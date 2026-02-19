@@ -115,6 +115,6 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
         GUISetText( gui, id, TxtBuff );
     }
     GUISetFocus( gui, id );
-    WndFree( savebuff );
-    WndFree( match );
+    MemFree( savebuff );
+    MemFree( match );
 }

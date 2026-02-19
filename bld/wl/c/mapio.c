@@ -321,7 +321,7 @@ static void WriteMapSectSegs( section *sect )
                 count += RingCount( class->segs );
             }
         }
-        segs = LnkMemAlloc( count * sizeof( seg_info ) );
+        segs = MemAllocSafe( count * sizeof( seg_info ) );
         count = 0;
         for( class = sect->classlist; class != NULL; class = class->next_class ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
@@ -345,7 +345,7 @@ static void WriteMapSectSegs( section *sect )
                 WriteMapAbsSeg( segs[i].seg );
             }
         }
-        LnkMemFree( segs );
+        MemFree( segs );
     }
 }
 
@@ -709,7 +709,7 @@ static void WriteMapLines( void )
       || length == 0 )
        return;
 
-    input = LnkMemAlloc( length );
+    input = MemAllocSafe( length );
     ReadInfo( input_vm, input, length );
 
     for( p = input; p - input < length; ) {
@@ -737,22 +737,22 @@ static void WriteMapLines( void )
         opcode_base = *p;
         p += 1;
 
-        opcode_lengths = LnkMemAlloc( sizeof( unsigned ) * ( opcode_base - 1 ) );
+        opcode_lengths = MemAllocSafe( sizeof( unsigned ) * ( opcode_base - 1 ) );
         for( i = 0; i < opcode_base - 1; ++i ) {
             opcode_lengths[i] = *p++;
         }
 
         if( p - input >= length ) {
-            LnkMemFree( opcode_lengths );
-            LnkMemFree( input );
+            MemFree( opcode_lengths );
+            MemFree( input );
             return;
         }
 
         while( *p != 0 ) {
             p += strlen( (char *)p ) + 1;
             if( p - input >= length ) {
-                LnkMemFree( opcode_lengths );
-                LnkMemFree( input );
+                MemFree( opcode_lengths );
+                MemFree( input );
                 return;
             }
         }
@@ -766,8 +766,8 @@ static void WriteMapLines( void )
             p = SkipLEB128( p );
             p = SkipLEB128( p );
             if( p - input >= length ) {
-                LnkMemFree( opcode_lengths );
-                LnkMemFree( input );
+                MemFree( opcode_lengths );
+                MemFree( input );
                 return;
             }
         }
@@ -875,9 +875,9 @@ static void WriteMapLines( void )
             }
         }
         WriteMapNL();
-        LnkMemFree( opcode_lengths );
+        MemFree( opcode_lengths );
     }
-    LnkMemFree( input );
+    MemFree( input );
 }
 
 static bool CheckSymRecList( void *_info, void *sym )
@@ -894,7 +894,7 @@ static void AddSymRecList( symbol *sym, symrecinfo **head )
     symrecinfo      *info;
 
     if( RingLookup( *head, CheckSymRecList, sym ) == NULL ) {
-        info = LnkMemAlloc( sizeof( symrecinfo ) );
+        info = MemAllocSafe( sizeof( symrecinfo ) );
         info->next = NULL;
         info->sym = sym;
         info->mod = CurrMod;
@@ -1161,7 +1161,7 @@ void MapFini( void )
         MapFile = NULL;
 
         if( MapFName != NULL ) {
-            LnkMemFree( MapFName );
+            MemFree( MapFName );
             MapFName = NULL;
         }
     }
@@ -1224,7 +1224,7 @@ void WriteMapPubEnd( void )
       && ( NumMapSyms > 0 ) ) {
         symarray = NULL;
         if( NumMapSyms < ( UINT_MAX / sizeof( symbol * ) ) - 1 ) {
-            symarray = LnkMemAllocNoChk( NumMapSyms * sizeof( symbol * ) );
+            symarray = MemAlloc( NumMapSyms * sizeof( symbol * ) );
         }
         currsym = symarray;
         ok = ( symarray != NULL );
@@ -1243,7 +1243,7 @@ void WriteMapPubEnd( void )
             LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
         } else {
             WriteMapSymArray( symarray, NumMapSyms );
-            LnkMemFree( symarray );
+            MemFree( symarray );
         }
     }
 }
@@ -1255,7 +1255,7 @@ void WriteMapPubSortStart( pubdefinfo *info )
     if( (MapFlags & MAP_SORT)
       && (MapFlags & MAP_GLOBAL) == 0
       && ( CurrMod->publist != NULL ) ) {
-        info->symarray = LnkMemAlloc( Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
+        info->symarray = MemAllocSafe( Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
     }
 }
 
@@ -1266,7 +1266,7 @@ void WriteMapPubSortEnd( pubdefinfo *info )
         WriteMapSymArray( info->symarray, info->num );
     }
     if( info->symarray != NULL ) {
-        LnkMemFree( info->symarray );
+        MemFree( info->symarray );
         info->symarray = NULL;
     }
 }

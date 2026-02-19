@@ -111,7 +111,7 @@ static  char    *LastRep;
 
 static void SetLast( char **what, const char *to )
 {
-    _Free( *what );
+    MemFree( *what );
     if( to == NULL )
         to = LIT_ENG( Empty );
     *what = DupStr( to );
@@ -155,12 +155,12 @@ void InitBrowse( void )
 
 void FiniBrowse( void )
 {
-    _Free( LastFile );
-    _Free( LastExe );
-    _Free( LastDmp );
-    _Free( LastCfg );
-    _Free( LastBrk );
-    _Free( LastRep );
+    MemFree( LastFile );
+    MemFree( LastExe );
+    MemFree( LastDmp );
+    MemFree( LastCfg );
+    MemFree( LastBrk );
+    MemFree( LastRep );
     LastFile = NULL;
     LastExe = NULL;
     LastDmp = NULL;
@@ -179,7 +179,7 @@ static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags
         strcpy( TxtBuff, *last );
     }
     rc = DlgFileBrowse( title, filter, TxtBuff, TXT_LEN, flags );
-    _Free( *last );
+    MemFree( *last );
     *last = DupStr( TxtBuff );
     return( rc );
 }

@@ -128,15 +128,8 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
 
-    newmenu = RESALLOC( sizeof( FullMenu ) );
-    newitem = RESALLOC( sizeof( FullMenuItem ) );
-
-    if( newmenu == NULL
-      || newitem == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
+    newmenu = RESALLOCSAFE( sizeof( FullMenu ) );
+    newitem = RESALLOCSAFE( sizeof( FullMenuItem ) );
 
     *newitem = firstitem;
     newmenu->head = NULL;
@@ -153,13 +146,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     FullMenuItem     *newitem;
 
 
-    newitem = RESALLOC( sizeof( FullMenuItem ) );
-
-    if( newitem == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
+    newitem = RESALLOCSAFE( sizeof( FullMenuItem ) );
 
     *newitem = curritem;
 

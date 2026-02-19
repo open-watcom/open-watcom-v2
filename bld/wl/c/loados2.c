@@ -177,7 +177,7 @@ static void ReadOldLib( void )
             QRead( the_file, &head.pe, PE_HDR_SIZE, fname );
             QRead( the_file, (char *)&head.pe + PE_HDR_SIZE, PE_OPT_SIZE( head.pe ), fname );
             num_objects = head.pe.fheader.num_objects;
-            objects = LnkMemAlloc( num_objects * sizeof( pe_object ) );
+            objects = MemAllocSafe( num_objects * sizeof( pe_object ) );
             QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
             currobj = objects;
             for( ; num_objects > 0; --num_objects ) {
@@ -189,7 +189,7 @@ static void ReadOldLib( void )
                 }
                 currobj++;
             }
-            LnkMemFree( objects );
+            MemFree( objects );
             if( num_objects == 0 ) {
                 LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
             }
@@ -198,7 +198,7 @@ static void ReadOldLib( void )
         }
     }
     QClose( the_file, fname );
-    LnkMemFree( fname );
+    MemFree( fname );
     FmtData.u.os2fam.old_lib_name = NULL;
 }
 
@@ -362,7 +362,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    exe_type = LnkMemAlloc( sizeof( FullTypeRecord ) );
+    exe_type = MemAllocSafe( sizeof( FullTypeRecord ) );
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = type->NumResources;
     exe_type->Info.type = findResOrTypeName( restab, &(type->TypeName) );
@@ -383,7 +383,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    exe_res = LnkMemAlloc( sizeof( FullResourceRecord ) );
+    exe_res = MemAllocSafe( sizeof( FullResourceRecord ) );
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
     exe_res->Info.flags = mem_flags;
@@ -437,9 +437,9 @@ static void FreeResTable( ResTable *restab )
         type_next = type->Next;
         for( res = type->Head; res != NULL; res = res_next ) {
             res_next = res->Next;
-            LnkMemFree( res );
+            MemFree( res );
         }
-        LnkMemFree( type );
+        MemFree( type );
     }
 
     restab->Dir.Head = NULL;
@@ -637,12 +637,12 @@ unsigned long ResNonResNameTable( bool dores )
     }
     if( dores ) {
         if( FmtData.u.os2fam.module_name != NULL ) {
-            LnkMemFree( FmtData.u.os2fam.module_name );
+            MemFree( FmtData.u.os2fam.module_name );
             FmtData.u.os2fam.module_name = NULL;
         }
     } else {     /* in non-resident names table */
         if( FmtData.description != NULL ) {
-            LnkMemFree( FmtData.description );
+            MemFree( FmtData.description );
             FmtData.description = NULL;
         }
     }
@@ -854,7 +854,7 @@ void ChkOS2Exports( void )
             // Keep the import name. If an alias is exported, we want the
             // alias name in the import lib, not the substitute name
             if( exp->impname == NULL ) {
-                exp->impname = LnkMemStrdup( exp->sym->name.u.ptr );
+                exp->impname = MemStrdupSafe( exp->sym->name.u.ptr );
             }
 
             exp->sym = sym;
@@ -948,11 +948,11 @@ static void FiniNEResources( FILE *res_fp, WResDir inRes, ResTable *outRes )
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {
-            LnkMemFree( outRes->Str.StringBlock );
+            MemFree( outRes->Str.StringBlock );
             outRes->Str.StringBlock = NULL;
         }
         if( outRes->Str.StringList != NULL ) {
-            LnkMemFree( outRes->Str.StringList );
+            MemFree( outRes->Str.StringList );
             outRes->Str.StringList = NULL;
         }
         WResFreeDir( inRes );
@@ -1243,8 +1243,8 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
             return( WriteDOSDefStub( stub_align ) );   // NOTE: <== a return here.
         }
-        LnkMemFree( FmtData.u.os2fam.stub_file_name );
-        FmtData.u.os2fam.stub_file_name = LnkMemStrdup( fullname );
+        MemFree( FmtData.u.os2fam.stub_file_name );
+        FmtData.u.os2fam.stub_file_name = MemStrdupSafe( fullname );
         QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2fam.stub_file_name );
         if( dosheader.signature != EXESIGN_DOS ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );

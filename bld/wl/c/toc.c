@@ -81,7 +81,7 @@ void ResetToc( void )
 void CleanToc( void )
 /**************************/
 {
-    ZapHTable( Toc, LnkMemFree );
+    ZapHTable( Toc, MemFree );
 }
 
 static unsigned TocEntryHashFunc( void *_e, unsigned size )
@@ -102,7 +102,7 @@ static int TocEntryCmp( const void *_e1, const void *_e2 )
 void InitToc( void )
 /***********************/
 {
-    Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, LnkMemAlloc, LnkMemFree );
+    Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, MemAlloc, MemFree );
     TocSize = 0;
     if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
         TocName = TocSymName;
@@ -139,7 +139,7 @@ static void AddToToc( TocEntryId *e )
     searchEntry.e = *e;
 
     if( FindHTableElem( Toc, &searchEntry ) == NULL ) {
-        entry = LnkMemAlloc( sizeof( *entry ) );
+        entry = MemAllocSafe( sizeof( *entry ) );
         entry->e = *e;
         entry->pos = TocSize;
         TocSize += sizeof( offset );

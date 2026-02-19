@@ -50,7 +50,7 @@ size_t GUIAPI GUIDlgBuffGetText( gui_window *wnd, gui_ctl_id id, char *buff, siz
         if( len > buff_len )
             len = buff_len;
         memcpy( buff, str, len );
-        GUIMemFree( str );
+        MemFree( str );
     }
     buff[len] = '\0';
     return( len );

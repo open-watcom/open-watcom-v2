@@ -265,7 +265,7 @@ static void VarDisplayFree( type_display *junk )
     for( prev = junk; prev->alias != junk; prev = prev->alias )
         ;
     prev->alias = junk->alias;
-    DbgFree( junk );
+    MemFree( junk );
 }
 
 void VarDisplayFini( void )
@@ -294,7 +294,7 @@ static type_display *VarDisplayAddType( type_display **owner, const char *name )
 {
     type_display        *new;
 
-    new = DbgAlloc( sizeof( *new ) + strlen( name ) );
+    new = MemAlloc( sizeof( *new ) + strlen( name ) );
     memset( new, 0, sizeof( *new ) );
     strcpy( new->name, name );
     while( *owner != NULL )
@@ -557,7 +557,7 @@ static var_node *NewNode( var_info *i, unsigned len )
 
     i->mem_lock = true;
     size = sizeof( var_node ) + len;
-    new = DbgAlloc( size + type_SIZE );
+    new = MemAlloc( size + type_SIZE );
     i->mem_lock = false;
     if( new == NULL ) {
         ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
@@ -785,8 +785,8 @@ static void     VarNodeFini( var_node *v )
         junk = v;
         v = v->next;
         ++count;
-        DbgFree( junk->value );
-        DbgFree( junk );
+        MemFree( junk->value );
+        MemFree( junk );
     }
 }
 
@@ -1577,7 +1577,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 len = strlen( LIT_ENG( field ) );
             } else {
                 len = DIPSymName( field, NULL, SNT_SOURCE, NULL, 0 );
-                _AllocA( name, len+1 );
+                name = walloca( len + 1 );
                 DIPSymName( field, NULL, SNT_SOURCE, name, len+1 );
             }
             if( delay_indirect ) {
@@ -1841,8 +1841,8 @@ void VarDelete( var_info *i, var_node *v )
         owner = &(*owner)->next;
     }
     *owner = v->next;
-    DbgFree( v->value );
-    DbgFree( v );
+    MemFree( v->value );
+    MemFree( v );
 }
 
 
@@ -1965,7 +1965,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
     VarBuildName( i, v, false );
     name = DupStr( TxtBuff );
     SpawnP( BreakOnExprSP, name );
-    DbgFree( name );
+    MemFree( name );
 }
 
 void VarAddWatch( var_info *i, var_node *v )
@@ -2227,7 +2227,7 @@ void VarSetValue( var_node *v, const char *value )
 {
     if( v->value_valid )
         return;
-    DbgFree( v->value );
+    MemFree( v->value );
     v->value = DupStr( value );
     v->value_valid = true;
 }
@@ -2265,7 +2265,7 @@ static scope_state *NilScope( void )
 {
     scope_state *s;
 
-    s = DbgMustAlloc( sizeof( scope_state ) );
+    s = MemAllocSafe( sizeof( scope_state ) );
     memset( s, 0, sizeof( *s ) );
     InitMappableAddr( &s->scope );
     s->scope.addr = NilAddr;
@@ -2364,8 +2364,8 @@ static void VarFreeScopeList( var_info *i, scope_state *junk )
     *owner = junk->next;
     VarNodeFini( junk->v );
     FiniMappableAddr( &junk->scope );
-    DbgFree( junk->wnd_data );
-    DbgFree( junk );
+    MemFree( junk->wnd_data );
+    MemFree( junk );
     for( s = i->s; s != NULL; s = s->next ) {
         if( s->outer == junk ) {
             s->outer = NULL;
@@ -2517,7 +2517,7 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr )
         }
         break;
     case VAR_LOCALS:
-        _AllocA( nested, sizeof( *nested ) );
+        nested = walloca( sizeof( *nested ) );
         outer = NULL;
         nested->next = NULL;
         havescope = true;
@@ -2533,7 +2533,7 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr )
             repaint = true;
             if( havescope ) {
                 for( ;; ) {
-                    _AllocA( new, sizeof( *new ) );
+                    new = walloca( sizeof( *new ) );
                     if( DIPScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE )
                         break;
                     new->next = nested;

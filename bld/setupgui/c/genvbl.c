@@ -96,7 +96,7 @@ void InitVarsList( void )
 void VarSetAutoSetCond( vhandle var_handle, const char *cond )
 /************************************************************/
 {
-    Vars.list[var_handle].autoset = GUIMemStrdup( cond );
+    Vars.list[var_handle].autoset = MemStrdup( cond );
 }
 
 
@@ -240,7 +240,7 @@ static vhandle NewVariable( const char *vbl_name )
     var_handle = Vars.array.num;
     BumpArray( &Vars.array );
     tmp_variable = &Vars.list[var_handle];
-    tmp_variable->name = GUIMemStrdup( vbl_name );
+    tmp_variable->name = MemStrdup( vbl_name );
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
@@ -280,13 +280,13 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
                 }
                 return( var_handle );
             }
-            GUIMemFree( tmp_variable->strval );   // free the old string
+            MemFree( tmp_variable->strval );   // free the old string
         }
     } else {
         var_handle = NewVariable( vbl_name );
     }
     tmp_variable = &Vars.list[var_handle];
-    tmp_variable->strval = GUIMemStrdup( strval );
+    tmp_variable->strval = MemStrdup( strval );
     tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
         tmp_variable->hook( var_handle );
@@ -482,9 +482,9 @@ void FreeVarsList( bool delete_all_vars )
     j = 0;
     if( delete_all_vars ) {
         for( i = 0; i < Vars.array.num; i++ ) {
-            GUIMemFree( Vars.list[i].name );
-            GUIMemFree( Vars.list[i].strval );
-            GUIMemFree( Vars.list[i].autoset );
+            MemFree( Vars.list[i].name );
+            MemFree( Vars.list[i].strval );
+            MemFree( Vars.list[i].autoset );
         }
     } else {
         for( i = 0; i < Vars.array.num; i++ ) {
@@ -497,9 +497,9 @@ void FreeVarsList( bool delete_all_vars )
                 }
                 j++;
             } else {
-                GUIMemFree( Vars.list[i].name );
-                GUIMemFree( Vars.list[i].strval );
-                GUIMemFree( Vars.list[i].autoset );
+                MemFree( Vars.list[i].name );
+                MemFree( Vars.list[i].strval );
+                MemFree( Vars.list[i].autoset );
             }
         }
     }
@@ -517,6 +517,6 @@ void FreeVarsList( bool delete_all_vars )
             HashInsert( Vars.hash, Vars.list[i].name, i );
         }
     } else {
-        GUIMemFree( Vars.list );
+        MemFree( Vars.list );
     }
 }

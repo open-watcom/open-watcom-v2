@@ -56,10 +56,10 @@ bool InitOvlState( void )
     if( OvlRemap == NULL ) {
         OvlSize = RemoteOvlSectSize();
         OvlCount = ( OvlSize - 3 ) * 8;
-        _Alloc( OvlRemap, OvlCount * sizeof( section_info ) );
+        OvlRemap = MemAlloc( OvlCount * sizeof( section_info ) );
         if( OvlRemap == NULL )
             return( false );
-        _Alloc( TblCache, OvlSize );
+        TblCache = MemAlloc( OvlSize );
         for( i = 0; i < OvlCount; ++i ) {
             if( RemoteOvlSectPos( i + 1, &where ) ) {
                 OvlRemap[i].first = where.start.mach.segment;
@@ -76,9 +76,9 @@ bool InitOvlState( void )
 
 void FiniOvlState( void )
 {
-    _Free( TblCache );
+    MemFree( TblCache );
     TblCache = NULL;
-    _Free( OvlRemap );
+    MemFree( OvlRemap );
     OvlRemap = NULL;
     OvlSize = OvlCount = 0;
 }
@@ -107,7 +107,7 @@ bool SectIsLoaded( unsigned sect_id, int sect_map_id )
             RemoteSectTblRead( tbl );
             TblCacheValid = true;
         } else {
-            _AllocA( tbl, OvlSize );
+            tbl = walloca( OvlSize );
             RemoteSectTblRead( tbl );
         }
     } else { /* map at time of execution */
@@ -128,7 +128,7 @@ void SectLoad( unsigned sect_id )
         return;
     if( TblCache != NULL && SectIsLoaded( sect_id, OVL_MAP_CURR ) )
         return;
-    _AllocA( tbl, OvlSize );
+    tbl = walloca( OvlSize );
     memset( tbl, 0, OvlSize );
     --sect_id;
     tbl[sect_id / 8] |= 1 << ( sect_id % 8 );

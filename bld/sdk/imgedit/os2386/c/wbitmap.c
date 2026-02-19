@@ -43,7 +43,7 @@
 
 #include "wbitmap.h"
 #include "palette.h"
-#include "cguimem.h"
+#include "commmem.h"
 
 #define CHUNK_SIZE      (48 * 1024)
 

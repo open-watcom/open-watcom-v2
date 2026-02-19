@@ -47,6 +47,7 @@ typedef unsigned long       memsize;
 #endif
 
 typedef struct _trmem_internal  *_trmem_hdl;
+#define _TRMEM_HDL_NONE     ((_trmem_hdl)NULL)
 
 typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)

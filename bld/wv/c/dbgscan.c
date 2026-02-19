@@ -103,14 +103,14 @@ static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool cle
     if( radixstr == NULL || SYM_NAME_LEN( radixstr->string ) != len ) {
         if( clear )
             return;
-        radixstr = DbgMustAlloc( sizeof( radix_str ) + len );
+        radixstr = MemAllocSafe( sizeof( radix_str ) + len );
         memcpy( SYM_NAME_NAME( radixstr->string ), str, len );
         SET_SYM_NAME_LEN( radixstr->string, len );
         radixstr->next = *owner;
         *owner = radixstr;
     } else if( clear ) {
         *owner = radixstr->next;
-        _Free( radixstr );
+        MemFree( radixstr );
         return;
     }
     radixstr->value = value;
@@ -138,7 +138,7 @@ void FiniScan( void )
 
     while( (radixstr = RadixStrs) != NULL ) {
         RadixStrs = RadixStrs->next;
-        _Free( radixstr );
+        MemFree( radixstr );
     }
 }
 
@@ -742,9 +742,9 @@ void AddActualChar( char data )
     size_t  len;
 
     len = ++StringLength;
-    _Alloc( hold, len );
+    hold = MemAlloc( len );
     if( hold == NULL ) {
-        _Free( StringStart );
+        MemFree( StringStart );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     }
     walk1 = hold;
@@ -752,7 +752,7 @@ void AddActualChar( char data )
     for( --len; len > 0; --len )
         *walk1++ = *walk2++;
     *walk1 = data;
-    _Free( StringStart );
+    MemFree( StringStart );
     StringStart = hold;
 }
 
@@ -776,7 +776,7 @@ static void RawScan( void )
 {
     if( ScanPtr[-1] == NULLCHAR ) {
         /* missing end quote; scanned past eol -- error */
-        _Free( StringStart );
+        MemFree( StringStart );
         StringStart = NULL;   /* this is necessary */
         StringLength = 0;
         scan_string = false;  /* this is essential */

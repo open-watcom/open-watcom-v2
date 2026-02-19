@@ -108,12 +108,12 @@ char *FileName( const char *buff, prompt_slot slot, bool force )
         if( cnt != 0 ) {
             len = cnt;
         }
-        ptr = MemAlloc( len + 1 + DefExtLen[slot] + 1 );
+        ptr = MemAllocSafe( len + 1 + DefExtLen[slot] + 1 );
         memcpy( ptr, buff, len );
         ptr[len++] = '.';
         strcpy( ptr + len, DefExt[slot] );
     } else {
-        ptr = MemAlloc( len + 1 );
+        ptr = MemAllocSafe( len + 1 );
         memcpy( ptr, buff, len );
         ptr[len] = '\0';
     }
@@ -126,7 +126,7 @@ void AddCommand( char *msg, prompt_slot slot, bool verbatim )
     cmdentry    *cmd;
     cmdentry    *list;
 
-    cmd = MemAlloc( sizeof( cmdentry ) );
+    cmd = MemAllocSafe( sizeof( cmdentry ) );
     cmd->command = msg;
     cmd->asis = verbatim;
     cmd->next = NULL;
@@ -224,7 +224,7 @@ char *Msg2Splice( const char *msg1, const char *msg2 )
 
     len1 = strlen( msg1 );
     len2 = strlen( msg2 );
-    both = MemAlloc( len1 + len2 + 1 );
+    both = MemAllocSafe( len1 + len2 + 1 );
     memcpy( both, msg1, len1 );
     memcpy( both + len1, msg2, len2 );
     *(both + len1 + len2) = '\0';
@@ -242,7 +242,7 @@ char *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 )
     len1 = strlen( msg1 );
     len2 = strlen( msg2 );
     len3 = strlen( msg3 );
-    all = MemAlloc( len1 + len2 + len3 + 1 );
+    all = MemAllocSafe( len1 + len2 + len3 + 1 );
     memcpy( all, msg1, len1 );
     memcpy( all + len1, msg2, len2 );
     memcpy( all + len1 + len2, msg3, len3 );

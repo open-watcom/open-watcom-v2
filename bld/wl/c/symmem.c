@@ -83,7 +83,7 @@ static bool ShrinkBlock( block_data *block )
         return( false );
     if( block->currbrk >= block->list->size )
         return( false );
-    new = LnkMemRealloc( block->list, block->currbrk + ALLOC_SIZE );
+    new = MemReallocSafe( block->list, block->currbrk + ALLOC_SIZE );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
   #ifdef DEVBUILD
@@ -125,7 +125,7 @@ static void GetNewBlock( block_data *block, size_t size )
     if( try < size )
         try = size;
     for( ;; ) {
-        new = LnkMemAllocNoChk( try + ALLOC_SIZE );
+        new = MemAlloc( try + ALLOC_SIZE );
         if( new != NULL )
             break;
         try /= 2;

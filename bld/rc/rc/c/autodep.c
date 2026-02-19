@@ -60,7 +60,7 @@ bool AddDependency( const char *fname )
 
     if( CmdLineParms.GenAutoDep ) {
         cmp = 0;
-        name = RESALLOC( _MAX_PATH );
+        name = RESALLOCSAFE( _MAX_PATH );
         _fullpath( name, fname, _MAX_PATH );
         for( cur = &depList; *cur != NULL; cur = &(*cur)->next ) {
             cmp = strcmp( name, (*cur)->info.name );
@@ -71,7 +71,7 @@ bool AddDependency( const char *fname )
         if( *cur == NULL
           || cmp != 0 ) {
             len = strlen( name ) + 1;
-            new = RESALLOC( sizeof( DepNode ) - 1 + len );
+            new = RESALLOCSAFE( sizeof( DepNode ) - 1 + len );
             new->next = *cur;
             new->info.len = (uint_16)len;
             memcpy( new->info.name, name, len );

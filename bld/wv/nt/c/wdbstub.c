@@ -1868,7 +1868,7 @@ void WndAsmInspect( address addr )
     char                buff[256];
     mad_disasm_data     *dd;
 
-    _AllocA( dd, MADDisasmDataSize() );
+    dd = walloca( MADDisasmDataSize() );
     for( i = 0; i < 10; ++i ) {
         MADDisasm( dd, &addr, 0 );
         MADDisasmFormat( dd, MDP_ALL, CurrRadix, buff, sizeof( buff ) );

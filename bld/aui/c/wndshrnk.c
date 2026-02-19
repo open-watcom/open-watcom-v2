@@ -151,7 +151,7 @@ void WndShowAll( void )
     for( gui = GUIGetFront(); gui != NULL; gui = GUIGetNextWindow( gui ) ) {
         ++count;
     }
-    list = WndAlloc( count * sizeof( gui ) );
+    list = MemAlloc( count * sizeof( gui ) );
     pcurr = list;
     for( gui = GUIGetFront(); gui != NULL; gui = GUIGetNextWindow( gui ) ) {
         if( WndMain != NULL && WndMain->gui == gui )
@@ -161,6 +161,6 @@ void WndShowAll( void )
     while( pcurr > list ) {
         GUIShowWindow( *--pcurr );
     }
-    WndFree( list );
+    MemFree( list );
 }
 

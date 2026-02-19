@@ -523,7 +523,7 @@ static void ProcCode( void )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
+            result = MemAllocSafe( CODE_BUFFER_LEN - BufferLeft + 1 );
             strncpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
@@ -549,7 +549,7 @@ static void ProcData( void )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
+            result = MemAllocSafe( CODE_BUFFER_LEN - BufferLeft + 1 );
             strncpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
@@ -789,7 +789,7 @@ static void GetExport( void )
         }
     }
     toklen += 8;       // export keyword + space + nullchar;
-    command = MemAlloc( toklen );
+    command = MemAllocSafe( toklen );
     strncpy( command, "export ", 7 );
     currloc = command + 7;
     strncpy( currloc, name, namelen );
@@ -899,7 +899,7 @@ static void GetImport( void )
         toklen += CmdFile->len + 1;      // string length + dot.
     }
     toklen += 8;       // import keyword + space + nullchar;
-    result = MemAlloc( toklen );
+    result = MemAllocSafe( toklen );
     strncpy( result, "import ", 7 );
     currloc = result + 7;
     if( second != NULL ) {       // got a internal name in first.
@@ -1116,7 +1116,7 @@ static void GetSegments( void )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN && !GotOvl ) { // something spec'd.
             len = CODE_BUFFER_LEN - BufferLeft;
-            result = MemAlloc( len + seglen + 12 );
+            result = MemAllocSafe( len + seglen + 12 );
             strncpy( result, "segment '", 9 );
             currloc = result + 9;
             strncpy( currloc, segname, seglen );

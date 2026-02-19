@@ -39,8 +39,8 @@
 
 #define SMTabIntervalGet()              TabIntervalGet()
 
-#define _SMAlloc( pointer, size )       (pointer) = DbgAlloc( size )
-#define _SMFree( pointer )              DbgFree( pointer )
+#define _SMAlloc( pointer, size )       (pointer) = MemAlloc( size )
+#define _SMFree( pointer )              MemFree( pointer )
 
 #define sm_file_handle                  file_handle
 #define sm_mod_handle                   mod_handle

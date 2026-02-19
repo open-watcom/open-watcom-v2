@@ -49,7 +49,7 @@
 #include "rccore.h"
 
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemAlloc,RcMemFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,MemAlloc,MemFree);
 
 void InitGlobs( void )
 /********************/

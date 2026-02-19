@@ -56,7 +56,7 @@ FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem it
     }                                   // instead of using the full string.
                                         // This is what Microsoft does.
     list->NumItems++;
-    list->Item = RCREALLOC( list->Item, list->NumItems * sizeof( VerValueItem ) );
+    list->Item = RCREALLOCSAFE( list->Item, list->NumItems * sizeof( VerValueItem ) );
     list->Item[list->NumItems - 1] = item;
 
     return( list );
@@ -67,7 +67,7 @@ FullVerValueList *SemWINNewVerValueList( VerValueItem item )
 {
     FullVerValueList    *list;
 
-    list = RESALLOC( sizeof( FullVerValueList ) );
+    list = RESALLOCSAFE( sizeof( FullVerValueList ) );
     list->NumItems = 0;
     list->Item = NULL;
 
@@ -114,7 +114,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
 {
     FullVerBlock    *block;
 
-    block = RESALLOC( sizeof( FullVerBlock ) );
+    block = RESALLOCSAFE( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -130,7 +130,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
 {
     FullVerBlock    *block;
 
-    block = RESALLOC( sizeof( FullVerBlock ) );
+    block = RESALLOCSAFE( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -234,7 +234,7 @@ FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
 {
     FullVerBlockNest    *parent;
 
-    parent = RESALLOC( sizeof( FullVerBlockNest ) );
+    parent = RESALLOCSAFE( sizeof( FullVerBlockNest ) );
     parent->Head = NULL;
     parent->Tail = NULL;
 
@@ -310,7 +310,7 @@ VerFixedInfo *SemWINNewVerFixedInfo( VerFixedOption option )
 {
     VerFixedInfo    *info;
 
-    info = RESALLOC( sizeof( VerFixedInfo ) );
+    info = RESALLOCSAFE( sizeof( VerFixedInfo ) );
     memset( info, 0, sizeof( VerFixedInfo ) );
 
     return( SemWINAddVerFixedInfo( info, option ) );

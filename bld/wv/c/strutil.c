@@ -193,7 +193,7 @@ char *DupStrLen( const char *str, size_t len )
 {
     char        *dup;
 
-    dup = DbgAlloc( len + 1 );
+    dup = MemAlloc( len + 1 );
     if( dup != NULL ) {
         memcpy( dup, str, len );
         dup[len] = NULLCHAR;

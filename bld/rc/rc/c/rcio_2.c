@@ -75,7 +75,7 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
         remove( out_name );
     }
 
-    buffer = RESALLOC( BUFFER_SIZE );
+    buffer = RESALLOCSAFE( BUFFER_SIZE );
 
     RESSEEK( inp_fp, 0, SEEK_SET );
     /*
@@ -122,7 +122,7 @@ static bool OpenResFileInfo( ExeType type )
     }
     Pass2Info.AllResFilesOpen = true;
     if( CmdLineParms.NoResFile ) {
-        Pass2Info.ResFile = RESALLOC( sizeof( ResFileInfo ) );
+        Pass2Info.ResFile = RESALLOCSAFE( sizeof( ResFileInfo ) );
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->fp = NULL;
@@ -135,7 +135,7 @@ static bool OpenResFileInfo( ExeType type )
     } else {
         name = CmdLineParms.OutResFileName;
     }
-    curfile = RESALLOC( sizeof( ExtraRes ) + strlen( name ) );
+    curfile = RESALLOCSAFE( sizeof( ExtraRes ) + strlen( name ) );
     curfile->next = CmdLineParms.ExtraResFiles;
     CmdLineParms.ExtraResFiles = curfile;
     strcpy( curfile->name, name );
@@ -252,7 +252,7 @@ bool RcPass2IoInit( void )
     src = &(Pass2Info.OldFile);
 
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
-    Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
+    Pass2Info.IoBuffer = RESALLOCSAFE( IO_BUFFER_SIZE );
 
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, src );
     if( noerror ) {

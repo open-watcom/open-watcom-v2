@@ -189,7 +189,7 @@ static void MakeListItem( name_list **list, const char *item, size_t len )
 {
     name_list *entry;
 
-    entry = MemAlloc( sizeof( name_list ) + len );
+    entry = MemAllocSafe( sizeof( name_list ) + len );
     entry->next = NULL;
     entry->lnameidx = 0;
     memcpy( entry->name, item, len );
@@ -229,7 +229,7 @@ static bool ProcExclude( const char *item, size_t len )
     while( len > 0 ) {
         switch( ExcludeState ) {
         case EX_NONE:
-            ExEntry = MemAlloc( sizeof( exclude_list ) + len );
+            ExEntry = MemAllocSafe( sizeof( exclude_list ) + len );
             ExEntry->next = NULL;
             ExEntry->segidx = 0;
             ExEntry->lnameidx = 0;
@@ -565,7 +565,7 @@ int main(int argc, char **argv )
     InputBuffer = InitRecStuff();
     InFile = NULL;
     OutFile = NULL;
-    ClassList = MemAlloc( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
+    ClassList = MemAllocSafe( sizeof( name_list ) + sizeof( DEF_CLASS ) - 1 );
     ClassList->next = NULL;
     ClassList->lnameidx = 0;
     memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );

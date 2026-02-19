@@ -251,13 +251,13 @@ void SetTokens( bool parse_tokens )
 
 void LangInit( void )
 {
-    _Alloc( ParseTable, PARSE_TABLE_INIT );
+    ParseTable = MemAlloc( PARSE_TABLE_INIT );
     ParseTableSize = PARSE_TABLE_INIT;
 }
 
 void LangFini( void )
 {
-    _Free( ParseTable );
+    MemFree( ParseTable );
     ParseTable = NULL;
     ParseTableSize = 0;
 }
@@ -275,7 +275,7 @@ static unsigned ReadSection( file_handle fh, unsigned off )
     last = off + len;
     if( last > ParseTableSize ) {
         new = ParseTable;
-        _Realloc( new, last );
+        new = MemRealloc( new, last );
         if( new == NULL )
             return( 0 );
         ParseTable = new;

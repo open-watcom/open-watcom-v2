@@ -376,7 +376,7 @@ toolbar *ToolBarInit( HWND parent )
     btnColor = CLR_PALEGRAY;
 #endif
 
-    bar = (toolbar *)CUIMemAlloc( sizeof( toolbar ) );
+    bar = (toolbar *)MemAlloc( sizeof( toolbar ) );
     if ( bar ) {
         memset( bar, 0, sizeof( toolbar ) );
         bar->border_width = 1;
@@ -456,12 +456,12 @@ void ToolBarDestroy ( toolbar *bar )
 #endif
         for( curr = bar->tool_list; curr != NULL; curr = next ) {
             next = curr->next;
-            CUIMemFree( curr );
+            MemFree( curr );
         }
         if( bar->bgbrush != WPI_NULL ) {
             _wpi_deletebrush( bar->bgbrush );
         }
-        CUIMemFree( bar );
+        MemFree( bar );
     }
 
 } /* ToolBarDestroy */
@@ -499,7 +499,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     TOOLINFO    ti;
 #endif
 
-    t = (tool *)CUIMemAlloc( sizeof( tool ) );
+    t = (tool *)MemAlloc( sizeof( tool ) );
     if( info->flags & ITEM_BLANK ) {
         t->u.blank_space = info->u.blank_space;
     } else {

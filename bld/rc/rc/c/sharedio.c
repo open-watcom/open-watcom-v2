@@ -84,7 +84,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
     *presfiles = NULL;
     rescnt = 0;
     for( ; resnames != NULL; resnames = resnames->next ) {
-        resfile = RESALLOC( sizeof( ResFileInfo ) );
+        resfile = RESALLOCSAFE( sizeof( ResFileInfo ) );
         resfile->next = *presfiles;
         *presfiles = resfile;
         resfile->Dir = WResInitDir();

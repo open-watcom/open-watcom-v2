@@ -149,7 +149,7 @@ void WndFiniCacheLines( void )
     int         i;
 
     for( i = 0; i < NUM_CACHE_ENTRIES; ++i ) {
-        WndFree( CacheLine[i].text );
+        MemFree( CacheLine[i].text );
         CacheLine[i].text = NULL;
     }
 }
@@ -181,8 +181,8 @@ static void DoSet( int i, a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
     CacheLine[i].wnd = wnd;
     CacheLine[i].row = row;
     CacheLine[i].piece = piece;
-    WndFree( CacheLine[i].text );
-    CacheLine[i].text = WndAlloc( strlen( line->text ) + 1 );
+    MemFree( CacheLine[i].text );
+    CacheLine[i].text = MemAlloc( strlen( line->text ) + 1 );
     strcpy( CacheLine[i].text, line->text );
 }
 

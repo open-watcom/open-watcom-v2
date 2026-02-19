@@ -56,18 +56,18 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     filler = ( text == NULL ) ? LIT_GUI( Empty ) : text;
     fillerLength = strlen( filler );
     if( is_GUI_data ) {
-        new = GUIMemAlloc( fillerLength + 1 );
+        new = MemAlloc( fillerLength + 1 );
     } else {
-        new = uimalloc( fillerLength + 1 );
+        new = MemAlloc( fillerLength + 1 );
     }
     if( new == NULL ) {
         return( false );
     }
     strcpy( new, filler );
     if( is_GUI_data ) {
-        GUIMemFree( edit_control->buffer );
+        MemFree( edit_control->buffer );
     } else {
-        uifree( edit_control->buffer );
+        MemFree( edit_control->buffer );
     }
     edit_control->buffer = new;
     edit_control->length = fillerLength;
@@ -108,7 +108,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
             ret = true;
             new_str = NULL;
             if( text != NULL ) {
-                new_str = GUIMemStrdup( text );
+                new_str = MemStrdup( text );
                 if( new_str == NULL ) {
                     ret = false;
                 }
@@ -120,7 +120,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
                 case FLD_RADIO: fldtext = &field->u.radio->str; break;
                 case FLD_TEXT: fldtext = &field->u.str; break;
                 }
-                GUIMemFree( *fldtext );
+                MemFree( *fldtext );
                 *fldtext = new_str;
             }
         }

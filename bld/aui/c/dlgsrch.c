@@ -69,7 +69,7 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
     GUISetCurrSelect( gui, list, i );
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    GUIMemFree( cmd );
+    MemFree( cmd );
     GUISelectAll( gui, edit, true );
 }
 
@@ -79,7 +79,7 @@ static void DlgClickHistory( gui_window *gui, int edit, int list )
 
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
-    GUIMemFree( cmd );
+    MemFree( cmd );
 }
 
 static void DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list )
@@ -188,7 +188,7 @@ typedef struct {
 
 static void     GetDlgStatus( gui_window *gui, dlg_search *dlg )
 {
-    GUIMemFree( dlg->wnd->searchitem );
+    MemFree( dlg->wnd->searchitem );
     dlg->wnd->searchitem = GUIGetText( gui, CTL_SRCH_EDIT );
     if( dlg->wnd->searchitem == NULL )
         dlg->direction = 0;
@@ -281,7 +281,7 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     } else {
         WndSetMagicStr( "" );
     }
-    WndFree( dlg );
+    MemFree( dlg );
     return( direction );
 }
 

@@ -441,7 +441,7 @@ wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
     if( cmds != NULL ) {
         // add
         if( curr == NULL ) {
-            _Alloc( curr, sizeof( wnd_macro ) );
+            curr = MemAlloc( sizeof( wnd_macro ) );
             if( curr == NULL ) {
                 FreeCmdList( cmds );
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
@@ -471,7 +471,7 @@ wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
             *owner = curr->link;
             WndMenuSetHotKey( curr->menu, curr->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
             FreeCmdList( curr->cmd );
-            _Free( curr );
+            MemFree( curr );
             curr = NULL;
         }
     }
@@ -552,7 +552,7 @@ void    FiniMacros( void )
         WndMenuSetHotKey( mac->menu, mac->type == MACRO_MAIN_MENU, LIT_ENG( Empty ) );
         mac = mac->link;
         FreeCmdList( junk->cmd );
-        _Free( junk );
+        MemFree( junk );
     }
     WndMacroList = NULL;
 }

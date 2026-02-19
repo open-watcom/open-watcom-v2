@@ -346,9 +346,9 @@ name-id
 
 type-id
     : Y_NAME
-        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
     | string-constant
-        { $$ = WResIDFromStr( $1.string ); RcMemFree( $1.string ); }
+        { $$ = WResIDFromStr( $1.string ); MemFree( $1.string ); }
     | constant-expression
         { $$ = WResIDFromNum( $1.Value ); }
     ;
@@ -606,7 +606,7 @@ user-defined-resource
 
 user-defined-data
     : file-name
-        { $$ = SemCopyRawFile( $1.string ); RcMemFree( $1.string ); }
+        { $$ = SemCopyRawFile( $1.string ); MemFree( $1.string ); }
     | raw-data-section
         { $$ = SemFlushDataElemList( $1, true ); }
     ;
@@ -729,7 +729,7 @@ presparam-stmt
 
 presparam-name
     : name-id
-        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); MemFree( $1 ); }
     ;
 
 string-table-resource
@@ -773,13 +773,13 @@ string-items
         {
             $$ = SemOS2NewStringTable();
             SemOS2AddStrToStringTable( $$, $1.ItemID, $1.String );
-            RcMemFree( $1.String );
+            MemFree( $1.String );
         }
     | string-items string-item
         {
             SemOS2AddStrToStringTable( $1, $2.ItemID, $2.String );
             $$ = $1;
-            RcMemFree( $2.String );
+            MemFree( $2.String );
         }
     ;
 
@@ -900,7 +900,7 @@ acc-event
         {
             $$.event = SemOS2StrToAccelEvent( $1.string );
             $$.strevent = true;
-            RcMemFree( $1.string );
+            MemFree( $1.string );
         }
     | constant-expression
         {
@@ -1157,13 +1157,13 @@ menu-stmt
         {
             $$.token = Y_MENU;
             $$.Opt.Name = WResIDToNameOrOrdinal( $2 );
-            RcMemFree( $2 );
+            MemFree( $2 );
         }
     ;
 
 ctl-class-name
     : string-constant
-        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
     | Y_PUSHBUTTON
         { $$ = ResStrToNameOrOrdinal( "PUSHBUTTON" ); }
     | Y_COMBOBOX
@@ -1247,7 +1247,7 @@ cntl-text-options
     : string-constant cntl-options
         {
             $2.Text = ResStrToNameOrOrdinal( $1.string );
-            RcMemFree( $1.string );
+            MemFree( $1.string );
             $$ = $2;
         }
     ;
@@ -1409,7 +1409,7 @@ icon-parms
 
 control-name
     : name-id
-        { $$ = WResIDToNameOrOrdinal( $1 ); RcMemFree( $1 ); }
+        { $$ = WResIDToNameOrOrdinal( $1 ); MemFree( $1 ); }
     ;
 
 /*
@@ -1431,7 +1431,7 @@ control-stmt
 
 cntl-text
     : string-constant
-        { $$ = ResStrToNameOrOrdinal( $1.string ); RcMemFree( $1.string ); }
+        { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
     | constant-expression
         { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
     | Y_NAME
@@ -1519,11 +1519,11 @@ string-group
         {
             $$.lstring = ( $1.lstring | $2.lstring );
             $$.length = $1.length + $2.length;
-            $$.string = RcMemAlloc( $$.length + 1 );
+            $$.string = MemAllocSafe( $$.length + 1 );
             strcpy( $$.string, $1.string );
             strcat( $$.string, $2.string );
-            RcMemFree( $1.string );
-            RcMemFree( $2.string );
+            MemFree( $1.string );
+            MemFree( $2.string );
         }
     ;
 

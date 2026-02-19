@@ -80,7 +80,7 @@ bool GUIInsertCtrlWnd( gui_window *wnd )
 {
     dialog_wnd_node     *dlg_wnd_node;
 
-    dlg_wnd_node = (dialog_wnd_node *)GUIMemAlloc( sizeof( dialog_wnd_node ) );
+    dlg_wnd_node = (dialog_wnd_node *)MemAlloc( sizeof( dialog_wnd_node ) );
     if( dlg_wnd_node != NULL ) {
         dlg_wnd_node->wnd = wnd;
         dlg_wnd_node->next = DialogHead;
@@ -117,7 +117,7 @@ static void GUIDeleteCtrlWnd( gui_window *wnd )
             } else {
                 (*prev_owner)->next = curr->next;
             }
-            GUIMemFree( curr );
+            MemFree( curr );
             break;
         }
         prev_owner = owner;
@@ -169,7 +169,7 @@ control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class contro
 {
     control_item        *item;
 
-    item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
+    item = (control_item *)MemAlloc( sizeof( control_item ) );
     if( item != NULL ) {
         item->control_class = control_class;
         item->text = ctl_info->text;
@@ -195,12 +195,12 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent_wnd )
     if( ( parent_wnd == NULL ) || ( phwnd != parent_wnd->hwnd ) ) {
         return( NULL );
     }
-    item = (control_item *)GUIMemAlloc( sizeof( control_item ) );
+    item = (control_item *)MemAlloc( sizeof( control_item ) );
     if( item != NULL ) {
         memset( item, 0, sizeof( control_item ) );
         control_class = GUIGetControlClassFromHWND( hwnd );
         if( control_class == GUI_BAD_CLASS ) {
-            GUIMemFree( item );
+            MemFree( item );
             return( NULL );
         }
         item->control_class = control_class;
@@ -234,7 +234,7 @@ void GUIControlDelete( gui_window *wnd, gui_ctl_id id )
             } else {
                 prev->next = next;
             }
-            GUIMemFree( curr );
+            MemFree( curr );
             break;
         }
         prev = curr;
@@ -256,7 +256,7 @@ void GUIControlDeleteAll( gui_window *wnd )
 
     for( curr = wnd->controls; curr != NULL; curr = next ) {
         next = curr->next;
-        GUIMemFree( curr );
+        MemFree( curr );
     }
     wnd->controls = NULL;
     GUIDeleteCtrlWnd( wnd );

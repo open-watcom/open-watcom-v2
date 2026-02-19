@@ -64,7 +64,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
 {
     stringblock *blk;
 
-    blk = LnkMemAlloc( sizeof( stringblock ) );
+    blk = MemAllocSafe( sizeof( stringblock ) );
     blk->next = NULL;
     RingAppend( &strtab->data, blk );
     blk->size = 0;

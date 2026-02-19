@@ -41,12 +41,6 @@ extern void     MemInit( void );
 extern void     MemFini( void );
 #endif
 
-#define _ChkAlloc( res, size, type )    res = DbgChkAlloc( size, type )
-#define _Realloc( res, size )           res = DbgRealloc( res, size )
-#define _Alloc( res, size )             res = DbgAlloc( size )
-#define _AllocA( res, size )            res = walloca( size )
-#define _Free( ptr )                    DbgFree( ptr )
-
 extern void SysSetMemLimit( void );
 
 #endif

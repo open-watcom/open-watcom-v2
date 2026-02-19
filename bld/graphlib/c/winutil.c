@@ -359,7 +359,7 @@ WPI_INST _GetInst( void )
 }
 
 
-void _wpi_free( void * ptr )
+void MemFree( void * ptr )
 /*==========================
   What we use to free memory. */
 {
@@ -367,7 +367,7 @@ void _wpi_free( void * ptr )
 }
 
 
-void * _wpi_malloc( size_t size )
+void * MemAlloc( size_t size )
 /*===============================
   What we use to allocate memory. */
 {

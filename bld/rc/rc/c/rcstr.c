@@ -197,7 +197,7 @@ static void ConstructStringBlock( StringsBlock *str )
     /*
      * allocate the block for the strings
      */
-    str->StringBlock = RESALLOC( str->StringBlockSize );
+    str->StringBlock = RESALLOCSAFE( str->StringBlockSize );
     /*
      * copy the strings into the block
      */
@@ -226,7 +226,6 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
 /***********************************************************************/
 {
     size_t  list_len;
-    void    **new_list;
 
     if( WResIsEmpty( dir ) ) {
         /*
@@ -239,7 +238,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
          */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RESALLOC( list_len * sizeof( void * ) );
+        str->StringList = RESALLOCSAFE( list_len * sizeof( void * ) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList, list_len, CompareWResIDNames );
@@ -251,10 +250,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            new_list = RCREALLOC( str->StringList, list_len * sizeof( void * ) );
-            if( new_list != NULL ) {
-                str->StringList = new_list;
-            }
+            str->StringList = RCREALLOCSAFE( str->StringList, list_len * sizeof( void * ) );
             ConstructStringBlock( str );
         }
     }

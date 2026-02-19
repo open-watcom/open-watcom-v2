@@ -165,8 +165,4 @@ extern char     *RemoveExt( char * );
 extern int      HasFileExtension( const char *p, const char *ext );
 extern void     MakeName( char *name, const char *ext );
 
-extern void     *MemAlloc( size_t );
-extern char     *MemStrdup( const char * );
 extern char     *MemStrLenDup( const char *str, size_t len );
-extern void     *MemRealloc( void *, size_t );
-extern void     MemFree( void * );

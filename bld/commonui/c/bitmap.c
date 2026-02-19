@@ -62,7 +62,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
     BITMAPINFOHEADER    *header;
     long                bitmap_size;
 
-    header = CUIMemAlloc( sizeof( BITMAPINFOHEADER ) );
+    header = MemAlloc( sizeof( BITMAPINFOHEADER ) );
     if( header == NULL ) {
         return( NULL );
     }
@@ -72,7 +72,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
         /* Bitmap has palette, read it */
         fseek( fp, START_OF_HEADER, SEEK_SET );
         bitmap_size = DIB_INFO_SIZE( header->biBitCount );
-        bm = CUIMemRealloc( header, bitmap_size );
+        bm = MemRealloc( header, bitmap_size );
         if( bm == NULL ) {
             return( NULL );
         }
@@ -92,7 +92,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     BITMAPCOREHEADER    *header;
     long                bitmap_size;
 
-    header = CUIMemAlloc( sizeof( BITMAPCOREHEADER ) );
+    header = MemAlloc( sizeof( BITMAPCOREHEADER ) );
     if( header == NULL ) {
         return( NULL );
     }
@@ -100,7 +100,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     fread( header, sizeof( BITMAPCOREHEADER ), 1, fp );
     fseek( fp, START_OF_HEADER, SEEK_SET );
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
-    bm_core = CUIMemRealloc( header, bitmap_size );
+    bm_core = MemRealloc( header, bitmap_size );
     if( bm_core == NULL ) {
         return( NULL );
     }
@@ -132,8 +132,8 @@ static void HugeMemCopy( void __far *dst, void __far *src, unsigned bytes )
 }
 #else
 #define HugeMemCopy( a, b, c ) memcpy( a, b, c )
-#define __halloc( a, b ) CUIMemAlloc( a )
-#define __hfree CUIMemFree
+#define __halloc( a, b ) MemAlloc( a )
+#define __hfree MemFree
 #endif
 
 /* This is the amount of memory we read in at once. */
@@ -148,7 +148,7 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
     WORD                chunk_size;
 
     for( chunk_size = CHUNK_SIZE; chunk_size != 0; chunk_size >>= 1 ) {
-        if( (buffer = CUIMemAlloc( chunk_size )) != NULL ) {
+        if( (buffer = MemAlloc( chunk_size )) != NULL ) {
             while( size > chunk_size ) {
                 fread( buffer, chunk_size, 1, fp );
                 HugeMemCopy( dst, buffer, chunk_size );
@@ -157,7 +157,7 @@ static void readInPieces( BYTE _WCI86HUGE *dst, FILE *fp, DWORD size )
             }
             fread( buffer, size, 1, fp );
             HugeMemCopy( dst, buffer, size );
-            CUIMemFree( buffer );
+            MemFree( buffer );
             break;
         }
     }
@@ -238,13 +238,13 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
         if( info != NULL ) {
             info->u.bm_core = bm_core;
         } else {
-            CUIMemFree( bm_core );
+            MemFree( bm_core );
         }
     } else {
         if( info != NULL ) {
             info->u.bm_info = bm_info;
         } else {
-            CUIMemFree( bm_info );
+            MemFree( bm_info );
         }
     }
     return( hbitmap );

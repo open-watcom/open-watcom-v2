@@ -126,27 +126,27 @@ static void FreeSections( section *sec )
         }
         DBISectCleanup( sec );
         FreeAreas( sec->areas );
-        ZapHTable( sec->modFilesHashed, LnkMemFree );
+        ZapHTable( sec->modFilesHashed, MemFree );
         // Free up any Order Class entries
         for( Class = sec->orderlist; Class != NULL; Class = NextClass ) {
             NextClass = Class->NextClass;
             if( Class->Name != NULL ) {   // Including members and sucessors
-                LnkMemFree ( Class->Name );
+                MemFree ( Class->Name );
             }
             if( Class->Copy ) {
-                LnkMemFree ( Class->SrcName );
+                MemFree ( Class->SrcName );
             }
             // Order Seg entries can also have members and sucessors
             for( Seg = Class->SegList; Seg != NULL; Seg = NextSeg ) {
                 NextSeg = Seg->NextSeg;
                 if( Seg->Name != NULL ) {
-                    LnkMemFree( Seg->Name );
+                    MemFree( Seg->Name );
                 }
-                LnkMemFree ( Seg );
+                MemFree ( Seg );
             }
-            LnkMemFree ( Class );
+            MemFree ( Class );
         }
-        LnkMemFree( sec );
+        MemFree( sec );
     }
 }
 
@@ -177,13 +177,13 @@ void CleanLinkStruct( void )
         FreeMods( LibModules );
     }
     if( SymFileName != NULL ) {
-        LnkMemFree( SymFileName );
+        MemFree( SymFileName );
     }
     if( FmtData.osname != NULL ) {
-        LnkMemFree( FmtData.osname );
+        MemFree( FmtData.osname );
     }
     if( FmtData.resource != NULL ) {
-        LnkMemFree( FmtData.resource );
+        MemFree( FmtData.resource );
     }
     FreeRelocInfo();
     FreeGroups( Groups );
@@ -208,8 +208,8 @@ void FreeSegFlags( xxx_seg_flags *curr )
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
-        LnkMemFree( curr->name );
-        LnkMemFree( curr );
+        MemFree( curr->name );
+        MemFree( curr );
     }
 }
 #endif

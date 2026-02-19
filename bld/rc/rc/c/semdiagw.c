@@ -85,7 +85,7 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 {
     FullDialogBoxHeader     *newheader;
 
-    newheader = RESALLOC( sizeof( FullDialogBoxHeader ) );
+    newheader = RESALLOCSAFE( sizeof( FullDialogBoxHeader ) );
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
         newheader->Win32 = false;
@@ -256,7 +256,7 @@ FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
 {
     FullDiagCtrlList    *newlist;
 
-    newlist = RESALLOC( sizeof( FullDiagCtrlList ) );
+    newlist = RESALLOCSAFE( sizeof( FullDiagCtrlList ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     newlist->numctrls = 0;
@@ -289,7 +289,7 @@ static FullDialogBoxControl *semInitDiagCtrl( void )
 {
     FullDialogBoxControl        *newctrl;
 
-    newctrl = RESALLOC( sizeof( FullDialogBoxControl ) );
+    newctrl = RESALLOCSAFE( sizeof( FullDialogBoxControl ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
     newctrl->Win32 = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);

@@ -63,7 +63,7 @@
 #pragma initialize  40;
 
 static unsigned     NumMessages = 0;
-static _trmem_hdl   TrHdl;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 static FILE         *TrFileHandle = NULL;
 
 struct Memory
@@ -179,9 +179,14 @@ Memory::Memory()
 
 Memory::~Memory()
 {
-    _trmem_prt_usage( TrHdl );
-    _trmem_prt_list( TrHdl );
-    _trmem_close( TrHdl );
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        if( _trmem_get_current_usage( TrHdl ) ) {
+            _trmem_prt_usage( TrHdl );
+        }
+        _trmem_prt_list( TrHdl );
+        _trmem_close( TrHdl );
+        TrHdl = _TRMEM_HDL_NONE;
+    }
 #ifdef TRMEM_NO_STDOUT
     fclose( TrFileHandle );
     if( NumMessages > 1 ) {

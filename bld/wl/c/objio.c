@@ -240,14 +240,14 @@ void InitTokBuff( void )
 /*****************************/
 {
     TokSize = MAX_HEADROOM;
-    TokBuff = LnkMemAlloc( MAX_HEADROOM );
+    TokBuff = MemAllocSafe( MAX_HEADROOM );
 }
 
 void FreeTokBuffs( void )
 /******************************/
 {
     if( TokBuff != NULL ) {
-        LnkMemFree( TokBuff );
+        MemFree( TokBuff );
         TokBuff = NULL;
     }
 }

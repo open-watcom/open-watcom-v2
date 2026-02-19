@@ -76,7 +76,7 @@ bool ProcSysOption( const char *start, unsigned len, int pass )
 
     switch( Lookup( SysOptNameTab, start, len ) ) {
     case OPT_CONSOLE:
-        _Free( DbgTerminal );
+        MemFree( DbgTerminal );
         DbgTerminal = GetFileName( pass );
         break;
     case OPT_XCONFIG:

@@ -252,7 +252,7 @@ static void GetVariableVals( gui_window *gui, a_dialog_header *dlg, bool closing
             text = GUIGetText( gui, id );
             if( text != NULL ) {
                 SetVariableByHandle( var_handle, text );
-                GUIMemFree( text );
+                MemFree( text );
             }
             break;
         default:
@@ -395,7 +395,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool
 
     GUIGetFocus( gui, &focus_id );
 
-    control_on_new_line = GUIMemAlloc( sizeof( bool ) * dlg->num_controls );
+    control_on_new_line = MemAlloc( sizeof( bool ) * dlg->num_controls );
 
     // Figure out which controls are on a separate line from the last control
     control_on_new_line[0] = true;
@@ -480,7 +480,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool
         }
     }
 
-    GUIMemFree( control_on_new_line );
+    MemFree( control_on_new_line );
 
     // SetBoolVariableByName( "_Visibility_Condition_", false );
     VisibilityCondition = false;

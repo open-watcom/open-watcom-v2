@@ -64,7 +64,7 @@
 #include <wmsgdlg.hpp>
 #endif
 
-_trmem_hdl TrHdl;
+_trmem_hdl TrHdl = _TRMEM_HDL_NONE;
 
 class Memory : public DebuggingLog
 {
@@ -211,25 +211,25 @@ void WBRFree( void *p )
 
 #if 1
 #ifndef STANDALONE_MERGER
-void *GUIMemAlloc( unsigned a )
+void *MemAlloc( unsigned a )
 //--------------------------
 {
     return WBRAlloc( a );
 }
 
-void *GUIMemStrdup( const char *a )
+void *MemStrdup( const char *a )
 //--------------------------
 {
     return strdup( a );
 }
 
-void *GUIMemRealloc( void *ptr, unsigned size )
+void *MemRealloc( void *ptr, unsigned size )
 //------------------------------------------
 {
     return WBRRealloc( ptr, size );
 }
 
-void GUIMemFree( void *p )
+void MemFree( void *p )
 //---------------------
 {
     WBRFree( p );
@@ -253,13 +253,13 @@ void MemFree( void *p )
     WBRFree( p );
 }
 
-void *_wpi_malloc( unsigned a )
+void *MemAlloc( unsigned a )
 //----------------------------
 {
     return WBRAlloc( a );
 }
 
-void _wpi_free( void *p )
+void MemFree( void *p )
 //-----------------------
 {
     WBRFree( p );
@@ -323,6 +323,9 @@ Memory::Memory()
 Memory::~Memory()
 //---------------
 {
+    if( _trmem_get_current_usage( TrHdl ) ) {
+        _trmem_prt_usage( TrHdl );
+    }
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
     if( _numMessages > 1 ) {

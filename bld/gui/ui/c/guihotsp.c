@@ -51,7 +51,7 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
     if( field == NULL ) {
         return( false );
     }
-    hot_spot = (a_hot_spot *)GUIMemAlloc( sizeof( a_hot_spot ) );
+    hot_spot = (a_hot_spot *)MemAlloc( sizeof( a_hot_spot ) );
     field->u.hs = hot_spot;
     if( hot_spot == NULL ) {
         return( false );
@@ -59,7 +59,7 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
     field->typ = FLD_HOT;
     hot_spot->str = NULL;
     if( ctl_info->text != NULL ) {
-        hot_spot->str = GUIMemStrdup( ctl_info->text );
+        hot_spot->str = MemStrdup( ctl_info->text );
         if( hot_spot->str == NULL ) {
             return( false );
         }
@@ -83,9 +83,9 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
 void GUIFreeHotSpot( a_hot_spot *hot_spot )
 {
     if( hot_spot != NULL ) {
-        GUIMemFree( hot_spot->str );
+        MemFree( hot_spot->str );
     }
-    GUIMemFree( hot_spot );
+    MemFree( hot_spot );
 }
 
 bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
@@ -94,10 +94,10 @@ bool GUISetHotSpotText( a_hot_spot *hot_spot, const char *text )
 
     if( text == NULL )
         text = "";
-    new_str = GUIMemStrdup( text );
+    new_str = MemStrdup( text );
     if( new_str == NULL )
         return( false );
-    GUIMemFree( hot_spot->str );
+    MemFree( hot_spot->str );
     hot_spot->str = new_str;
     return( true );
 }

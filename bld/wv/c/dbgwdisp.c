@@ -140,7 +140,7 @@ char    *GetWndFont( a_window wnd )
 
 static void SetFont( wnd_class_wv wndclass, char *font )
 {
-    GUIMemFree( WndFontInfo[wndclass] );
+    MemFree( WndFontInfo[wndclass] );
     WndFontInfo[wndclass] = font;
 }
 
@@ -212,7 +212,7 @@ static char *GUIDupStrLen( const char *str, size_t len )
 {
     char        *dup;
 
-    dup = GUIMemAlloc( len + 1 );
+    dup = MemAlloc( len + 1 );
     if( dup != NULL ) {
         memcpy( dup, str, len );
         dup[len] = NULLCHAR;

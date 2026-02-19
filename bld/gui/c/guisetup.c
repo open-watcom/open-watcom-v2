@@ -45,7 +45,7 @@ gui_window *GUISetupWnd( gui_create_info *dlg_info )
 {
     gui_window *wnd;
 
-    wnd = (gui_window *)GUIMemAlloc( sizeof( gui_window ) );
+    wnd = (gui_window *)MemAlloc( sizeof( gui_window ) );
     if( wnd != NULL ) {
         memset( wnd, 0, sizeof( gui_window ) );
         wnd->gui_call_back = dlg_info->gui_call_back;

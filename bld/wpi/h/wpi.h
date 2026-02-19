@@ -47,12 +47,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "wpitypes.h"
-#include "wpimem.h"
+#include "commmem.h"
 
-
-#ifndef _wpi_malloc2
-#define _wpi_malloc2(ptr,x) ptr = (void *)_wpi_malloc( sizeof( *ptr ) * x )
-#endif
 
 #if defined( __OS2_PM__) || defined( __OS2__ )
 

@@ -39,6 +39,7 @@ typedef unsigned short  WORD;
 extern "C" {
     #include <gui.h>
     #include <guikey.h>
+    #include <commmem.h>
 }
 
 typedef res_name_or_id  WResourceNameOrId;

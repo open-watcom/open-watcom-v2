@@ -34,10 +34,9 @@
 #ifndef __DBGMEM_INCLUDED
 #define __DBGMEM_INCLUDED
 
-extern void     *DbgRealloc( void *, size_t );
-extern void     *DbgChkAlloc( size_t, char * );
-extern void     *DbgAlloc( size_t );
-extern void     *DbgMustAlloc( size_t );
-extern void     DbgFree( void * );
+#include "commmem.h"
+
+
+extern void     *MemAllocSafeMsg( size_t, char * );
 
 #endif

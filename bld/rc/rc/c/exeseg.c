@@ -47,14 +47,11 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {
     int     tablesize;
 
+    /* unused parameters */ (void)err_code;
+
     tablesize = seg->NumSegs * sizeof( segment_record );
-    seg->Segments = RESALLOC( tablesize );
-    if( seg->Segments == NULL ) {
-        *err_code = errno;
-        return( RS_NO_MEM );
-    } else {
-        return( RS_OK );
-    }
+    seg->Segments = RESALLOCSAFE( tablesize );
+    return( RS_OK );
 } /* allocSegTable */
 
 static RcStatus readSegTable( FILE *fp, uint_32 offset, segment_record *segments, size_t size )

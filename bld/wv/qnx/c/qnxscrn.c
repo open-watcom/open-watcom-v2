@@ -141,7 +141,7 @@ static bool TryXWindows( void )
         *p++ = NULLCHAR;
     }
     end = p;
-    _AllocA( argv, (argc + 10) * sizeof( *argv ) );
+    argv = walloca( (argc + 10) * sizeof( *argv ) );
 
     argv[0] = xqsh_name;
     argv[1] = "-T";
@@ -287,7 +287,7 @@ void InitScreen( void )
     } else {
         StartupErr( "unable to initialize debugger screen" );
     }
-    _Free( DbgTerminal );
+    MemFree( DbgTerminal );
     DbgTerminal = NULL;
     fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
     UIConHandle = DbgConHandle;

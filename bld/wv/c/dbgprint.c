@@ -711,7 +711,7 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, voi
         d->first_time = false;
         DupStack();
         len = DIPSymName( member_hdl, NULL, SNT_SOURCE, NULL, 0 );
-        _AllocA( name, len + 1 );
+        name = walloca( len + 1 );
         len = DIPSymName( member_hdl, NULL, SNT_SOURCE, name, len + 1 );
         PrtStr( name, len );
         PrtChar( '=' );

@@ -212,7 +212,7 @@ void SymResolve( stack_entry *entry )
             GetTrueEntry( entry );
         } else {
             if( entry->ti.kind == TK_STRING ) {
-                _ChkAlloc( entry->v.string.allocated, entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                entry->v.string.allocated = MemAllocSafeMsg( entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &entry->v.string.loc, LT_INTERNAL, entry->v.string.allocated );
                 if( DIPSymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
@@ -428,10 +428,10 @@ void LRValue( stack_entry *entry )
                 }
                 break;
             case TK_STRING:
-                _ChkAlloc( entry->v.string.allocated, entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                entry->v.string.allocated = MemAllocSafeMsg( entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
                 if( LocationAssign( &ll, &entry->v.loc, entry->ti.size, false ) != DS_OK ) {
-                    _Free( entry->v.string.allocated );
+                    MemFree( entry->v.string.allocated );
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 entry->v.string.loc = ll;

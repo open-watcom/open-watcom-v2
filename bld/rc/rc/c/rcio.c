@@ -150,14 +150,12 @@ static file_loc *addLocation( file_loc *prev, const char *filename )
 
     if( prev == NULL
       || strcmp( prev->Filename, filename ) != 0 ) {
-        loc = RESALLOC( sizeof( file_loc ) );
-        if( loc != NULL ) {
-            loc->prev = prev;
-            loc->IsCOrHFile = checkCurrentFileType( filename );
-            loc->Filename = RESALLOC( strlen( filename ) + 1 );
-            strcpy( loc->Filename, filename );
-            return( loc );
-        }
+        loc = RESALLOCSAFE( sizeof( file_loc ) );
+        loc->prev = prev;
+        loc->IsCOrHFile = checkCurrentFileType( filename );
+        loc->Filename = RESALLOCSAFE( strlen( filename ) + 1 );
+        strcpy( loc->Filename, filename );
+        return( loc );
     }
     return( prev );
 }
@@ -201,7 +199,7 @@ static bool openNewFile( const char *filename )
 /*********************************************/
 {
     InStack.Current->fp = NULL;
-    InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
+    InStack.Current->Filename = RESALLOCSAFE( strlen( filename ) + 1 );
     strcpy( InStack.Current->Filename, filename );
     InStack.Current->Offset = 0;
     /*
@@ -260,7 +258,7 @@ static bool RcIoPopTextInputFile( void )
 static void RcIoTextInputInit( void )
 /***********************************/
 {
-    InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
+    InStack.Buffer = RESALLOCSAFE( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
     InStack.Location = NULL;

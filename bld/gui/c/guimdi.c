@@ -505,7 +505,7 @@ static void GUICALLBACK PickInit( gui_window *wnd, gui_ctl_id list_id )
 
     root = GUIGetRootWindow();
     num_windows = GUIGetNumChildWindows();
-    ChildWindows = (gui_window **)GUIMemAlloc( sizeof( gui_window * ) * num_windows );
+    ChildWindows = (gui_window **)MemAlloc( sizeof( gui_window * ) * num_windows );
     info.dlg_wnd = wnd;
     info.list_id = list_id;
     TotalWindows = 0;
@@ -526,7 +526,7 @@ void GUIMDIMoreWindows( void )
             GUIBringToFront( wnd );
         }
     }
-    GUIMemFree( ChildWindows );
+    MemFree( ChildWindows );
     ChildWindows = NULL;
     TotalWindows = 0;
 }

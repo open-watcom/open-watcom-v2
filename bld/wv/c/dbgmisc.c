@@ -656,7 +656,7 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
             if( _IsOn( SW_THREAD_EXTRA_CHANGED ) ) {
                 *owner = thd->link;
                 state = thd->state & ~THD_DEAD;
-                _Free( thd );
+                MemFree( thd );
                 break;
             }
             thd->state &= ~THD_DEAD;
@@ -668,7 +668,7 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
     } else {
         RemoteThdName( tid, name );
     }
-    _Alloc( thd, sizeof( thread_state ) + strlen( name ) );
+    hd = MemAlloc( sizeof( thread_state ) + strlen( name ) );
     if( thd == NULL )
         return( NULL );
     thd->link = *owner;
@@ -709,12 +709,12 @@ void NameThread( dtid_t tid, const char *name )
 
     for( owner = &HeadThd; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->tid == tid ) {
-            _Alloc( new, sizeof( thread_state ) + strlen( name ) );
+            new = MemAlloc( sizeof( thread_state ) + strlen( name ) );
             *new = *curr;
             *owner = new;
             strcpy( new->name, name );
             DbgUpdate( UP_THREAD_STATE );
-            _Free( curr );
+            MemFree( curr );
             break;
         }
     }
@@ -737,7 +737,7 @@ static void KillDeadThreads( void )
     for( owner = &HeadThd; (thd = *owner) != NULL; ) {
         if( thd->state & THD_DEAD ) {
             *owner = thd->link;
-            _Free( thd );
+            MemFree( thd );
         } else {
             owner = &thd->link;
         }
@@ -865,6 +865,6 @@ void FreeThreads( void )
 
     while( (thd = HeadThd) != NULL ) {
         HeadThd = thd->link;
-        _Free( thd );
+        MemFree( thd );
     }
 }

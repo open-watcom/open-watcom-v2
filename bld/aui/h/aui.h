@@ -329,9 +329,6 @@ extern bool                 WndStopRefresh( bool );
 
 extern void                 WndMemInit( void );
 extern void                 WndMemFini( void );
-extern void                 *WndAlloc( size_t );
-extern void                 *WndRealloc( void *, size_t );
-extern void                 WndFree( void * );
 extern void                 *WndMustAlloc( size_t );
 extern void                 *WndMustRealloc( void *, size_t );
 extern void                 WndCreateFloatingPopup( a_window, gui_point *, const gui_menu_items *, gui_ctl_id *id );

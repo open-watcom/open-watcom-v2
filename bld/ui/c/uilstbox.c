@@ -89,7 +89,7 @@ void uipaintlistbox( a_list *list )
     }
 
     length = list->box->area.width;
-    buf = (char *)uimalloc( length + 1 );
+    buf = (char *)MemAlloc( length + 1 );
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
@@ -115,7 +115,7 @@ void uipaintlistbox( a_list *list )
                      list->box->area.col, list->box->area.width,
                      UIData->attrs[ATTR_NORMAL], "", 0 );
     }
-    uifree( buf );
+    MemFree( buf );
 }
 
 static void setstartline( a_list *list )
@@ -251,7 +251,7 @@ a_list_info *uibeglistbox( VSCREEN *vs, SAREA *area, a_list *list )
     a_list_info     *box;
     unsigned        maxline;
 
-    box = uimalloc( sizeof( a_list_info ) );
+    box = MemAlloc( sizeof( a_list_info ) );
     if( box == NULL ) {
         return( NULL );
     }
@@ -297,7 +297,7 @@ unsigned uiendlistbox( a_list *list )
     uiclose( list->box->vs );   // Shut down VSCREEN
     k = list->box->line;
     uifinigadget( &list->box->gadget );
-    uifree( list->box );
+    MemFree( list->box );
     list->box = NULL;
     return( k );
 }

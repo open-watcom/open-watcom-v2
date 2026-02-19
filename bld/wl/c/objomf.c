@@ -148,7 +148,7 @@ char *GetOMFName( const file_list *list, unsigned long *loc )
     if( name == NULL )
         return( NULL );
     len = *(unsigned char *)name;        /* get actual name length */
-    return( LnkMemToString( name + 1, len ) );
+    return( MemToString( name + 1, len ) );
 }
 
 void OMFSkipObj( const file_list *list, unsigned long *loc )
@@ -167,7 +167,7 @@ static void ProcTHEADR( void )
         if( sym_len == 0 ) {
             BadObject();
         }
-        CurrMod->name.u.ptr = LnkMemToString( ObjBuff, sym_len );
+        CurrMod->name.u.ptr = MemToString( ObjBuff, sym_len );
     }
 }
 

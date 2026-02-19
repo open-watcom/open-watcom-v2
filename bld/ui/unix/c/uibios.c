@@ -64,7 +64,7 @@ char *GetTermType( void )
         if( p == NULL ) {
             p = "";
         }
-        UITermType = uimalloc( strlen( p ) + 1 );
+        UITermType = MemAlloc( strlen( p ) + 1 );
         strcpy( UITermType, p );
     }
     return( UITermType );
@@ -73,12 +73,12 @@ char *GetTermType( void )
 void SetTermType( const char *new_term )
 {
     if( UITermType != NULL ) {
-        uifree( UITermType );
+        MemFree( UITermType );
     }
     if( new_term == NULL ) {
         new_term = "";
     }
-    UITermType = uimalloc( strlen( new_term ) + 1 );
+    UITermType = MemAlloc( strlen( new_term ) + 1 );
     strcpy( UITermType, new_term );
 }
 
@@ -125,7 +125,7 @@ void intern finibios( void )
     _uibiosfini();
     del_curterm( cur_term );
     if( UITermType != NULL ) {
-        uifree( UITermType );
+        MemFree( UITermType );
         UITermType = NULL;
     }
 }

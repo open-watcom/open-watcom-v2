@@ -32,9 +32,11 @@
 #include <stddef.h>
 #include "bool.h"
 #include "aui.h"
+#include "commmem.h"
 
-#define ALLOC       WndAlloc
-#define FREE        WndFree
+
+#define ALLOC       MemAlloc
+#define FREE        MemFree
 #define CASEIGNORE  SrchIgnoreCase
 #define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic

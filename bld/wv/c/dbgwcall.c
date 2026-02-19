@@ -201,7 +201,7 @@ static void CallClose( a_window wnd )
     call_window *call = WndCall( wnd );
 
     FiniTraceBack( &call->tb );
-    WndFree( call );
+    MemFree( call );
 }
 
 

@@ -85,7 +85,7 @@ static void FreeList( lookup *curr )
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
-        _Free( curr );
+        MemFree( curr );
     }
 }
 
@@ -98,7 +98,7 @@ static void AddLookSpec( const char *start, unsigned len, bool respect, lookup *
 {
     lookup  *next;
 
-    _Alloc( next, sizeof( struct lookup_list ) + len );
+    next = MemAlloc( sizeof( struct lookup_list ) + len );
     if( next == NULL ) {
         FreeList( DefLookup );
         DefLookup = old;
@@ -275,7 +275,7 @@ int Lookup( const char *tokenlist,  const char *what, size_t tokenlen )
     char        tc,wc;
     const char  *t;
 
-    _AllocA( ucwhat, tokenlen );
+    ucwhat = walloca( tokenlen );
     for( k = 0; k < tokenlen; k++ )
         ucwhat[k] = toupper( what[k] );
 
@@ -481,7 +481,7 @@ void FreeSymHandle( sym_list *sl )
     for( owner = &SymListHead; (curr = *owner) != NULL; owner = &curr->next ) {
         if( curr == sl ) {
             *owner = curr->next;
-            _Free( curr );
+            MemFree( curr );
             break;
         }
     }
@@ -494,7 +494,7 @@ void PurgeSymHandles( void )
 
     for( curr = SymListHead; curr != NULL; curr = next ) {
         next = curr->next;
-        _Free( curr );
+        MemFree( curr );
     }
     SymListHead = NULL;
 }

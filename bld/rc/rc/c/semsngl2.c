@@ -72,7 +72,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                     /*
                      * DEFAULTICON doesn't have a name, let's make our own
                      */
-                    name = RESALLOC( sizeof( WResID ) );
+                    name = RESALLOCSAFE( sizeof( WResID ) );
                     name->IsName = false;
                     name->ID.Num = 999;
                     firstIcon    = true;    /* Trigger a warning if we have one already */
@@ -95,10 +95,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                       || name->ID.Num == 1) ) {
                         WResID      *id;
 
-                        id = RESALLOC( sizeof( WResID ) );
-                        if( id == NULL )
-                            break;
-
+                        id = RESALLOCSAFE( sizeof( WResID ) );
                         firstIcon  = false;
                         id->IsName = false;
                         id->ID.Num = OS2_RT_DEFAULTICON;
@@ -170,7 +167,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     ResLocation         loc;
     long                pos;
 
-    buffer = RESALLOC( FONT_BUFFER_SIZE );
+    buffer = RESALLOCSAFE( FONT_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -234,7 +231,7 @@ static FullFontDir *NewFontDir( void )
 {
     FullFontDir     *newdir;
 
-    newdir = RESALLOC( sizeof( FullFontDir ) );
+    newdir = RESALLOCSAFE( sizeof( FullFontDir ) );
     newdir->Head = NULL;
     newdir->Tail = NULL;
     newdir->NumOfFonts = 0;
@@ -257,7 +254,7 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     /*
      * -1 for the 1 char in the struct already
      */
-    entry = RESALLOC( sizeof( FullFontDirEntry ) + structextra - 1 );
+    entry = RESALLOCSAFE( sizeof( FullFontDirEntry ) + structextra - 1 );
     entry->Next = NULL;
     entry->Prev = NULL;
     /*

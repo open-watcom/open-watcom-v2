@@ -43,10 +43,10 @@
 #define RESTELL         res_tell
 #define RESIOERR        res_ioerr
 
-#define RESALLOC        RcMemAlloc
-#define RESFREE         RcMemFree
+#define RESALLOCSAFE    MemAllocSafe
+#define RESFREE         MemFree
 
-#define RCREALLOC       RcMemRealloc
+#define RCREALLOCSAFE   MemReallocSafe
 
 extern FILE             *res_open( const char *, wres_open_mode );
 extern bool             res_close( FILE * );

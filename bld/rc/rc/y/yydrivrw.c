@@ -172,10 +172,10 @@ static YYTOKENTYPE yylexWIN( void )
         case Y_NAME:
         case Y_STRING:
         case Y_DOS_FILENAME:
-            RcMemFree( value.string.string );
+            MemFree( value.string.string );
             break;
         case Y_INTEGER:
-            RcMemFree( value.intinfo.str );
+            MemFree( value.intinfo.str );
             break;
         case YYEOFTOKEN:
     /**/    goto END_LOOP;
@@ -304,18 +304,18 @@ static void newParseStack( parse_stack *stack )
     /*
      * get new stack
      */
-    stack->vstack = RcMemAlloc( STACK_MAX * sizeof( YYSTYPE ) );
-    stack->sstack = RcMemAlloc( STACK_MAX * sizeof( YYACTTYPE ) );
+    stack->vstack = MemAllocSafe( STACK_MAX * sizeof( YYSTYPE ) );
+    stack->sstack = MemAllocSafe( STACK_MAX * sizeof( YYACTTYPE ) );
     initParseStack( stack );
 }
 
 static void deleteStack( parse_stack *stack )
 {
     if( stack->vstack ) {
-        RcMemFree( stack->vstack );
+        MemFree( stack->vstack );
     }
     if( stack->sstack ) {
-        RcMemFree( stack->sstack );
+        MemFree( stack->sstack );
     }
 }
 
@@ -325,13 +325,13 @@ static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_sta
         switch( yytoken ) {
         case Y_INTEGER:
             RcError( ERR_SYNTAX_STR, yylval.intinfo.str );
-            RcMemFree( yylval.intinfo.str );
+            MemFree( yylval.intinfo.str );
             break;
         case Y_NAME:
         case Y_STRING:
         case Y_DOS_FILENAME:
             RcError( ERR_SYNTAX_STR, yylval.string.string );
-            RcMemFree( yylval.string.string );
+            MemFree( yylval.string.string );
             break;
         case Y_SCAN_ERROR:
             break;
@@ -372,7 +372,7 @@ static p_action doParse( parse_stack *resource_state )
             ErrorHasOccured = true;
             token_count = 0;
         } else if( yytoken == Y_INTEGER && yylval.intinfo.str != NULL ) {
-            RcMemFree( yylval.intinfo.str );
+            MemFree( yylval.intinfo.str );
             yylval.intinfo.str = NULL;
         }
     } while( what != P_ACCEPT && what != P_ERROR );

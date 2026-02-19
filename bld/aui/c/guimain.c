@@ -136,7 +136,7 @@ bool WndFini( void )
         return( false );
     GUIDestroyWnd( NULL );
     if( BusyString != NULL ) {
-        WndFree( BusyString );
+        MemFree( BusyString );
         BusyString = NULL;
     }
     return( true );

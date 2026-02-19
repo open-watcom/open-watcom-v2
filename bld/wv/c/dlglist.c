@@ -71,7 +71,7 @@ static void AddText( gui_window *gui, char *add )
         text = GUIGetListItem( gui, CTL_LIST_LIST, i );
         if( text != NULL ) {
             dup = ( strcmp( add, text ) == 0 );
-            GUIMemFree( text );
+            MemFree( text );
             if( dup ) {
                 break;
             }
@@ -94,7 +94,7 @@ static bool GUICALLBACK SourceGUIEventProc( gui_window *gui, gui_event gui_ev, v
     dlg = GUIGetExtra( gui );
     switch( gui_ev ) {
     case GUI_DESTROY:
-        WndFree( dlg->title );
+        MemFree( dlg->title );
         return( true );
     case GUI_INIT_DIALOG:
         GUISetWindowText( gui, dlg->title );
@@ -141,7 +141,7 @@ static bool GUICALLBACK SourceGUIEventProc( gui_window *gui, gui_event gui_ev, v
                 text = GUIGetListItem( gui, CTL_LIST_LIST, i );
                 if( text != NULL ) {
                     dlg->add( text, strlen( text ) );
-                    GUIMemFree( text );
+                    MemFree( text );
                 }
             }
             /* fall through */

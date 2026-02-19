@@ -33,16 +33,10 @@
 #define DUPBUF_STACK(p,s,l) {void *x=alloca(l);memcpy(x,s,l);p=x;}
 #define DUPSTR_STACK(p,s,l) {char *x=alloca(l+1);memcpy(x,s,l);x[l]='\0';p=x;}
 
-extern void     *TryAlloc( size_t );
 extern void     *PermAlloc( size_t );
 extern void     *Pass1Alloc( size_t );
 
-extern void     *LnkMemAlloc( size_t );
-extern void     *LnkMemAllocNoChk( size_t );
-extern char     *LnkMemStrdup( const char * );
-extern void     LnkMemFree( void * );
-extern void     *LnkMemRealloc( void *, size_t );
-extern char     *LnkMemToString( const void *mem, size_t len );
+extern char     *MemToString( const void *mem, size_t len );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );
@@ -51,7 +45,6 @@ extern void     ResetPass1Blocks( void );
 extern bool     PermShrink( void );
 extern void     ReleasePass1Blocks( void );
 
-#define _TryAlloc( dest, size )         dest = TryAlloc( size )
 #define _PermAlloc( dest, size )        dest = PermAlloc( size )
 #define _PermFree( ptr )                /* nothing to do */
 #define _Pass1Alloc( dest, size )       dest = Pass1Alloc( size )

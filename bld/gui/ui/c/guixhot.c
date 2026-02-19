@@ -44,7 +44,7 @@ bool GUIXInitHotSpots( int num, gui_resource *hot )
     memset( GUIHotSpots, 0, sizeof( hotspot_info ) * num );
     for( i = 0; i < num; i++ ) {
         if( hot[i].chars != NULL ) {
-            GUIHotSpots[i].text = GUIMemStrdup( hot[i].chars );
+            GUIHotSpots[i].text = MemStrdup( hot[i].chars );
             if( GUIHotSpots[i].text == NULL )
                 return( false );
             GUIHotSpots[i].size.x = strlen( GUIHotSpots[i].text );
@@ -73,6 +73,6 @@ void GUIXCleanupHotSpots( void )
     int i;
 
     for( i = 0; i < GUINumHotSpots; i++ ) {
-        GUIMemFree( GUIHotSpots[i].text );
+        MemFree( GUIHotSpots[i].text );
     }
 }

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "cguimem.h"
+#include "commmem.h"
 
 
 extern void     MemOpen( void );

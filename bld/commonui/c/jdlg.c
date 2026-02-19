@@ -58,14 +58,14 @@ static bool mbcs2unicode( const char *src, LPWSTR *dest, int *len )
         return( false );
     }
 
-    new = CUIMemAlloc( len1 * sizeof( WCHAR ) );
+    new = MemAlloc( len1 * sizeof( WCHAR ) );
     if( new == NULL ) {
         return( false );
     }
 
     len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, new, len1 );
     if( len2 != len1 ) {
-        CUIMemFree( new );
+        MemFree( new );
         return( false );
     }
 
@@ -90,7 +90,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
 
 #ifdef __WINDOWS__
     slen = strlen( facename ) + 1;
-    data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
+    data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
     if( data != NULL ) {
         *(WORD *)data = pointsize;
         memcpy( data + sizeof( WORD ), facename, slen );
@@ -99,7 +99,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
     data = NULL;
     if( mbcs2unicode( facename, &uni_facename, &slen ) ) {
         slen *= sizeof( WCHAR );
-        data = (BYTE *)CUIMemAlloc( sizeof( WORD ) + slen );
+        data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
         if( data != NULL ) {
             *(WORD *)data = pointsize;
             memcpy( data + sizeof( WORD ), uni_facename, slen );
@@ -229,7 +229,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
         return( false );
     }
 
-    *facename = (char *)CUIMemAlloc( strlen( lf.lfFaceName ) + 1 );
+    *facename = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
     if( *facename == NULL ) {
         return( false );
     }
@@ -379,7 +379,7 @@ bool JDialogInit( void )
 void JDialogFini( void )
 {
     if( JFontInfo != NULL ) {
-        CUIMemFree( JFontInfo );
+        MemFree( JFontInfo );
         JFontInfo = NULL;
         JFontInfoLen = 0;
     }

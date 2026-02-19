@@ -310,7 +310,7 @@ char *GUIMakeEditCopy( char *buffer, int length )
     char        *copy;
 
     if( length > 0 ) {
-        copy = (char *)GUIMemAlloc( length + 1 );
+        copy = (char *)MemAlloc( length + 1 );
         if( copy != NULL ) {
             memcpy( copy, buffer, length );
             copy[length] = '\0';
@@ -358,13 +358,13 @@ bool GUIJustSetWindowText( gui_window *wnd, const char *title )
 
     new_title = NULL;
     if( title != NULL ) {
-        new_title = GUIMemStrdup( title );
+        new_title = MemStrdup( title );
         if( new_title == NULL ) {
             return( false );
         }
     }
     if( wnd->vs.dynamic_title ) {
-        GUIMemFree( (void *)wnd->vs.title );
+        MemFree( (void *)wnd->vs.title );
     } else {
         wnd->vs.dynamic_title = true;
     }
@@ -497,15 +497,15 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
     }
     if( IS_HSCROLL_ON( wnd ) ) {
         uifinigadget( wnd->hgadget );
-        GUIMemFree( wnd->hgadget );
+        MemFree( wnd->hgadget );
     }
     if( IS_VSCROLL_ON( wnd ) ) {
         uifinigadget( wnd->vgadget );
-        GUIMemFree( wnd->vgadget );
+        MemFree( wnd->vgadget );
     }
     GUIFreeMenus( wnd );
     GUIFreeHint( wnd );
-    GUIMemFree( wnd->icon_name );
+    MemFree( wnd->icon_name );
     if( !dialog ) {
         uivshow( &wnd->vs );
         wnd->vs.open = true;
@@ -515,12 +515,12 @@ void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
         GUICurrWnd = NULL;
     }
     if( wnd->vs.dynamic_title ) {
-        GUIMemFree( (void *)wnd->vs.title );
+        MemFree( (void *)wnd->vs.title );
         wnd->vs.title = NULL;
         wnd->vs.dynamic_title = false;
     }
     GUIFreeColours( wnd );
-    GUIMemFree( wnd );
+    MemFree( wnd );
 }
 
 static void DoDestroy( gui_window *wnd, bool dialog )

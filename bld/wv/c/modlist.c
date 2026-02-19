@@ -123,7 +123,7 @@ void ModListAddModules( module_list *list, mod_handle mod, bool any )
     walk_result (*rtn)( mod_handle mh, void *d );
 
     rtn = any ? &CheckAnyMod : &CheckMod;
-    DbgFree( list->sort );
+    MemFree( list->sort );
     list->numrows = 0;
     list->sort = NULL;
     /* get number of rows */
@@ -135,7 +135,7 @@ void ModListAddModules( module_list *list, mod_handle mod, bool any )
             return;
         }
     }
-    list->sort = DbgMustAlloc( list->numrows * sizeof( mod_handle ) );
+    list->sort = MemAllocSafe( list->numrows * sizeof( mod_handle ) );
     list->numrows = 0;
     DIPWalkModList( mod, rtn, list );
     qsort( list->sort, list->numrows, sizeof( mod_handle ), ModOrder );
@@ -155,8 +155,8 @@ void    ModListInit( module_list *list, const char *prefix )
 
 void    ModListFree( module_list *list )
 {
-    DbgFree( list->prefix );
-    DbgFree( list->sort );
+    MemFree( list->prefix );
+    MemFree( list->sort );
     list->sort = NULL;
     list->prefix = NULL;
     list->pref_len = 0;

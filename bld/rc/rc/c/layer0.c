@@ -100,7 +100,7 @@ static RcBuffer *NewRcBuffer( void )
 {
     RcBuffer    *new_buff;
 
-    new_buff = RcMemAlloc( sizeof( RcBuffer ) );
+    new_buff = MemAllocSafe( sizeof( RcBuffer ) );
     new_buff->IsDirty = false;
     new_buff->Count = 0;
     new_buff->BytesRead = 0;
@@ -230,7 +230,7 @@ bool res_close( FILE *fp )
                 return( true );
             }
         }
-        RcMemFree( buff );
+        MemFree( buff );
         RcFileList[i].HasRcBuffer = false;
         RcFileList[i].fp = NULL;
         RcFileList[i].Buffer = NULL;

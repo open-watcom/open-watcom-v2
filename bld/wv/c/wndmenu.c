@@ -353,8 +353,8 @@ static void FreeLabels( gui_menu_items *menus )
         FreeLabels( &menus->menu[i].child );
         if( menus->menu[i].style & WND_MENU_ALLOCATED ) {
             menus->menu[i].style &= ~WND_MENU_ALLOCATED;
-//            WndFree( (void *)menus->menu[i].label );
-//            WndFree( (void *)menus->menu[i].hinttext );
+//            MemFree( (void *)menus->menu[i].label );
+//            MemFree( (void *)menus->menu[i].hinttext );
         }
     }
 }
@@ -459,13 +459,13 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
         }
     }
     len = cp - menu->label;
-    new = WndAlloc( len + 1 + strlen( key ) + 1 );
+    new = MemAlloc( len + 1 + strlen( key ) + 1 );
     memcpy( new, menu->label, len );
     p = new + len;
     *p++ = '\t';
     StrCopyDst( key, p );
     if( menu->style & WND_MENU_ALLOCATED )
-        WndFree( (void *)menu->label );
+        MemFree( (void *)menu->label );
     menu->style |= WND_MENU_ALLOCATED;
     menu->label = new;
     if( is_main ) {

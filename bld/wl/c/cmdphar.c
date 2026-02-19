@@ -72,8 +72,8 @@ void SetPharFmt( void )
 void FreePharFmt( void )
 /**********************/
 {
-    LnkMemFree( FmtData.u.phar.breaksym );
-    LnkMemFree( FmtData.u.phar.stub );
+    MemFree( FmtData.u.phar.breaksym );
+    MemFree( FmtData.u.phar.stub );
 }
 
 
@@ -193,7 +193,7 @@ static bool ProcRealBreak( void )
     ok = getatol( &value );
     if( FmtData.u.phar.breaksym != NULL ) {
         LnkMsg( WRN+LOC+LINE+MSG_MULT_REALBREAKS, NULL );
-        LnkMemFree( FmtData.u.phar.breaksym );
+        MemFree( FmtData.u.phar.breaksym );
         FmtData.u.phar.breaksym = NULL;
     }
     if( ok != ST_IS_ORDINAL ) {   // must be a symbol name.

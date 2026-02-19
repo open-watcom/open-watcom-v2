@@ -68,7 +68,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
     dataSegLen = 0;
     dataSeg = NULL;
 
-    dlgtemplate = CUIMemAlloc( blocklen );
+    dlgtemplate = MemAlloc( blocklen );
     if( dlgtemplate == NULL )
         return( NULL );
 
@@ -127,14 +127,14 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen =  classlen + textlen + ctldatalen + dataSegLen + presparmslen;
 
-    new_dlgtemplate = CUIMemRealloc( old_dlgtemplate, blocklen );
-    dataSeg = CUIMemRealloc( dataSeg, ddatalen );
+    new_dlgtemplate = MemRealloc( old_dlgtemplate, blocklen );
+    dataSeg = MemRealloc( dataSeg, ddatalen );
 
     if( new_dlgtemplate == NULL || ( dataSeg == NULL && ddatalen ) ) {
         if( dataSeg != NULL )
-            CUIMemFree( dataSeg );
+            MemFree( dataSeg );
         if( new_dlgtemplate != NULL )
-            CUIMemFree( new_dlgtemplate );
+            MemFree( new_dlgtemplate );
         if( new_text != NULL )
             _wpi_freemenutext( new_text );
         return( NULL );
@@ -253,12 +253,12 @@ TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
     }
 
     if( dataSeg != NULL ) {
-        new_dlgtemplate = CUIMemRealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
+        new_dlgtemplate = MemRealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
         dt = (WPDLGTEMPLATE)new_dlgtemplate;
         dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
         _FARmemcpy( dit, dataSeg, dataSegLen );
         dt->cbTemplate += dataSegLen;
-        CUIMemFree( dataSeg );
+        MemFree( dataSeg );
         dataSeg = NULL;
     } else {
         new_dlgtemplate = old_dlgtemplate;
@@ -307,7 +307,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     psize = 0;
     if( facename != NULL ) {
         bufsize = strlen( facename ) + 10 + 1;
-        buf = (char *)CUIMemAlloc( bufsize );
+        buf = (char *)MemAlloc( bufsize );
         if( buf != NULL ) {
             buf[0] = '\0';
             sprintf( buf, "%u.%s", pointsize, facename );
@@ -318,7 +318,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
             psize = sizeof( PRESPARAMS ) - sizeof( PARAM )
                     + sizeof( BYTE ) + 2 * sizeof( ULONG )
                     + bufsize;
-            pdata = (PRESPARAMS *)CUIMemAlloc( psize );
+            pdata = (PRESPARAMS *)MemAlloc( psize );
             if( pdata != NULL ) {
                 pdata->cb = psize - sizeof( ULONG );
                 pdata->aparam[0].id = PP_FONTNAMESIZE;
@@ -327,7 +327,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
             } else {
                 psize = 0;
             }
-            CUIMemFree( buf );
+            MemFree( buf );
         }
     }
 
@@ -343,11 +343,11 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                         WC_FRAME, captiontext, pdata, psize, NULL, frame_flags );
 
     if( pdata != NULL ) {
-        CUIMemFree( pdata );
+        MemFree( pdata );
     }
 
     if( new_dlgtemplate == NULL ) {
-        CUIMemFree( old_dlgtemplate );
+        MemFree( old_dlgtemplate );
     }
 
     return( new_dlgtemplate );
@@ -365,7 +365,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
     new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, id, 0, classname, captiontext, NULL, 0, infodata, infodatalen );
 
     if( new_dlgtemplate == NULL ) {
-        CUIMemFree( old_dlgtemplate );
+        MemFree( old_dlgtemplate );
     }
 
     return( new_dlgtemplate );

@@ -92,7 +92,7 @@ void CreateLC( stack_entry *entry )
     location_context    *new;
 
     if( entry->lc == NULL ) {
-        _ChkAlloc( new, sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+        new = MemAllocSafeMsg( sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
         InitLC( new, false );
         entry->lc = new;
     }
@@ -103,7 +103,7 @@ void FreeLC( stack_entry *entry )
     if( entry->lc != NULL ) {
         entry->lc->use--;
         if( entry->lc->use == 0 ) {
-            _Free( entry->lc );
+            MemFree( entry->lc );
             entry->lc = NULL;
         }
     }
@@ -135,7 +135,7 @@ void CreateEntry( void )
     unsigned    size;
 
     size = sizeof( stack_entry ) + type_SIZE + sym_SIZE;
-    _ChkAlloc( new, size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    new = MemAllocSafeMsg( size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memset( new, 0, size );
     new->up = ExprSP;
     new->dn = ExprSP->dn;
@@ -159,9 +159,9 @@ bool AllocatedString( stack_entry *stk )
 static void FreeEntry( stack_entry *old )
 {
     if( AllocatedString( old ) )
-        _Free( old->v.string.allocated );
+        MemFree( old->v.string.allocated );
     FreeLC( old );
-    _Free( old );
+    MemFree( old );
 }
 
 
@@ -296,7 +296,7 @@ char *DupStringVal( stack_entry *stk )
         return( NULL );
     if( stk->ti.size >= UINT_MAX )
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    _ChkAlloc( dest, stk->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    dest = MemAllocSafeMsg( stk->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     memcpy( dest, stk->v.string.loc.e[0].u.p, stk->ti.size );
     return( dest );
 }
@@ -745,7 +745,7 @@ void ExprPurge( void )
     stk_ptr->dn = NULL;
     ExprSP = stk_ptr;
     if( StringStart != NULL )
-        _Free( StringStart );
+        MemFree( StringStart );
     FreePgmStack( true );
 }
 

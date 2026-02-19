@@ -55,7 +55,7 @@ void FreeRing( char_ring *p )
     while( p != NULL ) {
         old = p;
         p = p->next;
-        _Free( old );
+        MemFree( old );
     }
 }
 
@@ -85,7 +85,7 @@ void DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase 
             if( ucase && strnicmp( p->name, start, len ) == 0
               || !ucase && strncmp( p->name, start, len ) == 0 ) {
                 *owner = p->next;
-                _Free( p );
+                MemFree( p );
                 break;
             }
         }
@@ -97,7 +97,7 @@ void InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase 
     char_ring *path;
 
     if( len != 0 ) {
-        path = DbgMustAlloc( sizeof( char_ring ) + len );
+        path = MemAllocSafe( sizeof( char_ring ) + len );
         memcpy( path->name, start, len );
         path->name[len] = NULLCHAR;
         if( ucase ) {
@@ -204,7 +204,7 @@ void *OpenSrcFile( cue_handle *cueh )
     char        *buff;
 
     len = DIPCueFile( cueh, NULL, 0 ) + 1;
-    _AllocA( buff, len );
+    buff = walloca( len );
     DIPCueFile( cueh, buff, len );
     hndl = FOpenSource( buff, DIPCueMod( cueh ), DIPCueFileId( cueh ) );
     if( hndl != NULL )

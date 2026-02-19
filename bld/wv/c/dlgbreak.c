@@ -78,7 +78,7 @@ static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
             ok = true;
             addr = dlg->tmpbp.loc.addr;
         }
-        GUIMemFree( new );
+        MemFree( new );
     } else {
         ok = DlgGetDataAddr( gui, CTL_BRK_ADDRESS, &addr );
     }
@@ -343,7 +343,7 @@ bool DlgBreak( address addr )
     dlg.cond_error = false;
     if( bp->status.b.expr_error ) {
         PrevError( bp->error );
-        WndFree( bp->error );
+        MemFree( bp->error );
         bp->error = NULL;
         bp->status.b.expr_error = false;
         dlg.cond_error = true;

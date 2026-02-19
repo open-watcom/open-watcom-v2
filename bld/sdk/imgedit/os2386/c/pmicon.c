@@ -44,7 +44,7 @@
 #include "wpi.h"
 #include "pmicon.h"
 #include "wbitmap.h"
-#include "cguimem.h"
+#include "commmem.h"
 
 /*
  * convertToBmp2 - converts an old form BITMAPINFO structure to a

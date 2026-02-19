@@ -127,6 +127,8 @@ RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
     OS2ResTable         *restab;
     WResDir             dir;
 
+    /* unused parameters */ (void)err_code;
+
     restab = &(dst->u.NEInfo.OS2Res);
     dir = res->Dir;
 
@@ -141,11 +143,7 @@ RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
          */
         restab->table_size   = restab->num_res_segs * sizeof( resource_table_record );
 
-        restab->resources = RESALLOC( restab->num_res_segs * sizeof( restab->resources[0] ) );
-        if( restab->resources == NULL ) {
-            *err_code = errno;
-            return( RS_NO_MEM );
-        }
+        restab->resources = RESALLOCSAFE( restab->num_res_segs * sizeof( restab->resources[0] ) );
         buildOS2ResTable( restab, dir );
         /*
          * OS/2 requires resources to be sorted

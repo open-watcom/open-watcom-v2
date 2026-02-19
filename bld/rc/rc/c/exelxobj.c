@@ -46,13 +46,13 @@ static bool readObjectAndPageTable( ExeFileInfo *src )
     size_t      table_size;
 
     table_size = src->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
-    src->u.LXInfo.Objects = RESALLOC( table_size );
+    src->u.LXInfo.Objects = RESALLOCSAFE( table_size );
     ret = SeekRead( src->fp, src->WinHeadOffset + src->u.LXInfo.OS2Head.objtab_off,
                 src->u.LXInfo.Objects, table_size );
 
     if( ret == RS_OK ) {
         table_size = src->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
-        src->u.LXInfo.Pages = RESALLOC( table_size );
+        src->u.LXInfo.Pages = RESALLOCSAFE( table_size );
         ret = SeekRead( src->fp, src->WinHeadOffset + src->u.LXInfo.OS2Head.objmap_off,
                     src->u.LXInfo.Pages, table_size );
     }
@@ -139,8 +139,8 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
     /*
      * Allocate dst object/page table
      */
-    dst_obj  = RESALLOC( dst_obj_size );
-    dst_page = RESALLOC( dst_page_size );
+    dst_obj  = RESALLOCSAFE( dst_obj_size );
+    dst_page = RESALLOCSAFE( dst_page_size );
     dst->u.LXInfo.Objects = dst_obj;
     dst->u.LXInfo.Pages   = dst_page;
 

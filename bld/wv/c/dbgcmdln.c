@@ -273,9 +273,9 @@ static void GetTrapParm( int pass )
     *start++ = TRAP_PARM_SEPARATOR;
     GetRawItem( start );
     if( pass == 2 ) {
-        _Alloc( start, strlen( parm ) + strlen( TrapParms ) + 1 );
+        start = MemAlloc( strlen( parm ) + strlen( TrapParms ) + 1 );
         StrCopyDst( parm, StrCopyDst( TrapParms, start ) );
-        _Free( TrapParms );
+        MemFree( TrapParms );
         TrapParms = start;
     }
 }
@@ -288,8 +288,8 @@ static void GetInitCmd( int pass )
     SkipSpaces();
     GetRawItem( cmd );
     if( pass == 2 ) {
-        _Free( InitCmdList );
-        _Alloc( InitCmdList, strlen( cmd ) + 1 );
+        MemFree( InitCmdList );
+        InitCmdList = MemAlloc( strlen( cmd ) + 1 );
         StrCopyDst( cmd, InitCmdList );
     }
 }
@@ -361,17 +361,17 @@ static void ProcOptList( int pass )
             if( pass == 2 ) {
                 char *symfile = GetFileName( pass );
                 FindLocalDebugInfo( symfile );
-                _Free( symfile );
+                MemFree( symfile );
             }
             break;
         case OPT_INVOKE:
             if( pass == 2 )
-                _Free( InvokeFile );
+                MemFree( InvokeFile );
             InvokeFile = GetFileName( pass );
             break;
         case OPT_NOINVOKE:
             if( pass == 2 )
-                _Free( InvokeFile );
+                MemFree( InvokeFile );
             InvokeFile = NULL;
             break;
         case OPT_NOSOURCECHECK:
@@ -402,7 +402,7 @@ static void ProcOptList( int pass )
             break;
         case OPT_TRAP:
             if( pass == 2 )
-                _Free( TrapParms );
+                MemFree( TrapParms );
             TrapParms = GetFileName( pass );
             SkipSpaces();
             if( CurrChar == TRAP_PARM_SEPARATOR ) {
@@ -415,13 +415,13 @@ static void ProcOptList( int pass )
 #ifdef ENABLE_TRAP_LOGGING
         case OPT_TRAP_DEBUG_FLUSH:
             if( pass == 2 )
-                _Free( TrapTraceFileName );
+                MemFree( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
             TrapTraceFileFlush = true;
             break;
         case OPT_TRAP_DEBUG:
             if( pass == 2 )
-                _Free( TrapTraceFileName );
+                MemFree( TrapTraceFileName );
             TrapTraceFileName = GetFileName( pass );
             TrapTraceFileFlush = false;
             break;

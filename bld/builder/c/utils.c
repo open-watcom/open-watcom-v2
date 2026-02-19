@@ -58,7 +58,7 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   TRMemHandle;
+static _trmem_hdl   TRMemHandle = _TRMEM_HDL_NONE;
 
 static void     TRPrintLine( void *parm, const char *buff, size_t len )
 {
@@ -82,8 +82,14 @@ void MClose( void )
 /*****************/
 {
 #ifdef TRMEM
-    _trmem_prt_list( TRMemHandle );
-    _trmem_close( TRMemHandle );
+    if( TRMemHandle != _TRMEM_HDL_NONE ) {
+        if( _trmem_get_current_usage( TRMemHandle ) ) {
+            _trmem_prt_usage( TRMemHandle );
+        }
+        _trmem_prt_list( TRMemHandle );
+        _trmem_close( TRMemHandle );
+        TRMemHandle = _TRMEM_HDL_NONE;
+    }
 #endif
 }
 

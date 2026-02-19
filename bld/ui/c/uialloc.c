@@ -119,8 +119,8 @@ void UIMemPrtUsage( void )
 #endif
 
 
-TRMEMAPI( uimalloc )
-void * uimalloc( size_t size )
+TRMEMAPI( MemAlloc )
+void * UIAPI MemAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), UIMemHandle ) );
@@ -129,8 +129,8 @@ void * uimalloc( size_t size )
 #endif
 }
 
-TRMEMAPI( uifree )
-void uifree( void *ptr )
+TRMEMAPI( MemFree )
+void UIAPI MemFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 2 ), UIMemHandle );
@@ -139,8 +139,8 @@ void uifree( void *ptr )
 #endif
 }
 
-TRMEMAPI( uirealloc )
-void * uirealloc( void *old, size_t size )
+TRMEMAPI( MemRealloc )
+void * UIAPI MemRealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), UIMemHandle ) );

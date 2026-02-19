@@ -293,7 +293,7 @@ void InitIOWindow( void )
 
 void FiniIOWindow( void )
 {
-    WndFree( IOTypeMenu );
+    MemFree( IOTypeMenu );
     MemFiniTypes( &IOData );
 }
 
@@ -310,8 +310,8 @@ static bool WNDCALLBACK IOWndEventProc( a_window wnd, gui_event gui_ev, void *pa
         }
         return( true );
     case GUI_DESTROY :
-        WndFree( io->list );
-        WndFree( io );
+        MemFree( io->list );
+        MemFree( io );
         return( true );
     }
     return( false );

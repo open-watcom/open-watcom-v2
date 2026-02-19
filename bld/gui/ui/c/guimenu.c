@@ -101,7 +101,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new, bo
     if( end == NULL ) {
         length++; /* no & so need room for NULL as it doesn't replace & */
     }
-    new_str = (char *)GUIMemAlloc( length );
+    new_str = (char *)MemAlloc( length );
     *new = new_str;
     if( new_str == NULL ) {
         return( false );
@@ -130,12 +130,12 @@ void GUIFreeMenuItems( UIMENUITEM *menuitems )
 
     if( menuitems != NULL ) {
         for( i = 0; !MENUENDMARKER( menuitems[i] ); i++ ) {
-            GUIMemFree( menuitems[i].name );
+            MemFree( menuitems[i].name );
             if( menuitems[i].popup != NULL ) {
                 GUIFreeMenuItems( menuitems[i].popup );
             }
         }
-        GUIMemFree( menuitems );
+        MemFree( menuitems );
     }
 }
 
@@ -143,7 +143,7 @@ UIMENUITEM *GUIAllocMenuItems( int num_items )
 {
     UIMENUITEM  *menuitems;
 
-    menuitems = (UIMENUITEM *)GUIMemAlloc( sizeof( UIMENUITEM ) * ( num_items + 1 ) );
+    menuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 1 ) );
     if( menuitems != NULL ) {
         memset( menuitems, 0, sizeof( UIMENUITEM ) * ( num_items + 1 ) );
     }
@@ -288,7 +288,7 @@ bool GUIAPI GUISetMenuText( gui_window *wnd, gui_ctl_id id, const char *text, bo
     if( !MenuConvert( text, &menuitem->flags, &new, checked ) ) {
         return( false );
     }
-    GUIMemFree( menuitem->name );
+    MemFree( menuitem->name );
     menuitem->name = new;
     if( vbar ) {
         /* if the menu item changed was in the top bar of menus,
@@ -412,7 +412,7 @@ static VBARMENU *GUIAllocVBarMenu( void )
 {
     VBARMENU    *vbarmenu;
 
-    vbarmenu = (VBARMENU *)GUIMemAlloc( sizeof( VBARMENU ) );
+    vbarmenu = (VBARMENU *)MemAlloc( sizeof( VBARMENU ) );
     if( vbarmenu != NULL ) {
         vbarmenu->titles = NULL;
         vbarmenu->currmenu = -1;
@@ -427,7 +427,7 @@ static void GUIFreeVBarMenu( VBARMENU *vbarmenu )
         if( vbarmenu->titles != NULL ) {
             GUIFreeMenuItems( vbarmenu->titles );
         }
-        GUIMemFree( vbarmenu );
+        MemFree( vbarmenu );
     }
 }
 
@@ -468,7 +468,7 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
     if( ( position > num_items ) || ( position == -1 ) ) {
         position = num_items;
     }
-    newmenuitems = (UIMENUITEM *)GUIMemAlloc( sizeof( UIMENUITEM ) * ( num_items + 2 ) );
+    newmenuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 2 ) );
     if( newmenuitems == NULL ) {
         return( false );
     }
@@ -482,15 +482,15 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
     menus.menu = (gui_menu_struct *)menu;
     memset( &newmenuitems[position], 0, sizeof( UIMENUITEM ) );
     if( !GUISetMenuItems( &menus, &newmenuitems[position] ) ) {
-        GUIMemFree( newmenuitems );
+        MemFree( newmenuitems );
         return( false );
     }
     if( !GUICreateMenuItems( &menu->child, &newmenuitems[position].popup ) ) {
-        GUIMemFree( newmenuitems );
+        MemFree( newmenuitems );
         return( false );
     }
     *pmenuitems = newmenuitems;
-    GUIMemFree( menuitems );
+    MemFree( menuitems );
     GUIMDIResetMenus( wnd, wnd->parent, &menus );
     if( append_hint ) {
         GUIAppendHintText( wnd, menu, type );
@@ -610,7 +610,7 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
     if( num_items == 1 ) {
         newmenuitems = NULL;
     } else {
-        newmenuitems = (UIMENUITEM *)GUIMemAlloc( sizeof( UIMENUITEM ) * num_items );
+        newmenuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * num_items );
         if( newmenuitems == NULL ) {
             return( false );
         }
@@ -621,8 +621,8 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
         GUIFreeMenuItems( menuitems[position].popup );
     }
     *pmenuitems = newmenuitems;
-    GUIMemFree( menuitems[position].name );
-    GUIMemFree( menuitems );
+    MemFree( menuitems[position].name );
+    MemFree( menuitems );
     GUIDeleteHintText( wnd, id, MENU_HINT );
     GUIMDIDeleteMenuItem( id );
     return( true );

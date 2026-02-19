@@ -85,6 +85,6 @@ void ModComplete( gui_window *gui, gui_ctl_id id )
     }
     GUISetFocus( gui, id );
     ModListFree( &list );
-    WndFree( match );
-    WndFree( savebuff );
+    MemFree( match );
+    MemFree( savebuff );
 }

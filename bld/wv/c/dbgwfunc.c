@@ -284,7 +284,7 @@ static bool WNDCALLBACK FuncWndEventProc( a_window wnd, gui_event gui_ev, void *
         return( true );
     case GUI_DESTROY :
         NameListFree( NameList( func ) );
-        WndFree( func );
+        MemFree( func );
         return( true );
     }
     return( false );

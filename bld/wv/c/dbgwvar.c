@@ -218,8 +218,8 @@ static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piec
         break;
     case VAR_PIECE_VALUE:
         if( !VarExpandable( class ) ) {
-            char *value = DbgAlloc( TXT_LEN );
-            char *title = DbgAlloc( TXT_LEN );
+            char *value = MemAlloc( TXT_LEN );
+            char *title = MemAlloc( TXT_LEN );
             old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, false );
@@ -234,8 +234,8 @@ static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piec
                 VarDoAssign( &var->i, v, value );
             NewCurrRadix( old_radix );
             WndRowDirty( wnd, row );
-            DbgFree( value );
-            DbgFree( title );
+            MemFree( value );
+            MemFree( title );
         }
         break;
     }
@@ -551,7 +551,7 @@ static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
         VarBuildName( &var->i, v, false );
         name = DupStr( TxtBuff );
         WndInspectExprSP( name );
-        WndFree( name );
+        MemFree( name );
         break;
     case MENU_VAR_WATCH:
         VarAddWatch( &var->i, v );
@@ -786,7 +786,7 @@ static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_win
         }
         break;
     case VAR_LOCALS:
-        _AllocA( nested, sizeof( *nested ) );
+        nested = walloca( sizeof( *nested ) );
         outer = NULL;
         nested->next = NULL;
         havescope = true;
@@ -803,7 +803,7 @@ static bool VarInfoWndRefresh( var_type vtype, var_info *i, address *addr, a_win
             VarSaveWndToScope( wnd );
             if( havescope ) {
                 for( ;; ) {
-                    _AllocA( new, sizeof( *new ) );
+                    new = walloca( sizeof( *new ) );
                     if( DIPScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE )
                         break;
                     new->next = nested;
@@ -963,7 +963,7 @@ static bool WNDCALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         VarFiniInfo( &var->i );
-        WndFree( var );
+        MemFree( var );
         return( true );
     }
     return( false );

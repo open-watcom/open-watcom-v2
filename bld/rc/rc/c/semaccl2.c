@@ -141,8 +141,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     FullAccelTableOS2   *newtable;
     FullAccelEntryOS2   *newentry;
 
-    newtable = RESALLOC( sizeof( FullAccelTableOS2 ) );
-    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
+    newtable = RESALLOCSAFE( sizeof( FullAccelTableOS2 ) );
+    newentry = RESALLOCSAFE( sizeof( FullAccelEntryOS2 ) );
 
     if( newtable == NULL
       || newentry == NULL ) {
@@ -165,13 +165,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
-
-    if( newentry == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
+    newentry = RESALLOCSAFE( sizeof( FullAccelEntryOS2 ) );
 
     *newentry = currentry;
 

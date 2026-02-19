@@ -126,7 +126,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    exe_type = RESALLOC( sizeof( FullTypeRecord ) );
+    exe_type = RESALLOCSAFE( sizeof( FullTypeRecord ) );
 
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = typeinfo->NumResources;
@@ -190,7 +190,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    exe_res = RESALLOC( sizeof( FullResourceRecord ) );
+    exe_res = RESALLOCSAFE( sizeof( FullResourceRecord ) );
 
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;

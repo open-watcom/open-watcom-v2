@@ -33,6 +33,8 @@
 #include "sample.rh"
 #include "gui.h"
 #include "guikey.h"
+#include "commmem.h"
+
 
 #define keys                    1
 #define controls_on_main        0

@@ -337,7 +337,7 @@ void ProcPaint( void )
     } else {
         set = WndClassColour[wndclass];
         if( set == NULL ) {
-            set = WndAlloc( sizeof( WndColours ) );
+            set = MemAlloc( sizeof( WndColours ) );
             memcpy( set, WndColours, sizeof( WndColours ) );
             WndClassColour[wndclass] = set;
         }
@@ -379,7 +379,7 @@ void FiniPaint( void )
 
     for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( WndClassColour[wndclass] != NULL ) {
-            WndFree( WndClassColour[wndclass] );
+            MemFree( WndClassColour[wndclass] );
             WndClassColour[wndclass] = NULL;
         }
     }

@@ -83,7 +83,7 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
 {
     sym_list        *new_sl;
 
-    _ChkAlloc( new_sl, sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    new_sl = MemAllocSafeMsg( sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     DIPSymInit( SL2SH( new_sl ), IIH2IH( iih ) );
     new_sl->next = *sl_head;
     *sl_head = new_sl;
@@ -1035,7 +1035,7 @@ void InitDbgInfo( void )
     } else {
         do {
             CheckDIPLoad( *dip, false );
-            _Free( *dip );
+            MemFree( *dip );
             *dip = NULL;
         } while( *++dip != NULL );
     }

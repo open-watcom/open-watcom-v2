@@ -113,7 +113,7 @@ void WEXPORT WControl::getText( char* buff, size_t len ) {
             text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = '\0';
-        GUIMemFree( text );
+        MemFree( text );
     }
 }
 
@@ -123,7 +123,7 @@ void WEXPORT WControl::getText( WString& str ) {
 
     char *text = GUIGetText( parent()->handle(), controlId() );
     WString t( text );
-    GUIMemFree( text );
+    MemFree( text );
     str = t;
 }
 
@@ -135,7 +135,7 @@ size_t WEXPORT WControl::getTextLength() {
     if( text == NULL )
         return( 0 );
     size_t len = strlen( text );
-    GUIMemFree( text );
+    MemFree( text );
     return( len );
 }
 

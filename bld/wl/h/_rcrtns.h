@@ -34,6 +34,9 @@
 #ifndef _RCRTNS_INCLUDED
 #define _RCRTNS_INCLUDED
 
+#include "commmem.h"
+
+
 #define RESOPEN         res_open
 #define RESCLOSE        res_close
 #define RESWRITE        res_write
@@ -42,10 +45,10 @@
 #define RESTELL         res_tell
 #define RESIOERR        res_ioerr
 
-#define RESALLOC        LnkMemAlloc
-#define RESFREE         LnkMemFree
+#define RESALLOCSAFE    MemAllocSafe
+#define RESFREE         MemFree
 
-#define RCREALLOC       LnkMemRealloc
+#define RCREALLOCSAFE   MemReallocSafe
 
 extern FILE             *res_open( const char *name, wres_open_mode omode );
 extern bool             res_close( FILE *fp );

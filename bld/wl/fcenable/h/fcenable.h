@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include "bool.h"
 #include "watcom.h"
+#include "commmem.h"
 
 #define MAX_OBJECT_REC_SIZE 4096
 
@@ -95,9 +96,6 @@ extern int          QSeek( FILE *, long, int );
 // mem.c
 extern void         MemInit( void );
 extern void         MemFini( void );
-
-extern void         *MemAlloc( size_t );
-extern void         MemFree( void * );
 
 // records.c
 extern void         *InitRecStuff( void );

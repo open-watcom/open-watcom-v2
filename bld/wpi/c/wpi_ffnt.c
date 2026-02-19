@@ -73,7 +73,7 @@ HFONT _wpi_f_createfont( WPI_F_FONT *font )
 
     WPI_F_FONT                  *copy_font;
 
-    _wpi_malloc2( copy_font, 1 );
+    copy_font = MemAlloc( sizeof( *copy_font ) );
 
     memcpy( copy_font, font, sizeof( *font ) );
 
@@ -97,7 +97,7 @@ void _wpi_f_getoldfont( WPI_PRES pres, HFONT ofont )
                                                         0, &font->bundle );
     }
 
-    _wpi_free( font );
+    MemFree( font );
 }
 
 static WPI_F_FONT *get_f_attrs( WPI_PRES pres, WPI_F_FONT *font )
@@ -181,7 +181,7 @@ static BOOL find_font( WPI_PRES pres, FATTRS *attr, WPI_F_FONT *font )
         return( FALSE );
     }
 
-    fonts = _wpi_malloc( num_fonts * sizeof( FONTMETRICS ) );
+    fonts = MemAlloc( num_fonts * sizeof( FONTMETRICS ) );
     GpiQueryFonts( pres, QF_PUBLIC, font->attr.szFacename,
                     &num_fonts, (LONG) sizeof( FONTMETRICS ), fonts );
 
@@ -247,7 +247,7 @@ static BOOL find_font( WPI_PRES pres, FATTRS *attr, WPI_F_FONT *font )
         //attr->fsType ... // doesn't need to be set
     }
 
-    _wpi_free( fonts );
+    MemFree( fonts );
 
     return( found_match );
 }
@@ -271,7 +271,8 @@ HFONT _wpi_f_selectfont( WPI_PRES pres, HFONT f )
 
     font = (void *)f;
 
-    _wpi_malloc2( old_font, 1 );
+    old_font = MemAlloc( sizeof( *old_font ) );
+
     get_f_attrs( pres, old_font );
 
     /* The OS/2 font palette will choose a non-synthesized bold/italic

@@ -125,7 +125,7 @@ static bool RegResize( a_window wnd )
         reg->count++;
     }
 
-    WndFree( reg->info );
+    MemFree( reg->info );
     reg->info = WndMustAlloc( reg->count * sizeof( *reg->info ) );
     space = WndAvgCharX( wnd );
 
@@ -167,7 +167,7 @@ static bool RegResize( a_window wnd )
 
     // calculate the indents
 
-    WndFree( reg->indents );
+    MemFree( reg->indents );
     reg->indents = WndMustAlloc( reg->count * sizeof( *reg->indents ) );
 
     // For each column
@@ -463,9 +463,9 @@ static bool WNDCALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         WndDeleteToggles( reg->popup, ArraySize( RegMenu ), reg->num_toggles );
-        WndFree( reg->info );
-        WndFree( reg->indents );
-        WndFree( reg );
+        MemFree( reg->info );
+        MemFree( reg->indents );
+        MemFree( reg );
         return( true );
     }
     return( false );

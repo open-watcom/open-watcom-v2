@@ -115,8 +115,8 @@ size_t GetSystemDir( char *buff, size_t buff_len )
     i = 0;
     if( PrfQueryProfile( GUIGetHAB(), &prof ) ) {
         if( prof.cchSysName > 0 ) {
-            _AllocA( prof.pszSysName, prof.cchSysName );
-            _AllocA( prof.pszUserName, prof.cchUserName );
+            prof.pszSysName = walloca( prof.cchSysName );
+            prof.pszUserName = walloca( prof.cchUserName );
             PrfQueryProfile( GUIGetHAB(), &prof );
         }
 

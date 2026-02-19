@@ -183,7 +183,7 @@ static bool TryXWindows( void )
         *p++ = NULLCHAR;
     }
     end = p;
-    _AllocA( argv, ( argc + 16 ) * sizeof( *argv ) );
+    argv = walloca( ( argc + 16 ) * sizeof( *argv ) );
 
     argv[0] = xsh_name;
     argv[1] = "-title";
@@ -333,7 +333,7 @@ void InitScreen( void )
         ConMode = C_CURTTY;
         DbgConHandle = -1;
     }
-    _Free( DbgTerminal );
+    MemFree( DbgTerminal );
     DbgTerminal = NULL;
     if( DbgConHandle != -1 ) {
         fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );

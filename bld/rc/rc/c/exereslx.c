@@ -80,11 +80,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
         LXResEntry      *curr_table;
 
         curr_table = res->resources;
-        res->resources = RCREALLOC( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
-        if( res->resources == NULL ) {
-            res->resources = curr_table;
-            return( true );
-        }
+        res->resources = RCREALLOCSAFE( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
     }
 
     resinfo  = WResGetResInfo( wind );

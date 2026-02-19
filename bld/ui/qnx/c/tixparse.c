@@ -109,11 +109,11 @@ static tix_status init_tix_scanner( const char *termname, FILE **in_file )
     rc = TIX_OK;
     if( *termname != '\0' ) {
         len = strlen( termname ) + 5;
-        tix_name = uimalloc( len );
+        tix_name = MemAlloc( len );
         strcpy( tix_name, termname );
         strcat( tix_name, ".tix" );
         fp = ti_fopen( tix_name );
-        uifree( tix_name );
+        MemFree( tix_name );
         if( fp == NULL ) {
             if( strstr( termname, "qnx" ) != 0 ) {
                 fp = ti_fopen( "qnx.tix" );

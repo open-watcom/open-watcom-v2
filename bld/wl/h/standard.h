@@ -39,6 +39,7 @@
 #include "bool.h"
 #include "machtype.h"
 #include "roundmac.h"
+#include "commmem.h"
 #include "alloc.h"
 #include "iopath.h"
 #include "wlinkcfg.h"

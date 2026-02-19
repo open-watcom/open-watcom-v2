@@ -242,7 +242,7 @@ static char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
     LRESULT text_copied;
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
-    cp = (char *)GUIMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return ( NULL );
     }
@@ -366,7 +366,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     if( LastPath && ( rc == 0 || (ofn->flags & FN_WANT_LAST_PATH) == 0 ) ) {
-        GUIMemFree( LastPath );
+        MemFree( LastPath );
         LastPath = NULL;
     }
     ofn->last_path = LastPath;

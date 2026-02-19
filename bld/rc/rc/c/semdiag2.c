@@ -129,7 +129,7 @@ static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
 {
     FullDiagCtrlListOS2     *newlist;
 
-    newlist = RESALLOC( sizeof( FullDiagCtrlListOS2 ) );
+    newlist = RESALLOCSAFE( sizeof( FullDiagCtrlListOS2 ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     newlist->numctrls = 0;
@@ -167,7 +167,7 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 {
     FullDialogBoxControlOS2     *newctrl;
 
-    newctrl = RESALLOC( sizeof( FullDialogBoxControlOS2 ) );
+    newctrl = RESALLOCSAFE( sizeof( FullDialogBoxControlOS2 ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
     newctrl->children = NULL;
@@ -710,7 +710,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     InitOS2DialogBoxHeader( &head, codepage, size );
 
     // Create the DLGTITEM array in memory
-    ptr = tmpl = RESALLOC( size );
+    ptr = tmpl = RESALLOCSAFE( size );
 
     ptr = SemOS2BuildTemplateItemsArray( ptr, ctrls );
 
@@ -854,7 +854,7 @@ PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparams )
 {
     PresParamListOS2    *newlist;
 
-    newlist = RESALLOC( sizeof( PresParamListOS2 ) );
+    newlist = RESALLOCSAFE( sizeof( PresParamListOS2 ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     return( SemOS2AppendPresParam( newlist, presparams ) );
@@ -865,7 +865,7 @@ PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list, PresParamsOS2 p
 {
     PresParamsOS2       *params;
 
-    params = RESALLOC( sizeof( PresParamsOS2 ) );
+    params = RESALLOCSAFE( sizeof( PresParamsOS2 ) );
     *params = presparams;
     ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), params );
     return( list );
