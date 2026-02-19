@@ -479,7 +479,7 @@ void StaticFini( void )
     _MemFreeArray( StaticBuffer );
 }
 
-#if defined( __LINUX__ )
+#if defined( __UNIX__ )
 
 TRMEMAPI( uimalloc )
 void * UIAPI uimalloc( size_t size )
