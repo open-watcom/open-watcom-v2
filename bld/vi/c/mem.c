@@ -482,7 +482,7 @@ void StaticFini( void )
 #if defined( __UNIX__ )
 
 TRMEMAPI( uimalloc )
-void * UIAPI uimalloc( size_t size )
+void * uimalloc( size_t size )
 {
     void        *tmp;
 
@@ -498,7 +498,7 @@ void * UIAPI uimalloc( size_t size )
 }
 
 TRMEMAPI( uirealloc )
-void * UIAPI uirealloc( void *ptr, size_t size )
+void * uirealloc( void *ptr, size_t size )
 {
     void        *tmp;
 
@@ -514,7 +514,7 @@ void * UIAPI uirealloc( void *ptr, size_t size )
 }
 
 TRMEMAPI( uifree )
-void UIAPI uifree( void *ptr )
+void uifree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 9 ), trmemHandle );
