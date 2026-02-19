@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include "memfuncs.h"
+
 /* Several char foo[MAX_CMD] arrays are defined. Overflow goes undetected */
 #if defined(__OS2__) || defined(__NT__) || defined(__UNIX__)
 #define MAX_CMD 10240
@@ -165,8 +167,4 @@ extern char     *RemoveExt( char * );
 extern int      HasFileExtension( const char *p, const char *ext );
 extern void     MakeName( char *name, const char *ext );
 
-extern void     *MemAlloc( size_t );
-extern char     *MemStrdup( const char * );
 extern char     *MemStrLenDup( const char *str, size_t len );
-extern void     *MemRealloc( void *, size_t );
-extern void     MemFree( void * );
