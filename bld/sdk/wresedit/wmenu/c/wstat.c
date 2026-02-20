@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -146,7 +146,7 @@ void WDestroyStatusLine( WStatBar *wsb )
 {
     if( wsb != NULL ) {
         StatusWndDestroy( wsb->stat );
-        WRMemFree( wsb );
+        MemFree( wsb );
     }
 }
 
@@ -156,7 +156,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     RECT                rect;
     status_block_desc   sbd[1];
 
-    wsb = (WStatBar *)WRMemAlloc( sizeof( WStatBar ) );
+    wsb = (WStatBar *)MemAlloc( sizeof( WStatBar ) );
     if( wsb != NULL ) {
         wsb->stat = StatusWndStart();
         if( wsb->stat == NULL ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ WStringInfo *WRESEAPI WStrAllocStringInfo( void )
 {
     WStringInfo *info;
 
-    info = (WStringInfo *)WRMemAlloc( sizeof( WStringInfo ) );
+    info = (WStringInfo *)MemAlloc( sizeof( WStringInfo ) );
 
     memset( info, 0, sizeof( WStringInfo ) );
 
@@ -73,16 +74,16 @@ void WRESEAPI WStrFreeStringInfo( WStringInfo *info )
         node = info->tables;
         while( node != NULL ) {
             if( node->block_name != NULL ) {
-                WRMemFree( node->block_name );
+                MemFree( node->block_name );
             }
             if( node->data != NULL ) {
-                WRMemFree( node->data );
+                MemFree( node->data );
             }
             node = node->next;
         }
         if( info->file_name != NULL ) {
-            WRMemFree( info->file_name );
+            MemFree( info->file_name );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }

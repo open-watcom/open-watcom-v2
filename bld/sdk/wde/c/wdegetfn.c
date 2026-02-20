@@ -136,7 +136,7 @@ char *WdeGetFileFilter( void )
 void WdeFreeFileFilter( void )
 {
     if( WdeFileFilter != NULL ) {
-        WRMemFree( WdeFileFilter );
+        MemFree( WdeFileFilter );
     }
 }
 

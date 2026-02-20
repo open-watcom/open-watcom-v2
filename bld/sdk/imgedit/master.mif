@@ -33,7 +33,9 @@ additional_clean = *.gh *.grh *.grc
 #
 .c : c;../c
 
-inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(cli_wr_inc_dirs) -I"$(wre_dir)/h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs)
+inc_dirs  = -I. -Ih -I"../h" $(cli_wres_inc_dirs) $(cli_wr_inc_dirs) &
+    -I"$(wre_dir)/h" $(cli_commonui_inc_dirs) $(cli_wpi_inc_dirs) &
+    -I"$(trmem_dir)"
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef wpitest

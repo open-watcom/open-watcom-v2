@@ -94,7 +94,7 @@ static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     }
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     return( true );

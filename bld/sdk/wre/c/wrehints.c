@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,11 +174,11 @@ void WREDisplayHint( ctl_id id )
     } else {
         mditext = AllocRCString( WRE_HINT_MDIMSG );
         if( mditext ) {
-            buf = WRMemAlloc( strlen(mditext) + 20 + 1 );
+            buf = MemAlloc( strlen(mditext) + 20 + 1 );
             if( buf ) {
                 sprintf( buf, mditext, WRE_MDI_FIRST + 1 - id );
                 WRESetStatusText( NULL, buf, true );
-                WRMemFree( buf );
+                MemFree( buf );
             }
             FreeRCString( mditext );
         }
@@ -264,7 +264,7 @@ void WREFiniHints ( void )
 
     for ( plist = WREPopupList; plist; plist = ListConsume ( plist ) ) {
         p = (WREPopupListItem *)ListElement( plist );
-        WRMemFree ( p );
+        MemFree ( p );
     }
 }
 
@@ -272,7 +272,7 @@ bool WRECreateWREPopupListItem ( int num, HMENU hmenu, WREPopupHintItem *hint_it
 {
     WREPopupListItem *p;
 
-    p = (WREPopupListItem *)WRMemAlloc( sizeof(WREPopupListItem) );
+    p = (WREPopupListItem *)MemAlloc( sizeof(WREPopupListItem) );
 
     if ( p ) {
         p->num        = num;
@@ -281,7 +281,7 @@ bool WRECreateWREPopupListItem ( int num, HMENU hmenu, WREPopupHintItem *hint_it
         if ( WREInitHintItems ( num, hmenu, hint_items ) ) {
             ListAddElt ( &WREPopupList, p );
         } else {
-            WRMemFree( p );
+            MemFree( p );
             return ( false );
         }
     } else {

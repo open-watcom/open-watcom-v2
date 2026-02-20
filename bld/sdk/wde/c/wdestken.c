@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    s = (WdeStackEnvType *)WRMemAlloc( sizeof( WdeStackEnvType ) );
+    s = (WdeStackEnvType *)MemAlloc( sizeof( WdeStackEnvType ) );
     if( s == NULL ) {
         return( FALSE );
     }
@@ -83,7 +84,7 @@ bool WdePopEnv( jmp_buf *e )
         s = WdeTop;
         WdeTop = s->next;
         memcpy( e, &s->e, sizeof( jmp_buf ) );
-        WRMemFree( s );
+        MemFree( s );
     } else {
         return( FALSE );
     }

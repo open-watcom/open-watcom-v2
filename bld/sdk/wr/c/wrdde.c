@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ bool    WRAPI WRAllocDataFromDDE( HDDEDATA hData, char **pdata, size_t *dsize )
         if( size == 0 ) {
             ok = false;
         } else {
-            *pdata = data = WRMemAlloc( size );
+            *pdata = data = MemAlloc( size );
             if( data == NULL ) {
                 ok = false;
             } else {
@@ -80,7 +80,7 @@ bool    WRAPI WRAllocDataFromDDE( HDDEDATA hData, char **pdata, size_t *dsize )
         }
         if( !ok ) {
             if( data != NULL ) {
-                WRMemFree( data );
+                MemFree( data );
             }
             *pdata = NULL;
             *dsize = 0;

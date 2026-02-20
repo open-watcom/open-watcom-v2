@@ -102,7 +102,7 @@ void * PPENTRY PP_Alloc( size_t size )
 {
     void        *p;
 
-    p = WRMemAlloc( size );
+    p = MemAlloc( size );
     if( p == NULL ) {
         outOfMemory();
     }
@@ -112,7 +112,7 @@ void * PPENTRY PP_Alloc( size_t size )
 void PPENTRY PP_Free( void *p )
 /*****************************/
 {
-    WRMemFree( p );
+    MemFree( p );
 }
 
 int PP_MBCharLen( const char *p )
@@ -274,7 +274,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt_n
 
     if( !ok ) {
         if( name != NULL ) {
-            WRMemFree( name );
+            MemFree( name );
             name = NULL;
         }
     }
@@ -315,7 +315,7 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
         ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
-                WRMemFree( *file_name );
+                MemFree( *file_name );
             }
             *file_name = name;
         }
@@ -378,7 +378,7 @@ bool WRELoadResourceSymbols( WREResInfo *info )
     }
 
     if( info->symbol_file != NULL ) {
-        WRMemFree( info->symbol_file );
+        MemFree( info->symbol_file );
     }
     info->symbol_file = symbol_file;
 
@@ -449,7 +449,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         prompt_name = true;
     } else {
         strcpy( fn_path, symbol_file );
-        WRMemFree( symbol_file );
+        MemFree( symbol_file );
         symbol_file = NULL;
         prompt_name = false;
     }
@@ -461,7 +461,7 @@ bool WREFindAndLoadSymbols( WREResInfo *rinfo )
         ret = (symbol_file != NULL);
         if( ret ) {
             if( rinfo->symbol_file != NULL ) {
-                WRMemFree( rinfo->symbol_file );
+                MemFree( rinfo->symbol_file );
             }
             rinfo->symbol_file = symbol_file;
         }

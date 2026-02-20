@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     }
 
     if( text != NULL && tnode->Info.TypeName.IsName ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     if( !ok && tn != NULL && tn->exclude ) {
@@ -280,7 +280,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
             str = WResIDToStr( name );
             if( str != NULL ) {
                 index = SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)(LPCSTR)str );
-                WRMemFree( str );
+                MemFree( str );
             }
             if( index == LB_ERR ) {
                 index = 0;
@@ -407,11 +407,11 @@ void WRESetTotalText( WREResInfo *info )
     } else if( count == 1 ) {
         SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextOne );
     } else {
-        buf = WRMemAlloc( strlen( WRETotalText ) + 20 + 1 );
+        buf = MemAlloc( strlen( WRETotalText ) + 20 + 1 );
         if( buf != NULL ) {
             sprintf( buf, WRETotalText, (int)count );
             SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
-            WRMemFree( buf );
+            MemFree( buf );
         }
     }
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ int WListConcat( LIST **dest, LIST *src, size_t size )
         if( size == 0 ) {
             elt = ListElement( olist );
         } else {
-            elt = WRMemAlloc( size );
+            elt = MemAlloc( size );
             if( elt == NULL ) {
                 return( FALSE );
             }
@@ -119,7 +119,7 @@ void ListAddElt( LIST **head, void *obj )
 {
     LIST *new;
 
-    new = WRMemAlloc( sizeof( LIST ) );
+    new = MemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = *head;
     new->prev = NULL;
@@ -135,7 +135,7 @@ void ListFree( LIST *lst )
 
     for( ; lst != NULL; lst = next ) {
         next = lst->next;
-        WRMemFree( lst );
+        MemFree( lst );
     }
 }
 
@@ -168,7 +168,7 @@ void ListRemoveElt( LIST **lst, void *obj )
             } else {
                 *lst = node->next;
             }
-            WRMemFree( node );
+            MemFree( node );
             break;
         }
     }
@@ -179,7 +179,7 @@ LIST *ListConsume( LIST *curr )
     LIST *next;
 
     next = curr->next;
-    WRMemFree( curr );
+    MemFree( curr );
     return( next );
 }
 
@@ -219,7 +219,7 @@ void ListInsertElt( LIST *prev, void *obj )
 {
     LIST *new;
 
-    new = WRMemAlloc( sizeof( LIST ) );
+    new = MemAlloc( sizeof( LIST ) );
     new->elt = obj;
     new->next = prev->next;
     new->prev = prev;

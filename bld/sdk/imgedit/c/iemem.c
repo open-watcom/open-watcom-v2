@@ -107,8 +107,8 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 #if 0
-TRMEMAPI( _wpi_malloc )
-void * _wpi_malloc( size_t size )
+TRMEMAPI( MemAlloc )
+void * MemAlloc( size_t size )
 /*******************************/
 {
     void        *ptr;
@@ -155,8 +155,8 @@ void MemFree( void *ptr )
 #endif
 }
 #if 0
-TRMEMAPI( _wpi_free )
-void _wpi_free( void *ptr )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM

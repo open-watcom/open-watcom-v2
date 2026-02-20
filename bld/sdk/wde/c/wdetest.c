@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -190,7 +190,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
         if( text != NULL ) {
-            str = (char *)WRMemAlloc( strlen( text ) + 10 + 1 );
+            str = (char *)MemAlloc( strlen( text ) + 10 + 1 );
             if( str == NULL ) {
                 WdeFreeRCString( text );
                 return( TRUE );
@@ -209,7 +209,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
         }
         SendMessage( win, WM_SETREDRAW, TRUE, 0 );
         InvalidateRect( win, NULL, TRUE );
-        WRMemFree( str );
+        MemFree( str );
         WdeFreeRCString( text );
     }
 

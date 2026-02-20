@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -254,7 +254,7 @@ bool WSaveObjectAs( bool prompt_name, WStringEditInfo *einfo, WRSaveIntoData *id
     if( ok ) {
         if( got_name ) {
             if( einfo->file_name != NULL ) {
-                WRMemFree( einfo->file_name );
+                MemFree( einfo->file_name );
             }
             einfo->file_name = fname;
             einfo->file_type = ftype;
@@ -262,15 +262,15 @@ bool WSaveObjectAs( bool prompt_name, WStringEditInfo *einfo, WRSaveIntoData *id
         }
     } else {
         if( fname != NULL && got_name ) {
-            WRMemFree( fname );
+            MemFree( fname );
         }
     }
 
     if( idata2.type != NULL ) {
-        WRMemFree( idata2.type );
+        MemFree( idata2.type );
     }
     if( idata2.name != NULL) {
-        WRMemFree( idata2.name );
+        MemFree( idata2.name );
     }
 
     return( ok );
@@ -319,7 +319,7 @@ bool WSaveObjectInto( WStringEditInfo *einfo, WRSaveIntoData *idata )
     }
 
     if( fname != NULL ) {
-        WRMemFree( fname );
+        MemFree( fname );
     }
 
     return( ok );
@@ -338,9 +338,9 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
         return( NULL );
     }
 
-    lang = (WResLangType *)WRMemAlloc( sizeof( WResLangType ) );
+    lang = (WResLangType *)MemAlloc( sizeof( WResLangType ) );
     if( lang == NULL ) {
-        WRMemFree( tname );
+        MemFree( tname );
         return( NULL );
     }
     lang->lang = DEF_LANG;
@@ -351,7 +351,7 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
     while( block != NULL ) {
         idata2 = WInitSaveData( block, tname, lang );
         if( idata2 == NULL ) {
-            WRMemFree( tname );
+            MemFree( tname );
             WFreeSaveIntoData( idata );
             return( NULL );
         }
@@ -401,7 +401,7 @@ WRSaveIntoData *WAllocSaveIntoData( void )
 {
     WRSaveIntoData *idata;
 
-    idata = (WRSaveIntoData *)WRMemAlloc( sizeof( WRSaveIntoData ) );
+    idata = (WRSaveIntoData *)MemAlloc( sizeof( WRSaveIntoData ) );
     if( idata != NULL ) {
         memset( idata, 0, sizeof( WRSaveIntoData ) );
     }
@@ -415,19 +415,19 @@ void WFreeSaveIntoData( WRSaveIntoData *idata )
 
     if( idata != NULL ) {
         if( idata->type != NULL ) {
-            WRMemFree( idata->type );
+            MemFree( idata->type );
         }
     }
 
     while( idata != NULL ) {
         idata2 = idata->next;
         if( idata->name != NULL ) {
-            WRMemFree( idata->name );
+            MemFree( idata->name );
         }
         if( idata->data != NULL ) {
-            WRMemFree( idata->data );
+            MemFree( idata->data );
         }
-        WRMemFree( idata );
+        MemFree( idata );
         idata = idata2;
     }
 }
@@ -465,7 +465,7 @@ bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_n
         ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
-                WRMemFree( *file_name );
+                MemFree( *file_name );
             }
             *file_name = name;
         }

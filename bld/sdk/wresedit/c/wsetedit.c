@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ bool WSetEditWithWResID( HWND edit, WResID *id )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( ok );
@@ -173,7 +173,7 @@ bool WSetLBoxWithWResID( HWND lbox, WResID *id, void *data )
     ok = ok && WSetLBoxWithStr( lbox, name, data );
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     return( ok );
@@ -198,7 +198,7 @@ char *WGetStrFromEdit( HWND edit, bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -206,7 +206,7 @@ char *WGetStrFromEdit( HWND edit, bool *mod )
     text_copied = SendMessage ( edit, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -240,7 +240,7 @@ WResID *WGetWResIDFromEdit( HWND edit, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( rp );
@@ -271,7 +271,7 @@ int_32 WGetSINT32FromEdit( HWND edit, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( val );
@@ -300,7 +300,7 @@ char *WGetStrFromComboLBox( HWND combo, LRESULT pos )
 
     text_length = SendMessage( combo, CB_GETLBTEXTLEN, (WPARAM)pos, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -308,7 +308,7 @@ char *WGetStrFromComboLBox( HWND combo, LRESULT pos )
     text_copied = SendMessage( combo, CB_GETLBTEXT, (WPARAM)pos, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 

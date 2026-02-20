@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,12 +126,12 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
 {
     if( o->new_oe ) {
         ListRemoveElt( &o->lists->newlist, (OBJPTR)o->new_oe );
-        WRMemFree( o->new_oe );
+        MemFree( o->new_oe );
         o->new_oe = NULL;
         o->old_oe->present = TRUE;
         o->old_oe->pos_set = FALSE;
     } else {
-        o->new_oe = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
+        o->new_oe = (WdeOrderedEntry *)MemAlloc( sizeof( WdeOrderedEntry ) );
         if( o->new_oe != NULL ) {
             o->old_oe->pos_set = TRUE;
             memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
@@ -210,7 +210,7 @@ void WdeFreeOrderedList( LIST *list )
     for( olist = list; olist != NULL; olist = ListNext( olist ) ) {
         oe = (WdeOrderedEntry *)ListElement( olist );
         if( oe != NULL ) {
-            WRMemFree( oe );
+            MemFree( oe );
         }
     }
 
@@ -261,7 +261,7 @@ bool WdeAddOrderedEntry( LIST **list, OBJPTR obj )
         return( true );
     }
 
-    oentry = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
+    oentry = (WdeOrderedEntry *)MemAlloc( sizeof( WdeOrderedEntry ) );
     if( oentry != NULL ) {
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
@@ -302,7 +302,7 @@ bool WdeCleanOrderedList( LIST **list )
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( !oentry->present ) {
             ListRemoveElt( list, (OBJPTR)oentry );
-            WRMemFree( oentry );
+            MemFree( oentry );
         }
     }
 

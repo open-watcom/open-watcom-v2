@@ -137,7 +137,7 @@ void WRESetFileFilter( char *filter )
 void WREFreeFileFilter( void )
 {
     if( LastFileFilter != NULL ) {
-        WRMemFree( LastFileFilter );
+        MemFree( LastFileFilter );
     }
 }
 

@@ -196,7 +196,7 @@ bool WSetEditWindowStringData( WStringEditInfo *einfo, WStringBlock *block,
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );
@@ -223,11 +223,11 @@ bool WGetEditWindowStringData( WStringEditInfo *einfo, char **text,
 
     if( !ok ) {
         if( text != NULL && *text != NULL ) {
-            WRMemFree( *text );
+            MemFree( *text );
             *text = NULL;
         }
         if( symbol != NULL && *symbol != NULL ) {
-            WRMemFree( *symbol );
+            MemFree( *symbol );
             *symbol = NULL;
         }
     }
@@ -280,7 +280,7 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     if( ok ) {
         if( id == string_id ) {
             // text was modified
-            WRMemFree( block->block.String[string_id & 0xf] );
+            MemFree( block->block.String[string_id & 0xf] );
             block->block.String[string_id & 0xf] = WResIDNameFromStr( text );
         } else {
             // identifier was modified
@@ -291,11 +291,11 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     if( oldtext != NULL ) {
-        WRMemFree( oldtext );
+        MemFree( oldtext );
     }
 
     return( ok );
@@ -321,7 +321,7 @@ bool WSetEditWindowText( HWND dlg, char *text )
         n = WConvertStringFrom( t, "\t\n", "tn" );
         if( n != NULL ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_STREDTEXT ), n );
-            WRMemFree( n );
+            MemFree( n );
         } else {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_STREDTEXT ), t );
         }
@@ -341,7 +341,7 @@ bool WGetEditWindowText( HWND dlg, char **text )
         n = WGetStrFromEdit( GetDlgItem( dlg, IDM_STREDTEXT ), NULL );
         *text = WConvertStringTo( n, "\t\n", "tn" );
         if( n != NULL ) {
-            WRMemFree( n );
+            MemFree( n );
         }
         ok = ( *text != NULL );
     }
@@ -423,7 +423,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WRMemFree( *symbol );
+                MemFree( *symbol );
                 *symbol = NULL;
                 return( false );
             }
@@ -431,7 +431,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WRMemFree( *symbol );
+        MemFree( *symbol );
         *symbol = NULL;
     }
 
@@ -521,7 +521,7 @@ bool WIsCurrentModified( WStringEditInfo *einfo, char *text, uint_16 id, char *s
     }
 
     if( current_text != NULL ) {
-        WRMemFree( current_text );
+        MemFree( current_text );
     }
 
     return( mod );
@@ -580,7 +580,7 @@ bool WPasteStringItem( WStringEditInfo *einfo )
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );
@@ -635,7 +635,7 @@ bool WClipStringItem( WStringEditInfo *einfo, bool cut )
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );
@@ -658,7 +658,7 @@ static bool WQueryChangeEntry( WStringEditInfo *einfo )
         FreeRCString( text );
     }
     if( title != NULL ) {
-        WRMemFree( title );
+        MemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -752,11 +752,11 @@ void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
     }
 
     if( symbol != NULL ) {
-        WRMemFree( symbol );
+        MemFree( symbol );
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 }
 

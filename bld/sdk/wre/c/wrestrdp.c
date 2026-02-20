@@ -43,7 +43,7 @@ char *WREStrdup( const char *src )
         return( NULL );
     }
 
-    dest = WRMemAlloc( strlen( src ) + 1 );
+    dest = MemAlloc( strlen( src ) + 1 );
 
     if( dest != NULL ) {
         strcpy( dest, src );

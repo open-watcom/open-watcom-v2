@@ -353,7 +353,7 @@ WMenuInfo *WMenuGetEInfo( WMenuHandle hndl, bool keep )
     if( ok ) {
         if( einfo->info->modified ) {
             if( info->data != NULL ) {
-                WRMemFree( info->data );
+                MemFree( info->data );
                 info->data = NULL;
             }
             info->data_size = 0;
@@ -495,7 +495,7 @@ char *WCreateEditTitle( WMenuEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)WRMemAlloc( len );
+    title = (char *)MemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
@@ -528,7 +528,7 @@ void WSetEditTitle( WMenuEditInfo *einfo )
         if( is_rc ) {
             FreeRCString( title );
         } else {
-            WRMemFree( title );
+            MemFree( title );
         }
     }
 }
@@ -586,7 +586,7 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         if( is_rc ) {
             FreeRCString( title );
         } else {
-            WRMemFree( title );
+            MemFree( title );
         }
     }
 
@@ -672,7 +672,7 @@ static void handleSymbols( WMenuEditInfo *einfo )
     WRAddSymbolsToComboBox( einfo->info->symbol_table, einfo->edit_dlg, IDM_MENUEDID, WR_HASHENTRY_ALL );
     if( text != NULL ) {
         WSetEditWithStr( GetDlgItem( einfo->edit_dlg, IDM_MENUEDID ), text );
-        WRMemFree( text );
+        MemFree( text );
     }
 
     WHandleSelChange( einfo );
@@ -688,7 +688,7 @@ static void handleLoadSymbols( WMenuEditInfo *einfo )
     }
 
     if( einfo->info->symbol_file != NULL ) {
-        WRMemFree( einfo->info->symbol_file );
+        MemFree( einfo->info->symbol_file );
     }
     einfo->info->symbol_file = file;
 
@@ -1090,7 +1090,7 @@ bool WQuerySaveRes( WMenuEditInfo *einfo, bool force_exit )
                 FreeRCString( text );
             }
             if( title != NULL ) {
-                WRMemFree( title );
+                MemFree( title );
             }
         }
         if( ret == IDYES ) {
@@ -1135,7 +1135,7 @@ bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
         FreeRCString( text );
     }
     if( title != NULL ) {
-        WRMemFree( title );
+        MemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -1228,7 +1228,7 @@ void WHandleClear( WMenuEditInfo *einfo )
             WResetPrevWindowMenu( einfo );
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
-                    WRMemFree( einfo->file_name );
+                    MemFree( einfo->file_name );
                     einfo->file_name = NULL;
                     WSetEditTitle( einfo );
                 }

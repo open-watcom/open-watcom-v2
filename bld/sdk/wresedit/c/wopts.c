@@ -93,13 +93,13 @@ static WOptState WDefaultState = {
 void WOptsShutdown( void )
 {
     if( WCurrentState.last_dir != NULL ) {
-        WRMemFree( WCurrentState.last_dir );
+        MemFree( WCurrentState.last_dir );
     }
     WCurrentState.last_dir = WStrdup( WGetInitialDir() );
     WCurrentState.last_filter = WGetFileFilter();
     WWriteOpts( &WCurrentState );
     if( WCurrentState.last_dir != NULL ) {
-        WRMemFree( WCurrentState.last_dir );
+        MemFree( WCurrentState.last_dir );
     }
 }
 
@@ -179,7 +179,7 @@ bool WWriteRectOpt( char *entry, RECT *r )
     str = WRectToStr( r );
     if( str != NULL ) {
         ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName ) != 0;
-        WRMemFree( str );
+        MemFree( str );
     }
 
     return( ret );

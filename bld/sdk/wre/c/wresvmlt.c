@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ bool SaveObjectsAs( WRECurrentResInfo *curr, WRSaveIntoData *idata )
     }
 
     if( fname != NULL ) {
-        WRMemFree( fname );
+        MemFree( fname );
     }
 
     return( ok );
@@ -170,7 +170,7 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
     }
 
     if( fname != NULL ) {
-        WRMemFree( fname );
+        MemFree( fname );
     }
 
     return( ok );
@@ -235,7 +235,7 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
     idata->data = WREGetCopyResData( curr );
 
     if( idata->data == NULL ) {
-        WRMemFree( idata );
+        MemFree( idata );
         idata = NULL;
     }
 
@@ -249,9 +249,9 @@ void WREFreeSaveIntoData( WRSaveIntoData *idata )
     for( ; idata != NULL; idata = idata2 ) {
         idata2 = idata->next;
         if( idata->data != NULL ) {
-            WRMemFree( idata->data );
+            MemFree( idata->data );
         }
-        WRMemFree( idata );
+        MemFree( idata );
     }
 }
 
@@ -259,7 +259,7 @@ WRSaveIntoData *WREAllocSaveIntoData( void )
 {
     WRSaveIntoData *idata;
 
-    idata = (WRSaveIntoData *)WRMemAlloc( sizeof( WRSaveIntoData ) );
+    idata = (WRSaveIntoData *)MemAlloc( sizeof( WRSaveIntoData ) );
     if( idata != NULL ) {
         memset( idata, 0, sizeof( WRSaveIntoData ) );
     }

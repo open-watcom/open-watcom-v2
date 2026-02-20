@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,11 +244,11 @@ void WdeDisplayHint( ctl_id id )
     } else {
         mditext = WdeAllocRCString( WDE_HINT_MDIMSG );
         if( mditext != NULL ) {
-            buf = WRMemAlloc( strlen( mditext ) + 20 + 1 );
+            buf = MemAlloc( strlen( mditext ) + 20 + 1 );
             if( buf != NULL ) {
                 sprintf( buf, mditext, WDE_MDI_FIRST + 1 - id );
                 WdeSetStatusText( NULL, buf, true );
-                WRMemFree( buf );
+                MemFree( buf );
             }
             WdeFreeRCString( mditext );
         }
@@ -347,7 +347,7 @@ void WdeFiniHints( void )
 
     for ( plist = WdePopupList; plist != NULL; plist = ListConsume ( plist ) ) {
         p = (WdePopupListItem *)ListElement( plist );
-        WRMemFree( p );
+        MemFree( p );
     }
 }
 
@@ -355,7 +355,7 @@ bool WdeCreateWdePopupListItem( int num, HMENU hmenu, WdePopupHintItem *hint_ite
 {
     WdePopupListItem *p;
 
-    p = (WdePopupListItem *)WRMemAlloc( sizeof( WdePopupListItem ) );
+    p = (WdePopupListItem *)MemAlloc( sizeof( WdePopupListItem ) );
 
     if( p != NULL ) {
         p->num = num;
@@ -364,7 +364,7 @@ bool WdeCreateWdePopupListItem( int num, HMENU hmenu, WdePopupHintItem *hint_ite
         if( WdeInitHintItems( num, hmenu, hint_items ) ) {
             ListAddElt( &WdePopupList, (OBJPTR)p );
         } else {
-            WRMemFree( p );
+            MemFree( p );
             return( FALSE );
         }
     } else {

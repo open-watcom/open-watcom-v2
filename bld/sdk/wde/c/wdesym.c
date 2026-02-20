@@ -117,7 +117,7 @@ void * PPENTRY PP_Alloc( size_t size )
 {
     void        *p;
 
-    p = WRMemAlloc( size );
+    p = MemAlloc( size );
     if( p == NULL ) {
         outOfMemory();
     }
@@ -127,7 +127,7 @@ void * PPENTRY PP_Alloc( size_t size )
 void PPENTRY PP_Free( void *p )
 /*****************************/
 {
-    WRMemFree( p );
+    MemFree( p );
 }
 
 int PP_MBCharLen( const char *p )
@@ -272,7 +272,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
     }
 
     if( info->sym_name != NULL ) {
-        WRMemFree( info->sym_name );
+        MemFree( info->sym_name );
     }
     info->sym_name = include;
 
@@ -347,16 +347,16 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     }
 
     if( type != NULL ) {
-        WRMemFree( type );
+        MemFree( type );
     }
 
     if( res != NULL ) {
-        WRMemFree( res );
+        MemFree( res );
     }
 
     if( !ok ) {
         if( str != NULL ) {
-            WRMemFree( str );
+            MemFree( str );
         }
     }
 
@@ -464,7 +464,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
     include = WdeFindDLGInclude( rinfo );
     if( include != NULL && !WRFileExists( include ) ) {
-        WRMemFree( include );
+        MemFree( include );
         include = NULL;
     }
 
@@ -474,7 +474,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
         prompt_name = true;
     } else {
         strcpy( fn_path, include );
-        WRMemFree( include );
+        MemFree( include );
         include = NULL;
         prompt_name = false;
     }
@@ -486,7 +486,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
         ret = (include != NULL);
         if( ret ) {
             if( rinfo->sym_name != NULL ) {
-                WRMemFree( rinfo->sym_name );
+                MemFree( rinfo->sym_name );
             }
             rinfo->sym_name = include;
             WdeSetResModified( rinfo, TRUE );
@@ -587,7 +587,7 @@ char *WdeLoadSymbols( WRHashTable **table, char *file_name, bool prompt_name )
 
     if( !ok ) {
         if( name != NULL ) {
-            WRMemFree( name );
+            MemFree( name );
             name = NULL;
         }
     }
@@ -626,7 +626,7 @@ bool WdeSaveSymbols( WRHashTable *table, char **file_name, bool prompt_name )
             return( false );
         }
         if( *file_name != NULL ) {
-            WRMemFree( *file_name );
+            MemFree( *file_name );
         }
         *file_name = name;
     } else {

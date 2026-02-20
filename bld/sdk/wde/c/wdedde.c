@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -302,7 +302,7 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 
     if( WRDataFromWResID( name, &data, &size, is32bit ) ) {
         hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hNameItem, WdeDataClipbdFormat, 0 );
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( hData );
@@ -318,7 +318,7 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
 
     if( WdeGetItemData( ditem, &data, &size ) ) {
         hData = DdeCreateDataHandle( IdInst, (LPBYTE)data, (DWORD)size, 0, hDataItem, WdeDataClipbdFormat, 0 );
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( hData );
@@ -440,7 +440,7 @@ bool WdeStartDDEEditSession( void )
         if( ditem->dialog_name == NULL ) {
             ok = false;
         }
-        WRMemFree( data );
+        MemFree( data );
     }
 
     if( ok ) {
@@ -457,7 +457,7 @@ bool WdeStartDDEEditSession( void )
                 if( ditem->dialog_info == NULL ) {
                     ok = false;
                 }
-                WRMemFree( data );
+                MemFree( data );
             }
         }
     }
@@ -502,7 +502,7 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( filename != NULL ) {
-        WRMemFree( filename );
+        MemFree( filename );
     }
 
     return( ok );
@@ -553,7 +553,7 @@ void WdeHandlePokedData( HDDEDATA hData )
 #endif
     }
 
-    WRMemFree( cmd );
+    MemFree( cmd );
 }
 
 HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,

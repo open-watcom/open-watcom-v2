@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ bool WRERenameResource( void )
     }
 
     if( info.new_name != NULL ) {
-        WRMemFree( info.new_name );
+        MemFree( info.new_name );
     }
 
     return( ok );
@@ -129,7 +129,7 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
     r = WREFindResNodeFromWResID( type_node, &rn->Info.ResName );
     if( r != NULL && r != *res_node ) {
         WREDisplayErrorMsg( WRE_DUPRESNAME );
-        WRMemFree( rn );
+        MemFree( rn );
         return( false );
     }
 
@@ -154,7 +154,7 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
         (*res_node)->Next->Prev = rn;
     }
 
-    WRMemFree( *res_node );
+    MemFree( *res_node );
 
     *res_node = rn;
 
@@ -178,7 +178,7 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
         len += id->ID.Name.NumChars - 1;
     }
 
-    rnode = (WResResNode *)WRMemAlloc( len );
+    rnode = (WResResNode *)MemAlloc( len );
 
     if( rnode != NULL ) {
         memset( rnode, 0, len - id_len );

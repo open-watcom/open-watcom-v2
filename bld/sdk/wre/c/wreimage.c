@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +194,7 @@ static bool WREAppendDataToData( char **d1, size_t *d1size, char *d2, size_t d2s
         return( false );
     }
 
-    *d1 = WRMemRealloc( *d1, *d1size + d2size );
+    *d1 = MemRealloc( *d1, *d1size + d2size );
     if( *d1 == NULL ) {
         return( false );
     }
@@ -277,7 +277,7 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, char **pdata, size_
         rch = (RESCURSORHEADER *)group->lang->data;
         *dsize = sizeof( CURSORHEADER );
         *dsize += sizeof( CURSORDIRENTRY ) * (rch->cwCount - 1);
-        *pdata = WRMemAlloc( *dsize );
+        *pdata = MemAlloc( *dsize );
         ch = (CURSORHEADER *)*pdata;
         ok = (*pdata != NULL);
     }
@@ -338,7 +338,7 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, char **pdata, size_t 
         rih = (RESICONHEADER *)group->lang->data;
         *dsize = sizeof( ICONHEADER );
         *dsize += sizeof( ICONDIRENTRY ) * (rih->cwCount - 1);
-        *pdata = WRMemAlloc( *dsize );
+        *pdata = MemAlloc( *dsize );
         ih = (ICONHEADER *)*pdata;
         ok = (*pdata != NULL);
     }
@@ -395,7 +395,7 @@ bool WREGetAndAddCursorImage( char *data, WResDir dir, CURSORDIRENTRY *cd, uint_
     ok = (data != NULL && dir != NULL && cd != NULL && cd->dwBytesInRes != 0);
 
     if ( ok ) {
-        cursor = WRMemAlloc( cd->dwBytesInRes );
+        cursor = MemAlloc( cd->dwBytesInRes );
         ok = (cursor != NULL);
     }
 
@@ -428,16 +428,16 @@ bool WREGetAndAddCursorImage( char *data, WResDir dir, CURSORDIRENTRY *cd, uint_
 
     if( !ok ) {
         if( cursor != NULL ) {
-            WRMemFree( cursor );
+            MemFree( cursor );
         }
     }
 
     if( tname != NULL ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     if( rname != NULL ) {
-        WRMemFree( rname );
+        MemFree( rname );
     }
 
     return( ok );
@@ -461,7 +461,7 @@ bool WREGetAndAddIconImage( char *data, WResDir dir, ICONDIRENTRY *id, uint_16 o
     ok = (data != NULL && dir != NULL && id != NULL && id->dwBytesInRes != 0);
 
     if( ok ) {
-        icon = WRMemAlloc( id->dwBytesInRes );
+        icon = MemAlloc( id->dwBytesInRes );
         ok = (icon != NULL);
     }
 
@@ -487,16 +487,16 @@ bool WREGetAndAddIconImage( char *data, WResDir dir, ICONDIRENTRY *id, uint_16 o
 
     if( !ok ) {
         if( icon != NULL ) {
-            WRMemFree( icon );
+            MemFree( icon );
         }
     }
 
     if( tname != NULL ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     if( rname != NULL ) {
-        WRMemFree( rname );
+        MemFree( rname );
     }
 
     return( ok );
@@ -528,7 +528,7 @@ bool WRECreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize,
     if( ok ) {
         *rchsize = sizeof( RESCURSORHEADER );
         *rchsize += sizeof( RESCURSORDIRENTRY ) * (ih->idCount - 1);
-        *rch = (RESCURSORHEADER *)WRMemAlloc( *rchsize );
+        *rch = (RESCURSORHEADER *)MemAlloc( *rchsize );
         ok = (*rch != NULL);
     }
 
@@ -545,7 +545,7 @@ bool WRECreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize,
     }
 
     if( ih != NULL ) {
-        WRMemFree( ih );
+        MemFree( ih );
     }
 
     return( ok );
@@ -574,7 +574,7 @@ bool WRECreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, char *data, s
     if( ok ) {
         *rihsize = sizeof( RESICONHEADER );
         *rihsize += sizeof( RESICONDIRENTRY ) * (ih->idCount - 1);
-        *rih = (RESICONHEADER *)WRMemAlloc( *rihsize );
+        *rih = (RESICONHEADER *)MemAlloc( *rihsize );
         ok = (*rih != NULL);
     }
 
@@ -593,7 +593,7 @@ bool WRECreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, char *data, s
     }
 
     if( ih != NULL ) {
-        WRMemFree( ih );
+        MemFree( ih );
     }
 
     return( ok );
@@ -633,7 +633,7 @@ bool WRECalcAndAddIconDirectory( char **data, size_t *size, WORD type )
         return( false );
     }
 
-    *data = WRMemRealloc( *data, *size + ihsize );
+    *data = MemRealloc( *data, *size + ihsize );
     if( *data == NULL ) {
         return( false );
     }
@@ -641,7 +641,7 @@ bool WRECalcAndAddIconDirectory( char **data, size_t *size, WORD type )
     memcpy( *data, ih, ihsize );
     *size += ihsize;
 
-    WRMemFree( ih );
+    MemFree( ih );
 
     return( true );
 }
@@ -675,7 +675,7 @@ bool WREAddCursorHotspot( char **cursor, size_t *size, CURSORHOTSPOT *hs )
         return( false );
     }
 
-    *cursor = WRMemRealloc( *cursor, *size + hs_size );
+    *cursor = MemRealloc( *cursor, *size + hs_size );
     if( *cursor == NULL ) {
         return( false );
     }
@@ -733,7 +733,7 @@ bool WRECreateCursorEntries( WRECurrentResInfo *curr, char *data, size_t size )
 
     if( ok ) {
         if( curr->lang->data != NULL ) {
-            WRMemFree( curr->lang->data );
+            MemFree( curr->lang->data );
             curr->lang->data = NULL;
         }
         curr->lang->Info.Length = 0;
@@ -772,7 +772,7 @@ bool WRECreateIconEntries( WRECurrentResInfo *curr, char *data, size_t size )
 
     if( ok ) {
         if( curr->lang->data != NULL ) {
-            WRMemFree( curr->lang->data );
+            MemFree( curr->lang->data );
             curr->lang->data = NULL;
         }
         curr->lang->Info.Length = 0;

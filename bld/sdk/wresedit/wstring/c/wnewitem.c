@@ -107,7 +107,7 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
             einfo->info->modified = true;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
-                WRMemFree( block->block.String[id & 0xf] );
+                MemFree( block->block.String[id & 0xf] );
                 block->block.String[id & 0xf] = WResIDNameFromStr( text );
                 block->symbol[id & 0xf] = WStrdup( symbol );
                 einfo->info->modified = true;
@@ -202,11 +202,11 @@ bool WInsertStringEntry( WStringEditInfo *einfo )
     }
 
     if( symbol != NULL ) {
-        WRMemFree( symbol );
+        MemFree( symbol );
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );
@@ -270,7 +270,7 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 
         ++idlen;
         idtext[idlen] = '\0';
         tlen = strlen( text );
-        lbtext = (char *)WRMemAlloc( tlen + idlen + 4 );
+        lbtext = (char *)MemAlloc( tlen + idlen + 4 );
         ok = (lbtext != NULL);
     }
 
@@ -286,15 +286,15 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 
     }
 
     if( n != NULL ) {
-        WRMemFree( n );
+        MemFree( n );
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     if( lbtext != NULL ) {
-        WRMemFree( lbtext );
+        MemFree( lbtext );
     }
 
     return( ok );

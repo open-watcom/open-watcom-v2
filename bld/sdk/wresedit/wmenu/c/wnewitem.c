@@ -242,7 +242,7 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
             }
             tlen = strlen( text ) + 1;
         }
-        lbtext = (char *)WRMemAlloc( depth * DEPTH_MULT + tlen + 14 );
+        lbtext = (char *)MemAlloc( depth * DEPTH_MULT + tlen + 14 );
         ok = (lbtext != NULL);
     }
 
@@ -265,11 +265,11 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
     }
 
     if( lbtext1 != NULL ) {
-        WRMemFree( lbtext1 );
+        MemFree( lbtext1 );
     }
 
     if( lbtext != NULL ) {
-        WRMemFree( lbtext );
+        MemFree( lbtext );
     }
 
     return( ok );
@@ -295,7 +295,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
     WGetEditWindowFlags( einfo->edit_dlg, &flags );
     flags &= ~(MENU_POPUP | MENU_SEPARATOR);
 
-    new = (WMenuEntry *)WRMemAlloc( sizeof( WMenuEntry ) );
+    new = (WMenuEntry *)MemAlloc( sizeof( WMenuEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WMenuEntry ) );
@@ -328,12 +328,12 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
         new->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WRMemFree( symbol );
+            MemFree( symbol );
         }
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( new );

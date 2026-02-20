@@ -114,7 +114,7 @@ void WRERemoveAccelEditSession( WREAccelSession *session )
         if( session->info != NULL ) {
             WAccFreeAccelInfo( session->info );
         }
-        WRMemFree( session );
+        MemFree( session );
     }
 }
 
@@ -129,12 +129,12 @@ WResID *WRECreateAccTitle( void )
     name = NULL;
     text = AllocRCString( WRE_DEFACCELNAME );
     if( text != NULL ) {
-        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)MemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumAccTitles );
             name = WResIDFromStr( title );
-            WRMemFree( title );
+            MemFree( title );
         }
         FreeRCString( text );
     }
@@ -188,7 +188,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WRMemFree( rname );
+                MemFree( rname );
             }
         }
         if( dup ) {
@@ -201,7 +201,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
     }
 
     if( tname_alloc ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     return( ok );
@@ -239,7 +239,7 @@ bool WREEditAccelResource( WRECurrentResInfo *curr )
                     if( WREStartAccelSession( curr ) == NULL ) {
                         ok = false;
                     }
-                    WRMemFree( curr->lang->data );
+                    MemFree( curr->lang->data );
                     curr->lang->data = NULL;
                 }
             } else {
@@ -328,7 +328,7 @@ WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )
         WREInsertObject( &WREAccSessions, session );
     } else {
         WAccFreeAccelInfo( session->info );
-        WRMemFree( session );
+        MemFree( session );
         session = NULL;
     }
 
@@ -359,7 +359,7 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
 
     if( ok && session->info->modified ) {
         if( session->lnode->data != NULL ) {
-            WRMemFree( session->lnode->data );
+            MemFree( session->lnode->data );
         }
         session->lnode->data = session->info->data;
         session->lnode->Info.lang = session->info->lang;
@@ -468,7 +468,7 @@ WREAccelSession *WREAllocAccelSession( void )
 {
     WREAccelSession *session;
 
-    session = (WREAccelSession *)WRMemAlloc( sizeof( WREAccelSession ) );
+    session = (WREAccelSession *)MemAlloc( sizeof( WREAccelSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREAccelSession ) );

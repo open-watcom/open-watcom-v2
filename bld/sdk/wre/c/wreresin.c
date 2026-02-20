@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +56,9 @@ void WREFreeResInfo( WREResInfo *info )
             WRFreeHashTable( info->symbol_table );
         }
         if( info->symbol_file != NULL ) {
-            WRMemFree( info->symbol_file );
+            MemFree( info->symbol_file );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }
 
@@ -65,7 +66,7 @@ WREResInfo *WREAllocResInfo( void )
 {
     WREResInfo  *info;
 
-    info = (WREResInfo *)WRMemAlloc( sizeof( WREResInfo ) );
+    info = (WREResInfo *)MemAlloc( sizeof( WREResInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREResInfo ) );

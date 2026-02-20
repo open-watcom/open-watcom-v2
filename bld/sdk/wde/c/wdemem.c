@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,18 @@
 #include "wdeglbl.h"
 #include "wrdll.h"
 #include "wresmem.h"
+#include "memfuncs.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
+
+#if defined( _M_IX86 ) && defined( __NT__ )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -57,11 +65,12 @@
 
 /* function to replace this in mem.c in commonui */
 
+TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
     void *p;
 
-    p = WRMemAlloc( size );
+    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
 
     if( p != NULL ) {
         memset( p, 0, size );
@@ -72,21 +81,30 @@ void *MemAlloc( size_t size )
 
 /* function for wres.lib */
 
+TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
-    return( WRMemAlloc( size ) );
+    return( WRMemAlloc( size, _TRMEM_WHO( 2 ) ) );
 }
 
 /* function to replace this in mem.c in commonui */
 
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *old, size_t size )
+{
+    return( WRMemRealloc( old, size, _TRMEM_WHO( 1 ) ) );
+}
+
+TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr );
+    WRMemFree( ptr, _TRMEM_WHO( 3 ) );
 }
 
 /* function for wres.lib */
 
+TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
-    WRMemFree( ptr );
+    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
 }

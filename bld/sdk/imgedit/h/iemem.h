@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2019-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2019-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include "cguimem.h"
+#include "memfuncs.h"
 
 
 extern void     MemOpen( void );

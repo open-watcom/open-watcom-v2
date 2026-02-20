@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +244,7 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetStrFromEdit ( hDlg, IDB_TEXT, &mod );
         if( mod && vp != NULL ) {
             if( GETHDR_CAPTION( info->info.d.header ) ) {
-                WRMemFree( GETHDR_CAPTION( info->info.d.header ) );
+                MemFree( GETHDR_CAPTION( info->info.d.header ) );
             }
             SETHDR_CAPTION( info->info.d.header, (char *)vp );
         }
@@ -253,7 +253,7 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         vp = (void *)WdeGetResNameOrFromEdit ( hDlg, IDB_TEXT, &mod );
         if ( mod && vp != NULL ) {
             if( GETCTL_TEXT( info->info.c.info ) ) {
-                WRMemFree( GETCTL_TEXT( info->info.c.info ) );
+                MemFree( GETCTL_TEXT( info->info.c.info ) );
             }
             SETCTL_TEXT( info->info.c.info, (ResNameOrOrdinal *)vp );
         }

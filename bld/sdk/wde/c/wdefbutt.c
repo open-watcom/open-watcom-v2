@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,7 +163,7 @@ OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
 
     new = WdeButtonCreate( parent, obj_rect, handle, id, WdeDefaultButton );
 
-    WRMemFree( GETCTL_TEXT( WdeDefaultButton ) );
+    MemFree( GETCTL_TEXT( WdeDefaultButton ) );
     SETCTL_TEXT( WdeDefaultButton, NULL );
 
     return( new );
@@ -182,7 +182,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeButtonObject *)WRMemAlloc( sizeof( WdeButtonObject ) );
+    new = (WdeButtonObject *)MemAlloc( sizeof( WdeButtonObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeButtonCreate: Object malloc failed" );
         return( NULL );
@@ -202,7 +202,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeButtonCreate: CONTROL_OBJ not created!" );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
@@ -211,7 +211,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         if( !Forward( new->object_handle, SET_CLEAR_INT, &b, NULL ) ) {
             WdeWriteTrail( "WdeButtonCreate: SET_CLEAR_INT failed!" );
             Destroy( new->control, false );
-            WRMemFree( new );
+            MemFree( new );
             return( NULL );
         }
     }
@@ -219,14 +219,14 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
@@ -312,7 +312,7 @@ bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )
         return( false );
     }
 
-    WRMemFree( obj );
+    MemFree( obj );
 
     return( true );
 }
@@ -388,7 +388,7 @@ bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeButtonObject *)WRMemAlloc( sizeof( WdeButtonObject ) );
+    *new = (WdeButtonObject *)MemAlloc( sizeof( WdeButtonObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeButtonCopyObject: Object malloc failed" );
@@ -406,7 +406,7 @@ bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR ha
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle) ) {
         WdeWriteTrail( "WdeButtonCopyObject: Control not created!" );
-        WRMemFree( *new );
+        MemFree( *new );
         return( false );
     }
 

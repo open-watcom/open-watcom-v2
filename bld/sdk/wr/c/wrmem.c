@@ -31,18 +31,14 @@
 
 
 #include "wrglbl.h"
-#include "wrmemi.h"
 #include "wresmem.h"
-#include "trmem.h"
 
 
 #if defined( _M_IX86 ) && defined( __NT__ )
 #define _XSTR(s)    # s
 #define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
-#define TRMEMAPIDLL(x)  _Pragma(_XSTR(aux (__stdcall) x __frame))
 #else
 #define TRMEMAPI(x)
-#define TRMEMAPIDLL(x)
 #endif
 
 static _trmem_hdl   TRMemHandle;
@@ -84,51 +80,46 @@ void WRMemClose( void )
     }
 }
 
-TRMEMAPIDLL( WRMemAlloc )
-void *WRAPI WRMemAlloc( size_t size )
+void * WRAPI WRMemAlloc( size_t size, _trmem_who who )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
+        return( _trmem_alloc( size, who, TRMemHandle ) );
     } else {
         return( malloc( size ) );
     }
 }
 
-TRMEMAPIDLL( WRMemFree )
-void WRAPI WRMemFree( void *ptr )
+void WRAPI WRMemFree( void *ptr, _trmem_who who )
 {
     if( TRMemHandle != NULL ) {
-        _trmem_free( ptr, _TRMEM_WHO( 2 ), TRMemHandle );
+        _trmem_free( ptr, who, TRMemHandle );
     } else {
         free( ptr );
     }
 }
 
-TRMEMAPIDLL( WRMemRealloc )
-void *WRAPI WRMemRealloc( void *ptr, size_t size )
+void * WRAPI WRMemRealloc( void *ptr, size_t size, _trmem_who who )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle ) );
+        return( _trmem_realloc( ptr, size, who, TRMemHandle ) );
     } else {
         return( realloc( ptr, size ) );
     }
 }
 
-TRMEMAPIDLL( WRMemValidate )
-int WRAPI WRMemValidate( void *ptr )
+int WRAPI WRMemValidate( void *ptr, _trmem_who who )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_validate( ptr, _TRMEM_WHO( 4 ), TRMemHandle ) );
+        return( _trmem_validate( ptr, who, TRMemHandle ) );
     } else {
         return( TRUE );
     }
 }
 
-TRMEMAPIDLL( WRMemChkRange )
-int WRAPI WRMemChkRange( void *start, size_t len )
+int WRAPI WRMemChkRange( void *start, size_t len, _trmem_who who )
 {
     if( TRMemHandle != NULL ) {
-        return( _trmem_chk_range( start, len, _TRMEM_WHO( 5 ), TRMemHandle ) );
+        return( _trmem_chk_range( start, len, who, TRMemHandle ) );
     } else {
         return( TRUE );
     }
@@ -161,6 +152,24 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+{
+    void *p;
+
+    if( TRMemHandle != NULL ) {
+        p = _trmem_alloc( size, _TRMEM_WHO( 6 ), TRMemHandle );
+    } else {
+        p = malloc( size );
+    }
+
+    if( p != NULL ) {
+        memset( p, 0, size );
+    }
+
+    return( p );
+}
+
 /* function for wres.lib */
 
 TRMEMAPI( wres_alloc )
@@ -177,6 +186,19 @@ void *wres_alloc( size_t size )
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
+{
+    void *p;
+
+    if( TRMemHandle != NULL ) {
+        p = _trmem_realloc( ptr, size, _TRMEM_WHO( 8 ), TRMemHandle );
+    } else {
+        p = realloc( ptr, size );
+    }
+    return( p );
+}
+
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *ptr, size_t size )
 {
     void *p;
 

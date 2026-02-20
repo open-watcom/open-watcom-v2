@@ -138,7 +138,7 @@ ControlClass *WdeStrToControlClass( char *str )
 
     slen = strlen( str );
 
-    c = (ControlClass *)WRMemAlloc( sizeof( ControlClass ) + slen );
+    c = (ControlClass *)MemAlloc( sizeof( ControlClass ) + slen );
 
     if( c != NULL ) {
         memcpy( c->ClassName, str, slen + 1 );
@@ -240,7 +240,7 @@ WResID *WdeCopyWResID( WResID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResID *)WRMemAlloc( len );
+    dest = (WResID *)MemAlloc( len );
 
     if( dest != NULL ) {
         memcpy( dest, src, len );
@@ -264,7 +264,7 @@ WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResHelpID *)WRMemAlloc( len );
+    dest = (WResHelpID *)MemAlloc( len );
 
     if( dest != NULL ) {
         memcpy ( dest, src, len );
@@ -311,18 +311,18 @@ void WdeFreeDialogBoxControl( WdeDialogBoxControl **c )
 {
     if( c != NULL && *c != NULL ) {
         if( GETCTL_CLASSID( *c ) ) {
-            WRMemFree( GETCTL_CLASSID( *c ) );
+            MemFree( GETCTL_CLASSID( *c ) );
         }
         if( GETCTL_TEXT( *c ) ) {
-            WRMemFree( GETCTL_TEXT( *c ) );
+            MemFree( GETCTL_TEXT( *c ) );
         }
         if( (*c)->symbol ) {
-            WRMemFree( (*c)->symbol );
+            MemFree( (*c)->symbol );
         }
         if( (*c)->helpsymbol ) {
-            WRMemFree( (*c)->helpsymbol );
+            MemFree( (*c)->helpsymbol );
         }
-        WRMemFree( *c );
+        MemFree( *c );
         *c = NULL;
     }
 }
@@ -331,7 +331,7 @@ WdeDialogBoxControl *WdeAllocDialogBoxControl( void )
 {
     WdeDialogBoxControl *c;
 
-    c = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
+    c = (WdeDialogBoxControl *)MemAlloc( sizeof( WdeDialogBoxControl ) );
     if( c == NULL ) {
         return( NULL );
     }
@@ -344,21 +344,21 @@ void WdeFreeDialogBoxHeader( WdeDialogBoxHeader **c )
 {
     if( c != NULL && *c != NULL ) {
         if( GETHDR_MENUNAME( *c ) ) {
-            WRMemFree( GETHDR_MENUNAME( *c ) );
+            MemFree( GETHDR_MENUNAME( *c ) );
         }
         if( GETHDR_CLASSNAME( *c ) ) {
-            WRMemFree( GETHDR_CLASSNAME( *c ) );
+            MemFree( GETHDR_CLASSNAME( *c ) );
         }
         if( GETHDR_CAPTION( *c ) ) {
-            WRMemFree( GETHDR_CAPTION( *c ) );
+            MemFree( GETHDR_CAPTION( *c ) );
         }
         if( GETHDR_FONTFACENAME( *c ) ) {
-            WRMemFree( GETHDR_FONTFACENAME( *c ) );
+            MemFree( GETHDR_FONTFACENAME( *c ) );
         }
         if( (*c)->symbol ) {
-            WRMemFree( (*c)->symbol );
+            MemFree( (*c)->symbol );
         }
-        WRMemFree( *c );
+        MemFree( *c );
         *c = NULL;
     }
 }
@@ -367,7 +367,7 @@ WdeDialogBoxHeader *WdeAllocDialogBoxHeader( void )
 {
     WdeDialogBoxHeader *c;
 
-    c = (WdeDialogBoxHeader *)WRMemAlloc( sizeof( WdeDialogBoxHeader ) );
+    c = (WdeDialogBoxHeader *)MemAlloc( sizeof( WdeDialogBoxHeader ) );
     if( c == NULL ) {
         return( NULL );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -246,7 +246,7 @@ static bool WQueryNukePopup( WMenuEditInfo *einfo )
         FreeRCString( text );
     }
     if( title != NULL ) {
-        WRMemFree( title );
+        MemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -344,7 +344,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 }
             }
             if( entry->item->Item.Popup.ItemText ) {
-                WRMemFree( entry->item->Item.Popup.ItemText );
+                MemFree( entry->item->Item.Popup.ItemText );
             }
         } else {
             // if the item is being changed from a normal item into a popup
@@ -356,11 +356,11 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 entry->preview_popup = (HMENU)NULL;
             }
             if( entry->item->Item.Normal.ItemText ) {
-                WRMemFree( entry->item->Item.Normal.ItemText );
+                MemFree( entry->item->Item.Normal.ItemText );
             }
         }
         if( entry->symbol != NULL ) {
-            WRMemFree( entry->symbol );
+            MemFree( entry->symbol );
         }
         entry->item->IsPopup = ((flags & MENU_POPUP) != 0);
         if( entry->item->IsPopup ) {
@@ -380,10 +380,10 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         entry->symbol = symbol;
     } else {
         if( symbol != NULL ) {
-            WRMemFree( symbol );
+            MemFree( symbol );
         }
         if( text != NULL ) {
-            WRMemFree( text );
+            MemFree( text );
         }
     }
 
@@ -413,7 +413,7 @@ bool WSetEditWindowText( HWND dlg, MenuFlags flags, char *text )
         n = WConvertStringFrom( t, "\t\x8", "ta" );
         if( n != NULL ) {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), n );
-            WRMemFree( n );
+            MemFree( n );
         } else {
             ok = WSetEditWithStr( GetDlgItem( dlg, IDM_MENUEDTEXT ), t );
         }
@@ -432,12 +432,12 @@ bool WGetEditWindowText( HWND dlg, char **text )
     if( ok ) {
         n = WGetStrFromEdit( GetDlgItem( dlg, IDM_MENUEDTEXT ), NULL );
         if( n != NULL && *n == '\0' ) {
-            WRMemFree( n );
+            MemFree( n );
             n = NULL;
         }
         *text = WConvertStringTo( n, "\t\x8", "ta" );
         if( n != NULL ) {
-            WRMemFree( n );
+            MemFree( n );
         }
         ok = (*text != NULL);
     }
@@ -527,7 +527,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 }
             } else {
                 *id = 0;
-                WRMemFree( *symbol );
+                MemFree( *symbol );
                 *symbol = NULL;
                 return( false );
             }
@@ -535,7 +535,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     } else {
         // the string did have a numeric representation
         *id = (uint_16)val;
-        WRMemFree( *symbol );
+        MemFree( *symbol );
         *symbol = NULL;
     }
 
@@ -719,7 +719,7 @@ bool WPasteMenuItem( WMenuEditInfo *einfo )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( ok );
@@ -767,7 +767,7 @@ bool WClipMenuItem( WMenuEditInfo *einfo, bool cut )
     }
 
     if( data != NULL ) {
-        WRMemFree( data );
+        MemFree( data );
     }
 
     return( ok );
@@ -790,7 +790,7 @@ static bool WQueryChangeEntry( WMenuEditInfo *einfo )
         FreeRCString( text );
     }
     if( title != NULL ) {
-        WRMemFree( title );
+        MemFree( title );
     }
 
     if( ret == IDYES ) {

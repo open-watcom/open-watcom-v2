@@ -448,7 +448,7 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)WRMemAlloc( len );
+    title = (char *)MemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
@@ -481,7 +481,7 @@ void WSetEditTitle( WStringEditInfo *einfo )
         if( is_rc ) {
             FreeRCString( title );
         } else {
-            WRMemFree( title );
+            MemFree( title );
         }
     }
 }
@@ -539,7 +539,7 @@ bool WCreateEditWindow( HINSTANCE inst, WStringEditInfo *einfo )
         if( is_rc ) {
             FreeRCString( title );
         } else {
-            WRMemFree( title );
+            MemFree( title );
         }
     }
 
@@ -626,7 +626,7 @@ static void handleLoadSymbols( WStringEditInfo *einfo )
     }
 
     if( einfo->info->symbol_file != NULL ) {
-        WRMemFree( einfo->info->symbol_file );
+        MemFree( einfo->info->symbol_file );
     }
     einfo->info->symbol_file = file;
 
@@ -910,7 +910,7 @@ bool WQuerySaveRes( WStringEditInfo *einfo, bool force_exit )
                 FreeRCString( text );
             }
             if( title != NULL ) {
-                WRMemFree( title );
+                MemFree( title );
             }
         }
         if( msg_ret == IDYES ) {
@@ -955,7 +955,7 @@ bool WQuerySaveSym( WStringEditInfo *einfo, bool force_exit )
         FreeRCString( text );
     }
     if( title != NULL ) {
-        WRMemFree( title );
+        MemFree( title );
     }
 
     if( ret == IDYES ) {
@@ -1005,7 +1005,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
     if( einfo != NULL && einfo->current_block != NULL && ntext != NULL ) {
         WSetStatusByID( einfo->wsb, W_CHANGESTRINGMEMFLAGS, 0 );
         // alloc space for ntext and two 16-bit ints
-        rtext = (char *)WRMemAlloc( strlen( ntext ) + 20 );
+        rtext = (char *)MemAlloc( strlen( ntext ) + 20 );
         if( rtext != NULL ) {
             sprintf( rtext, ntext, einfo->current_block->blocknum & 0xfff0,
                      (einfo->current_block->blocknum & 0xfff0) + 16 - 1 );
@@ -1016,7 +1016,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
                                                       &einfo->current_block->MemFlags,
                                                       rname, WGetEditInstance(),
                                                       WStrHelpRoutine );
-            WRMemFree( rname );
+            MemFree( rname );
         }
         FreeRCString( ntext );
         WSetStatusReadyText( einfo->wsb );
@@ -1062,7 +1062,7 @@ void WHandleClear( WStringEditInfo *einfo )
             einfo->current_pos = LB_ERR;
             if( einfo->info->stand_alone ) {
                 if( einfo->file_name != NULL ) {
-                    WRMemFree( einfo->file_name );
+                    MemFree( einfo->file_name );
                     einfo->file_name = NULL;
                     WSetEditTitle( einfo );
                 }

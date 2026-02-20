@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,7 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
 
     if( !ok ) {
         if( new != NULL ) {
-            WRMemFree( new );
+            MemFree( new );
         }
     }
 
@@ -184,7 +184,7 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, LRESULT po
         ++ilen;
         idtext[ilen] = '\0';
         klen = strlen( keytext );
-        lbtext = (char *)WRMemAlloc( klen + ilen + 2 );
+        lbtext = (char *)MemAlloc( klen + ilen + 2 );
         ok = (lbtext != NULL);
     }
 
@@ -196,7 +196,7 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, LRESULT po
     }
 
     if( lbtext != NULL ) {
-        WRMemFree( lbtext );
+        MemFree( lbtext );
     }
 
     return( ok );
@@ -206,7 +206,7 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
 {
     WAccelEntry *new;
 
-    new = (WAccelEntry *)WRMemAlloc( sizeof( WAccelEntry ) );
+    new = (WAccelEntry *)MemAlloc( sizeof( WAccelEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WAccelEntry ) );

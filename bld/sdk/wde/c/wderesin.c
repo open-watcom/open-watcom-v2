@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,9 +74,9 @@ bool WdeFreeResInfo( WdeResInfo *res_info )
             WRFreeHashTable( res_info->hash_table );
         }
         if( res_info->sym_name != NULL ) {
-            WRMemFree( res_info->sym_name );
+            MemFree( res_info->sym_name );
         }
-        WRMemFree( res_info );
+        MemFree( res_info );
     } else {
         return( false );
     }
@@ -89,7 +89,7 @@ bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
     if( dlg_info != NULL ) {
         WdeFreeControlList( &dlg_info->control_list );
         WdeFreeDialogBoxHeader( &dlg_info->dialog_header );
-        WRMemFree( dlg_info );
+        MemFree( dlg_info );
     } else {
         return( false );
     }
@@ -110,7 +110,7 @@ void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
             Destroy( (*ditem)->object, false );
         }
         (*ditem)->object = NULL;
-        WRMemFree( *ditem );
+        MemFree( *ditem );
         *ditem = NULL;
     }
 }
@@ -153,7 +153,7 @@ WdeResDlgItem *WdeAllocResDlgItem( void )
 {
     WdeResDlgItem  *item;
 
-    item = (WdeResDlgItem *)WRMemAlloc( sizeof( WdeResDlgItem ) );
+    item = (WdeResDlgItem *)MemAlloc( sizeof( WdeResDlgItem ) );
 
     if( item != NULL ) {
         memset( item, 0, sizeof( WdeResDlgItem ) );
@@ -166,7 +166,7 @@ WdeResInfo *WdeAllocResInfo( void )
 {
     WdeResInfo  *res_info;
 
-    res_info = (WdeResInfo *)WRMemAlloc( sizeof( WdeResInfo ) );
+    res_info = (WdeResInfo *)MemAlloc( sizeof( WdeResInfo ) );
 
     if( res_info != NULL ) {
         memset( res_info, 0, sizeof( WdeResInfo ) );

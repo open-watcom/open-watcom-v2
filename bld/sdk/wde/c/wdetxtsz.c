@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 
     if( ok ) {
         len = strlen( text );
-        str = (char *)WRMemAlloc( len + 1 );
+        str = (char *)MemAlloc( len + 1 );
         ok = (str != NULL);
     }
 
@@ -98,7 +98,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
     }
 
     if( str != NULL ) {
-        WRMemFree( str );
+        MemFree( str );
     }
 
     if( dc != (HDC)NULL ) {
@@ -138,7 +138,7 @@ bool WdeGetNameOrOrdinalSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size 
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,12 +222,12 @@ void WREFreeToolBarInfo( WREToolBarInfo *info )
 {
     if( info != NULL ) {
         if( info->items != NULL ) {
-            WRMemFree( info->items );
+            MemFree( info->items );
         }
         if( info->dinfo.background != NULL ) {
             DeleteObject( info->dinfo.background );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }
 
@@ -235,16 +235,16 @@ WREToolBarInfo *WREAllocToolBarInfo( int num )
 {
     WREToolBarInfo *info;
 
-    info = (WREToolBarInfo *)WRMemAlloc( sizeof( WREToolBarInfo ) );
+    info = (WREToolBarInfo *)MemAlloc( sizeof( WREToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)WRMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = (TOOLITEMINFO *)MemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WRMemFree( info );
+            MemFree( info );
             info = NULL;
         }
     }
@@ -256,7 +256,7 @@ WREToolBar *WREAllocToolBar( void )
 {
     WREToolBar *tbar;
 
-    tbar = (WREToolBar *)WRMemAlloc( sizeof( WREToolBar ) );
+    tbar = (WREToolBar *)MemAlloc( sizeof( WREToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WREToolBar ) );
     }
@@ -267,7 +267,7 @@ WREToolBar *WREAllocToolBar( void )
 void WREFreeToolBar( WREToolBar *tbar )
 {
     if( tbar != NULL ) {
-        WRMemFree( tbar );
+        MemFree( tbar );
     }
 }
 

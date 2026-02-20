@@ -68,7 +68,7 @@ void * PPENTRY PP_Alloc( size_t size )
 {
     void        *p;
 
-    p = WRMemAlloc( size );
+    p = MemAlloc( size );
     if( p == NULL ) {
         outOfMemory();
     }
@@ -78,7 +78,7 @@ void * PPENTRY PP_Alloc( size_t size )
 void PPENTRY PP_Free( void *p )
 /*****************************/
 {
-    WRMemFree( p );
+    MemFree( p );
 }
 
 int PP_MBCharLen( const char *p )
@@ -179,7 +179,7 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 
     if( !ok ) {
         if( name != NULL ) {
-            WRMemFree( name );
+            MemFree( name );
             name = NULL;
         }
     }

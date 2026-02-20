@@ -133,7 +133,7 @@ OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
 
     new = WdeAniCreate( parent, obj_rect, handle, id, WdeDefaultAniC );
 
-    WRMemFree( GETCTL_TEXT( WdeDefaultAniC ) );
+    MemFree( GETCTL_TEXT( WdeDefaultAniC ) );
     SETCTL_TEXT( WdeDefaultAniC, NULL );
 
     return( new );
@@ -150,7 +150,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
         return( NULL );
     }
 
-    new = (WdeAniCObject *)WRMemAlloc( sizeof( WdeAniCObject ) );
+    new = (WdeAniCObject *)MemAlloc( sizeof( WdeAniCObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeAniCCreate: Object malloc failed" );
         return( NULL );
@@ -170,21 +170,21 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
 
     if( new->control == NULL ) {
         WdeWriteTrail( "WdeAniCCreate: CONTROL_OBJ not created!" );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeAniCCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeAniCCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
-        WRMemFree( new );
+        MemFree( new );
         return( NULL );
     }
 
@@ -270,7 +270,7 @@ bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )
         return( false );
     }
 
-    WRMemFree( obj );
+    MemFree( obj );
 
     return( true );
 }
@@ -297,7 +297,7 @@ bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeAniCObject *)WRMemAlloc( sizeof( WdeAniCObject ) );
+    *new = (WdeAniCObject *)MemAlloc( sizeof( WdeAniCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeAniCCopyObject: Object malloc failed" );
@@ -315,7 +315,7 @@ bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, OBJPTR handle )
 
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeAniCCopyObject: Control not created!" );
-        WRMemFree( *new );
+        MemFree( *new );
         return( false );
     }
 

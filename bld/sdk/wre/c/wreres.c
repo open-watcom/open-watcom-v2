@@ -481,7 +481,7 @@ bool PleaseOpenFile( UINT msg )
     }
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     if( title != NULL ) {
@@ -656,7 +656,7 @@ bool WREOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     return( ok );
@@ -924,7 +924,7 @@ bool WRESaveResource( WREResInfo *res_info, bool prompt_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WRMemFree( res_info->info->save_name );
+            MemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {
@@ -1077,7 +1077,7 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
         } else {
             WREResCounter++;
             win_title_len = strlen( WREResUntitled ) + 7;
-            win_title = (char *)WRMemAlloc( win_title_len );
+            win_title = (char *)MemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WREResUntitled, 0xffff & WREResCounter );
             mdics.szTitle = win_title;
         }
@@ -1118,7 +1118,7 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
     }
 
     if( win_title != NULL ) {
-        WRMemFree( win_title );
+        MemFree( win_title );
     }
 
     return( ok );

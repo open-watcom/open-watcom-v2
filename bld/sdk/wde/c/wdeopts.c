@@ -174,7 +174,7 @@ static bool WdeWriteRectOpt( char *entry, RECT *r )
     str = WdeRectToStr( r );
     if( str != NULL ) {
         ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
-        WRMemFree( str );
+        MemFree( str );
     }
 
     return( ret );
@@ -258,10 +258,10 @@ static void WdeWriteOpts( WdeOptState *o )
 void WdeOptsShutdown( void )
 {
     if( WdeCurrentState.last_directory != NULL ) {
-        WRMemFree( WdeCurrentState.last_directory );
+        MemFree( WdeCurrentState.last_directory );
     }
     if( WdeCurrentState.last_file_filter != NULL ) {
-        WRMemFree( WdeCurrentState.last_file_filter );
+        MemFree( WdeCurrentState.last_file_filter );
     }
 
     WdeCurrentState.last_directory = WdeStrdup( WdeGetInitialDir() );
@@ -270,10 +270,10 @@ void WdeOptsShutdown( void )
     WdeWriteOpts( &WdeCurrentState );
 
     if( WdeCurrentState.last_directory != NULL ) {
-        WRMemFree( WdeCurrentState.last_directory );
+        MemFree( WdeCurrentState.last_directory );
     }
     if( WdeCurrentState.inc_path != NULL ) {
-        WRMemFree( WdeCurrentState.inc_path );
+        MemFree( WdeCurrentState.inc_path );
     }
 }
 
@@ -292,7 +292,7 @@ void WdeInitOpts( void )
 void WdeResetOpts( void )
 {
     if( WdeCurrentState.inc_path != NULL ) {
-        WRMemFree( WdeCurrentState.inc_path );
+        MemFree( WdeCurrentState.inc_path );
     }
     WdeCurrentState.is_wres_fmt = WdeDefaultState.is_wres_fmt;
     WdeCurrentState.use_def_dlg = WdeDefaultState.use_def_dlg;
@@ -359,7 +359,7 @@ char *WdeGetIncPathOption( void )
 void WdeSetIncPathOption( char *path )
 {
     if( WdeCurrentState.inc_path != NULL ) {
-        WRMemFree( WdeCurrentState.inc_path );
+        MemFree( WdeCurrentState.inc_path );
     }
     WdeCurrentState.inc_path = path;
 }
@@ -521,14 +521,14 @@ static void WdeGetOptInfo( HWND hDlg )
     WdeCurrentState.ignore_inc = IsDlgButtonChecked( hDlg, IDB_OPT_IGNOREINC );
 
     if( WdeCurrentState.inc_path != NULL ) {
-        WRMemFree( WdeCurrentState.inc_path );
+        MemFree( WdeCurrentState.inc_path );
     }
 
     WdeCurrentState.inc_path = WdeGetStrFromEdit( hDlg, IDB_OPT_INCPATH, NULL );
 
     if( WdeCurrentState.inc_path != NULL ) {
         if( WdeIsStrSpace( WdeCurrentState.inc_path ) ) {
-            WRMemFree( WdeCurrentState.inc_path );
+            MemFree( WdeCurrentState.inc_path );
             WdeCurrentState.inc_path = NULL;
         }
     }

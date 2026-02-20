@@ -100,7 +100,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi, char **fname, WRes
     }
 
     if( rdata != NULL ) {
-        WRMemFree( rdata );
+        MemFree( rdata );
     }
 
     WdeSetWaitCursor( false );
@@ -188,13 +188,13 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     if( ok ) {
         if( fname != NULL ) {
             if( *file_name != NULL ) {
-                WRMemFree( *file_name );
+                MemFree( *file_name );
             }
             *file_name = fname;
         }
     } else {
         if( fname != NULL ) {
-            WRMemFree( fname );
+            MemFree( fname );
         }
     }
 
@@ -256,7 +256,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     }
 
     if( fname != NULL ) {
-        WRMemFree( fname );
+        MemFree( fname );
     }
 
     if( idata.type != NULL ) {

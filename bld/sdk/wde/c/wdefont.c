@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,12 +131,12 @@ void WdeFreeFontList( void )
         font_names = (WdeFontNames *)ListElement( flist );
         for( nlist = font_names->family_list; nlist != NULL; nlist = ListNext( nlist ) ) {
             font_data = (WdeFontData *)ListElement( nlist );
-            WRMemFree( font_data );
+            MemFree( font_data );
         }
         if( font_names->family_list != NULL ) {
             ListFree( font_names->family_list );
         }
-        WRMemFree( font_names );
+        MemFree( font_names );
     }
     ListFree( WdeFontList );
 
@@ -144,12 +144,12 @@ void WdeFreeFontList( void )
         font_names = (WdeFontNames *)ListElement( flist );
         for( nlist = font_names->family_list; nlist != NULL; nlist = ListNext( nlist ) ) {
             font_data = (WdeFontData *)ListElement( nlist );
-            WRMemFree( font_data );
+            MemFree( font_data );
         }
         if( font_names->family_list != NULL ) {
             ListFree( font_names->family_list );
         }
-        WRMemFree( font_names );
+        MemFree( font_names );
     }
     ListFree( WdeFontFamiliesList );
 }
@@ -193,7 +193,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf,
     WdeFontData *font_sibling;
     LIST        *olist;
 
-    font_data = (WdeFontData *)WRMemAlloc( sizeof( WdeFontData ) );
+    font_data = (WdeFontData *)MemAlloc( sizeof( WdeFontData ) );
     if( font_data == NULL ) {
         WdeWriteTrail( "Could not allocate font data" );
         return( false );
@@ -210,7 +210,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf,
     for( olist = font_element->family_list; olist != NULL; olist = ListNext( olist ) ) {
         font_sibling = (WdeFontData *)ListElement( olist );
         if( font_sibling->pointsize == font_data->pointsize ) {
-            WRMemFree( font_data );
+            MemFree( font_data );
             return( true );
         }
     }
@@ -255,7 +255,7 @@ int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, 
         }
     }
 
-    font_names = (WdeFontNames *)WRMemAlloc( sizeof( WdeFontNames ) );
+    font_names = (WdeFontNames *)MemAlloc( sizeof( WdeFontNames ) );
     if( font_names == NULL ) {
         WdeWriteTrail( "Could not allocate font names structure." );
         return( FALSE );

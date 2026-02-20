@@ -111,10 +111,10 @@ static bool WREGetStrOpt( char *entry, char **opt )
 void WREOptsShutdown( void )
 {
     if( WRECurrentState.last_filter != NULL ) {
-        WRMemFree( WRECurrentState.last_filter );
+        MemFree( WRECurrentState.last_filter );
     }
     if( WRECurrentState.last_dir != NULL ) {
-        WRMemFree( WRECurrentState.last_dir );
+        MemFree( WRECurrentState.last_dir );
     }
 
     WRECurrentState.last_dir = WREStrdup( WREGetInitialDir() );
@@ -123,7 +123,7 @@ void WREOptsShutdown( void )
     WREWriteOpts( &WRECurrentState );
 
     if( WRECurrentState.last_dir != NULL ) {
-        WRMemFree( WRECurrentState.last_dir );
+        MemFree( WRECurrentState.last_dir );
     }
 }
 
@@ -198,7 +198,7 @@ bool WREWriteRectOpt( char *entry, RECT *r )
     str = WRERectToStr( r );
     if( str != NULL ) {
         ret = ( WritePrivateProfileString( WRESectionName, entry, str, WREProfileName ) != 0 );
-        WRMemFree( str );
+        MemFree( str );
     }
 
     return( ret );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +59,7 @@ WAccelInfo *WRESEAPI WAccAllocAccelInfo( void )
 {
     WAccelInfo *info;
 
-    info = (WAccelInfo *)WRMemAlloc( sizeof( WAccelInfo ) );
+    info = (WAccelInfo *)MemAlloc( sizeof( WAccelInfo ) );
 
     memset( info, 0, sizeof( WAccelInfo ) );
 
@@ -69,14 +70,14 @@ void WRESEAPI WAccFreeAccelInfo( WAccelInfo *info )
 {
     if( info != NULL ) {
         if( info->res_name != NULL ) {
-            WRMemFree( info->res_name );
+            MemFree( info->res_name );
         }
         if( info->file_name != NULL ) {
-            WRMemFree( info->file_name );
+            MemFree( info->file_name );
         }
         if( info->data != NULL ) {
-            WRMemFree( info->data );
+            MemFree( info->data );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }

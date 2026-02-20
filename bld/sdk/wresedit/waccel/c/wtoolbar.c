@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -221,12 +221,12 @@ void WFreeToolBarInfo( WToolBarInfo *info )
 {
     if( info != NULL ) {
         if( info->items != NULL ) {
-            WRMemFree( info->items );
+            MemFree( info->items );
         }
         if( info->dinfo.background != NULL ) {
             DeleteObject( info->dinfo.background );
         }
-        WRMemFree( info );
+        MemFree( info );
     }
 }
 
@@ -234,16 +234,16 @@ WToolBarInfo *WAllocToolBarInfo( int num )
 {
     WToolBarInfo *info;
 
-    info = (WToolBarInfo *)WRMemAlloc( sizeof( WToolBarInfo ) );
+    info = (WToolBarInfo *)MemAlloc( sizeof( WToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)WRMemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = (TOOLITEMINFO *)MemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
         } else {
-            WRMemFree( info );
+            MemFree( info );
             info = NULL;
         }
     }
@@ -255,7 +255,7 @@ WToolBar *WAllocToolBar( void )
 {
     WToolBar *tbar;
 
-    tbar = (WToolBar *)WRMemAlloc( sizeof( WToolBar ) );
+    tbar = (WToolBar *)MemAlloc( sizeof( WToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WToolBar ) );
     }
@@ -266,7 +266,7 @@ WToolBar *WAllocToolBar( void )
 void WFreeToolBar( WToolBar *tbar )
 {
     if( tbar != NULL ) {
-        WRMemFree( tbar );
+        MemFree( tbar );
     }
 }
 

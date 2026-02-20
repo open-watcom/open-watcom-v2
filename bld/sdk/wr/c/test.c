@@ -85,7 +85,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 #if 0
     } else if( _argc == 2 ) {
         ret = FALSE;
-        data = WRMemAlloc( 32 );
+        data = MemAlloc( 32 );
         if( data != NULL ) {
             for( i = 0; i < 32; i++ ) {
                 data[i] = i;
@@ -94,11 +94,11 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             type.ID.Num = 10;
             name.ID.Num = 200;
             ret = WRSaveObjectAs( _argv[1], WR_WIN16M_RES, &type, &name, data, 32, 0 );
-            WRMemFree( data );
+            MemFree( data );
         }
     } else if( _argc == 3 ) {
         ret = FALSE;
-        data = WRMemAlloc( 32 );
+        data = MemAlloc( 32 );
         if( data != NULL ) {
             for( i = 0; i < 32; i++ ) {
                 data[i] = i;
@@ -107,7 +107,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             type.ID.Num = 10;
             name.ID.Num = 100;
             ret = WRSaveObjectInto( _argv[1], &type, &name, data, 32, 0, &dup );
-            WRMemFree( data );
+            MemFree( data );
         }
 #endif
     } else {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -84,7 +84,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
     text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -109,7 +109,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -117,7 +117,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
     text_copied = SendDlgItemMessage( hDlg, id, LB_GETTEXT, index, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -142,7 +142,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, CB_GETLBTEXTLEN, index, 0 );
 
-    cp = (char *)WRMemAlloc( text_length + 1 );
+    cp = (char *)MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -150,7 +150,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
     text_copied = SendDlgItemMessage( hDlg, id, CB_GETLBTEXT, index, (LPARAM)(LPCSTR)cp );
 
     if( text_copied != text_length ) {
-        WRMemFree( cp );
+        MemFree( cp );
         return( NULL );
     }
 
@@ -240,7 +240,7 @@ ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( cc );
@@ -253,7 +253,7 @@ void WdeSetEditWithControlClass( ControlClass *cc, HWND hDlg, int id )
     cp = WdeControlClassToStr( cc );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WRMemFree( cp );
+        MemFree( cp );
     }
 }
 
@@ -265,7 +265,7 @@ void WdeSetEditWithResNameOr( ResNameOrOrdinal *rp, HWND hDlg, int id )
         cp = WdeResNameOrOrdinalToStr( rp, 10 );
         if( cp != NULL ) {
             WdeSetEditWithStr( cp, hDlg, id );
-            WRMemFree( cp );
+            MemFree( cp );
         }
     } else {
         WdeSetEditWithStr( "", hDlg, id );
@@ -283,7 +283,7 @@ void WdeSetEditWithWResID( WResID *ip, HWND hDlg, int id )
     cp = WResIDToStr( ip );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WRMemFree( cp );
+        MemFree( cp );
     }
 }
 
@@ -298,7 +298,7 @@ void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
     cp = WResHelpIDToStr( ip );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
-        WRMemFree( cp );
+        MemFree( cp );
     }
 }
 
@@ -317,14 +317,14 @@ ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
             return( NULL );
         }
         if( *cp == '\0' ) {
-            WRMemFree( cp );
+            MemFree( cp );
             return( NULL );
         }
         rp = WdeStrToResNameOrOrdinal( cp );
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( rp );
@@ -355,7 +355,7 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( rp );
@@ -387,7 +387,7 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( rp );
@@ -424,7 +424,7 @@ int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( val );
@@ -460,7 +460,7 @@ uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *mod )
     }
 
     if( cp != NULL ) {
-        WRMemFree( cp );
+        MemFree( cp );
     }
 
     return( val );

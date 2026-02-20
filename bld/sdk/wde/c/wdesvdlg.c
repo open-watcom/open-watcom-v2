@@ -457,7 +457,7 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
         tlen += 7; // size of the string IMPURE and a space
     }
 
-    *text = (char *)WRMemAlloc( tlen + 1 );
+    *text = (char *)MemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( false );
     }
@@ -505,7 +505,7 @@ static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, c
         if( (flags & map->check_mask) == map->flag && (fs & map->style) ) {
             slen = strlen( map->text );
             new_tlen = tlen + 3 * not_first + slen + 1;
-            *text = (char *)WRMemRealloc( *text, new_tlen );
+            *text = (char *)MemRealloc( *text, new_tlen );
             if( not_first == 1 ) {
                 strcat( *text, " | " );
                 strcat( *text, map->text );
@@ -535,7 +535,7 @@ bool WdeSetWindowFlagText( unsigned long flags, char **text )
     }
 
     if( *text != NULL ) {
-        WRMemFree( *text );
+        MemFree( *text );
         *text = NULL;
     }
 
@@ -555,14 +555,14 @@ static bool WdeAddStyleString( char **text, char *str )
     slen = strlen( str );
 
     if( *text == NULL ) {
-        *text = WRMemAlloc( slen + 1 );
+        *text = MemAlloc( slen + 1 );
         if( *text != NULL ) {
             strcpy( *text, str );
         }
     } else {
         tlen = strlen( *text );
         tlen += slen + 3 + 1;
-        *text = (char *)WRMemRealloc( *text, tlen );
+        *text = (char *)MemRealloc( *text, tlen );
         if( *text != NULL ) {
             strcat( *text, " | " );
             strcat( *text, str );
@@ -589,7 +589,7 @@ bool WdeSetDialogFlagText( unsigned long flags, char **text )
     }
 
     if( *text != NULL ) {
-        WRMemFree( *text );
+        MemFree( *text );
         *text = NULL;
     }
 
@@ -640,7 +640,7 @@ static bool WdeSetEXFlagText( uint_32 flags, char **text )
     }
 
     if( *text != NULL ) {
-        WRMemFree( *text );
+        MemFree( *text );
         *text = NULL;
     }
 
@@ -713,7 +713,7 @@ bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text )
 
     if( !ok ) {
         if( *text != NULL  ) {
-            WRMemFree( *text );
+            MemFree( *text );
             *text = NULL;
         }
     }
@@ -784,7 +784,7 @@ static bool WdeSetCommControlFlagText( char *control_class, unsigned long flags,
 
     if( !ok ) {
         if( *text != NULL ) {
-            WRMemFree( *text );
+            MemFree( *text );
             *text = NULL;
         }
     }
@@ -872,7 +872,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
 
     if( ok ) {
         nlen = nlength + 12;   // 12 is length of 'CONTROL..." string
-        ControlStr = WRMemAlloc( nlen + 1 );
+        ControlStr = MemAlloc( nlen + 1 );
         sprintf( ControlStr, "\tCONTROL \"%s\",", n );
         for( len = strlen( ControlStr ); len < nlen; len++ ) {
             strcat( ControlStr, " " );
@@ -886,7 +886,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
             if( control->helpsymbol != NULL ) {
                 helpsymbol = WdeStrdup( control->helpsymbol );
             } else {
-                helpsymbol = WRMemAlloc( 32 );
+                helpsymbol = MemAlloc( 32 );
                 if( control->HelpId > 0 ) {
                     sprintf( helpsymbol, "%ld", control->HelpId );
                 } else {
@@ -925,7 +925,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
             fprintf( fp, "\n" );
 
             /* free the help symbol */
-            WRMemFree( helpsymbol );
+            MemFree( helpsymbol );
 
         } else {
             /* standard control */
@@ -943,34 +943,34 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
             }
         }
         if( ControlStr != NULL ) {
-            WRMemFree( ControlStr );
+            MemFree( ControlStr );
         }
     }
 
     if( n != NULL ) {
-        WRMemFree( n );
+        MemFree( n );
     }
 
     if( ctext_alloc && ctext != NULL ) {
-        WRMemFree( ctext );
+        MemFree( ctext );
     }
 
     if( cclass != NULL ) {
-        WRMemFree( cclass );
+        MemFree( cclass );
     }
 
     if( cstyle != NULL ) {
-        WRMemFree( cstyle );
+        MemFree( cstyle );
     }
 
 #if __NT__XX
     if( ExStyle != NULL ) {
-        WRMemFree( ExStyle );
+        MemFree( ExStyle );
     }
 #endif
 
     if( cid_alloc && cid != NULL ) {
-        WRMemFree( cid );
+        MemFree( cid );
     }
 
     return( ok );
@@ -1018,7 +1018,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             if( dhptr->helpsymbol != NULL ) {
                 helpsymbol = WdeStrdup( dhptr->helpsymbol );
             } else {
-                helpsymbol = WRMemAlloc( 32 );
+                helpsymbol = MemAlloc( 32 );
                 if( dhptr->HelpId > 0 ) {
                     sprintf( helpsymbol, "%ld", dhptr->HelpId );
                 } else {
@@ -1028,7 +1028,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
             fprintf( fp, "%s DIALOGEX %s %d, %d, %d, %d", name, str,
                 sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
-            WRMemFree( str );
+            MemFree( str );
             str = NULL;
             if( *helpsymbol != '\0' ) {
                 fprintf( fp, ", %s", helpsymbol );
@@ -1036,25 +1036,25 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             fprintf( fp, "\n" );
 
             /* free the help symbol */
-            WRMemFree( helpsymbol );
+            MemFree( helpsymbol );
 
         } else {
             /* standard dialog */
             fprintf( fp, "%s DIALOG %s %d, %d, %d, %d\n", name, str,
                 sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
-            WRMemFree( str );
+            MemFree( str );
             str = NULL;
         }
         style = GETHDR_STYLE( ditem->dialog_info->dialog_header );
         ok = (WdeSetDialogFlagText( style, &str ) && str != NULL);
-        WRMemFree( name );
+        MemFree( name );
         name = NULL;
     }
 
     if( ok ) {
         if( str != NULL ) {
             fprintf( fp, "STYLE %s\n", str );
-            WRMemFree( str );
+            MemFree( str );
             str = NULL;
         }
         rname = GETHDR_CLASSNAME( ditem->dialog_info->dialog_header );
@@ -1064,7 +1064,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                 if( *str != '\0' ) {
                     fprintf( fp, "CLASS \"%s\"\n", str );
                 }
-                WRMemFree( str );
+                MemFree( str );
                 str = NULL;
             }
         }
@@ -1074,7 +1074,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                     GETHDR_CAPTION( ditem->dialog_info->dialog_header ), "\t\n\"", "tn\"" );
                 if( str != NULL ) {
                     fprintf( fp, "CAPTION \"%s\"\n", str );
-                    WRMemFree( str );
+                    MemFree( str );
                     str = NULL;
                 }
             }
@@ -1086,7 +1086,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         WdeSetEXFlagText( ExStyle, &str );
         if( str != NULL ) {
             fprintf( fp, "EXSTYLE %s\n", str );
-            WRMemFree( str );
+            MemFree( str );
             str = NULL;
         }
 #endif
@@ -1098,7 +1098,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                 if( *str != '\0' ) {
                     fprintf( fp, "MENU %s\n", str );
                 }
-                WRMemFree( str );
+                MemFree( str );
                 str = NULL;
             }
         }
@@ -1124,7 +1124,7 @@ char *WdeConstructDLGInclude( WdeResInfo *rinfo )
 
     len = strlen( rinfo->sym_name );
     len += 1 + 1 + 2 + 2; // for a nullchar, tab, 2 double quotes, and "\0"
-    include = WRMemAlloc( len );
+    include = MemAlloc( len );
     if( include == NULL ) {
         return( NULL );
     }
@@ -1154,7 +1154,7 @@ static void WdeWriteDLGInclude( WdeResInfo *rinfo, FILE *fp )
     fwrite( include, sizeof( char ), strlen( include ), fp );
     fwrite( "\nEND\n\n", sizeof( char ), 6, fp );
 
-    WRMemFree( include );
+    MemFree( include );
 }
 #endif
 
@@ -1186,7 +1186,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                     if( nlen < strlen( ctext ) ) {
                         nlen = strlen( ctext );
                     }
-                    WRMemFree( ctext );
+                    MemFree( ctext );
                     ctext = NULL;
                 }
             }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -224,7 +224,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
         return( TRUE );
     }
 
-    sel = (int *)WRMemAlloc( count * sizeof( int ) );
+    sel = (int *)MemAlloc( count * sizeof( int ) );
     if( sel == NULL ) {
         WdeWriteTrail( "WdeGetSelectInfo: alloc failed!" );
         return( FALSE );
@@ -256,7 +256,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
     }
 
     if( sel ) {
-        WRMemFree( sel );
+        MemFree( sel );
     }
 
     return( ok );
@@ -305,7 +305,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
-        WRMemFree( name );
+        MemFree( name );
 
         count++;
     }
@@ -467,7 +467,7 @@ bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
             SETCTL_STYLE( control, SS_LEFT | WS_BORDER | WS_VISIBLE |
                                    WS_TABSTOP | WS_GROUP );
             if( GETCTL_CLASSID( control ) != NULL ) {
-                WRMemFree( GETCTL_CLASSID( control ) );
+                MemFree( GETCTL_CLASSID( control ) );
             }
             SETCTL_CLASSID( control, ResNumToControlClass( CLASS_STATIC ) );
             new = Create(object_id, dialog, &control_rect, (OBJPTR)control );

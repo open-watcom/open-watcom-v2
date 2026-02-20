@@ -151,12 +151,12 @@ WResID *WRECreateImageTitle( uint_16 type )
     }
 
     if( text != NULL ) {
-        title = (char *)WRMemAlloc( strlen( text ) + 20 + 1 );
+        title = (char *)MemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, num );
             name = WResIDFromStr( title );
-            WRMemFree( title );
+            MemFree( title );
         }
         FreeRCString( text );
     }
@@ -210,7 +210,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
                 num_retries++;
             }
             if( rname != NULL ) {
-                WRMemFree( rname );
+                MemFree( rname );
             }
         }
         if( dup ) {
@@ -223,7 +223,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
     }
 
     if( tname_alloc ) {
-        WRMemFree( tname );
+        MemFree( tname );
     }
 
     return( ok );
@@ -361,7 +361,7 @@ bool WREGetImageSessionData( HCONV server, char **pdata, size_t *dsize )
 
     size = session->info.data_size;
     *dsize = size;
-    *pdata = WRMemAlloc( size );
+    *pdata = MemAlloc( size );
     if( *pdata == NULL ) {
         return( false );
     }
@@ -370,7 +370,7 @@ bool WREGetImageSessionData( HCONV server, char **pdata, size_t *dsize )
     if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
         if( !WRAddBitmapFileHeader( pdata, dsize ) ) {
             if( *pdata != NULL ) {
-                WRMemFree( *pdata );
+                MemFree( *pdata );
             }
             return( false );
         }
@@ -404,9 +404,9 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
                     if( ok ) {
                         WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
                     }
-                    WRMemFree( name );
+                    MemFree( name );
                 }
-                WRMemFree( data );
+                MemFree( data );
             }
         }
     }
@@ -423,7 +423,7 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, char *data, si
     if( ok ) {
         WRStripBitmapFileHeader( &data, &size );
         if( session->lnode->data != NULL ) {
-            WRMemFree( session->lnode->data );
+            MemFree( session->lnode->data );
         }
         session->lnode->data = data;
         session->lnode->Info.Length = size;
@@ -509,7 +509,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hData )
                     ok = false;
                 }
                 if( !ok ) {
-                    WRMemFree( data );
+                    MemFree( data );
                 }
             }
         }
@@ -571,7 +571,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     }
     if( !ok ) {
         if( data != NULL ) {
-            WRMemFree( data );
+            MemFree( data );
         }
         return( NULL );
     }
@@ -632,7 +632,7 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
                             ok = false;
                         }
 //                        curr->lang->data = NULL;
-//                        WRMemFree( curr->lang->data );
+//                        MemFree( curr->lang->data );
                     }
                 } else {
                     if( WREStartImageSession( service, curr, false ) == NULL ) {
@@ -699,7 +699,7 @@ WREImageSession *WREAllocImageSession( void )
 {
     WREImageSession *session;
 
-    session = (WREImageSession *)WRMemAlloc( sizeof( WREImageSession ) );
+    session = (WREImageSession *)MemAlloc( sizeof( WREImageSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREImageSession ) );
@@ -765,12 +765,12 @@ void WREFreeEditSession( WREImageSession *session )
 {
     if( session != NULL ) {
         if( session->info.file_name != NULL ) {
-            WRMemFree( session->info.file_name );
+            MemFree( session->info.file_name );
         }
         if( session->info.res_name != NULL ) {
-            WRMemFree( session->info.res_name );
+            MemFree( session->info.res_name );
         }
-        WRMemFree( session );
+        MemFree( session );
     }
 }
 

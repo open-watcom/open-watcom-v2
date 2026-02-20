@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +73,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
         }
     }
 
-    *text = (char *)WRMemAlloc( tlen + 1 );
+    *text = (char *)MemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( FALSE );
     }
@@ -144,11 +145,11 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( flagtext != NULL ) {
-        WRMemFree( flagtext );
+        MemFree( flagtext );
     }
 
     if( text != NULL ) {
-        WRMemFree( text );
+        MemFree( text );
     }
 
     return( ok );
@@ -249,7 +250,7 @@ bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, bool append )
     }
 
     if( rname != NULL ) {
-        WRMemFree( rname );
+        MemFree( rname );
     }
 
     if( fp != NULL ) {

@@ -524,7 +524,7 @@ bool WdeOpenResource( char *fn )
     }
 
     if( name != NULL ) {
-        WRMemFree( name );
+        MemFree( name );
     }
 
     WdeSetWaitCursor( false );
@@ -776,7 +776,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
         } else {
             WdeResCounter++;
             win_title_len = strlen( WdeResUntitled ) + 7;
-            win_title = (char *)WRMemAlloc( win_title_len );
+            win_title = (char *)MemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WdeResUntitled, 0xffff & WdeResCounter );
             mdics.szTitle = win_title;
         }
@@ -800,7 +800,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
     ret = SendMessage( win, WM_MDICREATE, 0, (LPARAM)&mdics );
 
     if( win_title != NULL ) {
-        WRMemFree( win_title );
+        MemFree( win_title );
     }
 
 #ifdef __NT__
@@ -906,7 +906,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool prompt_name )
 
     if( ok ) {
         if( got_name && res_info->info->save_name != NULL ) {
-            WRMemFree( res_info->info->save_name );
+            MemFree( res_info->info->save_name );
         }
         res_info->info->save_name = fn;
         if( res_info->info->save_type == WR_DONT_KNOW ) {

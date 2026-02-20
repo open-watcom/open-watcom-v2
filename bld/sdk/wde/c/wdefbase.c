@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 
     WdeDebugCreate( "Base", parent, obj_rect, handle );
 
-    new = (WdeBaseObject *)WRMemAlloc( sizeof( WdeBaseObject ) );
+    new = (WdeBaseObject *)MemAlloc( sizeof( WdeBaseObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeBaseCreate: Malloc failed" );
         return( (OBJPTR)new );
@@ -305,7 +305,7 @@ bool WdeBaseDestroy( WdeBaseObject *obj, bool *flag, bool *p2 )
 
     Destroy( obj->o_item, *flag );
 
-    WRMemFree( obj );
+    MemFree( obj );
 
     return( true );
 }

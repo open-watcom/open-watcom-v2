@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize )
     }
 
     if( ok ) {
-        *data = WRMemAlloc( *dsize );
+        *data = MemAlloc( *dsize );
         ok = (*data != NULL);
     }
 
@@ -111,7 +111,7 @@ bool WGetClipData( HWND hwnd, UINT fmt, char **data, size_t *dsize )
 
     if( !ok ) {
         if( *data != NULL ) {
-            WRMemFree( *data );
+            MemFree( *data );
         }
         *data = NULL;
         *dsize = 0;

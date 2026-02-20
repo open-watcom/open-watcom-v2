@@ -54,7 +54,7 @@ char *WdeStrdup( const char *src )
     if( src == NULL ) {
         return( NULL );
     }
-    dest = WRMemAlloc( strlen( src ) + 1 );
+    dest = MemAlloc( strlen( src ) + 1 );
     if( dest != NULL ) {
         strcpy( dest, src );
     }

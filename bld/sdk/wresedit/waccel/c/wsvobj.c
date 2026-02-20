@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ bool WSaveObject( WAccelEditInfo *einfo, bool prompt_name, bool save_into )
                         ok = WSaveObjectAs( prompt_name, einfo );
                     }
                     if( einfo->info->data != NULL ) {
-                        WRMemFree( einfo->info->data );
+                        MemFree( einfo->info->data );
                         einfo->info->data = NULL;
                         einfo->info->data_size = 0;
                     }
@@ -268,7 +268,7 @@ bool WSaveObjectAs( bool prompt_name, WAccelEditInfo *einfo )
     if( ok ) {
         if( got_name ) {
             if( einfo->file_name != NULL ) {
-                WRMemFree( einfo->file_name );
+                MemFree( einfo->file_name );
             }
             einfo->file_name = fname;
             einfo->file_type = ftype;
@@ -276,19 +276,19 @@ bool WSaveObjectAs( bool prompt_name, WAccelEditInfo *einfo )
         }
     } else {
         if( fname != NULL && got_name ) {
-            WRMemFree( fname );
+            MemFree( fname );
         }
     }
 
     if( idata.type != NULL ) {
-        WRMemFree( idata.type );
+        MemFree( idata.type );
     }
 
     if( idata2.type != NULL ) {
-        WRMemFree( idata2.type );
+        MemFree( idata2.type );
     }
     if( idata2.name != NULL ) {
-        WRMemFree( idata2.name );
+        MemFree( idata2.name );
     }
 
     return( ok );
@@ -349,11 +349,11 @@ bool WSaveObjectInto( WAccelEditInfo *einfo )
     }
 
     if( fname != NULL ) {
-        WRMemFree( fname );
+        MemFree( fname );
     }
 
     if( idata.type != NULL ) {
-        WRMemFree( idata.type );
+        MemFree( idata.type );
     }
 
     return( ok );
@@ -392,7 +392,7 @@ bool WSaveSymbols( HWND win, WRHashTable *table, char **file_name, bool prompt_n
         ok = (name != NULL);
         if( ok ) {
             if( *file_name != NULL ) {
-                WRMemFree( *file_name );
+                MemFree( *file_name );
             }
             *file_name = name;
         }
