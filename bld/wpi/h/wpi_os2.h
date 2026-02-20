@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,11 +120,11 @@
 
     #define GlobalUnlockCheck( hmem ) TRUE
 
-    #define GlobalAlloc( flags, size ) _wpi_malloc( (size_t) size )
+    #define GlobalAlloc( flags, size ) MemAlloc( (size_t)size )
 
-    #define GlobalFree( hmem ) _wpi_free( (void *) hmem )
+    #define GlobalFree( hmem ) MemFree( (void *) hmem )
 
-    #define GlobalReAlloc( hmem, size, flags ) (HANDLE) _wpi_realloc( hmem, size )
+    #define GlobalReAlloc( hmem, size, flags ) (HANDLE) MemRealloc( hmem, size )
 
     #define LocalHandle( ptr ) ptr
 
@@ -135,11 +135,11 @@
 
     #define LocalUnlockCheck( hmem ) TRUE
 
-    #define LocalAlloc( flags, size ) _wpi_malloc( (size_t) size )
+    #define LocalAlloc( flags, size ) MemAlloc( (size_t)size )
 
-    #define LocalFree( hmem ) _wpi_free( (void *) hmem )
+    #define LocalFree( hmem ) MemFree( (void *) hmem )
 
-    #define LocalReAlloc(hmem, size, flags) _wpi_realloc((void *)hmem, (size_t)size)
+    #define LocalReAlloc(hmem, size, flags) MemRealloc((void *)hmem, (size_t)size)
 
     #define Catch( buf ) setjmp( buf )
 
@@ -329,13 +329,13 @@ extern HBRUSH _wpi_createsolidbrush( WPI_COLOUR colour );
 extern HBRUSH _wpi_createnullbrush( void );
 extern HPEN _wpi_createnullpen( void );
 
-    #define _wpi_deletebrush( brush ) _wpi_free( (WPI_OBJECT *)brush )
+    #define _wpi_deletebrush( brush ) MemFree( (WPI_OBJECT *)brush )
 
-    #define _wpi_deletenullbrush( brush ) _wpi_free( (WPI_OBJECT *)brush )
+    #define _wpi_deletenullbrush( brush ) MemFree( (WPI_OBJECT *)brush )
 
-    #define _wpi_deletenullpen( pen ) _wpi_free( (WPI_OBJECT *)pen )
+    #define _wpi_deletenullpen( pen ) MemFree( (WPI_OBJECT *)pen )
 
-    #define _wpi_deletepen( pen ) _wpi_free( (WPI_OBJECT *)pen )
+    #define _wpi_deletepen( pen ) MemFree( (WPI_OBJECT *)pen )
 
     #define _wpi_gpipop( pres, num ) GpiPop( pres, num )
 
@@ -789,7 +789,7 @@ extern BOOL _wpi_exttextout( WPI_PRES pres, int left, int top, UINT options,
         // nothing
 
     #define _wpi_f_deletefont( font ) \
-        _wpi_free( (WPI_F_FONT *) font )
+        MemFree( (WPI_F_FONT *) font )
 
     extern HFONT _wpi_f_selectfont( WPI_PRES pres, HFONT font );
 
@@ -1075,14 +1075,14 @@ extern void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos );
                                                         hfont, QPF_NOINHERIT )
 
     #define _wpi_createfont( fontmetrics, wfont ) \
-        _wpi_malloc2( wfont, 1 ); \
+        wfont = MemAlloc( sizeof( *wfont ) ); \
         _wpi_getfontattrs( &fontmetrics, wfont ); \
         (wfont)->fsType = 0; \
 
     #define _wpi_createrealfont( fontmetrics, wfont ) \
         { \
             WPI_PRES            pres; \
-            _wpi_malloc2( wfont, 1 ); \
+            wfont = MemAlloc( sizeof( *wfont ) ); \
             _wpi_getfontattrs( &fontmetrics, wfont ); \
             (wfont)->fsFontUse = FATTR_FONTUSE_OUTLINE; \
             (wfont)->fsType = 0; \
@@ -1110,12 +1110,12 @@ extern void _wpi_deletesysmenupos( HMENU hmenu, SHORT pos );
 extern WPI_FONT _wpi_selectfont( WPI_PRES hps, WPI_FONT wfont );
 
     #define _wpi_deletefont( wfont ) \
-        _wpi_free( wfont );
+        MemFree( wfont );
 
     #define _wpi_getoldfont( hps, oldfont ) \
         GpiCreateLogFont( hps, NULL, 3L, oldfont ); \
         GpiSetCharSet( hps, 3L ); \
-        _wpi_free( oldfont );
+        MemFree( oldfont );
 
 extern HBRUSH _wpi_selectbrush( WPI_PRES pres, HBRUSH brush );
 extern void _wpi_getoldbrush( WPI_PRES pres, HBRUSH oldbrush );
@@ -1410,7 +1410,7 @@ extern void _wpi_deleteobject( WPI_HANDLE object );
 extern char *_wpi_menutext2pm( const char *text );
 extern void _wpi_menutext2win( char *text );
 
-    #define _wpi_freemenutext( ptext ) _wpi_free( ptext )
+    #define _wpi_freemenutext( ptext ) MemFree( ptext )
 
     #define _wpi_is_close_menuselect( p1, p2 ) ( SHORT1FROMMP( p1 ) == 0xffff )
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,7 +74,7 @@ HFONT _wpi_f_createfont( WPI_F_FONT *font )
 
     WPI_F_FONT                  *copy_font;
 
-    _wpi_malloc2( copy_font, 1 );
+    copy_font = MemAllocSafe( sizeof( *copy_font ) );
 
     memcpy( copy_font, font, sizeof( *font ) );
 
@@ -97,7 +98,7 @@ void _wpi_f_getoldfont( WPI_PRES pres, HFONT ofont )
                                                         0, &font->bundle );
     }
 
-    _wpi_free( font );
+    MemFree( font );
 }
 
 static WPI_F_FONT *get_f_attrs( WPI_PRES pres, WPI_F_FONT *font )
@@ -181,7 +182,7 @@ static BOOL find_font( WPI_PRES pres, FATTRS *attr, WPI_F_FONT *font )
         return( FALSE );
     }
 
-    fonts = _wpi_malloc( num_fonts * sizeof( FONTMETRICS ) );
+    fonts = MemAllocSafe( num_fonts * sizeof( *fonts ) );
     GpiQueryFonts( pres, QF_PUBLIC, font->attr.szFacename,
                     &num_fonts, (LONG) sizeof( FONTMETRICS ), fonts );
 
@@ -247,7 +248,7 @@ static BOOL find_font( WPI_PRES pres, FATTRS *attr, WPI_F_FONT *font )
         //attr->fsType ... // doesn't need to be set
     }
 
-    _wpi_free( fonts );
+    MemFree( fonts );
 
     return( found_match );
 }
@@ -271,14 +272,14 @@ HFONT _wpi_f_selectfont( WPI_PRES pres, HFONT f )
 
     font = (void *)f;
 
-    _wpi_malloc2( old_font, 1 );
+    old_font = MemAllocSafe( sizeof( *old_font ) );
     get_f_attrs( pres, old_font );
 
     /* The OS/2 font palette will choose a non-synthesized bold/italic
        font by title, if you ask for a 'bold' one */
     find_normal = TRUE;
-    if( font->attr.fsSelection & FATTR_SEL_ITALIC ||
-                                font->attr.fsSelection & FATTR_SEL_BOLD ) {
+    if( (font->attr.fsSelection & FATTR_SEL_ITALIC)
+      || (font->attr.fsSelection & FATTR_SEL_BOLD) ) {
         strcpy( old_face, font->attr.szFacename );
         strcpy( tmp_face, font->attr.szFacename );
         if( font->attr.fsSelection & FATTR_SEL_BOLD ) {

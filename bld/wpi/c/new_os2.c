@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,7 @@ WPI_FONT _wpi_createwpifont( WPI_LOGFONT *fontmetrics )
 {
     WPI_FONT    wpifont;
 
-    wpifont = _wpi_malloc( sizeof(FATTRS) );
+    wpifont = MemAllocSafe( sizeof( FATTRS ) );
     _wpi_getfontattrs( fontmetrics, wpifont );
     wpifont->fsFontUse = FATTR_FONTUSE_OUTLINE;
     wpifont->fsType = 0;

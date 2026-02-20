@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,9 +54,9 @@ HINI _wpi_openinifile( WPI_INST inst, char *name )
         prof.pszSysName = NULL;
         prof.pszUserName = NULL;
         if( PrfQueryProfile( inst.hab, &prof ) ) {
-            ptr = _wpi_malloc( prof.cchSysName + strlen( name ) + 1 );
+            ptr = MemAllocSafe( prof.cchSysName + strlen( name ) + 1 );
             prof.pszSysName = ptr;
-            prof.pszUserName = _wpi_malloc( prof.cchUserName );
+            prof.pszUserName = MemAllocSafe( prof.cchUserName );
             PrfQueryProfile( inst.hab, &prof );
             end = strrchr( ptr, '\\' );
             if( end != NULL ) {
@@ -69,8 +70,8 @@ HINI _wpi_openinifile( WPI_INST inst, char *name )
     ret = PrfOpenProfile( inst.hab, ptr );
 
     if( prof.pszSysName != NULL ) {
-        _wpi_free( prof.pszSysName );
-        _wpi_free( prof.pszUserName );
+        MemFree( prof.pszSysName );
+        MemFree( prof.pszUserName );
     }
 
     return( ret );
@@ -89,8 +90,8 @@ void _wpi_getinidirectory( WPI_INST inst, LPSTR dir_info, int size )
 
     if( PrfQueryProfile( inst.hab, &prof ) ) {
         if( prof.cchSysName > 0 ) {
-            _wpi_malloc2( prof.pszSysName, prof.cchSysName );
-            _wpi_malloc2( prof.pszUserName, prof.cchUserName );
+            prof.pszSysName = MemAllocSafe( prof.cchSysName );
+            prof.pszUserName = MemAllocSafe( prof.cchUserName );
             PrfQueryProfile( inst.hab, &prof );
         }
 
@@ -111,8 +112,8 @@ void _wpi_getinidirectory( WPI_INST inst, LPSTR dir_info, int size )
     } else {
         dir_info[0] = '\0';
     }
-    _wpi_free( prof.pszUserName );
-    _wpi_free( prof.pszSysName );
+    MemFree( prof.pszUserName );
+    MemFree( prof.pszSysName );
 } /* _wpi_getinidirectory */
 
 int _wpi_getprivateprofilestring( HINI hini, LPSTR app,
