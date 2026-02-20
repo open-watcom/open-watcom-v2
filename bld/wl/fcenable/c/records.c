@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,8 +136,8 @@ void *InitRecStuff( void )
 /************************/
 {
 
-    Rec1 = MemAlloc( MAX_OBJECT_REC_SIZE );
-    OutputBuffer = MemAlloc( MAX_OBJECT_REC_SIZE );
+    Rec1 = MemAllocSafe( MAX_OBJECT_REC_SIZE );
+    OutputBuffer = MemAllocSafe( MAX_OBJECT_REC_SIZE );
     PageLen = 0;
     return( Rec1 );
 }
