@@ -62,9 +62,9 @@ bool InitParsing( void )
 {
     int     cmd_len;
 
-    CmdFile = MemAlloc( sizeof( cmdfilelist ) );
+    CmdFile = MemAllocSafe( sizeof( cmdfilelist ) );
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    CmdFile->buffer = MemAlloc( cmd_len );
+    CmdFile->buffer = MemAllocSafe( cmd_len );
     _bgetcmd( CmdFile->buffer, cmd_len );
     CmdFile->next = NULL;
     CmdFile->how = COMMANDLINE;
@@ -185,7 +185,7 @@ void StartNewFile( char *fname )
     cmdfilelist     *newfile;
     unsigned long   long_size;
 
-    newfile = MemAlloc( sizeof( cmdfilelist ) );
+    newfile = MemAllocSafe( sizeof( cmdfilelist ) );
     newfile->name = fname;
     newfile->fp = NULL;
     newfile->buffer = NULL;
@@ -210,7 +210,7 @@ void StartNewFile( char *fname )
     if( newfile->buffer == NULL ) {  // if couldn't buffer for some reason.
         newfile->where = ENDOFLINE;
         newfile->how = NONBUFFERED;
-        newfile->buffer = MemAlloc( MAX_LINE + 1 );// have to have at least this
+        newfile->buffer = MemAllocSafe( MAX_LINE + 1 );// have to have at least this
         newfile->current = newfile->buffer;        // much RAM or death ensues.
     }
 }
@@ -358,21 +358,6 @@ bool MakeToken( sep_type separator, bool include_fn )
     return( true );
 }
 
-char *ToString( void )
-/********************/
-{
-    char            *src;
-    size_t          len;
-    char            *str;
-
-    src = CmdFile->token;
-    len = CmdFile->len;
-    str = MemAlloc( len + 1 );
-    memcpy( str, src, len );
-    str[len] = '\0';
-    return( str );
-}
-
 static char     sep_chr = ',';  /* Current separator character. */
 static char     last_sep;       /* Previous separator character. */
 static bool     is_redir;       /* Input is redirected (not from console). */
@@ -487,7 +472,7 @@ static int GetNextInputChar( prompt_slot slot )
                 --CmdFile->current;
 
             /* Open the response file and read next character. */
-            StartNewFile( MemStrdup( fname ) );
+            StartNewFile( MemStrdupSafe( fname ) );
             c = ReadNextChar( slot );
         }
     }
@@ -682,7 +667,7 @@ static void DoOneObject( char *obj )
         if( OverlayLevel )
             ErrorExit( "nested left parentheses" );
 
-        sect = MemAlloc( 8 );
+        sect = MemAllocSafe( 8 );
         memcpy( sect, "section", 8 );
         AddCommand( sect , OVERLAY_SLOT, true );
         ++OverlayLevel;

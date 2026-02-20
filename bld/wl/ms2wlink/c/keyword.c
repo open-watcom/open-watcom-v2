@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -511,7 +511,6 @@ static void ProcCode( void )
 {
     char    buffer[CODE_BUFFER_LEN];
     char    *result;
-    size_t  len;
 
     strncpy( buffer, "segment type code", 17 );
     OptionBuffer = buffer + 17;
@@ -522,10 +521,7 @@ static void ProcCode( void )
         while( ProcessKeyword( CodeAttributes ) )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
-            len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
-            strncpy( result, buffer, len );
-            *(result + len) = '\0';
+            result = MemToStringSafe( buffer, CODE_BUFFER_LEN - BufferLeft - 1 );
             AddCommand( result, OPTION_SLOT, false );
         }
     }
@@ -537,7 +533,6 @@ static void ProcData( void )
 {
     char    buffer[CODE_BUFFER_LEN];
     char    *result;
-    size_t  len;
 
     strncpy( buffer, "segment type data", 17 );
     OptionBuffer = buffer + 17;
@@ -548,10 +543,7 @@ static void ProcData( void )
         while( ProcessKeyword( DataAttributes ) )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
-            len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
-            strncpy( result, buffer, len );
-            *(result + len) = '\0';
+            result = MemToStringSafe( buffer, CODE_BUFFER_LEN - BufferLeft - 1 );
             AddCommand( result, OPTION_SLOT, false );
         }
     }
@@ -620,7 +612,7 @@ static void ProcNonConforming( void )
 }
 
 static void ProcMoveable( void )
-/*****************************/
+/******************************/
 {
     AddToBuffer( "moveable", 8 );
     ImplyFormat( FMT_WINDOWS );
@@ -789,7 +781,7 @@ static void GetExport( void )
         }
     }
     toklen += 8;       // export keyword + space + nullchar;
-    command = MemAlloc( toklen );
+    command = MemAllocSafe( toklen );
     strncpy( command, "export ", 7 );
     currloc = command + 7;
     strncpy( currloc, name, namelen );
@@ -899,7 +891,7 @@ static void GetImport( void )
         toklen += CmdFile->len + 1;      // string length + dot.
     }
     toklen += 8;       // import keyword + space + nullchar;
-    result = MemAlloc( toklen );
+    result = MemAllocSafe( toklen );
     strncpy( result, "import ", 7 );
     currloc = result + 7;
     if( second != NULL ) {       // got a internal name in first.
@@ -937,7 +929,7 @@ static void ProcInclude ( void )
 /******************************/
 {
     if( MakeToken( SEP_QUOTE, true ) || MakeToken( SEP_NO, true ) ) {
-        StartNewFile( ToString() );
+        StartNewFile( MemToStringSafe( CmdFile->token, CmdFile->len ) );
         ParseDefFile();
     } else {
         Warning( "invalid include statement", OPTION_SLOT );
@@ -1116,7 +1108,7 @@ static void GetSegments( void )
             {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN && !GotOvl ) { // something spec'd.
             len = CODE_BUFFER_LEN - BufferLeft;
-            result = MemAlloc( len + seglen + 12 );
+            result = MemAllocSafe( len + seglen + 12 );
             strncpy( result, "segment '", 9 );
             currloc = result + 9;
             strncpy( currloc, segname, seglen );
