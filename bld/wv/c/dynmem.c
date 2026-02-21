@@ -59,7 +59,6 @@
     #ifdef GUI_IS_GUI
     #else
         #include "stdui.h"
-        #include "helpmem.h"
     #endif
 #endif
 #ifdef TRMEM
@@ -430,9 +429,6 @@ void GUIMemOpen( void )
     }
 #endif
 }
-#ifndef GUI_IS_GUI
-void UIAPI UIMemOpen( void ) {}
-#endif
 
 void GUIMemClose( void )
 /**********************/
@@ -446,10 +442,6 @@ void GUIMemClose( void )
     }
 #endif
 }
-#ifndef GUI_IS_GUI
-void UIAPI UIMemClose( void ) {}
-#endif
-
 
 /*
  * Alloc functions
@@ -465,6 +457,17 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
 #ifndef __NOUI__
 TRMEMAPI( WndAlloc )
 void *WndAlloc( size_t size )
@@ -476,16 +479,6 @@ void *WndAlloc( size_t size )
 #endif
 }
 #ifdef GUI_IS_GUI
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
@@ -501,36 +494,13 @@ void *MemAllocSafe( size_t size )
 #endif
 
 #ifdef GUI_IS_GUI
-
-#ifdef __OS2__
-
-#endif  /* __OS2__ */
-
 #else   /* GUI_IS_GUI */
 
-TRMEMAPI( uimalloc )
-void * UIAPI uimalloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 11 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 TRMEMAPI( uifaralloc )
 LP_VOID UIAPI uifaralloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 12 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-TRMEMAPI( HelpMemAlloc )
-void *HelpMemAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 13 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
@@ -587,17 +557,6 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-#ifndef __NOUI__
-TRMEMAPI( WndFree )
-void WndFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-#ifdef GUI_IS_GUI
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
@@ -608,21 +567,22 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
+
+#ifndef __NOUI__
+TRMEMAPI( WndFree )
+void WndFree( void *ptr )
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
+#else
+    free( ptr );
 #endif
+}
 #endif
 
 #ifdef GUI_IS_GUI
 #else   /* GUI_IS_GUI */
 
-TRMEMAPI( uifree )
-void UIAPI uifree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 19 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
 TRMEMAPI( uifarfree )
 void UIAPI uifarfree( LP_VOID ptr )
 {
@@ -633,15 +593,6 @@ void UIAPI uifarfree( LP_VOID ptr )
         free( MEM_NEAR_PTR( ptr ) );
 #endif
     }
-}
-TRMEMAPI( HelpMemFree )
-void HelpMemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 21 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
 }
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
@@ -670,16 +621,6 @@ void *GUIMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-TRMEMAPI( WndRealloc )
-void *WndRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-#ifdef GUI_IS_GUI
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
@@ -690,30 +631,15 @@ void *MemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-#endif
 
-#ifdef GUI_IS_GUI
-#else   /* GUI_IS_GUI */
-
-TRMEMAPI( uirealloc )
-void * UIAPI uirealloc( void *ptr, size_t size )
+TRMEMAPI( WndRealloc )
+void *WndRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 26 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
 #else
     return( realloc( ptr, size ) );
 #endif
 }
-TRMEMAPI( HelpMemRealloc )
-void *HelpMemRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 27 ), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-#endif  /* ! GUI_IS_GUI */
 
 #endif  /* ! __NOUI__ */
