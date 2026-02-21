@@ -30,15 +30,17 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
+#include "global.h"
 #include <assert.h>
-#include <stdlib.h>
-#include "rctypes.h"
 #include "rcerrors.h"
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
+
+//#include "layer0.h"
+#include "rcrtns.h"
+
+#include "preproc.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -198,3 +200,21 @@ int RcMemChkRange( void *start, size_t len )
     }
 }
 #endif
+
+void *PPENTRY PP_Alloc( size_t size )
+/***********************************/
+{
+    void    *p;
+
+    p = RESALLOC( size );
+    if( p == NULL ) {
+        RcFatalError( ERR_OUT_OF_MEMORY );
+    }
+    return( p );
+}
+
+void PPENTRY PP_Free( void *p )
+/*****************************/
+{
+    RESFREE( p );
+}
