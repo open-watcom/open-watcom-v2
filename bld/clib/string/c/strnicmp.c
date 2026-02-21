@@ -57,10 +57,10 @@
             c2 += STRING( 'a' ) - STRING( 'A' );
         }
         if( c1 != c2 )
-            break;      /* less than or greater than */
+            return( c1 - c2 );      /* less than or greater than */
         if( c1 == '\0' ) {
             break;      /* equal */
         }
     }
-    return( c1 - c2 );
+    return( 0 );
 }
