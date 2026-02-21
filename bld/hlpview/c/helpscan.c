@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,8 @@
 #include "bool.h"
 #include "watcom.h"
 #include "helpscan.h"
-#include "helpmem.h"
 #include "wibhelp.h"
+#include "memfuncs.h"
 
 
 static char     specialChars[] = {
@@ -94,7 +94,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
         case IB_ESCAPE:
             if( cnt == TEXT_BLOCK_SIZE ) {
                 cnt = 0;
-                block->next = HelpMemAlloc( sizeof( TextInfoBlock ) );
+                block->next = MemAlloc( sizeof( TextInfoBlock ) );
                 block = block->next;
                 block->next = NULL;
             }
@@ -147,7 +147,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
         default:
             if( cnt == TEXT_BLOCK_SIZE ) {
                 cnt = 0;
-                block->next = HelpMemAlloc( sizeof( TextInfoBlock ) );
+                block->next = MemAlloc( sizeof( TextInfoBlock ) );
                 block = block->next;
                 block->next = NULL;
             }
@@ -168,7 +168,7 @@ static void freeHyperlinkInfo( TextInfoBlock *cur )
     while( cur != NULL ) {
         tmp = cur;
         cur = cur->next;
-        HelpMemFree( tmp );
+        MemFree( tmp );
     }
 }
 

@@ -34,7 +34,8 @@
 #include <string.h>
 #include "bool.h"
 #include "help.h"
-#include "helpmem.h"
+#include "helpmemu.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -268,7 +269,7 @@ HelpHdl InitHelpSearch( FILE *fp )
     uint_16     u16;
 
     HelpSeek( fp, 0, HELP_SEEK_SET );
-    hdl = HelpMemAlloc( sizeof( struct HelpHdl ) );
+    hdl = MemAlloc( sizeof( struct HelpHdl ) );
     hdl->fp = fp;
     HelpRead( fp, &u32, sizeof( u32 ) );
     hdl->header.sig1 = u32;
@@ -281,7 +282,7 @@ HelpHdl InitHelpSearch( FILE *fp )
     if( hdl->header.sig1 != HELP_SIG_1
       || hdl->header.sig2 != HELP_SIG_2
       || hdl->header.ver_min != HELP_MIN_VER ) {
-        HelpMemFree( hdl );
+        MemFree( hdl );
         hdl = NULL;
     } else if( hdl->header.ver_maj == HELP_MAJ_V1
       || hdl->header.ver_maj == HELP_MAJ_VER ) {
@@ -299,7 +300,7 @@ HelpHdl InitHelpSearch( FILE *fp )
         hdl->header.str_size = u16;
         HelpSeek( fp, 6 * sizeof( uint_16 ), HELP_SEEK_CUR );
         if( hdl->header.str_size ) {
-            buffer = HelpMemAlloc( hdl->header.str_size );
+            buffer = MemAlloc( hdl->header.str_size );
             HelpRead( fp, buffer, hdl->header.str_size );
             str_cnt = buffer[0];
             str_len = buffer + 1;
@@ -314,16 +315,16 @@ HelpHdl InitHelpSearch( FILE *fp )
             } else {
                 hdl->desc_str = NULL;
             }
-            HelpMemFree( buffer );
+            MemFree( buffer );
         } else {
             hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
             hdl->desc_str = NULL;
         }
         len = hdl->header.datapagecnt * ( sizeof( uint_16 ) );
-        hdl->itemindex = HelpMemAlloc( len );
+        hdl->itemindex = MemAlloc( len );
         HelpRead( fp, hdl->itemindex, len );
     } else {
-        HelpMemFree( hdl );
+        MemFree( hdl );
         hdl = NULL;
     }
 
@@ -358,15 +359,15 @@ void FiniHelpSearch( HelpHdl hdl )
 {
     if( hdl != NULL ) {
         if( hdl->itemindex != NULL ) {
-            HelpMemFree( hdl->itemindex );
+            MemFree( hdl->itemindex );
         }
         if( hdl->def_topic != NULL ) {
-            HelpMemFree( hdl->def_topic );
+            MemFree( hdl->def_topic );
         }
         if( hdl->desc_str != NULL ) {
-            HelpMemFree( hdl->desc_str );
+            MemFree( hdl->desc_str );
         }
-        HelpMemFree( hdl );
+        MemFree( hdl );
     }
 }
 
@@ -403,11 +404,11 @@ void main( int argc, char *argv[] )
             if( cur == NULL )
                 break;
             printf( "     %s\n", cur );
-            HelpMemFree( cur );
+            MemFree( cur );
             cur = HelpFindNext( &cursor );
         }
         if( cur != NULL ) {
-            HelpMemFree( cur );
+            MemFree( cur );
         }
     }
     FiniHelpSearch( hdl );

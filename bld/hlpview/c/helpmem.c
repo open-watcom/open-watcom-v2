@@ -32,7 +32,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "helpmem.h"
 #include "memfuncs.h"
 #include "helpmemu.h"
 #ifdef TRMEM
@@ -91,8 +90,8 @@ void HelpMemClose( void )
 #endif
 }
 
-TRMEMAPI( HelpMemAlloc )
-HELPMEM void *HelpMemAlloc( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
@@ -100,18 +99,9 @@ HELPMEM void *HelpMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-TRMEMAPI( MemAlloc )
-void * MemAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
-TRMEMAPI( HelpMemRealloc )
-HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memHandle ) );
@@ -119,30 +109,12 @@ HELPMEM void *HelpMemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-TRMEMAPI( MemRealloc )
-void * MemRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 9 ), memHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
 
-TRMEMAPI( HelpMemFree )
-HELPMEM void HelpMemFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
-#else
-    free( ptr );
-#endif
-}
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), memHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
 #else
     free( ptr );
 #endif

@@ -41,6 +41,7 @@
 #include "guistr.h"
 #include "guiutil.h"
 #include "guihotsp.h"
+#include "memfuncs.h"
 
 
 bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
@@ -58,7 +59,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     if( is_GUI_data ) {
         new = GUIMemAlloc( fillerLength + 1 );
     } else {
-        new = uimalloc( fillerLength + 1 );
+        new = MemAlloc( fillerLength + 1 );
     }
     if( new == NULL ) {
         return( false );
@@ -67,7 +68,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     if( is_GUI_data ) {
         GUIMemFree( edit_control->buffer );
     } else {
-        uifree( edit_control->buffer );
+        MemFree( edit_control->buffer );
     }
     edit_control->buffer = new;
     edit_control->length = fillerLength;

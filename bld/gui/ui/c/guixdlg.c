@@ -48,6 +48,7 @@
 #include "guirdlg.h"
 #include <stdio.h>
 #include "guix.h"
+#include "memfuncs.h"
 
 
 ui_event GUIControlEvents[] = {
@@ -297,12 +298,11 @@ a_list *GUIGetList( VFIELD *field )
 
 static void FreeEdit( an_edit_control *edit_control, bool free_edit, bool is_GUI_data )
 {
-    void        uifree( void * );  // Function in ui project
-
-    if( is_GUI_data )
+    if( is_GUI_data ) {
         GUIMemFree( edit_control->buffer );
-    else
-        uifree( edit_control->buffer );
+    } else {
+        MemFree( edit_control->buffer );
+    }
     if( free_edit ) {
         GUIMemFree( edit_control );
     }
