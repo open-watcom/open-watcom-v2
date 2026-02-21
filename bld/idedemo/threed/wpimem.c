@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #else
 #include <windows.h>
 #endif
+#if 0
 #include "wpimem.h"
 
 void _wpi_free( void * ptr )
@@ -53,3 +54,32 @@ void * _wpi_realloc( void *ptr, size_t size )
 {
     return( realloc( ptr, size ) );
 }
+#else
+#include "memfuncs.h"
+
+void MemFree( void * ptr )
+{
+    free( ptr );
+}
+
+void * MemAlloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void * MemAllocSafe( size_t size )
+{
+    return( malloc( size ) );
+}
+
+void * MemRealloc( void *ptr, size_t size )
+{
+    return( realloc( ptr, size ) );
+}
+
+char * MemStrdup( const char *str )
+{
+    return( strdup( str ) );
+}
+#endif
+

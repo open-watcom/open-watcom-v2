@@ -37,9 +37,8 @@
 #include "msg.h"
 #include "aui.h"
 #include "guimem.h"
+#include "memfuncs.h"
 #if defined( GUI_IS_GUI )
-    #include "wpimem.h"
-    #include "cguimem.h"
 #else
     #include "stdui.h"
     #include "helpmem.h"
@@ -247,15 +246,16 @@ void *GUIMemAlloc( size_t size )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( _wpi_malloc )
-void * _wpi_malloc( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
 {
     void    *mem;
 
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 3 ), WPMemHandle );
+        mem = _trmem_alloc( size, _TRMEM_WHO( 2 ), WPMemHandle );
 #else
         mem = malloc( size );
 #endif
@@ -271,9 +271,10 @@ void * _wpi_malloc( size_t size )
     }
     return( mem );
 }
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
+
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
 {
     void    *mem;
 
@@ -407,6 +408,34 @@ char *GUIMemStrdup( const char *str )
     return( ptr );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+    char    *ptr;
+    size_t  size;
+
+    size = strlen( str ) + 1 ;
+    for( ;; ) {
+#ifdef TRMEM
+        profMemCheck( "ProfTryAlloc" );
+        ptr = _trmem_strdup( str, _TRMEM_WHO( 7 ), WPMemHandle );
+#else
+        ptr = strdup( str );
+#endif
+        if( ptr != NULL )
+            break;
+        if( DIPMoreMem( size ) == DS_FAIL ) {
+            break;
+        }
+    }
+
+    if( ptr == NULL ) {
+        fatal( LIT( Memfull ) );
+    }
+    return( ptr );
+}
+
 /*
  *  Free functions
  */
@@ -436,16 +465,6 @@ void GUIMemFree( void *ptr )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( _wpi_free )
-void _wpi_free( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 10 ), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
@@ -550,29 +569,6 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
 
 #if defined( GUI_IS_GUI )
 
-TRMEMAPI( _wpi_realloc )
-void * _wpi_realloc( void *ptr, size_t new_size )
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 16 ), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t new_size )
 /********************************************/

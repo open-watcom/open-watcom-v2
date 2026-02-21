@@ -241,6 +241,18 @@ void *MemAlloc( unsigned a )
     return WBRAlloc( a );
 }
 
+void *MemAllocSafe( unsigned a )
+//------------------------------
+{
+    return WBRAlloc( a );
+}
+
+char *MemStrdup( const char *a )
+//--------------------------
+{
+    return strdup( a );
+}
+
 void *MemRealloc( void *ptr, unsigned size )
 //------------------------------------------
 {

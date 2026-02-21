@@ -51,13 +51,12 @@
 #include "dip.h"
 #include "strutil.h"
 #include "dbginit.h"
+#include "memfuncs.h"
 #ifndef __NOUI__
     #include "aui.h"
     #include "guimem.h"
     #include "wresmem.h"
     #ifdef GUI_IS_GUI
-        #include "wpimem.h"
-        #include "cguimem.h"
     #else
         #include "stdui.h"
         #include "helpmem.h"
@@ -487,22 +486,23 @@ void *MemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 #endif
 #endif
 
 #ifdef GUI_IS_GUI
 
 #ifdef __OS2__
-
-TRMEMAPI( _wpi_malloc )
-void * _wpi_malloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 10 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
 #endif  /* __OS2__ */
 
@@ -562,6 +562,17 @@ char *GUIMemStrdup( const char *str )
 #endif
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 15 ), DbgMemHandle ) );
+#else
+    return( strdup( str ) );
+#endif
+}
+
 /*
  * Free functions
  */
@@ -601,21 +612,6 @@ void MemFree( void *ptr )
 #endif
 
 #ifdef GUI_IS_GUI
-
-#ifdef __OS2__
-
-TRMEMAPI( _wpi_free )
-void _wpi_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 18 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-#endif  /* __OS2__ */
-
 #else   /* GUI_IS_GUI */
 
 TRMEMAPI( uifree )
@@ -697,21 +693,6 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 
 #ifdef GUI_IS_GUI
-
-#ifdef __OS2__
-
-TRMEMAPI( _wpi_realloc )
-void * _wpi_realloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 25 ), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-#endif  /* __OS2__ */
-
 #else   /* GUI_IS_GUI */
 
 TRMEMAPI( uirealloc )
