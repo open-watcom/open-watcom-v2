@@ -49,10 +49,10 @@ _WCRTLINK int _fstrnicmp( const char _WCFAR *s, const char _WCFAR *t, size_t n )
         if( c2 >= 'A' && c2 <= 'Z' )
             c2 += 'a' - 'A';
         if( c1 != c2 )
-            break;      /* less than or greater than */
+            return( c1 - c2 );      /* less than or greater than */
         if( c1 == '\0' ) {
             break;      /* equal */
         }
     }
-    return( c1 - c2 );
+    return( 0 );
 }
