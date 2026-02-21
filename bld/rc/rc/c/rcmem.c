@@ -36,11 +36,9 @@
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
-
-//#include "layer0.h"
 #include "rcrtns.h"
-
 #include "preproc.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -89,8 +87,8 @@ void RcMemShutdown( void )
 #endif
 }
 
-TRMEMAPI( RcMemAlloc )
-void *RcMemAlloc( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 /*****************************/
 {
     void    *ptr;
@@ -108,8 +106,8 @@ void *RcMemAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( RcMemFree )
-void RcMemFree( void *ptr )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
@@ -119,8 +117,8 @@ void RcMemFree( void *ptr )
 #endif
 }
 
-TRMEMAPI( RcMemRealloc )
-void *RcMemRealloc( void *old_ptr, size_t newsize )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *old_ptr, size_t newsize )
 /*************************************************/
 {
     void    *ptr;
@@ -139,24 +137,29 @@ void *RcMemRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-TRMEMAPI( RcMemStrdup )
-char *RcMemStrdup( const char *buf )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 /**********************************/
 {
     void    *ptr;
-    size_t  size;
 
-    if( buf != NULL ) {
-        size = strlen( buf ) + 1;
+    if( str != NULL ) {
 #ifdef TRMEM
-        ptr = _trmem_alloc( size, _TRMEM_WHO( 4 ), RcMemHandle );
-#else
-        ptr = RCMemLayer1Malloc( size );
-#endif
+        ptr = _trmem_strdup( size, _TRMEM_WHO( 4 ), RcMemHandle );
         if( ptr == NULL ) {
             RcFatalError( ERR_OUT_OF_MEMORY );
         }
-        return( strcpy( ptr, buf ) );
+        return( ptr );
+#else
+        size_t  size;
+
+        size = strlen( str ) + 1;
+        ptr = RCMemLayer1Malloc( size );
+        if( ptr == NULL ) {
+            RcFatalError( ERR_OUT_OF_MEMORY );
+        }
+        return( strcpy( ptr, str ) );
+#endif
     }
     return( NULL );
 }
@@ -201,20 +204,3 @@ int RcMemChkRange( void *start, size_t len )
 }
 #endif
 
-void *PPENTRY PP_Alloc( size_t size )
-/***********************************/
-{
-    void    *p;
-
-    p = RESALLOC( size );
-    if( p == NULL ) {
-        RcFatalError( ERR_OUT_OF_MEMORY );
-    }
-    return( p );
-}
-
-void PPENTRY PP_Free( void *p )
-/*****************************/
-{
-    RESFREE( p );
-}

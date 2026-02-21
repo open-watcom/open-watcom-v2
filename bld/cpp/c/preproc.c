@@ -38,6 +38,7 @@
 #include "pathlist.h"
 #include "pathgrp2.h"
 #include "ppfmttm.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -98,7 +99,7 @@ static char *str_dup( const char *str )
     char    *p;
 
     len = strlen( str ) + 1;
-    p = PP_Alloc( len );
+    p = MemAlloc( len );
     if( p != NULL )
         memcpy( p, str, len );
     return( p );
@@ -112,7 +113,7 @@ static FILE *PP_Open( const char *filename )
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
         prev_file = PP_File;
-        PP_File = (FILELIST *)PP_Alloc( sizeof( FILELIST ) );
+        PP_File = (FILELIST *)MemAlloc( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
             fclose( handle );
             handle = NULL;
@@ -138,8 +139,8 @@ static FILELIST *PP_Close( void )
     fclose( this_file->handle );
     PP_File = this_file->prev_file;
     PPBufPtr = this_file->prev_bufptr;
-    PP_Free( this_file->filename );
-    PP_Free( this_file );
+    MemFree( this_file->filename );
+    MemFree( this_file );
     return( PP_File );
 }
 
@@ -164,12 +165,12 @@ void PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list )
         }
         len = strlen( path_list );
         if( old_list == NULL ) {
-            p = new_list = PP_Alloc( len + 1 );
+            p = new_list = MemAlloc( len + 1 );
         } else {
             old_len = strlen( old_list );
-            new_list = PP_Alloc( old_len + 1 + len + 1 );
+            new_list = MemAlloc( old_len + 1 + len + 1 );
             strcpy( new_list, old_list );
-            PP_Free( old_list );
+            MemFree( old_list );
             p = new_list + old_len;
         }
         while( *path_list != '\0' ) {
@@ -195,13 +196,13 @@ void PPENTRY PP_IncludePathInit( incl_type incltype )
 {
     switch( incltype ) {
     case PPINCLUDE_SYS:
-        IncludePath2 = PP_Alloc( 1 );
+        IncludePath2 = MemAlloc( 1 );
         *IncludePath2 = '\0';
         break;
     case PPINCLUDE_USR:
     case PPINCLUDE_SRC:
     default:
-        IncludePath1 = PP_Alloc( 1 );
+        IncludePath1 = MemAlloc( 1 );
         *IncludePath1 = '\0';
         break;
     }
@@ -212,7 +213,7 @@ void PPENTRY PP_IncludePathFini( incl_type incltype )
     switch( incltype ) {
     case PPINCLUDE_SYS:
         if( IncludePath2 != NULL ) {
-            PP_Free( IncludePath2 );
+            MemFree( IncludePath2 );
             IncludePath2 = NULL;
         }
         break;
@@ -220,7 +221,7 @@ void PPENTRY PP_IncludePathFini( incl_type incltype )
     case PPINCLUDE_SRC:
     default:
         if( IncludePath1 != NULL ) {
-            PP_Free( IncludePath1 );
+            MemFree( IncludePath1 );
             IncludePath1 = NULL;
         }
         break;
@@ -474,10 +475,10 @@ static char *resize_macro_buf( char *buf, size_t new_size )
 {
     if( new_size > macro_buf_size ) {
         new_size = ( ( 255 + new_size ) / 256 ) * 256;
-        macro_buf = PP_Alloc( new_size );
+        macro_buf = MemAlloc( new_size );
         if( buf != NULL ) {
             memcpy( macro_buf, buf, macro_buf_size );
-            PP_Free( buf );
+            MemFree( buf );
         }
         macro_buf_size = new_size;
     }
@@ -487,7 +488,7 @@ static char *resize_macro_buf( char *buf, size_t new_size )
 static void free_macro_buf( void )
 {
     if( macro_buf != NULL ) {
-        PP_Free( macro_buf );
+        MemFree( macro_buf );
         macro_buf = NULL;
     }
     macro_buf_size = 0;
@@ -511,9 +512,9 @@ static size_t PP_ReadBuf( size_t line_len )
     PPBufPtr = this_file->buffer;
     if( PPLineBufSize < line_len + len ) {
         PPLineBufSize *= 2;
-        p = PP_Alloc( PPLineBufSize + 2 );
+        p = MemAlloc( PPLineBufSize + 2 );
         memcpy( p, PPLineBuf, line_len );
-        PP_Free( PPLineBuf );
+        MemFree( PPLineBuf );
         PPLineBuf = p;
     }
     return( len );
@@ -633,7 +634,7 @@ static void open_include_file( const char *filename, const char *end, incl_type 
             PPErrorCallback( buffer );
         }
         sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PPPreProcChar, (int)len, buffer );
-        PP_Free( buffer );
+        MemFree( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
         PPErrorCount++;
     }
@@ -841,9 +842,9 @@ void PPENTRY PP_Define( const char *ptr )
         p = resize_macro_buf( p, len + 1 );
         p[len++] = '\0';
         if( me->replacement_list != NULL ) {
-            PP_Free( me->replacement_list );
+            MemFree( me->replacement_list );
         }
-        me->replacement_list = PP_Alloc( len );
+        me->replacement_list = MemAlloc( len );
         memcpy( me->replacement_list, p, len );
     }
 }
@@ -859,7 +860,7 @@ void PPENTRY PP_Define_1( const char *ptr )
     me = PP_AddMacro( macro_name, ptr - macro_name );
     if( me != NULL ) {
         me->parmcount = 0;
-        me->replacement_list = PP_Alloc( sizeof( "1" ) );
+        me->replacement_list = MemAlloc( sizeof( "1" ) );
         strcpy( me->replacement_list, "1" );
     }
 }
@@ -882,7 +883,7 @@ static void IncLevel( int value )
 {
     CPP_INFO    *cpp;
 
-    cpp = (CPP_INFO *)PP_Alloc( sizeof( CPP_INFO ) );
+    cpp = (CPP_INFO *)MemAlloc( sizeof( CPP_INFO ) );
     cpp->prev_cpp = PPStack;
     cpp->cpp_type = PP_IF;
     cpp->processing = false;
@@ -1003,7 +1004,7 @@ static void PP_Endif( void )
         --NestLevel;
         cpp = PPStack;
         PPStack = cpp->prev_cpp;
-        PP_Free( cpp );
+        MemFree( cpp );
     }
     if( NestLevel < SkipLevel ) {
         SkipLevel = NestLevel;
@@ -1348,7 +1349,7 @@ int PPENTRY PP_Char( void )
     if( *PPTokenPtr == '\0' ) {
         for( ; (mtok = PPTokenList) != NULL; ) {
             PPTokenList = mtok->next;
-            PP_Free( mtok );
+            MemFree( mtok );
             mtok = PPTokenList;
             if( mtok == NULL )
                 break;
@@ -1403,7 +1404,7 @@ void PPENTRY PP_Init( char c, unsigned char spec_macros )
     PPTokenList = NULL;
     PPCurToken = NULL;
     PPLineBufSize = PPBUFSIZE;
-    PPLineBuf = PP_Alloc( PPLineBufSize + 2 );
+    PPLineBuf = MemAlloc( PPLineBufSize + 2 );
     PPLineBuf[0] = '\0';
     PPLineBuf[1] = '\0';
     PPPreProcChar = c;
@@ -1419,7 +1420,7 @@ int PPENTRY PP_Fini( void )
     PP_IncludePathFini( PPINCLUDE_SYS );
     PP_IncludePathFini( PPINCLUDE_USR );
     PP_MacrosFini();
-    PP_Free( PPLineBuf );
+    MemFree( PPLineBuf );
     PPLineBuf = NULL;
     return( PPErrorCount > 0 );
 }

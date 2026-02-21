@@ -165,8 +165,8 @@ void wres_free( void *ptr )
 #endif
 }
 
-TRMEMAPI( PP_Alloc )
-void * PPENTRY PP_Alloc( size_t size )
+TRMEMAPI( MemAlloc )
+void * PPENTRY MemAlloc( size_t size )
 {
     void        *p;
 
@@ -181,8 +181,8 @@ void * PPENTRY PP_Alloc( size_t size )
     return( p );
 }
 
-TRMEMAPI( PP_Free )
-void PPENTRY PP_Free( void *p )
+TRMEMAPI( MemFree )
+void PPENTRY MemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 8 ), memHandle );

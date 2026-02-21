@@ -31,6 +31,7 @@
 
 
 #include "_preproc.h"
+#include "memfuncs.h"
 
 
 static long PP_HexNumber( void )
@@ -240,7 +241,7 @@ static void PP_AdvanceToken( void )
         if( PPTokenPtr[0] != '\0' )
             break;
         if( PPCurToken != NULL ) {
-            PP_Free( PPCurToken );
+            MemFree( PPCurToken );
             PPCurToken = PPNextToken();
         }
         if( PPCurToken == NULL ) {

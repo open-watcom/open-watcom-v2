@@ -111,5 +111,3 @@ extern unsigned char    PPSpecMacros;
 extern void             PP_MemInit( void );
 extern void             PP_MemFini( void );
 
-extern void             *PP_Realloc( void *old, size_t size );
-extern char             *PP_Strdup( const char *str );

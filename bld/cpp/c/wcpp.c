@@ -38,6 +38,7 @@
 #include <stdarg.h>
 #include "iopath.h"
 #include "swchar.h"
+#include "memfuncs.h"
 
 
 typedef enum {
@@ -138,11 +139,11 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
     case 'd':
         ++arg;
         if( defines == NULL ) {
-            defines = PP_Alloc( ( numdefs + 1 ) * sizeof( char * ) );
+            defines = MemAlloc( ( numdefs + 1 ) * sizeof( char * ) );
         } else {
-            defines = PP_Realloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
+            defines = MemRealloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
         }
-        defines[numdefs++] = PP_Strdup( arg );
+        defines[numdefs++] = MemStrdup( arg );
         break;
     case 'h':
         wcpp_quit( usageMsg, NULL );
@@ -153,10 +154,10 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
 
             ++arg;
             len = strlen( arg );
-            p = PP_Alloc( len + 1 );
+            p = MemAlloc( len + 1 );
             scanString( p, arg, len );
             PP_IncludePathAdd( PPINCLUDE_USR, p );
-            PP_Free( p );
+            MemFree( p );
         }
         break;
     case 'l':
@@ -165,10 +166,10 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
     case 'o':
         ++arg;
         if( out_filename != NULL ) {
-            PP_Free( out_filename );
+            MemFree( out_filename );
         }
         len = strlen( arg );
-        out_filename = PP_Alloc( len + 1 );
+        out_filename = MemAlloc( len + 1 );
         scanString( out_filename, arg, len );
         break;
     case 'z':
@@ -326,7 +327,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
     argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
     varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
-    info = PP_Alloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info = MemAlloc( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                                   // push info on stack
     info->argv = (char **)info->buf;
@@ -336,7 +337,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     contok = doScanParams( argc, info->argv, ppflags );
 
     stack = info->next;                             // pop stack
-    PP_Free( info );
+    MemFree( info );
     return( contok );
 }
 
@@ -359,11 +360,11 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
 //            contok = false;
         } else {
             if( filenames == NULL ) {
-                filenames = PP_Alloc( ( nofilenames + 1 ) * sizeof( char * ) );
+                filenames = MemAlloc( ( nofilenames + 1 ) * sizeof( char * ) );
             } else {
-                filenames = PP_Realloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+                filenames = MemRealloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
             }
-            filenames[nofilenames++] = PP_Strdup( arg );
+            filenames[nofilenames++] = MemStrdup( arg );
         }
     }
     return( contok );
@@ -475,16 +476,16 @@ int main( int argc, char *argv[] )
     }
 
     if( out_filename != NULL ) {
-        PP_Free( out_filename );
+        MemFree( out_filename );
     }
     for( i = 0; i < nofilenames; ++i ) {
-        PP_Free( filenames[i] );
+        MemFree( filenames[i] );
     }
-    PP_Free( (void *)filenames );
+    MemFree( (void *)filenames );
     for( i = 0; i < numdefs; i++ ) {
-        PP_Free( defines[i] );
+        MemFree( defines[i] );
     }
-    PP_Free( (void *)defines );
+    MemFree( (void *)defines );
 
     rc = PP_Fini() | rc;
 

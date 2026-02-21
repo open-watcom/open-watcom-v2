@@ -36,6 +36,7 @@
 //  their own support for these routines.
 //
 #include "_preproc.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -103,8 +104,8 @@ static void *check_nomem( void *ptr )
     return( ptr );
 }
 
-TRMEMAPI( PP_Alloc )
-void * PPENTRY PP_Alloc( size_t size )
+TRMEMAPI( MemAlloc )
+void * MemAlloc( size_t size )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
@@ -113,8 +114,8 @@ void * PPENTRY PP_Alloc( size_t size )
 #endif
 }
 
-TRMEMAPI( PP_Strdup )
-char * PP_Strdup( const char *str )
+TRMEMAPI( MemStrdup )
+char * MemStrdup( const char *str )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), memHandle ) ) );
@@ -123,8 +124,8 @@ char * PP_Strdup( const char *str )
 #endif
 }
 
-TRMEMAPI( PP_Realloc )
-void *PP_Realloc( void *old, size_t size )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *old, size_t size )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), memHandle ) ) );
@@ -133,8 +134,8 @@ void *PP_Realloc( void *old, size_t size )
 #endif
 }
 
-TRMEMAPI( PP_Free )
-void PPENTRY PP_Free( void *p )
+TRMEMAPI( MemFree )
+void MemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
