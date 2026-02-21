@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include "uidef.h"
 #include "uicurshk.h"
+#include "memfuncs.h"
 
 
 static MONITOR ui_data = {
@@ -71,7 +72,7 @@ bool intern initbios( void )
     UIData->height = height;
     UIData->width = width;
     size = UIData->width * UIData->height * sizeof( PIXEL );
-    bufptr = uimalloc( size );
+    bufptr = MemAlloc( size );
     size /= sizeof( PIXEL );
     for( i = 0; i < size; i++ ) {
         bufptr[i].ch = ' ';

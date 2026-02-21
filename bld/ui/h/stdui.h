@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include "bool.h"
 #include "initmode.h"
-#include "uimem.h"
 
 
 #ifndef _FAR
@@ -776,10 +775,6 @@ extern void             UIAPI UIMemOpen( void );
 extern void             UIAPI UIMemClose( void );
 
 extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
-
-extern void             * uimalloc( size_t );
-extern void             uifree( void * );
-extern void             * uirealloc( void *, size_t );
 
 /*
  * Application related functions

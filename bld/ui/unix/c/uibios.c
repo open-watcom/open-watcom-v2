@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "qdebug.h"
+#include "memfuncs.h"
 
 
 extern PossibleDisplay  DisplayList[];
@@ -64,7 +65,7 @@ char *GetTermType( void )
         if( p == NULL ) {
             p = "";
         }
-        UITermType = uimalloc( strlen( p ) + 1 );
+        UITermType = MemAlloc( strlen( p ) + 1 );
         strcpy( UITermType, p );
     }
     return( UITermType );
@@ -73,12 +74,12 @@ char *GetTermType( void )
 void SetTermType( const char *new_term )
 {
     if( UITermType != NULL ) {
-        uifree( UITermType );
+        MemFree( UITermType );
     }
     if( new_term == NULL ) {
         new_term = "";
     }
-    UITermType = uimalloc( strlen( new_term ) + 1 );
+    UITermType = MemAlloc( strlen( new_term ) + 1 );
     strcpy( UITermType, new_term );
 }
 
@@ -125,7 +126,7 @@ void intern finibios( void )
     _uibiosfini();
     del_curterm( cur_term );
     if( UITermType != NULL ) {
-        uifree( UITermType );
+        MemFree( UITermType );
         UITermType = NULL;
     }
 }

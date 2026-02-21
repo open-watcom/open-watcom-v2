@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,15 @@
 #if defined( HAVE_FAR ) && defined( __386__ )
   #include <i86.h>
 #endif
+#include "memfuncs.h"
+
 
 LP_VOID UIAPI uifaralloc( size_t size )
 /*************************************/
 {
     void        *ptr;
 
-    ptr = uimalloc( size );
+    ptr = MemAlloc( size );
     if( ptr != NULL ) {
         /* convert ptr to far if necessary: use DS for segment value */
         return( ptr );
@@ -58,8 +60,8 @@ void UIAPI uifarfree( LP_VOID ptr )
      * since the memory should have been allocated by uifaralloc() above,
      * this is safe because we synthesized the segment part to begin with.
      */
-    uifree( (void *)_FP_OFF( ptr ) );
+    MemFree( (void *)_FP_OFF( ptr ) );
 #else
-    uifree( (void *)ptr );
+    MemFree( (void *)ptr );
 #endif
 }

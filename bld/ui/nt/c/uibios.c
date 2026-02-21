@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include <windows.h>
 #include "uicurshk.h"
 #include "uiintern.h"
+#include "memfuncs.h"
 
 
 static MONITOR ui_data = {
@@ -100,7 +101,7 @@ bool intern initbios( void )
     BSize.Y = UIData->height = sbi.dwMaximumWindowSize.Y;
     UIData->colour = M_VGA;
 
-    UIData->screen.origin = (LP_PIXEL)uimalloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+    UIData->screen.origin = (LP_PIXEL)MemAlloc( UIData->width * UIData->height * sizeof( PIXEL ) );
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();
@@ -119,7 +120,7 @@ void intern finibios( void )
     SetConsoleActiveScreenBuffer( oldOutputHandle );
     uifinicursor();
     finikeyboard();
-    uifree( (void *)UIData->screen.origin );
+    MemFree( (void *)UIData->screen.origin );
     SetConsoleCtrlHandler( consoleHandler, false );
 }
 

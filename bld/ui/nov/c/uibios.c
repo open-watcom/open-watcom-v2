@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,7 @@
 #include "uimouse.h"
 #include "uinlm.h"
 #include "uicurshk.h"
+#include "memfuncs.h"
 
 
 int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
@@ -111,7 +113,7 @@ bool intern initbios( void )
     if( initmonitor() ) {
 
         size = UIData->width * UIData->height;
-        UIData->screen.origin = (LP_PIXEL)uimalloc( size * sizeof( PIXEL ) );
+        UIData->screen.origin = (LP_PIXEL)MemAlloc( size * sizeof( PIXEL ) );
         for( i = 0; i < size; ++i ) {
             UIData->screen.origin[i].ch = ' ';
             UIData->screen.origin[i].attr = 7;
@@ -153,7 +155,7 @@ void intern finibios( void )
     uifinicursor();
     finikeyboard();
     finimonitor();
-    uifree( (void *)UIData->screen.origin );
+    MemFree( (void *)UIData->screen.origin );
 
 }
 

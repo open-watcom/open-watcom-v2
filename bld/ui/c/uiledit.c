@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +49,7 @@
 #include "uidef.h"
 #include "uivedit.h"
 #include "uiledit.h"
+#include "memfuncs.h"
 
 
 a_ui_edit       *UIEdit = NULL;
@@ -59,7 +60,7 @@ static bool extend( unsigned n )
 {
     char    *buf;
 
-    buf = uirealloc( UIEdit->edit_buffer, n );
+    buf = MemRealloc( UIEdit->edit_buffer, n );
     if( buf == NULL )
         return( false );
     buf[UIEdit->edit_eline.length] = '\0';
@@ -107,7 +108,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
     unsigned        l;
     a_ui_edit       *edit;
 
-    edit = uimalloc( sizeof( a_ui_edit ) );
+    edit = MemAlloc( sizeof( a_ui_edit ) );
     if( edit == NULL ) {
         return( NULL );
     }
@@ -272,7 +273,7 @@ unsigned uiendedit( void )
     uiveditfini( UIEdit->edit_vs, &UIEdit->edit_eline );
     edit = UIEdit;
     UIEdit = UIEdit->next;
-    uifree( edit );
+    MemFree( edit );
     return( i );
 }
 

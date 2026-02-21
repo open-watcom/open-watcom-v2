@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ static struct ostream _con_out;
 
 static bool ostream_init( int f )
 {
-    if( (_con_out.sbuf = uimalloc( 2048 )) == NULL ) {
+    if( (_con_out.sbuf = MemAlloc( 2048 )) == NULL ) {
         return( false );
     }
     _con_out.ebuf = _con_out.sbuf + 2048;
@@ -817,11 +817,11 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         }
         shadow = _MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
+        scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL )
             return( false );
-        if( (shadow = uirealloc( shadow, size * sizeof( PIXEL ) )) == NULL ) {
-            uifree( scrn );
+        if( (shadow = MemRealloc( shadow, size * sizeof( PIXEL ) )) == NULL ) {
+            MemFree( scrn );
             return( false );
         }
 #endif

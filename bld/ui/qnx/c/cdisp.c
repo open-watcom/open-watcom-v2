@@ -54,6 +54,7 @@
 #include "uiextrn.h"
 #include "ctkeyb.h"
 #include "uicurshk.h"
+#include "memfuncs.h"
 
 
 static MONITOR ui_data = {
@@ -115,7 +116,7 @@ static bool setupscrnbuff( void )
             return( false );
         scrn = _MK_FP( seg, 0 );
 #else
-        scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
+        scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
         if( scrn == NULL ) {
             return( false );
         }

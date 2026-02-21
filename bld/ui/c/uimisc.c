@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,8 @@
 #include <string.h>
 #include "uidef.h"
 #include "uimenu.h"
+#include "memfuncs.h"
+
 
 void UIAPI uiscreeninit( VSCREEN *vs, SAREA *area, screen_flags flags )
 /*********************************************************************/
@@ -60,11 +62,11 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
 {
     VSCREEN             *vs;
 
-    vs = uimalloc( sizeof( VSCREEN ) );
+    vs = MemAlloc( sizeof( VSCREEN ) );
     if( vs != NULL ) {
         uiscreeninit( vs, area, flags );
         if( title != NULL ) {
-            vs->title = uimalloc( strlen( title ) + 1 );
+            vs->title = MemAlloc( strlen( title ) + 1 );
             strcpy( (char *)vs->title, title );
             vs->dynamic_title = true;
         }
@@ -78,8 +80,8 @@ void intern uiclose( VSCREEN *vs )
 {
     uivclose( vs );
     if( vs->dynamic_title )
-        uifree( (void *)vs->title );
-    uifree( vs );
+        MemFree( (void *)vs->title );
+    MemFree( vs );
 }
 
 void uicntrtext( VSCREEN *vs, SAREA *area, ATTR attr, unsigned field_len, const char *text )

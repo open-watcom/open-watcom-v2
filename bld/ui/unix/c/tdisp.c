@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,6 +86,7 @@
 #include "doparse.h"
 #include "uicurshk.h"
 #include "tdisp.h"
+#include "memfuncs.h"
 
 
 #define PIXELEQUAL(p1,p2)   ((p1).ch == (p2).ch && (p1).attr == (p2).attr)
@@ -798,12 +799,12 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
 
-    scrn = uirealloc( scrn, size * sizeof( PIXEL ) );
+    scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
     if( scrn == NULL )
         return( false );
-    shadow = uirealloc( shadow, size * sizeof( PIXEL ) );
+    shadow = MemRealloc( shadow, size * sizeof( PIXEL ) );
     if( shadow == NULL ) {
-        uifree( scrn );
+        MemFree( scrn );
         return( false );
     }
 
