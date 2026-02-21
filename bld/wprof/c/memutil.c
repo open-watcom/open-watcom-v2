@@ -38,11 +38,6 @@
 #include "aui.h"
 #include "guimem.h"
 #include "memfuncs.h"
-#if defined( GUI_IS_GUI )
-#else
-    #include "stdui.h"
-    #include "helpmem.h"
-#endif
 #include "memutil.h"
 #include "wpmutil.h"
 #include "dumpmem.h"
@@ -156,10 +151,6 @@ void GUIMemOpen( void )
     }
 #endif
 }
-#if !defined( GUI_IS_GUI )
-void UIAPI UIMemOpen( void ) {}
-#endif
-
 
 void WPMemClose( void ) {}
 void GUIMemClose( void )
@@ -174,9 +165,6 @@ void GUIMemClose( void )
     }
 #endif
 }
-#if !defined( GUI_IS_GUI )
-void UIAPI UIMemClose( void ) {}
-#endif
 
 #ifdef TRMEM
 static void profMemCheck( char *msg )
@@ -244,8 +232,6 @@ void *GUIMemAlloc( size_t size )
     return( mem );
 }
 
-#if defined( GUI_IS_GUI )
-
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
@@ -272,6 +258,7 @@ void *MemAlloc( size_t size )
     return( mem );
 }
 
+#if defined( GUI_IS_GUI )
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 /*******************************/
@@ -300,54 +287,6 @@ void *MemAllocSafe( size_t size )
 
 #else /* !GUI_IS_GUI */
 
-TRMEMAPI( uimalloc )
-void * UIAPI uimalloc( size_t size )
-{
-    void    *mem;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 4 ), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
-TRMEMAPI( HelpMemAlloc )
-void *HelpMemAlloc( size_t size )
-{
-    void    *mem;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 5 ), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
 
 #endif /* GUI_IS_GUI */
 
@@ -462,9 +401,6 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-
-#if defined( GUI_IS_GUI )
-
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
@@ -476,31 +412,6 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
-
-#else /* !GUI_IS_GUI */
-
-TRMEMAPI( uifree )
-void UIAPI uifree( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 11 ), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
-TRMEMAPI( HelpMemFree )
-void HelpMemFree( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 12 ), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-#endif /* GUI_IS_GUI */
 
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
@@ -566,9 +477,6 @@ void *GUIMemRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-
-#if defined( GUI_IS_GUI )
-
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t new_size )
 /********************************************/
@@ -593,58 +501,6 @@ void *MemRealloc( void *ptr, size_t new_size )
     }
     return( new );
 }
-
-#else /* !GUI_IS_GUI */
-
-TRMEMAPI( uirealloc )
-void * UIAPI uirealloc( void *ptr, size_t new_size )
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 17 ), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-TRMEMAPI( HelpMemRealloc )
-void *HelpMemRealloc( void *ptr, size_t new_size )
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 18 ), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-
-#endif /* GUI_IS_GUI */
-
 
 /*
  *  Other functions WP specific
