@@ -277,7 +277,7 @@ static bool DoMainLoop( dlg_state *state )
         }
     } /* for */
     VbufFree( &temp_vbuf );
-    GUIMemFree( list );
+    MemFree( list );
 
     return( ret );
 }

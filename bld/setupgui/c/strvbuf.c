@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,10 +58,10 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
 
     if( reqd >= vbuf->len ) {
         reqd = BUFFER_SIZE( reqd );
-        new_buffer = GUIMemAlloc( reqd );
+        new_buffer = MemAlloc( reqd );
         memcpy( new_buffer, vbuf->buf, vbuf->used + 1 ); // +1 include '\0' terminator
         if( vbuf->len > 1 )
-            GUIMemFree( vbuf->buf );
+            MemFree( vbuf->buf );
         vbuf->buf = new_buffer;
         vbuf->len = reqd;
     }
@@ -89,7 +89,7 @@ void VbufFree(                  // FREE BUFFER
     VBUF *vbuf )                // - VBUF structure
 {
     if( vbuf->len > 1 )
-        GUIMemFree( vbuf->buf );
+        MemFree( vbuf->buf );
     vbuf->buf = VBUF_INIT_BUF;
     vbuf->len = VBUF_INIT_LEN;
     vbuf->used = VBUF_INIT_USED;

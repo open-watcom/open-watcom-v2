@@ -365,7 +365,7 @@ static tree_node *TreeNode( tree_op op, tree_node *left, tree_node *right )
 {
     tree_node   *tree;
 
-    tree = GUIMemAlloc( sizeof( tree_node ) );
+    tree = MemAlloc( sizeof( tree_node ) );
     tree->op = op;
     tree->left.u.node = left;
     tree->right = right;
@@ -438,7 +438,7 @@ static tree_node *BuildExprTree( const char *str )
     while( stack_top-- > 0 ) {
         tree = TreeNode( OP_AND, tree, stack[stack_top] );
     }
-    GUIMemFree( str2 );
+    MemFree( str2 );
     return( tree );
 }
 
@@ -482,14 +482,14 @@ static void BurnTree( tree_node *tree )
         BurnTree( tree->left.u.node );
         break;
     case OP_EXIST:
-        GUIMemFree( tree->left.u.str );
+        MemFree( tree->left.u.str );
         break;
     case OP_VAR:
     case OP_TRUE:
     case OP_FALSE:
         break;
     }
-    GUIMemFree( tree );
+    MemFree( tree );
 }
 
 static array_idx NewFileCond( char *str )
@@ -940,7 +940,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
         return( NULL );
     }
 
-    big_buffer = GUIMemAlloc( strlen( text ) * 2 + 1 );
+    big_buffer = MemAlloc( strlen( text ) * 2 + 1 );
     if( big_buffer == NULL ) {
         return( NULL );
     }
@@ -1026,9 +1026,9 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     }
     *new_index = '\0';
 
-    GUIMemFree( text );
+    MemFree( text );
     text = GUIMemStrdup( big_buffer );
-    GUIMemFree( big_buffer );
+    MemFree( big_buffer );
     return( text );
 }
 
@@ -1061,7 +1061,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             afh = FileOpen( &file_name, DATA_BIN );
             if( afh != NULL ) {
                 FileStat( &file_name, &statbuf );
-                text = GUIMemAlloc( statbuf.st_size + 1 );  /* +1 for terminating null */
+                text = MemAlloc( statbuf.st_size + 1 );  /* +1 for terminating null */
                 if( text != NULL ) {
                     FileRead( afh, text, statbuf.st_size );
                     text[statbuf.st_size] = '\0';
@@ -1106,7 +1106,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
         } else {
             rc = false;
         }
-        GUIMemFree( text );
+        MemFree( text );
     }
     return( rc );
 }
@@ -1152,8 +1152,8 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    GUIMemFree( vbl_name );
-    GUIMemFree( text );
+    MemFree( vbl_name );
+    MemFree( text );
     return( rc );
 }
 
@@ -1313,7 +1313,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    GUIMemFree( vbl_name );
+    MemFree( vbl_name );
     VbufFree( &buff );
     return( rc );
 }
@@ -1362,7 +1362,7 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    GUIMemFree( next_copy );
+    MemFree( next_copy );
     return( rc );
 }
 
@@ -1433,9 +1433,9 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    GUIMemFree( init_cond );
-    GUIMemFree( vbl_name );
-    GUIMemFree( text );
+    MemFree( init_cond );
+    MemFree( vbl_name );
+    MemFree( text );
     return( rc );
 }
 
@@ -1512,9 +1512,9 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
     } else {
         rc = false;
     }
-    GUIMemFree( init_cond );
-    GUIMemFree( vbl_name );
-    GUIMemFree( text );
+    MemFree( init_cond );
+    MemFree( vbl_name );
+    MemFree( text );
     return( rc );
 }
 
@@ -1624,7 +1624,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         rc = false;
     }
     VbufFree( &buff );
-    GUIMemFree( vbl_name );
+    MemFree( vbl_name );
     return( rc );
 }
 
@@ -1846,13 +1846,13 @@ static bool ProcLine( char *line, pass_type pass )
         if( stricmp( line, "DefPMGroup" ) == 0 ) {
             line = next; next = NextToken( line, ',' );
             if( SetupInfo.pm_group_file != NULL ) {
-                GUIMemFree( SetupInfo.pm_group_file );
+                MemFree( SetupInfo.pm_group_file );
                 SetupInfo.pm_group_file = NULL;
             }
             SetupInfo.pm_group_file = GUIMemStrdup( line );
             line = next; next = NextToken( line, ',' );
             if( SetupInfo.pm_group_name != NULL ) {
-                GUIMemFree( SetupInfo.pm_group_name );
+                MemFree( SetupInfo.pm_group_name );
                 SetupInfo.pm_group_name = NULL;
             }
             VbufInit( &buff );
@@ -1865,7 +1865,7 @@ static bool ProcLine( char *line, pass_type pass )
             AllPMGroups[num].group_name = GUIMemStrdup( SetupInfo.pm_group_name );
             AllPMGroups[num].group_file = GUIMemStrdup( SetupInfo.pm_group_file );
             if( SetupInfo.pm_group_iconfile != NULL ) {
-                GUIMemFree( SetupInfo.pm_group_iconfile );
+                MemFree( SetupInfo.pm_group_iconfile );
                 SetupInfo.pm_group_iconfile = NULL;
             }
             SetupInfo.pm_group_iconfile = GUIMemStrdup( next );
@@ -1914,7 +1914,7 @@ static bool ProcLine( char *line, pass_type pass )
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
-                FileInfo[num].files = GUIMemAlloc( num_files * sizeof( a_file_info ) );
+                FileInfo[num].files = MemAlloc( num_files * sizeof( a_file_info ) );
                 if( FileInfo[num].files == NULL ) {
                     return( false );
                 }
@@ -2098,7 +2098,7 @@ static bool ProcLine( char *line, pass_type pass )
           && stricmp( next, "supplemental" ) == 0 ) {
             TargetInfo[num].supplemental = true;
         }
-        TargetInfo[num].path = GUIMemAlloc( _MAX_PATH );
+        TargetInfo[num].path = MemAlloc( _MAX_PATH );
         if( TargetInfo[num].path == NULL ) {
             return( false );
         }
@@ -2324,7 +2324,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     size_t              bytes_read;
 
     bufsize = TEXTBUF_SIZE;
-    buffer = GUIMemAlloc( bufsize );
+    buffer = MemAlloc( bufsize );
     if( buffer == NULL ) {
         return( SIM_INIT_NOMEM );
     }
@@ -2356,7 +2356,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
             bytes_read = len + bytes_read - ( p - readbuf );
             if( bytes_read > bufsize ) {
                 bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
-                buffer = GUIMemRealloc( buffer, bufsize + 1 );
+                buffer = MemRealloc( buffer, bufsize + 1 );
             }
             strcpy( buffer + len, p );
             if( bytes_read == 0 )
@@ -2392,7 +2392,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
             break;
         }
     }
-    GUIMemFree( buffer );
+    MemFree( buffer );
     GUIResetMouseCursor( old_cursor );
     return( result );
 }
@@ -3503,15 +3503,15 @@ static void FreeSetupInfoVal( void )
 /**********************************/
 {
     if( SetupInfo.pm_group_file != NULL ) {
-        GUIMemFree( SetupInfo.pm_group_file );
+        MemFree( SetupInfo.pm_group_file );
         SetupInfo.pm_group_file = NULL;
     }
     if( SetupInfo.pm_group_name != NULL ) {
-        GUIMemFree( SetupInfo.pm_group_name );
+        MemFree( SetupInfo.pm_group_name );
         SetupInfo.pm_group_name = NULL;
     }
     if( SetupInfo.pm_group_iconfile != NULL ) {
-        GUIMemFree( SetupInfo.pm_group_iconfile );
+        MemFree( SetupInfo.pm_group_iconfile );
         SetupInfo.pm_group_iconfile = NULL;
     }
 }
@@ -3524,10 +3524,10 @@ static void FreeTargetInfo( void )
 
     if( TargetInfo != NULL ) {
         for( i = 0; i < SetupInfo.target.num; i++ ) {
-            GUIMemFree( TargetInfo[i].name );
-            GUIMemFree( TargetInfo[i].path );
+            MemFree( TargetInfo[i].name );
+            MemFree( TargetInfo[i].path );
         }
-        GUIMemFree( TargetInfo );
+        MemFree( TargetInfo );
         TargetInfo = NULL;
         SetupInfo.target.num = 0;
     }
@@ -3541,9 +3541,9 @@ static void FreeDirInfo( void )
 
     if( DirInfo != NULL ) {
         for( i = 0; i < SetupInfo.dirs.num; i++ ) {
-            GUIMemFree( DirInfo[i].desc );
+            MemFree( DirInfo[i].desc );
         }
-        GUIMemFree( DirInfo );
+        MemFree( DirInfo );
         DirInfo = NULL;
         SetupInfo.dirs.num = 0;
     }
@@ -3558,13 +3558,13 @@ static void FreeFileInfo( void )
 
     if( FileInfo != NULL ) {
         for( i = 0; i < SetupInfo.files.num; i++ ) {
-            GUIMemFree( FileInfo[i].filename );
+            MemFree( FileInfo[i].filename );
             for( j = 0; j < FileInfo[i].num_files; ++j ) {
                 VbufFree( &FileInfo[i].files[j].name );
             }
-            GUIMemFree( FileInfo[i].files );
+            MemFree( FileInfo[i].files );
         }
-        GUIMemFree( FileInfo );
+        MemFree( FileInfo );
         FileInfo = NULL;
         SetupInfo.files.num = 0;
     }
@@ -3579,7 +3579,7 @@ static void FreeDLLsToCheck( void )
         for( i = 0; i < SetupInfo.dlls_to_count.num; i++ ) {
             VbufFree( &DLLsToCheck[i].full_path );
         }
-        GUIMemFree( DLLsToCheck );
+        MemFree( DLLsToCheck );
         DLLsToCheck = NULL;
         SetupInfo.dlls_to_count.num = 0;
     }
@@ -3594,7 +3594,7 @@ static void FreeFileCondInfo( void )
         for( i = 0; i < SetupInfo.fileconds.num; i++ ) {
             BurnTree( FileCondInfo[i].cond );
         }
-        GUIMemFree( FileCondInfo );
+        MemFree( FileCondInfo );
         FileCondInfo = NULL;
         SetupInfo.fileconds.num = 0;
     }
@@ -3607,9 +3607,9 @@ static void FreeForceDLLInstall( void )
 
     if( ForceDLLInstall != NULL ) {
         for( i = 0; i < SetupInfo.force_DLL_install.num; i++ ) {
-            GUIMemFree( ForceDLLInstall[i].name );
+            MemFree( ForceDLLInstall[i].name );
         }
-        GUIMemFree( ForceDLLInstall );
+        MemFree( ForceDLLInstall );
         ForceDLLInstall = NULL;
         SetupInfo.force_DLL_install.num = 0;
     }
@@ -3622,10 +3622,10 @@ static void FreeSpawnInfo( void )
 
     if( SpawnInfo != NULL ) {
         for( i = 0; i < SetupInfo.spawn.num; i++ ) {
-            GUIMemFree( SpawnInfo[i].command );
-            GUIMemFree( SpawnInfo[i].condition );
+            MemFree( SpawnInfo[i].command );
+            MemFree( SpawnInfo[i].condition );
         }
-        GUIMemFree( SpawnInfo );
+        MemFree( SpawnInfo );
         SpawnInfo = NULL;
         SetupInfo.spawn.num = 0;
     }
@@ -3639,9 +3639,9 @@ static void FreeDeleteInfo( void )
 
     if( DeleteInfo != NULL ) {
         for( i = 0; i < SetupInfo.delete.num; i++ ) {
-            GUIMemFree( DeleteInfo[i].name );
+            MemFree( DeleteInfo[i].name );
         }
-        GUIMemFree( DeleteInfo );
+        MemFree( DeleteInfo );
         DeleteInfo = NULL;
         SetupInfo.delete.num = 0;
     }
@@ -3655,13 +3655,13 @@ static void FreePMInfo( void )
 
     if( PMInfo != NULL ) {
         for( i = 0; i < SetupInfo.pm_files.num; i++ ) {
-            GUIMemFree( PMInfo[i].desc );
-            GUIMemFree( PMInfo[i].filename );
-            GUIMemFree( PMInfo[i].parameters );
-            GUIMemFree( PMInfo[i].iconfile );
-            GUIMemFree( PMInfo[i].condition );
+            MemFree( PMInfo[i].desc );
+            MemFree( PMInfo[i].filename );
+            MemFree( PMInfo[i].parameters );
+            MemFree( PMInfo[i].iconfile );
+            MemFree( PMInfo[i].condition );
         }
-        GUIMemFree( PMInfo );
+        MemFree( PMInfo );
         PMInfo = NULL;
         SetupInfo.pm_files.num = 0;
     }
@@ -3675,14 +3675,14 @@ static void FreeProfileInfo( void )
 
     if( ProfileInfo != NULL ) {
         for( i = 0; i < SetupInfo.profile.num; i++ ) {
-            GUIMemFree( ProfileInfo[i].hive_name );
-            GUIMemFree( ProfileInfo[i].app_name );
-            GUIMemFree( ProfileInfo[i].key_name );
-            GUIMemFree( ProfileInfo[i].value );
-            GUIMemFree( ProfileInfo[i].file_name );
-            GUIMemFree( ProfileInfo[i].condition );
+            MemFree( ProfileInfo[i].hive_name );
+            MemFree( ProfileInfo[i].app_name );
+            MemFree( ProfileInfo[i].key_name );
+            MemFree( ProfileInfo[i].value );
+            MemFree( ProfileInfo[i].file_name );
+            MemFree( ProfileInfo[i].condition );
         }
-        GUIMemFree( ProfileInfo );
+        MemFree( ProfileInfo );
         ProfileInfo = NULL;
         SetupInfo.profile.num = 0;
     }
@@ -3695,11 +3695,11 @@ static void FreeOneConfigInfo( array_info *info, struct config_info *array )
     array_idx   i;
 
     for( i = 0; i < info->num; i++ ) {
-        GUIMemFree( array[i].var );
-        GUIMemFree( array[i].value );
-        GUIMemFree( array[i].condition );
+        MemFree( array[i].var );
+        MemFree( array[i].value );
+        MemFree( array[i].condition );
     }
-    GUIMemFree( array );
+    MemFree( array );
     info->num = 0;
 }
 
@@ -3734,10 +3734,10 @@ static void FreeLabelInfo( void )
 
     if( LabelInfo != NULL ) {
         for( i = 0; i < SetupInfo.label.num; i++ ) {
-            GUIMemFree( LabelInfo[i].dir );
-            GUIMemFree( LabelInfo[i].label );
+            MemFree( LabelInfo[i].dir );
+            MemFree( LabelInfo[i].label );
         }
-        GUIMemFree( LabelInfo );
+        MemFree( LabelInfo );
         LabelInfo = NULL;
         SetupInfo.label.num = 0;
     }
@@ -3750,10 +3750,10 @@ static void FreeAllPMGroups( void )
 
     if( AllPMGroups != NULL ) {
         for( i = 0; i < SetupInfo.all_pm_groups.num; i++ ) {
-            GUIMemFree( AllPMGroups[i].group_name );
-            GUIMemFree( AllPMGroups[i].group_file );
+            MemFree( AllPMGroups[i].group_name );
+            MemFree( AllPMGroups[i].group_file );
         }
-        GUIMemFree( AllPMGroups );
+        MemFree( AllPMGroups );
         AllPMGroups = NULL;
         SetupInfo.all_pm_groups.num = 0;
     }
@@ -3766,14 +3766,14 @@ static void FreeAssociationInfo( void )
 
     if( AssociationInfo != NULL ) {
         for( i = 0; i < SetupInfo.associations.num; i++ ) {
-            GUIMemFree( AssociationInfo[i].ext );
-            GUIMemFree( AssociationInfo[i].keyname );
-            GUIMemFree( AssociationInfo[i].description );
-            GUIMemFree( AssociationInfo[i].program );
-            GUIMemFree( AssociationInfo[i].iconfile );
-            GUIMemFree( AssociationInfo[i].condition );
+            MemFree( AssociationInfo[i].ext );
+            MemFree( AssociationInfo[i].keyname );
+            MemFree( AssociationInfo[i].description );
+            MemFree( AssociationInfo[i].program );
+            MemFree( AssociationInfo[i].iconfile );
+            MemFree( AssociationInfo[i].condition );
         }
-        GUIMemFree( AssociationInfo );
+        MemFree( AssociationInfo );
         AssociationInfo = NULL;
         SetupInfo.associations.num = 0;
     }
@@ -3903,7 +3903,7 @@ static char *CompileCondition( const char *str )
             sprintf( buff + strlen( buff ), "#%d ", (int)var_handle );
         }
     }
-    GUIMemFree( str2 );
+    MemFree( str2 );
     return( GUIMemStrdup( buff ) );
 }
 

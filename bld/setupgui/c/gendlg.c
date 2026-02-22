@@ -76,25 +76,25 @@ static void FreeDialog( a_dialog_header *dlg )
 {
     int i;
 
-    GUIMemFree( dlg->name );
-    GUIMemFree( dlg->condition );
-    GUIMemFree( dlg->title );
+    MemFree( dlg->name );
+    MemFree( dlg->condition );
+    MemFree( dlg->title );
     if( !dlg->def_dlg ) {            /* free non-default controls */
         for( i = 0; dlg->pVariables[i] != NO_VAR; ++i ) {
             if( dlg->pConditions[i] != NULL ) {
-                GUIMemFree( dlg->pConditions[i] );
+                MemFree( dlg->pConditions[i] );
             }
         }
         for( i = 0; i < dlg->num_controls; i++ ) {
-            GUIMemFree( (void *)dlg->controls[i].text );
+            MemFree( (void *)dlg->controls[i].text );
             if( dlg->controls_ext[i].pVisibilityConds != NULL ) {
-                GUIMemFree( dlg->controls_ext[i].pVisibilityConds );
+                MemFree( dlg->controls_ext[i].pVisibilityConds );
             }
         }
-        GUIMemFree( dlg->controls_ext );
-        GUIMemFree( dlg->controls );
+        MemFree( dlg->controls_ext );
+        MemFree( dlg->controls );
     }
-    GUIMemFree( dlg );
+    MemFree( dlg );
 }
 
 a_dialog_header *AddNewDialog( const char *name )
@@ -105,7 +105,7 @@ a_dialog_header *AddNewDialog( const char *name )
     a_dialog_header *old_dlg;
     a_dialog_header *new_dlg;
 
-    new_dlg = (a_dialog_header *)GUIMemAlloc( sizeof( a_dialog_header ) );
+    new_dlg = (a_dialog_header *)MemAlloc( sizeof( a_dialog_header ) );
     memset( new_dlg, '\0', sizeof( *new_dlg ) );
     new_dlg->name = GUIMemStrdup( name );
     new_dlg->adjusted = false;

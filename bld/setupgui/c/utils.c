@@ -479,7 +479,7 @@ void ResetAllFsysInfo( void )
 
     for( i = 0; i < FsysArray.num; ++i ) {
         if( FsysInfo[i].root != NULL ) {
-            GUIMemFree( FsysInfo[i].root );
+            MemFree( FsysInfo[i].root );
             FsysInfo[i].root = NULL;
         }
     }
@@ -502,10 +502,10 @@ void FiniFsysInfo( void )
     array_idx   i;
 
     for( i = 0; i < FsysArray.num; i++ ) {
-        GUIMemFree( FsysInfo[i].root );
+        MemFree( FsysInfo[i].root );
     }
     FsysArray.num = 0;
-    GUIMemFree( FsysInfo );
+    MemFree( FsysInfo );
 }
 
 static const char *GetRootFromPath( VBUF *root, const char *path )
@@ -1029,7 +1029,7 @@ bool CheckFsys( bool issue_message )
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
     max_targets = SimNumTargets();
-    space = GUIMemAlloc( max_targets * sizeof( *space ) );
+    space = MemAlloc( max_targets * sizeof( *space ) );
     ok = true;
     for( i = 0; i < max_targets; i++ ) {
         SimSetTargetMarked( i, false );
@@ -1165,7 +1165,7 @@ bool CheckFsys( bool issue_message )
             SetVariableByName( drive_freesp, buff );
         }
     }
-    GUIMemFree( space );
+    MemFree( space );
     return( ok );
 }
 
@@ -1219,7 +1219,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
     }
 
     for( ;; ) {
-        pbuff = GUIMemAlloc( buffer_size );
+        pbuff = MemAlloc( buffer_size );
         if( pbuff != NULL )
             break;
         buffer_size >>= 1;
@@ -1239,7 +1239,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
     if( dst_fh == -1 ) {
         FileClose( src_afh );
         if( pbuff != lastchance )
-            GUIMemFree( pbuff );
+            MemFree( pbuff );
         dst_fh = open_vbuf( dst_file, O_RDONLY );
         if( dst_fh != -1 ) {
             /*
@@ -1284,7 +1284,7 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
     close( dst_fh );
     FileClose( src_afh );
     if( pbuff != lastchance )
-        GUIMemFree( pbuff );
+        MemFree( pbuff );
     if( ret == CFE_NOERROR ) {
         /*
          * Make the destination file have the same time stamp
@@ -1462,7 +1462,7 @@ static void NewFileToCheck( const VBUF *name, bool is_dll )
 {
     file_check  *new;
 
-    new = GUIMemAlloc( sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->next = fileCheckThisPack;
     fileCheckThisPack = new;
     VbufInit( &new->name );
@@ -1518,7 +1518,7 @@ static bool CheckPendingFiles( void )
         if( cancel )
             return( false );
         VbufFree( &curr->name );
-        GUIMemFree( curr );
+        MemFree( curr );
     }
     return( true );
 }
@@ -1726,8 +1726,8 @@ static bool DoCopyFiles( void )
                     while( split != NULL ) {
                         junk = split;
                         split = split->next;
-                        GUIMemFree( junk->src_path );
-                        GUIMemFree( junk );
+                        MemFree( junk->src_path );
+                        MemFree( junk );
                     }
                     owner_split = &split;
                     *owner_split = NULL;
@@ -2027,7 +2027,7 @@ void DeleteObsoleteFiles( void )
         }
     }
     VbufInit( &temp_vbuf );
-    found = GUIMemAlloc( sizeof( bool ) * group );
+    found = MemAlloc( sizeof( bool ) * group );
     memset( found, false, sizeof( bool ) * group );
     found_any = false;
     group = 0;
@@ -2067,7 +2067,7 @@ void DeleteObsoleteFiles( void )
         }
     }
     VbufFree( &temp_vbuf );
-    GUIMemFree( found );
+    MemFree( found );
 }
 
 void GetInstallName( VBUF *name )
@@ -2264,7 +2264,7 @@ static void AddDefine( char *def )
     if( p != NULL ) {
         *p = '\0';
         ++p;
-        var = GUIMemAlloc( sizeof( DEF_VAR ) );
+        var = MemAlloc( sizeof( DEF_VAR ) );
         var->variable = GUIMemStrdup( def );
         var->value = GUIMemStrdup( p );
         var->link = ExtraVariables;
@@ -2293,9 +2293,9 @@ static void FreeDefinedVars( void )
 
     while( (var = ExtraVariables) != NULL ) {
         ExtraVariables = var->link;
-        GUIMemFree( var->variable );
-        GUIMemFree( var->value );
-        GUIMemFree( var );
+        MemFree( var->variable );
+        MemFree( var->value );
+        MemFree( var );
     }
 }
 
@@ -2419,7 +2419,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
                 if( argv[i][2] == '='
                   && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
-                    GUIMemFree( VariablesFile );
+                    MemFree( VariablesFile );
                     VariablesFile = GUIMemStrdup( &argv[i][3] );
                 }
                 break;
@@ -2508,7 +2508,7 @@ bool FreeDirParams( void )
 /************************/
 {
     FreeDefinedVars();
-    GUIMemFree( VariablesFile );
+    MemFree( VariablesFile );
 
     return( true );
 }

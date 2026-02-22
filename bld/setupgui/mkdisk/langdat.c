@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ static void AddToList( const char *name, ctl_file **owner )
             break;
         owner = &curr->next;
     }
-    curr = MAlloc( sizeof( *curr ) );
+    curr = MemAlloc( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->name, name );
     *owner = curr;
@@ -230,7 +230,7 @@ static void PushInclude( const char *name )
     char        *dir;
     char        dir_name[_MAX_PATH];
 
-    new = MAlloc( sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->prev = IncludeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
@@ -265,7 +265,7 @@ static bool PopInclude( void )
     curr = IncludeStk;
     fclose( curr->fp );
     IncludeStk = curr->prev;
-    MFree( curr );
+    MemFree( curr );
     if( IncludeStk == NULL ) {
         return( false );
     }
@@ -483,7 +483,7 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
     bool        found;
 
     len = strlen( str ) + 1;
-    s_copy = MAlloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
+    s_copy = MemAlloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
         found = checkWord( p, word_list );
@@ -491,11 +491,11 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
           && !and_op
           || !found
           && and_op ) {
-            MFree( s_copy );
+            MemFree( s_copy );
             return( !and_op );
         }
     }
-    MFree( s_copy );
+    MemFree( s_copy );
     return( and_op );
 }
 
@@ -525,17 +525,17 @@ static char *item_def( const char *old, const char *new, const char *item )
     if( old != NULL ) {
         printf( "langdat warning: default item '%s' already defined\n", item );
         printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
-        MFree( (void *)old );
+        MemFree( (void *)old );
     }
-    return( MStrdup( new ) );
+    return( MemStrdup( new ) );
 }
 
 static char *item_redef( const char *old, const char *new )
 {
     if( old != NULL ) {
-        MFree( (void *)old );
+        MemFree( (void *)old );
     }
-    return( MStrdup( new ) );
+    return( MemStrdup( new ) );
 }
 
 static char *item_append( const char *old, const char *new )
@@ -546,29 +546,29 @@ static char *item_append( const char *old, const char *new )
         p = (char *)old;
     } else {
         if( old == NULL ) {
-            p = MStrdup( new );
+            p = MemStrdup( new );
         } else {
             if( *old == '\0' ) {
-                p = MStrdup( new );
+                p = MemStrdup( new );
             } else {
                 size_t  len;
 
                 len = strlen( old ) + strlen( new ) + 1 + 1;
-                p = MAlloc( len );
+                p = MemAlloc( len );
                 strcpy( p, old );
                 strcat( p, " " );
                 strcat( p, new );
             }
-            MFree( (void *)old );
+            MemFree( (void *)old );
         }
     }
     return( p );
 }
 
-#define FREE_ITEM(x) if( x != NULL && x != blank ) { MFree( (void *)x ); } x = NULL
+#define FREE_ITEM(x) if( x != NULL && x != blank ) { MemFree( (void *)x ); } x = NULL
 
 #define DEFVAL(x)   ((x==NULL)?blank:x)
-#define DEFVALA(x)  ((x==NULL)?NULL:MStrdup(x))
+#define DEFVALA(x)  ((x==NULL)?NULL:MemStrdup(x))
 
 static void ProcessLine( const char *line )
 {
@@ -600,7 +600,7 @@ static void ProcessLine( const char *line )
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVALA( DefKeys );
 
-    p = line_copy = MStrdup( line );
+    p = line_copy = MemStrdup( line );
     SKIP_BLANKS( p );
     cmd = strtok( p, "=" );
     do {
@@ -667,7 +667,7 @@ static void ProcessLine( const char *line )
     FREE_ITEM( cond );
     FREE_ITEM( where );
     FREE_ITEM( keys );
-    MFree( line_copy );
+    MemFree( line_copy );
 }
 
 static void FreeDefault( void )
@@ -694,7 +694,7 @@ static void ProcessDefault( const char *line )
     FreeDefault();
 
     /* Process new defaults (if provided) */
-    p = line_copy = MStrdup( line );
+    p = line_copy = MemStrdup( line );
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
@@ -737,7 +737,7 @@ static void ProcessDefault( const char *line )
             cmd = strtok( NULL, " \t=" );
         } while( cmd != NULL );
     }
-    MFree( line_copy );
+    MemFree( line_copy );
 }
 
 /****************************************************************************
@@ -923,7 +923,7 @@ int main( int argc, char *argv[] )
 
     /* unused parameters */ (void)argc;
 
-    MOpen();
+    MemOpen();
     Product_ver[0] = '\0';
     ProcessOptions( argv + 1 );
     if( Product == NULL ) {
@@ -935,7 +935,7 @@ int main( int argc, char *argv[] )
             p = DEFCTLNAME;
         fn = SearchUpDirs( p );
         if( fn == NULL ) {
-            MClose();
+            MemClose();
             Fatal( "Can not find '%s'\n", p );
         }
         AddToList( fn, &CtlList );
@@ -943,12 +943,12 @@ int main( int argc, char *argv[] )
     while( CtlList != NULL ) {
         ProcessCtlFile( CtlList->name );
         next = CtlList->next;
-        MFree( CtlList );
+        MemFree( CtlList );
         CtlList = next;
     }
     FreeDefault();
     CloseLog();
-    MClose();
+    MemClose();
     return( 0 );
 }
 

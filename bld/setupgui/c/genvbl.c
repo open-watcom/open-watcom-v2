@@ -280,7 +280,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
                 }
                 return( var_handle );
             }
-            GUIMemFree( tmp_variable->strval );   // free the old string
+            MemFree( tmp_variable->strval );   // free the old string
         }
     } else {
         var_handle = NewVariable( vbl_name );
@@ -482,9 +482,9 @@ void FreeVarsList( bool delete_all_vars )
     j = 0;
     if( delete_all_vars ) {
         for( i = 0; i < Vars.array.num; i++ ) {
-            GUIMemFree( Vars.list[i].name );
-            GUIMemFree( Vars.list[i].strval );
-            GUIMemFree( Vars.list[i].autoset );
+            MemFree( Vars.list[i].name );
+            MemFree( Vars.list[i].strval );
+            MemFree( Vars.list[i].autoset );
         }
     } else {
         for( i = 0; i < Vars.array.num; i++ ) {
@@ -497,9 +497,9 @@ void FreeVarsList( bool delete_all_vars )
                 }
                 j++;
             } else {
-                GUIMemFree( Vars.list[i].name );
-                GUIMemFree( Vars.list[i].strval );
-                GUIMemFree( Vars.list[i].autoset );
+                MemFree( Vars.list[i].name );
+                MemFree( Vars.list[i].strval );
+                MemFree( Vars.list[i].autoset );
             }
         }
     }
@@ -517,6 +517,6 @@ void FreeVarsList( bool delete_all_vars )
             HashInsert( Vars.hash, Vars.list[i].name, i );
         }
     } else {
-        GUIMemFree( Vars.list );
+        MemFree( Vars.list );
     }
 }

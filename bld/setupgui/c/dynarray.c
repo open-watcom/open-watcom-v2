@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ void InitArray( void **array, array_idx esize, array_info *info )
     if( info->alloc == 0 ) {
         info->alloc = info->increment;
     }
-    *array = GUIMemAlloc( esize * info->alloc );
+    *array = MemAlloc( esize * info->alloc );
     info->esize = esize;
     info->array = array;
 }
@@ -54,7 +54,7 @@ bool BumpArray( array_info *info )
 {
     if( ++info->num >= info->alloc ) {
         info->alloc = info->num + info->increment;
-        *(info->array) = GUIMemRealloc( *(info->array), info->esize * info->alloc );
+        *(info->array) = MemRealloc( *(info->array), info->esize * info->alloc );
         if( *(info->array) == NULL ) {
             return( false );
         }
@@ -67,7 +67,7 @@ bool BumpDownArray( array_info *info )
 {
     if( info->alloc - info->num >= info->increment ) {
         info->alloc -= info->increment;
-        *(info->array) = GUIMemRealloc( *(info->array), info->esize * info->alloc );
+        *(info->array) = MemRealloc( *(info->array), info->esize * info->alloc );
         if( *(info->array) == NULL ) {
             return( false );
         }
