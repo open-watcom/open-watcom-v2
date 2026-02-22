@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,7 +257,7 @@ static void InitQueue( const char *cwd )
     size_t      len;
 
     len = strlen( cwd );
-    qp = MAlloc( sizeof( *qp ) + len );
+    qp = MemAlloc( sizeof( *qp ) + len );
     qp->next = NULL;
     qp->depth = 0;
     StringCopy( qp->name, cwd );
@@ -271,7 +271,7 @@ static void EnQueue( const char *path, depth_type depth )
     char        *p;
 
     if( QueueHead->depth < depth ) {
-        qp = MAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
+        qp = MemAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
         p = StringCopy( qp->name, QueueHead->name );
@@ -293,7 +293,7 @@ static void DeQueue( void )
     qp = QueueHead;
     if( qp != NULL ) {
         QueueHead = qp->next;
-        MFree( qp );
+        MemFree( qp );
     }
 }
 
@@ -434,7 +434,7 @@ static void TestDirectory( pmake_data *data, target_list *targets, bool verbose 
     priority = CheckTargets( targets, data->makefile );
     if( priority != NONE_PRIORITY && TrueTarget( targets ) ) {
         len = strlen( QueueHead->name );
-        new = MAlloc( sizeof( *new ) + len );
+        new = MemAlloc( sizeof( *new ) + len );
         new->next = data->dir_list;
         data->dir_list = new;
         new->depth = QueueHead->depth;
@@ -464,7 +464,7 @@ static void NextSubdir( void )
             last_ok = QueueHead;
             QueueHead = QueueHead->next;
         } else if( chdir( RelativePath( last_ok->name, QueueHead->next->name ) ) == 0 ) {
-            MFree( last_ok );
+            MemFree( last_ok );
             break;
         } else {
             DeQueue();
@@ -572,11 +572,11 @@ static target_list *GetTargetItem( void )
         flags = TARGET_NOT_USED;
     }
     if( flags == TARGET_NOT_USED ) {
-        target = MAlloc( sizeof( *target ) + len );
+        target = MemAlloc( sizeof( *target ) + len );
         StringCopyLen( target->string, arg, len );
         target->len = len;
     } else {
-        target = MAlloc( sizeof( *target ) - 1 );
+        target = MemAlloc( sizeof( *target ) - 1 );
         target->len = 0;
     }
     target->flags = flags;
@@ -608,7 +608,7 @@ static void freeTargets( target_list *targets )
 
     while( targets != NULL ) {
         next = targets->next;
-        MFree( targets );
+        MemFree( targets );
         targets = next;
     }
 }
@@ -622,7 +622,7 @@ static void SortDirectories( pmake_data *data )
     char        buff[_MAX_PATH];
     int         i;
 
-    dir_array = MAlloc( sizeof( *dir_array ) * NumDirectories );
+    dir_array = MemAlloc( sizeof( *dir_array ) * NumDirectories );
     i = 0;
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
@@ -635,7 +635,7 @@ static void SortDirectories( pmake_data *data )
         curr->next = data->dir_list;
         data->dir_list = curr;
     }
-    MFree( dir_array );
+    MemFree( dir_array );
     if( data->optimize ) {
         prev_name = NULL;
         for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
@@ -688,8 +688,8 @@ static void DoIt( pmake_data *data )
                 data->want_help = true;
                 return;
             }
-            MFree( data->makefile );
-            data->makefile = MAlloc( len + 1 );
+            MemFree( data->makefile );
+            data->makefile = MemAlloc( len + 1 );
             StringCopyLen( data->makefile, arg, len );
             break;
         case 'i':
@@ -704,8 +704,8 @@ static void DoIt( pmake_data *data )
                 data->want_help = true;
                 return;
             }
-            MFree( data->command );
-            data->command = MAlloc( len + 1 );
+            MemFree( data->command );
+            data->command = MemAlloc( len + 1 );
             StringCopyLen( data->command, arg, len );
             break;
         case 'o':
@@ -729,25 +729,25 @@ static void DoIt( pmake_data *data )
         getTargets( &targets );
     }
     if( targets == NULL ) {
-        targets = MAlloc( sizeof( *targets ) - 1 );
+        targets = MemAlloc( sizeof( *targets ) - 1 );
         targets->next = NULL;
         targets->flags = TARGET_ALL;
         targets->len = 0;
     }
     SKIP_SPACES( CmdLine );
-    data->cmd_args = MAlloc( strlen( CmdLine ) + 1 );
+    data->cmd_args = MemAlloc( strlen( CmdLine ) + 1 );
     StringCopy( data->cmd_args, CmdLine );
     /* end of command line processing */
 
     /* setup default value if not defined on command line */
     if( data->makefile == NULL || *data->makefile == '\0' ) {
-        MFree( data->makefile );
-        data->makefile = MAlloc( sizeof( DEFAULT_MAKE_FILE ) );
+        MemFree( data->makefile );
+        data->makefile = MemAlloc( sizeof( DEFAULT_MAKE_FILE ) );
         StringCopy( data->makefile, DEFAULT_MAKE_FILE );
     }
     if( data->command == NULL || *data->command == '\0' ) {
-        MFree( data->command );
-        data->command = MAlloc( sizeof( DEFAULT_MAKE_CMD ) );
+        MemFree( data->command );
+        data->command = MemAlloc( sizeof( DEFAULT_MAKE_CMD ) );
         StringCopy( data->command, DEFAULT_MAKE_CMD );
     }
 
@@ -795,19 +795,19 @@ void PMakeCleanup( pmake_data *data )
 
     while( data->dir_list != NULL ) {
         tmp = data->dir_list->next;
-        MFree( data->dir_list );
+        MemFree( data->dir_list );
         data->dir_list = tmp;
     }
     if( data->command != NULL ) {
-        MFree( data->command );
+        MemFree( data->command );
         data->command = NULL;
     }
     if( data->makefile != NULL ) {
-        MFree( data->makefile );
+        MemFree( data->makefile );
         data->makefile = NULL;
     }
     if( data->cmd_args != NULL ) {
-        MFree( data->cmd_args );
+        MemFree( data->cmd_args );
         data->cmd_args = NULL;
     }
 }

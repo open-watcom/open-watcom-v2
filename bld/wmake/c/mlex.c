@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +52,11 @@ void LexFini( void )
 /*************************/
 {
     if( *targ_path != NULLCHAR ) {
-        FreeSafe( targ_path );
+        MemFree( targ_path );
         targ_path = "";
     }
     if( *dep_path != NULLCHAR ) {
-        FreeSafe( dep_path );
+        MemFree( dep_path );
         dep_path = "";
     }
     PreProcFini();
@@ -97,7 +98,7 @@ MTOKEN_T LexToken( enum LexMode mode )
 void LexMaybeFree( MTOKEN_T tok )
 /**************************************
  * remarks: Some tokens set CurAttr.u.ptr to a memory region.  This routine
- *          FreeSafes the region if tok is one of these token types.
+ *          MemFrees the region if tok is one of these token types.
  */
 {
     switch( tok ) {
@@ -110,7 +111,7 @@ void LexMaybeFree( MTOKEN_T tok )
     case MAC_NAME:
     case MAC_PUNC:
     case MAC_TEXT:
-        FreeSafe( CurAttr.u.ptr );
+        MemFree( CurAttr.u.ptr );
         CurAttr.u.ptr = NULL;
         break;
     default:

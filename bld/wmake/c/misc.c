@@ -335,8 +335,8 @@ const char *DoWildCard( const char *base )
             return( base );
         }
         // create directory name and pattern
-        path = MallocSafe( _MAX_PATH );
-        pattern = MallocSafe( _MAX_PATH );
+        path = MemAllocSafe( _MAX_PATH );
+        pattern = MemAllocSafe( _MAX_PATH );
         strcpy( path, base );
         FixName( path );
         _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -382,11 +382,11 @@ void DoWildCardClose( void )
 /**************************/
 {
     if( path != NULL ) {
-        FreeSafe( path );
+        MemFree( path );
         path = NULL;
     }
     if( pattern != NULL ) {
-        FreeSafe( pattern );
+        MemFree( pattern );
         pattern = NULL;
     }
     if( dirp != NULL ) {

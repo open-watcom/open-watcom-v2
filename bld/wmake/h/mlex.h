@@ -234,7 +234,7 @@ extern union CurAttrUnion {
 } CurAttr;                          /* attribute of last return value */
 
 /* NOTE: If you get a pointer in CurAttr.ptr, it is yours to play with. */
-/* ie: When done, you MUST do a FreeSafe( CurAttr.ptr )                 */
+/* ie: When done, you MUST do a MemFree( CurAttr.ptr )                 */
 
 
 /*

@@ -115,9 +115,9 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
             } else {
                 char *targname = AddCreator( CurAttr.u.ptr );
                 WildTList( dest, targname, true, true );
-                FreeSafe( targname );
+                MemFree( targname );
             }
-            FreeSafe( CurAttr.u.ptr );
+            MemFree( CurAttr.u.ptr );
             CurAttr.u.ptr = NULL;
             break;
         case TOK_DOTNAME:
@@ -129,7 +129,7 @@ STATIC MTOKEN_T buildTargs( TLIST **dest, MTOKEN_T t )
             break;
         case TOK_FILENAME:
             WildTList( dest, CurAttr.u.ptr, true, true );
-            FreeSafe( CurAttr.u.ptr );
+            MemFree( CurAttr.u.ptr );
             CurAttr.u.ptr = NULL;
             break;
         default:
@@ -304,7 +304,7 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
             break;
         case TOK_FILENAME:
             WildTList( list, CurAttr.u.ptr, true, false );
-            FreeSafe( CurAttr.u.ptr );  /* not needed any more */
+            MemFree( CurAttr.u.ptr );  /* not needed any more */
             CurAttr.u.ptr = NULL;
             while( *list != NULL ) {    /* find tail again */
                 list = &(*list)->next;
@@ -470,7 +470,7 @@ STATIC void parseExtensions( void )
             } else if( !Glob.compat_nmake && !Glob.compat_unix ) {
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.u.ptr );
             }
-            FreeSafe( CurAttr.u.ptr );
+            MemFree( CurAttr.u.ptr );
             CurAttr.u.ptr = NULL;
             any = true;
         } else {
@@ -635,9 +635,9 @@ STATIC void parseSuf( void )
         if( t == TOK_SUF ) {
             if( !SufExists( CurAttr.u.ptr ) ) {
                 PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr );
-                FreeSafe( CurAttr.u.ptr );
+                MemFree( CurAttr.u.ptr );
             } else {
-                cur = MallocSafe( sizeof( *cur ) );
+                cur = MemAllocSafe( sizeof( *cur ) );
                 cur->name = CurAttr.u.ptr;
                 cur->next = head;
                 head = cur;
@@ -676,11 +676,11 @@ STATIC void parseSuf( void )
         cur = head;
         head = head->next;
         SetSufPath( cur->name, path );
-        FreeSafe( cur->name );
-        FreeSafe( cur );
+        MemFree( cur->name );
+        MemFree( cur );
     }
     if( path != NULL ) {
-        FreeSafe( path );               /* from CurAttr.u.ptr */
+        MemFree( path );               /* from CurAttr.u.ptr */
     }
 }
 
@@ -798,13 +798,13 @@ STATIC void getBody( FLIST *head )
                          PrtMsg( ERR | LOC | NOKEEP_ONLY );
                      }
 
-                     FreeSafe( temp );
+                     MemFree( temp );
                      break;
                 }
             }
             bufTemp = StartVec();
             WriteVec( bufTemp, temp );
-            FreeSafe( temp );
+            MemFree( temp );
             CatVec( buf, bufTemp );
             bufTemp = StartVec();
             WriteVec( bufTemp, "\n" );
@@ -894,7 +894,7 @@ STATIC FLIST *GetInlineFile( char **commandIn )
         }
     }
     WriteNVec( newCommand, cmdText + start, index - start );
-    FreeSafe( cmdText );
+    MemFree( cmdText );
     *commandIn = FinishVec( newCommand );
     getBody( head );
     return( head );
@@ -956,7 +956,7 @@ TLIST *Parse( void )
         case TOK_CMD:
             if( *CurAttr.u.ptr == NULLCHAR ) {
                 /* discard blank lines */
-                FreeSafe( CurAttr.u.ptr );
+                MemFree( CurAttr.u.ptr );
                 CurAttr.u.ptr = NULL;
             } else {
                 if( btlist == NULL ) {
@@ -964,7 +964,7 @@ TLIST *Parse( void )
                         PrtMsg( WRN | LOC | CLIST_HAS_NO_OWNER );
                         clist_warning_given = true;
                     }
-                    FreeSafe( CurAttr.u.ptr );
+                    MemFree( CurAttr.u.ptr );
                     CurAttr.u.ptr = NULL;
                 } else {
                     newclist = NewCList();

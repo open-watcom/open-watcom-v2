@@ -172,14 +172,14 @@ void IfMemScarce( bool (*func)( void ) )
  *          some memory.  Otherwise ERROR.  Be careful to make sure that
  *          *func can do its work without being too obtrusive - make no
  *          assumptions about what routines can be called.  The only
- *          guaranteed safe routine is FreeSafe().
+ *          guaranteed safe routine is MemFree().
  */
 {
     struct scarce *new;
 
     assert( func != NULL );
 
-    new = MallocSafe( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->func = func;
     new->next = scarceHead;
     scarceHead = new;
@@ -224,7 +224,7 @@ void MemFini( void )
     while( scarceHead != NULL ) {   /* free all scarce trackers */
         cur = scarceHead;
         scarceHead = scarceHead->next;
-        FreeSafe( cur );
+        MemFree( cur );
     }
   #endif
 
@@ -352,8 +352,8 @@ void *wres_alloc( size_t size )
 #endif
 
 
-TRMEMAPI( MallocUnSafe )
-void *MallocUnSafe( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 /*******************************/
 {
     void *ptr;
@@ -365,8 +365,8 @@ void *MallocUnSafe( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( MallocSafe )
-void *MallocSafe( size_t size )
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
 /******************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size.
@@ -380,9 +380,8 @@ void *MallocSafe( size_t size )
 #endif
 }
 
-
-TRMEMAPI( CallocSafe )
-void *CallocSafe( size_t size )
+TRMEMAPI( MemCAllocSafe )
+void *MemCAllocSafe( size_t size )
 /******************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size
@@ -400,12 +399,25 @@ void *CallocSafe( size_t size )
     return( ptr );
 }
 
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/**********************************
+ * returns: Pointer to a duplicate of str in a new block of memory.
+ * aborts:  If not enough memory to make a duplicate.
+ */
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), Handle ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
+#endif
+}
 
-TRMEMAPI( FreeSafe )
-void FreeSafe( void *ptr )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
 /*************************
  * post:    The block pointed to by ptr is freed if it was allocated by
- *          MallocSafe.
+ *          MemAlloc...
  * remarks: Guaranteed to work in low memory situations (scarce).
  */
 {
@@ -428,23 +440,10 @@ void wres_free( void *ptr )
 }
 #endif
 
-TRMEMAPI( StrdupSafe )
-char *StrdupSafe( const char *str )
-/**********************************
- * returns: Pointer to a duplicate of str in a new block of memory.
- * aborts:  If not enough memory to make a duplicate.
- */
-{
-#ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), Handle ) ) );
-#else
-    return( check_nomem( strdup( str ) ) );
-#endif
-}
 
 
-TRMEMAPI( CharToStrSafe )
-char *CharToStrSafe( char c )
+TRMEMAPI( CharToStringSafe )
+char *CharToStringSafe( char c )
 /****************************
  * returns: Pointer to a string with one character in a new block of memory.
  * aborts:  If not enough memory to make a string.
@@ -480,8 +479,8 @@ void MemShrink( void )
 
 #ifdef USE_FAR
 
-void FAR *FarMallocUnSafe( size_t size )
-/**************************************/
+void FAR *FarMemAlloc( size_t size )
+/**********************************/
 {
     if( !largeNearSeg ) {
         memGrow();
@@ -490,12 +489,12 @@ void FAR *FarMallocUnSafe( size_t size )
 }
 
 
-void FAR *FarMallocSafe( size_t size )
+void FAR *FarMemAllocSafe( size_t size )
 /************************************/
 {
     void FAR *ptr;
 
-    ptr = FarMallocUnSafe( size );
+    ptr = FarMemAlloc( size );
     if( ptr == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
@@ -505,7 +504,7 @@ void FAR *FarMallocSafe( size_t size )
 }
 
 
-void FarFreeSafe( void FAR *p )
+void FarMemFree( void FAR *p )
 /*****************************/
 {
     _ffree( p );

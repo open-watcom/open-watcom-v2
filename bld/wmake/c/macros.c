@@ -112,7 +112,7 @@ STATIC char *getDirBuf( void )
 /****************************/
 {
     if( dirBuf == NULL ) {
-        dirBuf = MallocSafe( _MAX_PATH );
+        dirBuf = MemAllocSafe( _MAX_PATH );
     }
     return( dirBuf );
 }
@@ -468,7 +468,7 @@ char *GetMacroValue( const char *name )
     const char  *old;
     char        *line;
 
-    InName = StrdupSafe( name );
+    InName = MemStrdupSafe( name );
     p = strchr( InName, ':' );
 
     if( p == NULL ) {
@@ -476,7 +476,7 @@ char *GetMacroValue( const char *name )
         if( beforeSub == NULL ) {
             afterSub = NULL;
         } else {
-            afterSub  = StrdupSafe( beforeSub );
+            afterSub = MemStrdupSafe( beforeSub );
         }
     } else {
         *p++ = NULLCHAR;
@@ -501,13 +501,13 @@ char *GetMacroValue( const char *name )
                     PrtMsg( ERR | LOC | INVALID_STRING_SUBSTITUTE );
                 }
                 if( line != NULL ) {
-                    FreeSafe( line );
+                    MemFree( line );
                 }
             }
         }
     }
 
-    FreeSafe( InName );
+    MemFree( InName );
     return( afterSub );
 }
 
@@ -559,12 +559,12 @@ STATIC bool addMacro( const char *name, char *value )
     unused_value = false;
     if( new != NULL
       && !new->readonly ) {   /* reuse old node */
-        FreeSafe( (void *)new->value );
+        MemFree( (void *)new->value );
         new->value = value;
         new->readonly = Glob.macreadonly;
     } else if( new == NULL ) {
-        new = MallocSafe( sizeof( *new ) ); /* get memory for new node */
-        new->node.name = StrdupSafe( macro );
+        new = MemAllocSafe( sizeof( *new ) ); /* get memory for new node */
+        new->node.name = MemStrdupSafe( macro );
         new->value = value;
         new->readonly = Glob.macreadonly;
         AddHashNode( macTab, (HASHNODE *)new );
@@ -631,9 +631,9 @@ void UnDefMacro( const char *name )
 
     assert( dead != NULL );
 
-    FreeSafe( dead->node.name );
-    FreeSafe( (void *)dead->value );
-    FreeSafe( dead );
+    MemFree( dead->node.name );
+    MemFree( (void *)dead->value );
+    MemFree( dead );
 }
 #ifdef __WATCOMC__
 #pragma pop( check_stack );
@@ -699,7 +699,7 @@ char *DeMacroSpecial( const char *InString )
             buffer[pos] = NULLCHAR;
             tempString = FullDeMacroText( buffer );
             WriteVec( outString, tempString );
-            FreeSafe( tempString);
+            MemFree( tempString);
         }
     }
     WriteNVec( outString, old, p - old + 1 );
@@ -759,23 +759,23 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         } else {
             s = PreGetCHR();
             if( sismacc( s ) ) {
-                p = CharToStrSafe( s );
+                p = CharToStringSafe( s );
             } else {
-                p = CharToStrSafe( NULLCHAR );
+                p = CharToStringSafe( NULLCHAR );
             }
         }
 
         if( IsMacroName( p ) ) {
             p2 = WrnGetMacroValue( p );
-            FreeSafe( p );
+            MemFree( p );
             return( p2 );
         }
-        FreeSafe( p );
+        MemFree( p );
         break;
     case MAC_DOLLAR:
-        return( CharToStrSafe( TMP_DOLLAR ) );      /* write a place holder */
+        return( CharToStringSafe( TMP_DOLLAR ) );      /* write a place holder */
     case MAC_COMMENT:
-        return( CharToStrSafe( TMP_COMMENT ) );     /* write a place holder */
+        return( CharToStringSafe( TMP_COMMENT ) );     /* write a place holder */
     case MAC_OPEN:
         /* recurse, get macro name */
         if( !Glob.compat_nmake
@@ -783,10 +783,10 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
             p = deMacroText( depth + 1, end1, MAC_CLOSE );
             if( IsMacroName( p ) ) {
                 p2 = WrnGetMacroValue( p );
-                FreeSafe( p );
+                MemFree( p );
                 return( p2 );
             }
-            FreeSafe( p );
+            MemFree( p );
         } else {
             s = PreGetCHR();
             if( sismsspecial( s ) ) {
@@ -835,7 +835,7 @@ STATIC char *ProcessToken( int depth, MTOKEN_T end1, MTOKEN_T end2, MTOKEN_T t )
         /* static pointer returned so we need to duplicate string */
         cp2 = specialValue( t );
         if( cp2 != NULL ) {
-            return( StrdupSafe( cp2 ) );
+            return( MemStrdupSafe( cp2 ) );
         }
         return( NULL );
     case MAC_ALL_DEP:
@@ -875,7 +875,7 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
 /*******************************************************************
  * post:    0 or more characters removed from input; next character of
  *          input is STRM_END || STRM_MAGIC || EOL || end1 || end2
- * returns: pointer to demacro'd string (caller must FreeSafe)
+ * returns: pointer to demacro'd string (caller must MemFree)
  */
 {
     MTOKEN_T    t;
@@ -907,7 +907,7 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
         if( t == MAC_CLOSE
           && end2 != MAC_CLOSE ) {
             t = MAC_PUNC;
-            CurAttr.u.ptr = CharToStrSafe( ')' );
+            CurAttr.u.ptr = CharToStringSafe( ')' );
         }
 
         if( t == TOK_END               /* always stops at these */
@@ -924,7 +924,7 @@ STATIC char *deMacroToEnd( int depth, MTOKEN_T end1, MTOKEN_T end2 )
         p = ProcessToken( depth, end1, end2, t );
         if( p != NULL ) {
             WriteVec( vec, p );
-            FreeSafe( p );
+            MemFree( p );
         }
     }
 
@@ -1088,7 +1088,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     WriteVec( DeMacroText, leadingSpace );  /* Write copy of leading whitespace */
     temp        = StartVec();
     WriteVec( temp, DeMacroStr );
-    FreeSafe( DeMacroStr );
+    MemFree( DeMacroStr );
     CatVec( DeMacroText, temp );            /* Write graphic string expansion */
     temp        = StartVec();
     WriteVec( temp, TrailSpace );
@@ -1155,7 +1155,7 @@ STATIC char *PartDeMacroProcess( void )
                 }
                 WriteVec( wsvec, CurAttr.u.ptr );
             }
-            FreeSafe( CurAttr.u.ptr );
+            MemFree( CurAttr.u.ptr );
             CurAttr.u.ptr = NULL;
             break;
         case MAC_TEXT:
@@ -1166,7 +1166,7 @@ STATIC char *PartDeMacroProcess( void )
             }
             leadingws = false;
             WriteVec( vec, CurAttr.u.ptr );
-            FreeSafe( CurAttr.u.ptr );
+            MemFree( CurAttr.u.ptr );
             CurAttr.u.ptr = NULL;
             break;
         default:
@@ -1296,9 +1296,9 @@ STATIC char *deMacroName( const char *text, const char *name )
                 temp = GetMacroValue( macronameStr );
                 if( temp != NULL ) {
                     WriteVec( outtext, temp );
-                    FreeSafe( temp );
+                    MemFree( temp );
                 }
-                FreeSafe( macronameStr );
+                MemFree( macronameStr );
                 p = oldptr = p + 1 + lengthToClose;
             }
             break;
@@ -1309,7 +1309,7 @@ STATIC char *deMacroName( const char *text, const char *name )
                 temp = GetMacroValue( name );
                 if( temp != NULL ) {
                     WriteVec( outtext, temp );
-                    FreeSafe( temp );
+                    MemFree( temp );
                 }
                 p = oldptr = p + 1;
             }
@@ -1342,7 +1342,7 @@ void DefMacro( const char *name )
 
     temp  = PartDeMacro( false );
     value = deMacroName( temp, name );
-    FreeSafe( temp );
+    MemFree( temp );
 
     unused_value = true;
     EnvVarValue = NULL;
@@ -1366,8 +1366,8 @@ void DefMacro( const char *name )
 #ifdef CLEAN_ENVIRONMENT_VAR
                 tempEList = NewEList();
                 tempEList->next = OldEnvValues;
-                tempEList->envVarName = StrdupSafe( name );
-                tempEList->envOldVal  = StrdupSafe( EnvOldValue );
+                tempEList->envVarName = MemStrdupSafe( name );
+                tempEList->envOldVal  = MemStrdupSafe( EnvOldValue );
                 OldEnvValues = tempEList;
 #endif
                 SetEnvSafe( name, EnvVarValue );
@@ -1375,8 +1375,8 @@ void DefMacro( const char *name )
         }
     }
     if( unused_value )
-        FreeSafe( value );
-    FreeSafe( EnvVarValue );
+        MemFree( value );
+    MemFree( EnvVarValue );
 }
 
 
@@ -1420,14 +1420,14 @@ STATIC void restoreEnvironment( void )
     while( (p = OldEnvValues) != NULL ) {
         OldEnvValues = p->next;
         len = strlen( p->envVarName );
-        env = MallocSafe( sizeof( ENV_TRACKER ) + len + strlen( p->envOldVal ) + 1 );
+        env = MemAllocSafe( sizeof( ENV_TRACKER ) + len + strlen( p->envOldVal ) + 1 );
         strcpy( env->name, p->envVarName );
         env->value = env->name + len + 1;
         strcpy( env->value, p->envOldVal );
         SetEnvExt( env );
-        FreeSafe( p->envVarName );
-        FreeSafe( p->envOldVal );
-        FreeSafe( p );
+        MemFree( p->envVarName );
+        MemFree( p->envOldVal );
+        MemFree( p );
     }
 }
 #endif
@@ -1453,9 +1453,9 @@ STATIC bool freeMacro( MACRO *mac, const void *ptr )
 {
     /* unused parameters */ (void)ptr;
 
-    FreeSafe( mac->node.name );
-    FreeSafe( (char *)(mac->value) );
-    FreeSafe( mac );
+    MemFree( mac->node.name );
+    MemFree( (char *)(mac->value) );
+    MemFree( mac );
     return( false );
 }
 #endif
@@ -1470,7 +1470,7 @@ void MacroFini( void )
     macTab = NULL;
 
     if( dirBuf != NULL ) {
-        FreeSafe( dirBuf );
+        MemFree( dirBuf );
     }
 #endif
 #ifdef CLEAN_ENVIRONMENT_VAR

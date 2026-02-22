@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ static void AddCtlFile( const char *name )
             break;
         owner = &curr->next;
     }
-    curr = MAlloc( sizeof( *curr ) );
+    curr = MemAlloc( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->name, name );
     *owner = curr;
@@ -249,7 +249,7 @@ static int parse_string( const char *env, char **args )
                 if( pos > 0 ) {
                     if( args != NULL ) {
                         parm_buff[pos] = '\0';
-                        args[argc] = MStrdup( parm_buff );
+                        args[argc] = MemStrdup( parm_buff );
                     }
                     ++argc;
                     pos = 0;
@@ -262,7 +262,7 @@ static int parse_string( const char *env, char **args )
             if( !quoted ) {
                 if( args != NULL ) {
                     parm_buff[pos] = '\0';
-                    args[argc] = MStrdup( parm_buff );
+                    args[argc] = MemStrdup( parm_buff );
                 }
                 ++argc;
                 pos = 0;
@@ -278,7 +278,7 @@ static int parse_string( const char *env, char **args )
     if( pos > 0 ) {
         if( args != NULL ) {
             parm_buff[pos] = '\0';
-            args[argc] = MStrdup( parm_buff );
+            args[argc] = MemStrdup( parm_buff );
         }
         ++argc;
     }
@@ -295,14 +295,14 @@ static bool ProcessEnv( bool opt_end )
     if( env != NULL ) {
         argc = parse_string( env, NULL );
         if( argc > 0 ) {
-            args = MAlloc( ( argc + 1 ) * sizeof( char * ) );
+            args = MemAlloc( ( argc + 1 ) * sizeof( char * ) );
             argc = parse_string( env, args );
             args[argc] = NULL;
             opt_end = ProcessOptions( args, opt_end );
             while( argc > 0 ) {
-                MFree( args[--argc] );
+                MemFree( args[--argc] );
             }
-            MFree( args );
+            MemFree( args );
         }
     }
     return( opt_end );
@@ -314,7 +314,7 @@ static void PushInclude( const char *name )
     pgroup2         pg;
     char            dir_name[_MAX_PATH];
 
-    new = MAlloc( sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->prev = includeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
@@ -342,7 +342,7 @@ static bool PopInclude( void )
     fclose( curr->fp );
     includeStk = curr->prev;
     ResetArchives( curr->reset_abit );
-    MFree( curr );
+    MemFree( curr );
     if( includeStk == NULL )
         return( false );
     SysChdir( GetIncludeCWD() );
@@ -699,7 +699,7 @@ int main( int argc, char *argv[] )
     int         rc = 0;
     bool        opt_end;
 
-    MOpen();
+    MemOpen();
     SysInit( argc, argv );
     LogBackup = DEF_BACKUP;
     opt_end = false;
@@ -719,11 +719,11 @@ int main( int argc, char *argv[] )
             rc = 1;
         }
         next = CtlList->next;
-        MFree( CtlList );
+        MemFree( CtlList );
         CtlList = next;
     }
     CloseLog();
-    MClose();
+    MemClose();
     return( rc );
 }
 

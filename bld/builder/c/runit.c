@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,7 +214,7 @@ void ResetArchives( copy_entry list )
             _dos_setfileattr( list->src, attr & ~_A_ARCH );
         }
 #endif
-        MFree( list );
+        MemFree( list );
         list = next;
     }
 }
@@ -231,7 +231,7 @@ static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 {
     copy_entry  entry;
 
-    entry = MAlloc( sizeof( *entry ) );
+    entry = MemAlloc( sizeof( *entry ) );
     entry->next = NULL;
     strcpy( entry->src, src );
     strcpy( entry->dst, dst );
@@ -506,7 +506,7 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
     res = BuildList( src, dst, test_abit, cond_copy, &list );
     if( res == 0
       && list != NULL ) {
-        char    *copy_buff = MAlloc( COPY_BUFF_SIZE );
+        char    *copy_buff = MemAlloc( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
             next = list->next;
             if( res == 0
@@ -524,9 +524,9 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
 #endif
                 }
             }
-            MFree( list );
+            MemFree( list );
         }
-        MFree( copy_buff );
+        MemFree( copy_buff );
     }
     return( res );
 }
@@ -716,7 +716,7 @@ static int DoRM( const char *f )
                  * build directory list
                  */
                 len += i + 1;
-                tmp = MAlloc( offsetof( iolist, name ) + len );
+                tmp = MemAlloc( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
                     dhead = tmp;
@@ -750,7 +750,7 @@ static int DoRM( const char *f )
         if( rc != 0 ) {
             retval = rc;
         }
-        MFree( tmp );
+        MemFree( tmp );
     }
     return( retval );
 }

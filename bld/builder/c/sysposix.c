@@ -62,7 +62,7 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     const char  **argv;
     int         i;
 
-    cmdnam = MStrdup( cmd );
+    cmdnam = MemStrdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
     /*
@@ -72,9 +72,9 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     while( i-- > 0 && cmdnam[i] == ' ' ) {
         cmdnam[i] = '\0';
     }
-    argv = MAlloc( strlen( cmdnam ) * sizeof( char * ) );
+    argv = MemAlloc( strlen( cmdnam ) * sizeof( char * ) );
     if( argv == NULL ) {
-        MFree( cmdnam );
+        MemFree( cmdnam );
         return( -1 );
     }
     i = 0;
@@ -108,8 +108,8 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
             }
         }
     }
-    MFree( cmdnam );
-    MFree( argv );
+    MemFree( cmdnam );
+    MemFree( argv );
     if( pid == -1 )
         return( -1 );
     return( 0 );

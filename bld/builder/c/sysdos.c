@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ int SysRunCommand( const char *cmd )
     char        buff[BUFSIZE + 1];
     char        *p;
 
-    pgmname = MStrdup( cmd );
+    pgmname = MemStrdup( cmd );
     if( pgmname == NULL )
         return( -1 );
     cmdline = strchr( pgmname, ' ' );
@@ -144,6 +144,6 @@ int SysRunCommand( const char *cmd )
         }
         TinyDelete( temp_name );
     }
-    MFree( pgmname );
+    MemFree( pgmname );
     return( rc );
 }

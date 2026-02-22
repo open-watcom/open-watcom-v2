@@ -74,7 +74,7 @@ struct Target {
 
     /*
      * node.name has been FixName()'d, and includes path.
-     * each target "owns" its name (ie: targ->name = StrdupSafe( name ) )
+     * each target "owns" its name (ie: targ->name = MemStrdupSafe( name ) )
      * name is read only - change with RenameTarget() only!
      */
 

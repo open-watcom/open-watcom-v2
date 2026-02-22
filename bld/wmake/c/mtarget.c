@@ -69,7 +69,7 @@ FLIST *NewFList( void )
         memset( f, 0, sizeof( *f ) );
         return( f );
     }
-    return( (FLIST *)CallocSafe( sizeof( FLIST ) ) );
+    return( (FLIST *)MemCAllocSafe( sizeof( FLIST ) ) );
 }
 
 
@@ -86,7 +86,7 @@ NKLIST *NewNKList( void )
         memset( nk, 0, sizeof( *nk ) );
         return( nk );
     }
-    return( (NKLIST *)CallocSafe( sizeof( NKLIST ) ) );
+    return( (NKLIST *)MemCAllocSafe( sizeof( NKLIST ) ) );
 }
 
 
@@ -103,7 +103,7 @@ SLIST *NewSList( void )
         memset( slist, 0, sizeof( *slist ) );
         return( slist );
     }
-    return( (SLIST *)CallocSafe( sizeof( SLIST ) ) );
+    return( (SLIST *)MemCAllocSafe( sizeof( SLIST ) ) );
 }
 
 
@@ -120,7 +120,7 @@ TLIST *NewTList( void )
         memset( t, 0, sizeof( *t ) );
         return( t );
     }
-    return( (TLIST *)CallocSafe( sizeof( TLIST ) ) );
+    return( (TLIST *)MemCAllocSafe( sizeof( TLIST ) ) );
 }
 
 STATIC TARGET *removeTarget( const char *name )
@@ -137,9 +137,9 @@ void RenameTarget( const char *oldname, const char *newname )
     targ = removeTarget( oldname );
     if( targ != NULL ) {
         if( targ->node.name != NULL ) {
-            FreeSafe( targ->node.name );
+            MemFree( targ->node.name );
         }
-        targ->node.name = FixName( StrdupSafe( newname ) );
+        targ->node.name = FixName( MemStrdupSafe( newname ) );
         AddHashNode( targTab, (HASHNODE *)targ );
     }
 }
@@ -152,7 +152,7 @@ TARGET *NewTarget( char *name )
 {
     TARGET  *new;
 
-    new = CallocSafe( sizeof( *new ) );
+    new = MemCAllocSafe( sizeof( *new ) );
     new->executed = true;
     new->date = OLDEST_DATE;
     new->node.name = name;
@@ -210,7 +210,7 @@ DEPEND *NewDepend( void )
         memset( dep, 0, sizeof( *dep ) );
         return( dep );
     }
-    return( (DEPEND *)CallocSafe( sizeof( DEPEND ) ) );
+    return( (DEPEND *)MemCAllocSafe( sizeof( DEPEND ) ) );
 }
 
 
@@ -225,7 +225,7 @@ CLIST *NewCList( void )
         memset( c, 0, sizeof( *c ) );
         return( c );
     }
-    return( (CLIST *)CallocSafe( sizeof( CLIST ) ) );
+    return( (CLIST *)MemCAllocSafe( sizeof( CLIST ) ) );
 }
 
 
@@ -243,9 +243,9 @@ STATIC FLIST *DupFList( const FLIST *old )
     }
 
     head = NewFList();
-    head->fileName = StrdupSafe( old->fileName );
+    head->fileName = MemStrdupSafe( old->fileName );
     if( old->body != NULL ) {
-        head->body = StrdupSafe( old->body );
+        head->body = MemStrdupSafe( old->body );
     } else {
         head->body = NULL;
     }
@@ -254,9 +254,9 @@ STATIC FLIST *DupFList( const FLIST *old )
     cur = head;
     for( old = old->next; old != NULL; old = old->next ) {
         new = NewFList();
-        new->fileName = StrdupSafe( old->fileName );
+        new->fileName = MemStrdupSafe( old->fileName );
         if( old->body != NULL ) {
-            new->body = StrdupSafe( old->body );
+            new->body = MemStrdupSafe( old->body );
         } else {
             new->body = NULL;
         }
@@ -282,13 +282,13 @@ CLIST *DupCList( const CLIST *old )
     }
 
     head = NewCList();
-    head->text       = StrdupSafe( old->text );
+    head->text       = MemStrdupSafe( old->text );
     head->inlineHead = DupFList( old->inlineHead );
 
     cur = head;
     for( old = old->next; old != NULL; old = old->next ) {
         new = NewCList();
-        new->text       = StrdupSafe( old->text );
+        new->text       = MemStrdupSafe( old->text );
         new->inlineHead = DupFList( old->inlineHead );
         cur->next = new;
 
@@ -365,7 +365,7 @@ void FreeNKList( NKLIST *nklist )   /* non-recursive */
     while( nklist != NULL ) {
         cur = nklist;
         nklist = nklist->next;
-        FreeSafe( cur->fileName );
+        MemFree( cur->fileName );
         cur->next = freeNKLists;
         freeNKLists = cur;
     }
@@ -381,10 +381,10 @@ void FreeSList( SLIST *slist )   /* non-recursive */
     while( slist != NULL ) {
         cur = slist;
         if( *cur->targ_path != NULLCHAR ) {
-            FreeSafe( cur->targ_path );
+            MemFree( cur->targ_path );
         }
         if( *cur->dep_path != NULLCHAR ) {
-            FreeSafe( cur->dep_path );
+            MemFree( cur->dep_path );
         }
         KillTarget( cur->cretarg->node.name );
         slist = slist->next;
@@ -405,8 +405,8 @@ void FreeFList( FLIST *flist )   /* non-recursive */
         cur        = flist;
         flist      = flist->next;
         cur->next  = freeFLists;
-        FreeSafe( cur->body );
-        FreeSafe( cur->fileName );
+        MemFree( cur->body );
+        MemFree( cur->fileName );
         freeFLists = cur;
     }
 }
@@ -420,7 +420,7 @@ void FreeCList( CLIST *clist )
     while( clist != NULL ) {
         cur = clist;
         clist = clist->next;
-        FreeSafe( cur->text );
+        MemFree( cur->text );
         FreeFList( cur->inlineHead );
         cur->next = freeCLists;
         freeCLists = cur;
@@ -452,8 +452,8 @@ STATIC void freeTarget( TARGET *targ )
     assert( targ != NULL );
 
     FreeDepend( targ->depend );
-    FreeSafe( targ->node.name );
-    FreeSafe( targ );
+    MemFree( targ->node.name );
+    MemFree( targ );
 }
 
 
@@ -481,7 +481,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
 
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
-        targ = NewTarget( StrdupSafe( name ) );
+        targ = NewTarget( MemStrdupSafe( name ) );
         if( name[0] == '.'
           && ( cisextc( name[1] )
           || ciswildc( name[1] ) ) ) {
@@ -509,7 +509,7 @@ STATIC TARGET *findOrNewDotTarget( DotName dot )
     strcpy( name + 1, DotNames[dot] );
     targ = FindTarget( name );
     if( targ == NULL ) {
-        targ = NewTarget( StrdupSafe( name ) );
+        targ = NewTarget( MemStrdupSafe( name ) );
         targ->special = true;
         targ->mentioned = true;
         switch( dot ) {
@@ -816,7 +816,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             dep = freeDepends;
             freeDepends = dep->next;
-            FreeSafe( dep );
+            MemFree( dep );
         } while( freeDepends != NULL );
         return( true );
     }
@@ -824,7 +824,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             t = freeTLists;
             freeTLists = t->next;
-            FreeSafe( t );
+            MemFree( t );
         } while( freeTLists != NULL );
         return( true );
     }
@@ -832,7 +832,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             nk = freeNKLists;
             freeNKLists = nk->next;
-            FreeSafe( nk );
+            MemFree( nk );
         } while( freeNKLists != NULL );
         return( true );
     }
@@ -840,7 +840,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             slist = freeSLists;
             freeSLists = slist->next;
-            FreeSafe( slist );
+            MemFree( slist );
         } while( freeSLists != NULL );
         return( true );
     }
@@ -848,7 +848,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             f = freeFLists;
             freeFLists = f->next;
-            FreeSafe( f );
+            MemFree( f );
         } while( freeFLists != NULL );
         return( true );
     }
@@ -856,7 +856,7 @@ STATIC bool cleanupLeftovers( void )
         do {
             c = freeCLists;
             freeCLists = c->next;
-            FreeSafe( c );
+            MemFree( c );
         } while( freeCLists != NULL );
         return( true );
     }

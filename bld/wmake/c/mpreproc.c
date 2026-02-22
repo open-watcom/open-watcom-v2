@@ -270,16 +270,16 @@ STATIC bool ifDef( void )
     EatToEOL();
 
     if( !IsMacroName( name ) ) {
-        FreeSafe( name );
+        MemFree( name );
         return( false );
     }
 
     value = GetMacroValue( name );
     ret = ( value != NULL );
     if( value != NULL ) {
-        FreeSafe( value );
+        MemFree( value );
     }
-    FreeSafe( name );
+    MemFree( name );
 
     return( ret );
 }
@@ -322,7 +322,7 @@ STATIC bool ifOp( void )
 
     parseExpr( &temp, test );
 
-    FreeSafe( test );
+    MemFree( test );
     return( temp.data.number != 0 );
 }
 
@@ -349,17 +349,17 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     EatToEOL();
 
     if( !IsMacroName( name ) ) {
-        FreeSafe( name );
-        FreeSafe( test );
+        MemFree( name );
+        MemFree( test );
         return;
     }
 
     value = WrnGetMacroValue( name );
 
-    FreeSafe( name );               /* don't need name any more */
+    MemFree( name );               /* don't need name any more */
 
     if( value == NULL ) {
-        FreeSafe( test );
+        MemFree( test );
         return;
     }
 
@@ -372,8 +372,8 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     chopTrailWS( beg );             /* chop trailing ws */
 
     *v1 = value;
-    *v2 = StrdupSafe( beg );
-    FreeSafe( test );
+    *v2 = MemStrdupSafe( beg );
+    MemFree( test );
 }
 
 
@@ -394,8 +394,8 @@ STATIC bool ifEq( void )
     }
     ret = ( strcmp( v1, v2 ) == 0 );
 
-    FreeSafe( (void *)v1 );
-    FreeSafe( v2 );
+    MemFree( (void *)v1 );
+    MemFree( v2 );
 
     return( ret );
 }
@@ -418,8 +418,8 @@ STATIC bool ifEqi( void )
     }
     ret = ( stricmp( v1, v2 ) == 0 );
 
-    FreeSafe( (void *)v1 );
-    FreeSafe( v2 );
+    MemFree( (void *)v1 );
+    MemFree( v2 );
 
     return( ret );
 }
@@ -666,7 +666,7 @@ STATIC void bangDefine( void )
     } else {
         DefMacro( name );
     }
-    FreeSafe( name );
+    MemFree( name );
 }
 
 
@@ -698,12 +698,12 @@ STATIC void bangInject( void )
     EatToEOL();
     contents = SkipWS( text );
     if( *contents == NULLCHAR ) {
-        FreeSafe( text );
+        MemFree( text );
         return;
     }
     p = FindNextWS( contents );
     if( *p == NULLCHAR ) {
-        FreeSafe( text );
+        MemFree( text );
         return;
     }
     if( *contents == '\"' ) {
@@ -732,7 +732,7 @@ STATIC void bangInject( void )
         }
         DefMacro( mac_name );
     }
-    FreeSafe( text );
+    MemFree( text );
 }
 
 
@@ -754,7 +754,7 @@ STATIC void bangLoadDLL( void )
     EatToEOL();
     p = SkipWS( text );
     if( *p == NULLCHAR ) {
-        FreeSafe( text );
+        MemFree( text );
         return;
     }
     /*
@@ -762,7 +762,7 @@ STATIC void bangLoadDLL( void )
      */
     p = SkipWS( CmdGetFileName( p, &cmd_name, false ) );
     if( *p == NULLCHAR ) {
-        FreeSafe( text );
+        MemFree( text );
         return;
     }
     /*
@@ -771,7 +771,7 @@ STATIC void bangLoadDLL( void )
     ent_name = SkipWS( CmdGetFileName( p, &dll_name, true ) );
     if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
-        FreeSafe( text );
+        MemFree( text );
         return;
     }
     /*
@@ -780,7 +780,7 @@ STATIC void bangLoadDLL( void )
     p = skipUntilWS( ent_name );
     *p = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
-    FreeSafe( text );
+    MemFree( text );
 }
 
 
@@ -799,21 +799,21 @@ STATIC void bangUnDef( void )
     EatToEOL();
 
     if( !IsMacroName( name ) ) {
-        FreeSafe( name );
+        MemFree( name );
         return;
     }
 
     value = GetMacroValue( name );
     if( value == NULL ) {
         PrtMsg( DBG | WRN | LOC | TRYING_UNDEF_UNDEF, directives[D_UNDEF] );
-        FreeSafe( name );
+        MemFree( name );
         return;
     }
 
     UnDefMacro( name );
 
-    FreeSafe( value );
-    FreeSafe( name );
+    MemFree( value );
+    MemFree( name );
 }
 
 
@@ -825,7 +825,7 @@ STATIC char *formatLongFileName( char *text )
     char    *pTxt;
 
     assert( text != NULL );
-    ret = StrdupSafe( text );
+    ret = MemStrdupSafe( text );
     pRet = ret;
     pTxt = text;
 
@@ -844,7 +844,7 @@ STATIC char *formatLongFileName( char *text )
     if( *pTxt == '\"' ) {
         if( *(pTxt + 1) != NULLCHAR ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
-            FreeSafe( ret );
+            MemFree( ret );
             return( NULL );
         }
     }
@@ -883,7 +883,7 @@ STATIC void bangInclude( void )
             temp = text;
             text = formatLongFileName( temp + 1 );
             if( text == NULL ) {
-                FreeSafe( temp );
+                MemFree( temp );
                 return;
             }
             for( ;; ) {
@@ -915,15 +915,15 @@ STATIC void bangInclude( void )
         temp = text;
         text = formatLongFileName( text );
         if( text == NULL ) {
-            FreeSafe( temp );
+            MemFree( temp );
             return;
         }
         if( !InsFile( text, false ) ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
     }
-    FreeSafe( temp );
-    FreeSafe( text );
+    MemFree( temp );
+    MemFree( text );
 }
 
 
@@ -942,7 +942,7 @@ STATIC void bangMessage( void )
     chopTrailWS( text );
 
     PrtMsg( PRNTSTR, text );
-    FreeSafe( text );
+    MemFree( text );
 }
 
 
@@ -962,7 +962,7 @@ STATIC void bangError( void )
 
     PrtMsg( ERR | LOC | NEOL | USER_ERROR );
     PrtMsg( ERR | PRNTSTR, text );
-    FreeSafe( text );
+    MemFree( text );
 }
 
 
@@ -1408,7 +1408,7 @@ STATIC bool IsMacro( char const *name )
     if( value == NULL ) {
         return( false );
     }
-    FreeSafe( value );
+    MemFree( value );
     return( true );
 }
 

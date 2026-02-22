@@ -90,7 +90,7 @@ STATIC void doBuiltIns( const char *makeopts )
 
     if( !Glob.overide ) {
         DoingBuiltIn = true;
-        cpy = MallocSafe( 2048 + strlen( makeopts ) );
+        cpy = MemAllocSafe( 2048 + strlen( makeopts ) );
         FmtStr( buf, "%F", BuiltIns );
         FmtStr( cpy, buf, makeopts );
         parseString( cpy );
@@ -129,7 +129,7 @@ STATIC void doBuiltIns( const char *makeopts )
             FmtStr( cpy, buf, makeopts );
             parseString( cpy );
         }
-        FreeSafe( cpy );
+        MemFree( cpy );
         DoingBuiltIn = false;
     }
 }
@@ -183,7 +183,7 @@ STATIC void handleMacroDefn( const char *buf )
 
     assert( buf != NULL );
 
-    q = StrdupSafe( buf );  /* we need our own copy */
+    q = MemStrdupSafe( buf );   /* we need our own copy */
 
     p = strpbrk( q, "=" );
     assert( p != NULL );
@@ -207,7 +207,7 @@ STATIC void handleMacroDefn( const char *buf )
             /* NOP - eat the characters. Needs own eater. */
         }
     }
-    FreeSafe( q );
+    MemFree( q );
 }
 
 
@@ -327,7 +327,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                             Usage();
                             // never return
                         }
-                        new = MallocSafe( sizeof( *new ) );
+                        new = MemAllocSafe( sizeof( *new ) );
                         new->name = (char *)p;
                         new->next = filesToDo;
                         filesToDo = new;
@@ -402,7 +402,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         char    default_option[] = " -?";
 
         // 120 allows for 30 options.
-        makeopts = MallocSafe( 120 + strlen( *log_name ) + 1 + 1 );
+        makeopts = MemAllocSafe( 120 + strlen( *log_name ) + 1 + 1 );
         makeopts[0] = NULLCHAR;
         for( option = 'a'; option <= 'z'; ++option ) {
             if( CHK_OPTION( option ) ) {
@@ -533,7 +533,7 @@ STATIC void parseFiles( void )
             cur = newhead;
             newhead = cur->next;
             p = cur->name;
-            FreeSafe( cur );
+            MemFree( cur );
             if( CHECK_STDIN( p ) ) { /* handle -f - */
                 InsOpenFile( stdin );
                 ok = true;
@@ -655,7 +655,7 @@ STATIC void init( char const * const *argv )
     makeopts = procFlags( argv, &log_name );
     ParseInit();
     doBuiltIns( makeopts );
-    FreeSafe( makeopts );
+    MemFree( makeopts );
 }
 
 
@@ -674,7 +674,7 @@ static int ExitSafe( int rc )
         while( filesToDo != NULL ) {
             NODE * const cur = filesToDo;
             filesToDo = cur->next;
-            FreeSafe( cur );
+            MemFree( cur );
         }
         if( mustTargs != NULL ) {
             FreeTList( mustTargs );

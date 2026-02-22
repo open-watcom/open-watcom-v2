@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ STATIC bool vecScarce( void )
         while( freeVec != NULL ) {
             cur = freeVec;
             freeVec = freeVec->next;
-            FreeSafe( cur );
+            MemFree( cur );
         }
         return( true );
     }
@@ -115,7 +115,7 @@ void VecInit( void )
 
     freeVec = NULL;
     for( count = 0; count < VECSTR_ALLOC_VECSTR; ++count ) {
-        new = MallocSafe( sizeof( *new ) );
+        new = MemAllocSafe( sizeof( *new ) );
         new->next = freeVec;
         freeVec = new;
     }
@@ -140,7 +140,7 @@ VECSTR StartVec( void )
         new = freeVec;
         freeVec = freeVec->next;
     } else {
-        new = MallocSafe( sizeof( *new ) );
+        new = MemAllocSafe( sizeof( *new ) );
     }
 
     new->d.head = NULL;
@@ -161,7 +161,7 @@ void FreeVec( VECSTR vec )
     while( walk != NULL ) {
         cur = walk;
         walk = walk->next;
-        FarFreeSafe( cur );
+        FarMemFree( cur );
     }
 
     ((OURPTR)vec)->next = freeVec;
@@ -180,10 +180,10 @@ STATIC char *expandVec( VECSTR vec )
 
     cur = ((OURPTR)vec)->d.head;
     if( cur == NULL ) {
-        return( CallocSafe( 1 ) );
+        return( MemCAllocSafe( 1 ) );
     }
 
-    result = MallocSafe( ((OURPTR)vec)->d.totlen + 1 );
+    result = MemAllocSafe( ((OURPTR)vec)->d.totlen + 1 );
 
     d = result;
     for( ; cur != NULL; cur = cur->next ) {
@@ -257,7 +257,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     len1 = len;
     if( len1 < MIN_TEXT )
         len1 = MIN_TEXT;
-    new = FarMallocSafe( sizeof( *new ) + len1 );
+    new = FarMemAllocSafe( sizeof( *new ) + len1 );
     FarMemCpy( new->text, text, len );
     new->len = len;
     new->next = NULL;
@@ -309,7 +309,7 @@ void CatVec( VECSTR dest, VECSTR src )
         cur = walk;
         walk = walk->next;
         cpyTxt( dest, cur->text, cur->len );
-        FarFreeSafe( cur );
+        FarMemFree( cur );
     }
     ((OURPTR)src)->next = freeVec;
     freeVec = (OURPTR)src;

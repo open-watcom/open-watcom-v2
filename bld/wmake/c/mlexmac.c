@@ -129,14 +129,14 @@ STATIC char *CatModifier( char *inString, bool destroy )
         WriteVec( output, inString );
         WriteVec( output, buffer );
         if( destroy ) {
-            FreeSafe( inString );
+            MemFree( inString );
         }
         return( FinishVec( output ) );
     }
     UnGetCHR( s );
-    ret = StrdupSafe( inString );
+    ret = MemStrdupSafe( inString );
     if( destroy ) {
-        FreeSafe( inString );
+        MemFree( inString );
     }
     return( ret );
 }
@@ -389,7 +389,7 @@ MTOKEN_T LexMacDef( STRM_T s )
     UnGetCHR( s );
 
     *cur = NULLCHAR;
-    CurAttr.u.ptr = StrdupSafe( text );
+    CurAttr.u.ptr = MemStrdupSafe( text );
 
     if( onlyws ) {
         return( MAC_WS );

@@ -226,12 +226,12 @@ void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name )
     /*
      * we want newer !loaddlls to take precedence
      */
-    n = MallocSafe( sizeof( *n ) );
-    n->cmd_name = StrdupSafe( cmd_name );
+    n = MemAllocSafe( sizeof( *n ) );
+    n->cmd_name = MemStrdupSafe( cmd_name );
     n->next = dllCommandList;
     dllCommandList = n;
-    IdeDrvInit( &n->inf, StrdupSafe( dll_name ),
-                (ent_name == NULL) ? NULL : StrdupSafe( ent_name ) );
+    IdeDrvInit( &n->inf, MemStrdupSafe( dll_name ),
+                (ent_name == NULL) ? NULL : MemStrdupSafe( ent_name ) );
 }
 
 DLL_CMD *OSFindDLL( char const *cmd_name )
@@ -295,14 +295,14 @@ STATIC void cleanDLLCmd( void )
 
     while( (n = dllCommandList) != NULL ) {
         dllCommandList = n->next;
-        FreeSafe( (char *)n->cmd_name );
+        MemFree( (char *)n->cmd_name );
         if( n->inf.dll_name != NULL ) {
-            FreeSafe( (char*) n->inf.dll_name );
+            MemFree( (char*) n->inf.dll_name );
         }
         if( n->inf.ent_name != NULL ) {
-            FreeSafe( (char *)n->inf.ent_name );
+            MemFree( (char *)n->inf.ent_name );
         }
-        FreeSafe( n );
+        MemFree( n );
     }
 #endif
 }
@@ -473,7 +473,7 @@ int SetEnvSafe( const char *name, const char *value )
 
     len = strlen( name );
     len1 = ( value == NULL ) ? 0 : strlen( value );
-    env = MallocSafe( sizeof( ENV_TRACKER ) + len + len1 + 1 );
+    env = MemAllocSafe( sizeof( ENV_TRACKER ) + len + len1 + 1 );
     // upper case the name
     p = env->name;
     while( *name != NULLCHAR ) {
@@ -499,13 +499,13 @@ int SetEnvSafe( const char *name, const char *value )
     old = *walk;
     if( old != NULL ) {
         *walk = old->next;          // unlink old entry from chain
-        FreeSafe( old );            // ...
+        MemFree( old );            // ...
     }
     if( env->value != NULL ) {
         env->next = envList;        // we put new entry into chain
         envList = env;              // ...
     } else {
-        FreeSafe( env );            // we're deleting the entry
+        MemFree( env );            // we're deleting the entry
     }
     return( rc );
 }
@@ -519,7 +519,7 @@ void SetEnvFini( void )
 
     while( (cur = envList) != NULL ) {
         envList = cur->next;
-        FreeSafe( cur );
+        MemFree( cur );
     }
 }
 #endif

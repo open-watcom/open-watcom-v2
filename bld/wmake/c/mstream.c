@@ -130,7 +130,7 @@ STATIC SENT *getSENT( STYPE_T type )
         d = freeSent;
         freeSent = freeSent->next;
     } else {
-        d = MallocSafe( sizeof( *d ) );
+        d = MemAllocSafe( sizeof( *d ) );
     }
     d->type = type;
     d->next = headSent;
@@ -156,12 +156,12 @@ STATIC void popSENT( void )
             fclose( tmp->data.file.fp );
             PrtMsg( DBG | INF | LOC | FINISHED_FILE, tmp->data.file.name );
         }
-        FreeSafe( tmp->data.file.buf );
-        FreeSafe( (void *)tmp->data.file.name );
+        MemFree( tmp->data.file.buf );
+        MemFree( (void *)tmp->data.file.name );
         break;
     case SENT_STR:
         if( tmp->free ) {
-            FreeSafe( (void *)tmp->data.str.str );
+            MemFree( (void *)tmp->data.str.str );
         }
         break;
     case SENT_CHAR:
@@ -183,7 +183,7 @@ STATIC void pushFP( SENT *sent, FILE *fp )
     assert( sent != NULL );
 
     sent->data.file.fp = fp;
-    sent->data.file.buf = MallocSafe( FILE_BUFFER_SIZE );
+    sent->data.file.buf = MemAllocSafe( FILE_BUFFER_SIZE );
     sent->data.file.cur = sent->data.file.buf;
     sent->data.file.max = sent->data.file.buf;
     sent->data.file.line = 1;
@@ -261,7 +261,7 @@ bool InsFile( const char *name, bool envsearch )
         if( fp != NULL ) {
             tmp = getSENT( SENT_FILE );
             tmp->free = true;
-            tmp->data.file.name = StrdupSafe( path );
+            tmp->data.file.name = MemStrdupSafe( path );
 
             pushFP( tmp, fp );
 
@@ -305,7 +305,7 @@ void InsString( const char *str, bool weFree )
 /*********************************************
  * Push a string into the stream.  Assumes that contents of string remain
  * static while it is in the stream.  (ie: it doesn't make its own copy).
- * If weFree then, it will be FreeSafe'd when it is done.
+ * If weFree then, it will be MemFree'd when it is done.
  */
 {
     SENT    *tmp;
@@ -418,7 +418,7 @@ STATIC bool streamScarce( void )
     while( freeSent != NULL ) {
         cur = freeSent;
         freeSent = freeSent->next;
-        FreeSafe( cur );
+        MemFree( cur );
     }
 
     return( true );
@@ -445,7 +445,7 @@ void StreamInit( void )
      */
     freeSent = NULL;
     for( count = 0; count < STREAM_ALLOC_SENT; count++ ) {
-        sent = MallocSafe( sizeof( *sent ) );
+        sent = MemAllocSafe( sizeof( *sent ) );
         sent->next = freeSent;
         freeSent = sent;
     }

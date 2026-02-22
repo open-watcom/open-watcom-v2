@@ -29,9 +29,7 @@
 ****************************************************************************/
 
 
-extern void         MOpen( void );
-extern void         MClose( void );
+#include "memfuncs.h"
 
-extern void         *MAlloc( size_t );
-extern void         MFree( void * );
-extern char         *MStrdup( const char * );
+extern void         MemOpen( void );
+extern void         MemClose( void );

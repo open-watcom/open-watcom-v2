@@ -101,7 +101,7 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
     char        *sp;
     int         rc;
 
-    cmdnam = MStrdup( cmd );
+    cmdnam = MemStrdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
     sp = strchr( cmdnam, ' ' );
@@ -122,7 +122,7 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
             }
         }
     }
-    MFree( cmdnam );
+    MemFree( cmdnam );
     return( rc );
 }
 

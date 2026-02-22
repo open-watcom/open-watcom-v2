@@ -132,13 +132,13 @@ STATIC void freeDirectList( DHEADPTR dhead )
         for( h = 0; h < HASH_PRIME; h++ ) {
             for( cwalk = dhead->dh_table[h]; cwalk != NULL; cwalk = cwalk_next ) {
                 cwalk_next = cwalk->ce_next;
-                FarFreeSafe( cwalk );
+                FarMemFree( cwalk );
 #ifdef CACHE_STATS
                 bytes += sizeof( *cwalk );
 #endif
             }
         }
-        FarFreeSafe( dhead );
+        FarMemFree( dhead );
 #ifdef CACHE_STATS
         bytes += sizeof( *dhead );
 #endif
@@ -192,7 +192,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
     }
 #endif
 
-    *pdhead = FarMallocUnSafe( sizeof( **pdhead ) );
+    *pdhead = FarMemAlloc( sizeof( **pdhead ) );
     if( *pdhead == NULL ) {
         return( CACHE_NOT_ENUF_MEM );
     }
@@ -227,7 +227,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #endif
         /* we tromp on entry, and get hash value */
         h = Hash( FixName( dire->d_name ), HASH_PRIME );
-        cnew = FarMallocUnSafe( sizeof( *cnew ) );
+        cnew = FarMemAlloc( sizeof( *cnew ) );
         if( cnew == NULL ) {
             CLOSEDIRXX( dirp );
             freeDirectList( *pdhead );  /* roll back, and abort */

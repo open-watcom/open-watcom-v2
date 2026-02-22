@@ -74,7 +74,7 @@ static unsigned long fileSize( FILE *fp )
     size = ftell( fp );
     fseek( fp, old, SEEK_SET );
     if( size == 0 ) {
-        // MallocSafe returns NULL for size == 0
+        // MemAllocSafe returns NULL for size == 0
         ++size;
     }
     return( size );
@@ -97,7 +97,7 @@ static void *orlRead( struct orl_io_struct *orlio, size_t bytes )
 
     if( orlBuffer == NULL ) {
         orlFileSize = (size_t)fileSize( orlio->orlInfo.fp );
-        orlBuffer = MallocSafe( orlFileSize );
+        orlBuffer = MemAllocSafe( orlFileSize );
         // just suck it right in :)
         n = fread( orlBuffer, 1, orlFileSize, orlio->orlInfo.fp );
         if( n != orlFileSize ) {
@@ -134,7 +134,7 @@ static int orlSeek( struct orl_io_struct *orlio, long offset, int mode )
 static void AutoORLInit( void )
 /*****************************/
 {
-    ORLSetFuncs( orl_cli_funcs, orlRead, orlSeek, MallocSafe, FreeSafe );
+    ORLSetFuncs( orl_cli_funcs, orlRead, orlSeek, MemAllocSafe, MemFree );
 
     orlHandle = ORLInit( &orl_cli_funcs );
 }
@@ -198,7 +198,7 @@ static handle AutoORLFileInit( const char *name )
             break;
         }
         if( orlBuffer != NULL ) {
-            FreeSafe( orlBuffer );
+            MemFree( orlBuffer );
             orlBuffer = NULL;
         }
         fclose( orlIO.orlInfo.fp );
@@ -259,7 +259,7 @@ static void AutoORLFileFini( handle hdl )
     (void)hdl;
     ORLFileFini( orlIO.orlInfo.orl_handle );
     fclose( orlIO.orlInfo.fp );
-    FreeSafe( orlBuffer );
+    MemFree( orlBuffer );
     orlBuffer = NULL;
 }
 

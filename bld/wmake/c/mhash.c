@@ -111,7 +111,7 @@ HASHTAB *NewHashTab( HASH_T prime )
 {
     HASHTAB     *tab;
 
-    tab = CallocSafe( sizeof( *tab ) + prime * sizeof( HASHNODE ) );
+    tab = MemCAllocSafe( sizeof( *tab ) + prime * sizeof( HASHNODE ) );
     tab->prime = prime;
 
     return( tab );
@@ -166,7 +166,7 @@ void FreeHashTab( HASHTAB *tab )
  * with any existing nodes.
  */
 {
-    FreeSafe( tab );
+    MemFree( tab );
 }
 
 

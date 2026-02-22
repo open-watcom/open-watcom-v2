@@ -69,8 +69,8 @@ static void     TRPrintLine( void *parm, const char *buff, size_t len )
 
 #endif  /* TRMEM */
 
-void MOpen( void )
-/****************/
+void MemOpen( void )
+/******************/
 {
 #ifdef TRMEM
     TRMemHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
@@ -78,7 +78,7 @@ void MOpen( void )
 #endif
 }
 
-void MClose( void )
+void MemClose( void )
 /*****************/
 {
 #ifdef TRMEM
@@ -100,7 +100,7 @@ void Fatal( const char *str, ... )
         va_end( args );
     }
     CloseLog();
-    MClose();
+    MemClose();
     exit( 1 );
 }
 
@@ -150,8 +150,8 @@ void CloseLog( void )
     }
 }
 
-TRMEMAPI( MAlloc )
-void *MAlloc( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 {
     void        *p;
 
@@ -166,8 +166,8 @@ void *MAlloc( size_t size )
     return( p );
 }
 
-TRMEMAPI( MStrdup )
-char *MStrdup( const char *s )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *s )
 {
     void        *p;
 
@@ -182,8 +182,8 @@ char *MStrdup( const char *s )
     return( p );
 }
 
-TRMEMAPI( MFree )
-void MFree( void *p )
+TRMEMAPI( MemFree )
+void MemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 3 ), TRMemHandle );

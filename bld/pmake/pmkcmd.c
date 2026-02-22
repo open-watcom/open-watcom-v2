@@ -130,7 +130,7 @@ static int RunCommand( char *cmd )
             skip_sp = false;
         }
     }
-    argv = (const char **)MAlloc( i * sizeof( char * ) );
+    argv = (const char **)MemAlloc( i * sizeof( char * ) );
     if( argv == NULL )
         return( 1 );    /* error no memory */
     skip_sp = true;
@@ -148,7 +148,7 @@ static int RunCommand( char *cmd )
     }
     argv[i] = NULL;
     rc = (int)spawnvp( P_WAIT, cmd, argv );
-    MFree( (void *)argv );
+    MemFree( (void *)argv );
     return( rc );
 }
 
@@ -242,6 +242,63 @@ static void PrintHelp( void )
     }
 }
 
+#ifdef TRMEM
+static _trmem_hdl   TRMemHandle;
+
+static void     TRPrintLine( void *parm, const char *buff, size_t len )
+{
+    /* unused parameters */ (void)parm; (void)len;
+
+    printf( "%s\n", buff );
+}
+#endif
+
+void MemOpen( void )
+/******************/
+{
+#ifdef TRMEM
+    TRMemHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+            NULL, TRPrintLine, _TRMEM_DEF );
+#endif
+}
+
+void MemClose( void )
+/*******************/
+{
+#ifdef TRMEM
+    _trmem_prt_list( TRMemHandle );
+    _trmem_close( TRMemHandle );
+#endif
+}
+
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+{
+    void        *p;
+
+#ifdef TRMEM
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
+#else
+    p = malloc( size );
+#endif
+    if( p == NULL ) {
+        printf( "Out of memory!\n" );
+        MemClose();
+        exit( EXIT_FAILURE );
+    }
+    return( p );
+}
+
+TRMEMAPI( MemFree )
+void MemFree( void *p )
+{
+#ifdef TRMEM
+    _trmem_free( p, _TRMEM_WHO( 2 ), TRMemHandle );
+#else
+    free( p );
+#endif
+}
+
 #if !defined( __WATCOMC__ )
 int main( int argc, char **argv )
 {
@@ -260,9 +317,9 @@ int main( void )
 #endif
 
     rc = EXIT_FAILURE;
-    MOpen();
+    MemOpen();
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = MAlloc( cmd_len );
+    cmd_line = MemAlloc( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     if( PMakeBuild( &pmake, cmd_line ) != NULL ) {
         if( pmake.want_help ) {
@@ -279,64 +336,7 @@ int main( void )
         }
         PMakeCleanup( &pmake );
     }
-    MFree( cmd_line );
-    MClose();
+    MemFree( cmd_line );
+    MemClose();
     return( rc );
-}
-
-#ifdef TRMEM
-static _trmem_hdl   TRMemHandle;
-
-static void     TRPrintLine( void *parm, const char *buff, size_t len )
-{
-    /* unused parameters */ (void)parm; (void)len;
-
-    printf( "%s\n", buff );
-}
-#endif
-
-void MOpen( void )
-/****************/
-{
-#ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
-            NULL, TRPrintLine, _TRMEM_DEF );
-#endif
-}
-
-void MClose( void )
-/*****************/
-{
-#ifdef TRMEM
-    _trmem_prt_list( TRMemHandle );
-    _trmem_close( TRMemHandle );
-#endif
-}
-
-TRMEMAPI( MAlloc )
-void *MAlloc( size_t size )
-{
-    void        *p;
-
-#ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
-#else
-    p = malloc( size );
-#endif
-    if( p == NULL ) {
-        printf( "Out of memory!\n" );
-        MClose();
-        exit( EXIT_FAILURE );
-    }
-    return( p );
-}
-
-TRMEMAPI( MFree )
-void MFree( void *p )
-{
-#ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 2 ), TRMemHandle );
-#else
-    free( p );
-#endif
 }

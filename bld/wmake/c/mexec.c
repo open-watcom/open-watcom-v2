@@ -302,7 +302,7 @@ STATIC char *createTmpFileName( void )
       && !Glob.compat_nmake ) {
         tmpPath = getenv( TEMPENVVAR );
         if( tmpPath != NULL ) {
-            tmpPath = StrdupSafe( tmpPath );
+            tmpPath = MemStrdupSafe( tmpPath );
         }
     }
 
@@ -313,13 +313,13 @@ STATIC char *createTmpFileName( void )
         if( tmpPath != NULL ) {
             if( strlen( tmpPath ) >= _MAX_PATH ) {
                 FreeVec( buf );
-                FreeSafe( tmpPath );
+                MemFree( tmpPath );
                 PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 ExitFatal();
                 // never return
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
                 FreeVec( buf );
-                FreeSafe( tmpPath );
+                MemFree( tmpPath );
                 PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 ExitFatal();
                 // never return
@@ -344,10 +344,10 @@ STATIC char *createTmpFileName( void )
         if( !ExistFile( result ) ) {
             /* touch the file */
             TouchFile( result );
-            FreeSafe( tmpPath );
+            MemFree( tmpPath );
             return( result );
         }
-        FreeSafe( result );
+        MemFree( result );
         tmpFileNumber = (UINT16)((tmpFileNumber + time( NULL )) % 100000);
     }
 }
@@ -397,7 +397,7 @@ STATIC bool processInlineFile( FILE *fp, const char *body, const char *fileName 
                     if( *DeMacroBody != NULLCHAR ) {
                         WriteVec( outText, DeMacroBody );
                     }
-                    FreeSafe( DeMacroBody );
+                    MemFree( DeMacroBody );
                 }
                 if( firstTime ) {
                     WriteVec( outText, " > " );
@@ -409,7 +409,7 @@ STATIC bool processInlineFile( FILE *fp, const char *body, const char *fileName 
                 DeMacroBody = FinishVec( outText );
                 PrtMsg( INF | PRNTSTR, DeMacroBody );
             }
-            FreeSafe( DeMacroBody );
+            MemFree( DeMacroBody );
         }
     }
     return( ok );
@@ -447,7 +447,7 @@ STATIC char *RemoveBackSlash( const char *inString )
     }
     buffer[pos] = NULLCHAR;
 
-    return( StrdupSafe( buffer ) );
+    return( MemStrdupSafe( buffer ) );
 }
 
 
@@ -498,7 +498,7 @@ STATIC bool createFile( const FLIST *head )
             if( fclose( fp ) == 0 ) {
                 if( !head->keep ) {
                     temp = NewNKList();
-                    temp->fileName = StrdupSafe( tmpFileName );
+                    temp->fileName = MemStrdupSafe( tmpFileName );
                     temp->next     = noKeepList;
                     noKeepList     = temp;
                 }
@@ -510,8 +510,8 @@ STATIC bool createFile( const FLIST *head )
             PrtMsg( ERR | ERROR_OPENING_FILE, tmpFileName );
             ok = false;
         }
-        FreeSafe( fileName );
-        FreeSafe( tmpFileName );
+        MemFree( fileName );
+        MemFree( tmpFileName );
     }
     return( ok );
 }
@@ -570,7 +570,7 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
             }
             WriteNVec( newCommand, cmdText + start, index - start - 2 );
             start = index;
-            FreeSafe( current->fileName );
+            MemFree( current->fileName );
             current->fileName = createTmpFileName();
 
             WriteVec( newCommand, current->fileName );
@@ -580,14 +580,14 @@ STATIC bool writeInlineFiles( FLIST *head, char **commandIn )
         } else {
             if( !current->keep ) {
                 temp = NewNKList();
-                temp->fileName = StrdupSafe( current->fileName );
+                temp->fileName = MemStrdupSafe( current->fileName );
                 temp->next     = noKeepList;
                 noKeepList     = temp;
             }
         }
     }
     WriteNVec( newCommand, cmdText+start, strlen( cmdText ) - start );
-    FreeSafe( cmdText );
+    MemFree( cmdText );
     *commandIn = FinishVec( newCommand );
     return( ok );
 }
@@ -648,7 +648,7 @@ STATIC bool percentMake( char *arg )
     bool        more_targets;
 
     /* %make <target> <target> ... */
-    buf = MallocSafe( _MAX_PATH );
+    buf = MemAllocSafe( _MAX_PATH );
 
     ok = false;
     start = arg;
@@ -676,7 +676,7 @@ STATIC bool percentMake( char *arg )
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
-            calltarg = NewTarget( FixName( StrdupSafe( buf ) ) );
+            calltarg = NewTarget( FixName( MemStrdupSafe( buf ) ) );
             newtarg = true;
         }
         ok = Update( calltarg );
@@ -690,7 +690,7 @@ STATIC bool percentMake( char *arg )
         }
         start = finish;
     }
-    FreeSafe( buf );
+    MemFree( buf );
 
     return( ok );
 }
@@ -704,7 +704,7 @@ STATIC void closeCurrentFile( void )
         currentFileHandle = NULL;
     }
     if( currentFileName != NULL ) {
-        FreeSafe( currentFileName );
+        MemFree( currentFileName );
         currentFileName = NULL;
     }
     CacheRelease();     /* so that the cache is updated */
@@ -760,7 +760,7 @@ STATIC bool percentWrite( char *arg, enum write_type type )
      */
     if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
-        currentFileName = StrdupSafe( fn );
+        currentFileName = MemStrdupSafe( fn );
         if( type == WR_APPEND ) {
             open_flags = "a";
         } else {
@@ -1522,15 +1522,15 @@ STATIC RET_T handleFor( char *line )
             newlen = numsubst * strlen( subst ) + cmdlen;
             if( lastlen < newlen ) {
                 lastlen = newlen;
-                FreeSafe( exec );
-                exec = MallocSafe( newlen );
+                MemFree( exec );
+                exec = MemAllocSafe( newlen );
             }
 
             /* make variable substitutions */
             doForSubst( var, varlen, subst, cmd, exec );
 
             if( !execLine( exec ) ) {
-                FreeSafe( exec );
+                MemFree( exec );
                 busy = false;
                 /* abandon remaining file entries */
                 DoWildCardClose();
@@ -1539,7 +1539,7 @@ STATIC RET_T handleFor( char *line )
         }
     }
 
-    FreeSafe( exec );
+    MemFree( exec );
     busy = false;
     return( RET_SUCCESS );
 }
@@ -1795,7 +1795,7 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
                  * build directory list
                  */
                 len += i + 1;
-                tmp = MallocSafe( offsetof( iolist, name ) + len );
+                tmp = MemAllocSafe( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
                     dhead = tmp;
@@ -2541,7 +2541,7 @@ bool ExecCList( CLIST *clist )
                 ok = verbosePrintTempFile( currentFlist );
             }
             ok = execLine( line );
-            FreeSafe( line );
+            MemFree( line );
             if( !ok ) {
                 return( ok );
             }
@@ -2574,7 +2574,7 @@ STATIC void destroyNKList( void )
             WriteVec( outText, temp->fileName );
             tempstr = FinishVec( outText );
             PrtMsg( INF | PRNTSTR, tempstr );
-            FreeSafe( tempstr );
+            MemFree( tempstr );
         }
         remove( temp->fileName );
     }
