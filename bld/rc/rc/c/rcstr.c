@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,7 @@
 #include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcrtns.h"
+#include "memfuncs.h"
 
 
 #if !defined( INSIDE_WLINK ) || defined( _OS2 )
@@ -197,7 +198,7 @@ static void ConstructStringBlock( StringsBlock *str )
     /*
      * allocate the block for the strings
      */
-    str->StringBlock = RESALLOC( str->StringBlockSize );
+    str->StringBlock = MemAllocSafe( str->StringBlockSize );
     /*
      * copy the strings into the block
      */
@@ -239,19 +240,19 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
          */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RESALLOC( list_len * sizeof( void * ) );
+        str->StringList = MemAllocSafe( list_len * sizeof( void * ) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList, list_len, CompareWResIDNames );
         str->StringListLen = list_len;
 
         if( list_len == 0 ) {
-            RESFREE( str->StringList );
+            MemFree( str->StringList );
             str->StringList = NULL;
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            new_list = RCREALLOC( str->StringList, list_len * sizeof( void * ) );
+            new_list = MemReallocSafe( str->StringList, list_len * sizeof( void * ) );
             if( new_list != NULL ) {
                 str->StringList = new_list;
             }

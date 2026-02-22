@@ -126,7 +126,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    exe_type = RESALLOC( sizeof( FullTypeRecord ) );
+    exe_type = MemAllocSafe( sizeof( FullTypeRecord ) );
 
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = typeinfo->NumResources;
@@ -190,7 +190,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    exe_res = RESALLOC( sizeof( FullResourceRecord ) );
+    exe_res = MemAllocSafe( sizeof( FullResourceRecord ) );
 
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
@@ -361,9 +361,9 @@ static void freeResTable( ResTable *restab )
         next_type = exe_type->Next;
         for( exe_res = exe_type->Head; exe_res != NULL; exe_res = next_res ) {
             next_res = exe_res->Next;
-            RESFREE( exe_res );
+            MemFree( exe_res );
         }
-        RESFREE( exe_type );
+        MemFree( exe_type );
     }
 
     restab->Dir.Head = NULL;

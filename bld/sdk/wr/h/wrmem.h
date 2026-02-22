@@ -35,16 +35,17 @@
 #define WRMEM_INCLUDED
 
 #include "trmem.h"
-//#include "memfuncs.h"
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern void *   WRAPI WRMemAlloc( size_t, _trmem_who who );
-WRDLLENTRY extern void     WRAPI WRMemFree( void *, _trmem_who who );
-WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, size_t, _trmem_who who );
-WRDLLENTRY extern int      WRAPI WRMemValidate( void *, _trmem_who who );
-WRDLLENTRY extern int      WRAPI WRMemChkRange( void *, size_t, _trmem_who who );
+WRDLLENTRY extern void *   WRAPI WRMemAlloc( size_t, _trmem_who );
+WRDLLENTRY extern void *   WRAPI WRMemAllocSafe( size_t, _trmem_who );
+WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, size_t, _trmem_who );
+WRDLLENTRY extern void *   WRAPI WRMemReallocSafe( void *, size_t, _trmem_who );
+WRDLLENTRY extern void     WRAPI WRMemFree( void *, _trmem_who );
+WRDLLENTRY extern int      WRAPI WRMemValidate( void *, _trmem_who );
+WRDLLENTRY extern int      WRAPI WRMemChkRange( void *, size_t, _trmem_who );
 WRDLLENTRY extern void     WRAPI WRMemPrtUsage( void );
 
 #endif

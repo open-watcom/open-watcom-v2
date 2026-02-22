@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,7 @@ static RcStatus readDBIndex( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
-    charInfo.index = RESALLOC( size );
+    charInfo.index = MemAllocSafe( size );
     numread = fread( charInfo.index, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -102,7 +102,7 @@ static RcStatus readDBTable( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
-    charInfo.entries = RESALLOC( size );
+    charInfo.entries = MemAllocSafe( size );
     numread = fread( charInfo.entries, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -192,11 +192,11 @@ void FreeCharTable( void )
 /************************/
 {
     if( charInfo.index != NULL ) {
-        RESFREE( charInfo.index );
+        MemFree( charInfo.index );
         charInfo.index = NULL;
     }
     if( charInfo.entries != NULL ) {
-        RESFREE( charInfo.entries );
+        MemFree( charInfo.entries );
         charInfo.entries = NULL;
     }
 }

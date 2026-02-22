@@ -107,3 +107,5 @@ extern void         PPENTRY PP_MacrosFini( void );
 extern int          PPENTRY PP_MBCharLen( const char *p );
 extern const char   * PPENTRY PP_GetEnv( const char *__name );
 
+extern void         * PPMemAlloc( size_t size );
+extern void         PPMemFree( void *p );

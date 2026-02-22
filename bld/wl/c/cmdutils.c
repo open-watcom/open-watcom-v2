@@ -113,7 +113,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         } else {
             retval = rtn();
         }
-        LnkMemFree( start );
+        MemFree( start );
     }
     return( retval );
 #endif
@@ -389,7 +389,7 @@ char *getstring( void )
 /*********************/
 // make the current token into a C string.
 {
-    return( LnkMemToString( Token.this, Token.len ) );
+    return( MemToStringSafe( Token.this, Token.len ) );
 }
 
 static unsigned ParseNumber( const char *str, int radix, int *shift )
@@ -641,14 +641,14 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
         toklen = Token.len;
         if( req == SEP_QUOTE && Token.this[toklen] == '\'' )
             toklen++;
-        buff = LnkMemAlloc( envlen + toklen + 1);
+        buff = MemAllocSafe( envlen + toklen + 1);
         memcpy( buff, env, envlen );
         memcpy( buff + envlen, Token.this, toklen );
         buff[toklen + envlen] = '\0';
         NewCommandSource( envname, buff, ENVIRONMENT );
-        LnkMemFree( buff );
+        MemFree( buff );
     }
-    LnkMemFree( envname );
+    MemFree( envname );
 }
 
 static void GetNewLine( void )
@@ -694,21 +694,21 @@ static void StartNewFile( void )
     fname = FileName( Token.this, Token.len, E_NONE, false );
     file = QObjOpen( fname );
     if( file == NIL_FHANDLE ) {
-        LnkMemFree( fname );
+        MemFree( fname );
         fname = getstring();
         envstring = GetEnvString( fname );
         if( envstring != NULL ) {
             NewCommandSource( fname, envstring, ENVIRONMENT );
-            LnkMemFree( fname );
+            MemFree( fname );
         } else {
             LnkMsg( ERR+LOC+LINE+MSG_CANT_OPEN_NO_REASON, "s", fname );
-            LnkMemFree( fname );
+            MemFree( fname );
             Suicide();
         }
     } else {
         SetCommandFile( file, fname );
         DEBUG(( DBG_OLD, "processing command file %s", fname ));
-        LnkMemFree( fname );
+        MemFree( fname );
     }
 }
 
@@ -947,7 +947,7 @@ static char *getCmdLine( void )
     char    *cmd_line;
 
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = LnkMemAlloc( cmd_len );
+    cmd_line = MemAlloc( cmd_len );
     if( cmd_line != NULL ) {
         _bgetcmd( cmd_line, cmd_len );
     }
@@ -960,7 +960,7 @@ void NewCommandSource( const char *name, const char *buff, method how )
 {
     cmdfilelist     *newfile;
 
-    newfile = LnkMemAlloc( sizeof( cmdfilelist ) );
+    newfile = MemAllocSafe( sizeof( cmdfilelist ) );
     newfile->file = STDIN_FILENO;
     newfile->symprefix = NULL;
     if( CmdFile != NULL ) {     /* save current state */
@@ -978,16 +978,16 @@ void NewCommandSource( const char *name, const char *buff, method how )
     }
     CmdFile = newfile;
     if( name != NULL ) {
-        newfile->name = LnkMemStrdup( name );
+        newfile->name = MemStrdupSafe( name );
     } else {
         newfile->name = NULL;
     }
     newfile->token.how = how;
     if( how == NONBUFFERED ) {
         /* have to have at least this size */
-        newfile->token.buff = LnkMemAlloc( MAX_REC + 1 );
+        newfile->token.buff = MemAlloc( MAX_REC + 1 );
     } else if( buff != NULL ) {
-        newfile->token.buff = LnkMemStrdup( buff );
+        newfile->token.buff = MemStrdupSafe( buff );
     } else if( how == COMMANDLINE ) {
         newfile->token.buff = getCmdLine();
     } else {
@@ -1019,14 +1019,14 @@ void SetCommandFile( f_handle file, const char *fname )
     if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
         size_t  size = (size_t)long_size;
 
-        buff = LnkMemAllocNoChk( size + 1 );
+        buff = MemAlloc( size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
             if( size == IOERROR )
                 size = 0;
             buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
-            LnkMemFree( buff );
+            MemFree( buff );
         }
     }
     if( buff == NULL ) {  // if couldn't buffer for some reason.
@@ -1055,15 +1055,15 @@ static void deleteCmdFile( cmdfilelist *cmdfile )
         QClose( file, cmdfile->name );
     }
     if( cmdfile->symprefix != NULL ) {
-        LnkMemFree( cmdfile->symprefix );
+        MemFree( cmdfile->symprefix );
     }
     if( cmdfile->name != NULL ) {
-        LnkMemFree( cmdfile->name );
+        MemFree( cmdfile->name );
     }
     if( cmdfile->token.buff != NULL ) {
-        LnkMemFree( cmdfile->token.buff );
+        MemFree( cmdfile->token.buff );
     }
-    LnkMemFree( cmdfile );
+    MemFree( cmdfile );
 }
 
 void RestoreCmdLine( void )
@@ -1130,12 +1130,12 @@ outfilelist *NewOutFile( char *filename )
 
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         if( FNAMECMPSTR( filename, fnode->fname ) == 0 ) {
-            LnkMemFree( filename );       // don't need this now.
+            MemFree( filename );       // don't need this now.
             return( fnode );
         }
     }
     // file name not already in list, so add a list entry.
-    fnode = LnkMemAlloc( sizeof( outfilelist ) );
+    fnode = MemAllocSafe( sizeof( outfilelist ) );
     InitBuffFile( fnode, filename, true );
     fnode->next = OutFiles;
     OutFiles = fnode;
@@ -1155,7 +1155,7 @@ char *GetFileName( char **membname )
     namelen = Token.len;
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
         fullmemb = GetBaseName( Token.this, Token.len, &memblen );
-        *membname = LnkMemToString( fullmemb, memblen );
+        *membname = MemToStringSafe( fullmemb, memblen );
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {
         *membname = NULL;

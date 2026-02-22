@@ -32,6 +32,7 @@
 
 #include "wrglbl.h"
 #include "wresmem.h"
+#include "wrmemi.h"
 
 
 #if defined( _M_IX86 ) && defined( __NT__ )

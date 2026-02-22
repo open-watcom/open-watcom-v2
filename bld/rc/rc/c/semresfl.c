@@ -101,11 +101,11 @@ static bool copyResourcesFromRes( const char *full_filename )
                 RcError( ERR_RES_OS_MISMATCH, full_filename );
                 error = true;
             } else {
-                buffer = RESALLOC( BUFFER_SIZE );
+                buffer = MemAllocSafe( BUFFER_SIZE );
                 for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
                     copyAResource( fp, &wind, buffer, full_filename );
                 }
-                RESFREE( buffer );
+                MemFree( buffer );
             }
         }
         RcIoCloseInputBin( fp );
@@ -130,5 +130,5 @@ void SemWINAddResFile( char *filename )
     } else if( copyResourcesFromRes( full_filename ) ) {
         ErrorHasOccured = true;
     }
-    RESFREE( filename );
+    MemFree( filename );
 }

@@ -118,8 +118,8 @@ void LnkMemFini( void )
 #endif
 }
 
-TRMEMAPI( LnkMemAllocNoChk )
-void *LnkMemAllocNoChk( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 /***********************************/
 {
     void    *ptr;
@@ -141,9 +141,9 @@ void *LnkMemAllocNoChk( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( LnkMemAlloc )
-void *LnkMemAlloc( size_t size )
-/******************************/
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
 {
     void            *ptr;
 
@@ -167,9 +167,9 @@ void *LnkMemAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( LnkMemStrdup )
-char *LnkMemStrdup( const char *str )
-/***********************************/
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
 {
     char            *ptr;
 
@@ -192,11 +192,11 @@ char *LnkMemStrdup( const char *str )
     return( ptr );
 }
 
-TRMEMAPI( LnkMemRealloc )
-void *LnkMemRealloc( void *src, size_t size )
-/********************************************
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *src, size_t size )
+/*********************************************
  * reallocate a block of memory.
- * Notes for LnkMemRealloc
+ * Notes for MemRealloc
  * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
  * and this function is called from permshrink
  */
@@ -218,8 +218,8 @@ void *LnkMemRealloc( void *src, size_t size )
     return( dest );
 }
 
-TRMEMAPI( LnkMemFree )
-void LnkMemFree( void *p )
+TRMEMAPI( MemFree )
+void MemFree( void *p )
 /************************/
 {
     if( p == NULL )
@@ -231,9 +231,9 @@ void LnkMemFree( void *p )
 #endif
 }
 
-TRMEMAPI( LnkMemToString )
-char *LnkMemToString( const void *mem, size_t len )
-/*************************************************/
+TRMEMAPI( MemToStringSafe )
+char *MemToStringSafe( const void *mem, size_t len )
+/***********************************************/
 {
     char            *ptr;
 
@@ -304,7 +304,7 @@ void DbgZapFreed( void *tgt, size_t size )
 
 bool FreeUpMemory( void )
 /************************
- * make sure LnkMemRealloc is kept up to date with what is put in here.
+ * make sure MemRealloc is kept up to date with what is put in here.
  */
 {
 #if defined( __QNX__ )

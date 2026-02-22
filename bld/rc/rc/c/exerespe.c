@@ -43,6 +43,7 @@
 #include "exeobj.h"
 #include "exeutil.h"
 #include "exerespe.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -87,7 +88,7 @@ static void QueueEmpty( DirEntryQueue *queue )
 
     for( curr = queue->front; curr != NULL; curr = next ) {
         next = curr->next;
-        RESFREE( curr );
+        MemFree( curr );
     }
 
     QueueInit( queue );
@@ -104,7 +105,7 @@ static void QueueAdd( DirEntryQueue *queue, PEResDirEntry *entry )
 {
     QueueNode       *new;
 
-    new = RESALLOC( sizeof( QueueNode ) );
+    new = MemAllocSafe( sizeof( QueueNode ) );
     new->entry = entry;
     new->next = NULL;
     if( queue->front == NULL ) {
@@ -133,7 +134,7 @@ static PEResDirEntry *QueueRemove( DirEntryQueue *queue )
     }
 
     entry = old->entry;
-    RESFREE( old );
+    MemFree( old );
     return( entry );
 } /* QueueRemove */
 
@@ -147,7 +148,7 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
     entry->Head.num_name_entries = 0;
     entry->Head.num_id_entries = 0;
     entry->NumUnused = num_entries;
-    entry->Children = RESALLOC( num_entries * sizeof( PEResEntry ) );
+    entry->Children = MemAllocSafe( num_entries * sizeof( PEResEntry ) );
 }
 
 static void PEResDirAdd( PEResDirEntry *entry, WResID *name,
@@ -668,7 +669,7 @@ static void FreeSubDir( PEResDirEntry *subdir )
         }
     }
 
-    RESFREE( subdir->Children );
+    MemFree( subdir->Children );
 }
 
 static void FreePEResDir( PEResDir *dir )
@@ -676,9 +677,9 @@ static void FreePEResDir( PEResDir *dir )
 {
     FreeSubDir( &dir->Root );
     if( dir->String.StringBlock != NULL )
-        RESFREE( dir->String.StringBlock );
+        MemFree( dir->String.StringBlock );
     if( dir->String.StringList != NULL ) {
-        RESFREE( dir->String.StringList );
+        MemFree( dir->String.StringList );
     }
 }
 

@@ -345,8 +345,8 @@ void ResetSym( void )
 void InitSym( void )
 /*************************/
 {
-    GlobalSymPtrs = LnkMemAlloc( GLOBAL_TABALLOC );
-    StaticSymPtrs = LnkMemAlloc( STATIC_TABALLOC );
+    GlobalSymPtrs = MemAllocSafe( GLOBAL_TABALLOC );
+    StaticSymPtrs = MemAllocSafe( STATIC_TABALLOC );
 }
 
 #ifdef DEVBUILD
@@ -406,7 +406,7 @@ static void WipeSym( symbol *sym )
       && (FmtData.type & MK_ELF) == 0 ) {
         if( FmtData.type & MK_NOVELL ) {
             if( sym->p.import != DUMMY_IMPORT_PTR ) {
-                LnkMemFree( sym->p.import );
+                MemFree( sym->p.import );
             }
         } else {
             FreeImport( sym->p.import );
@@ -414,7 +414,7 @@ static void WipeSym( symbol *sym )
         sym->p.import = NULL;
     } else if( IS_SYM_ALIAS( sym ) ) {
         if( sym->info & SYM_FREE_ALIAS ) {
-            LnkMemFree( sym->p.alias.u.ptr );
+            MemFree( sym->p.alias.u.ptr );
         }
         sym->u.aliaslen = 0;    // make sure this is nulled again
     }
@@ -449,8 +449,8 @@ void CleanSym( void )
 void FiniSym( void )
 /*************************/
 {
-    LnkMemFree( GlobalSymPtrs );
-    LnkMemFree( StaticSymPtrs );
+    MemFree( GlobalSymPtrs );
+    MemFree( StaticSymPtrs );
 }
 
 static void PrepHashTable( symbol **table, unsigned size )
@@ -549,7 +549,7 @@ void ClearRefInfo( symbol *sym )
 
     if( (sym->info & SYM_EXPORTED) == 0 ) {
         save = *(sym->e.vfdata);
-        LnkMemFree( sym->e.vfdata );
+        MemFree( sym->e.vfdata );
         sym->e.def = save;
     }
 }
@@ -618,7 +618,7 @@ static void SetSymAlias( symbol *sym, const char *target, size_t targetlen )
 /**************************************************************************/
 {
     SET_SYM_TYPE( sym, SYM_ALIAS );
-    sym->p.alias.u.ptr = LnkMemToString( target, targetlen );
+    sym->p.alias.u.ptr = MemToStringSafe( target, targetlen );
     sym->u.aliaslen = targetlen;
     sym->info |= SYM_DEFINED;           /* an alias can't be undefined */
     sym->info &= ~SYM_WAS_LAZY;
@@ -644,7 +644,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
     if( IS_SYM_ALIAS( sym ) ) {
         LnkMsg( WRN+MSG_MULTIPLE_ALIASES, "S", sym );
         if( sym->info & SYM_FREE_ALIAS ) {
-            LnkMemFree( sym->p.alias.u.ptr );
+            MemFree( sym->p.alias.u.ptr );
         }
     } else if( sym->info & SYM_DEFINED ) {
         return;                 // <--------- NOTE: premature return!!!!
@@ -819,7 +819,7 @@ symbol *SymOp( sym_flags symop, const char *symname, size_t length )
         if( symop & ST_DEFINE ) {
             if( IS_SYM_ALIAS( sym )
               && (sym->info & SYM_FREE_ALIAS) ) {
-                LnkMemFree( sym->p.alias.u.ptr );
+                MemFree( sym->p.alias.u.ptr );
                 sym->info &= ~SYM_FREE_ALIAS;
             }
             sym->info |= SYM_DEFINED;
@@ -1066,7 +1066,7 @@ void ConvertLazyRefs( void )
         if( IS_SYM_A_REF( sym ) ) {
             if( IS_SYM_VF_REF( sym ) ) {
                 defsym = *(sym->e.vfdata);
-                LnkMemFree( sym->e.vfdata );
+                MemFree( sym->e.vfdata );
             } else {
                 defsym = sym->e.def;
                 if( sym->info & SYM_VF_MARKED ) {
@@ -1126,7 +1126,7 @@ void ConvertVFSym( symbol * sym )
     symbol *    defsym;
 
     defsym = *(sym->e.vfdata);
-    LnkMemFree( sym->e.vfdata );
+    MemFree( sym->e.vfdata );
     sym->e.def = defsym;
     if( IS_SYM_PURE_REF( sym ) ) {
         SET_SYM_TYPE( sym, SYM_LAZY_REF );

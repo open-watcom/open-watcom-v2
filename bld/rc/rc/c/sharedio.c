@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "wresdefn.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -84,7 +85,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
     *presfiles = NULL;
     rescnt = 0;
     for( ; resnames != NULL; resnames = resnames->next ) {
-        resfile = RESALLOC( sizeof( ResFileInfo ) );
+        resfile = MemAllocSafe( sizeof( ResFileInfo ) );
         resfile->next = *presfiles;
         *presfiles = resfile;
         resfile->Dir = WResInitDir();
@@ -179,7 +180,7 @@ void CloseResFiles( ResFileInfo *resfiles )
         resfiles = res->next;
         WResFreeDir( res->Dir );
         RCCloseFile( &(res->fp) );
-        RESFREE( res );
+        MemFree( res );
     }
 }
 
@@ -330,10 +331,10 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         }
     }
     if( nameid->IsName ) {
-        RESFREE( name );
+        MemFree( name );
     }
     if( typeid->IsName ) {
-        RESFREE( type );
+        MemFree( type );
     }
 }
 

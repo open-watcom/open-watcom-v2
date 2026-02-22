@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,13 +46,13 @@ static bool readObjectAndPageTable( ExeFileInfo *src )
     size_t      table_size;
 
     table_size = src->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
-    src->u.LXInfo.Objects = RESALLOC( table_size );
+    src->u.LXInfo.Objects = MemAllocSafe( table_size );
     ret = SeekRead( src->fp, src->WinHeadOffset + src->u.LXInfo.OS2Head.objtab_off,
                 src->u.LXInfo.Objects, table_size );
 
     if( ret == RS_OK ) {
         table_size = src->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
-        src->u.LXInfo.Pages = RESALLOC( table_size );
+        src->u.LXInfo.Pages = MemAllocSafe( table_size );
         ret = SeekRead( src->fp, src->WinHeadOffset + src->u.LXInfo.OS2Head.objmap_off,
                     src->u.LXInfo.Pages, table_size );
     }
@@ -139,8 +139,8 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
     /*
      * Allocate dst object/page table
      */
-    dst_obj  = RESALLOC( dst_obj_size );
-    dst_page = RESALLOC( dst_page_size );
+    dst_obj  = MemAllocSafe( dst_obj_size );
+    dst_page = MemAllocSafe( dst_page_size );
     dst->u.LXInfo.Objects = dst_obj;
     dst->u.LXInfo.Pages   = dst_page;
 

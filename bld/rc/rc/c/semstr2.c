@@ -88,7 +88,7 @@ FullStringTable *SemOS2NewStringTable( void )
 {
     FullStringTable     *newtable;
 
-    newtable = RESALLOC( sizeof( FullStringTable ) );
+    newtable = MemAllocSafe( sizeof( FullStringTable ) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -109,9 +109,9 @@ static void SemOS2FreeStringTable( FullStringTable *oldtable )
     for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
         nextblock = currblock->Next;
         ResFreeStringTableBlock( &(currblock->Block) );
-        RESFREE( currblock );
+        MemFree( currblock );
     }
-    RESFREE( oldtable );
+    MemFree( oldtable );
 } /* SemOS2FreeStringTable */
 
 static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
@@ -134,7 +134,7 @@ static FullStringTableBlock *newStringTableBlock( void )
 {
     FullStringTableBlock        *newblock;
 
-    newblock = RESALLOC( sizeof( FullStringTableBlock ) );
+    newblock = MemAllocSafe( sizeof( FullStringTableBlock ) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;
@@ -328,10 +328,10 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
              */
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemAddResource( name, type, currblock->Flags, loc );
-            RESFREE( name );
+            MemFree( name );
         }
         SemOS2FreeStringTable( currtable );
     }
-    RESFREE( type );
+    MemFree( type );
     return;
 }

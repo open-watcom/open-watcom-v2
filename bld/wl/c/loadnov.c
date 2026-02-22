@@ -657,15 +657,15 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
     }
     imp = sym->p.import;
     if( imp == DUMMY_IMPORT_PTR ) {
-        imp = LnkMemAlloc( sizeof( nov_import ) );
+        imp = MemAllocSafe( sizeof( nov_import ) );
         sym->p.import = imp;
         imp->contents = 0;
         imp->u.r.relocs[imp->contents++] = offset;
     } else if( imp->contents < MAX_IMP_INTERNAL ) {
         if( imp->contents == 2 ) {
-            new = LnkMemAlloc( ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
+            new = MemAllocSafe( ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
             memcpy( new, imp, sizeof( nov_import ) );
-            LnkMemFree( imp );
+            MemFree( imp );
             imp = new;
             sym->p.import = imp;
         }
@@ -682,9 +682,9 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
         voff = imp->u.v.num_relocs % IMP_NUM_VIRT;
         if( voff == 0 ) {
             if( vblock >= (unsigned)( imp->contents - MAX_IMP_INTERNAL ) * MAX_IMP_VIRT ) {
-                new = LnkMemAlloc( sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
+                new = MemAllocSafe( sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
                 memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
-                LnkMemFree( imp );
+                MemFree( imp );
                 imp = new;
                 imp->contents++;
                 sym->p.import = imp;

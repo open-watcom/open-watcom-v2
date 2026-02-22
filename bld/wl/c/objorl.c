@@ -89,7 +89,7 @@ static void *ORLRead( struct orl_io_struct *orlio, size_t len )
 
     result = CachePermRead( &orlio->list, ORLFilePos + ORLPos, len );
     ORLPos += len;
-    cache = LnkMemAlloc( sizeof( readcache ) );
+    cache = MemAllocSafe( sizeof( readcache ) );
     cache->next = ReadCacheList;
     ReadCacheList = cache;
     cache->data = result;
@@ -112,7 +112,7 @@ static int ORLSeek( struct orl_io_struct *orlio, long pos, int where )
 void InitORLObj( void )
 /*********************/
 {
-    ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, LnkMemAlloc, LnkMemFree );
+    ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, MemAlloc, MemFree );
 
     ORLHandle = ORLInit( &orl_cli_funcs );
     ReadCacheList = NULL;
@@ -164,7 +164,7 @@ static void ClearCachedData( const file_list *list )
     while( (cache = ReadCacheList) != NULL ) {
         ReadCacheList = cache->next;
         CacheFree( list, cache->data );
-        LnkMemFree( cache );
+        MemFree( cache );
     }
 }
 
@@ -187,7 +187,7 @@ static void FiniFile( orl_file_handle filehdl, const file_list *list )
     ORLFileFini( filehdl );
     ClearCachedData( list );
     if( ImpModName != NULL ) {
-        LnkMemFree( ImpModName );
+        MemFree( ImpModName );
         ImpModName = NULL;
     }
 }
@@ -305,11 +305,11 @@ static orl_return EntryCallback( const char *name, void *dummy )
              * entry directive contains unmangled symbol name
              * prepend undrescore should be OK
              */
-            coff_symbol_name = LnkMemAlloc( strlen( name ) + 2 );
+            coff_symbol_name = MemAllocSafe( strlen( name ) + 2 );
             coff_symbol_name[0] = '_';
             strcpy( coff_symbol_name + 1, name );
             SetStartSym( coff_symbol_name );
-            LnkMemFree( coff_symbol_name );
+            MemFree( coff_symbol_name );
         } else {
             SetStartSym( name );
         }
@@ -562,7 +562,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
         if( namelen > sizeof( CoffImportRefName ) - 1 ) {
             namelen -= sizeof( CoffImportRefName ) - 1;
             if( strnicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
-                ImpModName = LnkMemAlloc( namelen + 5 );
+                ImpModName = MemAllocSafe( namelen + 5 );
                 memcpy( ImpModName, name, namelen );
                 if( strnicmp( CurrMod->name.u.ptr + strlen( CurrMod->name.u.ptr ) - 4, ".drv", 4 ) == 0 ) { /* KLUDGE!! */
                     memcpy( ImpModName + namelen, ".drv", 5 );
@@ -875,7 +875,7 @@ static void HandleImportSymbol( const char *name )
         extname.len = strlen( ImpExternalName );
         HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
     }
-    LnkMemFree( ImpModName );
+    MemFree( ImpModName );
     ImpModName = NULL;
 }
 

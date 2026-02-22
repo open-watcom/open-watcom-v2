@@ -456,7 +456,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     WdeDebugCreate( "Custom", parent, obj_rect, handle );
 
-    WRMemValidate( parent, _TRMEM_WHO( 6 ) );
+    WRMemValidate( parent, _TRMEM_WHO( 9 ) );
 
     if( parent == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: Custom has no parent!" );
@@ -520,7 +520,7 @@ bool CALLBACK WdeCustomDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2
 
     WdeDebugDispatch( "Custom", act, obj, p1, p2 );
 
-    WRMemChkRange( obj, sizeof( WdeCustomObject ), _TRMEM_WHO( 7 ) );
+    WRMemChkRange( obj, sizeof( WdeCustomObject ), _TRMEM_WHO( 10 ) );
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == act ) {
@@ -727,7 +727,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
         }
         MemFree( text );
     } else {
-         ccs.szText[0] = '\0';
+        ccs.szText[0] = '\0';
     }
 
     proc = lpcci->lpfnStyle;

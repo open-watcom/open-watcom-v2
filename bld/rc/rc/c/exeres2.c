@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code )
          */
         restab->table_size   = restab->num_res_segs * sizeof( resource_table_record );
 
-        restab->resources = RESALLOC( restab->num_res_segs * sizeof( restab->resources[0] ) );
+        restab->resources = MemAllocSafe( restab->num_res_segs * sizeof( restab->resources[0] ) );
         if( restab->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
@@ -344,7 +344,7 @@ RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
 
     *err_code = errno;
     if( restab->resources != NULL ) {
-        RESFREE( restab->resources );
+        MemFree( restab->resources );
     }
 
     return( ret );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,7 +139,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     }
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
-        RESFREE( value->string.string );
+        MemFree( value->string.string );
         /*
          * get the line number
          */
@@ -147,7 +147,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
         }
-        RESFREE( value->intinfo.str );
+        MemFree( value->intinfo.str );
         value->intinfo.str = NULL;
         lineno = value->intinfo.val;
         /*
@@ -159,13 +159,13 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
             if( AddDependency( value->string.string ) ) {
                 ErrorHasOccured = true;
             }
-            RESFREE( value->string.string );
+            MemFree( value->string.string );
             token = scanDFA( value );
         } else {
             RcIoSetCurrentFileInfo( lineno, NULL );
         }
     } else if( stricmp( value->string.string, "pragma" ) == 0 ) {
-        RESFREE( value->string.string );
+        MemFree( value->string.string );
         token = Y_POUND_PRAGMA;
     } else if( stricmp( value->string.string, "error" ) == 0 ) {
         char            buf[80];
@@ -277,7 +277,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
     state( S_L_STRING ):
         if( LookAhead =='"' ) {
             longString = true;
-            RESFREE( VarStringEnd( newstring, NULL ) );
+            MemFree( VarStringEnd( newstring, NULL ) );
             change_state( S_START );
         } else {
             change_state( S_NAME );
@@ -789,7 +789,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                 /*
                  * release the string if it is a keyword
                  */
-                RESFREE( value->string.string );
+                MemFree( value->string.string );
             }
             if( token == Y_RCINCLUDE ) {
                 /*

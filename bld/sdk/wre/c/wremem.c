@@ -82,7 +82,7 @@ void *MemAlloc( size_t size )
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old, size_t size )
 {
-    return( WRMemRealloc( old, size, _TRMEM_WHO( 1 ) ) );
+    return( WRMemRealloc( old, size, _TRMEM_WHO( 2 ) ) );
 }
 
 /* function for wres.lib */
@@ -90,7 +90,7 @@ void *MemRealloc( void *old, size_t size )
 TRMEMAPI( wres_alloc )
 void *wres_alloc( size_t size )
 {
-    return( WRMemAlloc( size, _TRMEM_WHO( 2 ) ) );
+    return( WRMemAlloc( size, _TRMEM_WHO( 3 ) ) );
 }
 
 /* function to replace this in mem.c in commonui */
@@ -98,7 +98,7 @@ void *wres_alloc( size_t size )
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr, _TRMEM_WHO( 3 ) );
+    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
 }
 
 /* function for wres.lib */
@@ -106,5 +106,5 @@ void MemFree( void *ptr )
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
 {
-    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
+    WRMemFree( ptr, _TRMEM_WHO( 5 ) );
 }

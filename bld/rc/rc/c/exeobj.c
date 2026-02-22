@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,7 @@ static RcStatus readObjectTable( ExeFileInfo *src )
 
     pehdr = src->u.PEInfo.WinHead;
     objects_size = pehdr->fheader.num_objects * sizeof( pe_object );
-    src->u.PEInfo.Objects = RESALLOC( objects_size );
+    src->u.PEInfo.Objects = MemAllocSafe( objects_size );
     ret = SeekRead( src->fp, src->WinHeadOffset + PE_SIZE( *pehdr ), src->u.PEInfo.Objects, objects_size );
     switch( ret ) {
     case RS_OK:
@@ -147,7 +147,7 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
         return( -1 );
     }
 
-    dst->u.PEInfo.Objects = RESALLOC( dst_obj_size );
+    dst->u.PEInfo.Objects = MemAllocSafe( dst_obj_size );
 
     for( obj_num = 0; obj_num < dst_num_objects; obj_num++ ) {
         dst->u.PEInfo.Objects[obj_num] = src->u.PEInfo.Objects[obj_num];

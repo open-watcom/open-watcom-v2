@@ -270,7 +270,7 @@ static void StoreBakPat( segdata *sdata, byte loctype )
     bakpat_list         *bkptr;
 
     len = EOObjRec - ObjBuff;
-    bkptr = LnkMemAlloc( sizeof( bakpat_list ) + len - 1 );
+    bkptr = MemAllocSafe( sizeof( bakpat_list ) + len - 1 );
     bkptr->len = len;
     bkptr->loctype = loctype;
     bkptr->sdata = sdata;   /* We don't know the data offset yet. */
@@ -346,7 +346,7 @@ void DoBakPats( void )
                 break;
             }
         }
-        LnkMemFree( bkptr );
+        MemFree( bkptr );
     }
     BakPats = NULL;
 }

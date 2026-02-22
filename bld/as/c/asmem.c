@@ -34,6 +34,7 @@
 #include "as.h"
 #include "wresmem.h"
 #include "preproc.h"
+#include "memfuncs.h"
 #if defined( TRMEM )
     #include "trmem.h"
 #endif
@@ -165,8 +166,8 @@ void wres_free( void *ptr )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void * PPENTRY MemAlloc( size_t size )
+TRMEMAPI( PPMemAlloc )
+void * PPENTRY PPMemAlloc( size_t size )
 {
     void        *p;
 
@@ -181,8 +182,8 @@ void * PPENTRY MemAlloc( size_t size )
     return( p );
 }
 
-TRMEMAPI( MemFree )
-void PPENTRY MemFree( void *p )
+TRMEMAPI( PPMemFree )
+void PPENTRY PPMemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 8 ), memHandle );

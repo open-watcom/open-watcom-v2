@@ -318,7 +318,7 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
         return( false );
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 8 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 11 ) );
 
     return( true );
 }
@@ -400,7 +400,7 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     MemFree( class_list );
     GlobalUnlock( list_global );
 
-    WRMemValidate( lib, _TRMEM_WHO( 9 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 12 ) );
 
     return( true );
 }
@@ -418,7 +418,7 @@ bool WdeAddBorControlsToCustLib( WdeCustLib *lib, WdeBorlandClassList *class_lis
         }
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 10 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 13 ) );
 
     return( true );
 }
@@ -468,7 +468,7 @@ bool WdeCreateAndAddCustControl( WdeCustLib *lib, WdeCustInfoProc info_proc,
     GlobalUnlock( info_global );
     GlobalFree( info_global );
 
-    WRMemValidate( lib, _TRMEM_WHO( 11 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 14 ) );
 
     return( true );
 }
@@ -485,8 +485,8 @@ void WdeAddCustControlToCustLib( WdeCustLib *lib, WdeCustControl *control )
         ListInsertElt( end, (OBJPTR)control );
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 12 ) );
-    WRMemValidate( control, _TRMEM_WHO( 13 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 15 ) );
+    WRMemValidate( control, _TRMEM_WHO( 16 ) );
 }
 
 WdeCustLib *WdeAllocCustLib( void )
@@ -502,7 +502,7 @@ WdeCustLib *WdeAllocCustLib( void )
 
     memset( lib, 0, sizeof( WdeCustLib ) );
 
-    WRMemValidate( lib, _TRMEM_WHO( 14 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 17 ) );
 
     return( lib );
 }

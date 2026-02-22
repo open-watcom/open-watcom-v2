@@ -47,6 +47,13 @@
 #include "clibext.h"
 
 
+#if defined( _M_IX86 ) && defined( __NT__ )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
+
 typedef struct {
     WRHashTable    *table;
     bool            dup;
@@ -63,22 +70,24 @@ static void outOfMemory( void )
     longjmp( SymEnv, 1 );
 }
 
-void * PPENTRY PP_Alloc( size_t size )
-/************************************/
+TRMEMAPI( PPMemAlloc )
+void *PPMemAlloc( size_t size )
+/*****************************/
 {
     void        *p;
 
-    p = MemAlloc( size );
+    p = WRMemAlloc( size, _TRMEM_WHO( 6 ) );
     if( p == NULL ) {
         outOfMemory();
     }
     return( p );
 }
 
-void PPENTRY PP_Free( void *p )
-/*****************************/
+TRMEMAPI( PPMemFree )
+void PPMemFree( void *p )
+/***********************/
 {
-    MemFree( p );
+    WRMemFree( p, _TRMEM_WHO( 5 ) );
 }
 
 int PP_MBCharLen( const char *p )

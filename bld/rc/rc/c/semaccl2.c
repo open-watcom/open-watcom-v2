@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,8 +141,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     FullAccelTableOS2   *newtable;
     FullAccelEntryOS2   *newentry;
 
-    newtable = RESALLOC( sizeof( FullAccelTableOS2 ) );
-    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
+    newtable = MemAllocSafe( sizeof( FullAccelTableOS2 ) );
+    newentry = MemAllocSafe( sizeof( FullAccelEntryOS2 ) );
 
     if( newtable == NULL
       || newentry == NULL ) {
@@ -165,7 +165,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
+    newentry = MemAllocSafe( sizeof( FullAccelEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -188,9 +188,9 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 *acctable )
 
     for( currentry = acctable->head; currentry != NULL; currentry = nextentry ) {
         nextentry = currentry->next;
-        RESFREE( currentry );
+        MemFree( currentry );
     }
-    RESFREE( acctable );
+    MemFree( acctable );
 }
 
 static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
@@ -243,7 +243,7 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
             SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
         }
     } else {
-        RESFREE( name );
+        MemFree( name );
     }
     SemOS2FreeAccelTable( acctable );
 }

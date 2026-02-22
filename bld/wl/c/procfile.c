@@ -411,7 +411,7 @@ static void DoPass1( mod_entry *next, file_list *list )
                 }
             }
             if( ignoreobj ) {
-                LnkMemFree( membname );
+                MemFree( membname );
                 if( size != 0 ) {
                     loc += size;
                 } else {
@@ -427,7 +427,7 @@ static void DoPass1( mod_entry *next, file_list *list )
                 next->modinfo |= ObjFormat & FMT_OBJ_FMT_MASK;
                 if( member != NULL ) {
                     next->modinfo |= member->flags;
-                    LnkMemFree( member );
+                    MemFree( member );
                 }
                 if( (list->flags & STAT_HAS_MEMBER) == 0 ) {
                     next->modinfo |= list->flags & DBI_MASK;
@@ -439,7 +439,7 @@ static void DoPass1( mod_entry *next, file_list *list )
                 next->location = loc;
                 if( membname != NULL ) {
                     next->name.u.ptr = AddStringStringTable( &PermStrings, membname );
-                    LnkMemFree( membname );
+                    MemFree( membname );
                 } else {
                     next->name.u.ptr = list->infile->name.u.ptr;
                 }

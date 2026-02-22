@@ -37,12 +37,7 @@ extern void     *TryAlloc( size_t );
 extern void     *PermAlloc( size_t );
 extern void     *Pass1Alloc( size_t );
 
-extern void     *LnkMemAlloc( size_t );
-extern void     *LnkMemAllocNoChk( size_t );
-extern char     *LnkMemStrdup( const char * );
-extern void     LnkMemFree( void * );
-extern void     *LnkMemRealloc( void *, size_t );
-extern char     *LnkMemToString( const void *mem, size_t len );
+extern char     *MemToStringSafe( const void *mem, size_t len );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );

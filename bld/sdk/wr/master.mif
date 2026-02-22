@@ -37,7 +37,7 @@ additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
 #
 .c:   ../c;$(trmem_dir);$(wrc_dir)/c;$(watcom_dir)/c
 
-inc_dirs = -I. $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_inc_dirs)
+inc_dirs = -I. $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wrc_dir)/h" $(cli_commonui_inc_dirs) -I"$(trmem_dir)"
 
 extra_cpp_flags   = -DINSIDE_WR
 

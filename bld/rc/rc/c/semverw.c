@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem it
     }                                   // instead of using the full string.
                                         // This is what Microsoft does.
     list->NumItems++;
-    list->Item = RCREALLOC( list->Item, list->NumItems * sizeof( VerValueItem ) );
+    list->Item = MemReallocSafe( list->Item, list->NumItems * sizeof( VerValueItem ) );
     list->Item[list->NumItems - 1] = item;
 
     return( list );
@@ -67,7 +67,7 @@ FullVerValueList *SemWINNewVerValueList( VerValueItem item )
 {
     FullVerValueList    *list;
 
-    list = RESALLOC( sizeof( FullVerValueList ) );
+    list = MemAllocSafe( sizeof( FullVerValueList ) );
     list->NumItems = 0;
     list->Item = NULL;
 
@@ -78,7 +78,7 @@ static void FreeValItem( VerValueItem *item )
 /*******************************************/
 {
     if( !item->IsNum ) {
-        RESFREE( item->Value.String );
+        MemFree( item->Value.String );
     }
 }
 
@@ -90,8 +90,8 @@ static void FreeValList( FullVerValueList *list )
     for( i = 0; i < list->NumItems; i++ ) {
         FreeValItem( list->Item + i );
     }
-    RESFREE( list->Item );
-    RESFREE( list );
+    MemFree( list->Item );
+    MemFree( list );
 }
 
 static bool semWriteVerValueList( FullVerValueList *list, bool use_unicode, FILE *fp, int *err_code )
@@ -114,7 +114,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
 {
     FullVerBlock    *block;
 
-    block = RESALLOC( sizeof( FullVerBlock ) );
+    block = MemAllocSafe( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -130,7 +130,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
 {
     FullVerBlock    *block;
 
-    block = RESALLOC( sizeof( FullVerBlock ) );
+    block = MemAllocSafe( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -218,7 +218,7 @@ static bool SemWriteVerBlock( FullVerBlock *block, FILE *fp, int *err_code )
 static void FreeVerBlock( FullVerBlock *block )
 /*********************************************/
 {
-    RESFREE( block->Head.Key );
+    MemFree( block->Head.Key );
     if( block->Value != NULL ) {
         FreeValList( block->Value );
     }
@@ -226,7 +226,7 @@ static void FreeVerBlock( FullVerBlock *block )
         FreeVerBlockNest( block->Nest );
     }
 
-    RESFREE( block );
+    MemFree( block );
 }
 
 FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
@@ -234,7 +234,7 @@ FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
 {
     FullVerBlockNest    *parent;
 
-    parent = RESALLOC( sizeof( FullVerBlockNest ) );
+    parent = MemAllocSafe( sizeof( FullVerBlockNest ) );
     parent->Head = NULL;
     parent->Tail = NULL;
 
@@ -257,7 +257,7 @@ FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNes
         ResAddLLItemAtEnd( (void **)&nest1->Head, (void **)&nest1->Tail, block );
     }
 
-    RESFREE( nest2 );
+    MemFree( nest2 );
 
     return( nest1 );
 }
@@ -287,7 +287,7 @@ static void FreeVerBlockNest( FullVerBlockNest *nest )
         FreeVerBlock( block );
     }
 
-    RESFREE( nest );
+    MemFree( nest );
 }
 
 static bool SemWriteVerBlockNest( FullVerBlockNest *nest, FILE *fp, int *err_code )
@@ -310,7 +310,7 @@ VerFixedInfo *SemWINNewVerFixedInfo( VerFixedOption option )
 {
     VerFixedInfo    *info;
 
-    info = RESALLOC( sizeof( VerFixedInfo ) );
+    info = MemAllocSafe( sizeof( VerFixedInfo ) );
     memset( info, 0, sizeof( VerFixedInfo ) );
 
     return( SemWINAddVerFixedInfo( info, option ) );
@@ -429,10 +429,10 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
 #endif
         SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
-        RESFREE( name );
+        MemFree( name );
     }
 
-    RESFREE( info );
+    MemFree( info );
     FreeVerBlockNest( nest );
 
     return;
@@ -440,7 +440,7 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
-    RESFREE( info );
+    MemFree( info );
     FreeVerBlockNest( nest );
     return;
 }

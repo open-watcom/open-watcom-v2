@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,8 +103,8 @@ void SemAddResourceAndFree( WResID *name, WResID *type, ResMemFlags flags, ResLo
 /******************************************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
-    RESFREE( name );
-    RESFREE( type );
+    MemFree( name );
+    MemFree( type );
 }
 
 static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
@@ -136,8 +136,8 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     } else {
         error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, true );
     }
-    RESFREE( ms_head.Type );
-    RESFREE( ms_head.Name );
+    MemFree( ms_head.Type );
+    MemFree( ms_head.Name );
     ErrorHasOccured = true;
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
@@ -200,13 +200,13 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
           && type->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( type );
             RcWarning( ERR_TYPE_GT_7FFF, namestr );
-            RESFREE( namestr );
+            MemFree( namestr );
         }
         if( !name->IsName
           && name->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( name );
             RcWarning( ERR_NAME_GT_7FFF, namestr );
-            RESFREE( namestr );
+            MemFree( namestr );
         }
     }
     error = WResAddResource( type, name, flags, loc.start, loc.len, CurrResFile.dir, lang, &duplicate );

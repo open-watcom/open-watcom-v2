@@ -73,7 +73,7 @@ static void CheckFileTrace( section *sect, void *_info )
     for( list = sect->files; list != NULL; list = list->next_file ) {
         if( FNAMECMPSTR( list->infile->name.u.ptr, info->u.name ) == 0 ) {
             info->found = true;
-            LnkMemFree( info->u.name );
+            MemFree( info->u.name );
             list->flags |= STAT_TRACE_SYMS;
             return;
         }
@@ -85,7 +85,7 @@ void AddTraceListMod( char *fname, char *membname )
 {
     trace_info      *info;
 
-    info = LnkMemAlloc( sizeof( trace_info ) );
+    info = MemAllocSafe( sizeof( trace_info ) );
     info->u.name = fname;
     info->member = membname;
     info->found = false;        // used for matching libraries
@@ -109,14 +109,14 @@ void CheckTraces( void )
             ParmWalkAllSects( CheckFileTrace, info );
             if( !info->found ) {
                 LnkMsg( WRN+MSG_TRACE_OBJ_NOT_FOUND, "s", info->u.name );
-                LnkMemFree( info->u.name );
+                MemFree( info->u.name );
             }
-            LnkMemFree( info );
+            MemFree( info );
         } else {
             for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
                 if( FNAMECMPSTR( lib->infile->name.u.ptr, info->u.name ) == 0 ) {
                     info->found = true;
-                    LnkMemFree( info->u.name );
+                    MemFree( info->u.name );
                     info->u.lib = lib;
                     break;
                 }
@@ -137,7 +137,7 @@ void CheckLibTrace( file_list *lib )
         if( !info->found ) {
             if( FNAMECMPSTR( info->u.name, lib->infile->name.u.ptr ) == 0 ) {
                 info->found = true;
-                LnkMemFree( info->u.name );
+                MemFree( info->u.name );
                 info->u.lib = lib;
                 break;
             }
@@ -156,8 +156,8 @@ bool FindLibTrace( mod_entry *mod )
         if( info->found && info->u.lib == mod->f.source ) {
             if( ModNameCompare( mod->name.u.ptr, info->member ) ) {
                 *prev = info->next;
-                LnkMemFree( info->member );
-                LnkMemFree( info );
+                MemFree( info->member );
+                MemFree( info );
                 return( true );
             }
         }
@@ -171,7 +171,7 @@ void AddTraceListSym( char *symname )
 {
     sym_trace_info  *info;
 
-    info = LnkMemAlloc( sizeof( sym_trace_info ) );
+    info = MemAllocSafe( sizeof( sym_trace_info ) );
     info->name = symname;
     info->next = TraceListSym;
     TraceListSym = info;
@@ -187,8 +187,8 @@ bool FindSymTrace( const char *symname )
     for( info = TraceListSym; info != NULL; info = info->next ) {
         if( strcmp( info->name, symname ) == 0 ) {
             *prev = info->next;
-            LnkMemFree( info->name );
-            LnkMemFree( info );
+            MemFree( info->name );
+            MemFree( info );
             return( true );
         }
         prev = &(info->next);
@@ -222,15 +222,15 @@ void CleanTraces( void )
 
     for( ; TraceListSym != NULL; TraceListSym = next ) {
         next = TraceListSym->next;
-        LnkMemFree( TraceListSym->name );
-        LnkMemFree( TraceListSym );
+        MemFree( TraceListSym->name );
+        MemFree( TraceListSym );
     }
     for( ; TraceList != NULL; TraceList = next ) {
         next = TraceList->next;
         if( !TraceList->found ) {
-            LnkMemFree( TraceList->u.name );
+            MemFree( TraceList->u.name );
         }
-        LnkMemFree( TraceList->member );
-        LnkMemFree( TraceList );
+        MemFree( TraceList->member );
+        MemFree( TraceList );
     }
 }

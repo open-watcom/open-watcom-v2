@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +80,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
         LXResEntry      *curr_table;
 
         curr_table = res->resources;
-        res->resources = RCREALLOC( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
+        res->resources = MemReallocSafe( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
         if( res->resources == NULL ) {
             res->resources = curr_table;
             return( true );

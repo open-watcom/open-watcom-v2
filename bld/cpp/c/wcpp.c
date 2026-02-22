@@ -138,12 +138,9 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         break;
     case 'd':
         ++arg;
-        if( defines == NULL ) {
-            defines = MemAlloc( ( numdefs + 1 ) * sizeof( char * ) );
-        } else {
-            defines = MemRealloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
-        }
-        defines[numdefs++] = MemStrdup( arg );
+        defines = MemRealloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
+        defines[numdefs] = MemStrdup( arg );
+        ++numdefs;
         break;
     case 'h':
         wcpp_quit( usageMsg, NULL );
@@ -359,12 +356,9 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {
-            if( filenames == NULL ) {
-                filenames = MemAlloc( ( nofilenames + 1 ) * sizeof( char * ) );
-            } else {
-                filenames = MemRealloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
-            }
-            filenames[nofilenames++] = MemStrdup( arg );
+            filenames = MemRealloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+            filenames[nofilenames] = MemStrdup( arg );
+            ++nofilenames;
         }
     }
     return( contok );

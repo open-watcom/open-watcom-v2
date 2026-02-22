@@ -143,3 +143,23 @@ void MemFree( void *p )
     free( p );
 #endif
 }
+
+TRMEMAPI( PPMemAlloc )
+void * PPMemAlloc( size_t size )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
+TRMEMAPI( PPMemFree )
+void PPMemFree( void *p )
+{
+#ifdef TRMEM
+    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
+#else
+    free( p );
+#endif
+}

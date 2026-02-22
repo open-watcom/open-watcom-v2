@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ static FileStack    InStack;
 static void freeCurrentFileName( void )
 /*************************************/
 {
-    RESFREE( InStack.Current->Filename );
+    MemFree( InStack.Current->Filename );
     InStack.Current->Filename = NULL;
 }
 
@@ -150,11 +150,11 @@ static file_loc *addLocation( file_loc *prev, const char *filename )
 
     if( prev == NULL
       || strcmp( prev->Filename, filename ) != 0 ) {
-        loc = RESALLOC( sizeof( file_loc ) );
+        loc = MemAllocSafe( sizeof( file_loc ) );
         if( loc != NULL ) {
             loc->prev = prev;
             loc->IsCOrHFile = checkCurrentFileType( filename );
-            loc->Filename = RESALLOC( strlen( filename ) + 1 );
+            loc->Filename = MemAllocSafe( strlen( filename ) + 1 );
             strcpy( loc->Filename, filename );
             return( loc );
         }
@@ -170,8 +170,8 @@ static file_loc *removeLocation( file_loc *loc )
     prev = NULL;
     if( loc != NULL ) {
         prev = loc->prev;
-        RESFREE( loc->Filename );
-        RESFREE( loc );
+        MemFree( loc->Filename );
+        MemFree( loc );
     }
     return( prev );
 }
@@ -201,7 +201,7 @@ static bool openNewFile( const char *filename )
 /*********************************************/
 {
     InStack.Current->fp = NULL;
-    InStack.Current->Filename = RESALLOC( strlen( filename ) + 1 );
+    InStack.Current->Filename = MemAllocSafe( strlen( filename ) + 1 );
     strcpy( InStack.Current->Filename, filename );
     InStack.Current->Offset = 0;
     /*
@@ -260,7 +260,7 @@ static bool RcIoPopTextInputFile( void )
 static void RcIoTextInputInit( void )
 /***********************************/
 {
-    InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
+    InStack.Buffer = MemAllocSafe( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
     InStack.Location = NULL;
@@ -273,7 +273,7 @@ static bool RcIoTextInputShutdown( void )
         InStack.Location = removeLocation( InStack.Location );
     }
     if( InStack.Buffer != NULL ) {
-        RESFREE( InStack.Buffer );
+        MemFree( InStack.Buffer );
         InStack.Buffer = NULL;
         InStack.BufferSize = 0;
         if( IsEmptyFileStack( InStack ) ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ ToolBar *SemWINCreateToolBar( void )
 {
     ToolBar     *ret;
 
-    ret = RESALLOC( sizeof( ToolBar ) );
+    ret = MemAllocSafe( sizeof( ToolBar ) );
     ret->last = &ret->first;
     ret->nodecnt = 1;
     initToolBarItems( &ret->first );
@@ -63,7 +63,7 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
-        toolbar->last->next = RESALLOC( sizeof( ToolBarItems ) );
+        toolbar->last->next = MemAllocSafe( sizeof( ToolBarItems ) );
         toolbar->last = toolbar->last->next;
         initToolBarItems( toolbar->last );
         toolbar->nodecnt++;
@@ -80,9 +80,9 @@ static void semFreeToolBar( ToolBar *toolbar )
 
     for( cur = toolbar->first.next; cur != NULL; cur = next ) {
         next = cur->next;
-        RESFREE( cur );
+        MemFree( cur );
     }
-    RESFREE( toolbar );
+    MemFree( toolbar );
 }
 
 void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,

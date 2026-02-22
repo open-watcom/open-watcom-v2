@@ -273,7 +273,7 @@ void FreeList( void *_curr )
 
     for( curr = _curr; curr != NULL; curr = next ) {
         next = curr->next;
-        LnkMemFree( curr );
+        MemFree( curr );
     }
 }
 
@@ -516,7 +516,7 @@ void InitEnvVars( void )
 #endif
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
-            ExePath = LnkMemAlloc( len + 1 );
+            ExePath = MemAllocSafe( len + 1 );
             p = ExePath;
             do {
                 if( p != ExePath )
@@ -525,7 +525,7 @@ void InitEnvVars( void )
             } while( *path_list != '\0' );
             *p = '\0';
         } else {
-            ExePath = LnkMemAlloc( 1 );
+            ExePath = MemAllocSafe( 1 );
             *ExePath = '\0';
         }
     }
@@ -533,7 +533,7 @@ void InitEnvVars( void )
         path_list = GetEnvString( "LIB" );
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
-            LibPath = LnkMemAlloc( len + 1 );
+            LibPath = MemAllocSafe( len + 1 );
             p = LibPath;
             do {
                 if( p != LibPath )
@@ -542,7 +542,7 @@ void InitEnvVars( void )
             } while( *path_list != '\0' );
             *p = '\0';
         } else {
-            LibPath = LnkMemAlloc( 1 );
+            LibPath = MemAllocSafe( 1 );
             *LibPath = '\0';
         }
     }
@@ -552,11 +552,11 @@ void FiniEnvVars( void )
 /**********************/
 {
     if( ExePath != NULL ) {
-        LnkMemFree( ExePath );
+        MemFree( ExePath );
         ExePath = NULL;
     }
     if( LibPath != NULL ) {
-        LnkMemFree( LibPath );
+        MemFree( LibPath );
         LibPath = NULL;
     }
 }
@@ -671,7 +671,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
         /*
          * duplicate name if no extension change is necessary
          */
-        ptr = LnkMemToString( buff, len );
+        ptr = MemToStringSafe( buff, len );
     } else {
         if( force && etype == E_MAP ) {         // op map goes in current dir.
             buff = namstart;
@@ -687,10 +687,10 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
          * if some extension is required then add it
          */
         if( etype == E_NONE ) {
-            ptr = LnkMemToString( buff, len );
+            ptr = MemToStringSafe( buff, len );
         } else {
             extlen = DefExtLen[etype];
-            ptr = LnkMemAlloc( len + 1 + extlen + 1 );
+            ptr = MemAllocSafe( len + 1 + extlen + 1 );
             memcpy( ptr, buff, len );
             if( extlen > 0 ) {
                 ptr[len++] = '.';
@@ -714,13 +714,13 @@ section *NewSection( void )
 {
     section             *sect;
 
-    sect = LnkMemAlloc( sizeof( section ) );
+    sect = MemAllocSafe( sizeof( section ) );
     sect->next_sect = NULL;
     sect->classlist = NULL;
     sect->orderlist = NULL;
     sect->areas = NULL;
     sect->files = NULL;
-    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, LnkMemAlloc, LnkMemFree );
+    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, MemAllocSafe, MemFree );
     sect->mods = NULL;
     sect->reloclist = NULL;
     SET_ADDR_UNDEFINED( sect->sect_addr );

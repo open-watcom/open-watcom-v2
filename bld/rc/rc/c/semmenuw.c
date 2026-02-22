@@ -128,8 +128,8 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
 
-    newmenu = RESALLOC( sizeof( FullMenu ) );
-    newitem = RESALLOC( sizeof( FullMenuItem ) );
+    newmenu = MemAllocSafe( sizeof( FullMenu ) );
+    newitem = MemAllocSafe( sizeof( FullMenuItem ) );
 
     if( newmenu == NULL
       || newitem == NULL ) {
@@ -153,7 +153,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     FullMenuItem     *newitem;
 
 
-    newitem = RESALLOC( sizeof( FullMenuItem ) );
+    newitem = MemAllocSafe( sizeof( FullMenuItem ) );
 
     if( newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -312,11 +312,11 @@ static void SemFreeMenuItem( FullMenuItem *curritem )
     if( curritem->IsPopup ) {
         SemFreeSubMenu( curritem->item.popup.submenu );
         if( curritem->item.popup.item.menuData.ItemText != NULL ) {
-            RESFREE( curritem->item.popup.item.menuData.ItemText );
+            MemFree( curritem->item.popup.item.menuData.ItemText );
         }
     } else {
         if( curritem->item.normal.menuData.ItemText != NULL ) {
-            RESFREE( curritem->item.normal.menuData.ItemText );
+            MemFree( curritem->item.normal.menuData.ItemText );
         }
     }
 }
@@ -330,9 +330,9 @@ static void SemFreeSubMenu( FullMenu *submenu )
     for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
         nextitem = curritem->next;
         SemFreeMenuItem( curritem );
-        RESFREE( curritem );
+        MemFree( curritem );
     }
-    RESFREE( submenu );
+    MemFree( submenu );
 }
 
 void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
@@ -396,7 +396,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
         }
     } else {
-        RESFREE( name );
+        MemFree( name );
     }
     SemFreeSubMenu( menu );
 }

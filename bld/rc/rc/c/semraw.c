@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ void SemWriteRawDataItem( RawDataItem item )
             }
         }
         if( item.TmpStr ) {
-            RESFREE( item.Item.String );
+            MemFree( item.Item.String );
         }
     } else {
         error = false;
@@ -118,7 +118,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
 
     error = false;
     fp = NULL;
-    buffer = RESALLOC( BUFFER_SIZE );
+    buffer = MemAllocSafe( BUFFER_SIZE );
     if( !onlyFile ) {
         if( RcFindSourceFile( filename, full_filename ) == -1 ) {
             RcError( ERR_CANT_FIND_FILE, filename );
@@ -164,7 +164,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
         loc.len = SemEndResource( loc.start );
     }
     RcIoCloseInputBin( fp );
-    RESFREE( buffer );
+    MemFree( buffer );
     return( loc );
 }
 
@@ -185,7 +185,7 @@ DataElemList *SemNewDataElemList( RawDataItem node )
 {
     DataElemList    *head;
 
-    head = RESALLOC( sizeof( DataElemList ) );
+    head = MemAllocSafe( sizeof( DataElemList ) );
     head->data[0] = node;
     head->count = 1;
     head->next = NULL;
@@ -232,7 +232,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
-        RESFREE( curnode );
+        MemFree( curnode );
     }
     if( call_startend ) {
         resLoc.len = SemEndResource( resLoc.start );
@@ -256,9 +256,9 @@ void SemFreeDataElemList( DataElemList *head )
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString ) {
-                RESFREE( curnode->data[i].Item.String );
+                MemFree( curnode->data[i].Item.String );
             }
         }
-        RESFREE( curnode );
+        MemFree( curnode );
     }
 }

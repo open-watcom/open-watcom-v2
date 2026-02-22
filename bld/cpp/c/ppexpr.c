@@ -241,7 +241,7 @@ static void PP_AdvanceToken( void )
         if( PPTokenPtr[0] != '\0' )
             break;
         if( PPCurToken != NULL ) {
-            MemFree( PPCurToken );
+            PPMemFree( PPCurToken );
             PPCurToken = PPNextToken();
         }
         if( PPCurToken == NULL ) {

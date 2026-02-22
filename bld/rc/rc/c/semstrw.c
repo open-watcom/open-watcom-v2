@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ FullStringTable *SemWINNewStringTable( void )
 {
     FullStringTable     *newtable;
 
-    newtable = RESALLOC( sizeof( FullStringTable ) );
+    newtable = MemAllocSafe( sizeof( FullStringTable ) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -66,10 +66,10 @@ static void semFreeStringTable( FullStringTable *oldtable )
     for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
         nextblock = currblock->Next;
         ResFreeStringTableBlock( &(currblock->Block) );
-        RESFREE( currblock );
+        MemFree( currblock );
     }
 
-    RESFREE( oldtable );
+    MemFree( oldtable );
 } /* semFreeStringTable */
 
 static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
@@ -92,7 +92,7 @@ static FullStringTableBlock *newStringTableBlock( void )
 {
     FullStringTableBlock    *newblock;
 
-    newblock = RESALLOC( sizeof( FullStringTableBlock ) );
+    newblock = MemAllocSafe( sizeof( FullStringTableBlock ) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;
@@ -301,10 +301,10 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemWINSetResourceLanguage( &currtable->lang, false );
             SemAddResource( name, type, currblock->Flags, loc );
-            RESFREE( name );
+            MemFree( name );
         }
         semFreeStringTable( currtable );
     }
-    RESFREE( type );
+    MemFree( type );
     return;
 }

@@ -127,8 +127,8 @@ FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
     FullMenuOS2       *newmenu;
     FullMenuItemOS2   *newitem;
 
-    newmenu = RESALLOC( sizeof( FullMenuOS2 ) );
-    newitem = RESALLOC( sizeof( FullMenuItemOS2 ) );
+    newmenu = MemAllocSafe( sizeof( FullMenuOS2 ) );
+    newitem = MemAllocSafe( sizeof( FullMenuItemOS2 ) );
 
     if( newmenu == NULL
       || newitem == NULL ) {
@@ -151,7 +151,7 @@ FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem 
 {
     FullMenuItemOS2     *newitem;
 
-    newitem = RESALLOC( sizeof( FullMenuItemOS2 ) );
+    newitem = MemAllocSafe( sizeof( FullMenuItemOS2 ) );
 
     if( newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -253,11 +253,11 @@ static void SemOS2FreeMenuItem( FullMenuItemOS2 *curritem )
     if( curritem->submenu != NULL ) {
         SemOS2FreeSubMenu( curritem->submenu );
         if( curritem->item.ItemText != NULL ) {
-            RESFREE( curritem->item.ItemText );
+            MemFree( curritem->item.ItemText );
         }
     } else {
         if( curritem->item.ItemText != NULL ) {
-            RESFREE( curritem->item.ItemText );
+            MemFree( curritem->item.ItemText );
         }
     }
 }
@@ -272,9 +272,9 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
         for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
             nextitem = curritem->next;
             SemOS2FreeMenuItem( curritem );
-            RESFREE( curritem );
+            MemFree( curritem );
         }
-        RESFREE( submenu );
+        MemFree( submenu );
     }
 }
 
@@ -300,7 +300,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
             SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_MENU ), flags, loc );
         }
     } else {
-        RESFREE( name );
+        MemFree( name );
     }
     SemOS2FreeSubMenu( menu );
 }

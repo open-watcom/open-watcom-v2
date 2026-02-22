@@ -495,7 +495,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     WdeDebugCreate( "Custom", parent, obj_rect, handle );
 
-    WRMemValidate( parent, _TRMEM_WHO( 15 ) );
+    WRMemValidate( parent, _TRMEM_WHO( 18 ) );
 
     if( parent == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: Custom has no parent!" );
@@ -563,7 +563,7 @@ bool CALLBACK WdeCustomDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2
 
     WdeDebugDispatch( "Custom", act, obj, p1, p2 );
 
-    WRMemChkRange( obj, sizeof( WdeCustomObject ), _TRMEM_WHO( 16 ) );
+    WRMemChkRange( obj, sizeof( WdeCustomObject ), _TRMEM_WHO( 19 ) );
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == act ) {

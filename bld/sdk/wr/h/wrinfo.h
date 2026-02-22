@@ -35,7 +35,6 @@
 
 #include "wresall.h"
 #include "wrglbl.h"
-#include "wrmemi.h"
 
 /****************************************************************************/
 /* type definitions                                                         */

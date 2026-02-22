@@ -71,10 +71,10 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename )
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = true;
-        RESFREE( name );
+        MemFree( name );
     }
-    RESFREE( filename->string );
-    RESFREE( filename );
+    MemFree( filename->string );
+    MemFree( filename );
 }
 
 void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *fullflags, char *filename )
@@ -86,8 +86,8 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
     char        full_filename[_MAX_PATH];
 
     if( ErrorHasOccured ) {
-        RESFREE( name );
-        RESFREE( filename );
+        MemFree( name );
+        MemFree( filename );
         return;
     }
     switch( CmdLineParms.Win16VerStamp ) {
@@ -161,18 +161,18 @@ void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *
         AddFontResources( name, flags, full_filename );
         break;
     default:
-        RESFREE( name );
+        MemFree( name );
         break;
     }
 
-    RESFREE( filename );
+    MemFree( filename );
 
     return;
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
-    RESFREE( name );
-    RESFREE( filename );
+    MemFree( name );
+    MemFree( filename );
 } /* SemWINAddSingleLineResource */
 
 static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
@@ -234,13 +234,13 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOC( sizeof( FullIconDirEntry ) );
+        entry = MemAllocSafe( sizeof( FullIconDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsIcoFileEntry = true;
         ret = readIcoFileDirEntry( &(entry->Entry.Ico), fp, err_code );
         if( ret != RS_OK ) {
-            RESFREE( entry );
+            MemFree( entry );
         } else {
             ResAddLLItemAtEnd( (void **)&(dir->Head), (void **)&(dir->Tail), entry );
         }
@@ -300,7 +300,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
     ResLocation         loc;
 
     ret = RS_OK;
-    buffer = RESALLOC( BUFFER_SIZE );
+    buffer = MemAllocSafe( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /*
@@ -330,7 +330,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
         CurrResFile.NextCurOrIcon += 1;
     }
 
-    RESFREE( buffer );
+    MemFree( buffer );
 
     return( ret );
 } /* copyIcons */
@@ -343,7 +343,7 @@ static void FreeIconDir( FullIconDir *dir )
 
     for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
         nextentry = currentry->Next;
-        RESFREE( currentry );
+        MemFree( currentry );
     }
 } /* FreeIconDir */
 
@@ -656,7 +656,7 @@ static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_
 FILE_OPEN_ERROR:
     RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     return;
 
 READ_DIR_ERROR:
@@ -666,7 +666,7 @@ READ_DIR_ERROR:
         ReportCopyError( ret, ERR_READING_ICON, filename, err_code );
     }
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );
     return;
@@ -681,7 +681,7 @@ WRITE_DIR_ERROR:
 COPY_ICONS_ERROR:
     ReportCopyError( ret, ERR_READING_ICON, filename, err_code );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );
     return;
@@ -764,7 +764,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
     BitmapInfoHeader    dibhead;
     ResLocation         loc;
 
-    buffer = RESALLOC( BUFFER_SIZE );
+    buffer = MemAllocSafe( BUFFER_SIZE );
 
     for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
         /*
@@ -810,7 +810,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
         CurrResFile.NextCurOrIcon += 1;
     }
 
-    RESFREE( buffer );
+    MemFree( buffer );
 
     return( ret );
 } /* copyCursors */
@@ -848,13 +848,13 @@ static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOC( sizeof( FullCurDirEntry ) );
+        entry = MemAllocSafe( sizeof( FullCurDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsCurFileEntry = true;
         ret = readCurFileDirEntry( &(entry->Entry.Cur), fp, err_code );
         if( ret != RS_OK ) {
-            RESFREE( entry );
+            MemFree( entry );
         } else {
             ResAddLLItemAtEnd( (void **)&(dir->Head), (void **)&(dir->Tail), entry );
         }
@@ -871,7 +871,7 @@ static void FreeCurDir( FullCurDir *dir )
 
     for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
         nextentry = currentry->Next;
-        RESFREE( currentry );
+        MemFree( currentry );
     }
 } /* FreeCurDir */
 
@@ -1054,7 +1054,7 @@ static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags grou
 FILE_OPEN_ERROR:
     RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     return;
 
 READ_DIR_ERROR:
@@ -1064,7 +1064,7 @@ READ_DIR_ERROR:
         ReportCopyError( ret, ERR_READING_CURSOR, filename, err_code );
     }
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );
     return;
@@ -1079,7 +1079,7 @@ WRITE_DIR_ERROR:
 COPY_CURSORS_ERROR:
     ReportCopyError( ret, ERR_READING_CURSOR, filename, err_code );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );
     return;
@@ -1109,7 +1109,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     ResLocation         loc;
     long                pos;
 
-    buffer = RESALLOC( BITMAP_BUFFER_SIZE );
+    buffer = MemAllocSafe( BITMAP_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -1128,7 +1128,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
      */
     SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
 
-    RESFREE( buffer );
+    MemFree( buffer );
 
     return( ret );
 } /* copyBitmap */
@@ -1232,20 +1232,20 @@ static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *file
 FILE_OPEN_ERROR:
     RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     return;
 
 READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     RcIoCloseInputBin( fp );
     return;
 
 NOT_BITMAP_ERROR:
     RcError( ERR_NOT_BITMAP_FILE, filename );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     RcIoCloseInputBin( fp );
     return;
 
@@ -1280,7 +1280,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
     ResLocation         loc;
     long                pos;
 
-    buffer = RESALLOC( FONT_BUFFER_SIZE );
+    buffer = MemAllocSafe( FONT_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -1303,7 +1303,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
      */
     SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
 
-    RESFREE( buffer );
+    MemFree( buffer );
 
     return( ret );
 } /* copyFont */
@@ -1343,7 +1343,7 @@ static FullFontDir *NewFontDir( void )
 {
     FullFontDir     *newdir;
 
-    newdir = RESALLOC( sizeof( FullFontDir ) );
+    newdir = MemAllocSafe( sizeof( FullFontDir ) );
     newdir->Head = NULL;
     newdir->Tail = NULL;
     newdir->NumOfFonts = 0;
@@ -1366,7 +1366,7 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     /*
      * -1 for the 1 char in the struct already
      */
-    entry = RESALLOC( sizeof( FullFontDirEntry ) - 1 + structextra );
+    entry = MemAllocSafe( sizeof( FullFontDirEntry ) - 1 + structextra );
     entry->Next = NULL;
     entry->Prev = NULL;
     /*
@@ -1442,14 +1442,14 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
     if( facename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
-        RESFREE( devicename );
+        MemFree( devicename );
         goto READ_HEADER_ERROR;
     }
 
     AddFontToDir( &info, devicename, facename, name );
 
-    RESFREE( devicename );
-    RESFREE( facename );
+    MemFree( devicename );
+    MemFree( facename );
 
     RcIoCloseInputBin( fp );
 
@@ -1459,13 +1459,13 @@ static void AddFontResources( WResID *name, ResMemFlags flags, const char *filen
 FILE_OPEN_ERROR:
     RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     return;
 
 READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RESFREE( name );
+    MemFree( name );
     RcIoCloseInputBin( fp );
     return;
 
@@ -1484,9 +1484,9 @@ static void FreeFontDir( FullFontDir *olddir )
 
     for( currentry = olddir->Head; currentry != NULL; currentry = nextentry ) {
         nextentry = currentry->Next;
-        RESFREE( currentry );
+        MemFree( currentry );
     }
-    RESFREE( olddir );
+    MemFree( olddir );
 }
 
 /*

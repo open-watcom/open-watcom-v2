@@ -48,7 +48,7 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
     int     tablesize;
 
     tablesize = seg->NumSegs * sizeof( segment_record );
-    seg->Segments = RESALLOC( tablesize );
+    seg->Segments = MemAllocSafe( tablesize );
     if( seg->Segments == NULL ) {
         *err_code = errno;
         return( RS_NO_MEM );

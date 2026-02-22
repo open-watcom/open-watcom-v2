@@ -42,11 +42,6 @@
 #define RESTELL         res_tell
 #define RESIOERR        res_ioerr
 
-#define RESALLOC        LnkMemAlloc
-#define RESFREE         LnkMemFree
-
-#define RCREALLOC       LnkMemRealloc
-
 extern FILE             *res_open( const char *name, wres_open_mode omode );
 extern bool             res_close( FILE *fp );
 extern size_t           res_read( FILE *fp, void *buf, size_t len );

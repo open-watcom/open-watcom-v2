@@ -119,11 +119,11 @@ static f_handle openTempFile( char **fname )
     if( ptr == NULL )
         ptr = GetEnvString( "TMPDIR" );
     if( ptr == NULL ) {
-        tptr = LnkMemAlloc( TEMPFNAME_SIZE );
+        tptr = MemAllocSafe( TEMPFNAME_SIZE );
         *fname = tptr;
     } else {
         tlen = strlen( ptr );
-        tptr = LnkMemAlloc( tlen + 1 + TEMPFNAME_SIZE );
+        tptr = MemAllocSafe( tlen + 1 + TEMPFNAME_SIZE );
         memcpy( tptr, ptr, tlen );
         *fname = tptr;
         tptr += tlen;
@@ -159,9 +159,9 @@ static void SetupImpLib( void )
     ImpLib.module_name = NULL;
     ImpLib.didone = false;
     if( FmtData.make_implib ) {
-        ImpLib.buffer = LnkMemAlloc( IMPLIB_BUFSIZE );
+        ImpLib.buffer = MemAllocSafe( IMPLIB_BUFSIZE );
         if( FmtData.make_impfile ) {
-            ImpLib.fname = LnkMemStrdup( FmtData.implibname );
+            ImpLib.fname = MemStrdupSafe( FmtData.implibname );
             ImpLib.handle = QOpenRW( ImpLib.fname );
         } else {
             ImpLib.handle = openTempFile( &ImpLib.fname );
@@ -176,7 +176,7 @@ static void SetupImpLib( void )
          */
         if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE)) == 0 )
             ImpLib.module_name_len += strlen( fname + namelen );
-        ImpLib.module_name = LnkMemAlloc( ImpLib.module_name_len );
+        ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
         memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
     }
 }
@@ -862,7 +862,7 @@ static void ExecWlib( void )
      * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
      *                  and +1 for nullchar
      */
-    cmdline = LnkMemAlloc( namelen + impnamelen +19 +2 +1 +4 +1 );
+    cmdline = MemAllocSafe( namelen + impnamelen +19 +2 +1 +4 +1 );
     memcpy( cmdline, "-c -b -n -q -pa -ii \"", 19 + 2 );
     temp = cmdline + 19 - 1;
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
@@ -899,7 +899,7 @@ static void ExecWlib( void )
     if( ExecDLLPgm( WLIB_EXE, cmdline ) ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
-    LnkMemFree( cmdline );
+    MemFree( cmdline );
 #else
     char        *atfname;
     size_t      namelen;
@@ -907,7 +907,7 @@ static void ExecWlib( void )
     char        *libtype;
 
     namelen = strlen( ImpLib.fname ) + 1;
-    atfname = LnkMemAlloc( namelen + 1 );  // +1 for the @
+    atfname = MemAllocSafe( namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
     switch( LinkState & LS_HAVE_MACHTYPE_MASK ) {
@@ -935,7 +935,7 @@ static void ExecWlib( void )
     if( retval == -1 ) {
         PrintIOError( ERR+MSG_CANT_EXECUTE, "12", WLIB_EXE );
     }
-    LnkMemFree( atfname );
+    MemFree( atfname );
 #endif
 }
 
@@ -962,10 +962,10 @@ void BuildImpLib( void )
         }
         QDelete( ImpLib.fname );
     }
-    LnkMemFree( FmtData.implibname );
-    LnkMemFree( ImpLib.fname );
-    LnkMemFree( ImpLib.buffer );
-    LnkMemFree( ImpLib.module_name );
+    MemFree( FmtData.implibname );
+    MemFree( ImpLib.fname );
+    MemFree( ImpLib.buffer );
+    MemFree( ImpLib.module_name );
 }
 
 static void BufImpWrite( const char *buffer, size_t len )
@@ -1209,9 +1209,9 @@ void FreeOutFiles( void )
         if( LinkState & LS_LINK_ERROR ) {
             QDelete( fnode->fname );
         }
-        LnkMemFree( fnode->fname );
+        MemFree( fnode->fname );
         OutFiles = fnode->next;
-        LnkMemFree( fnode );
+        MemFree( fnode );
     }
 }
 
@@ -1345,7 +1345,7 @@ static void FlushBuffFile( outfilelist *outfile )
     if( modpos != 0 ) {
         QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
     }
-    LnkMemFree( outfile->buffer );
+    MemFree( outfile->buffer );
     outfile->buffer = NULL;
 }
 
@@ -1432,7 +1432,7 @@ void OpenBuffFile( outfilelist *outfile )
     if( outfile->handle == NIL_FHANDLE ) {
         PrintIOError( FTL+MSG_CANT_OPEN_NO_REASON, "s", outfile->fname );
     }
-    outfile->buffer = LnkMemAlloc( BUFF_BLOCK_SIZE );
+    outfile->buffer = MemAllocSafe( BUFF_BLOCK_SIZE );
 }
 
 void CloseBuffFile( outfilelist *outfile )

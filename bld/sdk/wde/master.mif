@@ -36,7 +36,8 @@ additional_clean = *.gh *.grh *.grc
 .c : ../$(host_os)/c;../c;$(cli_cpp_c_dirs);$(watcom_dir)/c
 
 inc_dirs = -I. -I"../$(host_os)/h" -I"../h" -I"$(fmedit_dir)/dev" $(cli_commonui_inc_dirs) &
-    $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wre_dir)/h" $(cli_cpp_inc_dirs) $(cli_wpi_inc_dirs)
+    $(cli_wr_inc_dirs) $(cli_wres_inc_dirs) -I"$(wre_dir)/h" $(cli_cpp_inc_dirs) &
+    $(cli_wpi_inc_dirs) -I"$(trmem_dir)"
 
 extra_cpp_flags   = -DWDE
 

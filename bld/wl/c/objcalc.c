@@ -951,8 +951,8 @@ void SetSegFlags( xxx_seg_flags *flag_list )
                 leader->segflags = flag_list->flags;
             }
         }
-        LnkMemFree( flag_list->name );
-        LnkMemFree( flag_list );
+        MemFree( flag_list->name );
+        MemFree( flag_list );
     }
 }
 

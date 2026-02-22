@@ -76,7 +76,7 @@ static void BadLibrary( file_list *list )
 /***************************************/
 {
     list->infile->status |= INSTAT_IOERR;
-    LnkMemFree( list->u.dict );
+    MemFree( list->u.dict );
     list->u.dict = NULL;
     Locator( list->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_LIB_FILE_ATTR, NULL );
@@ -92,7 +92,7 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
     reclength = MGET_LE_16_UN( header ) + 3;
     if( makedict ) {
         if( list->u.dict == NULL ) {
-            list->u.dict = LnkMemAlloc( sizeof( dict_entry ) );
+            list->u.dict = MemAllocSafe( sizeof( dict_entry ) );
         }
         omf_dict = &list->u.dict->o;
         omf_dict->cache = NULL;
@@ -146,7 +146,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
 
     // Create an index table that we will sort to match the
     // case-insensitive sort order that we want for our symbol names.
-    index_tab = LnkMemAlloc( sizeof( index_type ) * d.num_entries );
+    index_tab = MemAllocSafe( sizeof( index_type ) * d.num_entries );
     for( ix = 0; ix < d.num_entries; ix++ ) {
         index_tab[ix] = ix;
     }
@@ -193,7 +193,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
             index_tab[ix1] = ix1;
         }
     }
-    LnkMemFree( index_tab );
+    MemFree( index_tab );
 }
 
 static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, int numdicts )
@@ -245,7 +245,7 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
         dict->offsettab = NULL;
         dict->symbtab = NULL;
         if( num > 0 ) {
-            dict->symbtab = LnkMemAlloc( sizeof( char * ) * num );
+            dict->symbtab = MemAllocSafe( sizeof( char * ) * num );
         }
     } else /* if( numdicts == 2 ) */ {
         num = MGET_LE_32_UN( data );    /* number of files */
@@ -264,7 +264,7 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
         }
         dict->num_entries = num;
         if( num > 0 && dict->symbtab == NULL ) {
-            dict->symbtab = LnkMemAlloc( sizeof( char * ) * num );
+            dict->symbtab = MemAllocSafe( sizeof( char * ) * num );
         }
     }
     for( index = 0; index < num; index++ ) {
@@ -300,7 +300,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
     numdicts = 0;
     if( makedict ) {
         if( list->u.dict == NULL ) {
-            list->u.dict = LnkMemAlloc( sizeof( dict_entry ) );
+            list->u.dict = MemAllocSafe( sizeof( dict_entry ) );
         }
     }
     for( ;; ) {
@@ -324,7 +324,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
         if( numdicts == 0 ) {
             Locator( list->infile->name.u.ptr, NULL, 0 );
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
-            LnkMemFree( list->u.dict );
+            MemFree( list->u.dict );
             list->u.dict = NULL;
             return( false );
         }
@@ -367,9 +367,9 @@ static void FreeDictCache( void **cache, unsigned buckets )
 /*********************************************************/
 {
     while( buckets-- > 0 ) {
-        LnkMemFree( cache[buckets] );
+        MemFree( cache[buckets] );
     }
-    LnkMemFree( cache );
+    MemFree( cache );
 }
 
 static void **AllocDict( unsigned num_buckets, unsigned residue )
@@ -379,11 +379,11 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     void            **cache;
     unsigned        bucket;
 
-    cache = LnkMemAllocNoChk( sizeof( void * ) * ( num_buckets + 1 ) );
+    cache = MemAlloc( sizeof( void * ) * ( num_buckets + 1 ) );
     if( cache == NULL )
         return( NULL );
     for( bucket = 0; bucket < num_buckets; ++bucket ) {
-        cache[bucket] = LnkMemAllocNoChk( DIC_REC_SIZE * PAGES_IN_CACHE );
+        cache[bucket] = MemAlloc( DIC_REC_SIZE * PAGES_IN_CACHE );
         if( cache[bucket] == NULL ) {
             FreeDictCache( cache, bucket );
             return( NULL );
@@ -391,7 +391,7 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     }
 
     if( residue != 0 ) {
-        cache[bucket] = LnkMemAllocNoChk( residue * DIC_REC_SIZE );
+        cache[bucket] = MemAlloc( residue * DIC_REC_SIZE );
         if( cache[bucket] == NULL ) {
             FreeDictCache( cache, bucket );
             return( NULL );
@@ -552,13 +552,13 @@ void BurnLibs( void )
             continue;
         if( temp->flags & STAT_AR_LIB ) {
             CacheFree( temp, dict->a.filepostab - 1 );
-            LnkMemFree( dict->a.symbtab );
+            MemFree( dict->a.symbtab );
         } else {
             if( dict->o.cache != NULL ) {
                 FreeDictCache( dict->o.cache, ( dict->o.pages / PAGES_IN_CACHE ) + 1 );
             }
         }
-        LnkMemFree( dict );
+        MemFree( dict );
         temp->u.dict = NULL;
         FreeObjCache( temp );
     }
@@ -646,7 +646,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     objname = IdentifyObject( lib, &pos, &dummy );
     if( objname != NULL ) {
         obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
-        LnkMemFree( objname );
+        MemFree( objname );
     } else {
         obj->name.u.ptr = NULL;
     }
@@ -683,7 +683,7 @@ char *GetARName( const ar_header *header, const file_list *list, unsigned long *
         buf = header->name;
     }
     if( len > 0 ) {
-        name = LnkMemToString( buf, len );
+        name = MemToStringSafe( buf, len );
     }
     return( name );
 }
