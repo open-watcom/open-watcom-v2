@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,10 +30,12 @@
 ****************************************************************************/
 
 
-#include "zipmem.h"
+#include <stddef.h>
+#include "memfuncs.h"
 
-#define ZCALLOC     zip_alloc
-#define ZCFREE      zip_free
 
-#define ALLOC       zip_alloc
-#define FREE        zip_free
+#define ZCALLOC     MemAlloc
+#define ZCFREE      MemFree
+
+#define ALLOC       MemAlloc
+#define FREE        MemFree

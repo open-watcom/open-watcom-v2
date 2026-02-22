@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,24 +36,24 @@
 #include <errno.h>
 #include "wio.h"
 #include "zip.h"
-#include "zipmem.h"
+#include "memfuncs.h"
 
 
 // Maximum length of libzip error string
 #define MAX_ZERR_LENGTH     1024
 
 
-void *zip_alloc( size_t size )
+void *MemAlloc( size_t size )
 /****************************/
 {
     return( malloc( size ) );
 }
-void *zip_realloc( void *ptr, size_t size )
+void *MemRealloc( void *ptr, size_t size )
 /*****************************************/
 {
     return( realloc( ptr, size ) );
 }
-void zip_free( void *ptr )
+void MemFree( void *ptr )
 /************************/
 {
     free( ptr );

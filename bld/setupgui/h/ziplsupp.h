@@ -30,9 +30,10 @@
 ****************************************************************************/
 
 
-#include "zipmem.h"
+#include <stddef.h>
+#include "memfuncs.h"
 
 
-#define ZIP_ALLOC   zip_alloc
-#define ZIP_REALLOC zip_realloc
-#define ZIP_FREE    zip_free
+#define ZIP_ALLOC   MemAlloc
+#define ZIP_REALLOC MemRealloc
+#define ZIP_FREE    MemFree

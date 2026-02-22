@@ -41,7 +41,6 @@
 #ifdef USE_WRESLIB
     #include "wresmem.h"
 #endif
-#include "zipmem.h"
 
 
 #if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
@@ -164,16 +163,6 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( zip_alloc )
-void *zip_alloc( size_t size )
-/****************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), GUIMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 #if defined( GUI_IS_GUI )
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
@@ -250,16 +239,6 @@ void MemFree( void *ptr )
 #endif
 }
 
-TRMEMAPI( zip_free )
-void zip_free( void *ptr )
-/************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), GUIMemHandle );
-#else
-    free( ptr );
-#endif
-}
 #ifdef USE_WRESLIB
 TRMEMAPI( wres_free )
 void wres_free( void *ptr )
@@ -297,15 +276,3 @@ void *MemRealloc( void *ptr, size_t size )
     return( realloc( ptr, size ) );
 #endif
 }
-
-TRMEMAPI( zip_realloc )
-void *zip_realloc( void *ptr, size_t size )
-/*****************************************/
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 14 ), GUIMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
