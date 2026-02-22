@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -337,7 +337,7 @@ void ProcPaint( void )
     } else {
         set = WndClassColour[wndclass];
         if( set == NULL ) {
-            set = WndAlloc( sizeof( WndColours ) );
+            set = GUIMemAlloc( sizeof( WndColours ) );
             memcpy( set, WndColours, sizeof( WndColours ) );
             WndClassColour[wndclass] = set;
         }
@@ -379,7 +379,7 @@ void FiniPaint( void )
 
     for( wndclass = 0; wndclass < NUM_WNDCLS_ALL; ++wndclass ) {
         if( WndClassColour[wndclass] != NULL ) {
-            WndFree( WndClassColour[wndclass] );
+            GUIMemFree( WndClassColour[wndclass] );
             WndClassColour[wndclass] = NULL;
         }
     }

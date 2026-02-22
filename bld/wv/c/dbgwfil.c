@@ -813,9 +813,9 @@ static bool WNDCALLBACK FileWndEventProc( a_window wnd, gui_event gui_ev, void *
                 FileRemove( file->name, 0 );
             }
         }
-        WndFree( file->name );
+        GUIMemFree( file->name );
         AsmFreeSrc( file->asw );
-        WndFree( file );
+        GUIMemFree( file );
         DbgUpdate( UP_OPEN_CHANGE );
         return( true );
     }
@@ -851,7 +851,7 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     a_window    wnd;
     unsigned    line;
 
-    file = WndMustAlloc( sizeof( file_window ) );
+    file = GUIMemAllocSafe( sizeof( file_window ) );
     file->viewhndl = viewhndl;
     if( cueh == NULL ) {
         file->mod = NO_MOD;

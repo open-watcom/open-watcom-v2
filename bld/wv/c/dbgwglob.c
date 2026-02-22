@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +174,7 @@ static bool WNDCALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *
         return( true );
     case GUI_DESTROY :
         NameListFree( NameList( glob ) );
-        WndFree( glob );
+        GUIMemFree( glob );
         return( true );
     }
     return( false );
@@ -210,7 +210,7 @@ a_window DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
-    glob = WndMustAlloc( sizeof( glob_window ) );
+    glob = GUIMemAllocSafe( sizeof( glob_window ) );
     glob->mod = mod;
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }

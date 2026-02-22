@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -551,7 +551,7 @@ static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
         VarBuildName( &var->i, v, false );
         name = DupStr( TxtBuff );
         WndInspectExprSP( name );
-        WndFree( name );
+        GUIMemFree( name );
         break;
     case MENU_VAR_WATCH:
         VarAddWatch( &var->i, v );
@@ -741,7 +741,7 @@ static void VarSaveWndToScope( a_window wnd )
 
     wnd_data = var->i.s->wnd_data;
     if( wnd_data == NULL ) {
-        wnd_data = WndMustAlloc( sizeof( var_wnd_data ) );
+        wnd_data = GUIMemAllocSafe( sizeof( var_wnd_data ) );
         var->i.s->wnd_data = wnd_data;
     }
     wnd_data->scroll = WndTop( wnd );
@@ -963,7 +963,7 @@ static bool WNDCALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         VarFiniInfo( &var->i );
-        WndFree( var );
+        GUIMemFree( var );
         return( true );
     }
     return( false );
@@ -1074,7 +1074,7 @@ static  a_window        DoWndVarOpen( var_type vtype )
     var_window  *var;
     a_window    wnd;
 
-    var = WndMustAlloc( sizeof( var_window ) );
+    var = GUIMemAllocSafe( sizeof( var_window ) );
     var->vtype = vtype;
     wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
     if( wnd != NULL )

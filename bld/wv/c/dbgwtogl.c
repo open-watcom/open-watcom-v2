@@ -53,7 +53,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
 
     for( num_toggles = 0; toggles[num_toggles].menu != MAD_MSTR_NIL; ++num_toggles ) ;
     menu_items = num_old + num_toggles;
-    popup = WndMustAlloc( menu_items * sizeof( gui_menu_struct ) );
+    popup = GUIMemAllocSafe( menu_items * sizeof( gui_menu_struct ) );
     memcpy( popup, old, num_old * sizeof( gui_menu_struct ) );
     for( i = 0; i < num_old; ++i ) {
         popup[i].style &= ~WND_MENU_ALLOCATED;
@@ -81,8 +81,8 @@ void WndDeleteToggles( gui_menu_struct *popup, unsigned num_old, unsigned num_to
     NullPopupMenu( popup );
     menu = popup + num_old;
     for( i = 0; i < num_toggles; ++i ) {
-        WndFree( (void *)menu->label );
+        GUIMemFree( (void *)menu->label );
         ++menu;
     }
-    WndFree( popup );
+    GUIMemFree( popup );
 }

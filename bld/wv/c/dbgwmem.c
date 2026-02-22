@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,7 +230,7 @@ static void MemGetContents( a_window wnd, bool make_dirty )
     old = mem->u.m.contents;
     old_size = mem->u.m.size;
     size = mem->items_per_line * mem->item_size * WndRows( wnd );
-    mem->u.m.contents = WndAlloc( size );
+    mem->u.m.contents = GUIMemAlloc( size );
     if( mem->u.m.contents == NULL ) {
         mem->u.m.size = 0;
     } else {
@@ -256,7 +256,7 @@ static void MemGetContents( a_window wnd, bool make_dirty )
             }
         }
     }
-    WndFree( old );
+    GUIMemFree( old );
 }
 
 static void MemSetStartAddr( a_window wnd, address addr, bool new_home )
@@ -332,7 +332,7 @@ void MemSetFollow( a_window wnd, char *follow )
     mem_window  *mem;
 
     mem = WndMem( wnd );
-    WndFree( mem->u.m.follow );
+    GUIMemFree( mem->u.m.follow );
     mem->u.m.follow = follow;
 }
 
@@ -472,8 +472,8 @@ static void MemFreeBackout( mem_window *mem )
 
     junk = mem->u.m.backout;
     mem->u.m.backout = junk->next;
-    WndFree( junk->follow );
-    WndFree( junk );
+    GUIMemFree( junk->follow );
+    GUIMemFree( junk );
 }
 
 static void MemSetCurrent( a_window wnd, unsigned offset )
@@ -508,7 +508,7 @@ static void MemBackout( a_window wnd )
     }
     mem->total_size = backout->total_size;
     if( backout->follow ) {
-        WndFree( mem->u.m.follow );
+        GUIMemFree( mem->u.m.follow );
         mem->u.m.follow = backout->follow;
         backout->follow = NULL;
     }
@@ -526,7 +526,7 @@ static void MemNewBackout( a_window wnd )
     mem_window  *mem;
 
     mem = WndMem( wnd );
-    backout = WndAlloc( sizeof( *backout ) );
+    backout = GUIMemAlloc( sizeof( *backout ) );
     if( backout == NULL )
         return;
     backout->next = mem->u.m.backout;
@@ -593,7 +593,7 @@ static void DoFollow( a_window wnd, char *fmt )
 
     mem = WndMem( wnd );
     MemNewBackout( wnd );
-    WndFree( mem->u.m.follow );
+    GUIMemFree( mem->u.m.follow );
     Format( TxtBuff, fmt, AddrDiff( mem->u.m.addr, mem->u.m.home ) + MemCurrOffset( wnd ) );
     mem->u.m.follow = DupStr( TxtBuff );
     MemFollow( wnd );
@@ -818,7 +818,7 @@ static void     WNDCALLBACK MemMenuItem( a_window wnd, gui_ctl_id id, wnd_row ro
         break;
     case MENU_MEMORY_FOLLOW_CURSOR:
         MemNewBackout( wnd );
-        WndFree( mem->u.m.follow );
+        GUIMemFree( mem->u.m.follow );
         mem->u.m.follow = NULL;
         if( WndHasCurrent( wnd ) ) {
             mem->total_size = MemCurrOffset( wnd );
@@ -917,7 +917,7 @@ void InitMemWindow( void )
     int                 i;
 
     MemInitTypes( MAS_MEMORY | MTK_ALL, &MemData );
-    MemTypeMenu = WndMustAlloc( MemData.num_types * sizeof( *MemTypeMenu ) );
+    MemTypeMenu = GUIMemAllocSafe( MemData.num_types * sizeof( *MemTypeMenu ) );
     for( i = 0; i < MemData.num_types; ++i ) {
         MemTypeMenu[i].id = MENU_MEMORY_FIRST_TYPE + i;
         MemTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
@@ -944,7 +944,7 @@ void InitMemWindow( void )
 
 void FiniMemWindow( void )
 {
-    WndFree( MemTypeMenu );
+    GUIMemFree( MemTypeMenu );
     MemFiniTypes( &MemData );
 }
 
@@ -996,13 +996,13 @@ static bool WNDCALLBACK MemWndEventProc( a_window wnd, gui_event gui_ev, void *p
             FileClose( mem->u.f.fh );
         }
         if( !mem->file ) {
-            WndFree( mem->u.m.contents );
-            WndFree( mem->u.m.follow );
+            GUIMemFree( mem->u.m.contents );
+            GUIMemFree( mem->u.m.follow );
             while( mem->u.m.backout != NULL ) {
                 MemFreeBackout( mem );
             }
         }
-        WndFree( mem );
+        GUIMemFree( mem );
         return( true );
     case GUI_NO_EVENT : // sent whenever WndDirtyCurr is called
         MemUpdateCursor( wnd );
@@ -1080,7 +1080,7 @@ a_window        DoWndMemOpen( address addr, mad_type_handle mth )
     a_window    wnd;
 
     MemValidAddr( addr );
-    mem = WndMustAlloc( sizeof( mem_window ) );
+    mem = GUIMemAllocSafe( sizeof( mem_window ) );
     mem->u.m.addr = mem->u.m.home = addr;
     mem->u.m.contents = NULL;
     SetDataDot( addr );
@@ -1103,7 +1103,7 @@ a_window        WndStkOpen( void )
     a_window    wnd;
     mem_window  *mem;
 
-    mem = WndMustAlloc( sizeof( mem_window ) );
+    mem = GUIMemAllocSafe( sizeof( mem_window ) );
     mem->u.m.addr = mem->u.m.home = Context.stack;
     mem->u.m.contents = NULL;
     mem->init_mth = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
@@ -1119,7 +1119,7 @@ a_window        DoWndBinOpen( const char *title, file_handle fh )
     mem_window  *mem;
     a_window    wnd;
 
-    mem = WndMustAlloc( sizeof( mem_window ) );
+    mem = GUIMemAllocSafe( sizeof( mem_window ) );
     mem->file = true;
     mem->stack = false;
     mem->init_mth = MAD_NIL_TYPE_HANDLE;

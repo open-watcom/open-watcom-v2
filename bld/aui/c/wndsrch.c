@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ void *WndCompileRX( const char *expr )
 
 void WndFreeRX( void *rx )
 {
-    WndFree( (regexp *)rx );
+    GUIMemFree( (regexp *)rx );
 }
 
 
@@ -308,9 +308,9 @@ bool    WndSearch( a_window wnd, bool from_top, int direction )
     }
 done:;
     WndSetCache( wnd, had_cache );
-    WndFree( not_found );
-    WndFree( top_of_window );
-    WndFree( end_of_window );
-    WndFree( search_wrapped );
+    GUIMemFree( not_found );
+    GUIMemFree( top_of_window );
+    GUIMemFree( end_of_window );
+    GUIMemFree( search_wrapped );
     return( rc );
 }

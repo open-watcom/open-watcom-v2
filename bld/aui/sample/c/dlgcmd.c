@@ -132,7 +132,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
         }
         break;
     case GUI_DESTROY:
-        WndFree( cmd );
+        GUIMemFree( cmd );
         return( true );
     default:
         break;
@@ -145,7 +145,7 @@ void    DlgCmd( void )
 {
     char        *cmd;
 
-    cmd = WndMustAlloc( 100 );
+    cmd = GUIMemAllocSafe( 100 );
     GUISetModalDlgs( true );
     DlgOpen( "Enter a command", DLG_CMD_ROWS, DLG_CMD_COLS,
              Controls, NUM_CONTROLS, &CmdGUIEventProc, cmd );

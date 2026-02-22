@@ -172,10 +172,10 @@ static void     WNDCALLBACK W1Fini( a_window wnd )
 
     num_rows = w1->num_rows;
     for( i = 0; i < num_rows; ++i ) {
-        WndFree( w1->rows[i].pieces );
+        GUIMemFree( w1->rows[i].pieces );
     }
-    WndFree( w1->rows );
-    WndFree( w1 );
+    GUIMemFree( w1->rows );
+    GUIMemFree( w1 );
 }
 
 
@@ -188,7 +188,7 @@ static bool W1Init( a_window wnd )
 
     num_rows = RandNum( 200 );
     w1->num_rows = num_rows;
-    w1->rows = WndAlloc( num_rows * sizeof( w1_row ) );
+    w1->rows = GUIMemAlloc( num_rows * sizeof( w1_row ) );
     w1->align = true;
     if( w1->rows == NULL ) {
         WndClose( wnd );
@@ -197,7 +197,7 @@ static bool W1Init( a_window wnd )
     }
     for( i = 0; i < num_rows; ++i ) {
         pieces = RandNum( 10 );
-        w1->rows[i].pieces = WndAlloc( pieces * sizeof( char * ) );
+        w1->rows[i].pieces = GUIMemAlloc( pieces * sizeof( char * ) );
         w1->rows[i].num_pieces = pieces;
         for( j = 0; j < pieces; ++j ) {
             w1->rows[i].pieces[j] = Word[RandNum( WORD_SIZE ) - 1];
@@ -254,7 +254,7 @@ a_window W1Open( void )
 
     WndInitCreateStruct( &info );
     info.info = &W1Info;
-    info.extra = WndMustAlloc( sizeof( w1_window ) );
+    info.extra = GUIMemAllocSafe( sizeof( w1_window ) );
     info.wndclass = CLASS_W1;
     info.title = "Words";
     info.style |= GUI_INIT_INVISIBLE;

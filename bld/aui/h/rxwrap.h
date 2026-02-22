@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include "bool.h"
 #include "aui.h"
 
-#define ALLOC       WndAlloc
-#define FREE        WndFree
+#define ALLOC       GUIMemAlloc
+#define FREE        GUIMemFree
 #define CASEIGNORE  SrchIgnoreCase
 #define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic

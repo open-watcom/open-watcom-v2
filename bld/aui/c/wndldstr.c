@@ -43,7 +43,7 @@ char *WndLoadString( gui_res_id id )
         buff[0] = '\0';
     }
     size = strlen( buff ) + 1;
-    ret = WndMustAlloc( size );
+    ret = GUIMemAllocSafe( size );
     memcpy( ret, buff, size );
     return( ret );
 }

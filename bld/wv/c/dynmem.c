@@ -468,16 +468,18 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-#ifndef __NOUI__
-TRMEMAPI( WndAlloc )
-void *WndAlloc( size_t size )
+TRMEMAPI( GUIMemAllocSafe )
+void *GUIMemAllocSafe( size_t size )
+/*******************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 9 ), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
 #else
     return( malloc( size ) );
 #endif
 }
+
+#ifndef __NOUI__
 #ifdef GUI_IS_GUI
 
 TRMEMAPI( MemAllocSafe )
@@ -569,15 +571,6 @@ void MemFree( void *ptr )
 }
 
 #ifndef __NOUI__
-TRMEMAPI( WndFree )
-void WndFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 17 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
 #endif
 
 #ifdef GUI_IS_GUI
@@ -632,14 +625,15 @@ void *MemRealloc( void *ptr, size_t size )
 #endif
 }
 
-TRMEMAPI( WndRealloc )
-void *WndRealloc( void *ptr, size_t size )
+TRMEMAPI( GUIMemReallocSafe )
+void *GUIMemReallocSafe( void *chunk, size_t size )
 {
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 24 ), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
+    chunk = GUIMemRealloc( chunk, size );
+    if( chunk == NULL ) {
+        Say( "No memory for window\n" );
+        exit( 1 );
+    }
+    return( chunk );
 }
 
 #endif  /* ! __NOUI__ */

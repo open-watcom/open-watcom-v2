@@ -98,7 +98,7 @@ static void IOAddNewAddr( a_window wnd, address *addr, int type )
 
     row = io->num_rows;
     io->num_rows++;
-    io->list = WndMustRealloc( io->list, io->num_rows * sizeof( io_location ) );
+    io->list = GUIMemReallocSafe( io->list, io->num_rows * sizeof( io_location ) );
     curr = &io->list[row];
     curr->type = PIECE_TYPE( type );
     curr->addr = *addr;
@@ -274,7 +274,7 @@ void InitIOWindow( void )
     if( IOData.num_types == 0 ) {
         return;
     }
-    IOTypeMenu = WndMustAlloc( IOData.num_types * sizeof( *IOTypeMenu ) );
+    IOTypeMenu = GUIMemAllocSafe( IOData.num_types * sizeof( *IOTypeMenu ) );
     for( i = 0; i < IOData.num_types; ++i ) {
         IOTypeMenu[i].id = MENU_IO_FIRST_TYPE + i;
         IOTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
@@ -293,7 +293,7 @@ void InitIOWindow( void )
 
 void FiniIOWindow( void )
 {
-    WndFree( IOTypeMenu );
+    GUIMemFree( IOTypeMenu );
     MemFiniTypes( &IOData );
 }
 
@@ -310,8 +310,8 @@ static bool WNDCALLBACK IOWndEventProc( a_window wnd, gui_event gui_ev, void *pa
         }
         return( true );
     case GUI_DESTROY :
-        WndFree( io->list );
-        WndFree( io );
+        GUIMemFree( io->list );
+        GUIMemFree( io );
         return( true );
     }
     return( false );
@@ -353,8 +353,8 @@ a_window DoWndIOOpen( address *addr, mad_type_handle mth )
 
     if( IOData.num_types == 0 )
         return( NULL );
-    io = WndMustAlloc( sizeof( io_window ) );
-    io->list = WndMustAlloc( sizeof( io_location ) );
+    io = GUIMemAllocSafe( sizeof( io_window ) );
+    io->list = GUIMemAllocSafe( sizeof( io_location ) );
     io->num_rows = 1;
     io->list->addr = *addr;
     io->list->type = PIECE_TYPE( MENU_IO_FIRST_TYPE );
@@ -378,7 +378,7 @@ a_window WndIOOpen( void )
     io_window   *io;
     a_window    wnd;
 
-    io = WndMustAlloc( sizeof( io_window ) );
+    io = GUIMemAllocSafe( sizeof( io_window ) );
     io->list = NULL;
     io->num_rows = 0;
     wnd = DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );

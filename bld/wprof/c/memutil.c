@@ -98,39 +98,6 @@ void GUIMemPrtUsage( void )
 {
 }
 
-TRMEMAPI( WndAlloc )
-void    *WndAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memhdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-
-TRMEMAPI( WndRealloc )
-void    *WndRealloc( void *ptr, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memhdl ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-
-TRMEMAPI( WndFree )
-void    WndFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), memhdl );
-#else
-    free( ptr );
-#endif
-}
-
-
 void WPMemOpen( void ) {}
 void GUIMemOpen( void )
 /********************/
@@ -206,9 +173,20 @@ void *ProfAlloc( size_t size )
     }
     return( mem );
 }
+
 TRMEMAPI( GUIMemAlloc )
-void *GUIMemAlloc( size_t size )
-/******************************/
+void    *GUIMemAlloc( size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memhdl ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
 {
     void    *mem;
 
@@ -232,9 +210,9 @@ void *GUIMemAlloc( size_t size )
     return( mem );
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
+TRMEMAPI( GUIMemAllocSafe )
+void *GUIMemAllocSafe( size_t size )
+/******************************/
 {
     void    *mem;
 
@@ -454,8 +432,17 @@ void *ProfRealloc( void *ptr, size_t new_size )
     return( new );
 }
 TRMEMAPI( GUIMemRealloc )
-void *GUIMemRealloc( void *ptr, size_t new_size )
-/***********************************************/
+void    *GUIMemRealloc( void *ptr, size_t size )
+{
+#ifdef TRMEM
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memhdl ) );
+#else
+    return( realloc( ptr, size ) );
+#endif
+}
+TRMEMAPI( GUIMemReallocSafe )
+void *GUIMemReallocSafe( void *ptr, size_t new_size )
+/***************************************************/
 {
     void    *new;
 
@@ -533,24 +520,6 @@ void *ProfCAlloc( size_t size )
 }
 
 #if 0
-void *WndAlloc( unsigned size )
-/*****************************/
-{
-    return( ProfAlloc( size ) );
-}
-
-void *WndRealloc( void *chunk, unsigned size )
-/********************************************/
-{
-    return( ProfRealloc( chunk, size ) );
-}
-
-void WndFree( void *chunk )
-/*************************/
-{
-    ProfFree( chunk );
-}
-
 void WndNoMemory( void )
 /**********************/
 {

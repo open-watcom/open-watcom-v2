@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -318,7 +318,7 @@ static bool WNDCALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *p
         BrkInit( wnd );
         return( true );
     case GUI_DESTROY:
-        WndFree( wndbreak );
+        GUIMemFree( wndbreak );
         return( true );
     }
     return( false );
@@ -350,7 +350,7 @@ a_window WndBrkOpen( void )
     a_window            wnd;
     break_window        *brkw;
 
-    brkw = WndMustAlloc( sizeof( *brkw ) );
+    brkw = GUIMemAllocSafe( sizeof( *brkw ) );
     wnd = DbgWndCreate( LIT_DUI( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
     if( wnd != NULL )
         WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );

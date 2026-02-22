@@ -266,7 +266,7 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     dlg_search  *dlg;
     int direction;
 
-    dlg = WndMustAlloc( sizeof( *dlg ) );
+    dlg = GUIMemAllocSafe( sizeof( *dlg ) );
     dlg->wnd = wnd;
     dlg->direction = 0;
     dlg->case_ignore = SrchIgnoreCase;
@@ -281,7 +281,7 @@ static int DoDlgSearch( a_window wnd, void *history, bool want_prev )
     } else {
         WndSetMagicStr( "" );
     }
-    WndFree( dlg );
+    GUIMemFree( dlg );
     return( direction );
 }
 

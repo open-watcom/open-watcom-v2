@@ -109,8 +109,8 @@ void    WndAddPopupMenu( a_window wnd )
 
 void    WndNullPopItem( a_window wnd )
 {
-    WndFree( wnd->popitem );
-    wnd->popitem = WndMustAlloc( 1 );
+    GUIMemFree( wnd->popitem );
+    wnd->popitem = GUIMemAllocSafe( 1 );
     wnd->popitem[0] = '\0';
 }
 
@@ -190,8 +190,8 @@ static void    WndSelPopPiece( a_window wnd, bool paint_immed )
             }
         }
     }
-    WndFree( wnd->popitem );
-    wnd->popitem = WndMustAlloc( buff_size + 2 );
+    GUIMemFree( wnd->popitem );
+    wnd->popitem = GUIMemAllocSafe( buff_size + 2 );
     ptr = wnd->popitem;
     for( row = start->row; row <= end->row; ++row ) {
         for( piece = 0; ; ++piece ) {

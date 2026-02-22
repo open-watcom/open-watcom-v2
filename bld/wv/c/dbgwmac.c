@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -623,7 +623,7 @@ static bool WNDCALLBACK MacWndEventProc( a_window wnd, gui_event gui_ev, void *p
         MacReSize( wnd );
         return( true );
     case GUI_DESTROY:
-        WndFree( wndmac );
+        GUIMemFree( wndmac );
         return( true );
     }
     return( false );
@@ -654,6 +654,6 @@ a_window WndMacOpen( void )
 {
     mac_window  *wndmac;
 
-    wndmac = WndMustAlloc( sizeof( *wndmac ) );
+    wndmac = GUIMemAllocSafe( sizeof( *wndmac ) );
     return( DbgWndCreateTitle( LIT_DUI( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon, TITLE_SIZE, true ) );
 }

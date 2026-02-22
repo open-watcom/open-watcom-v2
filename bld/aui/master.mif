@@ -86,7 +86,6 @@ libtarg_objs = &
     wndcrsr.obj &
     wndcurr.obj &
     wndid.obj &
-    wndmem.obj &
     wndmeth.obj &
     wndutil.obj &
     wndchar.obj &

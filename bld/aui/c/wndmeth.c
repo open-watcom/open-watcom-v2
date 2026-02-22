@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -149,7 +149,7 @@ void WndFiniCacheLines( void )
     int         i;
 
     for( i = 0; i < NUM_CACHE_ENTRIES; ++i ) {
-        WndFree( CacheLine[i].text );
+        GUIMemFree( CacheLine[i].text );
         CacheLine[i].text = NULL;
     }
 }
@@ -181,8 +181,8 @@ static void DoSet( int i, a_window wnd, wnd_row row, wnd_piece piece, wnd_line_p
     CacheLine[i].wnd = wnd;
     CacheLine[i].row = row;
     CacheLine[i].piece = piece;
-    WndFree( CacheLine[i].text );
-    CacheLine[i].text = WndAlloc( strlen( line->text ) + 1 );
+    GUIMemFree( CacheLine[i].text );
+    CacheLine[i].text = GUIMemAlloc( strlen( line->text ) + 1 );
     strcpy( CacheLine[i].text, line->text );
 }
 

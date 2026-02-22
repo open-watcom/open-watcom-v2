@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -167,7 +167,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
         }
         break;
     case GUI_DESTROY:
-        WndFree( dlg );
+        GUIMemFree( dlg );
         return( true );
     default:
         break;
@@ -180,6 +180,6 @@ void    DlgCmd( void )
 {
     dlg_command *dlg;
 
-    dlg = WndMustAlloc( sizeof( dlg_command ) );
+    dlg = GUIMemAllocSafe( sizeof( dlg_command ) );
     DlgOpenRes( CmdGUIEventProc, dlg, DIALOG_CMD );
 }

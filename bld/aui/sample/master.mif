@@ -34,7 +34,7 @@ extra_c_flags = -DGUI_IS_GUI
 #
 # EXE
 #
-exetarg_objs = wndalloc.obj app.obj util.obj window1.obj window2.obj &
+exetarg_objs = wndmem.obj app.obj util.obj window1.obj window2.obj &
     window3.obj window4.obj window5.obj window6.obj window7.obj window8.obj &
     menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
 exetarg_libs = $(cli_aui_libs)

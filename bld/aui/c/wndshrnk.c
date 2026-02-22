@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,7 +152,7 @@ void WndShowAll( void )
     for( gui = GUIGetFront(); gui != NULL; gui = GUIGetNextWindow( gui ) ) {
         ++count;
     }
-    list = WndAlloc( count * sizeof( gui ) );
+    list = GUIMemAlloc( count * sizeof( gui ) );
     pcurr = list;
     for( gui = GUIGetFront(); gui != NULL; gui = GUIGetNextWindow( gui ) ) {
         if( WndMain != NULL && WndMain->gui == gui )
@@ -161,6 +162,6 @@ void WndShowAll( void )
     while( pcurr > list ) {
         GUIShowWindow( *--pcurr );
     }
-    WndFree( list );
+    GUIMemFree( list );
 }
 

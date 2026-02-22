@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,8 +125,8 @@ static bool RegResize( a_window wnd )
         reg->count++;
     }
 
-    WndFree( reg->info );
-    reg->info = WndMustAlloc( reg->count * sizeof( *reg->info ) );
+    GUIMemFree( reg->info );
+    reg->info = GUIMemAllocSafe( reg->count * sizeof( *reg->info ) );
     space = WndAvgCharX( wnd );
 
     max_extent = 0;
@@ -167,8 +167,8 @@ static bool RegResize( a_window wnd )
 
     // calculate the indents
 
-    WndFree( reg->indents );
-    reg->indents = WndMustAlloc( reg->count * sizeof( *reg->indents ) );
+    GUIMemFree( reg->indents );
+    reg->indents = GUIMemAllocSafe( reg->count * sizeof( *reg->indents ) );
 
     // For each column
     for( i = 0; i < reg->up; ++i ) {
@@ -463,9 +463,9 @@ static bool WNDCALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         WndDeleteToggles( reg->popup, ArraySize( RegMenu ), reg->num_toggles );
-        WndFree( reg->info );
-        WndFree( reg->indents );
-        WndFree( reg );
+        GUIMemFree( reg->info );
+        GUIMemFree( reg->indents );
+        GUIMemFree( reg );
         return( true );
     }
     return( false );
@@ -503,7 +503,7 @@ a_window WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource 
     reg_window  *reg;
     a_window    wnd;
 
-    reg = WndMustAlloc( sizeof( reg_window ) );
+    reg = GUIMemAllocSafe( sizeof( reg_window ) );
     reg->kind = kind;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndclass, reg, icon );
     return( wnd );

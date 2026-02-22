@@ -201,7 +201,7 @@ static void CallClose( a_window wnd )
     call_window *call = WndCall( wnd );
 
     FiniTraceBack( &call->tb );
-    WndFree( call );
+    GUIMemFree( call );
 }
 
 
@@ -252,6 +252,6 @@ a_window WndCallOpen( void )
 {
     call_window *call;
 
-    call = WndMustAlloc( sizeof( call_window ) );
+    call = GUIMemAllocSafe( sizeof( call_window ) );
     return( DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,7 +132,7 @@ bool    WNDAPI DlgNew( const char *title, char *buff, size_t buff_len )
     Controls[OK_IDX].text = WndLoadString( LIT_AUI( New_OK ) );
     Controls[CANCEL_IDX].text = WndLoadString( LIT_AUI( New_Cancel ) );
     rc = DlgNewWithCtl( title, buff, buff_len, Controls, ArraySize( Controls ), dlgNewGUIEventProc, DLG_SIZE_DATA );
-    WndFree( (void *)Controls[OK_IDX].text );
-    WndFree( (void *)Controls[CANCEL_IDX].text );
+    GUIMemFree( (void *)Controls[OK_IDX].text );
+    GUIMemFree( (void *)Controls[CANCEL_IDX].text );
     return( rc );
 }
