@@ -142,7 +142,7 @@ void CVInitModule( mod_entry *obj )
 /*********************************/
 // called before pass 1 is done on the module
 {
-    _PermAlloc( obj->d.cv, sizeof( cvmodinfo ) );
+    obj->d.cv = _PermAlloc( sizeof( cvmodinfo ) );
     memset( obj->d.cv, 0, sizeof( cvmodinfo ) );
 }
 

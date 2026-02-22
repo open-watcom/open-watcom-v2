@@ -646,7 +646,7 @@ virt_mem AllocStg( virt_mem_size size )
     if( size == 0 )
         return( 0 );
     if( size < TINY_ALLOC_CUTOFF ) {
-        _PermAlloc( ptr, size + sizeof( vmemblock ) - 1 );
+        ptr = _PermAlloc( size + sizeof( vmemblock ) - 1 );
         ptr->next = ptr;
     } else {
         ptr = MemAllocSafe( size + sizeof( vmemblock ) - 1 );

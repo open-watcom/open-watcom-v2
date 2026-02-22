@@ -134,7 +134,7 @@ void *MemAlloc( size_t size )
             memset( ptr, 0, size );
             break;
         }
-        if( !FreeUpMemory() ) {
+        if( !FreeUpMemory( false ) ) {
             break;
         }
     }
@@ -157,12 +157,10 @@ void *MemAllocSafe( size_t size )
             memset( ptr, 0, size );
             break;
         }
-        if( !FreeUpMemory() ) {
+        if( !FreeUpMemory( false ) ) {
+            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
             break;
         }
-    }
-    if( ptr == NULL ) {
-        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
     }
     return( ptr );
 }
@@ -182,12 +180,36 @@ char *MemStrdupSafe( const char *str )
         if( ptr != NULL ) {
             break;
         }
-        if( !FreeUpMemory() ) {
+        if( !FreeUpMemory( false ) ) {
+            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
             break;
         }
     }
-    if( ptr == NULL ) {
-        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
+    return( ptr );
+}
+
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *src, size_t size )
+/*****************************************
+ * reallocate a block of memory.
+ * Notes for MemRealloc
+ * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
+ * and this function is called from permshrink
+ */
+{
+    void    *ptr;
+
+    for( ;; ) {
+#ifdef TRMEM
+        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
+#else
+        ptr = realloc( src, size );
+#endif
+        if( ptr != NULL )
+            break;
+        if( !FreeUpMemory( true ) ) {
+            break;
+        }
     }
     return( ptr );
 }
@@ -201,21 +223,22 @@ void *MemReallocSafe( void *src, size_t size )
  * and this function is called from permshrink
  */
 {
-    void    *dest;
+    void    *ptr;
 
     for( ;; ) {
 #ifdef TRMEM
-        dest = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
+        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
 #else
-        dest = realloc( src, size );
+        ptr = realloc( src, size );
 #endif
-        if( dest != NULL )
+        if( ptr != NULL )
             break;
-        if( !CacheRelease() && !SwapOutVirt() && !SwapOutRelocs() ) {
+        if( !FreeUpMemory( true ) ) {
             LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );       // see note 1 below
+            break;
         }
     }
-    return( dest );
+    return( ptr );
 }
 
 TRMEMAPI( MemFree )
@@ -248,12 +271,10 @@ char *MemToStringSafe( const void *mem, size_t len )
             ptr[len] = '\0';
             break;
         }
-        if( !FreeUpMemory() ) {
+        if( !FreeUpMemory( false ) ) {
+            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
             break;
         }
-    }
-    if( ptr == NULL ) {
-        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
     }
     return( ptr );
 }
@@ -302,24 +323,30 @@ void DbgZapFreed( void *tgt, size_t size )
 }
 #endif
 
-bool FreeUpMemory( void )
-/************************
- * make sure MemRealloc is kept up to date with what is put in here.
+bool FreeUpMemory( bool skip )
+/*****************************
+ * The MemRealloc.. function uses skip = true to skip PermShrink, which
+ * calls the MemRealloc function, which would cause "infinite" recursion.
  */
 {
+    if( !skip ) {
 #if defined( __QNX__ )
-    if( LastChanceSeg != (unsigned)-1 ) {
-        /*
-            If we're low on memory, the system is low on memory. Give
-            something back to the OS so it can do it's job, and don't
-            ever ask it for anything more.
-        */
-        qnx_segment_free( LastChanceSeg );
-        LastChanceSeg = -1;
-        _heapenable( 0 );
-    }
+        if( LastChanceSeg != (unsigned)-1 ) {
+            /*
+             * If we're low on memory, the system is low on memory. Give
+             * something back to the OS so it can do it's job, and don't
+             * ever ask it for anything more.
+             */
+            qnx_segment_free( LastChanceSeg );
+            LastChanceSeg = -1;
+            _heapenable( 0 );
+        }
 #endif
-    return( PermShrink() || CacheRelease() || SwapOutVirt() || SwapOutRelocs() );
+        if( PermShrink() ) {
+            return( true );
+        }
+    }
+    return( CacheRelease() || SwapOutVirt() || SwapOutRelocs() );
 }
 
 #if defined( __WATCOMC__ )
@@ -328,6 +355,6 @@ int __nmemneed( size_t amount )
 {
     /* unused parameters */ (void)amount;
 
-    return( FreeUpMemory() );
+    return( FreeUpMemory( false ) );
 }
 #endif

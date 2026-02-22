@@ -107,7 +107,7 @@ static comdat_info * AllocCDatInfo( void )
         info = FreedInfos;
         FreedInfos = info->next;
     } else {
-        _Pass1Alloc( info, sizeof( comdat_info ) );
+        info = Pass1Alloc( sizeof( comdat_info ) );
     }
     info->pieces = NULL;
     return( info );
@@ -129,7 +129,7 @@ static comdat_piece * AllocCDatPiece( void )
         piece = FreedPieces;
         FreedPieces = piece->next;
     } else {
-        _Pass1Alloc( piece, sizeof( comdat_piece ) );
+        piece = Pass1Alloc( sizeof( comdat_piece ) );
     }
     memset( piece, 0, sizeof( comdat_piece ) );
     return( piece );

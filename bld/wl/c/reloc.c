@@ -80,7 +80,7 @@ static reloc_info *AllocRelocInfo( void )
 {
     reloc_info      *info;
 
-    _PermAlloc( info, sizeof( reloc_info ) );       /* allocate more */
+    info = _PermAlloc( sizeof( reloc_info ) );       /* allocate more */
     info->sizeleft = RELOC_PAGE_SIZE;
     info->loc.spilled = false;
     info->loc.u.addr = MemAlloc( RELOC_PAGE_SIZE );
@@ -107,7 +107,7 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
 
     pageidx = OSF_PAGE_COUNT( size );
     idxhigh = OSF_RLIDX_HIGH( pageidx );
-    _PermAlloc( mem, ( idxhigh + 1 ) * sizeof( void * ) );
+    mem = _PermAlloc( ( idxhigh + 1 ) * sizeof( void * ) );
     start = mem;
     allocsize = OSF_RLIDX_MAX * unitsize;
     while( idxhigh-- > 0 ) {

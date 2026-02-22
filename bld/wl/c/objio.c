@@ -61,7 +61,7 @@ static infilelist *AllocEntry( const char *name, const path_entry *path )
 {
     infilelist  *infile;
 
-    _PermAlloc( infile, sizeof( infilelist ) );
+    infile = _PermAlloc( sizeof( infilelist ) );
     infile->name.u.ptr = AddStringStringTable( &PermStrings, name );
     infile->path_list = path;
     infile->prefix = NULL;

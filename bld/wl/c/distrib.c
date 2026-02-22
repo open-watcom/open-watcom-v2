@@ -140,7 +140,7 @@ void InitArcList( mod_entry *mod )
 {
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
     } else {
-        _PermAlloc( mod->x.arclist, offsetof( arcdata, arcs ) );
+        mod->x.arclist = _PermAlloc( offsetof( arcdata, arcs ) );
     }
 }
 
@@ -551,7 +551,7 @@ void DistribFinishMod( mod_entry *mod )
         mod->x.arclist->numarcs = 0;
     }
     allocsize = offsetof( arcdata, arcs ) + mod->x.arclist->numarcs * sizeof( dist_arc );
-    _Pass1Alloc( arclist, allocsize );
+    arclist = Pass1Alloc( allocsize );
     memcpy( arclist, mod->x.arclist, allocsize );
     mod->x.arclist = arclist;
 }

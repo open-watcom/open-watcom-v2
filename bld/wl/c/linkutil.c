@@ -294,7 +294,7 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
         owner = &imp->next;
     }
     if( imp == NULL ) {
-        _PermAlloc( imp, sizeof( obj_name_list ) );
+        imp = _PermAlloc( sizeof( obj_name_list ) );
         imp->next = NULL;
         imp->len = len;
         imp->name.u.ptr = AddSymbolStringTable( &PermStrings, name, len );
@@ -628,7 +628,7 @@ file_list *AllocNewFile( member_list *member )
 {
     file_list       *new_entry;
 
-    _PermAlloc( new_entry, sizeof( file_list ) );
+    new_entry = _PermAlloc( sizeof( file_list ) );
     new_entry->next_file = NULL;
     new_entry->flags = DBIFlag;
     new_entry->strtab = NULL;

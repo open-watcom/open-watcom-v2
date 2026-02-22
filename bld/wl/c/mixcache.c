@@ -111,7 +111,7 @@ bool CacheOpen( const file_list *list )
             infile->currpos = infile->len;
         } else {
             numblocks = NumCacheBlocks( infile->len );
-            _Pass1Alloc( infile->cache, numblocks * sizeof( char * ) );
+            infile->cache = Pass1Alloc( numblocks * sizeof( char * ) );
             cache = infile->cache;
             while( numblocks-- > 0 ) {
                 *cache++ = NULL;

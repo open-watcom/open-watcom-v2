@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -268,7 +268,7 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
 
     group = CarveAlloc( CarveGroup );
     group->leaders = NULL;
-    _PermAlloc( sym, sizeof( *sym ) ); // second class slave citizen
+    sym = _PermAlloc( sizeof( *sym ) ); // second class slave citizen
     BasicInitSym( sym );
     sym->namelen_cmp = strlen( name );
     sym->name.u.ptr = AddBufferStringTable( &PermStrings, name, sym->namelen_cmp + 1 );

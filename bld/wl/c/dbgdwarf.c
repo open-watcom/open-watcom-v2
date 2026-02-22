@@ -202,7 +202,7 @@ void DwarfInit( void )
 void DwarfInitModule( mod_entry *mod )
 /*******************************************/
 {
-    _PermAlloc( mod->d.d, sizeof( dwarfmodinfo ) );
+    mod->d.d = _PermAlloc( sizeof( dwarfmodinfo ) );
     memset( mod->d.d, 0, sizeof( dwarfmodinfo ) );
 }
 

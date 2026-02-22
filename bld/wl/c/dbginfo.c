@@ -109,7 +109,7 @@ static snamelist *LangAlloc( size_t len, const char *buff )
 {
     snamelist *node;
 
-    _PermAlloc( node, sizeof( snamelist ) + len );
+    node = _PermAlloc( sizeof( snamelist ) + len );
     node->len = len;
     memcpy( node->name, buff, len );
     node->name[len] = '\0';
@@ -127,7 +127,7 @@ void ODBIInit( section *sect )
     Master.obj_minor_ver = 0;
     DBISourceLang = LangAlloc( sizeof( FE_LANG_C ) - 1, FE_LANG_C );
     DBISourceLang->next = NULL;
-    _PermAlloc( sect->dbg_info, sizeof( debug_info ) );
+    sect->dbg_info = _PermAlloc( sizeof( debug_info ) );
     memset( sect->dbg_info, 0, sizeof( debug_info ) );  //assumes NULL == 0
 #ifdef DEVBUILD
     memset( &TraceInfo, 0, sizeof( TraceInfo ) );
@@ -139,7 +139,7 @@ void ODBIInitModule( mod_entry *mod )
 {
     if( CurrSect->dbg_info == NULL )
         return;
-    _PermAlloc( mod->d.o, sizeof( odbimodinfo ) );
+    mod->d.o = _PermAlloc( sizeof( odbimodinfo ) );
     memset( mod->d.o, 0, sizeof( odbimodinfo ) );
 }
 

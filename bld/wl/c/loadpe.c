@@ -789,7 +789,7 @@ void DoAddResource( char *name )
     unsigned            len;
 
     len = strlen( name );
-    _PermAlloc( info, sizeof( list_of_names ) + len );
+    info = _PermAlloc( sizeof( list_of_names ) + len );
     memcpy( info->name, name, len + 1 );
     info->next_name = FmtData.u.pe.resources;
     FmtData.u.pe.resources = info;
@@ -1636,7 +1636,7 @@ static void RegisterImport( dll_sym_info *sym )
     }
     if( mod == NULL ) {
         ++NumMods;
-        _PermAlloc( mod, sizeof( struct module_import ) );
+        mod = _PermAlloc( sizeof( struct module_import ) );
         mod->next = PEImpList;
         PEImpList = mod;
         mod->mod = sym->m.modnum;
@@ -1649,7 +1649,7 @@ static void RegisterImport( dll_sym_info *sym )
         os2_imp = NULL;
     }
     mod->num_entries++;
-    _PermAlloc( imp, sizeof( struct import_name ) );
+    imp = _PermAlloc( sizeof( struct import_name ) );
     imp->dll = sym;
     imp->imp = os2_imp;
     /* keep the list sorted by name for calculating hint values */

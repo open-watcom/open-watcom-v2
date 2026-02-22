@@ -124,7 +124,7 @@ static void SetOvlClasses( void )
     list_of_names       *ovlmgr;
 
     if( OvlClasses != NULL ) {
-        _PermAlloc( ovlmgr, sizeof( list_of_names ) + OVL_MGR_CL_LEN );
+        ovlmgr = _PermAlloc( sizeof( list_of_names ) + OVL_MGR_CL_LEN );
         memcpy( ovlmgr->name, OvlMgrClass, OVL_MGR_CL_LEN+1 );
         ovlmgr->next_name = OvlClasses;
         OvlClasses = ovlmgr;
@@ -146,7 +146,7 @@ static void NewArea( section *sect )
     ovl_area            *ovl;
     ovl_area            **owner;
 
-    _PermAlloc( ovl, sizeof( ovl_area ) );
+    ovl = _PermAlloc( sizeof( ovl_area ) );
     ovl->next_area = NULL;
     ovl->sections = sect;
     sect->parent = CurrSect;
@@ -303,7 +303,7 @@ static bool AddClass( void )
 {
     list_of_names       *ovlclass;
 
-    _PermAlloc( ovlclass, sizeof( list_of_names ) + Token.len );
+    ovlclass = _PermAlloc( sizeof( list_of_names ) + Token.len );
     memcpy( ovlclass->name, Token.this, Token.len );
     ovlclass->name[Token.len] = '\0';
     ovlclass->next_name = OvlClasses;

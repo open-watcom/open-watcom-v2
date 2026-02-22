@@ -436,7 +436,7 @@ void DBIAddLines( segdata *seg, const void *line, size_t size, bool is32bit )
 {
     lineinfo    *info;
 
-    _PermAlloc( info, sizeof( lineinfo ) + size - 1 );
+    info = _PermAlloc( sizeof( lineinfo ) + size - 1 );
     info->seg = seg;
     info->size = size;
     if( is32bit )
