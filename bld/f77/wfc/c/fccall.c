@@ -518,7 +518,7 @@ void    FCCall( void )
         arg_vec = NULL;
     } else {
         // We need argc + 1 because we use NULL at the end
-        arg_vec = FMemAlloc( ( argc + 1 ) * sizeof( cg_name ) );
+        arg_vec = MemAlloc( ( argc + 1 ) * sizeof( cg_name ) );
     }
     call = CGInitCall( rtn, sp_cgtyp, sp );
     if( sp->u.ns.flags & SY_INTRINSIC ) {
@@ -713,7 +713,7 @@ void    FCCall( void )
         for( idx = 0; arg_vec[idx] != NULL; ++idx ) {
             CGAddParm( call, SCBLength( arg_vec[idx] ), TY_INTEGER );
         }
-        FMemFree( arg_vec );
+        MemFree( arg_vec );
     }
     if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         XPush( CGUnary( O_POINTS, CGCall( call ), sp_cgtyp ) );

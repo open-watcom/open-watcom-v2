@@ -250,7 +250,7 @@ void InitDo( stmt_num term_stmt_no )
         CSHead->bottom = NextLabel();
         CSHead->cycle = NextLabel();
     }
-    do_pointer = FMemAlloc( sizeof( do_entry ) );
+    do_pointer = MemAlloc( sizeof( do_entry ) );
     CSHead->cs_info.do_parms = do_pointer;
     do_pointer->term_stmt_no = term_stmt_no;
     do_pointer->do_parm = NULL;

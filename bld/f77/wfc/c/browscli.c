@@ -295,16 +295,16 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
         } else {
             dw_sections[sect].sec_type = initial_section_type;
             dw_sections[sect].u1.size = MEM_INCREMENT;
-            dw_sections[sect].u2.data = FMemAlloc( MEM_INCREMENT );
+            dw_sections[sect].u2.data = MemAlloc( MEM_INCREMENT );
         }
     }
 
     switch( dw_sections[sect].sec_type ) {
     case( MEM_SECTION ):
         if( dw_sections[sect].u1.size <= ( dw_sections[sect].offset + size ) ) {
-            temp = FMemAlloc( dw_sections[sect].u1.size + MEM_INCREMENT );
+            temp = MemAlloc( dw_sections[sect].u1.size + MEM_INCREMENT );
             memcpy( temp, dw_sections[sect].u2.data, dw_sections[sect].u1.size );
-            FMemFree( dw_sections[sect].u2.data );
+            MemFree( dw_sections[sect].u2.data );
             dw_sections[sect].u2.data = temp;
             dw_sections[sect].u1.size += MEM_INCREMENT;
         }
@@ -382,10 +382,10 @@ static void CLIZeroWrite( dw_sectnum sect, size_t size )
 {
     char            *btmp;
 
-    btmp = FMemAlloc( size + 1 );
+    btmp = MemAlloc( size + 1 );
     memset( btmp, 0, size );
     CLIWrite( sect, btmp, size );
-    FMemFree( btmp );
+    MemFree( btmp );
 }
 
 static void CLISeek( dw_sectnum sect, dw_out_offset offset, int type )
@@ -448,7 +448,7 @@ static void *CLIAlloc( size_t size )
 {
     void            *p;
 
-    p = FMemAlloc( size );
+    p = MemAlloc( size );
     if( p == NULL && size > 0 ) {
         Error( MO_DYNAMIC_OUT );
         CSuicide();
@@ -460,7 +460,7 @@ static void *CLIAlloc( size_t size )
 static void CLIFree( void *p )
 /****************************/
 {
-    FMemFree( p );
+    MemFree( p );
 }
 
 static void CLILock( void )
@@ -516,7 +516,7 @@ void CLIFini( void )
         if( ( dw_sections[sect].sec_type == FILE_SECTION ) && ( dw_sections[sect].u1.fp != NULL ) ) {
             fclose( dw_sections[sect].u1.fp );
         } else if( ( dw_sections[sect].sec_type == MEM_SECTION ) && dw_sections[sect].u2.data != NULL ) {
-            FMemFree( dw_sections[sect].u2.data );
+            MemFree( dw_sections[sect].u2.data );
         }
         memset( &dw_sections[sect], 0, sizeof( F77_DW_SECTION ) );
     }

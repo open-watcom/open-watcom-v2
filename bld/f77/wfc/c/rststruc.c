@@ -49,7 +49,7 @@ static sym_id AddStruct( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( fstruct ) + length );
+    sym = MemAlloc( sizeof( fstruct ) + length );
     sym->u.sd.dbh = 0;
     sym->u.sd.name_len = length;
     memcpy( &sym->u.sd.name, name, length );
@@ -184,7 +184,7 @@ static sym_id AddField( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( field ) + length );
+    sym = MemAlloc( sizeof( field ) + length );
     sym->u.fd.name_len = length;
     memcpy( &sym->u.fd.name, name, length );
     sym->u.fd.name[length] = NULLCHAR;
@@ -332,7 +332,7 @@ void    STUnion( void ) {
     //                      ENDMAP
     if( CurrStruct == NULL )
         return;
-    un = FMemAlloc( sizeof( funion ) );
+    un = MemAlloc( sizeof( funion ) );
     un->u.fd.typ = FT_UNION;
     un->u.fd.link = NULL;
     un->u.fd.xt.record = NULL;
@@ -369,7 +369,7 @@ void    STMap( void ) {
     //                        INTEGER I
     if( field == NULL )
         return;
-    md = FMemAlloc( sizeof( fmap ) );
+    md = MemAlloc( sizeof( fmap ) );
     md->u.sd.link = NULL;
     md->u.sd.fl.fields = NULL;
     md->u.sd.size = 0;

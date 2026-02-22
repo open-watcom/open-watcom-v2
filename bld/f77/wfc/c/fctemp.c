@@ -78,7 +78,7 @@ tmp_handle      AllocTmp( cg_type cgtyp ) {
             return( tmp );
         }
     }
-    tmp = FMemAlloc( sizeof( tmp_tracker ) );
+    tmp = MemAlloc( sizeof( tmp_tracker ) );
     tmp->tmp = CGTemp( cgtyp );
     tmp->cgtyp = cgtyp;
     tmp->avail = false;

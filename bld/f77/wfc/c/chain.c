@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ void    FreeChain( void *_head ) {
     chain = *head;
     while( chain != NULL ) {
         next = *chain;
-        FMemFree( chain );
+        MemFree( chain );
         chain = next;
     }
     *head = NULL;
@@ -63,7 +64,7 @@ void    *FreeLink( void **link ) {
     void        *next;
 
     next = *link;
-    FMemFree( link );
+    MemFree( link );
     return( next );
 }
 

@@ -62,7 +62,7 @@ csnode  *NewCSNode( size_t label_len )
 
     csnode  *csptr;
 
-    csptr = FMemAlloc( sizeof( csnode ) + label_len );
+    csptr = MemAlloc( sizeof( csnode ) + label_len );
     csptr->link = NULL;
     csptr->typ = CS_EMPTY_LIST;
     csptr->cs_info.do_parms = NULL;
@@ -92,7 +92,7 @@ void CSPurge(void)
         while( CSHead->typ != CS_EMPTY_LIST ) {
             DelCSNode();
         }
-        FMemFree( CSHead );
+        MemFree( CSHead );
         CSHead = NULL;
     }
 }
@@ -154,12 +154,12 @@ void DelCSNode(void)
                         FreeLabel( currcase->label.g_label );
                     }
                 }
-                FMemFree( currcase );
+                MemFree( currcase );
             }
         } else if( old->typ == CS_DO ) {
-            FMemFree( old->cs_info.do_parms );
+            MemFree( old->cs_info.do_parms );
         }
-        FMemFree( old );
+        MemFree( old );
     }
 }
 

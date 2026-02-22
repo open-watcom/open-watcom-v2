@@ -112,7 +112,7 @@ void SubPragmaFini( void )
             ( (arr->u.ns.flags & SY_SUB_PARM) || _Allocatable( arr ) ) ) {
             arr->u.ns.si.va.u.dim_ext->dim_flags |= DIM_EXTENDED;
         }
-        FMemFree( ArrayInfo );
+        MemFree( ArrayInfo );
         ArrayInfo = next;
     }
 #endif
@@ -147,7 +147,7 @@ static void AddArrayInfo( const char *arr_name, size_t arr_len )
             return;
         }
     }
-    new_arr = FMemAlloc( sizeof( arr_info ) + arr_len );
+    new_arr = MemAlloc( sizeof( arr_info ) + arr_len );
     new_arr->link = NULL;
     for( i = 0; i < arr_len; i++ ) {
         new_arr->arr[i] = toupper( arr_name[i] );
@@ -176,7 +176,7 @@ void AddDependencyInfo( source_t *fi )
             }
         }
         if( stat( p, &stat_info ) != -1 ) {
-            new_dep = FMemAlloc( sizeof( dep_info ) + strlen( p ) );
+            new_dep = MemAlloc( sizeof( dep_info ) + strlen( p ) );
             new_dep->link = NULL;
             strcpy( new_dep->fn, p );
             new_dep->time_stamp = stat_info.st_mtime;
@@ -223,7 +223,7 @@ static void AddDefaultLib( const char *libname, char priority )
      * if library entry not found then create new one
      */
     if( lib == NULL ) {
-        lib = FMemAlloc( sizeof( default_lib ) + strlen( libname ) );
+        lib = MemAlloc( sizeof( default_lib ) + strlen( libname ) );
         strcpy( lib->libname, libname );
     }
     /*
@@ -512,7 +512,7 @@ static void     Pragma( void )
                 size_t      len;
 
                 len = TokEnd - TokStart;
-                p = FMemAlloc( len + 1 );
+                p = MemAlloc( len + 1 );
                 t = TokStart;
                 if( *t == '"' ) {
                     t++;
@@ -521,7 +521,7 @@ static void     Pragma( void )
                 strncpy( p, t, len );
                 p[len] = NULLCHAR;
                 AddDefaultLib( p, '9' );
-                FMemFree( p );
+                MemFree( p );
                 ScanFnToken();
             }
         }

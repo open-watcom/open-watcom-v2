@@ -56,7 +56,7 @@ case_entry *NewCase( void )
 {
     case_entry  *ptr;
 
-    ptr = FMemAlloc( sizeof( case_entry ) );
+    ptr = MemAlloc( sizeof( case_entry ) );
     ptr->label.g_label = 0;
     ptr->low = 0;
     ptr->high = 0;

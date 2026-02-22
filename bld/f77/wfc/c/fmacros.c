@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,7 @@ static  void    FreeMacros( bool free_perm )
         link = MacroList->link;
         if( !free_perm && ( MacroList->flags == MACFLAG_PERMANENT ) )
             break;
-        FMemFree( MacroList );
+        MemFree( MacroList );
         MacroList = link;
     }
 }
@@ -143,7 +143,7 @@ void MacroDEFINE( const char *macro, size_t macro_len )
 
     me = FindMacroEntry( macro, macro_len );
     if( me == NULL ) {
-        me = FMemAlloc( sizeof( macro_entry ) + macro_len - 1 );
+        me = MemAlloc( sizeof( macro_entry ) + macro_len - 1 );
         me->link = MacroList;
         me->name_len = macro_len;
         me->flags = MacroFlags;
@@ -166,7 +166,7 @@ void MacroUNDEFINE( const char *macro, size_t macro_len )
         if( strnicmp( (*me)->name, macro, macro_len ) == 0 ) {
             free_me = *me;
             *me = free_me->link;
-            FMemFree( free_me );
+            MemFree( free_me );
             return;
         }
     }

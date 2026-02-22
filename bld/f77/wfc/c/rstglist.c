@@ -63,7 +63,7 @@ static  sym_id  LnkNewGlobal( sym_id local )
     size_t      len;
 
     len = sizeof( named_symbol ) + local->u.ns.u2.name_len;
-    global = FMemAlloc( len );
+    global = MemAlloc( len );
     memcpy( global, local, len );
     HashInsert( GHashTable, HashValue, &GList, global );
     return( global );

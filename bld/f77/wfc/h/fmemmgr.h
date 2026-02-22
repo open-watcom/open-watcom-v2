@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 
+#include "memfuncs.h"
+
 extern void     FMemInit( void );
 extern void     FMemFini( void );
 extern void     FMemErrors( void );
-
-extern void     *FMemAlloc( size_t size );
-extern void     FMemFree( void *p );
-extern char     *FMemStrdup( const char *str );

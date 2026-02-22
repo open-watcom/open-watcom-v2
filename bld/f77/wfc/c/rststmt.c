@@ -50,7 +50,7 @@ sym_id  STStmtNo( stmt_num stmt_no )
             return( ste_ptr );
         }
     }
-    ste_ptr = FMemAlloc( sizeof( stmtno ) );
+    ste_ptr = MemAlloc( sizeof( stmtno ) );
     ste_ptr->u.st.block = CSHead->block;
     ste_ptr->u.st.flags = SN_INIT;
     ste_ptr->u.st.number = stmt_no;

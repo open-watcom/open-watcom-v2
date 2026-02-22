@@ -213,13 +213,13 @@ static void PathOption( opt_entry *optn, const char *ptr )
         return;
     end = ptr + len;
     if( IncludePath == NULL ) {
-        p = IncludePath = FMemAlloc( len + 1 );
+        p = IncludePath = MemAlloc( len + 1 );
     } else {
         old_list = IncludePath;
         old_len = strlen( old_list );
-        IncludePath = FMemAlloc( old_len + 1 + len + 1 );
+        IncludePath = MemAlloc( old_len + 1 + len + 1 );
         memcpy( IncludePath, old_list, len );
-        FMemFree( old_list );
+        MemFree( old_list );
         p = IncludePath + old_len;
     }
     while( *ptr != NULLCHAR ) {
@@ -241,7 +241,7 @@ void    FIncludePathInit( void )
     env = getenv( "FINCLUDE" );
     if( env != NULL && *env != NULLCHAR ) {
         len = strlen( env );
-        p = FIncludePath = FMemAlloc( len + 1 );
+        p = FIncludePath = MemAlloc( len + 1 );
         while( *env != NULLCHAR ) {
             if( p != FIncludePath )
                 *p++ = PATH_LIST_SEP;
@@ -255,7 +255,7 @@ void    FIncludePathFini( void )
 //==============================
 {
     if( FIncludePath != NULL ) {
-        FMemFree( FIncludePath );
+        MemFree( FIncludePath );
     }
 }
 
@@ -263,7 +263,7 @@ void    FiniProcCmd( void )
 //=========================
 {
     if( IncludePath != NULL ) {
-        FMemFree( IncludePath );
+        MemFree( IncludePath );
     }
 }
 

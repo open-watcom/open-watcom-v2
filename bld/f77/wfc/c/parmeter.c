@@ -98,12 +98,12 @@ void    CpParameter( void ) {
                 if( typ == FT_CHAR ) {
                     str = CITNode->value.string.ptr;
                     if( parm_size > CITNode->size ) {
-                        lit = FMemAlloc( parm_size );
+                        lit = MemAlloc( parm_size );
                         lit_len = CITNode->size;
                         memcpy( lit, str, lit_len );
                         memset( lit + lit_len, ' ', parm_size - lit_len );
                         value_id = STLit( lit, parm_size );
-                        FMemFree( lit );
+                        MemFree( lit );
                     } else {
                         if( parm_size == 0 ) { // *(*)
                             parm_size = CITNode->size;

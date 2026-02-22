@@ -857,8 +857,8 @@ static  void    DoDataInit( PTYPE ptyp )
         /*
          * numeric to numeric
          */
-        f77h.alloc = FMemAlloc;
-        f77h.free  = FMemFree;
+        f77h.alloc = MemAlloc;
+        f77h.free  = MemFree;
         CFInit( &f77h );
 
         if( DtConstPtyp != ptyp ) {

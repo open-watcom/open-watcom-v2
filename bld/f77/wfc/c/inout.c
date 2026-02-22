@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +100,7 @@ void    InitComIO( void ) {
     TermCursor = 0;
     ErrCursor  = 0;
     ListCursor = 0;
-    TermBuff = FMemAlloc( TERM_BUFF_SIZE );
+    TermBuff = MemAlloc( TERM_BUFF_SIZE );
     ErrBuff = NULL;
     ListBuff = NULL;
     CurrFile = NULL;
@@ -116,7 +116,7 @@ void    InitComIO( void ) {
 void    FiniComIO( void ) {
 //===================
 
-    FMemFree( TermBuff );
+    MemFree( TermBuff );
 }
 
 
@@ -296,8 +296,8 @@ void    SrcInclude( const char *name )
 {
     source_t    *src;
 
-    src = FMemAlloc( sizeof( source_t ) );
-    src->name = FMemAlloc( strlen( name ) + 1 );
+    src = MemAlloc( sizeof( source_t ) );
+    src->name = MemAlloc( strlen( name ) + 1 );
     strcpy( src->name, name );
     src->rec = 0;
     src->link = CurrFile;
@@ -336,8 +336,8 @@ void    Conclude( void ) {
         }
     }
     SDClose( old->fileptr );
-    FMemFree( old->name );
-    FMemFree( old );
+    MemFree( old->name );
+    MemFree( old );
     ProgSw &= ~PS_INC_EOF;
     BISetSrcFile();             // tell browser which file we return to
 }
@@ -366,7 +366,7 @@ void    OpenErr( void ) {
         if( ErrFile != NULL ) {
             ErrCursor = 0;
             if( ErrBuff == NULL ) {
-                ErrBuff = FMemAlloc( ERR_BUFF_SIZE );
+                ErrBuff = MemAlloc( ERR_BUFF_SIZE );
             }
         }
     }
@@ -497,7 +497,7 @@ void    CloseErr( void ) {
     ErrFile = NULL;
     if( ErrBuff == NULL )
         return;
-    FMemFree( ErrBuff );
+    MemFree( ErrBuff );
     ErrBuff = NULL;
 }
 
@@ -555,7 +555,7 @@ static  void    OpenListingFile( bool reopen ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
             ListFlag |= LF_CC_NOLF;
-            ListBuff = FMemAlloc( LIST_BUFF_SIZE + 1 );
+            ListBuff = MemAlloc( LIST_BUFF_SIZE + 1 );
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );
@@ -762,7 +762,7 @@ void    CloseLst( void ) {
     ListFile = NULL;
     if( ListBuff == NULL )
         return;
-    FMemFree( ListBuff );
+    MemFree( ListBuff );
     ListBuff = NULL;
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static  sym_id  AddNameList( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = FMemAlloc( sizeof( name_list ) + length );
+    sym = MemAlloc( sizeof( name_list ) + length );
     sym->u.nl.name_len = length;
     sym->u.nl.address = NULL;
     sym->u.nl.dbh = 0;

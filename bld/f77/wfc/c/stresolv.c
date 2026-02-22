@@ -169,7 +169,7 @@ void    EquivResolve( void ) {
                 }
                 GenEquivSet( eq_head, eqv_entry, lead_offset, offset );
                 next_eq_entry = eqv_entry->next_eq_entry;
-                FMemFree( eqv_entry );
+                MemFree( eqv_entry );
                 eqv_entry = next_eq_entry;
                 if( eqv_entry == NULL ) {
                     break;
@@ -177,7 +177,7 @@ void    EquivResolve( void ) {
             }
         }
         eq_set = eq_head->next_eq_set;
-        FMemFree( eq_head );
+        MemFree( eq_head );
     }
     EquivSets = NULL;
 }

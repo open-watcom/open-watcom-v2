@@ -38,17 +38,17 @@
 void    *AsmAlloc( size_t amount )
 //================================
 {
-    return( FMemAlloc( amount ) );
+    return( MemAlloc( amount ) );
 }
 
 char *AsmStrdup( const char *str )
 //================================
 {
-    return( FMemStrdup( str ) );
+    return( MemStrdup( str ) );
 }
 
 void    AsmFree( void *ptr )
 //==========================
 {
-    FMemFree( ptr );
+    MemFree( ptr );
 }

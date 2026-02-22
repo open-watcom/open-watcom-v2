@@ -61,7 +61,7 @@ void    FreeGlobalSegs( void )
     while( GlobalSeg != NULL ) {
         curr_seg  = GlobalSeg;
         GlobalSeg = curr_seg->link;
-        FMemFree( curr_seg );
+        MemFree( curr_seg );
     }
 }
 
@@ -72,7 +72,7 @@ static  void    NewGlobalSeg( void )
 {
     global_seg  *new_seg;
 
-    new_seg = FMemAlloc( sizeof( global_seg ) );
+    new_seg = MemAlloc( sizeof( global_seg ) );
     new_seg->segid = SEG_NULL;
     new_seg->link = NULL;
     if( CurrGSeg == NULL ) {

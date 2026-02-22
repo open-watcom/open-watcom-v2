@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -834,8 +834,8 @@ static dw_handle BIGetUnionType( sym_id ste_ptr )
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
-    sym = FMemAlloc( sizeof( named_symbol ) + sizeof( buff ) );
-    sym->u.ns.xt.record = FMemAlloc( sizeof( fstruct) + sizeof( buff ) );
+    sym = MemAlloc( sizeof( named_symbol ) + sizeof( buff ) );
+    sym->u.ns.xt.record = MemAlloc( sizeof( fstruct) + sizeof( buff ) );
     for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
         memset( sym->u.ns.xt.record, 0, sizeof( fstruct ) + sizeof( buff ) );
         memcpy( sym->u.ns.xt.record, fs, sizeof( fmap ) );
@@ -848,8 +848,8 @@ static dw_handle BIGetUnionType( sym_id ste_ptr )
         map++;
         DWAddField( cBIId, BIGetType( sym ), justJunk, sym->u.ns.name, 0 );
     }
-    FMemFree( sym->u.ns.xt.record );
-    FMemFree( sym );
+    MemFree( sym->u.ns.xt.record );
+    MemFree( sym );
     DWEndStruct( cBIId );
     return( ret );
 }
@@ -874,7 +874,7 @@ static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle )
 {
     sym_list    *tmp;
 
-    tmp = FMemAlloc( sizeof( sym_list ) );
+    tmp = MemAlloc( sizeof( sym_list ) );
     tmp->id = ste_ptr;
     tmp->dbh = handle;
     tmp->link = *list;
@@ -892,7 +892,7 @@ static void BIWalkList( sym_list **list, func action, int nuke_list )
         action( tmp->id, tmp->dbh );
         tmp = tmp->link;
         if( nuke_list ) {
-            FMemFree( *list );
+            MemFree( *list );
             *list = tmp;
         }
     }

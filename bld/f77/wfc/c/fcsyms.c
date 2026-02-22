@@ -541,7 +541,7 @@ static void PostponeFreeBackHandle( back_handle cgbck )
 {
     old_back_handle     *tmp;
 
-    tmp = FMemAlloc( sizeof( old_back_handle ) );
+    tmp = MemAlloc( sizeof( old_back_handle ) );
     tmp->next = OldBackHandles;
     OldBackHandles = tmp;
     tmp->cgbck = cgbck;
@@ -946,7 +946,7 @@ void    FreeUsedBacks( bool nuke )
         if( nuke ) {
             BEFreeBack( tmp->cgbck );
         }
-        FMemFree( tmp );
+        MemFree( tmp );
     }
 }
 

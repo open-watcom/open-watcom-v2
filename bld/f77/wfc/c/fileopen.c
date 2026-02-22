@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,14 +75,14 @@ b_file  *Openf( const char *f, const char *mode )
         return( NULL );
     }
     if( S_ISCHR( info.st_mode ) ) {
-        io = FMemAlloc( offsetof( b_file, read_len ) );
+        io = MemAlloc( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
 //        attrs &= ~TRUNC_ON_WRITE;
 //        attrs |= CHAR_DEVICE;
         buffered = false;
     } else {
-        io = FMemAlloc( sizeof( b_file ) );
+        io = MemAlloc( sizeof( b_file ) );
         buffered = true;
     }
     if( io == NULL ) {
@@ -107,6 +107,6 @@ void    Closef( b_file *io )
         FSetSysErr( io );
         return;
     }
-    FMemFree( io );
+    MemFree( io );
     FSetIOOk( NULL );
 }

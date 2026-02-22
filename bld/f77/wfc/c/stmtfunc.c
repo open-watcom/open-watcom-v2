@@ -72,7 +72,7 @@ void    SFPrologue( void ) {
     func_node = CITNode;
     AdvanceITPtr();
     ReqOpenParenOpr();
-    SFSymId->u.ns.si.sf.header = FMemAlloc( sizeof( sf_header ) );
+    SFSymId->u.ns.si.sf.header = MemAlloc( sizeof( sf_header ) );
     SFSymId->u.ns.si.sf.header->ref_count = 1;
     parm = &SFSymId->u.ns.si.sf.header->parm_list;
     *parm = NULL;
@@ -92,7 +92,7 @@ void    SFPrologue( void ) {
                     if( sym->u.ns.flags & SY_SPECIAL_PARM ) {
                         Error( SF_DUPLICATE_DUMMY_PARM );
                     } else {
-                        *parm = FMemAlloc( sizeof( sf_parm ) );
+                        *parm = MemAlloc( sizeof( sf_parm ) );
                         (*parm)->link = NULL;
                         (*parm)->actual = sym;
                         (*parm)->shadow = STShadow( sym );

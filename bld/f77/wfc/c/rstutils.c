@@ -72,7 +72,7 @@ sym_id STAdd( const char *name, size_t length )
 {
     sym_id    sym;
 
-    sym = FMemAlloc( sizeof( named_symbol ) + length );
+    sym = MemAlloc( sizeof( named_symbol ) + length );
     sym->u.ns.u2.name_len = length;
     memcpy( &sym->u.ns.name, name, length );
     sym->u.ns.name[length] = NULLCHAR;
@@ -100,7 +100,7 @@ void    FreeSFHeader( sym_id sym )
 {
     if( sym->u.ns.si.sf.header != NULL ) {
         FreeChain( &sym->u.ns.si.sf.header->parm_list );
-        FMemFree( sym->u.ns.si.sf.header );
+        MemFree( sym->u.ns.si.sf.header );
         sym->u.ns.si.sf.header = NULL;
     }
 }

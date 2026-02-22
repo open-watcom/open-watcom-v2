@@ -220,7 +220,7 @@ void    ConstCat( size_t size )
     itnode      *link_node;
 
     last_node = CITNode;
-    str = FMemAlloc( size );
+    str = MemAlloc( size );
     size_left = size;
     dest = str;
     for( ;; ) {
@@ -241,7 +241,7 @@ void    ConstCat( size_t size )
     CITNode->link = link_node;
     AddConst( CITNode );
     CITNode->value.string.ptr = CITNode->sym_ptr->u.lt.value;
-    FMemFree( str );
+    MemFree( str );
 }
 
 void    (* const ConstTable[])(TYPE, TYPE, OPTR) = {

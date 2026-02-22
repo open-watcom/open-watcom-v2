@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ sym_id  STLit( const char *str, size_t len )
             }
         }
     }
-    sym = FMemAlloc( sizeof( literal ) - 1 + len );
+    sym = MemAlloc( sizeof( literal ) - 1 + len );
     memcpy( sym->u.lt.value, str, len );
     sym->u.lt.length = len;
     if( StmtSw & SS_DATA_INIT ) {

@@ -189,7 +189,7 @@ void    CpEquivalence(void) {
                     if( equiv.substr != 0 ) {
                         eq_size += 2 * sizeof( intstar4 );
                     }
-                    new_eq = FMemAlloc( eq_size );
+                    new_eq = MemAlloc( eq_size );
                     memcpy( new_eq, &equiv, eq_size );
                     if( eqv_entry == NULL ) {
                         eq_head = new_eq;
@@ -244,7 +244,7 @@ void    EqPurge(void) {
         for( ;; ) {
             old = eq_set;
             eq_set = old->next_eq_entry;
-            FMemFree( old );
+            MemFree( old );
             if( eq_set == NULL ) {
                 break;
             }

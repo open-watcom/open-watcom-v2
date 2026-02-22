@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
             head = head->u.cn.link;
         }
     }
-    head = FMemAlloc( sizeof( constant ) - sizeof( ftn_type ) + size );
+    head = MemAlloc( sizeof( constant ) - sizeof( ftn_type ) + size );
     memcpy( &head->u.cn.value, c_ptr, size );
     head->u.cn.typ = typ;
     head->u.cn.size = size;

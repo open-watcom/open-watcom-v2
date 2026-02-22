@@ -108,7 +108,7 @@ char    *MkNodeStr( itnode *itptr ) {
     char        *str;
 
     opnd_size = itptr->opnd_size;
-    str = FMemAlloc( opnd_size + 1 );
+    str = MemAlloc( opnd_size + 1 );
     memcpy( str, itptr->opnd, opnd_size );
     str[opnd_size] = NULLCHAR;
     return( str );
@@ -120,7 +120,7 @@ void    FrNodeStr( char *str ) {
 
 // Free memory allocated by MkNodeStr().
 
-    FMemFree( str );
+    MemFree( str );
 }
 
 

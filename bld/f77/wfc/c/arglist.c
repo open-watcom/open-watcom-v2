@@ -173,10 +173,10 @@ void    EnPurge( void )
     while( Entries != NULL ) {
         for( curr_parm = Entries->parms; curr_parm != NULL; curr_parm = next ) {
             next = curr_parm->link;
-            FMemFree( curr_parm );
+            MemFree( curr_parm );
         }
         next = Entries->link;
-        FMemFree( Entries );
+        MemFree( Entries );
         Entries = next;
     }
 }

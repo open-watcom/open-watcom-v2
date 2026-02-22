@@ -93,7 +93,7 @@ void    FiniLabels( bool back_label )
                 }
             }
             *owner = curr->link;
-            FMemFree( curr );
+            MemFree( curr );
         } else {
             owner = &curr->link;
         }
@@ -113,7 +113,7 @@ static  label_entry     *FindLabel( label_id label )
         }
     }
     if( le == NULL ) {
-        le = FMemAlloc( sizeof( label_entry ) );
+        le = MemAlloc( sizeof( label_entry ) );
         le->label = label;
         le->back_label = false;
         le->u.cglbl = NULL;
@@ -543,7 +543,7 @@ void    DoneLabel( label_id label )
     }
     *owner = curr->link;
     BEFiniLabel( curr->u.cglbl );
-    FMemFree( curr );
+    MemFree( curr );
 }
 
 

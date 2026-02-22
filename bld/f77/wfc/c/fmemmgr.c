@@ -42,6 +42,7 @@
 #include "fmeminit.h"
 #include "utility.h"
 #include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -137,8 +138,8 @@ static void no_mem( void )
     }
 }
 
-TRMEMAPI( FMemAlloc )
-void    *FMemAlloc( size_t size ) {
+TRMEMAPI( MemAlloc )
+void    *MemAlloc( size_t size ) {
 //=================================
 
     void        *p;
@@ -178,8 +179,8 @@ void    *wres_alloc( size_t size )
 }
 
 
-TRMEMAPI( FMemStrdup )
-char    *FMemStrdup( const char *str )
+TRMEMAPI( MemStrdup )
+char    *MemStrdup( const char *str )
 //====================================
 {
     void        *p;
@@ -207,8 +208,8 @@ char    *FMemStrdup( const char *str )
     return( p );
 }
 
-TRMEMAPI( FMemFree )
-void    FMemFree( void *p ) {
+TRMEMAPI( MemFree )
+void    MemFree( void *p ) {
 //===========================
 
 #ifdef TRMEM

@@ -51,7 +51,7 @@ grp_entry       *STGroupEntry( void ) {
 
     grp_entry   *ge;
 
-    ge = FMemAlloc( sizeof( grp_entry ) );
+    ge = MemAlloc( sizeof( grp_entry ) );
     ge->link = NULL;
     return( ge );
 }
@@ -64,7 +64,7 @@ com_eq  *STComEq( void ) {
 
     com_eq      *ce_ext;
 
-    ce_ext = FMemAlloc( sizeof( com_eq ) );
+    ce_ext = MemAlloc( sizeof( com_eq ) );
     ce_ext->ec_flags = 0;
     ce_ext->low = 0;
     ce_ext->high = 0;
@@ -84,7 +84,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
     act_dim_list    *ste_ptr;
 
     size = offsetof( act_dim_list, subs_1_lo ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
-    ste_ptr = FMemAlloc( size );
+    ste_ptr = MemAlloc( size );
     memcpy( ste_ptr, subs_ptr, size );
     return( ste_ptr );
 }
@@ -154,7 +154,7 @@ sym_id  FreeREntry( sym_id sym ) {
             FreeRList( fd->u.fd.xt.sym_record );
         } else {
             if( fd->u.fd.dim_ext != NULL ) {
-                FMemFree( fd->u.fd.dim_ext );
+                MemFree( fd->u.fd.dim_ext );
             }
         }
         fd = FreeLink( (void **)fd );
@@ -206,12 +206,12 @@ sym_id        STFreeName( sym_id sym_ptr ) {
         if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
             if( sym_ptr->u.ns.flags & SY_SUBSCRIPTED ) {
                 if( sym_ptr->u.ns.si.va.u.dim_ext != NULL ) {
-                    FMemFree( sym_ptr->u.ns.si.va.u.dim_ext );
+                    MemFree( sym_ptr->u.ns.si.va.u.dim_ext );
                 }
             }
             if( sym_ptr->u.ns.flags & SY_IN_EC ) {
                 if( sym_ptr->u.ns.si.va.vi.ec_ext != NULL ) {
-                    FMemFree( sym_ptr->u.ns.si.va.vi.ec_ext );
+                    MemFree( sym_ptr->u.ns.si.va.vi.ec_ext );
                 }
             }
         } else if( (sym_ptr->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
