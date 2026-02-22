@@ -125,6 +125,12 @@ void TestCompare( void )
 
     status = strnicmp( bufA, "fOo B!!!", 6 );   /* ensure not same */
     VERIFY( status != 0 );
+
+    status = strncmp( bufA, "foo", 0 );         /* ensure not same */
+    VERIFY( status == 0 );
+
+    status = strnicmp( bufA, "foo", 0 );        /* ensure not same */
+    VERIFY( status == 0 );
 }
 
 
