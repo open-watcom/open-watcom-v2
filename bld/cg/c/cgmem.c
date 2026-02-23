@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ pointer CGAlloc( size_t size )
 {
     pointer     chunk;
 
-    chunk = MemAlloc( size );
+    chunk = CgMemAlloc( size );
     if( chunk == NULL ) {
         FatalError( "Out of memory" );
     }
@@ -54,7 +54,7 @@ pointer CGAlloc( size_t size )
 void    CGFree( pointer chunk )
 /*****************************/
 {
-    MemFree( chunk );
+    CgMemFree( chunk );
 }
 
 bool TBreak()

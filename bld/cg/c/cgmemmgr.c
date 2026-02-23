@@ -386,8 +386,8 @@ static pointer  GetFromBlk( size_t amount )
 }
 
 
-pointer  MemAlloc( size_t amount )
-/********************************/
+pointer  CgMemAlloc( size_t amount )
+/**********************************/
 {
     char        *chunk;
     int         mem_class;
@@ -413,8 +413,8 @@ pointer  MemAlloc( size_t amount )
 }
 
 
-void     MemFree( pointer p )
-/***************************/
+void     CgMemFree( pointer p )
+/*****************************/
 {
     frl     *free;
     int     mem_class;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +30,15 @@
 ****************************************************************************/
 
 
-extern pointer          MemAlloc( size_t );
-extern void             MemFree( pointer );
+extern pointer          CgMemAlloc( size_t );
+extern void             CgMemFree( pointer );
 extern void             MemInit( void );
 extern void             MemFini( void );
 extern void             MemCoalesce( void );
 extern pointer_uint     MemInUse( void );
 extern pointer_uint     MemSize( void );
 
-#define _SysAlloc       MemAlloc
-#define _SysFree        MemFree
+#define _SysAlloc       CgMemAlloc
+#define _SysFree        CgMemFree
 #define _SysInit        MemInit
 #define _SysReInit      MemCoalesce
