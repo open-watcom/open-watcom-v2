@@ -610,7 +610,7 @@ static int AddFsysInfo( int target )
     }
     BumpArray( &FsysArray );
     ResetFsysInfoData( &FsysInfo[i] );
-    FsysInfo[i].root = GUIMemStrdup( p );
+    FsysInfo[i].root = MemStrdup( p );
     VbufFree( &root );
     SimSetTargetFsys( target, i );
     return( i );
@@ -1034,6 +1034,7 @@ bool CheckFsys( bool issue_message )
     for( i = 0; i < max_targets; i++ ) {
         SimSetTargetMarked( i, false );
     }
+    targ_root = "";
     if( ok ) {
         /*
          * check for enough disk space, combine drives that are the same
@@ -2265,8 +2266,8 @@ static void AddDefine( char *def )
         *p = '\0';
         ++p;
         var = MemAlloc( sizeof( DEF_VAR ) );
-        var->variable = GUIMemStrdup( def );
-        var->value = GUIMemStrdup( p );
+        var->variable = MemStrdup( def );
+        var->value = MemStrdup( p );
         var->link = ExtraVariables;
         ExtraVariables = var;
     }
@@ -2420,7 +2421,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
                   && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
                     MemFree( VariablesFile );
-                    VariablesFile = GUIMemStrdup( &argv[i][3] );
+                    VariablesFile = MemStrdup( &argv[i][3] );
                 }
                 break;
             case 'd':

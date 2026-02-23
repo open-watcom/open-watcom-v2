@@ -54,16 +54,15 @@
 
 static _trmem_hdl  TrHdl = _TRMEM_HDL_NONE;
 
-static FILE *GUIMemFP = NULL;           /* stream to put output on */
-static bool GUIMemOpened = false;
+static FILE *TrFile = NULL;           /* stream to put output on */
 
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    if( GUIMemFP != NULL ) {
-        fprintf( GUIMemFP, "%s\n", buff );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buff );
     }
 }
 #if 0
@@ -87,7 +86,7 @@ void GUIMemRedirect( FILE *fp )
 /*****************************/
 {
 #ifdef TRMEM
-    GUIMemFP = fp;
+    TrFile = fp;
 #else
     /* unused parameters */ (void)fp;
 #endif
@@ -96,7 +95,7 @@ void GUIMemRedirect( FILE *fp )
 void UIMemRedirect( FILE *fp )
 {
 #ifdef TRMEM
-    GUIMemFP = fp;
+    TrFile = fp;
 #else
     /* unused parameters */ (void)fp;
 #endif
@@ -110,16 +109,15 @@ void GUIMemOpen( void )
 #ifdef TRMEM
     char * tmpdir;
 
-    if( !GUIMemOpened ) {
-        GUIMemFP = stderr;
+    if( TrHdl == _TRMEM_HDL_NONE ) {
+        TrFile = stderr;
         TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, GUIMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            GUIMemFP = fopen( tmpdir, "w" );
+            TrFile = fopen( tmpdir, "w" );
         }
-        GUIMemOpened = true;
     }
 #endif
 }
@@ -130,9 +128,9 @@ void GUIMemClose( void )
 #ifdef TRMEM
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
-    if( GUIMemFP != stderr ) {
-        fclose( GUIMemFP );
-        GUIMemFP = NULL;
+    if( TrFile != stderr ) {
+        fclose( TrFile );
+        TrFile = NULL;
     }
 #endif
 }

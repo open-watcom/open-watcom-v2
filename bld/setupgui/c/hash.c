@@ -87,7 +87,7 @@ bool HashInsert( hash_handle ht, hash_key k, vhandle data )
         return( false );
     i = hashKey( ht->size, k );
     he->data = data;
-    he->key = GUIMemStrdup( k );
+    he->key = MemStrdup( k );
     he->next = ht->table[i];
     ht->table[i] = he;
     return( true );

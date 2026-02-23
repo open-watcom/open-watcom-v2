@@ -181,7 +181,7 @@ static bool DoMainLoop( dlg_state *state )
         p = "Welcome";
     }
     i = 0;
-    diags = list = GUIMemStrdup( p );
+    diags = list = MemStrdup( p );
     for( ;; ) {
         diag_list[i] = diags;
         next = strchr( diags, ',' );
