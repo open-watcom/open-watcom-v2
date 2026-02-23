@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include "bool.h"
 #include "wressetr.h"
-#include "wresmem.h"
+#include "memfuncs.h"
 #include "reserr.h"
 
 
@@ -86,4 +86,4 @@ static bool res_ioerr( FILE *fp, size_t rc )
     return( ferror( fp ) != 0 );
 }
 
-WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, wres_alloc, wres_free );
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, MemAlloc, MemFree );

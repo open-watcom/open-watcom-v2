@@ -44,7 +44,7 @@
 #include "virtmem.h"
 #include "reloc.h"
 #include "objcache.h"
-#include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
     #include "ideentry.h"
@@ -277,26 +277,6 @@ char *MemToStringSafe( const void *mem, size_t len )
         }
     }
     return( ptr );
-}
-
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
-#else
-    free( ptr );
-#endif
 }
 
 int ValidateMem( void )

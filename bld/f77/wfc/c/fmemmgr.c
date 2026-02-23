@@ -41,7 +41,6 @@
 #include "cle.h"
 #include "fmeminit.h"
 #include "utility.h"
-#include "wresmem.h"
 #include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -167,18 +166,6 @@ void    *MemAlloc( size_t size ) {
     return( p );
 }
 
-TRMEMAPI( wres_alloc )
-void    *wres_alloc( size_t size )
-//================================
-{
-#if defined( TRMEM )
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-
 TRMEMAPI( MemStrdup )
 char    *MemStrdup( const char *str )
 //====================================
@@ -218,15 +205,4 @@ void    MemFree( void *p ) {
     free( p );
 #endif
     UnFreeMem--;
-}
-
-TRMEMAPI( wres_free )
-void    wres_free( void *p )
-//==========================
-{
-#ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 5 ), memHandle );
-#else
-    free( p );
-#endif
 }

@@ -32,7 +32,6 @@
 
 
 #include "as.h"
-#include "wresmem.h"
 #include "preproc.h"
 #include "memfuncs.h"
 #if defined( TRMEM )
@@ -110,6 +109,16 @@ pointer AsmAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
+TRMEMAPI( MemAlloc )
+pointer MemAlloc( size_t size )
+/*****************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
+#else
+    return( malloc( size ) );
+#endif
+}
 
 TRMEMAPI( AsmStrdup )
 char *AsmStrdup( const char *str )
@@ -132,6 +141,16 @@ void AsmFree( pointer ptr )
     free( ptr );
 #endif
 }
+TRMEMAPI( MemFree )
+void MemFree( pointer ptr )
+/*************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
+#else
+    free( ptr );
+#endif
+}
 
 TRMEMAPI( AsMemRealloc )
 pointer AsMemRealloc( pointer ptr, size_t size )
@@ -141,28 +160,6 @@ pointer AsMemRealloc( pointer ptr, size_t size )
     return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), memHandle ) );
 #else
     return( realloc( ptr, size ) );
-#endif
-}
-
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-/*****************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), memHandle );
-#else
-    free( ptr );
 #endif
 }
 

@@ -41,7 +41,6 @@
 #include "memutil.h"
 #include "wpmutil.h"
 #include "dumpmem.h"
-#include "wresmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -264,34 +263,8 @@ void *MemAllocSafe( size_t size )
 }
 
 #else /* !GUI_IS_GUI */
-
-
 #endif /* GUI_IS_GUI */
 
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-    void    *mem;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 6 ), WPMemHandle );
-#else
-        mem = malloc( size );
-#endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
-}
 
 /*
  *  Strdup functions
@@ -390,18 +363,6 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 13 ), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
 
 /*
  *  Realloc functions

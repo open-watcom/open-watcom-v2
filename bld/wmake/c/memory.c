@@ -37,7 +37,7 @@
 #if defined( __WATCOMC__ )
     #include <malloc.h>         /* necessary for heap checking functions */
 #endif
-#include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include <sys/types.h>
     #include "trmem.h"
@@ -339,19 +339,6 @@ STATIC void *doAlloc( size_t size )
 #endif /* USE_SCARCE */
 }
 
-#ifndef BOOTSTRAP
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-  #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), Handle ) );
-  #else
-    return( malloc( size ) );
-  #endif
-}
-#endif
-
-
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /*******************************/
@@ -427,19 +414,6 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
-
-#ifndef BOOTSTRAP
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-  #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), Handle );
-  #else
-    free( ptr );
-  #endif
-}
-#endif
-
 
 
 TRMEMAPI( CharToStringSafe )

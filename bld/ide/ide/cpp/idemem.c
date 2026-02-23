@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "guimem.h"
-#include "wresmem.h"
 #include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -140,15 +139,6 @@ void *GUIMemAlloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-TRMEMAPI( wres_alloc )
-void * wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
@@ -210,16 +200,6 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), TrHdl );
-#else
-    free( ptr );
-#endif
-}
-
 
 /*
  * Realloc functions

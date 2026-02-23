@@ -33,7 +33,6 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
-#include "wresmem.h"
 #include "memfuncs.h"
 
 /****************************************************************************/
@@ -79,14 +78,6 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-/* function for wres.lib */
-
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-    return( WRMemAlloc( size, _TRMEM_WHO( 2 ) ) );
-}
-
 /* function to replace this in mem.c in commonui */
 
 TRMEMAPI( MemRealloc )
@@ -99,12 +90,4 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
     WRMemFree( ptr, _TRMEM_WHO( 4 ) );
-}
-
-/* function for wres.lib */
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-    WRMemFree( ptr, _TRMEM_WHO( 5 ) );
 }

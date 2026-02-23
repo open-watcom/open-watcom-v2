@@ -55,7 +55,6 @@
 #ifndef __NOUI__
     #include "aui.h"
     #include "guimem.h"
-    #include "wresmem.h"
     #ifdef GUI_IS_GUI
     #else
         #include "stdui.h"
@@ -507,15 +506,6 @@ LP_VOID UIAPI uifaralloc( size_t size )
     return( malloc( size ) );
 #endif
 }
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 14 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
 #endif  /* ! GUI_IS_GUI */
 
@@ -586,15 +576,6 @@ void UIAPI uifarfree( LP_VOID ptr )
         free( MEM_NEAR_PTR( ptr ) );
 #endif
     }
-}
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 22 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
 }
 
 #endif  /* ! GUI_IS_GUI */

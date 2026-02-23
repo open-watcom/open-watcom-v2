@@ -40,7 +40,7 @@
 #include <string.h>
 #include "asmalloc.h"
 #include "fatal.h"
-#include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -114,6 +114,15 @@ void *AsmAlloc( size_t size )
     return( check_nomem( malloc( size ) ) );
 #endif
 }
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
 
 TRMEMAPI( AsmStrdup )
 char *AsmStrdup( const char *str )
@@ -138,23 +147,14 @@ void AsmFree( void *ptr )
 #endif
     }
 }
-
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
 {
+    if( ptr != NULL ) {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
+        _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
 #else
-    return( malloc( size ) );
+        free( ptr );
 #endif
-}
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), memHandle );
-#else
-    free( ptr );
-#endif
+    }
 }

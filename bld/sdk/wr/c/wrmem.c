@@ -31,7 +31,7 @@
 
 
 #include "wrglbl.h"
-#include "wresmem.h"
+#include "memfuncs.h"
 #include "wrmemi.h"
 
 
@@ -171,18 +171,6 @@ void *MemAllocSafe( size_t size )
     return( p );
 }
 
-/* function for wres.lib */
-
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-    if( TRMemHandle != NULL ) {
-        return( _trmem_alloc( size, _TRMEM_WHO( 7 ), TRMemHandle ) );
-    } else {
-        return( malloc( size ) );
-    }
-}
-
 /* function to replace this in mem.c in commonui */
 
 TRMEMAPI( MemRealloc )
@@ -218,18 +206,6 @@ void MemFree( void *ptr )
 {
     if( TRMemHandle != NULL ) {
         _trmem_free( ptr, _TRMEM_WHO( 9 ), TRMemHandle );
-    } else {
-        free( ptr );
-    }
-}
-
-/* function for wres.lib */
-
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-    if( TRMemHandle != NULL ) {
-        _trmem_free( ptr, _TRMEM_WHO( 10 ), TRMemHandle );
     } else {
         free( ptr );
     }

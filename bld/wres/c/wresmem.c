@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,15 @@
 
 
 #include <stdlib.h>
-#include "wresmem.h"
+#include "memfuncs.h"
 
 
-void *wres_alloc( size_t size )
+void *MemAlloc( size_t size )
 {
     return( malloc( size ) );
 }
 
-void wres_free( void *ptr )
+void MemFree( void *ptr )
 {
     free( ptr );
 }

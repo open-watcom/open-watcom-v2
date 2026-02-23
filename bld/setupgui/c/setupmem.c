@@ -38,9 +38,6 @@
 #ifdef TRMEM
     #include "trmem.h"
 #endif
-#ifdef USE_WRESLIB
-    #include "wresmem.h"
-#endif
 
 
 #if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
@@ -173,18 +170,6 @@ void *MemAllocSafe( size_t size )
 #endif
 }
 
-#ifdef USE_WRESLIB
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-#endif
-
 /*
  * Strdup function
  */
@@ -236,19 +221,6 @@ void GUIMemFree( void *ptr )
     free( ptr );
 #endif
 }
-
-#ifdef USE_WRESLIB
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), TrHdl );
-#else
-    free( ptr );
-#endif
-}
-#endif
-
 
 /*
  * Realloc functions

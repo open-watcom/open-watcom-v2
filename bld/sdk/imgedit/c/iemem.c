@@ -32,7 +32,7 @@
 
 #include "imgedit.h"
 #include "iemem.h"
-#include "wresmem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -106,32 +106,6 @@ void *MemAlloc( size_t size )
 #endif
     return( ptr );
 }
-#if 0
-TRMEMAPI( MemAlloc )
-void * MemAlloc( size_t size )
-/*******************************/
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), MemHandle );
-#else
-    ptr = malloc( size );
-    memset( ptr, 0, size );
-#endif
-    return( ptr );
-}
-#endif
-/* function for wres.lib */
-TRMEMAPI( wres_alloc )
-void *wres_alloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), MemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
@@ -150,28 +124,6 @@ void MemFree( void *ptr )
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 5 ), MemHandle );
-#else
-    free( ptr );
-#endif
-}
-#if 0
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 6 ), MemHandle );
-#else
-    free( ptr );
-#endif
-}
-#endif
-/* function for wres.lib */
-TRMEMAPI( wres_free )
-void wres_free( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 7 ), MemHandle );
 #else
     free( ptr );
 #endif
