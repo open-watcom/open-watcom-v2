@@ -35,6 +35,7 @@
 #include "rcrtns.h"
 #include "reserr.h"
 #include "trmemcvr.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
