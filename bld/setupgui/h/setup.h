@@ -62,6 +62,7 @@
 #include "vhandle.h"
 #include "gui.h"
 #include "strvbuf.h"
+#include "memfuncs.h"
 
 
 #ifdef __OS2__
