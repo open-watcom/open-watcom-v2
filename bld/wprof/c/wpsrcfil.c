@@ -57,7 +57,7 @@ char *WPSourceGetLine( a_window wnd, int line )
     curr_sio = WndExtra( wnd );
     wp_src = curr_sio->src_file;
     if( wp_src->src_buff_len == 0 ) {
-        wp_src->src_buff = ProfAlloc( 100 );
+        wp_src->src_buff = MemAlloc( 100 );
         wp_src->src_buff_len = 100;
     }
     for( ;; ) {
@@ -65,7 +65,7 @@ char *WPSourceGetLine( a_window wnd, int line )
         if( buff_len != wp_src->src_buff_len )
             break;
         wp_src->src_buff_len += 120;
-        wp_src->src_buff = ProfRealloc( wp_src->src_buff, wp_src->src_buff_len );
+        wp_src->src_buff = MemRealloc( wp_src->src_buff, wp_src->src_buff_len );
     }
     if( buff_len == FREADLINE_ERROR ) {
         wp_src->src_eof = true;
@@ -138,12 +138,12 @@ void WPSourceClose( wp_srcfile * wpsrc_file )
     if( wpsrc_file != NULL ) {
         FDoneSource( wpsrc_file->src_file );
         if( wpsrc_file->src_buff != NULL ) {
-            ProfFree( wpsrc_file->src_buff );
+            MemFree( wpsrc_file->src_buff );
         }
         if( wpsrc_file->src_lines != NULL ) {
-            ProfFree( wpsrc_file->src_lines );
+            MemFree( wpsrc_file->src_lines );
         }
-        ProfFree( wpsrc_file );
+        MemFree( wpsrc_file );
     }
 }
 
@@ -193,7 +193,7 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
             click_index = rtn_rover->first_tick_index - 1;
             count2 = rtn_rover->last_tick_index - click_index;
             line_count += count2;
-            lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
+            lines = MemRealloc( lines, sizeof( wp_srcline ) * line_count );
             while( count2-- > 0 ) {
                 samp_data = WPGetMassgdSampData( curr_sio, click_index );
                 if( DIPAddrCue( curr_mod->mh, *samp_data->raw, cueh ) != SR_NONE ) {
@@ -220,5 +220,5 @@ STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
         line_count = line_index + 1;
     }
     wpsrc_file->wp_line_count = line_count;
-    wpsrc_file->src_lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
+    wpsrc_file->src_lines = MemRealloc( lines, sizeof( wp_srcline ) * line_count );
 }

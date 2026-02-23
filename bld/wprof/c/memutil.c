@@ -55,18 +55,17 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   WPMemHandle;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
-static FILE         *WPMemFP = NULL;    /* stream to put output on */
-static int          WPMemOpened = 0;
+static FILE         *TrFile = NULL;    /* stream to put output on */
 
 static void WPMemPrintLine( void *parm, const char *buff, size_t len )
 /********************************************************************/
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    if( WPMemFP != NULL ) {
-        fprintf( WPMemFP, "%s\n", buff );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buff );
     }
 }
 #if 0
@@ -89,7 +88,7 @@ void WPMemPrtUsage( void )
 /************************/
 {
 #ifdef TRMEM
-    _trmem_prt_usage( WPMemHandle );
+    _trmem_prt_usage( TrHdl );
 #endif
 }
 void GUIMemPrtUsage( void )
@@ -97,37 +96,34 @@ void GUIMemPrtUsage( void )
 {
 }
 
-void WPMemOpen( void ) {}
 void GUIMemOpen( void )
 /********************/
 {
 #ifdef TRMEM
     char * tmpdir;
 
-    if( !WPMemOpened ) {
-        WPMemFP = stderr;
-        WPMemHandle = _trmem_open( malloc, free, realloc, strdup,
+    if( TrHdl == _TRMEM_HDL_NONE ) {
+        TrFile = stderr;
+        TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, WPMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
-            WPMemFP = fopen( tmpdir, "w" );
+            TrFile = fopen( tmpdir, "w" );
         }
-        WPMemOpened = 1;
     }
 #endif
 }
 
-void WPMemClose( void ) {}
 void GUIMemClose( void )
 /**********************/
 {
 #ifdef TRMEM
-    _trmem_prt_list( WPMemHandle );
-    _trmem_close( WPMemHandle );
-    if( WPMemFP != stderr ) {
-        fclose( WPMemFP );
-        WPMemFP = NULL;
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
+    if( TrFile != stderr ) {
+        fclose( TrFile );
+        TrFile = NULL;
     }
 #endif
 }
@@ -142,137 +138,91 @@ static void profMemCheck( char *msg )
 }
 #endif
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        fatal( LIT( Memfull ) );
+    }
+    return( ptr );
+}
 
 /*
  *  Alloc functions
  */
 
-TRMEMAPI( ProfAlloc )
-void *ProfAlloc( size_t size )
-/****************************/
+#ifdef TRMEM
+static void *doAlloc( size_t size, _trmem_who who )
+#else
+static void *doAlloc( size_t size )
+#endif
 {
-    void    *mem;
+    void    *ptr;
 
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 1 ), WPMemHandle );
+        ptr = _trmem_alloc( size, who, TrHdl );
 #else
-        mem = malloc( size );
+        ptr = malloc( size );
 #endif
-        if( mem != NULL )
+        if( ptr != NULL )
             break;
         if( DIPMoreMem( size ) == DS_FAIL ) {
             break;
         }
     }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
+    return( ptr );
 }
 
 TRMEMAPI( GUIMemAlloc )
 void    *GUIMemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memhdl ) );
+    return( doAlloc( size, _TRMEM_WHO( 1 ) ) );
 #else
-    return( malloc( size ) );
+    return( doAlloc( size ) );
 #endif
 }
-
 TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
+void    *MemAlloc( size_t size )
 {
-    void    *mem;
-
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 2 ), WPMemHandle );
+    return( doAlloc( size, _TRMEM_WHO( 1 ) ) );
 #else
-        mem = malloc( size );
+    return( doAlloc( size ) );
 #endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
 }
 
 TRMEMAPI( GUIMemAllocSafe )
 void *GUIMemAllocSafe( size_t size )
-/******************************/
+/***************************/
 {
-    void    *mem;
-
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 2 ), WPMemHandle );
+    return( check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) ) );
 #else
-        mem = malloc( size );
+    return( check_nomem( doAlloc( size ) ) );
 #endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
 }
-
-#if defined( GUI_IS_GUI )
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
-/*******************************/
+/***************************/
 {
-    void    *mem;
-
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 2 ), WPMemHandle );
+    return( check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) ) );
 #else
-        mem = malloc( size );
+    return( check_nomem( doAlloc( size ) ) );
 #endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( mem );
 }
-
-#else /* !GUI_IS_GUI */
-#endif /* GUI_IS_GUI */
-
 
 /*
  *  Strdup functions
  */
 
-TRMEMAPI( GUIMemStrdup )
-char *GUIMemStrdup( const char *str )
-/***********************************/
+#ifdef TRMEM
+static void *doStrdup( const char *str, _trmem_who who )
+#else
+static void *doStrdup( const char *str )
+#endif
 {
     char    *ptr;
     size_t  size;
@@ -281,7 +231,7 @@ char *GUIMemStrdup( const char *str )
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryAlloc" );
-        ptr = _trmem_strdup( str, _TRMEM_WHO( 7 ), WPMemHandle );
+        ptr = _trmem_strdup( str, who, TrHdl );
 #else
         ptr = strdup( str );
 #endif
@@ -290,75 +240,74 @@ char *GUIMemStrdup( const char *str )
         if( DIPMoreMem( size ) == DS_FAIL ) {
             break;
         }
-    }
-
-    if( ptr == NULL ) {
-        fatal( LIT( Memfull ) );
     }
     return( ptr );
 }
 
+TRMEMAPI( GUIMemStrdup )
+char *GUIMemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( doStrdup( str, _TRMEM_WHO( 7 ) ) );
+#else
+    return( doStrdup( str ) );
+#endif
+}
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
 /********************************/
 {
-    char    *ptr;
-    size_t  size;
-
-    size = strlen( str ) + 1 ;
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        ptr = _trmem_strdup( str, _TRMEM_WHO( 7 ), WPMemHandle );
+    return( doStrdup( str, _TRMEM_WHO( 7 ) ) );
 #else
-        ptr = strdup( str );
+    return( doStrdup( str ) );
 #endif
-        if( ptr != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
+}
 
-    if( ptr == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    return( ptr );
+TRMEMAPI( GUIMemStrdupSafe )
+char *GUIMemStrdupSafe( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( check_nomem( doStrdup( str, _TRMEM_WHO( 7 ) ) ) );
+#else
+    return( check_nomem( doStrdup( str ) ) );
+#endif
+}
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( check_nomem( doStrdup( str, _TRMEM_WHO( 7 ) ) ) );
+#else
+    return( check_nomem( doStrdup( str ) ) );
+#endif
 }
 
 /*
  *  Free functions
  */
 
-TRMEMAPI( ProfFree )
-void ProfFree( void *ptr )
+TRMEMAPI( GUIMemFree )
+void GUIMemFree( void *ptr )
 /************************/
 {
 #ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), WPMemHandle );
-#else
-    free( ptr );
-#endif
-}
-TRMEMAPI( GUIMemFree )
-void GUIMemFree( void *ptr )
-/**************************/
-{
-#ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 9 ), WPMemHandle );
+    profMemCheck( "MemFree" );
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
 #else
     free( ptr );
 #endif
 }
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
-/***********************/
+/************************/
 {
 #ifdef TRMEM
-    profMemCheck( "ProfFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 9 ), WPMemHandle );
+    profMemCheck( "MemFree" );
+    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -368,16 +317,18 @@ void MemFree( void *ptr )
  *  Realloc functions
  */
 
-TRMEMAPI( ProfRealloc )
-void *ProfRealloc( void *ptr, size_t new_size )
-/*********************************************/
+#ifdef TRMEM
+static void *doRealloc( void *ptr, size_t new_size, _trmem_who who )
+#else
+static void *doRealloc( void *ptr, size_t new_size )
+#endif
 {
     void    *new;
 
     for( ;; ) {
 #ifdef TRMEM
         profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 14 ), WPMemHandle );
+        new = _trmem_realloc( ptr, new_size, who, TrHdl );
 #else
         new = realloc( ptr, new_size );
 #endif
@@ -387,67 +338,39 @@ void *ProfRealloc( void *ptr, size_t new_size )
             break;
         }
     }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
     return( new );
 }
+
 TRMEMAPI( GUIMemRealloc )
-void    *GUIMemRealloc( void *ptr, size_t size )
+void *GUIMemRealloc( void *ptr, size_t new_size )
+/*********************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), memhdl ) );
+    return( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) );
 #else
-    return( realloc( ptr, size ) );
+    return( doRealloc( ptr, new_size ) );
 #endif
 }
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t new_size )
+/*********************************************/
+{
+#ifdef TRMEM
+    return( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) );
+#else
+    return( doRealloc( ptr, new_size ) );
+#endif
+}
+
 TRMEMAPI( GUIMemReallocSafe )
 void *GUIMemReallocSafe( void *ptr, size_t new_size )
 /***************************************************/
 {
-    void    *new;
-
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 15 ), WPMemHandle );
+    return( check_nomem( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) ) );
 #else
-        new = realloc( ptr, new_size );
+    return( check_nomem( doRealloc( ptr, new_size ) ) );
 #endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
-}
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t new_size )
-/********************************************/
-{
-    void    *new;
-
-    for( ;; ) {
-#ifdef TRMEM
-        profMemCheck( "ProfTryRealloc" );
-        new = _trmem_realloc( ptr, new_size, _TRMEM_WHO( 15 ), WPMemHandle );
-#else
-        new = realloc( ptr, new_size );
-#endif
-        if( new != NULL )
-            break;
-        if( DIPMoreMem( new_size ) == DS_FAIL ) {
-            break;
-        }
-    }
-    if( new == NULL ) {
-        fatal( LIT( Memfull_Realloc  ));
-    }
-    return( new );
 }
 
 /*
@@ -457,27 +380,14 @@ TRMEMAPI( ProfCAlloc )
 void *ProfCAlloc( size_t size )
 /*****************************/
 {
-    void    *mem;
+    void    *ptr;
 
-    for( ;; ) {
 #ifdef TRMEM
-        profMemCheck( "ProfTryAlloc" );
-        mem = _trmem_alloc( size, _TRMEM_WHO( 19 ), WPMemHandle );
+    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) );
 #else
-        mem = malloc( size );
+    ptr = check_nomem( doAlloc( size ) );
 #endif
-        if( mem != NULL )
-            break;
-        if( DIPMoreMem( size ) == DS_FAIL ) {
-            break;
-        }
-    }
-
-    if( mem == NULL ) {
-        fatal( LIT( Memfull ) );
-    }
-    memset( mem, 0, size );
-    return( mem );
+    return( memset( ptr, 0, size ) );
 }
 
 #if 0

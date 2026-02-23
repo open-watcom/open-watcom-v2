@@ -225,12 +225,12 @@ static char *AddPath( char *old_list, const char *path_list )
     if( path_list != NULL && *path_list != NULLCHAR ) {
         len = strlen( path_list );
         if( old_list == NULL ) {
-            p = new_list = ProfAlloc( len + 1 );
+            p = new_list = MemAlloc( len + 1 );
         } else {
             old_len = strlen( old_list );
-            new_list = ProfAlloc( old_len + 1 + len + 1 );
+            new_list = MemAlloc( old_len + 1 + len + 1 );
             strcpy( new_list, old_list );
-            ProfFree( old_list );
+            MemFree( old_list );
             p = new_list + old_len;
         }
         while( *path_list != NULLCHAR ) {

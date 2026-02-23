@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -202,7 +202,7 @@ void DlgAbout( void )
     for( index = 0; index < ArraySize( AboutMessage ); ++index ) {
         about_len += strlen( AboutMessage[index] ) + 1;
     }
-    about_data = ProfAlloc( about_len+1 );
+    about_data = MemAlloc( about_len+1 );
     about_rover = about_data;
     for( index = 0; index < ArraySize( AboutMessage ); ++index ) {
         about_len = strlen( AboutMessage[index] );
@@ -212,5 +212,5 @@ void DlgAbout( void )
     }
     *about_rover = NULLCHAR;
     WndDisplayMessage( about_data, LIT( About_WPROF ), GUI_INFORMATION );
-    ProfFree( about_data );
+    MemFree( about_data );
 }

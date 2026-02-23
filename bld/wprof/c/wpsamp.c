@@ -848,7 +848,7 @@ STATIC bool sampleProcOverview( a_window wnd, wnd_row row, wnd_piece piece, wnd_
         }
     } else if( piece == PIECE_NAME_TITLE ) {
         line->indent = indentPiece;
-        nameBuff = ProfRealloc( nameBuff, strlen( overviewHeaders[row] ) + 1 );
+        nameBuff = MemRealloc( nameBuff, strlen( overviewHeaders[row] ) + 1 );
         strcpy( nameBuff, overviewHeaders[row] );
         line->text = nameBuff;
         line->tabstop = false;
@@ -861,7 +861,7 @@ STATIC bool sampleProcOverview( a_window wnd, wnd_row row, wnd_piece piece, wnd_
         indentPiece += WndExtentX( wnd, nameBuff );
     } else {
         line->indent = indentPiece;
-        nameBuff = ProfRealloc( nameBuff, strlen( text ) + 1 );
+        nameBuff = MemRealloc( nameBuff, strlen( text ) + 1 );
         strcpy( nameBuff, text );
         line->text = nameBuff;
         line->tabstop = false;

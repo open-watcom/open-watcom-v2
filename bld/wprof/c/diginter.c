@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,19 +56,19 @@
 void *DIGCLIENTRY( Alloc )( size_t amount )
 /*****************************************/
 {
-    return( ProfAlloc( amount ) );
+    return( MemAlloc( amount ) );
 }
 
 void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 /****************************************************/
 {
-    return( ProfRealloc( p, amount ) );
+    return( MemRealloc( p, amount ) );
 }
 
 void DIGCLIENTRY( Free )( void *p )
 /*********************************/
 {
-    ProfFree( p );
+    MemFree( p );
 }
 
 FILE * DIGCLIENTRY( Open )( const char *name, dig_open dig_mode )

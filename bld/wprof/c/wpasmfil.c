@@ -60,8 +60,8 @@ wp_asmline * WPGetAsmLoc( wp_asmfile * wpasm_file, int row, int * group_loc, int
     asm_group = row / MAX_ASM_LINE_INDEX;
     asm_row = row - ( asm_group * MAX_ASM_LINE_INDEX );
     if( asm_group != 0 && asm_row == 0 && asm_group > wpasm_file->asm_groups ) {
-        wpasm_file->asm_data = ProfRealloc( wpasm_file->asm_data, sizeof( wp_asm_groups ) * ( asm_group + 1 ) );
-        wpasm_file->asm_data[asm_group].asm_lines = ProfAlloc( MAX_ASM_LINE_SIZE );
+        wpasm_file->asm_data = MemRealloc( wpasm_file->asm_data, sizeof( wp_asm_groups ) * ( asm_group + 1 ) );
+        wpasm_file->asm_data[asm_group].asm_lines = MemAlloc( MAX_ASM_LINE_SIZE );
         wpasm_file->asm_groups++;
     }
     *group_loc = asm_group;
@@ -110,7 +110,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     }
     wpasm_file = ProfCAlloc( sizeof(wp_asmfile) );
     curr_sio->asm_file = wpasm_file;
-    wpasm_file->asm_buff = ProfAlloc( MAX_ASM_BUFF_LEN );
+    wpasm_file->asm_buff = MemAlloc( MAX_ASM_BUFF_LEN );
     wpasm_file->asm_buff_len = MAX_ASM_BUFF_LEN;
     SetNumBytes( 0 );
     SetExeFile( fp, false );
@@ -120,8 +120,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     wpasm_file->max_time = 0;
     addr_tick_index = curr_mod->first_tick_index - 1;
     samp_data = WPGetMassgdSampData( curr_sio, addr_tick_index++ );
-    wpasm_file->asm_data = ProfAlloc( sizeof(wp_asm_groups) );
-    wpasm_file->asm_data[0].asm_lines = ProfAlloc( MAX_ASM_LINE_SIZE );
+    wpasm_file->asm_data = MemAlloc( sizeof(wp_asm_groups) );
+    wpasm_file->asm_data[0].asm_lines = MemAlloc( MAX_ASM_LINE_SIZE );
     wpasm_file->asm_groups = 0;
     rows = 0;
     for( ;; ) {
@@ -175,7 +175,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     }
     WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
     wpasm_file->asm_data[asm_group].asm_lines =
-            ProfRealloc( wpasm_file->asm_data[asm_group].asm_lines, sizeof( wp_asmline ) * ( asm_row + 1 ) );
+            MemRealloc( wpasm_file->asm_data[asm_group].asm_lines, sizeof( wp_asmline ) * ( asm_row + 1 ) );
     wpasm_file->asm_rows = rows;
     return( wpasm_file );
 }
@@ -201,19 +201,19 @@ void WPAsmClose( wp_asmfile * wpasm_file )
             row = wpasm_file->asm_rows;
             asm_group = 0;
             for( ;; ) {
-                ProfFree( wpasm_file->asm_data[asm_group++].asm_lines );
+                MemFree( wpasm_file->asm_data[asm_group++].asm_lines );
                 row -= MAX_ASM_LINE_INDEX;
                 if( row < 0 ) break;
             }
-            ProfFree( wpasm_file->asm_data );
+            MemFree( wpasm_file->asm_data );
         }
         if( wpasm_file->asm_buff != NULL ) {
-            ProfFree( wpasm_file->asm_buff );
+            MemFree( wpasm_file->asm_buff );
         }
         if( wpasm_file->fp != 0 ) {
             ExeClose( wpasm_file->fp );
         }
-        ProfFree( wpasm_file );
+        MemFree( wpasm_file );
     }
 }
 
@@ -246,7 +246,7 @@ char * WPAsmGetLine( a_window wnd, int line )
                 if( buff_len != wpasm_file->asm_buff_len )
                     break;
                 wpasm_file->asm_buff_len += 120;
-                wpasm_file->asm_buff = ProfRealloc( wpasm_file->asm_buff, wpasm_file->asm_buff_len );
+                wpasm_file->asm_buff = MemRealloc( wpasm_file->asm_buff, wpasm_file->asm_buff_len );
             }
             if( buff_len == FREADLINE_ERROR ) {
                 buff_len = 0;

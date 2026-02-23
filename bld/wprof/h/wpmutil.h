@@ -31,6 +31,4 @@
 ****************************************************************************/
 
 
-extern void     WPMemOpen( void );
-extern void     WPMemClose( void );
 extern void     WPMemPrtUsage( void );

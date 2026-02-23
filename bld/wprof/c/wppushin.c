@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ void WPPushEvent( int event )
 /***************************/
 {
     wpStackSize++;
-    wpEventStack = ProfRealloc( wpEventStack, wpStackSize * sizeof( int ) );
+    wpEventStack = MemRealloc( wpEventStack, wpStackSize * sizeof( int ) );
     wpEventStack[wpStackSize-1] = event;
 }
 
@@ -97,7 +97,7 @@ void WPPushPtrEvent( int event, void *ptr )
 
     WPPushEvent( event );
     wpDataSize += sizeof( void * );
-    wpDataStack = ProfRealloc( wpDataStack, wpDataSize );
+    wpDataStack = MemRealloc( wpDataStack, wpDataSize );
     data_point = (char *)wpDataStack + wpDataSize - sizeof(pointer);
     *(char **)data_point = ptr;
 }

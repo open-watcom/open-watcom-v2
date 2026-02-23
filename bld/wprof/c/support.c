@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,7 @@ void AsmSize( void )
 
     new = MADDisasmDataSize();
     if( new > MDSize ) {
-        MDData = ProfRealloc( MDData, new );
+        MDData = MemRealloc( MDData, new );
         //MAD: error check for realloc fail
         MDSize = new;
     }
@@ -109,7 +109,7 @@ void AsmSize( void )
 
 void AsmFini( void )
 {
-    ProfFree( MDData );
+    MemFree( MDData );
 }
 
 
@@ -942,7 +942,7 @@ STATIC void ResolveOverlays( image_info *image )
             curr_tick++;
         }
     }
-    ProfFree( remap_segment );
+    MemFree( remap_segment );
 }
 
 
@@ -1003,11 +1003,7 @@ STATIC bool LoadOverlayInfo( void )
         if( formal_entry.flags_anc == OVLTAB_TERMINATOR )
             break;
         ++count;
-        if( entry_ptr == NULL ) {
-            entry_ptr = ProfAlloc( count * sizeof(ovl_entry) );
-        } else {
-            entry_ptr = ProfRealloc( entry_ptr, count * sizeof(ovl_entry) );
-        }
+        entry_ptr = MemRealloc( entry_ptr, count * sizeof(ovl_entry) );
         entry = entry_ptr + count - 1;
         /* make sure we are properly initialized in case of error */
         image->ovl_count = count;
@@ -1056,7 +1052,7 @@ STATIC bool LoadOverlayInfo( void )
             }
         }
         len = strlen( ovl_name ) + 1;
-        entry->fname = ProfAlloc( len );
+        entry->fname = MemAlloc( len );
         memcpy( entry->fname, ovl_name, len );
     }
     ExeClose( fp );

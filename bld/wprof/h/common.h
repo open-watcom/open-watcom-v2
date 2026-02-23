@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,8 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "bool.h"
+#include "memfuncs.h"
+
 
 #define STATIC          static
 #define MAX_LONG_DIGITS (16)

@@ -54,9 +54,9 @@ void ClearMassaged( sio_data * curr_sio )
     if( curr_sio->massaged_sample != NULL ) {
         buckets = MSG_BUCKET_IDX( curr_sio->number_massaged ) + 1;
         for( index = 0; index < buckets; ++index ) {
-            ProfFree( curr_sio->massaged_sample[index] );
+            MemFree( curr_sio->massaged_sample[index] );
         }
-        ProfFree( curr_sio->massaged_sample );
+        MemFree( curr_sio->massaged_sample );
         curr_sio->massaged_sample = NULL;
     }
     curr_sio->number_massaged = 0;
@@ -78,12 +78,12 @@ void ClearRoutineInfo( file_info * curr_file )
         curr_rtn = curr_file->routine[count];
         if( curr_rtn != NULL ) {
             if( curr_rtn->sh != NULL ) {
-                ProfFree( curr_rtn->sh );
+                MemFree( curr_rtn->sh );
             }
-            ProfFree( curr_rtn );
+            MemFree( curr_rtn );
         }
     }
-    ProfFree( curr_file->routine );
+    MemFree( curr_file->routine );
     curr_file->routine = NULL;
     curr_file->rtn_count = 0;
 }
@@ -101,10 +101,10 @@ void ClearFileInfo( mod_info * curr_mod )
     for( count = 0; count < curr_mod->file_count; ++count ) {
         if( curr_mod->mod_file[count] != NULL ) {
             ClearRoutineInfo( curr_mod->mod_file[count] );
-            ProfFree( curr_mod->mod_file[count] );
+            MemFree( curr_mod->mod_file[count] );
         }
     }
-    ProfFree( curr_mod->mod_file );
+    MemFree( curr_mod->mod_file );
     curr_mod->mod_file = NULL;
     curr_mod->file_count = 0;
 }
@@ -122,10 +122,10 @@ void ClearModuleInfo( image_info * curr_image )
     for( count = 0; count < curr_image->mod_count; ++count ) {
         if( curr_image->module[count] != NULL ) {
             ClearFileInfo( curr_image->module[count] );
-            ProfFree( curr_image->module[count] );
+            MemFree( curr_image->module[count] );
         }
     }
-    ProfFree( curr_image->module );
+    MemFree( curr_image->module );
     curr_image->module = NULL;
     curr_image->mod_count = 0;
 }
@@ -154,7 +154,7 @@ void ClearSample( sio_data * curr_sio )
         fclose( curr_sio->fp );
     }
     if( curr_sio->samp_file_name != NULL ) {
-        ProfFree( curr_sio->samp_file_name );
+        MemFree( curr_sio->samp_file_name );
     }
     if( curr_sio->sample_window != NULL ) {
         WndExtra( curr_sio->sample_window ) = NULL;
@@ -168,41 +168,41 @@ void ClearSample( sio_data * curr_sio )
     for( index = 0; index < curr_sio->image_count; ++index ) {
         image = curr_sio->images[index];
         if( image->map_data != NULL ) {
-            ProfFree( image->map_data );
+            MemFree( image->map_data );
         }
         if( image->ovl_data != NULL ) {
             if( image->ovl_data->fname != NULL ) {
-                ProfFree( image->ovl_data->fname );
+                MemFree( image->ovl_data->fname );
             }
-            ProfFree( image->ovl_data );
+            MemFree( image->ovl_data );
         }
         if( image->sym_name != NULL ) {
-            ProfFree( image->sym_name );
+            MemFree( image->sym_name );
         }
         if( image->name != NULL ) {
-            ProfFree( image->name );
+            MemFree( image->name );
         }
         ClearModuleInfo( image );
-        ProfFree( image );
+        MemFree( image );
     }
-    ProfFree( curr_sio->images );
+    MemFree( curr_sio->images );
     for( ovl = curr_sio->ovl_loads; ovl != NULL; ovl = next_ovl ) {
         next_ovl = ovl->next;
-        ProfFree( ovl );
+        MemFree( ovl );
         if( next_ovl == curr_sio->ovl_loads ) {
             break;
         }
     }
     for( remap = curr_sio->remaps; remap != NULL; remap = next_remap ) {
         next_remap = remap->next;
-        ProfFree( remap );
+        MemFree( remap );
         if( next_remap == curr_sio->remaps ) {
             break;
         }
     }
     for( marks = curr_sio->marks; marks != NULL; marks = next_mark ) {
         next_mark = marks->next;
-        ProfFree( marks );
+        MemFree( marks );
         if( next_mark == curr_sio->marks ) {
             break;
         }
@@ -211,10 +211,10 @@ void ClearSample( sio_data * curr_sio )
         next = thd->next;
         buckets = RAW_BUCKET_IDX( thd->end_time - thd->start_time ) + 1;
         for( index = 0; index < buckets; ++index ) {
-            ProfFree( thd->raw_bucket[index] );
+            MemFree( thd->raw_bucket[index] );
         }
-        ProfFree( thd->raw_bucket );
-        ProfFree( thd );
+        MemFree( thd->raw_bucket );
+        MemFree( thd );
     }
     ClearMassaged( curr_sio );
     WPDipDestroyProc( curr_sio->dip_process );
@@ -232,7 +232,7 @@ void ClearSample( sio_data * curr_sio )
             SIOData = prev_sio;
         }
     }
-    ProfFree( curr_sio );
+    MemFree( curr_sio );
     WndHourGlass( old_cursor );
 }
 

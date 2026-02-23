@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,11 +206,11 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_n
     new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
     DIPSymName( sym, NULL, demangle_name_type, new_rtn->name, name_len + 1 );
     sym_size = DIPHandleSize( HK_SYM );
-    new_rtn->sh = ProfAlloc( sym_size );
+    new_rtn->sh = MemAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );
     rtn_count = sym_file->rtn_count;
     sym_file->rtn_count++;
-    sym_file->routine = ProfRealloc( sym_file->routine, sym_file->rtn_count * sizeof( pointer ) );
+    sym_file->routine = MemRealloc( sym_file->routine, sym_file->rtn_count * sizeof( pointer ) );
     sym_file->routine[rtn_count] = new_rtn;
     return( WR_CONTINUE );
 }
@@ -231,7 +231,7 @@ STATIC walk_result loadModuleInfo( mod_handle mh, void *_curr_image )
     new_mod->mh = mh;
     mod_count = curr_image->mod_count;
     curr_image->mod_count++;
-    curr_image->module = ProfRealloc( curr_image->module, curr_image->mod_count * sizeof( pointer ) );
+    curr_image->module = MemRealloc( curr_image->module, curr_image->mod_count * sizeof( pointer ) );
     curr_image->module[mod_count] = new_mod;
     initFileInfo( new_mod );
     DIPWalkSymList( SS_MODULE, &mh, &loadRoutineInfo, new_mod );
@@ -268,7 +268,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
         }
     }
     curr_mod->file_count++;
-    curr_mod->mod_file = ProfRealloc( curr_mod->mod_file, curr_mod->file_count * sizeof( pointer ) );
+    curr_mod->mod_file = MemRealloc( curr_mod->mod_file, curr_mod->file_count * sizeof( pointer ) );
     count = DIPCueFile( cueh, NULL, 0 ) + 1;
     sym_file = ProfCAlloc( sizeof( file_info ) + count );
     sym_file->fid = fid;
@@ -599,7 +599,7 @@ STATIC void loadImageInfo( image_info * curr_image )
             memcpy( FNameBuff, curr_image->name, name_len );
             ReplaceExt( FNameBuff, ".sym" );
             name_len = strlen( FNameBuff ) + 1;
-            curr_image->sym_name = ProfAlloc( name_len );
+            curr_image->sym_name = MemAlloc( name_len );
             memcpy( curr_image->sym_name, FNameBuff, name_len );
             sym_fp = DIGCli( Open )( curr_image->sym_name, DIG_OPEN_READ );
             if( sym_fp != NULL ) {
@@ -608,7 +608,7 @@ STATIC void loadImageInfo( image_info * curr_image )
                 DIGCli( Close )( sym_fp );
             }
             if( curr_image->dip_handle == NO_MOD ) {
-                ProfFree( curr_image->sym_name );
+                MemFree( curr_image->sym_name );
                 curr_image->sym_name = NULL;
             }
         }
@@ -711,12 +711,12 @@ STATIC void calcAggregates( void )
         buckets += RAW_BUCKET_IDX( thd->end_time - thd->start_time ) + 1;
     }
     sorted_idx = ProfCAlloc( buckets * sizeof( *sorted_idx ) );
-    sorted_vect = ProfAlloc( buckets * sizeof(*thd->raw_bucket) );
+    sorted_vect = MemAlloc( buckets * sizeof(*thd->raw_bucket) );
     base = 0;
     for( thd = CurrSIOData->samples; thd != NULL; thd = thd->next ) {
         end = RAW_BUCKET_IDX( thd->end_time - thd->start_time ) + 1;
         for( index = 0; index < end; ++index, ++base ) {
-            sorted_vect[base] = ProfAlloc( MAX_RAW_BUCKET_INDEX * sizeof( **sorted_vect ) );
+            sorted_vect[base] = MemAlloc( MAX_RAW_BUCKET_INDEX * sizeof( **sorted_vect ) );
             for( index2 = 0; index2 < MAX_RAW_BUCKET_INDEX; ++index2 ) {
                 sorted_vect[base][index2]
                     = &thd->raw_bucket[index][index2];
@@ -738,7 +738,7 @@ STATIC void calcAggregates( void )
     curr_mbucket = 0;
     curr_midx = (unsigned)-1;
 //    mbuckets = 1;
-    massgd_data = ProfAlloc( sizeof( *massgd_data ) );
+    massgd_data = MemAlloc( sizeof( *massgd_data ) );
     massgd_data[0] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );
     for( ;; ) {
         best = (unsigned)-1;
@@ -759,7 +759,7 @@ STATIC void calcAggregates( void )
         if( curr == NULL || AddrCmp( sorted_vect[best][sorted_idx[best]], curr->raw ) != 0 ) {
             if( ++curr_midx >= MAX_MASSGD_BUCKET_INDEX ) {
                 ++curr_mbucket;
-                massgd_data = ProfRealloc( massgd_data, (curr_mbucket+1) * sizeof(*massgd_data) );
+                massgd_data = MemRealloc( massgd_data, (curr_mbucket+1) * sizeof(*massgd_data) );
                 massgd_data[curr_mbucket] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );
                 curr_midx = 0;
             }
@@ -775,10 +775,10 @@ STATIC void calcAggregates( void )
                 + (curr_mbucket * (unsigned long)MAX_MASSGD_BUCKET_INDEX);
     CurrSIOData->massaged_mapped = true;
     for( index = 0; index < buckets; ++index ) {
-        ProfFree( sorted_vect[index] );
+        MemFree( sorted_vect[index] );
     }
-    ProfFree( sorted_vect );
-    ProfFree( sorted_idx );
+    MemFree( sorted_vect );
+    MemFree( sorted_idx );
 }
 
 

@@ -32,13 +32,13 @@
 
 
 #include <stdio.h>
-#include "memutil.h"
+#include "memfuncs.h"
 
 
 #define SMTabIntervalGet()              8
 
-#define _SMAlloc( pointer, size )       (pointer) = ProfAlloc( size )
-#define _SMFree( pointer )              ProfFree( pointer )
+#define _SMAlloc( pointer, size )       (pointer) = MemAlloc( size )
+#define _SMFree( pointer )              MemFree( pointer )
 
 #define sm_file_handle                  FILE *
 #define sm_mod_handle                   int

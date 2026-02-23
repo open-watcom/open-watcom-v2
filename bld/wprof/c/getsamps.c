@@ -69,19 +69,19 @@ STATIC bool initCurrSIO( void )
     CurrSIOData = ProfCAlloc( sizeof( sio_data ) );
     CurrSIOData->fp = fp;
     name_len = strlen( SamplePath ) + 1;
-    CurrSIOData->samp_file_name = ProfAlloc( name_len );
+    CurrSIOData->samp_file_name = MemAlloc( name_len );
     memcpy( CurrSIOData->samp_file_name, SamplePath, name_len );
-    CurrSIOData->images = ProfAlloc( 2 * sizeof( pointer ) );
+    CurrSIOData->images = MemAlloc( 2 * sizeof( pointer ) );
     new_image = ProfCAlloc( sizeof( image_info ) );
     name_len = strlen( LIT( Unknown_Image ) ) + 1;
-    new_image->name = ProfAlloc( name_len );
+    new_image->name = MemAlloc( name_len );
     memcpy( new_image->name, LIT( Unknown_Image ), name_len );
     new_image->unknown_image = true;
     CurrSIOData->images[0] = new_image;
     CurrSIOData->curr_image = new_image;
     new_image = ProfCAlloc( sizeof( image_info ) );
     name_len = strlen( LIT( Gathered_Images ) ) + 1;
-    new_image->name = ProfAlloc( name_len );
+    new_image->name = MemAlloc( name_len );
     memcpy( new_image->name, LIT( Gathered_Images ), name_len );
     new_image->ignore_gather = true;
     new_image->gather_image = true;
@@ -225,11 +225,11 @@ STATIC void procImageBlock( samp_data *data, bool main_exe )
     new_image = ProfCAlloc( sizeof( image_info ) );
     image_index = CurrSIOData->image_count;
     CurrSIOData->image_count++;
-    CurrSIOData->images = ProfRealloc( CurrSIOData->images,
+    CurrSIOData->images = MemRealloc( CurrSIOData->images,
                                      CurrSIOData->image_count * sizeof( pointer ) );
     CurrSIOData->images[image_index] = new_image;
     CurrSIOData->curr_image = new_image;
-    new_image->name = ProfAlloc( name_len );
+    new_image->name = MemAlloc( name_len );
     memcpy( new_image->name, data->code.name, name_len );
     new_image->overlay_table.mach.segment = data->code.ovl_tab.segment;
     new_image->overlay_table.mach.offset = data->code.ovl_tab.offset;
@@ -254,11 +254,7 @@ STATIC void procAddrBlock( uint_16 total_len, samp_data * data )
     curr_image = CurrSIOData->curr_image;
     map_count = curr_image->map_count + new_count;
     map = curr_image->map_data;
-    if( map == NULL ) {
-        map = ProfAlloc( map_count * sizeof(*map) );
-    } else {
-        map = ProfRealloc( map, map_count * sizeof(*map) );
-    }
+    map = MemRealloc( map, map_count * sizeof(*map) );
     for( i = 0, j = curr_image->map_count; i < new_count; ++i, ++j ) {
         map[j].map.mach.segment    = data->map.data[i].map.segment;
         map[j].map.mach.offset     = data->map.data[i].map.offset;
@@ -325,14 +321,14 @@ STATIC bool procSampleBlock( clicks_t tick, uint_16 total_len,
     for( ;; ) {
         thd = *owner;
         if( thd == NULL ) {
-            thd = ProfAlloc( sizeof( *thd ) );
+            thd = MemAlloc( sizeof( *thd ) );
             *owner = thd;
             thd->next = NULL;
             thd->thread = thread;
             thd->start_time = tick;
             thd->end_time = end_tick;
             buckets = RAW_BUCKET_IDX( count ) + 1;
-            thd->raw_bucket = ProfAlloc( buckets * sizeof( *thd->raw_bucket ) );
+            thd->raw_bucket = MemAlloc( buckets * sizeof( *thd->raw_bucket ) );
             for( index = 0; index < buckets; ++index ) {
                 thd->raw_bucket[index] = ProfCAlloc( MAX_RAW_BUCKET_SIZE );
             }
@@ -347,7 +343,7 @@ STATIC bool procSampleBlock( clicks_t tick, uint_16 total_len,
         index = RAW_BUCKET_IDX( thd->end_time - thd->start_time ) + 1;
         buckets = RAW_BUCKET_IDX( end_tick - thd->start_time ) + 1;
         if( buckets > index ) {
-            thd->raw_bucket = ProfRealloc( thd->raw_bucket, buckets * sizeof( *thd->raw_bucket ) );
+            thd->raw_bucket = MemRealloc( thd->raw_bucket, buckets * sizeof( *thd->raw_bucket ) );
             for( ; index < buckets; ++index ) {
                 thd->raw_bucket[index] = ProfCAlloc( MAX_RAW_BUCKET_SIZE );
             }
@@ -401,19 +397,19 @@ STATIC bool readSampleFile( void )
         ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
         return( false );
     }
-    buff = ProfAlloc( SIZE_DATA );
+    buff = MemAlloc( SIZE_DATA );
     buff_len = SIZE_DATA;
     main_exe = false;
     while( prefix.kind != SAMP_LAST ) {
         size = prefix.length;
         if( buff_len < size ) {
-            buff = ProfRealloc( buff, size );
+            buff = MemRealloc( buff, size );
             buff_len = size;
         }
         /* reads data & next prefix */
         if( fread( buff, 1, size, fp ) != size ) {
             ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
-            ProfFree( buff );
+            MemFree( buff );
             return( false );
         }
         next_prefix = (void *)( ((char *) buff) + ( size - SIZE_PREFIX ));
@@ -429,7 +425,7 @@ STATIC bool readSampleFile( void )
 //            /* reads callgraph data & next prefix   */
 //            if( fread( next_prefix, 1, size, fp ) != size ) {
 //                errorIO();
-//                ProfFree( buff );
+//                MemFree( buff );
 //                ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
 //                return( false );
 //            }
@@ -470,7 +466,7 @@ STATIC bool readSampleFile( void )
         }
         prefix = *next_prefix;
     }
-    ProfFree( buff );
+    MemFree( buff );
     return( true );
 }
 
