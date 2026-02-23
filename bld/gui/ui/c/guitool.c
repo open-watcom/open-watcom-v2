@@ -73,7 +73,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         with_excl = NULL;
         menu.label = tbar->toolinfo.toolbar[i].label;
         if( menu.label != NULL ) {
-            with_excl = (char *)GUIMemAlloc( strlen( menu.label ) + strlen( LIT_GUI( Exclamation ) ) + 1 );
+            with_excl = (char *)MemAlloc( strlen( menu.label ) + strlen( LIT_GUI( Exclamation ) ) + 1 );
             if( with_excl != NULL ) {
                 strcpy( with_excl, menu.label );
                 strcat( with_excl, LIT_GUI( Exclamation ) );
@@ -83,13 +83,13 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         menu.id = tbar->toolinfo.toolbar[i].id;
         menu.hinttext = tbar->toolinfo.toolbar[i].hinttext;
         if( !GUIAppendToolbarMenu( wnd, &menu, ( i == ( tbar->toolinfo.num_items - 1 ) ) ) ) {
-            GUIMemFree( with_excl );
+            MemFree( with_excl );
             while( i-- > 0 ) {
                 GUIDeleteToolbarMenuItem( wnd, tbar->toolinfo.toolbar[i].id );
             }
             return( false );
         }
-        GUIMemFree( with_excl );
+        MemFree( with_excl );
     }
     GUIEVENT( wnd, GUI_TOOLBAR_FIXED, NULL );
     return( true );
@@ -171,10 +171,10 @@ bool GUIXCloseToolBar( gui_window *wnd )
     }
     if( ( tbar->toolinfo.num_items > 0 ) && !switching ) {
         for( i = 0; i < tbar->toolinfo.num_items; i++ ) {
-            GUIMemFree( (void *)tbar->toolinfo.toolbar[i].label );
+            MemFree( (void *)tbar->toolinfo.toolbar[i].label );
         }
-        GUIMemFree( (void *)tbar->toolinfo.toolbar );
-        GUIMemFree( tbar );
+        MemFree( (void *)tbar->toolinfo.toolbar );
+        MemFree( tbar );
         wnd->tbar = NULL;
     }
     if( !switching ) {
@@ -240,7 +240,7 @@ static bool CreateFloatingToolbar( gui_window *wnd, gui_ord height )
     FloatingToolbar.colours.colour = GUIGetWindowColours( wnd );
     FloatingToolbar.colours.colour[GUI_FRAME_INACTIVE] = FloatingToolbar.colours.colour[GUI_FRAME_ACTIVE];
     tbar->floattoolbar = GUICreateWindow( &FloatingToolbar );
-    GUIMemFree( FloatingToolbar.colours.colour );
+    MemFree( FloatingToolbar.colours.colour );
     FloatingToolbar.colours.colour = NULL;
     Button.parent = tbar->floattoolbar;
     loc = 0;
@@ -286,7 +286,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
     }
-    tbar = wnd->tbar = (toolbarinfo *)GUIMemAlloc( sizeof( toolbarinfo ) );
+    tbar = wnd->tbar = (toolbarinfo *)MemAlloc( sizeof( toolbarinfo ) );
     if( tbar == NULL ) {
         return( false );
     }
@@ -294,9 +294,9 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         tbar->toolinfo = NoToolbar;
     } else {
         size = sizeof( gui_toolbar_struct ) * toolinfo->num_items;
-        new_toolinfo = (gui_toolbar_struct *)GUIMemAlloc( size );
+        new_toolinfo = (gui_toolbar_struct *)MemAlloc( size );
         if( new_toolinfo == NULL ) {
-            GUIMemFree( tbar );
+            MemFree( tbar );
             wnd->tbar = NULL;
             return( false );
         }
@@ -304,13 +304,13 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         for( i = 0; i < toolinfo->num_items; i++ ) {
             new_toolinfo[i].label = NULL;
             if( toolinfo->toolbar[i].label != NULL ) {
-                new_toolinfo[i].label = GUIMemStrdup( toolinfo->toolbar[i].label );
+                new_toolinfo[i].label = MemStrdup( toolinfo->toolbar[i].label );
                 if( new_toolinfo[i].label == NULL ) {
                     while( i-- > 0  ) {
-                        GUIMemFree( (void *)new_toolinfo[i].label );
+                        MemFree( (void *)new_toolinfo[i].label );
                     }
-                    GUIMemFree( new_toolinfo );
-                    GUIMemFree( tbar );
+                    MemFree( new_toolinfo );
+                    MemFree( tbar );
                     wnd->tbar = NULL;
                     return( false );
                 }

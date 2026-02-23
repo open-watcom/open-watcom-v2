@@ -221,7 +221,7 @@ char * GUIAPI GUIGetText( gui_window *wnd, gui_ctl_id id )
         }
         length = _wpi_getwindowtextlength( hwnd );
         if( length > 0 ) {
-            text = (char *)GUIMemAlloc( length + 1 );
+            text = (char *)MemAlloc( length + 1 );
             if( text != NULL ) {
                 _wpi_getwindowtext( hwnd, (LPSTR)text, length + 1 );
                 switch( control_class ) {
@@ -280,7 +280,7 @@ char * GUIAPI GUIGetListItem( gui_window *wnd, gui_ctl_id id, int choice )
 
     length = (int)GUIToComboList( wnd, id, LB_GETTEXTLEN, CB_GETLBTEXTLEN, (WPI_PARAM1)choice, (WPI_PARAM2)0, (WPI_MRESULT)0 );
     if( length > 0 ) {
-        text = (char *)GUIMemAlloc( length + 1 );
+        text = (char *)MemAlloc( length + 1 );
         if( text != NULL ) {
 #ifdef __OS2_PM__
             GUIToComboList( wnd, id, LB_GETTEXT , CB_GETLBTEXT, MPFROM2SHORT( choice, length + 1 ), (WPI_PARAM2)(LPSTR)text, (WPI_MRESULT)0 );

@@ -54,7 +54,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             text = field->u.check->str;
             if( text == NULL )
                 return( text );
-            text = GUIMemStrdup( text );
+            text = MemStrdup( text );
             if( text != NULL )
                 return( text );
             break;
@@ -63,7 +63,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             text = field->u.radio->str;
             if( text == NULL )
                 return( text );
-            text = GUIMemStrdup( text );
+            text = MemStrdup( text );
             if( text != NULL )
                 return( text );
             break;
@@ -72,7 +72,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             text = field->u.hs->str;
             if( text == NULL )
                 return( text );
-            text = GUIMemStrdup( text );
+            text = MemStrdup( text );
             if( text != NULL )
                 return( text );
             break;
@@ -81,7 +81,7 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             text = field->u.str;
             if( text == NULL )
                 return( text );
-            text = GUIMemStrdup( text );
+            text = MemStrdup( text );
             if( text != NULL )
                 return( text );
             break;

@@ -201,13 +201,13 @@ static char *tabFilter( const char *message )
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
-    new_message = (char *)GUIMemStrdup( message );
+    new_message = (char *)MemStrdup( message );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         len = strlen( new_message );
         if( tab_pos == len )
             break;      /* no more tabs */
-        new_message = (char *)GUIMemRealloc( new_message, len + TAB_SIZE + 1 );
+        new_message = (char *)MemRealloc( new_message, len + TAB_SIZE + 1 );
         /* don't forget the NULL */
         start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
@@ -284,7 +284,7 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
             }
         }                                   /* add new line to error box */
         new_num = *num_controls + 1;
-        new_info = (string_info *)GUIMemRealloc( *info, sizeof( string_info ) * new_num );
+        new_info = (string_info *)MemRealloc( *info, sizeof( string_info ) * new_num );
         ok = ( new_info != NULL );
         if( !ok ) {
             break;
@@ -296,7 +296,7 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
         if( start != NULL ) {
             char    *p;
 
-            p = GUIMemAlloc( len + 1 );
+            p = MemAlloc( len + 1 );
             if( p == NULL ) {
                 break;
             }
@@ -307,7 +307,7 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
         }
     } /* for */
     // de-allocate memory allocated in tabFilter routine */
-    GUIMemFree( new_message );
+    MemFree( new_message );
     return( ok );
 }
 
@@ -317,9 +317,9 @@ static void freeStringControls( int num_controls, string_info *info )
     int i;
 
     for( i = 0; i < num_controls; ++i ) {
-        GUIMemFree( info[i].text );
+        MemFree( info[i].text );
     }
-    GUIMemFree( info );
+    MemFree( info );
 }
 
 
@@ -440,7 +440,7 @@ gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *messag
     }
 
     num_controls += num_string_controls;
-    controls_info = (gui_control_info *)GUIMemAlloc( sizeof( gui_control_info ) * num_controls );
+    controls_info = (gui_control_info *)MemAlloc( sizeof( gui_control_info ) * num_controls );
     if( controls_info == NULL ) {
         freeStringControls( num_string_controls, strings );
         return( GUI_RET_CANCEL );
@@ -482,6 +482,6 @@ gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *messag
     GUIDlgOpen( title, rows, cols, controls_info, num_controls, &DisplayMessageGUIEventProc, &ret );
     // deallocate used memory
     freeStringControls( num_string_controls, strings );
-    GUIMemFree( controls_info );
+    MemFree( controls_info );
     return( ret );
 }

@@ -44,6 +44,7 @@
 #include "uimenu.h"
 #include "guimin.h"
 #include "guihint.h"
+#include "memfuncs.h"
 
 
 #define BORDER_AMOUNT           2

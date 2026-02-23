@@ -53,6 +53,7 @@
 #include "guitypes.h"
 #include "toolbr.h"
 #include "guihint.h"
+#include "memfuncs.h"
 
 
 #define IS_HSCROLL_ON(x)        (((x)->scroll_style & GUI_HSCROLL) != 0)

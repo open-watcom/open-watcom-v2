@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -184,7 +184,7 @@ bool GUICreateGadget( gui_window *wnd, a_gadget_direction dir,
         return( true );
     }
 
-    gadget = (p_gadget)GUIMemAlloc( sizeof( a_gadget ) );
+    gadget = (p_gadget)MemAlloc( sizeof( a_gadget ) );
     if( gadget == NULL ) {
         *gadget_ptr = NULL;
         return( false );

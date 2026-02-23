@@ -41,7 +41,7 @@
 #include "guistr.h"
 #include "guiutil.h"
 #include "guihotsp.h"
-#include "memfuncs.h"
+//#include "memfuncs.h"
 
 
 bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
@@ -57,7 +57,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     filler = ( text == NULL ) ? LIT_GUI( Empty ) : text;
     fillerLength = strlen( filler );
     if( is_GUI_data ) {
-        new = GUIMemAlloc( fillerLength + 1 );
+        new = MemAlloc( fillerLength + 1 );
     } else {
         new = MemAlloc( fillerLength + 1 );
     }
@@ -66,7 +66,7 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
     }
     strcpy( new, filler );
     if( is_GUI_data ) {
-        GUIMemFree( edit_control->buffer );
+        MemFree( edit_control->buffer );
     } else {
         MemFree( edit_control->buffer );
     }
@@ -109,7 +109,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
             ret = true;
             new_str = NULL;
             if( text != NULL ) {
-                new_str = GUIMemStrdup( text );
+                new_str = MemStrdup( text );
                 if( new_str == NULL ) {
                     ret = false;
                 }
@@ -121,7 +121,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
                 case FLD_RADIO: fldtext = &field->u.radio->str; break;
                 case FLD_TEXT: fldtext = &field->u.str; break;
                 }
-                GUIMemFree( *fldtext );
+                MemFree( *fldtext );
                 *fldtext = new_str;
             }
         }

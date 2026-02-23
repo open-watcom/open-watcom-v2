@@ -148,7 +148,7 @@ static char *GetFontInfo( LOGFONT *lf )
     char                buff[MAX_STR];
 
     SetFontToString( lf, buff );
-    return( GUIMemStrdup( buff ) );
+    return( MemStrdup( buff ) );
 }
 #endif
 
