@@ -39,6 +39,7 @@
 #include "guiutil.h"
 #include "vhandle.h"
 #include "hash.h"
+#include "memfuncs.h"
 
 
 typedef struct hash_element {
