@@ -32,9 +32,9 @@
 
 #include <stddef.h>
 #include "cmemmgr.h"
-#include "asalloc.h"
+#include "memfuncs.h"
 
-void *AsmAlloc( size_t amount )
+void *MemAlloc( size_t amount )
 {
     void    *ptr;
 
@@ -42,12 +42,12 @@ void *AsmAlloc( size_t amount )
     return( ptr );
 }
 
-char *AsmStrdup( const char *str )
+char *MemStrdup( const char *str )
 {
     return( CMemStrdup( str ) );
 }
 
-void AsmFree( void *ptr )
+void MemFree( void *ptr )
 {
     CMemFree( ptr );
 }

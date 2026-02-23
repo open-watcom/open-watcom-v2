@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ void ObjWriteOpen( void )
     if( AsmFiles.file[OBJ] == NULL ) {
         Fatal( MSG_CANNOT_OPEN_FILE, obj_name );
     }
-    pobjState = AsmAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
+    pobjState = MemAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
     pobjState->in_buf = 0;
     pobjState->in_rec = false;
 }
@@ -110,7 +110,7 @@ void ObjWriteClose( bool del )
     if( fclose( AsmFiles.file[OBJ] ) ) {
         Fatal( MSG_CANNOT_CLOSE_FILE, obj_name );
     }
-    AsmFree( pobjState );
+    MemFree( pobjState );
     pobjState = NULL;
     if( del ) {
         /* This remove works around an NT networking bug */

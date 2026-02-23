@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ static void QAddItem( qdesc **queue, void *data )
 {
     queuenode   *node;
 
-    node = AsmAlloc( sizeof( queuenode ) );
+    node = MemAlloc( sizeof( queuenode ) );
     node->data = data;
     if( *queue == NULL ) {
-        *queue = AsmAlloc( sizeof( qdesc ) );
+        *queue = MemAlloc( sizeof( qdesc ) );
         QInit( *queue );
     }
     QEnqueue( *queue, node );
@@ -169,9 +169,9 @@ bool GetPublicData( void )
         }
         last = curr;
 
-        d = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
+        d = MemAlloc( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
         objr->u.pubdef.pubs = d;
-        NameArray = AsmAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
+        NameArray = MemAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
             dir = (dir_node_handle)curr->data;
             NameArray[i] = Mangle( &dir->sym );
@@ -192,9 +192,9 @@ bool GetPublicData( void )
         d = objr->u.pubdef.pubs;
         write_record( objr, true );
         for( i = 0; i < objr->u.pubdef.num_pubs; i++ ) {
-            AsmFree( NameArray[i] );
+            MemFree( NameArray[i] );
         }
-        AsmFree( NameArray );
+        MemFree( NameArray );
     }
     return( true );
 }
@@ -204,9 +204,9 @@ static void FreePubQueue( void )
 {
     if( PubQueue != NULL ) {
         while( PubQueue->head != NULL ) {
-            AsmFree( QDequeue( PubQueue ) );
+            MemFree( QDequeue( PubQueue ) );
         }
-        AsmFree( PubQueue );
+        MemFree( PubQueue );
     }
 }
 
@@ -241,10 +241,10 @@ static void FreeAliasQueue( void )
             queuenode   *node;
 
             node = QDequeue( AliasQueue );
-            AsmFree( node->data );
-            AsmFree( node );
+            MemFree( node->data );
+            MemFree( node );
         }
-        AsmFree( AliasQueue );
+        MemFree( AliasQueue );
     }
 }
 
@@ -301,13 +301,13 @@ static void FreeLnameQueue( void )
             node = QDequeue( LnameQueue );
             dir = (dir_node_handle)node->data;
             if( dir->sym.state == SYM_CLASS_LNAME ) {
-                AsmFree( dir->e.lnameinfo );
-                AsmFree( dir->sym.name );
-                AsmFree( dir );
+                MemFree( dir->e.lnameinfo );
+                MemFree( dir->sym.name );
+                MemFree( dir );
             }
-            AsmFree( node );
+            MemFree( node );
         }
-        AsmFree( LnameQueue );
+        MemFree( LnameQueue );
     }
 }
 
@@ -331,7 +331,7 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
     if( limit > count )
         limit = count;
     *need32 = false;
-    *ldata = AsmAlloc( limit * sizeof( linnum_data ) );
+    *ldata = MemAlloc( limit * sizeof( linnum_data ) );
     for( i = 0; i < limit; i++ ) {
         node = QDequeue( LinnumQueue );
         node_data = (line_num_info *)(node->data);
@@ -342,8 +342,8 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
                 *need32 = true;
             }
         }
-        AsmFree( node_data );
-        AsmFree( node );
+        MemFree( node_data );
+        MemFree( node );
     }
     return( limit );
 }
@@ -356,10 +356,10 @@ static void FreeLinnumQueue( void )
     if( LinnumQueue != NULL ) {
         while( LinnumQueue->head != NULL ) {
             node = QDequeue( LinnumQueue );
-            AsmFree( node->data );
-            AsmFree( node );
+            MemFree( node->data );
+            MemFree( node );
         }
-        AsmFree( LinnumQueue );
+        MemFree( LinnumQueue );
     }
 }
 

@@ -73,8 +73,8 @@ void AsmFiniRelocs( void )
 
     for( reloc = AsmRelocs; reloc != NULL; reloc = reloc_next ) {
         reloc_next = reloc->next;
-        AsmFree( reloc->name );
-        AsmFree( reloc );
+        MemFree( reloc->name );
+        MemFree( reloc );
     }
     AsmRelocs = NULL;
 }

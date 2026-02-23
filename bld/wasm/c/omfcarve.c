@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ static void newBlk( cv_t *cv )
 {
     blk_t   *newblk;
 
-    newblk = AsmAlloc( sizeof( blk_t ) - 1 + cv->blk_top );
+    newblk = MemAlloc( sizeof( blk_t ) - 1 + cv->blk_top );
     newblk->next = cv->blk_list;
     cv->blk_list = newblk;
     cv->top_elm = newblk->data + cv->blk_top;
@@ -67,7 +67,7 @@ carve_t CarveCreate( size_t elm_size, size_t blk_size )
 {
     cv_t    *cv;
 
-    cv = AsmAlloc( sizeof( *cv ) );
+    cv = MemAlloc( sizeof( *cv ) );
     cv->elm_size = elm_size;
     cv->blk_size = blk_size;
     cv->blk_top = blk_size * elm_size;
@@ -88,9 +88,9 @@ void CarveDestroy( carve_t caller_cv )
     cv = (cv_t *)caller_cv;
     for( cur = cv->blk_list; cur != NULL; cur = next ) {
         next = cur->next;
-        AsmFree( cur );
+        MemFree( cur );
     }
-    AsmFree( cv );
+    MemFree( cv );
 }
 
 void *CarveAlloc( carve_t caller_cv )

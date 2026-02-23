@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ void LifixDestroy( lifix_list *lif )
 
     for( cur = lif->head; cur != NULL; cur = next ) {
         next = cur->next;
-        AsmFree( cur );
+        MemFree( cur );
     }
 }
 
@@ -95,7 +95,7 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
     lifix   **walk;
     lifix   *new;
 
-    new = AsmAlloc( sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->lower_bound = lower_bound;
     new->delta = delta;
     walk = &lif->head;
@@ -116,7 +116,7 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
 
     /* this assertion guarantees we are building the list in decreasing order*/
 /**/myassert( lif->head == NULL || ( lif->head->lower_bound < lower_bound ) );
-    new = AsmAlloc( sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->lower_bound = lower_bound;
     new->delta = delta;
     new->next = lif->head;

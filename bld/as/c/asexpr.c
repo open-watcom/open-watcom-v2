@@ -41,7 +41,7 @@ static expr_tree *etAlloc( et_class type ) {
 */
     expr_tree   *node;
 
-    node = AsmAlloc( sizeof( expr_tree ) );
+    node = MemAlloc( sizeof( expr_tree ) );
     node->type = type;
     return( node );
 }
@@ -51,7 +51,7 @@ static void etFree( expr_tree *node ) {
     Free an expression node.
 */
 
-    AsmFree( node );
+    MemFree( node );
 }
 
 expr_tree *ETReloc( asm_reloc_type rtype, sym_handle sym )

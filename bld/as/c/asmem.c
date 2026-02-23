@@ -99,19 +99,9 @@ static void outOfMemory( void )
     exit( 1 );
 }
 
-TRMEMAPI( AsmAlloc )
-pointer AsmAlloc( size_t size )
-/*****************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
 TRMEMAPI( MemAlloc )
-pointer MemAlloc( size_t size )
-/*****************************/
+void *MemAlloc( size_t size )
+/***************************/
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) );
@@ -120,8 +110,8 @@ pointer MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( AsmStrdup )
-char *AsmStrdup( const char *str )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 /********************************/
 {
 #ifdef TRMEM
@@ -131,19 +121,9 @@ char *AsmStrdup( const char *str )
 #endif
 }
 
-TRMEMAPI( AsmFree )
-void AsmFree( pointer ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
-#else
-    free( ptr );
-#endif
-}
 TRMEMAPI( MemFree )
-void MemFree( pointer ptr )
-/*************************/
+void MemFree( void *ptr )
+/***********************/
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
@@ -152,9 +132,9 @@ void MemFree( pointer ptr )
 #endif
 }
 
-TRMEMAPI( AsMemRealloc )
-pointer AsMemRealloc( pointer ptr, size_t size )
-/**********************************************/
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
+/****************************************/
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), memHandle ) );

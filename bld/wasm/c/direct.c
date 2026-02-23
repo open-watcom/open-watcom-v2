@@ -472,7 +472,7 @@ void push( void *stk, void *elt )
     void        **stack = stk;
     stacknode   *node;
 
-    node = AsmAlloc( sizeof( stacknode ));
+    node = MemAlloc( sizeof( stacknode ));
     node->next = *stack;
     node->elt = elt;
     *stack = node;
@@ -488,7 +488,7 @@ void *pop( void *stk )
     node = (stacknode *)(*stack);
     *stack = node->next;
     elt = node->elt;
-    AsmFree( node );
+    MemFree( node );
     return( elt );
 }
 
@@ -569,13 +569,13 @@ void dir_init( dir_node_handle dir, int tab )
     switch( tab ) {
     case TAB_SEG:
         dir->sym.state = SYM_SEG;
-        dir->e.seginfo = AsmAlloc( sizeof( seg_info ) );
+        dir->e.seginfo = MemAlloc( sizeof( seg_info ) );
         dir->e.seginfo->idx = 0;
         dir->e.seginfo->group = NULL;
         break;
     case TAB_GRP:
         dir->sym.state = SYM_GRP;
-        dir->e.grpinfo = AsmAlloc( sizeof( grp_info ) );
+        dir->e.grpinfo = MemAlloc( sizeof( grp_info ) );
         dir->e.grpinfo->idx = 0;
         dir->e.grpinfo->seglist = NULL;
         dir->e.grpinfo->numseg = 0;
@@ -583,7 +583,7 @@ void dir_init( dir_node_handle dir, int tab )
     case TAB_EXT:
     case TAB_FPPATCH:
         dir->sym.state = SYM_EXTERNAL;
-        dir->e.extinfo = AsmAlloc( sizeof( ext_info ) );
+        dir->e.extinfo = MemAlloc( sizeof( ext_info ) );
         dir->e.extinfo->idx = 0;
         dir->e.extinfo->use32 = Use32;
         dir->e.extinfo->comm = false;
@@ -595,14 +595,14 @@ void dir_init( dir_node_handle dir, int tab )
         dir->sym.state = SYM_CONST;
         dir->sym.segment = NULL;
         dir->sym.offset = 0;
-        dir->e.constinfo = AsmAlloc( sizeof( const_info ) );
+        dir->e.constinfo = MemAlloc( sizeof( const_info ) );
         dir->e.constinfo->tokens = NULL;
         dir->e.constinfo->count = 0;
         dir->e.constinfo->predef = false;
         return;
     case TAB_PROC:
         dir->sym.state = SYM_PROC;
-        dir->e.procinfo = AsmAlloc( sizeof( proc_info ) );
+        dir->e.procinfo = MemAlloc( sizeof( proc_info ) );
         dir->e.procinfo->regslist = NULL;
         dir->e.procinfo->params.head = NULL;
         dir->e.procinfo->params.tail = NULL;
@@ -613,7 +613,7 @@ void dir_init( dir_node_handle dir, int tab )
         break;
     case TAB_MACRO:
         dir->sym.state = SYM_MACRO;
-        dir->e.macroinfo = AsmAlloc( sizeof( macro_info ) );
+        dir->e.macroinfo = MemAlloc( sizeof( macro_info ) );
         dir->e.macroinfo->params.head = NULL;
         dir->e.macroinfo->params.tail = NULL;
         dir->e.macroinfo->labels.head = NULL;
@@ -624,12 +624,12 @@ void dir_init( dir_node_handle dir, int tab )
         break;
     case TAB_CLASS_LNAME:
         dir->sym.state = SYM_CLASS_LNAME;
-        dir->e.lnameinfo = AsmAlloc( sizeof( lname_info ) );
+        dir->e.lnameinfo = MemAlloc( sizeof( lname_info ) );
         dir->e.lnameinfo->idx = 0;
         break;
     case TAB_STRUCT:
         dir->sym.state = SYM_STRUCT;
-        dir->e.structinfo = AsmAlloc( sizeof( struct_info ) );
+        dir->e.structinfo = MemAlloc( sizeof( struct_info ) );
         dir->e.structinfo->size = 0;
         dir->e.structinfo->alignment = 0;
         dir->e.structinfo->fields.head = NULL;
@@ -798,19 +798,19 @@ void FreeInfo( dir_node_handle dir )
 
             for( segcurr = dir->e.grpinfo->seglist; segcurr != NULL; segcurr = segnext ) {
                 segnext = segcurr->next;
-                AsmFree( segcurr );
+                MemFree( segcurr );
             }
-            AsmFree( dir->e.grpinfo );
+            MemFree( dir->e.grpinfo );
         }
         break;
     case SYM_SEG:
-        AsmFree( dir->e.seginfo );
+        MemFree( dir->e.seginfo );
         break;
     case SYM_EXTERNAL:
-        AsmFree( dir->e.extinfo );
+        MemFree( dir->e.extinfo );
         break;
     case SYM_CLASS_LNAME:
-        AsmFree( dir->e.lnameinfo );
+        MemFree( dir->e.lnameinfo );
         break;
     case SYM_CONST:
         if( !dir->e.constinfo->predef ) {
@@ -830,11 +830,11 @@ void FreeInfo( dir_node_handle dir )
                     DebugMsg(( "%s ", dir->e.constinfo->tokens[i].string_ptr ));
                 }
 #endif
-                AsmFree( dir->e.constinfo->tokens[i].string_ptr );
+                MemFree( dir->e.constinfo->tokens[i].string_ptr );
             }
             DebugMsg(( "\n" ));
-            AsmFree( dir->e.constinfo->tokens );
-            AsmFree( dir->e.constinfo );
+            MemFree( dir->e.constinfo->tokens );
+            MemFree( dir->e.constinfo );
         }
         break;
     case SYM_PROC:
@@ -846,33 +846,33 @@ void FreeInfo( dir_node_handle dir )
 
             for( labelcurr = dir->e.procinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
-                AsmFree( labelcurr->label );
-                AsmFree( labelcurr->replace );
-                AsmFree( labelcurr );
+                MemFree( labelcurr->label );
+                MemFree( labelcurr->replace );
+                MemFree( labelcurr );
             }
 
             for( labelcurr = dir->e.procinfo->locals.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
-                AsmFree( labelcurr->label );
-                AsmFree( labelcurr->replace );
-                AsmFree( labelcurr );
+                MemFree( labelcurr->label );
+                MemFree( labelcurr->replace );
+                MemFree( labelcurr );
             }
 
             for( labelcurr = dir->e.procinfo->labels.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
-                AsmFree( labelcurr->label );
-                AsmFree( labelcurr->replace );
+                MemFree( labelcurr->label );
+                MemFree( labelcurr->replace );
                 if( labelcurr->sym != NULL )
                     FreeASym( labelcurr->sym );
-                AsmFree( labelcurr );
+                MemFree( labelcurr );
             }
 
             for( regcurr = dir->e.procinfo->regslist; regcurr != NULL; regcurr = regnext ) {
                 regnext = regcurr->next;
-                AsmFree( regcurr->reg );
-                AsmFree( regcurr );
+                MemFree( regcurr->reg );
+                MemFree( regcurr );
             }
-            AsmFree( dir->e.procinfo );
+            MemFree( dir->e.procinfo );
         }
         break;
     case SYM_MACRO:
@@ -889,33 +889,33 @@ void FreeInfo( dir_node_handle dir )
              */
             for( labelcurr = dir->e.macroinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
                 labelnext = labelcurr->next;
-                AsmFree( labelcurr->label );
+                MemFree( labelcurr->label );
                 if( labelcurr->replace != NULL ) {
-                    AsmFree( labelcurr->replace );
+                    MemFree( labelcurr->replace );
                 }
                 if( labelcurr->def != NULL ) {
-                    AsmFree( labelcurr->def );
+                    MemFree( labelcurr->def );
                 }
-                AsmFree( labelcurr );
+                MemFree( labelcurr );
             }
             /*
              * free the labels list
              */
             for( localcurr = dir->e.macroinfo->labels.head; localcurr != NULL; localcurr = localnext ) {
                 localnext = localcurr->next;
-                AsmFree( localcurr->label );
-                AsmFree( localcurr );
+                MemFree( localcurr->label );
+                MemFree( localcurr );
             }
             /*
              * free the lines list
              */
             for( linecurr = dir->e.macroinfo->lines.head; linecurr != NULL; linecurr = linenext ) {
                 linenext = linecurr->next;
-                AsmFree( linecurr->line );
-                AsmFree( linecurr );
+                MemFree( linecurr->line );
+                MemFree( linecurr );
             }
 
-            AsmFree( dir->e.macroinfo );
+            MemFree( dir->e.macroinfo );
         }
         break;
     case SYM_STRUCT:
@@ -925,13 +925,13 @@ void FreeInfo( dir_node_handle dir )
 
             for( ptr = dir->e.structinfo->fields.head; ptr != NULL; ptr = next ) {
                 next = ptr->next;
-                AsmFree( ptr->initializer );
-                AsmFree( ptr->value );
+                MemFree( ptr->initializer );
+                MemFree( ptr->value );
                 if( ptr->sym != NULL )
                     FreeASym( ptr->sym );
-                AsmFree( ptr );
+                MemFree( ptr );
             }
-            AsmFree( dir->e.structinfo );
+            MemFree( dir->e.structinfo );
         }
         break;
     default:
@@ -1316,7 +1316,7 @@ bool GrpDef( token_buffer *tokbuf, token_idx i )
          */
         seg->e.seginfo->group = &grp->sym;
 
-        new = AsmAlloc( sizeof( seg_list ) );
+        new = MemAlloc( sizeof( seg_list ) );
         new->seg = seg;
         new->next = NULL;
         grp->e.grpinfo->numseg++;
@@ -1523,7 +1523,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
                  */
                 new_info = old_info;
             } else {
-                new_info = AsmAlloc( sizeof( seg_info ) );
+                new_info = MemAlloc( sizeof( seg_info ) );
             }
         } else {
             /*
@@ -1726,7 +1726,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
             ModuleInfo.use32 = true;
         }
         if( new_info != old_info )
-            AsmFree( new_info );
+            MemFree( new_info );
         if( push_seg( seg ) ) {
             return( RC_ERROR );
         }
@@ -1756,7 +1756,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
 
 error:
     if( new_info != old_info )
-        AsmFree( new_info );
+        MemFree( new_info );
     return( RC_ERROR );
 }
 
@@ -2217,7 +2217,7 @@ static void set_def_seg_name( int type )
         case TOK_LARGE:
         case TOK_HUGE:
             sprintf( buffer, "%s%s", GetModuleName(), get_sim_name( SIM_CODE, NULL ) );
-            Options.text_seg = AsmStrdup( buffer );
+            Options.text_seg = MemStrdup( buffer );
             break;
         default:
             break;
@@ -2907,8 +2907,8 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
         info->localsize += ( size * factor );
 
-        local = AsmAlloc( sizeof( label_list ) );
-        local->label = AsmStrdup( name );
+        local = MemAlloc( sizeof( label_list ) );
+        local->label = MemStrdup( name );
         local->size = size;
         local->replace = NULL;
         local->sym = tmp;
@@ -3018,10 +3018,10 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
             return( RC_ERROR );
         }
     }
-    paramnode = AsmAlloc( sizeof( label_list ) );
+    paramnode = MemAlloc( sizeof( label_list ) );
     paramnode->u.is_vararg = is_vararg;
     paramnode->size = parameter_size;
-    paramnode->label = AsmStrdup( token );
+    paramnode->label = MemStrdup( token );
     paramnode->replace = NULL;
     paramnode->sym = tmp;
     if( Use32 ) {
@@ -3177,9 +3177,9 @@ bool UsesDef( token_buffer *tokbuf, token_idx i )
     info = CurrProc->e.procinfo;
     i++;
     for( ; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_FINAL ); i++ ) {
-        regist = AsmAlloc( sizeof( regs_list ));
+        regist = MemAlloc( sizeof( regs_list ));
         regist->next = NULL;
-        regist->reg = AsmStrdup( tokbuf->tokens[i].string_ptr );
+        regist->reg = MemStrdup( tokbuf->tokens[i].string_ptr );
         if( info->regslist == NULL ) {
             info->regslist = regist;
         } else {
@@ -3404,9 +3404,9 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
             i++;
             for( ; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ); i++ ) {
                 token = tokbuf->tokens[i].string_ptr;
-                regist = AsmAlloc( sizeof( regs_list ));
+                regist = MemAlloc( sizeof( regs_list ));
                 regist->next = NULL;
-                regist->reg = AsmStrdup( token );
+                regist->reg = MemStrdup( token );
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
@@ -3705,7 +3705,7 @@ bool WritePrologue( const char *curline )
                 sprintf( buffer + strlen( buffer ), "%s%lu]",
                          ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
-            curr->replace = AsmStrdup( buffer );
+            curr->replace = MemStrdup( buffer );
         }
         info->localsize = offset;
         /*
@@ -3770,7 +3770,7 @@ bool WritePrologue( const char *curline )
             } else {
                 params.param_number++;
             }
-            curr->replace = AsmStrdup( buffer );
+            curr->replace = MemStrdup( buffer );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
                 if( Use32 ) {
@@ -4135,7 +4135,7 @@ bool AddAlias( token_buffer *tokbuf, token_idx i )
      */
     len1 = strlen( tokbuf->tokens[i].string_ptr );
     len2 = strlen( tokbuf->tokens[i + 2].string_ptr );
-    tmp = AsmAlloc( len1 + len2 + 2 );
+    tmp = MemAlloc( len1 + len2 + 2 );
     AddAliasData( tmp );
     p = tmp;
     *p++ = (uint_8)len1;
@@ -4149,7 +4149,7 @@ bool NameDirective( token_buffer *tokbuf, token_idx i )
 /*****************************************************/
 {
     if( Options.module_name == NULL ) {
-        Options.module_name = AsmStrdup( tokbuf->tokens[i + 1].string_ptr );
+        Options.module_name = MemStrdup( tokbuf->tokens[i + 1].string_ptr );
         ConvertModuleName( Options.module_name );
     }
     return( RC_OK );

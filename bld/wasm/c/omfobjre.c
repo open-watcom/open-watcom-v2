@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,7 +97,7 @@ void ObjKillRec( obj_rec_handle objr )
 
             lines = objr->u.linnum.lines;
             if( lines != NULL ) {
-                AsmFree( lines );
+                MemFree( lines );
             }
         }
         break;
@@ -105,7 +105,7 @@ void ObjKillRec( obj_rec_handle objr )
     case CMD_STATIC_PUBDEF:
         if( objr->u.pubdef.free_pubs ) {
 /**/        myassert( objr->u.pubdef.pubs != NULL );
-            AsmFree( objr->u.pubdef.pubs );
+            MemFree( objr->u.pubdef.pubs );
         }
         break;
     }
@@ -116,7 +116,7 @@ void ObjAllocData( obj_rec_handle objr, uint_16 len )
 /***************************************************/
 {
 /**/myassert( objr->data == NULL );
-    objr->data = AsmAlloc( len );
+    objr->data = MemAlloc( len );
     objr->length = len;
     objr->free_data = 1;
 }
@@ -136,7 +136,7 @@ void ObjDetachData( obj_rec_handle objr )
 /**/myassert( objr != NULL );
 /**/myassert( objr->data != NULL );
     if( objr->free_data ) {
-        AsmFree( objr->data );
+        MemFree( objr->data );
     }
     objr->data = NULL;
     objr->length = 0;

@@ -143,7 +143,7 @@ static void addReloc( asm_reloc *reloc, op_reloc_target target, owl_reloc_type t
 {
     reloc_list  new_entry;
 
-    new_entry = AsmAlloc( sizeof( struct reloc_entry ) );
+    new_entry = MemAlloc( sizeof( struct reloc_entry ) );
     new_entry->next = NULL;
     new_entry->target = target;
     new_entry->type = type;
@@ -1527,7 +1527,7 @@ void MIPSEmit( instruction *ins )
                 }
                 _DBGMSG1( " reloc emitted for the instruction.\n" );
 #endif
-                AsmFree( curr_reloc );
+                MemFree( curr_reloc );
             }
         }
 #ifdef _STANDALONE_

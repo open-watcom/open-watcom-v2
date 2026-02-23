@@ -40,12 +40,12 @@
 #define __FESUPP_H__
 
 #include <string.h>
-#include "asalloc.h"
+#include "memfuncs.h"
 
 
 // MACRO DEFINITIONS
 
-#define _MemoryAllocate( size )     AsmAlloc( size )
-#define _MemoryFree( ptr )          AsmFree( ptr )
+#define _MemoryAllocate( size )     MemAlloc( size )
+#define _MemoryFree( ptr )          MemFree( ptr )
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,10 +140,10 @@ const FNAME *AddFlist( char const *name )
         index++;
         last = flist;
     }
-    flist = AsmAlloc( sizeof( FNAME ) );
-    flist->name = AsmAlloc( len1 );
+    flist = MemAlloc( sizeof( FNAME ) );
+    flist->name = MemAlloc( len1 );
     memcpy( flist->name, name, len1 );
-    flist->fullname = AsmAlloc( len2 );
+    flist->fullname = MemAlloc( len2 );
     memcpy( flist->fullname, fname, len2 );
     flist->mtime = 0;
     if( stat( fname, &statbuf ) == 0 )
@@ -164,9 +164,9 @@ static void FreeFlist( void )
 
     for( ; (curr = FNames) != NULL; ) {
         FNames = curr->next;
-        AsmFree( curr->fullname );
-        AsmFree( curr->name );
-        AsmFree( (void *)curr );
+        MemFree( curr->fullname );
+        MemFree( curr->name );
+        MemFree( (void *)curr );
     }
 }
 
@@ -317,7 +317,7 @@ static void write_one_export( dir_node_handle dir )
         ObjPut8( objr, 0 );
         write_record( objr, true );
 
-        AsmFree( name );
+        MemFree( name );
     }
 }
 
@@ -519,7 +519,7 @@ static void write_external( void )
             }
             name = Mangle( &curr->sym );
             len = strlen( name );
-            AsmFree( name );
+            MemFree( name );
             if( len > 255 )
                 len = 255;
             /* + 1 for string len + 1 for type index */
@@ -559,7 +559,7 @@ static void write_external( void )
             if( len > 255 )
                 len = 255;
             ObjPutName( objr, name, (uint_8)len );
-            AsmFree( name );
+            MemFree( name );
             ObjPut8( objr, 0 );    // for the type index
             if( first->e.extinfo->comm ) {
                 /* now add the data type & communal length */
@@ -795,7 +795,7 @@ void AddLinnumDataRef( void )
     }
     if( line_num < 0x8000 ) {
         if( lastLineNumber != line_num ) {
-            curr = AsmAlloc( sizeof( line_num_info ) );
+            curr = MemAlloc( sizeof( line_num_info ) );
             curr->number = (uint_16)line_num;
             curr->offset = AsmCodeAddress;
             curr->srcfile = get_curr_srcfile();

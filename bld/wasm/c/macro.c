@@ -65,9 +65,9 @@ static asmline *asmline_append( asmlines *lines, char *line )
 {
     asmline *entry;
 
-    entry = AsmAlloc( sizeof( asmline ) );
+    entry = MemAlloc( sizeof( asmline ) );
     entry->paramscount = 0;
-    entry->line = AsmStrdup( line );
+    entry->line = MemStrdup( line );
     /*
      * add macro line to the end of macro lines list
      */
@@ -106,7 +106,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
             /*
              * hey! it matches!
              */
-            new_line = AsmAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
+            new_line = MemAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
@@ -124,7 +124,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
             lineinfo->line = new_line;
             lineinfo->paramscount++;
 
-            AsmFree( old_line );
+            MemFree( old_line );
             /*
              * ptr to char after #dd
              */
@@ -164,10 +164,10 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
                 char    label[10];
 
                 sprintf( label, "??%04d", MacroLocalVarCounter++ );
-                locallabel->label = AsmStrdup( label );
+                locallabel->label = MemStrdup( label );
                 locallabel->label_len = strlen( locallabel->label );
             }
-            new_line = AsmAlloc( strlen( old_line ) - len + locallabel->label_len + 1 );
+            new_line = MemAlloc( strlen( old_line ) - len + locallabel->label_len + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
@@ -180,7 +180,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
             strcpy( new_line + before + locallabel->label_len, start + len );
             lineinfo->line = new_line;
 
-            AsmFree( old_line );
+            MemFree( old_line );
             /*
              * ptr to char after new label
              */
@@ -304,8 +304,8 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
     while( tok->class == TC_ID ) {
         local_label *locallabel;
 
-        locallabel = AsmAlloc( sizeof( local_label ) );
-        locallabel->local = AsmStrdup( tok->string_ptr );
+        locallabel = MemAlloc( sizeof( local_label ) );
+        locallabel->local = MemStrdup( tok->string_ptr );
         locallabel->local_len = strlen( locallabel->local );
         locallabel->label = NULL;
         locallabel->label_len = 0;
@@ -396,10 +396,10 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * add parameter to the end of list
              */
-            paramnode = AsmAlloc( sizeof( parm_list ) );
+            paramnode = MemAlloc( sizeof( parm_list ) );
             paramnode->replace = NULL;
-            paramnode->label = AsmStrdup( name );
-            paramnode->def = AsmStrdup( def_value );
+            paramnode->label = MemStrdup( name );
+            paramnode->def = MemStrdup( def_value );
             paramnode->required = required;
             /*
              * add to the tail of linked list
@@ -562,7 +562,7 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         /*
          * replace macro local labels by internal symbols
          */
-        lineinfo.line = line = AsmStrdup( line );
+        lineinfo.line = line = MemStrdup( line );
         quote = false;
         for( ; *line != '\0'; ) {
             start = find_replacement_items( &line, &quote );
@@ -577,7 +577,7 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         count++;
     }
     if( count > 0 ) {
-        param_array = AsmAlloc( count * sizeof( char * ) );
+        param_array = MemAlloc( count * sizeof( char * ) );
         count = 0;
         for( param = info->params.head; param != NULL; param = param->next ) {
             param_array[count] = param->replace;
@@ -587,13 +587,13 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
          * replace parameters by actual values
          */
         my_sprintf( buffer, line, count, param_array );
-        new_line = AsmStrdup( buffer );
-        AsmFree( param_array );
+        new_line = MemStrdup( buffer );
+        MemFree( param_array );
     } else {
-        new_line = AsmStrdup( line );
+        new_line = MemStrdup( line );
     }
     if( info->labels.head != NULL ) {
-        AsmFree( lineinfo.line );
+        MemFree( lineinfo.line );
     }
     return( new_line );
 }
@@ -602,7 +602,7 @@ static void reset_paramslist( parm_list *param )
 /**********************************************/
 {
     for( ; param != NULL; param = param->next ) {
-        AsmFree( param->replace );
+        MemFree( param->replace );
         param->replace = NULL;
     }
 }
@@ -702,7 +702,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     /*
                      * fill in the default value
                      */
-                    param->replace = AsmStrdup( param->def );
+                    param->replace = MemStrdup( param->def );
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
@@ -780,7 +780,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     i++;
                 }
                 *p = '\0';
-                param->replace = AsmStrdup( buffer );
+                param->replace = MemStrdup( buffer );
                 /*
                  * go past the comma
                  */
@@ -800,7 +800,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     for( lineinfo = info->lines.head; lineinfo != NULL; lineinfo = lineinfo->next ) {
         line = fill_in_params_and_labels( lineinfo->line, info );
         InputQueueLine( line );
-        AsmFree( line );
+        MemFree( line );
     }
     /*
      * put this macro into the file stack
@@ -816,7 +816,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     for( locallabel = info->labels.head; locallabel != NULL; locallabel = locallabel->next ) {
         if( locallabel->label_len > 0 ) {
             locallabel->label_len = 0;
-            AsmFree( locallabel->label );
+            MemFree( locallabel->label );
             locallabel->label = NULL;
         }
     }

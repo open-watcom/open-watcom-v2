@@ -210,7 +210,7 @@ void PushLineQueue( void )
 
     DebugMsg(( "PUSHLINEQUEUE\n" ));
 
-    new = AsmAlloc( sizeof( input_queue ) );
+    new = MemAlloc( sizeof( input_queue ) );
     new->next = line_queue;
     new->lines.head = NULL;
     new->lines.tail = NULL;
@@ -233,7 +233,7 @@ bool PopLineQueue( void )
     if( tmp == NULL )
         return( false );
     line_queue = line_queue->next;
-    AsmFree( tmp );
+    MemFree( tmp );
     return( true );
 }
 
@@ -254,12 +254,12 @@ static line_list *enqueue( void )
     line_list   *new;
 
     if( line_queue == NULL ) {
-        line_queue = AsmAlloc( sizeof( input_queue ) );
+        line_queue = MemAlloc( sizeof( input_queue ) );
         line_queue->next = NULL;
         line_queue->lines.tail = NULL;
         line_queue->lines.head = NULL;
     }
-    new = AsmAlloc( sizeof( line_list ) );
+    new = MemAlloc( sizeof( line_list ) );
     /*
      * add new item to the end of list
      */
@@ -279,7 +279,7 @@ static file_list *push_flist( const char *name, bool is_a_file )
 {
     file_list   *new;
 
-    new = AsmAlloc( sizeof( file_list ) );
+    new = MemAlloc( sizeof( file_list ) );
     new->next = file_stack;
     file_stack = new;
     new->line_num = LineNumber;
@@ -344,7 +344,7 @@ void InputQueueLine( const char *line )
 
     DebugMsg(( "QUEUELINE: %s  ( line %lu ) \n", line, LineNumber ));
     new = enqueue();
-    new->line = AsmStrdup( line );
+    new->line = MemStrdup( line );
 }
 
 static FILE *open_file_in_include_path( const char *name, char *fullpath )
@@ -427,8 +427,8 @@ static char *input_get( char *string )
             line_queue->lines.head = inputline->next;
             if( line_queue->lines.head == NULL )
                 line_queue->lines.tail = NULL;
-            AsmFree( inputline->line );
-            AsmFree( inputline );
+            MemFree( inputline->line );
+            MemFree( inputline );
             return( string );
         }
         PopLineQueue();
@@ -454,16 +454,16 @@ static char *input_get( char *string )
             if( inputline != NULL ) {
                 strcpy( string, inputline->line );
                 inputfile->u.data->lines.head = inputline->next;
-                AsmFree( inputline->line );
-                AsmFree( inputline );
+                MemFree( inputline->line );
+                MemFree( inputline );
                 return( string );
             }
             MacroEnd( false );
-            AsmFree( inputfile->u.data );
+            MemFree( inputfile->u.data );
         }
         file_stack = inputfile->next;
         LineNumber = inputfile->line_num;
-        AsmFree( inputfile );
+        MemFree( inputfile );
     }
     return( NULL );
 }
@@ -584,13 +584,13 @@ void AddItemToIncludePath( const char *path_list, const char *end )
     }
     if( len > 0 ) {
         if( IncludePath == NULL ) {
-            p = IncludePath = AsmAlloc( len + 1 );
+            p = IncludePath = MemAlloc( len + 1 );
         } else {
             old_list = IncludePath;
             old_len = strlen( old_list );
-            IncludePath = AsmAlloc( old_len + 1 + len + 1 );
+            IncludePath = MemAlloc( old_len + 1 + len + 1 );
             strcpy( IncludePath, old_list );
-            AsmFree( old_list );
+            MemFree( old_list );
             p = IncludePath + old_len;
         }
         do {
@@ -605,7 +605,7 @@ void AddItemToIncludePath( const char *path_list, const char *end )
 void FreeIncludePath( void )
 /**************************/
 {
-    AsmFree( IncludePath );
+    MemFree( IncludePath );
     FreeForceInclude();
 }
 

@@ -105,15 +105,6 @@ static void *check_nomem( void *ptr )
     return( ptr );
 }
 
-TRMEMAPI( AsmAlloc )
-void *AsmAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
-#else
-    return( check_nomem( malloc( size ) ) );
-#endif
-}
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
@@ -124,8 +115,8 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( AsmStrdup )
-char *AsmStrdup( const char *str )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 {
     if( str == NULL )
         return( NULL );
@@ -136,17 +127,6 @@ char *AsmStrdup( const char *str )
 #endif
 }
 
-TRMEMAPI( AsmFree )
-void AsmFree( void *ptr )
-{
-    if( ptr != NULL ) {
-#ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 3 ), memHandle );
-#else
-        free( ptr );
-#endif
-    }
-}
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {

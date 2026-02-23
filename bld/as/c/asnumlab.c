@@ -130,7 +130,7 @@ static void doEmitNumericLabel( uint_32 label_num, owl_section_handle section, o
 
     label_list = &numericLabels[ label_num - 1 ];
 
-    label = AsmAlloc( sizeof( *label ) );
+    label = MemAlloc( sizeof( *label ) );
     label->section = section;
     label->offset = offset;
     label->type = type;
@@ -199,7 +199,7 @@ void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 labe
 
     label_list = &numericLabels[ abs(label_ref) - 1 ];
 
-    reloc = AsmAlloc( sizeof( *reloc ) );
+    reloc = MemAlloc( sizeof( *reloc ) );
     reloc->section = section;
     reloc->offset = offset;
     reloc->type = type;
@@ -215,7 +215,7 @@ void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 labe
             label_list->last->relocs = reloc;
         } else {
             Error( UNRESOLVED_BACK_NUMREF );
-            AsmFree( reloc );
+            MemFree( reloc );
         }
     }
 }
@@ -267,14 +267,14 @@ void AsNumLabelFini( void )
                 }
 #endif
                 label->relocs = reloc->next;
-                AsmFree( reloc );
+                MemFree( reloc );
                 reloc = label->relocs;
             }
             label_list->first = label->next;
             if( label_list->first == NULL ) {
                 label_list->last = NULL;
             }
-            AsmFree( label );
+            MemFree( label );
             label = label_list->first;
         }
         if( label_list->next_refs ) {
@@ -282,7 +282,7 @@ void AsNumLabelFini( void )
             Error( NON_EXISTANT_FORWARD_REF, ctr );
             do {
                 reloc = label_list->next_refs->next;
-                AsmFree( label_list->next_refs );
+                MemFree( label_list->next_refs );
                 label_list->next_refs = reloc;
             } while( reloc );
         }

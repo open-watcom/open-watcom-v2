@@ -30,9 +30,5 @@
 ****************************************************************************/
 
 
-typedef void    *pointer;
-
-extern void     *AsMemRealloc( pointer, size_t );
-
 extern void     AsMemInit( void );
 extern void     AsMemFini( void );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -256,7 +256,7 @@ typedef struct pubdef_info {
     base_info   base;           /* base information                         */
     uint_16     num_pubs;       /* number of publics in following array     */
     pubdef_data *pubs;          /* array of size num_pubs                   */
-    uint_8      free_pubs : 1;  /* can we AsmFree the pubs array?           */
+    uint_8      free_pubs : 1;  /* can we MemFree the pubs array?           */
     uint_8      processed : 1;  /* for use by dbg_generator (init'd to 0)   */
 } pubdef_info;
 /*
@@ -292,7 +292,7 @@ typedef struct obj_rec {
     uint_8          *data;      /* data for this record              (PRIVATE)  */
     uint_8          command;    /* the command field for this record            */
     uint_8          is_32   : 1;/* is this a Microsoft 32bit record             */
-    uint_8          free_data:1;/* should we AsmFree( data )??       (PRIVATE)  */
+    uint_8          free_data:1;/* should we MemFree( data )??       (PRIVATE)  */
     objrec_info     u;          /* data depending on record type                */
 } obj_rec;
 

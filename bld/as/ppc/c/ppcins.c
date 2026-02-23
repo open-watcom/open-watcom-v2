@@ -454,7 +454,7 @@ static void addInstructionSymbol( ins_flags flags, ins_table *table_entry ) {
     if( flags & LK ) strcat( buffer, "l" );
     if( flags & AA ) strcat( buffer, "a" );
 
-    entry = AsmAlloc( sizeof( ins_symbol ) );
+    entry = MemAlloc( sizeof( ins_symbol ) );
     entry->table_entry = table_entry;
     entry->flags = flags;
 
@@ -572,7 +572,7 @@ instruction *InsCreate( sym_handle op_sym )
 {
     instruction *ins;
 
-    ins = AsmAlloc( sizeof( instruction ) );
+    ins = MemAlloc( sizeof( instruction ) );
     ins->opcode_sym = op_sym;
     ins->format = SymGetLink( op_sym );
     ins->num_operands = 0;
@@ -588,7 +588,7 @@ void InsAddOperand( instruction *ins, ins_operand *op )
             Error( MAX_NUMOP_EXCEEDED );
             insErrFlag = true;
         }
-        AsmFree( op );
+        MemFree( op );
         return;
     }
     if( insErrFlag )
@@ -624,9 +624,9 @@ void InsDestroy( instruction *ins )
     int         i;
 
     for( i = 0; i < ins->num_operands; i++ ) {
-        AsmFree( ins->operands[ i ] );
+        MemFree( ins->operands[ i ] );
     }
-    AsmFree( ins );
+    MemFree( ins );
 }
 
 void InsFini( void )
@@ -646,7 +646,7 @@ void InsFini( void )
         curr = &PPCTable[ i ];
         for( entry = curr->symbols; entry != NULL; entry = next ) {
             next = entry->next;
-            AsmFree( entry );
+            MemFree( entry );
         }
         curr->symbols = NULL;   // need to reset this pointer
     }

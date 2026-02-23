@@ -52,6 +52,6 @@
 #include "sections.h"
 #include "asnumlab.h"
 #include "asmsg.h"
-#include "asalloc.h"
+#include "memfuncs.h"
 
 #define ArraySize( x )  (sizeof( x ) / sizeof( *(x) ))

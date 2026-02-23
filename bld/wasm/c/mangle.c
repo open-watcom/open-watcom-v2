@@ -50,7 +50,7 @@ enum changes {
 static char *AsmMangler( asm_sym_handle sym )
 /*******************************************/
 {
-    return( AsmStrdup( sym->name ) );
+    return( MemStrdup( sym->name ) );
 }
 
 static char *UCaseMangler( asm_sym_handle sym )
@@ -58,7 +58,7 @@ static char *UCaseMangler( asm_sym_handle sym )
 {
     char        *name;
 
-    name = AsmStrdup( sym->name );
+    name = MemStrdup( sym->name );
     return( strupr( name ) );
 }
 
@@ -67,7 +67,7 @@ static char *UScoreMangler( asm_sym_handle sym )
 {
     char        *name;
 
-    name = AsmAlloc( strlen( sym->name ) + 1 + 1 );
+    name = MemAlloc( strlen( sym->name ) + 1 + 1 );
     name[0] = '_';
     strcpy( name + 1, sym->name );
     return( name );
@@ -88,7 +88,7 @@ static char *StdUScoreMangler( asm_sym_handle sym )
         parasize = ((dir_node_handle)sym)->e.procinfo->parasize;
         for( count = 2; parasize > 9; count++ )
             parasize /= 10;
-        name = AsmAlloc( strlen( sym->name ) + 1 + 1 + count + 1 );
+        name = MemAlloc( strlen( sym->name ) + 1 + 1 + count + 1 );
         parasize = ((dir_node_handle)sym)->e.procinfo->parasize;
         sprintf( name, "_%s@%d", sym->name, parasize );
         return( name );
@@ -124,7 +124,7 @@ static char *WatcomCMangler( asm_sym_handle sym )
     }
 
     len = strlen( ptr );
-    name = AsmAlloc( len + 2 + 1 );
+    name = MemAlloc( len + 2 + 1 );
     p = name;
     if( changes & USCORE_BEFORE ) {
         *p++ = '_';

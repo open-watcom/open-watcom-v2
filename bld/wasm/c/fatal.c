@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,10 +76,10 @@ void AsmShutDown( void )
         fclose( AsmFiles.file[ERR] );
         AsmFiles.file[ERR] = NULL;
     }
-    AsmFree( AsmFiles.fname[ASM] );
-    AsmFree( AsmFiles.fname[ERR] );
-    AsmFree( AsmFiles.fname[LST] );
-    AsmFree( AsmFiles.fname[OBJ] );
+    MemFree( AsmFiles.fname[ASM] );
+    MemFree( AsmFiles.fname[ERR] );
+    MemFree( AsmFiles.fname[LST] );
+    MemFree( AsmFiles.fname[OBJ] );
     MemFini();
 }
 

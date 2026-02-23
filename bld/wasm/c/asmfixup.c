@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,7 +111,7 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
         return( NULL );
     }
 
-    fixup = AsmAlloc( sizeof( asmfixup ) );
+    fixup = MemAlloc( sizeof( asmfixup ) );
     if( fixup != NULL ) {
         fixup->external = false;
         fixup->fixup_loc = AsmCodeAddress;
@@ -197,7 +197,7 @@ static bool DoPatch( asm_sym_handle sym, asmfixup *fixup )
             PhaseError = true;
             sym->offset++;
             AsmByte( 0 );
-            AsmFree( fixup );
+            MemFree( fixup );
             return( RC_OK );
         } else if( sym->mem_type == MT_NEAR ) {
             /*
@@ -206,7 +206,7 @@ static bool DoPatch( asm_sym_handle sym, asmfixup *fixup )
             switch( fixup->fixup_type ) {
             case FIX_RELOFF32:
             case FIX_RELOFF16:
-                AsmFree( fixup );
+                MemFree( fixup );
                 return( RC_OK );
             }
         }
@@ -274,7 +274,7 @@ static bool DoPatch( asm_sym_handle sym, asmfixup *fixup )
             PatchCodeBuffer( fixup, size );
 #endif
         }
-        AsmFree( fixup );
+        MemFree( fixup );
         break;
     default:
         SkipFixup();
@@ -407,7 +407,7 @@ static bool MakeFpFixup( const char *patch_name )
     }
     if( dir != NULL ) {
         if( Parse_Pass != PASS_1 ) {
-            fixup = AsmAlloc( sizeof( asmfixup ) );
+            fixup = MemAlloc( sizeof( asmfixup ) );
             if( fixup == NULL )
                 return( RC_ERROR );
             fixup->external = false;
@@ -453,7 +453,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
 #else
     asmfixup    *fixup;
 
-    fixup = AsmAlloc( sizeof( asmfixup ) );
+    fixup = MemAlloc( sizeof( asmfixup ) );
     if( fixup == NULL ) {
         return( RC_ERROR );
     }
@@ -482,7 +482,7 @@ void AsmFiniRelocs( void )
 
     while( (fixup = FixupHead) != NULL ) {
         FixupHead = fixup->next;
-        AsmFree( fixup );
+        MemFree( fixup );
     }
 }
 #endif

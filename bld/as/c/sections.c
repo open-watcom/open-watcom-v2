@@ -51,7 +51,7 @@ static obj_section_handle   sectionHashTable[HASH_TABLE_SIZE];
 static void sectionFields( obj_section_handle section, char *name, owl_section_type type, owl_alignment align ) {
 //***************************************************************************************************************
 
-    if( name ) section->name = AsmStrdup( name );
+    if( name ) section->name = MemStrdup( name );
     // Otherwise we keep the old name.
 
     section->owl_hdl = OWLSectionInit( OwlFile, section->name, type, align );
@@ -67,7 +67,7 @@ static obj_section_handle sectionCreate( char *name, owl_section_type type, owl_
     obj_section_handle  section;
     obj_section_handle  *bucket;
 
-    section = AsmAlloc( sizeof( *section ) );
+    section = MemAlloc( sizeof( *section ) );
     sectionFields( section, name, type, align );
 
     bucket = &sectionHashTable[AsHashVal( name, HASH_TABLE_SIZE )];
@@ -126,8 +126,8 @@ void SectionFini( void )
         section = sectionHashTable[ctr];
         while( section ) {
             next = section->next;
-            AsmFree( section->name );
-            AsmFree( section );
+            MemFree( section->name );
+            MemFree( section );
             section = next;
         }
         sectionHashTable[ctr] = NULL;

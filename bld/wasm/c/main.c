@@ -188,9 +188,9 @@ static char *SetTargetName( char *target_name, const char *name )
 /***************************************************************/
 {
     if( target_name != NULL ) {
-        AsmFree( target_name );
+        MemFree( target_name );
     }
-    return( AsmStrdup( name ) );
+    return( MemStrdup( name ) );
 }
 
 static bool isvalidident( const char *id )
@@ -320,11 +320,11 @@ static void srcFileName( const char *token )
     if( pg.ext[0] == '\0' ) {
         pg.ext = ASM_EXT;
     }
-    SrcFName = AsmStrdup( pg.fname );
-    SrcModuleName = AsmStrdup( pg.fname );
+    SrcFName = MemStrdup( pg.fname );
+    SrcModuleName = MemStrdup( pg.fname );
     ConvertModuleName( SrcModuleName );
     _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-    AsmFiles.fname[ASM] = AsmStrdup( name );
+    AsmFiles.fname[ASM] = MemStrdup( name );
 }
 
 static void add_include( const char *target_name, const char *src )
@@ -362,16 +362,16 @@ static void free_names( void )
 /* Free names set as cmdline options */
 {
     if( Options.code_class != NULL ) {
-        AsmFree( Options.code_class );
+        MemFree( Options.code_class );
     }
     if( Options.data_seg != NULL ) {
-        AsmFree( Options.data_seg );
+        MemFree( Options.data_seg );
     }
     if( Options.module_name != NULL ) {
-        AsmFree( Options.module_name );
+        MemFree( Options.module_name );
     }
     if( Options.text_seg != NULL ) {
-        AsmFree( Options.text_seg );
+        MemFree( Options.text_seg );
     }
 }
 
@@ -385,7 +385,7 @@ static void main_init( void )
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
-    AsmFiles.fname[ERR] = AsmStrdup( "*" );
+    AsmFiles.fname[ERR] = MemStrdup( "*" );
     ObjRecInit();
 }
 
@@ -427,7 +427,7 @@ static char *ReadIndirectFile( char *name )
         fseek( fp, 0, SEEK_END );
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
-        env = AsmAlloc( len + 1 );
+        env = MemAlloc( len + 1 );
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
@@ -535,7 +535,7 @@ static int ProcOptions( OPT_STORAGE *data, const char *str )
             if( ch == '\0' ) {
                 if( level < 0 )
                     break;
-                AsmFree( buffers[level] );
+                MemFree( buffers[level] );
                 CmdScanLineInit( save[level] );
                 level--;
                 continue;
@@ -569,12 +569,12 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = AsmStrdup( s->data );
+            p = MemStrdup( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
     if( o != NULL ) {
-        AsmFree( *o );
+        MemFree( *o );
         *o = p;
     }
     return( p );
@@ -603,7 +603,7 @@ static char *set_build_target( OPT_STORAGE *data )
     if( data->bt ) {
         char *target = SetStringOption( NULL, &(data->bt_value) );
         target_name = SetTargetName( target_name, strupr( target ) );
-        AsmFree( target );
+        MemFree( target );
     }
 
     if( target_name == NULL ) {
@@ -1092,23 +1092,23 @@ static void set_options( OPT_STORAGE *data )
         SetStringOption( &Options.code_class, &(data->nc_value) );
     }
     if( data->fe && data->fe_value != NULL ) {
-        AsmFree( AsmFiles.fname[ERR] );
-        AsmFiles.fname[ERR] = AsmStrdup( data->fe_value->data );
+        MemFree( AsmFiles.fname[ERR] );
+        AsmFiles.fname[ERR] = MemStrdup( data->fe_value->data );
     }
     if( data->fr ) {
-        AsmFree( AsmFiles.fname[ERR] );
+        MemFree( AsmFiles.fname[ERR] );
         if( data->fr_value != NULL ) {
-            AsmFiles.fname[ERR] = AsmStrdup( data->fr_value->data );
+            AsmFiles.fname[ERR] = MemStrdup( data->fr_value->data );
         } else {
             AsmFiles.fname[ERR] = NULL;
         }
     }
     if( data->fl && data->fl_value != NULL ) {
-        AsmFiles.fname[LST] = AsmStrdup( data->fl_value->data );
+        AsmFiles.fname[LST] = MemStrdup( data->fl_value->data );
         Options.write_listing = true;
     }
     if( data->fo && data->fo_value != NULL ) {
-        AsmFiles.fname[OBJ] = AsmStrdup( data->fo_value->data );
+        AsmFiles.fname[OBJ] = MemStrdup( data->fo_value->data );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
@@ -1126,7 +1126,7 @@ static void do_init_stuff( char **cmdline )
         exit( EXIT_ERROR );
 
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
-    ForceInclude = AsmStrdup( getenv( "FORCE" ) );
+    ForceInclude = MemStrdup( getenv( "FORCE" ) );
     OPT_INIT( &data );
     ProcOptions( &data, getenv( "WASM" ) );
     for( ; *cmdline != NULL; ++cmdline ) {
@@ -1139,7 +1139,7 @@ static void do_init_stuff( char **cmdline )
         usage_msg();
     }
     add_include( target_name, AsmFiles.fname[ASM] );
-    AsmFree( target_name );
+    MemFree( target_name );
     set_cpu_mode();
     set_fpu_mode();
     PrintBanner();
@@ -1149,8 +1149,8 @@ static void do_init_stuff( char **cmdline )
 static void do_fini_stuff( void )
 /*******************************/
 {
-    AsmFree( SrcFName );
-    AsmFree( SrcModuleName );
+    MemFree( SrcFName );
+    MemFree( SrcModuleName );
     MsgFini();
 }
 
@@ -1219,5 +1219,5 @@ void CmdlParamsInit( void )
 void FreeForceInclude( void )
 /***************************/
 {
-    AsmFree( ForceInclude );
+    MemFree( ForceInclude );
 }

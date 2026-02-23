@@ -295,10 +295,10 @@ static void FreeConstData( const_info *constinfo )
                 DebugMsg(( "%s ", constinfo->tokens[i].string_ptr ));
             }
 #endif
-            AsmFree( constinfo->tokens[i].string_ptr );
+            MemFree( constinfo->tokens[i].string_ptr );
         }
         DebugMsg(( "\n" ));
-        AsmFree( constinfo->tokens );
+        MemFree( constinfo->tokens );
     }
 }
 
@@ -333,7 +333,7 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
             return( RC_ERROR );
         }
     }
-    new = AsmAlloc( sizeof( asm_tok ) );
+    new = MemAlloc( sizeof( asm_tok ) );
     memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
     new[0].class = TC_NUM;
     new[0].u.value = value;
@@ -383,7 +383,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
             dir->e.constinfo->tokens[0].u.value = 1;
         } else {
             /* just define it to be 1 and get out */
-            new = AsmAlloc( sizeof( asm_tok ) );
+            new = MemAlloc( sizeof( asm_tok ) );
             memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
             new[0].class = TC_NUM;
             new[0].u.value = 1;
@@ -420,7 +420,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         count = 0;
         can_be_redefine = true;
     } else {
-        new = AsmAlloc( counta * sizeof( asm_tok ) );
+        new = MemAlloc( counta * sizeof( asm_tok ) );
         can_be_redefine = ( counta > 1 );
     }
     for( i = 0; i < count; i++ ) {
@@ -458,7 +458,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
         }
         new[i].class = tokbuf->tokens[start + i].class;
         memcpy( new[i].u.bytes, tokbuf->tokens[start + i].u.bytes, sizeof( new[i].u.bytes ) );
-        new[i].string_ptr = AsmStrdup( tokbuf->tokens[start + i].string_ptr );
+        new[i].string_ptr = MemStrdup( tokbuf->tokens[start + i].string_ptr );
     }
     if( new_constant && can_be_redefine )
         dir->e.constinfo->redefine = true;
