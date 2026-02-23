@@ -184,7 +184,6 @@ tdovl1 += &
     mainline.obj &
     wf77prag.obj &
     wf77aux.obj &
-    asmalloc.obj &
     asmmsg.obj &
     $(cli_asminline_objs)
 
