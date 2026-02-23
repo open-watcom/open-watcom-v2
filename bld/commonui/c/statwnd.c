@@ -422,7 +422,7 @@ statwnd *StatusWndStart( void )
 {
     statwnd *sw;
 
-    sw = (statwnd *)CUIMemAlloc( sizeof( statwnd ) );
+    sw = (statwnd *)MemAlloc( sizeof( statwnd ) );
     if( sw != NULL ) {
         memset( sw, 0, sizeof( statwnd ) );
     }
@@ -469,7 +469,7 @@ static void updateParts( statwnd *sw )
     int     width;
     int     *parts;
 
-    parts = (int *)CUIMemAlloc( sizeof( int ) * ( sw->numSections + 1 ) );
+    parts = (int *)MemAlloc( sizeof( int ) * ( sw->numSections + 1 ) );
     GetClientRect( sw->win, &rc );
     width = rc.right - rc.left;
     for( i = 0; i < sw->numSections; i++ ) {
@@ -488,7 +488,7 @@ static void updateParts( statwnd *sw )
     } else {
         SendMessage( sw->win, SB_SETPARTS, sw->numSections, (LPARAM)parts );
     }
-    CUIMemFree( parts );
+    MemFree( parts );
 
 } /* updateParts */
 
@@ -627,8 +627,8 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
     if( len == 0 ) {
         return;
     }
-    CUIMemFree( sw->sectionData[curr_block] );
-    sw->sectionData[curr_block] = CUIMemAlloc( len + 1 );
+    MemFree( sw->sectionData[curr_block] );
+    sw->sectionData[curr_block] = MemAlloc( len + 1 );
     memcpy( sw->sectionData[curr_block], buff, len + 1 );
     sw->sectionDataFlags[curr_block] = flags | DT_TEXTATTRS;
 
@@ -826,10 +826,10 @@ void StatusWndDestroy( statwnd *sw )
             _wpi_destroywindow( sw->win );
         }
         for( i = 0; i <= sw->numSections; i++ ) {
-            CUIMemFree( sw->sectionData[i] );
+            MemFree( sw->sectionData[i] );
             sw->sectionData[i] = NULL;
         }
-        CUIMemFree( sw );
+        MemFree( sw );
     }
 
 } /* StatusWndDestroy */

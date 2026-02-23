@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -732,7 +732,7 @@ bool MDINewWindow( HWND hwnd )
 {
     mdi_data    *md;
 
-    md = (mdi_data *)CUIMemAlloc( sizeof( mdi_data ) );
+    md = (mdi_data *)MemAlloc( sizeof( mdi_data ) );
     if( md == NULL ) {
         return( false );
     }
@@ -780,7 +780,7 @@ static void finiWindow( HWND hwnd )
     if( curr == mdiTail ) {
         mdiTail = prev;
     }
-    CUIMemFree( curr );
+    MemFree( curr );
 
 } /* finiWindow */
 

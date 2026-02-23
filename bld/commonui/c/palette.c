@@ -54,7 +54,7 @@ HPALETTE CreateDIBPalette( BITMAPINFO *info )
     palette_handle = (HPALETTE)0;
 
     if( num_colours != 0 ) {
-        palette = CUIMemAlloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
+        palette = MemAlloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
         if( palette == NULL ) {
             return( (HPALETTE)0 );
         }
@@ -69,7 +69,7 @@ HPALETTE CreateDIBPalette( BITMAPINFO *info )
             palette->palPalEntry[i].peFlags = 0;
         }
         palette_handle = CreatePalette( palette );
-        CUIMemFree( palette );
+        MemFree( palette );
     }
     return( palette_handle );
 
