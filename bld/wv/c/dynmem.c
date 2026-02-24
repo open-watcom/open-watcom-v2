@@ -50,15 +50,16 @@
 #include "dui.h"
 #include "dip.h"
 #include "strutil.h"
-#include "dbginit.h"
 #ifndef __NOUI__
     #include "aui.h"
-    #include "guimem.h"
-    #ifdef GUI_IS_GUI
-    #else
+    #ifndef GUI_IS_GUI
         #include "stdui.h"
     #endif
 #endif
+#ifndef __NOUI__
+    #include "guimem.h"
+#endif
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif

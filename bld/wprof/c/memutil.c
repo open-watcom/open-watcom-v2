@@ -36,11 +36,11 @@
 #include "dip.h"
 #include "msg.h"
 #include "aui.h"
-#include "guimem.h"
-#include "memfuncs.h"
 #include "memutil.h"
 #include "wpmutil.h"
 #include "dumpmem.h"
+#include "guimem.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
