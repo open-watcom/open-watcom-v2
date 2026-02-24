@@ -73,11 +73,14 @@ void WRMemOpen( bool trace )
 
 void WRMemClose( void )
 {
-    _trmem_prt_list( TrHdl );
-    _trmem_close( TrHdl );
-    if( TrFile != NULL ) {
-        fclose( TrFile );
-        TrFile = NULL;
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list( TrHdl );
+        _trmem_close( TrHdl );
+        if( TrFile != NULL ) {
+            fclose( TrFile );
+            TrFile = NULL;
+        }
+        TrHdl = _TRMEM_HDL_NONE;
     }
 }
 
