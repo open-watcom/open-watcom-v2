@@ -34,6 +34,10 @@
 #ifndef _MEMFUNCS_H_INCLUDED
 #define _MEMFUNCS_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern void     *MemAlloc( size_t );
 extern void     *MemAllocSafe( size_t );
 extern char     *MemStrdup( const char * );
@@ -41,5 +45,9 @@ extern char     *MemStrdupSafe( const char * );
 extern void     *MemRealloc( void *, size_t );
 extern void     *MemReallocSafe( void *, size_t );
 extern void     MemFree( void * );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
