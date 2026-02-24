@@ -406,7 +406,7 @@ void    lay_banner( const gmltag * entry )
             wkb.next_refnum = ref_ban->next_refnum;
             regwkprev = NULL;
             for( regwk = ref_ban->region; regwk != NULL; regwk = regwk->next ) { // allocate + copy banregions
-                regwknew = MemAlloc( sizeof( region_lay_tag ) );
+                regwknew = MemAllocSafe( sizeof( region_lay_tag ) );
                 memcpy( regwknew, regwk, sizeof( region_lay_tag ) );
                 if( wkb.region == NULL ) {   // forward chain
                     wkb.region = regwknew;
@@ -486,7 +486,7 @@ void    lay_banner( const gmltag * entry )
             xx_err_exit( ERR_ALL_BAN_ATT_RQRD );
             /* never return */
         }
-        curr_ban = MemAlloc( sizeof( banner_lay_tag ) );
+        curr_ban = MemAllocSafe( sizeof( banner_lay_tag ) );
         memcpy( curr_ban, &wkb, sizeof( banner_lay_tag ) );
 
         if( layout_work.banner == NULL ) {      // First banner initializes the list
@@ -1107,7 +1107,7 @@ void    lay_banregion( const gmltag *entry )
             xx_err_exit( ERR_ALL_REG_ATT_RQRD );
             /* never return */
         }
-        reg = MemAlloc( sizeof( region_lay_tag ) );
+        reg = MemAllocSafe( sizeof( region_lay_tag ) );
         memcpy( reg, &wkr, sizeof( region_lay_tag ) );
         if( prev_reg == NULL ) {    // first region in banner
             curr_ban->region = reg;

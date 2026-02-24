@@ -876,7 +876,7 @@ static void set_out_file( void )
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL )
             MemFree( out_file );
-        out_file = MemAlloc( strlen( temp_outfile ) + 1 );
+        out_file = MemAllocSafe( strlen( temp_outfile ) + 1 );
         strcpy( out_file, temp_outfile );
     }
 
@@ -907,7 +907,7 @@ static void set_out_file_attr( void )
 
                 /* Use default if rec_spec is badly-formed. */
 
-                out_file_attr = MemStrdup( "t:132" );
+                out_file_attr = MemStrdupSafe( "t:132" );
 
             } else {
 
@@ -922,7 +922,7 @@ static void set_out_file_attr( void )
 
             /* Use default if bin_driver->rec_spec is missing. */
 
-            out_file_attr = MemStrdup( "t:132" );
+            out_file_attr = MemStrdupSafe( "t:132" );
         }
     }
 

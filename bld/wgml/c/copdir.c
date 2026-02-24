@@ -363,7 +363,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
                             /* Return the member name, if found. */
 
                             if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
-                                return( MemStrdup( current_entry.member_name ) );
+                                return( MemStrdupSafe( current_entry.member_name ) );
                             }
 
                             break;
@@ -406,7 +406,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
                     /* Return the member name, if found. */
 
                     if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
-                        return( MemStrdup( current_entry.member_name ) );
+                        return( MemStrdupSafe( current_entry.member_name ) );
                     }
 
                     break;

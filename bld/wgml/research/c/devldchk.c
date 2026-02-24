@@ -216,27 +216,27 @@ int main()
     /* Special preparations for test01 and test02. */
 
     if( (!stricmp( dev_name, "test01") ) || (!stricmp( dev_name, "test02") ) ) {
-        opt_font * current = MemAlloc( sizeof( opt_font ) );
+        opt_font * current = MemAllocSafe( sizeof( opt_font ) );
 
         current->nxt = NULL;
         current->font = 11;
-        current->name = MemAlloc( sizeof( "tfon08" ) + 1 );
+        current->name = MemAllocSafe( sizeof( "tfon08" ) + 1 );
         strcpy_s( current->name,  sizeof( "tfon08" ) + 1, "tfon08" );
-        current->style = MemAlloc( sizeof( "plain" ) + 1 );
+        current->style = MemAllocSafe( sizeof( "plain" ) + 1 );
         strcpy_s( current->style, sizeof( "plain" ) + 1, "plain" );
         current->space = 0;
         current->height = 0;
 
         opt_fonts = current;
 
-        current = MemAlloc( sizeof( opt_font ) );
+        current = MemAllocSafe( sizeof( opt_font ) );
         opt_fonts->nxt = current;
 
         current->nxt = NULL;
         current->font = 12;
-        current->name = MemAlloc( sizeof( "tfon09" ) + 1 );
+        current->name = MemAllocSafe( sizeof( "tfon09" ) + 1 );
         strcpy_s( current->name,  sizeof( "tfon09" ) + 1, "tfon09" );
-        current->style = MemAlloc( sizeof( "bold" ) + 1 );
+        current->style = MemAllocSafe( sizeof( "bold" ) + 1 );
         strcpy_s( current->style, sizeof( "bold" ) + 1, "bold" );
         current->space = 0;
         current->height = 0;

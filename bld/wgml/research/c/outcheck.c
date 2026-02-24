@@ -487,7 +487,7 @@ static oc_element * oc_alloc_oc_element( oc_element_type el_type )
     oc_element    *   retval  = NULL;
 
     if( oc_element_pool == NULL ) {
-        retval = MemAlloc( sizeof( oc_element ) );
+        retval = MemAllocSafe( sizeof( oc_element ) );
     } else {
         retval = oc_element_pool;
         oc_element_pool = oc_element_pool->next;
@@ -545,14 +545,14 @@ static text_chars *oc_alloc_text_chars( char *in_text, size_t count, font_number
         if( count > TEXT_START ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
         }
-        retval = MemAlloc( sizeof( text_chars ) + size );
+        retval = MemAllocSafe( sizeof( text_chars ) + size );
         retval->length = size;
     } else {
         retval  = oc_text_chars_pool;
         oc_text_chars_pool = oc_text_chars_pool->next;
         if( count > retval->length ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
-            retval = MemRealloc( retval, sizeof( text_chars ) + size );
+            retval = MemReallocSafe( retval, sizeof( text_chars ) + size );
             retval->length = size;
         }
     }
@@ -587,7 +587,7 @@ static text_line * oc_alloc_text_line( void )
     text_line   *   retval  = NULL;
 
     if( oc_text_line_pool == NULL ) {
-        retval = MemAlloc( sizeof( text_line ) );
+        retval = MemAllocSafe( sizeof( text_line ) );
     } else {
         retval = oc_text_line_pool;
         oc_text_line_pool = oc_text_line_pool->next;
@@ -1313,7 +1313,7 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
             req_count++;
 
             req_length = def_tabs.length + (req_count * TAB_COUNT);
-            def_tabs.tabs = MemRealloc( def_tabs.tabs, req_length * sizeof( tab_stop ) );
+            def_tabs.tabs = MemReallocSafe( def_tabs.tabs, req_length * sizeof( tab_stop ) );
             def_tabs.length = req_length;
         }
 
@@ -2782,7 +2782,7 @@ static void emulate_wgml( void )
 
     /* Initialize the text_chars pool to hold 20 instances. */
 
-    oc_text_chars_pool = MemAlloc( sizeof( text_chars ) + TEXT_START );
+    oc_text_chars_pool = MemAllocSafe( sizeof( text_chars ) + TEXT_START );
     oc_text_chars_pool->next = NULL;
     oc_text_chars_pool->font = 0;
     oc_text_chars_pool->x_address = 0;
@@ -2791,7 +2791,7 @@ static void emulate_wgml( void )
     oc_text_chars_pool->length = TEXT_START;
     tc_pool_ptr = oc_text_chars_pool;
     for( i = 0; i < 19; i++ ) {
-        tc_pool_ptr->next = MemAlloc( sizeof( text_chars ) + TEXT_START );
+        tc_pool_ptr->next = MemAllocSafe( sizeof( text_chars ) + TEXT_START );
         tc_pool_ptr = tc_pool_ptr->next;
         tc_pool_ptr->next = NULL;
         tc_pool_ptr->font = 0;
@@ -2803,14 +2803,14 @@ static void emulate_wgml( void )
 
     /* Initialize the text_line pool to hold ten instances. */
 
-    oc_text_line_pool = MemAlloc( sizeof( text_line ) );
+    oc_text_line_pool = MemAllocSafe( sizeof( text_line ) );
     oc_text_line_pool->next = NULL;
     oc_text_line_pool->line_height = 0;
     oc_text_line_pool->y_address = 0;
     oc_text_line_pool->first = 0;
     tl_pool_ptr = oc_text_line_pool;
     for( i = 0; i < 9; i++ ) {
-        tl_pool_ptr->next = MemAlloc( sizeof( text_line ) );
+        tl_pool_ptr->next = MemAllocSafe( sizeof( text_line ) );
         tl_pool_ptr = tl_pool_ptr->next;
         tl_pool_ptr->next = NULL;
         tl_pool_ptr->line_height = 0;
@@ -2818,7 +2818,7 @@ static void emulate_wgml( void )
         tl_pool_ptr->first = NULL;
     }
 
-    oc_element_pool = MemAlloc( sizeof( oc_element ) );
+    oc_element_pool = MemAllocSafe( sizeof( oc_element ) );
     oc_element_pool->next = NULL;
     oc_element_pool->type = oc_text;
     oc_element_pool->element.oc_text.count = 0;
@@ -2826,7 +2826,7 @@ static void emulate_wgml( void )
     oc_element_pool->element.oc_text.first = NULL;
     te_pool_ptr = oc_element_pool;
     for( i = 0; i < 9; i++ ) {
-        te_pool_ptr->next = MemAlloc( sizeof( oc_element ) );
+        te_pool_ptr->next = MemAllocSafe( sizeof( oc_element ) );
         te_pool_ptr = te_pool_ptr->next;
         te_pool_ptr->next = NULL;
         te_pool_ptr->type = oc_text;

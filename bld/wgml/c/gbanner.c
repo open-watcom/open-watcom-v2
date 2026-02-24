@@ -49,9 +49,9 @@ static void resize_and_copy_strblk( final_reg_content *strblk, char *buf, int fo
          */
         size = ( ( size + STRBLK_SIZE - 1 ) / STRBLK_SIZE ) * STRBLK_SIZE;
         if( strblk->string == NULL ) {
-            strblk->string = MemAlloc( size + 1 );
+            strblk->string = MemAllocSafe( size + 1 );
         } else {
-            strblk->string = MemRealloc( strblk->string, size + 1 );
+            strblk->string = MemReallocSafe( strblk->string, size + 1 );
         }
         strblk->size = size;
     }

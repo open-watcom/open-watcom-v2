@@ -90,7 +90,7 @@ nest_stack * copy_to_nest_stack( void )
 
     head = NULL;
     for( inwk = input_cbs; inwk != NULL; inwk = inwk->prev ) {
-        nest_p = MemAlloc( sizeof( nest_stack ) );
+        nest_p = MemAllocSafe( sizeof( nest_stack ) );
         nest_p->prev = NULL;
         nest_p->nest_flag = inwk->fmflags & II_input;
         if( head == NULL ) {

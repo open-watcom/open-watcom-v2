@@ -93,12 +93,12 @@ void    add_macro_cb_entry( mac_entry *me, gtentry *ge )
     macrocb *   new;
     inputcb *   nip;
 
-    new = MemAlloc( sizeof( macrocb ) );
+    new = MemAllocSafe( sizeof( macrocb ) );
 
-    nip = MemAlloc( sizeof( inputcb ) );
+    nip = MemAllocSafe( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = MemAlloc( sizeof( ifcb ) );
+    nip->if_cb       = MemAllocSafe( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->pe_cb.count = -1;
     nip->pe_cb.line  = NULL;
@@ -459,7 +459,7 @@ void    scr_dm( void )
             }
             len = p - nmstart;
             *p = '\0';
-            work = MemAlloc( sizeof( inp_line ) + len );
+            work = MemAllocSafe( sizeof( inp_line ) + len );
             work->next = NULL;
             strcpy( work->value, nmstart );
             if( last != NULL ) {
@@ -549,7 +549,7 @@ void    scr_dm( void )
                     }
                 }
             }
-            work = MemAlloc( sizeof( inp_line ) + cb->s.f->usedlen );
+            work = MemAllocSafe( sizeof( inp_line ) + cb->s.f->usedlen );
             work->next = NULL;
             strcpy( work->value, buff2 );
             if( last != NULL ) {
@@ -579,7 +579,7 @@ void    scr_dm( void )
 
         ProcFlags.in_macro_define = 0;
 
-        me  = MemAlloc( sizeof( mac_entry ) );
+        me  = MemAllocSafe( sizeof( mac_entry ) );
         me->next = NULL;
         me->label_cb = NULL;
         strcpy( me->name, macname1 );

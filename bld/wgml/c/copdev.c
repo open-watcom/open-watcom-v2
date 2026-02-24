@@ -100,8 +100,8 @@ static index_status find_cumulative_index( functions_block * in_block, uint16_t 
  *          reflects the new size) on success.
  *
  * Notes:
- *      MemRealloc() will call exit() if the reallocation fails.
- *      MemRealloc() will free in_device if the instance is actually moved to a
+ *      MemReallocSafe() will call exit() if the reallocation fails.
+ *      MemReallocSafe() will free in_device if the instance is actually moved to a
  *          new location.
  *      The intended use is for the pointer passed as in_device to be used to
  *          store the return value.
@@ -123,7 +123,7 @@ static cop_device *resize_cop_device( cop_device *in_device, unsigned in_size )
 
     /* Reallocate the cop_device. */
 
-    local_device = MemRealloc( in_device, new_size );
+    local_device = MemReallocSafe( in_device, new_size );
     local_device->allocated_size = new_size;
     return( local_device );
 }
@@ -166,9 +166,9 @@ static void set_cumulative_index( functions_block * in_block )
  *      A NULL pointer on failure.
  *
  *  Notes:
- *      resize_cop_device() uses MemRealloc(), which calls exit() if the
+ *      resize_cop_device() uses MemReallocSafe(), which calls exit() if the
  *          allocation fails.
- *      parse_functions_block() uses MemAlloc, which calls exit() if the
+ *      parse_functions_block() uses MemAllocSafe, which calls exit() if the
  *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -232,7 +232,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Initialize the out_device. */
 
-    out_device = MemAlloc( START_SIZE );
+    out_device = MemAllocSafe( START_SIZE );
 
     out_device->allocated_size = START_SIZE;
     out_device->next_offset = sizeof( cop_device );
@@ -914,7 +914,7 @@ cop_device * parse_device( FILE *fp )
 
             /* Allocate a buffer and read the translation characters into it. */
 
-            outtrans_data = MemAlloc( data_count );
+            outtrans_data = MemAllocSafe( data_count );
 
             fread_buff( outtrans_data, data_count, fp );
             if( ferror( fp )

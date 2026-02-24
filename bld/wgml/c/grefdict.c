@@ -238,7 +238,7 @@ ref_entry *add_new_refid( ref_dict *dict, const char *refid, ffh_entry *ffh )
 {
     ref_entry   *ref;
 
-    ref = (ref_entry *)MemAlloc( sizeof( ref_entry ) ) ;
+    ref = (ref_entry *)MemAllocSafe( sizeof( ref_entry ) ) ;
     init_ref_entry( ref, refid, ffh );
     add_ref_entry( dict, ref );
     return( ref );

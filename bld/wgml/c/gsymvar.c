@@ -116,7 +116,7 @@ void    init_dict( symdict_hdl *pdict )
 {
     symdict_hdl dict;
 
-    dict = MemAlloc( sizeof( symdict ) );
+    dict = MemAllocSafe( sizeof( symdict ) );
     dict->first    = NULL;
     dict->htbl     = NULL;
     dict->lookups  = 0;
@@ -127,7 +127,7 @@ void    init_dict( symdict_hdl *pdict )
 
     if( dict == global_dict
       || dict == sys_dict ) {
-        dict->htbl = MemAlloc( sizeof( void * ) * SYM_HASH_SIZE );
+        dict->htbl = MemAllocSafe( sizeof( void * ) * SYM_HASH_SIZE );
         memset( dict->htbl, 0, sizeof( void * ) * SYM_HASH_SIZE );
         dict->local = false;
     }
@@ -203,9 +203,9 @@ static void resize_value( symsub *val, unsigned size )
 {
     if( val->size < size ) {// need more room
         if( val->size > 0 ) {
-            val->value = MemRealloc( val->value, size + 1 );
+            val->value = MemReallocSafe( val->value, size + 1 );
         } else {
-            val->value = MemAlloc( size + 1 );
+            val->value = MemAllocSafe( size + 1 );
         }
         val->size = size;
     }
@@ -531,12 +531,12 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
           && (subscript == var->last_auto_inc + 1) ) {
             var->last_auto_inc++;
         }
-        newsub            = MemAlloc( sizeof( symsub ) );
+        newsub            = MemAllocSafe( sizeof( symsub ) );
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = subscript;
         newsub->size      = len;
-        newsub->value     = MemAlloc( len + 1 );
+        newsub->value     = MemAllocSafe( len + 1 );
         strncpy( newsub->value, val, len );
         newsub->value[len] = '\0';
 
@@ -599,7 +599,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     symvar      *new;
     symsub      *newsub;
 
-    new = MemAlloc( sizeof( symvar ) );
+    new = MemAllocSafe( sizeof( symvar ) );
     new->next = NULL;
     strcpy( new->name, name );
     new->last_auto_inc  = 0;
@@ -607,13 +607,13 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     new->subscripts = NULL;
     new->flags = f & ~SF_deleted;
 
-    newsub = MemAlloc( sizeof( symsub ) );
+    newsub = MemAllocSafe( sizeof( symsub ) );
     new->sub_0 = newsub;
     newsub->next      = NULL;
     newsub->base      = new;
     newsub->subscript = 0;
     newsub->size      = NUM2STR_LENGTH;
-    newsub->value     = MemAlloc( NUM2STR_LENGTH + 1 );
+    newsub->value     = MemAllocSafe( NUM2STR_LENGTH + 1 );
     newsub->value[0]  = '0';
     newsub->value[1]  = '\0';
 

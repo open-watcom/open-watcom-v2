@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -52,7 +52,7 @@ void    banner_defaults( void )
     static  char        extendc[] = "extend";
     static  char        nr[] = "pgnumr";
 
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     layout_work.banner = ban;
 
     ban->next = NULL;
@@ -69,7 +69,7 @@ void    banner_defaults( void )
     ban->next_refnum = 2;
     ban->style = no_content;
 
-    reg = MemAlloc( sizeof( region_lay_tag ) );
+    reg = MemAllocSafe( sizeof( region_lay_tag ) );
     ban->region = reg;
     reg->next = NULL;
     reg->reg_indent = 0;
@@ -107,13 +107,13 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
     ban->docsect = body_ban;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -128,7 +128,7 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
@@ -136,7 +136,7 @@ void    banner_defaults( void )
     ban->docsect = abstract_ban;
     ban->style = pgnumr_content;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -155,20 +155,20 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
     ban->docsect = preface_ban;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
     reg->next = NULL;
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
@@ -177,7 +177,7 @@ void    banner_defaults( void )
     ban->docsect = toc_ban;
     ban->style = no_content;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -195,14 +195,14 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
     ban->place = top_place;
     ban->docsect = figlist_ban;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -211,14 +211,14 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
     ban->place = top_place;
     ban->docsect = index_ban;
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -227,7 +227,7 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
@@ -235,7 +235,7 @@ void    banner_defaults( void )
     ban->docsect = letter_ban;
 
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;
@@ -249,7 +249,7 @@ void    banner_defaults( void )
 
 
     wk = ban;
-    ban = MemAlloc( sizeof( banner_lay_tag ) );
+    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
     memcpy( ban, wk, sizeof( banner_lay_tag ) );
     wk->next = ban;
 
@@ -257,7 +257,7 @@ void    banner_defaults( void )
     ban->docsect = letlast_ban;
 
 
-    regwk = MemAlloc( sizeof( region_lay_tag ) );
+    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
     memcpy( regwk, reg, sizeof( region_lay_tag ) );
     reg = regwk;
     ban->region = reg;

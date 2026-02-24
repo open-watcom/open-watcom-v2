@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -120,7 +120,7 @@ static  void    set_default_extension( const char * masterfname )
     if( strlen( ext ) > 0) {
         if( strlen( ext ) > strlen( def_ext ) ) {
             MemFree( def_ext);
-            def_ext = MemAlloc( 1 + strlen( ext ) );
+            def_ext = MemAllocSafe( 1 + strlen( ext ) );
         }
         strcpy( def_ext, ext );
     }
@@ -174,7 +174,7 @@ static  char    * reuse_filename( const char * fn )
         }
     }
 
-    fnwk = MemAlloc( sizeof( fnstack ) + strlen( fn ) );
+    fnwk = MemAllocSafe( sizeof( fnstack ) + strlen( fn ) );
     strcpy( fnwk->fn, fn );
 
     fnwk->prev = fn_stack;
@@ -192,13 +192,13 @@ static  void    add_file_cb_entry( FILE *fp, const char *fname )
     filecb  *   new;
     inputcb *   nip;
 
-    new = MemAlloc( sizeof( filecb ) );
+    new = MemAllocSafe( sizeof( filecb ) );
     new->filename = reuse_filename( fname );
 
-    nip = MemAlloc( sizeof( inputcb ) );
+    nip = MemAllocSafe( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = MemAlloc( sizeof( ifcb ) );
+    nip->if_cb       = MemAllocSafe( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->pe_cb.line  = NULL;
     nip->pe_cb.count = 0;
@@ -797,14 +797,14 @@ int main( int argc, char * argv[] )
 
     environment = JMPBUF_PTR( env );
     start_time = clock();               // remember start time
-    mem_init();                         // init memory tracker if necessary
+    MemInit();                          // init memory tracker if necessary
     if( setjmp( env ) == 0 ) {          // if fatal error has occurred
 
         passcount = 0;
 
         init_global_vars();
 
-        token_buf = MemAlloc( BUF_SIZE + 1 );
+        token_buf = MemAllocSafe( BUF_SIZE + 1 );
 
         // out_msg( "define enum %d %d\n", INF_CMDLINE, INF_CMDLINE );
 
@@ -813,7 +813,7 @@ int main( int argc, char * argv[] )
         ff_setup();                         // init findfile
 
         cmdlen = _bgetcmd( NULL, 0 ) + 1;
-        cmdline = MemAlloc( cmdlen );
+        cmdline = MemAllocSafe( cmdlen );
         _bgetcmd( cmdline, cmdlen );
 
         g_info_research( INF_CMDLINE, cmdline );
@@ -953,7 +953,7 @@ int main( int argc, char * argv[] )
 
     fini_msgs();                        // end of msg resources, no more msgs built from
                                         // resources possible after this point
-    mem_fini();                         // TRMEM final report
+    MemFini();                          // TRMEM final report
 
     if( exit_rc != 0 )
         return( exit_rc );

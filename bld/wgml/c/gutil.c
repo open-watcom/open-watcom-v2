@@ -1196,12 +1196,12 @@ ffh_entry * init_ffh_entry( ffh_entry * ffh_list, ffhflags flags )
 
     curr = ffh_list;
     if( curr == NULL ) {            // first entry
-        curr = (ffh_entry *)MemAlloc( sizeof( ffh_entry ) );
+        curr = (ffh_entry *)MemAllocSafe( sizeof( ffh_entry ) );
     } else {
         while( curr->next != NULL ) {
             curr = curr->next;
         }
-        curr->next = (ffh_entry *)MemAlloc( sizeof( ffh_entry ) );
+        curr->next = (ffh_entry *)MemAllocSafe( sizeof( ffh_entry ) );
         curr = curr->next;
     }
     curr->next = NULL;
@@ -1233,7 +1233,7 @@ fwd_ref *init_fwd_ref( fwd_ref *dict, const char *refid )
         }
         prev = local;
     }
-    curr = (fwd_ref *)MemAlloc( sizeof( fwd_ref ) );
+    curr = (fwd_ref *)MemAllocSafe( sizeof( fwd_ref ) );
     curr->next = NULL;
     strcpy( curr->refid, refid );
     if( dict == NULL ) {

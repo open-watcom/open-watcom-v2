@@ -714,7 +714,7 @@ static cop_font * get_cop_font( char const * in_name )
  * The actual parsing is done using the functions declared in copfiles.h.
  * This function is, in fact, the test function for those functions.
  *
- * Note: since MemAlloc() is used to allocate these structs, MemFree()
+ * Note: since MemAllocSafe() is used to allocate these structs, MemFree()
  *      must be used to free them.
  *
  * Global Used:

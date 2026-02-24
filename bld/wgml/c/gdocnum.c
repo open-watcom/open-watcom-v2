@@ -67,7 +67,7 @@ void    gml_docnum( const gmltag * entry )
     buff = NULL;
     if( layout_work.docnum.string[0] != '\0' ) {
         buff_len = strlen( layout_work.docnum.string ) + strlen ( p ) + 1;
-        buff = MemAlloc( buff_len );
+        buff = MemAllocSafe( buff_len );
         strcpy( buff, layout_work.docnum.string );
         strcat( buff, p );
         p = buff;

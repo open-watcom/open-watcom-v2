@@ -66,17 +66,17 @@ text_chars *alloc_text_chars( const char *text, unsigned cnt, font_number font )
             prev->next = curr->next;    // unchain curr
         }
     } else {                            // no one large enough found
-        curr = MemAlloc( sizeof( *curr ) + cnt );
+        curr = MemAllocSafe( sizeof( *curr ) + cnt );
         curr->length = cnt;             // set max text size
 
         if( text_pool == NULL ) {       // alloc 10 text_chars if pool empty
             int k;
 
-            text_pool = MemAlloc( sizeof( *prev ) + TEXT_CHARS_DEF );
+            text_pool = MemAllocSafe( sizeof( *prev ) + TEXT_CHARS_DEF );
             prev = text_pool;
             for( k = 0; k < 10; k++ ) {
                 prev->length = TEXT_CHARS_DEF;
-                prev->next = MemAlloc( sizeof( *prev ) + TEXT_CHARS_DEF );
+                prev->next = MemAllocSafe( sizeof( *prev ) + TEXT_CHARS_DEF );
                 prev = prev->next;
             }
             prev->next = NULL;
@@ -163,12 +163,12 @@ text_line * alloc_text_line( void )
     if( curr != NULL ) {                // there is one to use
         line_pool = curr->next;
     } else {                            // pool is empty
-        curr = MemAlloc( sizeof( text_line ) );
+        curr = MemAllocSafe( sizeof( text_line ) );
 
-        line_pool = MemAlloc( sizeof( *prev ) );
+        line_pool = MemAllocSafe( sizeof( *prev ) );
         prev = line_pool;
         for( k = 0; k < 10; k++ ) {     // alloc 10 text_lines if pool empty
-            prev->next = MemAlloc( sizeof( *prev ) );
+            prev->next = MemAllocSafe( sizeof( *prev ) );
             prev = prev->next;
         }
         prev->next = NULL;
@@ -212,17 +212,17 @@ box_col_set * alloc_box_col_set( void )
     int             k;
 
     if( box_col_set_pool == NULL ) {                // pool is empty
-        box_col_set_pool = MemAlloc( sizeof( *curr ) );
+        box_col_set_pool = MemAllocSafe( sizeof( *curr ) );
         curr = box_col_set_pool;
         curr->current = 0;
         curr->length = BOXCOL_COUNT;
-        curr->cols = MemAlloc( BOXCOL_COUNT * sizeof( box_col_spec ));
+        curr->cols = MemAllocSafe( BOXCOL_COUNT * sizeof( box_col_spec ));
         for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
-            curr->next = MemAlloc( sizeof( *curr ) );
+            curr->next = MemAllocSafe( sizeof( *curr ) );
             curr = curr->next;
             curr->current = 0;
             curr->length = BOXCOL_COUNT;
-            curr->cols = MemAlloc( BOXCOL_COUNT * sizeof( box_col_spec ));
+            curr->cols = MemAllocSafe( BOXCOL_COUNT * sizeof( box_col_spec ));
         }
         curr->next = NULL;
     }
@@ -264,11 +264,11 @@ box_col_stack * alloc_box_col_stack( void )
     int                 k;
 
     if( box_col_stack_pool == NULL ) {                // pool is empty
-        box_col_stack_pool = MemAlloc( sizeof( *curr ) );
+        box_col_stack_pool = MemAllocSafe( sizeof( *curr ) );
         curr = box_col_stack_pool;
         curr->first = NULL;
         for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
-            curr->next = MemAlloc( sizeof( *curr ) );
+            curr->next = MemAllocSafe( sizeof( *curr ) );
             curr = curr->next;
             curr->first = NULL;
         }
@@ -315,10 +315,10 @@ doc_element * alloc_doc_el( element_type type )
     int             k;
 
     if( doc_el_pool == NULL ) {         // pool is empty
-        doc_el_pool = MemAlloc( sizeof( *curr ) );
+        doc_el_pool = MemAllocSafe( sizeof( *curr ) );
         curr = doc_el_pool;
         for( k = 0; k < 10; k++ ) {     // alloc 10 doc_els if pool empty
-            curr->next = MemAlloc( sizeof( *curr ) );
+            curr->next = MemAllocSafe( sizeof( *curr ) );
             curr = curr->next;
         }
         curr->next = NULL;
@@ -445,10 +445,10 @@ doc_el_group * alloc_doc_el_group( group_type type )
         curr = doc_el_group_pool;
         doc_el_group_pool = curr->next;
     } else {                            // pool is empty
-        curr = MemAlloc( sizeof( doc_el_group ) );
+        curr = MemAllocSafe( sizeof( doc_el_group ) );
         doc_el_group_pool = curr;
         for( k = 0; k < 10; k++ ) {     // alloc 10 box_col_sets if pool empty
-            curr->next = MemAlloc( sizeof( *curr ) );
+            curr->next = MemAllocSafe( sizeof( *curr ) );
             curr = curr->next;
         }
         curr->next = NULL;
@@ -506,12 +506,12 @@ eol_ix * alloc_eol_ix( ix_h_blk * in_ixh, ereftyp in_type )
     if( curr != NULL ) {                // there is one to use
         eol_ix_pool = curr->next;
     } else {                            // pool is empty
-        curr = MemAlloc( sizeof( eol_ix ) );
+        curr = MemAllocSafe( sizeof( eol_ix ) );
 
-        eol_ix_pool = MemAlloc( sizeof( *prev ) );
+        eol_ix_pool = MemAllocSafe( sizeof( *prev ) );
         prev = eol_ix_pool;
         for( k = 0; k < 10; k++ ) {     // alloc 10 eol_ix instances if pool empty
-            prev->next = MemAlloc( sizeof( *prev ) );
+            prev->next = MemAllocSafe( sizeof( *prev ) );
             prev = prev->next;
         }
         prev->next = NULL;
@@ -554,12 +554,12 @@ tag_cb  * alloc_tag_cb( void )
     if( curr != NULL ) {                // there is one to use
         tag_pool = curr->prev;
     } else {                            // pool is empty
-        curr = MemAlloc( sizeof( tag_cb ) );
+        curr = MemAllocSafe( sizeof( tag_cb ) );
 
-        prev = MemAlloc( sizeof( *prev ) );
+        prev = MemAllocSafe( sizeof( *prev ) );
         tag_pool = prev;
         for( k = 0; k < 10; k++ ) { // alloc 10 tag_cb if pool empty
-            prev->prev = MemAlloc( sizeof( *prev ) );
+            prev->prev = MemAllocSafe( sizeof( *prev ) );
             prev = prev->prev;
         }
         prev->prev = NULL;
@@ -610,12 +610,12 @@ sym_list_entry * alloc_sym_list_entry( void )
     if( curr != NULL ) {                // there is one to use
         sym_list_pool = curr->prev;
     } else {                            // pool is empty
-        curr = MemAlloc( sizeof( sym_list_entry ) );
+        curr = MemAllocSafe( sizeof( sym_list_entry ) );
 
-        prev = MemAlloc( sizeof( *prev ) );
+        prev = MemAllocSafe( sizeof( *prev ) );
         sym_list_pool = prev;
         for( k = 0; k < 10; k++ ) { // alloc 10 tag_cb if pool empty
-            prev->prev = MemAlloc( sizeof( *prev ) );
+            prev->prev = MemAllocSafe( sizeof( *prev ) );
             prev = prev->prev;
         }
         prev->prev = NULL;

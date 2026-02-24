@@ -53,6 +53,7 @@
 #include "gvars.h"
 #include "findfile.h"
 #include "wnoret.h"
+#include "memfuncs.h"
 
 #ifdef  __cplusplus
 extern "C" {    /* Use "C" linkage when in C++ mode */
@@ -203,18 +204,14 @@ extern mac_entry    *find_macro( mac_dict dict, char const *name );
 
 /* gmemory.c                            */
 extern void         mem_banner( void );
-extern void         mem_init( void );
-extern void         mem_fini( void );
+extern void         MemInit( void );
+extern void         MemFini( void );
 extern unsigned long mem_get_peak_usage( void );
 extern void         mem_prt_curr_usage( void );
 extern int          mem_validate( void );
 extern void         mem_prt_list( void );
 
-extern void         *MemAlloc( unsigned size );
-extern void         *MemRealloc( void *p, unsigned size );
-extern char         *MemStrdup( const char *str );
 extern char         *mem_tostring( const char *str, unsigned size );
-extern void         MemFree( void *p );
 
 /* gnestut.c                            */
 extern void         init_nest_cb( void );

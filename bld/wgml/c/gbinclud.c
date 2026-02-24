@@ -187,7 +187,7 @@ void    gml_binclude( const gmltag * entry )
         cur_el->element.binc.force_FONT0 = false;
         cur_el->element.binc.has_rec_type = has_rec_type;
         cur_el->element.binc.fp = fp;
-        cur_el->element.binc.file = MemStrdup( try_file_name );
+        cur_el->element.binc.file = MemStrdupSafe( try_file_name );
 
         if( GlobalFlags.inclist ) {
             g_info_lm( INF_CURR_FILE, cur_el->element.binc.file );

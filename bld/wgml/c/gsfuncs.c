@@ -75,7 +75,7 @@ static char *alloc_resbuf( inp_line **in_wk )
 {
     inp_line  * wk;
 
-    wk = MemAlloc( sizeof( inp_line ) + BUF_SIZE );
+    wk = MemAllocSafe( sizeof( inp_line ) + BUF_SIZE );
     if( *in_wk == NULL ) {
         wk->next = NULL;
     } else {

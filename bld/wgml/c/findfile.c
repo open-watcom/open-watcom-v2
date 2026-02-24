@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +94,7 @@ static directory_list initialize_directory_list( const char *items_list )
     directory_list  list;
     char            *p;
 
-    list = MemStrdup( items_list );
+    list = MemStrdupSafe( items_list );
     p = list;
     if( items_list != NULL ) {
         while( *items_list != '\0' ) {

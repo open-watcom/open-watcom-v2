@@ -59,8 +59,8 @@
  *          the new size) on success.
  *
  * Notes:
- *      MemRealloc() will call exit() if the reallocation fails.
- *      MemRealloc() will free in_font if the instance is actually moved to a
+ *      MemReallocSafe() will call exit() if the reallocation fails.
+ *      MemReallocSafe() will free in_font if the instance is actually moved to a
  *          new location.
  *      The intended use is for the pointer passed as in_font to be used to
  *          store the return value.
@@ -82,7 +82,7 @@ static cop_font *resize_cop_font( cop_font *in_font, unsigned in_size )
 
     /* Reallocate the cop_font. */
 
-    local_font = MemRealloc( in_font, new_size );
+    local_font = MemReallocSafe( in_font, new_size );
     local_font->allocated_size = new_size;
     return( local_font );
 }
@@ -106,7 +106,7 @@ static cop_font *resize_cop_font( cop_font *in_font, unsigned in_size )
  *      A NULL pointer on failure.
  *
  *  Notes:
- *      resize_cop_font() uses MemRealloc(), which calls exit() if the
+ *      resize_cop_font() uses MemReallocSafe(), which calls exit() if the
  *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -164,7 +164,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
     /* Initialize the out_font. */
 
-    out_font = MemAlloc( START_SIZE );
+    out_font = MemAllocSafe( START_SIZE );
 
     out_font->next_font = NULL;
     out_font->allocated_size = START_SIZE;
@@ -538,7 +538,7 @@ cop_font *parse_font( FILE *fp, char const *fon_name )
 
             /* Allocate a buffer and read the translation characters into it. */
 
-            outtrans_data = MemAlloc( data_count );
+            outtrans_data = MemAllocSafe( data_count );
 
             fread_buff( outtrans_data, data_count, fp );
             if( ferror( fp ) || feof( fp ) ) {

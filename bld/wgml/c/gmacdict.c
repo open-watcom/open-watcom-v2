@@ -99,7 +99,7 @@ void    init_macro_dict( mac_dict *pdict )
 {
     mac_dict    dict;
 
-    dict = MemAlloc( sizeof( *dict ) );
+    dict = MemAllocSafe( sizeof( *dict ) );
     memset( dict->htbl, 0, sizeof( dict->htbl ) );
     dict->lookups  = 0;
     dict->macros   = 0;

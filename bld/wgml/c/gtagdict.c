@@ -60,7 +60,7 @@ gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int
         xx_source_err_exit_c( ERR_TAG_EXIST, tagname );
         /* never return */
     }
-    dict = MemAlloc( sizeof( *dict ) );
+    dict = MemAllocSafe( sizeof( *dict ) );
     dict->next = *pdict;
     *pdict = dict;
 

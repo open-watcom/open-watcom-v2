@@ -64,8 +64,8 @@
  *          the new size).
  *
  * Notes:
- *      MemRealloc() will call exit() if the reallocation fails.
- *      MemRealloc() will free in_driver if the instance is actually moved to a
+ *      MemReallocSafe() will call exit() if the reallocation fails.
+ *      MemReallocSafe() will free in_driver if the instance is actually moved to a
  *          new location.
  *      The intended use is for the pointer passed as in_driver to be used to
  *          store the return value.
@@ -87,7 +87,7 @@ static cop_driver *resize_cop_driver( cop_driver *in_driver, unsigned in_size )
 
     /* Reallocate the cop_driver. */
 
-    local_driver = MemRealloc( in_driver, new_size );
+    local_driver = MemReallocSafe( in_driver, new_size );
     local_driver->allocated_size = new_size;
     return( local_driver );
 }
@@ -116,9 +116,9 @@ static cop_driver *resize_cop_driver( cop_driver *in_driver, unsigned in_size )
  *      NULL on failure, which indicates an incorrectly formatted file.
  *
  * Notes:
- *      resize_cop_driver() calls MemRealloc(), which will call exit() if
+ *      resize_cop_driver() calls MemReallocSafe(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls MemAlloc(), which will call exit() if
+ *      get_code_blocks() calls MemAllocSafe(), which will call exit() if
  *          the allocation fails.
  */
 
@@ -257,9 +257,9 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
  *      NULL on failure.
  *
  * Note:
- *      resize_cop_driver() calls MemRealloc(), which will call exit() if
+ *      resize_cop_driver() calls MemReallocSafe(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls MemAlloc(), which will call exit() if
+ *      get_code_blocks() calls MemAllocSafe(), which will call exit() if
  *          the allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -724,9 +724,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
  *      NULL on failure, which indicates an incorrectly formatted file.
  *
  * Notes:
- *      resize_cop_driver() calls MemRealloc(), which will call exit() if
+ *      resize_cop_driver() calls MemReallocSafe(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls MemAlloc(), which will call exit() if
+ *      get_code_blocks() calls MemAllocSafe(), which will call exit() if
  *          the allocation fails.
  */
 static cop_driver *parse_init_block( cop_driver *in_driver, const char **current, const char *base )
@@ -902,16 +902,16 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
  *      A NULL pointer on failure.
  *
  *  Notes:
- *      MemAlloc() calls exit() if the allocation fails.
- *      resize_cop_driver() uses MemRealloc(), which calls exit() if the
+ *      MemAllocSafe() calls exit() if the allocation fails.
+ *      resize_cop_driver() uses MemReallocSafe(), which calls exit() if the
  *          allocation fails.
- *      get_code_blocks() uses MemAlloc(), which calls exit() if the
+ *      get_code_blocks() uses MemAllocSafe(), which calls exit() if the
  *          allocation fails.
- *      get_p_buffers() uses MemAlloc(), which calls exit() if the
+ *      get_p_buffers() uses MemAllocSafe(), which calls exit() if the
  *          allocation fails; however, a NULL is returned for a file error; if
  *          a non-NULL value is returned, then p_buffer.buffer is non-NULL
  *          as well.
- *      parse_functions_block() uses MemAlloc(), which calls exit() if the
+ *      parse_functions_block() uses MemAllocSafe(), which calls exit() if the
  *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -960,7 +960,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* Initialize the out_driver. */
 
-    out_driver = MemAlloc( START_SIZE );
+    out_driver = MemAllocSafe( START_SIZE );
 
     out_driver->allocated_size = START_SIZE;
     out_driver->next_offset = sizeof( cop_driver );

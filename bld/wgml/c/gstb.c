@@ -174,7 +174,7 @@ void    scr_tb( void )
         while( *p != '\0' ) {               // tab stop start
             if( user_tabs.current == user_tabs.length ) {
                 user_tabs.length += TAB_COUNT;  // add space for new tab stops
-                user_tabs.tabs = MemRealloc( user_tabs.tabs, user_tabs.length *
+                user_tabs.tabs = MemReallocSafe( user_tabs.tabs, user_tabs.length *
                                             sizeof( tab_stop ) );
             }
             i = user_tabs.current;          // initialize (not done elsewhere)
