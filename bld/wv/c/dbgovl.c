@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,10 +57,10 @@ bool InitOvlState( void )
     if( OvlRemap == NULL ) {
         OvlSize = RemoteOvlSectSize();
         OvlCount = ( OvlSize - 3 ) * 8;
-        _Alloc( OvlRemap, OvlCount * sizeof( section_info ) );
+        OvlRemap = MemAlloc( OvlCount * sizeof( section_info ) );
         if( OvlRemap == NULL )
             return( false );
-        _Alloc( TblCache, OvlSize );
+        TblCache = MemAlloc( OvlSize );
         for( i = 0; i < OvlCount; ++i ) {
             if( RemoteOvlSectPos( i + 1, &where ) ) {
                 OvlRemap[i].first = where.start.mach.segment;
@@ -76,9 +77,9 @@ bool InitOvlState( void )
 
 void FiniOvlState( void )
 {
-    _Free( TblCache );
+    MemFree( TblCache );
     TblCache = NULL;
-    _Free( OvlRemap );
+    MemFree( OvlRemap );
     OvlRemap = NULL;
     OvlSize = OvlCount = 0;
 }

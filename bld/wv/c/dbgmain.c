@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,7 +278,7 @@ static void Profile( void )
 {
     if( InvokeFile != NULL ) {
         ProfileInvoke( InvokeFile );
-        _Free( InvokeFile );
+        MemFree( InvokeFile );
         InvokeFile = NULL;
         ProcInput();
     }
@@ -290,7 +290,7 @@ static void PushInitCmdList( void )
 
     if( InitCmdList != NULL ) {
         cmds = AllocCmdList( InitCmdList, strlen( InitCmdList ) );
-        _Free( InitCmdList );
+        MemFree( InitCmdList );
         InitCmdList = NULL;
         PushCmdList( cmds );
         FreeCmdList( cmds );
@@ -375,7 +375,7 @@ void DebugFini( void )
     FiniMADInfo();
     FiniTrace();
     RestoreHandlers();
-    _Free( TrapParms );
+    MemFree( TrapParms );
     FiniLiterals();
     FiniLocalInfo();
 }

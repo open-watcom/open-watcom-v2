@@ -55,7 +55,7 @@ void FreeRing( char_ring *p )
     while( p != NULL ) {
         old = p;
         p = p->next;
-        _Free( old );
+        MemFree( old );
     }
 }
 
@@ -85,7 +85,7 @@ void DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase 
             if( ucase && strnicmp( p->name, start, len ) == 0
               || !ucase && strncmp( p->name, start, len ) == 0 ) {
                 *owner = p->next;
-                _Free( p );
+                MemFree( p );
                 break;
             }
         }

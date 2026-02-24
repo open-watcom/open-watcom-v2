@@ -669,7 +669,7 @@ void DoStringConcat( void )
     ExprSP->ti.kind = TK_STRING;
     ExprSP->ti.modifier = TM_NONE;
     ExprSP->ti.size = left->ti.size + rite->ti.size;
-    _ChkAlloc( ExprSP->v.string.allocated, ExprSP->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    ExprSP->v.string.allocated = MemAllocSafeMsg( ExprSP->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
     LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
     LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->ti.size, false );
     ExprSP->v.string.loc.e[0].u.p = left->ti.size +

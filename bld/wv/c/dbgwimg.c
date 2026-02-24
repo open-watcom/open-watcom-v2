@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,16 +136,16 @@ static void     WNDCALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row ro
         } else {
             new_name = DupStr( ImgSymFileName( image, true ) );
             if( !SymBrowse( &new_name ) ) {
-                _Free( new_name );
+                MemFree( new_name );
             } else {
                 UnLoadImgSymInfo( image, true );
                 old_name = image->symfile_name;
                 image->symfile_name = new_name;
                 if( ReLoadImgSymInfo( image ) ) {
-                    _Free( old_name );
+                    MemFree( old_name );
                 } else {
                     image->symfile_name = old_name;
-                    _Free( new_name );
+                    MemFree( new_name );
                 }
             }
         }

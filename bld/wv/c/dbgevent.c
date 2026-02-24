@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,9 +70,9 @@ static void FreeOneEvent( event_record *junk )
     owner = FindOwner( junk );
     *owner = junk->next;
     FreeCmdList( junk->cmd );
-    _Free( junk->addr_string );
-    _Free( junk->cue );
-    _Free( junk );
+    MemFree( junk->addr_string );
+    MemFree( junk->cue );
+    MemFree( junk );
 }
 
 void RecordInit( void )
@@ -125,7 +125,7 @@ static void AddEvent( const char *start, size_t len, address ip )
     event_record        *new;
 
     owner = FindOwner( NULL );
-    _Alloc( new, sizeof( *new ) );
+    new = MemAlloc( sizeof( *new ) );
     new->addr_string = NULL;
     new->cue = NULL;
     new->next = NULL;

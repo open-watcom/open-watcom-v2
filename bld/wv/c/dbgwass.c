@@ -913,7 +913,7 @@ static void     WNDCALLBACK AsmRefresh( a_window wnd )
         new_size = MADDisasmDataSize();
         if( new_size > asw->ddsize ) {
             new = asw->cache_dd;
-            _Realloc( new, new_size );
+            new = MemRealloc( new, new_size );
             if( new == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
             } else {
@@ -956,7 +956,7 @@ static void     WNDCALLBACK AsmRefresh( a_window wnd )
 static  void    AsmFini( asm_window *asw )
 {
     AsmNewSource( asw, NULL );
-    _Free( asw->cache_dd );
+    MemFree( asw->cache_dd );
     MemFree( asw->ins );
     MemFree( asw );
 }
@@ -1076,7 +1076,7 @@ a_window DoWndAsmOpen( address addr, bool track )
 
     asw = MemAllocSafe( sizeof( asm_window ) );
     asw->ddsize = MADDisasmDataSize();
-    _Alloc( asw->cache_dd, asw->ddsize );
+    asw->cache_dd = MemAlloc( asw->ddsize );
     if( asw->cache_dd == NULL ) {
         MemFree( asw );
         return( NULL );

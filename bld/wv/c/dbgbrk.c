@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -679,15 +679,15 @@ void RemovePoint( brkp *bp )
             }
             RecordBreakEvent( bp, B_CLEAR );
             FreeCmdList( bp->cmds );
-            _Free( bp->condition );
-            _Free( bp->source_line );
-            _Free( bp->image_name );
-            _Free( bp->mod_name );
-            _Free( bp->sym_name );
+            MemFree( bp->condition );
+            MemFree( bp->source_line );
+            MemFree( bp->image_name );
+            MemFree( bp->mod_name );
+            MemFree( bp->sym_name );
             *owner = bp->next;
             DbgUpdate( UP_BREAK_CHANGE );
             FiniMappableAddr( &bp->loc );
-            _Free( bp );
+            MemFree( bp );
             break;
         }
     }
@@ -1080,14 +1080,14 @@ void SetPointAddr( brkp *bp, address addr )
 
     if( bp->status.b.unmapped )
         return;
-    _Free( bp->source_line );
+    MemFree( bp->source_line );
     bp->source_line = NULL;
     bp->loc.addr = addr;
-    _Free( bp->mod_name );
+    MemFree( bp->mod_name );
     bp->mod_name = NULL;
-    _Free( bp->image_name );
+    MemFree( bp->image_name );
     bp->image_name = NULL;
-    _Free( bp->sym_name );
+    MemFree( bp->sym_name );
     bp->sym_name = NULL;
     bp->cue_diff = 0;
     bp->addr_diff = 0;
@@ -1122,9 +1122,9 @@ void SetPointAddr( brkp *bp, address addr )
             ok = false;
         }
         if( !ok ) {
-            _Free( bp->image_name );
-            _Free( bp->mod_name );
-            _Free( bp->sym_name );
+            MemFree( bp->image_name );
+            MemFree( bp->mod_name );
+            MemFree( bp->sym_name );
             bp->image_name = NULL;
             bp->mod_name = NULL;
             bp->sym_name = NULL;
@@ -1194,7 +1194,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
 
     if( !IS_BP_EXECUTE( mth ) && !BrkCheckWatchLimit( loc, mth ) )
         return( NULL );
-    _Alloc( bp, sizeof( brkp ) );
+    bp = MemAlloc( sizeof( brkp ) );
     InitMappableAddr( &bp->loc );
     bp->mth = mth;
     bp->arch = SysConfig.arch;
@@ -1327,7 +1327,7 @@ void SetBPAutoDestruct( brkp *bp, int autodes )
 void SetBPCondition( brkp *bp, const char *condition )
 {
     if( bp->condition != NULL ) {
-        _Free( bp->condition );
+        MemFree( bp->condition );
     }
     if( condition == NULL || condition[0] == NULLCHAR ) {
         bp->condition = NULL;

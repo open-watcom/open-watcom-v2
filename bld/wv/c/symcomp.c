@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,7 +69,7 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
             continue;
         return( &curr->list );
     }
-    _Alloc( curr, sizeof( *curr ) );
+    curr = MemAlloc( sizeof( *curr ) );
     wf = 0;
     if( code )
         wf |= WF_CODE;
@@ -94,7 +94,7 @@ void SymCompFini( void )
     for( curr = SortedNames; curr != NULL; curr = next ) {
         next = curr->next;
         NameListFree( &curr->list );
-        _Free( curr );
+        MemFree( curr );
     }
     SortedNames = NULL;
 }

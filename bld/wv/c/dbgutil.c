@@ -402,7 +402,7 @@ void FreeCmdList( cmd_list *cmds )
         return;
     cmds->use--;
     if( cmds->use == 0 ) {
-        _Free( cmds );
+        MemFree( cmds );
     }
 }
 
@@ -464,14 +464,14 @@ void PopInpStack( void )
         return;
     if( old->lang != NULL ) {
         StrCopyDst( old->lang, buff );
-        _Free( old->lang );
+        MemFree( old->lang );
         old->lang = NULL; /* in case NewLang gets an error */
         NewLang( buff );
     }
     old->rtn( old->handle, INP_RTN_FINI );
     ReScan( old->scan );
     InpStack = old->link;
-    _Free( old );
+    MemFree( old );
 }
 
 
@@ -484,7 +484,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
     input_stack *new;
     char        *lang;
 
-    _Alloc( new, sizeof( input_stack ) );
+    new = MemAlloc( sizeof( input_stack ) );
     if( new == NULL ) {
         rtn( handle, INP_RTN_FINI ); /* clean up handle */
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );

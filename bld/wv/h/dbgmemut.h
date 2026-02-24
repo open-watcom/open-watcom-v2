@@ -42,11 +42,7 @@ extern void     MemInit( void );
 extern void     MemFini( void );
 #endif
 
-#define _ChkAlloc( res, size, type )    res = MemAllocSafeMsg( size, type )
-#define _Realloc( res, size )           res = MemRealloc( res, size )
-#define _Alloc( res, size )             res = MemAlloc( size )
 #define _AllocA( res, size )            res = walloca( size )
-#define _Free( ptr )                    MemFree( ptr )
 
 extern void SysSetMemLimit( void );
 

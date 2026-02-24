@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,7 @@ static void DlgListPopLine( void )
     DlgListTop->prev = NULL;
     DlgLines--;
     DbgUpdate( UP_DLG_WRITTEN );
-    _Free( temp );
+    MemFree( temp );
 }
 
 
@@ -198,7 +198,7 @@ void WndDlgFini( void )
     while( DlgListTop != NULL ) {
         old = DlgListTop;
         DlgListTop = DlgListTop->next;
-        _Free( old );
+        MemFree( old );
     }
 }
 

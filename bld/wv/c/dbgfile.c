@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -684,7 +684,7 @@ static void parsePathList( char_ring **owner, char *src )
             while( len > 0 && start[len - 1] == ' ' ) {
                 --len;
             }
-            _Alloc( new, sizeof( char_ring ) + len );
+            new = MemAlloc( sizeof( char_ring ) + len );
             if( new == NULL )
                 break;
             *owner = new;
@@ -707,14 +707,14 @@ static void parseEnvVar( char_ring **owner, const char *name )
     size = DUIEnvLkup( name, NULL, 0 );
     if( size > 0 ) {
         ++size;
-        _Alloc( buff, size );   /* allocate enough room for a very long PATH */
+        buff = MemAlloc( size );   /* allocate enough room for a very long PATH */
         if( buff == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
         }
         if( DUIEnvLkup( name, buff, size ) != 0 ) {
             parsePathList( owner, buff );
         }
-        _Free( buff );
+        MemFree( buff );
     }
 }
 

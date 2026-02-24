@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -251,13 +251,13 @@ void SetTokens( bool parse_tokens )
 
 void LangInit( void )
 {
-    _Alloc( ParseTable, PARSE_TABLE_INIT );
+    ParseTable = MemAlloc( PARSE_TABLE_INIT );
     ParseTableSize = PARSE_TABLE_INIT;
 }
 
 void LangFini( void )
 {
-    _Free( ParseTable );
+    MemFree( ParseTable );
     ParseTable = NULL;
     ParseTableSize = 0;
 }
@@ -275,7 +275,7 @@ static unsigned ReadSection( file_handle fh, unsigned off )
     last = off + len;
     if( last > ParseTableSize ) {
         new = ParseTable;
-        _Realloc( new, last );
+        new = MemRealloc( new, last );
         if( new == NULL )
             return( 0 );
         ParseTable = new;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,12 +58,12 @@ void AddAliasInfo( unsigned seg, unsigned alias )
         for( owner = &HeadAliasTbl; (curr = *owner) != NULL; owner = &curr->next ) {
             if( curr->seg == seg ) {
                 (*owner)->next = curr->next;
-                _Free( curr );
+                MemFree( curr );
                 return;
             }
         }
     } else {
-        _Alloc( curr, sizeof( alias_info ) );
+        curr = MemAlloc( sizeof( alias_info ) );
         if( curr != NULL ) {
             curr->seg = seg;
             curr->alias = alias;
@@ -78,7 +79,7 @@ void FreeAliasInfo( void )
 
     while( HeadAliasTbl != NULL ) {
         temp = HeadAliasTbl->next;
-        _Free( HeadAliasTbl );
+        MemFree( HeadAliasTbl );
         HeadAliasTbl = temp;
     }
 }

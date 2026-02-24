@@ -193,8 +193,8 @@ void PurgeUserNames( void )
     while( (sl = WmonSymLst) != NULL ) {
         WmonSymLst = sl->next;
         if( sl->s.info.ti.kind == TK_STRING )
-            _Free( sl->s.info.v.string );
-        _Free( sl );
+            MemFree( sl->s.info.v.string );
+        MemFree( sl );
     }
 }
 

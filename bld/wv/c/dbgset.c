@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,7 +272,7 @@ bool LangSetInit( void )
     static char InitialLang[] = { FE_LANG_CPP };
 
     LangInit();
-    _Alloc( Language, sizeof( InitialLang ) + 1 );
+    Language = MemAlloc( sizeof( InitialLang ) + 1 );
     if( Language == NULL )
         return( false );
     StrCopyDst( InitialLang, Language );
@@ -281,7 +281,7 @@ bool LangSetInit( void )
 
 void LangSetFini( void )
 {
-    _Free( Language );
+    MemFree( Language );
     LangFini();
 }
 
@@ -306,14 +306,14 @@ void NewLang( const char *lang )
     strlwr( new_lang );
     if( ( len != strlen( Language ) ) || memcmp( new_lang, Language, len ) != 0 ) {
         if( LangLoad( new_lang, len ) ) {
-            _Free( Language );
+            MemFree( Language );
             Language = new_lang;
             return;
         }
         LangLoad( Language, strlen( Language ) );
         Error( ERR_NONE, LIT_ENG( ERR_NO_LANG ) );
     }
-    _Free( new_lang );
+    MemFree( new_lang );
 }
 
 
@@ -498,7 +498,7 @@ void PendingToggles( void )
                 ReScan( curr->toggle );
                 DoOneToggle( wt );
                 *owner = curr->next;
-                _Free( curr );
+                MemFree( curr );
             } else {
                 owner = &curr->next;
             }
@@ -892,7 +892,7 @@ void SupportFini( void )
     while( curr != NULL ) {
         junk = curr;
         curr = curr->next;
-        _Free( junk );
+        MemFree( junk );
     }
     SupportRtns = NULL;
 }
