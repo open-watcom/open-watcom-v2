@@ -318,7 +318,7 @@ static bool WNDCALLBACK BrkWndEventProc( a_window wnd, gui_event gui_ev, void *p
         BrkInit( wnd );
         return( true );
     case GUI_DESTROY:
-        GUIMemFree( wndbreak );
+        MemFree( wndbreak );
         return( true );
     }
     return( false );
@@ -350,7 +350,7 @@ a_window WndBrkOpen( void )
     a_window            wnd;
     break_window        *brkw;
 
-    brkw = GUIMemAllocSafe( sizeof( *brkw ) );
+    brkw = MemAllocSafe( sizeof( *brkw ) );
     wnd = DbgWndCreate( LIT_DUI( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
     if( wnd != NULL )
         WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );

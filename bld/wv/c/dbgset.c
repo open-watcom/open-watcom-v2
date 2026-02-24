@@ -300,7 +300,7 @@ void NewLang( const char *lang )
     if( lang == NULL )
         return;
     len = strlen( lang );
-    new_lang = DbgMustAlloc( len + 1 );
+    new_lang = MemAllocSafe( len + 1 );
     memcpy( new_lang, lang, len );
     new_lang[len] = NULLCHAR;
     strlwr( new_lang );
@@ -415,7 +415,7 @@ static void PendingAdd( mad_window_toggles wt, dig_arch arch, const char *name, 
 
     for( owner = &PendToggleList[wt]; (new = *owner) != NULL; owner = &new->next )
         ;
-    new = DbgMustAlloc( sizeof( *new ) + len );
+    new = MemAllocSafe( sizeof( *new ) + len );
     *owner = new;
     new->next = NULL;
     new->arch = arch;
@@ -920,7 +920,7 @@ static void SupportSet( void )
     count = 0;
     while( ScanItemDelim( ";}", true, &start, &len ) ) {
         if( !IsInSupportNames( start, len ) ) {
-            new = DbgMustAlloc( sizeof( *new ) + len );
+            new = MemAllocSafe( sizeof( *new ) + len );
             new->next = SupportRtns;
             SupportRtns = new;
             memcpy( new->name, start, len );

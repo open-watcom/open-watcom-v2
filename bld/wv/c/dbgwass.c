@@ -213,13 +213,13 @@ static  void    AsmResize( a_window wnd )
     if( size <= 0 )
         size = 1;
     first = asw->ins[0].addr;
-    new_ins = GUIMemAlloc( size * sizeof( *new_ins ) );
+    new_ins = MemAlloc( size * sizeof( *new_ins ) );
     memset( new_ins, 0, size * sizeof( *new_ins ) );
     if( new_ins == NULL ) {
         WndClose( wnd );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
     }
-    GUIMemFree( asw->ins );
+    MemFree( asw->ins );
     asw->ins = new_ins;
     asw->ins_size = size;
     AsmSetFirst( wnd, first, asw->ins[0].line != 0 );
@@ -957,8 +957,8 @@ static  void    AsmFini( asm_window *asw )
 {
     AsmNewSource( asw, NULL );
     _Free( asw->cache_dd );
-    GUIMemFree( asw->ins );
-    GUIMemFree( asw );
+    MemFree( asw->ins );
+    MemFree( asw );
 }
 
 static  void    AsmInit( a_window wnd )
@@ -970,7 +970,7 @@ static  void    AsmInit( a_window wnd )
     size = WndRows( wnd );
     if( size <= 0 )
         size = 1;
-    asw->ins = GUIMemAlloc( size * sizeof( *asw->ins ) );
+    asw->ins = MemAlloc( size * sizeof( *asw->ins ) );
     memset( asw->ins, 0, size * sizeof( *asw->ins ) );
     asw->ins_size = size;
     if( asw->ins == NULL ) {
@@ -1074,11 +1074,11 @@ a_window DoWndAsmOpen( address addr, bool track )
     asm_window  *asw;
     a_window    wnd;
 
-    asw = GUIMemAllocSafe( sizeof( asm_window ) );
+    asw = MemAllocSafe( sizeof( asm_window ) );
     asw->ddsize = MADDisasmDataSize();
     _Alloc( asw->cache_dd, asw->ddsize );
     if( asw->cache_dd == NULL ) {
-        GUIMemFree( asw );
+        MemFree( asw );
         return( NULL );
     }
     asw->active = addr;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,11 +109,11 @@ static void     ModInit( a_window wnd )
 
     ModListFree( ModList( mod ) );
     ModListAddModules( ModList( mod ), mod->handle, mod->all_modules );
-    GUIMemFree( mod->info );
+    MemFree( mod->info );
     mod->info = NULL;
     size = sizeof( modinfo ) * ModListNumRows( ModList( mod ) );
     if( size != 0 ) {
-        mod->info = GUIMemAlloc( size );
+        mod->info = MemAlloc( size );
         memset( mod->info, 0, size );
     }
     ModCalcIndent( wnd );
@@ -301,8 +301,8 @@ static bool WNDCALLBACK ModWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         ModListFree( ModList( mod ) );
-        GUIMemFree( mod->info );
-        GUIMemFree( mod );
+        MemFree( mod->info );
+        MemFree( mod );
         return( true );
     }
     return( false );
@@ -338,7 +338,7 @@ a_window DoWndModOpen( mod_handle handle )
 {
     mod_window  *mod;
 
-    mod = GUIMemAllocSafe( sizeof( mod_window ) );
+    mod = MemAllocSafe( sizeof( mod_window ) );
     mod->handle = handle;
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }

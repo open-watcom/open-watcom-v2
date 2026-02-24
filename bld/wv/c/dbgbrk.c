@@ -1440,7 +1440,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_MAPADDRESS:
             mapaddress = true;
             ScanItem( true, &start, &len );
-            DbgFree( image_name );
+            MemFree( image_name );
             image_name = DupStrLen( start, len );
             loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
@@ -1450,13 +1450,13 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
         case B_SYMADDRESS:
             symaddress = true;
             ScanItem( true, &start, &len );
-            DbgFree( image_name );
+            MemFree( image_name );
             image_name = DupStrLen( start, len );
             ScanItem( true, &start, &len );
-            DbgFree( mod_name );
+            MemFree( mod_name );
             mod_name = DupStrLen( start, len );
             ScanItem( true, &start, &len );
-            DbgFree( sym_name );
+            MemFree( sym_name );
             sym_name = DupStrLen( start, len );
             cue_diff = ReqLongExpr();
             addr_diff = ReqLongExpr();
@@ -1512,9 +1512,9 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
     }
     bp = AddPoint( loc, mth, unmapped );
     if( bp == NULL ) {
-        DbgFree( image_name );
-        DbgFree( mod_name );
-        DbgFree( sym_name );
+        MemFree( image_name );
+        MemFree( mod_name );
+        MemFree( sym_name );
         return( NULL );
     }
     bp->status.b.unmapped = unmapped;

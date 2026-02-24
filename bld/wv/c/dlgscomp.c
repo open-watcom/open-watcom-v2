@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,6 +115,6 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
         GUISetText( gui, id, TxtBuff );
     }
     GUISetFocus( gui, id );
-    GUIMemFree( savebuff );
-    GUIMemFree( match );
+    MemFree( savebuff );
+    MemFree( match );
 }

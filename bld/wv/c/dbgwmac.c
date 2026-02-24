@@ -615,7 +615,7 @@ static bool WNDCALLBACK MacWndEventProc( a_window wnd, gui_event gui_ev, void *p
         MacRefresh( wnd );
         WndMacroList = SortLinkedList( WndMacroList,
                     offsetof( wnd_macro, link ),
-                    MacCompare, DbgAlloc, DbgFree );
+                    MacCompare, MemAlloc, MemFree );
         MacReSize( wnd );
         memset( wndmac, 0, sizeof( *wndmac ) );
         return( true );
@@ -623,7 +623,7 @@ static bool WNDCALLBACK MacWndEventProc( a_window wnd, gui_event gui_ev, void *p
         MacReSize( wnd );
         return( true );
     case GUI_DESTROY:
-        GUIMemFree( wndmac );
+        MemFree( wndmac );
         return( true );
     }
     return( false );
@@ -654,6 +654,6 @@ a_window WndMacOpen( void )
 {
     mac_window  *wndmac;
 
-    wndmac = GUIMemAllocSafe( sizeof( *wndmac ) );
+    wndmac = MemAllocSafe( sizeof( *wndmac ) );
     return( DbgWndCreateTitle( LIT_DUI( WindowAccelerator ), &MacInfo, WND_MACRO, wndmac, &AclIcon, TITLE_SIZE, true ) );
 }

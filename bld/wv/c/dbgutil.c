@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -384,7 +384,7 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 {
     cmd_list *cmds;
 
-    cmds = DbgMustAlloc( sizeof( cmd_list ) + len );
+    cmds = MemAllocSafe( sizeof( cmd_list ) + len );
     cmds->use = 1;
     cmds->buff[len] = NULLCHAR;
     memcpy( cmds->buff, start, len );

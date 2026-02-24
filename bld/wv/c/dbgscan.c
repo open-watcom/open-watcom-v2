@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool cle
     if( radixstr == NULL || SYM_NAME_LEN( radixstr->string ) != len ) {
         if( clear )
             return;
-        radixstr = DbgMustAlloc( sizeof( radix_str ) + len );
+        radixstr = MemAllocSafe( sizeof( radix_str ) + len );
         memcpy( SYM_NAME_NAME( radixstr->string ), str, len );
         SET_SYM_NAME_LEN( radixstr->string, len );
         radixstr->next = *owner;

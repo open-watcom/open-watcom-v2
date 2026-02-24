@@ -125,8 +125,8 @@ static bool RegResize( a_window wnd )
         reg->count++;
     }
 
-    GUIMemFree( reg->info );
-    reg->info = GUIMemAllocSafe( reg->count * sizeof( *reg->info ) );
+    MemFree( reg->info );
+    reg->info = MemAllocSafe( reg->count * sizeof( *reg->info ) );
     space = WndAvgCharX( wnd );
 
     max_extent = 0;
@@ -167,8 +167,8 @@ static bool RegResize( a_window wnd )
 
     // calculate the indents
 
-    GUIMemFree( reg->indents );
-    reg->indents = GUIMemAllocSafe( reg->count * sizeof( *reg->indents ) );
+    MemFree( reg->indents );
+    reg->indents = MemAllocSafe( reg->count * sizeof( *reg->indents ) );
 
     // For each column
     for( i = 0; i < reg->up; ++i ) {
@@ -463,9 +463,9 @@ static bool WNDCALLBACK RegWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         WndDeleteToggles( reg->popup, ArraySize( RegMenu ), reg->num_toggles );
-        GUIMemFree( reg->info );
-        GUIMemFree( reg->indents );
-        GUIMemFree( reg );
+        MemFree( reg->info );
+        MemFree( reg->indents );
+        MemFree( reg );
         return( true );
     }
     return( false );
@@ -503,7 +503,7 @@ a_window WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource 
     reg_window  *reg;
     a_window    wnd;
 
-    reg = GUIMemAllocSafe( sizeof( reg_window ) );
+    reg = MemAllocSafe( sizeof( reg_window ) );
     reg->kind = kind;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndclass, reg, icon );
     return( wnd );

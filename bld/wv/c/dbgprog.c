@@ -366,7 +366,7 @@ bool UnMapAddress( mappable_addr *loc, image_entry *image )
     }
     if( image == NULL )
         return( false );
-    DbgFree( loc->image_name );
+    MemFree( loc->image_name );
     loc->image_name = DupStr( image->image_name );
     for( map = image->map_list; map != NULL; map = map->link ) {
         if( map->real_addr.segment == loc->addr.mach.segment ) {
@@ -679,7 +679,7 @@ remap_return ReMapImageAddress( mappable_addr *loc, image_entry *image )
             loc->addr.mach.segment = map->real_addr.segment;
             loc->addr.mach.offset = loc->addr.mach.offset + map->real_addr.offset;
             AddrSection( &loc->addr, OVL_MAP_CURR );
-            DbgFree( loc->image_name );
+            MemFree( loc->image_name );
             loc->image_name = NULL;
             return( REMAP_REMAPPED );
         }
@@ -1025,7 +1025,7 @@ void FiniMappableAddr( mappable_addr *loc )
 /*****************************************/
 {
     if( loc->image_name != NULL ) {
-        DbgFree( loc->image_name );
+        MemFree( loc->image_name );
     }
 }
 
@@ -1129,7 +1129,7 @@ static void DoResNew( bool have_parms, const char *cmd,
     char                *new;
 
     TraceKill();
-    new = DbgMustAlloc( clen + plen + 2 );
+    new = MemAllocSafe( clen + plen + 2 );
     ReleaseProgOvlay( false );
     BPsUnHit();
     memcpy( new, cmd, clen );
@@ -1218,7 +1218,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     _Alloc( buff, bsize );
     if( buff == NULL ) {
         bsize = 128;
-        buff = DbgMustAlloc( bsize );
+        buff = MemAllocSafe( bsize );
     }
     copylen = SizeMinusDebugInfo( fh_lcl, strip );
     DUICopySize( cookie, copylen );
@@ -1350,7 +1350,7 @@ static void ProgNew( void )
                     ++start;
                     --len;
                 }
-                new = DbgMustAlloc( start - symfile + 1 );
+                new = MemAllocSafe( start - symfile + 1 );
                 SymFileName = new;
                 memcpy( new, symfile, start - symfile );
                 new[start - symfile] = NULLCHAR;

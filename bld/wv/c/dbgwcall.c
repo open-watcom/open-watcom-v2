@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,7 +201,7 @@ static void CallClose( a_window wnd )
     call_window *call = WndCall( wnd );
 
     FiniTraceBack( &call->tb );
-    GUIMemFree( call );
+    MemFree( call );
 }
 
 
@@ -252,6 +252,6 @@ a_window WndCallOpen( void )
 {
     call_window *call;
 
-    call = GUIMemAllocSafe( sizeof( call_window ) );
+    call = MemAllocSafe( sizeof( call_window ) );
     return( DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon ) );
 }

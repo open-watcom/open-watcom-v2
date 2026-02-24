@@ -174,7 +174,7 @@ static bool WNDCALLBACK GlobWndEventProc( a_window wnd, gui_event gui_ev, void *
         return( true );
     case GUI_DESTROY :
         NameListFree( NameList( glob ) );
-        GUIMemFree( glob );
+        MemFree( glob );
         return( true );
     }
     return( false );
@@ -210,7 +210,7 @@ a_window DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
-    glob = GUIMemAllocSafe( sizeof( glob_window ) );
+    glob = MemAllocSafe( sizeof( glob_window ) );
     glob->mod = mod;
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }

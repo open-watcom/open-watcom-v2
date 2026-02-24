@@ -284,7 +284,7 @@ static bool WNDCALLBACK FuncWndEventProc( a_window wnd, gui_event gui_ev, void *
         return( true );
     case GUI_DESTROY :
         NameListFree( NameList( func ) );
-        GUIMemFree( func );
+        MemFree( func );
         return( true );
     }
     return( false );
@@ -322,7 +322,7 @@ a_window DoWndFuncOpen( bool is_global, mod_handle mod )
     wnd_class_wv    wndclass;
     const char      *title;
 
-    func = GUIMemAllocSafe( sizeof( func_window ) );
+    func = MemAllocSafe( sizeof( func_window ) );
     func->mod = mod;
     if( is_global ) {
         wndclass = WND_GBLFUNCTIONS;

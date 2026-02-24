@@ -69,7 +69,7 @@ static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, rtn_func *rtn
         ok = rtn( LIT_ENG( Empty ), value );
     } else {
         ok = rtn( str, value );
-        GUIMemFree( str );
+        MemFree( str );
     }
     return( ok );
 }

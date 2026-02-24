@@ -161,7 +161,7 @@ static void DoCallSet( void )
         char *new_return;
 
         i = ScanPos() - start;
-        new_return = DbgMustAlloc( i + 1 );
+        new_return = MemAllocSafe( i + 1 );
         memcpy( new_return, start, i );
         new_return[i] = NULLCHAR;
         _Free( DefReturn );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -98,7 +98,7 @@ static void IOAddNewAddr( a_window wnd, address *addr, int type )
 
     row = io->num_rows;
     io->num_rows++;
-    io->list = GUIMemReallocSafe( io->list, io->num_rows * sizeof( io_location ) );
+    io->list = MemReallocSafe( io->list, io->num_rows * sizeof( io_location ) );
     curr = &io->list[row];
     curr->type = PIECE_TYPE( type );
     curr->addr = *addr;
@@ -274,7 +274,7 @@ void InitIOWindow( void )
     if( IOData.num_types == 0 ) {
         return;
     }
-    IOTypeMenu = GUIMemAllocSafe( IOData.num_types * sizeof( *IOTypeMenu ) );
+    IOTypeMenu = MemAllocSafe( IOData.num_types * sizeof( *IOTypeMenu ) );
     for( i = 0; i < IOData.num_types; ++i ) {
         IOTypeMenu[i].id = MENU_IO_FIRST_TYPE + i;
         IOTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
@@ -293,7 +293,7 @@ void InitIOWindow( void )
 
 void FiniIOWindow( void )
 {
-    GUIMemFree( IOTypeMenu );
+    MemFree( IOTypeMenu );
     MemFiniTypes( &IOData );
 }
 
@@ -310,8 +310,8 @@ static bool WNDCALLBACK IOWndEventProc( a_window wnd, gui_event gui_ev, void *pa
         }
         return( true );
     case GUI_DESTROY :
-        GUIMemFree( io->list );
-        GUIMemFree( io );
+        MemFree( io->list );
+        MemFree( io );
         return( true );
     }
     return( false );
@@ -353,8 +353,8 @@ a_window DoWndIOOpen( address *addr, mad_type_handle mth )
 
     if( IOData.num_types == 0 )
         return( NULL );
-    io = GUIMemAllocSafe( sizeof( io_window ) );
-    io->list = GUIMemAllocSafe( sizeof( io_location ) );
+    io = MemAllocSafe( sizeof( io_window ) );
+    io->list = MemAllocSafe( sizeof( io_location ) );
     io->num_rows = 1;
     io->list->addr = *addr;
     io->list->type = PIECE_TYPE( MENU_IO_FIRST_TYPE );
@@ -378,7 +378,7 @@ a_window WndIOOpen( void )
     io_window   *io;
     a_window    wnd;
 
-    io = GUIMemAllocSafe( sizeof( io_window ) );
+    io = MemAllocSafe( sizeof( io_window ) );
     io->list = NULL;
     io->num_rows = 0;
     wnd = DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );

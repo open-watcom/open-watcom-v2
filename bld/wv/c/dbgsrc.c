@@ -97,7 +97,7 @@ void InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase 
     char_ring *path;
 
     if( len != 0 ) {
-        path = DbgMustAlloc( sizeof( char_ring ) + len );
+        path = MemAllocSafe( sizeof( char_ring ) + len );
         memcpy( path->name, start, len );
         path->name[len] = NULLCHAR;
         if( ucase ) {

@@ -218,8 +218,8 @@ static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piec
         break;
     case VAR_PIECE_VALUE:
         if( !VarExpandable( class ) ) {
-            char *value = DbgAlloc( TXT_LEN );
-            char *title = DbgAlloc( TXT_LEN );
+            char *value = MemAlloc( TXT_LEN );
+            char *title = MemAlloc( TXT_LEN );
             old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, false );
@@ -234,8 +234,8 @@ static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piec
                 VarDoAssign( &var->i, v, value );
             NewCurrRadix( old_radix );
             WndRowDirty( wnd, row );
-            DbgFree( value );
-            DbgFree( title );
+            MemFree( value );
+            MemFree( title );
         }
         break;
     }
@@ -551,7 +551,7 @@ static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
         VarBuildName( &var->i, v, false );
         name = DupStr( TxtBuff );
         WndInspectExprSP( name );
-        GUIMemFree( name );
+        MemFree( name );
         break;
     case MENU_VAR_WATCH:
         VarAddWatch( &var->i, v );
@@ -741,7 +741,7 @@ static void VarSaveWndToScope( a_window wnd )
 
     wnd_data = var->i.s->wnd_data;
     if( wnd_data == NULL ) {
-        wnd_data = GUIMemAllocSafe( sizeof( var_wnd_data ) );
+        wnd_data = MemAllocSafe( sizeof( var_wnd_data ) );
         var->i.s->wnd_data = wnd_data;
     }
     wnd_data->scroll = WndTop( wnd );
@@ -963,7 +963,7 @@ static bool WNDCALLBACK VarWndEventProc( a_window wnd, gui_event gui_ev, void *p
         return( true );
     case GUI_DESTROY :
         VarFiniInfo( &var->i );
-        GUIMemFree( var );
+        MemFree( var );
         return( true );
     }
     return( false );
@@ -1074,7 +1074,7 @@ static  a_window        DoWndVarOpen( var_type vtype )
     var_window  *var;
     a_window    wnd;
 
-    var = GUIMemAllocSafe( sizeof( var_window ) );
+    var = MemAllocSafe( sizeof( var_window ) );
     var->vtype = vtype;
     wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
     if( wnd != NULL )

@@ -35,17 +35,18 @@
 #define __DBGMEMUT_INCLUDED
 
 #include "walloca.h"
+#include "memfuncs.h"
 
 #ifdef __NOUI__
 extern void     MemInit( void );
 extern void     MemFini( void );
 #endif
 
-#define _ChkAlloc( res, size, type )    res = DbgChkAlloc( size, type )
-#define _Realloc( res, size )           res = DbgRealloc( res, size )
-#define _Alloc( res, size )             res = DbgAlloc( size )
+#define _ChkAlloc( res, size, type )    res = MemAllocSafeMsg( size, type )
+#define _Realloc( res, size )           res = MemRealloc( res, size )
+#define _Alloc( res, size )             res = MemAlloc( size )
 #define _AllocA( res, size )            res = walloca( size )
-#define _Free( ptr )                    DbgFree( ptr )
+#define _Free( ptr )                    MemFree( ptr )
 
 extern void SysSetMemLimit( void );
 

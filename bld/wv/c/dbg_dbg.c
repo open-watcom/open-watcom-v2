@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,7 +233,7 @@ bool CreateSym( lookup_item *li, dig_type_info *ti )
     default:
         return( false );
     }
-    new = DbgMustAlloc( sizeof( *new ) + li->name.len );
+    new = MemAllocSafe( sizeof( *new ) + li->name.len );
     new->next = WmonSymLst;
     WmonSymLst = new;
     new->s.info.ti = new_ti;

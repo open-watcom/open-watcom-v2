@@ -72,8 +72,8 @@ void    FiniToolBar( void )
     int         i;
 
     for( i = 0; i < ArraySize( ToolBar ); ++i ) {
-        GUIMemFree( (void *)ToolBar[i].hinttext );
-        GUIMemFree( (void *)ToolBar[i].tip );
+        MemFree( (void *)ToolBar[i].hinttext );
+        MemFree( (void *)ToolBar[i].tip );
     }
 }
 

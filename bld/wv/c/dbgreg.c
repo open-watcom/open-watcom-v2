@@ -467,7 +467,7 @@ machine_state *AllocMachState( void )
     unsigned        state_size;
 
     state_size = sizeof( machine_state ) + CurrRegSize;
-    state = DbgMustAlloc( state_size );
+    state = MemAllocSafe( state_size );
     memset( state, 0, sizeof( *state ) );
     if( OvlSize != 0 ) {
         _Alloc( state->ovl, OvlSize );

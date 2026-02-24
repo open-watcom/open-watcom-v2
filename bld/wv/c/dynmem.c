@@ -51,7 +51,6 @@
 #include "dip.h"
 #include "strutil.h"
 #include "dbginit.h"
-#include "memfuncs.h"
 #ifndef __NOUI__
     #include "aui.h"
     #include "guimem.h"
@@ -101,7 +100,7 @@ extern int _d16ReserveExt( int );
 
 #ifdef TRMEM
 static FILE             *TrackFile = NULL;   /* stream to put output on */
-static _trmem_hdl       DbgMemHandle;
+static _trmem_hdl       TrHdl = _TRMEM_HDL_NONE;
 #endif
 
 #ifdef __WATCOMC__
@@ -126,67 +125,6 @@ int __saveregs  xmemneed( size_t size )
 /*
  * Dynamic Memory management routines
  */
-
-TRMEMAPI( DbgAlloc )
-void *DbgAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( DbgMustAlloc )
-void *DbgMustAlloc( size_t size )
-{
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), DbgMemHandle );
-#else
-    ptr = malloc( size );
-#endif
-    if( ptr == NULL ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-    }
-    return( ptr );
-}
-
-TRMEMAPI( DbgRealloc )
-void *DbgRealloc( void *chunk, size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_realloc( chunk, size, _TRMEM_WHO( 3 ), DbgMemHandle ) );
-#else
-    return( realloc( chunk, size ) );
-#endif
-}
-
-TRMEMAPI( DbgFree )
-void DbgFree( void *ptr )
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 4 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-TRMEMAPI( DbgChkAlloc )
-void *DbgChkAlloc( size_t size, char *error )
-{
-    void *ret;
-
-#ifdef TRMEM
-    ret = _trmem_alloc( size, _TRMEM_WHO( 5 ), DbgMemHandle );
-#else
-    ret = malloc( size );
-#endif
-    if( ret == NULL )
-        Error( ERR_NONE, error );
-    return( ret );
-}
 
 #if defined( __DOS__ ) || defined( __NOUI__ )
 
@@ -214,7 +152,7 @@ static void MemExpand( void )
         if( size < MAX_BLOCK )
             alloced = size;
 #ifdef TRMEM
-        p = _trmem_alloc( alloced, _TRMEM_WHO( 6 ), DbgMemHandle );
+        p = _trmem_alloc( alloced, _TRMEM_WHO( 6 ), TrHdl );
 #else
         p = malloc( alloced );
 #endif
@@ -226,7 +164,7 @@ static void MemExpand( void )
     while( link != NULL ) {
         p = *link;
 #ifdef TRMEM
-        _trmem_free( link, _TRMEM_WHO( 7 ), DbgMemHandle );
+        _trmem_free( link, _TRMEM_WHO( 7 ), TrHdl );
 #else
         free( link );
 #endif
@@ -270,21 +208,21 @@ static void DbgMemPrintLine( void *parm, const char *buff, size_t len )
 static unsigned DbgMemPrtList( void )
 /***********************************/
 {
-    return( _trmem_prt_list( DbgMemHandle ) );
+    return( _trmem_prt_list( TrHdl ) );
 }
 
 static void DbgMemOpen( void )
 /****************************/
 {
-    DbgMemHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, DbgMemPrintLine, _TRMEM_DEF );
 }
 
 static void DbgMemClose( void )
 /*****************************/
 {
-    _trmem_prt_list( DbgMemHandle );
-    _trmem_close( DbgMemHandle );
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
 }
 
 static void MemTrackInit( void )
@@ -370,8 +308,6 @@ void MemFini( void )
 
 #ifdef TRMEM
 
-static int  GUIMemOpened = 0;
-
 static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 /*********************************************************************/
 {
@@ -395,7 +331,7 @@ void GUIMemPrtUsage( void )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_prt_usage( DbgMemHandle );
+    _trmem_prt_usage( TrHdl );
 #endif
 }
 
@@ -415,16 +351,15 @@ void GUIMemOpen( void )
 #ifdef TRMEM
     char * tmpdir;
 
-    if( !GUIMemOpened ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         TrackFile = stderr;
-        DbgMemHandle = _trmem_open( malloc, free, realloc, strdup,
+        TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, GUIMemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
             TrackFile = fopen( tmpdir, "w" );
         }
-        GUIMemOpened = 1;
     }
 #endif
 }
@@ -433,66 +368,14 @@ void GUIMemClose( void )
 /**********************/
 {
 #ifdef TRMEM
-    _trmem_prt_list( DbgMemHandle );
-    _trmem_close( DbgMemHandle );
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
     if( TrackFile != stderr ) {
         fclose( TrackFile );
         TrackFile = NULL;
     }
 #endif
 }
-
-/*
- * Alloc functions
- */
-
-TRMEMAPI( GUIMemAlloc )
-void *GUIMemAlloc( size_t size )
-/******************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( GUIMemAllocSafe )
-void *GUIMemAllocSafe( size_t size )
-/*******************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-#ifndef __NOUI__
-#ifdef GUI_IS_GUI
-
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
-/*******************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 8 ), DbgMemHandle ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-#endif
-#endif
 
 #ifdef GUI_IS_GUI
 #else   /* GUI_IS_GUI */
@@ -501,77 +384,18 @@ TRMEMAPI( uifaralloc )
 LP_VOID UIAPI uifaralloc( size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 12 ), DbgMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 12 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
 }
-
-#endif  /* ! GUI_IS_GUI */
-
-/*
- * Strdup functions
- */
-
-TRMEMAPI( GUIMemStrdup )
-char *GUIMemStrdup( const char *str )
-/***********************************/
-{
-#ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 15 ), DbgMemHandle ) );
-#else
-    return( strdup( str ) );
-#endif
-}
-
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
-/********************************/
-{
-#ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 15 ), DbgMemHandle ) );
-#else
-    return( strdup( str ) );
-#endif
-}
-
-/*
- * Free functions
- */
-
-TRMEMAPI( GUIMemFree )
-void GUIMemFree( void *ptr )
-/**************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-TRMEMAPI( MemFree )
-void MemFree( void *ptr )
-/***********************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 16 ), DbgMemHandle );
-#else
-    free( ptr );
-#endif
-}
-
-#ifndef __NOUI__
-#endif
-
-#ifdef GUI_IS_GUI
-#else   /* GUI_IS_GUI */
 
 TRMEMAPI( uifarfree )
 void UIAPI uifarfree( LP_VOID ptr )
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 20 ), DbgMemHandle );
+        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 17 ), TrHdl );
 #else
         free( MEM_NEAR_PTR( ptr ) );
 #endif
@@ -581,40 +405,110 @@ void UIAPI uifarfree( LP_VOID ptr )
 #endif  /* ! GUI_IS_GUI */
 
 
+#endif  /* ! __NOUI__ */
+
+
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
+//        exit( 1 );
+    }
+    return( ptr );
+}
+
+/*
+ * Alloc functions
+ */
+
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 9 ), TrHdl ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 11 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
+TRMEMAPI( MemAllocSafeMsg )
+void *MemAllocSafeMsg( size_t size, char *error )
+{
+    void *ret;
+
+#ifdef TRMEM
+    ret = _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl );
+#else
+    ret = malloc( size );
+#endif
+    if( ret == NULL )
+        Error( ERR_NONE, error );
+    return( ret );
+}
+
+/*
+ * Strdup functions
+ */
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 14 ), TrHdl ) );
+#else
+    return( strdup( str ) );
+#endif
+}
+
+/*
+ * Free functions
+ */
+
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
+/***********************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 16 ), TrHdl );
+#else
+    free( ptr );
+#endif
+}
+
 /*
  * Realloc functions
  */
 
-TRMEMAPI( GUIMemRealloc )
-void *GUIMemRealloc( void *ptr, size_t size )
-/*******************************************/
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 23 ), DbgMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 19 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif
 }
 
-TRMEMAPI( GUIMemReallocSafe )
-void *GUIMemReallocSafe( void *chunk, size_t size )
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *ptr, size_t size )
 {
-    chunk = GUIMemRealloc( chunk, size );
-    if( chunk == NULL ) {
-        Say( "No memory for window\n" );
-        exit( 1 );
-    }
-    return( chunk );
+#ifdef TRMEM
+    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 21 ), TrHdl ) ) );
+#else
+    return( check_nomem( realloc( ptr, size ) ) );
+#endif
 }
-
-#endif  /* ! __NOUI__ */
