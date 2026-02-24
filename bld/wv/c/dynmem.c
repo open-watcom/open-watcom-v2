@@ -59,6 +59,7 @@
 #ifndef __NOUI__
     #include "guimem.h"
 #endif
+#include "roundmac.h"
 #include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -71,10 +72,6 @@
 #else
 #define TRMEMAPI(x)
 #endif
-
-#define _60kB   (60UL * 1024UL)
-#define _1MB    (1024UL * 1024UL)
-#define _4MB    (4UL * 1024UL * 1024UL)
 
 #ifdef __DOS__
     #define MEM_NEAR_PTR(x)     (void *)_FP_OFF( x )
@@ -130,7 +127,7 @@ int __saveregs  xmemneed( size_t size )
 #if defined( __DOS__ ) || defined( __NOUI__ )
 
 #if defined( _M_I86 )
-    #define MAX_BLOCK   _60kB
+    #define MAX_BLOCK   (_64K - _4K) /* 60 kB */
 #elif defined( __DOS__ )
     #define MAX_BLOCK   _4MB
 #else
