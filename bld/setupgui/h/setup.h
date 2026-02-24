@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,17 +103,6 @@
 #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
 #define SEEK_POSBACK(p)     (-(long)(p))
-
-typedef enum {
-    CFE_NOERROR,
-    CFE_NOMEMORY,
-    CFE_CANTOPENSRC,
-    CFE_CANTOPENDST,
-    CFE_ERROR,
-    CFE_ABORT,
-    CFE_BAD_CRC,
-    CFE_DSTREADONLY
-} COPYFILE_ERROR;
 
 #if defined( __NT__ )
 enum {

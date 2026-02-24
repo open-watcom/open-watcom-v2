@@ -31,6 +31,17 @@
 
 
 typedef enum {
+    CFE_NOERROR,
+    CFE_NOMEMORY,
+    CFE_CANTOPENSRC,
+    CFE_CANTOPENDST,
+    CFE_ERROR,
+    CFE_ABORT,
+    CFE_BAD_CRC,
+    CFE_DSTREADONLY
+} COPYFILE_ERROR;
+
+typedef enum {
     COPY_NORMAL     = 0x00,
     COPY_APPEND     = 0x01,
     COPY_TEXT_CRLF  = 0x02
