@@ -148,17 +148,6 @@ void *MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( GUIMemAlloc )
-void *GUIMemAlloc( size_t size )
-/******************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 /*******************************/
@@ -185,35 +174,13 @@ char *MemStrdup( const char *str )
 #endif
 }
 
-TRMEMAPI( GUIMemStrdup )
-char *GUIMemStrdup( const char *str )
-/***********************************/
-{
-#ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 4 ), TrHdl ) );
-#else
-    return( strdup( str ) );
-#endif
-}
-
 /*
  * Free functions
  */
 
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
-/**************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
-#else
-    free( ptr );
-#endif
-}
-
-TRMEMAPI( GUIMemFree )
-void GUIMemFree( void *ptr )
-/**************************/
+/***********************/
 {
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
@@ -228,18 +195,7 @@ void GUIMemFree( void *ptr )
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
-/*******************************************/
-{
-#ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 7 ), TrHdl ) );
-#else
-    return( realloc( ptr, size ) );
-#endif
-}
-
-TRMEMAPI( GUIMemRealloc )
-void *GUIMemRealloc( void *ptr, size_t size )
-/*******************************************/
+/****************************************/
 {
 #ifdef TRMEM
     return( _trmem_realloc( ptr, size, _TRMEM_WHO( 7 ), TrHdl ) );

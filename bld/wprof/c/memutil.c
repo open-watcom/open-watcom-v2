@@ -174,15 +174,6 @@ static void *doAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( GUIMemAlloc )
-void    *GUIMemAlloc( size_t size )
-{
-#ifdef TRMEM
-    return( doAlloc( size, _TRMEM_WHO( 1 ) ) );
-#else
-    return( doAlloc( size ) );
-#endif
-}
 TRMEMAPI( MemAlloc )
 void    *MemAlloc( size_t size )
 {
@@ -193,16 +184,6 @@ void    *MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( GUIMemAllocSafe )
-void *GUIMemAllocSafe( size_t size )
-/***************************/
-{
-#ifdef TRMEM
-    return( check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) ) );
-#else
-    return( check_nomem( doAlloc( size ) ) );
-#endif
-}
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 /***************************/
@@ -244,16 +225,6 @@ static void *doStrdup( const char *str )
     return( ptr );
 }
 
-TRMEMAPI( GUIMemStrdup )
-char *GUIMemStrdup( const char *str )
-/********************************/
-{
-#ifdef TRMEM
-    return( doStrdup( str, _TRMEM_WHO( 7 ) ) );
-#else
-    return( doStrdup( str ) );
-#endif
-}
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
 /********************************/
@@ -265,16 +236,6 @@ char *MemStrdup( const char *str )
 #endif
 }
 
-TRMEMAPI( GUIMemStrdupSafe )
-char *GUIMemStrdupSafe( const char *str )
-/********************************/
-{
-#ifdef TRMEM
-    return( check_nomem( doStrdup( str, _TRMEM_WHO( 7 ) ) ) );
-#else
-    return( check_nomem( doStrdup( str ) ) );
-#endif
-}
 TRMEMAPI( MemStrdupSafe )
 char *MemStrdupSafe( const char *str )
 /********************************/
@@ -290,17 +251,6 @@ char *MemStrdupSafe( const char *str )
  *  Free functions
  */
 
-TRMEMAPI( GUIMemFree )
-void GUIMemFree( void *ptr )
-/************************/
-{
-#ifdef TRMEM
-    profMemCheck( "MemFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
-#else
-    free( ptr );
-#endif
-}
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /************************/
@@ -341,16 +291,6 @@ static void *doRealloc( void *ptr, size_t new_size )
     return( new );
 }
 
-TRMEMAPI( GUIMemRealloc )
-void *GUIMemRealloc( void *ptr, size_t new_size )
-/*********************************************/
-{
-#ifdef TRMEM
-    return( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) );
-#else
-    return( doRealloc( ptr, new_size ) );
-#endif
-}
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t new_size )
 /*********************************************/
@@ -359,17 +299,6 @@ void *MemRealloc( void *ptr, size_t new_size )
     return( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) );
 #else
     return( doRealloc( ptr, new_size ) );
-#endif
-}
-
-TRMEMAPI( GUIMemReallocSafe )
-void *GUIMemReallocSafe( void *ptr, size_t new_size )
-/***************************************************/
-{
-#ifdef TRMEM
-    return( check_nomem( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) ) );
-#else
-    return( check_nomem( doRealloc( ptr, new_size ) ) );
 #endif
 }
 
