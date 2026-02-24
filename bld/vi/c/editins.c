@@ -1125,7 +1125,7 @@ void PushMode( void )
 {
     mode        *cmode;
 
-    cmode = MemAlloc( sizeof( mode ) );
+    cmode = MemAllocSafe( sizeof( mode ) );
     cmode->prev = modeTail;
     modeTail = cmode;
 

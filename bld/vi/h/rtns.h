@@ -591,13 +591,7 @@ void    MatchInit( void );
 void    MatchFini( void );
 
 /* mem.c */
-void    *MemAlloc( size_t );
-void    *MemAllocUnsafe( size_t );
-char    *MemStrdup( const char *str );
-void    MemFree( void * );
 void    MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) );
-void    *MemRealloc( void *, size_t );
-void    *MemReallocUnsafe( void *ptr, size_t size );
 void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
@@ -605,13 +599,11 @@ void    StaticFini( void );
 void    InitMem( void );
 void    FiniMem( void );
 
-#define _MemAllocArray(t,c)         (t *)MemAlloc( (c) * sizeof( t ) )
-#define _MemReallocArray(p,t,c)     (t *)MemRealloc( p, (c) * sizeof( t ) )
-#define _MemFreeArray(p)            MemFree( p )
-#define _MemAllocPtrArray(t,c)      (t **)MemAlloc( (c) * sizeof( t * ) )
-#define _MemReallocPtrArray(p,t,c)  (t **)MemRealloc( p, (c) * sizeof( t * ) )
-#define _MemFreePtrArray(p,c,fn)     MemFreePtrArray((void **)(p), (c), fn)
-#define _MemReallocPtrArrayUnsafe(p,t,c)    (t **)MemReallocUnsafe( p, (c) * sizeof( t * ) )
+#define _MemAllocArraySafe(t,c)             (t *)MemAllocSafe( (c) * sizeof( t ) )
+#define _MemReallocArraySafe(p,t,c)         (t *)MemReallocSafe( p, (c) * sizeof( t ) )
+#define _MemAllocPtrArraySafe(t,c)          (t **)MemAllocSafe( (c) * sizeof( t * ) )
+#define _MemReallocPtrArraySafe(p,t,c)      (t **)MemReallocSafe( p, (c) * sizeof( t * ) )
+#define _MemReallocPtrArray(p,t,c)          (t **)MemRealloc( p, (c) * sizeof( t * ) )
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );

@@ -237,7 +237,7 @@ void XMSInit( void )
         XMSCtrl.size = XMS_MAX_BLOCK_SIZE;
     }
 
-    xmsPtrs = _MemAllocArray( xhandle, EditVars.MaxXMSBlocks );
+    xmsPtrs = _MemAllocArraySafe( xhandle, EditVars.MaxXMSBlocks );
 
     for( i = 0; i < EditVars.MaxXMSBlocks; i++ ) {
         xmsPtrs[i] = xmsAlloc( MAX_IO_BUFFER );
@@ -247,7 +247,7 @@ void XMSInit( void )
         h.external = xmsPtrs[i];
         TotalXMSBlocks++;
     }
-    xmsPtrs = _MemReallocArray( xmsPtrs, xhandle, TotalXMSBlocks );
+    xmsPtrs = _MemReallocArraySafe( xmsPtrs, xhandle, TotalXMSBlocks );
     if( xmsPtrs == NULL ) {
         return;
     }

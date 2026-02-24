@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -117,7 +117,7 @@ bool CreateStringHandle( const char *name, HSZ *hdl )
     if( !DdeKeepStringHandle( DDEInstId, *hdl ) ) {
         return( false );
     }
-    hlptr = MemAlloc( offsetof( hsz_list, string ) + len + 1 );
+    hlptr = MemAllocSafe( offsetof( hsz_list, string ) + len + 1 );
 
     hlptr->hsz = *hdl;
     memcpy( hlptr->string, buff, len + 1 );

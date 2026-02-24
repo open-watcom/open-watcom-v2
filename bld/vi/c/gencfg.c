@@ -215,7 +215,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
         return( ERR_FILE_OPEN );
     }
     isCmdLine = is_cmdline;
-    buff = MemAllocUnsafe( VBUF_SIZE );
+    buff = MemAlloc( VBUF_SIZE );
     if( buff != NULL ) {
         setvbuf( fp, buff, _IOFBF, VBUF_SIZE );
     }
@@ -329,7 +329,7 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
         Message1( "Configuration file \"%s\" generated", fname );
     }
 
-    _MemFreeArray( buff );
+    MemFree( buff );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
 
 } /* GenerateConfiguration */

@@ -184,7 +184,7 @@ void ErrorBox( const char *str, ... )
 
 static bool err_alloc( int cnt )
 {
-    errorValues = _MemAllocArray( int, cnt );
+    errorValues = _MemAllocArraySafe( int, cnt );
     return( true );
 }
 
@@ -238,8 +238,8 @@ vi_rc GetErrorTokenValue( int *value, const char *str )
 
 void ErrorFini( void )
 {
-    _MemFreeArray( errorTokens );
-    _MemFreeArray( errorValues );
+    MemFree( errorTokens );
+    MemFree( errorValues );
     errorTokensLoaded = false;
 
 } /* ErrorFini */

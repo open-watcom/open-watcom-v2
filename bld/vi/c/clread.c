@@ -57,7 +57,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    fn = _MemAllocArray( char, FILENAME_MAX );
+    fn = _MemAllocArraySafe( char, FILENAME_MAX );
     GetNextWord1( name, fn );
     if( *fn == '\0' || IsDirectory( fn ) ) {
         if( *fn != '\0' ) {
@@ -66,12 +66,12 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
             dir = CurrentDirectory;
         }
         if( EditFlags.ExMode ) {
-            _MemFreeArray( fn );
+            MemFree( fn );
             return( ERR_INVALID_IN_EX_MODE );
         }
         rc = SelectFileOpen( dir, &fn, "*", false );
         if( rc != ERR_NO_ERR || fn[0] == '\0' ) {
-            _MemFreeArray( fn );
+            MemFree( fn );
             return( rc );
         }
     }
@@ -108,7 +108,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
         UpdateCurrentStatus( lastst );
         if( rc != ERR_NO_ERR && rc != END_OF_FILE ) {
             FreeEntireFile( cfile );
-            _MemFreeArray( fn );
+            MemFree( fn );
             return( rc );
         }
         bytecnt += lnecnt;
@@ -128,7 +128,7 @@ vi_rc ReadAFile( linenum afterwhich, const char *name )
         }
     }
     FileFree( cfile );
-    _MemFreeArray( fn );
+    MemFree( fn );
     return( ERR_NO_ERR );
 
 } /* ReadAFile */

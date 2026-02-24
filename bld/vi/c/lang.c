@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -160,7 +160,7 @@ static hash_entry *createTable( int entries )
 {
     hash_entry  *table;
 
-    table = _MemAllocArray( hash_entry, entries );
+    table = _MemAllocArraySafe( hash_entry, entries );
     memset( table, 0, entries * sizeof( hash_entry ) );
 
     return( table );
@@ -174,7 +174,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
     unsigned    len;
     vi_keyword  *tmpValue, *tmpIndex;
 
-    tmpValue = _MemAllocArray( vi_keyword, NumKeyword );
+    tmpValue = _MemAllocArraySafe( vi_keyword, NumKeyword );
     keyword = Keyword;
     tmpIndex = tmpValue;
     for( i = 0; i < NumKeyword; i++ ) {
@@ -209,7 +209,7 @@ static void addTable( hash_entry *table, char *Keyword, int NumKeyword, int entr
         tmpIndex++;
     }
 
-    _MemFreeArray( tmpValue );
+    MemFree( tmpValue );
 }
 
 static int nkeywords = 0;
@@ -305,16 +305,16 @@ void LangFini( lang_t language )
     }
     langInfo[language].ref_count--;
     if( langInfo[language].ref_count == 0 ) {
-        _MemFreeArray( langInfo[language].keyword_table );
-        _MemFreeArray( langInfo[language].read_buf );
+        MemFree( langInfo[language].keyword_table );
+        MemFree( langInfo[language].read_buf );
         langInfo[language].keyword_table = NULL;
         langInfo[language].table_entries = 0;
         langInfo[language].read_buf = NULL;
     }
     if( language == VI_LANG_C || language == VI_LANG_CPP ) {
         if( langInfo[VI_LANG_C].ref_count == 0 && langInfo[VI_LANG_CPP].ref_count == 0 ) {
-            _MemFreeArray( pragma_table );
-            _MemFreeArray( pragma_read_buf );
+            MemFree( pragma_table );
+            MemFree( pragma_read_buf );
             pragma_table = NULL;
             pragma_table_entries = 0;
             pragma_read_buf = NULL;

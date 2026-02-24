@@ -107,7 +107,7 @@ vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
         strlwr( searchString );
     }
     rc = doGREP( dirlist );
-    _MemFreeArray( searchString );
+    MemFree( searchString );
     return( rc );
 
 } /* DoFGREP */
@@ -128,10 +128,10 @@ vi_rc DoEGREP( const char *dirlist, const char *string )
         origString = string;
         isFgrep = false;
         rc = doGREP( dirlist );
-        _MemFreeArray( searchString );
+        MemFree( searchString );
     }
     if( cRx != NULL ) {
-        _MemFreeArray( cRx );
+        MemFree( cRx );
         cRx = NULL;
     }
     return( rc );
@@ -280,7 +280,7 @@ static void getOneFile( HWND dlg, char **files, int *count, bool leave )
       #ifdef __NT__
             }
       #endif
-            _MemFreeArray( files[i] );
+            MemFree( files[i] );
             for( j = i; j < *count; j++ ) {
                 files[j] = files[j + 1];
             }
@@ -317,7 +317,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         SendMessage( list_box, WM_SETFONT, (WPARAM)FontHandle( dirw_info.text_style.font ), 0L );
         MySprintf( tmp, "Files Containing \"%s\"", searchString );
         SetWindowText( dlg, tmp );
-        fileList = _MemAllocPtrArray( char, MAX_FILES );
+        fileList = _MemAllocPtrArraySafe( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
@@ -350,7 +350,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         }
         break;
     case WM_DESTROY:
-        _MemFreePtrArray( fileList, fileCount, MemFree );
+        MemFreePtrArray( (void **)fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -390,7 +390,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.pszText = "Line";
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
-        fileList = _MemAllocPtrArray( char, MAX_FILES );
+        fileList = _MemAllocPtrArraySafe( char, MAX_FILES );
         fileCount = (int)initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", searchString );
@@ -425,7 +425,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         }
         break;
     case WM_DESTROY:
-        _MemFreePtrArray( fileList, fileCount, MemFree );
+        MemFreePtrArray( (void **)fileList, fileCount, MemFree );
         break;
     }
     return( FALSE );
@@ -490,7 +490,7 @@ static vi_rc doGREP( const char *dirlist )
      * prepare list array
      */
     clist = 0;
-    list = _MemAllocPtrArray( char, MAX_FILES );
+    list = _MemAllocPtrArraySafe( char, MAX_FILES );
 
     /*
      * create info. window
@@ -569,7 +569,7 @@ static vi_rc doGREP( const char *dirlist )
                         si.event == VI_KEY( F1 ) || si.event == VI_KEY( F3 ) ) {
                         break;
                     }
-                    _MemFreeArray( list[si.num] );
+                    MemFree( list[si.num] );
                     for( i = si.num; i < clist - 1; i++ ) {
                         list[i] = list[i + 1];
                     }
@@ -590,7 +590,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * cleanup
      */
-    _MemFreePtrArray( list, clist, MemFree );
+    MemFreePtrArray( (void **)list, clist, MemFree );
     return( rc );
 
 } /* DoFGREP */
@@ -743,7 +743,7 @@ static vi_rc fSearch( const char *fn, char *r )
     rc = FileOpen( fn, false, O_BINARY | O_RDONLY, 0, &handle );
     if( rc == ERR_NO_ERR ) {
         rc = ERR_NO_MEMORY;
-        buff = _MemAllocArray( char, MAXBYTECNT );
+        buff = _MemAllocArraySafe( char, MAXBYTECNT );
         if( buff != NULL ) {
             /*
              * read in buffers from the file, and search through them
@@ -818,7 +818,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     strncpy( context_display, buffloc - MAX_DISP, MAX_DISP );
                 }
             }
-            _MemFreeArray( buff );
+            MemFree( buff );
         }
         close( handle );
     }

@@ -81,7 +81,7 @@ void PushMouseEventHandler( mouse_callback cb )
 {
     mouse_hook          *mh;
 
-    mh = MemAlloc( sizeof( mouse_hook ) );
+    mh = MemAllocSafe( sizeof( mouse_hook ) );
     mh->cb = cb;
     mh->next = hookHead;
     hookHead = mh;

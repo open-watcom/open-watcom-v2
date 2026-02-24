@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,7 +101,7 @@ void BIOSGetColorPalette( void _FAR *palette )
 
     pal = palette;
     size = sizeof( VIOPALSTATE ) + sizeof( USHORT ) * (MAX_COLOR_REGISTERS - 1);
-    pal_state = MemAlloc( size );
+    pal_state = MemAllocSafe( size );
     pal_state->cb = size;
     pal_state->type = 0;
     pal_state->iFirst = 0;

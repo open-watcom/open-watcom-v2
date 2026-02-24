@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -265,7 +265,7 @@ vi_rc StartMenu( const char *data )
     }
 
     if( tmp == NULL ) {
-        tmp = MemAlloc( offsetof( menu, str ) + len + 1 );
+        tmp = MemAllocSafe( offsetof( menu, str ) + len + 1 );
         new = true;
     }
     if( predef_menu == NULL ) {
@@ -297,8 +297,8 @@ static void initMenuList( menu *cmenu )
 
     MemFree( cmenu->list );
     MemFree( cmenu->hi_list );
-    cmenu->list = _MemAllocPtrArray( char, cmenu->itemcnt );
-    cmenu->hi_list = _MemAllocArray( hichar, cmenu->itemcnt + 1 );
+    cmenu->list = _MemAllocPtrArraySafe( char, cmenu->itemcnt );
+    cmenu->hi_list = _MemAllocArraySafe( hichar, cmenu->itemcnt + 1 );
 
     cmi = cmenu->itemhead;
     for( i = 0; i < cmenu->itemcnt; i++ ) {
@@ -362,7 +362,7 @@ vi_rc MenuItem( const char *data )
     ch = extractMenuStr( str, &hioff );
     len = strlen( str );
     size = sizeof( menu_item ) + len + strlen( data ) + 2;
-    tmp = MemAlloc( size );
+    tmp = MemAllocSafe( size );
     tmp->slen = (unsigned char)len;
     tmp->hi_char._char = ch;
     tmp->hi_char._offs = hioff;

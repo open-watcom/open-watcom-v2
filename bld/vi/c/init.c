@@ -94,7 +94,7 @@ char *GetConfigFileName( void )
 
 void FiniConfigFileName( void )
 {
-    _MemFreeArray( cfgFN );
+    MemFree( cfgFN );
 
 } /* FiniConfigFileName */
 
@@ -313,7 +313,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     EditVars.FileEndString = MemStrdup( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
-    WorkLine = MemAlloc( sizeof( line ) + EditVars.MaxLineLen + 2 );
+    WorkLine = MemAllocSafe( sizeof( line ) + EditVars.MaxLineLen + 2 );
     WorkLine->len = -1;
 
     sline = 0;
@@ -358,12 +358,12 @@ static void doInitializeEditor( int argc, char *argv[] )
     if( EditVars.TagFileName == NULL ) {
         EditVars.TagFileName = MemStrdup( "tags" );
     }
-    DotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
-    AltDotBuffer = _MemAllocArray( vi_key, maxdotbuffer + 2 );
-    DotCmd = _MemAllocArray( vi_key, maxdotbuffer + 2 );
+    DotBuffer = _MemAllocArraySafe( vi_key, maxdotbuffer + 2 );
+    AltDotBuffer = _MemAllocArraySafe( vi_key, maxdotbuffer + 2 );
+    DotCmd = _MemAllocArraySafe( vi_key, maxdotbuffer + 2 );
     SwapBlockInit( EditVars.MaxSwapBlocks );
-    ReadBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
-    WriteBuffer = _MemAllocArray( char, MAX_IO_BUFFER + 6 );
+    ReadBuffer = _MemAllocArraySafe( char, MAX_IO_BUFFER + 6 );
+    WriteBuffer = _MemAllocArraySafe( char, MAX_IO_BUFFER + 6 );
     HistInit();
     GetClockStart();
     GetSpinStart();
@@ -504,7 +504,7 @@ static void doInitializeEditor( int argc, char *argv[] )
                 break;
             }
         }
-        _MemFreePtrArray( list, ocnt, MemFree );
+        MemFreePtrArray( (void **)list, ocnt, MemFree );
         if( EditFlags.BreakPressed ) {
             ClearBreak();
             break;

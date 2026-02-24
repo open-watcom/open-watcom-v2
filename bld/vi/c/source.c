@@ -57,9 +57,9 @@ static void freeSource( sfile *sf )
 
     while( (curr = sf) != NULL ) {
         sf = curr->next;
-        _MemFreeArray( curr->data );
-        _MemFreeArray( curr->arg1 );
-        _MemFreeArray( curr->arg2 );
+        MemFree( curr->data );
+        MemFree( curr->arg1 );
+        MemFree( curr->arg2 );
         MemFree( curr );
     }
 }
@@ -349,8 +349,8 @@ static void finiSource( labels *lab, vars_list *vl, sfile *sf, undo_stack *atomi
     info        *cinfo;
 
     if( lab != NULL ) {
-        _MemFreePtrArray( lab->name, lab->cnt, MemFree );
-        _MemFreePtrArray( lab->pos, 0, NULL );
+        MemFreePtrArray( (void **)lab->name, lab->cnt, MemFree );
+        MemFreePtrArray( (void **)lab->pos, 0, NULL );
     }
 
     VarListDelete( vl );
@@ -601,7 +601,7 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
 {
     resident    *tmp;
 
-    tmp = MemAlloc( sizeof( resident ) );
+    tmp = MemAllocSafe( sizeof( resident ) );
     tmp->fn = MemStrdup( fn );
     tmp->sf = sf;
     memcpy( &tmp->lab, lab, sizeof( labels ) );
@@ -622,9 +622,9 @@ void DeleteResidentScripts( void )
     while( (tmp = resHead) != NULL ) {
         resHead = tmp->next;
         freeSource( tmp->sf );
-        _MemFreePtrArray( tmp->lab.name, tmp->lab.cnt, MemFree );
-        _MemFreePtrArray( tmp->lab.pos, 0, NULL );
-        _MemFreeArray( tmp->fn );
+        MemFreePtrArray( (void **)tmp->lab.name, tmp->lab.cnt, MemFree );
+        MemFreePtrArray( (void **)tmp->lab.pos, 0, NULL );
+        MemFree( tmp->fn );
         MemFree( tmp );
     }
 

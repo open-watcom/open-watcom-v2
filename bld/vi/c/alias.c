@@ -56,9 +56,9 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
      */
     for( curr = *head; curr != NULL; curr = curr->next ) {
         if( strcmp( str, curr->alias ) == 0 ) {
-            _MemFreeArray( curr->expand );
+            MemFree( curr->expand );
             if( *what == '\0' ) {
-                _MemFreeArray( curr->alias );
+                MemFree( curr->alias );
                 MemFree( DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr ) );
             } else {
                 curr->expand = MemStrdup( what );
@@ -69,7 +69,7 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
     /*
      * add the new item
      */
-    curr = MemAlloc( sizeof( alias_list ) );
+    curr = MemAllocSafe( sizeof( alias_list ) );
     curr->alias = MemStrdup( str );
     curr->expand = MemStrdup( what );
 

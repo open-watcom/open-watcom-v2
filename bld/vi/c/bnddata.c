@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ void BoundDataInit( void )
     /*
      * get everything
      */
-    BndMemory = _MemAllocArray( char, size );
+    BndMemory = _MemAllocArraySafe( char, size );
     read( h, BndMemory, size );
     close( h );
 
@@ -89,8 +89,8 @@ void BoundDataInit( void )
      * get number of files, and get space to store data
      */
     dataFcnt = *(bind_size *)BndMemory;
-    dataOffsets = _MemAllocArray( bind_size, dataFcnt );
-    entryCounts = _MemAllocArray( bind_size, dataFcnt );
+    dataOffsets = _MemAllocArraySafe( bind_size, dataFcnt );
+    entryCounts = _MemAllocArraySafe( bind_size, dataFcnt );
 
     /*
      * get file names
@@ -98,7 +98,7 @@ void BoundDataInit( void )
     tmp = BndMemory + sizeof( bind_size );
     size = *(bind_size *)tmp;
     tmp += sizeof( bind_size );
-    DataFnameTokens = _MemAllocArray( char, size );
+    DataFnameTokens = _MemAllocArraySafe( char, size );
     memcpy( DataFnameTokens, tmp, size );
     tmp += size;
 
@@ -119,10 +119,10 @@ void BoundDataInit( void )
  */
 void BoundDataFini( void )
 {
-    _MemFreeArray( BndMemory );
-    _MemFreeArray( dataOffsets );
-    _MemFreeArray( entryCounts );
-    _MemFreeArray( DataFnameTokens );
+    MemFree( BndMemory );
+    MemFree( dataOffsets );
+    MemFree( entryCounts );
+    MemFree( DataFnameTokens );
 
 } /* BoundDataFini */
 

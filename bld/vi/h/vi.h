@@ -54,6 +54,7 @@
 #include "rtns.h"
 #include "rtns2.h"
 #include "dc.h"
+#include "memfuncs.h"
 
 #ifdef __WIN__
   #include "winvi.h"

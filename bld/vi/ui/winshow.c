@@ -154,7 +154,7 @@ void WindowTitleAOI( window_id wid, const char *title, bool active )
     window      *w;
 
     w = WINDOW_FROM_ID( wid );
-    _MemFreeArray( w->title );
+    MemFree( w->title );
     if( title == NULL ) {
         w->title = NULL;
     } else {

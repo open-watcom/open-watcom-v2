@@ -54,14 +54,14 @@ void StatusWndSetSeparatorsWithArray( section_size *source, int num )
     int                 i;
 
     assert( num > 0 );
-    list = _MemAllocArray( status_block_desc, num );
+    list = _MemAllocArraySafe( status_block_desc, num );
     for( i = 0; i < num; i++ ) {
         list[i].separator_width = SEPARATOR_WIDTH;
         list[i].width = source[i];
         list[i].width_is_percent = false;
     }
     StatusWndSetSeparators( sw, num, list );
-    _MemFreeArray( list );
+    MemFree( list );
 }
 
 bool StatusHookProc( HWND, UINT, WPARAM, LPARAM );
@@ -173,7 +173,7 @@ static void processLButtonDown( HWND hwnd, WPARAM wparam, LPARAM lparam )
     capIndex = setCursor( GET_X( lparam ) - CURSOR_CORRECT );
     if( capIndex != -1 ) {
         SetCapture( hwnd );
-        sections = _MemAllocArray( section_size, EditVars.NumStatusSections + 2 );
+        sections = _MemAllocArraySafe( section_size, EditVars.NumStatusSections + 2 );
         GetClientRect( status_window_id, &rect );
         memcpy( sections + 1, EditVars.StatusSections, EditVars.NumStatusSections * sizeof( section_size ) );
         sections[0] = 0;
@@ -188,7 +188,7 @@ static void processLButtonUp( void )
         ReleaseCapture();
         capIndex = -1;
         memcpy( EditVars.StatusSections, sections + 1, EditVars.NumStatusSections * sizeof( section_size ) );
-        _MemFreeArray( sections );
+        MemFree( sections );
     }
 }
 

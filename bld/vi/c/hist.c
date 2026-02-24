@@ -133,7 +133,7 @@ static void writeHistory( FILE *fp, hist_type ht )
         k = j % EditVars.Hist[ht].max;
         if( EditVars.Hist[ht].data[k] != NULL ) {
             MyFprintf( fp, "%s\n", EditVars.Hist[ht].data[k] );
-            _MemFreeArray( EditVars.Hist[ht].data[k] );
+            MemFree( EditVars.Hist[ht].data[k] );
             EditVars.Hist[ht].data[k] = NULL;
         }
         j++;
@@ -170,7 +170,7 @@ void HistInitSingle( hist_type ht, int max )
 {
     EditVars.Hist[ht].max = max;
     EditVars.Hist[ht].curr = 0;
-    EditVars.Hist[ht].data = _MemReallocPtrArray( EditVars.Hist[ht].data, char, max + 1 );
+    EditVars.Hist[ht].data = _MemReallocPtrArraySafe( EditVars.Hist[ht].data, char, max + 1 );
 
 } /* HistInitSingle */
 
@@ -195,7 +195,7 @@ void HistFini( void )
 
     for( ht = 0; ht < MAX_HIST; ht++ ) {
         // array elements are freed in WriteHistory/SaveHistory
-        _MemFreePtrArray( EditVars.Hist[ht].data, 0, NULL );
+        MemFreePtrArray( (void **)EditVars.Hist[ht].data, 0, NULL );
     }
     MemFree( EditVars.HistoryFile );
     EditVars.HistoryFile = NULL;

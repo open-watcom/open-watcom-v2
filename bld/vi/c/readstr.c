@@ -537,12 +537,12 @@ static vi_key specialKeyFilter( input_buffer *input, vi_key event )
         if( input->curr_pos != strlen( input->buffer ) ) {
             MyBeep();
         } else {
-            tmp = _MemAllocArray( char, input->buffer_length );
+            tmp = _MemAllocArraySafe( char, input->buffer_length );
             assert( tmp != NULL );
             GetTextForSpecialKey( event, tmp, input->buffer_length - strlen( input->buffer ) );
             saveStr( input );
             insertString( input, tmp );
-            _MemFreeArray( tmp );
+            MemFree( tmp );
         }
         break;
     default:
@@ -792,12 +792,12 @@ bool ReadStringInWindow( window_id wid, int line, char *prompt, char *str, size_
     input.window.id = wid;
     input.window.line = line;
 #ifdef __WIN__
-    input.cache = _MemAllocArray( char, max_len );
+    input.cache = _MemAllocArraySafe( char, max_len );
     input.cache[0] = '\0';
 #endif
     rc = getStringInWindow( &input );
 #ifdef __WIN__
-    _MemFreeArray( input.cache );
+    MemFree( input.cache );
 #endif
     return( rc );
 

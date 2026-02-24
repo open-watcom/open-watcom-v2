@@ -104,7 +104,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     size1 = strlen( file->name ) + 4;
     if( size1 < NAMEWIDTH + 1 )
         size1 = NAMEWIDTH + 1;
-    tmp = _MemAllocArray( char, size1 );
+    tmp = _MemAllocArraySafe( char, size1 );
 
     size = file->fsize;
     MySprintf( tmp, "  %S", file->name );
@@ -174,5 +174,5 @@ void FormatFileEntry( direct_ent *file, char *res )
                (int)tm->tm_hour,
                (int)tm->tm_min );
 
-    _MemFreeArray( tmp );
+    MemFree( tmp );
 } /* FormatFileEntry */

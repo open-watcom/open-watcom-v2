@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -102,11 +102,11 @@ void static windowSwap( window *w )
     if( i != size * sizeof( char_info ) ) {
         return;
     }
-    _MemFreeArray( w->text );
+    MemFree( w->text );
     w->text = NULL;
-    _MemFreeArray( w->whooverlapping );
+    MemFree( w->whooverlapping );
     w->whooverlapping = NULL;
-    _MemFreeArray( w->overlap );
+    MemFree( w->overlap );
     w->overlap = NULL;
     w->isswapped = true;
 
@@ -143,9 +143,9 @@ static void fetchWindow( window *w )
     long        pos;
 
     size = w->width * w->height;
-    w->text = _MemAllocArray( char_info, size );
-    w->whooverlapping = _MemAllocArray( window_id, size );
-    w->overlap = _MemAllocArray( window_id, size );
+    w->text = _MemAllocArraySafe( char_info, size );
+    w->whooverlapping = _MemAllocArraySafe( window_id, size );
+    w->overlap = _MemAllocArraySafe( window_id, size );
 
     pos = (long)w->id * buffSize();
     FileSeek( swapHandle, pos );

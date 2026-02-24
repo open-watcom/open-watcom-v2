@@ -171,7 +171,7 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
     }
     *doresize = false;
     w = WINDOW_FROM_ID( wid );
-    tmpImage = _MemAllocArray( char_info, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
+    tmpImage = _MemAllocArraySafe( char_info, EditVars.WindMaxWidth * EditVars.WindMaxHeight );
     x1 = w->area.x1;
     x2 = w->area.x2;
     y1 = w->area.y1;
@@ -261,7 +261,7 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
          */
         if( done ) {
             swapTmp( tmpImage, Scrn, x1, y1, x2, y2 );
-            _MemFreeArray( tmpImage );
+            MemFree( tmpImage );
             if( *doresize ) {
                 wd->x1 = x1;
                 wd->x2 = x2;

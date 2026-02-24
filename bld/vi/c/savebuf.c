@@ -47,7 +47,7 @@ static void freeSavebuf( savebuf *tmp )
     case SAVEBUF_NOP:
         break;
     case SAVEBUF_LINE:
-        _MemFreeArray( tmp->u.data );
+        MemFree( tmp->u.data );
         break;
     case SAVEBUF_FCBS:
         for( cfcb = tmp->u.fcbs.head; cfcb != NULL; cfcb = tfcb ) {
@@ -319,7 +319,7 @@ vi_rc GetSavebufString( char **data )
         rc = ERR_SAVEBUF_TOO_BIG;
     } else {
         rc = ERR_NO_ERR;
-        *data = p = _MemAllocArray( char, len );
+        *data = p = _MemAllocArraySafe( char, len );
         switch( tmp->type ) {
         case SAVEBUF_LINE:
             strcpy( p, tmp->u.data );
@@ -423,7 +423,7 @@ void AddLineToSavebuf( const char *data, int scol, int ecol )
     /*
      * get and copy buffer
      */
-    tmp->u.data = _MemAllocArray( char, len + 1 );
+    tmp->u.data = _MemAllocArraySafe( char, len + 1 );
     for( i = scol; i <= ecol; i++ ) {
         tmp->u.data[i - scol] = data[i];
     }

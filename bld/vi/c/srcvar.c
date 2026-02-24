@@ -74,7 +74,7 @@ static void var_add( const char *name, const char *val, vars_list *vl )
      * create and add a new variable
      */
     name_len = strlen( name );
-    new = MemAlloc( offsetof( vars, name ) + name_len + 1 );
+    new = MemAllocSafe( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
     new->value = MemStrdup( val );
     new->len = len;
@@ -130,7 +130,7 @@ void VarListDelete( vars_list *vl )
 
     for( curr = vl->head; curr != NULL; curr = next ) {
         next = curr->next;
-        _MemFreeArray( curr->value );
+        MemFree( curr->value );
         MemFree( curr );
     }
 

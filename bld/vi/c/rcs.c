@@ -300,10 +300,10 @@ WINEXPORT int RCSAPI Batcher( const char *cmd, void *cookie )
 
     cookie = cookie;
     len = _fstrlen( MK_FP32( (void *)cmd ) );
-    p = _MemAllocArray( char, len + 1 );
+    p = _MemAllocArraySafe( char, len + 1 );
     _fmemcpy( p, MK_FP32( (void *)cmd ), len + 1 );
     rc = ( ExecCmd( NULL, NULL, p ) == 0 );
-    _MemFreeArray( p );
+    MemFree( p );
     return( rc );
 }
 

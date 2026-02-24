@@ -153,7 +153,7 @@ void XMemInit( void )
     if( extra > 0 ) {
         XMemBlockArraySize++;
     }
-    XMemBlocks = MemAlloc( XMemBlockArraySize + 1 );
+    XMemBlocks = MemAllocSafe( XMemBlockArraySize + 1 );
     for( i = 0; i < XMemBlockArraySize; i++ ) {
         XMemBlocks[i] = 0xff;
     }

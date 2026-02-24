@@ -224,7 +224,7 @@ void EMSInit( void )
         EMSCtrl.physical[i].used = false;
     }
 
-    emsPtrs = _MemAllocArray( xhandle, EditVars.MaxEMSBlocks );
+    emsPtrs = _MemAllocArraySafe( xhandle, EditVars.MaxEMSBlocks );
 
     for( i = 0; i < EditVars.MaxEMSBlocks; i++ ) {
         emsPtrs[i] = eMSAlloc( MAX_IO_BUFFER );
@@ -234,7 +234,7 @@ void EMSInit( void )
         h.external = emsPtrs[i];
         TotalEMSBlocks++;
     }
-    emsPtrs = _MemReallocArray( emsPtrs, xhandle, TotalEMSBlocks );
+    emsPtrs = _MemReallocArraySafe( emsPtrs, xhandle, TotalEMSBlocks );
 
     EMSCtrl.inuse = true;
 

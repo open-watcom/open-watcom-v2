@@ -108,7 +108,7 @@ line *LineAlloc( const char *data, int len )
 {
     line        *tmp;
 
-    tmp = MemAlloc( offsetof( line, data ) + len + 1 );
+    tmp = MemAllocSafe( offsetof( line, data ) + len + 1 );
     if( data != NULL ) {
         memcpy( tmp->data, data, len );
     }

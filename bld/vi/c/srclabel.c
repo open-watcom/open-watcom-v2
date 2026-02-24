@@ -67,8 +67,8 @@ vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
     /*
      * reallocate buffers
      */
-    labs->name = _MemReallocPtrArray( labs->name, char, labs->cnt + 1 );
-    labs->pos = _MemReallocPtrArray( labs->pos, sfile, labs->cnt + 1 );
+    labs->name = _MemReallocPtrArraySafe( labs->name, char, labs->cnt + 1 );
+    labs->pos = _MemReallocPtrArraySafe( labs->pos, sfile, labs->cnt + 1 );
 
     /*
      * set name and position of label

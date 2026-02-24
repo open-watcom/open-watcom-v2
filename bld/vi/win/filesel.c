@@ -75,7 +75,7 @@ WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam,
         case IDOK:
             len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXTLENGTH, 0, 0 );
             if( len >= of->nMaxFile ) {
-                FileNameList = MemAlloc( len + 1 );
+                FileNameList = MemAllocSafe( len + 1 );
                 len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)(LPSTR)FileNameList );
             }
         }
@@ -139,7 +139,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
 #if defined( __NT__ ) && !defined( _WIN64 )
         if( !is_chicago ) {
 #endif
-            _MemFreeArray( (char *)of.lpstrFile );
+            MemFree( (char *)of.lpstrFile );
             *result = FileNameList;
 #if defined( __NT__ ) && !defined( _WIN64 )
         }
@@ -220,7 +220,7 @@ char *GetInitialFileName( void )
     char        *ptr;
     vi_rc       rc;
 
-    path = _MemAllocArray( char, FILENAME_MAX );
+    path = _MemAllocArraySafe( char, FILENAME_MAX );
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
@@ -228,7 +228,7 @@ char *GetInitialFileName( void )
     } else {
         ptr = NULL;
     }
-    _MemFreeArray( path );
+    MemFree( path );
     return( ptr );
 
 } /* GetInitialFileName */

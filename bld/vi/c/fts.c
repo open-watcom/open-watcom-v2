@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +53,11 @@ vi_rc FTSStart( const char *data )
     template_ll *templatePtr;
     ft_src      *fts, *ftsOld;
 
-    fts = MemAlloc( sizeof( ft_src ) );
+    fts = MemAllocSafe( sizeof( ft_src ) );
     fts->cmd_head = fts->cmd_tail = NULL;
     fts->template_head = fts->template_tail = NULL;
     for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
-        templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
+        templatePtr = MemAllocSafe( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&fts->template_head, (ss **)&fts->template_tail, (ss *)templatePtr );
     }
@@ -125,7 +125,7 @@ vi_rc FTSAddCmd( const char *data, int tok )
         return( ERR_INVALID_COMMAND );
     }
 
-    cmd = MemAlloc( offsetof( cmd_ll, data ) + strlen( cmd_data ) + 1 );
+    cmd = MemAllocSafe( offsetof( cmd_ll, data ) + strlen( cmd_data ) + 1 );
     strcpy( cmd->data, cmd_data );
 
     AddLLItemAtEnd( (ss **)&ftsTail->cmd_head, (ss **)&ftsTail->cmd_tail, (ss *)cmd );
@@ -393,7 +393,7 @@ ft_src *FTSMatchTemplateData( const char *data )
     // build a template list
     template_head = template_tail = NULL;
     for( data = GetNextWord1( data, template_data ); *template_data != '\0'; data = GetNextWord1( data, template_data ) ) {
-        templatePtr = MemAlloc( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
+        templatePtr = MemAllocSafe( offsetof( template_ll, data ) + strlen( template_data ) + 1 );
         strcpy( templatePtr->data, template_data );
         AddLLItemAtEnd( (ss **)&template_head, (ss **)&template_tail, (ss *)templatePtr );
     }

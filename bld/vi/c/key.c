@@ -495,7 +495,7 @@ void KeyAddString( const char *str )
             KeyAdd( *keys );
         }
     }
-    _MemFreeArray( scr.data );
+    MemFree( scr.data );
 
 } /* KeyAddString */
 

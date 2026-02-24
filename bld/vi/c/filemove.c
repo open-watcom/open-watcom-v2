@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +107,7 @@ vi_rc NextFileDammit( void )
             current_window_id = NO_WINDOW;
             // EditFlags.Quiet = true;
             if( CommandBuffer != NULL ) {
-                _MemFreeArray( CommandBuffer );
+                MemFree( CommandBuffer );
             }
             QuitEditor( ERR_NO_ERR );
         }

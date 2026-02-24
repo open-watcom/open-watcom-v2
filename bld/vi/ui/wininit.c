@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ static void allocImage( void )
     size_t  size;
 
     size = EditVars.WindMaxWidth * EditVars.WindMaxHeight;
-    ScreenImage = _MemAllocArray( window_id, size );
+    ScreenImage = _MemAllocArraySafe( window_id, size );
     for( i = 0; i < size; i++ ) {
         ScreenImage[i] = NO_WINDOW;
     }
@@ -106,6 +106,6 @@ void FinishWindows( void )
     ct.height = 7;
     ct.width = 100;
     NewCursor( NO_WINDOW, ct );
-    _MemFreeArray( ScreenImage );
+    MemFree( ScreenImage );
 
 } /* FinishWindows */

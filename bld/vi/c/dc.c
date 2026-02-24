@@ -55,7 +55,7 @@ static void initDCLine( dc_line *dcline )
 static void deinitDCLine( dc_line *dcline )
 {
     if( dcline->text != NULL ) {
-        _MemFreeArray( dcline->text );
+        MemFree( dcline->text );
         dcline->text = NULL;
     }
     SSKillBlock( dcline->ss );
@@ -71,7 +71,7 @@ void DCCreate( void )
     nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
     CurrentInfo->dclines = NULL;
     if( nlines > 0 ) {
-        CurrentInfo->dclines = _MemAllocArray( dc_line, nlines );
+        CurrentInfo->dclines = _MemAllocArraySafe( dc_line, nlines );
         dcline = CurrentInfo->dclines;
         for( i = 0; i < nlines; i++ ) {
             initDCLine( dcline );
@@ -100,11 +100,11 @@ void DCResize( info *info )
     if( nlines == 0 ) {
         // no room to display anything - trash the cache
         if( info->dclines != NULL ) {
-            _MemFreeArray( info->dclines );
+            MemFree( info->dclines );
             info->dclines = NULL;
         }
     } else {
-        info->dclines = _MemReallocArray( info->dclines, dc_line, nlines );
+        info->dclines = _MemReallocArraySafe( info->dclines, dc_line, nlines );
         dcline = info->dclines + info->dc_size;
         for( ; extra-- > 0; ) {
             initDCLine( dcline );
@@ -131,7 +131,7 @@ void DCScroll( int nlines )
     dcline = CurrentInfo->dclines;
 
     // 'wrap' pointers so don't need to free/allocate ss blocks, etc.
-    dcline_temp = _MemAllocArray( dc_line, CurrentInfo->dc_size );
+    dcline_temp = _MemAllocArraySafe( dc_line, CurrentInfo->dc_size );
     bit = abs( nlines ) * sizeof( dc_line );
     rest = (CurrentInfo->dc_size - abs( nlines )) * sizeof( dc_line );
     if( nlines > 0 ) {
@@ -145,7 +145,7 @@ void DCScroll( int nlines )
         memmove( dcline + CurrentInfo->dc_size + nlines, dcline_temp, bit );
         dcline_i = dcline + CurrentInfo->dc_size + nlines;
     }
-    _MemFreeArray( dcline_temp );
+    MemFree( dcline_temp );
 
     a = abs( nlines );
     for( i = 0; i < a; i++ ) {
@@ -170,7 +170,7 @@ void DCDestroy( void )
         deinitDCLine( dcline );
         dcline++;
     }
-    _MemFreeArray( CurrentInfo->dclines );
+    MemFree( CurrentInfo->dclines );
     CurrentInfo->dclines = NULL;
     CurrentInfo->dc_size = 0;
 }
@@ -450,8 +450,8 @@ void DCValidateLine( dc_line *dcline, int start_col, const char *text )
     if( dcline->text != NULL ) {
         if( dcline->textlen < nlen ) {
             // realloc might needlessly memcpy stuff around
-            _MemFreeArray( dcline->text );
-            dcline->text = _MemAllocArray( char, nlen );
+            MemFree( dcline->text );
+            dcline->text = _MemAllocArraySafe( char, nlen );
         }
     } else {
         size_t  len;
@@ -459,7 +459,7 @@ void DCValidateLine( dc_line *dcline, int start_col, const char *text )
         len = nlen;
         if( len < MIN_CACHE_LINE_LENGTH )
             len = MIN_CACHE_LINE_LENGTH;
-        dcline->text = _MemAllocArray( char, len );
+        dcline->text = _MemAllocArraySafe( char, len );
     }
     memcpy( dcline->text, text, nlen );
     dcline->textlen = nlen;

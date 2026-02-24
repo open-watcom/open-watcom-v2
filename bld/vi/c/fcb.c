@@ -60,7 +60,7 @@ vi_rc ReadFcbData( file *f, bool *crlf_reached )
     if( f->is_stdio ) {
         if( extraData != NULL ) {
             memcpy( ReadBuffer, extraData, extraDataSize );
-            _MemFreeArray( extraData );
+            MemFree( extraData );
             extraData = NULL;
         }
     } else {
@@ -137,7 +137,7 @@ vi_rc ReadFcbData( file *f, bool *crlf_reached )
     f->bytes_pending = true;
     if( f->is_stdio ) {
         extraDataSize = cnt - used;
-        extraData = MemAlloc( extraDataSize );
+        extraData = MemAllocSafe( extraDataSize );
         memcpy( extraData, ReadBuffer + used, extraDataSize );
     }
     return( ERR_NO_ERR );

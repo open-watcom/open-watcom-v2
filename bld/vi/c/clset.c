@@ -670,7 +670,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
         switch( j ) {
         case SETVAR_T_STATUSSECTIONS:
             if( EditVars.StatusSections != NULL ) {
-                _MemFreeArray( EditVars.StatusSections );
+                MemFree( EditVars.StatusSections );
                 EditVars.StatusSections = NULL;
                 EditVars.NumStatusSections = 0;
             }
@@ -679,7 +679,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
+                EditVars.StatusSections = _MemReallocArraySafe( EditVars.StatusSections, unsigned short, EditVars.NumStatusSections + 1 );
                 EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );
@@ -713,7 +713,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_TILECOLOR:
             if( EditVars.TileColors == NULL ) {
-                EditVars.TileColors = _MemAllocArray( type_style, EditVars.MaxTileColors + 1 );
+                EditVars.TileColors = _MemAllocArraySafe( type_style, EditVars.MaxTileColors + 1 );
                 for( i = 0; i <= EditVars.MaxTileColors; ++i ) {
                     EditVars.TileColors[i].foreground = -1;
                     EditVars.TileColors[i].background = -1;
@@ -754,14 +754,14 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             break;
         case SETVAR_T_FIGNORE:
             if( *fn == '\0' ) {
-                _MemFreeArray( EditVars.FIgnore );
+                MemFree( EditVars.FIgnore );
                 EditVars.FIgnore = NULL;
                 EditVars.CurrFIgnore = 0;
                 if( msgFlag ) {
                     MySprintf( fn, "fignore reset" );
                 }
             } else {
-                EditVars.FIgnore = _MemReallocArray( EditVars.FIgnore, char, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
+                EditVars.FIgnore = _MemReallocArraySafe( EditVars.FIgnore, char, EXTENSION_LENGTH * (EditVars.CurrFIgnore + 1) );
                 str[0] = '.';
                 str[1] = '\0';
                 strcat( str, fn );
@@ -992,7 +992,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
             case SETVAR_T_MAXTILECOLORS:
                 k = (EditVars.TileColors == NULL) ? 0 : EditVars.MaxTileColors + 1;
                 EditVars.MaxTileColors = lval;
-                EditVars.TileColors = _MemReallocArray( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
+                EditVars.TileColors = _MemReallocArraySafe( EditVars.TileColors, type_style, EditVars.MaxTileColors + 1 );
                 for( ; k <= EditVars.MaxTileColors; ++k ) {
                     EditVars.TileColors[k].foreground = -1;
                     EditVars.TileColors[k].background = -1;
@@ -1021,7 +1021,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                     lval = MAX_IO_BUFFER;
                 EditVars.MaxLineLen = lval;
                 StaticStart();
-                WorkLine = MemRealloc( WorkLine, sizeof( line ) + EditVars.MaxLineLen + 2 );
+                WorkLine = MemReallocSafe( WorkLine, sizeof( line ) + EditVars.MaxLineLen + 2 );
                 break;
             case SETVAR_T_TOOLBARBUTTONHEIGHT:
                 EditVars.ToolBarButtonHeight = lval;
@@ -1146,17 +1146,17 @@ static list_linenum getSetInfo( const char ***vals, char ***list, size_t *longes
     tc1 = GetNumberOfTokens( SetVarTokens );
     tc2 = GetNumberOfTokens( SetFlagTokens );
     tc = tc1 + tc2;
-    sdata = _MemAllocPtrArray( set_data, tc );
-    *list = _MemAllocPtrArray( char, tc );
-    *vals = (const char **)_MemAllocPtrArray( char, tc );
+    sdata = _MemAllocPtrArraySafe( set_data, tc );
+    *list = _MemAllocPtrArraySafe( char, tc );
+    *vals = (const char **)_MemAllocPtrArraySafe( char, tc );
 
     for( i1 = 0; i1 < tc1; i1++ ) {
-        sdata[i1] = MemAlloc( sizeof( set_data ) );
+        sdata[i1] = MemAllocSafe( sizeof( set_data ) );
         sdata[i1]->setting = MemStrdup( GetTokenStringCVT( SetVarTokens, i1, settokstr, true ) );
         sdata[i1]->val = MemStrdup( getOneSetVal( i1, false, tmpstr, true ) );
     }
     for( i2 = 0; i2 < tc2; i2++ ) {
-        sdata[tc1 + i2] = MemAlloc( sizeof( set_data ) );
+        sdata[tc1 + i2] = MemAllocSafe( sizeof( set_data ) );
         sdata[tc1 + i2]->setting = MemStrdup( GetTokenStringCVT( SetFlagTokens, i2, settokstr, true ) );
         sdata[tc1 + i2]->val = MemStrdup( getOneSetVal( i2, true, tmpstr, true ) );
     }
@@ -1165,7 +1165,7 @@ static list_linenum getSetInfo( const char ***vals, char ***list, size_t *longes
         (*list)[i] = sdata[i]->setting;
         (*vals)[i] = sdata[i]->val;
     }
-    _MemFreePtrArray( sdata, tc, MemFree );
+    MemFreePtrArray( (void **)sdata, tc, MemFree );
     i1 = getLongestTokenLength( SetVarTokens );
     i2 = getLongestTokenLength( SetFlagTokens );
     if( i1 > i2 ) {
@@ -1229,8 +1229,8 @@ vi_rc Set( const char *name )
         }
         rc = SelectItemAndValue( &setw_info, "Settings", list, tc, SettingSelected, 1, vals, longest + 3 );
         setw_info.area.y2 = tmp;
-        _MemFreePtrArray( vals, tc, MemFree );
-        _MemFreePtrArray( list, tc, MemFree );
+        MemFreePtrArray( (void **)vals, tc, MemFree );
+        MemFreePtrArray( (void **)list, tc, MemFree );
         ReDisplayScreen();
   #endif
 #endif /* VICOMP */

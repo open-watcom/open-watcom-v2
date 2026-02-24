@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ static vi_rc getDir( const char *fullmask, bool want_all_dirs )
                     break;
                 }
                 len = strlen( dire->d_name );
-                tmp = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
+                tmp = MemAllocSafe( offsetof( direct_ent, name ) + len + 1 );
                 GetFileInfo( tmp, dire, path );
                 memcpy( tmp->name, dire->d_name, len + 1 );
 #ifndef __UNIX__

@@ -103,7 +103,7 @@ static void destroyBlock( int i, char *start )
         memmove( EditVars.StatusSections + i, EditVars.StatusSections + i + 1, (EditVars.NumStatusSections - 1 - i) * sizeof( section_size ) );
     }
     EditVars.NumStatusSections--;
-    EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
+    EditVars.StatusSections = _MemReallocArraySafe( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
 
     strncpy( new_ss, EditVars.StatusString, start - EditVars.StatusString );
     new_ss[start - EditVars.StatusString] = '\0';
@@ -144,7 +144,7 @@ static void splitBlock( int i, char *start )
         return;
     }
     EditVars.NumStatusSections++;
-    EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
+    EditVars.StatusSections = _MemReallocArraySafe( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
     memmove( EditVars.StatusSections + i + 1, EditVars.StatusSections + i, (EditVars.NumStatusSections - 1 - i) * sizeof( section_size ) );
     if( i > 0 ) {
         EditVars.StatusSections[i] = EditVars.StatusSections[i - 1] + (diff / 2);
@@ -220,7 +220,7 @@ static void buildDefaults( void )
     ReplaceString( &EditVars.StatusString, DEFAULT_STATUSSTRING );
 
     EditVars.NumStatusSections = NARRAY( def_sections );
-    EditVars.StatusSections = _MemReallocArray( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
+    EditVars.StatusSections = _MemReallocArraySafe( EditVars.StatusSections, section_size, EditVars.NumStatusSections );
     memcpy( EditVars.StatusSections, def_sections, sizeof( def_sections ) );
 
     totalRedraw();

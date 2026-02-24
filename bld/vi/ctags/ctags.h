@@ -33,6 +33,8 @@
 
 #include "wio.h"
 #include "bool.h"
+#include "memfuncs.h"
+
 
 typedef enum {
     TYPE_C,
@@ -68,8 +70,6 @@ extern bool     VerboseFlag;
  * function prototypes
  */
 /* ctags.c */
-extern void     *MemAlloc( size_t size );
-extern void     MemFree( void *ptr );
 extern bool     IsTokenChar( int ch );
 extern int      MyStricmp( char **buf, const char *literal );
 extern void     ErrorMsgExit( const char *, ... );

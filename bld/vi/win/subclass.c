@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@ void SubclassGenericAdd( HWND hwnd, WNDPROCx wndproc, HINSTANCE inst )
 {
     proc_entry  *newProc;
 
-    newProc = MemAlloc( sizeof( proc_entry ) );
+    newProc = MemAllocSafe( sizeof( proc_entry ) );
 
     newProc->hwnd = hwnd;
     newProc->oldProc = (WNDPROC)GET_WNDPROC( hwnd );

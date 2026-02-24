@@ -68,7 +68,7 @@ static sfile *initItems( void )
 {
     sfile       *tsf;
 
-    tsf = MemAlloc( sizeof( sfile ) );
+    tsf = MemAllocSafe( sizeof( sfile ) );
     tsf->next = NULL;
     tsf->prev = NULL;
     tsf->arg1 = NULL;
@@ -91,7 +91,7 @@ static void genItem( int token, const char *where )
 {
     sfile       *tsf;
 
-    tsf = MemAlloc( sizeof( sfile ) );
+    tsf = MemAllocSafe( sizeof( sfile ) );
 
     tsf->arg1 = NULL;
     tsf->arg2 = NULL;

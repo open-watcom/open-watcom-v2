@@ -416,7 +416,7 @@ static vi_rc invalidMark( mark *cmark, unsigned no )
  */
 void AllocateMarkList( void )
 {
-    MarkList = MemAlloc( MARK_SIZE * (MAX_MARKS + 1) );
+    MarkList = MemAllocSafe( MARK_SIZE * (MAX_MARKS + 1) );
     SetMarkContext();
     currContext->inuse = true;
     currContext->p.line = 1;
@@ -442,7 +442,7 @@ void SetMarkContext( void )
  */
 void FreeMarkList( void )
 {
-    _MemFreeArray( MarkList );
+    MemFree( MarkList );
     MarkList = NULL;
     /* set currContext to NULL so we get a GPFault if we deref it */
     currContext = NULL;

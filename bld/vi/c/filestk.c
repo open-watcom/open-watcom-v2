@@ -50,13 +50,13 @@ void InitFileStack( void )
         }
         fDepth--;
     }
-    fStack = _MemReallocPtrArray( fStack, file_stack, EditVars.MaxPush );
+    fStack = _MemReallocPtrArraySafe( fStack, file_stack, EditVars.MaxPush );
 
 } /* InitFileStack */
 
 void FiniFileStack( void )
 {
-    _MemFreePtrArray( fStack, 0, NULL );
+    MemFreePtrArray( (void **)fStack, 0, NULL );
     fStack = NULL;
     fDepth = 0;
 
@@ -77,7 +77,7 @@ vi_rc PushFileStack( void )
 
     len = strlen( CurrentFile->name );
 
-    fs = MemAlloc( offsetof( file_stack, fname ) + len + 1 );
+    fs = MemAllocSafe( offsetof( file_stack, fname ) + len + 1 );
     memcpy( fs->fname, CurrentFile->name, len + 1 );
     fs->p = CurrentPos;
 

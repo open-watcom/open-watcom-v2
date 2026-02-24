@@ -183,6 +183,6 @@ void MatchFini( void )
     int i;
 
     for( i = 0; i < MatchCount; i++ ) {
-        _MemFreeArray( MatchData[i] );
+        MemFree( MatchData[i] );
     }
 }

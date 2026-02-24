@@ -250,7 +250,7 @@ static menu *addMenuToMenu( menu *m, const char *name, const char *help )
 
     // assert( IsMenu( m->hmenu ) );
     name_len = strlen( name );
-    new = MemAlloc( sizeof( menu ) + name_len + strlen( help ) + 1 );
+    new = MemAllocSafe( sizeof( menu ) + name_len + strlen( help ) + 1 );
     new->num_items = 0;
     strcpy( &new->name[0], name );
     new->help = &new->name[name_len + 1];
@@ -278,7 +278,7 @@ static item *addItemToMenu( menu *m, const char *name, const char *help, const c
     // assert( IsMenu( m->hmenu ) );
     cmd_len = strlen( cmd );
     name_len = strlen( name );
-    new = MemAlloc( sizeof( item ) + cmd_len + name_len + strlen( help ) + 2 );
+    new = MemAllocSafe( sizeof( item ) + cmd_len + name_len + strlen( help ) + 2 );
     if( *name == '\0' ) {
         new->menuid = 0;
         new->name = NULL;

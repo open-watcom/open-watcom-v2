@@ -123,14 +123,14 @@ window *AllocWindow( window_id wid, windim x1, windim y1, windim x2, windim y2, 
     height = y2 - y1 + 1;
     size = width * height;
 
-    w = MemAlloc( offsetof( window, overcnt ) + height );
+    w = MemAllocSafe( offsetof( window, overcnt ) + height );
     w->id = wid;
     w->has_gadgets = has_gadgets;
     w->accessed = 0;
     w->isswapped = false;
-    w->text = _MemAllocArray( char_info, size );
-    w->overlap = _MemAllocArray( window_id, size );
-    w->whooverlapping = _MemAllocArray( window_id, size );
+    w->text = _MemAllocArraySafe( char_info, size );
+    w->overlap = _MemAllocArraySafe( window_id, size );
+    w->whooverlapping = _MemAllocArraySafe( window_id, size );
     w->area.x1 = x1;
     w->area.x2 = x2;
     w->area.y1 = y1;
@@ -219,11 +219,11 @@ vi_rc NewWindow2( window_id *wid, window_info *wi )
  */
 void FreeWindow( window *w )
 {
-    _MemFreeArray( w->text );
-    _MemFreeArray( w->overlap );
-    _MemFreeArray( w->whooverlapping );
-    _MemFreeArray( w->title );
-    _MemFreeArray( w->borderdata );
+    MemFree( w->text );
+    MemFree( w->overlap );
+    MemFree( w->whooverlapping );
+    MemFree( w->title );
+    MemFree( w->borderdata );
     MemFree( w );
 
 } /* FreeWindow */

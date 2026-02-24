@@ -328,11 +328,11 @@ void WriteProfile( void )
  */
 void FiniProfile( void )
 {
-    _MemFreeArray( cfgFile );
+    MemFree( cfgFile );
     cfgFile = NULL;
-    _MemFreeArray( iniFile );
+    MemFree( iniFile );
     iniFile = NULL;
-    _MemFreeArray( iniPath );
+    MemFree( iniPath );
     iniPath = NULL;
 
 } /* FiniProfile */

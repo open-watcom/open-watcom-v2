@@ -740,7 +740,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
 
     switch( msg ) {
     case WM_CREATE:
-        wd = MemAlloc( sizeof( window_data ) );
+        wd = MemAllocSafe( sizeof( window_data ) );
         WINDOW_TO_ID( wid, (LONG_PTR)&EditWindow );
         DATA_TO_ID( wid, (LONG_PTR)wd );
         return( 0 );

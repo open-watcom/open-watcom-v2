@@ -43,7 +43,7 @@ fcb *FcbAlloc( file *f )
     /*
      * allocate fcb
      */
-    cfcb = MemAlloc( FCB_SIZE );
+    cfcb = MemAllocSafe( FCB_SIZE );
 
     /*
      * thread fcb with all the others

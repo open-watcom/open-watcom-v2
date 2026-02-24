@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ bool IsMagicCharRegular( char ch )
 vi_rc CurrentRegComp( const char *str )
 {
     if( CurrentRegularExpression != NULL ) {
-        _MemFreeArray( CurrentRegularExpression );
+        MemFree( CurrentRegularExpression );
     }
     CurrentRegularExpression = RegComp( str );
     return( RegExpError );

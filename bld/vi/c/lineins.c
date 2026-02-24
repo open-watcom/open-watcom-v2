@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ vi_rc InsertLinesAtCursor( fcb_list *fcblist, undo_stack *us )
     fcblist->tail->byte_cnt += CurrentLine->len - CurrentPos.column + 1;
 
     tLine = fcblist->tail->lines.tail->prev;
-    fcblist->tail->lines.tail = MemRealloc( fcblist->tail->lines.tail,
+    fcblist->tail->lines.tail = MemReallocSafe( fcblist->tail->lines.tail,
                     sizeof( line ) + fcblist->tail->lines.tail->len + 1 );
     if( tLine ) {
         tLine->next = fcblist->tail->lines.tail;

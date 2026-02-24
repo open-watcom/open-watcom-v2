@@ -319,7 +319,7 @@ vi_rc AddBitmapToToolBar( const char *data, bool tip )
     tooltip_len = strlen( tooltip );
     if( tooltip_len > MAX_TIP - 1 )
         tooltip_len = MAX_TIP - 1;
-    item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + help_len + tooltip_len + 3 );
+    item = MemAllocSafe( sizeof( tool_item ) + cmd_len + name_len + help_len + tooltip_len + 3 );
     strcpy( item->cmd, data );
     if( name_len != 0 ) {
         item->id = NextMenuId();

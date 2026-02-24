@@ -152,7 +152,7 @@ vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int 
     long    changecnt, linecnt;
     linenum end_line;
 
-    char *cmd = _MemAllocArray( char, MAX_INPUT_LINE );
+    char *cmd = _MemAllocArraySafe( char, MAX_INPUT_LINE );
 
     StartUndoGroup( UndoStack );
 
@@ -176,7 +176,7 @@ vi_rc TwoPartSubstitute( const char *find, const char *replace, int prompt, int 
     }
     EndUndoGroup( UndoStack );
 
-    _MemFreeArray( cmd );
+    MemFree( cmd );
     return( rc );
 
 } /* TwoPartSubstitute */

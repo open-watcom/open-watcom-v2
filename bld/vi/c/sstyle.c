@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -395,12 +395,12 @@ void SSDifBlock( ss_block *ss_old, const char *text, int start_col,
 
 ss_block *SSNewBlock( void )
 {
-    return( _MemAllocArray( ss_block, MAX_SS_BLOCKS ) );
+    return( _MemAllocArraySafe( ss_block, MAX_SS_BLOCKS ) );
 }
 
 void SSKillBlock( ss_block *ss )
 {
-    _MemFreeArray( ss );
+    MemFree( ss );
 }
 
 bool SSKillsFlags( char ch )

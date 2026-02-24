@@ -137,10 +137,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             break;
         }
         len = DdeQueryString( DDEInstId, hdl, NULL, 0, CP_WINANSI ) + 1;
-        ptr = _MemAllocArray( char, len  );
+        ptr = _MemAllocArraySafe( char, len  );
         DdeQueryString( DDEInstId, hdl, ptr, len, CP_WINANSI );
         VarAddStr( buffer, ptr, vl );
-        _MemFreeArray( ptr );
+        MemFree( ptr );
         break;
 
     case T_DDERET:
@@ -220,10 +220,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             break;
         }
         len = DdeGetData( dde_data, NULL, 0, 0 );
-        ptr = _MemAllocArray( char, len );
+        ptr = _MemAllocArraySafe( char, len );
         DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
         VarAddStr( buffer, ptr,  vl );
-        _MemFreeArray( ptr );
+        MemFree( ptr );
 //      DdeFreeDataHandle( dde_data );
         break;
 
@@ -315,10 +315,10 @@ bool RunDDECommand( int token, const char *data, char *buffer, vi_rc *result, va
             rc = ERR_DDE_FAILED;
         } else {
             len = DdeGetData( dde_data, NULL, 0, 0 ) + 1;
-            ptr = _MemAllocArray( char, len );
+            ptr = _MemAllocArraySafe( char, len );
             DdeGetData( dde_data, (LPBYTE)ptr, len, 0 );
             VarAddStr( buffer, ptr,  vl );
-            _MemFreeArray( ptr );
+            MemFree( ptr );
             DdeFreeDataHandle( dde_data );
         }
         break;

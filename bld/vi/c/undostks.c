@@ -58,10 +58,10 @@ static void shrinkUndoStack( undo_stack *stack )
 {
     stack->current--;
     if( stack->current < 0 ) {
-        _MemFreePtrArray( stack->stack, 0, NULL );
+        MemFreePtrArray( (void **)stack->stack, 0, NULL );
         stack->stack = NULL;
     } else {
-        stack->stack = _MemReallocPtrArray( stack->stack, undo, stack->current + 1 );
+        stack->stack = _MemReallocPtrArraySafe( stack->stack, undo, stack->current + 1 );
     }
 
 } /* shrinkUndoStack */
@@ -94,7 +94,7 @@ undo *UndoAlloc( undo_stack *stack, int type )
     }
 
     for( ;; ) {
-        tmp = MemAllocUnsafe( size );
+        tmp = MemAlloc( size );
         if( tmp != NULL ) {
             memset( tmp, 0, size );
             break;
@@ -144,7 +144,7 @@ void PushUndoStack( undo *item, undo_stack *stack )
 {
     void        *tmp;
 
-    tmp = _MemReallocPtrArrayUnsafe( stack->stack, undo, stack->current + 2 );
+    tmp = _MemReallocPtrArray( stack->stack, undo, stack->current + 2 );
     if( tmp == NULL ) {
         dropUndoStackTop( stack );
     } else {
@@ -186,7 +186,7 @@ void PurgeUndoStack( undo_stack *stack )
     if( stack == NULL ) {
         return;
     }
-    _MemFreePtrArray( stack->stack, stack->current + 1, undo_free );
+    MemFreePtrArray( (void **)stack->stack, stack->current + 1, undo_free );
     stack->stack = NULL;
     stack->current = -1;
 
@@ -210,8 +210,8 @@ void AddUndoToCurrent( undo *item, undo_stack *stack )
  */
 void AllocateUndoStacks( void )
 {
-    UndoStack = MemAlloc( sizeof( undo_stack ) );
-    UndoUndoStack = MemAlloc( sizeof( undo_stack ) );
+    UndoStack = MemAllocSafe( sizeof( undo_stack ) );
+    UndoUndoStack = MemAllocSafe( sizeof( undo_stack ) );
     UndoStack->stack = NULL;
     UndoUndoStack->stack = NULL;
     UndoStack->current = -1;
@@ -225,10 +225,10 @@ void AllocateUndoStacks( void )
 void FreeUndoStacks( void )
 {
     FreeAllUndos();
-    _MemFreePtrArray( UndoStack->stack, UndoStack->current + 1, undo_free );
+    MemFreePtrArray( (void **)UndoStack->stack, UndoStack->current + 1, undo_free );
     MemFree( UndoStack );
     UndoStack = NULL;
-    _MemFreePtrArray( UndoUndoStack->stack, UndoUndoStack->current + 1, undo_free );
+    MemFreePtrArray( (void **)UndoUndoStack->stack, UndoUndoStack->current + 1, undo_free );
     MemFree( UndoUndoStack );
     UndoUndoStack = NULL;
 

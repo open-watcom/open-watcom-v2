@@ -45,7 +45,7 @@ static vi_key   *keyVals;
 
 static bool key_alloc( int cnt )
 {
-    keyVals = _MemAllocArray( vi_key, cnt );
+    keyVals = _MemAllocArraySafe( vi_key, cnt );
     return( true );
 }
 
@@ -154,7 +154,7 @@ vi_rc MapKey( map_flags mflags, const char *data )
                     MySprintf( WorkLine->data, "%d %s", key, scr.data );
                 }
             }
-            _MemFreeArray( scr.data );
+            MemFree( scr.data );
             return( rc );
 
         } else {
@@ -166,7 +166,7 @@ vi_rc MapKey( map_flags mflags, const char *data )
 
     maps[key].inuse = false;
     maps[key].is_base = false;
-    _MemFreeArray( maps[key].data );
+    MemFree( maps[key].data );
     maps[key].data = NULL;
     if( (mflags & MAPFLAG_UNMAP) == 0 ) {
         if( mflags & MAPFLAG_BASE ) {
@@ -380,7 +380,7 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
      * get storage for key map
      */
     len = strlen( data );
-    scr->data = _MemAllocArray( vi_key, len + 1 );
+    scr->data = _MemAllocArraySafe( vi_key, len + 1 );
     scr->inuse = false;
 
     /*
@@ -439,8 +439,8 @@ vi_rc AddKeyMap( key_map *scr, const char *data )
  */
 void InitKeyMaps( void )
 {
-    KeyMaps = _MemAllocArray( key_map, MAX_EVENTS );
-    InputKeyMaps = _MemAllocArray( key_map, MAX_EVENTS );
+    KeyMaps = _MemAllocArraySafe( key_map, MAX_EVENTS );
+    InputKeyMaps = _MemAllocArraySafe( key_map, MAX_EVENTS );
 
 } /* InitKeyMaps */
 
@@ -451,21 +451,21 @@ void FiniKeyMaps( void )
 {
     int i;
 
-    _MemFreeArray( keyVals );
-    _MemFreeArray( CharTokens );
+    MemFree( keyVals );
+    MemFree( CharTokens );
 
     // assuming Keymaps and InputKeymaps are inited to 0
     // this should be OK
     for( i = 0; i < MAX_EVENTS; i++ ) {
         if( KeyMaps[i].data != NULL ) {
-            _MemFreeArray( KeyMaps[i].data );
+            MemFree( KeyMaps[i].data );
         }
         if( InputKeyMaps[i].data != NULL ) {
-            _MemFreeArray( InputKeyMaps[i].data );
+            MemFree( InputKeyMaps[i].data );
         }
     }
-    _MemFreeArray( KeyMaps );
-    _MemFreeArray( InputKeyMaps );
+    MemFree( KeyMaps );
+    MemFree( InputKeyMaps );
 
 } /* InitKeyMaps */
 
@@ -485,11 +485,11 @@ vi_rc ExecuteBuffer( void )
     rc = GetSavebufString( &data );
     if( rc == ERR_NO_ERR ) {
         rc = AddKeyMap( &scr, data );
-        _MemFreeArray( data );
+        MemFree( data );
         if( rc == ERR_NO_ERR ) {
             rc = RunKeyMap( &scr, 1L );
         }
-        _MemFreeArray( scr.data );
+        MemFree( scr.data );
     }
     return( rc );
 

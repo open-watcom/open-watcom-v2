@@ -41,7 +41,6 @@
     #include "trmem.h"
 #endif
 #include "memdmp.h"
-#include "memfuncs.h"
 
 
 #if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
@@ -199,7 +198,7 @@ static void tossBoundData( void )
 {
     if( BoundData ) {
         if( !EditFlags.BndMemoryLocked ) {
-            _MemFreeArray( BndMemory );
+            MemFree( BndMemory );
             BndMemory = NULL;
         }
     }
@@ -209,9 +208,9 @@ static void tossBoundData( void )
 
 
 /*
- * doMemAllocUnsafe - see above
+ * doMemAlloc - see above
  */
-static void *doMemAllocUnsafe( size_t size, WHO_PTR who )
+static void *doMemAlloc( size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -232,38 +231,38 @@ static void *doMemAllocUnsafe( size_t size, WHO_PTR who )
 }
 
 /*
- * MemAlloc - allocate some memory (always works, or editor aborts)
+ * MemAllocSafe - allocate some memory (always works, or editor aborts)
  */
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemAllocUnsafe( size, _TRMEM_WHO( 1 ) );
+    tmp = doMemAlloc( size, _TRMEM_WHO( 1 ) );
 #else
-    tmp = doMemAllocUnsafe( size, NULL );
+    tmp = doMemAlloc( size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
-} /* MemAlloc */
+} /* MemAllocSafe */
 
 /*
- * MemAllocUnsafe - allocate some memory, return null if it fails
+ * MemAlloc - allocate some memory, return null if it fails
  */
-TRMEMAPI( MemAllocUnsafe )
-void *MemAllocUnsafe( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( doMemAllocUnsafe( size, _TRMEM_WHO( 2 ) ) );
+    return( doMemAlloc( size, _TRMEM_WHO( 2 ) ) );
 #else
-    return( doMemAllocUnsafe( size, NULL ) );
+    return( doMemAlloc( size, NULL ) );
 #endif
 
-} /* MemAllocUnsafe */
+} /* MemAlloc */
 
 /*
  * MemStrdup - allocate memory and duplicate string
@@ -317,9 +316,9 @@ void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
 
 
 /*
- * doMemReallocUnsafe - reallocate a block, return NULL if it fails
+ * doMemRealloc - reallocate a block, return NULL if it fails
  */
-static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
+static void *doMemRealloc( void *ptr, size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -347,7 +346,7 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
 #endif
 #ifdef __WATCOMC__
     if( tmp == NULL ) {
-        tmp = doMemAllocUnsafe( size, who );
+        tmp = doMemAlloc( size, who );
         if( tmp == NULL ) {
             return( NULL );
         }
@@ -371,37 +370,37 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
     }
     return( tmp );
 
-} /* doMemReallocUnsafe */
+} /* doMemRealloc */
 
-TRMEMAPI( MemReallocUnsafe )
-void *MemReallocUnsafe( void *ptr, size_t size )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 5 ) ) );
+    return( doMemRealloc( ptr, size, _TRMEM_WHO( 5 ) ) );
 #else
-    return( doMemReallocUnsafe( ptr, size, NULL ) );
+    return( doMemRealloc( ptr, size, NULL ) );
 #endif
 }
 
 /*
- * MemRealloc - reallocate a block, and it will succeed.
+ * MemReallocSafe - reallocate a block, and it will succeed.
  */
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t size )
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *ptr, size_t size )
 {
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemReallocUnsafe( ptr, size, _TRMEM_WHO( 6 ) );
+    tmp = doMemRealloc( ptr, size, _TRMEM_WHO( 6 ) );
 #else
-    tmp = doMemReallocUnsafe( ptr, size, NULL );
+    tmp = doMemRealloc( ptr, size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
     }
     return( tmp );
 
-} /* MemRealloc */
+} /* MemReallocSafe */
 
 static char *staticBuffs[MAX_STATIC_BUFFERS];
 static bool staticUse[MAX_STATIC_BUFFERS];
@@ -457,9 +456,9 @@ void StaticStart( void )
 {
     int i, bs;
 
-    _MemFreeArray( StaticBuffer );
+    MemFree( StaticBuffer );
     bs = EditVars.MaxLineLen + 2;
-    StaticBuffer = _MemAllocArray( char, MAX_STATIC_BUFFERS * bs );
+    StaticBuffer = _MemAllocArraySafe( char, MAX_STATIC_BUFFERS * bs );
     for( i = 0; i < MAX_STATIC_BUFFERS; i++ ) {
         staticUse[i] = false;
         staticBuffs[i] = &StaticBuffer[i * bs];
@@ -469,6 +468,6 @@ void StaticStart( void )
 
 void StaticFini( void )
 {
-    _MemFreeArray( StaticBuffer );
+    MemFree( StaticBuffer );
 }
 
