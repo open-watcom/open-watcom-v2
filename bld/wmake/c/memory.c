@@ -299,6 +299,8 @@ static void *check_nomem( void *ptr )
     return( ptr );
 }
 
+#ifdef USE_SCARCE
+
 #ifdef TRMEM
 STATIC void *doAlloc( size_t size, _trmem_who who )
 #else
@@ -310,7 +312,6 @@ STATIC void *doAlloc( size_t size )
  *          such block exists.
  */
 {
-#ifdef USE_SCARCE
     void   *ptr;
 
     for( ;; ) {
@@ -319,37 +320,32 @@ STATIC void *doAlloc( size_t size )
   #else
         ptr = malloc( size );
   #endif
-        if( ptr != NULL ) {
-            break;
-        }
-        if( !tryScarce() ) {
+        if( ptr != NULL || !tryScarce() ) {
             break;
         }
     }
     return( ptr );
-
-#else /* !USE_SCARCE */
-
-  #ifdef TRMEM
-    return( _trmem_alloc( size, who, TrHdl ) );
-  #else
-    return( malloc( size ) );
-  #endif
+}
 
 #endif /* USE_SCARCE */
-}
 
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
-/*******************************/
+/***************************/
 {
-    void *ptr;
 #ifdef TRMEM
-    ptr = doAlloc( size, _TRMEM_WHO( 1 ) );
+  #ifdef USE_SCARCE
+    return( doAlloc( size, _TRMEM_WHO( 1 ) ) );
+  #else
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
+  #endif
 #else
-    ptr = doAlloc( size );
+  #ifdef USE_SCARCE
+    return( doAlloc( size ) );
+  #else
+    return( malloc( size ) );
+  #endif
 #endif
-    return( ptr );
 }
 
 TRMEMAPI( MemAllocSafe )
@@ -361,15 +357,23 @@ void *MemAllocSafe( size_t size )
  */
 {
 #ifdef TRMEM
+  #ifdef USE_SCARCE
     return( check_nomem( doAlloc( size, _TRMEM_WHO( 2 ) ) ) );
+  #else
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
+  #endif
 #else
+  #ifdef USE_SCARCE
     return( check_nomem( doAlloc( size ) ) );
+  #else
+    return( check_nomem( malloc( size ) ) );
+  #endif
 #endif
 }
 
 TRMEMAPI( MemCAllocSafe )
 void *MemCAllocSafe( size_t size )
-/******************************
+/*********************************
  * post:    A scarce routine may be called
  * returns: A pointer to a block of memory of size size
  * aborts:  If not enough memory to satisfy request
@@ -377,13 +381,51 @@ void *MemCAllocSafe( size_t size )
 {
     void    *ptr;
 
-#ifdef TRMEM        /* so we can track ret address */
+#ifdef TRMEM
+  #ifdef USE_SCARCE
     ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 3 ) ) );
+  #else
+    ptr = check_nomem( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
+  #endif
 #else
+  #ifdef USE_SCARCE
     ptr = check_nomem( doAlloc( size ) );
+  #else
+    ptr = check_nomem( malloc( size ) );
+  #endif
 #endif
     return( memset( ptr, NULLCHAR, size ) );
 }
+
+#ifdef USE_SCARCE
+
+#ifdef TRMEM
+STATIC char *doStrdup( const char *str, _trmem_who who )
+#else
+STATIC char *doStrdup( const char *str )
+#endif
+/******************************************************
+ * post:    A scarce routine may have been called.
+ * returns: A pointer to a block of memory of size size, or NULL if no
+ *          such block exists.
+ */
+{
+    void   *ptr;
+
+    for( ;; ) {
+  #ifdef TRMEM
+        ptr = _trmem_strdup( str, who, TrHdl );
+  #else
+        ptr = strdup( str );
+  #endif
+        if( ptr != NULL || !tryScarce() ) {
+            break;
+        }
+    }
+    return( ptr );
+}
+
+#endif /* USE_SCARCE */
 
 TRMEMAPI( MemStrdupSafe )
 char *MemStrdupSafe( const char *str )
@@ -393,9 +435,17 @@ char *MemStrdupSafe( const char *str )
  */
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 4 ), TrHdl ) ) );
+  #ifdef USE_SCARCE
+    return( check_nomem( doStrdup( str, _TRMEM_WHO( 4 ) ) ) );
+  #else
+    return( _trmem_strdup( str, _TRMEM_WHO( 4 ), TrHdl ) );
+  #endif
 #else
-    return( check_nomem( strdup( str ) ) );
+  #ifdef USE_SCARCE
+    return( check_nomem( doStrdup( str ) ) );
+  #else
+    return( strdup( str ) );
+  #endif
 #endif
 }
 
@@ -425,9 +475,17 @@ char *CharToStringSafe( char c )
     char    *p;
 
 #ifdef TRMEM
+  #ifdef USE_SCARCE
     p = check_nomem( doAlloc( 2, _TRMEM_WHO( 6 ) ) );
+  #else
+    p = check_nomem( _trmem_alloc( 2, _TRMEM_WHO( 6 ), TrHdl ) );
+  #endif
 #else
+  #ifdef USE_SCARCE
     p = check_nomem( doAlloc( 2 ) );
+  #else
+    p = check_nomem( malloc( 2 ) );
+  #endif
 #endif
     p[0] = c;
     p[1] = NULLCHAR;

@@ -37,16 +37,16 @@
 #include <stdlib.h>
 #include "memfuncs.h"
 
-#define MALLOC(n,t)     ((t *)MemAlloc((n) * sizeof(t)))
-#define REALLOC(p,n,t)  ((t *)MemRealloc((p),(n) * sizeof(t)))
-#define CALLOC(n,t)     ((t *)MemCAlloc((n),sizeof(t)))
+#define MALLOC(n,t)     ((t *)MemAllocSafe((n) * sizeof(t)))
+#define REALLOC(p,n,t)  ((t *)MemReallocSafe((p),(n) * sizeof(t)))
+#define CALLOC(n,t)     ((t *)MemCAllocSafe((n),sizeof(t)))
 #define FREE(n)         MemFree((n))
-#define STRDUP(p)       MemStrdup((p))
+#define STRDUP(p)       MemStrdupSafe((p))
 
 
 extern void     MemInit( void );
 extern void     MemFini( void );
 
-extern void     *MemCAlloc( size_t n, size_t size );
+extern void     *MemCAllocSafe( size_t n, size_t size );
 
 #endif

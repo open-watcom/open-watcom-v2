@@ -98,56 +98,49 @@ void MemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/****************************/
+static void *check_nomem( void *ptr )
 {
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
     if( ptr == NULL ) {
         msg( "Out of memory\n" );
     }
     return( ptr );
 }
 
-TRMEMAPI( MemCAlloc )
-void *MemCAlloc( size_t n, size_t size )
-/***************************************/
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
+TRMEMAPI( MemCAllocSafe )
+void *MemCAllocSafe( size_t n, size_t size )
+/******************************************/
 {
     void        *ptr;
 
     size *= n;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
+    ptr = check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) );
 #else
-    ptr = malloc( size );
+    ptr = check_nomem( malloc( size ) );
 #endif
-    if( ptr == NULL ) {
-        msg( "Out of memory\n" );
-    }
     return( memset( ptr, 0, size ) );
 }
 
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *old_ptr, size_t newsize )
-/************************************************/
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *old_ptr, size_t newsize )
+/***************************************************/
 {
-    void    *ptr;
-
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), TrHdl );
+    return( check_nomem( _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), TrHdl ) ) );
 #else
-    ptr = realloc( old_ptr, newsize );
+    return( check_nomem( realloc( old_ptr, newsize ) ) );
 #endif
-    if( ptr == NULL ) {
-        msg( "Out of memory\n" );
-    }
-    return( ptr );
 }
 
 TRMEMAPI( MemFree )
@@ -163,21 +156,15 @@ void MemFree( void *ptr )
     }
 }
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
-/*********************************/
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
 {
-    char        *ptr;
-
     if( str == NULL )
         return( NULL );
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl ) ) );
 #else
-    ptr = strdup( str );
+    return( check_nomem( strdup( str ) ) );
 #endif
-    if( ptr == NULL ) {
-        msg( "Out of memory\n" );
-    }
-    return( ptr );
 }

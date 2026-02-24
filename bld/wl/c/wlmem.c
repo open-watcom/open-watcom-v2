@@ -118,26 +118,48 @@ void LnkMemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
-/***********************************/
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );       // see note 1 below
+    }
+    return( ptr );
+}
+
+#ifdef TRMEM
+static void *doAlloc( size_t size, _trmem_who who )
+#else
+static void *doAlloc( size_t size )
+#endif
 {
     void    *ptr;
 
     for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
+        ptr = _trmem_alloc( size, who, TrHdl );
 #else
         ptr = malloc( size );
 #endif
-        if( ptr != NULL ) {
-            memset( ptr, 0, size );
-            break;
-        }
-        if( !FreeUpMemory( false ) ) {
+        if( ptr != NULL || !FreeUpMemory( false ) ) {
             break;
         }
     }
+    return( ptr );
+}
+
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+    void    *ptr;
+
+#ifdef TRMEM
+    ptr = doAlloc( size, _TRMEM_WHO( 1 ) );
+#else
+    ptr = doAlloc( size );
+#endif
+    if( ptr != NULL )
+        memset( ptr, 0, size );
     return( ptr );
 }
 
@@ -147,18 +169,30 @@ void *MemAllocSafe( size_t size )
 {
     void            *ptr;
 
+#ifdef TRMEM
+    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) );
+#else
+    ptr = check_nomem( doAlloc( size ) );
+#endif
+    return( memset( ptr, 0, size ) );
+}
+
+#ifdef TRMEM
+static char *doStrdup( const char *str, _trmem_who who )
+#else
+static char *doStrdup( const char *str )
+#endif
+/**************************************/
+{
+    char            *ptr;
+
     for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
+        ptr = _trmem_strdup( str, who, TrHdl );
 #else
-        ptr = malloc( size );
+        ptr = strdup( str );
 #endif
-        if( ptr != NULL ) {
-            memset( ptr, 0, size );
-            break;
-        }
-        if( !FreeUpMemory( false ) ) {
-            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
+        if( ptr != NULL || !FreeUpMemory( false ) ) {
             break;
         }
     }
@@ -169,19 +203,34 @@ TRMEMAPI( MemStrdupSafe )
 char *MemStrdupSafe( const char *str )
 /************************************/
 {
-    char            *ptr;
+#ifdef TRMEM
+    return( check_nomem( doStrdup( str, _TRMEM_WHO( 3 ) ) ) );
+#else
+    return( check_nomem( doStrdup( str ) ) );
+#endif
+}
+
+#ifdef TRMEM
+static void *doRealloc( void *src, size_t size, _trmem_who who )
+#else
+static void *doRealloc( void *src, size_t size )
+#endif
+/***********************************************
+ * reallocate a block of memory.
+ * Notes for MemRealloc
+ * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
+ * and this function is called from permshrink
+ */
+{
+    void    *ptr;
 
     for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
+        ptr = _trmem_realloc( src, size, who, TrHdl );
 #else
-        ptr = strdup( str );
+        ptr = realloc( src, size );
 #endif
-        if( ptr != NULL ) {
-            break;
-        }
-        if( !FreeUpMemory( false ) ) {
-            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
+        if( ptr != NULL || !FreeUpMemory( true ) ) {
             break;
         }
     }
@@ -190,55 +239,24 @@ char *MemStrdupSafe( const char *str )
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *src, size_t size )
-/*****************************************
- * reallocate a block of memory.
- * Notes for MemRealloc
- * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
- * and this function is called from permshrink
- */
+/****************************************/
 {
-    void    *ptr;
-
-    for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
+    return( doRealloc( src, size, _TRMEM_WHO( 4 ) ) );
 #else
-        ptr = realloc( src, size );
+    return( doRealloc( src, size ) );
 #endif
-        if( ptr != NULL )
-            break;
-        if( !FreeUpMemory( true ) ) {
-            break;
-        }
-    }
-    return( ptr );
 }
 
 TRMEMAPI( MemReallocSafe )
 void *MemReallocSafe( void *src, size_t size )
-/*********************************************
- * reallocate a block of memory.
- * Notes for MemRealloc
- * NOTE 1: we don't want to call FreeUpMemory, since that does a permshrink
- * and this function is called from permshrink
- */
+/********************************************/
 {
-    void    *ptr;
-
-    for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 5 ), TrHdl );
+    return( check_nomem( doRealloc( src, size, _TRMEM_WHO( 4 ) ) ) );
 #else
-        ptr = realloc( src, size );
+    return( check_nomem( doRealloc( src, size ) ) );
 #endif
-        if( ptr != NULL )
-            break;
-        if( !FreeUpMemory( true ) ) {
-            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );       // see note 1 below
-            break;
-        }
-    }
-    return( ptr );
 }
 
 TRMEMAPI( MemFree )
@@ -255,27 +273,18 @@ void MemFree( void *p )
 }
 
 TRMEMAPI( MemToStringSafe )
-char *MemToStringSafe( const void *mem, size_t len )
-/***********************************************/
+char *MemToStringSafe( const void *mem, size_t size )
+/***************************************************/
 {
     char            *ptr;
 
-    for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 7 ), TrHdl );
+    ptr = check_nomem( doAlloc( size + 1, _TRMEM_WHO( 1 ) ) );
 #else
-        ptr = malloc( len + 1 );
+    ptr = check_nomem( doAlloc( size + 1 ) );
 #endif
-        if( ptr != NULL ) {
-            memcpy( ptr, mem, len );
-            ptr[len] = '\0';
-            break;
-        }
-        if( !FreeUpMemory( false ) ) {
-            LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
-            break;
-        }
-    }
+    memcpy( ptr, mem, size );
+    ptr[size] = '\0';
     return( ptr );
 }
 
