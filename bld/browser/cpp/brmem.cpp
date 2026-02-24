@@ -209,7 +209,6 @@ void WBRFree( void *p )
 #endif
 }
 
-#if 1
 #ifndef STANDALONE_MERGER
 void *MemAlloc( unsigned a )
 //--------------------------
@@ -253,7 +252,6 @@ void GUIMemPrtUsage( void )
 {
 }
 #endif  // STANDALONE_MERGER
-#endif  // 0
 
 }; /* extern "C" */
 
