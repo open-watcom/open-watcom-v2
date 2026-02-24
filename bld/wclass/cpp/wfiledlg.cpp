@@ -34,6 +34,7 @@
 #include "wfilenam.hpp"
 #include "wresstr.hpp"
 #include "wfiledlg.hpp"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -139,7 +140,7 @@ const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
         WFileName path( _ofn.last_path );
         path.concat( "\\" );
         f.absoluteTo( path );
-        GUIMemFree( _ofn.last_path );
+        MemFree( _ofn.last_path );
         _ofn.last_path = NULL;
         strcpy( _fileName, f );
 #endif

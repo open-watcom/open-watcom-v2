@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +35,7 @@
 #include "wwindow.hpp"
 #include "wstatdlg.hpp"
 #include "wpopmenu.hpp"
+#include "memfuncs.h"
 
 
 WEXPORT WControl::WControl( WWindow* parent, gui_control_class control_class,
@@ -113,7 +114,7 @@ void WEXPORT WControl::getText( char* buff, size_t len ) {
             text_len = len - 1;
         memcpy( buff, text, text_len );
         buff[text_len] = '\0';
-        GUIMemFree( text );
+        MemFree( text );
     }
 }
 
@@ -123,7 +124,7 @@ void WEXPORT WControl::getText( WString& str ) {
 
     char *text = GUIGetText( parent()->handle(), controlId() );
     WString t( text );
-    GUIMemFree( text );
+    MemFree( text );
     str = t;
 }
 
@@ -135,7 +136,7 @@ size_t WEXPORT WControl::getTextLength() {
     if( text == NULL )
         return( 0 );
     size_t len = strlen( text );
-    GUIMemFree( text );
+    MemFree( text );
     return( len );
 }
 
