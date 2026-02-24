@@ -77,6 +77,14 @@ void FiniMem( void )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        FatalError( ERR_NO_MEMORY );
+    }
+    return( ptr );
+}
+
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
@@ -92,19 +100,14 @@ TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 /*******************************/
 {
-    void *ptr;
-
     if( size == 0 ) {
         return( NULL );
     }
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
-    ptr = malloc( size );
+    return( check_nomem( malloc( size ) ) );
 #endif
-    if( ptr == NULL )
-        FatalError( ERR_NO_MEMORY );
-    return( ptr );
 }
 
 TRMEMAPI( MemStrdup )

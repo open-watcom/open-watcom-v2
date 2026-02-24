@@ -114,6 +114,13 @@ void GUIMemClose( void )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        exit( 1 );
+    }
+    return( ptr );
+}
 
 /*
  * Alloc functions
@@ -135,9 +142,9 @@ void *MemAllocSafe( size_t size )
 /*******************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
-    return( malloc( size ) );
+    return( check_nomem( malloc( size ) ) );
 #endif
 }
 

@@ -78,21 +78,23 @@ void MemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAllocSafe )
-void *MemAllocSafe( size_t size )
-/*******************************/
+static void *check_nomem( void *ptr )
 {
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
     if( ptr == NULL ) {
         Error( "Dynamic Memory Exhausted!!!" );
     }
     return( ptr );
+}
+
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+/*******************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
 }
 
 TRMEMAPI( MemFree )

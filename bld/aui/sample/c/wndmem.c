@@ -126,6 +126,14 @@ void GUIMemRedirect( FILE *fp )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        Say( "No memory for window\n" );
+        exit( 1 );
+    }
+    return( ptr );
+}
 
 /*
  * Alloc functions
@@ -145,14 +153,11 @@ void *MemAlloc( size_t size )
 TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 {
-    void        *chunk;
-
-    chunk = MemAlloc( size );
-    if( chunk == NULL ) {
-        Say( "No memory for window\n" );
-        exit( 1 );
-    }
-    return( chunk );
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
 }
 
 /*

@@ -382,8 +382,7 @@ void *MemCAllocSafe( size_t size )
 #else
     ptr = check_nomem( doAlloc( size ) );
 #endif
-    memset( ptr, NULLCHAR, size );
-    return( ptr );
+    return( memset( ptr, NULLCHAR, size ) );
 }
 
 TRMEMAPI( MemStrdupSafe )
