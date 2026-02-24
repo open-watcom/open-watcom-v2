@@ -33,9 +33,10 @@
 #include <stddef.h>
 #include "bool.h"
 #include "aui.h"
+#include "memfuncs.h"
 
-#define ALLOC       GUIMemAlloc
-#define FREE        GUIMemFree
+#define ALLOC       MemAlloc
+#define FREE        MemFree
 #define CASEIGNORE  SrchIgnoreCase
 #define MAGICFLAG   false
 #define MAGICSTR    SrchIgnoreMagic

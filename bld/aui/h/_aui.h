@@ -36,6 +36,7 @@
 #include "aui.h"
 #include "aui.rh"
 #include "auimsgs.grh"
+#include "memfuncs.h"
 
 #define WNDEVENT( w, e, p )     (w)->info->event( w, e, p )
 

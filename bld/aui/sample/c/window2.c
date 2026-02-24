@@ -241,7 +241,7 @@ static bool WNDCALLBACK W2WndEventProc( a_window wnd, gui_event gui_ev, void *pa
         WndSetRepaint( wnd );
         return( true );
     case GUI_DESTROY :
-        GUIMemFree( w2 );
+        MemFree( w2 );
         return( true );
     default :
         break;
@@ -276,7 +276,7 @@ a_window W2Open( void )
     a_window    wnd;
     wnd_create_struct   info;
 
-    w2 = GUIMemAllocSafe( WORD_SIZE * sizeof( char * ) + sizeof( *w2 ) );
+    w2 = MemAllocSafe( WORD_SIZE * sizeof( char * ) + sizeof( *w2 ) );
     WndInitCreateStruct( &info );
     info.scroll_style &= ~GUI_VDRAG;
     info.title = "window with a title";
