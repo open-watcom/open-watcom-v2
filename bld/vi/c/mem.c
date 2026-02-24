@@ -52,7 +52,7 @@
 #endif
 
 #ifdef TRMEM
-    #define MSIZE( x )          _trmem_msize( x, trmemHandle )
+    #define MSIZE( x )          _trmem_msize( x, TrHdl )
     #define WHO_PTR             _trmem_who
 #else
     #define MSIZE( x )          _msize( x )
@@ -63,16 +63,16 @@ static char                 *StaticBuffer = NULL;
 
 #ifdef TRMEM
 
-static FILE                 *trmemOutput = NULL;
-static _trmem_hdl           trmemHandle;
+static FILE                 *TrFile = NULL;
+static _trmem_hdl           TrHdl = _TRMEM_HDL_NONE;
 
 static void trmemPrintLine( void *handle, const char *buff, size_t len )
 /**********************************************************************/
 {
     /* unused parameters */ (void)handle; (void)len;
 
-    if( trmemOutput != NULL ) {
-        fprintf( trmemOutput, "%s\n", buff );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buff );
     }
 }
 
@@ -81,11 +81,11 @@ static void trmemPrintLine( void *handle, const char *buff, size_t len )
 void FiniMem( void )
 {
 #ifdef TRMEM
-    _trmem_prt_list( trmemHandle );
-    _trmem_close( trmemHandle );
-    if( trmemOutput != NULL ) {
-        fclose( trmemOutput );
-        trmemOutput = NULL;
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
+    if( TrFile != NULL ) {
+        fclose( TrFile );
+        TrFile = NULL;
     }
 #endif
 }
@@ -93,8 +93,8 @@ void FiniMem( void )
 void InitMem( void )
 {
 #ifdef TRMEM
-    trmemOutput = fopen( "trmem.out", "w" );
-    trmemHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrFile = fopen( "trmem.out", "w" );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
         NULL, trmemPrintLine, _TRMEM_DEF );
     // atexit( DumpTRMEM );
 #endif
@@ -108,7 +108,7 @@ static void *getMem( size_t size, WHO_PTR who )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = _trmem_alloc( size, who, trmemHandle );
+    tmp = _trmem_alloc( size, who, TrHdl );
 #else
     /* unused parameters */ (void)who;
 
@@ -274,7 +274,7 @@ char *MemStrdup( const char *str )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), trmemHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
 #else
     ptr = strdup( str );
 #endif
@@ -292,7 +292,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 4 ), trmemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -339,7 +339,7 @@ static void *doMemReallocUnsafe( void *ptr, size_t size, WHO_PTR who )
     }
 
 #ifdef TRMEM
-    tmp = _trmem_realloc( ptr, size, who, trmemHandle );
+    tmp = _trmem_realloc( ptr, size, who, TrHdl );
 #else
     /* unused parameters */ (void)who;
 

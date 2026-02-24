@@ -56,8 +56,8 @@
 #endif
 
 #if defined( TRMEM ) && !defined( USE_CG_MEMMGT ) && defined( _M_IX86 )
-    #define alloc_mem(s,n)  _trmem_alloc( s, who, trackerHdl )
-    #define _doFree(p,n)    _trmem_free( p, _trmem_guess_who(), trackerHdl )
+    #define alloc_mem(s,n)  _trmem_alloc( s, who, TrHdl )
+    #define _doFree(p,n)    _trmem_free( p, _trmem_guess_who(), TrHdl )
     #define _MemAlloc(p,n)  _CMemAlloc( p, _trmem_guess_who() )
     #define _MemAllocW(p)   _CMemAlloc( p, who )
     #define _addPerm(p,n)   addPerm( p, _trmem_guess_who() )
@@ -66,8 +66,8 @@
     #define alloc_mem(s,n)  BEMemAlloc( s )
     #define _doFree(p,n)    BEMemFree( p )
   #elif defined( TRMEM )
-    #define alloc_mem(s,n)  _trmem_alloc( s, _TRMEM_ROUTINE(n), trackerHdl )
-    #define _doFree(p,n)    _trmem_free( p, _TRMEM_ROUTINE(n), trackerHdl )
+    #define alloc_mem(s,n)  _trmem_alloc( s, _TRMEM_ROUTINE(n), TrHdl )
+    #define _doFree(p,n)    _trmem_free( p, _TRMEM_ROUTINE(n), TrHdl )
   #else
     #define alloc_mem(s,n)  malloc( s )
     #define _doFree(p,n)    free( p )
@@ -102,7 +102,7 @@ static void *deferredFreeList;
 
 #ifdef TRMEM
 
-static _trmem_hdl   trackerHdl;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
 static void printLine( void *dummy, const char *buf, size_t len )
 /***************************************************************/
@@ -315,12 +315,12 @@ static void cmemInit(           // INITIALIZATION
     if( CppGetEnv( "TRQUIET" ) == NULL ) {
         trmem_flags |= _TRMEM_CLOSE_CHECK_FREE;
     }
-    trackerHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
                                 NULL, printLine, trmem_flags );
 #endif
 #if defined( USE_CG_MEMMGT )
   #ifdef TRMEM
-    BEMemInit( trackerHdl );
+    BEMemInit( TrHdl );
   #else
     BEMemInit( NULL );
   #endif
@@ -347,9 +347,9 @@ static void cmemFini(           // COMPLETION
 #endif
 #ifdef TRMEM
     if( TOGGLEDBG( dump_memory ) ) {
-        _trmem_prt_list_ex( trackerHdl, 100 );
+        _trmem_prt_list_ex( TrHdl, 100 );
     }
-    if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {
+    if( _trmem_close( TrHdl ) != 0 && !CompFlags.compile_failed ) {
         // we can't print an error message since we have no more memory
   #if defined( __WATCOMC__ )
         EnterDebugger();

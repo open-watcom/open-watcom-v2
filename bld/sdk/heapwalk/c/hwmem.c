@@ -46,17 +46,17 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl  MemHandle;
+static _trmem_hdl  TrHdl = _TRMEM_HDL_NONE;
 
-static FILE *MemFP = NULL;   /* stream to put output on */
+static FILE *TrFile = NULL;   /* stream to put output on */
 
 static void MemPrintLine( void *parm, const char *buff, size_t len )
 /******************************************************************/
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    if( MemFP != NULL ) {
-        fprintf( MemFP, "%s\n", buff );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buff );
     }
 }
 
@@ -74,12 +74,12 @@ void MemOpen( void )
     __win_realloc_flags = GMEM_MOVEABLE | GMEM_SHARE;
 #endif
 #ifdef TRMEM
-    MemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
         NULL, MemPrintLine, _TRMEM_DEF );
 
     tmpdir = getenv( "TRMEMFILE" );
     if( tmpdir != NULL ) {
-        MemFP = fopen( tmpdir, "w" );
+        TrFile = fopen( tmpdir, "w" );
     }
 #endif
 }
@@ -88,11 +88,11 @@ void MemClose( void )
 /*******************/
 {
 #ifdef TRMEM
-    _trmem_prt_list( MemHandle );
-    _trmem_close( MemHandle );
-    if( MemFP != NULL ) {
-        fclose( MemFP );
-        MemFP = NULL;
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
+    if( TrFile != NULL ) {
+        fclose( TrFile );
+        TrFile = NULL;
     }
 #endif
 }
@@ -104,7 +104,7 @@ void *MemAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), MemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     ptr = malloc( size );
     memset( ptr, 0, size );
@@ -117,7 +117,7 @@ void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), MemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -128,7 +128,7 @@ void MemFree( void *ptr )
 /***********************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), MemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
 #else
     free( ptr );
 #endif

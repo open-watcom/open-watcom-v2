@@ -59,16 +59,16 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   memHandle;
-static FILE         *memFile;       /* file handle we'll write() to */
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+static FILE         *TrFile;       /* file handle we'll write() to */
 
 static void memPrintLine( void *file, const char *buf, size_t len )
 {
     /* unused parameters */ (void)file; (void)len;
 
     fprintf( stderr, "***%s\n", buf );
-    if( memFile != NULL ) {
-        fprintf( memFile, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
 }
 
@@ -79,10 +79,10 @@ void    FMemInit( void ) {
 
     UnFreeMem = 0;
 #if defined( TRMEM )
-    memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
+    TrFile = fopen( "mem.trk", "w" );
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
                             NULL, memPrintLine, _TRMEM_DEF );
-    if( memHandle == NULL ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         exit( EXIT_FAILURE );
     }
 #else
@@ -106,14 +106,14 @@ void    FMemFini( void )
 //======================
 {
 #if defined( TRMEM )
-    if( memHandle != NULL ) {
-        _trmem_prt_list_ex( memHandle, 100 );
-        _trmem_close( memHandle );
-        if( memFile != NULL ) {
-            fclose( memFile );
-            memFile = NULL;
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list_ex( TrHdl, 100 );
+        _trmem_close( TrHdl );
+        if( TrFile != NULL ) {
+            fclose( TrFile );
+            TrFile = NULL;
         }
-        memHandle = NULL;
+        TrHdl = _TRMEM_HDL_NONE;
     }
 #else
     FMemErrors();
@@ -144,14 +144,14 @@ void    *MemAlloc( size_t size ) {
     void        *p;
 
 #if defined( TRMEM )
-    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     p = malloc( size );
 #endif
     if( p == NULL ) {
         FrlFini( &ITPool );
 #if defined( TRMEM )
-        p = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
+        p = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
 #else
         p = malloc( size );
 #endif
@@ -173,14 +173,14 @@ char    *MemStrdup( const char *str )
     void        *p;
 
 #if defined( TRMEM )
-    p = _trmem_strdup( str, _TRMEM_WHO( 3 ), memHandle );
+    p = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
 #else
     p = strdup( str );
 #endif
     if( p == NULL ) {
         FrlFini( &ITPool );
 #if defined( TRMEM )
-        p = _trmem_strdup( str, _TRMEM_WHO( 3 ), memHandle );
+        p = _trmem_strdup( str, _TRMEM_WHO( 4 ), TrHdl );
 #else
         p = strdup( str );
 #endif
@@ -200,7 +200,7 @@ void    MemFree( void *p ) {
 //===========================
 
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( p );
 #endif

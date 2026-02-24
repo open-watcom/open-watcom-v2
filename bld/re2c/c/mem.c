@@ -48,8 +48,8 @@
 
 #if defined( TRMEM )
 
-static _trmem_hdl   memHandle;
-static FILE         *memFile;       /* file handle we'll write() to */
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+static FILE         *TrFile;       /* file handle we'll write() to */
 
 static void memPrintLine( void *file, const char *buf, size_t len )
 /*****************************************************************/
@@ -57,8 +57,8 @@ static void memPrintLine( void *file, const char *buf, size_t len )
     /* unused parameters */ (void)file; (void)len;
 
     fprintf( stderr, "***%s\n", buf );
-    if( memFile != NULL ) {
-        fprintf( memFile, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
 }
 
@@ -68,10 +68,10 @@ void MemInit( void )
 /******************/
 {
 #ifdef TRMEM
-    memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+    TrFile = fopen( "mem.trk", "w" );
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
                                 NULL, memPrintLine, _TRMEM_DEF );
-    if( memHandle == NULL ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         exit( EXIT_FAILURE );
     }
 #endif
@@ -81,14 +81,14 @@ void MemFini( void )
 //******************
 {
 #ifdef TRMEM
-    if( memHandle != NULL ) {
-        _trmem_prt_list_ex( memHandle, 100 );
-        _trmem_close( memHandle );
-        if( memFile != NULL ) {
-            fclose( memFile );
-            memFile = NULL;
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list_ex( TrHdl, 100 );
+        _trmem_close( TrHdl );
+        if( TrFile != NULL ) {
+            fclose( TrFile );
+            TrFile = NULL;
         }
-        memHandle = NULL;
+        TrHdl = _TRMEM_HDL_NONE;
     }
 #endif
 }
@@ -98,7 +98,7 @@ void *MemAlloc( size_t size )
 /***************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 4 ), memHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -109,7 +109,7 @@ void MemFree( void *ptr )
 /***********************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), memHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), TrHdl );
 #else
     free( ptr );
 #endif

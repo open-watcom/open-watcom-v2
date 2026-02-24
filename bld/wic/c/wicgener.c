@@ -237,7 +237,7 @@ void reportError(WicErrors err, ...)
 
 #pragma initialize  40;
 
-static _trmem_hdl   TrHdl;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 static unsigned     NumMessages = 0;
 
 static enum {
@@ -393,7 +393,7 @@ void initMemory(void)
 #ifdef TRMEM
     TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
                             NULL, _printLine, _TRMEM_DEF );
-    if (TrHdl == NULL) {
+    if (TrHdl == _TRMEM_HDL_NONE) {
         puts( "Memory initialization failed." );
         exit(1);
     }

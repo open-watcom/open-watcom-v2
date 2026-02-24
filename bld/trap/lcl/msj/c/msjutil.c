@@ -53,8 +53,8 @@
 
 #ifdef TRMEM
 
-static FILE             *TrackFile = NULL;
-static _trmem_hdl       TRMemHandle;
+static FILE             *TrFile = NULL;
+static _trmem_hdl       TrHdl = _TRMEM_HDL_NONE;
 
 /* extern to avoid problems with taking address and overlays */
 void PopErrBox( void *buff )
@@ -71,82 +71,82 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
 
     if( !Closing )
         PopErrBox( (void *)buff );
-    if( TrackFile != NULL ) {
-        fprintf( TrackFile, "%s\n", buff );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buff );
     }
 }
 
 static void TRMemOpen( void )
 /***************************/
 {
-    TRMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
             NULL, TRPrintLine, _TRMEM_DEF );
 }
 
 static void TRMemClose( void )
 /****************************/
 {
-    _trmem_close( TRMemHandle );
+    _trmem_close( TrHdl );
 }
 
 TRMEMAPI( TRMemAlloc )
 static void * TRMemAlloc( size_t size )
 /*************************************/
 {
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 }
 
 TRMEMAPI( TRMemFree )
 static void TRMemFree( void * ptr )
 /*********************************/
 {
-    _trmem_free( ptr, _TRMEM_WHO( 2 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 2 ), TrHdl );
 }
 
 TRMEMAPI( TRMemRealloc )
 static void * TRMemRealloc( void * ptr, size_t size )
 /***************************************************/
 {
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TrHdl ) );
 }
 
 
 extern void TRMemPrtUsage( void )
 /*******************************/
 {
-    _trmem_prt_usage( TRMemHandle );
+    _trmem_prt_usage( TrHdl );
 }
 
 static unsigned TRMemPrtList( void )
 /******************************/
 {
-    return( _trmem_prt_list( TRMemHandle ) );
+    return( _trmem_prt_list( TrHdl ) );
 }
 
 TRMEMAPI( TRMemValidate )
 extern int TRMemValidate( void * ptr )
 /************************************/
 {
-    return( _trmem_validate( ptr, _TRMEM_WHO( 4 ), TRMemHandle ) );
+    return( _trmem_validate( ptr, _TRMEM_WHO( 4 ), TrHdl ) );
 }
 
 extern void TRMemCheck()
 /**********************/
 {
-    _trmem_validate_all( TRMemHandle );
+    _trmem_validate_all( TrHdl );
 }
 
 TRMEMAPI( TRMemChkRange )
 extern int TRMemChkRange( void * start, size_t len )
 /**************************************************/
 {
-    return( _trmem_chk_range( start, len, _TRMEM_WHO( 5 ), TRMemHandle ) );
+    return( _trmem_chk_range( start, len, _TRMEM_WHO( 5 ), TrHdl ) );
 }
 
 static void MemTrackInit()
 {
-    TrackFile = stderr;
-    TrackFile = fopen( "track.fil", "wt" );
+    TrFile = stderr;
+    TrFile = fopen( "track.fil", "wt" );
     TRMemOpen();
 }
 
@@ -156,14 +156,14 @@ static char TrackErr[] = { "Memory Tracker Errors Detected" };
 static void MemTrackFini()
 {
     Closing = TRUE;
-    if( TrackFile != stderr ) {
-        if( fseek( TrackFile, 0, SEEK_END ) != 0 ) {
+    if( TrFile != stderr ) {
+        if( fseek( TrFile, 0, SEEK_END ) != 0 ) {
             PopErrBox( TrackErr );
         } else if( TRMemPrtList() != 0 ) {
             PopErrBox( UnFreed );
         }
-        fclose( TrackFile );
-        TrackFile = NULL;
+        fclose( TrFile );
+        TrFile = NULL;
     }
     TRMemClose();
 }

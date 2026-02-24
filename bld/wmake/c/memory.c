@@ -86,20 +86,20 @@ enum {
     TRMEM_IGNORE_ERROR  = 0x0002
 };
 
-STATIC _trmem_hdl   Handle;
+STATIC _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 STATIC int          trmemCode;
-STATIC FILE         *trkfile = NULL;
+STATIC FILE         *TrFile = NULL;
 
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
 {
     /* unused parameters */ (void)h; (void)size;
 
-    if( trkfile == NULL ) {
-        trkfile = fopen( "mem.trk", "w" );
+    if( TrFile == NULL ) {
+        TrFile = fopen( "mem.trk", "w" );
     }
-    if( trkfile != NULL ) {
-        fprintf( trkfile, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
         fprintf( stdout, "%s\n", buf );
@@ -240,19 +240,19 @@ void MemFini( void )
             trmemCode = atoi( trmemCodeStr );
         }
         if( trmemCode & TRMEM_IGNORE_ERROR ) {
-            _trmem_prt_list( Handle );
+            _trmem_prt_list( TrHdl );
         } else {
-            if( _trmem_prt_list( Handle ) > 0 ) {
+            if( _trmem_prt_list( TrHdl ) > 0 ) {
                 PrtMsg( ERR | ERROR_TRMEM );
             }
         }
 
-        _trmem_close( Handle ); /* Report any memory errors. */
+        _trmem_close( TrHdl ); /* Report any memory errors. */
     }
     MemCheck();
-    if( trkfile != NULL ) {
-        fclose( trkfile );
-        trkfile = NULL;
+    if( TrFile != NULL ) {
+        fclose( TrFile );
+        TrFile = NULL;
     }
   #endif
 #endif
@@ -279,9 +279,9 @@ void MemInit( void )
 {
     memGrow();
 #ifdef TRMEM
-    Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
-    if( Handle == NULL ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
         ExitFatal();
         // never return
@@ -315,7 +315,7 @@ STATIC void *doAlloc( size_t size )
 
     for( ;; ) {
   #ifdef TRMEM
-        ptr = _trmem_alloc( size, who, Handle );
+        ptr = _trmem_alloc( size, who, TrHdl );
   #else
         ptr = malloc( size );
   #endif
@@ -331,7 +331,7 @@ STATIC void *doAlloc( size_t size )
 #else /* !USE_SCARCE */
 
   #ifdef TRMEM
-    return( _trmem_alloc( size, who, Handle ) );
+    return( _trmem_alloc( size, who, TrHdl ) );
   #else
     return( malloc( size ) );
   #endif
@@ -345,7 +345,7 @@ void *MemAlloc( size_t size )
 {
     void *ptr;
 #ifdef TRMEM
-    ptr = doAlloc( size, _TRMEM_WHO( 2 ) );
+    ptr = doAlloc( size, _TRMEM_WHO( 1 ) );
 #else
     ptr = doAlloc( size );
 #endif
@@ -361,7 +361,7 @@ void *MemAllocSafe( size_t size )
  */
 {
 #ifdef TRMEM
-    return( check_nomem( doAlloc( size, _TRMEM_WHO( 3 ) ) ) );
+    return( check_nomem( doAlloc( size, _TRMEM_WHO( 2 ) ) ) );
 #else
     return( check_nomem( doAlloc( size ) ) );
 #endif
@@ -378,7 +378,7 @@ void *MemCAllocSafe( size_t size )
     void    *ptr;
 
 #ifdef TRMEM        /* so we can track ret address */
-    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 4 ) ) );
+    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 3 ) ) );
 #else
     ptr = check_nomem( doAlloc( size ) );
 #endif
@@ -394,7 +394,7 @@ char *MemStrdupSafe( const char *str )
  */
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), Handle ) ) );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 4 ), TrHdl ) ) );
 #else
     return( check_nomem( strdup( str ) ) );
 #endif
@@ -409,7 +409,7 @@ void MemFree( void *ptr )
  */
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), Handle );
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -426,7 +426,7 @@ char *CharToStringSafe( char c )
     char    *p;
 
 #ifdef TRMEM
-    p = check_nomem( doAlloc( 2, _TRMEM_WHO( 8 ) ) );
+    p = check_nomem( doAlloc( 2, _TRMEM_WHO( 6 ) ) );
 #else
     p = check_nomem( doAlloc( 2 ) );
 #endif

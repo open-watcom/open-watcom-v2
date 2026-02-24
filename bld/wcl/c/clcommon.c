@@ -80,7 +80,7 @@ static char *DebugOptions[] = {
 
 #ifdef TRMEM
 
-static _trmem_hdl   TRMemHandle;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
 static void memPrintLine( void *fh, const char *buf, size_t len )
 {
@@ -180,7 +180,7 @@ void  MemInit( void )
 /*******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, memPrintLine, _TRMEM_DEF );
 #endif
 }
@@ -189,9 +189,9 @@ void  MemFini( void )
 /*******************/
 {
 #ifdef TRMEM
-    _trmem_prt_usage( TRMemHandle );
-    _trmem_prt_list( TRMemHandle );
-    _trmem_close( TRMemHandle );
+    _trmem_prt_usage( TrHdl );
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
 #endif
 }
 
@@ -202,7 +202,7 @@ void  *MemAlloc( size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     ptr = malloc( size );
 #endif
@@ -220,7 +220,7 @@ char *MemStrdup( const char *str )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl );
 #else
     ptr = strdup( str );
 #endif
@@ -239,7 +239,7 @@ char *MemStrLenDup( const char *str, size_t len )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 3 ), TRMemHandle );
+    ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 3 ), TrHdl );
 #else
     ptr = malloc( len + 1 );
 #endif
@@ -260,7 +260,7 @@ void  *MemRealloc( void *p, size_t size )
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TRMemHandle );
+    ptr = _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl );
 #else
     ptr = realloc( p, size );
 #endif
@@ -276,7 +276,7 @@ void  MemFree( void *ptr )
 /************************/
 {
 #ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 5 ), TRMemHandle );;
+        _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );;
 #else
         free( ptr );
 #endif

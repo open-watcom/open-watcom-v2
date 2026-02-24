@@ -189,7 +189,7 @@ void *MemAllocSafe( size_t size )
 /***************************/
 {
 #ifdef TRMEM
-    return( check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) ) );
+    return( check_nomem( doAlloc( size, _TRMEM_WHO( 2 ) ) ) );
 #else
     return( check_nomem( doAlloc( size ) ) );
 #endif
@@ -230,7 +230,7 @@ char *MemStrdup( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( doStrdup( str, _TRMEM_WHO( 7 ) ) );
+    return( doStrdup( str, _TRMEM_WHO( 3 ) ) );
 #else
     return( doStrdup( str ) );
 #endif
@@ -241,7 +241,7 @@ char *MemStrdupSafe( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( check_nomem( doStrdup( str, _TRMEM_WHO( 7 ) ) ) );
+    return( check_nomem( doStrdup( str, _TRMEM_WHO( 4 ) ) ) );
 #else
     return( check_nomem( doStrdup( str ) ) );
 #endif
@@ -257,7 +257,7 @@ void MemFree( void *ptr )
 {
 #ifdef TRMEM
     profMemCheck( "MemFree" );
-    _trmem_free( ptr, _TRMEM_WHO( 8 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -296,7 +296,7 @@ void *MemRealloc( void *ptr, size_t new_size )
 /*********************************************/
 {
 #ifdef TRMEM
-    return( doRealloc( ptr, new_size, _TRMEM_WHO( 14 ), TrHdl ) );
+    return( doRealloc( ptr, new_size, _TRMEM_WHO( 6 ), TrHdl ) );
 #else
     return( doRealloc( ptr, new_size ) );
 #endif
@@ -312,7 +312,7 @@ void *ProfCAlloc( size_t size )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 1 ) ) );
+    ptr = check_nomem( doAlloc( size, _TRMEM_WHO( 7 ) ) );
 #else
     ptr = check_nomem( doAlloc( size ) );
 #endif

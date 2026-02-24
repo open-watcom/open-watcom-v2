@@ -277,7 +277,7 @@ WdeCustLib *WdeAllocCustLib( void )
 
     memset( lib, 0, sizeof( WdeCustLib ) );
 
-    WRMemValidate( lib, _TRMEM_WHO( 8 ) );
+    WRMemValidate( lib, _TRMEM_WHO( 3 ) );
 
     return( lib );
 }

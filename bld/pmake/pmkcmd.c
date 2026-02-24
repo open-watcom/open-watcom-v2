@@ -243,7 +243,7 @@ static void PrintHelp( void )
 }
 
 #ifdef TRMEM
-static _trmem_hdl   TRMemHandle;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
 static void     TRPrintLine( void *parm, const char *buff, size_t len )
 {
@@ -257,7 +257,7 @@ void MemOpen( void )
 /******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
             NULL, TRPrintLine, _TRMEM_DEF );
 #endif
 }
@@ -266,8 +266,8 @@ void MemClose( void )
 /*******************/
 {
 #ifdef TRMEM
-    _trmem_prt_list( TRMemHandle );
-    _trmem_close( TRMemHandle );
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
 #endif
 }
 
@@ -277,7 +277,7 @@ void *MemAlloc( size_t size )
     void        *p;
 
 #ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     p = malloc( size );
 #endif
@@ -293,7 +293,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 2 ), TRMemHandle );
+    _trmem_free( p, _TRMEM_WHO( 2 ), TrHdl );
 #else
     free( p );
 #endif

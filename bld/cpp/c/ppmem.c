@@ -51,16 +51,16 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   memHandle;
-static FILE         *memFile;       /* file handle we'll write() to */
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+static FILE         *TrFile;       /* file handle we'll write() to */
 
 static void memPrintLine( void *file, const char *buf, size_t len )
 {
     /* unused parameters */ (void)file; (void)len;
 
     fprintf( stderr, "***%s\n", buf );
-    if( memFile != NULL ) {
-        fprintf( memFile, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
 }
 
@@ -70,10 +70,10 @@ void PP_MemInit( void )
 /*********************/
 {
 #ifdef TRMEM
-    memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrFile = fopen( "mem.trk", "w" );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
             NULL, memPrintLine, _TRMEM_DEF );
-    if( memHandle == NULL ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         exit( EXIT_FAILURE );
     }
 #endif
@@ -83,14 +83,14 @@ void PP_MemFini( void )
 /*********************/
 {
 #ifdef TRMEM
-    if( memHandle != NULL ) {
-        _trmem_prt_list_ex( memHandle, 100 );
-        _trmem_close( memHandle );
-        if( memFile != NULL ) {
-            fclose( memFile );
-            memFile = NULL;
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list_ex( TrHdl, 100 );
+        _trmem_close( TrHdl );
+        if( TrFile != NULL ) {
+            fclose( TrFile );
+            TrFile = NULL;
         }
-        memHandle = NULL;
+        TrHdl = _TRMEM_HDL_NONE;
     }
 #endif
 }
@@ -108,7 +108,7 @@ TRMEMAPI( MemAlloc )
 void * MemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
 #else
     return( check_nomem( malloc( size ) ) );
 #endif
@@ -118,7 +118,7 @@ TRMEMAPI( MemStrdup )
 char * MemStrdup( const char *str )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), memHandle ) ) );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
     return( check_nomem( strdup( str ) ) );
 #endif
@@ -128,7 +128,7 @@ TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old, size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), memHandle ) ) );
+    return( check_nomem( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), TrHdl ) ) );
 #else
     return( check_nomem( realloc( old, size ) ) );
 #endif
@@ -138,7 +138,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 4 ), TrHdl );
 #else
     free( p );
 #endif
@@ -148,7 +148,7 @@ TRMEMAPI( PPMemAlloc )
 void * PPMemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl ) ) );
 #else
     return( check_nomem( malloc( size ) ) );
 #endif
@@ -158,7 +158,7 @@ TRMEMAPI( PPMemFree )
 void PPMemFree( void *p )
 {
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 4 ), memHandle );
+    _trmem_free( p, _TRMEM_WHO( 6 ), TrHdl );
 #else
     free( p );
 #endif

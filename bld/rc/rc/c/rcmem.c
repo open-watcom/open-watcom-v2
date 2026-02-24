@@ -53,7 +53,7 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   RcMemHandle = NULL;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
 static void RcPrintMemLine( void *dummy, const char *buf, size_t len )
 /********************************************************************/
@@ -69,7 +69,7 @@ void RcMemInit( void )
 /********************/
 {
 #ifdef TRMEM
-    RcMemHandle = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
                         NULL, RcPrintMemLine, _TRMEM_DEF );
 #else
     RCMemLayer1Init();
@@ -81,7 +81,7 @@ void RcMemShutdown( void )
 {
 #ifdef TRMEM
      RcPrintMemList();
-    _trmem_close( RcMemHandle );
+    _trmem_close( TrHdl );
 #else
      RCMemLayer1ShutDown();
 #endif
@@ -100,7 +100,7 @@ void *MemAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), RcMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 #else
     return( RCMemLayer1Malloc( size ) );
 #endif
@@ -111,7 +111,7 @@ void *MemAllocSafe( size_t size )
 /*******************************/
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), RcMemHandle ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
     return( check_nomem( RCMemLayer1Malloc( size ) ) );
 #endif
@@ -122,7 +122,7 @@ void MemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), RcMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
 #else
     RCMemLayer1Free( ptr );
 #endif
@@ -133,7 +133,7 @@ void *MemRealloc( void *old_ptr, size_t newsize )
 /*************************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 4 ), RcMemHandle ) );
+    return( _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 4 ), TrHdl ) );
 #else
     return( RCMemLayer1Realloc( old_ptr, newsize ) );
 #endif
@@ -146,7 +146,7 @@ void *MemReallocSafe( void *old_ptr, size_t newsize )
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 5 ), RcMemHandle );
+    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 5 ), TrHdl );
 #else
     ptr = RCMemLayer1Realloc( old_ptr, newsize );
 #endif
@@ -162,7 +162,7 @@ char *MemStrdup( const char *str )
 {
     if( str != NULL ) {
 #ifdef TRMEM
-        return( _trmem_strdup( str, _TRMEM_WHO( 6 ), RcMemHandle ) );
+        return( _trmem_strdup( str, _TRMEM_WHO( 6 ), TrHdl ) );
 #else
         void    *ptr;
         size_t  size;
@@ -184,7 +184,7 @@ char *MemStrdupSafe( const char *str )
     if( str == NULL )
         return( NULL );
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), RcMemHandle ) ) );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 7 ), TrHdl ) ) );
 #else
     return( strcpy( check_nomem( RCMemLayer1Malloc( strlen( str ) + 1 ) ), str ) );
 #endif
@@ -194,16 +194,16 @@ char *MemStrdupSafe( const char *str )
 void RcPrintMemUsage( void )
 /**************************/
 {
-    if( RcMemHandle != NULL ) {
-        _trmem_prt_usage( RcMemHandle );
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_usage( TrHdl );
     }
 }
 
 void RcPrintMemList( void )
 /*************************/
 {
-    if( RcMemHandle != NULL ) {
-        _trmem_prt_list( RcMemHandle );
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list( TrHdl );
     }
 }
 
@@ -211,8 +211,8 @@ TRMEMAPI( RcMemValidate )
 int RcMemValidate( void *ptr )
 /****************************/
 {
-    if( RcMemHandle != NULL ) {
-        return( _trmem_validate( ptr, _TRMEM_WHO( 8 ), RcMemHandle ) );
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( _trmem_validate( ptr, _TRMEM_WHO( 8 ), TrHdl ) );
     } else {
         return( 0 );
     }
@@ -222,8 +222,8 @@ TRMEMAPI( RcMemChkRange )
 int RcMemChkRange( void *start, size_t len )
 /******************************************/
 {
-    if( RcMemHandle != NULL ) {
-        return( _trmem_chk_range( start, len, _TRMEM_WHO( 9 ), RcMemHandle ) );
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( _trmem_chk_range( start, len, _TRMEM_WHO( 9 ), TrHdl ) );
     } else {
         return( 0 );
     }
@@ -235,7 +235,7 @@ void *PPMemAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 10 ), RcMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 10 ), TrHdl ) );
 #else
     return( RCMemLayer1Malloc( size ) );
 #endif
@@ -246,7 +246,7 @@ void PPMemFree( void *ptr )
 /*************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 11 ), RcMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 11 ), TrHdl );
 #else
     RCMemLayer1Free( ptr );
 #endif

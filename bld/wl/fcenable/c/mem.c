@@ -46,7 +46,7 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl TrHdl;
+static _trmem_hdl TrHdl = _TRMEM_HDL_NONE;
 
 static void PrintLine( void *parm, const char *buff, size_t len )
 /***************************************************************/

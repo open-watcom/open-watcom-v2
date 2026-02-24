@@ -35,21 +35,18 @@
 #define _ALLOC_H_
 
 #include <stdlib.h>
+#include "memfuncs.h"
 
-#define MALLOC(n,t)     ((t *)YaccAlloc((n) * sizeof(t)))
-#define REALLOC(p,n,t)  ((t *)YaccRealloc((p),(n) * sizeof(t)))
-#define CALLOC(n,t)     ((t *)YaccCalloc((n),sizeof(t)))
-#define FREE(n)         YaccFree((n))
-#define STRDUP(p)       YaccStrdup((p))
+#define MALLOC(n,t)     ((t *)MemAlloc((n) * sizeof(t)))
+#define REALLOC(p,n,t)  ((t *)MemRealloc((p),(n) * sizeof(t)))
+#define CALLOC(n,t)     ((t *)MemCAlloc((n),sizeof(t)))
+#define FREE(n)         MemFree((n))
+#define STRDUP(p)       MemStrdup((p))
 
 
 extern void     MemInit( void );
 extern void     MemFini( void );
 
-extern void     *YaccAlloc( size_t size );
-extern void     *YaccCalloc( size_t n, size_t size );
-extern void     *YaccRealloc( void *old_ptr, size_t newsize );
-extern void     YaccFree( void *ptr );
-extern char     *YaccStrdup( const char *str );
+extern void     *MemCAlloc( size_t n, size_t size );
 
 #endif

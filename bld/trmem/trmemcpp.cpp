@@ -61,8 +61,8 @@
 #endif
 
 static unsigned     NumMessages = 0;
-static _trmem_hdl   TrHdl;
-static FILE         *TrFileHandle = NULL;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+static FILE         *TrFile = NULL;
 
 struct Memory
 {
@@ -76,8 +76,8 @@ void PrintLine( void *parm, const char *buf, size_t len )
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    if( TrFileHandle != NULL ) {
-        fprintf( TrFileHandle, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
     NumMessages++;
 }
@@ -173,9 +173,9 @@ Memory::Memory()
     TrHdl = _trmem_open( malloc, free, realloc, strdup,
                             NULL, PrintLine, _TRMEM_DEF );
 #ifdef TRMEM_NO_STDOUT
-    TrFileHandle = fopen( "tracker.txt", "w" );
+    TrFile = fopen( "tracker.txt", "w" );
 #else
-    TrFileHandle = stdout;
+    TrFile = stdout;
 #endif
 }
 
@@ -184,7 +184,7 @@ Memory::~Memory()
     _trmem_prt_list( TrHdl );
     _trmem_close( TrHdl );
 #ifdef TRMEM_NO_STDOUT
-    fclose( TrFileHandle );
+    fclose( TrFile );
     if( NumMessages > 1 ) {
   #ifdef __WINDOWS__
         MessageBox ( NULL, "memory problems detected", "Memory Tracker",
@@ -196,7 +196,7 @@ Memory::~Memory()
   #endif
     }
 #endif
-    TrFileHandle = NULL;
+    TrFile = NULL;
 }
 
 #endif  /* TRMEM */

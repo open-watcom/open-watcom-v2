@@ -83,11 +83,11 @@ void *MemAlloc( size_t size )
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old, size_t size )
 {
-    return( WRMemRealloc( old, size, _TRMEM_WHO( 3 ) ) );
+    return( WRMemRealloc( old, size, _TRMEM_WHO( 2 ) ) );
 }
 
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
+    WRMemFree( ptr, _TRMEM_WHO( 3 ) );
 }

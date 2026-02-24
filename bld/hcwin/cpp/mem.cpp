@@ -50,7 +50,7 @@
 #pragma initialize 40;
 #endif
 
-static _trmem_hdl TrHdl;
+static _trmem_hdl TrHdl = _TRMEM_HDL_NONE;
 
 static Memory bogus;    // just need to get the ctors called
 

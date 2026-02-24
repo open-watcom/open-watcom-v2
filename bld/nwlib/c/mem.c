@@ -47,7 +47,7 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   TRMemHandle;
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 
 extern void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
@@ -63,7 +63,7 @@ void InitMem( void )
 /******************/
 {
 #ifdef TRMEM
-    TRMemHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
         NULL, TRPrintLine, _TRMEM_DEF );
 #endif
 }
@@ -72,8 +72,8 @@ void FiniMem( void )
 /******************/
 {
 #ifdef TRMEM
-    _trmem_prt_list_ex( TRMemHandle, 100 );
-    _trmem_close( TRMemHandle );
+    _trmem_prt_list_ex( TrHdl, 100 );
+    _trmem_close( TrHdl );
 #endif
 }
 
@@ -82,7 +82,7 @@ void *MemAlloc( size_t size )
 /***************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -98,7 +98,7 @@ void *MemAllocSafe( size_t size )
         return( NULL );
     }
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TRMemHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
 #else
     ptr = malloc( size );
 #endif
@@ -116,7 +116,7 @@ char *MemStrdup( const char *str )
     if( str == NULL )
         return( NULL );
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TRMemHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
 #else
     ptr = strdup( str );
 #endif
@@ -132,7 +132,7 @@ void *MemRealloc( void *ptr, size_t size )
     void  *mptr;
 
 #ifdef TRMEM
-    mptr = _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TRMemHandle );
+    mptr = _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl );
 #else
     mptr = realloc( ptr, size );
 #endif
@@ -148,7 +148,7 @@ void MemFree( void *ptr )
     if( ptr == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 4 ), TRMemHandle );
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( ptr );
 #endif

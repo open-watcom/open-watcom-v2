@@ -85,5 +85,5 @@ void *MemRealloc( void *old, size_t size )
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
+    WRMemFree( ptr, _TRMEM_WHO( 3 ) );
 }

@@ -62,7 +62,7 @@ static uint             Chunks;
 
 #ifdef TRMEM
 
-static _trmem_hdl       Handle;
+static _trmem_hdl       TrHdl = _TRMEM_HDL_NONE;
 static bool             local_init;
 
 static void PrintLine( void *handle, const char *buff, size_t len )
@@ -82,11 +82,11 @@ void    CGMemInit( pointer trmemhdl )
     MemOut = MO_FATAL;
 #ifdef TRMEM
     if( trmemhdl == NULL ) {
-        Handle = _trmem_open( _SysAlloc, _SysFree, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+        TrHdl = _trmem_open( _SysAlloc, _SysFree, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
                               NULL, PrintLine, _TRMEM_DEF );
         local_init = true;
     } else {
-        Handle = trmemhdl;
+        TrHdl = trmemhdl;
         local_init = false;
     }
 #else
@@ -107,9 +107,9 @@ void    CGMemFini( void )
     if( local_init ) {
         envvar = FEGetEnv( "TRQUIET" );
         if( envvar == NULL ) {
-            _trmem_prt_list( Handle );
+            _trmem_prt_list( TrHdl );
         }
-        _trmem_close( Handle );
+        _trmem_close( TrHdl );
     }
 #endif
 #ifdef _CHUNK_TRACKING
@@ -143,9 +143,9 @@ pointer CGAlloc( size_t size )
     _MemLow;
     for( ;; ) {
 #if defined( TRMEM ) && defined( _M_IX86 )
-        chunk = _trmem_alloc( size, who, Handle );
+        chunk = _trmem_alloc( size, who, TrHdl );
 #elif defined( TRMEM )
-        chunk = _trmem_alloc( size, NULL, Handle );
+        chunk = _trmem_alloc( size, NULL, TrHdl );
 #else
         chunk = _SysAlloc( size );
 #endif
@@ -173,7 +173,7 @@ TRMEMAPI( CGAlloc )
 pointer CGAlloc( size_t size )
 /****************************/
 {
-    return( _CGAlloc( size, _TRMEM_WHO( 3 ) ) );
+    return( _CGAlloc( size, _TRMEM_WHO( 1 ) ) );
 }
 #endif
 
@@ -188,9 +188,9 @@ void    CGFree( pointer chunk )
     --Chunks;
 #endif
 #if defined( TRMEM ) && defined( _M_IX86 )
-    _trmem_free( chunk, who, Handle );
+    _trmem_free( chunk, who, TrHdl );
 #elif defined( TRMEM )
-    _trmem_free( chunk, NULL, Handle );
+    _trmem_free( chunk, NULL, TrHdl );
 #else
     _SysFree( chunk );
 #endif
@@ -201,7 +201,7 @@ TRMEMAPI( CGFree )
 void    CGFree( pointer chunk )
 /*****************************/
 {
-    _CGFree( chunk, _TRMEM_WHO( 4 ) );
+    _CGFree( chunk, _TRMEM_WHO( 2 ) );
 }
 #endif
 
@@ -209,6 +209,6 @@ void    CGFree( pointer chunk )
 void    DumpMem( void )
 /*********************/
 {
-    _trmem_prt_usage( Handle );
+    _trmem_prt_usage( TrHdl );
 }
 #endif

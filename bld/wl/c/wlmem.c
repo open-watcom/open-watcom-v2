@@ -227,7 +227,7 @@ void *MemReallocSafe( void *src, size_t size )
 
     for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 4 ), TrHdl );
+        ptr = _trmem_realloc( src, size, _TRMEM_WHO( 5 ), TrHdl );
 #else
         ptr = realloc( src, size );
 #endif
@@ -248,7 +248,7 @@ void MemFree( void *p )
     if( p == NULL )
         return;
 #ifdef TRMEM
-    _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
+    _trmem_free( p, _TRMEM_WHO( 6 ), TrHdl );
 #else
     free( p );
 #endif
@@ -262,7 +262,7 @@ char *MemToStringSafe( const void *mem, size_t len )
 
     for( ;; ) {
 #ifdef TRMEM
-        ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 6 ), TrHdl );
+        ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 7 ), TrHdl );
 #else
         ptr = malloc( len + 1 );
 #endif

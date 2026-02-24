@@ -54,16 +54,16 @@
 
 #ifdef TRMEM
 
-static _trmem_hdl   memHandle;
-static FILE         *memFile;       /* file handle we'll write() to */
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+static FILE         *TrFile;       /* file handle we'll write() to */
 
 static void memPrintLine( void *file, const char *buf, size_t len )
 {
     /* unused parameters */ (void)file; (void)len;
 
     fprintf( stderr, "***%s\n", buf );
-    if( memFile != NULL ) {
-        fprintf( memFile, "%s\n", buf );
+    if( TrFile != NULL ) {
+        fprintf( TrFile, "%s\n", buf );
     }
 }
 
@@ -73,10 +73,10 @@ void MemInit( void )
 /******************/
 {
 #ifdef TRMEM
-    memFile = fopen( "mem.trk", "w" );
-    memHandle = _trmem_open( malloc, free, realloc, strdup,
+    TrFile = fopen( "mem.trk", "w" );
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
                                 NULL, memPrintLine, _TRMEM_DEF );
-    if( memHandle == NULL ) {
+    if( TrHdl == _TRMEM_HDL_NONE ) {
         exit( EXIT_FAILURE );
     }
 #endif
@@ -86,26 +86,26 @@ void MemFini( void )
 /******************/
 {
 #ifdef TRMEM
-    if( memHandle != NULL ) {
-        _trmem_prt_list_ex( memHandle, 100 );
-        _trmem_close( memHandle );
-        if( memFile != NULL ) {
-            fclose( memFile );
-            memFile = NULL;
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        _trmem_prt_list_ex( TrHdl, 100 );
+        _trmem_close( TrHdl );
+        if( TrFile != NULL ) {
+            fclose( TrFile );
+            TrFile = NULL;
         }
-        memHandle = NULL;
+        TrHdl = _TRMEM_HDL_NONE;
     }
 #endif
 }
 
-TRMEMAPI( YaccAlloc )
-void *YaccAlloc( size_t size )
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
 /****************************/
 {
     void        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     ptr = malloc( size );
 #endif
@@ -115,15 +115,15 @@ void *YaccAlloc( size_t size )
     return( ptr );
 }
 
-TRMEMAPI( YaccCalloc )
-void *YaccCalloc( size_t n, size_t size )
+TRMEMAPI( MemCAlloc )
+void *MemCAlloc( size_t n, size_t size )
 /***************************************/
 {
     void        *ptr;
 
     size *= n;
 #ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), memHandle );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
 #else
     ptr = malloc( size );
 #endif
@@ -133,14 +133,14 @@ void *YaccCalloc( size_t n, size_t size )
     return( memset( ptr, 0, size ) );
 }
 
-TRMEMAPI( YaccRealloc )
-void *YaccRealloc( void *old_ptr, size_t newsize )
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *old_ptr, size_t newsize )
 /************************************************/
 {
     void    *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), memHandle );
+    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 3 ), TrHdl );
 #else
     ptr = realloc( old_ptr, newsize );
 #endif
@@ -150,21 +150,21 @@ void *YaccRealloc( void *old_ptr, size_t newsize )
     return( ptr );
 }
 
-TRMEMAPI( YaccFree )
-void YaccFree( void *ptr )
+TRMEMAPI( MemFree )
+void MemFree( void *ptr )
 /************************/
 {
     if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 4 ), memHandle );
+        _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
 #else
         free( ptr );
 #endif
     }
 }
 
-TRMEMAPI( YaccStrdup )
-char *YaccStrdup( const char *str )
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
 /*********************************/
 {
     char        *ptr;
@@ -172,7 +172,7 @@ char *YaccStrdup( const char *str )
     if( str == NULL )
         return( NULL );
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 5 ), memHandle );
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl );
 #else
     ptr = strdup( str );
 #endif

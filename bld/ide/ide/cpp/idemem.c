@@ -135,7 +135,7 @@ void *MemAllocSafe( size_t size )
 /*******************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -150,7 +150,7 @@ char *MemStrdup( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 1 ), TrHdl ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
     return( strdup( str ) );
 #endif
@@ -180,7 +180,7 @@ void *MemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 7 ), TrHdl ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 5 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif

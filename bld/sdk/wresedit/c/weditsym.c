@@ -76,7 +76,7 @@ void *PPMemAlloc( size_t size )
 {
     void        *p;
 
-    p = WRMemAlloc( size, _TRMEM_WHO( 6 ) );
+    p = WRMemAlloc( size, _TRMEM_WHO( 3 ) );
     if( p == NULL ) {
         outOfMemory();
     }
@@ -87,7 +87,7 @@ TRMEMAPI( PPMemFree )
 void PPMemFree( void *p )
 /***********************/
 {
-    WRMemFree( p, _TRMEM_WHO( 5 ) );
+    WRMemFree( p, _TRMEM_WHO( 4 ) );
 }
 
 int PP_MBCharLen( const char *p )
