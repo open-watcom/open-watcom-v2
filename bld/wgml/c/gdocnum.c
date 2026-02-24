@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -67,7 +67,7 @@ void    gml_docnum( const gmltag * entry )
     buff = NULL;
     if( layout_work.docnum.string[0] != '\0' ) {
         buff_len = strlen( layout_work.docnum.string ) + strlen ( p ) + 1;
-        buff = mem_alloc( buff_len );
+        buff = MemAlloc( buff_len );
         strcpy( buff, layout_work.docnum.string );
         strcat( buff, p );
         p = buff;
@@ -116,7 +116,7 @@ void    gml_docnum( const gmltag * entry )
     scr_process_break();                // commit docnum line (or blank line)
 
     if( buff != NULL ) {
-        mem_free( buff );
+        MemFree( buff );
     }
 
     g_curr_font = font_save;

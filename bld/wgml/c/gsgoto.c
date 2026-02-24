@@ -221,7 +221,7 @@ void    scr_label( void )
                         /* never return */
                     }
                     // new label
-                    lb              = mem_alloc( sizeof( labelcb ) );
+                    lb              = MemAlloc( sizeof( labelcb ) );
                     memset( lb, 0, sizeof( labelcb ) );
                     lb->prev        = input_cbs->s.m->mac->label_cb;
                     input_cbs->s.m->mac->label_cb = lb;
@@ -238,7 +238,7 @@ void    scr_label( void )
                         /* never return */
                     }
                     // new label
-                    lb              = mem_alloc( sizeof( labelcb ) );
+                    lb              = MemAlloc( sizeof( labelcb ) );
                     lb->prev        = input_cbs->s.f->label_cb;
                     input_cbs->s.f->label_cb = lb;
                     lb->pos         = input_cbs->s.f->pos;

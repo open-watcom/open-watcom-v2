@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 200--2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 200--2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -89,7 +89,7 @@ void add_GML_tag_research( char * tag )
         }
         wk = wk->nxt;
     }
-    new = mem_alloc( sizeof( taglist ) );
+    new = MemAlloc( sizeof( taglist ) );
     if( wk == NULL ) {
         wk = new;
         if( ProcFlags.layout ) {
@@ -152,7 +152,7 @@ void    free_GML_tags_research( void )
     while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1) ;
+        MemFree( wk1) ;
     }
     sys_tags = NULL;
 
@@ -160,7 +160,7 @@ void    free_GML_tags_research( void )
     while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1) ;
+        MemFree( wk1) ;
     }
     lay_tags = NULL;
 }
@@ -183,7 +183,7 @@ void    add_SCR_tag_research( char * tag )
             break;
         }
     }
-    new = mem_alloc( sizeof( taglist ) );
+    new = MemAlloc( sizeof( taglist ) );
     if( wk == NULL ) {
         scrkws = new;
     } else {
@@ -230,7 +230,7 @@ void    free_SCR_tags_research( void )
     while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1) ;
+        MemFree( wk1) ;
     }
     scrkws = NULL;
 }
@@ -254,7 +254,7 @@ void    add_multi_func_research( const char *fun )
             break;
         }
     }
-    new = mem_alloc( sizeof( taglist ) );
+    new = MemAlloc( sizeof( taglist ) );
     if( wk == NULL ) {
         multi_funcs = new;
     } else {
@@ -301,7 +301,7 @@ void    free_multi_funcs_research( void )
     while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1) ;
+        MemFree( wk1) ;
     }
     multi_funcs = NULL;
 }
@@ -325,7 +325,7 @@ void    add_single_func_research( const char *fun )
             break;
         }
     }
-    new = mem_alloc( sizeof( taglist ) );
+    new = MemAlloc( sizeof( taglist ) );
     if( wk == NULL ) {
         single_funcs = new;
     } else {
@@ -372,7 +372,7 @@ void    free_single_funcs_research( void )
     while( wk != NULL ) {
         wk1 = wk;
         wk = wk->nxt;
-        mem_free( wk1 );
+        MemFree( wk1 );
     }
     single_funcs = NULL;
 }

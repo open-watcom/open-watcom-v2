@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -149,11 +149,11 @@ void gml_figref( const gmltag * entry )
     op_len = strlen( on_page );
     if( cur_re == NULL ) {              // undefined refid
         if( do_page ) {
-            ref_text = (char *)mem_alloc( dr_len + dp_len + 1 );
+            ref_text = (char *)MemAlloc( dr_len + dp_len + 1 );
             strcpy( ref_text, def_ref );
             strcat( ref_text, def_page );
         } else {
-            ref_text = (char *)mem_alloc( dr_len + 1 );
+            ref_text = (char *)MemAlloc( dr_len + 1 );
             strcpy( ref_text, def_ref );
         }
     } else {
@@ -162,20 +162,20 @@ void gml_figref( const gmltag * entry )
             format_num( cur_re->u.ffh.entry->pageno, buffer, sizeof( buffer ),
                         cur_re->u.ffh.entry->style );
             bu_len = strlen( buffer );
-            ref_text = (char *)mem_alloc( len + op_len + bu_len  + 1 );
+            ref_text = (char *)MemAlloc( len + op_len + bu_len  + 1 );
             strcpy( ref_text, cur_re->u.ffh.entry->prefix );
             ref_text[len - 1] = '\0';       // remove delim
             len += (dr_len + op_len + bu_len );
             strcat( ref_text, on_page );
             strcat( ref_text, buffer );
         } else {
-            ref_text = (char *)mem_alloc( len + 1 );
+            ref_text = (char *)MemAlloc( len + 1 );
             strcpy( ref_text, cur_re->u.ffh.entry->prefix );
             ref_text[len - 1] = '\0';       // remove delim
         }
     }
     process_text( ref_text, g_curr_font );
-    mem_free( ref_text );
+    MemFree( ref_text );
     ref_text = NULL;
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {
@@ -270,7 +270,7 @@ void gml_hdref( const gmltag * entry )
     dr_len = strlen( def_ref );
     op_len = strlen( on_page );
     if( cur_re == NULL ) {              // undefined refid
-        ref_text = (char *)mem_alloc( dp_len + dr_len + 1 );
+        ref_text = (char *)MemAlloc( dp_len + dr_len + 1 );
         strcpy( ref_text, def_ref );
         if( do_page ) {
           strcat( ref_text, def_page );
@@ -282,14 +282,14 @@ void gml_hdref( const gmltag * entry )
                         cur_re->u.ffh.entry->style );
             bu_len = strlen( buffer );
             len += (op_len + bu_len );
-            ref_text = (char *)mem_alloc( len + 1 );
+            ref_text = (char *)MemAlloc( len + 1 );
             strcpy( ref_text, "\"" );
             strcat( ref_text, cur_re->u.ffh.entry->text );
             strcat( ref_text, "\"" );
             strcat( ref_text, on_page );
             strcat( ref_text, buffer );
         } else {
-            ref_text = (char *)mem_alloc( len + 1 );
+            ref_text = (char *)MemAlloc( len + 1 );
             strcpy( ref_text, "\"" );
             strcat( ref_text, cur_re->u.ffh.entry->text );
             strcat( ref_text, "\"" );
@@ -310,7 +310,7 @@ void gml_hdref( const gmltag * entry )
     }
 
     process_text( ref_text, g_curr_font );
-    mem_free( ref_text );
+    MemFree( ref_text );
     ref_text = NULL;
 
     if( !ProcFlags.reprocess_line && *p != '\0' ) {

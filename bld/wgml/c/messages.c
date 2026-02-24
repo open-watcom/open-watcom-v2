@@ -316,7 +316,7 @@ static void show_line_error_len( const char * pa, unsigned len )
     buf[cnt] = '*';         // puts "*" after last memset position; no, really
     buf[cnt + 1] = '\0';
     out_msg( "%s\n", buf );
-    mem_free( buf );
+    MemFree( buf );
     out_msg( "\n" );
 }
 

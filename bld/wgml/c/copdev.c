@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,8 +100,8 @@ static index_status find_cumulative_index( functions_block * in_block, uint16_t 
  *          reflects the new size) on success.
  *
  * Notes:
- *      mem_realloc() will call exit() if the reallocation fails.
- *      mem_realloc() will free in_device if the instance is actually moved to a
+ *      MemRealloc() will call exit() if the reallocation fails.
+ *      MemRealloc() will free in_device if the instance is actually moved to a
  *          new location.
  *      The intended use is for the pointer passed as in_device to be used to
  *          store the return value.
@@ -122,7 +123,7 @@ static cop_device *resize_cop_device( cop_device *in_device, unsigned in_size )
 
     /* Reallocate the cop_device. */
 
-    local_device = mem_realloc( in_device, new_size );
+    local_device = MemRealloc( in_device, new_size );
     local_device->allocated_size = new_size;
     return( local_device );
 }
@@ -165,9 +166,9 @@ static void set_cumulative_index( functions_block * in_block )
  *      A NULL pointer on failure.
  *
  *  Notes:
- *      resize_cop_device() uses mem_realloc(), which calls exit() if the
+ *      resize_cop_device() uses MemRealloc(), which calls exit() if the
  *          allocation fails.
- *      parse_functions_block() uses mem_alloc, which calls exit() if the
+ *      parse_functions_block() uses MemAlloc, which calls exit() if the
  *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -231,7 +232,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Initialize the out_device. */
 
-    out_device = mem_alloc( START_SIZE );
+    out_device = MemAlloc( START_SIZE );
 
     out_device->allocated_size = START_SIZE;
     out_device->next_offset = sizeof( cop_device );
@@ -246,7 +247,7 @@ cop_device * parse_device( FILE *fp )
     fread_buff( discriminator, 3, fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -254,7 +255,7 @@ cop_device * parse_device( FILE *fp )
     /* Verify that the discriminator is for a .COP device file. */
 
     if( memcmp( discriminator, "DEV", 3 ) != 0 ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -264,7 +265,7 @@ cop_device * parse_device( FILE *fp )
     length = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -278,7 +279,7 @@ cop_device * parse_device( FILE *fp )
         fread_buff( string_ptr, length, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -292,7 +293,7 @@ cop_device * parse_device( FILE *fp )
     length = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -306,7 +307,7 @@ cop_device * parse_device( FILE *fp )
         fread_buff( string_ptr, length, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -320,7 +321,7 @@ cop_device * parse_device( FILE *fp )
     length = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -334,7 +335,7 @@ cop_device * parse_device( FILE *fp )
         fread_buff( string_ptr, length, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -352,13 +353,13 @@ cop_device * parse_device( FILE *fp )
     designator = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( designator != 0x2200 ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -368,7 +369,7 @@ cop_device * parse_device( FILE *fp )
     out_device->page_width = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -378,7 +379,7 @@ cop_device * parse_device( FILE *fp )
     out_device->page_depth = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -388,7 +389,7 @@ cop_device * parse_device( FILE *fp )
     out_device->horizontal_base_units = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -398,7 +399,7 @@ cop_device * parse_device( FILE *fp )
     out_device->vertical_base_units = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -408,7 +409,7 @@ cop_device * parse_device( FILE *fp )
     fseek( fp, U16_SIZE, SEEK_CUR );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -418,7 +419,7 @@ cop_device * parse_device( FILE *fp )
     out_device->x_start = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -428,7 +429,7 @@ cop_device * parse_device( FILE *fp )
     out_device->y_start = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -438,7 +439,7 @@ cop_device * parse_device( FILE *fp )
     out_device->x_offset = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -448,7 +449,7 @@ cop_device * parse_device( FILE *fp )
     out_device->y_offset = fread_u32( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -460,7 +461,7 @@ cop_device * parse_device( FILE *fp )
     designator = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -473,7 +474,7 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -481,7 +482,7 @@ cop_device * parse_device( FILE *fp )
         out_device->box.font = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -497,7 +498,7 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -511,13 +512,13 @@ cop_device * parse_device( FILE *fp )
             fread_buff( string_ptr, length, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
             string_ptr[length] = '\0';
         } else {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -527,7 +528,7 @@ cop_device * parse_device( FILE *fp )
         out_device->box.font = FONT0;
         break;
     default:
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -537,13 +538,13 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x0F ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -553,7 +554,7 @@ cop_device * parse_device( FILE *fp )
     fread_buff( &out_device->box.chars, 11, fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -563,7 +564,7 @@ cop_device * parse_device( FILE *fp )
     fseek( fp, 4, SEEK_CUR );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -575,7 +576,7 @@ cop_device * parse_device( FILE *fp )
     designator = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -588,7 +589,7 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -596,7 +597,7 @@ cop_device * parse_device( FILE *fp )
         out_device->underscore.font = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -613,7 +614,7 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -627,7 +628,7 @@ cop_device * parse_device( FILE *fp )
             fread_buff( string_ptr, length, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -649,7 +650,7 @@ cop_device * parse_device( FILE *fp )
         out_device->underscore.font = FONT0;
         break;
     default:
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -659,13 +660,13 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x05 ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -675,7 +676,7 @@ cop_device * parse_device( FILE *fp )
     out_device->underscore.underscore_char = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -685,7 +686,7 @@ cop_device * parse_device( FILE *fp )
     fseek( fp, 4, SEEK_CUR );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -697,13 +698,13 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x03 ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -713,7 +714,7 @@ cop_device * parse_device( FILE *fp )
     data_count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -721,7 +722,7 @@ cop_device * parse_device( FILE *fp )
     outtrans_flag = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -729,7 +730,7 @@ cop_device * parse_device( FILE *fp )
     intrans_flag = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -745,13 +746,13 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
 
         if( count != 0x81 ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -761,13 +762,13 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
 
         if( count != 0x00 ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -782,7 +783,7 @@ cop_device * parse_device( FILE *fp )
         fread_buff( byte_ptr, 0x100, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -799,7 +800,7 @@ cop_device * parse_device( FILE *fp )
         outtrans_data_size = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -809,7 +810,7 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -822,7 +823,7 @@ cop_device * parse_device( FILE *fp )
             /* The count byte should be 0x00. */
 
             if( count != 0x00 ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -832,7 +833,7 @@ cop_device * parse_device( FILE *fp )
             fread_buff( uint8_array, 0x100, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -894,7 +895,7 @@ cop_device * parse_device( FILE *fp )
             /* The count byte should be equal to data_count. */
 
             if( count != data_count ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -905,7 +906,7 @@ cop_device * parse_device( FILE *fp )
                 uint16_array[i] = fread_u16( fp );
                 if( ferror( fp )
                   || feof( fp ) ) {
-                    mem_free( out_device );
+                    MemFree( out_device );
                     out_device = NULL;
                     return( out_device );
                 }
@@ -913,14 +914,14 @@ cop_device * parse_device( FILE *fp )
 
             /* Allocate a buffer and read the translation characters into it. */
 
-            outtrans_data = mem_alloc( data_count );
+            outtrans_data = MemAlloc( data_count );
 
             fread_buff( outtrans_data, data_count, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( outtrans_data );
+                MemFree( outtrans_data );
                 outtrans_data = NULL;
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -995,11 +996,11 @@ cop_device * parse_device( FILE *fp )
                     }
                 }
             }
-            mem_free( outtrans_data );
+            MemFree( outtrans_data );
             outtrans_data = NULL;
             break;
         default:
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1012,13 +1013,13 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1028,7 +1029,7 @@ cop_device * parse_device( FILE *fp )
     out_device->defaultfonts.font_count = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1051,7 +1052,7 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1066,7 +1067,7 @@ cop_device * parse_device( FILE *fp )
             fread_buff( string_ptr, length, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -1080,13 +1081,13 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
 
         if( count != 0x04 ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1096,7 +1097,7 @@ cop_device * parse_device( FILE *fp )
         defaultfont_ptr[i].font_height = fread_u16( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1106,7 +1107,7 @@ cop_device * parse_device( FILE *fp )
         defaultfont_ptr[i].font_space = fread_u16( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1116,7 +1117,7 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1131,7 +1132,7 @@ cop_device * parse_device( FILE *fp )
             fread_buff( string_ptr, length, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -1147,7 +1148,7 @@ cop_device * parse_device( FILE *fp )
 
     raw_functions = get_p_buffer( fp );
     if( raw_functions == NULL ) {
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1171,29 +1172,29 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1203,15 +1204,15 @@ cop_device * parse_device( FILE *fp )
     cumulative_index = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1226,15 +1227,15 @@ cop_device * parse_device( FILE *fp )
 
         return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1263,29 +1264,29 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1295,15 +1296,15 @@ cop_device * parse_device( FILE *fp )
     cumulative_index = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1318,15 +1319,15 @@ cop_device * parse_device( FILE *fp )
 
         return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1355,29 +1356,29 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1387,15 +1388,15 @@ cop_device * parse_device( FILE *fp )
     cumulative_index = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1410,15 +1411,15 @@ cop_device * parse_device( FILE *fp )
 
         return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1447,29 +1448,29 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1479,15 +1480,15 @@ cop_device * parse_device( FILE *fp )
     cumulative_index = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1502,15 +1503,15 @@ cop_device * parse_device( FILE *fp )
 
         return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
         if( return_value == not_valid ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1539,29 +1540,29 @@ cop_device * parse_device( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
 
     if( count != 0x02 ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1571,15 +1572,15 @@ cop_device * parse_device( FILE *fp )
     out_device->devicefonts.font_count = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( raw_functions );
+        MemFree( raw_functions );
         raw_functions = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_device );
+        MemFree( out_device );
         out_device = NULL;
         return( out_device );
     }
@@ -1599,15 +1600,15 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1624,12 +1625,12 @@ cop_device * parse_device( FILE *fp )
               || feof( fp ) ) {
                 raw_functions = NULL;
                 if( cop_functions->code_blocks != NULL ) {
-                    mem_free( cop_functions->code_blocks );
+                    MemFree( cop_functions->code_blocks );
                     cop_functions->code_blocks = NULL;
                 }
-                mem_free( cop_functions );
+                MemFree( cop_functions );
                 cop_functions = NULL;
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -1637,12 +1638,12 @@ cop_device * parse_device( FILE *fp )
         } else {
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1652,15 +1653,15 @@ cop_device * parse_device( FILE *fp )
         length = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1675,15 +1676,15 @@ cop_device * parse_device( FILE *fp )
             fread_buff( string_ptr, length, fp );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( raw_functions );
+                MemFree( raw_functions );
                 raw_functions = NULL;
                 if( cop_functions->code_blocks != NULL ) {
-                    mem_free( cop_functions->code_blocks );
+                    MemFree( cop_functions->code_blocks );
                     cop_functions->code_blocks = NULL;
                 }
-                mem_free( cop_functions );
+                MemFree( cop_functions );
                 cop_functions = NULL;
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -1697,29 +1698,29 @@ cop_device * parse_device( FILE *fp )
         nulls = fread_u16( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
 
         if( nulls != 0x0000 ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1729,29 +1730,29 @@ cop_device * parse_device( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
 
         if( count != 0x03 ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1761,15 +1762,15 @@ cop_device * parse_device( FILE *fp )
         devicefont_ptr[i].resident = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1781,15 +1782,15 @@ cop_device * parse_device( FILE *fp )
         cumulative_index = fread_u16( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( raw_functions );
+            MemFree( raw_functions );
             raw_functions = NULL;
             if( cop_functions->code_blocks != NULL ) {
-                mem_free( cop_functions->code_blocks );
+                MemFree( cop_functions->code_blocks );
                 cop_functions->code_blocks = NULL;
             }
-            mem_free( cop_functions );
+            MemFree( cop_functions );
             cop_functions = NULL;
-            mem_free( out_device );
+            MemFree( out_device );
             out_device = NULL;
             return( out_device );
         }
@@ -1804,15 +1805,15 @@ cop_device * parse_device( FILE *fp )
 
             return_value = find_cumulative_index( cop_functions, cumulative_index, &j );
             if( return_value == not_valid ) {
-                mem_free( raw_functions );
+                MemFree( raw_functions );
                 raw_functions = NULL;
                 if( cop_functions->code_blocks != NULL ) {
-                    mem_free( cop_functions->code_blocks );
+                    MemFree( cop_functions->code_blocks );
                     cop_functions->code_blocks = NULL;
                 }
-                mem_free( cop_functions );
+                MemFree( cop_functions );
                 cop_functions = NULL;
-                mem_free( out_device );
+                MemFree( out_device );
                 out_device = NULL;
                 return( out_device );
             }
@@ -1839,13 +1840,13 @@ cop_device * parse_device( FILE *fp )
 
     /*  Free the memory used in parsing the CodeBlocks. */
 
-    mem_free( raw_functions );
+    MemFree( raw_functions );
     raw_functions = NULL;
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* Convert non-NULL offsets to pointers. */

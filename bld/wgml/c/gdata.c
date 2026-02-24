@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -72,9 +72,9 @@ void init_global_vars( void )
     out_file            = NULL;         // output file name
     out_file_attr       = NULL;         // output file name attributes
 
-    alt_ext             = mem_alloc( 5 );   // alternate extension   .xxx
+    alt_ext             = MemAlloc( 5 );   // alternate extension   .xxx
     *alt_ext            = '\0';
-    def_ext             = mem_alloc( sizeof( GML_EXT ) );
+    def_ext             = MemAlloc( sizeof( GML_EXT ) );
     strcpy( def_ext, GML_EXT );
     ampchar             = '&';
 
@@ -151,7 +151,7 @@ void init_global_vars( void )
     t_page.max_width        = 0;
     t_page.cur_left         = 0;
     t_page.cur_width        = 0;
-    t_page.last_pane        = mem_alloc( sizeof(doc_pane) );
+    t_page.last_pane        = MemAlloc( sizeof(doc_pane) );
     t_page.cur_col          = &t_page.last_pane->cols[0];
     t_page.last_col_main    = NULL;
     t_page.last_col_fn      = NULL;
@@ -243,8 +243,8 @@ void init_global_vars( void )
     research_from         = 0;
     research_to           = 0;
 
-    buff2               = mem_alloc( BUF_SIZE + 1 );
-    workbuf             = mem_alloc( BUF_SIZE + 1 );
+    buff2               = MemAlloc( BUF_SIZE + 1 );
+    workbuf             = MemAlloc( BUF_SIZE + 1 );
 
     post_space          = 0;
 

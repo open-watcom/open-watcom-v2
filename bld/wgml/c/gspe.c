@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -102,7 +102,7 @@ static  void    init_pe_line( int pe_count )
     if( get_line( true ) ) {
         input_cbs->pe_cb.count = pe_count;
         input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
-        input_cbs->pe_cb.line  = mem_alloc( input_cbs->pe_cb.ll );
+        input_cbs->pe_cb.line  = MemAlloc( input_cbs->pe_cb.ll );
         strcpy( input_cbs->pe_cb.line, buff2 );
     }
     return;
@@ -117,7 +117,7 @@ void    reset_pe_cb( void )
 {
     input_cbs->pe_cb.count = -1;
     if( input_cbs->pe_cb.line != NULL ) {
-        mem_free( input_cbs->pe_cb.line );
+        MemFree( input_cbs->pe_cb.line );
         input_cbs->pe_cb.line = NULL;
     }
     return;

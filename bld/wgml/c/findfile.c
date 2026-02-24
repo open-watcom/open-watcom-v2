@@ -93,7 +93,7 @@ static directory_list initialize_directory_list( const char *items_list )
     directory_list  list;
     char            *p;
 
-    list = mem_strdup( items_list );
+    list = MemStrdup( items_list );
     p = list;
     if( items_list != NULL ) {
         while( *items_list != '\0' ) {
@@ -208,7 +208,7 @@ void ff_setup( void )
 
 void ff_set_incpath( const char *path )
 {
-    mem_free( wgml_inc_dirs );
+    MemFree( wgml_inc_dirs );
     wgml_inc_dirs = initialize_directory_list( path );
 }
 
@@ -218,7 +218,7 @@ void ff_set_incpath( const char *path )
 
 void ff_set_libpath( const char *path )
 {
-    mem_free( wgml_lib_dirs );
+    MemFree( wgml_lib_dirs );
     wgml_lib_dirs = initialize_directory_list( path );
 }
 
@@ -233,22 +233,22 @@ void ff_teardown( void )
     /* directories points to a single block of allocated memory. */
 
     if( cur_dir_list != NULL ) {
-        mem_free( cur_dir_list );
+        MemFree( cur_dir_list );
         cur_dir_list = NULL;
     }
 
     if( wgml_inc_dirs != NULL ) {
-        mem_free( wgml_inc_dirs );
+        MemFree( wgml_inc_dirs );
         wgml_inc_dirs = NULL;
     }
 
     if( wgml_lib_dirs != NULL) {
-        mem_free( wgml_lib_dirs );
+        MemFree( wgml_lib_dirs );
         wgml_lib_dirs = NULL;
     }
 
     if( path_dirs != NULL ) {
-        mem_free( path_dirs );
+        MemFree( path_dirs );
         path_dirs = NULL;
     }
 }
@@ -460,7 +460,7 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     fp = try_open( dir_name, primary_file );
                 }
 #endif
-                mem_free( member_name );
+                MemFree( member_name );
 
                 /* Not finding the file is only a problem for DSEQ_bin_lib. */
 

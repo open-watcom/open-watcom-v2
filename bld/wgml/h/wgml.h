@@ -210,11 +210,11 @@ extern void         mem_prt_curr_usage( void );
 extern int          mem_validate( void );
 extern void         mem_prt_list( void );
 
-extern void         *mem_alloc( unsigned size );
-extern void         *mem_realloc( void *p, unsigned size );
-extern char         *mem_strdup( const char *str );
+extern void         *MemAlloc( unsigned size );
+extern void         *MemRealloc( void *p, unsigned size );
+extern char         *MemStrdup( const char *str );
 extern char         *mem_tostring( const char *str, unsigned size );
-extern void         mem_free( void *p );
+extern void         MemFree( void *p );
 
 /* gnestut.c                            */
 extern void         init_nest_cb( void );

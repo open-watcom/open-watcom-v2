@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -213,7 +213,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
                 *p = '\0';
             }
             strcpy( p, pline->value );
-            mem_free( pline );
+            MemFree( pline );
             p = p2;
         }
     } else if( ge->attribs != NULL

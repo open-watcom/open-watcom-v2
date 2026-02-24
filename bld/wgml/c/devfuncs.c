@@ -571,7 +571,7 @@ static void pre_text_output( void )
 
 static void *df_do_nothing_char( void )
 {
-    return( (void *)mem_strdup( NULL ) );
+    return( (void *)MemStrdup( NULL ) );
 }
 
 /* Function df_do_nothing_num().
@@ -629,7 +629,7 @@ static void *df_clearpc( void )
 /* Function df_dotab().
  * Implements device function %dotab().
  *
- * Note: mem_realloc() will not return unless it succeeds.
+ * Note: MemRealloc() will not return unless it succeeds.
  */
 
 static void *df_dotab( void )
@@ -914,7 +914,7 @@ static void *df_wait( void )
 
 static void *df_date( void )
 {
-    return( (void *)mem_strdup( date_val ) );
+    return( (void *)MemStrdup( date_val ) );
 }
 
 /* Function df_default_width().
@@ -952,7 +952,7 @@ static void *df_font_outname1( void )
 {
     char    *ret_val;
 
-    ret_val = mem_strdup( wgml_fonts[df_font].bin_font->font_out_name1 );
+    ret_val = MemStrdup( wgml_fonts[df_font].bin_font->font_out_name1 );
 
     return( (void *)ret_val );
 }
@@ -965,7 +965,7 @@ static void *df_font_outname2( void )
 {
     char    *ret_val;
 
-    ret_val = mem_strdup( wgml_fonts[df_font].bin_font->font_out_name2 );
+    ret_val = MemStrdup( wgml_fonts[df_font].bin_font->font_out_name2 );
 
     return( (void *)ret_val );
 }
@@ -978,7 +978,7 @@ static void *df_font_resident( void )
 {
     char    *ret_val;
 
-    ret_val = mem_alloc( 2 );
+    ret_val = MemAlloc( 2 );
     ret_val[0] = wgml_fonts[df_font].font_resident;
     ret_val[1] = '\0';
 
@@ -1063,7 +1063,7 @@ static void *df_thickness( void )
 
 static void *df_time( void )
 {
-    return( (void *)mem_strdup( time_val ) );
+    return( (void *)MemStrdup( time_val ) );
 }
 
 /* Function df_wgml_header().
@@ -1072,7 +1072,7 @@ static void *df_time( void )
 
 static void *df_wgml_header( void )
 {
-    return( (void *)mem_strdup( VERSION40_TEXT ) );
+    return( (void *)MemStrdup( VERSION40_TEXT ) );
 }
 
 /* Function df_x_address().
@@ -1252,7 +1252,7 @@ static void *df_out_text_device( void )
 
         /* Free the memory allocated to the parameter. */
 
-        mem_free( first );
+        MemFree( first );
 
         break;
 
@@ -1302,7 +1302,7 @@ static void out_text_driver( bool out_trans, bool out_text )
 
         /* Free the memory allocated to the parameter. */
 
-        mem_free( first );
+        MemFree( first );
 
         break;
 
@@ -1355,7 +1355,7 @@ static void *char_literal( void )
 
     /* Convert the character literal into a char *. */
 
-    ret_val = mem_strdup( current_df_data.current );
+    ret_val = MemStrdup( current_df_data.current );
     current_df_data.current += count + 1;
 
     return( (void *)ret_val );
@@ -1440,7 +1440,7 @@ static void *df_cancel( void )
 
     /* Free the buffer and reset the recursion check. */
 
-    mem_free( first );
+    MemFree( first );
     instance--;
 
     return( NULL );
@@ -1554,8 +1554,8 @@ static void *df_setsymbol( void )
 
     /* Free the memory allocated to the parameters. */
 
-    mem_free(first);
-    mem_free(second);
+    MemFree(first);
+    MemFree(second);
 
     return( NULL );
 }
@@ -1800,8 +1800,8 @@ static void *df_ifeqs( void )
 
     /* Free the memory allocated to produce the parameters */
 
-    mem_free( first );
-    mem_free( second );
+    MemFree( first );
+    MemFree( second );
 
     return( NULL );
 }
@@ -1846,8 +1846,8 @@ static void *df_ifnes( void )
 
     /* Free the memory allocated to produce the parameters */
 
-    mem_free( first );
-    mem_free( second );
+    MemFree( first );
+    MemFree( second );
 
     return( NULL );
 }
@@ -1901,7 +1901,7 @@ static void *df_decimal( void )
 
     /* Convert and return the value. */
 
-    value = mem_alloc( NUM2STR_LENGTH + 1 );
+    value = MemAlloc( NUM2STR_LENGTH + 1 );
     sprintf( value, "%d", (int)first );
     return( value );
 }
@@ -1963,7 +1963,7 @@ static void *df_getnumsymbol( void )
 
     /* Free the memory allocated to the parameter. */
 
-    mem_free( name );
+    MemFree( name );
 
     return( (void *)(uintptr_t)ret_val );
 }
@@ -1990,11 +1990,11 @@ static void *df_getstrsymbol( void )
     /* Now get the symbol's value. */
 
     find_symvar( global_dict, name, SI_no_subscript, &sym_val );
-    ret_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
+    ret_val = MemStrdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Free the memory allocated to the parameter. */
 
-    mem_free( name );
+    MemFree( name );
 
     return( (void *)ret_val );
 }
@@ -2019,7 +2019,7 @@ static void *df_hex( void )
 
     /* Convert and return a pointer to the parameter */
 
-    value = mem_alloc( 9 );
+    value = MemAlloc( 9 );
     sprintf( value, "%x", (unsigned)first );
     return( value );
 }
@@ -2470,8 +2470,8 @@ static void fb_font_switch( void )
             to_string = df_font_outname1();
             if( !do_now )
                 do_now = ( strcmp( from_string, to_string ) != 0 );
-            mem_free( from_string );
-            mem_free( to_string );
+            MemFree( from_string );
+            MemFree( to_string );
         }
 
         if( font_switch->font_outname2_flag ) {
@@ -2484,8 +2484,8 @@ static void fb_font_switch( void )
             to_string = df_font_outname2();
             if( !do_now )
                 do_now = ( strcmp( from_string, to_string ) != 0 );
-            mem_free( from_string );
-            mem_free( to_string );
+            MemFree( from_string );
+            MemFree( to_string );
         }
 
         if( font_switch->font_resident_flag ) {
@@ -2498,8 +2498,8 @@ static void fb_font_switch( void )
             to_string = df_font_resident();
             if( !do_now )
                 do_now = ( strcmp( from_string, to_string ) != 0 );
-            mem_free( from_string );
-            mem_free( to_string );
+            MemFree( from_string );
+            MemFree( to_string );
         }
 
         if( font_switch->font_space_flag ) {
@@ -3546,10 +3546,10 @@ void df_setup( void )
      */
 
     find_symvar( global_dict, "date", SI_no_subscript, &sym_val );
-    date_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
+    date_val = MemStrdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     find_symvar( global_dict, "time", SI_no_subscript, &sym_val );
-    time_val = mem_strdup( ( sym_val == NULL ) ? NULL : sym_val->value );
+    time_val = MemStrdup( ( sym_val == NULL ) ? NULL : sym_val->value );
 
     /* Set has_htab to true if the device defined the :HTAB block. */
 
@@ -3573,24 +3573,24 @@ void df_setup( void )
 void df_teardown( void )
 {
     if( date_val != NULL ) {
-        mem_free( date_val );
+        MemFree( date_val );
         date_val = NULL;
     }
 
     if( time_val != NULL ) {
-        mem_free( time_val );
+        MemFree( time_val );
         time_val = NULL;
     }
 
     if( space_chars.text != NULL ) {
-        mem_free( space_chars.text);
+        MemFree( space_chars.text);
         space_chars.current = 0;
         space_chars.size = 0;
         space_chars.text = NULL;
     }
 
     if( uscore_chars.text != NULL ) {
-        mem_free( uscore_chars.text);
+        MemFree( uscore_chars.text);
         uscore_chars.current = 0;
         uscore_chars.size = 0;
         uscore_chars.text = NULL;

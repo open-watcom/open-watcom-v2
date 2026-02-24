@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -116,7 +116,7 @@ void    init_dict( symdict_hdl *pdict )
 {
     symdict_hdl dict;
 
-    dict = mem_alloc( sizeof( symdict ) );
+    dict = MemAlloc( sizeof( symdict ) );
     dict->first    = NULL;
     dict->htbl     = NULL;
     dict->lookups  = 0;
@@ -127,7 +127,7 @@ void    init_dict( symdict_hdl *pdict )
 
     if( dict == global_dict
       || dict == sys_dict ) {
-        dict->htbl = mem_alloc( sizeof( void * ) * SYM_HASH_SIZE );
+        dict->htbl = MemAlloc( sizeof( void * ) * SYM_HASH_SIZE );
         memset( dict->htbl, 0, sizeof( void * ) * SYM_HASH_SIZE );
         dict->local = false;
     }
@@ -138,8 +138,8 @@ void    init_dict( symdict_hdl *pdict )
 static void free_value( symsub *ws )
 {
     if( ws->size > 0 )
-        mem_free( ws->value );
-    mem_free( ws );
+        MemFree( ws->value );
+    MemFree( ws );
 }
 
 static void free_sym_chain( symvar *wk )
@@ -155,7 +155,7 @@ static void free_sym_chain( symvar *wk )
                 free_value( ws );
             }
             free_value( wk->sub_0 );
-            mem_free( wk );
+            MemFree( wk );
         }
     }
     return;
@@ -186,9 +186,9 @@ void    free_dict( symdict_hdl *pdict )
         for( i = 0; i < SYM_HASH_SIZE; ++i ) {
             free_sym_chain( dict->htbl[i] );
         }
-        mem_free( dict->htbl );
+        MemFree( dict->htbl );
     }
-    mem_free( dict );
+    MemFree( dict );
     *pdict = NULL;
     return;
 }
@@ -203,9 +203,9 @@ static void resize_value( symsub *val, unsigned size )
 {
     if( val->size < size ) {// need more room
         if( val->size > 0 ) {
-            val->value = mem_realloc( val->value, size + 1 );
+            val->value = MemRealloc( val->value, size + 1 );
         } else {
-            val->value = mem_alloc( size + 1 );
+            val->value = MemAlloc( size + 1 );
         }
         val->size = size;
     }
@@ -531,12 +531,12 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
           && (subscript == var->last_auto_inc + 1) ) {
             var->last_auto_inc++;
         }
-        newsub            = mem_alloc( sizeof( symsub ) );
+        newsub            = MemAlloc( sizeof( symsub ) );
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = subscript;
         newsub->size      = len;
-        newsub->value     = mem_alloc( len + 1 );
+        newsub->value     = MemAlloc( len + 1 );
         strncpy( newsub->value, val, len );
         newsub->value[len] = '\0';
 
@@ -599,7 +599,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     symvar      *new;
     symsub      *newsub;
 
-    new = mem_alloc( sizeof( symvar ) );
+    new = MemAlloc( sizeof( symvar ) );
     new->next = NULL;
     strcpy( new->name, name );
     new->last_auto_inc  = 0;
@@ -607,13 +607,13 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     new->subscripts = NULL;
     new->flags = f & ~SF_deleted;
 
-    newsub = mem_alloc( sizeof( symsub ) );
+    newsub = MemAlloc( sizeof( symsub ) );
     new->sub_0 = newsub;
     newsub->next      = NULL;
     newsub->base      = new;
     newsub->subscript = 0;
     newsub->size      = NUM2STR_LENGTH;
-    newsub->value     = mem_alloc( NUM2STR_LENGTH + 1 );
+    newsub->value     = MemAlloc( NUM2STR_LENGTH + 1 );
     newsub->value[0]  = '0';
     newsub->value[1]  = '\0';
 

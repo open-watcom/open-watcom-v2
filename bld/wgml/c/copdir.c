@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -362,7 +363,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
                             /* Return the member name, if found. */
 
                             if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
-                                return( mem_strdup( current_entry.member_name ) );
+                                return( MemStrdup( current_entry.member_name ) );
                             }
 
                             break;
@@ -405,7 +406,7 @@ static char *get_member_name( FILE *fp, const char *dir_file_name, const char *d
                     /* Return the member name, if found. */
 
                     if( stricmp( defined_name, current_entry.defined_name ) == 0 ) {
-                        return( mem_strdup( current_entry.member_name ) );
+                        return( MemStrdup( current_entry.member_name ) );
                     }
 
                     break;

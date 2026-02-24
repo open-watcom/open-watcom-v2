@@ -76,7 +76,7 @@ static void free_tokens( void )
 
     while( (tok = cmd_data_lvl->cmd_tokens) != NULL ) {
         cmd_data_lvl->cmd_tokens = tok->nxt;
-        mem_free( tok );
+        MemFree( tok );
     }
 }
 
@@ -141,7 +141,7 @@ static int split_tokens( char *str )
             continue;
         }
 
-        new = mem_alloc( sizeof( *new ) + toklen );
+        new = MemAlloc( sizeof( *new ) + toklen );
         new->nxt = NULL;
         new->bol = linestart;
         linestart = false;
@@ -179,7 +179,7 @@ static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n )
     char    *   p;
     char    *   pbuff;
 
-    pbuff = mem_alloc( strlen( str ) + 1 );
+    pbuff = MemAlloc( strlen( str ) + 1 );
     p = pbuff;
 
     for( ; ; ) {
@@ -212,13 +212,13 @@ static void read_indirect_file( FILE *fp )
     unsigned    len;
     unsigned    blk_len;
 
-    buf = mem_alloc( 1024 );
+    buf = MemAlloc( 1024 );
     len = 0;
     while( (blk_len = fread( buf, 1, 1024, fp )) == 1024 ) {
         len += blk_len;
     }
     len += blk_len;
-    buf = mem_realloc( buf, len + 1 );
+    buf = MemRealloc( buf, len + 1 );
     rewind( fp );
     fread( buf, 1, len, fp );
     buf[len] = '\0';
@@ -235,7 +235,7 @@ static void read_indirect_file( FILE *fp )
         ++str;
     }
     split_tokens( buf );
-    mem_free( buf );
+    MemFree( buf );
 }
 
 /***************************************************************************/
@@ -327,9 +327,9 @@ static void set_altext( option * opt )
     len = tokennext->toklen;
     p = tokennext->token;
     if( alt_ext ) {
-        mem_free( alt_ext );
+        MemFree( alt_ext );
     }
-    alt_ext = mem_alloc( len + 2 );
+    alt_ext = MemAlloc( len + 2 );
     pw = alt_ext;
     if( *p != '.' ) {
         *pw++ = '.';                // make extension start with .
@@ -496,9 +496,9 @@ static void set_device( option * opt )
 
     g_info_research( INF_RECOGNIZED_XXX, "device name", p );
     if( g_dev_name != NULL ) {
-        mem_free( g_dev_name );
+        MemFree( g_dev_name );
     }
-    g_dev_name = mem_alloc( len + 1 );
+    g_dev_name = MemAlloc( len + 1 );
     pw = g_dev_name;
     while( len > 0 ) {
          len--;
@@ -601,7 +601,7 @@ static void set_font( option * opt )
     opt_font    *   f;
 
     old_errs = err_count;
-    new_font = mem_alloc( sizeof( opt_font ) );
+    new_font = MemAlloc( sizeof( opt_font ) );
     new_font->nxt = NULL;
     new_font->font = FONT0;
     new_font->name = NULL;
@@ -654,7 +654,7 @@ static void set_font( option * opt )
     p = tokennext->token;
 
     g_info_research( INF_RECOGNIZED_XXX, "font name", p );
-    new_font->name = mem_alloc( len + 1 );
+    new_font->name = MemAlloc( len + 1 );
     pw = new_font->name;
     while( len > 0 ) {
          len--;
@@ -705,7 +705,7 @@ static void set_font( option * opt )
             new_font->space = (unsigned) fn;
         } else {
             g_info_research( INF_RECOGNIZED_XXX, "font style", p );
-            new_font->style = mem_alloc( len + 1 );
+            new_font->style = MemAlloc( len + 1 );
             pw = new_font->style;
             while( len > 0 ) {
                  len--;
@@ -763,7 +763,7 @@ static void set_font( option * opt )
                 new_font->height = (unsigned) fn;
             } else {
                 g_info_research( INF_RECOGNIZED_XXX, "font style", p );
-                new_font->style = mem_alloc( len + 1 );
+                new_font->style = MemAlloc( len + 1 );
                 pw = new_font->style;
                 while( len > 0 ) {
                      len--;
@@ -792,7 +792,7 @@ static void set_font( option * opt )
         len = opts[0]->toklen;
         p = opts[0]->token;
         g_info_research( INF_RECOGNIZED_XXX, "font style", p );
-        new_font->style = mem_alloc( len + 1 );
+        new_font->style = MemAlloc( len + 1 );
         pw = new_font->style;
         while( len > 0 ) {
              len--;
@@ -872,14 +872,14 @@ static void set_font( option * opt )
         out_msg_research( "%i %i\n", new_font->space, new_font->height );
     } else {
         if( new_font->name !=NULL ) {
-            mem_free( new_font->name );
+            MemFree( new_font->name );
             new_font->name = NULL;
         }
         if( new_font->style !=NULL ) {
-            mem_free( new_font->style );
+            MemFree( new_font->style );
             new_font->style = NULL;
         }
-        mem_free( new_font );
+        MemFree( new_font );
         new_font = NULL;
     }
     return;
@@ -902,7 +902,7 @@ static void set_layout( option * opt )
         /* never return */
     }
     len = tokennext->toklen;
-    laywk = mem_alloc( sizeof( laystack ) + len );
+    laywk = MemAlloc( sizeof( laystack ) + len );
     strncpy( laywk->layfn, tokennext->token, len );
     laywk->layfn[len] = '\0';
     laywk->next = NULL;
@@ -938,7 +938,7 @@ static void set_outfile( option * opt )
 
     split_attr_file( out_file, attrwork, sizeof( attrwork ) - 1 );
     if( attrwork[0] != '\0' ) {
-        out_file_attr = mem_strdup( attrwork );
+        out_file_attr = MemStrdup( attrwork );
     } else {
         out_file_attr = NULL;
     }
@@ -1152,7 +1152,7 @@ static void set_optfile( option *opt )
 
     cmd_data_lvl++;
     cmd_data_lvl->sav_tokens = tokennext->nxt;
-    cmd_data_lvl->file_name = mem_strdup( try_file_name );
+    cmd_data_lvl->file_name = MemStrdup( try_file_name );
     read_indirect_file( fp );
     fclose( fp );
     tokennext = cmd_data_lvl->cmd_tokens;
@@ -1760,7 +1760,7 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
     split_attr_file( p , attrwork, sizeof( attrwork ) - 1 );
     if( attrwork[0] != '\0' ) {
         xx_warn_cc( WNG_FILEATTR_IGNORED, attrwork, p );
-        master_fname_attr = mem_strdup( attrwork );
+        master_fname_attr = MemStrdup( attrwork );
     } else {
         master_fname_attr = NULL;
     }
@@ -1850,7 +1850,7 @@ int proc_options( char * string )
             break;
         }
         if( cmd_data_lvl->file_name != NULL ) {
-            mem_free( cmd_data_lvl->file_name );
+            MemFree( cmd_data_lvl->file_name );
             cmd_data_lvl->file_name = NULL;
         }
         tok = cmd_data_lvl->sav_tokens;

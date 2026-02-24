@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +64,8 @@
  *          the new size).
  *
  * Notes:
- *      mem_realloc() will call exit() if the reallocation fails.
- *      mem_realloc() will free in_driver if the instance is actually moved to a
+ *      MemRealloc() will call exit() if the reallocation fails.
+ *      MemRealloc() will free in_driver if the instance is actually moved to a
  *          new location.
  *      The intended use is for the pointer passed as in_driver to be used to
  *          store the return value.
@@ -86,7 +87,7 @@ static cop_driver *resize_cop_driver( cop_driver *in_driver, unsigned in_size )
 
     /* Reallocate the cop_driver. */
 
-    local_driver = mem_realloc( in_driver, new_size );
+    local_driver = MemRealloc( in_driver, new_size );
     local_driver->allocated_size = new_size;
     return( local_driver );
 }
@@ -115,9 +116,9 @@ static cop_driver *resize_cop_driver( cop_driver *in_driver, unsigned in_size )
  *      NULL on failure, which indicates an incorrectly formatted file.
  *
  * Notes:
- *      resize_cop_driver() calls mem_realloc(), which will call exit() if
+ *      resize_cop_driver() calls MemRealloc(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls mem_alloc(), which will call exit() if
+ *      get_code_blocks() calls MemAlloc(), which will call exit() if
  *          the allocation fails.
  */
 
@@ -159,7 +160,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
         /* Initialize the code_text struct. */
 
         if( cop_codeblocks[0].designator != 0x00 ) {
-            mem_free( cop_codeblocks );
+            MemFree( cop_codeblocks );
             cop_codeblocks = NULL;
             break;
         }
@@ -175,7 +176,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
 
         memcpy( text_ptr, cop_codeblocks[0].text, size );
 
-        mem_free( cop_codeblocks );
+        MemFree( cop_codeblocks );
         cop_codeblocks = NULL;
 
         return( in_driver );
@@ -200,7 +201,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
         /* Initialize the code_text struct. */
 
         if( cop_codeblocks[0].designator != 0x00 ) {
-            mem_free( cop_codeblocks );
+            MemFree( cop_codeblocks );
             cop_codeblocks = NULL;
             break;
         }
@@ -216,7 +217,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
 
         memcpy( text_ptr, cop_codeblocks[0].text, size );
 
-        mem_free( cop_codeblocks );
+        MemFree( cop_codeblocks );
         cop_codeblocks = NULL;
 
         return( in_driver );
@@ -224,7 +225,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
 
     /* If we get here, then an error has occurred. */
 
-    mem_free( in_driver );
+    MemFree( in_driver );
     in_driver = NULL;
 
     return( in_driver );
@@ -256,9 +257,9 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, const char **curre
  *      NULL on failure.
  *
  * Note:
- *      resize_cop_driver() calls mem_realloc(), which will call exit() if
+ *      resize_cop_driver() calls MemRealloc(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls mem_alloc(), which will call exit() if
+ *      get_code_blocks() calls MemAlloc(), which will call exit() if
  *          the allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -289,7 +290,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     fontstyle_block_ptr->line_passes = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
@@ -300,13 +301,13 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     count = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
 
     if( count != 0x0001 ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
@@ -317,13 +318,13 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     count = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
 
     if( count != 0x0000 ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
@@ -332,7 +333,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
     /* data_count should contain the length of type, including the terminal null. */
 
     if( data_count == 0 ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
@@ -353,7 +354,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
         fread_buff( string_ptr, data_count, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( in_driver );
+            MemFree( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
@@ -393,7 +394,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
 
     *p_buffer_set = get_p_buffer( fp );
     if( *p_buffer_set == NULL ) {
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
         return( in_driver );
     }
@@ -496,9 +497,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             /* Ensure that the line pass is within range. */
 
             if( !CHECK_LINE_PASS( line_pass ) ) {
-                mem_free( *p_buffer_set );
+                MemFree( *p_buffer_set );
                 *p_buffer_set = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 break;
             }
@@ -536,9 +537,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             /* Ensure that the line pass is within range. */
 
             if( !CHECK_LINE_PASS( line_pass ) ) {
-                mem_free( *p_buffer_set );
+                MemFree( *p_buffer_set );
                 *p_buffer_set = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 break;
             }
@@ -576,9 +577,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             /* Ensure that the line pass is within range. */
 
             if( !CHECK_LINE_PASS( line_pass ) ) {
-                mem_free( *p_buffer_set );
+                MemFree( *p_buffer_set );
                 *p_buffer_set = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 break;
             }
@@ -616,9 +617,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             /* Ensure that the line pass is within range. */
 
             if( !CHECK_LINE_PASS( line_pass ) ) {
-                mem_free( *p_buffer_set );
+                MemFree( *p_buffer_set );
                 *p_buffer_set = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 break;
             }
@@ -656,9 +657,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             /* Ensure that the line pass is within range. */
 
             if( !CHECK_LINE_PASS( line_pass ) ) {
-                mem_free( *p_buffer_set );
+                MemFree( *p_buffer_set );
                 *p_buffer_set = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 break;
             }
@@ -690,14 +691,14 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
             memcpy( text_ptr, cop_codeblocks[i].text, size );
             break;
         default :
-            mem_free( *p_buffer_set );
+            MemFree( *p_buffer_set );
             *p_buffer_set = NULL;
-            mem_free( in_driver );
+            MemFree( in_driver );
             in_driver = NULL;
         }
     }
 
-    mem_free(cop_codeblocks);
+    MemFree(cop_codeblocks);
     cop_codeblocks = NULL;
 
     return( in_driver );
@@ -723,9 +724,9 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
  *      NULL on failure, which indicates an incorrectly formatted file.
  *
  * Notes:
- *      resize_cop_driver() calls mem_realloc(), which will call exit() if
+ *      resize_cop_driver() calls MemRealloc(), which will call exit() if
  *          the reallocation fails.
- *      get_code_blocks() calls mem_alloc(), which will call exit() if
+ *      get_code_blocks() calls MemAlloc(), which will call exit() if
  *          the allocation fails.
  */
 static cop_driver *parse_init_block( cop_driver *in_driver, const char **current, const char *base )
@@ -751,7 +752,7 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
     case 0x01 :
         count = get_u16( current );
         if( count == 0 ) {
-            mem_free( in_driver );
+            MemFree( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
@@ -789,9 +790,9 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
                 init_text_ptr[i].is_fontvalue = true;
                 break;
             default:
-                mem_free( cop_codeblocks );
+                MemFree( cop_codeblocks );
                 cop_codeblocks = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 return( in_driver );
             }
@@ -809,14 +810,14 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
             memcpy( text_ptr, cop_codeblocks[i].text, size );
         }
 
-        mem_free( cop_codeblocks );
+        MemFree( cop_codeblocks );
         cop_codeblocks = NULL;
 
         break;
     case 0x02 :
         count = get_u16( current );
         if( count == 0 ) {
-            mem_free( in_driver );
+            MemFree( in_driver );
             in_driver = NULL;
             return( in_driver );
         }
@@ -854,9 +855,9 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
                 init_text_ptr[i].is_fontvalue = true;
                 break;
             default:
-                mem_free( cop_codeblocks );
+                MemFree( cop_codeblocks );
                 cop_codeblocks = NULL;
-                mem_free( in_driver );
+                MemFree( in_driver );
                 in_driver = NULL;
                 return( in_driver );
             }
@@ -874,12 +875,12 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
             memcpy( text_ptr, cop_codeblocks[i].text, size );
         }
 
-        mem_free( cop_codeblocks );
+        MemFree( cop_codeblocks );
         cop_codeblocks = NULL;
 
         break;
     default :
-        mem_free( in_driver );
+        MemFree( in_driver );
         in_driver = NULL;
     }
 
@@ -901,16 +902,16 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
  *      A NULL pointer on failure.
  *
  *  Notes:
- *      mem_alloc() calls exit() if the allocation fails.
- *      resize_cop_driver() uses mem_realloc(), which calls exit() if the
+ *      MemAlloc() calls exit() if the allocation fails.
+ *      resize_cop_driver() uses MemRealloc(), which calls exit() if the
  *          allocation fails.
- *      get_code_blocks() uses mem_alloc(), which calls exit() if the
+ *      get_code_blocks() uses MemAlloc(), which calls exit() if the
  *          allocation fails.
- *      get_p_buffers() uses mem_alloc(), which calls exit() if the
+ *      get_p_buffers() uses MemAlloc(), which calls exit() if the
  *          allocation fails; however, a NULL is returned for a file error; if
  *          a non-NULL value is returned, then p_buffer.buffer is non-NULL
  *          as well.
- *      parse_functions_block() uses mem_alloc(), which calls exit() if the
+ *      parse_functions_block() uses MemAlloc(), which calls exit() if the
  *          allocation fails.
  *      NULL is returned for file errors and for formatting errors. It is
  *          suggested that a file error be treated as a format error since
@@ -959,7 +960,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* Initialize the out_driver. */
 
-    out_driver = mem_alloc( START_SIZE );
+    out_driver = MemAlloc( START_SIZE );
 
     out_driver->allocated_size = START_SIZE;
     out_driver->next_offset = sizeof( cop_driver );
@@ -974,7 +975,7 @@ cop_driver * parse_driver( FILE *fp )
     fread_buff( discriminator, 3, fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -982,7 +983,7 @@ cop_driver * parse_driver( FILE *fp )
     /* Verify that the discriminator is for a .COP driver file. */
 
     if( memcmp( discriminator, "DRV", 3 ) != 0 ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -992,7 +993,7 @@ cop_driver * parse_driver( FILE *fp )
     length = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1006,7 +1007,7 @@ cop_driver * parse_driver( FILE *fp )
         fread_buff( string_ptr, length, fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1020,13 +1021,13 @@ cop_driver * parse_driver( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( count != 0x04 ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1036,7 +1037,7 @@ cop_driver * parse_driver( FILE *fp )
     out_driver->fill_char = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1046,7 +1047,7 @@ cop_driver * parse_driver( FILE *fp )
     out_driver->x_positive = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1056,7 +1057,7 @@ cop_driver * parse_driver( FILE *fp )
     out_driver->y_positive = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1066,13 +1067,13 @@ cop_driver * parse_driver( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( count != 0x00 ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1081,7 +1082,7 @@ cop_driver * parse_driver( FILE *fp )
 
     p_buffer_set = get_p_buffer( fp );
     if( p_buffer_set == NULL ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1103,7 +1104,7 @@ cop_driver * parse_driver( FILE *fp )
     case 0x0001 :
         out_driver = parse_init_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
@@ -1111,7 +1112,7 @@ cop_driver * parse_driver( FILE *fp )
     case 0x0002 :
         out_driver = parse_init_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
@@ -1126,15 +1127,15 @@ cop_driver * parse_driver( FILE *fp )
 
         out_driver = parse_init_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1162,7 +1163,7 @@ cop_driver * parse_driver( FILE *fp )
     case 0x0001 :
         out_driver = parse_finish_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
@@ -1170,7 +1171,7 @@ cop_driver * parse_driver( FILE *fp )
     case 0x0002 :
         out_driver = parse_finish_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
@@ -1185,15 +1186,15 @@ cop_driver * parse_driver( FILE *fp )
 
         out_driver = parse_finish_block( out_driver, &current, p_buffer_set->buffer );
         if( out_driver == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
             return( out_driver );
         }
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1233,9 +1234,9 @@ cop_driver * parse_driver( FILE *fp )
         count = get_u16( &current );
 
         if( count != 0x0001 ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1244,19 +1245,19 @@ cop_driver * parse_driver( FILE *fp )
 
         cop_codeblocks = get_code_blocks( &current, count, p_buffer_set->buffer );
         if( cop_codeblocks == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( cop_codeblocks->designator != 0x00 ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( cop_codeblocks );
+            MemFree( cop_codeblocks );
             cop_codeblocks = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1271,7 +1272,7 @@ cop_driver * parse_driver( FILE *fp )
         text_ptr = OUT_DRV_SET_OFF( newline_block_ptr[i].text, size );
 
         memcpy( text_ptr, cop_codeblocks->text, size );
-        mem_free(cop_codeblocks);
+        MemFree(cop_codeblocks);
         cop_codeblocks = NULL;
 
         /* Reset to the start of the next P-buffer's data. */
@@ -1298,9 +1299,9 @@ cop_driver * parse_driver( FILE *fp )
     count = get_u16( &current );
 
     if( count != 0x0000 ) {
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1320,15 +1321,15 @@ cop_driver * parse_driver( FILE *fp )
     /* Verify that the number of CodeBlocks is 1. */
 
     if( cop_functions->count != 0x0001 ) {
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
         if( cop_functions->code_blocks != NULL ) {
-            mem_free( cop_functions->code_blocks );
+            MemFree( cop_functions->code_blocks );
             cop_functions->code_blocks = NULL;
         }
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1342,9 +1343,9 @@ cop_driver * parse_driver( FILE *fp )
     text_ptr = OUT_DRV_SET_OFF( out_driver->newpage.text, size );
 
     memcpy( text_ptr, cop_functions->code_blocks->text, size );
-    mem_free( cop_functions->code_blocks );
+    MemFree( cop_functions->code_blocks );
     cop_functions->code_blocks = NULL;
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -1378,22 +1379,22 @@ cop_driver * parse_driver( FILE *fp )
         memcpy( text_ptr, cop_functions->code_blocks->text, size );
         break;
     default :
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -1490,9 +1491,9 @@ cop_driver * parse_driver( FILE *fp )
 
             if( (count == 0x00)
               || (count > 0x02) ) {
-                mem_free( p_buffer_set );
+                MemFree( p_buffer_set );
                 p_buffer_set = NULL;
-                mem_free( out_driver );
+                MemFree( out_driver );
                 out_driver = NULL;
                 return( out_driver );
             }
@@ -1501,9 +1502,9 @@ cop_driver * parse_driver( FILE *fp )
 
             cop_codeblocks = get_code_blocks( &current, count, p_buffer_set->buffer );
             if( cop_codeblocks == NULL ) {
-                mem_free( p_buffer_set );
+                MemFree( p_buffer_set );
                 p_buffer_set = NULL;
-                mem_free( out_driver );
+                MemFree( out_driver );
                 out_driver = NULL;
                 return( out_driver );
             }
@@ -1564,17 +1565,17 @@ cop_driver * parse_driver( FILE *fp )
                     memcpy( text_ptr, cop_codeblocks[j].text, size );
                     break;
                 default:
-                    mem_free( p_buffer_set );
+                    MemFree( p_buffer_set );
                     p_buffer_set = NULL;
-                    mem_free( cop_codeblocks );
+                    MemFree( cop_codeblocks );
                     cop_codeblocks = NULL;
-                    mem_free( out_driver );
+                    MemFree( out_driver );
                     out_driver = NULL;
                     return( out_driver );
                 }
             }
 
-            mem_free(cop_codeblocks);
+            MemFree(cop_codeblocks);
             cop_codeblocks = NULL;
 
             /* Reset to the start of the next P-buffer's data. */
@@ -1599,15 +1600,15 @@ cop_driver * parse_driver( FILE *fp )
         fseek( fp, SEEK_POSBACK( span + span / 80 ), SEEK_CUR );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
     }
 
-    mem_free( p_buffer_set );
+    MemFree( p_buffer_set );
     p_buffer_set = NULL;
 
     /* Parse the FontstyleGroup. */
@@ -1617,13 +1618,13 @@ cop_driver * parse_driver( FILE *fp )
     count = fread_u8( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( count == 0x00 ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1633,13 +1634,13 @@ cop_driver * parse_driver( FILE *fp )
     out_driver->fontstyles.count = fread_u16( fp );
     if( ferror( fp )
       || feof( fp ) ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( out_driver->fontstyles.count == 0x00 ) {
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
@@ -1693,14 +1694,14 @@ cop_driver * parse_driver( FILE *fp )
             fseek( fp, SEEK_POSBACK( span + span / 80 ), SEEK_CUR );
             if( ferror( fp )
               || feof( fp ) ) {
-                mem_free( p_buffer_set );
+                MemFree( p_buffer_set );
                 p_buffer_set = NULL;
-                mem_free( out_driver );
+                MemFree( out_driver );
                 out_driver = NULL;
                 return( out_driver );
             }
         }
-        mem_free(p_buffer_set);
+        MemFree(p_buffer_set);
         p_buffer_set = NULL;
 
         /* Get the count and ensure it is not 0. */
@@ -1708,13 +1709,13 @@ cop_driver * parse_driver( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( count == 0x00 ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1756,22 +1757,22 @@ cop_driver * parse_driver( FILE *fp )
         memcpy( text_ptr, cop_functions->code_blocks->text, size );
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* Reset to the start of the next P-buffer's data. */
@@ -1806,22 +1807,22 @@ cop_driver * parse_driver( FILE *fp )
         memcpy( text_ptr, cop_functions->code_blocks->text, size );
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* The thickness is present only if the HlineBlock was present. */
@@ -1839,7 +1840,7 @@ cop_driver * parse_driver( FILE *fp )
 
         /* The thickness halted the set of P-buffers so it is exhausted. */
 
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
 
         /* Ensure that the count is 0x04. */
@@ -1847,13 +1848,13 @@ cop_driver * parse_driver( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( count != 0x04 ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1863,7 +1864,7 @@ cop_driver * parse_driver( FILE *fp )
         out_driver->hline.thickness = fread_u32( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1876,15 +1877,15 @@ cop_driver * parse_driver( FILE *fp )
     if( out_driver->hline.text != NULL ) {
         p_buffer_set = get_p_buffer( fp );
         if( p_buffer_set == NULL ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( p_buffer_set->buffer == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1914,22 +1915,22 @@ cop_driver * parse_driver( FILE *fp )
         memcpy( text_ptr, cop_functions->code_blocks->text, size );
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* The thickness is present only if the VlineBlock was present. */
@@ -1947,7 +1948,7 @@ cop_driver * parse_driver( FILE *fp )
 
         /* The thickness halted the set of P-buffers so it is exhausted. */
 
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
 
         /* Ensure that the count in 0x04. */
@@ -1955,13 +1956,13 @@ cop_driver * parse_driver( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( count != 0x04 ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1971,7 +1972,7 @@ cop_driver * parse_driver( FILE *fp )
         out_driver->vline.thickness = fread_u32( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -1987,15 +1988,15 @@ cop_driver * parse_driver( FILE *fp )
 
         p_buffer_set = get_p_buffer( fp );
         if( p_buffer_set == NULL ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( p_buffer_set->buffer == NULL ) {
-            mem_free( p_buffer_set );
+            MemFree( p_buffer_set );
             p_buffer_set = NULL;
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -2025,26 +2026,26 @@ cop_driver * parse_driver( FILE *fp )
         memcpy( text_ptr, cop_functions->code_blocks->text, size );
         break;
     default:
-        mem_free( p_buffer_set );
+        MemFree( p_buffer_set );
         p_buffer_set = NULL;
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
-        mem_free( cop_functions );
+        MemFree( cop_functions );
         cop_functions = NULL;
-        mem_free( out_driver );
+        MemFree( out_driver );
         out_driver = NULL;
         return( out_driver );
     }
 
     /* DboxBlock is the last item in the .COP file: the P-buffers are ended. */
 
-    mem_free( p_buffer_set );
+    MemFree( p_buffer_set );
     p_buffer_set = NULL;
     if( cop_functions->code_blocks != NULL ) {
-        mem_free( cop_functions->code_blocks );
+        MemFree( cop_functions->code_blocks );
         cop_functions->code_blocks = NULL;
     }
-    mem_free( cop_functions );
+    MemFree( cop_functions );
     cop_functions = NULL;
 
     /* The thickness is present only if DboxBlock was present. */
@@ -2056,13 +2057,13 @@ cop_driver * parse_driver( FILE *fp )
         count = fread_u8( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
 
         if( count != 0x04 ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }
@@ -2072,7 +2073,7 @@ cop_driver * parse_driver( FILE *fp )
         out_driver->dbox.thickness = fread_u32( fp );
         if( ferror( fp )
           || feof( fp ) ) {
-            mem_free( out_driver );
+            MemFree( out_driver );
             out_driver = NULL;
             return( out_driver );
         }

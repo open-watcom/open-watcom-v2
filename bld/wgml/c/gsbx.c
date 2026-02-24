@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -222,7 +222,7 @@ static  unsigned    v_offset        = 0;        // space reserved for the box li
 static box_col_set * resize_box_cols( box_col_set * in_cols )
 {
     in_cols->length += BOXCOL_COUNT;               // add space for new box columns
-    in_cols->cols = mem_realloc( in_cols->cols, in_cols->length * sizeof( box_col_spec ) );
+    in_cols->cols = MemRealloc( in_cols->cols, in_cols->length * sizeof( box_col_spec ) );
     memset( &in_cols->cols[in_cols->current], 0, BOXCOL_COUNT * sizeof( box_col_spec ));
     return( in_cols );
 }

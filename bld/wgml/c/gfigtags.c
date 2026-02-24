@@ -1150,7 +1150,7 @@ void gml_figcap( const gmltag * entry )
         sprintf( buffer, "%d", fig_entry->number );
         count += strlen( buffer );
         count++;                       // for the delimiter character
-        prefix = (char *)mem_alloc( count + 1 );
+        prefix = (char *)MemAlloc( count + 1 );
         strcpy( prefix, layout_work.figcap.string );
         current = strlen( prefix );
         strcat( &prefix[current], buffer );
@@ -1186,7 +1186,7 @@ void gml_figcap( const gmltag * entry )
         SkipSpaces( p );                    // skip preceding spaces
         post_space = 0;                     // no additional space
         if( pass == 1 ) {                   // only on first pass
-            fig_entry->text = mem_strdup( p );
+            fig_entry->text = MemStrdup( p );
         }
         process_text( fig_entry->text, g_curr_font );   // if text follows
     } else {

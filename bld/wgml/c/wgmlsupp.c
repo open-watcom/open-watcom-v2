@@ -170,37 +170,37 @@ void free_some_mem( void )
     int             i;
 
     if( token_buf != NULL ) {
-        mem_free( token_buf );
+        MemFree( token_buf );
     }
     if( alt_ext != NULL ) {
-        mem_free( alt_ext );
+        MemFree( alt_ext );
     }
     if( def_ext != NULL ) {
-        mem_free( def_ext );
+        MemFree( def_ext );
     }
     if( master_fname != NULL ) {
-        mem_free( master_fname );
+        MemFree( master_fname );
     }
     if( master_fname_attr != NULL ) {
-        mem_free( master_fname_attr );
+        MemFree( master_fname_attr );
     }
     if( g_dev_name != NULL ) {
-        mem_free( g_dev_name );
+        MemFree( g_dev_name );
     }
     if( lay_files != NULL ) {
         laystack * lwk;
 
         while( lay_files != NULL ) {
             lwk = lay_files->next;
-            mem_free( lay_files );
+            MemFree( lay_files );
             lay_files = lwk;
         }
     }
     if( out_file != NULL ) {
-        mem_free( out_file );
+        MemFree( out_file );
     }
     if( out_file_attr != NULL ) {
-        mem_free( out_file_attr );
+        MemFree( out_file_attr );
     }
     if( global_dict != NULL ) {
         free_dict( &global_dict );
@@ -212,7 +212,7 @@ void free_some_mem( void )
         free_macro_dict( &macro_dict );
     }
     if( line_buff.text != NULL ) {
-        mem_free( line_buff.text );
+        MemFree( line_buff.text );
     }
     if( fig_list != NULL ) {
         free_ffh_list( fig_list );
@@ -251,10 +251,10 @@ void free_some_mem( void )
         free_index_dict( &index_dict );
     }
     if( buff2 != NULL ) {
-        mem_free( buff2 );
+        MemFree( buff2 );
     }
     if( workbuf != NULL ) {
-        mem_free( workbuf );
+        MemFree( workbuf );
     }
     if( box_line != NULL ) {
         add_box_col_stack_to_pool( box_line );
@@ -294,7 +294,7 @@ void free_some_mem( void )
             }
         }
         sav_pane = t_page.panes->next;
-        mem_free( t_page.panes );
+        MemFree( t_page.panes );
         t_page.panes = sav_pane;
     }
     if( t_page.bot_ban != NULL ) {
@@ -423,7 +423,7 @@ bool get_line( bool display_line )
         input_cbs->hh_tag = pline->hh_tag;
         input_cbs->sym_space = pline->sym_space;
 
-        mem_free( pline );
+        MemFree( pline );
 
         if( input_cbs->hidden_head == NULL ) {  // last part of split line
             input_cbs->hidden_tail = NULL;

@@ -406,7 +406,7 @@ void    lay_banner( const gmltag * entry )
             wkb.next_refnum = ref_ban->next_refnum;
             regwkprev = NULL;
             for( regwk = ref_ban->region; regwk != NULL; regwk = regwk->next ) { // allocate + copy banregions
-                regwknew = mem_alloc( sizeof( region_lay_tag ) );
+                regwknew = MemAlloc( sizeof( region_lay_tag ) );
                 memcpy( regwknew, regwk, sizeof( region_lay_tag ) );
                 if( wkb.region == NULL ) {   // forward chain
                     wkb.region = regwknew;
@@ -456,7 +456,7 @@ void    lay_banner( const gmltag * entry )
                 banwk->next_refnum = wkb.next_refnum;
                 while( (regwk = banwk->region) != NULL ) { // free copy of banregions
                     banwk->region = regwk->next;
-                    mem_free( regwk );
+                    MemFree( regwk );
                 }
                 banwk->region = wkb.region;
                 wkb.region = NULL;
@@ -486,7 +486,7 @@ void    lay_banner( const gmltag * entry )
             xx_err_exit( ERR_ALL_BAN_ATT_RQRD );
             /* never return */
         }
-        curr_ban = mem_alloc( sizeof( banner_lay_tag ) );
+        curr_ban = MemAlloc( sizeof( banner_lay_tag ) );
         memcpy( curr_ban, &wkb, sizeof( banner_lay_tag ) );
 
         if( layout_work.banner == NULL ) {      // First banner initializes the list
@@ -574,9 +574,9 @@ void    lay_ebanner( const gmltag * entry )
         if( del_ban != NULL) {              // delete request
             while( (reg = del_ban->region) != NULL) {
                 del_ban->region = reg->next;
-                mem_free( reg );
+                MemFree( reg );
             }
-            mem_free( del_ban );
+            MemFree( del_ban );
             del_ban = NULL;
         } else if( curr_ban != NULL) {      // append survivor to the end of the list
 
@@ -1042,7 +1042,7 @@ void    lay_banregion( const gmltag *entry )
             } else {
                 prev_reg->next = reg->next;
             }
-            mem_free( reg );
+            MemFree( reg );
             reg = NULL;
         } else {                        // modify existing banregion
             for( k = 0; k < TABLE_SIZE( banregion_att ); ++k ) {
@@ -1107,7 +1107,7 @@ void    lay_banregion( const gmltag *entry )
             xx_err_exit( ERR_ALL_REG_ATT_RQRD );
             /* never return */
         }
-        reg = mem_alloc( sizeof( region_lay_tag ) );
+        reg = MemAlloc( sizeof( region_lay_tag ) );
         memcpy( reg, &wkr, sizeof( region_lay_tag ) );
         if( prev_reg == NULL ) {    // first region in banner
             curr_ban->region = reg;

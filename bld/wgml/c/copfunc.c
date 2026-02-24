@@ -58,7 +58,7 @@
  *      a pointer to a code_block containing the CodeBlocks.
  *
  * Note:
- *      mem_alloc() will call exit() if the allocation fails.
+ *      MemAlloc() will call exit() if the allocation fails.
  */
 
 code_block *get_code_blocks( const char **current, int count, const char *base )
@@ -70,7 +70,7 @@ code_block *get_code_blocks( const char **current, int count, const char *base )
 
     /* Allocate out_block. */
 
-    out_block = mem_alloc( sizeof( code_block ) * count );
+    out_block = MemAlloc( sizeof( code_block ) * count );
 
     /* Initialize each code_block. */
 
@@ -137,7 +137,7 @@ code_block *get_code_blocks( const char **current, int count, const char *base )
  *     a NULL pointer on failure.
  *
  * Note:
- *      mem_alloc() will call exit() if the allocation fails.
+ *      MemAlloc() will call exit() if the allocation fails.
  *      if a non-NULL pointer is returned, it's buffer field will also be
  *          non-NULL.
  *      NULL is returned for file errors.
@@ -183,7 +183,7 @@ p_buffer * get_p_buffer( FILE *fp )
 
     /* Allocate the out_buffer. */
 
-    current = mem_alloc( sizeof( p_buffer ) + 80 * p_count );
+    current = MemAlloc( sizeof( p_buffer ) + 80 * p_count );
     out_buffer = (p_buffer *)current;
     current += sizeof( p_buffer );
     out_buffer->buffer = current;
@@ -194,20 +194,20 @@ p_buffer * get_p_buffer( FILE *fp )
     for( i = 0; i < p_count; i++ ) {
         test_char = fgetc( fp );
         if( ferror( fp ) || feof( fp ) ) {
-            mem_free( out_buffer );
+            MemFree( out_buffer );
             out_buffer = NULL;
             return( out_buffer );
         }
 
         if( test_char != 80 ) {
-            mem_free( out_buffer );
+            MemFree( out_buffer );
             out_buffer = NULL;
             return( out_buffer );
         }
 
         fread_buff( current, 80, fp );
         if( ferror( fp ) || feof( fp ) ) {
-            mem_free( out_buffer );
+            MemFree( out_buffer );
             out_buffer = NULL;
             return( out_buffer );
         }
@@ -237,8 +237,8 @@ p_buffer * get_p_buffer( FILE *fp )
  *      a pointer to a functions_block containing the processed data.
  *
  * Notes:
- *      mem_alloc() will call exit() if the allocation fails.
- *      get_code_blocks() calls mem_alloc(), which will call exit() if
+ *      MemAlloc() will call exit() if the allocation fails.
+ *      get_code_blocks() calls MemAlloc(), which will call exit() if
  *          the allocation fails.
  *      if there are no CodeBlocks in the file, then NULL will not be returned
  *          but its code_blocks field will be NULL.
@@ -255,7 +255,7 @@ functions_block *parse_functions_block( const char **current, const char *base )
 
     /* Allocate the out_block. */
 
-    out_block = mem_alloc( sizeof( functions_block ) );
+    out_block = MemAlloc( sizeof( functions_block ) );
     out_block->count = code_count;
 
     /* Now extract the CodeBlocks, if any. */

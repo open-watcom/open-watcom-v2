@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -263,7 +263,7 @@ static void next_tab( void )
                 r_count /= TAB_COUNT;
                 r_count++;
                 r_length = def_tabs.length + (r_count * TAB_COUNT);
-                def_tabs.tabs = mem_realloc( def_tabs.tabs, r_length * sizeof( tab_stop ) );
+                def_tabs.tabs = MemRealloc( def_tabs.tabs, r_length * sizeof( tab_stop ) );
                 for( i = def_tabs.length; i < r_length; i++ ) {
                     def_tabs.tabs[i].column = def_tabs.tabs[i - 1].column + inter_tab;
                     def_tabs.tabs[i].fill_char = ' ';
@@ -2696,7 +2696,7 @@ void process_text( char * text, font_number font )
                 ProcFlags.cont_char = true;
                 pline = input_cbs->prev->hidden_head;
                 input_cbs->prev->hidden_head = input_cbs->prev->hidden_head->next;
-                mem_free( pline );
+                MemFree( pline );
             }
 
             if( ProcFlags.cont_char ) {

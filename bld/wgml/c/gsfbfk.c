@@ -181,7 +181,7 @@ static void restore_state( bool fb )
         /* but this does                                                          */
         /**************************************************************************/
         if( t_line != NULL ) {
-            mem_free( t_line );
+            MemFree( t_line );
         }
         t_line = sav_state.text_line;
         t_page.cur_left = sav_state.cur_left;

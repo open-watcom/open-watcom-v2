@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -49,9 +49,9 @@ static void resize_and_copy_strblk( final_reg_content *strblk, char *buf, int fo
          */
         size = ( ( size + STRBLK_SIZE - 1 ) / STRBLK_SIZE ) * STRBLK_SIZE;
         if( strblk->string == NULL ) {
-            strblk->string = mem_alloc( size + 1 );
+            strblk->string = MemAlloc( size + 1 );
         } else {
-            strblk->string = mem_realloc( strblk->string, size + 1 );
+            strblk->string = MemRealloc( strblk->string, size + 1 );
         }
         strblk->size = size;
     }
@@ -64,7 +64,7 @@ static void resize_and_copy_strblk( final_reg_content *strblk, char *buf, int fo
 static void free_strblk( final_reg_content *strblk )
 {
     if( strblk->string != NULL ) {
-        mem_free( strblk->string );
+        MemFree( strblk->string );
         strblk->string = NULL;
     }
     strblk->size = 0;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -99,7 +99,7 @@ void    init_macro_dict( mac_dict *pdict )
 {
     mac_dict    dict;
 
-    dict = mem_alloc( sizeof( *dict ) );
+    dict = MemAlloc( sizeof( *dict ) );
     memset( dict->htbl, 0, sizeof( dict->htbl ) );
     dict->lookups  = 0;
     dict->macros   = 0;
@@ -153,16 +153,16 @@ static  void    free_macro_entry_short( mac_entry * me )
         }
         while( cb != NULL ) {
             me->label_cb = cb->prev;
-            mem_free( cb );
+            MemFree( cb );
             cb = me->label_cb;
         }
         ml = me->macline;
         while( ml != NULL ) {           // free all macro lines
             mln = ml->next;
-            mem_free( ml );
+            MemFree( ml );
             ml = mln;
         }
-        mem_free( me );                 // now the entry itself
+        MemFree( me );                 // now the entry itself
     }
     return;
 }
@@ -186,13 +186,13 @@ void    free_macro_entry( mac_dict dict, mac_entry * me )
         }
         while( cb != NULL ) {
             me->label_cb = cb->prev;
-            mem_free( cb );
+            MemFree( cb );
             cb = me->label_cb;
         }
         ml = me->macline;
         while( ml != NULL ) {           // free all macro lines
              mln = ml->next;
-             mem_free( ml );
+             MemFree( ml );
              ml = mln;
         }
 
@@ -211,7 +211,7 @@ void    free_macro_entry( mac_dict dict, mac_entry * me )
                 wk = wkn;
             }
         }
-        mem_free( me );                 // now the entry itself
+        MemFree( me );                 // now the entry itself
     }
     return;
 }
@@ -239,7 +239,7 @@ void    free_macro_dict( mac_dict *pdict )
     printf( "macro lookups   : %d\n", dict->lookups );
     printf( "macro compares  : %d\n", dict->compares );
 #endif
-    mem_free( dict );
+    MemFree( dict );
     *pdict = NULL;          // dictionary is empty
     return;
 }

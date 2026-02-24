@@ -557,7 +557,7 @@ void    lay_dl( const gmltag * entry )
 
     /* Make a copy of the level 1 DL LAYOUT */
 
-    dl_layout = mem_alloc( sizeof( dl_lay_level ) );
+    dl_layout = MemAlloc( sizeof( dl_lay_level ) );
     dl_layout->next = NULL;
     dl_layout->left_indent = layout_work.dl.first->left_indent;
     dl_layout->right_indent = layout_work.dl.first->right_indent;
@@ -711,7 +711,7 @@ void    lay_dl( const gmltag * entry )
         if( dl_layout->line_break != layout_work.dl.first->line_break ) {
             curr_level->line_break = dl_layout->line_break;
         }
-        mem_free( dl_layout );
+        MemFree( dl_layout );
     } else if( curr_level->next == NULL ) {
         curr_level->next = dl_layout;
         layout_work.dl.max_level = dl_layout->level;
@@ -762,7 +762,7 @@ void    lay_gl( const gmltag * entry )
 
     /* Make a copy of the level 1 GL LAYOUT */
 
-    gl_layout = mem_alloc( sizeof( gl_lay_level ) );
+    gl_layout = MemAlloc( sizeof( gl_lay_level ) );
     gl_layout->next = NULL;
     gl_layout->left_indent = layout_work.gl.first->left_indent;
     gl_layout->right_indent = layout_work.gl.first->right_indent;
@@ -916,7 +916,7 @@ void    lay_gl( const gmltag * entry )
         if( gl_layout->delim != layout_work.gl.first->delim ) {
             curr_level->delim = gl_layout->delim;
         }
-        mem_free( gl_layout );
+        MemFree( gl_layout );
     } else if( curr_level->next == NULL ) {
         curr_level->next = gl_layout;
         layout_work.gl.max_level = gl_layout->level;
@@ -969,7 +969,7 @@ void    lay_ol( const gmltag * entry )
 
     /* Make a copy of the level 1 OL LAYOUT */
 
-    ol_layout = mem_alloc( sizeof( ol_lay_level ) );
+    ol_layout = MemAlloc( sizeof( ol_lay_level ) );
     ol_layout->next = NULL;
     ol_layout->left_indent = layout_work.ol.first->left_indent;
     ol_layout->right_indent = layout_work.ol.first->right_indent;
@@ -1149,7 +1149,7 @@ void    lay_ol( const gmltag * entry )
         if( ol_layout->number_font != layout_work.ol.first->number_font ) {
             curr_level->number_font = ol_layout->number_font;
         }
-        mem_free( ol_layout );
+        MemFree( ol_layout );
     } else if( curr_level->next == NULL ) {
         curr_level->next = ol_layout;
         layout_work.ol.max_level = ol_layout->level;
@@ -1199,7 +1199,7 @@ void    lay_sl( const gmltag * entry )
 
     /* Make a copy of the level 1 SL LAYOUT */
 
-    sl_layout = mem_alloc( sizeof( sl_lay_level ) );
+    sl_layout = MemAlloc( sizeof( sl_lay_level ) );
     sl_layout->next = NULL;
     sl_layout->left_indent = layout_work.sl.first->left_indent;
     sl_layout->right_indent = layout_work.sl.first->right_indent;
@@ -1339,7 +1339,7 @@ void    lay_sl( const gmltag * entry )
         if( sl_layout->font != layout_work.sl.first->font ) {
             curr_level->font = sl_layout->font;
         }
-        mem_free( sl_layout );
+        MemFree( sl_layout );
     } else if( curr_level->next == NULL ) {
         curr_level->next = sl_layout;
         layout_work.sl.max_level = sl_layout->level;
@@ -1393,7 +1393,7 @@ void    lay_ul( const gmltag * entry )
 
     /* Make a copy of the level 1 UL LAYOUT */
 
-    ul_layout = mem_alloc( sizeof( ul_lay_level ) );
+    ul_layout = MemAlloc( sizeof( ul_lay_level ) );
     ul_layout->next = NULL;
     ul_layout->left_indent = layout_work.ul.first->left_indent;
     ul_layout->right_indent = layout_work.ul.first->right_indent;
@@ -1586,7 +1586,7 @@ void    lay_ul( const gmltag * entry )
         if( ul_layout->bullet_font != layout_work.ul.first->bullet_font ) {
             curr_level->bullet_font = ul_layout->bullet_font;
         }
-        mem_free( ul_layout );
+        MemFree( ul_layout );
     } else if( curr_level->next == NULL ) {
         curr_level->next = ul_layout;
         layout_work.ul.max_level = ul_layout->level;

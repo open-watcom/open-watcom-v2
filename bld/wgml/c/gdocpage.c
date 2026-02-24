@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -2448,7 +2448,7 @@ void reset_t_page( void )
     if( t_page.panes->next != NULL ) {  // keep only the first pane
         while( (cur_pane = t_page.panes->next) != NULL ) {
             t_page.panes->next = cur_pane->next;
-            mem_free( cur_pane );
+            MemFree( cur_pane );
         }
     }
     t_page.last_pane = t_page.panes;

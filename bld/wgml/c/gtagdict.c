@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -60,7 +60,7 @@ gtentry *add_tag( tag_dict *pdict, const char *tagname, const char *macname, int
         xx_source_err_exit_c( ERR_TAG_EXIST, tagname );
         /* never return */
     }
-    dict = mem_alloc( sizeof( *dict ) );
+    dict = MemAlloc( sizeof( *dict ) );
     dict->next = *pdict;
     *pdict = dict;
 
@@ -104,13 +104,13 @@ static  void    free_att( gaentry *ga )
     vw = ga->vals;
     while( vw != NULL ) {
         if( vw->valflags & GAVAL_valptr ) {
-            mem_free( vw->a.valptr );
+            MemFree( vw->a.valptr );
         }
         vwn = vw->next;
-        mem_free( vw );
+        MemFree( vw );
         vw = vwn;
     }
-    mem_free( ga );
+    MemFree( ga );
 }
 
 
@@ -149,7 +149,7 @@ tag_dict    free_tag( tag_dict *pdict, gtentry *ge )
         DICT2GE( dict )->attribs = attrib->next;
         free_att( attrib );
     }
-    mem_free( dict );                   // now the entry itself
+    MemFree( dict );                   // now the entry itself
     return( prev_dict );                // return previous entry or NULL
 }
 

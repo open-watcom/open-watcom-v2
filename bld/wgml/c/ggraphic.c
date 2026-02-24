@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -238,8 +238,8 @@ void    gml_graphic( const gmltag * entry )
         } else {
             cur_el->element.graph.next_font = g_prev_font;
         }
-        cur_el->element.graph.short_name = mem_strdup( file );
-        cur_el->element.graph.file = mem_strdup( try_file_name );
+        cur_el->element.graph.short_name = MemStrdup( file );
+        cur_el->element.graph.file = MemStrdup( try_file_name );
 
         if( GlobalFlags.inclist ) {
             g_info_lm( INF_CURR_FILE, cur_el->element.graph.file );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -93,12 +93,12 @@ void    add_macro_cb_entry( mac_entry *me, gtentry *ge )
     macrocb *   new;
     inputcb *   nip;
 
-    new = mem_alloc( sizeof( macrocb ) );
+    new = MemAlloc( sizeof( macrocb ) );
 
-    nip = mem_alloc( sizeof( inputcb ) );
+    nip = MemAlloc( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = mem_alloc( sizeof( ifcb ) );
+    nip->if_cb       = MemAlloc( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->pe_cb.count = -1;
     nip->pe_cb.line  = NULL;
@@ -325,7 +325,7 @@ void    free_lines( inp_line * line )
     wk = line;
     while( wk != NULL ) {
          wk1 = wk->next;
-         mem_free( wk );
+         MemFree( wk );
          wk = wk1;
     }
     return;
@@ -459,7 +459,7 @@ void    scr_dm( void )
             }
             len = p - nmstart;
             *p = '\0';
-            work = mem_alloc( sizeof( inp_line ) + len );
+            work = MemAlloc( sizeof( inp_line ) + len );
             work->next = NULL;
             strcpy( work->value, nmstart );
             if( last != NULL ) {
@@ -549,7 +549,7 @@ void    scr_dm( void )
                     }
                 }
             }
-            work = mem_alloc( sizeof( inp_line ) + cb->s.f->usedlen );
+            work = MemAlloc( sizeof( inp_line ) + cb->s.f->usedlen );
             work->next = NULL;
             strcpy( work->value, buff2 );
             if( last != NULL ) {
@@ -579,7 +579,7 @@ void    scr_dm( void )
 
         ProcFlags.in_macro_define = 0;
 
-        me  = mem_alloc( sizeof( mac_entry ) );
+        me  = MemAlloc( sizeof( mac_entry ) );
         me->next = NULL;
         me->label_cb = NULL;
         strcpy( me->name, macname1 );

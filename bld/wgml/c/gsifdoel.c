@@ -437,8 +437,8 @@ void    scr_if( void )
 
         // terms and operator ok now compare
         ifcond = ifcompare( &t1, relation, &t2 );
-        mem_free( t1.term_string );     // don't need the strings anymore
-        mem_free( t2.term_string );
+        MemFree( t1.term_string );     // don't need the strings anymore
+        MemFree( t2.term_string );
         if( firstcondition ) {
             firstcondition = false;
             if( cb->if_level < MAX_IF_LEVEL ) {

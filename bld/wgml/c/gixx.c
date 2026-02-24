@@ -495,13 +495,13 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
         }
     }
     if( pgtext != NULL ) {
-        mem_free( pgtext );
+        MemFree( pgtext );
     }
     if( printtxt != NULL ) {
-        mem_free( printtxt );
+        MemFree( printtxt );
     }
     if( seetext != NULL ) {
-        mem_free( seetext );
+        MemFree( seetext );
     }
 
     ProcFlags.null_value = false;

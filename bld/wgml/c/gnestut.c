@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -90,7 +90,7 @@ nest_stack * copy_to_nest_stack( void )
 
     head = NULL;
     for( inwk = input_cbs; inwk != NULL; inwk = inwk->prev ) {
-        nest_p = mem_alloc( sizeof( nest_stack ) );
+        nest_p = MemAlloc( sizeof( nest_stack ) );
         nest_p->prev = NULL;
         nest_p->nest_flag = inwk->fmflags & II_input;
         if( head == NULL ) {

@@ -714,7 +714,7 @@ static cop_font * get_cop_font( char const * in_name )
  * The actual parsing is done using the functions declared in copfiles.h.
  * This function is, in fact, the test function for those functions.
  *
- * Note: since mem_alloc() is used to allocate these structs, mem_free()
+ * Note: since MemAlloc() is used to allocate these structs, MemFree()
  *      must be used to free them.
  *
  * Global Used:
@@ -736,21 +736,21 @@ static int parse_defined_name( void )
     current_device = get_cop_device( tgt_path );
     if( current_device != NULL) {
         display_device( current_device );
-        mem_free( current_device );
+        MemFree( current_device );
         return( SUCCESS );
     }
 
     current_driver = get_cop_driver( tgt_path );
     if( current_driver != NULL) {
         display_driver( current_driver );
-        mem_free( current_driver );
+        MemFree( current_driver );
         return( SUCCESS );
     }
 
     current_font = get_cop_font( tgt_path );
     if( current_font != NULL) {
         display_font( current_font );
-        mem_free( current_font );
+        MemFree( current_font );
         return( SUCCESS );
     }
 
@@ -861,7 +861,7 @@ int main()
 
     /* Free tgt_path. */
 
-    mem_free( tgt_path );
+    MemFree( tgt_path );
     tgt_path = NULL;
 
     ff_teardown();

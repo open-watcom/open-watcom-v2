@@ -151,53 +151,53 @@ void    free_layout( void )
 
     while( (dl_layout = layout_work.dl.first) != NULL ) {
         layout_work.dl.first = layout_work.dl.first->next;
-        mem_free( dl_layout );
+        MemFree( dl_layout );
     }
 
     while( (gl_layout = layout_work.gl.first) != NULL ) {
         layout_work.gl.first = layout_work.gl.first->next;
-        mem_free( gl_layout );
+        MemFree( gl_layout );
     }
 
     while( (ol_layout = layout_work.ol.first) != NULL ) {
         layout_work.ol.first = layout_work.ol.first->next;
-        mem_free( ol_layout );
+        MemFree( ol_layout );
     }
 
     while( (sl_layout = layout_work.sl.first) != NULL ) {
         layout_work.sl.first = layout_work.sl.first->next;
-        mem_free( sl_layout );
+        MemFree( sl_layout );
     }
 
     while( (ul_layout = layout_work.ul.first) != NULL ) {
         layout_work.ul.first = layout_work.ul.first->next;
-        mem_free( ul_layout );
+        MemFree( ul_layout );
     }
 
     while( (ban = layout_work.banner) != NULL ) {
         layout_work.banner = ban->next;
         while( (reg = ban->region) != NULL ) {
             ban->region = reg->next;
-            mem_free( reg );
+            MemFree( reg );
         }
         while( (br_gp = ban->by_line) != NULL ) {
             ban->by_line = br_gp->next;
             while( (reg = br_gp->first) != NULL ) {
                 br_gp->first = reg->next;
                 if( reg->final_content[0].string != NULL ) {
-                    mem_free( reg->final_content[0].string );
+                    MemFree( reg->final_content[0].string );
                 }
                 if( reg->final_content[1].string != NULL ) {
-                    mem_free( reg->final_content[1].string );
+                    MemFree( reg->final_content[1].string );
                 }
                 if( reg->final_content[2].string != NULL ) {
-                    mem_free( reg->final_content[2].string );
+                    MemFree( reg->final_content[2].string );
                 }
-                mem_free( reg );
+                MemFree( reg );
             }
-            mem_free( br_gp );
+            MemFree( br_gp );
         }
-        mem_free( ban );
+        MemFree( ban );
     }
 }
 

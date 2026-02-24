@@ -119,8 +119,8 @@ static  void    set_default_extension( const char * masterfname )
     _splitpath2( masterfname, buff, NULL, NULL, NULL, &ext );
     if( strlen( ext ) > 0) {
         if( strlen( ext ) > strlen( def_ext ) ) {
-            mem_free( def_ext);
-            def_ext = mem_alloc( 1 + strlen( ext ) );
+            MemFree( def_ext);
+            def_ext = MemAlloc( 1 + strlen( ext ) );
         }
         strcpy( def_ext, ext );
     }
@@ -149,7 +149,7 @@ static  void    free_filenames( void )
             cnt++;
         }
         wk1 = wk->prev;
-        mem_free( wk );
+        MemFree( wk );
         wk = wk1;
     }
     if( GlobalFlags.statistics ) {
@@ -174,7 +174,7 @@ static  char    * reuse_filename( const char * fn )
         }
     }
 
-    fnwk = mem_alloc( sizeof( fnstack ) + strlen( fn ) );
+    fnwk = MemAlloc( sizeof( fnstack ) + strlen( fn ) );
     strcpy( fnwk->fn, fn );
 
     fnwk->prev = fn_stack;
@@ -192,13 +192,13 @@ static  void    add_file_cb_entry( FILE *fp, const char *fname )
     filecb  *   new;
     inputcb *   nip;
 
-    new = mem_alloc( sizeof( filecb ) );
+    new = MemAlloc( sizeof( filecb ) );
     new->filename = reuse_filename( fname );
 
-    nip = mem_alloc( sizeof( inputcb ) );
+    nip = MemAlloc( sizeof( inputcb ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = mem_alloc( sizeof( ifcb ) );
+    nip->if_cb       = MemAlloc( sizeof( ifcb ) );
     memset( nip->if_cb, '\0', sizeof( ifcb ) );
     nip->pe_cb.line  = NULL;
     nip->pe_cb.count = 0;
@@ -251,10 +251,10 @@ static  void    del_input_cb_entry( void )
 //          xx_err_exit_c( ERR_IF_LEVEL, linestr );
 //          /* never return */
 //      }
-        mem_free( wk->if_cb );
+        MemFree( wk->if_cb );
     }
     if( wk->pe_cb.line != NULL ) {
-        mem_free( wk->pe_cb.line );
+        MemFree( wk->pe_cb.line );
     }
 
     if( wk->fmflags & II_tag_mac ) {
@@ -262,7 +262,7 @@ static  void    del_input_cb_entry( void )
  *  The macrolines in s.m don't need to be freed, as these point to
  *  mac_entry, and freeing is done with macro_dict
  */
-        mem_free( wk->s.m );
+        MemFree( wk->s.m );
     } else {
         if( wk->s.f->flags & FF_open ) {// close file if neccessary
             fclose( wk->s.f->fp );
@@ -273,13 +273,13 @@ static  void    del_input_cb_entry( void )
         }
         while( lw != NULL ) {
            wk->s.f->label_cb = lw->prev;
-           mem_free( lw );              // free labels
+           MemFree( lw );              // free labels
            lw = wk->s.f->label_cb;
         }
-        mem_free( wk->s.f );
+        MemFree( wk->s.f );
     }
     input_cbs = wk->prev;
-    mem_free( wk );
+    MemFree( wk );
     return;
 }
 
@@ -804,7 +804,7 @@ int main( int argc, char * argv[] )
 
         init_global_vars();
 
-        token_buf = mem_alloc( BUF_SIZE + 1 );
+        token_buf = MemAlloc( BUF_SIZE + 1 );
 
         // out_msg( "define enum %d %d\n", INF_CMDLINE, INF_CMDLINE );
 
@@ -813,14 +813,14 @@ int main( int argc, char * argv[] )
         ff_setup();                         // init findfile
 
         cmdlen = _bgetcmd( NULL, 0 ) + 1;
-        cmdline = mem_alloc( cmdlen );
+        cmdline = MemAlloc( cmdlen );
         _bgetcmd( cmdline, cmdlen );
 
         g_info_research( INF_CMDLINE, cmdline );
 
         tok_count = proc_options( cmdline );
         init_sysparm( cmdline, banner1w( "Script/GML", _WGML_VERSION_ ) );
-        /* don't mem_free cmdline now as it is used for sysparm variable */
+        /* don't MemFree cmdline now as it is used for sysparm variable */
         g_banner();
         if( tok_count < 4 ) {               // file ( device xyz   is minimum
             usage();                        // display usage and exit
@@ -940,7 +940,7 @@ int main( int argc, char * argv[] )
     ff_teardown();                      // free memory allocated in findfunc
     cop_teardown();                     // free memory allocated in copfiles
 
-    mem_free( cmdline );
+    MemFree( cmdline );
     free_some_mem();
     free_filenames();
 

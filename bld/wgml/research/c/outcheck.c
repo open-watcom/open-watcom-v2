@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -487,7 +487,7 @@ static oc_element * oc_alloc_oc_element( oc_element_type el_type )
     oc_element    *   retval  = NULL;
 
     if( oc_element_pool == NULL ) {
-        retval = mem_alloc( sizeof( oc_element ) );
+        retval = MemAlloc( sizeof( oc_element ) );
     } else {
         retval = oc_element_pool;
         oc_element_pool = oc_element_pool->next;
@@ -545,14 +545,14 @@ static text_chars *oc_alloc_text_chars( char *in_text, size_t count, font_number
         if( count > TEXT_START ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
         }
-        retval = mem_alloc( sizeof( text_chars ) + size );
+        retval = MemAlloc( sizeof( text_chars ) + size );
         retval->length = size;
     } else {
         retval  = oc_text_chars_pool;
         oc_text_chars_pool = oc_text_chars_pool->next;
         if( count > retval->length ) {
             size = (( count / TEXT_START ) + 1) * TEXT_START;
-            retval = mem_realloc( retval, sizeof( text_chars ) + size );
+            retval = MemRealloc( retval, sizeof( text_chars ) + size );
             retval->length = size;
         }
     }
@@ -587,7 +587,7 @@ static text_line * oc_alloc_text_line( void )
     text_line   *   retval  = NULL;
 
     if( oc_text_line_pool == NULL ) {
-        retval = mem_alloc( sizeof( text_line ) );
+        retval = MemAlloc( sizeof( text_line ) );
     } else {
         retval = oc_text_line_pool;
         oc_text_line_pool = oc_text_line_pool->next;
@@ -1313,7 +1313,7 @@ static uint32_t oc_tab_position( uint32_t cur_pos )
             req_count++;
 
             req_length = def_tabs.length + (req_count * TAB_COUNT);
-            def_tabs.tabs = mem_realloc( def_tabs.tabs, req_length * sizeof( tab_stop ) );
+            def_tabs.tabs = MemRealloc( def_tabs.tabs, req_length * sizeof( tab_stop ) );
             def_tabs.length = req_length;
         }
 
@@ -2782,7 +2782,7 @@ static void emulate_wgml( void )
 
     /* Initialize the text_chars pool to hold 20 instances. */
 
-    oc_text_chars_pool = mem_alloc( sizeof( text_chars ) + TEXT_START );
+    oc_text_chars_pool = MemAlloc( sizeof( text_chars ) + TEXT_START );
     oc_text_chars_pool->next = NULL;
     oc_text_chars_pool->font = 0;
     oc_text_chars_pool->x_address = 0;
@@ -2791,7 +2791,7 @@ static void emulate_wgml( void )
     oc_text_chars_pool->length = TEXT_START;
     tc_pool_ptr = oc_text_chars_pool;
     for( i = 0; i < 19; i++ ) {
-        tc_pool_ptr->next = mem_alloc( sizeof( text_chars ) + TEXT_START );
+        tc_pool_ptr->next = MemAlloc( sizeof( text_chars ) + TEXT_START );
         tc_pool_ptr = tc_pool_ptr->next;
         tc_pool_ptr->next = NULL;
         tc_pool_ptr->font = 0;
@@ -2803,14 +2803,14 @@ static void emulate_wgml( void )
 
     /* Initialize the text_line pool to hold ten instances. */
 
-    oc_text_line_pool = mem_alloc( sizeof( text_line ) );
+    oc_text_line_pool = MemAlloc( sizeof( text_line ) );
     oc_text_line_pool->next = NULL;
     oc_text_line_pool->line_height = 0;
     oc_text_line_pool->y_address = 0;
     oc_text_line_pool->first = 0;
     tl_pool_ptr = oc_text_line_pool;
     for( i = 0; i < 9; i++ ) {
-        tl_pool_ptr->next = mem_alloc( sizeof( text_line ) );
+        tl_pool_ptr->next = MemAlloc( sizeof( text_line ) );
         tl_pool_ptr = tl_pool_ptr->next;
         tl_pool_ptr->next = NULL;
         tl_pool_ptr->line_height = 0;
@@ -2818,7 +2818,7 @@ static void emulate_wgml( void )
         tl_pool_ptr->first = NULL;
     }
 
-    oc_element_pool = mem_alloc( sizeof( oc_element ) );
+    oc_element_pool = MemAlloc( sizeof( oc_element ) );
     oc_element_pool->next = NULL;
     oc_element_pool->type = oc_text;
     oc_element_pool->element.oc_text.count = 0;
@@ -2826,7 +2826,7 @@ static void emulate_wgml( void )
     oc_element_pool->element.oc_text.first = NULL;
     te_pool_ptr = oc_element_pool;
     for( i = 0; i < 9; i++ ) {
-        te_pool_ptr->next = mem_alloc( sizeof( oc_element ) );
+        te_pool_ptr->next = MemAlloc( sizeof( oc_element ) );
         te_pool_ptr = te_pool_ptr->next;
         te_pool_ptr->next = NULL;
         te_pool_ptr->type = oc_text;
@@ -3106,9 +3106,9 @@ static void emulate_wgml( void )
                 err_count++;
                 g_suicide();
             }
-            mem_free( te_pool_ptr );
+            MemFree( te_pool_ptr );
         }
-        mem_free( oc_element_pool );
+        MemFree( oc_element_pool );
         oc_element_pool = NULL;
         te_pool_ptr = NULL;
     }
@@ -3128,9 +3128,9 @@ static void emulate_wgml( void )
                 tl_pool_ptr->first = NULL;
                 tl_pool_ptr->last = NULL;
             }
-            mem_free( tl_pool_ptr );
+            MemFree( tl_pool_ptr );
         }
-        mem_free( oc_text_line_pool );
+        MemFree( oc_text_line_pool );
         oc_text_line_pool = NULL;
         tl_pool_ptr = NULL;
     }
@@ -3141,9 +3141,9 @@ static void emulate_wgml( void )
         while( oc_text_chars_pool->next != NULL ) {
             tc_pool_ptr = oc_text_chars_pool;
             oc_text_chars_pool = oc_text_chars_pool->next;
-            mem_free( tc_pool_ptr );
+            MemFree( tc_pool_ptr );
         }
-        mem_free( oc_text_chars_pool );
+        MemFree( oc_text_chars_pool );
         oc_text_chars_pool = NULL;
         tc_pool_ptr = NULL;
     }
@@ -3268,7 +3268,7 @@ start_heapcheck( "main" );
     cop_teardown();
     ff_teardown();
 
-    mem_free(tgt_path);
+    MemFree(tgt_path);
     tgt_path = NULL;
 
     free_some_mem();            // wgml globals

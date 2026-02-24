@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -116,7 +116,7 @@ static void    free_ref_entry( ref_dict *dict, ref_entry * me )
                 wk = wkn;
             }
         }
-        mem_free( me );                 // now the entry itself
+        MemFree( me );                 // now the entry itself
     }
     return;
 }
@@ -238,7 +238,7 @@ ref_entry *add_new_refid( ref_dict *dict, const char *refid, ffh_entry *ffh )
 {
     ref_entry   *ref;
 
-    ref = (ref_entry *)mem_alloc( sizeof( ref_entry ) ) ;
+    ref = (ref_entry *)MemAlloc( sizeof( ref_entry ) ) ;
     init_ref_entry( ref, refid, ffh );
     add_ref_entry( dict, ref );
     return( ref );
