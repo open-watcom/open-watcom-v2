@@ -77,7 +77,6 @@ void    WndNoMemory( void )
 }
 #endif
 
-
 void    GUIMemOpen( void )
 {
 #ifdef TRMEM
@@ -154,7 +153,7 @@ TRMEMAPI( MemAllocSafe )
 void *MemAllocSafe( size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
     return( check_nomem( malloc( size ) ) );
 #endif
@@ -169,7 +168,7 @@ char *MemStrdup( const char *str )
 /***********************************/
 {
 #ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
     return( strdup( str ) );
 #endif
@@ -184,7 +183,7 @@ void MemFree( void *ptr )
 /**************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -199,7 +198,7 @@ void *MemRealloc( void *ptr, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 5 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif

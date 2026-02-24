@@ -54,10 +54,6 @@
 #ifndef __NOUI__
     #include "aui.h"
     #include "guimem.h"
-    #ifdef GUI_IS_GUI
-    #else
-        #include "stdui.h"
-    #endif
 #endif
 #ifdef TRMEM
     #include "trmem.h"
