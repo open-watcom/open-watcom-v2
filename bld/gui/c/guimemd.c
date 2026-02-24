@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,20 +25,15 @@
 *
 *  ========================================================================
 *
-* Description:  Cover routines to access the trmem memory tracker
+* Description:  GUI application memory tracking stub functions
+*               Called to handling memory tracking (default version)
 *
 ****************************************************************************/
 
-#ifndef _GUIMEM_H_INCLUDED
-#define _GUIMEM_H_INCLUDED
 
-#include <stddef.h>
-#include <stdio.h>
+#include "guimem.h"
 
-/* may be implemented by application, stub functions */
-extern void     GUIMemOpen( void );
-extern void     GUIMemClose( void );
-extern void     GUIMemRedirect( FILE *fp );
-extern void     GUIMemPrtUsage( void );
-
-#endif
+void    GUIMemOpen( void ) {}
+void    GUIMemClose( void ) {}
+void    GUIMemRedirect( FILE *fp ) { /* unused parameters */(void)fp; }
+void    GUIMemPrtUsage( void ) {}

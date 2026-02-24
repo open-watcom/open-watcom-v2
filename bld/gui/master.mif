@@ -86,6 +86,7 @@ common_objs = &
     guiclass.obj   &
     guimenub.obj   &
     guitoolb.obj
-libtarg_objs = $(common_objs) $(sysobjs)
+mem_objs = guimemd.obj
+libtarg_objs = $(common_objs) $(mem_objs) $(sysobjs)
 libtarg_libs = $(cli_wpi_libs)
 !include libtarg.mif
