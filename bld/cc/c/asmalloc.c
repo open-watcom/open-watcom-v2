@@ -36,10 +36,7 @@
 
 void *MemAlloc( size_t amount )
 {
-    void    *ptr;
-
-    ptr = CMemAlloc( amount );
-    return( ptr );
+    return( CMemAlloc( amount ) );
 }
 
 char *MemStrdup( const char *str )
