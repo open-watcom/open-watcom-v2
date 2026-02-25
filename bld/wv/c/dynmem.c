@@ -175,7 +175,7 @@ static void MemExpand( void )
 void SysSetMemLimit( void )
 {
 #ifdef  __DOS__
-    _d16ReserveExt( MemSize + _1MB );
+    _d16ReserveExt( MemSize + _1M );
     MemExpand();
     if( _IsOff( SW_REMOTE_LINK ) && _IsOff( SW_KEEP_HEAP_ENABLED ) ) {
         _heapenable( 0 );
