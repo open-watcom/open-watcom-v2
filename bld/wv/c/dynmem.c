@@ -129,9 +129,9 @@ int __saveregs  xmemneed( size_t size )
 #if defined( _M_I86 )
     #define MAX_BLOCK   (_64K - _4K) /* 60 kB */
 #elif defined( __DOS__ )
-    #define MAX_BLOCK   _4MB
+    #define MAX_BLOCK   _4M
 #else
-    #define MAX_BLOCK   _1MB
+    #define MAX_BLOCK   _1M
 #endif
 
 TRMEMAPI( MemExpand )
