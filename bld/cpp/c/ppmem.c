@@ -145,7 +145,7 @@ void MemFree( void *p )
 }
 
 TRMEMAPI( PPMemAlloc )
-void * PPMemAlloc( size_t size )
+void *PPMemAlloc( size_t size )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl ) ) );

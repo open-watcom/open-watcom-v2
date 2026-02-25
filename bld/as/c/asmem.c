@@ -144,7 +144,7 @@ void *MemRealloc( void *ptr, size_t size )
 }
 
 TRMEMAPI( PPMemAlloc )
-void * PPENTRY PPMemAlloc( size_t size )
+void *PPMemAlloc( size_t size )
 {
     void        *p;
 
@@ -160,7 +160,7 @@ void * PPENTRY PPMemAlloc( size_t size )
 }
 
 TRMEMAPI( PPMemFree )
-void PPENTRY PPMemFree( void *p )
+void PPMemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 6 ), TrHdl );
