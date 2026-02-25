@@ -190,8 +190,8 @@ char *MemStrdupSafe( const char *str )
 /*  duplicate token                                                        */
 /***************************************************************************/
 
-TRMEMAPI( mem_tostring )
-char *mem_tostring( const char *str, size_t size )
+TRMEMAPI( MemToStringSafe )
+char *MemToStringSafe( const char *str, size_t size )
 {
     char    *p;
 

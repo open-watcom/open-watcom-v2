@@ -916,7 +916,7 @@ static void set_out_file_attr( void )
                  */
 
                 len -= 1;
-                out_file_attr = mem_tostring( &bin_driver->rec_spec[1], len - 1 );
+                out_file_attr = MemToStringSafe( &bin_driver->rec_spec[1], len - 1 );
             }
         } else {
 

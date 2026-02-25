@@ -211,7 +211,7 @@ extern void         mem_prt_curr_usage( void );
 extern int          mem_validate( void );
 extern void         mem_prt_list( void );
 
-extern char         *mem_tostring( const char *str, unsigned size );
+extern char         *MemToStringSafe( const char *str, size_t size );
 
 /* gnestut.c                            */
 extern void         init_nest_cb( void );

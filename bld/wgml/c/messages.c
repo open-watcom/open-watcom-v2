@@ -304,7 +304,7 @@ static void show_line_error_len( const char * pa, unsigned len )
         len = 1;
     }
     cnt = pa - buff2 + len;
-    buf = mem_tostring( buff2, cnt );
+    buf = MemToStringSafe( buff2, cnt );
     out_msg( "%s\n", buf );
     // number of characters before the offending input + "*" at start of offending input
     if( pa > buff2 ) {
