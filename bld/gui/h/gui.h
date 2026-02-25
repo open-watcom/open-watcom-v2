@@ -36,8 +36,8 @@
 
 
 #ifdef __WATCOMC__
-#define GUIAPI                  /* public API */ __fastcall
-#define GUICALLBACK             /* public callback */ __cdecl
+#define GUIAPI                  /* public API */
+#define GUICALLBACK             /* public callback */
 #else
 #define GUIAPI
 #define GUICALLBACK

@@ -40,8 +40,8 @@
 
 
 #ifdef __WATCOMC__
-#define WNDAPI              /* public API */ __stdcall
-#define WNDCALLBACK         /* public callback */ __syscall
+#define WNDAPI              /* public API */
+#define WNDCALLBACK         /* public callback */
 #else
 #define WNDAPI
 #define WNDCALLBACK

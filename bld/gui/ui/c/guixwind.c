@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,13 +179,13 @@ static void MainLoop( void )
 int GUIXMain( int argc, char * argv[] )
 {
     GUIMainTouched = true;
-    GUIMemOpen();
+    GUIMemOpen();                   /* user replaceable stub function */
     GUIStoreArgs( argv, argc );
     if( GUIFirstCrack() ) {         /* user replaceable stub function */
         MainLoop();
         GUIDead();                  /* user replaceable stub function */
     }
-    GUIMemClose();
+    GUIMemClose();                  /* user replaceable stub function */
     return( 0 );
 }
 
