@@ -45,6 +45,7 @@
 #include "death.h"
 #include "brmem.h"
 #include "debuglog.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -222,7 +223,7 @@ void *MemAllocSafe( unsigned a )
     return WBRAlloc( a );
 }
 
-void *MemStrdup( const char *a )
+char *MemStrdup( const char *a )
 //--------------------------
 {
     return strdup( a );
