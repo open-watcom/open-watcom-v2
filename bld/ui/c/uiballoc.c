@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,12 @@
 
 
 #include <stdio.h>
+#if defined( _M_IX86 )
+    #include <i86.h>
+#endif
 #include "uidef.h"
 #include "uifar.h"
+#include "memfuncs.h"
 
 #include "clibext.h"
 
@@ -57,14 +61,36 @@ void intern bunframe( BUFFER *bptr )
 bool intern balloc( BUFFER *bptr, uisize height, uisize width )
 /*************************************************************/
 {
+    LP_PIXEL    ptr;
+
     bptr->increment = width;
-    bptr->origin = faralloc( height * width );
-    return( bptr->origin != NULL );
+    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
+#if defined( __DOS__ ) && !defined( _M_I86 )
+    if( ptr != NULL ) {
+        /* convert ptr to far if necessary: use DS for segment value */
+        bptr->origin = ptr;
+        return( true );
+    }
+    /* use 0 for segment value */
+    bptr->origin = NULL;
+    return( false );
+#else
+    bptr->origin = ptr;
+    return( ptr != NULL );
+#endif
 }
 
 
 void intern bfree( BUFFER *bptr )
 /*******************************/
 {
-    farfree( bptr->origin );
+#if defined( __DOS__ ) && !defined( _M_I86 )
+    /* On extended DOS, we are throwing away the segment part. However,
+     * since the memory should have been allocated by balloc() above,
+     * this is safe because we synthesized the segment part to begin with.
+     */
+    MemFree( (void *)_FP_OFF( bptr->origin ) );
+#else
+    MemFree( (void *)bptr->origin );
+#endif
 }

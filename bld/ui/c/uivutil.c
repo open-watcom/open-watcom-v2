@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,8 @@
 
 
 #include "uidef.h"
-#if defined(HAVE_FAR)
-#include <i86.h>
+#if defined( _M_IX86 )
+    #include <i86.h>
 #endif
 
 
@@ -47,7 +47,7 @@ bool intern isdialogue( VSCREEN *vs )
 bool intern isscreen( BUFFER * bptr )
 /***********************************/
 {
-#if defined( HAVE_FAR )
+#if defined( __DOS__ ) || defined( _M_I86 )
     // Short cut when using far pointers. Just check segment:
 
     return( _FP_SEG( bptr->origin ) == _FP_SEG( UIData->screen.origin ) );

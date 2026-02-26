@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,5 +35,3 @@ extern void         intern farcopy( LP_PIXEL, LP_PIXEL, uisize, bool );
 extern void         intern farstring( LP_PIXEL, ATTR, LPC_STRING, uisize, bool );
 extern void         intern farattrib( LP_PIXEL, ATTR, uisize, bool );
 extern void         intern farattrflip( LP_PIXEL, uisize, bool );
-extern LP_PIXEL     intern faralloc( uisize size );
-extern void         intern farfree( LP_PIXEL ptr );

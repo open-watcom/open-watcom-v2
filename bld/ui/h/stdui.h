@@ -503,75 +503,63 @@ typedef int             CATTR;          /* cursor attributes type */
 #define iseditchar( ev )        ( ( ev >= EV_FIRST_EDIT_CHAR ) && ( ev <= EV_LAST_EDIT_CHAR ) )
 #define iskeyboardchar( ev )    ( ( ev >= EV_FIRST_EVENT ) && ( ev <= EV_LAST_KEYBOARD ) )
 
-#if defined( _M_I86 )
+#if defined( _M_I86 )   /* 16-bit */
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-    #define __FAR       __far
-    #define HAVE_FAR
     #define UIDBCS
 #elif defined( __NT__ )
     typedef struct pixel {
         unsigned short  ch;
         unsigned short  attr;
     } PIXEL;
-    #define __FAR
-    #undef HAVE_FAR
     #define UIDBCS
 #elif defined( __OS2__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-    #define __FAR
-    #undef HAVE_FAR
     #define UIDBCS
 #elif defined( __RDOS__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-    #define __FAR
-    #undef HAVE_FAR
     #undef UIDBCS
 #elif defined( __UNIX__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-    #define __FAR
-    #undef HAVE_FAR
     #undef UIDBCS
 #elif defined( __NETWARE__ )
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-  #if 1
-    #define __FAR
-    #undef HAVE_FAR
-  #else
-    #define __FAR       __far   /* ?? on netware probably should be near ?? */
-    #define HAVE_FAR
-  #endif
     #undef UIDBCS
-#elif defined( _M_IX86 )        /* 32-bit DOS */
+#elif defined( __DOS__ )    /* 32-bit DOS */
     typedef struct pixel {
         unsigned char   ch;
         ATTR            attr;
     } PIXEL;
-    #define __FAR       __far
-    #define HAVE_FAR
     #define UIDBCS
 #else
     #error pixel structure not configured for system
 #endif
 
-typedef PIXEL       __FAR *LP_PIXEL;
-typedef char        __FAR *LP_STRING;
-typedef const char  __FAR *LPC_STRING;
-typedef void        __FAR *LP_VOID;
+#if defined( __DOS__ ) || defined( _M_I86 )
+typedef PIXEL       __far *LP_PIXEL;
+typedef char        __far *LP_STRING;
+typedef const char  __far *LPC_STRING;
+typedef void        __far *LP_VOID;
+#else
+typedef PIXEL       *LP_PIXEL;
+typedef char        *LP_STRING;
+typedef const char  *LPC_STRING;
+typedef void        *LP_VOID;
+#endif
 
 typedef enum {
     C_OFF,
@@ -780,9 +768,6 @@ extern ATTR             UIAPI uisetattr( UIATTR uiattr, ATTR new_attr );
  * Application related functions
  * may be implemented by application, stub functions
  */
-
-extern LP_VOID          UIAPI uifaralloc( size_t );
-extern void             UIAPI uifarfree( LP_VOID );
 
 extern void             UIAPI uistartevent( void );
 extern void             UIAPI uidoneevent( void );

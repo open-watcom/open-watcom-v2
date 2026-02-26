@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "uidef.h"
+#include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif

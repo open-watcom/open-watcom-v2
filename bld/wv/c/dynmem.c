@@ -52,11 +52,6 @@
 #include "strutil.h"
 #ifndef __NOUI__
     #include "aui.h"
-    #ifndef GUI_IS_GUI
-        #include "stdui.h"
-    #endif
-#endif
-#ifndef __NOUI__
     #include "guimem.h"
 #endif
 #include "roundmac.h"
@@ -71,12 +66,6 @@
 #define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
 #else
 #define TRMEMAPI(x)
-#endif
-
-#ifdef __DOS__
-    #define MEM_NEAR_PTR(x)     (void *)_FP_OFF( x )
-#else
-    #define MEM_NEAR_PTR(x)     x
 #endif
 
 #ifdef __DOS__
@@ -318,13 +307,6 @@ static void GUIMemPrintLine( void *parm, const char *buff, size_t len )
 
 #endif  /* TRMEM */
 
-#if 0
-static void WndNoMemory( void )
-{
-    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_WINDOW ) );
-}
-#endif
-
 void GUIMemPrtUsage( void )
 /*************************/
 {
@@ -375,36 +357,11 @@ void GUIMemClose( void )
 #endif
 }
 
-#ifdef GUI_IS_GUI
-#else   /* GUI_IS_GUI */
-
-TRMEMAPI( uifaralloc )
-LP_VOID UIAPI uifaralloc( size_t size )
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
-#else
-    return( malloc( size ) );
-#endif
-}
-
-TRMEMAPI( uifarfree )
-void UIAPI uifarfree( LP_VOID ptr )
-{
-    if( ptr != NULL ) {
-#ifdef TRMEM
-        _trmem_free( MEM_NEAR_PTR( ptr ), _TRMEM_WHO( 4 ), TrHdl );
-#else
-        free( MEM_NEAR_PTR( ptr ) );
-#endif
-    }
-}
-
-#endif  /* ! GUI_IS_GUI */
-
-
 #endif  /* ! __NOUI__ */
 
+/*
+ * Common code follows
+ */
 
 static void *check_nomem( void *ptr )
 {
