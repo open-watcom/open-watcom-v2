@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,14 @@
 
 #define CHAR_VALUE(c)       (char)(unsigned char)(c)
 #define UCHAR_VALUE(c)      (unsigned char)(c)
+
+#if defined( __DOS__ ) || defined( _M_I86 )
+typedef char        __far *LP_STRING;
+typedef const char  __far *LPC_STRING;
+#else
+typedef char        *LP_STRING;
+typedef const char  *LPC_STRING;
+#endif
 
 typedef enum {
     UI_MOUSE_PRESS          = 1,

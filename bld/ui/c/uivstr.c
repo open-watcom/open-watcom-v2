@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 
 
 void UIAPI uitextfield( VSCREEN *vs, ORD row, ORD col, unsigned field_len,
-                        ATTR attr, LPC_STRING string, unsigned string_len )
+                        ATTR attr, const char *string, unsigned string_len )
 /**************************************************************************/
 {
     uisize          count;

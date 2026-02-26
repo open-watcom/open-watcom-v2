@@ -34,6 +34,9 @@
 #include <stdio.h>
 #if defined( _M_IX86 )
     #include <i86.h>
+  #if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+    #include <malloc.h>
+  #endif
 #endif
 #include "uidef.h"
 #include "uifar.h"
@@ -64,8 +67,8 @@ bool intern balloc( BUFFER *bptr, uisize height, uisize width )
     LP_PIXEL    ptr;
 
     bptr->increment = width;
-    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
 #if defined( __DOS__ ) && !defined( _M_I86 )
+    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
     if( ptr != NULL ) {
         /* convert ptr to far if necessary: use DS for segment value */
         bptr->origin = ptr;
@@ -74,7 +77,12 @@ bool intern balloc( BUFFER *bptr, uisize height, uisize width )
     /* use 0 for segment value */
     bptr->origin = NULL;
     return( false );
+#elif defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+    ptr = _fmalloc( height * width * sizeof( PIXEL ) );
+    bptr->origin = ptr;
+    return( ptr != NULL );
 #else
+    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
     bptr->origin = ptr;
     return( ptr != NULL );
 #endif
@@ -90,6 +98,8 @@ void intern bfree( BUFFER *bptr )
      * this is safe because we synthesized the segment part to begin with.
      */
     MemFree( (void *)_FP_OFF( bptr->origin ) );
+#elif defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+    _ffree( bptr->origin );
 #else
     MemFree( (void *)bptr->origin );
 #endif

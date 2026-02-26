@@ -551,14 +551,8 @@ typedef int             CATTR;          /* cursor attributes type */
 
 #if defined( __DOS__ ) || defined( _M_I86 )
 typedef PIXEL       __far *LP_PIXEL;
-typedef char        __far *LP_STRING;
-typedef const char  __far *LPC_STRING;
-typedef void        __far *LP_VOID;
 #else
 typedef PIXEL       *LP_PIXEL;
-typedef char        *LP_STRING;
-typedef const char  *LPC_STRING;
-typedef void        *LP_VOID;
 #endif
 
 typedef enum {
@@ -742,7 +736,7 @@ extern void             UIAPI uivsetactive( VSCREEN _FARD * );
 extern void             UIAPI uivsetcursor( VSCREEN _FARD * );
 extern bool             UIAPI uivshow( VSCREEN _FARD * );
 extern void             UIAPI uivtextput( VSCREEN _FARD *, ORD, ORD, ATTR, const char _FARD *, unsigned );
-extern void             UIAPI uitextfield( VSCREEN _FARD *, ORD, ORD, unsigned, ATTR, LPC_STRING, unsigned );
+extern void             UIAPI uitextfield( VSCREEN _FARD *, ORD, ORD, unsigned, ATTR, const char *, unsigned );
 extern void             UIAPI uimousespeed( unsigned );
 extern unsigned char    UIAPI uicheckshift( void );
 extern ui_event         UIAPI uikeyboardevent( void );

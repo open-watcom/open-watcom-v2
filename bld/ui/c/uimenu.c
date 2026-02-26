@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,8 +97,8 @@ char UIAPI uialtchar( ui_event ui_ev )
 }
 
 
-static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr, LPC_STRING string, uisize string_len )
-/****************************************************************************************************/
+static void mstring( BUFFER *bptr, ORD row, ORD col, ATTR attr, const char *string, uisize string_len )
+/*****************************************************************************************************/
 {
     SAREA       area;
 
