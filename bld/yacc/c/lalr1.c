@@ -196,7 +196,7 @@ static void CalcIncludes( void )
                             }
                         }
                         if( item >= nullable ) {
-                            free = CALLOC( 1, a_link );
+                            free = MemCAllocSafe( 1, sizeof( *free ) );
                             free->el = p;
                             free->next = q->include;
                             q->include = free;
@@ -468,9 +468,9 @@ static void Conflict( void )
     a_sym           *sym;
     sym_n           sym_idx;
 
-    set = AllocSet( 1 );
-    reduce = CALLOC( nterm, a_reduce_action * );
-    work = CALLOC( nterm, bitnum );
+    set = MemAllocSetSafe( 1 );
+    reduce = MemCAllocSafe( nterm, sizeof( *reduce ) );
+    work = MemCAllocSafe( nterm, sizeof( *work ) );
     for( state = statelist; state != NULL; state = state->next ) {
         Clear( set );
         for( saction = state->trans; (sym = saction->sym) != NULL; ++saction ) {
@@ -492,9 +492,9 @@ static void Conflict( void )
             }
         }
     }
-    FREE( work );
-    FREE( reduce );
-    FreeSet( set );
+    MemFree( work );
+    MemFree( reduce );
+    MemFreeSet( set );
 }
 
 void lalr1( void )
@@ -510,9 +510,9 @@ void lalr1( void )
     a_word          *rset;
 
     InitSets( nterm );
-    lp = lset = AllocSet( nvtrans );
-    rp = rset = AllocSet( nredun );
-    lk = look = CALLOC( nvtrans + nstate, a_look );
+    lp = lset = MemAllocSetSafe( nvtrans );
+    rp = rset = MemAllocSetSafe( nredun );
+    lk = look = MemCAllocSafe( nvtrans + nstate, sizeof( *look ) );
     for( state = statelist; state != NULL; state = state->next ) {
         state->look = lk;
         for( saction = state->trans; saction->sym != NULL; ++saction ) {
@@ -529,7 +529,7 @@ void lalr1( void )
             rp += GetSetSize( 1 );
         }
     }
-    stk = CALLOC( nvtrans, a_look * );
+    stk = MemCAllocSafe( nvtrans, sizeof( *stk ) );
     top = stk;
     Nullable();
     CalcReads();
@@ -544,12 +544,12 @@ void lalr1( void )
     if( rp - rset != GetSetSize( nredun ) ) {
         puts( "internal error" );
     }
-    FREE( stk );
-    FREE( look );
+    MemFree( stk );
+    MemFree( look );
     Conflict();
     nbstate = nstate;
-//    FreeSet( rset );
-//    FreeSet( lset );
+//    MemFreeSet( rset );
+//    MemFreeSet( lset );
 }
 
 void showstates( void )

@@ -59,17 +59,13 @@ typedef struct a_table {
 
 static base_n       avail;
 static base_n       used;
-static a_table      *table;
+static a_table      *table = NULL;
 
 static void expand_table( base_n new_size )
 {
     if( avail < new_size ) {
         avail = __ROUND_UP_SIZE( new_size, BLOCK );
-        if( table != NULL ) {
-            table = REALLOC( table, avail, a_table );
-        } else {
-            table = MALLOC( avail, a_table );
-        }
+        table = MemReallocSafe( table, avail * sizeof( *table ) );
     }
 }
 
@@ -230,18 +226,18 @@ void genobj( FILE *fp )
     for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
         symtab[sym_idx]->token = ntoken++;
     }
-    actions = CALLOC( ntoken, action_n );
+    actions = MemCAllocSafe( ntoken, sizeof( *actions ) );
     error = nstate + npro;
     for( j = 0; j < ntoken; ++j ) {
         actions[j] = error;
     }
-    tokens = CALLOC( ntoken, token_n );
-    test = CALLOC( ntoken, token_n );
-    best = CALLOC( ntoken, token_n );
-    other = CALLOC( nstate, action_n );
-    parent = CALLOC( nstate, action_n );
-    size = CALLOC( nstate, unsigned );
-    base = CALLOC( nstate, base_n );
+    tokens = MemCAllocSafe( ntoken, sizeof( *tokens ) );
+    test = MemCAllocSafe( ntoken, sizeof( *test ) );
+    best = MemCAllocSafe( ntoken, sizeof( *best ) );
+    other = MemCAllocSafe( nstate, sizeof( *other ) );
+    parent = MemCAllocSafe( nstate, sizeof( *parent ) );
+    size = MemCAllocSafe( nstate, sizeof( *size ) );
+    base = MemCAllocSafe( nstate, sizeof( *base ) );
     same = NULL;
     r = NULL;
     diff = NULL;
@@ -367,12 +363,12 @@ void genobj( FILE *fp )
             actions[*s] = error;
         }
     }
-    FREE( actions );
-    FREE( tokens );
-    FREE( test );
-    FREE( best );
-    FREE( other );
-    FREE( size );
+    MemFree( actions );
+    MemFree( tokens );
+    MemFree( test );
+    MemFree( best );
+    MemFree( other );
+    MemFree( size );
 
     putambigs( fp, base );
 
@@ -491,9 +487,9 @@ void genobj( FILE *fp )
         }
         endtab( fp );
     }
-    FREE( table );
-    FREE( base );
-    FREE( parent );
+    MemFree( table );
+    MemFree( base );
+    MemFree( parent );
 
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "states with defaults", num_default );
@@ -501,6 +497,6 @@ void genobj( FILE *fp )
 
     puttokennames( fp, dtoken, token_size );
 
-    FREE( protab );
-    FREE( symtab );
+    MemFree( protab );
+    MemFree( symtab );
 }

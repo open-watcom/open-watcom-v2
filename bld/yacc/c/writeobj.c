@@ -154,11 +154,7 @@ static void need( unsigned n )
 {
     if( codeused + n > codeavail ) {
         codeavail += BLOCK;
-        if( code ) {
-            code = REALLOC( code, codeavail, an_ins );
-        } else {
-            code = MALLOC( codeavail, an_ins );
-        }
+        code = MemReallocSafe( code, codeavail * sizeof( *code ) );
     }
 }
 
@@ -170,14 +166,14 @@ void writeobj( int maxlabel )
     }
     fprintf( tblout, "INCLUDE ytabmac.inc\n" );
     fprintf( tblout, "_TEXT\tSEGMENT\n" );
-    lbladdr = MALLOC( maxlabel, int );
+    lbladdr = MemAllocSafe( maxlabel * sizeof( *lbladdr ) );
     calcaddr();
     dumpcode();
     fprintf( tblout, "_TEXT\tENDS\n" );
     fprintf( tblout, "END\n" );
     fclose( tblout );
-    FREE( code );
-    FREE( lbladdr );
+    MemFree( code );
+    MemFree( lbladdr );
 }
 
 void emitins( short opcode, short offset )

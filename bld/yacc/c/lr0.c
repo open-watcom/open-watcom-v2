@@ -76,16 +76,16 @@ static a_state *addState( a_state **state, an_item **s, an_item **q, a_state *pa
         Unmark( *p );
     }
     if( *state == NULL ) {
-        *state = CALLOC( 1, a_state );
+        *state = MemCAllocSafe( 1, sizeof( **state ) );
         *statetail = *state;
         statetail = &(*state)->next;
         (*state)->kersize = kersize;
-        (*state)->items = CALLOC( kersize + 1, an_item * );
+        (*state)->items = MemCAllocSafe( kersize + 1, sizeof( *((*state)->items) ) );
         memcpy( (*state)->items, s, kersize * sizeof( an_item * ) );
         (*state)->sidx = nstate++;
     }
     if( parent != NULL ) {
-        add_parent = CALLOC( 1, a_parent );
+        add_parent = MemCAllocSafe( 1, sizeof( *add_parent ) );
         add_parent->state = parent;
         add_parent->next = (*state)->parents;
         (*state)->parents = add_parent;
@@ -179,14 +179,14 @@ static void Complete( a_state *state, an_item **s )
     }
     n = (index_n)( p - s );
     nredun += n;
-    raction = CALLOC( n + 1, a_reduce_action );
+    raction = MemCAllocSafe( n + 1, sizeof( *raction ) );
     state->redun = raction;
     for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
         raction->pro = (*p)[1].p.pro;
         ++raction;
     }
     if( p == q ) {
-        state->trans = CALLOC( 1, a_shift_action );
+        state->trans = MemCAllocSafe( 1, sizeof( *(state->trans) ) );
     } else {
         n = 1;
         s = p;
@@ -195,7 +195,7 @@ static void Complete( a_state *state, an_item **s )
                 ++n;
             }
         }
-        saction = CALLOC( n + 1, a_shift_action );
+        saction = MemCAllocSafe( n + 1, sizeof( *saction ) );
         state->trans = saction;
         do {
             saction->sym = (*s)->p.sym;
@@ -219,7 +219,7 @@ void lr0( void )
 
     nvtrans = 0;
     nredun = 0;
-    s = CALLOC( nitem, an_item * );
+    s = MemCAllocSafe( nitem, sizeof( *s ) );
     statetail = &statelist;
     *s = startsym->pro->items;
     startstate = addState( &startsym->state, s, s + 1, NULL );
@@ -228,15 +228,15 @@ void lr0( void )
     }
     errstate = addState( &errsym->state, s, s, NULL );
     Complete( errstate, s );
-    FREE( s );
+    MemFree( s );
 }
 
 void SetupStateTable( void )
 {
     a_state         *state;
 
-    FREE( statetab );
-    statetab = CALLOC( nstate, a_state * );
+    MemFree( statetab );
+    statetab = MemCAllocSafe( nstate, sizeof( *statetab ) );
     for( state = statelist; state != NULL; state = state->next ) {
         statetab[state->sidx] = state;
     }

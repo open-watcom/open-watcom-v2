@@ -66,7 +66,7 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
 
     if( *bv == NULL ) {
         *bs = size;
-        *bv = MALLOC( size, byte );
+        *bv = MemAllocSafe( size * sizeof( **bv ) );
         memcpy( *bv, v, size );
         return( 0 );
     }
@@ -87,7 +87,7 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
              * bitvector has some common bits with the end of the large vector
              */
             *bs += size - i;
-            p = REALLOC( p, *bs, byte );
+            p = MemReallocSafe( p, *bs * sizeof( *p ) );
             *bv = p;
             memcpy( &p[ls], &v[i], size - i );
             return( ls - i );
@@ -97,7 +97,7 @@ static unsigned insertIntoBitVector( byte **bv, unsigned *bs, byte *v, unsigned 
      * bitvector has no common bits with large vector
      */
     *bs += size;
-    p = REALLOC( p, *bs, byte );
+    p = MemReallocSafe( p, *bs * sizeof( *p ) );
     *bv = p;
     memcpy( &p[ls], v, size );
     return( ls );
@@ -141,17 +141,15 @@ static void actcpy( action_n *actions, compressed_action *ca, unsigned num_actio
 static action_n *actextend( action_n *a, unsigned *psize, unsigned incr )
 {
     unsigned        i;
+    unsigned        size;
 
     i = *psize;
-    *psize += incr;
-    if( i == 0 ) {
-        a = MALLOC( incr, action_n );
-    } else {
-        a = REALLOC( a, *psize, action_n );
-    }
-    while( i < *psize ) {
+    size = i + incr;
+    a = MemReallocSafe( a, size * sizeof( *a ) );
+    while( i < size ) {
         a[i++] = ACTION_NONE;
     }
+    *psize = size;
     return( a );
 }
 
@@ -327,10 +325,10 @@ static action_n *orderActionVectors( action_n **av, unsigned ntoken )
     action_n        sidx;
     action_n        *map;
 
-    a = MALLOC( nstate, av_info * );
+    a = MemAllocSafe( nstate * sizeof( *a ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         actions = av[sidx];
-        p = MALLOC( 1, av_info );
+        p = MemAllocSafe( sizeof( *p ) );
         a[sidx] = p;
         max = 0;
         min = ntoken;
@@ -351,14 +349,14 @@ static action_n *orderActionVectors( action_n **av, unsigned ntoken )
         p->action_vector = actions;
     }
     qsort( a, nstate, sizeof( av_info * ), cmp_action );
-    map = MALLOC( nstate, action_n );
+    map = MemAllocSafe( nstate * sizeof( *map ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         map[sidx] = a[sidx]->index;
         av[sidx] = a[sidx]->action_vector;
-        FREE( a[sidx] );
+        MemFree( a[sidx] );
         a[sidx] = NULL;
     }
-    FREE( a );
+    MemFree( a );
     return( map );
 }
 
@@ -406,8 +404,8 @@ void genobj_fast( FILE *fp )
     bvector = NULL;
     bsize = 0;
     vsize = __ROUND_UP_SIZE_TO( ntoken_term, 8 );
-    state_vector = MALLOC( vsize, byte );
-    base = CALLOC( nstate, unsigned );
+    state_vector = MemAllocSafe( vsize * sizeof( *state_vector ) );
+    base = MemCAllocSafe( nstate, sizeof( *base ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         state = statetab[sidx];
         memset( state_vector, 0, vsize );
@@ -444,13 +442,13 @@ void genobj_fast( FILE *fp )
         }
         base[sidx] = insertIntoBitVector( &bvector, &bsize, state_vector, vsize );
     }
-    FREE( state_vector );
+    MemFree( state_vector );
 
-    defaction = CALLOC( nstate, action_n );
-    all_actions = MALLOC( nstate, action_n * );
+    defaction = MemCAllocSafe( nstate, sizeof( *defaction ) );
+    all_actions = MemAllocSafe( nstate * sizeof( *all_actions ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         state = statetab[sidx];
-        state_actions = MALLOC( ntoken_term, action_n );
+        state_actions = MemAllocSafe( ntoken_term * sizeof( *state_actions ) );
         all_actions[sidx] = state_actions;
         for( j = 0; j < ntoken_term; ++j ) {
             state_actions[j] = ACTION_NONE;
@@ -485,19 +483,19 @@ void genobj_fast( FILE *fp )
     mapping = orderActionVectors( all_actions, ntoken_term );
     avector = NULL;
     asize = 0;
-    ca = CALLOC( ntoken_term, compressed_action );
-    abase = CALLOC( nstate, unsigned );
+    ca = MemCAllocSafe( ntoken_term, sizeof( *ca ) );
+    abase = MemCAllocSafe( nstate, sizeof( *abase ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         num_actions = actcompress( ca, all_actions[sidx], ntoken_term );
         abase[mapping[sidx]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_term );
-        FREE( all_actions[sidx] );
+        MemFree( all_actions[sidx] );
         all_actions[sidx] = NULL;
     }
-    FREE( mapping );
-    FREE( ca );
+    MemFree( mapping );
+    MemFree( ca );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         state = statetab[sidx];
-        state_actions = MALLOC( ntoken_all, action_n );
+        state_actions = MemAllocSafe( ntoken_all * sizeof( *state_actions ) );
         all_actions[sidx] = state_actions;
         for( j = 0; j < ntoken_all; ++j ) {
             state_actions[j] = ACTION_NONE;
@@ -512,18 +510,18 @@ void genobj_fast( FILE *fp )
         }
     }
     mapping = orderActionVectors( all_actions, ntoken_all );
-    ca = CALLOC( ntoken_all, compressed_action );
-    gbase = CALLOC( nstate, unsigned );
+    ca = MemCAllocSafe( ntoken_all, sizeof( *ca ) );
+    gbase = MemCAllocSafe( nstate, sizeof( *gbase ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         num_actions = actcompress( ca, all_actions[sidx], ntoken_all );
         gbase[mapping[sidx]] = insertIntoActionVector( &avector, &asize, ca, num_actions, ntoken_all );
-        FREE( all_actions[sidx] );
+        MemFree( all_actions[sidx] );
         all_actions[sidx] = NULL;
     }
-    FREE( mapping );
-    FREE( ca );
+    MemFree( mapping );
+    MemFree( ca );
 
-    FREE( all_actions );
+    MemFree( all_actions );
 
     putambigs( fp, NULL );
 
@@ -545,7 +543,7 @@ void genobj_fast( FILE *fp )
         puttab( fp, FITS_A_WORD, defaction[sidx] );
     }
     endtab( fp );
-    FREE( defaction );
+    MemFree( defaction );
     bitv_base_size = FITS_A_WORD;
     if( bsize < 257 ) {
         bitv_base_size = FITS_A_BYTE;
@@ -600,17 +598,17 @@ void genobj_fast( FILE *fp )
     }
     endtab( fp );
 
-    FREE( gbase );
-    FREE( abase );
-    FREE( base );
-    FREE( avector );
-    FREE( bvector );
+    MemFree( gbase );
+    MemFree( abase );
+    MemFree( base );
+    MemFree( avector );
+    MemFree( bvector );
 
     dumpstatistic( "bytes used in tables", bytesused );
     dumpstatistic( "table space utilization", 100 - ( empty_actions * 100 / asize ) );
 
     puttokennames( fp, 0, FITS_A_WORD );
 
-    FREE( protab );
-    FREE( symtab );
+    MemFree( protab );
+    MemFree( symtab );
 }

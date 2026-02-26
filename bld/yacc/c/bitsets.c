@@ -38,19 +38,13 @@
 #include "roundmac.h"
 
 
-bitnum  *setmembers;
-
-static unsigned     wperset;
+bitnum      *setmembers;
+unsigned    wperset;
 
 void InitSets( unsigned count )
 {
-    wperset = (unsigned)__ROUND_UP_SIZE_TO( count, WSIZE );
-    setmembers = CALLOC( count, bitnum );
-}
-
-a_word *AllocSet( unsigned set_count )
-{
-    return( CALLOC( set_count * wperset, a_word ) );
+    wperset = __ROUND_UP_SIZE_TO( count, WSIZE );
+    setmembers = MemCAllocSafe( count, sizeof( bitnum ) );
 }
 
 unsigned GetSetSize( unsigned set_count )

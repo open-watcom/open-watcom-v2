@@ -361,18 +361,18 @@ void genobj( FILE *fp )
     }
 
     error = nstate + npro;
-    actions = CALLOC( ntoken, action_n );
+    actions = MemCAllocSafe( ntoken, sizeof( *actions ) );
     for( i = 0; i < ntoken; ++i ) {
         actions[i] = error;
     }
     preamble( fp );
-    tokens = CALLOC( ntoken, token_n );
-    test = CALLOC( ntoken, token_n );
-    best = CALLOC( ntoken, token_n );
-//    base = CALLOC( nstate, short );
-    other = CALLOC( nstate, action_n );
-    parent = CALLOC( nstate, action_n );
-    size = CALLOC( nstate, token_n );
+    tokens = MemCAllocSafe( ntoken, sizeof( *tokens ) );
+    test = MemCAllocSafe( ntoken, sizeof( *test ) );
+    best = MemCAllocSafe( ntoken, sizeof( *best ) );
+//    base = MemCAllocSafe( nstate, sizeof( *base ) );
+    other = MemCAllocSafe( nstate, sizeof( *other ) );
+    parent = MemCAllocSafe( nstate, sizeof( *parent ) );
+    size = MemCAllocSafe( nstate, sizeof( *size ) );
     for( sidx = nstate; sidx-- > 0; ) {
         for( i = 0; i < ntoken; ++i ) {
             actions[i] = error;

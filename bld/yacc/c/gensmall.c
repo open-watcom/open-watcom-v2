@@ -97,7 +97,7 @@ static void add_table( short token, short action )
 {
     if( used == table_size ) {
         table_size += 64;
-        table = REALLOC( table, table_size, a_entry );
+        table = MemReallocSafe( table, table_size * sizeof( *table ) );
     }
     table[used].token = token;
     table[used].action = action;
@@ -152,7 +152,7 @@ void genobj( FILE *fp )
         symtab[sym_idx]->token = ntoken++;
     }
     any_token = ntoken;
-    state_base = CALLOC( nstate, short );
+    state_base = MemCAllocSafe( nstate, sizeof( *state_base ) );
     base = 0;
     max = 0;
     sum = 0;
@@ -254,5 +254,5 @@ void genobj( FILE *fp )
     fprintf( fp, "\"\"" );
     end_table( fp );
     fprintf( fp, "#endif\n" );
-    FREE( table );
+    MemFree( table );
 }

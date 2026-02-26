@@ -49,7 +49,7 @@ static void pushTrace( traceback **h, a_state *state, a_sym *sym )
 {
     traceback       *token;
 
-    token = MALLOC( 1, traceback );
+    token = MemAllocSafe( sizeof( traceback ) );
     token->next = *h;
     token->state = state;
     token->sym = sym;
@@ -62,7 +62,7 @@ static void popTrace( traceback **h )
 
     if( (token = *h) != NULL ) {
         *h = token->next;
-        FREE( token );
+        MemFree( token );
     }
 }
 
@@ -277,7 +277,7 @@ static void printAndFreeStack( traceback *top )
             fputs( min, stdout );
             column += len;
         }
-        FREE( token );
+        MemFree( token );
     }
 }
 
@@ -421,7 +421,7 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     if( len == 0 ) {
         return( NULL );
     }
-    min = MALLOC( len, char );
+    min = MemAllocSafe( len );
     min[0] = '\0';
     cat = min;
     for( p = pro->items; p->p.sym != NULL; ++p ) {
@@ -444,7 +444,7 @@ static void setMinToName( a_sym *sym )
 
     len = strlen( sym->name );
     len += 2;
-    min = MALLOC( len, char );
+    min = MemAllocSafe( len );
     min[0] = '\0';
     cat = min;
     cat = my_stpcpy( cat, sym->name );
@@ -503,7 +503,7 @@ static void seedWithSimpleMin( void )
         sym = symtab[sym_idx];
         if( sym->pro != NULL ) {
             if( sym->nullable ) {
-                sym->min = STRDUP( "" );
+                sym->min = MemStrdupSafe( "" );
             }
         } else {
             setMinToName( sym );

@@ -67,17 +67,17 @@ static AddError()
     short           *at;
     rule_n          pidx;
 
-    trans = CALLOC( nsym, a_shift_action );
-    raction = redun = CALLOC( npro + 1, a_reduce_action );
-    rset = conflict = AllocSet( npro + 2 );
+    trans = MemCAllocSafe( nsym, sizeof( *trans ) );
+    raction = redun = MemCAllocSafe( npro + 1, sizeof( *raction ) );
+    rset = conflict = MemAllocSetSafe( npro + 2 );
     for( pidx = 0; pidx <= npro; ++pidx ) {
         raction->follow = rset;
         ++raction;
         rset += GetSetSize( 1 );
     }
     defined = rset;
-    at = CALLOC( nstate, short );
-    s = t = CALLOC( nstate + 1, a_state * );
+    at = MemCAllocSafe( nstate, sizeof( *at ) );
+    s = t = MemCAllocSafe( nstate + 1, sizeof( *s ) );
     for( state = statelist; state != NULL; state = state->next ) {
          Mark( *state );
          *t++ = state;
@@ -162,7 +162,7 @@ static AddError()
             saction->state = AddErrState( &errsym->enter, s, t );
             ++saction;
         }
-        state->trans = CALLOC( ( saction - trans ) + 1, a_shift_action );
+        state->trans = MemCAllocSafe( ( saction - trans ) + 1, sizeof( *(state->trans) ) );
         memcpy( state->trans, trans, ( saction - trans ) * sizeof( a_shift_action ) );
         if( Empty( conflict ) ) {
             redun->pro = NULL;
@@ -178,9 +178,9 @@ static AddError()
                 ++i;
             }
         }
-        state->redun = CALLOC( i + 1, a_reduce_action );
+        state->redun = MemCAllocSafe( i + 1, sizeof( *(state->redun) ) );
         if( i > 0 ) {
-            rset = AllocSet( i );
+            rset = MemAllocSetSafe( i );
             raction = redun;
             while( i > 0 ) {
                 if( raction->pro != NULL ) {
@@ -194,10 +194,10 @@ static AddError()
             }
         }
     }
-    FREE( trans );
-    FREE( redun );
-    FreeSet( conflict );
-    FREE( s );
-    FREE( at );
+    MemFree( trans );
+    MemFree( redun );
+    MemFreeSet( conflict );
+    MemFree( s );
+    MemFree( at );
 }
 

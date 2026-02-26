@@ -126,11 +126,7 @@ static void addbuf( int c )
 {
     if( bufused == bufmax ) {
         bufmax += BUF_INCR;
-        if( buf != NULL ) {
-            buf = REALLOC( buf, bufmax, char );
-        } else {
-            buf = MALLOC( bufmax, char );
-        }
+        buf = MemReallocSafe( buf, bufmax * sizeof( *buf ) );
     }
     buf[bufused++] = (char)c;
 }
@@ -552,7 +548,7 @@ static a_SR_conflict *make_unique_ambiguity( a_sym *sym, conflict_id id )
             return( ambig );
         }
     }
-    ambig = MALLOC( 1, a_SR_conflict );
+    ambig = MemAllocSafe( sizeof( *ambig ) );
     ambig->next = ambiguousstates;
     ambig->sym = sym;
     ambig->id = id;
@@ -580,7 +576,7 @@ static void tlist_remove( char *name )
             if( curr->next == NULL ) {
                 tokens_tail = last;
             }
-            FREE( curr );
+            MemFree( curr );
             break;
         }
         last = curr;
@@ -598,7 +594,7 @@ static void tlist_add( char *name, token_n tokval )
             return;
         }
     }
-    tmp = (y_token *)MALLOC( strlen( name ) + sizeof( y_token ), char );
+    tmp = MemAllocSafe( strlen( name ) + sizeof( y_token ) );
     strcpy( tmp->name, name );
     tmp->value = tokval;
     tmp->next = NULL;
@@ -646,7 +642,7 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list, a_token *tok )
         scan( used, tok );
         absorbed_something = true;
         ambig = make_unique_ambiguity( sym, id );
-        en = MALLOC( 1, a_SR_conflict_list );
+        en = MemAllocSafe( sizeof( *en ) );
         en->next = *list;
         en->thread = ambig->thread;
         en->pro = NULL;
@@ -718,7 +714,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         }
         save = *s;
         *s = '\0';
-        type = STRDUP( p );
+        type = MemStrdupSafe( p );
         *s = save;
         ++s;
     } else {
@@ -727,7 +723,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
     if( *s == '$' ) {
         strcpy( buff, "yyval" );
         if( type == NULL && lhs->type != NULL ) {
-            type = STRDUP( lhs->type );
+            type = MemStrdupSafe( lhs->type );
         }
         ++s;
     } else {
@@ -742,7 +738,7 @@ static char *checkAttrib( char *s, char **ptype, char *buff, int *errs,
         il -= base + 1;
         sprintf( buff, "yyvp[%ld]", il );
         if( type == NULL && il >= 0 && rhs[il]->type != NULL ) {
-            type = STRDUP( rhs[il]->type );
+            type = MemStrdupSafe( rhs[il]->type );
         }
     }
     *ptype = type;
@@ -783,14 +779,14 @@ static void copyUniqueActions( FILE *fp )
                 fprintf( fp, " %s", item->p.sym->name );
             }
             fprintf( fp, " */\n" );
-            FREE( r );
+            MemFree( r );
         }
         for( s = c->action; *s != '\0'; ++s ) {
             fputc( *s, fp );
         }
         fprintf( fp, "\nbreak;\n" );
-        FREE( c->action );
-        FREE( c );
+        MemFree( c->action );
+        MemFree( c );
     }
 }
 
@@ -798,7 +794,7 @@ static void addRuleToUniqueCase( uniq_case *p, rule_n pidx, a_sym *lhs )
 {
     rule_case       *r;
 
-    r = MALLOC( 1, rule_case );
+    r = MemAllocSafe( sizeof( *r ) );
     r->lhs = lhs;
     r->pidx = pidx;
     r->next = p->rules;
@@ -822,12 +818,12 @@ static void insertUniqueAction( rule_n pidx, char *action, a_sym *lhs )
             *p = c->next;
             c->next = caseActions;
             caseActions = c;
-            FREE( action );
+            MemFree( action );
             return;
         }
         p = &(c->next);
     }
-    n = MALLOC( 1, uniq_case );
+    n = MemAllocSafe( sizeof( *n ) );
     n->action = action;
     n->rules = NULL;
     n->next = *p;
@@ -874,7 +870,7 @@ static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned ba
                 total_len += strlen( buff );
                 if( type != NULL ) {
                     total_len += strlen( type ) + 1;
-                    FREE( type );
+                    MemFree( type );
                 }
                 total_errs += errs;
             } else {
@@ -882,7 +878,7 @@ static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned ba
             }
         }
         if( total_errs == 0 ) {
-            action = MALLOC( total_len, char );
+            action = MemAllocSafe( total_len );
             p = action;
             for( s = buf; *s != '\0'; ) {
                 if( *s == '$' ) {
@@ -891,7 +887,7 @@ static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned ba
                     if( type != NULL ) {
                         *p++ = '.';
                         p = strpcpy( p, type );
-                        FREE( type );
+                        MemFree( type );
                     }
                 } else {
                     *p++ = *s++;
@@ -915,7 +911,7 @@ static void copyact( FILE *fp, rule_n pidx, a_sym *lhs, a_sym **rhs, unsigned ba
             fprintf( fp, "%s", buff );
             if( type != NULL ) {
                 fprintf( fp, ".%s", type );
-                FREE( type );
+                MemFree( type );
             }
         } else {
             fputc( *s++, fp );
@@ -928,7 +924,7 @@ static char *dupbuf( void )
 {
     char            *str;
 
-    str = MALLOC( bufused, char );
+    str = MemAllocSafe( bufused );
     memcpy( str, buf, bufused );
     bufused = 0;
     return( str );
@@ -982,12 +978,12 @@ void free_header_data( void )
     y_token         *tmp;
 
     if( union_name != NULL ) {
-        FREE( union_name );
+        MemFree( union_name );
         union_name = NULL;
     }
     while( (tmp = tokens_head) != NULL ) {
         tokens_head = tokens_head->next;
-        FREE( tmp );
+        MemFree( tmp );
     }
 }
 
@@ -1030,7 +1026,7 @@ void defs( FILE *fp, a_token *tok )
             fprintf( fp, "#define YYSTYPE yystype\n" );
             fprintf( fp, "#endif\n" );
             if( union_name == NULL ) {
-                union_name = MALLOC( strlen( buf ) + 1, char );
+                union_name = MemAllocSafe( strlen( buf ) + 1 );
                 strcpy( union_name, buf );
             } else {
                 srcinfo_msg( "%union already defined\n" );
@@ -1100,11 +1096,11 @@ void defs( FILE *fp, a_token *tok )
                     if( sym->type != NULL ) {
                         if( strcmp( sym->type, type ) != 0 ) {
                             srcinfo_msg( "'%s' type redeclared from '%s' to '%s'\n", buf, sym->type, type );
-                            FREE( sym->type );
-                            sym->type = STRDUP( type );
+                            MemFree( sym->type );
+                            sym->type = MemStrdupSafe( type );
                         }
                     } else {
-                        sym->type = STRDUP( type );
+                        sym->type = MemStrdupSafe( type );
                     }
                 }
                 if( ctype == T_TYPE ) {
@@ -1137,7 +1133,7 @@ void defs( FILE *fp, a_token *tok )
                 }
             }
             if( type != NULL )
-                FREE( type );
+                MemFree( type );
             break;
         default:
             srcinfo_msg( "Incorrect syntax.\n" );
@@ -1166,7 +1162,7 @@ void rules( FILE *fp, a_token *tok )
 
     ambiguousstates = NULL;
     maxrhs = INIT_RHS_SIZE;
-    rhs = CALLOC( maxrhs, a_sym * );
+    rhs = MemCAllocSafe( maxrhs, sizeof( *rhs ) );
     while( tok->id == T_CIDENTIFIER ) {
         int sym_lineno = lineno;
         lhs = addsym( buf );
@@ -1210,7 +1206,7 @@ void rules( FILE *fp, a_token *tok )
                 }
                 if( nrhs + 1 > maxrhs ) {
                     maxrhs *= 2;
-                    rhs = REALLOC( rhs, maxrhs, a_sym * );
+                    rhs = MemReallocSafe( rhs, maxrhs * sizeof( *rhs ) );
                 }
                 rhs[nrhs++] = sym;
             }
@@ -1263,7 +1259,7 @@ void rules( FILE *fp, a_token *tok )
             }
         } while( tok->id == '|' );
     }
-    FREE( rhs );
+    MemFree( rhs );
 
     not_token = false;
     for( sym = symlist; sym != NULL; sym = sym->next ) {

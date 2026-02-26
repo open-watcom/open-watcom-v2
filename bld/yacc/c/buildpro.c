@@ -89,8 +89,8 @@ void buildpro( void )
         }
     }
     nsym = nterm + nvble;
-    symtab = CALLOC( nsym, a_sym * );
-    protab = CALLOC( npro, a_pro * );
+    symtab = MemCAllocSafe( nsym, sizeof( *symtab ) );
+    protab = MemCAllocSafe( npro, sizeof( *protab ) );
     sym_idx = 0;
     j = 0;
     for( sym = symlist; sym != NULL; sym = sym->next ) {
@@ -130,8 +130,8 @@ a_sym *addsym( const char *s )
 
     sym = findsymptr( s );
     if( *sym == NULL ) {
-        p = CALLOC( 1, a_sym );
-        p->name = STRDUP( s );
+        p = MemCAllocSafe( 1, sizeof( *p ) );
+        p->name = MemStrdupSafe( s );
         *sym = p;
     }
     return( *sym );
@@ -144,7 +144,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, unsigned n )
     unsigned        i;
 
     amt = sizeof( a_pro ) + n * sizeof( an_item );
-    pro = (a_pro *)CALLOC( amt, char );
+    pro = MemCAllocSafe( 1, amt );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {
         pro->items[i].p.sym = rhs[i];

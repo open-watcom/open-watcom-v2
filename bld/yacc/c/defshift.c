@@ -135,14 +135,14 @@ void MarkDefaultShifts( void )
     bool            *all_used;
     action_n        sidx;
 
-    state_freq = MALLOC( nstate, freq_n );
+    state_freq = MemAllocSafe( nstate * sizeof( *state_freq ) );
     range_size = ( keyword_id_high - keyword_id_low ) + 1;
-    all_used = MALLOC( range_size, bool );
+    all_used = MemAllocSafe( range_size * sizeof( *all_used ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         doState( statetab[sidx], state_freq, all_used, range_size );
     }
-    FREE( all_used );
-    FREE( state_freq );
+    MemFree( all_used );
+    MemFree( state_freq );
     dumpstatistic( "default shift optimization states", nStates );
     dumpstatistic( "default shift optimization actions", nActions );
 }

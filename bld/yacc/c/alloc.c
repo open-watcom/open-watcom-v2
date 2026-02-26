@@ -147,13 +147,11 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /************************/
 {
-    if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
 #else
-        free( ptr );
+    free( ptr );
 #endif
-    }
 }
 
 TRMEMAPI( MemStrdupSafe )
@@ -168,3 +166,29 @@ char *MemStrdupSafe( const char *str )
     return( check_nomem( strdup( str ) ) );
 #endif
 }
+
+TRMEMAPI( MemAllocSetSafe )
+a_word *MemAllocSetSafe( unsigned set_count )
+{
+    void        *ptr;
+    size_t      size;
+
+    size = set_count * wperset * sizeof( a_word );
+#ifdef TRMEM
+    ptr = check_nomem( _trmem_alloc( size, _TRMEM_WHO( 6 ), TrHdl ) );
+#else
+    ptr = check_nomem( malloc( size ) );
+#endif
+    return( memset( ptr, 0, size ) );
+}
+
+TRMEMAPI( MemFreeSet )
+void MemFreeSet( a_word *set )
+{
+#ifdef TRMEM
+    _trmem_free( set, _TRMEM_WHO( 7 ), TrHdl );
+#else
+    free( set );
+#endif
+}
+

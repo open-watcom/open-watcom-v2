@@ -138,11 +138,11 @@ void genobj( FILE *fp )
 
     emitins( JMP, TOKENTRY( startstate->sidx ) );
 
-    target = CALLOC( nsym, short );
+    target = MemCAllocSafe( nsym, sizeof( *target ) );
     for( sym_idx = 0; sym_idx < nsym; ++sym_idx ) {
         target[sym_idx] = DEFAULT;
     }
-    symbol = CALLOC( nsym, sym_n );
+    symbol = MemCAllocSafe( nsym, sizeof( *symbol ) );
     for( sidx = 0; sidx < nstate; ++sidx ) {
         state = statetab[sidx];
         r = q = symbol;
@@ -212,8 +212,8 @@ void genobj( FILE *fp )
         }
     }
 
-    FREE( target );
-    FREE( symbol );
+    MemFree( target );
+    MemFree( symbol );
 
     for( pidx = 0; pidx < npro; ++pidx ) {
         pro = protab[pidx];

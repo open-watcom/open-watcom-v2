@@ -248,9 +248,9 @@ typedef enum value_size {
 } value_size;
 
 extern void     InitSets( unsigned count );
-extern a_word   *AllocSet( unsigned set_count );
+extern a_word   *MemAllocSetSafe( unsigned set_count );
+extern void     MemFreeSet( a_word *set );
 extern unsigned GetSetSize( unsigned set_count );
-#define FreeSet(x)  FREE(x)
 extern void     Union(a_word *,a_word *);
 extern void     Intersection( a_word *, a_word *);
 extern void     Assign(a_word *,a_word *);
@@ -366,6 +366,7 @@ extern a_pro    **protab;
 extern a_pro    *startpro;
 
 extern bitnum   *setmembers;
+extern unsigned wperset;
 
 extern char     *srcname_norm;
 

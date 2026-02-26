@@ -174,7 +174,7 @@ static a_shift_action *addShiftAction( a_sym *sym, a_state *state, a_shift_actio
 
     for( s = saction; s->sym != NULL; ++s ) {}  /* skip to last NULL item */
     i = ( s - saction ) + 1;
-    saction = REALLOC( saction, i + 1, a_shift_action );
+    saction = MemReallocSafe( saction, ( i + 1 ) * sizeof( *saction ) );
     saction[i - 1].sym = sym;
     saction[i - 1].state = state;
     memset( &saction[i], 0, sizeof( *saction ) );
@@ -189,9 +189,9 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
 
     for( r = raction; r->pro != NULL; ++r ) {}  /* skip to last NULL item */
     i = ( r - raction ) + 1;
-    new_follow = AllocSet( 1 );
+    new_follow = MemAllocSetSafe( 1 );
     Assign( new_follow, follow );
-    raction = REALLOC( raction, i + 1, a_reduce_action );
+    raction = MemReallocSafe( raction, ( i + 1 ) * sizeof( *raction ) );
     raction[i - 1].pro = pro;
     raction[i - 1].follow = new_follow;
     memset( &raction[i], 0, sizeof( *raction ) );
@@ -287,7 +287,7 @@ static void removeParent( a_state *state, a_state *parent )
     for( curr = *prev; curr != NULL; curr = curr->next ) {
         if( curr->state == parent ) {
             *prev = curr->next;
-            FREE( curr );
+            MemFree( curr );
             break;
         }
         prev = &(curr->next);
@@ -508,7 +508,7 @@ void EliminateUnitReductions( void )
         }
         sum += changeOccurred;
     } while( changeOccurred );
-    reduce_set = AllocSet( 1 );
+    reduce_set = MemAllocSetSafe( 1 );
     do {
         changeOccurred = 0;
         for( sidx = 0; sidx < nstate; ++sidx ) {
@@ -516,7 +516,7 @@ void EliminateUnitReductions( void )
         }
         sum += changeOccurred;
     } while( changeOccurred );
-    FreeSet( reduce_set );
+    MemFreeSet( reduce_set );
     dumpstatistic( "unit reduction states removed", deadStates );
     dumpstatistic( "unit reduction optimizations", sum );
 }

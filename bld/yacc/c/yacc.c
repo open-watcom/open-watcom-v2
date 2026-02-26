@@ -238,7 +238,7 @@ static char *fname_normalize( const char *name )
     char            *p;
     char            *dst;
 
-    p = dst = MALLOC( strlen( name ) + 1, char );
+    p = dst = MemAllocSafe( strlen( name ) + 1 );
     while( (c = *name++) != '\0' ) {
         if( c == '\\' )
             c = '/';
@@ -329,11 +329,11 @@ int main( int argc, char **argv )
     srcname_norm = fname_normalize( srcname );
 
     size = strlen( fileprefix);
-    codefilename   = MALLOC( size + 6, char );
+    codefilename   = MemAllocSafe( size + 6 );
     strcat( strcpy( codefilename, fileprefix), "tab.c" );
-    headerfilename = MALLOC( size + 6, char );
+    headerfilename = MemAllocSafe( size + 6 );
     strcat( strcpy( headerfilename, fileprefix), "tab.h" );
-    descfilename   = MALLOC( size + 5, char );
+    descfilename   = MemAllocSafe( size + 5 );
     strcat( strcpy( descfilename, fileprefix), ".out" );
     actout = openw( codefilename );
     tokout = openw( headerfilename );
@@ -437,10 +437,10 @@ int main( int argc, char **argv )
     tail( actout, &token );
     fclose( yaccin );
     fclose( actout );
-    FREE( codefilename );
-    FREE( headerfilename );
-    FREE( descfilename );
-    FREE( srcname_norm );
+    MemFree( codefilename );
+    MemFree( headerfilename );
+    MemFree( descfilename );
+    MemFree( srcname_norm );
     MemFini();
     return( 0 );
 }
