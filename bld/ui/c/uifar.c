@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,24 +154,16 @@ void intern farcopy( LP_PIXEL src, LP_PIXEL dst, uisize len, bool snow )
     if( snow ) {
         _snowmove( dst, src, len * sizeof( PIXEL ) );
     } else {
+        _fmemmove( dst, src, len * sizeof( PIXEL ) );
+    }
 #else
     /* unused parameters */ (void)snow;
-#endif
-#if defined( __NETWARE__ )
-        // Netware compiled with "far" defined, but pointers aren't really
-        // far, and there is no _fmemmove function, and we were getting
-        // "pointer truncated" warnings before, so just cast. (SteveM)
-        // ?? why it is compiled with "far" ??
-        // LP_PIXEL should be declared as near
-        // then these cast are useless
-        memmove( (PIXEL *)dst, (PIXEL *)src, len * sizeof( PIXEL ) );
-#elif !defined( _M_IX86 ) || defined( __UNIX__ )
-        memmove( dst, src, len * sizeof( PIXEL ) );
-#else
-        _fmemmove( dst, src, len * sizeof( PIXEL ) );
-#endif
-#ifdef _M_I86
-    }
+
+  #if defined( __DOS__ )
+    _fmemmove( dst, src, len * sizeof( PIXEL ) );
+  #else
+    memmove( dst, src, len * sizeof( PIXEL ) );
+  #endif
 #endif
 }
 
