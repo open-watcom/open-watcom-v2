@@ -105,7 +105,7 @@ extern void             intern bfake( BUFFER *, int, int );
 extern void             intern bfill( BUFFER *, int, int, ATTR, char, uisize );
 extern void             intern bpixel( BUFFER *, int, int, ATTR, char );
 extern void             intern braw( BUFFER *, int, int, LP_PIXEL, uisize );
-extern void             intern bstring( BUFFER *, int, int, ATTR, LPC_STRING, uisize );
+extern void             intern bstring( BUFFER *, int, int, ATTR, const char *, uisize );
 extern void             intern bunframe( BUFFER * );
 extern int              intern checkkey( void );
 extern void             intern checkmouse( MOUSESTAT *, MOUSEORD *, MOUSEORD *, MOUSETIME * );
