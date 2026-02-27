@@ -152,7 +152,7 @@ static void dumpcode( void )
 
 static void need( unsigned n )
 {
-    if( codeused + n > codeavail ) {
+    if( codeavail < codeused + n ) {
         codeavail += BLOCK;
         code = MemReallocSafe( code, codeavail * sizeof( *code ) );
     }
@@ -163,6 +163,7 @@ void writeobj( int maxlabel )
     tblout = fopen( "ytab.asm", "w" );
     if( tblout == NULL ) {
         msg( "cannot open 'ytab.asm'\n" );
+        /* never return */
     }
     fprintf( tblout, "INCLUDE ytabmac.inc\n" );
     fprintf( tblout, "_TEXT\tSEGMENT\n" );

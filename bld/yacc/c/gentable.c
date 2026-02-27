@@ -148,6 +148,7 @@ static base_n addtotable( token_n *tokens, token_n *end_token, action_n *actions
             if( ! bigflag ) {
                 if( tokval >= UCHAR_MAX ) {
                     msg( "too many tokens!\n" );
+                    /* never return */
                 }
             }
             SetToken( t, tokval );

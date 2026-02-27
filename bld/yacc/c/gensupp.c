@@ -128,6 +128,7 @@ void puttab( FILE *fp, value_size fits, unsigned i )
     if( fits == FITS_A_BYTE ) {
         if(( i & 0x00ff ) != i ) {
             msg( "value cannot fit into %s table! (%x)", tablename, i );
+            /* never return */
         }
         bytesused += 1;
         format = "%3u";
@@ -135,6 +136,7 @@ void puttab( FILE *fp, value_size fits, unsigned i )
     } else {
         if(( i & 0xffff ) != i ) {
             msg( "value cannot fit into %s table! (%x)", tablename, i );
+            /* never return */
         }
         bytesused += sizeof( short );
         format = "%5u";

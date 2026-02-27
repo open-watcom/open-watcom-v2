@@ -105,6 +105,7 @@ static void copyact( a_pro *pro, char *indent )
                 for( type = ++s; *s != '>'; ++s ) {
                     if( *s == '\0' ) {
                         msg( "Bad type specifier.\n" );
+                        /* never return */
                     }
                 }
                 *s++ = '\0';
@@ -124,6 +125,7 @@ static void copyact( a_pro *pro, char *indent )
                 }
                 if( i >= 0 && i > n ) {
                     msg( "Invalid $ parameter.\n" );
+                    /* never return */
                 }
                 fprintf( fp, "yysp[%d].v", i - 1 ); // Adjust yysp first
                 if( type == NULL && i >= 1 ) {

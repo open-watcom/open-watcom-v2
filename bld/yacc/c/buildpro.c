@@ -62,6 +62,7 @@ void buildpro( void )
 
     if( startsym == NULL ) {
         msg( "No grammar specified.\n" );
+        /* never return */
     }
     /*
      * construct: $start <- <start_symbol> $eof

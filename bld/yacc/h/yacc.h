@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include "bool.h"
+#include "wnoret.h"
 
 
 #define WSIZE           (sizeof(a_word)*8)
@@ -303,9 +304,10 @@ extern void     free_header_data( void );
 extern void     genobj( FILE * );
 extern void     genobj_fast( FILE * );
 
-extern void     msg( const char *, ... );
+NO_RETURN( extern void msg( const char *, ... ) );
+NO_RETURN( extern void srcinfo_msg( const char *, ... ) );
+
 extern void     warn( const char *, ... );
-extern void     srcinfo_msg( const char *, ... );
 extern void     srcinfo_warn( const char *, ... );
 extern void     dumpstatistic( const char *name, unsigned stat );
 

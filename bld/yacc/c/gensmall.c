@@ -71,6 +71,7 @@ void puttab( FILE *fp, value_size fits, unsigned i )
     if( fits == FITS_A_BYTE ) {
         if(( i & 0x00ff ) != i ) {
             msg( "value cannot fit into table! (%x)", i );
+            /* never return */
         }
         format = "%3u";
         mod = 20;
@@ -95,7 +96,7 @@ static void end_table( FILE *fp )
 
 static void add_table( short token, short action )
 {
-    if( used == table_size ) {
+    if( table_size == used ) {
         table_size += 64;
         table = MemReallocSafe( table, table_size * sizeof( *table ) );
     }

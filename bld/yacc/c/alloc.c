@@ -102,6 +102,7 @@ static void *check_nomem( void *ptr )
 {
     if( ptr == NULL ) {
         msg( "Out of memory\n" );
+        /* never return */
     }
     return( ptr );
 }

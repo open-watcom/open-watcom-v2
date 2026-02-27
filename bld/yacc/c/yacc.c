@@ -80,6 +80,7 @@ static FILE *openr( const char *filename )
     file = fopen( filename, "r" );
     if( file == NULL ) {
         msg( "Can't open %s.\n", filename );
+        /* never return */
     }
     return( file );
 }
@@ -91,6 +92,7 @@ static FILE *openw( const char *filename )
     file = fopen( filename, "w+" );
     if( file == NULL ) {
         msg( "Can't open %s for output.\n", filename );
+        /* never return */
     }
     return( file );
 }
@@ -151,6 +153,7 @@ static void setoptions( const char *p )
             break;
         default:
             msg( "Unknown option '%c'\n", *p );
+            /* never return */
         }
     }
 }
@@ -175,6 +178,7 @@ void msg( const char *fmt, ... )
     vprintf( fmt, args );
     va_end( args );
     exit( 1 );
+    /* never return */
 }
 
 void srcinfo_warn( const char *fmt, ... )
@@ -199,6 +203,7 @@ void srcinfo_msg( const char *fmt, ... )
     vprintf( fmt, args );
     va_end( args );
     exit( 1 );
+    /* never return */
 }
 
 void dumpstatistic( const char *name, unsigned stat )
@@ -316,6 +321,7 @@ int main( int argc, char **argv )
         skeleton = openr( argv[argc - 1] );
         if( skeleton == NULL ) {
             msg( "could not open driver source code '%s'\n", argv[argc - 1] );
+            /* never return */
         }
     }
     loadpath = argv[0];
@@ -340,6 +346,7 @@ int main( int argc, char **argv )
     temp1 = tmpfile();
     if( temp1 == NULL ) {
         msg( "Cannot create temporary file\n" );
+        /* never return */
     }
     defs( temp1, &token );
     dump_header( tokout );
@@ -348,6 +355,7 @@ int main( int argc, char **argv )
     temp2 = tmpfile();
     if( temp2 == NULL ) {
         msg( "Cannot create temporary file\n" );
+        /* never return */
     }
     rules( temp2, &token );
     buildpro();
@@ -368,6 +376,7 @@ int main( int argc, char **argv )
     if( default_shiftflag ) {
         if( keyword_id_low == 0 ) {
             msg( "No %%keyword_id <low> <high> specified." );
+            /* never return */
         } else {
             MarkDefaultShifts();
         }
@@ -381,8 +390,10 @@ int main( int argc, char **argv )
     if( warnings ) {
         if( warnings == 1 ) {
             msg( "%s: 1 warning\n", srcname );
+            /* never return */
         } else {
             msg( "%s: %d warnings\n", srcname, warnings );
+            /* never return */
         }
     }
     parsestats();
