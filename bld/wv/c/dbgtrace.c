@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +132,7 @@ void            ResizeTraceData( void )
 
     size = MADDisasmDataSize();
     if( size > TraceState.ddsize ) {
-        new = TraceState.dd;
-        new = MemRealloc( new, size );
+        new = MemRealloc( TraceState.dd, size );
         if( new == NULL ) {
             ReportMADFailure( MS_NO_MEM );
         } else {
@@ -143,8 +142,7 @@ void            ResizeTraceData( void )
     }
     size = MADTraceSize();
     if( size > TraceState.tdsize ) {
-        new = TraceState.td;
-        new = MemRealloc( new, size );
+        new = MemRealloc( TraceState.td, size );
         if( new == NULL ) {
             ReportMADFailure( MS_NO_MEM );
         } else {

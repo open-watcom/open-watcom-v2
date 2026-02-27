@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,7 +94,7 @@ static void fmtErr( char *prefix, int errco, va_list args )
     sprintf( fmtbuf, "%s %d:  %n", prefix, errco, &len );
     vsprintf( fmtbuf + len, errMsgs[errco], args );
     len = strlen( fmtbuf );
-    if( errLen + len > errBufSize ) {
+    if( errBufSize < errLen + len ) {
         errBufSize += ERR_BUF_INCRMT;
         errBuf = MemRealloc( errBuf, sizeof( WatIDEErrInfo ) + errBufSize );
     }

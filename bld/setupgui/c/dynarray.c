@@ -52,7 +52,8 @@ void InitArray( void **array, array_idx esize, array_info *info )
 bool BumpArray( array_info *info )
 /********************************/
 {
-    if( ++info->num >= info->alloc ) {
+    ++info->num;
+    if( info->alloc <= info->num ) {
         info->alloc = info->num + info->increment;
         *(info->array) = MemRealloc( *(info->array), info->esize * info->alloc );
         if( *(info->array) == NULL ) {
@@ -65,7 +66,7 @@ bool BumpArray( array_info *info )
 bool BumpDownArray( array_info *info )
 /************************************/
 {
-    if( info->alloc - info->num >= info->increment ) {
+    if( info->alloc >= info->increment + info->num ) {
         info->alloc -= info->increment;
         *(info->array) = MemRealloc( *(info->array), info->esize * info->alloc );
         if( *(info->array) == NULL ) {

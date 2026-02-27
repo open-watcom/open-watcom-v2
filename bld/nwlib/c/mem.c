@@ -114,42 +114,54 @@ TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
 /********************************/
 {
-    char *ptr;
-
     if( str == NULL )
         return( NULL );
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
+    return( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
-    ptr = strdup( str );
+    return( strdup( str ) );
 #endif
-    if( ptr == NULL )
-        FatalError( ERR_NO_MEMORY );
-    return( ptr );
+}
+
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
+{
+    if( str == NULL )
+        return( NULL );
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
+#endif
 }
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
-    void  *mptr;
-
 #ifdef TRMEM
-    mptr = _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl ) );
 #else
-    mptr = realloc( ptr, size );
+    return( realloc( ptr, size ) );
 #endif
-    if( mptr == NULL && size != 0 )
-        FatalError( ERR_NO_MEMORY );
-    return( mptr );
+}
+
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *ptr, size_t size )
+/********************************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl ) ) );
+#else
+    return( check_nomem( realloc( ptr, size ) ) );
+#endif
 }
 
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
 {
-    if( ptr == NULL )
-        return;
 #ifdef TRMEM
     _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );
 #else

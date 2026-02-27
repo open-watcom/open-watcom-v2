@@ -401,16 +401,11 @@ void *MemAllocSafe( size_t size )
 TRMEMAPI( MemAllocSafeMsg )
 void *MemAllocSafeMsg( size_t size, char *error )
 {
-    void *ret;
-
 #ifdef TRMEM
-    ret = _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl ) ) );
 #else
-    ret = malloc( size );
+    return( check_nomem( malloc( size ) ) );
 #endif
-    if( ret == NULL )
-        Error( ERR_NONE, error );
-    return( ret );
 }
 
 /*

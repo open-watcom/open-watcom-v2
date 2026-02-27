@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -579,7 +579,7 @@ static long insertFT( HWND hwndDlg )
         }
     }
     // make memory space for new FT entry if necessary
-    if( dlgDataArray_count + 1 > dlgDataArray_size ) {
+    if( dlgDataArray_size < dlgDataArray_count + 1 ) {
         dlgDataArray_size++;
         dlgDataArray = _MemReallocArraySafe( dlgDataArray, dlg_data, dlgDataArray_size );
     }

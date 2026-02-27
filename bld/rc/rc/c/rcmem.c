@@ -143,17 +143,11 @@ TRMEMAPI( MemReallocSafe )
 void *MemReallocSafe( void *old_ptr, size_t newsize )
 /***************************************************/
 {
-    void    *ptr;
-
 #ifdef TRMEM
-    ptr = _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 5 ), TrHdl );
+    return( check_nomem( _trmem_realloc( old_ptr, newsize, _TRMEM_WHO( 5 ), TrHdl ) ) );
 #else
-    ptr = RCMemLayer1Realloc( old_ptr, newsize );
+    return( check_nomem( RCMemLayer1Realloc( old_ptr, newsize ) ) );
 #endif
-    if( newsize ) {
-        return( check_nomem( ptr ) );
-    }
-    return( ptr );
 }
 
 TRMEMAPI( MemStrdup )

@@ -201,12 +201,8 @@ void    free_dict( symdict_hdl *pdict )
  */
 static void resize_value( symsub *val, unsigned size )
 {
-    if( val->size < size ) {// need more room
-        if( val->size > 0 ) {
-            val->value = MemReallocSafe( val->value, size + 1 );
-        } else {
-            val->value = MemAllocSafe( size + 1 );
-        }
+    if( size > val->size ) {// need more room
+        val->value = MemReallocSafe( val->value, size + 1 );
         val->size = size;
     }
 }

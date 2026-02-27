@@ -159,7 +159,7 @@ static void dump_state( state_info *state, state_lines *ls, uint limit )
 /**********************************************************************/
 {
     if( state->address < limit ) {
-        if( ls->numlines >= ls->currlinesize ) {
+        if( ls->currlinesize <= ls->numlines ) {
             ls->currlinesize += LINES_ARRAY_SIZE_INC;
             ls->lines = MemRealloc( (void *)ls->lines, ls->currlinesize * ORL_STRUCT_SIZEOF( orl_linnum ) );
         }

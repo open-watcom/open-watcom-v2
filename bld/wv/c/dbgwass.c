@@ -912,8 +912,7 @@ static void     WNDCALLBACK AsmRefresh( a_window wnd )
         WndZapped( wnd );
         new_size = MADDisasmDataSize();
         if( new_size > asw->ddsize ) {
-            new = asw->cache_dd;
-            new = MemRealloc( new, new_size );
+            new = MemRealloc( asw->cache_dd, new_size );
             if( new == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
             } else {

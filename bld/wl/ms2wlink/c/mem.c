@@ -143,8 +143,6 @@ TRMEMAPI( MemFree )
 void MemFree( void *p )
 /*********************/
 {
-    if( p == NULL )
-        return;
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
 #else

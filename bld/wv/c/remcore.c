@@ -577,8 +577,7 @@ unsigned RemoteMachineData( address addr, dig_info_type info_type, dig_elen in_s
         return( 0 );
     len -= sizeof( ret );
     if( len > MData->len ) {
-        new = MData;
-        new = MemRealloc( new, len + sizeof( *MData ) );
+        new = MemRealloc( MData, len + sizeof( *MData ) );
         if( new == NULL )
             return( len );
         MData = new;

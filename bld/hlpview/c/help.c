@@ -982,11 +982,11 @@ static void putline( char *buffer, int line )
 static void save_line( int line, long offset )
 /* Assumption:  line <= lastHelpLine + 1 */
 {
-    if( line >= maxPos ) {
+    if( maxPos <= line ) {
         maxPos = line + 10;
         helpPos = MemRealloc( helpPos, maxPos * sizeof( *helpPos ) );
     }
-    if( line > lastHelpLine ) {
+    if( lastHelpLine < line ) {
         lastHelpLine = line;
     }
     if( offset == -1 ) {

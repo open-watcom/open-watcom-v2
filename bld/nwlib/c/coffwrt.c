@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,7 +112,7 @@ static void AddCoffString( coff_lib_file  *c_file, name_len *str )
      * add space for null terminating character to the string length
      */
     len = str->len + 1;
-    if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
+    if( c_file->max_string_table_size <= ( c_file->string_table_size + len ) ) {
         c_file->max_string_table_size *= 2;
         c_file->string_table = MemRealloc( c_file->string_table, c_file->max_string_table_size );
     }

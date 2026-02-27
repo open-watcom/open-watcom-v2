@@ -6,21 +6,19 @@
    %     information storage and retrieval systems - except with the     %
    %     written permission of WATCOM International Inc.                 %
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
-   Date		By		Reason
-   ----		--		------
-   920707	D.J.Gaudet	added audit trail
+
+   Date         By              Reason
+   ----         --              ------
+   920707       D.J.Gaudet      added audit trail
 */
 #ifndef MISC_H_INCLUDED
 #define MISC_H_INCLUDED
+
+#include "memfuncs.h"
 
 void Quit( const char *usage_msg[], const char *msg, ... );
 void Die( const char *str, ... );
 
 long GetClusterSize( unsigned drive );
-
-void *MemAlloc( unsigned size );
-void *MemRealloc( void *orig, unsigned size );
-void MemFree( void *ptr );
 
 #endif

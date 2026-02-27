@@ -130,11 +130,9 @@ char *MemStrdup( const char *str )
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    if( ptr != NULL ) {
 #ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
 #else
-        free( ptr );
+    free( ptr );
 #endif
-    }
 }

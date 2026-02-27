@@ -274,8 +274,7 @@ static unsigned ReadSection( file_handle fh, unsigned off )
     CONV_LE_16( len );
     last = off + len;
     if( last > ParseTableSize ) {
-        new = ParseTable;
-        new = MemRealloc( new, last );
+        new = MemRealloc( ParseTable, last );
         if( new == NULL )
             return( 0 );
         ParseTable = new;

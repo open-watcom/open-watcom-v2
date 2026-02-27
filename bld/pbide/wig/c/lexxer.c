@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -141,7 +141,7 @@ int yylex( void )
 
         hash = HashByte( hash, tolower( c ) );
         yyText[ ccnt++ ] = tolower( c );  // power builder is case insensitive
-        if( ccnt > ( yyTextSize - 16 ) ) { // 16 byte safety zone
+        if( yyTextSize < ccnt + 16 ) {    // 16 byte safety zone
             yyTextSize += LINE_INC;
             yyText = MemRealloc( yyText, yyTextSize );
         }

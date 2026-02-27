@@ -195,17 +195,8 @@ void  MemFini( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void  *MemAlloc( size_t size )
-/****************************/
+static void *check_nomem( void *ptr )
 {
-    void        *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
     if( ptr == NULL ) {
         PrintMsg( WclMsgs[OUT_OF_MEMORY] );
         exit( 1 );
@@ -213,22 +204,26 @@ void  *MemAlloc( size_t size )
     return( ptr );
 }
 
+TRMEMAPI( MemAlloc )
+void  *MemAlloc( size_t size )
+/****************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
 /********************************/
 {
-    char        *ptr;
-
 #ifdef TRMEM
-    ptr = _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
-    ptr = strdup( str );
+    return( check_nomem( strdup( str ) ) );
 #endif
-    if( ptr == NULL ) {
-        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
-        exit( 1 );
-    }
-    return( ptr );
 }
 
 #if 0
@@ -239,14 +234,10 @@ char *MemStrLenDup( const char *str, size_t len )
     char        *ptr;
 
 #ifdef TRMEM
-    ptr = _trmem_alloc( len + 1, _TRMEM_WHO( 3 ), TrHdl );
+    ptr = check_nomem( _trmem_alloc( len + 1, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
-    ptr = malloc( len + 1 );
+    ptr = check_nomem( malloc( len + 1 ) );
 #endif
-    if( ptr == NULL ) {
-        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
-        exit( 1 );
-    }
     memcpy( ptr, str, len );
     ptr[len] = '\0';
     return( ptr );
@@ -257,18 +248,11 @@ TRMEMAPI( MemRealloc )
 void  *MemRealloc( void *p, size_t size )
 /***************************************/
 {
-    void        *ptr;
-
 #ifdef TRMEM
-    ptr = _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl );
+    return( check_nomem( _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl ) ) );
 #else
-    ptr = realloc( p, size );
+    return( check_nomem( realloc( p, size ) ) );
 #endif
-    if( ptr == NULL ) {
-        PrintMsg( WclMsgs[OUT_OF_MEMORY] );
-        exit( 1 );
-    }
-    return( ptr );
 }
 
 TRMEMAPI( MemFree )
@@ -276,9 +260,9 @@ void  MemFree( void *ptr )
 /************************/
 {
 #ifdef TRMEM
-        _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );;
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );;
 #else
-        free( ptr );
+    free( ptr );
 #endif
 }
 

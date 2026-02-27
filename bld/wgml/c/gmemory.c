@@ -210,14 +210,13 @@ char *MemToStringSafe( const char *str, size_t size )
 /***************************************************************************/
 
 TRMEMAPI( MemFree )
-void MemFree( void * p )
+void MemFree( void *p )
 {
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 5 ), TrHdl );
 #else
     free( p );
 #endif
-    p = NULL;
 }
 
 /* These functions were added for use in debugging */
@@ -229,9 +228,9 @@ void MemFree( void * p )
 int mem_validate( void )
 {
 #ifdef TRMEM
-    return(_trmem_validate_all( TrHdl ));
+    return( _trmem_validate_all( TrHdl ) );
 #endif
-    return 1;   // always succeed if trmem not in use
+    return( 1 );   // always succeed if trmem not in use
 }
 
 

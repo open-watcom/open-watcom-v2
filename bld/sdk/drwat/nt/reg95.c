@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -250,7 +251,7 @@ char **GetModuleList( DWORD pid, DWORD *cnt ) {
         noerror = Module32First( hdl, &modinfo );
     }
     for( *cnt = 0; noerror && !memerr; *cnt += 1 ) {
-        if( *cnt == allocsize ) {
+        if( allocsize == *cnt ) {
             allocsize += RE_ALLOCSIZE;
             ret = MemRealloc( ret, allocsize * sizeof( char * ) );
             if( ret == NULL ) {

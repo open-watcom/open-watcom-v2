@@ -36,13 +36,10 @@
 
 #include <stddef.h>
 #include "watcom.h"
+#include "memfuncs.h"
 
 extern void MemInit( void );
 extern void MemFini( void );
-
-extern void *MemAlloc( size_t size );
-extern void *MemRealloc( void *ptr, size_t size );
-extern void MemFree( void *ptr );
 
 #endif
 

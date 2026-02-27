@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,9 +75,9 @@ STATIC uint_8 *getTrData( type_rec *tr, uint_16 len ) {
     uint_8          *p;
 
     new_len = tr->len + len;
-    if( new_len > tr->alloc ) {
+    if( tr->alloc < new_len ) {
         tr->alloc = new_len + TYPE_REC_INC;
-        tr->data = MemRealloc( tr->data, new_len + TYPE_REC_INC );
+        tr->data = MemRealloc( tr->data, tr->alloc );
     }
     p = tr->data + tr->len;
     tr->len = new_len;

@@ -34,10 +34,8 @@
 #ifndef MEMORY_MANAGER_INCLUDED
 #define MEMORY_MANAGER_INCLUDED
 
-extern char     *MemStrdup(const char *);
-extern void     *MemMalloc(int);
-extern void     *MemRealloc(void*,int);
-extern void     MemFree(void *);
+#include "memfuncs.h"
+
 extern void     InitMem( void );
 extern void     FiniMem( void );
 

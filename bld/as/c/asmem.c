@@ -93,10 +93,13 @@ void AsMemFini( void )
 #endif
 }
 
-static void outOfMemory( void )
+static void *check_nomem( void *ptr )
 {
-    printf( "Out of memory\n" );
-    exit( 1 );
+    if( ptr == NULL ) {
+        printf( "Out of memory\n" );
+        exit( 1 );
+    }
+    return( ptr );
 }
 
 TRMEMAPI( MemAlloc )
@@ -146,17 +149,11 @@ void *MemRealloc( void *ptr, size_t size )
 TRMEMAPI( PPMemAlloc )
 void *PPMemAlloc( size_t size )
 {
-    void        *p;
-
 #ifdef TRMEM
-    p = _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl ) ) );
 #else
-    p = malloc( size );
+    return( check_nomem( malloc( size ) ) );
 #endif
-    if( p == NULL ) {
-        outOfMemory();
-    }
-    return( p );
 }
 
 TRMEMAPI( PPMemFree )

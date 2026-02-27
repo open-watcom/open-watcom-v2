@@ -2354,7 +2354,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
             p = readbuf;
             SKIP_WS( p );
             bytes_read = len + bytes_read - ( p - readbuf );
-            if( bytes_read > bufsize ) {
+            if( bufsize < bytes_read ) {
                 bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
                 buffer = MemRealloc( buffer, bufsize + 1 );
             }

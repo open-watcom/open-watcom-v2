@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -402,7 +402,7 @@ STATIC bool readSampleFile( void )
     main_exe = false;
     while( prefix.kind != SAMP_LAST ) {
         size = prefix.length;
-        if( buff_len < size ) {
+        if( size > buff_len ) {
             buff = MemRealloc( buff, size );
             buff_len = size;
         }

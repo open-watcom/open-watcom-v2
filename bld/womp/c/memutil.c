@@ -98,36 +98,36 @@ void MemFini( void ) {
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size ) {
-/***************************/
-    void *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
+static void *check_nomem( void *ptr )
+{
     if( ptr == NULL ) {
         Fatal( MSG_OUT_OF_MEMORY );
     }
     return( ptr );
 }
 
+TRMEMAPI( MemAlloc )
+void *MemAlloc( size_t size )
+/***************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
 TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t size ) {
+void *MemRealloc( void *ptr, size_t size )
 /****************************************/
+{
     void *new;
 
 #ifdef TRMEM
-    new = _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), TrHdl );
+    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
-    new = realloc( ptr, size );
+    return( check_nomem( realloc( ptr, size ) ) );
 #endif
-    if( new == NULL && size != 0 ) {
-        Fatal( MSG_OUT_OF_MEMORY );
-    }
-    return( new );
 }
 
 TRMEMAPI( MemFree )

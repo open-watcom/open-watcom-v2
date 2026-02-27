@@ -77,7 +77,7 @@ int wig_parse( void )
 static void addToTok( char ch )
 /*****************************/
 {
-    if( yyTextLen == yyTextSize ) {
+    if( yyTextSize == yyTextLen ) {
         yyTextSize += BUF_SIZE_INCREMENT;
         yyText = MemRealloc( yyText, yyTextSize );
     }
@@ -106,7 +106,7 @@ static int nextChar( void )
     if( ( c == EOF ) && errno ) {
         Error( FILE_READ_ERR, yyFileName );
     }
-    if( yyLineLen == yyLineSize ) {
+    if( yyLineSize == yyLineLen ) {
         yyLineSize += BUF_SIZE_INCREMENT;
         yyLine = MemRealloc( yyLine, yyLineSize );
     }

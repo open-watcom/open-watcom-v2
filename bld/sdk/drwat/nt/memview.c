@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +231,7 @@ static void addMemListItem( ProcNode *pnode, MemListData *info,
     char                        *objname;
     MEMORY_BASIC_INFORMATION    topass;
 
-    if( info->used >= info->allocated ) {
+    if( info->allocated <= info->used ) {
         info->allocated += MEM_ALLOC_INCR;
         info->data = MemRealloc( info->data, info->allocated * sizeof( void * ) );
     }
