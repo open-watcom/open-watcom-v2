@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +42,8 @@ typedef enum {
 } dbg_err_flags;
 
 /* this function never return to the caller */
-NO_RETURN( extern void Error( dbg_err_flags, char *, ... ) );
+NO_RETURN( extern void Error( dbg_err_flags, const char *, ... ) );
 /* this function return to the caller */
-extern void ErrorRet( dbg_err_flags, char *, ... );
+extern void ErrorRet( dbg_err_flags, const char *, ... );
 extern void PrevError( const char *msg );
 extern void StartupErr( const char *err );

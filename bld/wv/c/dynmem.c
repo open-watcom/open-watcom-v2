@@ -399,13 +399,19 @@ void *MemAllocSafe( size_t size )
 }
 
 TRMEMAPI( MemAllocSafeMsg )
-void *MemAllocSafeMsg( size_t size, char *error )
+void *MemAllocSafeMsg( size_t size, const char *error )
 {
+    void    *ptr;
+
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl ) ) );
+    ptr = _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl );
 #else
-    return( check_nomem( malloc( size ) ) );
+    ptr = malloc( size );
 #endif
+    if( ptr == NULL ) {
+        Error( ERR_NONE, error );
+    }
+    return( ptr );
 }
 
 /*

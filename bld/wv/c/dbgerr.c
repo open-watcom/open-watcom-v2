@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@ extern void             CmdError( void );
  * error - output error message
  */
 
-static int error( dbg_err_flags flg, char *fmt, va_list args )
+static int error( dbg_err_flags flg, const char *fmt, va_list args )
 {
     char            buff[TXT_LEN];
     char            *ptr;
@@ -152,7 +152,7 @@ static int error( dbg_err_flags flg, char *fmt, va_list args )
  * Error - output error message and suicide
  */
 
-void Error( dbg_err_flags flg, char *fmt, ... )
+void Error( dbg_err_flags flg, const char *fmt, ... )
 /* this function never return to the caller */
 {
     va_list args;
@@ -168,7 +168,7 @@ void Error( dbg_err_flags flg, char *fmt, ... )
  * ErrorRet - output error message
  */
 
-void ErrorRet( dbg_err_flags flg, char *fmt, ... )
+void ErrorRet( dbg_err_flags flg, const char *fmt, ... )
 /* this function return to the caller */
 {
     va_list args;

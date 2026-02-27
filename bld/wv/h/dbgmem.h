@@ -36,6 +36,6 @@
 
 #include "memfuncs.h"
 
-extern void     *MemAllocSafeMsg( size_t, char * );
+extern void     *MemAllocSafeMsg( size_t, const char * );
 
 #endif
