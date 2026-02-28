@@ -37,7 +37,7 @@
 #include "dbgdata.h"
 #include "dbgio.h"
 #include "dbgname.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgcmdln.h"
 #include "dbglkup.h"
 #include "dbgscrn.h"

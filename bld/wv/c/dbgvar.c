@@ -39,7 +39,7 @@
 #include "dbgitem.h"
 #include "dlgvarx.h"
 #include "dbgvar.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "wspawn.h"
 #include "dui.h"
 #include "strutil.h"

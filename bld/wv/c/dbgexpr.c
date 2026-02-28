@@ -36,7 +36,7 @@
 #include "liteng.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "ldsupp.h"
 #include "madinter.h"
 #include "i64.h"
@@ -92,9 +92,13 @@ void CreateLC( stack_entry *entry )
     location_context    *new;
 
     if( entry->lc == NULL ) {
-        new = MemAllocSafeMsg( sizeof( *new ), LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-        InitLC( new, false );
-        entry->lc = new;
+        new = MemAlloc( sizeof( *new ) );
+        if( new == NULL ) {
+            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+        } else {
+            InitLC( new, false );
+            entry->lc = new;
+        }
     }
 }
 
@@ -135,15 +139,19 @@ void CreateEntry( void )
     unsigned    size;
 
     size = sizeof( stack_entry ) + type_SIZE + sym_SIZE;
-    new = MemAllocSafeMsg( size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    memset( new, 0, size );
-    new->up = ExprSP;
-    new->dn = ExprSP->dn;
-    if( new->dn != NULL )
-        new->dn->up = new;
-    if( new->up != NULL )
-        new->up->dn = new;
-    ExprSP = new;
+    new = MemAlloc( size );
+    if( new == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    } else {
+        memset( new, 0, size );
+        new->up = ExprSP;
+        new->dn = ExprSP->dn;
+        if( new->dn != NULL )
+            new->dn->up = new;
+        if( new->up != NULL )
+            new->up->dn = new;
+        ExprSP = new;
+    }
 }
 
 bool AllocatedString( stack_entry *stk )
@@ -296,8 +304,12 @@ char *DupStringVal( stack_entry *stk )
         return( NULL );
     if( stk->ti.size >= UINT_MAX )
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    dest = MemAllocSafeMsg( stk->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    memcpy( dest, stk->v.string.loc.e[0].u.p, stk->ti.size );
+    dest = MemAlloc( stk->ti.size );
+    if( dest == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    } else {
+        memcpy( dest, stk->v.string.loc.e[0].u.p, stk->ti.size );
+    }
     return( dest );
 }
 

@@ -32,7 +32,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgovl.h"
 #include "removl.h"
 

@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 #include "liteng.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgstk.h"
 #include "wspawn.h"
 #include "madcli.h"

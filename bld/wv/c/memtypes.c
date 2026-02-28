@@ -35,7 +35,7 @@
 #include "dbgdata.h"
 #include "mad.h"
 #include "memtypes.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgitem.h"
 #include "strutil.h"
 #include "dbgscan.h"

@@ -44,7 +44,7 @@
 #else
     #include "rfxdata.h"
 #endif
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgio.h"
 #include "digcli.h"
 #include "digld.h"

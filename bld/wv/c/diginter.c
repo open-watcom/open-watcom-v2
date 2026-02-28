@@ -33,7 +33,7 @@
 
 #include <string.h>
 #include "dbgdefn.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgmemut.h"
 #include "dbgio.h"
 #include "digcli.h"

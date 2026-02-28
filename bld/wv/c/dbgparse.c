@@ -35,7 +35,7 @@
 #include "dbgstk.h"
 #include "dbgerr.h"
 #include "dbgio.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "i64.h"
 #include "dbgscan.h"
 #include "dbgexpr3.h"

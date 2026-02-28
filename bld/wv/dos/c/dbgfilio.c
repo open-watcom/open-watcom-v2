@@ -38,7 +38,7 @@
 #else
 #include "rfxdata.h"
 #endif
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "tinyio.h"
 #include "dbgio.h"
 #include "doserr.h"

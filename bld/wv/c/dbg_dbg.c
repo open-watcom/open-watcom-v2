@@ -32,7 +32,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "madinter.h"
 #include "dui.h"
 #include "dbgscan.h"

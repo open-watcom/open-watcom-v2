@@ -35,7 +35,7 @@
 #include "liteng.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgitem.h"
 #include "dbgtback.h"
 #include "dbgri.h"
@@ -669,14 +669,18 @@ void DoStringConcat( void )
     ExprSP->ti.kind = TK_STRING;
     ExprSP->ti.modifier = TM_NONE;
     ExprSP->ti.size = left->ti.size + rite->ti.size;
-    ExprSP->v.string.allocated = MemAllocSafeMsg( ExprSP->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-    LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
-    LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->ti.size, false );
-    ExprSP->v.string.loc.e[0].u.p = left->ti.size +
-                (byte *)ExprSP->v.string.loc.e[0].u.p;
-    LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->ti.size, false );
-    ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
-    CombineEntries( ExprSP, left, rite );
+    ExprSP->v.string.allocated = MemAlloc( ExprSP->ti.size );
+    if( ExprSP->v.string.allocated == NULL ) {
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+    } else {
+        LocationCreate( &ExprSP->v.string.loc, LT_INTERNAL, ExprSP->v.string.allocated );
+        LocationAssign( &ExprSP->v.string.loc, &left->v.string.loc, left->ti.size, false );
+        ExprSP->v.string.loc.e[0].u.p = left->ti.size +
+                    (byte *)ExprSP->v.string.loc.e[0].u.p;
+        LocationAssign( &ExprSP->v.string.loc, &rite->v.string.loc, rite->ti.size, false );
+        ExprSP->v.string.loc.e[0].u.p = ExprSP->v.string.allocated;
+        CombineEntries( ExprSP, left, rite );
+    }
 }
 
 

@@ -50,7 +50,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgio.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "stdui.h"
 #include "uiextrn.h"
 #include "dbgscrn.h"

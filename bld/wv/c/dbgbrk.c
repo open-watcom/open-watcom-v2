@@ -35,7 +35,7 @@
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "liteng.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "namelist.h"
 #include "dbgstk.h"
 #include "dbgrep.h"

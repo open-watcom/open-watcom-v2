@@ -36,7 +36,7 @@
 #include "dbgwind.h"
 #include "dbgerr.h"
 #include "madinter.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "wndregx.h"
 #include "dbgio.h"
 #include "strutil.h"

@@ -33,7 +33,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dui.h"
 #include "banner.h"
 #include "litdui.h"

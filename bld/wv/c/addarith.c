@@ -33,7 +33,7 @@
 
 #include "dbgdefn.h"
 #include "dbgdata.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "mad.h"
 #include "dbgovl.h"
 #include "addarith.h"

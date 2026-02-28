@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgtback.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgchain.h"
 #include "mad.h"
 #include "strutil.h"

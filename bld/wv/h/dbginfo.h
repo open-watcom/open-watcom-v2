@@ -34,7 +34,7 @@
 #ifndef __DBGINFO_INCLUDED
 #define __DBGINFO_INCLUDED
 
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgmemut.h"
 #include "dipwv.h"
 

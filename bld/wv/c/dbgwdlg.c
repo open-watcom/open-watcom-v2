@@ -34,7 +34,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbgwind.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbglog.h"
 #include "dbgwdlg.h"
 #include "wndsys.h"

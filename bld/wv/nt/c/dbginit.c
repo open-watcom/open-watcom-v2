@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@
 #if !defined( __NOUI__ ) && !defined( GUI_IS_GUI )
 #include "uiextrn.h"
 #endif
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "autoenv.h"
 #include "liteng.h"
 #include "strutil.h"

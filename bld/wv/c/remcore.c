@@ -34,7 +34,7 @@
 #include "dbgdata.h"
 #include "dbgerr.h"
 #include "dbgio.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dui.h"
 #include "trapaccs.h"
 #include "madinter.h"

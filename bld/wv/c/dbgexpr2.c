@@ -37,7 +37,7 @@
 #include "liteng.h"
 #include "dbgstk.h"
 #include "dbgerr.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "dbgitem.h"
 #include "i64.h"
 #include "numscan.h"
@@ -212,10 +212,14 @@ void SymResolve( stack_entry *entry )
             GetTrueEntry( entry );
         } else {
             if( entry->ti.kind == TK_STRING ) {
-                entry->v.string.allocated = MemAllocSafeMsg( entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-                LocationCreate( &entry->v.string.loc, LT_INTERNAL, entry->v.string.allocated );
-                if( DIPSymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
-                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+                entry->v.string.allocated = MemAlloc( entry->ti.size );
+                if( entry->v.string.allocated == NULL ) {
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                } else {
+                    LocationCreate( &entry->v.string.loc, LT_INTERNAL, entry->v.string.allocated );
+                    if( DIPSymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+                    }
                 }
             } else {
                 if( DIPSymValue( sh, entry->lc, &tmp ) != DS_OK ) {
@@ -428,13 +432,17 @@ void LRValue( stack_entry *entry )
                 }
                 break;
             case TK_STRING:
-                entry->v.string.allocated = MemAllocSafeMsg( entry->ti.size, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
-                LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
-                if( LocationAssign( &ll, &entry->v.loc, entry->ti.size, false ) != DS_OK ) {
-                    MemFree( entry->v.string.allocated );
-                    Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+                entry->v.string.allocated = MemAlloc( entry->ti.size );
+                if( entry->v.string.allocated == NULL ) {
+                    Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
+                } else {
+                    LocationCreate( &ll, LT_INTERNAL, entry->v.string.allocated );
+                    if( LocationAssign( &ll, &entry->v.loc, entry->ti.size, false ) != DS_OK ) {
+                        MemFree( entry->v.string.allocated );
+                        Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
+                    }
+                    entry->v.string.loc = ll;
                 }
-                entry->v.string.loc = ll;
                 break;
             case TK_BOOL:
             case TK_CHAR:

@@ -40,7 +40,7 @@
     #include <windows.h>
 #endif
 #include "dbgdefn.h"
-#include "dbgmem.h"
+#include "memfuncs.h"
 #include "wreslang.h"
 #include "wv.rh"
 #include "dbglit.h"

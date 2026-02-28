@@ -398,22 +398,6 @@ void *MemAllocSafe( size_t size )
 #endif
 }
 
-TRMEMAPI( MemAllocSafeMsg )
-void *MemAllocSafeMsg( size_t size, const char *error )
-{
-    void    *ptr;
-
-#ifdef TRMEM
-    ptr = _trmem_alloc( size, _TRMEM_WHO( 7 ), TrHdl );
-#else
-    ptr = malloc( size );
-#endif
-    if( ptr == NULL ) {
-        Error( ERR_NONE, error );
-    }
-    return( ptr );
-}
-
 /*
  * Strdup functions
  */
