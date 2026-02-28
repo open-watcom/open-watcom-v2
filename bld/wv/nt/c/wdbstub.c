@@ -96,7 +96,7 @@ Done:
 #include "dbgtrace.h"
 #include "dbgmisc.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbginsty.h"
 #include "dbgdot.h"
 #include "ntdbgpb.h"

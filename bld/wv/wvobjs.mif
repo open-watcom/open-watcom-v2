@@ -71,8 +71,8 @@ eng_objs = &
     $(_subdir_)remcapb.obj &
     $(_subdir_)ldsupp.obj &
     $(_subdir_)doserr.obj &
-    $(_subdir_)diginter.obj &
-    $(_subdir_)dipinter.obj &
+    $(_subdir_)digcli.obj &
+    $(_subdir_)dipcli.obj &
     $(_subdir_)madinter.obj &
     $(_subdir_)dbglit.obj &
     $(_subdir_)dbginsty.obj &

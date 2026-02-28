@@ -44,7 +44,7 @@
 #include "dbgprog.h"
 #include "remcore.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "enterdb.h"
 #include "dbglkup.h"
 #include "dbgsetfg.h"

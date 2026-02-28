@@ -50,7 +50,7 @@
 #include "dbgovl.h"
 #include "dbgprog.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgset.h"
 #include "dbgdot.h"
 

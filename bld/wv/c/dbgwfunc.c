@@ -42,7 +42,7 @@
 #include "dbgtrace.h"
 #include "dbgmisc.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgdot.h"
 #include "dbgwfil.h"
 #include "dbgwfunc.h"

@@ -47,7 +47,7 @@
 #include "dbgtrace.h"
 #include "modlist.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbginsty.h"
 #include "dbglkup.h"
 #include "dbgwass.h"

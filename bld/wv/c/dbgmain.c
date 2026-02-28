@@ -61,7 +61,7 @@
 #include "dbgmodfy.h"
 #include "dbgmisc.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgreg.h"
 #include "dbgevent.h"
 #include "dbgset.h"

@@ -41,7 +41,7 @@
 #include "dbgbrk.h"
 #include "dbgprog.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 
 #include "clibext.h"
 

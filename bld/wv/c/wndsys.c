@@ -51,7 +51,7 @@
 #include "wndsys.h"
 #include "remcore.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgwass.h"
 #include "dbgwdisp.h"
 #include "dbgwfil.h"

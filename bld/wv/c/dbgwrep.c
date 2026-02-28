@@ -45,7 +45,7 @@
 #include "wndsys.h"
 #include "dbgprog.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgreg.h"
 #include "dbgwglob.h"
 #include "dbgwinsp.h"

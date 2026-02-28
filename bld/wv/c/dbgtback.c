@@ -41,7 +41,7 @@
 #include "dbgexpr.h"
 #include "dbgovl.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 
 
 static unsigned                 OvlLevel;

@@ -43,7 +43,7 @@
 #include "dbgexpr.h"
 #include "dbgbrk.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgreg.h"
 #include "dbgupdt.h"
 #include "namelist.h"

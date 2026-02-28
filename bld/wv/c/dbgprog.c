@@ -58,7 +58,7 @@
 #include "remcore.h"
 #include "remfile.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"

@@ -59,7 +59,7 @@
 #include "dbgmisc.h"
 #include "removl.h"
 #include "dipimp.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "dbgreg.h"
 #include "addarith.h"
 #include "dbgevent.h"

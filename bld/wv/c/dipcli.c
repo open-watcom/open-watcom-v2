@@ -48,7 +48,7 @@
 #include "dbgovl.h"
 #include "dbg_dbg.h"
 #include "dbgprog.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "addarith.h"
 #include "dbgerr.h"
 
@@ -85,7 +85,7 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
 
     new_sl = MemAlloc( sizeof( sym_list ) - sizeof( byte ) + sym_SIZE );
     if( new_sl == NULL ) {
-        Error( ERR_NOERR, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
     }
     DIPSymInit( SL2SH( new_sl ), IIH2IH( iih ) );
     new_sl->next = *sl_head;

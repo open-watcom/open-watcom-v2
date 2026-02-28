@@ -59,7 +59,7 @@
 #include "dlgnewws.h"
 #include "dbgwvar.h"
 #include "dbgchopt.h"
-#include "dipinter.h"
+#include "wvdipcli.h"
 #include "menudef.h"
 #include "dbgicon.h"
 #include "liteng.h"
