@@ -674,7 +674,7 @@ void RestoreMainScreen( char *name )
 
 void WndSetWndMainSize( wnd_create_struct *info )
 {
-#ifdef __NT__
+  #ifdef __NT__
     RECT        workarea;
     gui_rect    screen;
     int         sx;
@@ -687,15 +687,15 @@ void WndSetWndMainSize( wnd_create_struct *info )
     sy = screen.height / GetSystemMetrics( SM_CYSCREEN );
     w = sx * (workarea.right - workarea.left);
     h = sy * (workarea.bottom - workarea.top);
-#endif
+  #endif
     info->rect = WndMainRect;
-#ifdef __NT__
+  #ifdef __NT__
     if( info->rect.width == 0 || info->rect.width > w ) {
         info->rect.width = w;
     }
     if( info->rect.height == 0 || info->rect.height > h ) {
         info->rect.height = h;
     }
-#endif
+  #endif
 }
 #endif

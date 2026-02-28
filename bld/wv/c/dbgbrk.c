@@ -1278,10 +1278,9 @@ static brkp *TogglePoint( memory_expr def_seg )
     if( IS_NIL_ADDR( addr ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_POINT ) );
         return( NULL );
-    } else {
-        ToggleBreak( addr );
-        return( bp );
     }
+    ToggleBreak( addr );
+    return( bp );
 }
 
 

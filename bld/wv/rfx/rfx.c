@@ -306,6 +306,14 @@ void GrabHandlers( void )
 {
 }
 
+static void MemInit( void )
+{
+}
+
+static void MemFini( void )
+{
+}
+
 void *MemAlloc( size_t size )
 {
     return( malloc( size ) );
@@ -1947,31 +1955,39 @@ static void Interactive( void )
 
 int main( int argc, char **argv )
 {
+    int     rc;
+
+    rc = 0;
     InitDbgSwitches();
+    MemInit();
     TxtBuff = MemAlloc( 512 );
     SysFileInit();
     if( argc < 2 || argv[1][0] == '?' ) {
         Usage();
-        return( 1 );
-    }
-    PathInit();
-    InitTrap( argv[1] );
-    if( !InitFileSupp() || !InitRFXSupp() ) {
-        FiniTrap();
-        StartupErr( "no remote file system support" );
-    }
-    InitInt();
-    CopySpecs = NULL;
-    MaxOnLine = 0;
-    DefaultLocation = LOC_LOCAL;
-    if( argc == 2 ) {
-        Interactive();
+        rc = 1;
     } else {
-        ErrorStatus = 0;
-        ProcessArgv( argc - 2, argv + 2, NULL );
-        CheckError();
+        PathInit();
+        InitTrap( argv[1] );
+        if( !InitFileSupp() || !InitRFXSupp() ) {
+            Error( "no remote file system support" );
+            rc = 2;
+        } else {
+            InitInt();
+            CopySpecs = NULL;
+            MaxOnLine = 0;
+            DefaultLocation = LOC_LOCAL;
+            if( argc == 2 ) {
+                Interactive();
+            } else {
+                ErrorStatus = 0;
+                ProcessArgv( argc - 2, argv + 2, NULL );
+                CheckError();
+            }
+            FiniInt();
+        }
+        FiniTrap();
+        PathFini();
     }
-    FiniTrap();
-    FiniInt();
-    return( 0 );
+    MemFini();
+    return( rc );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,13 +95,13 @@ void GUImain( void )
     watcom_setup_env();
 
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( cmd_len );
+    cmd_line = MemAlloc( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     CmdData = cmd_line;
     //TODO: replace with exception handler
 //    DosSetSigHandler( BrkHandler, &prev_hdl, &prev_act, 2, SIG_CTRLBREAK );
     DebugMain();
-    free( cmd_line );
+    MemFree( cmd_line );
 }
 
 #endif

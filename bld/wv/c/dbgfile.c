@@ -654,12 +654,14 @@ void SysFileInit( void )
     SYSHANDLE( STD_ERR ) = LocalFileHandleSys( STD_ERR );
 }
 
-#if !defined( BUILD_RFX )
-
 void PathFini( void )
 {
+#if !defined( BUILD_RFX )
     FreeRing( LclPath );
+#endif
 }
+
+#if !defined( BUILD_RFX )
 
 static void parsePathList( char_ring **owner, char *src )
 /********************************************************
