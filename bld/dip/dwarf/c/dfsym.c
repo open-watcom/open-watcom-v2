@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1252,12 +1252,16 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
              */
         } else {
             ish = DCSymCreate( df->com.iih, df->com.d );
-            ish->sclass = SYM_VAR;
-            ish->imh = df->com.imh;
-            ish->sym = var;
-            ish->state = DF_NOT;
-            df->sr = SR_EXACT;
-            df->com.cont = false;
+            if( ish == NULL ) {
+                df->sr = SR_FAIL;
+            } else {
+                ish->sclass = SYM_VAR;
+                ish->imh = df->com.imh;
+                ish->sym = var;
+                ish->state = DF_NOT;
+                df->sr = SR_EXACT;
+                df->com.cont = false;
+            }
         }
     }
     return( true );
@@ -1568,10 +1572,13 @@ static bool AHashItem( void *_find, drmem_hdl dr_sym, const char *name )
     if( find->scomp( name, find->name ) == 0 ) {
         find->sym = dr_sym;
         ish = DCSymCreate( find->iih, find->d );
-        ish->imh = DwarfMod( find->iih, dr_sym );
-        ish->sclass = SYM_VAR;
-        ish->sym = dr_sym;
-        ish->state = DF_NOT;
+        if( ish == NULL ) {
+        } else {
+            ish->imh = DwarfMod( find->iih, dr_sym );
+            ish->sclass = SYM_VAR;
+            ish->sym = dr_sym;
+            ish->state = DF_NOT;
+        }
     }
     return( true );
 }
@@ -1699,7 +1706,11 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
     /* unused parameters */ (void)lc;
 
     if( *(unsigned_8 *)li->name.start == SH_ESCAPE ) {
-        CollectSymHdl( li->name.start, DCSymCreate( iih, d ) );
+        ish = DCSymCreate( iih, d );
+        if( ish == NULL ) {
+            return( SR_FAIL );
+        }
+        CollectSymHdl( li->name.start, ish );
         return( SR_EXACT );
     }
     if( li->type == ST_OPERATOR ) {

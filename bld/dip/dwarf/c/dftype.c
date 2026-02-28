@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1060,26 +1060,30 @@ static bool AMemLookup( drmem_hdl var, int index, void *_d )
     len = strlen( name );
     if( len == d->li->name.len && d->scompn( name, d->li->name.start, len ) == 0 ) {
         ish = DCSymCreate( d->com.iih, d->com.d );
-        SetSymHandle( (type_wlk *)d, ish );
-        ish->sym = var;
-        switch( index ) {
-        case 0:
-            ish->sclass = SYM_MEM;
-            break;
-        case 2:
-            ish->sclass = SYM_MEMVAR;     // static member
-            break;
-        case 3:
-            if( DRGetVirtuality( var ) == DR_VIRTUALITY_VIRTUAL ) {
-                ish->sclass = SYM_VIRTF;   // virtual func
-            }else if( !DRIsSymDefined( var ) ) {
-                ish->sclass = SYM_MEMF;    // memfunc decl
-            }else{
-                ish->sclass = SYM_MEMVAR;   // inlined defn treat like a var
+        if( ish == NULL ) {
+            d->sr = SR_FAIL;
+        } else {
+            SetSymHandle( (type_wlk *)d, ish );
+            ish->sym = var;
+            switch( index ) {
+            case 0:
+                ish->sclass = SYM_MEM;
+                break;
+            case 2:
+                ish->sclass = SYM_MEMVAR;     // static member
+                break;
+            case 3:
+                if( DRGetVirtuality( var ) == DR_VIRTUALITY_VIRTUAL ) {
+                    ish->sclass = SYM_VIRTF;   // virtual func
+                } else if( !DRIsSymDefined( var ) ) {
+                    ish->sclass = SYM_MEMF;    // memfunc decl
+                } else {
+                    ish->sclass = SYM_MEMVAR;   // inlined defn treat like a var
+                }
+                break;
             }
-            break;
+            d->sr = SR_EXACT;
         }
-        d->sr = SR_EXACT;
     }
     DCFree( name );
     return( true );
@@ -1151,9 +1155,13 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     len = strlen( name );
     if( len == d->li->name.len && d->scompn( name, d->li->name.start, len ) == 0 ) {
         ish = DCSymCreate( d->com.iih, d->com.d );
-        SetSymHandle( (type_wlk *)d, ish );
-        ish->sym = var;
-        d->sr = SR_EXACT;
+        if( ish == NULL ) {
+            d->sr = SR_FAIL;
+        } else {
+            SetSymHandle( (type_wlk *)d, ish );
+            ish->sym = var;
+            d->sr = SR_EXACT;
+        }
     }
     DCFree( name );
     return( true );

@@ -234,22 +234,26 @@ static search_result LkupGblName( imp_image_handle *iih, section_info *inf, imp_
                 }
             }
             ish = DCSymCreate( iih, d );
-            ish->imh = GBL_MOD( gbl );
-            MK_ADDR( addr, gbl->addr, inf->sect_id );
-            /*
-             * need to see if there's a local symbol at the right address and use that instead
-             */
-            if( curr_imh == ish->imh ) {
-                /*
-                 * We've already checked the local symbols. It ain't there.
-                 */
-                GblCreate( iih, ish, gbl );
-            } else if( LookupLclAddr( iih, addr, ish ) == SR_EXACT ) {
-                SetGblLink( ish, gbl );
+            if( ish == NULL ) {
+                return( SR_FAIL );
             } else {
-                GblCreate( iih, ish, gbl );
+                ish->imh = GBL_MOD( gbl );
+                MK_ADDR( addr, gbl->addr, inf->sect_id );
+                /*
+                 * need to see if there's a local symbol at the right address and use that instead
+                 */
+                if( curr_imh == ish->imh ) {
+                    /*
+                     * We've already checked the local symbols. It ain't there.
+                     */
+                    GblCreate( iih, ish, gbl );
+                } else if( LookupLclAddr( iih, addr, ish ) == SR_EXACT ) {
+                    SetGblLink( ish, gbl );
+                } else {
+                    GblCreate( iih, ish, gbl );
+                }
+                sr = SR_EXACT;
             }
-            sr = SR_EXACT;
         }
     }
     return( sr );

@@ -235,8 +235,15 @@ static search_result   DoLookupSym( imp_image_handle *iih,
     len = li->name.len;
     for( s = iih->gbl; s != NULL; s = s->next ) {
         if( s->len == len && scompn( s->name, name, s->len ) == 0 ) {
-            DCSymCreate( iih, d )->p = s;
-            return( SR_EXACT );
+            imp_sym_handle  *ish;
+
+            ish = DCSymCreate( iih, d );
+            if( ish == NULL ) {
+                return( SR_FAIL );
+            } else {
+                ish->p = s;
+                return( SR_EXACT );
+            }
         }
     }
     return( SR_NONE );

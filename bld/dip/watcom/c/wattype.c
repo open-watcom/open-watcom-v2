@@ -649,25 +649,30 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
         p = FindAName( &state, Type->start, which, li );
         if( p != NULL ) {
             ish = DCSymCreate( iih, d );
-            ish->imh = imh;
-            ish->name_off = (byte)( NamePtr( p ) - p );
-            ish->u.typ.t.entry = entry;
-            ish->u.typ.t.offset = p - Type->start;
-            if( (MGET_U8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
-                ish->type = SH_CST;
-                ish->u.typ.h.offset = state.header - Type->start;
-                ish->u.typ.h.entry = entry;
+            if( ish == NULL ) {
+                sr = SR_FAIL;
+                break;
             } else {
-                ish->type = SH_TYP;
+                ish->imh = imh;
+                ish->name_off = (byte)( NamePtr( p ) - p );
+                ish->u.typ.t.entry = entry;
+                ish->u.typ.t.offset = p - Type->start;
+                if( (MGET_U8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
+                    ish->type = SH_CST;
+                    ish->u.typ.h.offset = state.header - Type->start;
+                    ish->u.typ.h.entry = entry;
+                } else {
+                    ish->type = SH_TYP;
+                }
+                /*
+                 * we really should continue searching for more names that
+                 * match, but we're going to early out because I know that
+                 * the symbolic info format is too weak to have more than
+                 * one type name or enum const that will match
+                 */
+                sr = SR_EXACT;
+                break;
             }
-            /*
-             * we really should continue searching for more names that
-             * match, but we're going to early out because I know that
-             * the symbolic info format is too weak to have more than
-             * one type name or enum const that will match
-             */
-            sr = SR_EXACT;
-            break;
         }
         if( state.hit_eof ) {
             break;
@@ -1743,13 +1748,18 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
                     len = MGET_U8( p ) - ( name - p );
                     if( len == lookup_len && scompn( name, lookup_name, len ) == 0 ) {
                         ish = DCSymCreate( iih, d );
-                        ish->u.typ.t.offset = p - Type->start;
-                        ish->u.typ.t.entry = Type->entry;
-                        ish->name_off = (byte)( name - p );
-                        ish->imh = ith->imh;
-                        ish->u.typ.h = ith->t;
-                        ish->type = SH_MBR;
-                        sr = SR_EXACT;
+                        if( ish == NULL ) {
+                            sr = SR_FAIL;
+                            break;
+                        } else {
+                            ish->u.typ.t.offset = p - Type->start;
+                            ish->u.typ.t.entry = Type->entry;
+                            ish->name_off = (byte)( name - p );
+                            ish->imh = ith->imh;
+                            ish->u.typ.h = ith->t;
+                            ish->type = SH_MBR;
+                            sr = SR_EXACT;
+                        }
                     }
                 }
             }

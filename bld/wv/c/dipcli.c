@@ -85,7 +85,8 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
 
     new_sl = MemAlloc( sizeof( sym_list ) - sizeof( byte ) + sym_SIZE );
     if( new_sl == NULL ) {
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+        ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+        return( NULL );
     }
     DIPSymInit( SL2SH( new_sl ), IIH2IH( iih ) );
     new_sl->next = *sl_head;
@@ -674,6 +675,9 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss, void 
     if( se == NULL && ri == NULL )
         return( SR_NONE );
     ish = DoSymCreate( iih, sl_head );
+    if( ish == NULL ) {
+        return( SR_FAIL );
+    }
     ish->p  = se;
     ish->ri = ri;
     return( SR_EXACT );
