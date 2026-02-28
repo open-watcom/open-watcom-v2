@@ -44,7 +44,7 @@
 #include "dui.h"
 #include "strutil.h"
 #include "dbgscan.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgmad.h"
 #include "dbgutil.h"
 #include "dbgovl.h"

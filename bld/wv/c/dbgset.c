@@ -40,7 +40,7 @@
 #include "dbgio.h"
 #include "strutil.h"
 #include "dbgscan.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgmad.h"
 #include "dbgutil.h"
 #include "dbgsrc.h"

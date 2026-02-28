@@ -36,7 +36,7 @@
 #include "memfuncs.h"
 #include "dui.h"
 #include "liteng.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "i64.h"
 #include "strutil.h"
 #include "dbgscan.h"

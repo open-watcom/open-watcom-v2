@@ -38,7 +38,7 @@
 #include "dbgerr.h"
 #include "memfuncs.h"
 #include "ldsupp.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "i64.h"
 #include "dbgscan.h"
 #include "dbgexpr4.h"

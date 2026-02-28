@@ -37,7 +37,7 @@
 #include "memfuncs.h"
 #include "dui.h"
 #include "trapaccs.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "trapglbl.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"

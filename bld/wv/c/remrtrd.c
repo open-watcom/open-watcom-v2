@@ -35,7 +35,7 @@
 #include "dbgio.h"
 #include "trprtrd.h"
 #include "trapaccs.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dui.h"
 #include "trapglbl.h"
 #include "remcore.h"

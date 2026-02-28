@@ -35,7 +35,7 @@
 #include "dbgdata.h"
 #include "dbgwind.h"
 #include "dbgerr.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "memfuncs.h"
 #include "wndregx.h"
 #include "dbgio.h"

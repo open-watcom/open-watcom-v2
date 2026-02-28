@@ -37,7 +37,7 @@
 #include "strutil.h"
 #include "dbgscan.h"
 #include "dbgmad.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "madcli.h"
 #include "dbgstk.h"
 #include "dbgexpr.h"

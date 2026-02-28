@@ -41,7 +41,7 @@
 #include "dbgitem.h"
 #include "i64.h"
 #include "numscan.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgutil.h"
 #include "dbgexpr4.h"
 #include "dbgexpr3.h"

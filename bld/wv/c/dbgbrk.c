@@ -46,7 +46,7 @@
 #include "strutil.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgutil.h"
 #include "trapglbl.h"
 #include "dbgmemor.h"

@@ -38,7 +38,7 @@
 #include "guidlg.h"
 #include "dlgbrk.h"
 #include "strutil.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgutil.h"
 #include "trapglbl.h"
 #include "dbgbrk.h"

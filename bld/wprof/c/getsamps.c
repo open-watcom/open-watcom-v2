@@ -40,7 +40,7 @@
 #include "sampinfo.h"
 #include "memutil.h"
 #include "getsamps.h"
-#include "madinter.h"
+#include "wpmadcli.h"
 #include "setsamps.h"
 #include "support.h"
 #include "utils.h"

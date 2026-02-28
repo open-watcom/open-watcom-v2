@@ -46,7 +46,7 @@
 #include "dbgmad.h"
 #include "numscan.h"
 #include "dbgutil.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "madcli.h"
 #include "dbgshow.h"
 #include "dbgparse.h"

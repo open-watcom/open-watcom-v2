@@ -44,7 +44,7 @@
 #include "memtypes.h"
 #include "strutil.h"
 #include "dbgscan.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgutil.h"
 #include "dbgmemor.h"
 #include "dbgbrk.h"

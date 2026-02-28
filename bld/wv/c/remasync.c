@@ -39,7 +39,7 @@
 #include "dui.h"
 #include "trpasync.h"
 #include "trapaccs.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "trapglbl.h"
 #include "remcore.h"
 #include "dbgmisc.h"

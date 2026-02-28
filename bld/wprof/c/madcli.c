@@ -44,7 +44,7 @@
 #include "common.h"
 #include "sampinfo.h"
 #include "msg.h"
-#include "madinter.h"
+#include "wpmadcli.h"
 #include "support.h"
 #include "wpdata.h"
 

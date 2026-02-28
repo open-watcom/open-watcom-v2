@@ -38,7 +38,7 @@
 #include "dbgerr.h"
 #include "dbgitem.h"
 #include "ldsupp.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dui.h"
 #include "i64.h"
 #include "strutil.h"

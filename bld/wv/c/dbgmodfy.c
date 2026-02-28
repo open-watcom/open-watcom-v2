@@ -39,7 +39,7 @@
 #include "dbgitem.h"
 #include "ldsupp.h"
 #include "dui.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dbgmad.h"
 #include "dbgscan.h"
 #include "dbgmemor.h"

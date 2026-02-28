@@ -33,7 +33,7 @@
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "memfuncs.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "dui.h"
 #include "dbgscan.h"
 #include "dbgovl.h"

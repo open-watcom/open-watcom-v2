@@ -40,7 +40,7 @@
 #include "dbgtback.h"
 #include "dbgri.h"
 #include "ldsupp.h"
-#include "madinter.h"
+#include "wvmadcli.h"
 #include "i64.h"
 #include "dbgutil.h"
 #include "dbgmemor.h"

@@ -10,13 +10,13 @@ objs = &
     $(debug_objs) $(srcmgt_obj) $(trmem_objs) &
     aboutmsg.obj &
     clrsamps.obj &
-    dipinter.obj &
-    diginter.obj &
+    dipcli.obj &
+    digcli.obj &
+    madcli.obj &
     dlgcnvt.obj &
     dlgoptn.obj &
     dlgsamp.obj &
     getsamps.obj &
-    madinter.obj &
     memutil.obj &
     msg.obj &
     msgstr.obj &
