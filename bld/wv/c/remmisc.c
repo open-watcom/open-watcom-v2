@@ -66,10 +66,12 @@ trap_elen           MaxPacketLen;
 
 #if !defined( BUILD_RFX )
 
+static trap_fail_func TrapFailed;
 static void TrapFailed( void )
 {
     UnLoadTrap();
     StartupErr( LIT_ENG( ERR_REMOTE_LINK_BROKEN ) );
+    /* never return */
 }
 
 void InitSuppServices( void )

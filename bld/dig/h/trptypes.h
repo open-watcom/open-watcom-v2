@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #if defined( __WINDOWS__ )
     #include "setevent.h"
 #endif
+#include "wnoret.h"
 
 #if defined( __WINDOWS__ )
     #define     TRAPENTRY   __far __pascal
@@ -147,5 +148,7 @@ typedef struct {
 } trap_callbacks;
 
 typedef const trap_requests *trap_load_func( const trap_callbacks *client );
+
+typedef NO_RETURN( void trap_fail_func( void ) );
 
 #endif

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,12 +55,11 @@ extern int              CloseTrapTraceFile( void );
 extern char             *LoadDumbTrap( trap_version * );
 extern digld_error      LoadTrap( const char *, char *, trap_version * );
 extern void             UnLoadTrap( void );
-extern void             TrapSetFailCallBack( void (*func)(void) );
 extern unsigned         TrapAccess( trap_elen, in_mx_entry_p, trap_elen, mx_entry_p );
 extern unsigned         TrapSimpleAccess( trap_elen, in_data_p, trap_elen, out_data_p );
 extern trap_load_func   TrapLoad;
 
 /* Client support routines */
-extern void             TrapSetFailCallBack( void (*func)(void) );
+extern void             TrapSetFailCallBack( trap_fail_func *func );
 extern void             TrapSetAccessCallBack( void (*func)(void) );
 extern void             TrapFailAllRequests( void );

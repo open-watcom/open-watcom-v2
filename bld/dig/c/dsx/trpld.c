@@ -141,7 +141,7 @@ extern void DoIntSwitchToRM( void );
         "xor    eax,eax" \
         "mov    ah,6" \
         "mov    cx,0xffff" \
-        "int    1ah" /* TRAP_SWITCH_VECTOR */ \
+        _INT TRAP_SWITCH_VECTOR /* int TRAP_SWITCH_VECTOR */ \
         "popad" \
     __parm              [] \
     __value             \
