@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -225,11 +225,11 @@ trap_retval RemoteGet( void *data, trap_elen len )
     bytes_read = myread( ReadHandle, data, len );
     switch( bytes_read ) {
     case 0:
-        return( REQUEST_FAILED );
+        return( TRAP_REQUEST_FAILED );
     case 1:
         tmp = myread( ReadHandle, &bytes_read, sizeof( trap_elen ) );
         if( tmp != sizeof( trap_elen ) )
-            return( REQUEST_FAILED );
+            return( TRAP_REQUEST_FAILED );
         break;
     }
     return( bytes_read );
@@ -246,12 +246,12 @@ trap_retval RemotePut( void *data, trap_elen len )
         len = 1;       /* Can't write zero bytes */
     bytes_written = mywrite( WriteHandle, data, len );
     if( bytes_written != len )
-        return( REQUEST_FAILED );
+        return( TRAP_REQUEST_FAILED );
     if( len == 1 ) {
         /* Send true length through */
         bytes_written = mywrite( WriteHandle, &real_len, sizeof( trap_elen ) );
         if( bytes_written != sizeof( trap_elen ) ) {
-            return( REQUEST_FAILED );
+            return( TRAP_REQUEST_FAILED );
         }
     }
     return( len );

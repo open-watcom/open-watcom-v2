@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -424,7 +424,7 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
     struct {
         mx_entry16      in;
         mx_entry16      out;
-        unsigned_16     retlen;
+        unsigned_16     retval;
     }                   __far *callstruct;
     unsigned            len;
     unsigned            copy;
@@ -451,31 +451,30 @@ static trap_retval DoTrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
         callstruct->out.ptr.a = 0;
     }
     GoToRealMode( RMTrapAccess );
-    if( callstruct->retlen == (unsigned_16)REQUEST_FAILED ) {
-        return( REQUEST_FAILED );
-    }
-    if( mx_out != NULL ) {
-        /*
-         * msgptr is pointing at the start of the output buffer
-         */
-        j = 0;
-        for( len = callstruct->retlen; len != 0; len -= copy ) {
-            copy = len;
-            if( copy > mx_out[j].len )
-                copy = mx_out[j].len;
-            _fmemcpy( mx_out[j].ptr, msgptr, copy );
-            ++j;
-            msgptr += copy;
+    if( callstruct->retval != TRAP_REQUEST_FAILED ) {
+        if( mx_out != NULL ) {
+            /*
+             * msgptr is pointing at the start of the output buffer
+             */
+            j = 0;
+            for( len = callstruct->retval; len != 0; len -= copy ) {
+                copy = len;
+                if( copy > mx_out[j].len )
+                    copy = mx_out[j].len;
+                _fmemcpy( mx_out[j].ptr, msgptr, copy );
+                ++j;
+                msgptr += copy;
+            }
+        } else {
+            callstruct->retval = 0;
         }
-    } else {
-        callstruct->retlen = 0;
-    }
-    if( TRP_REQUEST( mx_in ) == REQ_CONNECT ) {
-        if( ((connect_ret *)mx_out->ptr)->max_msg_size > MAX_MSG_SIZE ) {
-            ((connect_ret *)mx_out->ptr)->max_msg_size = MAX_MSG_SIZE;
+        if( TRP_REQUEST( mx_in ) == REQ_CONNECT ) {
+            if( ((connect_ret *)mx_out->ptr)->max_msg_size > MAX_MSG_SIZE ) {
+                ((connect_ret *)mx_out->ptr)->max_msg_size = MAX_MSG_SIZE;
+            }
         }
     }
-    return( callstruct->retlen );
+    return( callstruct->retval );
 }
 
 digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )

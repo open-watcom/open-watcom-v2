@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,14 +183,14 @@ trap_retval RemoteGet( void *data, trap_elen len )
 trap_retval RemotePut( void *data, trap_elen len )
 {
     while( len >= MAX_DATA_SIZE ) {
-        if( DoRemotePut( data, MAX_DATA_SIZE ) == REQUEST_FAILED ) {
-            return( REQUEST_FAILED );
+        if( DoRemotePut( data, MAX_DATA_SIZE ) == TRAP_REQUEST_FAILED ) {
+            return( TRAP_REQUEST_FAILED );
         }
         data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
-    if( DoRemotePut( data, len ) == REQUEST_FAILED ) {
-        return( REQUEST_FAILED );
+    if( DoRemotePut( data, len ) == TRAP_REQUEST_FAILED ) {
+        return( TRAP_REQUEST_FAILED );
     }
     return( len );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ static trap_retval ReqFuncProxy( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_
 
 #ifdef ENABLE_TRAP_LOGGING
     if( TrapTraceFileHandle != NULL ) {
-        /* result is the length of data returned or REQUEST_FAILED */
+        /* result is the length of data returned or TRAP_REQUEST_FAILED */
         /* Only worth tracing if there is data though */
         if( result > 0 ) {
             unsigned        ix;
@@ -190,18 +190,18 @@ unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out
     trap_retval     result;
 
     if( ReqFunc == NULL )
-        return( (unsigned)-1 );
+        return( -1 );
 
     result = ReqFuncProxy( num_in_mx, mx_in, num_out_mx, mx_out );
-    if( result == REQUEST_FAILED ) {
+    if( result == TRAP_REQUEST_FAILED ) {
         Failure();
     }
     Access();
 #if defined( __WINDOWS__ ) && !defined( SERVER )
     TRAP_EXTFUNC( HardModeCheck )();
 #endif
-    if( result == REQUEST_FAILED )
-        return( (unsigned)-1 );
+    if( result == TRAP_REQUEST_FAILED )
+        return( -1 );
     return( result );
 }
 

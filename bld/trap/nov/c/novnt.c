@@ -69,7 +69,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
     for( ;; ) {
         got = recv( ConnectionSocket, data, len, 0 );
         if( got == SOCKET_ERROR )
-            return( REQUEST_FAILED );
+            return( TRAP_REQUEST_FAILED );
         total += got;
         if( got != MAX_DATA_SIZE )
             break;
@@ -84,13 +84,13 @@ trap_retval RemotePut( void *data, trap_elen len )
 
     while( len >= MAX_DATA_SIZE ) {
         if( send( ConnectionSocket, data, MAX_DATA_SIZE, 0 ) == SOCKET_ERROR ) {
-            return( REQUEST_FAILED );
+            return( TRAP_REQUEST_FAILED );
         }
         data = (char *)data + MAX_DATA_SIZE;
         len -= MAX_DATA_SIZE;
     }
     if( send( ConnectionSocket, data, len, 0 ) == SOCKET_ERROR ) {
-        return( REQUEST_FAILED );
+        return( TRAP_REQUEST_FAILED );
     }
     return( len );
 }

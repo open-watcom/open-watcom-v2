@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 
 char                PackBuff[0x400];
 
-static trap_elen    PackInd = 0;
+static trap_elen    PackCurrLen = 0;
 
 #if defined( SERVER )
 
@@ -51,13 +51,13 @@ trap_retval PutBuffPacket( void *buff, trap_elen len )
 
     _DBG_Writeln( "in PutBuffPacket()" );
     result = RemotePut( buff, len );
-    PackInd = 0;
+    PackCurrLen = 0;
     return( result );
 }
 
 void *GetPacketBuffPtr( void )
 {
-    return( &PackBuff[PackInd] );
+    return( &PackBuff[PackCurrLen] );
 }
 
 #else
@@ -65,7 +65,7 @@ void *GetPacketBuffPtr( void )
 void StartPacket( void )
 {
     _DBG_Writeln( "in StartPacket()" );
-    PackInd = 0;
+    PackCurrLen = 0;
 }
 
 trap_retval PutPacket( void )
@@ -73,27 +73,27 @@ trap_retval PutPacket( void )
     trap_retval result;
 
     _DBG_Writeln( "in PutPacket()" );
-    result = RemotePut( PackBuff, PackInd );
-    PackInd = 0;
+    result = RemotePut( PackBuff, PackCurrLen );
+    PackCurrLen = 0;
     return( result );
 }
 
 void AddPacket( const void *ptr, trap_elen len )
 {
-    if( ( len + PackInd ) > sizeof( PackBuff ) ) {
-        len = sizeof( PackBuff ) - PackInd;
+    if( ( len + PackCurrLen ) > sizeof( PackBuff ) ) {
+        len = sizeof( PackBuff ) - PackCurrLen;
     }
-    memcpy( &PackBuff[PackInd], ptr, len );
-    PackInd += len;
+    memcpy( &PackBuff[PackCurrLen], ptr, len );
+    PackCurrLen += len;
 }
 
 void RemovePacket( void *ptr, trap_elen len )
 {
-    if( ( len + PackInd ) > sizeof( PackBuff ) ) {
-        len = sizeof( PackBuff ) - PackInd;
+    if( ( len + PackCurrLen ) > sizeof( PackBuff ) ) {
+        len = sizeof( PackBuff ) - PackCurrLen;
     }
-    memcpy( ptr, &PackBuff[PackInd], len );
-    PackInd += len;
+    memcpy( ptr, &PackBuff[PackCurrLen], len );
+    PackCurrLen += len;
 }
 
 #endif
@@ -101,7 +101,7 @@ void RemovePacket( void *ptr, trap_elen len )
 trap_retval GetPacket( void )
 {
     _DBG_Writeln( "in GetPacket()" );
-    PackInd = 0;
+    PackCurrLen = 0;
     return( RemoteGet( PackBuff, sizeof( PackBuff ) ) );
 }
 

@@ -52,7 +52,7 @@
 #define TRAP_VERSION_MINOR      0
 #define OLD_TRAP_VERSION_MINOR  0
 
-#define REQUEST_FAILED ((trap_retval)-1)
+#define TRAP_REQUEST_FAILED     ((trap_retval)-1)
 
 #if OLD_TRAP_VERSION_MINOR > 0
     #define TrapVersionOK( ver )  (((ver).major == TRAP_VERSION_MAJOR) && \

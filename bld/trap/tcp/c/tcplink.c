@@ -279,7 +279,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
 #ifdef __RDOS__
         while( size == 0 ) {
             if( !IS_VALID_SOCKET( data_socket ) )
-                return( REQUEST_FAILED );
+                return( TRAP_REQUEST_FAILED );
             size = recvData( &rec_len, sizeof( rec_len ) );
         }
 #endif
@@ -295,7 +295,7 @@ trap_retval RemoteGet( void *data, trap_elen len )
             }
         }
     }
-    return( REQUEST_FAILED );
+    return( TRAP_REQUEST_FAILED );
 }
 
 trap_retval RemotePut( void *data, trap_elen len )
@@ -321,7 +321,7 @@ trap_retval RemotePut( void *data, trap_elen len )
             }
         }
     }
-    return( REQUEST_FAILED );
+    return( TRAP_REQUEST_FAILED );
 }
 
 #ifdef __RDOS__

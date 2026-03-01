@@ -58,11 +58,11 @@ static trap_retval DoRequest( void )
     }
     TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
     result = PutPacket();
-    if( result != REQUEST_FAILED ) {
+    if( result != TRAP_REQUEST_FAILED ) {
         result = 0;
         if( Out_Mx_Num != 0 ) {
             result = GetPacket();
-            if( result != REQUEST_FAILED ) {
+            if( result != TRAP_REQUEST_FAILED ) {
                 left = result;
                 for( i = 0; i < Out_Mx_Num; i++ ) {
                     if( left > Out_Mx_Ptr[i].len ) {
