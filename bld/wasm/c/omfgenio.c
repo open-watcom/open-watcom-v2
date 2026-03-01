@@ -107,8 +107,11 @@ void ObjWriteClose( bool del )
         ObjWEndRec();
     }
     obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
-    if( fclose( AsmFiles.file[OBJ] ) ) {
-        Fatal( MSG_CANNOT_CLOSE_FILE, obj_name );
+    if( AsmFiles.file[OBJ] != NULL ) {
+        if( fclose( AsmFiles.file[OBJ] ) ) {
+            Fatal( MSG_CANNOT_CLOSE_FILE, obj_name );
+        }
+        AsmFiles.file[OBJ] = NULL;
     }
     MemFree( pobjState );
     pobjState = NULL;
