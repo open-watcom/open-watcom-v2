@@ -55,27 +55,27 @@ static const Msg_Struct Fatal_Msg[] = {
 
 extern bool             write_to_file;  // write if there is no error
 
+void CloseAsmFile( int i )
+{
+    if( AsmFiles.file[i] != NULL ) {
+        if( fclose( AsmFiles.file[i] ) != 0 ) {
+            Fatal( MSG_CANNOT_CLOSE_FILE, AsmFiles.fname[i] );
+        }
+        AsmFiles.file[i] = NULL;
+    }
+}
+
 void AsmShutDown( void )
 /**********************/
 {
     /* close ASM file */
-    if( AsmFiles.file[ASM] != NULL ) {
-        if( fclose( AsmFiles.file[ASM] ) != 0 ) {
-            Fatal( MSG_CANNOT_CLOSE_FILE, AsmFiles.fname[ASM] );
-        }
-    }
+    CloseAsmFile( ASM );
 
     /* close OBJ file */
     ObjWriteClose( !write_to_file || Options.error_count > 0 );
     ObjRecFini();
-    if( AsmFiles.file[LST] != NULL ) {
-        fclose( AsmFiles.file[LST] );
-        AsmFiles.file[LST] = NULL;
-    }
-    if( AsmFiles.file[ERR] != NULL ) {
-        fclose( AsmFiles.file[ERR] );
-        AsmFiles.file[ERR] = NULL;
-    }
+    CloseAsmFile( LST );
+    CloseAsmFile( ERR );
     MemFree( AsmFiles.fname[ASM] );
     MemFree( AsmFiles.fname[ERR] );
     MemFree( AsmFiles.fname[LST] );

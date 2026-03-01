@@ -381,7 +381,7 @@ static void main_init( void )
     int         i;
 
     MemInit();
-    for( i = ASM; i <= OBJ; i++ ) {
+    for( i = 0; i < FILE_TYPES; i++ ) {
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
