@@ -712,6 +712,7 @@ static void parseEnvVar( char_ring **owner, const char *name )
         buff = MemAlloc( size );   /* allocate enough room for a very long PATH */
         if( buff == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+            /* never return */
         }
         if( DUIEnvLkup( name, buff, size ) != 0 ) {
             parsePathList( owner, buff );

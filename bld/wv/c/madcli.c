@@ -218,6 +218,7 @@ void InitMADInfo( void )
 {
     if( MADInit() != MS_OK ) {
         StartupErr( LIT_ENG( STARTUP_MAD_Not_Init ) );
+        /* never return */
     }
 }
 
@@ -249,6 +250,7 @@ void ReportMADFailure( mad_status ms )
     if( SysConfig.arch == DIG_ARCH_NIL ) {
         /* we're in deep do do */
         StartupErr( LIT_ENG( LMS_RECURSIVE_MAD_FAILURE ) );
+        /* never return */
     }
     arch_old = SysConfig.arch;
     MADBaseName( arch_old, buff, sizeof( buff ) );

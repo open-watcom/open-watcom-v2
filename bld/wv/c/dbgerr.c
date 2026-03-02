@@ -106,6 +106,7 @@ static int error( dbg_err_flags flg, const char *fmt, va_list args )
     _SwitchOff( SW_CALL_FATAL );
     if( _IsOn( SW_ERROR_STARTUP ) ) {
         StartupErr( buff );
+        /* never return */
     }
     if( _IsOn( SW_ERR_IN_TXTBUFF ) ) {
         PurgeInpStack();

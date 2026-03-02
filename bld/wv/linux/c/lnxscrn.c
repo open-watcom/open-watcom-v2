@@ -153,6 +153,7 @@ static bool TryXWindows( void )
     _searchenv( "xterm", "PATH", xsh_name );
     if( xsh_name[0] == NULLCHAR ) {
         StartupErr( "xterm executable not in PATH" );
+        /* never return */
     }
     masterfd = open( "/dev/ptmx", O_RDWR );
     if( masterfd < 0 )
@@ -166,7 +167,7 @@ static bool TryXWindows( void )
     if( DbgConHandle == -1 ) {
         close( masterfd );
         StartupErr( "unable to open debugger console" );
-        return( false );
+        /* never return */
     }
     tcgetattr( slavefd, &termio );
     termio.c_lflag &= ~ECHO;
@@ -225,6 +226,7 @@ static bool TryXWindows( void )
     }
     if( XTermPid == (pid_t)-1 ) {
         StartupErr( "unable to create console helper process" );
+        /* never return */
     }
     do { /* xterm transmits a window ID -- ignore */
         res = read( slavefd, &buf, 1 );
@@ -314,6 +316,7 @@ static bool TryTTY( void )
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
+        /* never return */
     }
     return( true );
 }
@@ -322,6 +325,7 @@ void InitScreen( void )
 {
     if( setpgid( 0, 0 ) != 0 && errno != EPERM ) {
         StartupErr( "unable to create new process group" );
+        /* never return */
     }
     if( TryTTY() ) {
         ConMode = C_TTY;
@@ -343,6 +347,7 @@ void InitScreen( void )
     }
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );
+        /* never return */
     }
     if( _IsOn( SW_USE_MOUSE ) ) {
         GUIInitMouse( INIT_MOUSE );

@@ -999,6 +999,7 @@ static bool CheckDIPLoad( char *base_name, bool defaults )
         DIPFini();
         Format( TxtBuff, LIT_ENG( DIP_load_failed ), base_name, DIPMsgText( ds ) );
         StartupErr( TxtBuff );
+        /* never return */
     }
     return( true );
 }
@@ -1012,10 +1013,12 @@ void InitDbgInfo( void )
 
     if( DIPInit() != DS_OK ) {
         StartupErr( LIT_ENG( STARTUP_DIP_Not_Init ) );
+        /* never return */
     }
     if( DIPRegister( &InternalInterface ) != DS_OK ) {
         DIPFini();
         StartupErr( LIT_ENG( STARTUP_DIP_Not_Register ) );
+        /* never return */
     }
     dip = DipFiles;
     if( *dip == NULL ) {
@@ -1038,6 +1041,7 @@ void InitDbgInfo( void )
             *d++ = ')';
             *d = NULLCHAR;
             StartupErr( TxtBuff );
+            /* never return */
         }
     } else {
         do {

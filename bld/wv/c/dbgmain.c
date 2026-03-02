@@ -147,10 +147,12 @@ void DebugInit( void )
     if( !LangSetInit() ) {
         FiniTrap();
         StartupErr( LIT_ENG( STARTUP_Loading_PRS ) );
+        /* never return */
     }
     if( !InitCmd() ) {
         FiniTrap();
         StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+        /* never return */
     }
     InitScan();
     InitLook();

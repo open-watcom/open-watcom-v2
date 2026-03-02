@@ -864,6 +864,7 @@ static void AllocSave( void )
             RegenSave = MemAlloc( 4 * _64k + PageSize );
             if( RegenSave == NULL ) {
                 StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+                /* never return */
             }
             break;
         }
@@ -876,6 +877,7 @@ static void AllocSave( void )
         RegenSave = MemAlloc( regen_size );
         if( RegenSave == NULL ) {
             StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+            /* never return */
         }
         /* Font table has to go in low memory */
         rm_regen_size = FONT_TABLE_SIZE;
@@ -888,6 +890,7 @@ static void AllocSave( void )
     SwapSeg = DPMIAllocateDOSMemoryBlock( _NBPARAS( rm_regen_size + state_size + 2 * mouse_size ) );
     if( SwapSeg.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
+        /* never return */
     }
     /***************************************************************
       Real-mode Swap section layout
@@ -992,6 +995,7 @@ void InitScreen( void )
     if( !uistart() ) {
         UserScreen();
         StartupErr( LIT_DUI( Unable_to_init_ui ) );
+        /* never return */
     }
     if( _IsOn( SW_USE_MOUSE ) ) {
         GUIInitMouse( INIT_MOUSE_INITIALIZED );

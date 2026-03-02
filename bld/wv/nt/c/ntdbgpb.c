@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,18 +74,17 @@ const char *CheckForPowerBuilder( const char *name )
     EnumWindows( FindPidPB, 0 );
     if( AlreadyRunning ) {
         StartupErr( LIT_DUI( PowerBuilder_Debugger_Already_Running ) );
-        return( "" );
+        /* never return */
     }
     if( PidPB == 0 ) {
         StartupErr( LIT_DUI( PowerBuilder_Not_Running ) );
-        return( "" );
-    } else {
-        sprintf( pid, "#%x", PidPB );
-#ifdef GUI_IS_GUI
-        WndSetTitle( WndMain, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
-#else
-        SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
-#endif
-        return( pid );
+        /* never return */
     }
+    sprintf( pid, "#%x", PidPB );
+#ifdef GUI_IS_GUI
+    WndSetTitle( WndMain, LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
+#else
+    SetConsoleTitle( LIT_DUI( The_WATCOM_Debugger_for_PowerBuilder ) );
+#endif
+    return( pid );
 }

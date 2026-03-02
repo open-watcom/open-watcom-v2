@@ -123,11 +123,13 @@ static bool TryXWindows( void )
     /* we're in the X Windows (or helper)environment */
     if( pipe( pip ) != 0 ) {
         StartupErr( "unable to create console control channel" );
+        /* never return */
     }
     fcntl( pip[0], F_SETFD, FD_CLOEXEC );
     searchenv( "qnxterm", "PATH", xqsh_name );
     if( xqsh_name[0] == NULLCHAR ) {
         StartupErr( "qnxterm executable not in PATH" );
+        /* never return */
     }
     argc = 0;
     p = XConfig;
@@ -174,18 +176,21 @@ static bool TryXWindows( void )
                 argv[0], argv, environ, NULL, 0 );
     if( XQshPid == (pid_t)-1 ) {
         StartupErr( "unable to create console helper process" );
+        /* never return */
     }
     /* close the write pipe here so that the read fails if xqsh aborts */
     close( pip[1] );
     len = read( pip[0], buff, sizeof( buff ) );
     if( len == -1 ) {
         StartupErr( "console helper process unable to initialize" );
+        /* never return */
     }
     close( pip[0] );
     buff[len] = NULLCHAR;
     DbgConHandle = open( buff, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open debugger console" );
+        /* never return */
     }
     SetTermType( "qnx" );
     tcsetct( DbgConHandle, getpid() );
@@ -204,9 +209,11 @@ static bool TryQConsole( void )
 
     if( qnx_psinfo( PROC_PID, getpid(), &psinfo, 0, 0 ) != getpid() ) {
         StartupErr( "unable to obtain process information" );
+        /* never return */
     }
     if( qnx_sid_query( PROC_PID, psinfo.sid, &info ) != psinfo.sid ) {
         StartupErr( "unable to obtain console name" );
+        /* never return */
     }
     ptr = info.tty_name + strlen( info.tty_name );
     for( ;; ) {
@@ -224,6 +231,7 @@ static bool TryQConsole( void )
     DbgConHandle = open( info.tty_name, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
+        /* never return */
     }
     term = getenv( "TERM" );
     if( term != NULL && strcmp( term, "qnxw" ) == 0 ) {
@@ -240,6 +248,7 @@ static bool TryQConsole( void )
     }
     if( dev_info( DbgConHandle, &dev ) == -1 ) {
         StartupErr( "unable to obtain console information" );
+        /* never return */
     }
     DbgConsole = dev.unit;
     console_size( ConCtrl, DbgConsole, 0, 0, &PrevLines, &PrevColumns );
@@ -270,6 +279,7 @@ static bool TryTTY( void )
     DbgConHandle = open( DbgTerminal, O_RDWR );
     if( DbgConHandle == -1 ) {
         StartupErr( "unable to open system console" );
+        /* never return */
     }
     return( true );
 }
@@ -278,6 +288,7 @@ void InitScreen( void )
 {
     if( setpgid( 0, 0 ) != 0 && errno != EPERM ) {
         StartupErr( "unable to create new process group" );
+        /* never return */
     }
     if( TryTTY() ) {
         ConMode = C_TTY;
@@ -287,6 +298,7 @@ void InitScreen( void )
         ConMode = C_XWIN;
     } else {
         StartupErr( "unable to initialize debugger screen" );
+        /* never return */
     }
     MemFree( DbgTerminal );
     DbgTerminal = NULL;
@@ -294,6 +306,7 @@ void InitScreen( void )
     UIConHandle = DbgConHandle;
     if( !uistart() ) {
         StartupErr( "unable to initialize user interface" );
+        /* never return */
     }
     if( _IsOn( SW_USE_MOUSE ) )
         GUIInitMouse( INIT_MOUSE );

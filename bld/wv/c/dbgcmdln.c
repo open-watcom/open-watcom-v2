@@ -69,6 +69,7 @@ enum {
 
 bool                    DownLoadTask = false;
 
+NO_RETURN( static void OptError( char *err ) );
 static char             *(*GetArg)( int );
 static int              CurrArgc;
 static char             *CurrArgp;
@@ -104,7 +105,7 @@ static void NextChar( void )
 }
 
 
-void OptError( char *err )
+static void OptError( char *err )
 {
     char        *curr;
     char        buff[CMD_LEN];
@@ -123,6 +124,7 @@ void OptError( char *err )
     *curr = NULLCHAR;
     Format( buff, err, token );
     StartupErr( buff );
+    /* never return */
 }
 
 
@@ -144,8 +146,10 @@ bool HasEquals( void )
 void WantEquals( void )
 {
     SkipSpaces();
-    if( CurrChar != '=' && CurrChar != '#' )
+    if( CurrChar != '=' && CurrChar != '#' ) {
         OptError( LIT_ENG( STARTUP_Expect_Eql ) );
+        /* never return */
+    }
     NextChar();
     SkipSpaces();
 }
@@ -159,8 +163,10 @@ unsigned long GetValueLong( void )
     unsigned long val;
 
     WantEquals();
-    if( !isdigit( CurrChar ) )
+    if( !isdigit( CurrChar ) ) {
         OptError( LIT_ENG( STARTUP_Invalid_Num ) );
+        /* never return */
+    }
     val = 0;
     do {
         val = val * 10 + CurrChar - '0';
@@ -174,8 +180,10 @@ unsigned GetValue( void )
     unsigned long val;
 
     val = GetValueLong();
-    if( val > 0xffff )
+    if( val > 0xffff ) {
         OptError( LIT_ENG( STARTUP_Num_Too_Big ) );
+        /* never return */
+    }
     return( val );
 }
 
@@ -246,7 +254,9 @@ void GetRawItem( char *start )
         for( ;; ) {
             if( CurrChar == ARG_TERMINATE ) {
                 StartupErr( LIT_ENG( STARTUP_Expect_Brace ) );
-            } else if( CurrChar == '{' ) {
+                /* never return */
+            }
+            if( CurrChar == '{' ) {
                 ++num;
             } else if( CurrChar == '}' ) {
                 if( --num == 0 ) {
@@ -330,6 +340,7 @@ static void ProcOptList( int pass )
         if( CurrChar == '?' ) {
             PrintUsage();
             StartupErr( "" );
+            /* never return */
         }
 #endif
         while( isalnum( CurrChar ) ) {
@@ -343,6 +354,7 @@ static void ProcOptList( int pass )
                 break;
             }
             OptError( LIT_ENG( STARTUP_No_Recog_Optn ) );
+            /* never return */
         }
         switch( Lookup( OptNameTab, buff, curr - buff ) ) {
         case OPT_CONTINUE_UNEXPECTED_BREAK:
@@ -453,12 +465,15 @@ static void ProcOptList( int pass )
 #ifndef GUI_IS_GUI
             PrintUsage();
             StartupErr( "" );
-#endif
+            /* never return */
+#else
             break;
+#endif
         default:
             if( !ProcSysOption( buff, curr - buff, pass ) && !DUIScreenOption( buff, curr - buff, pass ) ) {
                 Format( err_buff, LIT_ENG( STARTUP_Invalid_Option ), buff, curr - buff );
                 StartupErr( err_buff );
+                /* never return */
             }
             break;
         }
@@ -501,6 +516,7 @@ void ProcCmd( void )
             ProcOptList( pass );
             if( CurrChar != ARG_TERMINATE ) {
                 OptError( LIT_ENG( STARTUP_Expect_End_Env_Str ) );
+                /* never return */
             }
         }
         GetArg = &GetCmdArg;

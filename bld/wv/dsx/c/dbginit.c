@@ -146,6 +146,7 @@ void GUImain( void )
     RMData = DPMIAllocateDOSMemoryBlock( _NBPARAS( RMSegEnd - RMSegStart ) );
     if( RMData.pm == 0 ) {
         StartupErr( LIT_ENG( Unable_to_alloc_DOS_mem ) );
+        /* never return */
     }
     PMData = _MK_FP( RMData.pm, 0 );
     _fmemcpy( PMData, RMSegStart, RMSegEnd - RMSegStart );

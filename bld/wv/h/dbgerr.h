@@ -41,9 +41,14 @@ typedef enum {
     ERR_SILENT  = 0x04,
 } dbg_err_flags;
 
-/* this function never return to the caller */
+/*
+ * following two functions are same except
+ *
+ * Error function exit debugger and never return to the caller
+ * ErrorRet function normaly return to the caller
+ */
 NO_RETURN( extern void Error( dbg_err_flags, const char *, ... ) );
-/* this function return to the caller */
 extern void ErrorRet( dbg_err_flags, const char *, ... );
+
 extern void PrevError( const char *msg );
-extern void StartupErr( const char *err );
+NO_RETURN( extern void StartupErr( const char *err ) );

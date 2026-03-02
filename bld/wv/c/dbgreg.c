@@ -404,6 +404,7 @@ void InitMachState( void )
     other = AllocState();
     if( StateCurr == NULL || other == NULL ) {
         StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
+        /* never return */
     }
     StateCurr->action = ACTION_NONE;
     other->action = ACTION_NONE;
