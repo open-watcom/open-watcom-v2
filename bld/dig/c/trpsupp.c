@@ -82,13 +82,6 @@ int CloseTrapTraceFile( void )
 }
 #endif
 
-static void Failure( void )
-{
-    if( pFailure ) {
-        pFailure();
-    }
-}
-
 static void Access( void )
 {
     if( pAccess ) {
