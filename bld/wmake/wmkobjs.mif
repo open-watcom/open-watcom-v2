@@ -8,8 +8,6 @@ objs = &
     main.obj &
     mautodep.obj &
     mautoomf.obj &
-    mautoorl.obj &
-    mautores.obj &
     mcache.obj &
     memory.obj &
     mexec.obj &
@@ -31,6 +29,13 @@ objs = &
     mvecstr.obj &
     depinfo.obj &
     $(trmem_objs)
+
+!ifndef bootstrap
+objs += mautores.obj
+! ifneq host_cpu i86
+objs += mautoorl.obj
+! endif
+!endif
 
 !ifdef DLLS_IMPLEMENTED
 objs += idedrv.obj

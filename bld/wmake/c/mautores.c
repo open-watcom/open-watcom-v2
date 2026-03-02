@@ -34,8 +34,6 @@
 #include "mcache.h"
 #include "mautodep.h"
 
-#ifndef BOOTSTRAP
-
 #include "wresauto.h"
 #include "wressetr.h"
 
@@ -121,5 +119,3 @@ const auto_dep_info RESAutoDepInfo = {
     NULL,
     AUTO_DEP_RES
 };
-
-#endif
