@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -222,8 +222,9 @@ static int get_precedence( token_buffer *tokbuf, token_idx i )
 static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start, token_idx end, bool (*is_expr)(token_buffer *, token_idx) )
 /******************************************************************************************************************************************/
 {
-    char        *tmp;
-    token_idx   i = *start;
+    char            *tmp;
+    token_idx       i = *start;
+    unsigned char   c;
 
     init_expr( new );
     switch( tokbuf->tokens[i].class ) {
@@ -247,9 +248,8 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
         new->type = EXPR_CONST;
         new->string = tokbuf->tokens[i].string_ptr;
         new->value = 0;
-        for( tmp = new->string; *tmp != '\0'; tmp++ ) {
-            new->value <<= 8;
-            new->value |= (*tmp);
+        for( tmp = new->string; (c = *(unsigned char *)tmp) != '\0'; tmp++ ) {
+            new->value = ( new->value << 8 ) | c;
         }
         break;
     case TC_REG:
