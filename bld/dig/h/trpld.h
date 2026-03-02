@@ -40,6 +40,9 @@
 
 #define TRAPSIGN        "TRAP"
 
+typedef void            trap_fail_cbfunc( void );
+typedef void            trap_access_cbfunc( void );
+
 extern trap_version     TrapVer;
 extern trap_req_func    *ReqFunc;
 
@@ -60,6 +63,6 @@ extern unsigned         TrapSimpleAccess( trap_elen, in_data_p, trap_elen, out_d
 extern trap_load_func   TrapLoad;
 
 /* Client support routines */
-extern void             TrapSetFailCallBack( trap_fail_func *func );
-extern void             TrapSetAccessCallBack( void (*func)(void) );
+extern void             TrapSetFailCallBack( trap_fail_cbfunc *func );
+extern void             TrapSetAccessCallBack( trap_access_cbfunc *func );
 extern void             TrapFailAllRequests( void );

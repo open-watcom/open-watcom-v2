@@ -149,6 +149,4 @@ typedef struct {
 
 typedef const trap_requests *trap_load_func( const trap_callbacks *client );
 
-typedef NO_RETURN( void trap_fail_func( void ) );
-
 #endif

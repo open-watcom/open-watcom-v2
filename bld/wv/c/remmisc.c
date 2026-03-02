@@ -66,7 +66,6 @@ trap_elen           MaxPacketLen;
 
 #if !defined( BUILD_RFX )
 
-static trap_fail_func TrapFailed;
 static void TrapFailed( void )
 {
     UnLoadTrap();
@@ -141,6 +140,7 @@ void InitTrap( const char *parms )
         strcpy( buff, error );
         InitTrapError = true;
         StartupErr( buff );
+        /* never return */
     }
     acc.req = REQ_CONNECT;
     acc.ver.major = TRAP_VERSION_MAJOR;
@@ -159,6 +159,7 @@ void InitTrap( const char *parms )
         UnLoadTrap();
         InitTrapError = true;
         StartupErr( err_msg );
+        /* never return */
     }
 #if !defined( BUILD_RFX )
     if( !InitTrapError ) {

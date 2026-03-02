@@ -52,8 +52,8 @@ char            *TrapTraceFileName = NULL;
 bool            TrapTraceFileFlush = false;
 #endif
 
-static trap_fail_func *pFailure = NULL;
-static void     (*pAccess)(void) = NULL;
+static trap_fail_cbfunc *pFailure = NULL;
+static trap_access_cbfunc *pAccess = NULL;
 #ifdef ENABLE_TRAP_LOGGING
 static FILE     *TrapTraceFileHandle = NULL;
 #endif
@@ -82,6 +82,13 @@ int CloseTrapTraceFile( void )
 }
 #endif
 
+static void Failure( void )
+{
+    if( pFailure ) {
+        pFailure();
+    }
+}
+
 static void Access( void )
 {
     if( pAccess ) {
@@ -89,12 +96,12 @@ static void Access( void )
     }
 }
 
-void TrapSetFailCallBack( trap_fail_func *func )
+void TrapSetFailCallBack( trap_fail_cbfunc *func )
 {
     pFailure = func;
 }
 
-void TrapSetAccessCallBack( void (*func)(void) )
+void TrapSetAccessCallBack( trap_access_cbfunc *func )
 {
     pAccess = func;
 }
@@ -186,9 +193,8 @@ unsigned TrapAccess( trap_elen num_in_mx, in_mx_entry_p mx_in, trap_elen num_out
         return( -1 );
 
     result = ReqFuncProxy( num_in_mx, mx_in, num_out_mx, mx_out );
-    if( result == TRAP_REQUEST_FAILED && pFailure != NULL ) {
-        pFailure();
-        /* never return */
+    if( result == TRAP_REQUEST_FAILED ) {
+        Failure();
     }
     Access();
 #if defined( __WINDOWS__ ) && !defined( SERVER )
