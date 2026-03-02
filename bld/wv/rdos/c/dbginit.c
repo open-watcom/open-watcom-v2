@@ -112,6 +112,7 @@ void SetCmdArgStart( int num, char *ptr )
 void KillDebugger( int ret_code )
 {
     RdosUnloadExe( ret_code );
+    /* never return */
 }
 
 void GrabHandlers( void )

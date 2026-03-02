@@ -106,6 +106,7 @@ static void HupHandler( int signo )
     signo = signo;
     ReleaseProgOvlay( true );
     KillDebugger( 0 );
+    /* never return */
 }
 
 static bool TryXWindows( void )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,9 +142,8 @@ void SetCmdArgStart( int num, char *ptr )
 
 void KillDebugger( int rc )
 {
-    /* unused parameters */ (void)rc;
-
-    exit( 0 );
+    exit( rc );
+    /* never return */
 }
 
 void GrabHandlers( void )

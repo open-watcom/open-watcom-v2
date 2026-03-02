@@ -198,5 +198,5 @@ void StartupErr( const char *err )
 {
     PopErrBox( err );
     KillDebugger(1);
-    // never return
+    /* never return */
 }

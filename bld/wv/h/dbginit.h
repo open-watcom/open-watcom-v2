@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +31,11 @@
 ****************************************************************************/
 
 
+#include "wnoret.h"
+
+
 extern bool             TBreak( void );
-#ifdef __WATCOMC__
-#pragma aux KillDebugger __aborts
-#endif
-extern void             KillDebugger( int rc );
+NO_RETURN( extern void KillDebugger( int rc ) );
 extern void             GrabHandlers( void );
 extern void             RestoreHandlers( void );
 extern void             PopErrBox( const char *buff );

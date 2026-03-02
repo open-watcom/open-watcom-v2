@@ -127,6 +127,7 @@ static void HupHandler( int signo )
     /* Xqsh has gone away -- nothing to do except die */
     ReleaseProgOvlay( true );
     KillDebugger( 0 );
+    /* never return */
 }
 
 static bool TryXWindows( void )

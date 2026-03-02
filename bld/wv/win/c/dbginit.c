@@ -130,7 +130,7 @@ void SetCmdArgStart( int num, char *ptr )
 void KillDebugger( int ret_code )
 {
     TinyExit( ret_code );
-    // never return
+    /* never return */
 }
 
 void GrabHandlers( void )
