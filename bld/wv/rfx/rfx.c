@@ -125,6 +125,7 @@ static char             Name2[MAX_DRIVE + MAX_PATH + MAX_NAME + MAX_EXT + 2];
 static char             Name3[MAX_DRIVE + MAX_PATH + MAX_NAME + MAX_EXT + 2];
 static int              FilesCopied;
 static int              DirectoriesMade;
+NO_RETURN( static void NoMemory( void ) );
 
 static const char * const HelpText[] = {
     "",
@@ -218,6 +219,29 @@ static const char * const Day[] = {
 /* UTILITIES                                                              */
 /**************************************************************************/
 
+static void MemInit( void )
+{
+}
+
+static void MemFini( void )
+{
+}
+
+void *MemAlloc( size_t size )
+{
+    return( malloc( size ) );
+}
+
+char *MemStrdup( const char *str )
+{
+    return( strdup( str ) );
+}
+
+void MemFree( void *ptr )
+{
+    free( ptr );
+}
+
 static void Help( void )
 {
     const char  * const *txts;
@@ -295,7 +319,13 @@ void StartupErr( const char *err )
 {
     Error( err );
     exit( 2 );
-    // never return
+    /* never return */
+}
+
+static void NoMemory( void )
+{
+    StartupErr( "Insufficient memory" );
+    /* never return */
 }
 
 void RestoreHandlers( void )
@@ -306,28 +336,12 @@ void GrabHandlers( void )
 {
 }
 
-static void MemInit( void )
-{
-}
-
-static void MemFini( void )
-{
-}
-
-void *MemAlloc( size_t size )
-{
-    return( malloc( size ) );
-}
-
-void MemFree( void *chunk )
-{
-    free( chunk );
-}
 #if 0
 static void FreeRing( void )
 {
 }
 #endif
+
 static error_handle TransSetErr( error_handle errh )
 {
     ErrorStatus = errh;
@@ -337,15 +351,6 @@ static error_handle TransSetErr( error_handle errh )
 static error_handle SysSetLclErr( sys_error err )
 {
     return( TransSetErr( StashErrCode( err, OP_LOCAL ) ) );
-}
-
-static char *MyStrdup( const char *str ) {
-
-    char *new;
-
-    new = MemAlloc( strlen( str ) + 1 );
-    strcpy( new, str );
-    return( new );
 }
 
 static char *Copy( const void *s, void *d, unsigned len ) {
@@ -905,11 +910,15 @@ static void AddCopySpec( const char *src, const char *dst, object_loc src_loc, o
     COPYPTR     new;
 
     new = MemAlloc( sizeof( COPYSPEC ) );
+    if( new == NULL ) {
+        NoMemory();
+        /* never return */
+    }
     new->next = CopySpecs;
     CopySpecs = new;
-    new->src = MyStrdup( src );
+    new->src = MemStrdup( src );
     new->src_loc = src_loc;
-    new->dst = MyStrdup( dst );
+    new->dst = MemStrdup( dst );
     new->dst_loc = dst_loc;
 }
 
@@ -1293,46 +1302,46 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
 
     dh = (dir_handle *)MemAlloc( sizeof( dir_handle ) );
     if( dh == NULL ) {
+        NoMemory();
+        /* never return */
+    }
+    dh->status = RFX_OK;
+    dh->location = fnloc;
+    fspec = _FileParse( fspec, &parse );
+    if( parse.name[0] == NULLCHAR ) {
+        parse.name[0] = '*';
+        parse.name[1] = NULLCHAR;
+        if( parse.ext[0] == NULLCHAR ) {
+            parse.ext[0] = '.';
+            parse.ext[1] = '*';
+            parse.ext[2] = NULLCHAR;
+            if( !parse.slash && parse.path[0] != NULLCHAR ) {
+                CopyStr( "\\", parse.path + strlen( parse.path ) );
+            }
+        }
+    } else if( IsDir( fspec, fnloc ) ) {
+        CopyStr( "\\", CopyStr( parse.ext, CopyStr( parse.name, parse.path + strlen( parse.path ) ) ) );
+        parse.name[0] = '*';
+        parse.name[1] = NULLCHAR;
+        parse.ext[0] = '.';
+        parse.ext[1] = '*';
+        parse.ext[2] = NULLCHAR;
+    } else if( parse.ext[0] == NULLCHAR ) {
+        parse.ext[0] = '.';
+        parse.ext[1] = '*';
+        parse.ext[2] = NULLCHAR;
+    }
+    Squish( &parse, dh->path );
+    if( GetFreeSpace( dh, fnloc ) ) {
+        errh = _FindFirst( dh->path, dh->location, IO_SUBDIRECTORY, &dh->info, sizeof( dh->info ) );
+        if( errh == 0 ) {
+            return( dh );
+        }
         SysSetLclErr( IO_FIND_ERROR );
     } else {
-        dh->status = RFX_OK;
-        dh->location = fnloc;
-        fspec = _FileParse( fspec, &parse );
-        if( parse.name[0] == NULLCHAR ) {
-            parse.name[0] = '*';
-            parse.name[1] = NULLCHAR;
-            if( parse.ext[0] == NULLCHAR ) {
-                parse.ext[0] = '.';
-                parse.ext[1] = '*';
-                parse.ext[2] = NULLCHAR;
-                if( !parse.slash && parse.path[0] != NULLCHAR ) {
-                    CopyStr( "\\", parse.path + strlen( parse.path ) );
-                }
-            }
-        } else if( IsDir( fspec, fnloc ) ) {
-            CopyStr( "\\", CopyStr( parse.ext, CopyStr( parse.name, parse.path + strlen( parse.path ) ) ) );
-            parse.name[0] = '*';
-            parse.name[1] = NULLCHAR;
-            parse.ext[0] = '.';
-            parse.ext[1] = '*';
-            parse.ext[2] = NULLCHAR;
-        } else if( parse.ext[0] == NULLCHAR ) {
-            parse.ext[0] = '.';
-            parse.ext[1] = '*';
-            parse.ext[2] = NULLCHAR;
-        }
-        Squish( &parse, dh->path );
-        if( GetFreeSpace( dh, fnloc ) ) {
-            errh = _FindFirst( dh->path, dh->location, IO_SUBDIRECTORY, &dh->info, sizeof( dh->info ) );
-            if( errh == 0 ) {
-                return( dh );
-            }
-            SysSetLclErr( IO_FIND_ERROR );
-        } else {
-            SysSetLclErr( IO_BAD_DRIVE );
-        }
-        DirClosef( dh );
+        SysSetLclErr( IO_BAD_DRIVE );
     }
+    DirClosef( dh );
     return( NULL );
 }
 
@@ -1958,9 +1967,13 @@ int main( int argc, char **argv )
     int     rc;
 
     rc = 0;
-    InitDbgSwitches();
     MemInit();
+    InitDbgSwitches();
     TxtBuff = MemAlloc( 512 );
+    if( TxtBuff == NULL ) {
+        NoMemory();
+        /* never return */
+    }
     SysFileInit();
     if( argc < 2 || argv[1][0] == '?' ) {
         Usage();

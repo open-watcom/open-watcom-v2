@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,13 @@
 ****************************************************************************/
 
 
+#include "wnoret.h"
+
 #define RFX_INVALID_FILE_ATTRIBUTES     (-1)
 
 #define DRIVECHAR(x)    ((x >= 'a' && x <= 'z') ? x & ~0x20 : x)
 
-extern void     StartupErr( const char * );
+NO_RETURN( extern void StartupErr( const char * ) );
 extern char     *StrCopyDst( const char *src, char *dest );
 extern void     InitInt( void );
 extern void     FiniInt( void );
