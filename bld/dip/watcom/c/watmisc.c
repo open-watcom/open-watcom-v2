@@ -259,10 +259,9 @@ static search_result DoLookupSym( imp_image_handle *iih, symbol_source ss,
         ish = DCSymCreate( iih, d );
         if( ish == NULL ) {
             return( SR_FAIL );
-        } else {
-            CollectSymHdl( li->name.start, ish );
-            return( SR_EXACT );
         }
+        CollectSymHdl( li->name.start, ish );
+        return( SR_EXACT );
     }
     if( li->type == ST_NAMESPACE )
         return( SR_NONE );

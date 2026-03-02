@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -652,27 +652,26 @@ static search_result SearchEnumTypeName( imp_image_handle *iih, imp_mod_handle i
             if( ish == NULL ) {
                 sr = SR_FAIL;
                 break;
-            } else {
-                ish->imh = imh;
-                ish->name_off = (byte)( NamePtr( p ) - p );
-                ish->u.typ.t.entry = entry;
-                ish->u.typ.t.offset = p - Type->start;
-                if( (MGET_U8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
-                    ish->type = SH_CST;
-                    ish->u.typ.h.offset = state.header - Type->start;
-                    ish->u.typ.h.entry = entry;
-                } else {
-                    ish->type = SH_TYP;
-                }
-                /*
-                 * we really should continue searching for more names that
-                 * match, but we're going to early out because I know that
-                 * the symbolic info format is too weak to have more than
-                 * one type name or enum const that will match
-                 */
-                sr = SR_EXACT;
-                break;
             }
+            ish->imh = imh;
+            ish->name_off = (byte)( NamePtr( p ) - p );
+            ish->u.typ.t.entry = entry;
+            ish->u.typ.t.offset = p - Type->start;
+            if( (MGET_U8( p + 1 ) & CLASS_MASK) == ENUM_TYPE ) {
+                ish->type = SH_CST;
+                ish->u.typ.h.offset = state.header - Type->start;
+                ish->u.typ.h.entry = entry;
+            } else {
+                ish->type = SH_TYP;
+            }
+            /*
+             * we really should continue searching for more names that
+             * match, but we're going to early out because I know that
+             * the symbolic info format is too weak to have more than
+             * one type name or enum const that will match
+             */
+            sr = SR_EXACT;
+            break;
         }
         if( state.hit_eof ) {
             break;
@@ -1751,15 +1750,14 @@ search_result SearchMbr( imp_image_handle *iih, imp_type_handle *ith,
                         if( ish == NULL ) {
                             sr = SR_FAIL;
                             break;
-                        } else {
-                            ish->u.typ.t.offset = p - Type->start;
-                            ish->u.typ.t.entry = Type->entry;
-                            ish->name_off = (byte)( name - p );
-                            ish->imh = ith->imh;
-                            ish->u.typ.h = ith->t;
-                            ish->type = SH_MBR;
-                            sr = SR_EXACT;
                         }
+                        ish->u.typ.t.offset = p - Type->start;
+                        ish->u.typ.t.entry = Type->entry;
+                        ish->name_off = (byte)( name - p );
+                        ish->imh = ith->imh;
+                        ish->u.typ.h = ith->t;
+                        ish->type = SH_MBR;
+                        sr = SR_EXACT;
                     }
                 }
             }
