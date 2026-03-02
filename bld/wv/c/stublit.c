@@ -101,7 +101,7 @@ char *DUILoadString( dui_res_id id )
     }
     buffer[len++] = NULLCHAR;
 #endif
-    ret = MemAlloc( len );
+    ret = MemAllocSafe( len );
     strcpy( ret, buffer );
     return( ret );
 }

@@ -337,7 +337,7 @@ void ProcPaint( void )
     } else {
         set = WndClassColour[wndclass];
         if( set == NULL ) {
-            set = MemAlloc( sizeof( WndColours ) );
+            set = MemAllocSafe( sizeof( WndColours ) );
             memcpy( set, WndColours, sizeof( WndColours ) );
             WndClassColour[wndclass] = set;
         }

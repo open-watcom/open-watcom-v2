@@ -459,7 +459,7 @@ void WndMenuSetHotKey( gui_menu_struct *menu, bool is_main, const char *key )
         }
     }
     len = cp - menu->label;
-    new = MemAlloc( len + 1 + strlen( key ) + 1 );
+    new = MemAllocSafe( len + 1 + strlen( key ) + 1 );
     memcpy( new, menu->label, len );
     p = new + len;
     *p++ = '\t';

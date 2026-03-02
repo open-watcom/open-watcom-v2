@@ -69,7 +69,7 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
             continue;
         return( &curr->list );
     }
-    curr = MemAlloc( sizeof( *curr ) );
+    curr = MemAllocSafe( sizeof( *curr ) );
     wf = 0;
     if( code )
         wf |= WF_CODE;

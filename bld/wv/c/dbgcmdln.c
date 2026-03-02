@@ -283,7 +283,7 @@ static void GetTrapParm( int pass )
     *start++ = TRAP_PARM_SEPARATOR;
     GetRawItem( start );
     if( pass == 2 ) {
-        start = MemAlloc( strlen( parm ) + strlen( TrapParms ) + 1 );
+        start = MemAllocSafe( strlen( parm ) + strlen( TrapParms ) + 1 );
         StrCopyDst( parm, StrCopyDst( TrapParms, start ) );
         MemFree( TrapParms );
         TrapParms = start;
@@ -299,7 +299,7 @@ static void GetInitCmd( int pass )
     GetRawItem( cmd );
     if( pass == 2 ) {
         MemFree( InitCmdList );
-        InitCmdList = MemAlloc( strlen( cmd ) + 1 );
+        InitCmdList = MemAllocSafe( strlen( cmd ) + 1 );
         StrCopyDst( cmd, InitCmdList );
     }
 }

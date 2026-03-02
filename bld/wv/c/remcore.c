@@ -705,7 +705,7 @@ void RemoteGetSysConfig( void )
 bool InitCoreSupp( void )
 {
     if( MData == NULL ) {
-        MData = MemAlloc( sizeof( *MData ) );
+        MData = MemAllocSafe( sizeof( *MData ) );
         MData->len = sizeof( MData->data );
         ClearMachineDataCache();
         RemoteGetSysConfig();

@@ -113,7 +113,7 @@ static void     ModInit( a_window wnd )
     mod->info = NULL;
     size = sizeof( modinfo ) * ModListNumRows( ModList( mod ) );
     if( size != 0 ) {
-        mod->info = MemAlloc( size );
+        mod->info = MemAllocSafe( size );
         memset( mod->info, 0, size );
     }
     ModCalcIndent( wnd );

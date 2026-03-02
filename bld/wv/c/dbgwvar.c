@@ -218,8 +218,8 @@ static  void    WNDCALLBACK VarModify( a_window wnd, wnd_row row, wnd_piece piec
         break;
     case VAR_PIECE_VALUE:
         if( !VarExpandable( class ) ) {
-            char *value = MemAlloc( TXT_LEN );
-            char *title = MemAlloc( TXT_LEN );
+            char *value = MemAllocSafe( TXT_LEN );
+            char *title = MemAllocSafe( TXT_LEN );
             old_radix = VarNewCurrRadix( v );
             ExprValue( ExprSP );
             VarBuildName( &var->i, v, false );

@@ -213,7 +213,7 @@ static  void    AsmResize( a_window wnd )
     if( size <= 0 )
         size = 1;
     first = asw->ins[0].addr;
-    new_ins = MemAlloc( size * sizeof( *new_ins ) );
+    new_ins = MemAllocSafe( size * sizeof( *new_ins ) );
     memset( new_ins, 0, size * sizeof( *new_ins ) );
     if( new_ins == NULL ) {
         WndClose( wnd );
@@ -969,7 +969,7 @@ static  void    AsmInit( a_window wnd )
     size = WndRows( wnd );
     if( size <= 0 )
         size = 1;
-    asw->ins = MemAlloc( size * sizeof( *asw->ins ) );
+    asw->ins = MemAllocSafe( size * sizeof( *asw->ins ) );
     memset( asw->ins, 0, size * sizeof( *asw->ins ) );
     asw->ins_size = size;
     if( asw->ins == NULL ) {

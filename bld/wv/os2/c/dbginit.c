@@ -95,7 +95,7 @@ void GUImain( void )
     watcom_setup_env();
 
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = MemAlloc( cmd_len );
+    cmd_line = MemAllocSafe( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     CmdData = cmd_line;
     //TODO: replace with exception handler

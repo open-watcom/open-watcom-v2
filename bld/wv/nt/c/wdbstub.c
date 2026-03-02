@@ -396,7 +396,7 @@ char *GetCmdPartByChar( const char *cmd, const char *delimit )
     if( len > pos ) {
         len = pos;
     }
-    result = MemAlloc( sizeof( char ) * ( len + 1 ) );
+    result = MemAllocSafe( sizeof( char ) * ( len + 1 ) );
     strncpy( result, cmd, len );
     result[len] = NULLCHAR;
     MyStrTrim( result );
@@ -417,11 +417,11 @@ char *GetParamPartByChar( const char *cmd, const char *delimit )
     pos = strcspn( cmd, delimit );
     len = strlen( cmd );
     if( pos == len ) {
-        result = MemAlloc( sizeof( char ) * 1 );
+        result = MemAllocSafe( sizeof( char ) * 1 );
         strncpy( result, "\0" , 1 );
     } else {
         len -= pos;
-        result = MemAlloc( sizeof( char ) * ( len + 1 ) );
+        result = MemAllocSafe( sizeof( char ) * ( len + 1 ) );
         strncpy( result, cmd + pos + 1, len + 1 );
         result[len] = NULLCHAR;
     }

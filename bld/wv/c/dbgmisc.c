@@ -709,7 +709,7 @@ void NameThread( dtid_t tid, const char *name )
 
     for( owner = &HeadThd; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->tid == tid ) {
-            new = MemAlloc( sizeof( thread_state ) + strlen( name ) );
+            new = MemAllocSafe( sizeof( thread_state ) + strlen( name ) );
             *new = *curr;
             *owner = new;
             strcpy( new->name, name );

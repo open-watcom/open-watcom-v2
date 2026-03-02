@@ -294,7 +294,7 @@ static type_display *VarDisplayAddType( type_display **owner, const char *name )
 {
     type_display        *new;
 
-    new = MemAlloc( sizeof( *new ) + strlen( name ) );
+    new = MemAllocSafe( sizeof( *new ) + strlen( name ) );
     memset( new, 0, sizeof( *new ) );
     strcpy( new->name, name );
     while( *owner != NULL )

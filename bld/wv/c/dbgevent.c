@@ -125,7 +125,7 @@ static void AddEvent( const char *start, size_t len, address ip )
     event_record        *new;
 
     owner = FindOwner( NULL );
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->addr_string = NULL;
     new->cue = NULL;
     new->next = NULL;

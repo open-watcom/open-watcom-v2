@@ -251,7 +251,7 @@ void SetTokens( bool parse_tokens )
 
 void LangInit( void )
 {
-    ParseTable = MemAlloc( PARSE_TABLE_INIT );
+    ParseTable = MemAllocSafe( PARSE_TABLE_INIT );
     ParseTableSize = PARSE_TABLE_INIT;
 }
 

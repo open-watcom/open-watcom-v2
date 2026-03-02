@@ -85,8 +85,8 @@ void MemInitTypes( mad_type_kind mas, mem_type_walk_data *data )
     MADTypeWalk( mas, MadMemTypeWalk, data );
     if( data->num_types == 0 )
         return;
-    data->labels = MemAlloc( data->num_types * sizeof( *data->labels ) );
-    data->info = MemAlloc( data->num_types * sizeof( *data->info ) );
+    data->labels = MemAllocSafe( data->num_types * sizeof( *data->labels ) );
+    data->info = MemAllocSafe( data->num_types * sizeof( *data->info ) );
     data->num_types = 0;
     MADTypeWalk( mas, MadMemTypeWalk, data );
 }
