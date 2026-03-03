@@ -40,24 +40,13 @@
 
 typedef void (*err_act)( void );
 
-typedef struct {
-    int       num;            // index
-    int       message;        // message displayed
-} Msg_Struct;
-
-static const Msg_Struct Fatal_Msg[] = {
-    #define pick( cmd, number, msg )    { number, msg },
-    #include "fatald.h"
-    #undef pick
-};
-
 extern bool             write_to_file;  // write if there is no error
 
 void CloseAsmFile( int i )
 {
     if( AsmFiles.file[i] != NULL ) {
         if( fclose( AsmFiles.file[i] ) != 0 ) {
-            Fatal( MSG_CANNOT_CLOSE_FILE, AsmFiles.fname[i] );
+            Fatal( CANNOT_CLOSE_FILE, AsmFiles.fname[i] );
         }
         AsmFiles.file[i] = NULL;
     }
@@ -84,16 +73,17 @@ void Fatal( unsigned msg, ... )
 /*****************************/
 {
     va_list     arg;
-    int         i;
 
     MsgPrintf( MSG_ERROR );
-    MsgPrintf( Fatal_Msg[msg].message );
-    if( Fatal_Msg[msg].num > 0 ) {
+    MsgPrintf( msg );
+    switch( msg ) {
+    case CANNOT_OPEN_FILE:
+    case CANNOT_CLOSE_FILE:
+    case OBJECT_FILE_ERROR:
         va_start( arg, msg );
-        for( i=Fatal_Msg[msg].num; i > 0; i-- ) {
-            printf( "%s", va_arg( arg, char * ) );
-        }
+        printf( "%s", va_arg( arg, char * ) );
         va_end( arg );
+        break;
     }
     printf("\n");
     longjmp( errjmp, 3 );

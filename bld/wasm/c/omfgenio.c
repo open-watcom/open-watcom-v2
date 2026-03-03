@@ -62,7 +62,7 @@ static void safeSeek( long offset, int mode )
 /**/myassert( AsmFiles.file[OBJ] != NULL );
 
     if( fseek( AsmFiles.file[OBJ], offset, mode ) ) {
-        Fatal( MSG_OBJECT_FILE_ERROR, "fseek" );
+        Fatal( OBJECT_FILE_ERROR, "fseek" );
     }
 }
 
@@ -72,7 +72,7 @@ static void safeWrite( const uint_8 *buf, uint_16 len )
 /**/myassert( AsmFiles.file[OBJ] != NULL );
 
     if( fwrite( buf, 1, len, AsmFiles.file[OBJ] ) != len ) {
-        Fatal( MSG_OBJECT_FILE_ERROR, "fwrite" );
+        Fatal( OBJECT_FILE_ERROR, "fwrite" );
     }
 }
 
@@ -82,7 +82,7 @@ void ObjWriteOpen( void )
 /*
     pobjState.file_out = ObjWriteOpen( AsmFiles.fname[OBJ] );
     if( pobjState.file_out == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
+        Fatal( CANNOT_OPEN_FILE, AsmFiles.fname[OBJ] );
     }
 */
     char    *obj_name;
@@ -90,7 +90,7 @@ void ObjWriteOpen( void )
     obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
     AsmFiles.file[OBJ] = fopen( obj_name, "wb" );
     if( AsmFiles.file[OBJ] == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, obj_name );
+        Fatal( CANNOT_OPEN_FILE, obj_name );
     }
     pobjState = MemAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
     pobjState->in_buf = 0;

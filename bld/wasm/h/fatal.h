@@ -33,14 +33,6 @@
 #ifndef _FATAL_H_
 #define _FATAL_H_
 
-enum {
-    #define pick( cmd, number, msg )  cmd,
-    #include "fatald.h"
-    #undef pick
-};
-
-/* number = number of arguments that follow; ret = return value */
-
 extern void     Fatal( unsigned msg, ... );
 extern void     CloseAsmFile( int type );
 extern void     AsmCloseFiles( void );

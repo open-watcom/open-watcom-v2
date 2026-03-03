@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "asmalloc.h"
+#include "asmerr.h"
 #include "fatal.h"
 #include "memfuncs.h"
 #ifdef TRMEM
@@ -100,7 +101,7 @@ void MemFini( void )
 static void *check_nomem( void *ptr )
 {
     if( ptr == NULL ) {
-        Fatal( MSG_OUT_OF_MEMORY );
+        Fatal( OUT_OF_MEMORY );
     }
     return( ptr );
 }

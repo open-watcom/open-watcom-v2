@@ -313,10 +313,10 @@ static void srcFileName( const char *token )
 
     if( token == NULL ) {
         MsgGet( SOURCE_FILE, msgbuf );
-        Fatal( MSG_CANNOT_OPEN_FILE, msgbuf );
+        Fatal( CANNOT_OPEN_FILE, msgbuf );
     }
     if( AsmFiles.fname[ASM] != NULL ) {
-        Fatal( MSG_TOO_MANY_FILES );
+        Fatal( TOO_MANY_FILES );
     }
     _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
@@ -405,7 +405,7 @@ static void open_files( void )
     /* open ASM file */
     AsmFiles.file[ASM] = fopen( AsmFiles.fname[ASM], "r" );
     if( AsmFiles.file[ASM] == NULL ) {
-        Fatal( MSG_CANNOT_OPEN_FILE, AsmFiles.fname[ASM] );
+        Fatal( CANNOT_OPEN_FILE, AsmFiles.fname[ASM] );
     }
 
     /* open OBJ file */
