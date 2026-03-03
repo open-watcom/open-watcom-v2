@@ -704,7 +704,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     *output_ptr++ = '\0';
     tokbuf->count = 0;
     tok = tokbuf->tokens;
-    while( tokbuf->count < MAX_TOKEN ) {
+    while( tokbuf->count < MAX_TOKEN_COUNT ) {
         tok->string_ptr = output_ptr;
         while( isspace( *ptr ) ) {
             ptr++;
@@ -725,14 +725,14 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
                 if( tok->u.token == T_COMMENT ) {
                     tok++;
                     tokbuf->count++;
-                    if( tokbuf->count >= MAX_TOKEN )
+                    if( tokbuf->count >= MAX_TOKEN_COUNT )
                         break;
                     get_comment( tok, &ptr, &output_ptr );
                 } else if( tok->u.token == T_INCLUDE || tok->u.token == T_INCLUDELIB ) {
                     // this mess allows include directives with undelimited file names
                     tok++;
                     tokbuf->count++;
-                    if( tokbuf->count >= MAX_TOKEN )
+                    if( tokbuf->count >= MAX_TOKEN_COUNT )
                         break;
                     get_inc_path( tok, &ptr, &output_ptr );
                 } else if( tok->u.token == T_DOT_RADIX ) {

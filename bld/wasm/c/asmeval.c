@@ -43,11 +43,11 @@
 static struct {
     token_idx           idx;
     bool                close_bracket;
-} TakeOut[MAX_TOKEN + 1];
+} TakeOut[MAX_TOKEN_COUNT + 1];
 
 static token_idx        TokCnt;
 
-static asm_tok          Store[MAX_TOKEN + 1];
+static asm_tok          Store[MAX_TOKEN_COUNT + 1];
 
 static int              op_sq_bracket_level;
 static bool             error_msg;
@@ -2142,7 +2142,7 @@ static void fix_final( token_buffer *tokbuf )
             tokbuf->tokens[TakeOut[i].idx].class = TC_OP_BRACKET;
             dup_count++;
         }
-        myassert( i < MAX_TOKEN );
+        myassert( i < MAX_TOKEN_COUNT );
     }
 
     for( start = 0; start < TokCnt; start++ ) {

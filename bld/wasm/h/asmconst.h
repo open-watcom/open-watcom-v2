@@ -39,7 +39,7 @@
 #define RC_ERROR                true
 #define RC_OK                   false
 
-#define MAX_TOKEN               100     // there is no restriction for this number
+#define MAX_TOKEN_COUNT         100     // there is no restriction for this number
 #define MAX_LINE_LEN            512     // there is no restriction for this number
 #define MAX_TOK_LEN             256
 #define MAX_FILE_NAME           30
@@ -56,6 +56,6 @@
 #define NULLC                   '\0'
 #define NULLS                   "\0"
 
-#define INVALID_IDX             (MAX_TOKEN + 1)
+#define INVALID_IDX             (MAX_TOKEN_COUNT + 1)
 #define ISVALID_IDX(x)          ((x)<INVALID_IDX)
 #define ISINVALID_IDX(x)        ((x)>=INVALID_IDX)
