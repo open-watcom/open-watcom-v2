@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1276,11 +1276,8 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
 /****************************************************************/
 {
     RcStatus            ret;
-    char                *buffer;
     ResLocation         loc;
     long                pos;
-
-    buffer = MemAllocSafe( FONT_BUFFER_SIZE );
 
     loc.start = SemStartResource();
 
@@ -1293,7 +1290,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = SemCopyDataUntilEOF( pos, fp, buffer, FONT_BUFFER_SIZE, err_code );
+            ret = SemCopyDataUntilEOF( pos, fp, FONT_BUFFER_SIZE, err_code );
         }
     }
 
@@ -1302,8 +1299,6 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
      * add the font to the RES file directory
      */
     SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
-
-    MemFree( buffer );
 
     return( ret );
 } /* copyFont */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +56,7 @@ typedef struct DataElemList {
 } DataElemList;
 
 extern void         SemWriteRawDataItem( RawDataItem item );
-extern RcStatus     SemCopyDataUntilEOF( long offset, FILE *fp, void *buff, unsigned buffsize, int *err_code );
+extern RcStatus     SemCopyDataUntilEOF( long offset, FILE *fp, unsigned block_size, int *err_code );
 extern ResLocation  SemCopyRawFile( const char *filename );
 extern ResLocation  SemCopyRawFileOnly( const char *filename );
 extern ResLocation  SemFlushDataElemList( DataElemList *head, bool call_startend );
