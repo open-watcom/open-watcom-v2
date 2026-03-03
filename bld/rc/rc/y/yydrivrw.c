@@ -305,8 +305,8 @@ static void newParseStack( parse_stack *stack )
     /*
      * get new stack
      */
-    stack->vstack = MemAlloc( STACK_MAX * sizeof( YYSTYPE ) );
-    stack->sstack = MemAlloc( STACK_MAX * sizeof( YYACTTYPE ) );
+    stack->vstack = MemAllocSafe( STACK_MAX * sizeof( YYSTYPE ) );
+    stack->sstack = MemAllocSafe( STACK_MAX * sizeof( YYACTTYPE ) );
     initParseStack( stack );
 }
 
