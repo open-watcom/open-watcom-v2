@@ -34,7 +34,6 @@
 #include <stdarg.h>
 #include "directiv.h"
 #include "asminput.h"
-#include "fatal.h"
 #include "standalo.h"
 
 
@@ -156,6 +155,26 @@ void AsmWarn( int level, unsigned msgnum, ... )
         va_end( args2 );
         print_include_file_nesting_structure();
     }
+}
+
+void Fatal( unsigned msg, ... )
+/*****************************/
+{
+    va_list     arg;
+
+    MsgPrintf( MSG_ERROR );
+    MsgPrintf( msg );
+    switch( msg ) {
+    case CANNOT_OPEN_FILE:
+    case CANNOT_CLOSE_FILE:
+    case OBJECT_FILE_ERROR:
+        va_start( arg, msg );
+        printf( "%s", va_arg( arg, char * ) );
+        va_end( arg );
+        break;
+    }
+    printf("\n");
+    longjmp( errjmp, 3 );
 }
 
 static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2 )

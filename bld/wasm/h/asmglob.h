@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,8 @@ typedef struct global_vars{
 extern global_vars  Globals;
 extern jmp_buf      errjmp;
 
-extern char *CreateFileName( const char *template, const char *ext, bool forceext );
+extern char     *CreateFileName( const char *template, const char *ext, bool forceext );
+extern void     CloseAsmFile( int type );
 
 #endif
 

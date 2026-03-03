@@ -127,7 +127,6 @@ static typeinfo TypeInfo[] = {
 #define IDEAL_LOCAL_STRING       "bp-"
 #define IDEAL_LOCAL_STRING_32    "ebp-"
 
-extern bool             write_to_file;  // write if there is no error
 extern unsigned         BufSize;
 extern bool             DefineProc;     // true if the definition of procedure
                                         // has not ended

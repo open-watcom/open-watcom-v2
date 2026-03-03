@@ -40,7 +40,6 @@
 #include <string.h>
 #include "asmalloc.h"
 #include "asmerr.h"
-#include "fatal.h"
 #include "memfuncs.h"
 #ifdef TRMEM
     #include "trmem.h"

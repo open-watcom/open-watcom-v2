@@ -83,7 +83,6 @@ typedef struct file_list {
 extern void             FreeForceInclude( void );
 
 extern bool             in_prologue;
-extern bool             write_to_file;
 extern bool             CheckSeg;
 extern bool             DefineProc;             // true if the definition of procedure
                                                 // has not ended

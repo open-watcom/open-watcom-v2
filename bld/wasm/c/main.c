@@ -36,7 +36,6 @@
     #include <process.h>
 #endif
 #include "asmalloc.h"
-#include "fatal.h"
 #include "asmexpnd.h"
 #include "swchar.h"
 #include "asminput.h"
@@ -389,10 +388,37 @@ static void main_init( void )
     ObjRecInit();
 }
 
+void CloseAsmFile( int i )
+{
+    if( AsmFiles.file[i] != NULL ) {
+        if( fclose( AsmFiles.file[i] ) != 0 ) {
+            Fatal( CANNOT_CLOSE_FILE, AsmFiles.fname[i] );
+        }
+        AsmFiles.file[i] = NULL;
+    }
+}
+
+static void close_files( void )
+/*****************************/
+{
+    /* close ASM file */
+    CloseAsmFile( ASM );
+
+    /* close OBJ file */
+    ObjWriteClose( !write_to_file || Options.error_count > 0 );
+    ObjRecFini();
+    CloseAsmFile( LST );
+    CloseAsmFile( ERR );
+    MemFree( AsmFiles.fname[ASM] );
+    MemFree( AsmFiles.fname[ERR] );
+    MemFree( AsmFiles.fname[LST] );
+    MemFree( AsmFiles.fname[OBJ] );
+}
+
 static void main_fini( void )
 /***************************/
 {
-    AsmCloseFiles();
+    close_files();
     free_names();
     MemFree( SrcFName );
     MemFree( SrcModuleName );

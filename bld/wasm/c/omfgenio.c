@@ -34,7 +34,6 @@
 #include <string.h>
 #include "asmglob.h"
 #include "asmalloc.h"
-#include "fatal.h"
 #include "omfgenio.h"
 #include "omfobjre.h"
 #include "myassert.h"

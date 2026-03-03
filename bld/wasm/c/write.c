@@ -36,7 +36,6 @@
 #include <time.h>
 #include <sys/stat.h>
 #include "asmalloc.h"
-#include "fatal.h"
 #include "asmeval.h"
 #include "asmglob.h"
 #include "omffixup.h"
