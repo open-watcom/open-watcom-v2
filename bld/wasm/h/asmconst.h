@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,6 @@
 #define MAX_TOKEN_COUNT         100     // there is no restriction for this number
 #define MAX_LINE_LEN            512     // there is no restriction for this number
 #define MAX_TOK_LEN             256
-#define MAX_FILE_NAME           30
 #define MAX_ID_LEN              247
 #define MAX_MEMORY              1024
 #define MAX_LINE                1024

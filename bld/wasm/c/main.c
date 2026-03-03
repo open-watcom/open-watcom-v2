@@ -54,16 +54,8 @@
 #include "clibext.h"
 
 
-extern void             Fatal( unsigned msg, ... );
-extern void             DelErrFile( void );
-
-#if defined( __WATCOMC__ ) && defined( _M_IX86 )
-unsigned char   _8087 = 0;
-unsigned char   _real87 = 0;
-#endif
-
-File_Info               AsmFiles;       // files information
-char                    *ModuleName = NULL;
+#define MAX_NESTING     15
+#define BUF_SIZE        512
 
 struct  option {
     char        *option;
@@ -71,8 +63,17 @@ struct  option {
     void        (*function)( void );
 };
 
-#define MAX_NESTING     15
-#define BUF_SIZE        512
+extern void         Fatal( unsigned msg, ... );
+extern void         DelErrFile( void );
+
+#if defined( __WATCOMC__ ) && defined( _M_IX86 )
+unsigned char       _8087 = 0;
+unsigned char       _real87 = 0;
+#endif
+
+File_Info           AsmFiles;       // files information
+char                *ModuleName = NULL;
+jmp_buf             errjmp;
 
 sw_data SWData = {
     false, // real mode CPU instructions set
@@ -81,13 +82,6 @@ sw_data SWData = {
     -1,    // unspecified memory model
     -1     // unspecified FP mode
 };
-
-static char             *ForceInclude = NULL;
-static const char       *switch_start = NULL;
-static char             *SrcFName = NULL;
-static char             *SrcModuleName = NULL;
-
-jmp_buf                 errjmp;
 
 global_options Options = {
     false,              // sign_value
@@ -126,6 +120,11 @@ global_options Options = {
     0,                  // trace stack
     true                // instructions optimization
 };
+
+static char             *ForceInclude = NULL;
+static const char       *switch_start = NULL;
+static char             *SrcFName = NULL;
+static char             *SrcModuleName = NULL;
 
 static void usage_msg( void )
 /***************************/
