@@ -393,8 +393,10 @@ static void main_init( void )
 static void main_fini( void )
 /***************************/
 {
+    AsmCloseFiles();
     free_names();
-    AsmShutDown();
+    MemFree( SrcFName );
+    MemFree( SrcModuleName );
 }
 
 static void open_files( void )
@@ -1122,11 +1124,11 @@ static bool do_init_stuff( void )
 //    char        msgbuf[MAX_MESSAGE_SIZE];
     OPT_STORAGE data;
     char        *target_name;
-    char 		**cmdline;
+    char        **cmdline;
 #if !defined( __UNIX__ )
     int         cmd_len;
     char        *cmd_line;
-    char 		*argv[2];
+    char        *argv[2];
 #endif
 
 #if defined( __UNIX__ )
@@ -1170,8 +1172,6 @@ static bool do_init_stuff( void )
 static void do_fini_stuff( void )
 /*******************************/
 {
-    MemFree( SrcFName );
-    MemFree( SrcModuleName );
 }
 
 #if defined( __UNIX__ ) && !defined( __WATCOMC__ )

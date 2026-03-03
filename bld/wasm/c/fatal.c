@@ -63,8 +63,8 @@ void CloseAsmFile( int i )
     }
 }
 
-void AsmShutDown( void )
-/**********************/
+void AsmCloseFiles( void )
+/************************/
 {
     /* close ASM file */
     CloseAsmFile( ASM );
@@ -81,7 +81,7 @@ void AsmShutDown( void )
 }
 
 void Fatal( unsigned msg, ... )
-/******************************/
+/*****************************/
 {
     va_list     arg;
     int         i;

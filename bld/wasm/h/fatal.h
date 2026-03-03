@@ -43,6 +43,6 @@ enum {
 
 extern void     Fatal( unsigned msg, ... );
 extern void     CloseAsmFile( int type );
-extern void     AsmShutDown( void );
+extern void     AsmCloseFiles( void );
 
 #endif
