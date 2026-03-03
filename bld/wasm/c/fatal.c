@@ -43,12 +43,10 @@ typedef void (*err_act)( void );
 typedef struct {
     int       num;            // index
     int       message;        // message displayed
-    err_act   action;         // function to call, if any
-    int       ret;            // exit code
 } Msg_Struct;
 
 static const Msg_Struct Fatal_Msg[] = {
-    #define pick( cmd, number, msg, act, ret )    { number, msg, act, ret },
+    #define pick( cmd, number, msg )    { number, msg },
     #include "fatald.h"
     #undef pick
 };
@@ -98,8 +96,5 @@ void Fatal( unsigned msg, ... )
         va_end( arg );
     }
     printf("\n");
-    if( Fatal_Msg[msg].action != NULL ) {
-        Fatal_Msg[msg].action();
-    }
-    exit( Fatal_Msg[msg].ret );
+    longjmp( errjmp, 3 );
 }

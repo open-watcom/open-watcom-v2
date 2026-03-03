@@ -34,7 +34,7 @@
 #define _FATAL_H_
 
 enum {
-    #define pick( cmd, number, msg, act, ret )  cmd,
+    #define pick( cmd, number, msg )  cmd,
     #include "fatald.h"
     #undef pick
 };
