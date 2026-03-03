@@ -73,6 +73,12 @@ typedef unsigned        uint32;
 
 #define msg(a,b)     static const char MSG_##a[]=b
 
+#if defined( _WIN64 )
+typedef unsigned __int64    _trmem_size;
+#else
+typedef unsigned long       _trmem_size;
+#endif
+
 msg(OUT_OF_MEMORY,      "Tracker out of memory" );
 msg(CHUNK_BYTE_UNFREED, "%U chunks (%Z bytes) unfreed" );
 msg(SIZE_ZERO,          "%W size zero" );
@@ -127,7 +133,7 @@ struct Entry {
     entry_ptr       next;
     void            *mem;
     _trmem_who      who;
-    size_t          size;       // real size = tr ^ mem ^ who ^ size
+    _trmem_size     size;       // real size = tr ^ mem ^ who ^ size
     uint32          when;
 };
 
@@ -153,18 +159,18 @@ static int isValidChunk( entry_ptr, const char *, _trmem_who, _trmem_hdl );
 
 static void setSize( entry_ptr p, size_t size )
 {
-    p->size = size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p;
+    p->size = (_trmem_size)size ^ (_trmem_size)p->mem ^ (_trmem_size)p->who ^ (_trmem_size)p;
 }
 
 static size_t getSize( entry_ptr p )
 {
-    return( p->size ^ (size_t)p->mem ^ (size_t)p->who ^ (size_t)p );
+    return( p->size ^ (_trmem_size)p->mem ^ (_trmem_size)p->who ^ (_trmem_size)p );
 }
 
 static char *mystpcpy( char *dest, const char *src )
 {
     *dest = *src;
-    while( *dest ) {
+    while( *dest != '\0' ) {
         ++dest;
         ++src;
         *dest = *src;
@@ -701,8 +707,9 @@ char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
     if( size < hdl->min_alloc ) {
         trPrt( hdl, MSG_MIN_ALLOC, "Strdup", who, size );
     }
-    mem = hdl->strdup( str );
+    mem = hdl->alloc( size + 1 );
     if( mem != NULL ) {
+        strcpy( mem, str );
         *(unsigned char *)_PtrAdd( mem, size ) = MARKER_BYTE;
         tr = allocEntry( hdl );
         if( tr != NULL ) {
