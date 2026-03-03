@@ -87,6 +87,8 @@ static const char       *switch_start = NULL;
 static char             *SrcFName = NULL;
 static char             *SrcModuleName = NULL;
 
+jmp_buf                 errjmp;
+
 global_options Options = {
     false,              // sign_value
     false,              // stop_at_end
@@ -380,7 +382,6 @@ static void main_init( void )
 {
     int         i;
 
-    MemInit();
     for( i = 0; i < FILE_TYPES; i++ ) {
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
@@ -1115,16 +1116,32 @@ static void set_options( OPT_STORAGE *data )
     }
 }
 
-static void do_init_stuff( char **cmdline )
-/*****************************************/
+static bool do_init_stuff( void )
+/**************************************/
 {
 //    char        msgbuf[MAX_MESSAGE_SIZE];
     OPT_STORAGE data;
     char        *target_name;
+    char 		**cmdline;
+#if !defined( __UNIX__ )
+    int         cmd_len;
+    char        *cmd_line;
+    char 		*argv[2];
+#endif
 
-    if( !MsgInit() )
-        exit( EXIT_ERROR );
-
+#if defined( __UNIX__ )
+    cmdline = _argv + 1;
+#else
+    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_line = MemAlloc( cmd_len );
+    if( cmd_line == NULL ) {
+        return( false );
+    }
+    _bgetcmd( cmd_line, cmd_len );
+    argv[0] = cmd_line;
+    argv[1] = NULL;
+    cmdline = argv;
+#endif
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
     ForceInclude = MemStrdup( getenv( "FORCE" ) );
     OPT_INIT( &data );
@@ -1144,6 +1161,10 @@ static void do_init_stuff( char **cmdline )
     set_fpu_mode();
     PrintBanner();
     open_files();
+#if !defined( __UNIX__ )
+    MemFree( cmd_line );
+#endif
+    return( true );
 }
 
 static void do_fini_stuff( void )
@@ -1151,51 +1172,37 @@ static void do_fini_stuff( void )
 {
     MemFree( SrcFName );
     MemFree( SrcModuleName );
-    MsgFini();
 }
 
-#ifdef __UNIX__
-
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
 int main( int argc, char **argv )
+#else
+int main( void )
+#endif
 /*******************************/
 {
-  #if !defined( __WATCOMC__ )
+    int         rc;
+#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
-  #else
-    /* unused parameters */ (void)argc;
-  #endif
-
-#else
-
-int main( void )
-/**************/
-{
-    char       *argv[2];
-    int        cmd_len;
-    char       *cmd_line;
-
 #endif
 
-    main_init();
-#ifdef __UNIX__
-    do_init_stuff( &argv[1] );
-#else
-    cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = malloc( cmd_len );
-    if( cmd_line == NULL ) {
-        return( -1 );
+    rc = EXIT_FAILURE;
+    MemInit();
+    if( MsgInit() ) {
+        main_init();
+        if( do_init_stuff() ) {
+            if( (rc = setjmp( errjmp )) == 0 ) {
+                WriteObjModule();           // main body: parse the source file
+                rc = Options.error_count;
+            }
+        }
+        do_fini_stuff();
+        main_fini();
     }
-    _bgetcmd( cmd_line, cmd_len );
-    argv[0] = cmd_line;
-    argv[1] = NULL;
-    do_init_stuff( argv );
-    free( cmd_line );
-#endif
-    WriteObjModule();           // main body: parse the source file
-    do_fini_stuff();
-    main_fini();
-    return( Options.error_count ); /* zero if no errors */
+    MsgFini();
+    MemFini();
+    return( rc ); /* zero if no errors */
 }
 
 void CmdlParamsInit( void )

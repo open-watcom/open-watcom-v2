@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,6 @@
 
 static bool             Errfile_Written = false;
 
-static void             AsmSuicide( void );
 static void             PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args );
 static void             PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2 );
 
@@ -78,8 +77,7 @@ int InternalError( const char *file, unsigned line )
     MsgGet( MSG_INTERNAL_ERROR, msgbuf );
     fprintf( stderr, msgbuf, file, line );
     fflush( stderr );
-    exit( EXIT_FAILURE );
-    return( 0 );
+    longjmp( errjmp, 2 );
 }
 #endif
 
@@ -122,7 +120,7 @@ void AsmErr( unsigned msgnum, ... )
 #endif
     va_start( args1, msgnum );
     va_start( args2, msgnum );
-    if( ErrLimit == -1  ||  ErrCount < ErrLimit ) {
+    if( ErrLimit == -1 || ErrCount < ErrLimit ) {
         PrtMsg1( "Error!", msgnum, args1, args2 );
         va_end( args1 );
         va_end( args2 );
@@ -132,7 +130,7 @@ void AsmErr( unsigned msgnum, ... )
         PrtMsg1( "", ERR_TOO_MANY_ERRORS, args1, args2 );
         va_end( args1 );
         va_end( args2 );
-        AsmSuicide();
+        longjmp( errjmp, 1 );
     }
 }
 
@@ -224,13 +222,6 @@ static void PutMsg( FILE *fp, char *prefix, unsigned msgnum, va_list args )
         vfprintf( fp, msgbuf, args );
         fprintf( fp, "\n" );
     }
-}
-
-static void AsmSuicide( void )
-/****************************/
-{
-    AsmShutDown();
-    exit( EXIT_ERROR );
 }
 
 void PrintStats( void )

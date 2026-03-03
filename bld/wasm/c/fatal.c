@@ -80,7 +80,6 @@ void AsmShutDown( void )
     MemFree( AsmFiles.fname[ERR] );
     MemFree( AsmFiles.fname[LST] );
     MemFree( AsmFiles.fname[OBJ] );
-    MemFini();
 }
 
 void Fatal( unsigned msg, ... )

@@ -225,6 +225,7 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
     char            *tmp;
     token_idx       i = *start;
     unsigned char   c;
+    unsigned_32     value;
 
     init_expr( new );
     switch( tokbuf->tokens[i].class ) {
@@ -247,10 +248,11 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
         new->empty = false;
         new->type = EXPR_CONST;
         new->string = tokbuf->tokens[i].string_ptr;
-        new->value = 0;
+        value = 0;
         for( tmp = new->string; (c = *(unsigned char *)tmp) != '\0'; tmp++ ) {
-            new->value = ( new->value << 8 ) | c;
+            value = ( value << 8 ) | c;
         }
+        new->value = value;
         break;
     case TC_REG:
         new->empty = false;

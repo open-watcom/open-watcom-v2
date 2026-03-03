@@ -38,6 +38,7 @@
 #include <string.h>
 #include <limits.h>
 #include <time.h>
+#include <setjmp.h>
 #include "watcom.h"
 #include "bool.h"
 #include "asmconst.h"
@@ -199,7 +200,8 @@ typedef struct global_vars{
     uint    for_counter;
 } global_vars;
 
-extern global_vars Globals;
+extern global_vars  Globals;
+extern jmp_buf      errjmp;
 
 extern char *CreateFileName( const char *template, const char *ext, bool forceext );
 
