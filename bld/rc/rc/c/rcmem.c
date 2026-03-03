@@ -100,7 +100,7 @@ void *MemAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
+    return( _trmem_alloc( size, g 1 ), TrHdl ) );
 #else
     return( RCMemLayer1Malloc( size ) );
 #endif
@@ -243,5 +243,27 @@ void PPMemFree( void *ptr )
     _trmem_free( ptr, _TRMEM_WHO( 11 ), TrHdl );
 #else
     RCMemLayer1Free( ptr );
+#endif
+}
+
+TRMEMAPI( SysMemAlloc )
+void *SysMemAlloc( size_t size )
+/******************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 12 ), TrHdl ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( SysMemFree )
+void SysMemFree( void *ptr )
+/**************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 13 ), TrHdl );
+#else
+    free( ptr );
 #endif
 }

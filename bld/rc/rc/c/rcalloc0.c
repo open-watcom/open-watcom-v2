@@ -36,6 +36,7 @@
 #include <string.h>
 #include "rcalloc0.h"
 #include "rcerrors.h"
+#include "rcmem.h"
 #ifdef RCMEM_DEBUG
 #include "errprt.h"
 #endif
@@ -103,13 +104,13 @@ static HeapList *RCMemLayer0AddToHeap( size_t heapsize, size_t blocks_per_heap )
 #else
     allocsize = heapsize * blocks_per_heap + sizeof( HeapList );
 #endif
-    data = malloc( allocsize );
-#ifdef RCMEM_DEBUG
-    memset( data, RCMEM_GARBAGEBYTE, allocsize );
-#endif
+    data = SysMemAlloc( allocsize );
     if( data == NULL ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
     }
+#ifdef RCMEM_DEBUG
+    memset( data, RCMEM_GARBAGEBYTE, allocsize );
+#endif
     data->next = NULL;
     freelist = (FreeListInfo *)( (char *)data + sizeof( HeapList ) );
     RCMemLayer0InitFreeList( freelist, heapsize, blocks_per_heap );
@@ -122,7 +123,7 @@ HeapHandle *RCMemLayer0NewHeap( size_t heapsize, size_t blocks_per_heap )
 {
     HeapHandle         *heap;
 
-    heap = malloc( sizeof( HeapHandle ) );
+    heap = SysMemAlloc( sizeof( HeapHandle ) );
     if( heap == NULL ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
     }
@@ -224,7 +225,7 @@ void RCMemLayer0ShutDown( HeapHandle *heap )
 #ifdef RCMEM_DEBUG
         RCMemLayer0CheckUnfreed( heap, (char *)curnode + sizeof( HeapList ) );
 #endif
-        free( curnode );
+        SysMemFree( curnode );
     }
-    free( heap );
+    SysMemFree( heap );
 }

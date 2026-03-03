@@ -46,4 +46,7 @@ extern void     RcPrintMemList( void );
 extern int      RcMemValidate( void *ptr );
 extern int      RcMemChkRange( void *start, size_t len );
 
+extern void     *SysMemAlloc( size_t size );
+extern void     SysMemFree( void *ptr );
+
 #endif
