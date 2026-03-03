@@ -67,7 +67,7 @@ void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
     token_idx   i;
 
     if( count > 0 ) {
-        for( i = tokbuf->count; i >= start; i-- ) {
+        for( i = tokbuf->count; i-- > start; ) {
             tokbuf->tokens[i + count] = tokbuf->tokens[i];
         }
         tokbuf->count += count;
