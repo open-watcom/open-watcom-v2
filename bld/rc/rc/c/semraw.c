@@ -101,6 +101,7 @@ RcStatus SemCopyDataUntilEOF( long offset, FILE *fp,
         if( RESWRITE( CurrResFile.fp, buff, numread ) != numread ) {
             *err_code = errno;
             rc = RS_WRITE_ERROR;
+            break;
         }
     }
     MemFree( buff );
