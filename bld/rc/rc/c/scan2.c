@@ -129,6 +129,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
 
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
     }
     /*
      * get the "line" or "pragma" directive
@@ -136,6 +137,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     token = scanDFA( value );
     if( token != Y_NAME ) {
         RcFatalError( ERR_INVALID_CPP );
+        /* never return */
     }
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
@@ -146,6 +148,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
         token = scanDFA( value );
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
+            /* never return */
         }
         MemFree( value->intinfo.str );
         value->intinfo.str = NULL;
@@ -180,8 +183,10 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
         }
         buf[i] = '\0';
         RcFatalError( ERR_TEXT_FROM_CPP, buf );
+        /* never return */
     } else {
         RcFatalError( ERR_INVALID_CPP );
+        /* never return */
     }
 
     return( token );
@@ -797,6 +802,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                  * to make  rcinclude's  look line  #include's
                  */
                 RcFatalError( ERR_NO_RCINCLUDES );
+                /* never return */
             }
             return( token );
         }

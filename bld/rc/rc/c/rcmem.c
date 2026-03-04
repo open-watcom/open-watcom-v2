@@ -91,6 +91,7 @@ static void *check_nomem( void *ptr )
 {
     if( ptr == NULL ) {
         RcFatalError( ERR_OUT_OF_MEMORY );
+        /* never return */
     }
     return( ptr );
 }

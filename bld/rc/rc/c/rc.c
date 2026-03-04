@@ -187,5 +187,6 @@ void RCmain( void )
     }
     if( !noerror ) {
         RCSuicide( 1 );
+        /* never return */
     }
 }

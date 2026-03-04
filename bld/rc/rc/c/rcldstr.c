@@ -68,7 +68,6 @@ bool InitRcMsgs( void )
 {
 #if defined( INCL_MSGTEXT )
     msgShift = 0;
-    return( true );
 #elif defined( USE_WRESLIB )
     /*
      * minimum size of testbuf is 2 characters (one character + terminator)
@@ -94,15 +93,16 @@ bool InitRcMsgs( void )
      * that the resource information starts at offset 0
      */
     hInstance.status = 0;
-    if( OpenRcMsgsFile( &hInstance, imageName ) ) {
-        msgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
-            return( true );
-        }
+    if( !OpenRcMsgsFile( &hInstance, imageName ) ) {
+        RcFatalError( ERR_RCSTR_NOT_FOUND );
+        /* never return */
     }
-    CloseResFile( &hInstance );
-    RcFatalError( ERR_RCSTR_NOT_FOUND );
-    return( false );
+    msgShift = _WResLanguage() * MSG_LANG_SPACING;
+    if( !GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
+        CloseResFile( &hInstance );
+        RcFatalError( ERR_RCSTR_NOT_FOUND );
+        /* never return */
+    }
 #else
   #if defined( IDE_PGM )
     hInstance = GetModuleHandle( NULL );
@@ -115,8 +115,8 @@ bool InitRcMsgs( void )
     hInstance = GetModuleHandle( _LpDllName );
   #endif
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
-    return( true );
 #endif
+    return( true );
 }
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )

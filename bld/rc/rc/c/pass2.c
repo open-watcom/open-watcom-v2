@@ -566,54 +566,70 @@ bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     ret = copyStubFile( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = AllocAndReadWINSegTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     InitWINResTable( dst, res );
 
     ret = seekPastResTable( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = findEndOfResources( src, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyOtherTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = copyWINBody( src, dst, res );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyDebugInfo( src, dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = writeHeadAndTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     return( true );
 
@@ -637,11 +653,6 @@ REPORT_ERROR:
 HANDLE_ERROR:
     return( false );
 
-STOP_ERROR:
-    RcFatalError( ERR_STOP_REQUESTED );
-#if !defined( __WATCOMC__ )
-    return( false );
-#endif
 } /* MergeResExeWINNE */
 
 
@@ -655,52 +666,68 @@ bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     ret = copyStubFile( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = InitOS2ResTable( dst, res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = AllocAndReadOS2SegTables( src, dst, res, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = seekPastResTable( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyOtherTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = copyOS2Body( src, dst, res );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyDebugInfo( src, dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = writeOS2HeadAndTables( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     return( true );
 
@@ -724,11 +751,6 @@ REPORT_ERROR:
 HANDLE_ERROR:
     return( false );
 
-STOP_ERROR:
-    RcFatalError( ERR_STOP_REQUESTED );
-#if !defined( __WATCOMC__ )
-    return( false );
-#endif
 } /* MergeResExeOS2NE */
 
 
@@ -798,44 +820,56 @@ bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     ret = copyStubFile( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = CopyExeObjects( src, dst );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = RcBuildPEResourceObject( dst, resfiles );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyDebugInfo( src, dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = writePEHeadAndObjTable( dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = updateDebugDirectory( src, dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     return( true );
 
@@ -862,11 +896,6 @@ REPORT_ERROR:
 HANDLE_ERROR:
     return( false );
 
-STOP_ERROR:
-    RcFatalError( ERR_STOP_REQUESTED );
-#if !defined( __WATCOMC__ )
-    return( false );
-#endif
 } /* MergeResExePE */
 
 
@@ -979,20 +1008,26 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     ret = copyStubFile( src, dst, &err_code );
     if( ret != RS_OK )
         goto REPORT_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = RcBuildLXResourceObjects( dst, resfiles );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     error = CopyLXExeObjects( src, dst );
     if( error )
         goto HANDLE_ERROR;
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = RcWriteLXResourceObjects( dst, resfiles );
     if( ret != RS_OK ) {
@@ -1005,24 +1040,30 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = copyLXDebugInfo( src, dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     ret = writeLXHeadAndTables( dst );
     if( ret != RS_OK ) {
         err_code = errno;
         goto REPORT_ERROR;
     }
-    if( StopInvoked )
-        goto STOP_ERROR;
+    if( StopInvoked ) {
+        RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
+    }
 
     return( true );
 
@@ -1049,9 +1090,4 @@ REPORT_ERROR:
 HANDLE_ERROR:
     return( false );
 
-STOP_ERROR:
-    RcFatalError( ERR_STOP_REQUESTED );
-#if !defined( __WATCOMC__ )
-    return( false );
-#endif
 } /* MergeResExeLX */

@@ -32,10 +32,7 @@
 #include <setjmp.h>
 
 extern int     RCSpawn( void (*fn)( void ) );
-#if defined(__WATCOMC__)
-#pragma aux RCSuicide __aborts
-#endif
-extern void    RCSuicide( int );
+NO_RETURN( extern void RCSuicide( int ) );
 
 extern jmp_buf jmpbuf_RCFatalError;
 

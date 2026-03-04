@@ -406,6 +406,7 @@ int RcIoGetChar( void )
                  * this error is reported in readCurrentFileBuffer so just terminate
                  */
                 RcFatalError( ERR_NO_MSG );
+                /* never return */
             }
         }
         if( InStack.NextChar >= InStack.EofChar ) {
@@ -424,14 +425,14 @@ int RcIoGetChar( void )
                  * this error is reported in readCurrentFileBuffer so just terminate
                  */
                 RcFatalError( ERR_NO_MSG );
-            } else {
-                /*
-                 * return \n which will end the current token properly
-                 * if it it is not a string and end it with a runaway
-                 * string error for strings
-                 */
-                return( '\n' );
+                /* never return */
             }
+            /*
+             * return \n which will end the current token properly
+             * if it it is not a string and end it with a runaway
+             * string error for strings
+             */
+            return( '\n' );
         }
     }
     return( GetLogChar() );

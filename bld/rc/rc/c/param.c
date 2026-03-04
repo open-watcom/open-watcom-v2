@@ -245,20 +245,20 @@ static void LoadCodePageFile( const char *cpfile )
     switch( ret ) {
     case RS_FILE_NOT_FOUND:
         RcFatalError( ERR_CANT_FIND_CHAR_FILE, cpfile );
-        break;
+        /* never return */
     case RS_READ_ERROR:
         RcFatalError( ERR_READING_CHAR_FILE, path, strerror( errno ) );
-        break;
+        /* never return */
     case RS_READ_INCMPLT:
     case RS_BAD_FILE_FMT:
         RcFatalError( ERR_BAD_CHAR_FILE, path );
-        break;
+        /* never return */
     case RS_WRONG_VER:
         RcFatalError( ERR_WRONG_CHAR_FILE_VER, path );
-        break;
+        /* never return */
     case RS_OPEN_ERROR:
         RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
-        break;
+        /* never return */
     case RS_OK:
         SetMBChars( GetLeadBytes() );
         ConvToUnicode = DBStringToUnicode;

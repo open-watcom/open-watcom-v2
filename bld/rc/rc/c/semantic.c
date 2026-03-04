@@ -61,21 +61,22 @@ SemOffset SemStartResource( void )
 {
     if( StopInvoked ) {
         RcFatalError( ERR_STOP_REQUESTED );
+        /* never return */
     }
     if( !CurrResFile.IsWatcomRes ) {
         tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
             RCCloseFile( &(CurrResFile.fp) );
             RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
-        } else {
-            /*
-             * save current values
-             */
-            save_fp = CurrResFile.fp;
-            save_name = CurrResFile.filename;
-            CurrResFile.fp = tmpResFile;
-            CurrResFile.filename = tmpResFileName;
+            /* never return */
         }
+        /*
+         * save current values
+         */
+        save_fp = CurrResFile.fp;
+        save_name = CurrResFile.filename;
+        CurrResFile.fp = tmpResFile;
+        CurrResFile.filename = tmpResFileName;
     }
     return( ResTell( CurrResFile.fp ) );
 }
