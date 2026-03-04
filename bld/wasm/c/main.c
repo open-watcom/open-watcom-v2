@@ -1161,9 +1161,6 @@ static bool do_init_stuff( void )
 #else
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
     cmd_line = MemAlloc( cmd_len );
-    if( cmd_line == NULL ) {
-        return( false );
-    }
     _bgetcmd( cmd_line, cmd_len );
     argv[0] = cmd_line;
     argv[1] = NULL;

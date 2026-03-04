@@ -112,30 +112,28 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
     }
 
     fixup = MemAlloc( sizeof( asmfixup ) );
-    if( fixup != NULL ) {
-        fixup->external = false;
-        fixup->fixup_loc = AsmCodeAddress;
+    fixup->external = false;
+    fixup->fixup_loc = AsmCodeAddress;
 #if defined( _STANDALONE_ )
-        fixup->sym = sym;
-        fixup->u_offset = sym->offset;
-        if( Modend ) {
-            fixup->fixup_seg = NULL;
-        } else {
-            fixup->fixup_seg = GetCurrSeg();
-        }
-        fixup->frame = Frame;                   // this is just a guess
-        fixup->next = sym->fixup;
-        sym->fixup = fixup;
-#else
-        fixup->name = sym->name;
-        fixup->next = FixupHead;
-        FixupHead = fixup;
-        fixup->u_offset = 0;
-#endif
-        fixup->fixup_type = fixup_type;
-        fixup->fixup_option = fixup_option;
-        InsFixups[Opnd_Count] = fixup;
+    fixup->sym = sym;
+    fixup->u_offset = sym->offset;
+    if( Modend ) {
+        fixup->fixup_seg = NULL;
+    } else {
+        fixup->fixup_seg = GetCurrSeg();
     }
+    fixup->frame = Frame;                   // this is just a guess
+    fixup->next = sym->fixup;
+    sym->fixup = fixup;
+#else
+    fixup->name = sym->name;
+    fixup->next = FixupHead;
+    FixupHead = fixup;
+    fixup->u_offset = 0;
+#endif
+    fixup->fixup_type = fixup_type;
+    fixup->fixup_option = fixup_option;
+    InsFixups[Opnd_Count] = fixup;
     return( fixup );
 }
 
@@ -408,8 +406,6 @@ static bool MakeFpFixup( const char *patch_name )
     if( dir != NULL ) {
         if( Parse_Pass != PASS_1 ) {
             fixup = MemAlloc( sizeof( asmfixup ) );
-            if( fixup == NULL )
-                return( RC_ERROR );
             fixup->external = false;
             fixup->fixup_loc = AsmCodeAddress;
             fixup->fixup_seg = NULL;
@@ -454,9 +450,6 @@ bool AddFPPatchAndFixups( fp_patches patch )
     asmfixup    *fixup;
 
     fixup = MemAlloc( sizeof( asmfixup ) );
-    if( fixup == NULL ) {
-        return( RC_ERROR );
-    }
     fixup->next = FixupHead;
     FixupHead = fixup;
     fixup->external = false;

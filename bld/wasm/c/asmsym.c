@@ -77,34 +77,32 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
 #endif
 
     sym->name = MemStrdup( name );
-    if( sym->name != NULL ) {
-        sym->next = NULL;
-        sym->fixup = NULL;
+    sym->next = NULL;
+    sym->fixup = NULL;
 #if defined( _STANDALONE_ )
-        sym->segment = NULL;
-        sym->offset = 0;
-        sym->public = false;
-        sym->referenced = false;
-        sym->langtype = WASM_LANG_NONE;
-        sym->first_size = 0;
-        sym->first_length = 0;
-        sym->total_size = 0;
-        sym->total_length = 0;
-        sym->count = 0;
-        sym->mangler = NULL;
-        sym->state = SYM_UNDEFINED;
-        sym->mem_type = MT_EMPTY;
+    sym->segment = NULL;
+    sym->offset = 0;
+    sym->public = false;
+    sym->referenced = false;
+    sym->langtype = WASM_LANG_NONE;
+    sym->first_size = 0;
+    sym->first_length = 0;
+    sym->total_size = 0;
+    sym->total_length = 0;
+    sym->count = 0;
+    sym->mangler = NULL;
+    sym->state = SYM_UNDEFINED;
+    sym->mem_type = MT_EMPTY;
 #else
-        sym->addr = 0;
-        handle = AsmQuerySymbol( sym->name );
-        sym->state = AsmQueryState( handle );
-        if( sym->state == SYM_UNDEFINED ) {
-            sym->mem_type = MT_EMPTY;
-        } else {
-            sym->mem_type = CvtTable[ AsmQueryType( handle ) ];
-        }
-#endif
+    sym->addr = 0;
+    handle = AsmQuerySymbol( sym->name );
+    sym->state = AsmQueryState( handle );
+    if( sym->state == SYM_UNDEFINED ) {
+        sym->mem_type = MT_EMPTY;
+    } else {
+        sym->mem_type = CvtTable[ AsmQueryType( handle ) ];
     }
+#endif
     return( sym->name );
 }
 
@@ -118,19 +116,17 @@ static asm_sym_handle AllocASym( const char *name )
 #else
     sym = MemAlloc( sizeof( *sym ) );
 #endif
-    if( sym != NULL ) {
-        if( InitAsmSym( sym, name ) == NULL ) {
-            MemFree( sym );
-            return( NULL );
-        }
-#if defined( _STANDALONE_ )
-        ((dir_node_handle)sym)->next = NULL;
-        ((dir_node_handle)sym)->prev = NULL;
-        ((dir_node_handle)sym)->line_num = 0;
-        ((dir_node_handle)sym)->e.seginfo = NULL;
-#endif
+    if( InitAsmSym( sym, name ) == NULL ) {
+        MemFree( sym );
+        return( NULL );
     }
-    return sym;
+#if defined( _STANDALONE_ )
+    ((dir_node_handle)sym)->next = NULL;
+    ((dir_node_handle)sym)->prev = NULL;
+    ((dir_node_handle)sym)->line_num = 0;
+    ((dir_node_handle)sym)->e.seginfo = NULL;
+#endif
+    return( sym );
 }
 
 static asm_sym_handle *AsmFind( const char *name )
@@ -497,16 +493,14 @@ static asm_sym_handle *SortAsmSyms( void )
     unsigned        j;
 
     syms = MemAlloc( AsmSymCount * sizeof( asm_sym * ) );
-    if( syms != NULL ) {
-        /* copy symbols to table */
-        for( i = j = 0; i < HASH_TABLE_SIZE; i++ ) {
-            for( sym = sym_table[i]; sym != NULL; sym = sym->next ) {
-                syms[j++] = sym;
-            }
+    /* copy symbols to table */
+    for( i = j = 0; i < HASH_TABLE_SIZE; i++ ) {
+        for( sym = sym_table[i]; sym != NULL; sym = sym->next ) {
+            syms[j++] = sym;
         }
-        /* sort 'em */
-        qsort( syms, AsmSymCount, sizeof( asm_sym * ), compare_fn );
     }
+    /* sort 'em */
+    qsort( syms, AsmSymCount, sizeof( asm_sym * ), compare_fn );
     return( syms );
 }
 
