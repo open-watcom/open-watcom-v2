@@ -902,7 +902,7 @@ void FreeInfo( dir_node_handle dir )
              */
             for( localcurr = dir->e.macroinfo->labels.head; localcurr != NULL; localcurr = localnext ) {
                 localnext = localcurr->next;
-                MemFree( localcurr->label );
+                MemFree( localcurr->local );
                 MemFree( localcurr );
             }
             /*
