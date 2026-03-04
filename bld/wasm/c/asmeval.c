@@ -1182,7 +1182,7 @@ static bool calculate( expr_list *token_1, expr_list *token_2, token_buffer *tok
         }
         switch( tokbuf->tokens[index].u.token ) {
         case T_SHL:
-            token_1->value = token_1->value << token_2->value;
+            token_1->value = (unsigned_32)token_1->value << token_2->value;
             break;
         case T_SHR:
             token_1->value = (unsigned_32)token_1->value >> token_2->value;

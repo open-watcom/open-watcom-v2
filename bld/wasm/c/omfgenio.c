@@ -194,7 +194,7 @@ void ObjWrite16( uint_16 word )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 1 ) {
         objWFlushBuffer();
     }
-    MPUT_LE_16( pobjState->buffer + pobjState->in_buf, word );
+    MPUT_LE_16_UN( pobjState->buffer + pobjState->in_buf, word );
     pobjState->in_buf += 2;
 }
 
@@ -206,7 +206,7 @@ void ObjWrite32( uint_32 dword )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 3 ) {
         objWFlushBuffer();
     }
-    MPUT_LE_32( pobjState->buffer + pobjState->in_buf, dword );
+    MPUT_LE_32_UN( pobjState->buffer + pobjState->in_buf, dword );
     pobjState->in_buf += 4;
 }
 

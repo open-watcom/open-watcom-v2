@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,13 +89,13 @@ static uint_8 *putIndex( uint_8 *p, uint_16 index )
 
 static uint_8 *put16( uint_8 *p, uint_16 word )
 {
-    MPUT_LE_16( p, word );
+    MPUT_LE_16_UN( p, word );
     return( p + 2 );
 }
 
 static uint_8 *put32( uint_8 *p, uint_32 dword )
 {
-    MPUT_LE_32( p, dword );
+    MPUT_LE_32_UN( p, dword );
     return( p + 4 );
 }
 

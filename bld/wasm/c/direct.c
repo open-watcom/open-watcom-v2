@@ -1409,9 +1409,18 @@ static seg_type ClassNameType( const char *name )
         }
     }
     slen = strlen( name );
-    memcpy( uname, name, slen + 1 );
+    strncpy( uname, name, 256 );
+    uname[256] = '\0';
     strupr( uname );
-    if( slen >= 3 ) {
+    if( slen < 3 ) {
+    	return( SEGTYPE_UNDEF );
+    }
+    if( slen == 4 ) {
+        // 'CODE'
+        if( CMPSIM( uname , get_sim_class( SIM_CODE ) ) == 0 ) {
+            return( SEGTYPE_ISCODE );
+        }
+    } else if( slen == 5 ) {
         // 'CONST'
         if( CMPSIM( uname, get_sim_class( SIM_CONST ) ) == 0 )
             return( SEGTYPE_ISDATA );
@@ -1422,16 +1431,17 @@ static seg_type ClassNameType( const char *name )
         if( CMPLIT( uname, "DBTYP" ) == 0 )
             return( SEGTYPE_ISDATA );
         // 'DBSYM'
-        if( CMPLIT( uname, "DBSYM" ) == 0 )
+        if( CMPLIT( uname, "DBSYM" ) == 0 ) {
             return( SEGTYPE_ISDATA );
-        // 'CODE'
-        if( CMPSIM( uname , get_sim_class( SIM_CODE ) ) == 0 )
-            return( SEGTYPE_ISCODE );
+        }
+    }
+    // '...BSS'
+    if( CMPSIMEND( uname + slen, get_sim_class( SIM_DATA_UN ) ) == 0 ) {
+        return( SEGTYPE_ISDATA );
+    }
+    if( slen >= 4 ) {
         // '...DATA'
-        if( CMPSIMEND( uname + slen, get_sim_class( SIM_DATA ) ) == 0 )
-            return( SEGTYPE_ISDATA );
-        // '...BSS'
-        if( CMPSIMEND( uname + slen, get_sim_class( SIM_DATA_UN ) ) == 0 ) {
+        if( CMPSIMEND( uname + slen, get_sim_class( SIM_DATA ) ) == 0 ) {
             return( SEGTYPE_ISDATA );
         }
     }
