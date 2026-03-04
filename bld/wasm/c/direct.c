@@ -4063,8 +4063,13 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
 void GetSymInfo( asm_sym_handle sym )
 /***********************************/
 {
-    sym->segment = &GetCurrSeg()->sym;
-    sym->offset = GetCurrAddr();
+    if( CurrSeg == NULL ) {
+    	sym->segment = NULL;
+        sym->offset = 0;
+    } else {
+    	sym->segment = &GetCurrSeg()->sym;
+        sym->offset = GetCurrAddr();
+    }
 }
 
 bool Comment( int what_to_do, token_buffer *tokbuf, token_idx i, const char *line )
