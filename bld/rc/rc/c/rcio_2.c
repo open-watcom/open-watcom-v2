@@ -64,8 +64,7 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
 {
     RcStatus    status;      /* error while deleting or renaming */
     FILE        *out_fp;
-    size_t      numread;
-    char        *buffer;
+    int         err_code;
 
     status = RS_OK;
     /*
@@ -75,9 +74,6 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
         remove( out_name );
     }
 
-    buffer = MemAllocSafe( BUFFER_SIZE );
-
-    RESSEEK( inp_fp, 0, SEEK_SET );
     /*
      * create output file and copy content to it
      */
@@ -85,23 +81,12 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
     if( out_fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, out_name, "unknown error" );
     } else {
-        while( (numread = RESREAD( inp_fp, buffer, BUFFER_SIZE )) != 0 ) {
-            if( numread != BUFFER_SIZE
-              && RESIOERR( inp_fp, numread ) ) {
-                status = RS_READ_ERROR;
-                break;
-            }
-            if( RESWRITE( out_fp, buffer, numread ) != numread ) {
-                status = RS_WRITE_ERROR;
-                break;
-            }
-        }
+        status = SemCopyDataUntilEOF( 0, inp_fp, out_fp, BUFFER_SIZE, &err_code );
         ResCloseFile( out_fp );
         if( isexe ) {
             chmod( out_name, PMODE_RWX );
         }
     }
-    MemFree( buffer );
     return( status == RS_OK );
 
 } /* CopyFileToOutFile */

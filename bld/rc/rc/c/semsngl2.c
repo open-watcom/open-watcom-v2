@@ -177,7 +177,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *name,
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = SemCopyDataUntilEOF( pos, fp, FONT_BUFFER_SIZE, err_code );
+            ret = SemCopyDataUntilEOF( pos, fp, CurrResFile.fp, FONT_BUFFER_SIZE, err_code );
         }
     }
 
