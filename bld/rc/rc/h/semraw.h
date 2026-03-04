@@ -56,7 +56,7 @@ typedef struct DataElemList {
 } DataElemList;
 
 extern void         SemWriteRawDataItem( RawDataItem item );
-extern RcStatus     SemCopyDataUntilEOF( long offset, FILE *fp, unsigned block_size, int *err_code );
+extern RcStatus     SemCopyDataUntilEOF( long offset, FILE *fpi, FILE *fpo, unsigned block_size, int *err_code );
 extern ResLocation  SemCopyRawFile( const char *filename );
 extern ResLocation  SemCopyRawFileOnly( const char *filename );
 extern ResLocation  SemFlushDataElemList( DataElemList *head, bool call_startend );
