@@ -32,6 +32,7 @@
 
 
 #include <stdarg.h>
+#include "wnoret.h"
 #ifdef INSIDE_WLINK
     #include "wlnkmsg.rh"
 #elif defined( INSIDE_WR )
