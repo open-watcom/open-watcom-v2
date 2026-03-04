@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,13 +81,6 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     newtable = MemAllocSafe( sizeof( FullHelpTableOS2 ) );
     newentry = MemAllocSafe( sizeof( FullHelpEntryOS2 ) );
 
-    if( newtable == NULL
-      || newentry == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
-
     *newentry = firstentry;
     newtable->head = NULL;
     newtable->tail = NULL;
@@ -104,12 +97,6 @@ FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
     FullHelpEntryOS2     *newentry;
 
     newentry = MemAllocSafe( sizeof( FullHelpEntryOS2 ) );
-
-    if( newentry == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
 
     *newentry = currentry;
 
@@ -186,13 +173,6 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
     newtable = MemAllocSafe( sizeof( FullHelpSubTableOS2 ) );
     newentry = MemAllocSafe( sizeof( FullHelpSubEntryOS2 ) );
 
-    if( newtable == NULL
-      || newentry == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
-
     newentry->dataListHead = data;
     newtable->head = NULL;
     newtable->tail = NULL;
@@ -209,12 +189,6 @@ FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList *data,
     FullHelpSubEntryOS2     *newentry;
 
     newentry = MemAllocSafe( sizeof( FullHelpSubEntryOS2 ) );
-
-    if( newentry == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
 
     newentry->dataListHead = data;
 

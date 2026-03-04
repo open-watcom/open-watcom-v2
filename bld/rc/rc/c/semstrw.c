@@ -46,13 +46,11 @@ FullStringTable *SemWINNewStringTable( void )
     FullStringTable     *newtable;
 
     newtable = MemAllocSafe( sizeof( FullStringTable ) );
-    if( newtable != NULL ) {
-        newtable->Head = NULL;
-        newtable->Tail = NULL;
-        newtable->next = NULL;
-        newtable->lang.lang = DEF_LANG;
-        newtable->lang.sublang = DEF_SUBLANG;
-    }
+    newtable->Head = NULL;
+    newtable->Tail = NULL;
+    newtable->next = NULL;
+    newtable->lang.lang = DEF_LANG;
+    newtable->lang.sublang = DEF_SUBLANG;
 
     return( newtable );
 } /* SemWINNewStringTable */
@@ -93,14 +91,12 @@ static FullStringTableBlock *newStringTableBlock( void )
     FullStringTableBlock    *newblock;
 
     newblock = MemAllocSafe( sizeof( FullStringTableBlock ) );
-    if( newblock != NULL ) {
-        newblock->Next = NULL;
-        newblock->Prev = NULL;
-        newblock->BlockNum = 0;
-        newblock->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
-        newblock->Flags = 0;
-        ResInitStringTableBlock( &(newblock->Block) );
-    }
+    newblock->Next = NULL;
+    newblock->Prev = NULL;
+    newblock->BlockNum = 0;
+    newblock->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
+    newblock->Flags = 0;
+    ResInitStringTableBlock( &(newblock->Block) );
 
     return( newblock );
 } /* newStringTableBlock */

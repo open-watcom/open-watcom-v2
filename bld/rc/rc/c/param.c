@@ -360,11 +360,11 @@ static char *MakeFileName( const char *infilename, const char *ext )
 
     len = strlen( infilename ) + 1;
     if( ext == NULL ) {
-        out = MemAlloc( len );
+        out = MemAllocSafe( len );
         strcpy( out, infilename );
     } else {
         _splitpath2( infilename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-        out = MemAlloc( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
+        out = MemAllocSafe( len + ( 1 + strlen( ext ) - strlen( pg.ext ) ) );
         _makepath( out, pg.drive, pg.dir, pg.fname, ext );
     }
     return( out );
@@ -380,7 +380,7 @@ static void CheckExtension( char **filename, const char *defext )
     if( pg.ext[0] == '\0' ) {
         len = strlen( *filename ) + ( 1 + strlen( defext ) ) + 1;
         MemFree( *filename );
-        *filename = MemAlloc( len );
+        *filename = MemAllocSafe( len );
         _makepath( *filename, pg.drive, pg.dir, pg.fname, defext );
     }
 } /* CheckExtension */
@@ -573,7 +573,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
             /*
              * checking if a replacement is to be done, then allocating memory
              */
-            replacedString = MemAlloc( lenOfStringFromFile+1 );
+            replacedString = MemAllocSafe( lenOfStringFromFile+1 );
             for( k = 0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
             }
@@ -634,18 +634,18 @@ void PrependToString( ScanValue *value, char *stringFromFile )
     if( CmdLineParms.Prepend ) {
         if( strcmp( stringFromFile, "" ) != 0 ) {
             lenOfPrependString =  strlen( CmdLineParms.PrependString );
-            value->string.string = MemAlloc( lenOfStringFromFile
+            value->string.string = MemAllocSafe( lenOfStringFromFile
                                    + lenOfPrependString + 1);
             strcpy( value->string.string, CmdLineParms.PrependString );
         } else {
             // in this case the lenOfPrependString is zero, so the
             // strcpy will not fail.
-            value->string.string = MemAlloc( lenOfStringFromFile + 1 );
+            value->string.string = MemAllocSafe( lenOfStringFromFile + 1 );
         }
         strcpy( &value->string.string[ lenOfPrependString ], stringFromFile );
         value->string.length = lenOfStringFromFile + lenOfPrependString;
     } else {
-        value->string.string = MemAlloc( ( lenOfStringFromFile+1 ) );
+        value->string.string = MemAllocSafe( lenOfStringFromFile + 1 );
         strcpy( value->string.string, stringFromFile );
         value->string.length = lenOfStringFromFile;
     }
@@ -668,7 +668,7 @@ static char *ReadIndirectFile( char *name )
         fseek( fp, 0, SEEK_END );
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
-        env = MemAlloc( len + 1 );
+        env = MemAllocSafe( len + 1 );
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
@@ -856,7 +856,7 @@ static void OptAddString( OPT_STRING **h, char const *s )
 {
     OPT_STRING *value;
 
-    value = MemAlloc( sizeof( *value ) + strlen( s ) );
+    value = MemAllocSafe( sizeof( *value ) + strlen( s ) );
     strcpy( value->data, s );
     value->next = *h;
     *h = value;
@@ -975,7 +975,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
                 size_t len;
 
                 len = strlen( s->data );
-                resfile = MemAlloc( sizeof( ExtraRes ) + len + 1 );
+                resfile = MemAllocSafe( sizeof( ExtraRes ) + len + 1 );
                 strcpy( resfile->name, s->data );
                 resfile->next = CmdLineParms.ExtraResFiles;
                 CmdLineParms.ExtraResFiles = resfile;
@@ -998,7 +998,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
 
         reverseList( &(data->g_value) );
         for( s = data->g_value; s != NULL; s = s->next ) {
-            frStrings = MemAlloc( sizeof( FRStrings ) + strlen( s->data ) + 1 );
+            frStrings = MemAllocSafe( sizeof( FRStrings ) + strlen( s->data ) + 1 );
             strcpy( frStrings->buf, s->data );
             frStrings->findString = strtok( frStrings->buf, "," );
             if( frStrings->findString == NULL ) {

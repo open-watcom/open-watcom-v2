@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,14 +47,12 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {
     int     tablesize;
 
+    /* unused parameters */ (void)err_code;
+
     tablesize = seg->NumSegs * sizeof( segment_record );
     seg->Segments = MemAllocSafe( tablesize );
-    if( seg->Segments == NULL ) {
-        *err_code = errno;
-        return( RS_NO_MEM );
-    } else {
-        return( RS_OK );
-    }
+    return( RS_OK );
+
 } /* allocSegTable */
 
 static RcStatus readSegTable( FILE *fp, uint_32 offset, segment_record *segments, size_t size )

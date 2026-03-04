@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,13 +131,6 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     newmenu = MemAllocSafe( sizeof( FullMenu ) );
     newitem = MemAllocSafe( sizeof( FullMenuItem ) );
 
-    if( newmenu == NULL
-      || newitem == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
-
     *newitem = firstitem;
     newmenu->head = NULL;
     newmenu->tail = NULL;
@@ -154,12 +147,6 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
 
 
     newitem = MemAllocSafe( sizeof( FullMenuItem ) );
-
-    if( newitem == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
-        ErrorHasOccured = true;
-        return( NULL );
-    }
 
     *newitem = curritem;
 

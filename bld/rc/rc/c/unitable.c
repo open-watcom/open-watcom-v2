@@ -273,7 +273,7 @@ RcStatus SetUTF8toCP932( void )
                 ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
             } else {
                 cvt_table_len = u16;
-                cvt_table = MemAlloc( sizeof( cvt_chr ) * cvt_table_len );
+                cvt_table = MemAllocSafe( sizeof( cvt_chr ) * cvt_table_len );
                 if( cvt_table_len != fread( cvt_table, sizeof( cvt_chr ), cvt_table_len , fh ) ) {
                     ret = ( feof( fh ) ) ? RS_READ_INCMPLT : RS_READ_ERROR;
                 }

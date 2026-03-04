@@ -151,13 +151,11 @@ static file_loc *addLocation( file_loc *prev, const char *filename )
     if( prev == NULL
       || strcmp( prev->Filename, filename ) != 0 ) {
         loc = MemAllocSafe( sizeof( file_loc ) );
-        if( loc != NULL ) {
-            loc->prev = prev;
-            loc->IsCOrHFile = checkCurrentFileType( filename );
-            loc->Filename = MemAllocSafe( strlen( filename ) + 1 );
-            strcpy( loc->Filename, filename );
-            return( loc );
-        }
+        loc->prev = prev;
+        loc->IsCOrHFile = checkCurrentFileType( filename );
+        loc->Filename = MemAllocSafe( strlen( filename ) + 1 );
+        strcpy( loc->Filename, filename );
+        return( loc );
     }
     return( prev );
 }

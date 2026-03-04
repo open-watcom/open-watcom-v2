@@ -95,11 +95,8 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
                       || name->ID.Num == 1) ) {
                         WResID      *id;
 
-                        id = MemAllocSafe( sizeof( WResID ) );
-                        if( id == NULL )
-                            break;
-
                         firstIcon  = false;
+                        id = MemAllocSafe( sizeof( WResID ) );
                         id->IsName = false;
                         id->ID.Num = OS2_RT_DEFAULTICON;
                         start = SemCopyRawFileOnly( full_filename );
