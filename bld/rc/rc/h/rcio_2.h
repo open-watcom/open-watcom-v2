@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #ifndef RCIO_2_INCLUDED
 #define RCIO_2_INCLUDED
 
+extern RcStatus     CopyDataUntilEOF( long offset, FILE *fpi, FILE *fpo, unsigned block_size, int *err_code );
 extern bool         CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe );
 extern bool         RcPass2IoInit( void );
 extern void         RcPass2IoShutdown( bool noerror );

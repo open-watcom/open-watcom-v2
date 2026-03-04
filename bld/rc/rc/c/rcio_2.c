@@ -59,6 +59,38 @@
 
 #define BUFFER_SIZE         1024
 
+RcStatus CopyDataUntilEOF( long offset, FILE *fpi, FILE *fpo,
+                         unsigned block_size, int *err_code )
+/***********************************************************/
+{
+    size_t      numread;
+    char        *buff;
+    RcStatus    rc;
+
+    if( RESSEEK( fpi, offset, SEEK_SET ) ) {
+        *err_code = errno;
+        return( RS_READ_ERROR );
+    }
+
+    rc = RS_OK;
+    buff = MemAllocSafe( block_size );
+    while( (numread = RESREAD( fpi, buff, block_size )) != 0 ) {
+        if( numread != block_size
+          && RESIOERR( fpi, numread ) ) {
+            *err_code = errno;
+            rc = RS_READ_ERROR;
+            break;
+        }
+        if( RESWRITE( fpo, buff, numread ) != numread ) {
+            *err_code = errno;
+            rc = RS_WRITE_ERROR;
+            break;
+        }
+    }
+    MemFree( buff );
+    return( rc );
+}
+
 bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
 /**********************************************************************/
 {
@@ -81,7 +113,7 @@ bool CopyFileToOutFile( FILE *inp_fp, const char *out_name, bool isexe )
     if( out_fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, out_name, "unknown error" );
     } else {
-        status = SemCopyDataUntilEOF( 0, inp_fp, out_fp, BUFFER_SIZE, &err_code );
+        status = CopyDataUntilEOF( 0, inp_fp, out_fp, BUFFER_SIZE, &err_code );
         ResCloseFile( out_fp );
         if( isexe ) {
             chmod( out_name, PMODE_RWX );

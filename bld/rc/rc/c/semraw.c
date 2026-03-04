@@ -76,38 +76,6 @@ void SemWriteRawDataItem( RawDataItem item )
     }
 }
 
-RcStatus SemCopyDataUntilEOF( long offset, FILE *fpi, FILE *fpo,
-                         unsigned block_size, int *err_code )
-/**************************************************************/
-{
-    size_t      numread;
-    char        *buff;
-    RcStatus    rc;
-
-    if( RESSEEK( fpi, offset, SEEK_SET ) ) {
-        *err_code = errno;
-        return( RS_READ_ERROR );
-    }
-
-    rc = RS_OK;
-    buff = MemAllocSafe( block_size );
-    while( (numread = RESREAD( fpi, buff, block_size )) != 0 ) {
-        if( numread != block_size
-          && RESIOERR( fpi, numread ) ) {
-            *err_code = errno;
-            rc = RS_READ_ERROR;
-            break;
-        }
-        if( RESWRITE( fpo, buff, numread ) != numread ) {
-            *err_code = errno;
-            rc = RS_WRITE_ERROR;
-            break;
-        }
-    }
-    MemFree( buff );
-    return( rc );
-}
-
 #define BUFFER_SIZE   0x200
 
 static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
@@ -153,7 +121,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
             RcError( ERR_READING_DATA, filename, strerror( errno ) );
             error = true;
         } else {
-            ret = SemCopyDataUntilEOF( pos, fp, CurrResFile.fp, BUFFER_SIZE, &err_code );
+            ret = CopyDataUntilEOF( pos, fp, CurrResFile.fp, BUFFER_SIZE, &err_code );
             if( ret != RS_OK ) {
                 ReportCopyError( ret, ERR_READING_DATA, filename, err_code );
                 error = true;
