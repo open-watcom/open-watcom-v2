@@ -245,7 +245,6 @@ typedef struct local_label {
     char                *local;
     size_t              local_len;
     char                *label;
-    size_t              label_len;
 } local_label;
 
 typedef struct {

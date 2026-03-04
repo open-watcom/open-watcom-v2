@@ -146,6 +146,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
     char            *new_line;
     char            *old_line;
     size_t          before;             // length of text before word
+    size_t          label_len;
 
     old_line = lineinfo->line;
     for( ; locallabel != NULL; locallabel = locallabel->next ) {
@@ -156,7 +157,7 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
              *
              * check internal symbol
              */
-            if( locallabel->label_len == 0 ) {
+            if( locallabel->label == NULL ) {
                 /*
                  * if the internal symbol does not exist, it is created
                  * and saved for further use
@@ -165,9 +166,9 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
 
                 sprintf( label, "??%04d", MacroLocalVarCounter++ );
                 locallabel->label = MemStrdup( label );
-                locallabel->label_len = strlen( locallabel->label );
             }
-            new_line = MemAlloc( strlen( old_line ) - len + locallabel->label_len + 1 );
+            label_len = strlen( locallabel->label );
+            new_line = MemAlloc( strlen( old_line ) - len + label_len + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
@@ -177,14 +178,14 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
             strcpy( new_line + before, locallabel->label );
             if( *(start + len) == '&' )
                 len++;
-            strcpy( new_line + before + locallabel->label_len, start + len );
+            strcpy( new_line + before + label_len, start + len );
             lineinfo->line = new_line;
 
             MemFree( old_line );
             /*
              * ptr to char after new label
              */
-            return( new_line + before + locallabel->label_len );
+            return( new_line + before + label_len );
         }
     }
     return( start + len );
@@ -308,7 +309,6 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
         locallabel->local = MemStrdup( tok->string_ptr );
         locallabel->local_len = strlen( locallabel->local );
         locallabel->label = NULL;
-        locallabel->label_len = 0;
         /*
          * add to the head of linked list
          */
@@ -607,6 +607,18 @@ static void reset_paramslist( parm_list *param )
     }
 }
 
+static void reset_localslist( local_label *locallabel )
+/*****************************************************/
+{
+    while( locallabel != NULL ) {
+        if( locallabel->label != NULL ) {
+            MemFree( locallabel->label );
+            locallabel->label = NULL;
+        }
+        locallabel = locallabel->next;
+    }
+}
+
 bool ExpandMacro( token_buffer *tokbuf )
 /**************************************/
 {
@@ -623,7 +635,6 @@ bool ExpandMacro( token_buffer *tokbuf )
     token_idx       expr_start = 0;
     char            *p;
     size_t          len;
-    local_label     *locallabel;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
         return( RC_OK );
@@ -813,13 +824,7 @@ bool ExpandMacro( token_buffer *tokbuf )
     /*
      * reset the local label replace strings, if exists
      */
-    for( locallabel = info->labels.head; locallabel != NULL; locallabel = locallabel->next ) {
-        if( locallabel->label_len > 0 ) {
-            locallabel->label_len = 0;
-            MemFree( locallabel->label );
-            locallabel->label = NULL;
-        }
-    }
+    reset_localslist( info->labels.head );
     /*
      * free the scanner token array
      * macro is expanded in source queue and original scanner tokens are not necessary
