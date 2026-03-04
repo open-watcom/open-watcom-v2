@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,6 +218,16 @@
     #define MPUT_LE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
     #define MPUT_LE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
     #define MPUT_LE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
+
+    #define MGET_U8_OFF(p,o)    (*((uint_8*)(p)+(o)))
+
+    #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = ((w) & 0x0000FF00UL) >> 8; \
+                                 ((uint_8*)(p))[1] = (w) & 0x000000FFUL; }
+    #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = ((w) & 0xFF000000UL) >> 24; \
+                                 ((uint_8*)(p))[1] = ((w) & 0x00FF0000UL) >> 16; \
+                                 ((uint_8*)(p))[2] = ((w) & 0x0000FF00UL) >> 8; \
+                                 ((uint_8*)(p))[3] = (w) & 0x000000FFUL; }
+
     /* Macros to convert big endian data in place */
     #define MPUT_BE_16(p,w)     (MGET_U16(p)) = (w)
     #define MPUT_BE_32(p,w)     (MGET_U32(p)) = (w)
@@ -243,6 +253,14 @@
     #define MPUT_LE_16(p,w)     (MGET_U16(p)) = (w)
     #define MPUT_LE_32(p,w)     (MGET_U32(p)) = (w)
     #define MPUT_LE_64(p,w)     (MGET_U64(p)) = (w)
+
+    #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = (w) & 0x000000FFUL; \
+                                 ((uint_8*)(p))[1] = ((w) & 0x0000FF00UL) >> 8; }
+    #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = (w) & 0x000000FFUL; \
+                                 ((uint_8*)(p))[1] = ((w) & 0x0000FF00UL) >> 8; \
+                                 ((uint_8*)(p))[2] = ((w) & 0x00FF0000UL) >> 16; \
+                                 ((uint_8*)(p))[3] = ((w) & 0xFF000000UL) >> 24; }
+
     /* Macros to convert big endian data in place */
     #define MPUT_BE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
     #define MPUT_BE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
