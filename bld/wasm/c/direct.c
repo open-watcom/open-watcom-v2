@@ -1409,11 +1409,13 @@ static seg_type ClassNameType( const char *name )
         }
     }
     slen = strlen( name );
-    strncpy( uname, name, 256 );
-    uname[256] = '\0';
+    if( slen > 256 )
+        slen = 256;
+    strncpy( uname, name, slen );
+    uname[slen] = '\0';
     strupr( uname );
     if( slen < 3 ) {
-    	return( SEGTYPE_UNDEF );
+        return( SEGTYPE_UNDEF );
     }
     if( slen == 4 ) {
         // 'CODE'
@@ -1455,9 +1457,19 @@ static seg_type SegmentNameType( char *name )
     char    uname[257];
 
     slen = strlen( name );
-    memcpy( uname, name, slen + 1 );
+    if( slen > 256 )
+        slen = 256;
+    strncpy( uname, name, slen );
+    uname[slen] = '\0';
     strupr( uname );
-    if( slen >= 4 ) {
+    if( slen < 4 ) {
+        return( SEGTYPE_UNDEF );
+    }
+    // '..._BSS'
+    if( CMPSIMEND( uname + slen, get_sim_name( SIM_DATA_UN, NULL ) ) == 0 ) {
+        return( SEGTYPE_ISDATA );
+    }
+    if( slen >= 5 ) {
         // '..._TEXT'
         if( CMPSIMEND( uname + slen, get_sim_name( SIM_CODE, NULL ) ) == 0 )
             return( SEGTYPE_ISCODE );
@@ -1465,10 +1477,7 @@ static seg_type SegmentNameType( char *name )
         if( CMPSIMEND( uname + slen, get_sim_name( SIM_DATA, NULL ) ) == 0 )
             return( SEGTYPE_ISDATA );
         // 'CONST...'
-        if( CMPSIMBEG( uname, get_sim_name( SIM_CONST, NULL ) ) == 0 )
-            return( SEGTYPE_ISDATA );
-        // '..._BSS'
-        if( CMPSIMEND( uname + slen, get_sim_name( SIM_DATA_UN, NULL ) ) == 0 ) {
+        if( CMPSIMBEG( uname, get_sim_name( SIM_CONST, NULL ) ) == 0 ) {
             return( SEGTYPE_ISDATA );
         }
     }
@@ -4064,10 +4073,10 @@ void GetSymInfo( asm_sym_handle sym )
 /***********************************/
 {
     if( CurrSeg == NULL ) {
-    	sym->segment = NULL;
+        sym->segment = NULL;
         sym->offset = 0;
     } else {
-    	sym->segment = &GetCurrSeg()->sym;
+        sym->segment = &GetCurrSeg()->sym;
         sym->offset = GetCurrAddr();
     }
 }
