@@ -37,4 +37,3 @@ extern int     RCSpawn( void (*fn)( void ) );
 NO_RETURN( extern void RCSuicide( int ) );
 
 extern jmp_buf jmpbuf_RCFatalError;
-
