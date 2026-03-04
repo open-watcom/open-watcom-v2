@@ -219,8 +219,6 @@
     #define MPUT_LE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
     #define MPUT_LE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
 
-    #define MGET_U8_OFF(p,o)    (*((uint_8*)(p)+(o)))
-
     #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = ((w) & 0x0000FF00UL) >> 8; \
                                  ((uint_8*)(p))[1] = (w) & 0x000000FFUL; }
     #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = ((w) & 0xFF000000UL) >> 24; \
