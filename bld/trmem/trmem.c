@@ -245,7 +245,8 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
     _trmem_who  who;
     char *      start;
     char *      xptr;
-    int         i;
+    uint        i;
+    uint        isize;
     size_t      size;
 
     va_start( args, fmt );
@@ -304,11 +305,14 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
             case 'X':   /* 14 bytes of hex data */
                 start = va_arg( args, char * );
                 size = va_arg( args, size_t );
-                if( size > 14 )
-                    size = 14;
+                if( size > 14 ) {
+                    isize = 14;
+                } else {
+                    isize = (uint)size;
+                }
                 xptr = start;
                 for( i = 0; i < 14; i++ ) {
-                    if( i < size ) {
+                    if( i < isize ) {
                         ptr = formHex( ptr, *xptr, sizeof( char ) );
                         xptr++;
                     } else {    // no more to print, so make things line up.
@@ -321,7 +325,7 @@ static void trPrt( _trmem_hdl hdl, const char *fmt, ... )
                         ptr++;
                     }
                 }
-                for( i = 0; i < size; i++ ) {
+                for( i = 0; i < isize; i++ ) {
                     if( isprint( *start ) ) {
                         *ptr = *start;
                     } else {
