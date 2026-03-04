@@ -81,10 +81,6 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
 
         curr_table = res->resources;
         res->resources = MemReallocSafe( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
-        if( res->resources == NULL ) {
-            res->resources = curr_table;
-            return( true );
-        }
     }
 
     resinfo  = WResGetResInfo( wind );

@@ -253,9 +253,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
             str->StringBlockSize = 0;
         } else {
             new_list = MemReallocSafe( str->StringList, list_len * sizeof( void * ) );
-            if( new_list != NULL ) {
-                str->StringList = new_list;
-            }
+            str->StringList = new_list;
             ConstructStringBlock( str );
         }
     }

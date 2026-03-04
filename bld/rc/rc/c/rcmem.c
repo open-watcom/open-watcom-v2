@@ -96,6 +96,10 @@ static void *check_nomem( void *ptr )
     return( ptr );
 }
 
+/*
+ * Alloc functions
+ */
+
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /*****************************/
@@ -118,6 +122,10 @@ void *MemAllocSafe( size_t size )
 #endif
 }
 
+/*
+ * Free functions
+ */
+
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /*************************/
@@ -128,6 +136,10 @@ void MemFree( void *ptr )
     RCMemLayer1Free( ptr );
 #endif
 }
+
+/*
+ * Realloc functions
+ */
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old_ptr, size_t newsize )
@@ -150,6 +162,10 @@ void *MemReallocSafe( void *old_ptr, size_t newsize )
     return( check_nomem( RCMemLayer1Realloc( old_ptr, newsize ) ) );
 #endif
 }
+
+/*
+ * Strdup functions
+ */
 
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )

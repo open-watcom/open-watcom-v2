@@ -597,7 +597,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
                      * bigger than the string to find
                      */
                     newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
-                    replacedString = MemRealloc( replacedString, newMemSize );
+                    replacedString = MemReallocSafe( replacedString, newMemSize );
                 }
                 strcpy( &replacedString[j], frStrings->replaceString );
                 j = j + lenOfReplaceString;
@@ -607,7 +607,7 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         }
         if( replacedString != NULL
           && frStrings->next != NULL ) {
-            stringFromFile = MemRealloc( stringFromFile, strlen( replacedString ) + 1 );
+            stringFromFile = MemReallocSafe( stringFromFile, strlen( replacedString ) + 1 );
             strcpy( stringFromFile, replacedString );
             MemFree( replacedString );
             replacedString = NULL;
@@ -634,8 +634,7 @@ void PrependToString( ScanValue *value, char *stringFromFile )
     if( CmdLineParms.Prepend ) {
         if( strcmp( stringFromFile, "" ) != 0 ) {
             lenOfPrependString =  strlen( CmdLineParms.PrependString );
-            value->string.string = MemAllocSafe( lenOfStringFromFile
-                                   + lenOfPrependString + 1);
+            value->string.string = MemAllocSafe( lenOfStringFromFile + lenOfPrependString + 1 );
             strcpy( value->string.string, CmdLineParms.PrependString );
         } else {
             // in this case the lenOfPrependString is zero, so the
@@ -700,7 +699,7 @@ static bool scanDefine( OPT_STRING **h )
         if( p != NULL ) {
             *p = ' ';
         } else {
-            *h = MemRealloc( *h, sizeof( **h ) + strlen( m ) + 2 );
+            *h = MemReallocSafe( *h, sizeof( **h ) + strlen( m ) + 2 );
             strcat( (*h)->data, " 1" );
         }
         return( true );
@@ -762,10 +761,10 @@ static void AddInpFileName( const char *infile )
     if( infile != NULL && *infile != '\0' ) {
         switch( nofilenames ) {
         case 0:
-            CmdLineParms.InFileName = MemStrdup( infile );
+            CmdLineParms.InFileName = MemStrdupSafe( infile );
             break;
         case 1:
-            CmdLineParms.InExeFileName = MemStrdup( infile );
+            CmdLineParms.InExeFileName = MemStrdupSafe( infile );
             break;
         case 2:
             /*
@@ -873,7 +872,7 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = MemStrdup( s->data );
+            p = MemStrdupSafe( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
@@ -958,7 +957,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && data->r ) {
-        CmdLineParms.OutResFileName = MemStrdup( outfile );
+        CmdLineParms.OutResFileName = MemStrdupSafe( outfile );
         if( data->fo ) {
             OPT_CLEAN_STRING( &(data->fo_value) );
         }
@@ -985,7 +984,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     }
     if( *outfile != '\0'
       && !data->r ) {
-        CmdLineParms.OutExeFileName = MemStrdup( outfile );
+        CmdLineParms.OutExeFileName = MemStrdupSafe( outfile );
         if( data->fe ) {
             OPT_CLEAN_STRING( &(data->fe_value) );
         }
