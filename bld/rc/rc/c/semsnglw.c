@@ -1109,8 +1109,6 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     ResLocation         loc;
     long                pos;
 
-    buffer = MemAllocSafe( BITMAP_BUFFER_SIZE );
-
     loc.start = SemStartResource();
 
     pos = RESTELL( fp );
@@ -1118,8 +1116,10 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
         ret = RS_READ_ERROR;
         *err_code = errno;
     } else {
+        buffer = MemAllocSafe( BITMAP_BUFFER_SIZE );
         ret = CopyData( pos, head->Size - sizeof( BitmapFileHeader ),
                           fp, buffer, BITMAP_BUFFER_SIZE, err_code );
+        MemFree( buffer );
     }
 
     loc.len = SemEndResource( loc.start );
@@ -1127,8 +1127,6 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
      * add the bitmap to the RES file directory
      */
     SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
-
-    MemFree( buffer );
 
     return( ret );
 } /* copyBitmap */

@@ -76,7 +76,6 @@ static bool copyResourcesFromRes( const char *full_filename )
     char                *buffer;
     bool                error;
 
-    buffer = NULL;
     dir = WResInitDir();
     fp = RcIoOpenInputBin( full_filename );
     if( fp == NULL ) {
