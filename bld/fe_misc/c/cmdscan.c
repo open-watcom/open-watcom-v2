@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,16 +81,16 @@ bool CmdScanBufferEnd(          // TEST IF END OF BUFFER
 bool CmdScanSwEnd(              // TEST IF END OF SWITCH
     void )
 {
-    int ch;                     // - current character
+    int c;                     // - current character
 
-    ch = *(unsigned char *)cmd.curr_ptr;
-    if( ch == '\0' ) {
+    c = *(unsigned char *)cmd.curr_ptr;
+    if( c == '\0' ) {
         return( true );
     }
-    if( isspace( ch ) ) {
+    if( isspace( c ) ) {
         return( true );
     }
-    if( CmdScanSwitchChar( ch ) ) {
+    if( CmdScanSwitchChar( c ) ) {
         return( true );
     }
     return( false );
@@ -100,22 +100,22 @@ bool CmdScanSwEnd(              // TEST IF END OF SWITCH
 int CmdScanLowerChar(           // SCAN THE NEXT CHARACTER, IN LOWER CASE
     void )
 {
-    int ch;                     // - character scanned
+    int c;                     // - character scanned
 
-    ch = CmdScanChar();
-    ch = tolower( ch );
-    return( ch );
+    c = CmdScanChar();
+    c = tolower( c );
+    return( c );
 }
 
 
 int CmdPeekChar(                // PEEK AT NEXT CHARACTER, IN LOWER CASE
     void )
 {
-    int ch;                     // - character scanned
+    int c;                     // - character scanned
 
-    ch = CmdScanLowerChar();
+    c = CmdScanLowerChar();
     CmdScanUngetChar();
-    return( ch );
+    return( c );
 }
 
 
@@ -212,21 +212,21 @@ size_t CmdScanQuotedString(     // SCAN AN OPTION
     char const **option )       // - addr( option pointer )
 {
     char const *str_beg;        // - start of string
-    int ch;
+    int c;
     int quote;
 
     quote = *(unsigned char *)cmd.curr_ptr++;
     *option = str_beg = cmd.curr_ptr;
-    while( (ch = *(unsigned char *)cmd.curr_ptr) != '\0' ) {
+    while( (c = *(unsigned char *)cmd.curr_ptr) != '\0' ) {
         cmd.curr_ptr++;
-        if( ch == quote ) {
+        if( c == quote ) {
             str_beg++;
             break;
         }
         // '"\\"' means '\', not '\"'
-        if( ch == '\\' ) {
-            ch = *(unsigned char *)cmd.curr_ptr;
-            if( ch == '\\' || ch == '"' ) {
+        if( c == '\\' ) {
+            c = *(unsigned char *)cmd.curr_ptr;
+            if( c == '\\' || c == '"' ) {
                 cmd.curr_ptr++;
             }
         }
@@ -294,7 +294,7 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
     bool *quoted )              // - addr( quoted )
 {
     char const *str_beg;        // - start of string
-    int ch;
+    int c;
 
     *option = str_beg = cmd.curr_ptr;
     if( cmd.unix_mode ) {
@@ -305,8 +305,8 @@ size_t CmdScanFilename(         // SCAN A FILE NAME
         *quoted = true;
         return( CmdScanQuotedString( option ) );
     } else {
-        for( ; (ch = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
-            if( isspace( ch ) ) {
+        for( ; (c = *(unsigned char *)cmd.curr_ptr) != '\0'; cmd.curr_ptr++ ) {
+            if( isspace( c ) ) {
                 break;
             }
         }
@@ -324,7 +324,7 @@ void CmdScanSkipWhiteSpace(     // SKIP OVER WHITE SPACES
     }
 }
 
-bool CmdScanSwitchChar( char c )
+bool CmdScanSwitchChar( int c )
 {
 #ifdef __UNIX__
     return( c == '-' );
