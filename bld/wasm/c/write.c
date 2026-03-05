@@ -729,8 +729,8 @@ static bool write_modend( void )
     return( RC_OK );
 }
 
-static time_t timet2dosu( time_t stamp )
-/**************************************/
+static unsigned_32 timet2dosu( time_t stamp )
+/*******************************************/
 {
     struct tm       *t;
     unsigned short  dos_time;
@@ -738,12 +738,12 @@ static time_t timet2dosu( time_t stamp )
 
     t = gmtime( &stamp );
 
-    dos_date = ( ( t->tm_year - 80 ) << DATE_YEAR_B )
-             | ( ( t->tm_mon + 1 ) << DATE_MON_B )
-             | ( t->tm_mday << DATE_DAY_B );
-    dos_time = ( ( t->tm_hour ) << TIME_HOUR_B )
-             | ( t->tm_min << TIME_MIN_B )
-             | ( ( t->tm_sec / 2 ) << TIME_SEC_B );
+    dos_date = (unsigned short)( ( t->tm_year - 80 ) << DATE_YEAR_B )
+             | (unsigned short)( ( t->tm_mon + 1 ) << DATE_MON_B )
+             | (unsigned short)( t->tm_mday << DATE_DAY_B );
+    dos_time = (unsigned short)( ( t->tm_hour ) << TIME_HOUR_B )
+             | (unsigned short)( t->tm_min << TIME_MIN_B )
+             | (unsigned short)( ( t->tm_sec / 2 ) << TIME_SEC_B );
     return( dos_date * 0x10000UL + dos_time );
 }
 
@@ -751,7 +751,10 @@ static bool write_autodep( void )
 /*******************************/
 {
     obj_rec_handle  objr;
-    char            buff[4 + 1 + 255];
+    struct {
+        unsigned_32 time;
+        char        name[256];
+    } data;
     size_t          len;
     const FNAME     *curr;
 
@@ -765,10 +768,10 @@ static bool write_autodep( void )
         objr = ObjNewRec( CMD_COMENT );
         objr->u.coment.attr = 0x80;
         objr->u.coment.class = CMT_DEPENDENCY;
-        MPUT_LE_32( buff, timet2dosu( curr->mtime ) );
-        buff[4] = (unsigned char)len;
-        memcpy( buff + 4 + 1, curr->fullname, len );
-        ObjAttachData( objr, (uint_8 *)buff, (uint_16)( 4 + 1 + len ) );
+        MPUT_LE_32( &data.time, timet2dosu( curr->mtime ) );
+        data.name[0] = (unsigned char)len;
+        memcpy( data.name + 1, curr->fullname, len );
+        ObjAttachData( objr, (uint_8 *)&data, (uint_16)( sizeof( data.time ) + 1 + len ) );
         write_record( objr, true );
     }
     // one NULL dependency record must be on the end

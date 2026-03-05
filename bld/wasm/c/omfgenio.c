@@ -155,7 +155,7 @@ static void objWFlushBuffer( void )
 void ObjWEndRec( void )
 /*********************/
 {
-    uint_8  buf[2];
+    uint_16 length;
     uint_8  checksum;
 
 /**/myassert( pobjState->in_rec );
@@ -164,13 +164,13 @@ void ObjWEndRec( void )
         objWFlushBuffer();
     }
     pobjState->length++;                  /* add 1 for checksum byte */
-    MPUT_LE_16( buf, pobjState->length );
-    checksum = pobjState->checksum + buf[0] + buf[1];
+    MPUT_LE_16( &length, pobjState->length );
+    checksum = pobjState->checksum + ((unsigned char *)&length)[0] + ((unsigned char *)&length)[1];
     checksum = -checksum;
     safeWrite( &checksum, 1 );
         /* back up to length */
     safeSeek( SEEK_POSBACK( pobjState->length + 2 ), SEEK_CUR );
-    safeWrite( buf, 2 );                   /* write the length */
+    safeWrite( (uint_8 *)&length, 2 );                   /* write the length */
     safeSeek( 0L, SEEK_END );       /* move to end of file again */
     pobjState->in_rec = false;
 }

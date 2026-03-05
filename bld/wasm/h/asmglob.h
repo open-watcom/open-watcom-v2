@@ -162,7 +162,7 @@ typedef struct global_options {
     int         error_count;
     int         warning_count;
     int         error_limit;
-    char        warning_level;
+    int         warning_level;
     bool        warning_error;
 
     char        *code_class;
