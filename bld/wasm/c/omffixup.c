@@ -36,6 +36,7 @@
 #include "asmalloc.h"
 #include "omffixup.h"
 #include "omfcarve.h"
+#include "omfgenio.h"
 #include "myassert.h"
 
 
@@ -87,18 +88,6 @@ static uint_8 *putIndex( uint_8 *p, uint_16 index )
     return( p );
 }
 
-static uint_8 *put16( uint_8 *p, uint_16 word )
-{
-    MPUT_LE_16_UN( p, word );
-    return( p + 2 );
-}
-
-static uint_8 *put32( uint_8 *p, uint_32 dword )
-{
-    MPUT_LE_32_UN( p, dword );
-    return( p + 4 );
-}
-
 static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum )
 {
 /**/myassert( p != NULL );
@@ -108,7 +97,7 @@ static uint_8 *putFrameDatum( uint_8 *p, uint_8 method, uint_16 datum )
     case FRAME_EXT:
         return( putIndex( p, datum ) );
     case FRAME_ABS:
-        return( put16( p, datum ) );
+        return( put16le( p, datum ) );
     }
     /*
      * for FRAME_LOC, FRAME_TARG, and FRAME_NONE there is nothing to output
@@ -120,7 +109,7 @@ static uint_8 *putTargetDatum( uint_8 *p, uint_8 method, uint_16 datum )
 {
 /**/myassert( p != NULL );
     if( (method & 0x03) == TARGET_ABS ) {
-        return( put16( p, datum ) );
+        return( put16le( p, datum ) );
     }
     return( putIndex( p, datum ) );
 }
@@ -150,9 +139,9 @@ uint_16 FixGenLRef( logref *log, uint_8 *buf, int type )
     p = putTargetDatum( p, target, log->target_datum );
     if( (target & 0x04) == 0 ) {
         if( type == FIX_GEN_MS386 ) {
-            p = put32( p, (uint_32)log->target_offset );
+            p = put32le( p, (uint_32)log->target_offset );
         } else {
-            p = put16( p, (uint_16)log->target_offset );
+            p = put16le( p, (uint_16)log->target_offset );
         }
     }
     return( (uint_16)( p - buf ) );
@@ -167,8 +156,8 @@ uint_16 FixGenPRef( physref *ref, uint_8 *buf, int type )
 /**/myassert( buf != NULL );
 /**/myassert( type == FIX_GEN_INTEL || type == FIX_GEN_MS386 );
     (void)type;
-    p = put16( buf, ref->frame );
-    p = put16( p, (uint_16)ref->offset );
+    p = put16le( buf, ref->frame );
+    p = put16le( p, (uint_16)ref->offset );
     return( (uint_16)( p - buf ) );
 }
 

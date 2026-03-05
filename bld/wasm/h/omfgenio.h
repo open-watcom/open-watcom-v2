@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,10 @@
 #include "omfrec.h"
 
 
+extern uint_16      get16le( uint_8 *p );
+extern uint_32      get32le( uint_8 *p );
+extern void         *put16le( uint_8 *p, uint_16 word );
+extern void         *put32le( uint_8 *p, uint_32 dword );
 extern void         ObjWriteOpen( void );
 extern void         ObjWriteClose( bool del );
 extern void         ObjWBegRec( uint_8 command );

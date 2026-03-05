@@ -51,6 +51,78 @@ static struct {
     uint_8      buffer[1];  /* for writing                                  */
 } *pobjState;               /* object file buffering info                   */
 
+uint_16 get16le( uint_8 *p )
+/***************************
+ * read unaligned 16-bit LE data
+ */
+{
+    uint_16 u16;
+
+#if defined( __BIG_ENDIAN__ )
+    ((uint_8 *)&u16)[1] = *p++;
+    ((uint_8 *)&u16)[0] = *p++;
+#else
+    ((uint_8 *)&u16)[0] = *p++;
+    ((uint_8 *)&u16)[1] = *p++;
+#endif
+    return( u16 );
+}
+
+uint_32 get32le( uint_8 *p )
+/***************************
+ * read unaligned 32-bit LE data
+ */
+{
+    uint_32 u32;
+
+#if defined( __BIG_ENDIAN__ )
+    ((uint_8 *)&u32)[3] = *p++;
+    ((uint_8 *)&u32)[2] = *p++;
+    ((uint_8 *)&u32)[1] = *p++;
+    ((uint_8 *)&u32)[0] = *p++;
+#else
+    ((uint_8 *)&u32)[0] = *p++;
+    ((uint_8 *)&u32)[1] = *p++;
+    ((uint_8 *)&u32)[2] = *p++;
+    ((uint_8 *)&u32)[3] = *p++;
+#endif
+    return( u32 );
+}
+
+void *put16le( uint_8 *p, uint_16 word )
+/****************************************
+ * write unaligned 16-bit LE data
+ */
+{
+#if defined( __BIG_ENDIAN__ )
+    *p++ = ((uint_8 *)&word)[1];
+    *p++ = ((uint_8 *)&word)[0];
+#else
+    *p++ = ((uint_8 *)&word)[0];
+    *p++ = ((uint_8 *)&word)[1];
+#endif
+    return( p );
+}
+
+void *put32le( uint_8 *p, uint_32 dword )
+/****************************************
+ * write unaligned 32-bit LE data
+ */
+{
+#if defined( __BIG_ENDIAN__ )
+    *p++ = ((uint_8 *)&dword)[3];
+    *p++ = ((uint_8 *)&dword)[2];
+    *p++ = ((uint_8 *)&dword)[1];
+    *p++ = ((uint_8 *)&dword)[0];
+#else
+    *p++ = ((uint_8 *)&dword)[0];
+    *p++ = ((uint_8 *)&dword)[1];
+    *p++ = ((uint_8 *)&dword)[2];
+    *p++ = ((uint_8 *)&dword)[3];
+#endif
+    return( p );
+}
+
 /*
     Routines for buffered writing of an object file
 */
@@ -164,7 +236,7 @@ void ObjWEndRec( void )
         objWFlushBuffer();
     }
     pobjState->length++;                  /* add 1 for checksum byte */
-    MPUT_LE_16( &length, pobjState->length );
+    put16le( (uint_8 *)&length, pobjState->length );
     checksum = pobjState->checksum + ((unsigned char *)&length)[0] + ((unsigned char *)&length)[1];
     checksum = -checksum;
     safeWrite( &checksum, 1 );
@@ -194,7 +266,7 @@ void ObjWrite16( uint_16 word )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 1 ) {
         objWFlushBuffer();
     }
-    MPUT_LE_16_UN( pobjState->buffer + pobjState->in_buf, word );
+    put16le( pobjState->buffer + pobjState->in_buf, word );
     pobjState->in_buf += 2;
 }
 
@@ -206,7 +278,7 @@ void ObjWrite32( uint_32 dword )
     if( pobjState->in_buf >= OBJ_BUFFER_SIZE - 3 ) {
         objWFlushBuffer();
     }
-    MPUT_LE_32_UN( pobjState->buffer + pobjState->in_buf, dword );
+    put32le( pobjState->buffer + pobjState->in_buf, dword );
     pobjState->in_buf += 4;
 }
 

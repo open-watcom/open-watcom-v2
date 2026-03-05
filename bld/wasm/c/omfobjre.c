@@ -37,6 +37,7 @@
 #include "omfobjre.h"
 #include "myassert.h"
 #include "omfcarve.h"
+#include "omfgenio.h"
 #include "omffixup.h"
 
 
@@ -152,22 +153,25 @@ uint_8 ObjGet8( obj_rec_handle objr )
 uint_16 ObjGet16( obj_rec_handle objr )
 /*************************************/
 {
-    uint_8  *p;
+    uint_16 u16;
 
 /**/myassert( objr != NULL && objr->data != NULL );
-    p = ObjGet( objr, 2 );
-    return( MGET_LE_16_UN( p ) );
+    u16 = get16le( objr->data + objr->curoff );
+    objr->curoff += 2;
+/**/myassert( objr->curoff <= objr->length );
+    return( u16 );
 }
 
 uint_32 ObjGet32( obj_rec_handle objr )
 /*************************************/
 {
-    uint_8  *p;
+    uint_32 u32;
 
 /**/myassert( objr != NULL && objr->data != NULL );
-
-    p = ObjGet( objr, 4 );
-    return( MGET_LE_32_UN( p ) );
+    u32 = get32le( objr->data + objr->curoff );
+    objr->curoff += 4;
+/**/myassert( objr->curoff <= objr->length );
+    return( u32 );
 }
 
 uint_32 ObjGetEither( obj_rec_handle objr )
@@ -220,7 +224,7 @@ void ObjPut16( obj_rec_handle objr, uint_16 word )
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
-    MPUT_LE_16_UN( objr->data + objr->curoff, word );
+    put16le( objr->data + objr->curoff, word );
     objr->curoff += 2;
 }
 
@@ -229,7 +233,7 @@ void ObjPut32( obj_rec_handle objr, uint_32 dword )
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
-    MPUT_LE_32_UN( objr->data + objr->curoff, dword );
+    put32le( objr->data + objr->curoff, dword );
     objr->curoff += 4;
 }
 
