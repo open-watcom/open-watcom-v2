@@ -156,7 +156,7 @@ uint_16 ObjGet16( obj_rec_handle objr )
 
 /**/myassert( objr != NULL && objr->data != NULL );
     p = ObjGet( objr, 2 );
-    return( MGET_LE_16( p ) );
+    return( MGET_LE_16_UN( p ) );
 }
 
 uint_32 ObjGet32( obj_rec_handle objr )
@@ -167,7 +167,7 @@ uint_32 ObjGet32( obj_rec_handle objr )
 /**/myassert( objr != NULL && objr->data != NULL );
 
     p = ObjGet( objr, 4 );
-    return( MGET_LE_32( p ) );
+    return( MGET_LE_32_UN( p ) );
 }
 
 uint_32 ObjGetEither( obj_rec_handle objr )
@@ -220,7 +220,7 @@ void ObjPut16( obj_rec_handle objr, uint_16 word )
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
-    MPUT_LE_16( objr->data + objr->curoff, word );
+    MPUT_LE_16_UN( objr->data + objr->curoff, word );
     objr->curoff += 2;
 }
 
@@ -229,7 +229,7 @@ void ObjPut32( obj_rec_handle objr, uint_32 dword )
 {
 /**/myassert( objr != NULL && objr->data != NULL );
 
-    MPUT_LE_32( objr->data + objr->curoff, dword );
+    MPUT_LE_32_UN( objr->data + objr->curoff, dword );
     objr->curoff += 4;
 }
 
