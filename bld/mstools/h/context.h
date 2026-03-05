@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +61,7 @@ extern void     CloseContext( void );
 extern void     PushContext( void );
 extern void     PopContext( void );
 
-extern char     GetCharContext( void );
+extern int      GetCharContext( void );
 extern void     UngetCharContext( void );
 
 extern void     MarkPosContext( void );

@@ -707,20 +707,20 @@ static int UnquoteDirective( char *dst, size_t maxlen, const char *src )
     return( un_quoted );
 }
 
-static bool CmdScanSwitchChar( char c )
+static bool CmdScanSwitchChar( int ch )
 {
 #ifdef __UNIX__
-    return( c == '-' );
+    return( ch == '-' );
 #else
-    return( c == '-' || c == '/' );
+    return( ch == '-' || ch == '/' );
 #endif
 }
 
 static  int     Parse( char *cmd )
 /********************************/
 {
-    char        opt;
-    char        c;
+    int         opt;
+    int         ch;
     char        *end;
 //    char        *cmd;
     size_t      len;
@@ -746,23 +746,23 @@ static  int     Parse( char *cmd )
 
     cmp_opt_index = 0;
     while( *cmd != '\0' ) {
-        opt = *cmd;
+        opt = *(unsigned char *)cmd;
         if( CmdScanSwitchChar( opt ) ) {
             cmd++;
         } else {
             opt = ' ';
         }
         in_quotes = false;
-        for( end = cmd; (c = *end) != '\0'; end++ ) {
-            if( c == '"' ) {
+        for( end = cmd; (ch = *(unsigned char *)end) != '\0'; end++ ) {
+            if( ch == '"' ) {
                 if( in_quotes )
                     break;
                 in_quotes = true;
             }
             if( !in_quotes ) {
-                if( c == ' '  )
+                if( ch == ' '  )
                     break;
-                if( CmdScanSwitchChar( c ) ) {
+                if( CmdScanSwitchChar( ch ) ) {
                     break;
                 }
             }

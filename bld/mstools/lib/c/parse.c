@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,18 +172,19 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    char                ch;
+    int                 ch;
     char *              filename;
 
     for( ;; ) {
         /*** Find the start of the next item ***/
         CmdScanWhitespace();
         ch = GetCharContext();
-        if( ch == '\0' )  break;
+        if( ch == '\0' )
+            break;
         MarkPosContext();               /* mark start of switch */
 
         /*** Handle switches, command files, and input files ***/
-        if( ch == '-'  ||  ch == '/' ) {        /* switch */
+        if( ch == '-' || ch == '/' ) {        /* switch */
             if( OPT_PROCESS( cmdOpts ) ) {
                 cmd_line_error();
             }
@@ -299,7 +300,8 @@ static bool parse_export( OPT_STRING **optStr )
 
     /*** Extract the entryName ***/
     p = str;
-    while( *p != '\0'  &&  *p != '='  &&  *p != ',' )  p++;
+    while( *p != '\0' && *p != '=' && *p != ',' )
+        p++;
     if( p == str ) {
         retcode = 0;
     } else {
@@ -322,7 +324,8 @@ static bool parse_export( OPT_STRING **optStr )
     if( *str == '='  &&  retcode != 0 ) {
         str++;
         p = str;
-        while( *p != '\0'  &&  *p != ',' )  p++;
+        while( *p != '\0' && *p != ',' )
+            p++;
         if( p == str ) {
             retcode = 0;
         } else {
@@ -349,7 +352,8 @@ static bool parse_export( OPT_STRING **optStr )
         } else {
             str++;
             p = str;
-            while( *p != '\0'  &&  isdigit( *p ) )  p++;
+            while( *p != '\0' && isdigit( *p ) )
+                p++;
             if( p == str ) {
                 retcode = 0;
             } else {
@@ -597,7 +601,7 @@ static bool parse_subsystem( OPT_STRING **p )
 int OPT_GET_LOWER( void )
 /***********************/
 {
-    return( tolower( (unsigned char)GetCharContext() ) );
+    return( tolower( GetCharContext() ) );
 }
 
 

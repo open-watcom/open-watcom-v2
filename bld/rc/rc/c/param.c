@@ -659,7 +659,7 @@ static char *ReadIndirectFile( char *name )
     char        *str;
     FILE        *fp;
     size_t      len;
-    char        ch;
+    int         ch;
 
     env = NULL;
     fp = fopen( name, "rb" );
@@ -672,8 +672,7 @@ static char *ReadIndirectFile( char *name )
         env[len] = '\0';
         fclose( fp );
         // zip through characters changing \r, \n etc into ' '
-        for( str = env; *str != '\0'; ++str ) {
-            ch = *str;
+        for( str = env; (ch = *(unsigned char *)str) != '\0'; ++str ) {
             if( ch == '\r' || ch == '\n' ) {
                 *str = ' ';
             }

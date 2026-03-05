@@ -200,12 +200,12 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
     return( contok );
 } /* ScanOptionsArg */
 
-static bool CmdScanSwitchChar( char c )
+static bool CmdScanSwitchChar( int ch )
 {
 #ifdef __UNIX__
-    return( c == '-' );
+    return( ch == '-' );
 #else
-    return( c == '-' || c == '/' );
+    return( ch == '-' || ch == '/' );
 #endif
 }
 
@@ -233,20 +233,20 @@ static int ParseVariable( const char *var, char **argv, char *buf )
     argc = 0;
     for( ;; ) {
         got_quote = false;
-        while( isspace( *var ) && *var != '\0' )
+        while( isspace( *(unsigned char *)var ) && *var != '\0' )
             var++;
         start = var;
         if( output_data ) {
             bufstart = bufend;
         }
-        if( CmdScanSwitchChar( *var ) ) {
+        if( CmdScanSwitchChar( *(unsigned char *)var ) ) {
             if( output_data ) {
                 *bufend++ = *var;
             }
             var++;
         }
-        while( ( got_quote || !isspace( *var ) ) && *var != '\0' ) {
-            if( *var == '\"' ) {
+        while( ( got_quote || !isspace( *(unsigned char *)var ) ) && *var != '\0' ) {
+            if( *(unsigned char *)var == '\"' ) {
                 got_quote = !got_quote;
             }
             if( output_data ) {
@@ -344,15 +344,17 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
     const char  *arg;
     bool        contok;         /* continue with main execution */
     int         currarg;
+    int         ch;
 
     contok = true;
     for( currarg = 0; currarg < argc && contok; currarg++ ) {
         arg = argv[currarg];
-        if( CmdScanSwitchChar( *arg ) ) {
+        ch = *(unsigned char *)arg;
+        if( CmdScanSwitchChar( ch ) ) {
             contok = ScanOptionsArg( arg + 1, ppflags ) && contok;
-        } else if( *arg == '@' ) {
+        } else if( ch == '@' ) {
             contok = scanEnvVarOrFile( arg + 1, ppflags ) && contok;
-        } else if( *arg == '?' ) {
+        } else if( ch == '?' ) {
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {

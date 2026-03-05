@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -752,7 +752,7 @@ static void add_string( StringList **p, char *str )
 static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk, bool atCharsOk )
 /**********************************************************************************************/
 {
-    char                ch = '\0';
+    int                 ch = '\0';
     long                start;
     int                 len = 0;
     bool                alive = true;
@@ -780,19 +780,21 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
     while( alive ) {
         ch = GetCharContext();
         switch( ch ) {
-          case ':':
-          case '.':
-            if( fileCharsOk )  break;
+        case ':':
+        case '.':
+            if( fileCharsOk )
+                break;
             /* note possible fall through */
-          case '@':
-            if( atCharsOk )  break;
+        case '@':
+            if( atCharsOk )
+                break;
             /* note possible fall through */
-          case '=':
-          case ',':
-          case ' ':
-          case '\n':
-          case '\r':
-          case '\t':
+        case '=':
+        case ',':
+        case ' ':
+        case '\n':
+        case '\r':
+        case '\t':
             if( !quoteUsed ) {
                 alive = false;          /* break a token on any of these */
                 if( len != 0 ) {
@@ -801,7 +803,7 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
                 break;
             }
             break;
-          case '"':
+        case '"':
             if( quoteUsed && usingQuote == '"' ) {
                 usingQuote = '\0';
                 alive = false;
@@ -810,8 +812,8 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
                 quoteUsed = true;
             }
             break;
-          case '\'':
-            if( quoteUsed  &&  usingQuote == '\'' ) {
+        case '\'':
+            if( quoteUsed && usingQuote == '\'' ) {
                 usingQuote = '\0';
                 alive = false;
             } else if( !quoteUsed ) {
@@ -819,11 +821,11 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
                 quoteUsed = true;
             }
             break;
-          case '\0':
+        case '\0':
             gotEof = true;
             alive = false;
             break;
-          default:
+        default:
             break;
         }
         len++;
@@ -847,7 +849,8 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
     }
     buf[count] = '\0';
     if( strlen( buf ) > 0 ) {
-        if( curToken != NULL )  FreeMem( curToken );
+        if( curToken != NULL )
+            FreeMem( curToken );
         curToken = buf;
     }
 
@@ -907,8 +910,9 @@ static int next_token( int state, bool *newCmd, bool *newLine, bool fileCharsOk,
     /*** If it's the start of a new command, set *newCmd ***/
     if( newCmd != NULL ) {
         *newCmd = false;
-        for( count=0; ; count++ ) {
-            if( breakStates[count] == -1 )  break;
+        for( count = 0; ; count++ ) {
+            if( breakStates[count] == -1 )
+                break;
             if( retcode == breakStates[count] ) {
                 *newCmd = true;
                 break;
@@ -959,11 +963,11 @@ static void strip_quotes( char *str )
 static void ScanWhitespace( bool *newLine )
 /*****************************************/
 {
-    char    ch;
+    int     ch;
 
     do {
         ch = GetCharContext();
-    } while( isspace( ch )  &&  ch != '\0' && ch != '\n' );
+    } while( isspace( ch ) && ch != '\0' && ch != '\n' );
     if( ch != '\0' && ch != '\n' )
         UngetCharContext();
     if( ch == '\n' ) {
@@ -978,7 +982,7 @@ static void ScanWhitespace( bool *newLine )
 static bool eat_comments( bool *newLine )
 /***************************************/
 {
-    char    ch;
+    int     ch;
     bool    alive = true;
 
     *newLine = false;
@@ -991,7 +995,7 @@ static bool eat_comments( bool *newLine )
                 if( ch == '\n' ) {
                     *newLine = true;
                 }
-            } while( ch != '\0'  &&  ch != '\n' );
+            } while( ch != '\0' && ch != '\n' );
         } else {
             alive = false;
         }

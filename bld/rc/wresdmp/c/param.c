@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,34 +189,36 @@ void FreeParams( void )
     }
 }
 
-static bool CmdScanSwitchChar( char c )
+static bool CmdScanSwitchChar( int ch )
 {
 #ifdef __UNIX__
-    return( c == '-' );
+    return( ch == '-' );
 #else
-    return( c == '-' || c == '/' );
+    return( ch == '-' || ch == '/' );
 #endif
 }
 
 bool ScanParams( int argc, const char * argv[] )
 /**********************************************/
 {
-    int     nofilenames;    /* number of filename parms read so far */
-    bool    contok;         /* continue with main execution */
-    int     currarg;
+    int         nofilenames;    /* number of filename parms read so far */
+    bool        contok;         /* continue with main execution */
+    int         currarg;
+    const char  *arg;
 
     DefaultParms();
 
     nofilenames = 0;
     contok = true;
     for( currarg = 1; currarg < argc && contok; currarg++ ) {
-        if( CmdScanSwitchChar( *argv[currarg] ) ) {
-            contok = ScanOptionsArg( argv[currarg] + 1 ) && contok;
-        } else if( *argv[currarg] == '?' ) {
+        arg = argv[currarg];
+        if( CmdScanSwitchChar( *(unsigned char *)arg ) ) {
+            contok = ScanOptionsArg( arg + 1 ) && contok;
+        } else if( *(unsigned char *)arg == '?' ) {
             CmdLineParms.PrintHelp = true;
             contok = false;
         } else if( nofilenames == 0 ) {
-            strncpy( CmdLineParms.FileName, argv[currarg], _MAX_PATH );
+            strncpy( CmdLineParms.FileName, arg, _MAX_PATH );
             nofilenames++;
         } else {
             puts( "Error: Too many arguments on command line" );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -208,10 +208,10 @@ void PopContext( void )
  * Get a character from the current context.  Returns a null byte if the
  * end of the context has been reached.
  */
-char GetCharContext( void )
-/*************************/
+int GetCharContext( void )
+/************************/
 {
-    char    ch;
+    int     ch;
 
     ch = '\0';
     if( !curContextInitialized )
@@ -226,9 +226,10 @@ char GetCharContext( void )
         break;
     case COMMAND_FILE_CONTEXT:
         {
-            int c;
-            if( (c = fgetc( curContext.fp )) != EOF ) {
-                ch = (char)c;
+            int cx;
+
+            if( (cx = fgetc( curContext.fp )) != EOF ) {
+                ch = cx;
             }
         }
         break;

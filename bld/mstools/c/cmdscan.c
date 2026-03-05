@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,12 +70,14 @@ static char *got_char( char *buf, size_t *bufsize, size_t offset, char ch )
 void CmdScanWhitespace( void )
 /****************************/
 {
-    char    ch;
+    int     ch;
 
     do {
         ch = GetCharContext();
-    } while( isspace( ch )  &&  ch != '\0' );
-    if( ch != '\0' )  UngetCharContext();
+    } while( isspace( ch ) && ch != '\0' );
+    if( ch != '\0' ) {
+        UngetCharContext();
+    }
 }
 
 
@@ -86,7 +89,7 @@ void CmdScanWhitespace( void )
 bool CmdScanRecogChar( int ch )
 /*****************************/
 {
-    if( GetCharContext() == (char)ch ) {
+    if( GetCharContext() == ch ) {
         return( true );
     } else {
         UngetCharContext();
@@ -102,7 +105,7 @@ bool CmdScanRecogChar( int ch )
 bool CmdScanRecogLowerChar( int ch )
 /**********************************/
 {
-    if( tolower( (unsigned char)GetCharContext() ) == tolower( ch ) ) {
+    if( tolower( GetCharContext() ) == tolower( ch ) ) {
         return( true );
     } else {
         UngetCharContext();
@@ -120,7 +123,7 @@ bool CmdScanRecogLowerChar( int ch )
 char *CmdScanString( void )
 /*************************/
 {
-    char                ch;
+    int                 ch;
     bool                inQuote = Quoted;   /* true if inside a quoted string */
     bool                backslash = false;  /* true if last char was a '\\' */
     long                start;              /* context offset of string start */
@@ -143,8 +146,10 @@ char *CmdScanString( void )
     start = GetPosContext();
     for( ;; ) {
         ch = GetCharContext();
-        if( ch == '\0' )  break;
-        if( !inQuote && isspace( ch ) )  break;
+        if( ch == '\0' )
+            break;
+        if( !inQuote && isspace( ch ) )
+            break;
         if( ch == '"' ) {
             if( backslash ) {
                 backslash = false;      /* handle \" within a string */
@@ -185,7 +190,8 @@ char *CmdScanString( void )
         offset++;
     }
 
-    if( ch != '\0' )  UngetCharContext();
+    if( ch != '\0' )
+        UngetCharContext();
     return( buf );
 }
 
@@ -241,7 +247,7 @@ char *CmdScanFileNameWithoutQuotes( void )
 bool CmdScanNumber( unsigned *num )
 /*********************************/
 {
-    char                digit;
+    int                 digit;
     bool                numberScanned = false;
     unsigned            value = 0;
     unsigned            base = 10;
@@ -277,7 +283,7 @@ bool CmdScanNumber( unsigned *num )
             numberScanned = true;
         } else if( base == 16 && isxdigit( digit ) ) {
             value *= base;
-            value += tolower( (unsigned char)digit ) - 'a' + 10;
+            value += tolower( digit ) - 'a' + 10;
             numberScanned = true;
         } else {
             UngetCharContext();

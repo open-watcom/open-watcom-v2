@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,18 +89,19 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    char                ch;
-    char *              filename;
+    int             ch;
+    char            *filename;
 
     for( ;; ) {
         /*** Find the start of the next item ***/
         CmdScanWhitespace();
         ch = GetCharContext();
-        if( ch == '\0' )  break;
+        if( ch == '\0' )
+            break;
         MarkPosContext();               /* mark start of switch */
 
         /*** Handle switches, command files, and input files ***/
-        if( ch == '-'  ||  ch == '/' ) {        /* switch */
+        if( ch == '-' || ch == '/' ) {        /* switch */
             if( OPT_PROCESS( cmdOpts ) ) {
                 cmd_line_error();
             }
@@ -970,7 +971,7 @@ static int handle_on_off_option( bool *hasBeenCalled, char *optName, int isOn )
 /*****************************************************************************/
 {
     int     rc = isOn;
-    char    ch;
+    int     ch;
 
     ch = GetCharContext();
     if( *hasBeenCalled ) {
@@ -1108,12 +1109,12 @@ static void handle_TP( OPT_STORAGE *cmdOpts, int x )
 int OPT_GET_LOWER( void )
 /***********************/
 {
-    return( tolower( (unsigned char)GetCharContext() ) );
+    return( tolower( GetCharContext() ) );
 }
 
 
 /*
- * If the next character is ch, it is consumed and a non-zero value
+ * If the next character is c, it is consumed and a non-zero value
  * is returned; otherwise, it is not consumed and zero is returned.
  */
 bool OPT_RECOG( int ch )
@@ -1123,7 +1124,7 @@ bool OPT_RECOG( int ch )
 }
 
 /*
- * If the next character is ch (in either uppercase or lowercase form), it
+ * If the next character is c (in either uppercase or lowercase form), it
  * is consumed and a non-zero value is returned; otherwise, it is not
  * consumed and zero is returned.
  */
@@ -1203,7 +1204,7 @@ bool OPT_GET_NUMBER( unsigned *p )
 bool OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
 /********************************************************/
 {
-    char ch;
+    int     ch;
 
     *p = value;
     ch = GetCharContext();
@@ -1226,7 +1227,7 @@ bool OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
 bool OPT_END( void )
 /******************/
 {
-    char ch;
+    int     ch;
 
     ch = GetCharContext();
     if( ch == '\0' )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,21 +89,22 @@ static void cmd_line_error( void )
 void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
 /***********************************************************/
 {
-    char                ch;
+    int                 ch;
     char *              filename;
 
     for( ;; ) {
         /*** Find the start of the next item ***/
         CmdScanWhitespace();
         ch = GetCharContext();
-        if( ch == '\0' )  break;
+        if( ch == '\0' )
+            break;
         MarkPosContext();               /* mark start of switch */
 
         /*** Handle switches, command files, and input files ***/
-        if( ch == '-'  ||  ch == '/' ) {        /* switch */
+        if( ch == '-' || ch == '/' ) {        /* switch */
             for( ;; ) {
                 ch = GetCharContext();
-                if( isspace( ch )  ||  ch == '\0' ) {
+                if( isspace( ch ) || ch == '\0' ) {
                     break;
                 } else {
                     UngetCharContext();
@@ -303,7 +304,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 int OPT_GET_LOWER( void )
 /***********************/
 {
-    return( tolower( (unsigned char)GetCharContext() ) );
+    return( tolower( GetCharContext() ) );
 }
 
 

@@ -57,15 +57,15 @@ static bool EqualChar( int c )
 
 static size_t get_token_len( const char *start )
 {
-    char        c;
+    int         ch;
     const char  *src;
 
-    for( src = start; (c = *src) != '\0'; ++src ) {
-        if( EqualChar( c ) )
+    for( src = start; (ch = *(unsigned char *)src) != '\0'; ++src ) {
+        if( EqualChar( ch ) )
             break;
-        if( c == ' ' )
+        if( ch == ' ' )
             break;
-        if( CmdScanSwitchChar( c ) ) {
+        if( CmdScanSwitchChar( ch ) ) {
             break;
         }
     }
