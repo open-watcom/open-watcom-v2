@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,11 +43,11 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
 /*******************************************************************/
 {
     token_idx start = i - 1; /* location of "directive name .. after any labels" */
-    token_idx arg_loc;
     char *parmstring = NULL;
     char *ptr;
     char buffer[MAX_LINE_LEN];
     size_t len;
+    size_t lenx;
 
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( tokbuf, i, false, true );
@@ -56,7 +56,6 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
-        arg_loc = i;
         len = tokbuf->tokens[i].u.value;
         i++;
         if( tokbuf->tokens[i].class != TC_FINAL ) {
@@ -69,7 +68,8 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
-        arg_loc = i;
+        AddTokens( tokbuf, i, 1 );
+        i += 2;
         for( ; tokbuf->tokens[i].class != TC_COMMA; i++ ) {
             if( tokbuf->tokens[i].class == TC_FINAL ) {
                 AsmError( EXPECTING_COMMA );
@@ -81,20 +81,19 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        len = strlen( tokbuf->tokens[i].string_ptr ) + 1;
-        parmstring = AsmTmpAlloc( len );
-        memcpy( parmstring, tokbuf->tokens[i].string_ptr, len );
+        parmstring = AsmTmpAlloc( strlen( tokbuf->tokens[i].string_ptr ) + 1 );
+        strcpy( parmstring, tokbuf->tokens[i].string_ptr );
+        i--;
         tokbuf->tokens[i].class = TC_FINAL;
         tokbuf->tokens[i].string_ptr = tokbuf->stringbuf;
         tokbuf->count = i;
-        AddTokens( tokbuf, arg_loc, 1 );
     }
     /* now make a macro */
     i = start;
-    sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
+    lenx = sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
     if( Options.mode & MODE_IDEAL ) {
-        tokbuf->tokens[i+1].string_ptr = buffer;
-        tokbuf->tokens[i+1].class = TC_ID;
+        tokbuf->tokens[i + 1].string_ptr = buffer;
+        tokbuf->tokens[i + 1].class = TC_ID;
     } else {
         tokbuf->tokens[i].string_ptr = buffer;
         tokbuf->tokens[i].class = TC_ID;
@@ -110,20 +109,20 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
 
     PushLineQueue();
     if( type == IRP_REPEAT ) {
-        sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
         while( len-- > 0 ) {
             InputQueueLine( buffer );
         }
     } else {
         for( ptr = parmstring; *ptr != NULLC; ) {
-            len = sprintf( buffer, IRP_MACRONAME "%d ", Globals.for_counter );
+            len = lenx;
+            buffer[len++] = ' ';
             if( type == IRP_CHAR ) {
                 buffer[len++] = *ptr++;
             } else {    // IRP_WORD
                 size_t len1;
 
                 len1 = strcspn( ptr, "," );
-                memcpy( buffer + len, ptr, len1 );
+                strncpy( buffer + len, ptr, len1 );
                 len += len1;
                 ptr += len1;
                 if( *ptr == ',' ) {
@@ -133,7 +132,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             buffer[len] = NULLC;
             InputQueueLine( buffer );
         }
-        sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
+        buffer[lenx] = '\0';
     }
     Globals.for_counter++;
     PushMacro( buffer, true );
