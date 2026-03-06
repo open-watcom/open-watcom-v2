@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1081,10 +1081,11 @@ static bool get_register_argument( token_buffer *tokbuf, token_idx index, char *
             case T_SS:
             case T_FS:
             case T_GS:
-                if( Use32 )
+                if( Use32 ) {
                     size = 4;
-                else
+                } else {
                     size = 2;
+                }
                 break;
             case T_AL:
             case T_AH:
@@ -1125,10 +1126,11 @@ static bool get_register_argument( token_buffer *tokbuf, token_idx index, char *
         } else if( tokbuf->tokens[i].class == TC_QUESTION_MARK ) {
             return( RC_OK );
         } else {
-            if( Use32 )
+            if( Use32 ) {
                 sprintf( buffer, "mov %s,", regs[A_DWORD][j] );
-            else
+            } else {
                 sprintf( buffer, "mov %s,", regs[A_WORD][j] );
+            }
             while( ( tokbuf->tokens[i].class != TC_FINAL ) &&
                    ( tokbuf->tokens[i].class != TC_COMMA ) ) {
                 strcat( buffer, tokbuf->tokens[i++].string_ptr );

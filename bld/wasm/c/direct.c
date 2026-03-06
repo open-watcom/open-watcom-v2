@@ -3645,15 +3645,10 @@ static void push_registers( regs_list *regist )
  */
 {
     char        buffer[20];
-    char        *p;
-    size_t      len;
 
     if( regist == NULL )
         return;
-    p = CATLIT( buffer, "push " );
-    len = strlen( regist->reg );
-    p = CATSTR( p, regist->reg, len );
-    *p = '\0';
+    sprintf( buffer, "push %s", regist->reg );
     InputQueueLine( buffer );
     push_registers( regist->next );
 }
@@ -3664,16 +3659,11 @@ static void pop_registers( regs_list *regist )
  */
 {
     char        buffer[20];
-    char        *p;
-    size_t      len;
 
     if( regist == NULL )
         return;
     pop_registers( regist->next );
-    p = CATLIT( buffer, "pop " );
-    len = strlen( regist->reg );
-    p = CATSTR( p, regist->reg, len );
-    *p = '\0';
+    sprintf( buffer, "pop %s", regist->reg );
     InputQueueLine( buffer );
 }
 
@@ -3685,7 +3675,6 @@ bool WritePrologue( const char *curline )
     label_list          *curr;
     unsigned long       offset;
     unsigned long       size;
-    char                *p;
     paramsinfo          params;
 
     params.param_number = 0;
@@ -3832,11 +3821,10 @@ bool WritePrologue( const char *curline )
         if( Options.trace_stack
           && info->mem_type == MT_FAR ) {
             if( Use32 ) {
-                CPYLIT( buffer, "inc ebp" );
+                InputQueueLine( "inc ebp" );
             } else {
-                CPYLIT( buffer, "inc bp" );
+                InputQueueLine( "inc bp" );
             }
-            InputQueueLine( buffer );
         }
         if( Use32 ) {
             /*
@@ -3845,13 +3833,11 @@ bool WritePrologue( const char *curline )
              * MOV  EBP, ESP
              * SUB  ESP, the number of localbytes
              */
-            CPYLIT( buffer, "push ebp" );
-            InputQueueLine( buffer );
-            CPYLIT( buffer, "mov ebp,esp" );
+            InputQueueLine( "push ebp" );
+            InputQueueLine( "mov ebp,esp" );
             if( info->localsize != 0 ) {
+                sprintf( buffer, "sub esp,%lu", info->localsize );
                 InputQueueLine( buffer );
-                p = CATLIT( buffer, "sub esp," );
-                sprintf( p, "%lu", info->localsize );
             }
         } else {
             /*
@@ -3860,16 +3846,13 @@ bool WritePrologue( const char *curline )
              * MOV  BP, SP
              * SUB  SP, the number of localbytes
              */
-            CPYLIT( buffer, "push bp" );
-            InputQueueLine( buffer );
-            CPYLIT( buffer, "mov bp,sp" );
+            InputQueueLine( "push bp" );
+            InputQueueLine( "mov bp,sp" );
             if( info->localsize != 0 ) {
+                sprintf( buffer, "sub sp,%lu", info->localsize );
                 InputQueueLine( buffer );
-                p = CATLIT( buffer, "sub sp," );
-                sprintf( p, "%lu", info->localsize );
             }
         }
-        InputQueueLine( buffer );
     }
     /*
      * Push the registers
@@ -3881,7 +3864,6 @@ bool WritePrologue( const char *curline )
 static void write_epilogue( void )
 /********************************/
 {
-    char        buffer[MAX_LINE_LEN];
     proc_info   *info;
 
     /**/myassert( CurrProc != NULL );
@@ -3965,7 +3947,7 @@ static void write_epilogue( void )
          * write 80286 and 80386 epilog code
          * LEAVE
          */
-        CPYLIT( buffer, "leave" );
+        InputQueueLine( "leave" );
     } else if( Use32 ) {
         /*
          * write 32-bit 80486 or P epilog code
@@ -3973,10 +3955,9 @@ static void write_epilogue( void )
          * POP EBP
          */
         if( info->localsize != 0 ) {
-            CPYLIT( buffer, "mov esp,ebp" );
-            InputQueueLine( buffer );
+            InputQueueLine( "mov esp,ebp" );
         }
-        CPYLIT( buffer, "pop ebp" );
+        InputQueueLine( "pop ebp" );
     } else {
         /*
          * write 16-bit 8086 or 80486 or P epilog code
@@ -3984,20 +3965,17 @@ static void write_epilogue( void )
          * POP BP
          */
         if( info->localsize != 0 ) {
-            CPYLIT( buffer, "mov sp,bp" );
-            InputQueueLine( buffer );
+            InputQueueLine( "mov sp,bp" );
         }
-        CPYLIT( buffer, "pop bp" );
+        InputQueueLine( "pop bp" );
     }
-    InputQueueLine( buffer );
     if( Options.trace_stack
       && info->mem_type == MT_FAR ) {
         if( Use32 ) {
-            CPYLIT( buffer, "dec ebp" );
+            InputQueueLine( "dec ebp" );
         } else {
-            CPYLIT( buffer, "dec bp" );
+            InputQueueLine( "dec bp" );
         }
-        InputQueueLine( buffer );
     }
 }
 
@@ -4009,13 +3987,15 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
     expr_list   opndx;
     char        *p;
 
+    write_epilogue();
+
     info = CurrProc->e.procinfo;
 
     if( flag_iret ) {
         if( tokbuf->tokens[i].u.token == T_IRET ) {
-            p = CATLIT( buffer, "iretf" );
+            InputQueueLine( "iretf" );
         } else {
-            p = CATLIT( buffer, "iretdf" );
+            InputQueueLine( "iretdf" );
         }
     } else {
         if( info->mem_type == MT_NEAR ) {
@@ -4023,12 +4003,7 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
         } else {
             p = CATLIT( buffer, "retf " );
         }
-    }
-    *p = '\0';
-
-    write_epilogue();
-
-    if( !flag_iret ) {
+        *p = '\0';
         if( tokbuf->count == i + 1 ) {
             switch( CurrProc->sym.langtype ) {
             case WASM_LANG_BASIC:
@@ -4064,8 +4039,8 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
             }
             sprintf( p, "%d", opndx.value );
         }
+        InputQueueLine( buffer );
     }
-    InputQueueLine( buffer );
     return( RC_OK );
 }
 
