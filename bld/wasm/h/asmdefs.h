@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -111,6 +111,7 @@ extern bool             Modend;         // end of module is reached
 extern bool             Use32;          // if 32-bit code is use
 
 extern void             AsmByte( unsigned char );
+extern void             SetFinalToken( token_buffer *tokbuf, token_idx i );
 extern bool             AsmScan( token_buffer *tokbuf, const char * );
 extern void             RadixSet( unsigned );
 

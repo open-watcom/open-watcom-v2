@@ -2172,13 +2172,14 @@ static void fix_final( token_buffer *tokbuf )
 token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok, bool flag_msg )
 /***********************************************************************************************/
 {
-    token_idx   i = start_tok;
+    token_idx   i;
     token_idx   start;          // position of first token of an expression
     token_idx   num;            // number of tokens in the expression
-    bool        final = false;
+    bool        final;
     expr_list   result;
     token_idx   count;
 
+    final = false;
     if( tokbuf->tokens[end_tok].class == TC_FINAL )
         final = true;
 
@@ -2189,6 +2190,7 @@ token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok
         return( INVALID_IDX );
     }
 
+    i = start_tok;
     while( i < TokCnt && i <= end_tok ) {
         if( is_expr1( tokbuf, i ) ) {
             start = i++;
@@ -2237,10 +2239,8 @@ token_idx EvalExpr( token_buffer *tokbuf, token_idx start_tok, token_idx end_tok
 
     if( tokbuf->tokens[TokCnt].class == TC_NOOP
       || final ) {
-        tokbuf->tokens[TokCnt].class = TC_FINAL;
-        tokbuf->tokens[TokCnt].string_ptr = NULL;
+        SetFinalToken( tokbuf, TokCnt );
     }
-
     return( TokCnt );
 }
 

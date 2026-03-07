@@ -49,6 +49,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     size_t len;
     size_t lenx;
 
+    len = 0;
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( tokbuf, i, false, true );
         /* make a temporary macro, then call it */
@@ -84,9 +85,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
         parmstring = AsmTmpAlloc( strlen( tokbuf->tokens[i].string_ptr ) + 1 );
         strcpy( parmstring, tokbuf->tokens[i].string_ptr );
         i--;
-        tokbuf->tokens[i].class = TC_FINAL;
-        tokbuf->tokens[i].string_ptr = tokbuf->stringbuf;
-        tokbuf->count = i;
+        SetFinalToken( tokbuf, i );
     }
     /* now make a macro */
     i = start;

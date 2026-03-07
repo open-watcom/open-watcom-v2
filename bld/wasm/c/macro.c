@@ -824,9 +824,7 @@ bool ExpandMacro( token_buffer *tokbuf )
      * free the scanner token array
      * macro is expanded in source queue and original scanner tokens are not necessary
      */
-    tokbuf->count = 0;
-    tokbuf->tokens[0].class = TC_FINAL;
-    tokbuf->tokens[0].string_ptr = tokbuf->stringbuf;
+    SetFinalToken( tokbuf, 0 );
 
     return( RC_OK );
 }
