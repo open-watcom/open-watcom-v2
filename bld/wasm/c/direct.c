@@ -4114,17 +4114,22 @@ bool AddAlias( token_buffer *tokbuf, token_idx i )
     /*
      * add this alias to the alias queue
      *
-     * aliases are stored as:  <len><alias_name><len><substitute_name>
+     * aliases are stored as OMF data format:  <len><alias_name><len><substitute_name>'\0'
      */
     len1 = strlen( tokbuf->tokens[i].string_ptr );
+    if( len1 > 255 )
+        len1 = 255;
     len2 = strlen( tokbuf->tokens[i + 2].string_ptr );
-    tmp = MemAlloc( len1 + len2 + 2 );
-    AddAliasData( tmp );
+    if( len2 > 255 )
+        len2 = 255;
+    tmp = MemAlloc( 1 + len1 + 1 + len2 + 1 );
     p = tmp;
     *p++ = (uint_8)len1;
-    p = CATSTR( p, tokbuf->tokens[i].string_ptr, len1 );
+    p = strncpy( p, tokbuf->tokens[i].string_ptr, len1 ) + len1;
     *p++ = (uint_8)len2;
-    p = CATSTR( p, tokbuf->tokens[i + 2].string_ptr, len2 );
+    p = strncpy( p, tokbuf->tokens[i + 2].string_ptr, len2 ) + len2;
+    *p = '\0';
+    AddAliasData( tmp );
     return( RC_OK );
 }
 

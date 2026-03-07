@@ -1108,28 +1108,13 @@ static void write_alias( void )
 {
     obj_rec_handle  objr;
     char            *alias;
-    char            *subst;
-    char            new[2 * 256];
-    size_t          len1;
-    size_t          len2;
     bool            first;
 
     first = true;
     while( (alias = GetAliasData( first )) != NULL ) {
         /* output an alias record for this alias */
-        len1 = strlen( alias );
-        subst = alias + len1 + 1;
-        len2 = strlen( subst );
-        if( len1 > 255 )
-            len1 = 255;
-        if( len2 > 255 )
-            len2 = 255;
-        new[0] = (unsigned char)len1;
-        memcpy( new + 1, alias, len1 );
-        new[1 + len1] = (unsigned char)len2;
-        memcpy( new + 1 + len1 + 1, subst, len2 );
         objr = ObjNewRec( CMD_ALIAS );
-        ObjAttachData( objr, (uint_8 *)new, (uint_16)( 1 + len1 + 1 + len2 ) );
+        ObjAttachData( objr, (uint_8 *)alias, (uint_16)strlen( alias ) );
         write_record( objr, true );
         first = false;
     }
