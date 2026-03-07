@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -108,7 +108,7 @@ private:
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::iterator FileNameIter;
     typedef std::set< std::wstring*, ptrLess< std::wstring* > >::const_iterator ConstFileNameIter;
     const char              *_loc;
-    unsigned int            _warningLevel;
+    int                     _warningLevel;
     OutputType              _outType;
     bool                    _parseContinuously;
     bool                    _printBanner;
