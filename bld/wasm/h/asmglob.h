@@ -63,8 +63,6 @@
 #define CMPLITBEG(sb,c) strncmp( sb, c, sizeof( c ) - 1 )
 #define CMPLITEND(se,c) strcmp( se - ( sizeof( c ) - 1 ), c )
 
-#define CPYLIT(s,c)     strcpy( s, c )
-#define CATLIT(s,c)     strcpy( s, c ) + sizeof( c ) - 1
 #define CATSTR(s,c,l)   strncpy( s, c, l ) + l
 
 #define BIT_012                 0x07

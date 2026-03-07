@@ -1871,8 +1871,6 @@ bool Startup( token_buffer *tokbuf, token_idx i )
 
     int         count;
     char        buffer[MAX_LINE_LEN];
-    char        *p;
-    size_t      len;
 
     if( ModuleInfo.model == MOD_NONE ) {
         AsmError( MODEL_IS_NOT_DECLARED );
@@ -1884,10 +1882,7 @@ bool Startup( token_buffer *tokbuf, token_idx i )
     case T_DOT_STARTUP:
     case T_STARTUPCODE:
         count = 0;
-        len = strlen( StartAddr );
-        p = CATSTR( buffer, StartAddr, len );
-        *p++ = ':';
-        *p = '\0';
+        sprintf( buffer, "%s:", StartAddr );
         InputQueueLine( buffer );
         if( ModuleInfo.ostype == OPSYS_DOS ) {
             if( ModuleInfo.distance == STACK_NEAR ) {
@@ -1907,11 +1902,8 @@ bool Startup( token_buffer *tokbuf, token_idx i )
         i++;
         if( ( tokbuf->tokens[i].string_ptr != NULL )
           && ( tokbuf->tokens[i].string_ptr[0] != '\0' ) ) {
-            len = strlen( RetVal );
-            p = CATSTR( buffer, RetVal, len );
-            len = strlen( tokbuf->tokens[i].string_ptr );
-            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
-            *p = '\0';
+            strcpy( buffer, RetVal );
+            strcat( buffer, tokbuf->tokens[i].string_ptr );
             InputQueueLine( buffer );
         }
         count = 0;
@@ -2676,7 +2668,6 @@ bool ModuleEnd( token_buffer *tokbuf )
     char        buffer[MAX_LINE_LEN];
     token_idx   i;
     char        *p;
-    size_t      len;
 
     if( lastseg.seg != SIM_NONE ) {
         close_lastseg();
@@ -2684,23 +2675,18 @@ bool ModuleEnd( token_buffer *tokbuf )
 
     if( !EndDirectiveProc ) {
         EndDirectiveProc = true;
-        p = CATLIT( buffer, "END" );
+        p = strcpy( buffer, "END" ) + 3;
         if( StartupDirectiveFound ) {
             StartupDirectiveFound = false;
             if( tokbuf->count > 1 ) {
                 AsmError( SYNTAX_ERROR );
             }
-            *p++ = ' ';
-            len = strlen( StartAddr );
-            p = CATSTR( p, StartAddr, len );
+            p += sprintf( p, " %s", StartAddr );
         } else {
             for( i = 1; i < tokbuf->count; ++i ) {
-                *p++ = ' ';
-                len = strlen( tokbuf->tokens[i].string_ptr );
-                p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+                p += sprintf( p, " %s", tokbuf->tokens[i].string_ptr );
             }
         }
-        *p = '\0';
         InputQueueLine( buffer );
         return( RC_OK );
     }
@@ -3999,24 +3985,23 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
         }
     } else {
         if( info->mem_type == MT_NEAR ) {
-            p = CATLIT( buffer, "retn " );
+            p = strcpy( buffer, "retn" ) + 4;
         } else {
-            p = CATLIT( buffer, "retf " );
+            p = strcpy( buffer, "retf" ) + 4;
         }
-        *p = '\0';
         if( tokbuf->count == i + 1 ) {
             switch( CurrProc->sym.langtype ) {
             case WASM_LANG_BASIC:
             case WASM_LANG_FORTRAN:
             case WASM_LANG_PASCAL:
                 if( info->parasize != 0 ) {
-                    sprintf( p, "%lu", info->parasize );
+                    sprintf( p, " %lu", info->parasize );
                 }
                 break;
             case WASM_LANG_STDCALL:
                 if( !info->is_vararg
                   && info->parasize != 0 ) {
-                    sprintf( p, "%lu", info->parasize );
+                    sprintf( p, " %lu", info->parasize );
                 }
                 break;
             case WASM_LANG_WATCOM_C:
@@ -4024,7 +4009,7 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
                   || !Use32 )
                   && !info->is_vararg
                   && ( info->parasize != 0 ) ) {
-                    sprintf( p, "%lu", info->parasize );
+                    sprintf( p, " %lu", info->parasize );
                 }
                 break;
             default:
@@ -4037,7 +4022,7 @@ bool Ret( token_buffer *tokbuf, token_idx i, bool flag_iret )
                 AsmError( CONSTANT_EXPECTED );
                 return( RC_ERROR );
             }
-            sprintf( p, "%d", opndx.value );
+            sprintf( p, " %d", opndx.value );
         }
         InputQueueLine( buffer );
     }

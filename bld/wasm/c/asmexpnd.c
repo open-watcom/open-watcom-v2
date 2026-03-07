@@ -238,12 +238,10 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
                     continue;   /*yes, skip it */
                 }
             }
-            len = strlen( tokbuf->tokens[i].string_ptr );
-            if( tokbuf->tokens[i].class == TC_STRING )
-                *p++ = '<';
-            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
             if( tokbuf->tokens[i].class == TC_STRING ) {
-                *p++ = '>';
+                p += sprintf( p, "<%s>", tokbuf->tokens[i].string_ptr );
+            } else {
+                p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
             }
         } else {
             if( tokbuf->tokens[i].class == TC_PERCENT ) {
@@ -258,17 +256,12 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
             wipe_space( string );
             word = strtok( string, " \t" );
             for( cnt = 1; cnt < count; cnt++ ) {
-                len = strlen( word );
-                p = CATSTR( p, word, len );
-                *p++ = ' ';
+                p += sprintf( p, "%s ", word );
                 word = strtok( NULL, " \t" );
             }
-            len = strlen( replace );
-            p = CATSTR( p, replace, len );
+            p += sprintf( p, "%s", replace );
             for( word = strtok( NULL, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
-                *p++ = ' ';
-                len = strlen( word );
-                p = CATSTR( p, word, len );
+                p += sprintf( p, " %s", word );
             }
         }
         *p++ = ' ';

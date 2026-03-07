@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,7 +95,6 @@ static void jumpExtend( token_buffer *tokbuf, int far_flag )
     unsigned    next_ins_size;
     char        buffer[MAX_LINE_LEN];
     char        *p;
-    size_t      len;
 
     /* there MUST be a conditional jump instruction in asmbuffer */
     for( i = 0; ; i++ ) {
@@ -115,11 +114,10 @@ static void jumpExtend( token_buffer *tokbuf, int far_flag )
     }
     sprintf( buffer + strlen( buffer ), " SHORT $+%d ", next_ins_size + 2 );
     InputQueueLine( buffer );
-    p = buffer;
     if( far_flag ) {
-        p = CATLIT( p, "jmpf " );
+        p = strcpy( buffer, "jmpf " ) + 5;
     } else {
-        p = CATLIT( p, "jmp " );
+        p = strcpy( buffer, "jmp " ) + 4;
     }
     for( i++; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
         switch( tokbuf->tokens[i].class ) {
@@ -128,17 +126,17 @@ static void jumpExtend( token_buffer *tokbuf, int far_flag )
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
+            *p = '\0';
             break;
         case TC_CL_SQ_BRACKET:
             *p++ = ']';
+            *p = '\0';
             break;
         default:
-            len = strlen( tokbuf->tokens[i].string_ptr );
-            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+            p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
             break;
         }
     }
-    *p = '\0';
     InputQueueLine( buffer );
     return;
 }
@@ -149,7 +147,6 @@ static void FarCallToNear( token_buffer *tokbuf )
     token_idx   i;
     char        buffer[MAX_LINE_LEN];
     char        *p;
-    size_t      len;
 
     /* there MUST be a call instruction in asmbuffer */
     for( i = 0; ; i++ ) {
@@ -161,15 +158,14 @@ static void FarCallToNear( token_buffer *tokbuf )
     if( Parse_Pass == PASS_2 )
         AsmNote( 4, CALL_FAR_TO_NEAR );
     InputQueueLine( "PUSH CS" );
-    p = buffer;
 #if defined( _STANDALONE_ )
     if( Options.mode & MODE_IDEAL ) {
-        p = CATLIT( p, "CALL NEAR " );
+        p = strcpy( buffer, "CALL NEAR " ) + 10;
     } else {
-        p = CATLIT( p, "CALL NEAR PTR " );
+        p = strcpy( buffer, "CALL NEAR PTR " ) + 14;
     }
 #else
-    p = CATLIT( p, "CALL NEAR PTR " );
+    p = strcpy( buffer, "CALL NEAR PTR " ) + 14;
 #endif
     for( i++; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
         switch( tokbuf->tokens[i].class ) {
@@ -178,17 +174,17 @@ static void FarCallToNear( token_buffer *tokbuf )
             break;
         case TC_OP_SQ_BRACKET:
             *p++ = '[';
+            *p = '\0';
             break;
         case TC_CL_SQ_BRACKET:
             *p++ = ']';
+            *p = '\0';
             break;
         default:
-            len = strlen( tokbuf->tokens[i].string_ptr );
-            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+            p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
             break;
         }
     }
-    *p = '\0';
     InputQueueLine( buffer );
     return;
 }

@@ -634,7 +634,6 @@ bool ExpandMacro( token_buffer *tokbuf )
     bool            expansion_flag = false;
     token_idx       expr_start = 0;
     char            *p;
-    size_t          len;
 
     if( tokbuf->tokens[0].class == TC_FINAL )
         return( RC_OK );
@@ -680,9 +679,7 @@ bool ExpandMacro( token_buffer *tokbuf )
         PushLineQueue();
         p = buffer;
         for( i = 0; i < macro_name_loc; i++ ) {
-            len = strlen( tokbuf->tokens[i].string_ptr );
-            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
-            *p++ = ' ';;
+            p += sprintf( p, "%s ", tokbuf->tokens[i].string_ptr );
         }
         *p = '\0';
         InputQueueLine( buffer );
@@ -750,8 +747,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                             if( *tokbuf->tokens[i].string_ptr == 0 ) {
                                 p += sprintf( p, "%lu", tokbuf->tokens[i].u.value );
                             } else {
-                                len = strlen( tokbuf->tokens[i].string_ptr );
-                                p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+                                p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                             }
                         } else if( tokbuf->tokens[i].class == TC_STRING ) {
                             char        *src;
@@ -765,8 +761,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                                 *p++ = *src++;
                             }
                         } else {
-                            len = strlen( tokbuf->tokens[i].string_ptr );
-                            p = CATSTR( p, tokbuf->tokens[i].string_ptr, len );
+                            p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                         }
                     } else {
                         bool expanded;
