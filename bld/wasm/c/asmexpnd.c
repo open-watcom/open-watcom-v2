@@ -61,20 +61,34 @@ static label_list *label_cmp( char *name, label_list *head )
 }
 
 
-void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count )
-/**********************************************************************/
+static void ReplaceTokenAt( token_buffer *tokbuf, token_idx start, const_info *constinfo )
+/****************************************************************************************/
 {
     token_idx   i;
 
-    if( count > 0 ) {
-        if( tokbuf->count + count > MAX_TOKEN_COUNT ) {
-            Fatal( TOO_MANY_TOKENS );
-        }
-        for( i = tokbuf->count; i-- > start; ) {
-            tokbuf->tokens[i + count] = tokbuf->tokens[i];
-        }
-        tokbuf->count += count;
+    if( tokbuf->count - 1 + constinfo->count > MAX_TOKEN_COUNT ) {
+        Fatal( TOO_MANY_TOKENS );
     }
+    /*
+     * Notes on the following code
+     * - TC_FINAL at the end must also be moved
+     * - token at the start position is not moved, it will be replaced
+     */
+    for( i = tokbuf->count; i > start; --i ) {
+        tokbuf->tokens[i + constinfo->count] = tokbuf->tokens[i];
+    }
+    for( i = 0; i < constinfo->count; i++ ) {
+        tokbuf->tokens[start + i] = constinfo->tokens[i];
+#ifdef DEBUG_OUT
+        if( tokbuf->tokens[start + i].class == TC_NUM ) {
+            DebugMsg(( " %d", tokbuf->tokens[start + i].u.value ));
+        } else {
+            DebugMsg(( " %s", tokbuf->tokens[start + i].string_ptr ));
+        }
+#endif
+    }
+    DebugMsg(( "\n" ));
+    tokbuf->count = tokbuf->count - 1 + constinfo->count;
 }
 
 bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *expanded )
@@ -91,19 +105,7 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
         if( dir->e.constinfo->expand_early || !early_only ) {
             DebugMsg(( "Expand Constant: %s ->", dir->sym.name ));
             /* insert the pre-scanned data for this constant */
-            count = dir->e.constinfo->count;
-            AddTokens( tokbuf, i, count - 1 );
-            for( j = 0; j < count; j++ ) {
-                tokbuf->tokens[i + j] = dir->e.constinfo->tokens[j];
-#ifdef DEBUG_OUT
-                if( tokbuf->tokens[i + j].class == TC_NUM ) {
-                    DebugMsg(( " %d", tokbuf->tokens[i + j].u.value ));
-                } else {
-                    DebugMsg(( " %s", tokbuf->tokens[i + j].string_ptr ));
-                }
-#endif
-            }
-            DebugMsg(( "\n" ));
+            ReplaceTokenAt( tokbuf, i, dir->e.constinfo );
             Globals.expand_count++;
             if( Globals.expand_count >= MAX_EQU_NESTING ) {
                 AsmError( NESTING_LEVEL_TOO_DEEP );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,6 @@
 extern bool ExpandAllConsts( token_buffer *tokbuf, token_idx start_pos, bool early_only );
 extern bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded );
 extern bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *expanded );
-extern void AddTokens( token_buffer *tokbuf, token_idx start, token_idx count );
 extern bool DefineConstant( token_buffer *tokbuf, token_idx i, bool redefine, bool expand_early );
 extern bool StoreConstant( const char *name, const char *value, bool redefine );
 extern bool StoreConstantNumber( const char *name, long value, bool redefine );
