@@ -51,13 +51,24 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     size_t      lenx;
     token_idx   j;
 
-    start = i - 1; /* location of "directive name .. after any labels" */
+    /*
+     * location of "directive name .. after any labels"
+     */
+    start = i - 1;
     parmstring = NULL;
     len = 0;
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( tokbuf, i, false, true );
         /*
-         * make a temporary macro, then call it
+         * Convert REPEAT/REPT directive
+         * <REPEAT/REPT><number><TC_FINAL>
+         * to macro without parameter
+         *
+         * in TASM-IDEAL mode
+         * <MACRO><macro name><TC_FINAL>
+         *
+         * otherwise:
+         * <macro name><MACRO><TC_FINAL>
          */
         if( tokbuf->tokens[i].class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
@@ -71,7 +82,15 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
         }
     } else {
         /*
-         * save the parm list, make a temporary macro, then call it with each parm
+         * Convert FOR[C]/IRP[C] directive
+         * <FOR[C]><parameter name>...<TC_FINAL>
+         * to macro with single parameter
+         *
+         * in TASM-IDEAL mode
+         * <MACRO><macro name><parameter name><TC_FINAL>
+         *
+         * otherwise:
+         * <macro name><MACRO><parameter name><TC_FINAL>
          */
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
@@ -104,7 +123,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
         SetFinalToken( tokbuf, i + 1 );
     }
     /*
-     * now make a macro definition
+     * now finish macro definition
      */
     i = start;
     lenx = sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
@@ -118,7 +137,9 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     }
     tokbuf->tokens[i].class = TC_DIRECTIVE;
     tokbuf->tokens[i].u.token = T_MACRO;
-
+    /*
+     * process macro definition
+     */
     if( MacroDef( tokbuf, i, true ) )
         return( RC_ERROR );
 
@@ -132,7 +153,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
         }
     } else {
         /*
-         * now call the above macro with each of the given parms
+         * now call the macro for each of the given parms
          */
         ptr = parmstring;
         while( *ptr != NULLC ) {
