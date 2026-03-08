@@ -95,8 +95,6 @@ bool ExpandSymbol( token_buffer *tokbuf, token_idx i, bool early_only, bool *exp
 /*************************************************************************************/
 {
     dir_node_handle     dir;
-    token_idx           j;
-    token_idx           count;
 
     *expanded = false;
     /* expand constant */
