@@ -363,44 +363,18 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     if( store_data ) {
         for( ; i < tokbuf->count ; ) {
             parm_list   *paramnode;
-            char        *def_value;
-            bool        required;
             /*
              * first get the param name
              */
             name = tokbuf->tokens[i].string_ptr;
-            i++;
             /*
-             * now see if it has a default value or is required
-             */
-            def_value = NULL;
-            required = false;
-            if( tokbuf->tokens[i].class == TC_COLON ) {
-                i++;
-                if( *tokbuf->tokens[i].string_ptr == '=' ) {
-                    i++;
-                    if( tokbuf->tokens[i].class != TC_STRING ) {
-                        AsmError( SYNTAX_ERROR );
-                        return( RC_ERROR );
-                    }
-                    def_value = tokbuf->tokens[i].string_ptr;
-                    i++;
-                } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
-                    /*
-                     * required parameter
-                     */
-                    required = true;
-                    i++;
-                }
-            }
-            /*
-             * add parameter to the end of list
+             * create parameter
              */
             paramnode = MemAlloc( sizeof( parm_list ) );
             paramnode->replace = NULL;
             paramnode->label = MemStrdup( name );
-            paramnode->def = MemStrdup( def_value );
-            paramnode->required = required;
+            paramnode->def = NULL;
+            paramnode->required = false;
             /*
              * add to the tail of linked list
              */
@@ -412,6 +386,28 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             }
             info->params.tail = paramnode;
 
+            i++;
+            /*
+             * now see if it has a default value or is required
+             */
+            if( tokbuf->tokens[i].class == TC_COLON ) {
+                i++;
+                if( *tokbuf->tokens[i].string_ptr == '=' ) {
+                    i++;
+                    if( tokbuf->tokens[i].class != TC_STRING ) {
+                        AsmError( SYNTAX_ERROR );
+                        return( RC_ERROR );
+                    }
+                    paramnode->def = MemAlloc( tokbuf->tokens[i].string_ptr );
+                    i++;
+                } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
+                    /*
+                     * required parameter
+                     */
+                    paramnode->required = true;
+                    i++;
+                }
+            }
             if( i < tokbuf->count
               && tokbuf->tokens[i].class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
