@@ -37,22 +37,28 @@
 #include "asmexpnd.h"
 #include "asminput.h"
 
+
 #define IRP_MACRONAME   "__STATIC_IRP_MACRO_"
 
 bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
 /*******************************************************************/
 {
-    token_idx start = i - 1; /* location of "directive name .. after any labels" */
-    char *parmstring = NULL;
-    char *ptr;
-    char buffer[MAX_LINE_LEN];
-    size_t len;
-    size_t lenx;
+    token_idx   start;
+    char        *parmstring;
+    char        *ptr;
+    char        buffer[MAX_LINE_LEN];
+    size_t      len;
+    size_t      lenx;
+    token_idx   j;
 
+    start = i - 1; /* location of "directive name .. after any labels" */
+    parmstring = NULL;
     len = 0;
     if( type == IRP_REPEAT ) {
         ExpandTheWorld( tokbuf, i, false, true );
-        /* make a temporary macro, then call it */
+        /*
+         * make a temporary macro, then call it
+         */
         if( tokbuf->tokens[i].class != TC_NUM ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
@@ -64,30 +70,42 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             return( RC_ERROR );
         }
     } else {
-        /* save the parm list, make a temporary macro, then call it with each parm */
+        /*
+         * save the parm list, make a temporary macro, then call it with each parm
+         */
         if( tokbuf->tokens[i].class != TC_ID ) {
             AsmError( OPERAND_EXPECTED );
             return( RC_ERROR );
         }
-        AddTokens( tokbuf, i, 1 );
-        i += 2;
-        for( ; tokbuf->tokens[i].class != TC_COMMA; i++ ) {
-            if( tokbuf->tokens[i].class == TC_FINAL ) {
-                AsmError( EXPECTING_COMMA );
-                return( RC_ERROR );
+        i++;
+        for( j = i; j < tokbuf->count; j++ ) {
+            if( tokbuf->tokens[j].class == TC_COMMA ) {
+                break;
             }
         }
-        i++;
-        if( tokbuf->tokens[i].class != TC_STRING ) {
+        if( j >= tokbuf->count ) {
+            AsmError( EXPECTING_COMMA );
+            return( RC_ERROR );
+        }
+        j++;
+        if( tokbuf->tokens[j].class != TC_STRING ) {
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        parmstring = AsmTmpAlloc( strlen( tokbuf->tokens[i].string_ptr ) + 1 );
-        strcpy( parmstring, tokbuf->tokens[i].string_ptr );
-        i--;
-        SetFinalToken( tokbuf, i );
+        parmstring = AsmTmpAlloc( strlen( tokbuf->tokens[j].string_ptr ) + 1 );
+        strcpy( parmstring, tokbuf->tokens[j].string_ptr );
+        /*
+         * copy parameter name token to correct location (one token up)
+         */
+        tokbuf->tokens[i] = tokbuf->tokens[i - 1];
+        /*
+         * correct tokens count and set TC_FINAL token after parameter name
+         */
+        SetFinalToken( tokbuf, i + 1 );
     }
-    /* now make a macro */
+    /*
+     * now make a macro definition
+     */
     i = start;
     lenx = sprintf( buffer, IRP_MACRONAME "%d", Globals.for_counter );
     if( Options.mode & MODE_IDEAL ) {
@@ -104,15 +122,20 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     if( MacroDef( tokbuf, i, true ) )
         return( RC_ERROR );
 
-    /* now call the above macro with each of the given parms */
-
     PushLineQueue();
     if( type == IRP_REPEAT ) {
+        /*
+         * now call the macro <number> times
+         */
         while( len-- > 0 ) {
             InputQueueLine( buffer );
         }
     } else {
-        for( ptr = parmstring; *ptr != NULLC; ) {
+        /*
+         * now call the above macro with each of the given parms
+         */
+        ptr = parmstring;
+        while( *ptr != NULLC ) {
             len = lenx;
             buffer[len++] = ' ';
             if( type == IRP_CHAR ) {
@@ -131,6 +154,9 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             buffer[len] = NULLC;
             InputQueueLine( buffer );
         }
+        /*
+         * reset buffer to macro name only
+         */
         buffer[lenx] = '\0';
     }
     Globals.for_counter++;
