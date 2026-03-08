@@ -398,7 +398,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    paramnode->def = MemAlloc( tokbuf->tokens[i].string_ptr );
+                    paramnode->def = MemStrdup( tokbuf->tokens[i].string_ptr );
                     i++;
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
