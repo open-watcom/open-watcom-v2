@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,7 @@ static instruction *NewIns( op_code op )
 {
     instruction *ins;
 
-    ins = malloc( sizeof( instruction ) );
-    if( ins == NULL )
-        Error( "out of memory for instructions" );
+    ins = MemAllocSafe( sizeof( instruction ) );
     ins->ins = op;
     ins->flink = NULL;
     ins->blink = NULL;
@@ -116,7 +115,7 @@ static void DelStream( instruction *ins )
         for( tbl = ins->ptr; tbl != NULL; tbl = next ) {
             next = tbl->link;
             tbl->lbl->operand--; /* decrement label reference count */
-            free( tbl );
+            MemFree( tbl );
         }
         break;
     case INS_JUMP:
@@ -257,9 +256,7 @@ void GenTblLabel( instruction *choice, instruction *lbl, unsigned value )
     choice_entry **owner;
     choice_entry *curr;
 
-    new = malloc( sizeof( choice_entry ) );
-    if( new == NULL )
-        Error( "no memory for choice entry" );
+    new = MemAllocSafe( sizeof( choice_entry ) );
     lbl->operand++;
     new->value = value;
     if( (unsigned int)value != (unsigned char)value ) {

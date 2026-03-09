@@ -35,8 +35,10 @@
 //  Any project that includes this pre-processor will probably substitute
 //  their own support for these routines.
 //
-#include "_preproc.h"
-#include "memfuncs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "ppmem.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -104,8 +106,8 @@ static void *check_nomem( void *ptr )
     return( ptr );
 }
 
-TRMEMAPI( MemAlloc )
-void * MemAlloc( size_t size )
+TRMEMAPI( MemAllocSafe )
+void * MemAllocSafe( size_t size )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
@@ -114,8 +116,8 @@ void * MemAlloc( size_t size )
 #endif
 }
 
-TRMEMAPI( MemStrdup )
-char * MemStrdup( const char *str )
+TRMEMAPI( MemStrdupSafe )
+char * MemStrdupSafe( const char *str )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
@@ -124,8 +126,8 @@ char * MemStrdup( const char *str )
 #endif
 }
 
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *old, size_t size )
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *old, size_t size )
 {
 #ifdef TRMEM
     return( check_nomem( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), TrHdl ) ) );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,9 +63,7 @@ static bool LookupAndAdd( class typ, symbol **ptr )
         Error( "out of memory" );
     *owner = curr;
     curr->link = NULL;
-    curr->name = malloc( TokenLen + 1 );
-    if( curr->name == NULL )
-        Error( "out of memory" );
+    curr->name = MemAllocSafe( TokenLen + 1 );
     strcpy( curr->name, TokenBuff );
     curr->alias = NULL;
     curr->typ = typ;
@@ -84,9 +83,7 @@ symbol  *NewSym( class typ )
 
 void NewAlias( symbol *sym )
 {
-    sym->alias = malloc( TokenLen + 1 );
-    if( sym->alias == NULL )
-        Error( "out of memory" );
+    sym->alias = MemAllocSafe( TokenLen + 1 );
     strcpy( sym->alias, TokenBuff );
 }
 
@@ -146,7 +143,7 @@ static void AddToList( token_list *list, char *name, unsigned value )
             break;
         }
     }
-    new = malloc( sizeof( token_entry ) );
+    new = MemAllocSafe( sizeof( token_entry ) );
     new->link = curr;
     *owner = new;
     new->name = name;

@@ -138,8 +138,8 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
         break;
     case 'd':
         ++arg;
-        defines = MemRealloc( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
-        defines[numdefs] = MemStrdup( arg );
+        defines = MemReallocSafe( (void *)defines, ( numdefs + 1 ) * sizeof( char * ) );
+        defines[numdefs] = MemStrdupSafe( arg );
         ++numdefs;
         break;
     case 'h':
@@ -151,7 +151,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
 
             ++arg;
             len = strlen( arg );
-            p = MemAlloc( len + 1 );
+            p = MemAllocSafe( len + 1 );
             scanString( p, arg, len );
             PP_IncludePathAdd( PPINCLUDE_USR, p );
             MemFree( p );
@@ -166,7 +166,7 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
             MemFree( out_filename );
         }
         len = strlen( arg );
-        out_filename = MemAlloc( len + 1 );
+        out_filename = MemAllocSafe( len + 1 );
         scanString( out_filename, arg, len );
         break;
     case 'z':
@@ -324,7 +324,7 @@ static bool scanEnvVarOrFile( const char *name, pp_flags *ppflags )
     argbufsize = strlen( optstring ) + 1 + argc;    // inter-parameter spaces map to 0
     argvsize = argc * sizeof( char * );             // sizeof argv[argc+1]
     varlen = strlen( name ) + 1;                    // Copy taken to detect recursion.
-    info = MemAlloc( sizeof( *info ) + argbufsize + argvsize + varlen );
+    info = MemAllocSafe( sizeof( *info ) + argbufsize + argvsize + varlen );
     info->next = stack;
     stack = info;                                   // push info on stack
     info->argv = (char **)info->buf;
@@ -358,8 +358,8 @@ static bool doScanParams( int argc, char *argv[], pp_flags *ppflags )
             wcpp_quit( usageMsg, NULL );
 //            contok = false;
         } else {
-            filenames = MemRealloc( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
-            filenames[nofilenames] = MemStrdup( arg );
+            filenames = MemReallocSafe( (void *)filenames, ( nofilenames + 1 ) * sizeof( char * ) );
+            filenames[nofilenames] = MemStrdupSafe( arg );
             ++nofilenames;
         }
     }

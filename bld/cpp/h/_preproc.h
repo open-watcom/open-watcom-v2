@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "preproc.h"
+#include "ppmem.h"
 
 
 #define PPBUFSIZE           8192
@@ -108,5 +109,3 @@ extern MACRO_TOKEN      *PPCurToken;
 extern pp_flags         PPFlags;
 extern char             PPSavedChar;    // saved char at end of token
 extern unsigned char    PPSpecMacros;
-extern void             PP_MemInit( void );
-extern void             PP_MemFini( void );

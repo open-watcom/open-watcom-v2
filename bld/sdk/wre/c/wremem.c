@@ -76,6 +76,20 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+{
+    void *p;
+
+    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
+
+    if( p != NULL ) {
+        memset( p, 0, size );
+    }
+
+    return( p );
+}
+
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old, size_t size )
 {

@@ -140,7 +140,7 @@ static MACRO_TOKEN *NewToken( ppt_token token, size_t len )
 {
     MACRO_TOKEN *mtok;
 
-    mtok = (MACRO_TOKEN *)MemAlloc( sizeof( MACRO_TOKEN ) + len );
+    mtok = (MACRO_TOKEN *)MemAllocSafe( sizeof( MACRO_TOKEN ) + len );
     mtok->next = NULL;
     mtok->token = token;
     return( mtok );
@@ -214,7 +214,7 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
     macro_parms = NULL;
     if( fmentry->parmcount != 0 ) { /* if () expected */
         if( fmentry->parmcount > 1 ) {
-            macro_parms = (MACRO_ARG *)MemAlloc( (fmentry->parmcount - 1) * sizeof( MACRO_ARG ) );
+            macro_parms = (MACRO_ARG *)MemAllocSafe( (fmentry->parmcount - 1) * sizeof( MACRO_ARG ) );
         }
         parm_cnt = 0;
         mtok = PPNextToken();
@@ -843,7 +843,7 @@ MACRO_TOKEN *MacroExpansion( MACRO_ENTRY *me, bool rescanning )
     MACRO_TOKEN *mtok;
     NESTED_MACRO *nested;
 
-    nested = (NESTED_MACRO *)MemAlloc( sizeof( NESTED_MACRO ) );
+    nested = (NESTED_MACRO *)MemAllocSafe( sizeof( NESTED_MACRO ) );
     nested->fmentry = me;
     nested->rescanning = rescanning;
     nested->substituting_parms = false;
@@ -916,7 +916,7 @@ MACRO_ENTRY *PP_AddMacro( const char *macro_name, size_t len )
 
     me = PP_MacroLookup( macro_name, len );
     if( me == NULL ) {
-        me = (MACRO_ENTRY *)MemAlloc( sizeof( MACRO_ENTRY ) + len );
+        me = (MACRO_ENTRY *)MemAllocSafe( sizeof( MACRO_ENTRY ) + len );
         if( me != NULL ) {
             hash = PP_Hash( macro_name, len );
             me->next = PPHashTable[hash];
