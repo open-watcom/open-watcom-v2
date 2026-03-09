@@ -640,15 +640,15 @@ bool ExpandMacro( token_buffer *tokbuf )
     for( macro_name_loc = 0; macro_name_loc < tokbuf->count; macro_name_loc++ ) {
         if( tokbuf->tokens[macro_name_loc].class == TC_ID ) {
             sym = AsmGetSymbol( tokbuf->tokens[macro_name_loc].string_ptr );
+            if( sym != NULL ) {
+                if( sym->state == SYM_MACRO ) {
+                    break;
+                }
+                sym = NULL;
+            }
         }
-        if( sym != NULL
-          && sym->state == SYM_MACRO ) {
-            break;
-        }
-        sym = NULL;
     }
-    if( sym == NULL
-      || sym->state != SYM_MACRO ) {
+    if( sym == NULL ) {
         /*
          * not a macro, continue regular processing
          */

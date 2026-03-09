@@ -75,7 +75,7 @@ static void ReplaceTokenAt( token_buffer *tokbuf, token_idx start, const_info *c
      * - token at the start position is not moved, it will be replaced
      */
     for( i = tokbuf->count; i > start; --i ) {
-        tokbuf->tokens[i + constinfo->count] = tokbuf->tokens[i];
+        tokbuf->tokens[i + constinfo->count - 1] = tokbuf->tokens[i];
     }
     for( i = 0; i < constinfo->count; i++ ) {
         tokbuf->tokens[start + i] = constinfo->tokens[i];
