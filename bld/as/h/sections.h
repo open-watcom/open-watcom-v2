@@ -32,9 +32,9 @@
 
 typedef struct obj_section * obj_section_handle;
 
-extern obj_section_handle SectionLookup( char * );
+extern obj_section_handle SectionLookup( const char * );
 extern void SectionInit( void );
 extern void SectionFini( void );
-extern void SectionSwitch( char *, owl_section_type *, owl_alignment );
-extern void SectionNew( char *, owl_section_type *, owl_alignment );
+extern void SectionSwitch( const char *, owl_section_type *, owl_alignment );
+extern void SectionNew( const char *, owl_section_type *, owl_alignment );
 extern owl_section_handle SectionOwlHandle( obj_section_handle );

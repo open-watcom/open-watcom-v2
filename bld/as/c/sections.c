@@ -48,10 +48,14 @@ struct obj_section {
 
 static obj_section_handle   sectionHashTable[HASH_TABLE_SIZE];
 
-static void sectionFields( obj_section_handle section, char *name, owl_section_type type, owl_alignment align ) {
-//***************************************************************************************************************
-
-    if( name ) section->name = MemStrdup( name );
+static void sectionFields( obj_section_handle section, const char *name, owl_section_type type, owl_alignment align )
+//*******************************************************************************************************************
+{
+    if( name != NULL ) {
+        if( section->name != NULL )
+            MemFree( section->name );
+        section->name = MemStrdup( name );
+    }
     // Otherwise we keep the old name.
 
     section->owl_hdl = OWLSectionInit( OwlFile, section->name, type, align );
@@ -61,13 +65,14 @@ static void sectionFields( obj_section_handle section, char *name, owl_section_t
     SymSetSection( SymLookup( section->name ) );
 }
 
-static obj_section_handle sectionCreate( char *name, owl_section_type type, owl_alignment align ) {
-//*************************************************************************************************
-
+static obj_section_handle sectionCreate( const char *name, owl_section_type type, owl_alignment align )
+//*****************************************************************************************************
+{
     obj_section_handle  section;
     obj_section_handle  *bucket;
 
     section = MemAlloc( sizeof( *section ) );
+    section->name = NULL;
     sectionFields( section, name, type, align );
 
     bucket = &sectionHashTable[AsHashVal( name, HASH_TABLE_SIZE )];
@@ -77,10 +82,10 @@ static obj_section_handle sectionCreate( char *name, owl_section_type type, owl_
     return( section );
 }
 
-static obj_section_handle doNewSection( char *name, owl_section_type *ptype, owl_alignment align ) {
-//**************************************************************************************************
-
-    if( ptype ) {
+static obj_section_handle doNewSection( const char *name, owl_section_type *ptype, owl_alignment align )
+//******************************************************************************************************
+{
+    if( ptype != NULL ) {
         return( sectionCreate( name, *ptype, align ) );
     }
     return( sectionCreate( name, SEC_ATTR_DEFAULT, 0 ) );
@@ -92,13 +97,13 @@ owl_section_handle SectionOwlHandle( obj_section_handle hdl )
     return( hdl->owl_hdl );
 }
 
-obj_section_handle SectionLookup( char *name )
-//********************************************
+obj_section_handle SectionLookup( const char *name )
+//**************************************************
 {
     obj_section_handle  section;
 
     section = sectionHashTable[AsHashVal( name, HASH_TABLE_SIZE )];
-    while( section ) {
+    while( section != NULL ) {
         if( strcmp( section->name, name ) == 0 )
             break;
         section = section->next;
@@ -124,7 +129,7 @@ void SectionFini( void )
     n = sizeof( sectionHashTable ) / sizeof( *sectionHashTable );
     for( ctr = 0; ctr < n; ctr++ ) {
         section = sectionHashTable[ctr];
-        while( section ) {
+        while( section != NULL ) {
             next = section->next;
             MemFree( section->name );
             MemFree( section );
@@ -134,8 +139,8 @@ void SectionFini( void )
     }
 }
 
-void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment align )
-//****************************************************************************
+void SectionSwitch( const char *name, owl_section_type *ptype, owl_alignment align )
+//**********************************************************************************
 // Switch to a section with the name, type, and alignment specified.
 // If no such section name exists, we create a new one.
 // If it does exist, we switch to that section given that the type and
@@ -144,9 +149,9 @@ void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment align )
     obj_section_handle  section;
 
     section = SectionLookup( name );
-    if( section ) {
+    if( section != NULL ) {
         // Then we switch to this section. Check type and alignment first.
-        if( ptype ) {
+        if( ptype != NULL ) {
             // type or alignment specified - have to match old ones.
             if( section->type != *ptype || align != section->alignment ) {
                 Error( SEC_ATTR_CONFLICT );
@@ -158,17 +163,17 @@ void SectionSwitch( char *name, owl_section_type *ptype, owl_alignment align )
     CurrentSection = section->owl_hdl;
 }
 
-void SectionNew( char *name, owl_section_type *ptype, owl_alignment align )
-//*************************************************************************
+void SectionNew( const char *name, owl_section_type *ptype, owl_alignment align )
+//*******************************************************************************
 // Create a new section regardless of whether a section by this name already
 // exists. The old one is non-accessible from then on.
 {
     obj_section_handle  section;
 
     section = SectionLookup( name );
-    if( section ) {
+    if( section != NULL ) {
         OWLSectionFini( section->owl_hdl );
-        if( ptype ) {
+        if( ptype != NULL ) {
             sectionFields( section, NULL, *ptype, align );
         } else {
             sectionFields( section, NULL, SEC_ATTR_DEFAULT, 0 );

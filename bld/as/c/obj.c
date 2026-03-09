@@ -85,12 +85,12 @@ void ObjSetObjFile( char *obj_name )
 }
 
 typedef struct {
-    char                *name;
+    const char          *name;
     owl_section_type    type;
     owl_alignment       alignment;
 } sect_info;
 
-static sect_info reservedSecInfo[] = {
+static sect_info    reservedSecInfo[] = {
     #define PICK( a, b, c, d )  { b, c, d },
     #include "_section.h"
     #undef PICK
@@ -100,7 +100,7 @@ void ObjSwitchSection( reserved_section section )
 //***********************************************
 // Switch to a reserved section
 {
-    sect_info   *secinfo;
+    sect_info       *secinfo;
 
     secinfo = &reservedSecInfo[ section ];
     if( SectionLookup( secinfo->name ) ) {
