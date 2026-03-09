@@ -93,6 +93,7 @@ void AsMemFini( void )
 #endif
 }
 
+#if 0
 static void *check_nomem( void *ptr )
 {
     if( ptr == NULL ) {
@@ -101,6 +102,7 @@ static void *check_nomem( void *ptr )
     }
     return( ptr );
 }
+#endif
 
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
