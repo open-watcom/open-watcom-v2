@@ -110,4 +110,3 @@ extern char             PPSavedChar;    // saved char at end of token
 extern unsigned char    PPSpecMacros;
 extern void             PP_MemInit( void );
 extern void             PP_MemFini( void );
-

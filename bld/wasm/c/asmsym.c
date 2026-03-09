@@ -76,10 +76,10 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
     void        *handle;
 #endif
 
+#if defined( _STANDALONE_ )
     sym->name = MemStrdup( name );
     sym->next = NULL;
     sym->fixup = NULL;
-#if defined( _STANDALONE_ )
     sym->segment = NULL;
     sym->offset = 0;
     sym->public = false;
@@ -94,6 +94,9 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
     sym->state = SYM_UNDEFINED;
     sym->mem_type = MT_EMPTY;
 #else
+    sym->name = MemStrdup( name );
+    sym->next = NULL;
+    sym->fixup = NULL;
     sym->addr = 0;
     handle = AsmQuerySymbol( sym->name );
     sym->state = AsmQueryState( handle );

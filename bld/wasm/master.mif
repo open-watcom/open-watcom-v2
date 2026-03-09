@@ -35,8 +35,6 @@ extra_cpp_flags =-D_STANDALONE_
 extra_cpp_flags += -DDEBUG_OUT
 !endif
 
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
-
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
 !  if $(__WATCOM_TOOLS__) < 1300

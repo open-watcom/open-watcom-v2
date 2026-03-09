@@ -58,7 +58,6 @@ extra_c_flags_f_ppmacro = -fh=$^:pch04.pch
 extra_c_flags_f_ppenv = -fh=$^:pch04.pch
 extra_c_flags_f_pathlist = -fh=$^:pch06.pch
 !endif
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

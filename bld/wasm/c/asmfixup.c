@@ -111,10 +111,10 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
         return( NULL );
     }
 
+#if defined( _STANDALONE_ )
     fixup = MemAlloc( sizeof( asmfixup ) );
     fixup->external = false;
     fixup->fixup_loc = AsmCodeAddress;
-#if defined( _STANDALONE_ )
     fixup->sym = sym;
     fixup->u_offset = sym->offset;
     if( Modend ) {
@@ -126,6 +126,9 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
     fixup->next = sym->fixup;
     sym->fixup = fixup;
 #else
+    fixup = MemAlloc( sizeof( asmfixup ) );
+    fixup->external = false;
+    fixup->fixup_loc = AsmCodeAddress;
     fixup->name = sym->name;
     fixup->next = FixupHead;
     FixupHead = fixup;

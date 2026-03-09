@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,10 +32,12 @@
 
 
 #include <ctype.h>
+#include <string.h>
 #include "bool.h"
 #include "cmdscan.h"
 #include "cmdlnprs.gh"          // required generated file
 #include "cmdlnprs.h"
+#include "memfuncs.h"
 
 
 static void addString           // STORE A STRING
@@ -45,7 +47,7 @@ static void addString           // STORE A STRING
 {
     OPT_STRING *value;
 
-    value = _MemoryAllocate( sizeof( *value ) + len );
+    value = MemAlloc( sizeof( *value ) + len );
     strncpy( value->data, s, len );
     value->data[len] = '\0';
     value->next = *h;
@@ -59,7 +61,7 @@ static void addNumber           // STORE A NUMBER
 {
     OPT_NUMBER *value;
 
-    value = _MemoryAllocate( sizeof( *value ) );
+    value = MemAlloc( sizeof( *value ) );
     value->number = number;
     value->next = *h;
     *h = value;
@@ -119,7 +121,7 @@ void OPT_CLEAN_NUMBER           // CLEAN UP NUMBERS
 
     while( (s = *h) != NULL ) {
         *h = s->next;
-        _MemoryFree( s );
+        MemFree( s );
     }
 }
 
@@ -131,7 +133,7 @@ void OPT_CLEAN_STRING           // CLEAN UP STRINGS
 
     while( (s = *h) != NULL ) {
         *h = s->next;
-        _MemoryFree( s );
+        MemFree( s );
     }
 }
 

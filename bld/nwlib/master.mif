@@ -59,8 +59,6 @@ extra_cpp_flags += -DIDE_PGM
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
 
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
-
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
 !  if $(__WATCOM_TOOLS__) < 1300

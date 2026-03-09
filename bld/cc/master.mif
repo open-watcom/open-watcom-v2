@@ -99,7 +99,6 @@ extra_c_flags_f_cscan    = $(extra_c_flags_f_cscan_$(host_cpu))
 ! endif
 !endif
 extra_c_flags_f_intlload = $(incl_file_opts)fesupp.h
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 
 #
 # lflags

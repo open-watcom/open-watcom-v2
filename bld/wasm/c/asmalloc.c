@@ -115,6 +115,16 @@ void *MemAlloc( size_t size )
 #endif
 }
 
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
 TRMEMAPI( MemStrdup )
 char *MemStrdup( const char *str )
 {

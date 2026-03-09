@@ -989,20 +989,6 @@ static bool dirValidate( directive_t *dir, dir_table *table_entry )
 }
 
 
-static directive_t *dirAlloc( void )
-//**********************************
-{
-    return( MemAlloc( sizeof( directive_t ) ) );
-}
-
-
-static void dirFree( directive_t *directive )
-//*******************************************
-{
-    MemFree( directive );
-}
-
-
 void DirInit( void )
 //******************
 {
@@ -1055,7 +1041,7 @@ bool DirGetNextScanState( void )
 directive_t *DirCreate( sym_handle sym )
 //**************************************
 {
-    lastDirective = dirAlloc();
+    lastDirective = MemAlloc( sizeof( directive_t ) );
     lastDirective->dir_sym = sym;
     lastDirective->num_operands = 0;
     lastDirective->operand_list = NULL;
@@ -1091,7 +1077,7 @@ void DirDestroy( directive_t *directive )
         dirop_next = dirop->next;
         DirOpDestroy( dirop );
     }
-    dirFree( directive );
+    MemFree( directive );
     lastDirective = NULL;
 }
 

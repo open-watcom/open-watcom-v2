@@ -85,7 +85,6 @@ extra_c_flags_axp = -si
 !endif
 
 extra_c_flags_f_carve    = $(incl_file_opts)carvecpp.h
-extra_c_flags_f_cmdlnprs = $(incl_file_opts)fesupp.h
 !ifeq debug 2
 extra_c_flags_f_dbgzap   = $(incl_file_opts)fesupp.h
 !endif
