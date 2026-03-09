@@ -190,7 +190,7 @@ static char *SetTargetName( char *target_name, const char *name )
     if( target_name != NULL ) {
         MemFree( target_name );
     }
-    return( MemStrdup( name ) );
+    return( MemStrdupSafe( name ) );
 }
 
 static bool isvalidident( const char *id )
@@ -320,11 +320,11 @@ static void srcFileName( const char *token )
     if( pg.ext[0] == '\0' ) {
         pg.ext = ASM_EXT;
     }
-    SrcFName = MemStrdup( pg.fname );
-    SrcModuleName = MemStrdup( pg.fname );
+    SrcFName = MemStrdupSafe( pg.fname );
+    SrcModuleName = MemStrdupSafe( pg.fname );
     ConvertModuleName( SrcModuleName );
     _makepath( name, pg.drive, pg.dir, pg.fname, pg.ext );
-    AsmFiles.fname[ASM] = MemStrdup( name );
+    AsmFiles.fname[ASM] = MemStrdupSafe( name );
 }
 
 static void add_include( const char *target_name, const char *src )
@@ -384,7 +384,7 @@ static void main_init( void )
         AsmFiles.file[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
-    AsmFiles.fname[ERR] = MemStrdup( "*" );
+    AsmFiles.fname[ERR] = MemStrdupSafe( "*" );
     ObjRecInit();
 }
 
@@ -455,7 +455,7 @@ static char *ReadIndirectFile( char *name )
         fseek( fp, 0, SEEK_END );
         len = ftell( fp );
         fseek( fp, 0, SEEK_SET );
-        env = MemAlloc( len + 1 );
+        env = MemAllocSafe( len + 1 );
         len = fread( env, 1, len, fp );
         env[len] = '\0';
         fclose( fp );
@@ -597,7 +597,7 @@ static char *SetStringOption( char **o, OPT_STRING **h )
     p = NULL;
     if( s != NULL ) {
         if( s->data[0] != '\0' ) {
-            p = MemStrdup( s->data );
+            p = MemStrdupSafe( s->data );
         }
         OPT_CLEAN_STRING( h );
     }
@@ -1121,22 +1121,22 @@ static void set_options( OPT_STORAGE *data )
     }
     if( data->fe && data->fe_value != NULL ) {
         MemFree( AsmFiles.fname[ERR] );
-        AsmFiles.fname[ERR] = MemStrdup( data->fe_value->data );
+        AsmFiles.fname[ERR] = MemStrdupSafe( data->fe_value->data );
     }
     if( data->fr ) {
         MemFree( AsmFiles.fname[ERR] );
         if( data->fr_value != NULL ) {
-            AsmFiles.fname[ERR] = MemStrdup( data->fr_value->data );
+            AsmFiles.fname[ERR] = MemStrdupSafe( data->fr_value->data );
         } else {
             AsmFiles.fname[ERR] = NULL;
         }
     }
     if( data->fl && data->fl_value != NULL ) {
-        AsmFiles.fname[LST] = MemStrdup( data->fl_value->data );
+        AsmFiles.fname[LST] = MemStrdupSafe( data->fl_value->data );
         Options.write_listing = true;
     }
     if( data->fo && data->fo_value != NULL ) {
-        AsmFiles.fname[OBJ] = MemStrdup( data->fo_value->data );
+        AsmFiles.fname[OBJ] = MemStrdupSafe( data->fo_value->data );
     }
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
@@ -1160,14 +1160,14 @@ static bool do_init_stuff( void )
     cmdline = _argv + 1;
 #else
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = MemAlloc( cmd_len );
+    cmd_line = MemAllocSafe( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     argv[0] = cmd_line;
     argv[1] = NULL;
     cmdline = argv;
 #endif
     add_constant( "WASM=" _MACROSTR( _BLDVER ), true );
-    ForceInclude = MemStrdup( getenv( "FORCE" ) );
+    ForceInclude = MemStrdupSafe( getenv( "FORCE" ) );
     OPT_INIT( &data );
     ProcOptions( &data, getenv( "WASM" ) );
     for( ; *cmdline != NULL; ++cmdline ) {

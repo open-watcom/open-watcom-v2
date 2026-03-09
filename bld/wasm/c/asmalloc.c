@@ -125,8 +125,8 @@ void *MemAllocSafe( size_t size )
 #endif
 }
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
 {
     if( str == NULL )
         return( NULL );

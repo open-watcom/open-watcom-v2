@@ -213,7 +213,7 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
 
     offset = the_struct->size; // offset of this element
 
-    f = MemAlloc( sizeof( field_list ) );
+    f = MemAllocSafe( sizeof( field_list ) );
 
     if( ISINVALID_IDX( loc ) ) {
         for( loc = 0; ISVALID_IDX( loc ); ++loc ) {
@@ -228,7 +228,7 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
         f->sym = NULL;
     }
     /* now add the initializer to the structure's list */
-    f->initializer = MemStrdup( tokbuf->tokens[loc].string_ptr );
+    f->initializer = MemStrdupSafe( tokbuf->tokens[loc].string_ptr );
 
     /* now add the value to initialize the struct to */
     count = 0;
@@ -243,7 +243,7 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
         }
     }
 
-    f->value = MemAlloc( count + 1 );
+    f->value = MemAllocSafe( count + 1 );
     f->value[0] = '\0';
     for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
         if( tokbuf->tokens[i].class == TC_FINAL )

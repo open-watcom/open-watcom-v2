@@ -56,7 +56,7 @@ static void newBlk( cv_t *cv )
 {
     blk_t   *newblk;
 
-    newblk = MemAlloc( sizeof( blk_t ) - 1 + cv->blk_top );
+    newblk = MemAllocSafe( sizeof( blk_t ) - 1 + cv->blk_top );
     newblk->next = cv->blk_list;
     cv->blk_list = newblk;
     cv->top_elm = newblk->data + cv->blk_top;
@@ -67,7 +67,7 @@ carve_t CarveCreate( size_t elm_size, size_t blk_size )
 {
     cv_t    *cv;
 
-    cv = MemAlloc( sizeof( *cv ) );
+    cv = MemAllocSafe( sizeof( *cv ) );
     cv->elm_size = elm_size;
     cv->blk_size = blk_size;
     cv->blk_top = blk_size * elm_size;

@@ -143,7 +143,7 @@ static void addReloc( asm_reloc *reloc, op_reloc_target target, owl_reloc_type t
 {
     reloc_list  new_entry;
 
-    new_entry = MemAlloc( sizeof( struct reloc_entry ) );
+    new_entry = MemAllocSafe( sizeof( struct reloc_entry ) );
     new_entry->next = NULL;
     new_entry->target = target;
     new_entry->type = type;

@@ -163,7 +163,7 @@ void ObjWriteOpen( void )
     if( AsmFiles.file[OBJ] == NULL ) {
         Fatal( CANNOT_OPEN_FILE, obj_name );
     }
-    pobjState = MemAlloc( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
+    pobjState = MemAllocSafe( sizeof( *pobjState ) + OBJ_BUFFER_SIZE );
     pobjState->in_buf = 0;
     pobjState->in_rec = false;
 }

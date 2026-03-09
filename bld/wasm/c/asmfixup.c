@@ -112,7 +112,7 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
     }
 
 #if defined( _STANDALONE_ )
-    fixup = MemAlloc( sizeof( asmfixup ) );
+    fixup = MemAllocSafe( sizeof( asmfixup ) );
     fixup->external = false;
     fixup->fixup_loc = AsmCodeAddress;
     fixup->sym = sym;
@@ -126,7 +126,7 @@ asmfixup *AddFixup( asm_sym_handle sym, fixup_types fixup_type, fixup_options fi
     fixup->next = sym->fixup;
     sym->fixup = fixup;
 #else
-    fixup = MemAlloc( sizeof( asmfixup ) );
+    fixup = MemAllocSafe( sizeof( asmfixup ) );
     fixup->external = false;
     fixup->fixup_loc = AsmCodeAddress;
     fixup->name = sym->name;
@@ -408,7 +408,7 @@ static bool MakeFpFixup( const char *patch_name )
     }
     if( dir != NULL ) {
         if( Parse_Pass != PASS_1 ) {
-            fixup = MemAlloc( sizeof( asmfixup ) );
+            fixup = MemAllocSafe( sizeof( asmfixup ) );
             fixup->external = false;
             fixup->fixup_loc = AsmCodeAddress;
             fixup->fixup_seg = NULL;
@@ -452,7 +452,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
 #else
     asmfixup    *fixup;
 
-    fixup = MemAlloc( sizeof( asmfixup ) );
+    fixup = MemAllocSafe( sizeof( asmfixup ) );
     fixup->next = FixupHead;
     FixupHead = fixup;
     fixup->external = false;

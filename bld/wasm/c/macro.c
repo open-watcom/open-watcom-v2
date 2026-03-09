@@ -65,9 +65,9 @@ static asmline *asmline_append( asmlines *lines, char *line )
 {
     asmline *entry;
 
-    entry = MemAlloc( sizeof( asmline ) );
+    entry = MemAllocSafe( sizeof( asmline ) );
     entry->paramscount = 0;
-    entry->line = MemStrdup( line );
+    entry->line = MemStrdupSafe( line );
     /*
      * add macro line to the end of macro lines list
      */
@@ -106,7 +106,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
             /*
              * hey! it matches!
              */
-            new_line = MemAlloc( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
+            new_line = MemAllocSafe( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
@@ -165,10 +165,10 @@ static char *replace_label( local_label *locallabel, char *start, size_t len, as
                 char    label[10];
 
                 sprintf( label, "??%04d", MacroLocalVarCounter++ );
-                locallabel->label = MemStrdup( label );
+                locallabel->label = MemStrdupSafe( label );
             }
             label_len = strlen( locallabel->label );
-            new_line = MemAlloc( strlen( old_line ) - len + label_len + 1 );
+            new_line = MemAllocSafe( strlen( old_line ) - len + label_len + 1 );
             before = start - old_line;
             if( before > 0 ) {
                 if( *(start - 1) == '&' )
@@ -305,8 +305,8 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
     while( tok->class == TC_ID ) {
         local_label *locallabel;
 
-        locallabel = MemAlloc( sizeof( local_label ) );
-        locallabel->local = MemStrdup( tok->string_ptr );
+        locallabel = MemAllocSafe( sizeof( local_label ) );
+        locallabel->local = MemStrdupSafe( tok->string_ptr );
         locallabel->local_len = strlen( locallabel->local );
         locallabel->label = NULL;
         /*
@@ -370,9 +370,9 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             /*
              * create parameter
              */
-            paramnode = MemAlloc( sizeof( parm_list ) );
+            paramnode = MemAllocSafe( sizeof( parm_list ) );
             paramnode->replace = NULL;
-            paramnode->label = MemStrdup( name );
+            paramnode->label = MemStrdupSafe( name );
             paramnode->def = NULL;
             paramnode->required = false;
             /*
@@ -398,7 +398,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
-                    paramnode->def = MemStrdup( tokbuf->tokens[i].string_ptr );
+                    paramnode->def = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
                     i++;
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
@@ -558,7 +558,7 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         /*
          * replace macro local labels by internal symbols
          */
-        lineinfo.line = line = MemStrdup( line );
+        lineinfo.line = line = MemStrdupSafe( line );
         quote = false;
         for( ; *line != '\0'; ) {
             start = find_replacement_items( &line, &quote );
@@ -573,7 +573,7 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         count++;
     }
     if( count > 0 ) {
-        param_array = MemAlloc( count * sizeof( char * ) );
+        param_array = MemAllocSafe( count * sizeof( char * ) );
         count = 0;
         for( param = info->params.head; param != NULL; param = param->next ) {
             param_array[count] = param->replace;
@@ -583,10 +583,10 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
          * replace parameters by actual values
          */
         my_sprintf( buffer, line, count, param_array );
-        new_line = MemStrdup( buffer );
+        new_line = MemStrdupSafe( buffer );
         MemFree( param_array );
     } else {
-        new_line = MemStrdup( line );
+        new_line = MemStrdupSafe( line );
     }
     if( info->labels.head != NULL ) {
         MemFree( lineinfo.line );
@@ -708,7 +708,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     /*
                      * fill in the default value
                      */
-                    param->replace = MemStrdup( param->def );
+                    param->replace = MemStrdupSafe( param->def );
                 }
                 if( tokbuf->tokens[i].class != TC_COMMA ) {
                     i++;
@@ -784,7 +784,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     i++;
                 }
                 *p = '\0';
-                param->replace = MemStrdup( buffer );
+                param->replace = MemStrdupSafe( buffer );
                 /*
                  * go past the comma
                  */

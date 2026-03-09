@@ -229,7 +229,7 @@ static void doStackLabel( sym_handle sym, owl_sym_type type, owl_sym_linkage lin
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = MemAllocSafe( sizeof( struct asm_label ) );
     new_label->section = CurrentSection;
     new_label->sym_name = SymName( sym );
     new_label->sym_type = type;
@@ -245,7 +245,7 @@ static void doStackNumericLabel( int_32 label_num, owl_sym_type type, owl_sym_li
 {
     label_list          new_label;
 
-    new_label = MemAlloc( sizeof( struct asm_label ) );
+    new_label = MemAllocSafe( sizeof( struct asm_label ) );
     new_label->section = CurrentSection;
     new_label->sym_name = NULL;
     new_label->sym_type = type;

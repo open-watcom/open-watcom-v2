@@ -67,7 +67,7 @@ static void hdl_append( sym_reloc_hdls *hdls, sym_handle sym ) {
 
     // make sure you only append symbols that have hi/lo relocs to them,
     // depending on what hdls is.
-    hdl = MemAlloc( sizeof( struct sym_reloc_handle ) );
+    hdl = MemAllocSafe( sizeof( struct sym_reloc_handle ) );
     hdl->hdl = sym;
     hdl->prev = NULL;
     hdl->next = NULL;
@@ -122,7 +122,7 @@ static sym_handle symAlloc( const char *name ) {
 
     sym_handle  sym;
 
-    sym = MemAlloc( sizeof( asm_symbol ) + strlen( name ) );
+    sym = MemAllocSafe( sizeof( asm_symbol ) + strlen( name ) );
     strcpy( sym->name, name );
     return( sym );
 }
@@ -295,7 +295,7 @@ void SymStackReloc( bool is_high, sym_handle sym, sym_section section, sym_offse
 
     assert( sym != NULL );
     assert( sym->class == SYM_LABEL );
-    reloc = MemAlloc( sizeof( struct sym_reloc_entry ) );
+    reloc = MemAllocSafe( sizeof( struct sym_reloc_entry ) );
     reloc->location.section = section;
     reloc->location.offset = offset;
     reloc->prev = reloc->next = NULL;

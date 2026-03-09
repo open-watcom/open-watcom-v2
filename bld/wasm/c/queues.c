@@ -55,10 +55,10 @@ static void QAddItem( qdesc **queue, void *data )
 {
     queuenode   *node;
 
-    node = MemAlloc( sizeof( queuenode ) );
+    node = MemAllocSafe( sizeof( queuenode ) );
     node->data = data;
     if( *queue == NULL ) {
-        *queue = MemAlloc( sizeof( qdesc ) );
+        *queue = MemAllocSafe( sizeof( qdesc ) );
         QInit( *queue );
     }
     QEnqueue( *queue, node );
@@ -169,9 +169,9 @@ bool GetPublicData( void )
         }
         last = curr;
 
-        d = MemAlloc( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
+        d = MemAllocSafe( objr->u.pubdef.num_pubs * sizeof( pubdef_data ) );
         objr->u.pubdef.pubs = d;
-        NameArray = MemAlloc( objr->u.pubdef.num_pubs * sizeof( char * ) );
+        NameArray = MemAllocSafe( objr->u.pubdef.num_pubs * sizeof( char * ) );
         for( i = 0, curr = start; curr != last; curr = curr->next, ++i ) {
             dir = (dir_node_handle)curr->data;
             NameArray[i] = Mangle( &dir->sym );
@@ -331,7 +331,7 @@ int GetLinnumData( int limit, linnum_data **ldata, bool *need32 )
     if( limit > count )
         limit = count;
     *need32 = false;
-    *ldata = MemAlloc( limit * sizeof( linnum_data ) );
+    *ldata = MemAllocSafe( limit * sizeof( linnum_data ) );
     for( i = 0; i < limit; i++ ) {
         node = QDequeue( LinnumQueue );
         node_data = (line_num_info *)(node->data);

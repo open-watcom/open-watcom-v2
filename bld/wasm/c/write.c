@@ -139,10 +139,10 @@ const FNAME *AddFlist( char const *name )
         index++;
         last = flist;
     }
-    flist = MemAlloc( sizeof( FNAME ) );
-    flist->name = MemAlloc( len1 );
+    flist = MemAllocSafe( sizeof( FNAME ) );
+    flist->name = MemAllocSafe( len1 );
     memcpy( flist->name, name, len1 );
-    flist->fullname = MemAlloc( len2 );
+    flist->fullname = MemAllocSafe( len2 );
     memcpy( flist->fullname, fname, len2 );
     flist->mtime = 0;
     if( stat( fname, &statbuf ) == 0 )
@@ -797,7 +797,7 @@ void AddLinnumDataRef( void )
     }
     if( line_num < 0x8000 ) {
         if( lastLineNumber != line_num ) {
-            curr = MemAlloc( sizeof( line_num_info ) );
+            curr = MemAllocSafe( sizeof( line_num_info ) );
             curr->number = (uint_16)line_num;
             curr->offset = AsmCodeAddress;
             curr->srcfile = get_curr_srcfile();

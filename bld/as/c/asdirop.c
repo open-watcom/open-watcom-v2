@@ -66,10 +66,10 @@ dir_operand *DirOpLine( const char *string )
 {
     dir_operand *dirop;
 
-    dirop = MemAlloc( sizeof( dir_operand ) );
+    dirop = MemAllocSafe( sizeof( dir_operand ) );
     dirop->next = NULL;
     dirop->type = DIROP_LINE;
-    STRING_CONTENT( dirop ) = MemStrdup( string );
+    STRING_CONTENT( dirop ) = MemStrdupSafe( string );
     return( dirop );
 }
 
@@ -78,10 +78,10 @@ dir_operand *DirOpString( const char *string )
 {
     dir_operand *dirop;
 
-    dirop = MemAlloc( sizeof( dir_operand ) );
+    dirop = MemAllocSafe( sizeof( dir_operand ) );
     dirop->next = NULL;
     dirop->type = DIROP_STRING;
-    STRING_CONTENT( dirop ) = MemStrdup( string );
+    STRING_CONTENT( dirop ) = MemStrdupSafe( string );
     return( dirop );
 }
 
@@ -91,7 +91,7 @@ dir_operand *DirOpNumber( expr_tree *expr )
     dir_operand *dirop;
 
     assert( expr != NULL );
-    dirop = MemAlloc( sizeof( dir_operand ) );
+    dirop = MemAllocSafe( sizeof( dir_operand ) );
     dirop->next = NULL;
     if( !dirOpGetNumber( dirop, expr ) ) {
         dirop->type = DIROP_ERROR;
@@ -105,7 +105,7 @@ static dir_operand *doDirOpSymbol( asm_reloc_type rtype, void *target, expr_tree
 
     dir_operand *dirop, *tmp;
 
-    dirop = MemAlloc( sizeof( dir_operand ) );
+    dirop = MemAllocSafe( sizeof( dir_operand ) );
     dirop->next = NULL;
     if( is_named ) {
         dirop->type = DIROP_SYMBOL;
@@ -116,7 +116,7 @@ static dir_operand *doDirOpSymbol( asm_reloc_type rtype, void *target, expr_tree
     }
     SYMBOL_RELOC_TYPE( dirop ) = rtype;
     if( expr ) {
-        tmp = MemAlloc( sizeof( dir_operand ) );
+        tmp = MemAllocSafe( sizeof( dir_operand ) );
         if( !dirOpGetNumber( tmp, expr ) || tmp->type == DIROP_FLOATING ) {
             dirop->type = DIROP_ERROR;
         } else {
@@ -147,9 +147,9 @@ dir_operand *DirOpRepeat( expr_tree *number, expr_tree *repeat )
     dir_operand *dirop, *tmp;
 
     assert( number != NULL && repeat != NULL );
-    dirop = MemAlloc( sizeof( dir_operand ) );
+    dirop = MemAllocSafe( sizeof( dir_operand ) );
     dirop->next = NULL;
-    tmp = MemAlloc( sizeof( dir_operand ) );     // use it to transfer type and content data
+    tmp = MemAllocSafe( sizeof( dir_operand ) );     // use it to transfer type and content data
     if( dirOpGetNumber( tmp, number ) ) {
         REPEAT_NUMBER( dirop ) = tmp->content.number;
         switch( tmp->type ) {

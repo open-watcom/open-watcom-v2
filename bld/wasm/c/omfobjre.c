@@ -117,7 +117,7 @@ void ObjAllocData( obj_rec_handle objr, uint_16 len )
 /***************************************************/
 {
 /**/myassert( objr->data == NULL );
-    objr->data = MemAlloc( len );
+    objr->data = MemAllocSafe( len );
     objr->length = len;
     objr->free_data = 1;
 }

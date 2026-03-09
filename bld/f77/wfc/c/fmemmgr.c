@@ -166,9 +166,38 @@ void    *MemAlloc( size_t size ) {
     return( p );
 }
 
-TRMEMAPI( MemStrdup )
-char    *MemStrdup( const char *str )
-//====================================
+TRMEMAPI( MemAllocSafe )
+void    *MemAllocSafe( size_t size )
+//==================================
+{
+    void        *p;
+
+#if defined( TRMEM )
+    p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
+#else
+    p = malloc( size );
+#endif
+    if( p == NULL ) {
+        FrlFini( &ITPool );
+#if defined( TRMEM )
+        p = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
+#else
+        p = malloc( size );
+#endif
+        if( p == NULL ) {
+            no_mem();
+        } else {
+            UnFreeMem++;
+        }
+    } else {
+        UnFreeMem++;
+    }
+    return( p );
+}
+
+TRMEMAPI( MemStrdupSafe )
+char    *MemStrdupSafe( const char *str )
+//=======================================
 {
     void        *p;
 

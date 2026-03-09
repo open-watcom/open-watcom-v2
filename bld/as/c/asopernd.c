@@ -60,7 +60,7 @@ static ins_operand *initOp( void )
 {
     ins_operand *op;
 
-    op = MemAlloc( sizeof( ins_operand ) );
+    op = MemAllocSafe( sizeof( ins_operand ) );
     op->flags = NOTHING;
     op->reloc.target.ptr = NULL;
     op->constant = 0;

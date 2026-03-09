@@ -130,7 +130,7 @@ static void doEmitNumericLabel( uint_32 label_num, owl_section_handle section, o
 
     label_list = &numericLabels[ label_num - 1 ];
 
-    label = MemAlloc( sizeof( *label ) );
+    label = MemAllocSafe( sizeof( *label ) );
     label->section = section;
     label->offset = offset;
     label->type = type;
@@ -199,7 +199,7 @@ void AsNumLabelReloc( owl_section_handle section, owl_offset offset, int_32 labe
 
     label_list = &numericLabels[ abs(label_ref) - 1 ];
 
-    reloc = MemAlloc( sizeof( *reloc ) );
+    reloc = MemAllocSafe( sizeof( *reloc ) );
     reloc->section = section;
     reloc->offset = offset;
     reloc->type = type;

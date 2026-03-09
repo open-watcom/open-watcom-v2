@@ -209,7 +209,7 @@ void PushLineQueue( void )
 
     DebugMsg(( "PUSHLINEQUEUE\n" ));
 
-    new = MemAlloc( sizeof( input_queue ) );
+    new = MemAllocSafe( sizeof( input_queue ) );
     new->next = line_queue;
     new->lines.head = NULL;
     new->lines.tail = NULL;
@@ -253,12 +253,12 @@ static line_list *enqueue( void )
     line_list   *new;
 
     if( line_queue == NULL ) {
-        line_queue = MemAlloc( sizeof( input_queue ) );
+        line_queue = MemAllocSafe( sizeof( input_queue ) );
         line_queue->next = NULL;
         line_queue->lines.tail = NULL;
         line_queue->lines.head = NULL;
     }
-    new = MemAlloc( sizeof( line_list ) );
+    new = MemAllocSafe( sizeof( line_list ) );
     /*
      * add new item to the end of list
      */
@@ -278,7 +278,7 @@ static file_list *push_flist( const char *name, bool is_a_file )
 {
     file_list   *new;
 
-    new = MemAlloc( sizeof( file_list ) );
+    new = MemAllocSafe( sizeof( file_list ) );
     new->next = file_stack;
     file_stack = new;
     new->line_num = LineNumber;
@@ -343,7 +343,7 @@ void InputQueueLine( const char *line )
 
     DebugMsg(( "QUEUELINE: %s  ( line %lu ) \n", line, LineNumber ));
     new = enqueue();
-    new->line = MemStrdup( line );
+    new->line = MemStrdupSafe( line );
 }
 
 static FILE *open_file_in_include_path( const char *name, char *fullpath )
@@ -583,11 +583,11 @@ void AddItemToIncludePath( const char *path_list, const char *end )
     }
     if( len > 0 ) {
         if( IncludePath == NULL ) {
-            p = IncludePath = MemAlloc( len + 1 );
+            p = IncludePath = MemAllocSafe( len + 1 );
         } else {
             old_list = IncludePath;
             old_len = strlen( old_list );
-            IncludePath = MemAlloc( old_len + 1 + len + 1 );
+            IncludePath = MemAllocSafe( old_len + 1 + len + 1 );
             strcpy( IncludePath, old_list );
             MemFree( old_list );
             p = IncludePath + old_len;

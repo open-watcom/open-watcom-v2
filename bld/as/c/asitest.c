@@ -104,18 +104,18 @@ void AsmWarning( const char *msg )
     printf( "AsmWarning (line %d): %s\n", curLine, msg );
 }
 
-void *MemAlloc( size_t amount )
+void *MemAllocSafe( size_t amount )
 //*****************************
 // CC provides this
 {
-    return( TRMemAlloc( amount ) );
+    return( TRMemAllocSafe( amount ) );
 }
 
-char *MemStrdup( const char *str )
+char *MemStrdupSafe( const char *str )
 //********************************
 // CC provides this
 {
-    return( TRMemStrdup( str ) );
+    return( TRMemStrdupSafe( str ) );
 }
 
 void MemFree( void *ptr )

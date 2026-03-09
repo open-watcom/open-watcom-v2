@@ -54,7 +54,7 @@ static void sectionFields( obj_section_handle section, const char *name, owl_sec
     if( name != NULL ) {
         if( section->name != NULL )
             MemFree( section->name );
-        section->name = MemStrdup( name );
+        section->name = MemStrdupSafe( name );
     }
     // Otherwise we keep the old name.
 
@@ -71,7 +71,7 @@ static obj_section_handle sectionCreate( const char *name, owl_section_type type
     obj_section_handle  section;
     obj_section_handle  *bucket;
 
-    section = MemAlloc( sizeof( *section ) );
+    section = MemAllocSafe( sizeof( *section ) );
     section->name = NULL;
     sectionFields( section, name, type, align );
 

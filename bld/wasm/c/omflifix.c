@@ -95,7 +95,7 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
     lifix   **walk;
     lifix   *new;
 
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->lower_bound = lower_bound;
     new->delta = delta;
     walk = &lif->head;
@@ -116,7 +116,7 @@ void LifixAdd( lifix_list *lif, uint_16 lower_bound, int_16 delta )
 
     /* this assertion guarantees we are building the list in decreasing order*/
 /**/myassert( lif->head == NULL || ( lif->head->lower_bound < lower_bound ) );
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->lower_bound = lower_bound;
     new->delta = delta;
     new->next = lif->head;

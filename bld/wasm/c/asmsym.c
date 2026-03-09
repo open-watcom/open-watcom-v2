@@ -77,7 +77,7 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
 #endif
 
 #if defined( _STANDALONE_ )
-    sym->name = MemStrdup( name );
+    sym->name = MemStrdupSafe( name );
     sym->next = NULL;
     sym->fixup = NULL;
     sym->segment = NULL;
@@ -94,7 +94,7 @@ static char *InitAsmSym( asm_sym_handle sym, const char *name )
     sym->state = SYM_UNDEFINED;
     sym->mem_type = MT_EMPTY;
 #else
-    sym->name = MemStrdup( name );
+    sym->name = MemStrdupSafe( name );
     sym->next = NULL;
     sym->fixup = NULL;
     sym->addr = 0;
@@ -115,9 +115,9 @@ static asm_sym_handle AllocASym( const char *name )
     asm_sym_handle  sym;
 
 #if defined( _STANDALONE_ )
-    sym = MemAlloc( sizeof( dir_node ) );
+    sym = MemAllocSafe( sizeof( dir_node ) );
 #else
-    sym = MemAlloc( sizeof( *sym ) );
+    sym = MemAllocSafe( sizeof( *sym ) );
 #endif
     if( InitAsmSym( sym, name ) == NULL ) {
         MemFree( sym );
@@ -195,7 +195,7 @@ static bool AddLocalLabel( asm_sym_handle sym )
         sym->mem_type = MT_SHORT;
     }
     info = CurrProc->e.procinfo;
-    label = MemAlloc( sizeof( label_list ) );
+    label = MemAllocSafe( sizeof( label_list ) );
     label->label = NULL;
     label->size = 0;
     label->replace = NULL;
@@ -324,7 +324,7 @@ bool AsmChangeName( const char *old, const char *new )
         sym = *sym_ptr;
         *sym_ptr = sym->next;
         MemFree( sym->name );
-        sym->name = MemStrdup( new );
+        sym->name = MemStrdupSafe( new );
         sym_ptr = AsmFind( new );
         if( *sym_ptr != NULL )
             return( true );
@@ -495,7 +495,7 @@ static asm_sym_handle *SortAsmSyms( void )
     unsigned        i;
     unsigned        j;
 
-    syms = MemAlloc( AsmSymCount * sizeof( asm_sym * ) );
+    syms = MemAllocSafe( AsmSymCount * sizeof( asm_sym * ) );
     /* copy symbols to table */
     for( i = j = 0; i < HASH_TABLE_SIZE; i++ ) {
         for( sym = sym_table[i]; sym != NULL; sym = sym->next ) {
@@ -763,21 +763,21 @@ static void DumpSymbol( asm_sym_handle sym )
     switch( sym->state ) {
     case SYM_SEG:
         type = "SEGMENT";
-//        dir->e.seginfo = MemAlloc( sizeof( seg_info ) );
+//        dir->e.seginfo = MemAllocSafe( sizeof( seg_info ) );
 //        dir->e.seginfo->idx = 0;
 //        dir->e.seginfo->grpidx = 0;
 //        dir->e.seginfo->segrec = NULL;
         break;
     case SYM_GRP:
         type = "GROUP";
-//        dir->e.grpinfo = MemAlloc( sizeof( grp_info ) );
+//        dir->e.grpinfo = MemAllocSafe( sizeof( grp_info ) );
 //        dir->e.grpinfo->idx = 0;
 //        dir->e.grpinfo->seglist = NULL;
 //        dir->e.grpinfo->numseg = 0;
         break;
     case SYM_EXTERNAL:
         type = "EXTERNAL";
-//        dir->e.extinfo = MemAlloc( sizeof( ext_info ) );
+//        dir->e.extinfo = MemAllocSafe( sizeof( ext_info ) );
 //        dir->e.extinfo->idx = 0;
 //        dir->e.extinfo->use32 = Use32;
 //        dir->e.extinfo->comm = false;
@@ -787,13 +787,13 @@ static void DumpSymbol( asm_sym_handle sym )
         break;
     case SYM_CONST:
         type = "CONSTANT";
-//        dir->e.constinfo = MemAlloc( sizeof( const_info ) );
+//        dir->e.constinfo = MemAllocSafe( sizeof( const_info ) );
 //        dir->e.constinfo->tokens = NULL;
 //        dir->e.constinfo->count = 0;
         break;
     case SYM_PROC:
         type = "PROCEDURE";
-//        dir->e.procinfo = MemAlloc( sizeof( proc_info ) );
+//        dir->e.procinfo = MemAllocSafe( sizeof( proc_info ) );
 //        dir->e.procinfo->regslist = NULL;
 //        dir->e.procinfo->params.head = NULL;
 //        dir->e.procinfo->params.tail = NULL;
@@ -802,7 +802,7 @@ static void DumpSymbol( asm_sym_handle sym )
         break;
     case SYM_MACRO:
         type = "MACRO";
-//        dir->e.macroinfo = MemAlloc( sizeof( macro_info ) );
+//        dir->e.macroinfo = MemAllocSafe( sizeof( macro_info ) );
 //        dir->e.macroinfo->params.head = NULL;
 //        dir->e.macroinfo->params.tail = NULL;
 //        dir->e.macroinfo->labels.head = NULL;
@@ -813,12 +813,12 @@ static void DumpSymbol( asm_sym_handle sym )
         break;
     case SYM_CLASS_LNAME:
         type = "CLASS";
-//        dir->e.lnameinfo = MemAlloc( sizeof( lname_info ) );
+//        dir->e.lnameinfo = MemAllocSafe( sizeof( lname_info ) );
 //        dir->e.lnameinfo->idx = 0;
         break;
     case SYM_STRUCT:
         type = "STRUCTURE";
-//        dir->e.structinfo = MemAlloc( sizeof( struct_info ) );
+//        dir->e.structinfo = MemAllocSafe( sizeof( struct_info ) );
 //        dir->e.structinfo->size = 0;
 //        dir->e.structinfo->alignment = 0;
 //        dir->e.structinfo->fields.head = NULL;

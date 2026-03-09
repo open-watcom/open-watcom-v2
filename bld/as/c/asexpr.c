@@ -41,7 +41,7 @@ static expr_tree *etAlloc( et_class type ) {
 */
     expr_tree   *node;
 
-    node = MemAlloc( sizeof( expr_tree ) );
+    node = MemAllocSafe( sizeof( expr_tree ) );
     node->type = type;
     return( node );
 }

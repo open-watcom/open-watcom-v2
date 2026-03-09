@@ -471,7 +471,7 @@ void push( void *stk, void *elt )
     void        **stack = stk;
     stacknode   *node;
 
-    node = MemAlloc( sizeof( stacknode ));
+    node = MemAllocSafe( sizeof( stacknode ));
     node->next = *stack;
     node->elt = elt;
     *stack = node;
@@ -568,13 +568,13 @@ void dir_init( dir_node_handle dir, int tab )
     switch( tab ) {
     case TAB_SEG:
         dir->sym.state = SYM_SEG;
-        dir->e.seginfo = MemAlloc( sizeof( seg_info ) );
+        dir->e.seginfo = MemAllocSafe( sizeof( seg_info ) );
         dir->e.seginfo->idx = 0;
         dir->e.seginfo->group = NULL;
         break;
     case TAB_GRP:
         dir->sym.state = SYM_GRP;
-        dir->e.grpinfo = MemAlloc( sizeof( grp_info ) );
+        dir->e.grpinfo = MemAllocSafe( sizeof( grp_info ) );
         dir->e.grpinfo->idx = 0;
         dir->e.grpinfo->seglist = NULL;
         dir->e.grpinfo->numseg = 0;
@@ -582,7 +582,7 @@ void dir_init( dir_node_handle dir, int tab )
     case TAB_EXT:
     case TAB_FPPATCH:
         dir->sym.state = SYM_EXTERNAL;
-        dir->e.extinfo = MemAlloc( sizeof( ext_info ) );
+        dir->e.extinfo = MemAllocSafe( sizeof( ext_info ) );
         dir->e.extinfo->idx = 0;
         dir->e.extinfo->use32 = Use32;
         dir->e.extinfo->comm = false;
@@ -594,14 +594,14 @@ void dir_init( dir_node_handle dir, int tab )
         dir->sym.state = SYM_CONST;
         dir->sym.segment = NULL;
         dir->sym.offset = 0;
-        dir->e.constinfo = MemAlloc( sizeof( const_info ) );
+        dir->e.constinfo = MemAllocSafe( sizeof( const_info ) );
         dir->e.constinfo->tokens = NULL;
         dir->e.constinfo->count = 0;
         dir->e.constinfo->predef = false;
         return;
     case TAB_PROC:
         dir->sym.state = SYM_PROC;
-        dir->e.procinfo = MemAlloc( sizeof( proc_info ) );
+        dir->e.procinfo = MemAllocSafe( sizeof( proc_info ) );
         dir->e.procinfo->regslist = NULL;
         dir->e.procinfo->params.head = NULL;
         dir->e.procinfo->params.tail = NULL;
@@ -612,7 +612,7 @@ void dir_init( dir_node_handle dir, int tab )
         break;
     case TAB_MACRO:
         dir->sym.state = SYM_MACRO;
-        dir->e.macroinfo = MemAlloc( sizeof( macro_info ) );
+        dir->e.macroinfo = MemAllocSafe( sizeof( macro_info ) );
         dir->e.macroinfo->params.head = NULL;
         dir->e.macroinfo->params.tail = NULL;
         dir->e.macroinfo->labels.head = NULL;
@@ -623,12 +623,12 @@ void dir_init( dir_node_handle dir, int tab )
         break;
     case TAB_CLASS_LNAME:
         dir->sym.state = SYM_CLASS_LNAME;
-        dir->e.lnameinfo = MemAlloc( sizeof( lname_info ) );
+        dir->e.lnameinfo = MemAllocSafe( sizeof( lname_info ) );
         dir->e.lnameinfo->idx = 0;
         break;
     case TAB_STRUCT:
         dir->sym.state = SYM_STRUCT;
-        dir->e.structinfo = MemAlloc( sizeof( struct_info ) );
+        dir->e.structinfo = MemAllocSafe( sizeof( struct_info ) );
         dir->e.structinfo->size = 0;
         dir->e.structinfo->alignment = 0;
         dir->e.structinfo->fields.head = NULL;
@@ -1315,7 +1315,7 @@ bool GrpDef( token_buffer *tokbuf, token_idx i )
          */
         seg->e.seginfo->group = &grp->sym;
 
-        new = MemAlloc( sizeof( seg_list ) );
+        new = MemAllocSafe( sizeof( seg_list ) );
         new->seg = seg;
         new->next = NULL;
         grp->e.grpinfo->numseg++;
@@ -1541,7 +1541,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
                  */
                 new_info = old_info;
             } else {
-                new_info = MemAlloc( sizeof( seg_info ) );
+                new_info = MemAllocSafe( sizeof( seg_info ) );
             }
         } else {
             /*
@@ -2227,7 +2227,7 @@ static void set_def_seg_name( int type )
         case TOK_LARGE:
         case TOK_HUGE:
             sprintf( buffer, "%s%s", GetModuleName(), get_sim_name( SIM_CODE, NULL ) );
-            Options.text_seg = MemStrdup( buffer );
+            Options.text_seg = MemStrdupSafe( buffer );
             break;
         default:
             break;
@@ -2911,8 +2911,8 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
 
         info->localsize += ( size * factor );
 
-        local = MemAlloc( sizeof( label_list ) );
-        local->label = MemStrdup( name );
+        local = MemAllocSafe( sizeof( label_list ) );
+        local->label = MemStrdupSafe( name );
         local->size = size;
         local->replace = NULL;
         local->sym = tmp;
@@ -3022,10 +3022,10 @@ static bool GetArgType( proc_info *info, const char *token, const char *typetoke
             return( RC_ERROR );
         }
     }
-    paramnode = MemAlloc( sizeof( label_list ) );
+    paramnode = MemAllocSafe( sizeof( label_list ) );
     paramnode->u.is_vararg = is_vararg;
     paramnode->size = parameter_size;
-    paramnode->label = MemStrdup( token );
+    paramnode->label = MemStrdupSafe( token );
     paramnode->replace = NULL;
     paramnode->sym = tmp;
     if( Use32 ) {
@@ -3181,9 +3181,9 @@ bool UsesDef( token_buffer *tokbuf, token_idx i )
     info = CurrProc->e.procinfo;
     i++;
     for( ; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_FINAL ); i++ ) {
-        regist = MemAlloc( sizeof( regs_list ));
+        regist = MemAllocSafe( sizeof( regs_list ));
         regist->next = NULL;
-        regist->reg = MemStrdup( tokbuf->tokens[i].string_ptr );
+        regist->reg = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
         if( info->regslist == NULL ) {
             info->regslist = regist;
         } else {
@@ -3408,9 +3408,9 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
             i++;
             for( ; ( i < tokbuf->count ) && ( tokbuf->tokens[i].class != TC_COMMA ); i++ ) {
                 token = tokbuf->tokens[i].string_ptr;
-                regist = MemAlloc( sizeof( regs_list ));
+                regist = MemAllocSafe( sizeof( regs_list ));
                 regist->next = NULL;
-                regist->reg = MemStrdup( token );
+                regist->reg = MemStrdupSafe( token );
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
@@ -3698,7 +3698,7 @@ bool WritePrologue( const char *curline )
                 sprintf( buffer + strlen( buffer ), "%s%lu]",
                          ( Use32 ) ? LOCAL_STRING_32 : LOCAL_STRING, offset );
             }
-            curr->replace = MemStrdup( buffer );
+            curr->replace = MemStrdupSafe( buffer );
         }
         info->localsize = offset;
         /*
@@ -3763,7 +3763,7 @@ bool WritePrologue( const char *curline )
             } else {
                 params.param_number++;
             }
-            curr->replace = MemStrdup( buffer );
+            curr->replace = MemStrdupSafe( buffer );
             if( curr->replace[0] == ' ' ) {
                 curr->replace[0] = '\0';
                 if( Use32 ) {
@@ -4122,7 +4122,7 @@ bool AddAlias( token_buffer *tokbuf, token_idx i )
     len2 = strlen( tokbuf->tokens[i + 2].string_ptr );
     if( len2 > 255 )
         len2 = 255;
-    tmp = MemAlloc( 1 + len1 + 1 + len2 + 1 );
+    tmp = MemAllocSafe( 1 + len1 + 1 + len2 + 1 );
     p = tmp;
     *p++ = (uint_8)len1;
     p = strncpy( p, tokbuf->tokens[i].string_ptr, len1 ) + len1;
@@ -4137,7 +4137,7 @@ bool NameDirective( token_buffer *tokbuf, token_idx i )
 /*****************************************************/
 {
     if( Options.module_name == NULL ) {
-        Options.module_name = MemStrdup( tokbuf->tokens[i + 1].string_ptr );
+        Options.module_name = MemStrdupSafe( tokbuf->tokens[i + 1].string_ptr );
         ConvertModuleName( Options.module_name );
     }
     return( RC_OK );

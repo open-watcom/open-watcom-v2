@@ -293,7 +293,7 @@ static void addInstructionSymbol( qualifier_flags flags, ins_table *table_entry 
         if( flags & QF_D ) strcat( buffer, "d" );
     }
 
-    entry = MemAlloc( sizeof( ins_symbol ) );
+    entry = MemAllocSafe( sizeof( ins_symbol ) );
     entry->table_entry = table_entry;
     entry->flags = flags;
 
@@ -499,7 +499,7 @@ instruction *InsCreate( sym_handle op_sym )
 {
     instruction *ins;
 
-    ins = MemAlloc( sizeof( instruction ) );
+    ins = MemAllocSafe( sizeof( instruction ) );
     ins->opcode_sym = op_sym;
     ins->format = SymGetLink( op_sym );
     ins->num_operands = 0;

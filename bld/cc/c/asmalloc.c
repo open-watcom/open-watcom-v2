@@ -45,7 +45,7 @@ void *MemAllocSafe( size_t amount )
     return( CMemAlloc( amount ) );
 }
 
-char *MemStrdup( const char *str )
+char *MemStrdupSafe( const char *str )
 {
     return( CMemStrdup( str ) );
 }
