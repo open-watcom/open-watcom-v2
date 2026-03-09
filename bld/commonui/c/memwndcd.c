@@ -665,7 +665,7 @@ void RedrawAsCode( HDC dc, MemWndInfo *info )
 /*
  * RegDisasmRtns - register us to use the interface to the disasembler
  */
-void RegDisasmRtns()
+void RegDisasmRtns( void )
 {
     if( !DisasmRegistered ) {
         DisasmInfo.GetDataByte = MemWndGetDataByte;

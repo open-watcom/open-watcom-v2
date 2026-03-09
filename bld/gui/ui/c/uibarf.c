@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,9 @@
 #include "guiwind.h"
 #include <stdlib.h>
 
-void uibarf()
-/***********/
+
+void uibarf( void )
+/*****************/
 {
     GUIDisplayMessage( NULL, "Internal Error", "Debug Message", GUI_EXCLAMATION );
 }

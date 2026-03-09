@@ -2409,17 +2409,17 @@ PTREE ParseMemInit( void )
     return( genericParseExpr( Y_MEM_INIT_SPECIAL, T_LEFT_BRACE, ERR_COMPLICATED_EXPRESSION ) );
 }
 
-PTREE ParseDefArg( )
+PTREE ParseDefArg( void )
 {
     return( genericParseExpr( Y_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }
 
-PTREE ParseTemplateIntDefArg( )
+PTREE ParseTemplateIntDefArg( void )
 {
     return( genericParseExpr( Y_TEMPLATE_INT_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }
 
-PTREE ParseTemplateTypeDefArg( )
+PTREE ParseTemplateTypeDefArg( void )
 {
     return( genericParseExpr( Y_TEMPLATE_TYPE_DEFARG_SPECIAL, T_DEFARG_END, ERR_COMPLICATED_EXPRESSION ) );
 }

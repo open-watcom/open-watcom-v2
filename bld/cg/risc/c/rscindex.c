@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,9 +182,9 @@ static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_
     return( TruncImmediate( mem_ins, op ) );
 }
 
-void    FixMemRefs() {
-/****************************/
-
+void    FixMemRefs( void )
+/************************/
+{
     block       *blk;
     instruction *ins;
     name        **op;

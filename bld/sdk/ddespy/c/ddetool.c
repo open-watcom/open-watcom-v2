@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -266,7 +266,7 @@ void MakeDDEToolBar( HWND hwnd )
 /*
  * DDEToolBarFini - destroy the toolbar and free memory associated with it
  */
-void DDEToolBarFini()
+void DDEToolBarFini( void )
 {
     unsigned    i;
 
