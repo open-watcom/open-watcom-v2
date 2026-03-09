@@ -108,37 +108,6 @@ static char  WdeBusyChars[]         = "-\\|/";
 static jmp_buf Env;
 
 
-static void outOfMemory( void )
-/*****************************/
-{
-    if( WdePopEnv( JMPBUF_PTR( Env ) ) ) {
-        longjmp( Env, 1 );
-    } else {
-        WdeWriteTrail( "Wde PreProc: Fatal error!" );
-        exit( -1 );
-    }
-}
-
-TRMEMAPI( PPMemAlloc )
-void *PPMemAlloc( size_t size )
-/*****************************/
-{
-    void        *p;
-
-    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
-    if( p == NULL ) {
-        outOfMemory();
-    }
-    return( p );
-}
-
-TRMEMAPI( PPMemFree )
-void PPMemFree( void *p )
-/***********************/
-{
-    WRMemFree( p, _TRMEM_WHO( 2 ) );
-}
-
 int PP_MBCharLen( const char *p )
 /*******************************/
 {

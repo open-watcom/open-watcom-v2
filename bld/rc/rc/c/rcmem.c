@@ -241,28 +241,6 @@ int RcMemChkRange( void *start, size_t len )
 }
 #endif
 
-TRMEMAPI( PPMemAlloc )
-void *PPMemAlloc( size_t size )
-/*****************************/
-{
-#ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 10 ), TrHdl ) );
-#else
-    return( RCMemLayer1Malloc( size ) );
-#endif
-}
-
-TRMEMAPI( PPMemFree )
-void PPMemFree( void *ptr )
-/*************************/
-{
-#ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 11 ), TrHdl );
-#else
-    RCMemLayer1Free( ptr );
-#endif
-}
-
 TRMEMAPI( SysMemAlloc )
 void *SysMemAlloc( size_t size )
 /******************************/

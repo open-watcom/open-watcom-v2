@@ -64,32 +64,6 @@ typedef struct {
 /****************************************************************************/
 static jmp_buf SymEnv;
 
-static void outOfMemory( void )
-/*****************************/
-{
-    longjmp( SymEnv, 1 );
-}
-
-TRMEMAPI( PPMemAlloc )
-void *PPMemAlloc( size_t size )
-/*****************************/
-{
-    void        *p;
-
-    p = WRMemAlloc( size, _TRMEM_WHO( 3 ) );
-    if( p == NULL ) {
-        outOfMemory();
-    }
-    return( p );
-}
-
-TRMEMAPI( PPMemFree )
-void PPMemFree( void *p )
-/***********************/
-{
-    WRMemFree( p, _TRMEM_WHO( 4 ) );
-}
-
 int PP_MBCharLen( const char *p )
 /*******************************/
 {
