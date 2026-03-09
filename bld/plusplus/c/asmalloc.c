@@ -42,6 +42,12 @@ void *MemAlloc( size_t amount )
     return( CMemAlloc( amount ) );
 }
 
+void *MemAllocSafe( size_t amount )
+/*********************************/
+{
+    return( CMemAlloc( amount ) );
+}
+
 char *MemStrdup( const char *str )
 /********************************/
 {

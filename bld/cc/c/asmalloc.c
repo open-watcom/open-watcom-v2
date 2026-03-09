@@ -34,7 +34,13 @@
 #include "cmemmgr.h"
 #include "memfuncs.h"
 
+
 void *MemAlloc( size_t amount )
+{
+    return( CMemAlloc( amount ) );
+}
+
+void *MemAllocSafe( size_t amount )
 {
     return( CMemAlloc( amount ) );
 }

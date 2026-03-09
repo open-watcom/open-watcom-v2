@@ -33,7 +33,13 @@
 
 #include "wdeglbl.h"
 #include "wrdll.h"
+#include "wdestken.h"
+#include "wdedebug.h"
 #include "memfuncs.h"
+#include "jmpbuf.h"
+
+//#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -62,7 +68,20 @@
 /* static variables                                                         */
 /****************************************************************************/
 
+static jmp_buf Env;
+
 /* function to replace this in mem.c in commonui */
+
+static void outOfMemory( void )
+/*****************************/
+{
+    if( WdePopEnv( JMPBUF_PTR( Env ) ) ) {
+        longjmp( Env, 1 );
+    } else {
+        WdeWriteTrail( "Wde Fatal error - no memory!" );
+        exit( -1 );
+    }
+}
 
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
@@ -70,11 +89,22 @@ void *MemAlloc( size_t size )
     void *p;
 
     p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
-
     if( p != NULL ) {
         memset( p, 0, size );
     }
+    return( p );
+}
 
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
+{
+    void *p;
+
+    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
+    if( p == NULL ) {
+        outOfMemory();
+    }
+    memset( p, 0, size );
     return( p );
 }
 

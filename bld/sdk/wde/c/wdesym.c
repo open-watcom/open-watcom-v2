@@ -105,8 +105,6 @@ extern char     *WdeWriteHeaderTitle;
 /****************************************************************************/
 static char  WdeBusyChars[]         = "-\\|/";
 
-static jmp_buf Env;
-
 
 int PP_MBCharLen( const char *p )
 /*******************************/

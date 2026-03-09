@@ -47,7 +47,7 @@ static void addString           // STORE A STRING
 {
     OPT_STRING *value;
 
-    value = MemAlloc( sizeof( *value ) + len );
+    value = MemAllocSafe( sizeof( *value ) + len );
     strncpy( value->data, s, len );
     value->data[len] = '\0';
     value->next = *h;
@@ -61,7 +61,7 @@ static void addNumber           // STORE A NUMBER
 {
     OPT_NUMBER *value;
 
-    value = MemAlloc( sizeof( *value ) );
+    value = MemAllocSafe( sizeof( *value ) );
     value->number = number;
     value->next = *h;
     *h = value;
