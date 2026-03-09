@@ -541,7 +541,7 @@ static void PostponeFreeBackHandle( back_handle cgbck )
 {
     old_back_handle     *tmp;
 
-    tmp = MemAlloc( sizeof( old_back_handle ) );
+    tmp = MemAllocSafe( sizeof( old_back_handle ) );
     tmp->next = OldBackHandles;
     OldBackHandles = tmp;
     tmp->cgbck = cgbck;

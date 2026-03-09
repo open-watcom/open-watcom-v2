@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ tmp_handle      AllocTmp( cg_type cgtyp ) {
             return( tmp );
         }
     }
-    tmp = MemAlloc( sizeof( tmp_tracker ) );
+    tmp = MemAllocSafe( sizeof( tmp_tracker ) );
     tmp->tmp = CGTemp( cgtyp );
     tmp->cgtyp = cgtyp;
     tmp->avail = false;

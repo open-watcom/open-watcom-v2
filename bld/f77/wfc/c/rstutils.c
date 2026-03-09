@@ -72,7 +72,7 @@ sym_id STAdd( const char *name, size_t length )
 {
     sym_id    sym;
 
-    sym = MemAlloc( sizeof( named_symbol ) + length );
+    sym = MemAllocSafe( sizeof( named_symbol ) + length );
     sym->u.ns.u2.name_len = length;
     memcpy( &sym->u.ns.name, name, length );
     sym->u.ns.name[length] = NULLCHAR;

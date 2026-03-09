@@ -72,7 +72,7 @@ static  void    NewGlobalSeg( void )
 {
     global_seg  *new_seg;
 
-    new_seg = MemAlloc( sizeof( global_seg ) );
+    new_seg = MemAllocSafe( sizeof( global_seg ) );
     new_seg->segid = SEG_NULL;
     new_seg->link = NULL;
     if( CurrGSeg == NULL ) {

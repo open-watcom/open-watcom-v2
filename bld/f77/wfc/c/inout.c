@@ -100,7 +100,7 @@ void    InitComIO( void ) {
     TermCursor = 0;
     ErrCursor  = 0;
     ListCursor = 0;
-    TermBuff = MemAlloc( TERM_BUFF_SIZE );
+    TermBuff = MemAllocSafe( TERM_BUFF_SIZE );
     ErrBuff = NULL;
     ListBuff = NULL;
     CurrFile = NULL;
@@ -296,8 +296,8 @@ void    SrcInclude( const char *name )
 {
     source_t    *src;
 
-    src = MemAlloc( sizeof( source_t ) );
-    src->name = MemAlloc( strlen( name ) + 1 );
+    src = MemAllocSafe( sizeof( source_t ) );
+    src->name = MemAllocSafe( strlen( name ) + 1 );
     strcpy( src->name, name );
     src->rec = 0;
     src->link = CurrFile;
@@ -366,7 +366,7 @@ void    OpenErr( void ) {
         if( ErrFile != NULL ) {
             ErrCursor = 0;
             if( ErrBuff == NULL ) {
-                ErrBuff = MemAlloc( ERR_BUFF_SIZE );
+                ErrBuff = MemAllocSafe( ERR_BUFF_SIZE );
             }
         }
     }
@@ -555,7 +555,7 @@ static  void    OpenListingFile( bool reopen ) {
             InfoError( SM_OPENING_FILE, name, errmsg );
         } else {
             ListFlag |= LF_CC_NOLF;
-            ListBuff = MemAlloc( LIST_BUFF_SIZE + 1 );
+            ListBuff = MemAllocSafe( LIST_BUFF_SIZE + 1 );
             if( ListBuff == NULL ) {
                 CloseLst();
                 InfoError( MO_DYNAMIC_OUT );

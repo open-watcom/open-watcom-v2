@@ -75,14 +75,14 @@ b_file  *Openf( const char *f, const char *mode )
         return( NULL );
     }
     if( S_ISCHR( info.st_mode ) ) {
-        io = MemAlloc( offsetof( b_file, read_len ) );
+        io = MemAllocSafe( offsetof( b_file, read_len ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
 //        attrs &= ~TRUNC_ON_WRITE;
 //        attrs |= CHAR_DEVICE;
         buffered = false;
     } else {
-        io = MemAlloc( sizeof( b_file ) );
+        io = MemAllocSafe( sizeof( b_file ) );
         buffered = true;
     }
     if( io == NULL ) {

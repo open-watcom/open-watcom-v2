@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,11 +213,11 @@ static void PathOption( opt_entry *optn, const char *ptr )
         return;
     end = ptr + len;
     if( IncludePath == NULL ) {
-        p = IncludePath = MemAlloc( len + 1 );
+        p = IncludePath = MemAllocSafe( len + 1 );
     } else {
         old_list = IncludePath;
         old_len = strlen( old_list );
-        IncludePath = MemAlloc( old_len + 1 + len + 1 );
+        IncludePath = MemAllocSafe( old_len + 1 + len + 1 );
         memcpy( IncludePath, old_list, len );
         MemFree( old_list );
         p = IncludePath + old_len;
@@ -241,7 +241,7 @@ void    FIncludePathInit( void )
     env = getenv( "FINCLUDE" );
     if( env != NULL && *env != NULLCHAR ) {
         len = strlen( env );
-        p = FIncludePath = MemAlloc( len + 1 );
+        p = FIncludePath = MemAllocSafe( len + 1 );
         while( *env != NULLCHAR ) {
             if( p != FIncludePath )
                 *p++ = PATH_LIST_SEP;

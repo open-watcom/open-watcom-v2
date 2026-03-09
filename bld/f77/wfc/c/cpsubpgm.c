@@ -110,7 +110,7 @@ static entry_pt *AddEntryPt( sym_id sym_ptr )
     entry_pt    *ptr;
 
     if( Entries == NULL ) {
-        ArgList = MemAlloc( sizeof( entry_pt ) );
+        ArgList = MemAllocSafe( sizeof( entry_pt ) );
         Entries = ArgList;
         ptr     = Entries;
     } else {
@@ -118,7 +118,7 @@ static entry_pt *AddEntryPt( sym_id sym_ptr )
         while( ptr->link != NULL ) {
             ptr = ptr->link;
         }
-        ptr->link = MemAlloc( sizeof( entry_pt ) );
+        ptr->link = MemAllocSafe( sizeof( entry_pt ) );
         ptr = ptr->link;
         if( ArgList == NULL ) {
             ArgList = ptr;
@@ -384,7 +384,7 @@ static parameter *NameParm( entry_pt *entry )
             return( NULL );
         }
     }
-    result = MemAlloc( sizeof( parameter ) );
+    result = MemAllocSafe( sizeof( parameter ) );
     result->link = NULL;
     result->id = sym;
     result->flags = 0;
@@ -401,7 +401,7 @@ static parameter *StarParm( void )
 
     parameter   *result;
 
-    result = MemAlloc( sizeof( parameter ) );
+    result = MemAllocSafe( sizeof( parameter ) );
     result->link = NULL;
     result->flags |= ARG_STMTNO;
     return( result );

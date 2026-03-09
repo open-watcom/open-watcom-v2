@@ -56,7 +56,7 @@ sym_id  STLit( const char *str, size_t len )
             }
         }
     }
-    sym = MemAlloc( sizeof( literal ) - 1 + len );
+    sym = MemAllocSafe( sizeof( literal ) - 1 + len );
     memcpy( sym->u.lt.value, str, len );
     sym->u.lt.length = len;
     if( StmtSw & SS_DATA_INIT ) {

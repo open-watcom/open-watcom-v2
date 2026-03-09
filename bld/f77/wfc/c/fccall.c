@@ -518,7 +518,7 @@ void    FCCall( void )
         arg_vec = NULL;
     } else {
         // We need argc + 1 because we use NULL at the end
-        arg_vec = MemAlloc( ( argc + 1 ) * sizeof( cg_name ) );
+        arg_vec = MemAllocSafe( ( argc + 1 ) * sizeof( cg_name ) );
     }
     call = CGInitCall( rtn, sp_cgtyp, sp );
     if( sp->u.ns.flags & SY_INTRINSIC ) {

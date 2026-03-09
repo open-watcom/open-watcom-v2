@@ -56,7 +56,7 @@ sym_id  TmpVar( TYPE typ, size_t size )
 {
     sym_id     temp;
 
-    temp = MemAlloc( sizeof( named_symbol ) );
+    temp = MemAllocSafe( sizeof( named_symbol ) );
     temp->u.ns.link = MList;
     MList = temp;
     temp->u.ns.flags = SY_USAGE | SY_TYPE | SY_VARIABLE;

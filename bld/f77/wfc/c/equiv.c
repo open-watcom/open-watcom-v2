@@ -189,7 +189,7 @@ void    CpEquivalence(void) {
                     if( equiv.substr != 0 ) {
                         eq_size += 2 * sizeof( intstar4 );
                     }
-                    new_eq = MemAlloc( eq_size );
+                    new_eq = MemAllocSafe( eq_size );
                     memcpy( new_eq, &equiv, eq_size );
                     if( eqv_entry == NULL ) {
                         eq_head = new_eq;

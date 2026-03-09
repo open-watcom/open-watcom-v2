@@ -144,8 +144,8 @@ void    MakeITList( void )
         GetOpnd();
         /*
          * Consider what happens when NewITNode() calls FrlAlloc() who
-         * in turns calls MemAlloc() and there is no memory left.
-         * MemAlloc() frees the I.T. list starting at ITHead so when
+         * in turns calls MemAllocSafe() and there is no memory left.
+         * MemAllocSafe() frees the I.T. list starting at ITHead so when
          * we return CITNode has been freed.
          * So don't code ---->    CITNode->link = NewITNode();
          */

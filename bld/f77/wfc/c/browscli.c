@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -295,14 +295,14 @@ static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
         } else {
             dw_sections[sect].sec_type = initial_section_type;
             dw_sections[sect].u1.size = MEM_INCREMENT;
-            dw_sections[sect].u2.data = MemAlloc( MEM_INCREMENT );
+            dw_sections[sect].u2.data = MemAllocSafe( MEM_INCREMENT );
         }
     }
 
     switch( dw_sections[sect].sec_type ) {
     case( MEM_SECTION ):
         if( dw_sections[sect].u1.size <= ( dw_sections[sect].offset + size ) ) {
-            temp = MemAlloc( dw_sections[sect].u1.size + MEM_INCREMENT );
+            temp = MemAllocSafe( dw_sections[sect].u1.size + MEM_INCREMENT );
             memcpy( temp, dw_sections[sect].u2.data, dw_sections[sect].u1.size );
             MemFree( dw_sections[sect].u2.data );
             dw_sections[sect].u2.data = temp;
@@ -382,7 +382,7 @@ static void CLIZeroWrite( dw_sectnum sect, size_t size )
 {
     char            *btmp;
 
-    btmp = MemAlloc( size + 1 );
+    btmp = MemAllocSafe( size + 1 );
     memset( btmp, 0, size );
     CLIWrite( sect, btmp, size );
     MemFree( btmp );
@@ -448,7 +448,7 @@ static void *CLIAlloc( size_t size )
 {
     void            *p;
 
-    p = MemAlloc( size );
+    p = MemAllocSafe( size );
     if( p == NULL && size > 0 ) {
         Error( MO_DYNAMIC_OUT );
         CSuicide();

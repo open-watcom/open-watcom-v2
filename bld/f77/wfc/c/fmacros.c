@@ -143,7 +143,7 @@ void MacroDEFINE( const char *macro, size_t macro_len )
 
     me = FindMacroEntry( macro, macro_len );
     if( me == NULL ) {
-        me = MemAlloc( sizeof( macro_entry ) + macro_len - 1 );
+        me = MemAllocSafe( sizeof( macro_entry ) + macro_len - 1 );
         me->link = MacroList;
         me->name_len = macro_len;
         me->flags = MacroFlags;

@@ -51,7 +51,7 @@ grp_entry       *STGroupEntry( void ) {
 
     grp_entry   *ge;
 
-    ge = MemAlloc( sizeof( grp_entry ) );
+    ge = MemAllocSafe( sizeof( grp_entry ) );
     ge->link = NULL;
     return( ge );
 }
@@ -64,7 +64,7 @@ com_eq  *STComEq( void ) {
 
     com_eq      *ce_ext;
 
-    ce_ext = MemAlloc( sizeof( com_eq ) );
+    ce_ext = MemAllocSafe( sizeof( com_eq ) );
     ce_ext->ec_flags = 0;
     ce_ext->low = 0;
     ce_ext->high = 0;
@@ -84,7 +84,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
     act_dim_list    *ste_ptr;
 
     size = offsetof( act_dim_list, subs_1_lo ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );
-    ste_ptr = MemAlloc( size );
+    ste_ptr = MemAllocSafe( size );
     memcpy( ste_ptr, subs_ptr, size );
     return( ste_ptr );
 }

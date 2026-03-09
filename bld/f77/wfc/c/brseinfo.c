@@ -834,8 +834,8 @@ static dw_handle BIGetUnionType( sym_id ste_ptr )
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
-    sym = MemAlloc( sizeof( named_symbol ) + sizeof( buff ) );
-    sym->u.ns.xt.record = MemAlloc( sizeof( fstruct) + sizeof( buff ) );
+    sym = MemAllocSafe( sizeof( named_symbol ) + sizeof( buff ) );
+    sym->u.ns.xt.record = MemAllocSafe( sizeof( fstruct) + sizeof( buff ) );
     for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
         memset( sym->u.ns.xt.record, 0, sizeof( fstruct ) + sizeof( buff ) );
         memcpy( sym->u.ns.xt.record, fs, sizeof( fmap ) );
@@ -874,7 +874,7 @@ static void BIAdd2List( sym_list **list, sym_id ste_ptr, dw_handle handle )
 {
     sym_list    *tmp;
 
-    tmp = MemAlloc( sizeof( sym_list ) );
+    tmp = MemAllocSafe( sizeof( sym_list ) );
     tmp->id = ste_ptr;
     tmp->dbh = handle;
     tmp->link = *list;

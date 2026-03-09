@@ -45,7 +45,7 @@ static  sym_id  AddNameList( const char *name, size_t length )
 {
     sym_id      sym;
 
-    sym = MemAlloc( sizeof( name_list ) + length );
+    sym = MemAllocSafe( sizeof( name_list ) + length );
     sym->u.nl.name_len = length;
     sym->u.nl.address = NULL;
     sym->u.nl.dbh = 0;

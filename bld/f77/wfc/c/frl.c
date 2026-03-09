@@ -45,7 +45,7 @@ void    *FrlAlloc( void ***head, size_t size )
         next = *head;
         *head = **head;
     } else {
-        next = MemAlloc( size );
+        next = MemAllocSafe( size );
     }
     return( next );
 }

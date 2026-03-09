@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -574,7 +574,7 @@ static void DupParmInfo( aux_info *dst, aux_info *src )
         ++size;
     }
     ++size;
-    new_reg_set = MemAlloc( size * sizeof( hw_reg_set ) );
+    new_reg_set = MemAllocSafe( size * sizeof( hw_reg_set ) );
     memcpy( new_reg_set, reg_set, size * sizeof( hw_reg_set ) );
     dst->parms = new_reg_set;
 }
@@ -593,7 +593,7 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
 #endif
 
     seq_len = src->code->length;
-    new_seq = MemAlloc( offsetof( byte_seq, data ) + seq_len );
+    new_seq = MemAllocSafe( offsetof( byte_seq, data ) + seq_len );
     memcpy( new_seq->data, src->code->data, seq_len );
     dst->code = new_seq;
     dst->code->length = src->code->length;
@@ -604,7 +604,7 @@ static void DupCallBytes( aux_info *dst, aux_info *src )
     head = NULL;
     lnk = &head;
     for( reloc = src->code->relocs; reloc; reloc = reloc->next ) {
-        new = MemAlloc( sizeof( byte_seq_reloc ) );
+        new = MemAllocSafe( sizeof( byte_seq_reloc ) );
         new->off = reloc->off;
         new->type = reloc->type;
         new->sym = reloc->sym;
@@ -622,7 +622,7 @@ static void DupObjectName( aux_info *dst, aux_info *src )
 {
     char        *new_name;
 
-    new_name = MemAlloc( strlen( src->objname ) + 1 );
+    new_name = MemAllocSafe( strlen( src->objname ) + 1 );
     strcpy( new_name, src->objname );
     dst->objname = new_name;
 }
@@ -634,7 +634,7 @@ static void DupArgInfo( pass_by **dst, pass_by *src )
     pass_by     *arg;
 
     for( ; src != NULL; src = src->link ) {
-        arg = MemAlloc( sizeof( pass_by ) );
+        arg = MemAllocSafe( sizeof( pass_by ) );
         arg->info = src->info;
         *dst = arg;
         dst = &arg->link;
@@ -675,7 +675,7 @@ static aux_info *NewAuxEntry( const char *name, size_t name_len )
 {
     aux_entry   *ent;
 
-    ent = MemAlloc( sizeof( aux_entry ) + name_len );
+    ent = MemAllocSafe( sizeof( aux_entry ) + name_len );
     ent->sym_len = name_len;
     memcpy( ent->sym_name, name, name_len );
     ent->sym_name[name_len] = NULLCHAR;
@@ -736,7 +736,7 @@ static void ObjectName( void )
     if( *(TokEnd - 1) != '"' )
         CSuicide();
     obj_len = TokEnd - TokStart - 2;
-    name = MemAlloc( obj_len + 1 );
+    name = MemAllocSafe( obj_len + 1 );
     if( CurrAux->objname != DefaultInfo.objname ) {
         MemFree( CurrAux->objname );
     }
@@ -904,7 +904,7 @@ static void AsmInsertFixups( byte *buff, size_t len )
         len = dst - temp;
         perform_fixups = true;
     }
-    seq = MemAlloc( offsetof( byte_seq, data ) + len );
+    seq = MemAllocSafe( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
     seq->length = len;
     memcpy( &seq->data, buff, len );
@@ -936,7 +936,7 @@ static void AsmInsertFixups( byte *buff, size_t len )
     head = NULL;
     lnk = &head;
     for( reloc = AsmRelocs; reloc; reloc = reloc->next ) {
-        new = MemAlloc( sizeof( byte_seq_reloc ) );
+        new = MemAllocSafe( sizeof( byte_seq_reloc ) );
         new->off = reloc->offset;
         new->type = reloc->type;
         new->sym = (void *)SymFind( reloc->name, strlen( reloc->name ) );
@@ -945,7 +945,7 @@ static void AsmInsertFixups( byte *buff, size_t len )
         lnk = &new->next;
     }
 
-    seq = MemAlloc( offsetof( byte_seq, data ) + len );
+    seq = MemAllocSafe( offsetof( byte_seq, data ) + len );
     seq->relocs = head;
     seq->length = len;
     memcpy( &seq->data, buff, len );
@@ -963,7 +963,7 @@ static void AddAFix( size_t i, char *name, unsigned type, unsigned off )
 {
     struct asmfixup     *fix;
 
-    fix = MemAlloc( sizeof( *fix ) );
+    fix = MemAllocSafe( sizeof( *fix ) );
     fix->external = true;
     fix->fixup_loc = i;
     fix->name = name;
@@ -1113,7 +1113,7 @@ static hw_reg_set *RegSets( void )
         }
     }
     HW_CAsgn( reg_sets[num_sets], HW_EMPTY );
-    regs = MemAlloc( ( num_sets + 1 ) * sizeof( hw_reg_set ) );
+    regs = MemAllocSafe( ( num_sets + 1 ) * sizeof( hw_reg_set ) );
     memcpy( regs, reg_sets, ( num_sets + 1 ) * sizeof( hw_reg_set ) );
     return( regs );
 }
@@ -1196,7 +1196,7 @@ static void GetArgList( pass_by **curr_arg )
             Error( PR_BAD_PARM_ATTR );
             CSuicide();
         }
-        arg = MemAlloc( sizeof( pass_by ) );
+        arg = MemAllocSafe( sizeof( pass_by ) );
         arg->link = NULL;
         arg->info = arg_pass_info;
         *curr_arg = arg;

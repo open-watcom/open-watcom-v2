@@ -220,7 +220,7 @@ void    ConstCat( size_t size )
     itnode      *link_node;
 
     last_node = CITNode;
-    str = MemAlloc( size );
+    str = MemAllocSafe( size );
     size_left = size;
     dest = str;
     for( ;; ) {

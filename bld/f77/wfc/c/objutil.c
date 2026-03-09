@@ -78,7 +78,7 @@ void    InitObj( void )
 //=====================
 // Allocate memory for object code.
 {
-    ObjCode = MemAlloc( WFC_PAGE_SIZE );
+    ObjCode = MemAllocSafe( WFC_PAGE_SIZE );
     ObjEnd = ObjCode + WFC_PAGE_SIZE;
     ObjPtr = ObjCode;
     *(unsigned_16 *)ObjPtr = FC_END_OF_SEQUENCE; // in case no source code in file

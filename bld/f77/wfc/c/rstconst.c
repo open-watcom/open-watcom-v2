@@ -69,7 +69,7 @@ sym_id  STConst( void *ptr, TYPE typ, size_t size ) {
             head = head->u.cn.link;
         }
     }
-    head = MemAlloc( sizeof( constant ) - sizeof( ftn_type ) + size );
+    head = MemAllocSafe( sizeof( constant ) - sizeof( ftn_type ) + size );
     memcpy( &head->u.cn.value, c_ptr, size );
     head->u.cn.typ = typ;
     head->u.cn.size = size;

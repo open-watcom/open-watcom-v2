@@ -113,7 +113,7 @@ static  label_entry     *FindLabel( label_id label )
         }
     }
     if( le == NULL ) {
-        le = MemAlloc( sizeof( label_entry ) );
+        le = MemAllocSafe( sizeof( label_entry ) );
         le->label = label;
         le->back_label = false;
         le->u.cglbl = NULL;

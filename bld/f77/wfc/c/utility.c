@@ -108,7 +108,7 @@ char    *MkNodeStr( itnode *itptr ) {
     char        *str;
 
     opnd_size = itptr->opnd_size;
-    str = MemAlloc( opnd_size + 1 );
+    str = MemAllocSafe( opnd_size + 1 );
     memcpy( str, itptr->opnd, opnd_size );
     str[opnd_size] = NULLCHAR;
     return( str );

@@ -138,9 +138,9 @@ static void no_mem( void )
 }
 
 TRMEMAPI( MemAlloc )
-void    *MemAlloc( size_t size ) {
-//=================================
-
+void    *MemAlloc( size_t size )
+//==============================
+{
     void        *p;
 
 #if defined( TRMEM )

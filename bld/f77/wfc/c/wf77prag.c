@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,7 +147,7 @@ static void AddArrayInfo( const char *arr_name, size_t arr_len )
             return;
         }
     }
-    new_arr = MemAlloc( sizeof( arr_info ) + arr_len );
+    new_arr = MemAllocSafe( sizeof( arr_info ) + arr_len );
     new_arr->link = NULL;
     for( i = 0; i < arr_len; i++ ) {
         new_arr->arr[i] = toupper( arr_name[i] );
@@ -176,7 +176,7 @@ void AddDependencyInfo( source_t *fi )
             }
         }
         if( stat( p, &stat_info ) != -1 ) {
-            new_dep = MemAlloc( sizeof( dep_info ) + strlen( p ) );
+            new_dep = MemAllocSafe( sizeof( dep_info ) + strlen( p ) );
             new_dep->link = NULL;
             strcpy( new_dep->fn, p );
             new_dep->time_stamp = stat_info.st_mtime;
@@ -223,7 +223,7 @@ static void AddDefaultLib( const char *libname, char priority )
      * if library entry not found then create new one
      */
     if( lib == NULL ) {
-        lib = MemAlloc( sizeof( default_lib ) + strlen( libname ) );
+        lib = MemAllocSafe( sizeof( default_lib ) + strlen( libname ) );
         strcpy( lib->libname, libname );
     }
     /*
@@ -512,7 +512,7 @@ static void     Pragma( void )
                 size_t      len;
 
                 len = TokEnd - TokStart;
-                p = MemAlloc( len + 1 );
+                p = MemAllocSafe( len + 1 );
                 t = TokStart;
                 if( *t == '"' ) {
                     t++;

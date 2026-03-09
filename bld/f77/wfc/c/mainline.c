@@ -133,12 +133,12 @@ int     main( int argc, char *argv[] )
     if( wfc_env != NULL ) {
         size_t  len1;
         len1 = strlen( wfc_env );
-        cmd_line = MemAlloc( len1 + 1 + cmd_len );
+        cmd_line = MemAllocSafe( len1 + 1 + cmd_len );
         strcpy( cmd_line, wfc_env );
         cmd_line[len1++] = ' ';
         _bgetcmd( cmd_line + len1, cmd_len );
     } else {
-        cmd_line = MemAlloc( cmd_len );
+        cmd_line = MemAllocSafe( cmd_len );
         _bgetcmd( cmd_line, cmd_len );
     }
     ret_code = 0;
