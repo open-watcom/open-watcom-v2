@@ -87,7 +87,7 @@ static HelpSrchPathItem *checkFileName( const char *name, char *buf )
     _makepath( buf, NULL, NULL, pg.fname, pg.ext );
     if( pg.drive[0] != '\0' || pg.dir[0] != '\0' ) {
         _makepath( path, pg.drive, pg.dir, NULL, NULL );
-        searchList[0].info = HelpDupStr( path );
+        searchList[0].info = MemStrdupSafe( path );
     }
     return( searchList );
 }

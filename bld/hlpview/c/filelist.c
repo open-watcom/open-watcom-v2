@@ -139,10 +139,10 @@ static FileList *scanDirectory( char *buf, FileList *list )
             if ( len < ( sizeof( "." DEF_EXT ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." DEF_EXT ) - 1 )], "." DEF_EXT ) != 0 ) {
                 continue;
             }
-            list->items[list->used] = MemAlloc( sizeof( FileInfo ) );
-            list->items[list->used]->fpath = HelpDupStr( buf );
+            list->items[list->used] = MemAllocSafe( sizeof( FileInfo ) );
+            list->items[list->used]->fpath = MemStrdupSafe( buf );
             _splitpath2( dire->d_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
-            list->items[list->used]->fname = HelpDupStr( pg.fname );
+            list->items[list->used]->fname = MemStrdupSafe( pg.fname );
             list->used++;
             if( list->used == list->allocated ) {
                 list->allocated += MAX_HELPFILES;
@@ -165,7 +165,7 @@ static FileList *doFillFileList( const char *path, FileList *list )
 
     done = 0;
     len = strlen( path ) + 1;
-    path_start = MemAlloc( len + 2 );
+    path_start = MemAllocSafe( len + 2 );
     strcpy( path_start, path );
     p = path_start;
     for( ;; ) {
@@ -237,7 +237,7 @@ static FileList *initFileList( void )
 {
     FileList    *list;
 
-    list = MemAlloc( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
+    list = MemAllocSafe( sizeof( FileList ) + MAX_HELPFILES * sizeof( FileInfo* ) );
     list->allocated = MAX_HELPFILES;
     list->used = 0;
     return( list );

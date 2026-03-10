@@ -269,7 +269,7 @@ HelpHdl InitHelpSearch( FILE *fp )
     uint_16     u16;
 
     HelpSeek( fp, 0, HELP_SEEK_SET );
-    hdl = MemAlloc( sizeof( struct HelpHdl ) );
+    hdl = MemAllocSafe( sizeof( struct HelpHdl ) );
     hdl->fp = fp;
     HelpRead( fp, &u32, sizeof( u32 ) );
     hdl->header.sig1 = u32;
@@ -300,28 +300,28 @@ HelpHdl InitHelpSearch( FILE *fp )
         hdl->header.str_size = u16;
         HelpSeek( fp, 6 * sizeof( uint_16 ), HELP_SEEK_CUR );
         if( hdl->header.str_size ) {
-            buffer = MemAlloc( hdl->header.str_size );
+            buffer = MemAllocSafe( hdl->header.str_size );
             HelpRead( fp, buffer, hdl->header.str_size );
             str_cnt = buffer[0];
             str_len = buffer + 1;
             ptr = (char *)( str_len + str_cnt );
             if( str_len[0] != 0 ) {
-                hdl->def_topic = HelpDupStr( ptr );
+                hdl->def_topic = MemStrdupSafe( ptr );
             } else {
-                hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
+                hdl->def_topic = MemStrdupSafe( DEFAULTTOPIC );
             }
             if( str_len[1] != 0 ) {
-                hdl->desc_str = HelpDupStr( ptr + str_len[0] );
+                hdl->desc_str = MemStrdupSafe( ptr + str_len[0] );
             } else {
                 hdl->desc_str = NULL;
             }
             MemFree( buffer );
         } else {
-            hdl->def_topic = HelpDupStr( DEFAULTTOPIC );
+            hdl->def_topic = MemStrdupSafe( DEFAULTTOPIC );
             hdl->desc_str = NULL;
         }
         len = hdl->header.datapagecnt * ( sizeof( uint_16 ) );
-        hdl->itemindex = MemAlloc( len );
+        hdl->itemindex = MemAllocSafe( len );
         HelpRead( fp, hdl->itemindex, len );
     } else {
         MemFree( hdl );

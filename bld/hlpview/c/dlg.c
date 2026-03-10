@@ -165,7 +165,7 @@ static void copyLBLinetoEditCtl( unsigned index )
     char        *lb_item;
     size_t      len;
 
-    lb_item = MemAlloc( MAX_EDIT_LINE_LEN );
+    lb_item = MemAllocSafe( MAX_EDIT_LINE_LEN );
     GetListBoxItem( &listData, index, lb_item, MAX_EDIT_LINE_LEN );
     len = strlen( lb_item );
     MemFree( editCtl.buffer );
@@ -254,9 +254,8 @@ char *HelpSearch( HelpHdl hdl )
             break;
         case EV_ENTER:
         case EV_LIST_BOX_DCLICK:
-            ret = MemAlloc( MAX_EDIT_LINE_LEN );
-            GetLBItemLiteral( &listData, listBox.box->row, ret,
-                              MAX_EDIT_LINE_LEN );
+            ret = MemAllocSafe( MAX_EDIT_LINE_LEN );
+            GetLBItemLiteral( &listData, listBox.box->row, ret, MAX_EDIT_LINE_LEN );
             if( ret[0] == '\0' ) {
                 MemFree( ret );
                 ret = NULL;

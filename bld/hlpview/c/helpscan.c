@@ -94,7 +94,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
         case IB_ESCAPE:
             if( cnt == TEXT_BLOCK_SIZE ) {
                 cnt = 0;
-                block->next = MemAlloc( sizeof( TextInfoBlock ) );
+                block->next = MemAllocSafe( sizeof( TextInfoBlock ) );
                 block = block->next;
                 block->next = NULL;
             }
@@ -147,7 +147,7 @@ static unsigned scanHyperLink( char *line, HelpTokenType *hlink_type, HyperLinkI
         default:
             if( cnt == TEXT_BLOCK_SIZE ) {
                 cnt = 0;
-                block->next = MemAlloc( sizeof( TextInfoBlock ) );
+                block->next = MemAllocSafe( sizeof( TextInfoBlock ) );
                 block = block->next;
                 block->next = NULL;
             }

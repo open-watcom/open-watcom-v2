@@ -145,10 +145,10 @@ static void initSearchList(
         while( srchlist[count].type != SRCHTYPE_EOL )
             count++;
         count++;
-        srch_List = MemAlloc( count * sizeof( HelpSrchPathItem ) );
+        srch_List = MemAllocSafe( count * sizeof( HelpSrchPathItem ) );
         for( i = 0; i < count ; ++i ) {
             srch_List[i].type = srchlist[i].type;
-            srch_List[i].info = HelpDupStr( srchlist[i].info );
+            srch_List[i].info = MemStrdupSafe( srchlist[i].info );
         }
     }
 }
@@ -166,7 +166,7 @@ static int do_init(                 /* INITIALIZATION FOR THE HELP PROCESS     *
     for( ; *helpfilenames != NULL; ++helpfilenames ) {
         SetHelpFileDefExt( *helpfilenames, filename );
         if( search_for_file( fullpath, filename, srchlist ) ) {
-            helpFiles[count].name = HelpDupStr( fullpath );
+            helpFiles[count].name = MemStrdupSafe( fullpath );
             helpFiles[count].fp = NULL;
             ++count;
             if( count >= MAX_HELP_FILES ) {

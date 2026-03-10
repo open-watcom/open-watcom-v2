@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "memfuncs.h"
 #include "helpmemu.h"
 #ifdef TRMEM
@@ -90,13 +91,23 @@ void HelpMemClose( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
 {
 #ifdef TRMEM
     return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 #else
     return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 1 ), TrHdl ) );
+#else
+    return( strdup( str ) );
 #endif
 }
 
@@ -119,4 +130,3 @@ void MemFree( void *ptr )
     free( ptr );
 #endif
 }
-

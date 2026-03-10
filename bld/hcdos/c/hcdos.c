@@ -269,7 +269,7 @@ static bool pass1( FILE *fin, const char **helpstr )
                     PrintError( "DEFTOPIC string ignored with this format.\n" );
                 } else {
                     ptr = find_str( buffer + IB_DEFAULT_TOPIC_SIZE );
-                    namebuff = MemAlloc( strlen( ptr ) + 1 );
+                    namebuff = MemAllocSafe( strlen( ptr ) + 1 );
                     strcpy( namebuff, ptr );
                     helpstr[0] = namebuff;
                 }
@@ -283,7 +283,7 @@ static bool pass1( FILE *fin, const char **helpstr )
                     PrintError( "DESCRIPTION string ignored with this format.\n" );
                 } else {
                     ptr = find_str( buffer + IB_DESCRIPTION_SIZE );
-                    namebuff = MemAlloc( strlen( ptr ) + 1 );
+                    namebuff = MemAllocSafe( strlen( ptr ) + 1 );
                     strcpy( namebuff, ptr );
                     helpstr[1] = namebuff;
                 }
@@ -296,7 +296,7 @@ static bool pass1( FILE *fin, const char **helpstr )
     namebuff = NULL;
     namebuff_len = 0;
     while( !feof( fin ) ) {
-        h = (a_helpnode *)MemAlloc( sizeof( a_helpnode ) );
+        h = (a_helpnode *)MemAllocSafe( sizeof( a_helpnode ) );
         h->fpos = fpos;
         buflen = strlen( buffer );
         if( buffer[buflen - 1] == '\n' ) {
@@ -318,7 +318,7 @@ static bool pass1( FILE *fin, const char **helpstr )
             len = ptr - ( buffer + IB_TOPIC_NAME_SIZE + 1 );
             if( namebuff_len <= len ) {
                 MemFree( namebuff );
-                namebuff = MemAlloc( len + 1 );
+                namebuff = MemAllocSafe( len + 1 );
                 namebuff_len = len + 1;
             }
             memcpy( namebuff, buffer + IB_TOPIC_NAME_SIZE + 1, len );
@@ -337,7 +337,7 @@ static bool pass1( FILE *fin, const char **helpstr )
             len = ptr - ( buffer + IB_TOPIC_NAME_SIZE );
             if( namebuff_len <= len ) {
                 MemFree( namebuff );
-                namebuff = MemAlloc( len + 1 );
+                namebuff = MemAllocSafe( len + 1 );
                 namebuff_len = len + 1;
             }
             memcpy( namebuff, buffer + IB_TOPIC_NAME_SIZE, len );
@@ -352,7 +352,7 @@ static bool pass1( FILE *fin, const char **helpstr )
                 PrintError( "invalid help topic line '%s'\n", buffer );
             }
         }
-        h->name = strdup( namebuff );
+        h->name = MemStrdupSafe( namebuff );
         if( Verbose ) {
             printf( "   %s\n", h->name );
         }
@@ -431,7 +431,7 @@ static void checkBufCB( HelpTokenType type, Info *info, void *_node )
     if( type == TK_PLAIN_LINK || type == TK_GOOFY_LINK ) {
         if( nameBufLen <= info->u.link.topic_len ) {
             MemFree( nameBuf );
-            nameBuf = MemAlloc( info->u.link.topic_len + 1 );
+            nameBuf = MemAllocSafe( info->u.link.topic_len + 1 );
             nameBufLen = info->u.link.topic_len + 1;
         }
         memcpy( nameBuf, info->u.link.topic, info->u.link.topic_len );
