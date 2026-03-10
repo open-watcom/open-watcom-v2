@@ -100,9 +100,7 @@ int SysRunCommand( const char *cmd )
     char        buff[BUFSIZE + 1];
     char        *p;
 
-    pgmname = MemStrdup( cmd );
-    if( pgmname == NULL )
-        return( -1 );
+    pgmname = MemStrdupSafe( cmd );
     cmdline = strchr( pgmname, ' ' );
     if( cmdline != NULL ) {
         *cmdline++ = '\0';

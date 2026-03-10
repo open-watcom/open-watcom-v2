@@ -62,9 +62,7 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     const char  **argv;
     int         i;
 
-    cmdnam = MemStrdup( cmd );
-    if( cmdnam == NULL )
-        return( -1 );
+    cmdnam = MemStrdupSafe( cmd );
     /*
      * skip trailing spaces
      */
@@ -72,11 +70,7 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     while( i-- > 0 && cmdnam[i] == ' ' ) {
         cmdnam[i] = '\0';
     }
-    argv = MemAlloc( strlen( cmdnam ) * sizeof( char * ) );
-    if( argv == NULL ) {
-        MemFree( cmdnam );
-        return( -1 );
-    }
+    argv = MemAllocSafe( strlen( cmdnam ) * sizeof( char * ) );
     i = 0;
     for( sp = cmdnam; sp != NULL; ) {
         while( *sp != '\0' && *sp == ' ' )

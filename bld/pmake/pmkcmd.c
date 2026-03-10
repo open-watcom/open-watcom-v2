@@ -130,9 +130,7 @@ static int RunCommand( char *cmd )
             skip_sp = false;
         }
     }
-    argv = (const char **)MemAlloc( i * sizeof( char * ) );
-    if( argv == NULL )
-        return( 1 );    /* error no memory */
+    argv = (const char **)MemAllocSafe( i * sizeof( char * ) );
     skip_sp = true;
     i = 0;
     for( p = cmd; *p != '\0'; ++p ) {
@@ -271,8 +269,8 @@ void MemClose( void )
 #endif
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
 {
     void        *p;
 
@@ -319,7 +317,7 @@ int main( void )
     rc = EXIT_FAILURE;
     MemOpen();
     cmd_len = _bgetcmd( NULL, 0 ) + 1;
-    cmd_line = MemAlloc( cmd_len );
+    cmd_line = MemAllocSafe( cmd_len );
     _bgetcmd( cmd_line, cmd_len );
     if( PMakeBuild( &pmake, cmd_line ) != NULL ) {
         if( pmake.want_help ) {

@@ -150,8 +150,8 @@ void CloseLog( void )
     }
 }
 
-TRMEMAPI( MemAlloc )
-void *MemAlloc( size_t size )
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( size_t size )
 {
     void        *p;
 
@@ -166,8 +166,8 @@ void *MemAlloc( size_t size )
     return( p );
 }
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *s )
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *s )
 {
     void        *p;
 

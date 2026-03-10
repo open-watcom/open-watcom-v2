@@ -139,7 +139,7 @@ static void AddCtlFile( const char *name )
             break;
         owner = &curr->next;
     }
-    curr = MemAlloc( sizeof( *curr ) );
+    curr = MemAllocSafe( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->name, name );
     *owner = curr;
@@ -249,7 +249,7 @@ static int parse_string( const char *env, char **args )
                 if( pos > 0 ) {
                     if( args != NULL ) {
                         parm_buff[pos] = '\0';
-                        args[argc] = MemStrdup( parm_buff );
+                        args[argc] = MemStrdupSafe( parm_buff );
                     }
                     ++argc;
                     pos = 0;
@@ -262,7 +262,7 @@ static int parse_string( const char *env, char **args )
             if( !quoted ) {
                 if( args != NULL ) {
                     parm_buff[pos] = '\0';
-                    args[argc] = MemStrdup( parm_buff );
+                    args[argc] = MemStrdupSafe( parm_buff );
                 }
                 ++argc;
                 pos = 0;
@@ -278,7 +278,7 @@ static int parse_string( const char *env, char **args )
     if( pos > 0 ) {
         if( args != NULL ) {
             parm_buff[pos] = '\0';
-            args[argc] = MemStrdup( parm_buff );
+            args[argc] = MemStrdupSafe( parm_buff );
         }
         ++argc;
     }
@@ -295,7 +295,7 @@ static bool ProcessEnv( bool opt_end )
     if( env != NULL ) {
         argc = parse_string( env, NULL );
         if( argc > 0 ) {
-            args = MemAlloc( ( argc + 1 ) * sizeof( char * ) );
+            args = MemAllocSafe( ( argc + 1 ) * sizeof( char * ) );
             argc = parse_string( env, args );
             args[argc] = NULL;
             opt_end = ProcessOptions( args, opt_end );
@@ -314,7 +314,7 @@ static void PushInclude( const char *name )
     pgroup2         pg;
     char            dir_name[_MAX_PATH];
 
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->prev = includeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;

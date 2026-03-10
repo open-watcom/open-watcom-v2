@@ -231,7 +231,7 @@ static copy_entry *add_copy_entry( copy_entry *list, char *src, char *dst )
 {
     copy_entry  entry;
 
-    entry = MemAlloc( sizeof( *entry ) );
+    entry = MemAllocSafe( sizeof( *entry ) );
     entry->next = NULL;
     strcpy( entry->src, src );
     strcpy( entry->dst, dst );
@@ -496,6 +496,7 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
     int         res;
     char        src[_MAX_PATH];
     char        dst[_MAX_PATH];
+    char        *copy_buff;
 
     cmd = GetPathOrFile( cmd, src );
     if( *src == '\0' ) {
@@ -506,7 +507,7 @@ static int ProcCopy( const char *cmd, bool test_abit, bool cond_copy, bool ignor
     res = BuildList( src, dst, test_abit, cond_copy, &list );
     if( res == 0
       && list != NULL ) {
-        char    *copy_buff = MemAlloc( COPY_BUFF_SIZE );
+        copy_buff = MemAllocSafe( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
             next = list->next;
             if( res == 0
@@ -716,7 +717,7 @@ static int DoRM( const char *f )
                  * build directory list
                  */
                 len += i + 1;
-                tmp = MemAlloc( offsetof( iolist, name ) + len );
+                tmp = MemAllocSafe( offsetof( iolist, name ) + len );
                 tmp->next = NULL;
                 if( dtail == NULL ) {
                     dhead = tmp;

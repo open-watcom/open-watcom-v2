@@ -257,7 +257,7 @@ static void InitQueue( const char *cwd )
     size_t      len;
 
     len = strlen( cwd );
-    qp = MemAlloc( sizeof( *qp ) + len );
+    qp = MemAllocSafe( sizeof( *qp ) + len );
     qp->next = NULL;
     qp->depth = 0;
     StringCopy( qp->name, cwd );
@@ -271,7 +271,7 @@ static void EnQueue( const char *path, depth_type depth )
     char        *p;
 
     if( QueueHead->depth < depth ) {
-        qp = MemAlloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
+        qp = MemAllocSafe( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
         p = StringCopy( qp->name, QueueHead->name );
@@ -434,7 +434,7 @@ static void TestDirectory( pmake_data *data, target_list *targets, bool verbose 
     priority = CheckTargets( targets, data->makefile );
     if( priority != NONE_PRIORITY && TrueTarget( targets ) ) {
         len = strlen( QueueHead->name );
-        new = MemAlloc( sizeof( *new ) + len );
+        new = MemAllocSafe( sizeof( *new ) + len );
         new->next = data->dir_list;
         data->dir_list = new;
         new->depth = QueueHead->depth;
@@ -572,11 +572,11 @@ static target_list *GetTargetItem( void )
         flags = TARGET_NOT_USED;
     }
     if( flags == TARGET_NOT_USED ) {
-        target = MemAlloc( sizeof( *target ) + len );
+        target = MemAllocSafe( sizeof( *target ) + len );
         StringCopyLen( target->string, arg, len );
         target->len = len;
     } else {
-        target = MemAlloc( sizeof( *target ) - 1 );
+        target = MemAllocSafe( sizeof( *target ) - 1 );
         target->len = 0;
     }
     target->flags = flags;
@@ -622,7 +622,7 @@ static void SortDirectories( pmake_data *data )
     char        buff[_MAX_PATH];
     int         i;
 
-    dir_array = MemAlloc( sizeof( *dir_array ) * NumDirectories );
+    dir_array = MemAllocSafe( sizeof( *dir_array ) * NumDirectories );
     i = 0;
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
@@ -689,7 +689,7 @@ static void DoIt( pmake_data *data )
                 return;
             }
             MemFree( data->makefile );
-            data->makefile = MemAlloc( len + 1 );
+            data->makefile = MemAllocSafe( len + 1 );
             StringCopyLen( data->makefile, arg, len );
             break;
         case 'i':
@@ -705,7 +705,7 @@ static void DoIt( pmake_data *data )
                 return;
             }
             MemFree( data->command );
-            data->command = MemAlloc( len + 1 );
+            data->command = MemAllocSafe( len + 1 );
             StringCopyLen( data->command, arg, len );
             break;
         case 'o':
@@ -729,25 +729,25 @@ static void DoIt( pmake_data *data )
         getTargets( &targets );
     }
     if( targets == NULL ) {
-        targets = MemAlloc( sizeof( *targets ) - 1 );
+        targets = MemAllocSafe( sizeof( *targets ) - 1 );
         targets->next = NULL;
         targets->flags = TARGET_ALL;
         targets->len = 0;
     }
     SKIP_SPACES( CmdLine );
-    data->cmd_args = MemAlloc( strlen( CmdLine ) + 1 );
+    data->cmd_args = MemAllocSafe( strlen( CmdLine ) + 1 );
     StringCopy( data->cmd_args, CmdLine );
     /* end of command line processing */
 
     /* setup default value if not defined on command line */
     if( data->makefile == NULL || *data->makefile == '\0' ) {
         MemFree( data->makefile );
-        data->makefile = MemAlloc( sizeof( DEFAULT_MAKE_FILE ) );
+        data->makefile = MemAllocSafe( sizeof( DEFAULT_MAKE_FILE ) );
         StringCopy( data->makefile, DEFAULT_MAKE_FILE );
     }
     if( data->command == NULL || *data->command == '\0' ) {
         MemFree( data->command );
-        data->command = MemAlloc( sizeof( DEFAULT_MAKE_CMD ) );
+        data->command = MemAllocSafe( sizeof( DEFAULT_MAKE_CMD ) );
         StringCopy( data->command, DEFAULT_MAKE_CMD );
     }
 

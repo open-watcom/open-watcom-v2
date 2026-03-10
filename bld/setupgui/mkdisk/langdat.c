@@ -101,7 +101,7 @@ static void AddToList( const char *name, ctl_file **owner )
             break;
         owner = &curr->next;
     }
-    curr = MemAlloc( sizeof( *curr ) );
+    curr = MemAllocSafe( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->name, name );
     *owner = curr;
@@ -230,7 +230,7 @@ static void PushInclude( const char *name )
     char        *dir;
     char        dir_name[_MAX_PATH];
 
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->prev = IncludeStk;
     new->skipping = 0;
     new->ifdefskipping = 0;
@@ -483,7 +483,7 @@ static bool ContainsWord( const char *str, ctl_file *word_list, bool and_op )
     bool        found;
 
     len = strlen( str ) + 1;
-    s_copy = MemAlloc( len + 1 ); // extra 1 byte is required for processing by First/NextWord
+    s_copy = MemAllocSafe( len + 1 ); // extra 1 byte is required for processing by First/NextWord
     memcpy( s_copy, str, len );
     for( p = FirstWord( s_copy ); p != NULL; p = NextWord( p ) ) {
         found = checkWord( p, word_list );
@@ -527,7 +527,7 @@ static char *item_def( const char *old, const char *new, const char *item )
         printf( "(in file %s line %d)\n", IncludeStk->name, IncludeStk->lineno );
         MemFree( (void *)old );
     }
-    return( MemStrdup( new ) );
+    return( MemStrdupSafe( new ) );
 }
 
 static char *item_redef( const char *old, const char *new )
@@ -535,7 +535,7 @@ static char *item_redef( const char *old, const char *new )
     if( old != NULL ) {
         MemFree( (void *)old );
     }
-    return( MemStrdup( new ) );
+    return( MemStrdupSafe( new ) );
 }
 
 static char *item_append( const char *old, const char *new )
@@ -546,15 +546,15 @@ static char *item_append( const char *old, const char *new )
         p = (char *)old;
     } else {
         if( old == NULL ) {
-            p = MemStrdup( new );
+            p = MemStrdupSafe( new );
         } else {
             if( *old == '\0' ) {
-                p = MemStrdup( new );
+                p = MemStrdupSafe( new );
             } else {
                 size_t  len;
 
                 len = strlen( old ) + strlen( new ) + 1 + 1;
-                p = MemAlloc( len );
+                p = MemAllocSafe( len );
                 strcpy( p, old );
                 strcat( p, " " );
                 strcat( p, new );
@@ -568,7 +568,7 @@ static char *item_append( const char *old, const char *new )
 #define FREE_ITEM(x) if( x != NULL && x != blank ) { MemFree( (void *)x ); } x = NULL
 
 #define DEFVAL(x)   ((x==NULL)?blank:x)
-#define DEFVALA(x)  ((x==NULL)?NULL:MemStrdup(x))
+#define DEFVALA(x)  ((x==NULL)?NULL:MemStrdupSafe(x))
 
 static void ProcessLine( const char *line )
 {
@@ -600,7 +600,7 @@ static void ProcessLine( const char *line )
     dstvar = DEFVAL( DefDstvar );
     keys = DEFVALA( DefKeys );
 
-    p = line_copy = MemStrdup( line );
+    p = line_copy = MemStrdupSafe( line );
     SKIP_BLANKS( p );
     cmd = strtok( p, "=" );
     do {
@@ -694,7 +694,7 @@ static void ProcessDefault( const char *line )
     FreeDefault();
 
     /* Process new defaults (if provided) */
-    p = line_copy = MemStrdup( line );
+    p = line_copy = MemStrdupSafe( line );
     SKIP_BLANKS( p );
     q = strtok( p, "]" );
     q += strlen( q ) - 1;
