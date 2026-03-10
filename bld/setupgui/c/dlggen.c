@@ -395,7 +395,7 @@ static void UpdateControlVisibility( gui_window *gui, a_dialog_header *dlg, bool
 
     GUIGetFocus( gui, &focus_id );
 
-    control_on_new_line = MemAlloc( sizeof( bool ) * dlg->num_controls );
+    control_on_new_line = MemAllocSafe( sizeof( bool ) * dlg->num_controls );
 
     // Figure out which controls are on a separate line from the last control
     control_on_new_line[0] = true;

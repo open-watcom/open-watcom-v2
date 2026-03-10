@@ -215,13 +215,13 @@ void MemFree( void *ptr )
  * Realloc functions
  */
 
-TRMEMAPI( MemRealloc )
-void *MemRealloc( void *ptr, size_t size )
-/****************************************/
+TRMEMAPI( MemReallocSafe )
+void *MemReallocSafe( void *ptr, size_t size )
+/********************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 5 ), TrHdl ) );
+    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 5 ), TrHdl ) ) );
 #else
-    return( realloc( ptr, size ) );
+    return( check_nomem( realloc( ptr, size ) ) );
 #endif
 }

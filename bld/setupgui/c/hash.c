@@ -64,9 +64,7 @@ hash_handle     HashInit( size_t size, hash_key_cmp func )
     assert( size != 0 );
     assert( func );
 
-    ht = MemAlloc( sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
-    if( !ht )
-        return( NULL );
+    ht = MemAllocSafe( sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
     memset( ht, 0, sizeof( hash_table ) + (sizeof( hash_element * ) * size) );
     ht->size = size;
     ht->cmp_func = func;
@@ -82,9 +80,7 @@ bool HashInsert( hash_handle ht, hash_key k, vhandle data )
     assert( ht );
     assert( k );
 
-    he = MemAlloc( sizeof( hash_element ) );
-    if( he == NULL )
-        return( false );
+    he = MemAllocSafe( sizeof( hash_element ) );
     i = hashKey( ht->size, k );
     he->data = data;
     he->key = MemStrdupSafe( k );

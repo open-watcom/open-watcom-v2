@@ -587,18 +587,11 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
      * allocate array to remember variables
      */
     if( num_xxx > 0 ) {
-        found_xxx = MemAlloc( num_xxx * sizeof( bool ) );
-        if( found_xxx == NULL ) {
-            return( false );
-        }
+        found_xxx = MemAllocSafe( num_xxx * sizeof( bool ) );
         memset( found_xxx, false, num_xxx * sizeof( bool ) );
     }
     if( num_env > 0 ) {
-        found_env = MemAlloc( num_env * sizeof( bool ) );
-        if( found_env == NULL ) {
-            MemFree( found_xxx );
-            return( false );
-        }
+        found_env = MemAllocSafe( num_env * sizeof( bool ) );
         memset( found_env, false, num_env * sizeof( bool ) );
     }
     while( fgets( envbuf, sizeof( envbuf ) - 1, fp1 ) != NULL ) {
@@ -1823,7 +1816,7 @@ bool ModifyConfiguration( bool uninstall )
         VbufInit( &changes );
         VbufInit( &temp_vbuf );
 
-        found = MemAlloc( num_env * sizeof( bool ) );
+        found = MemAllocSafe( num_env * sizeof( bool ) );
         memset( found, false, num_env * sizeof( bool ) );
         VbufConcStr( &temp_vbuf, GetVariableStrVal( "DstDir" ) );
         GetOldConfigFileDir( &changes, &temp_vbuf, uninstall );
@@ -2041,7 +2034,7 @@ bool GenerateBatchFile( bool uninstall )
 #endif
             num_env = SimNumEnvironment();
             if( num_env > 0 ) {
-                found_env = MemAlloc( num_env * sizeof( bool ) );
+                found_env = MemAllocSafe( num_env * sizeof( bool ) );
                 memset( found_env, false, num_env * sizeof( bool ) );
                 FinishEnvironmentLines( fp, num_env, found_env, true, NOECHO );
                 MemFree( found_env );

@@ -58,7 +58,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
 
     if( reqd >= vbuf->len ) {
         reqd = BUFFER_SIZE( reqd );
-        new_buffer = MemAlloc( reqd );
+        new_buffer = MemAllocSafe( reqd );
         memcpy( new_buffer, vbuf->buf, vbuf->used + 1 ); // +1 include '\0' terminator
         if( vbuf->len > 1 )
             MemFree( vbuf->buf );

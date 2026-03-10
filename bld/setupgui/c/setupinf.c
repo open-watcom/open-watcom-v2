@@ -365,7 +365,7 @@ static tree_node *TreeNode( tree_op op, tree_node *left, tree_node *right )
 {
     tree_node   *tree;
 
-    tree = MemAlloc( sizeof( tree_node ) );
+    tree = MemAllocSafe( sizeof( tree_node ) );
     tree->op = op;
     tree->left.u.node = left;
     tree->right = right;
@@ -940,10 +940,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
         return( NULL );
     }
 
-    big_buffer = MemAlloc( strlen( text ) * 2 + 1 );
-    if( big_buffer == NULL ) {
-        return( NULL );
-    }
+    big_buffer = MemAllocSafe( strlen( text ) * 2 + 1 );
     if( license_file ) {
         /*
          * restore paragraphs by removing single cr/crlf/lf
@@ -1061,11 +1058,9 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             afh = FileOpen( &file_name, DATA_BIN );
             if( afh != NULL ) {
                 FileStat( &file_name, &statbuf );
-                text = MemAlloc( statbuf.st_size + 1 );  /* +1 for terminating null */
-                if( text != NULL ) {
-                    FileRead( afh, text, statbuf.st_size );
-                    text[statbuf.st_size] = '\0';
-                }
+                text = MemAllocSafe( statbuf.st_size + 1 );  /* +1 for terminating null */
+                FileRead( afh, text, statbuf.st_size );
+                text[statbuf.st_size] = '\0';
                 FileClose( afh );
             }
             VbufFree( &file_name );
@@ -1914,10 +1909,7 @@ static bool ProcLine( char *line, pass_type pass )
             if( num_files == 0 ) {
                 FileInfo[num].files = NULL;
             } else {
-                FileInfo[num].files = MemAlloc( num_files * sizeof( a_file_info ) );
-                if( FileInfo[num].files == NULL ) {
-                    return( false );
-                }
+                FileInfo[num].files = MemAllocSafe( num_files * sizeof( a_file_info ) );
             }
             FileInfo[num].supplemental = false;
             FileInfo[num].core_component = false;
@@ -2098,10 +2090,7 @@ static bool ProcLine( char *line, pass_type pass )
           && stricmp( next, "supplemental" ) == 0 ) {
             TargetInfo[num].supplemental = true;
         }
-        TargetInfo[num].path = MemAlloc( _MAX_PATH );
-        if( TargetInfo[num].path == NULL ) {
-            return( false );
-        }
+        TargetInfo[num].path = MemAllocSafe( _MAX_PATH );
         TargetInfo[num].path[0] = '\0';
         TargetInfo[num].fsys = -1;
         break;
@@ -2324,10 +2313,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     size_t              bytes_read;
 
     bufsize = TEXTBUF_SIZE;
-    buffer = MemAlloc( bufsize );
-    if( buffer == NULL ) {
-        return( SIM_INIT_NOMEM );
-    }
+    buffer = MemAllocSafe( bufsize );
 
     LineCountPointer = &NoLineCount;
     old_cursor = GUISetMouseCursor( GUI_HOURGLASS_CURSOR );
@@ -2356,7 +2342,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
             bytes_read = len + bytes_read - ( p - readbuf );
             if( bufsize < bytes_read ) {
                 bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
-                buffer = MemRealloc( buffer, bufsize + 1 );
+                buffer = MemReallocSafe( buffer, bufsize + 1 );
             }
             strcpy( buffer + len, p );
             if( bytes_read == 0 )

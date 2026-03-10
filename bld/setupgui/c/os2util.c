@@ -292,7 +292,7 @@ static bool SetEAttr( const char *filename, const char *name, const char *val )
     plen = strlen( val );
     nlen = strlen( name );
     len = sizeof( FEA2LIST ) + nlen + plen + 4;
-    fet = MemAlloc( len );
+    fet = MemAllocSafe( len );
     fet->cbList = len;
     fet->list[0].oNextEntryOffset = sizeof( FEA2 ) + nlen + plen + 4;
     fet->list[0].fEA = 0;
@@ -307,7 +307,7 @@ static bool SetEAttr( const char *filename, const char *name, const char *val )
     memcpy( value, val, plen );
 
     len = sizeof( GEA2LIST ) + nlen ;
-    get = MemAlloc( len );
+    get = MemAllocSafe( len );
     get->cbList = len;
     get->list[0].oNextEntryOffset = sizeof( GEA2 ) + nlen;
     get->list[0].cbName = nlen;

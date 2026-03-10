@@ -1029,7 +1029,7 @@ bool CheckFsys( bool issue_message )
     if( !SimCalcTargetSpaceNeeded() )
         return( false );
     max_targets = SimNumTargets();
-    space = MemAlloc( max_targets * sizeof( *space ) );
+    space = MemAllocSafe( max_targets * sizeof( *space ) );
     ok = true;
     for( i = 0; i < max_targets; i++ ) {
         SimSetTargetMarked( i, false );
@@ -1463,7 +1463,7 @@ static void NewFileToCheck( const VBUF *name, bool is_dll )
 {
     file_check  *new;
 
-    new = MemAlloc( sizeof( *new ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->next = fileCheckThisPack;
     fileCheckThisPack = new;
     VbufInit( &new->name );
@@ -2028,7 +2028,7 @@ void DeleteObsoleteFiles( void )
         }
     }
     VbufInit( &temp_vbuf );
-    found = MemAlloc( sizeof( bool ) * group );
+    found = MemAllocSafe( sizeof( bool ) * group );
     memset( found, false, sizeof( bool ) * group );
     found_any = false;
     group = 0;
@@ -2265,7 +2265,7 @@ static void AddDefine( char *def )
     if( p != NULL ) {
         *p = '\0';
         ++p;
-        var = MemAlloc( sizeof( DEF_VAR ) );
+        var = MemAllocSafe( sizeof( DEF_VAR ) );
         var->variable = MemStrdupSafe( def );
         var->value = MemStrdupSafe( p );
         var->link = ExtraVariables;
