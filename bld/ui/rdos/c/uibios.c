@@ -72,7 +72,7 @@ bool intern initbios( void )
     UIData->height = height;
     UIData->width = width;
     size = UIData->width * UIData->height * sizeof( PIXEL );
-    bufptr = MemAlloc( size );
+    bufptr = MemAllocSafe( size );
     size /= sizeof( PIXEL );
     for( i = 0; i < size; i++ ) {
         bufptr[i].ch = ' ';

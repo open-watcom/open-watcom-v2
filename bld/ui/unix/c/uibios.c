@@ -65,7 +65,7 @@ char *GetTermType( void )
         if( p == NULL ) {
             p = "";
         }
-        UITermType = MemAlloc( strlen( p ) + 1 );
+        UITermType = MemAllocSafe( strlen( p ) + 1 );
         strcpy( UITermType, p );
     }
     return( UITermType );
@@ -79,7 +79,7 @@ void SetTermType( const char *new_term )
     if( new_term == NULL ) {
         new_term = "";
     }
-    UITermType = MemAlloc( strlen( new_term ) + 1 );
+    UITermType = MemAllocSafe( strlen( new_term ) + 1 );
     strcpy( UITermType, new_term );
 }
 

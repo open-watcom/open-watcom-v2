@@ -174,7 +174,7 @@ static tix_status init_tix_scanner( const char *termname, FILE **in_file )
     rc = TIX_OK;
     if( *termname != '\0' ) {
         len = strlen( termname ) + 5;
-        tix_name = MemAlloc( len );
+        tix_name = MemAllocSafe( len );
         strcpy( tix_name, termname );
         strcat( tix_name, ".tix" );
         fp = ti_fopen( tix_name );
