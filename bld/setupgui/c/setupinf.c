@@ -391,7 +391,7 @@ static tree_node *BuildExprTree( const char *str )
     /*
      * copy string so we can use STRTOK
      */
-    str2 = MemStrdup( str );
+    str2 = MemStrdupSafe( str );
     for( token = strtok( str2, " " ); token != NULL; token = strtok( NULL, " " ) ) {
         if( token[0] == '|' ) {         /* or together top 2 values */
             --stack_top;
@@ -418,7 +418,7 @@ static tree_node *BuildExprTree( const char *str )
                 stack_top = STACK_SIZE - 1;
             } else {
                 stack[stack_top] = TreeNodeUni( OP_EXIST );
-                stack[stack_top]->left.u.str = MemStrdup( token + 1 );
+                stack[stack_top]->left.u.str = MemStrdupSafe( token + 1 );
             }
         } else {                        /* push current value */
             ++stack_top;
@@ -897,7 +897,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         /*
          * dummy_var allows control to have an id
          *  - used by dynamic visibility feature
@@ -1027,7 +1027,7 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     *new_index = '\0';
 
     MemFree( text );
-    text = MemStrdup( big_buffer );
+    text = MemStrdupSafe( big_buffer );
     MemFree( big_buffer );
     return( text );
 }
@@ -1075,7 +1075,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
              */
             text = textwindow_wrap( text, parse_dlg, false, license_file );
         } else {
-            text = MemStrdup( line );
+            text = MemStrdupSafe( line );
             text = textwindow_wrap( text, parse_dlg, true, false );
         }
 
@@ -1087,7 +1087,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             /*
              * condition for visibility (dynamic)
              */
-            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
             /*
              * dummy_var allows control to have an id
              *  - used by dynamic visibility feature
@@ -1122,11 +1122,11 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdup( line );
+    vbl_name = MemStrdupSafe( line );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
     var_handle = AddVariable( vbl_name );
-    text = MemStrdup( line );
+    text = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1142,7 +1142,7 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         if( parse_dlg->max_width < len )
             parse_dlg->max_width = len;
         if( parse_dlg->max_width < 60 )
@@ -1190,7 +1190,7 @@ static bool dialog_pushbutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
     } else {
         rc = false;
     }
@@ -1216,7 +1216,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdup( line );
+    vbl_name = MemStrdupSafe( line );
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
@@ -1281,7 +1281,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         var_handle_2 = MakeDummyVar();
         SetVariableByHandle( var_handle_2, dialog_name );
         set_dlg_push_button( var_handle_2, button_text, parse_dlg->curr_dialog->controls,
@@ -1290,7 +1290,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdupSafe( line );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, VbufString( &buff ),
                       VarGetId( var_handle ), C0, parse_dlg->row_num, BW );
         if( VbufLen( &buff ) > 0 ) {
@@ -1298,7 +1298,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
             /*
              * condition for visibility (dynamic)
              */
-            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 2].pVisibilityConds = MemStrdup( line );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 2].pVisibilityConds = MemStrdupSafe( line );
             /*
              * dummy_var allows control to have an id
              *  - used by dynamic visibility feature
@@ -1334,7 +1334,7 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     button_text = TrimQuote( line );
     line = next; next = NextToken( line, ',' );
     dialog_name = line;
-    next_copy = MemStrdup( next );
+    next_copy = MemStrdupSafe( next );
     line = next; next = NextToken( line, ',' );
     text = line;
     line = next; next = NextToken( line, ',' );
@@ -1349,13 +1349,13 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         if( text != NULL ) {
             BumpDlgArrays( parse_dlg );
             /*
              * condition for visibility (dynamic)
              */
-            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdup( line );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdupSafe( line );
             parse_dlg->col_num = 1;
             dialog_static( next_copy, parse_dlg );
         }
@@ -1390,7 +1390,7 @@ static vhandle dialog_set_variable( DIALOG_PARSER_INFO *parse_dlg, const char *v
             }
         }
     }
-    parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = MemStrdup( init_cond );
+    parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = MemStrdupSafe( init_cond );
     parse_dlg->num_variables++;
     return( var_handle );
 }
@@ -1408,12 +1408,12 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdup( line );
+    vbl_name = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
-    init_cond = MemStrdup( line );
+    init_cond = MemStrdupSafe( line );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    text = MemStrdup( line );
+    text = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1424,7 +1424,7 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         set_dlg_radio( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                        parse_dlg->num_radio_buttons, text, VarGetId( var_handle ), C0, parse_dlg->row_num, len );
         if( parse_dlg->max_width < len ) {
@@ -1464,12 +1464,12 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         button_text = line;
     }
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdup( line );
+    vbl_name = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
-    init_cond = MemStrdup( line );
+    init_cond = MemStrdupSafe( line );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    text = MemStrdup( line );
+    text = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1483,7 +1483,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         set_dlg_check( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1, text,
                        VarGetId( var_handle ), parse_dlg->col_num, parse_dlg->row_num, len );
         if( parse_dlg->col_num == C0 ) {
@@ -1505,7 +1505,7 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         }
         if( detail_button ) {
             BumpDlgArrays( parse_dlg );
-            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdup( line );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdupSafe( line );
             set_dlg_push_button( dlg_var_handle, button_text, parse_dlg->curr_dialog->controls,
                                  parse_dlg->controls_array.num - 1, parse_dlg->row_num, 4, 4, W, BW );
         }
@@ -1541,7 +1541,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdup( line );
+    vbl_name = MemStrdupSafe( line );
     var_handle = AddVariable( vbl_name );
     line = next; next = NextToken( line, ',' );
     val = NULL;
@@ -1600,7 +1600,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         /*
          * condition for visibility (dynamic)
          */
-        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdup( line );
+        parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls].pVisibilityConds = MemStrdupSafe( line );
         set_dlg_edit( parse_dlg->curr_dialog->controls, parse_dlg->controls_array.num - 1,
                       VbufString( &buff ), VarGetId( var_handle ), C0, parse_dlg->row_num, W );
         if( VbufLen( &buff ) > 0 ) {
@@ -1608,7 +1608,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
             /*
              * condition for visibility (dynamic)
              */
-            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdup( line );
+            parse_dlg->curr_dialog->controls_ext[parse_dlg->curr_dialog->num_controls + 1].pVisibilityConds = MemStrdupSafe( line );
             /*
              * dummy_var allows control to have an id
              *  - used by dynamic visibility feature
@@ -1642,9 +1642,9 @@ static void GrabConfigInfo( char *line, array_info *info )
         return;
     array = *(info->array);
     next = NextToken( line, '=' );
-    array[num].var = MemStrdup( line );
+    array[num].var = MemStrdupSafe( line );
     line = next; next = NextToken( line, ',' );
-    array[num].value = MemStrdup( line );
+    array[num].value = MemStrdupSafe( line );
     array[num].condition = CompileCondition( next );
 }
 
@@ -1764,7 +1764,7 @@ static bool ProcLine( char *line, pass_type pass )
             } else if( stricmp( line, "condition" ) == 0 ) {
                 parse_dlg.curr_dialog->condition = CompileCondition( next );
             } else if( stricmp( line, "title" ) == 0 ) {
-                parse_dlg.curr_dialog->title = MemStrdup( next );
+                parse_dlg.curr_dialog->title = MemStrdupSafe( next );
             } else if( stricmp( line, "any_check" ) == 0 ) {
                 parse_dlg.curr_dialog->any_check = AddVariable( next );
             } else if( stricmp( line, "width" ) == 0 ) {
@@ -1779,7 +1779,7 @@ static bool ProcLine( char *line, pass_type pass )
                 if( !EvalCondition( next ) ) {
                     line = NULL;
                 }
-                parse_dlg.curr_dialog->controls_ext[parse_dlg.curr_dialog->num_controls - 1].pVisibilityConds = MemStrdup( line );
+                parse_dlg.curr_dialog->controls_ext[parse_dlg.curr_dialog->num_controls - 1].pVisibilityConds = MemStrdupSafe( line );
             } else {
                 /*
                  * add another control to current dialog
@@ -1849,7 +1849,7 @@ static bool ProcLine( char *line, pass_type pass )
                 MemFree( SetupInfo.pm_group_file );
                 SetupInfo.pm_group_file = NULL;
             }
-            SetupInfo.pm_group_file = MemStrdup( line );
+            SetupInfo.pm_group_file = MemStrdupSafe( line );
             line = next; next = NextToken( line, ',' );
             if( SetupInfo.pm_group_name != NULL ) {
                 MemFree( SetupInfo.pm_group_name );
@@ -1857,18 +1857,18 @@ static bool ProcLine( char *line, pass_type pass )
             }
             VbufInit( &buff );
             ReplaceVars( &buff, line );
-            SetupInfo.pm_group_name = MemStrdup( VbufString( &buff ) );
+            SetupInfo.pm_group_name = MemStrdupSafe( VbufString( &buff ) );
             VbufFree( &buff );
             num = SetupInfo.all_pm_groups.num;
             if( !BumpArray( &SetupInfo.all_pm_groups ) )
                 return( false );
-            AllPMGroups[num].group_name = MemStrdup( SetupInfo.pm_group_name );
-            AllPMGroups[num].group_file = MemStrdup( SetupInfo.pm_group_file );
+            AllPMGroups[num].group_name = MemStrdupSafe( SetupInfo.pm_group_name );
+            AllPMGroups[num].group_file = MemStrdupSafe( SetupInfo.pm_group_file );
             if( SetupInfo.pm_group_iconfile != NULL ) {
                 MemFree( SetupInfo.pm_group_iconfile );
                 SetupInfo.pm_group_iconfile = NULL;
             }
-            SetupInfo.pm_group_iconfile = MemStrdup( next );
+            SetupInfo.pm_group_iconfile = MemStrdupSafe( next );
         } else {
             /*
              * system variables start with '$'
@@ -1885,7 +1885,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.dirs ) )
             return( false );
         next = NextToken( line, ',' );
-        DirInfo[num].desc = MemStrdup( line );
+        DirInfo[num].desc = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
         DirInfo[num].target = atoi( line ) - 1;
         DirInfo[num].parent = atoi( next );
@@ -1904,7 +1904,7 @@ static bool ProcLine( char *line, pass_type pass )
             if( !BumpArray( &SetupInfo.files ) )
                 return( false );
             next = NextToken( line, ',' );
-            FileInfo[num].filename = MemStrdup( line );
+            FileInfo[num].filename = MemStrdupSafe( line );
             line = next; next = NextToken( line, ',' );
             /*
              * Multiple files in archive. First number is number of files,
@@ -2006,7 +2006,7 @@ static bool ProcLine( char *line, pass_type pass )
             SpawnInfo[num].when = WHEN_BEFORE;
         }
         line = next; next = NextToken( line, ',' );
-        SpawnInfo[num].command = MemStrdup( line );
+        SpawnInfo[num].command = MemStrdupSafe( line );
         SpawnInfo[num].condition = CompileCondition( next );
         break;
     case RS_DELETEFILES:
@@ -2022,7 +2022,7 @@ static bool ProcLine( char *line, pass_type pass )
             DeleteInfo[num].type = DELETE_DIR;
         }
         line = next; next = NextToken( line, ',' );
-        DeleteInfo[num].name = MemStrdup( line );
+        DeleteInfo[num].name = MemStrdupSafe( line );
         break;
     case RS_PMINFO:
         num = SetupInfo.pm_files.num;
@@ -2032,20 +2032,20 @@ static bool ProcLine( char *line, pass_type pass )
         PMInfo[num].group = ( strcmp( line, "GROUP" ) == 0 );
         PMInfo[num].shadow = ( line[0] == '+' );
         if( PMInfo[num].shadow ) {
-            PMInfo[num].filename = MemStrdup( line + 1 );
+            PMInfo[num].filename = MemStrdupSafe( line + 1 );
         } else {
-            PMInfo[num].filename = MemStrdup( line );
+            PMInfo[num].filename = MemStrdupSafe( line );
         }
         line = next; next = NextToken( line, ',' );
-        PMInfo[num].parameters = MemStrdup( line );
+        PMInfo[num].parameters = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
         VbufInit( &buff );
         ReplaceVars( &buff, line );
-        PMInfo[num].desc = MemStrdup( VbufString( &buff ) );
+        PMInfo[num].desc = MemStrdupSafe( VbufString( &buff ) );
         VbufFree( &buff );
         if( PMInfo[num].group ) {
-            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = MemStrdup( PMInfo[num].desc );
-            AllPMGroups[SetupInfo.all_pm_groups.num].group_file = MemStrdup( PMInfo[num].parameters );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_name = MemStrdupSafe( PMInfo[num].desc );
+            AllPMGroups[SetupInfo.all_pm_groups.num].group_file = MemStrdupSafe( PMInfo[num].parameters );
             if( !BumpArray( &SetupInfo.all_pm_groups ) ) {
                 return( false );
             }
@@ -2054,7 +2054,7 @@ static bool ProcLine( char *line, pass_type pass )
         PMInfo[num].iconindex = 0;
         if( next != NULL ) {
             line = next; next = NextToken( line, ',' );
-            PMInfo[num].iconfile = MemStrdup( line );
+            PMInfo[num].iconfile = MemStrdupSafe( line );
             if( next != NULL ) {
                 line = next; next = NextToken( line, ',' );
                 PMInfo[num].iconindex = atoi( line );
@@ -2067,15 +2067,15 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.profile ) )
             return( false );
         next = NextToken( line, ',' );
-        ProfileInfo[num].app_name = MemStrdup( line );
+        ProfileInfo[num].app_name = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        ProfileInfo[num].key_name = MemStrdup( line );
+        ProfileInfo[num].key_name = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        ProfileInfo[num].value = MemStrdup( line );
+        ProfileInfo[num].value = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        ProfileInfo[num].file_name = MemStrdup( line );
+        ProfileInfo[num].file_name = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        ProfileInfo[num].hive_name = MemStrdup( line );
+        ProfileInfo[num].hive_name = MemStrdupSafe( line );
         ProfileInfo[num].condition = CompileCondition( next );
         break;
     case RS_AUTOEXEC:
@@ -2092,7 +2092,7 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.target ) )
             return( false );
         next = NextToken( line, ',' );
-        TargetInfo[num].name = MemStrdup( line );
+        TargetInfo[num].name = MemStrdupSafe( line );
         TargetInfo[num].supplemental = false;
         if( next != NULL
           && stricmp( next, "supplemental" ) == 0 ) {
@@ -2110,29 +2110,29 @@ static bool ProcLine( char *line, pass_type pass )
         if( !BumpArray( &SetupInfo.label ) )
             return( false );
         next = NextToken( line, '=' );
-        LabelInfo[num].dir = MemStrdup( line );
-        LabelInfo[num].label = MemStrdup( next );
+        LabelInfo[num].dir = MemStrdupSafe( line );
+        LabelInfo[num].label = MemStrdupSafe( next );
         break;
     case RS_FORCEDLLINSTALL:
         num = SetupInfo.force_DLL_install.num;
         if( !BumpArray( &SetupInfo.force_DLL_install ) )
             return( false );
-        ForceDLLInstall[num].name = MemStrdup( line );
+        ForceDLLInstall[num].name = MemStrdupSafe( line );
         break;
     case RS_ASSOCIATIONS:
         num = SetupInfo.associations.num;
         if( !BumpArray( &SetupInfo.associations ) )
             return( false );
         next = NextToken( line, '=' );
-        AssociationInfo[num].ext = MemStrdup( line );
+        AssociationInfo[num].ext = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].keyname = MemStrdup( line );
+        AssociationInfo[num].keyname = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].description = MemStrdup( line );
+        AssociationInfo[num].description = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].program = MemStrdup( line );
+        AssociationInfo[num].program = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
-        AssociationInfo[num].iconfile = MemStrdup( line );
+        AssociationInfo[num].iconfile = MemStrdupSafe( line );
         line = next; next = NextToken( line, ',' );
         AssociationInfo[num].iconindex = strtol( line, NULL, 10 );
         AssociationInfo[num].condition = CompileCondition( next );
@@ -3887,7 +3887,7 @@ static char *CompileCondition( const char *str )
     /*
      * copy string so we can use STRTOK
      */
-    str2 = MemStrdup( str );
+    str2 = MemStrdupSafe( str );
     for( token = strtok( str2, " " ); token != NULL; token = strtok( NULL, " " ) ) {
         switch( token[0] ) {
         case '|':
@@ -3904,7 +3904,7 @@ static char *CompileCondition( const char *str )
         }
     }
     MemFree( str2 );
-    return( MemStrdup( buff ) );
+    return( MemStrdupSafe( buff ) );
 }
 
 vhandle MakeDummyVar( void )

@@ -96,7 +96,7 @@ void InitVarsList( void )
 void VarSetAutoSetCond( vhandle var_handle, const char *cond )
 /************************************************************/
 {
-    Vars.list[var_handle].autoset = MemStrdup( cond );
+    Vars.list[var_handle].autoset = MemStrdupSafe( cond );
 }
 
 
@@ -240,7 +240,7 @@ static vhandle NewVariable( const char *vbl_name )
     var_handle = Vars.array.num;
     BumpArray( &Vars.array );
     tmp_variable = &Vars.list[var_handle];
-    tmp_variable->name = MemStrdup( vbl_name );
+    tmp_variable->name = MemStrdupSafe( vbl_name );
     tmp_variable->has_value = false;
     tmp_variable->autoset = NULL;
     tmp_variable->restriction = 0;
@@ -286,7 +286,7 @@ static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char
         var_handle = NewVariable( vbl_name );
     }
     tmp_variable = &Vars.list[var_handle];
-    tmp_variable->strval = MemStrdup( strval );
+    tmp_variable->strval = MemStrdupSafe( strval );
     tmp_variable->has_value = true;
     if( tmp_variable->hook ) {
         tmp_variable->hook( var_handle );

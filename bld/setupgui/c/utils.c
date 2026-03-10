@@ -610,7 +610,7 @@ static int AddFsysInfo( int target )
     }
     BumpArray( &FsysArray );
     ResetFsysInfoData( &FsysInfo[i] );
-    FsysInfo[i].root = MemStrdup( p );
+    FsysInfo[i].root = MemStrdupSafe( p );
     VbufFree( &root );
     SimSetTargetFsys( target, i );
     return( i );
@@ -2266,8 +2266,8 @@ static void AddDefine( char *def )
         *p = '\0';
         ++p;
         var = MemAlloc( sizeof( DEF_VAR ) );
-        var->variable = MemStrdup( def );
-        var->value = MemStrdup( p );
+        var->variable = MemStrdupSafe( def );
+        var->value = MemStrdupSafe( p );
         var->link = ExtraVariables;
         ExtraVariables = var;
     }
@@ -2421,7 +2421,7 @@ bool GetDirParams( int argc, char **argv, VBUF *inf_name, VBUF *src_path, VBUF *
                   && argv[i][3] != '\0'
                   && access( &argv[i][3], R_OK ) == 0 ) {
                     MemFree( VariablesFile );
-                    VariablesFile = MemStrdup( &argv[i][3] );
+                    VariablesFile = MemStrdupSafe( &argv[i][3] );
                 }
                 break;
             case 'd':
