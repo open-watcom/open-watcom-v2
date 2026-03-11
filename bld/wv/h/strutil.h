@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,4 +38,3 @@ extern char *StrTrim( char *str );
 extern char *FmtStr( char *buff, const char *fmt, va_list args );
 extern char *Format( char *buff, const char *fmt, ... );
 extern char *DupStr( const char * );
-extern char *DupStrLen( char const *str, size_t len );

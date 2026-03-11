@@ -1101,7 +1101,7 @@ void SetPointAddr( brkp *bp, address addr )
         bp->mod_name = DupStr( TxtBuff );
         if( image->image_name[0] != NULLCHAR ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
-            bp->image_name = DupStrLen( start, ExtPointer( start, OP_REMOTE ) - start );
+            bp->image_name = MemToStringSafe( start, ExtPointer( start, OP_REMOTE ) - start );
         } else {
             bp->image_name = NULL;
         }
@@ -1440,7 +1440,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             mapaddress = true;
             ScanItem( true, &start, &len );
             MemFree( image_name );
-            image_name = DupStrLen( start, len );
+            image_name = MemToStringSafe( start, len );
             loc = NilAddr;
             loc.mach.segment = ReqLongExpr();
             loc.mach.offset = ReqLongExpr();
@@ -1450,13 +1450,13 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             symaddress = true;
             ScanItem( true, &start, &len );
             MemFree( image_name );
-            image_name = DupStrLen( start, len );
+            image_name = MemToStringSafe( start, len );
             ScanItem( true, &start, &len );
             MemFree( mod_name );
-            mod_name = DupStrLen( start, len );
+            mod_name = MemToStringSafe( start, len );
             ScanItem( true, &start, &len );
             MemFree( sym_name );
-            sym_name = DupStrLen( start, len );
+            sym_name = MemToStringSafe( start, len );
             cue_diff = ReqLongExpr();
             addr_diff = ReqLongExpr();
             loc = NilAddr;
@@ -1489,7 +1489,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle mth )
             cmds = AllocCmdList( start, len );
         if( ScanQuote( &start, &len ) ) {
             if( len != 0 )
-                condition = DupStrLen( start, len );
+                condition = MemToStringSafe( start, len );
             if( !ScanEOC() ) {
                 countdown = ReqExpr();
             }
