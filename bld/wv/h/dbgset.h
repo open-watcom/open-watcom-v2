@@ -31,16 +31,17 @@
 ****************************************************************************/
 
 
-extern bool SwitchOnOff( void );
-extern void ShowSwitch( bool on );
-extern void ProcSet( void );
-extern bool LangSetInit( void );
-extern void LangSetFini( void );
-extern void NewLang( const char *lang );
-extern void PendingToggles( void );
-extern void SupportFini( void );
-extern bool IsSupportRoutine( sym_handle *sym );
-extern void ConfigDisp( void );
-extern void ConfigFont( void );
-extern void ConfigPaint( void );
-extern void ConfigSet( void );
+extern bool         SwitchOnOff( void );
+extern void         ShowSwitch( bool on );
+extern void         ProcSet( void );
+extern bool         LangSetInit( void );
+extern void         LangSetFini( void );
+extern const char   *GetLanguage( void );
+extern void         NewLang( const char *lang, size_t len );
+extern void         PendingToggles( void );
+extern void         SupportFini( void );
+extern bool         IsSupportRoutine( sym_handle *sym );
+extern void         ConfigDisp( void );
+extern void         ConfigFont( void );
+extern void         ConfigPaint( void );
+extern void         ConfigSet( void );

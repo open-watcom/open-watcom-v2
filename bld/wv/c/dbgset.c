@@ -87,7 +87,7 @@ typedef enum {
     MWT_LAST
 } mad_window_toggles;
 
-char    *Language = NULL;
+static char         *Language = NULL;
 
 static pending_toggle_list *PendToggleList[MWT_LAST];
 
@@ -286,20 +286,23 @@ void LangSetFini( void )
 }
 
 
-
+const char *GetLanguage( void )
+{
+    return( Language );
+}
 
 /*
  * NewLang -- load a new expression language, if different from current one
  */
 
-void NewLang( const char *lang )
+void NewLang( const char *lang, size_t len )
 {
     char       *new_lang;
-    size_t     len;
 
     if( lang == NULL )
         return;
-    len = strlen( lang );
+    if( len == 0 )
+        len = strlen( lang );
     new_lang = MemAllocSafe( len + 1 );
     memcpy( new_lang, lang, len );
     new_lang[len] = NULLCHAR;
@@ -324,7 +327,7 @@ static void LangSet( void )
 
     ScanItem( true, &start, &len );
     ReqEOC();
-    NewLang( start );
+    NewLang( start, len );
 }
 
 static void LangConf( void )

@@ -55,8 +55,6 @@
 #include "dbgdot.h"
 
 
-extern char             *Language;
-
 dig_type_size DefaultSize( default_kind dk )
 {
     dig_type_info       ti;
@@ -466,7 +464,7 @@ void PopInpStack( void )
         StrCopyDst( old->lang, buff );
         MemFree( old->lang );
         old->lang = NULL; /* in case NewLang gets an error */
-        NewLang( buff );
+        NewLang( buff, 0 );
     }
     old->rtn( old->handle, INP_RTN_FINI );
     ReScan( old->scan );
@@ -490,7 +488,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     if( save_lang ) {
-        lang = DupStr( Language );
+        lang = DupStr( GetLanguage() );
         if( lang == NULL ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
         }
