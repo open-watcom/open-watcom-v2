@@ -2215,7 +2215,7 @@ static bool GetFileInfo( int dir_index, int i, bool in_old_dir, bool *pzeroed )
                 }
                 PropagateValue( FileInfo[i].condition.p->cond, true );
                 if( file->in_new_dir
-                  && __ROUND_UP_SIZE_INF( file->disk_size ) == file->size
+                  && __ROUND_UP_SIZE_INFBLK( file->disk_size ) == file->size
                   && file->date == file->disk_date ) {
                     FileInfo[i].condition.p->one_uptodate = true;
                 }
@@ -2794,7 +2794,7 @@ bool SimFileUpToDate( int parm )
             return( true );
         if( info->files[i].date > info->files[i].disk_date )
             return( false );
-        if( __ROUND_UP_SIZE_INF( info->files[i].disk_size ) != info->files[i].size )
+        if( __ROUND_UP_SIZE_INFBLK( info->files[i].disk_size ) != info->files[i].size )
             return( false );
     }
     return( true );

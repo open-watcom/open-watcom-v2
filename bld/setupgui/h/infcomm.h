@@ -31,9 +31,9 @@
 ****************************************************************************/
 
 
-#define INF_BLOCK_SIZE  (_1K / 2)   // installer uses sector size
+#define INFBLK_SIZE  (_1K / 2)   // installer uses sector size
 
-#define __ROUND_UP_SIZE_INF(x)  __ROUND_UP_SIZE((x), INF_BLOCK_SIZE)
+#define __ROUND_UP_SIZE_INFBLK(x)   __ROUND_UP_SIZE((x), INFBLK_SIZE)
 
-#define INFBLK2SIZE(x)  ((x) * INF_BLOCK_SIZE)
-#define SIZE2INFBLK(x)  ((x) / INF_BLOCK_SIZE)
+#define INFBLK2SIZE(x)  ((x) * INFBLK_SIZE)
+#define SIZE2INFBLK(x)  ((x) / INFBLK_SIZE)

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,6 +48,7 @@
 #include "iopath.h"
 #include "wreslang.h"
 #include "cvttable.h"
+#include "roundmac.h"
 #include "infcomm.h"
 
 #include "clibext.h"
@@ -327,7 +328,7 @@ static unsigned FileSize( const char *file )
         printf( "Can't find '%s'\n", file );
         return( 0 );
     } else {
-        return( __ROUND_UP_SIZE_INF( stat_buf.st_size ) );
+        return( __ROUND_UP_SIZE_INFBLK( stat_buf.st_size ) );
     }
 }
 
@@ -677,7 +678,7 @@ bool AddFile( char *path, char *old_path, char type, char redist, char *file, co
     printf( "\r%s                              \r", file );
     fflush( stdout );
 #endif
-    act_size = __ROUND_UP_SIZE_INF( act_size );
+    act_size = __ROUND_UP_SIZE_INFBLK( act_size );
 
     // strip target off front of path
     if( *path == '%' ) {
