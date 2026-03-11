@@ -154,7 +154,9 @@ static int error( dbg_err_flags flg, const char *fmt, va_list args )
  */
 
 void Error( dbg_err_flags flg, const char *fmt, ... )
-/* this function never return to the caller */
+/****************************************************
+ * this function never return to the caller
+ */
 {
     va_list args;
 
@@ -170,16 +172,24 @@ void Error( dbg_err_flags flg, const char *fmt, ... )
  */
 
 void ErrorRet( dbg_err_flags flg, const char *fmt, ... )
-/* this function return to the caller */
+/*******************************************************
+ * this function return to the caller
+ */
 {
     va_list args;
     int     rc;
+    bool    ret_off;
 
-    _SwitchOn( SW_ERROR_RETURNS );
+    ret_off = _IsOff( SW_ERROR_RETURNS );
+    if( ret_off ) {
+        _SwitchOn( SW_ERROR_RETURNS );
+    }
     va_start( args, fmt );
     rc = error( flg, fmt, args );
     va_end( args );
-    _SwitchOff( SW_ERROR_RETURNS );
+    if( ret_off ) {
+        _SwitchOff( SW_ERROR_RETURNS );
+    }
     if( rc ) {
         DUIArrowCursor();
         Suicide();

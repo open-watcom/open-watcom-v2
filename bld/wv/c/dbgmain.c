@@ -160,6 +160,7 @@ void DebugInit( void )
     InitSource();
     InitDLLList();
     DUIInit();
+    _SwitchOff( SW_ERROR_STARTUP );
     InitHook();
     VarDisplayInit();
 }

@@ -228,7 +228,6 @@ int main( int argc, char **argv )
     _bgetcmd( cmd_line, sizeof( cmd_line ) );
     CmdData = cmd_line;
     DebugMain();
-    _SwitchOff( SW_ERROR_STARTUP );
     DoInput();
     VarInitInfo( &Locals );
     Requestsem = CreateSemaphore( NULL, 0, 1, NULL );

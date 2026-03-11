@@ -352,7 +352,6 @@ int main( int argc, char **argv )
     _bgetcmd( cmd_line, sizeof( cmd_line ) );
     CmdData = cmd_line;
     DebugMain();
-    _SwitchOff( SW_ERROR_STARTUP );
     DoInput();
     VarInitInfo( &Locals );
     DosCreateEventSem( NULL, &Requestsem, 0, false );
