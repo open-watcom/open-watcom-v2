@@ -269,13 +269,8 @@ static void RecursionConf( void )
 
 bool LangSetInit( void )
 {
-    static char InitialLang[] = { FE_LANG_CPP };
-
     LangInit();
-    Language = MemAlloc( sizeof( InitialLang ) + 1 );
-    if( Language == NULL )
-        return( false );
-    StrCopyDst( InitialLang, Language );
+    Language = MemStrdupSafe( FE_LANG_CPP );
     return( LangLoad( Language ) );
 }
 
@@ -285,8 +280,7 @@ void LangSetFini( void )
     LangFini();
 }
 
-
-const char *GetLanguage( void )
+const char  *GetLanguage( void )
 {
     return( Language );
 }
