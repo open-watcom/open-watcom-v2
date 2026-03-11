@@ -62,7 +62,7 @@ void ModComplete( gui_window *gui, gui_ctl_id id )
     char        *savebuff;
 
     match = DlgGetMatchString( gui, id, &matchoff );
-    savebuff = DupStr( TxtBuff );
+    savebuff = MemStrdupSafe( TxtBuff );
     ModListInit( &list, *match == NULLCHAR ? NULL : match );
     ModListAddModules( &list, NO_MOD, false );
     switch( ModListNumRows( &list ) ) {

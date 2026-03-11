@@ -147,7 +147,7 @@ void    ModListInit( module_list *list, const char *prefix )
     list->sort = NULL;
     list->prefix = NULL;
     if( prefix != NULL ) {
-        list->prefix = DupStr( prefix );
+        list->prefix = MemStrdupSafe( prefix );
         list->pref_len = strlen( prefix );
     }
 }

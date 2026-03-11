@@ -1045,7 +1045,7 @@ char *CopySourceLine( cue_handle *cueh )
         return( NULL );
     for( p = TxtBuff; *p == ' '; ++p )
         {}
-    source_line = DupStr( p );
+    source_line = MemStrdupSafe( p );
     return( source_line );
 }
 
@@ -1098,7 +1098,7 @@ void SetPointAddr( brkp *bp, address addr )
         if( image == NULL )
             return;
         DIPModName( mod, TxtBuff, TXT_LEN );
-        bp->mod_name = DupStr( TxtBuff );
+        bp->mod_name = MemStrdupSafe( TxtBuff );
         if( image->image_name[0] != NULLCHAR ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
             bp->image_name = MemToStringSafe( start, ExtPointer( start, OP_REMOTE ) - start );
@@ -1109,12 +1109,12 @@ void SetPointAddr( brkp *bp, address addr )
         case SR_EXACT:
             bp->source_line = CopySourceLine( cueh );
             Format( TxtBuff, "%d", DIPCueLine( cueh ) );
-            bp->sym_name = DupStr( TxtBuff );
+            bp->sym_name = MemStrdupSafe( TxtBuff );
             ok = GetBPSymAddr( bp, &addr );
             break;
         case SR_CLOSEST:
             Format( TxtBuff, "%d", DIPCueLine( cueh ) );
-            bp->sym_name = DupStr( TxtBuff );
+            bp->sym_name = MemStrdupSafe( TxtBuff );
             bp->addr_diff = addr.mach.offset - DIPCueAddr( cueh ).mach.offset;
             ok = GetBPSymAddr( bp, &addr );
             break;
@@ -1331,7 +1331,7 @@ void SetBPCondition( brkp *bp, const char *condition )
     if( condition == NULL || condition[0] == NULLCHAR ) {
         bp->condition = NULL;
     } else {
-        bp->condition = DupStr( condition );
+        bp->condition = MemStrdupSafe( condition );
     }
     bp->status.b.use_condition = ( bp->condition != NULL );
 }
@@ -1564,7 +1564,7 @@ bool BreakWrite( address addr, mad_type_handle mth, const char *comment )
             bp = AddPoint( addr, mth, false );
             if( bp == NULL )
                 return( true );
-            bp->source_line = DupStr( comment );
+            bp->source_line = MemStrdupSafe( comment );
             RecordBreakEvent( bp, B_SET );
             return( true );
         }
@@ -1790,7 +1790,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                 }
             } else {
                 bp->status.b.expr_error = true;
-                bp->error = DupStr( TxtBuff );
+                bp->error = MemStrdupSafe( TxtBuff );
                 hit = true;
             }
             _SwitchOff( SW_ERR_IN_TXTBUFF );

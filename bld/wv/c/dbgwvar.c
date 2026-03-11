@@ -549,7 +549,7 @@ static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
         break;
     case MENU_VAR_INSPECT:
         VarBuildName( &var->i, v, false );
-        name = DupStr( TxtBuff );
+        name = MemStrdupSafe( TxtBuff );
         WndInspectExprSP( name );
         MemFree( name );
         break;

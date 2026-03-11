@@ -536,7 +536,7 @@ static void MemNewBackout( a_window wnd )
     backout->total_size = mem->total_size;
     backout->has_current = WndHasCurrent( wnd );
     if( mem->u.m.follow ) {
-        backout->follow = DupStr( mem->u.m.follow );
+        backout->follow = MemStrdupSafe( mem->u.m.follow );
     } else {
         backout->follow = NULL;
     }
@@ -595,7 +595,7 @@ static void DoFollow( a_window wnd, char *fmt )
     MemNewBackout( wnd );
     MemFree( mem->u.m.follow );
     Format( TxtBuff, fmt, AddrDiff( mem->u.m.addr, mem->u.m.home ) + MemCurrOffset( wnd ) );
-    mem->u.m.follow = DupStr( TxtBuff );
+    mem->u.m.follow = MemStrdupSafe( TxtBuff );
     MemFollow( wnd );
 }
 
@@ -921,8 +921,8 @@ void InitMemWindow( void )
     for( i = 0; i < MemData.num_types; ++i ) {
         MemTypeMenu[i].id = MENU_MEMORY_FIRST_TYPE + i;
         MemTypeMenu[i].style = GUI_STYLE_MENU_ENABLED | WND_MENU_ALLOCATED;
-        MemTypeMenu[i].label = DupStr( MemData.labels[i] );
-        MemTypeMenu[i].hinttext = DupStr( LIT_ENG( Empty ) );
+        MemTypeMenu[i].label = MemStrdupSafe( MemData.labels[i] );
+        MemTypeMenu[i].hinttext = MemStrdupSafe( LIT_ENG( Empty ) );
         MemTypeMenu[i].child = NoMenu;
     }
     for( i = 0; i < ArraySize( MemMenu ); ++i ) {

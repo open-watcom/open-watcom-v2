@@ -54,7 +54,7 @@ static walk_result MadMemTypeWalk( mad_type_handle mth, void *d )
         i = data->num_types;
         MADTypeInfo( mth, &mti );
         MADCli( String )( MADTypeName( mth ), TxtBuff, TXT_LEN );
-        data->labels[i] = DupStr( TxtBuff );
+        data->labels[i] = MemStrdupSafe( TxtBuff );
         data->info[i].mth = mth;
         data->info[i].item_width = GetMADMaxFormatWidth( mth );
         data->info[i].item_size = BITS2BYTES( mti.b.bits );

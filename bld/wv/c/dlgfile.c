@@ -114,7 +114,7 @@ static void SetLast( char **what, const char *to )
     MemFree( *what );
     if( to == NULL )
         to = LIT_ENG( Empty );
-    *what = DupStr( to );
+    *what = MemStrdupSafe( to );
 }
 
 void SetLastExe( const char *to )
@@ -180,7 +180,7 @@ static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags
     }
     rc = DlgFileBrowse( title, filter, TxtBuff, TXT_LEN, flags );
     MemFree( *last );
-    *last = DupStr( TxtBuff );
+    *last = MemStrdupSafe( TxtBuff );
     return( rc );
 }
 

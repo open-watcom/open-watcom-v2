@@ -140,7 +140,7 @@ static walk_result SearchSrcFile( srch_window *srch, cue_handle *cueh )
             found[srch->num_rows].mod = DIPCueMod( cueh );
             found[srch->num_rows].file_id = DIPCueFileId( cueh );
             found[srch->num_rows].open = false;
-            found[srch->num_rows].source_line = DupStr( TxtBuff );
+            found[srch->num_rows].source_line = MemStrdupSafe( TxtBuff );
             srch->num_rows++;
             len = DIPModName( DIPCueMod( cueh ), NULL, 0 );
             if( srch->max_mod_name < len )
@@ -357,7 +357,7 @@ static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie
 
     srch = MemAllocSafe( sizeof( srch_window ) );
     srch->file_list = NULL;
-    srch->expr = DupStr( expr );
+    srch->expr = MemStrdupSafe( expr );
     srch->cookie = cookie;
     srch->found = NULL;
     srch->num_rows = 0;

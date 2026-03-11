@@ -134,7 +134,7 @@ static void     WNDCALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row ro
         if( image->deferred_symbols ) {
             ReLoadImgSymInfo( image );
         } else {
-            new_name = DupStr( ImgSymFileName( image, true ) );
+            new_name = MemStrdupSafe( ImgSymFileName( image, true ) );
             if( !SymBrowse( &new_name ) ) {
                 MemFree( new_name );
             } else {

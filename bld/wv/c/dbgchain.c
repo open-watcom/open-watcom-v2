@@ -171,7 +171,7 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
     }
     CnvNearestAddr( chain->lc.execution, TxtBuff, TXT_LEN );
     MemFree( chain->symbol );
-    chain->symbol = DupStr( TxtBuff );
+    chain->symbol = MemStrdupSafe( TxtBuff );
     chain->sym_len = 0;
     curr->current_depth++;
     return( true );

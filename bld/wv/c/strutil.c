@@ -188,8 +188,3 @@ char *Format( char *buff, const char *fmt, ... )
     va_end( args );
     return( p );
 }
-
-char *DupStr( const char *str )
-{
-    return( MemStrdupSafe( str ) );
-}

@@ -480,7 +480,6 @@ void PopInpStack( void )
 void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 {
     input_stack *new;
-    char        *lang;
 
     new = MemAlloc( sizeof( input_stack ) );
     if( new == NULL ) {
@@ -488,11 +487,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
     }
     if( save_lang ) {
-        lang = DupStr( GetLanguage() );
-        if( lang == NULL ) {
-            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-        }
-        new->lang = lang;
+        new->lang = MemStrdupSafe( GetLanguage() );
     } else {
         new->lang = NULL;
     }

@@ -335,7 +335,7 @@ void DlgCmd( void )
             printf( "Error - unrecognized command\n" );
         }
     } else {
-        DoCmd( DupStr( buff ) );
+        DoCmd( MemStrdupSafe( buff ) );
         DoInput();
     }
 }

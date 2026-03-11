@@ -69,7 +69,7 @@ char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff )
         }
     }
     *matchoff = match + 1 - TxtBuff;
-    return( DupStr( match + 1 ) );
+    return( MemStrdupSafe( match + 1 ) );
 }
 
 
@@ -87,7 +87,7 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
     SortedNames = SymCompInit( true, true, false, false, NO_MOD );
     GUIResetMouseCursor( old_cursor );
     match = DlgGetMatchString( gui, id, &matchoff );
-    savebuff = DupStr( TxtBuff );
+    savebuff = MemStrdupSafe( TxtBuff );
     if( match != NULL && match[0] != NULLCHAR ) {
         SymCompMatches( SortedNames, match, &first, &last );
         num = last - first;

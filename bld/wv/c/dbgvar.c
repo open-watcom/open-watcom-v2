@@ -1963,7 +1963,7 @@ void VarBreakOnWrite( var_info *i, var_node *v )
     char                *name;
 
     VarBuildName( i, v, false );
-    name = DupStr( TxtBuff );
+    name = MemStrdupSafe( TxtBuff );
     SpawnP( BreakOnExprSP, name );
     MemFree( name );
 }
@@ -2228,7 +2228,7 @@ void VarSetValue( var_node *v, const char *value )
     if( v->value_valid )
         return;
     MemFree( v->value );
-    v->value = DupStr( value );
+    v->value = MemStrdupSafe( value );
     v->value_valid = true;
 }
 

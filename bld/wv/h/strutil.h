@@ -37,4 +37,3 @@ extern char *StrCopyDst( char const *src, char *dest );
 extern char *StrTrim( char *str );
 extern char *FmtStr( char *buff, const char *fmt, va_list args );
 extern char *Format( char *buff, const char *fmt, ... );
-extern char *DupStr( const char * );

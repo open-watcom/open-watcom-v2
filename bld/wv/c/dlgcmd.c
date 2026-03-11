@@ -159,7 +159,7 @@ static bool GUICALLBACK CmdGUIEventProc( gui_window *gui, gui_event gui_ev, void
             if( text != NULL ) {
                 if( text[0] != NULLCHAR )
                     WndSaveToHistory( CmdHistory, text );
-                DoCmd( DupStr( text ) );
+                DoCmd( MemStrdupSafe( text ) );
                 MemFree( text );
             }
             GUICloseDialog( gui );

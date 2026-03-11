@@ -367,7 +367,7 @@ bool UnMapAddress( mappable_addr *loc, image_entry *image )
     if( image == NULL )
         return( false );
     MemFree( loc->image_name );
-    loc->image_name = DupStr( image->image_name );
+    loc->image_name = MemStrdupSafe( image->image_name );
     for( map = image->map_list; map != NULL; map = map->link ) {
         if( map->real_addr.segment == loc->addr.mach.segment ) {
             loc->addr.mach.segment = map->map_addr.segment;

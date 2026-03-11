@@ -866,7 +866,7 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     file->erase = erase;
     file->toggled_break = false;
     file->eof = INT_MAX;
-    file->name = DupStr( name );
+    file->name = MemStrdupSafe( name );
     file->dotaddr = NilAddr;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndclass, file, &SrcIcon );
     if( wnd == NULL )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
         menu->id = id++;
         menu->style = GUI_STYLE_MENU_ENABLED;
         menu->hinttext = LIT_ENG( Empty );
-        menu->label = DupStr( TxtBuff );
+        menu->label = MemStrdupSafe( TxtBuff );
         menu->child = NoMenu;
         ++menu;
     }

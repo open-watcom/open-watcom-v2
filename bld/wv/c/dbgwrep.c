@@ -80,11 +80,11 @@ static void RepInitEv( event_record *ev )
         }
         if( ev->cue == NULL ) {
             UnAsm( ev->ip, TxtBuff, TXT_LEN );
-            ev->cue = DupStr( TxtBuff );
+            ev->cue = MemStrdupSafe( TxtBuff );
         }
     }
     if( ev->addr_string == NULL ) {
-        ev->addr_string = DupStr( GetEventAddress( ev ) );
+        ev->addr_string = MemStrdupSafe( GetEventAddress( ev ) );
     }
 }
 

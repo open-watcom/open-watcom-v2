@@ -240,7 +240,7 @@ char *GetFileName( int pass )
 
     WantEquals();
     GetItem( buff );
-    return( pass == 1 ? NULL : DupStr( buff ) );
+    return( pass == 1 ? NULL : MemStrdupSafe( buff ) );
 }
 
 void GetRawItem( char *start )
@@ -536,8 +536,8 @@ void ProcCmd( void )
                 MemSize = ~0;
             }
             SysSetMemLimit();
-            TrapParms = DupStr( "std" );
-            InvokeFile = DupStr( "" );
+            TrapParms = MemStrdupSafe( "std" );
+            InvokeFile = MemStrdupSafe( "" );
         }
     }
 }
