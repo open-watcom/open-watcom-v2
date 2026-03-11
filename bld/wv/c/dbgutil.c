@@ -481,11 +481,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 {
     input_stack *new;
 
-    new = MemAlloc( sizeof( input_stack ) );
-    if( new == NULL ) {
-        rtn( handle, INP_RTN_FINI ); /* clean up handle */
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-    }
+    new = MemAllocSafe( sizeof( input_stack ) );
     if( save_lang ) {
         new->lang = MemStrdupSafe( GetLanguage() );
     } else {

@@ -441,12 +441,7 @@ wnd_macro *MacAddDel( gui_key key, wnd_class_wv wndclass, cmd_list *cmds )
     if( cmds != NULL ) {
         // add
         if( curr == NULL ) {
-            curr = MemAlloc( sizeof( wnd_macro ) );
-            if( curr == NULL ) {
-                FreeCmdList( cmds );
-                Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-                return( curr );
-            }
+            curr = MemAllocSafe( sizeof( wnd_macro ) );
             curr->key = key;
             curr->wndclass = wndclass;
             curr->link = NULL;

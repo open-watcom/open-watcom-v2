@@ -471,12 +471,7 @@ machine_state *AllocMachState( void )
     state = MemAllocSafe( state_size );
     memset( state, 0, sizeof( *state ) );
     if( OvlSize != 0 ) {
-        state->ovl = MemAlloc( OvlSize );
-        if( state->ovl == NULL ) {
-            MemFree( state );
-            state = NULL;
-            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-        }
+        state->ovl = MemAllocSafe( OvlSize );
     }
     return( state );
 }

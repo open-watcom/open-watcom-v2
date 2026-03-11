@@ -94,16 +94,11 @@ static void FreeList( lookup *curr )
  * LookInit - initialize lookup
  */
 
-static void AddLookSpec( const char *start, unsigned len, bool respect, lookup *old )
+static void AddLookSpec( const char *start, unsigned len, bool respect )
 {
     lookup  *next;
 
-    next = MemAlloc( sizeof( struct lookup_list ) + len );
-    if( next == NULL ) {
-        FreeList( DefLookup );
-        DefLookup = old;
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-    }
+    next = MemAllocSafe( sizeof( struct lookup_list ) + len );
     next->next = DefLookup;
     next->respect_case = respect;
     memcpy( next->data, start, len );
@@ -116,9 +111,9 @@ void InitLook( void )
 {
     DefLookup = NULL;
     // add these in reverse order since AddLookSpec adds to the front of the list
-    AddLookSpec( "*_", 2, false, NULL );
-    AddLookSpec( "_*", 2, false, NULL );
-    AddLookSpec( "*", 1, false, NULL );
+    AddLookSpec( "*_", 2, false );
+    AddLookSpec( "_*", 2, false );
+    AddLookSpec( "*", 1, false );
 }
 
 void FiniLook( void )
@@ -210,17 +205,17 @@ void LookSet( void )
         old = DefLookup;
         DefLookup = NULL;
         while( --curr >= new ) {
-            AddLookSpec( curr->start, curr->len, curr->respect, old );
+            AddLookSpec( curr->start, curr->len, curr->respect );
         }
-        if( add ) {
-            if( old != NULL ) {
+        if( old != NULL ) {
+            if( add ) {
                 for( next = old; next->next != NULL; next = next->next )
                     ;
                 next->next = DefLookup;
                 DefLookup = old;
+            } else {
+                FreeList( old );
             }
-        } else {
-            FreeList( old );
         }
     }
     for( next = DefLookup; next != NULL; next = next->next ) {

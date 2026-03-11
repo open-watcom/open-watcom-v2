@@ -247,19 +247,9 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
-    inv = MemAlloc( sizeof( invokes ) + strlen( name ) );
-    if( inv != NULL ) {
-        inv->buff_size = CMD_LEN;
-        inv->buff = MemAlloc( inv->buff_size + 1 ); /* extra for NULLCHAR */
-    }
-    if( inv == NULL || inv->buff == NULL ) {
-        if( inv != NULL )
-            MemFree( inv );
-        FileClose( fh );
-        FreeRing( parmlist );
-        Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-        return;
-    }
+    inv = MemAllocSafe( sizeof( invokes ) + strlen( name ) );
+    inv->buff_size = CMD_LEN;
+    inv->buff = MemAllocSafe( inv->buff_size + 1 ); /* extra for NULLCHAR */
     strcpy( inv->name, name );
     inv->in_size = 0;
     inv->in_off = 0;
@@ -341,11 +331,7 @@ void ProcInvoke( void )
     owner = &parmlist;
     while( !ScanEOC() ) {
         ScanItem( true, &start, &len );
-        path = MemAlloc( sizeof( char_ring ) + len );
-        if( path == NULL ) {
-            FreeRing( parmlist );
-            Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
-        }
+        path = MemAllocSafe( sizeof( char_ring ) + len );
         memcpy( path->name, start, len );
         path->name[len] = NULLCHAR;
         path->next = NULL;
