@@ -381,7 +381,7 @@ void *MemAlloc( size_t size )
 /***************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 5 ), TrHdl ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -392,7 +392,7 @@ void *MemAllocSafe( size_t size )
 /*******************************/
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 6 ), TrHdl ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 4 ), TrHdl ) ) );
 #else
     return( check_nomem( malloc( size ) ) );
 #endif
@@ -407,7 +407,7 @@ char *MemStrdup( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( _trmem_strdup( str, _TRMEM_WHO( 8 ), TrHdl ) );
+    return( _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl ) );
 #else
     return( strdup( str ) );
 #endif
@@ -418,7 +418,7 @@ char *MemStrdupSafe( const char *str )
 /********************************/
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 8 ), TrHdl ) ) );
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 6 ), TrHdl ) ) );
 #else
     return( check_nomem( strdup( str ) ) );
 #endif
@@ -433,7 +433,7 @@ void MemFree( void *ptr )
 /***********************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 9 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 7 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -448,7 +448,7 @@ void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 10 ), TrHdl ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 8 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif
@@ -458,8 +458,23 @@ TRMEMAPI( MemReallocSafe )
 void *MemReallocSafe( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 11 ), TrHdl ) ) );
+    return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 9 ), TrHdl ) ) );
 #else
     return( check_nomem( realloc( ptr, size ) ) );
 #endif
+}
+
+TRMEMAPI( MemToStringSafe )
+char *MemToStringSafe( const char *ptr, size_t size )
+{
+    char        *str;
+
+#ifdef TRMEM
+    str = check_nomem( _trmem_alloc( size + 1, _TRMEM_WHO( 10 ), TrHdl ) );
+#else
+    str = check_nomem( malloc( size + 1 ) );
+#endif
+    strncpy( str, ptr, size );
+    str[size] = '\0';
+    return( str );
 }

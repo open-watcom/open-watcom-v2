@@ -44,6 +44,7 @@ extern void     MemFini( void );
 
 #define _AllocA( res, size )            res = walloca( size )
 
-extern void SysSetMemLimit( void );
+extern void     SysSetMemLimit( void );
+extern char     *MemToStringSafe( const char *ptr, size_t size );
 
 #endif
