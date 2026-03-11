@@ -276,7 +276,7 @@ bool LangSetInit( void )
     if( Language == NULL )
         return( false );
     StrCopyDst( InitialLang, Language );
-    return( LangLoad( Language, strlen( Language ) ) );
+    return( LangLoad( Language ) );
 }
 
 void LangSetFini( void )
@@ -301,19 +301,19 @@ void NewLang( const char *lang, size_t len )
 
     if( lang == NULL )
         return;
-    if( len == 0 )
-        len = strlen( lang );
-    new_lang = MemAllocSafe( len + 1 );
-    memcpy( new_lang, lang, len );
-    new_lang[len] = NULLCHAR;
+    if( len == 0 ) {
+        new_lang = MemStrdupSafe( lang );
+    } else {
+        new_lang = MemToStringSafe( lang, len );
+    }
     strlwr( new_lang );
-    if( ( len != strlen( Language ) ) || memcmp( new_lang, Language, len ) != 0 ) {
-        if( LangLoad( new_lang, len ) ) {
+    if( strcmp( new_lang, Language ) != 0 ) {
+        if( LangLoad( new_lang ) ) {
             MemFree( Language );
             Language = new_lang;
             return;
         }
-        LangLoad( Language, strlen( Language ) );
+        LangLoad( Language );
         Error( ERR_NONE, LIT_ENG( ERR_NO_LANG ) );
     }
     MemFree( new_lang );

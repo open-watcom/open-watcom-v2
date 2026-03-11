@@ -307,12 +307,12 @@ static bool ReadAllSections( file_handle fh )
     return( true );
 }
 
-bool LangLoad( const char *lang, size_t langlen )
+bool LangLoad( const char *lang )
 {
     file_handle fh;
     bool        ret;
 
-    fh = LocalPathOpen( lang, langlen, "prs" );
+    fh = LocalPathOpen( lang, strlen( lang ), "prs" );
     if( fh == NIL_HANDLE )
         return( false );
     ret = ReadAllSections( fh );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,4 +49,4 @@ extern void         OptMemAddr( memory_expr def_seg, address *def_val );
 extern void         SetTokens( bool parse_tokens );
 extern void         LangInit( void );
 extern void         LangFini( void );
-extern bool         LangLoad( const char *lang, size_t langlen );
+extern bool         LangLoad( const char *lang );
