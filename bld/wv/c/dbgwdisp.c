@@ -208,19 +208,6 @@ void FiniFont( void )
     }
 }
 
-static char *GUIDupStrLen( const char *str, size_t len )
-{
-    char        *dup;
-
-    dup = MemAlloc( len + 1 );
-    if( dup != NULL ) {
-        memcpy( dup, str, len );
-        dup[len] = NULLCHAR;
-    }
-    return( dup );
-}
-
-
 void ProcFont( void )
 {
     wnd_class_wv    wndclass;
@@ -237,7 +224,7 @@ void ProcFont( void )
             SetFont( wndclass1, NULL );
         }
     }
-    SetFont( wndclass, GUIDupStrLen( start, len ) );
+    SetFont( wndclass, MemToStringSafe( start, len ) );
     _SwitchOn( SW_PENDING_REPAINT );
 }
 
