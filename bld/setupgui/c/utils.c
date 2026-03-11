@@ -65,7 +65,6 @@
 #include "iopath.h"
 #include "guistats.h"
 #include "pathgrp2.h"
-#include "roundmac.h"
 
 #include "clibext.h"
 
@@ -1206,31 +1205,16 @@ bool DoDeleteFile( const VBUF *path )
 COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode copymode )
 /*****************************************************************************************/
 {
-    static char         lastchance[1024];
-    size_t              buffer_size = 16 * 1024;
+    static char         copy_buffer[_32K];
     file_handle         src_afh;
     int                 dst_fh;
     int                 bytes_read, bytes_written, style;
-    char                *pbuff;
     COPYFILE_ERROR      ret;
 
     src_afh = FileOpen( src_file, DATA_BIN );
     if( src_afh == NULL ) {
         return( CFE_CANTOPENSRC );
     }
-
-    for( ;; ) {
-        pbuff = MemAlloc( buffer_size );
-        if( pbuff != NULL )
-            break;
-        buffer_size >>= 1;
-        if( buffer_size < sizeof( lastchance ) ) {
-            pbuff = lastchance;
-            buffer_size = sizeof( lastchance );
-            break;
-        }
-    }
-
     if( copymode & COPY_APPEND ) {
         style = O_RDWR | O_BINARY;
     } else {
@@ -1239,8 +1223,6 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
     dst_fh = open_vbuf( dst_file, style, PMODE_R_USR_W );
     if( dst_fh == -1 ) {
         FileClose( src_afh );
-        if( pbuff != lastchance )
-            MemFree( pbuff );
         dst_fh = open_vbuf( dst_file, O_RDONLY );
         if( dst_fh != -1 ) {
             /*
@@ -1257,13 +1239,13 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
 
     ret = CFE_NOERROR;
     do {
-        bytes_read = FileRead( src_afh, pbuff, buffer_size );
-        if( bytes_read < 0 ) {
+        bytes_read = FileRead( src_afh, copy_buffer, sizeof( copy_buffer ) );
+        if( bytes_read == READ_ERROR ) {
             SetupError( "IDS_READERROR" );
             ret = CFE_ERROR;
             break;
         }
-        bytes_written = write( dst_fh, pbuff, bytes_read );
+        bytes_written = write( dst_fh, copy_buffer, bytes_read );
         BumpStatus( bytes_written );
         if( bytes_written != bytes_read
           || StatusCancelled() ) {
@@ -1281,11 +1263,9 @@ COPYFILE_ERROR DoCopyFile( const VBUF *src_file, const VBUF *dst_file, copy_mode
             ret = CFE_ERROR;
             break;
         }
-    } while( (size_t)bytes_read == buffer_size );
+    } while( (size_t)bytes_read == sizeof( copy_buffer ) );
     close( dst_fh );
     FileClose( src_afh );
-    if( pbuff != lastchance )
-        MemFree( pbuff );
     if( ret == CFE_NOERROR ) {
         /*
          * Make the destination file have the same time stamp
@@ -1505,9 +1485,9 @@ static void TransferCheckList( void )
 static bool CheckPendingFiles( void )
 /***********************************/
 {
-    file_check  *curr;
-    file_check  *next;
-    bool        cancel;
+    file_check      *curr;
+    file_check      *next;
+    bool            cancel;
 
     for( curr = fileCheck; curr != NULL; curr = next ) {
         next = curr->next;
@@ -1788,7 +1768,6 @@ static bool DoCopyFiles( void )
                         StatusLinesVbuf( STAT_COPYINGFILE, &dst_file );
                         checkForNewName( filenum, subfilenum, &dst_file );
                         copy_error = DoCopyFile( &src_file, &dst_file, getCopyMode( filenum, subfilenum ) );
-
                         switch( copy_error ) {
                         case CFE_ABORT:
                         case CFE_ERROR:
@@ -2150,7 +2129,7 @@ gui_message_return MsgBox( gui_window *gui, const char *msg_id,
 /*************************************************************/
 {
     gui_message_return  result;
-    char                msg_buf[1024];
+    char                msg_buf[_1K];
     const char          *errormessage;
     va_list             args;
     VBUF                msg_text;

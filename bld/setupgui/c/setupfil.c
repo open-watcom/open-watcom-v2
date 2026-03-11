@@ -1361,7 +1361,7 @@ static void secondarysearch( const VBUF *filename, VBUF *buffer )
 static void VersionStr( int fh, char *ver, size_t verlen, char *verbuf, size_t verbuflen )
 /****************************************************************************************/
 {
-    static char         Buffer[2048];
+    static char         Buffer[_2K];
     int                 len;
     int                 size;
     char                *p;

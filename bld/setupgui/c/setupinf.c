@@ -2309,7 +2309,7 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     char                *p;
     char                *buffer;
     size_t              bufsize;
-    char                readbuf[1024 + 1];
+    char                readbuf[_1K + 1];
     size_t              bytes_read;
 
     bufsize = TEXTBUF_SIZE;
@@ -2328,8 +2328,8 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
     for( ;; ) {
         len = 0;
         for( ;; ) {
-            bytes_read = FileRead( afh, readbuf, 1024 );
-            if( (int)bytes_read <= 0 ) {
+            bytes_read = FileRead( afh, readbuf, sizeof( readbuf ) - 1 );
+            if( bytes_read == READ_ERROR || bytes_read == 0 ) {
                 done = true;
                 break;
             }
@@ -3418,7 +3418,7 @@ static void CalcAddRemove( void )
                         continue;
                     if( DirInfo[j].num_files <= DirInfo[j].num_existing )
                         continue;
-                    TargetInfo[i].space_needed += __ROUND_UP_SIZE_BLOCK( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * 1024UL );
+                    TargetInfo[i].space_needed += __ROUND_UP_SIZE_BLOCK( ((( DirInfo[j].num_files - DirInfo[j].num_existing ) / 10) + 1) * _1K );
                 }
             }
         }

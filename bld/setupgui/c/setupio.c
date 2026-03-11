@@ -280,15 +280,12 @@ static size_t file_read( file_handle afh, void *buffer, size_t length )
     switch( afh->type ) {
     case DS_FILE:
         amt = fread( buffer, 1, length, afh->u.fp );
-        if( amt == 0
-          && ferror( afh->u.fp ) )
-            amt = (size_t)-1;
+        if( ferror( afh->u.fp ) )
+            amt = READ_ERROR;
         break;
 #if defined( USE_ZIP )
     case DS_ZIP:
         amt = zip_fread( afh->u.zf, buffer, length );
-        if( (int)amt < 0 )
-            amt = (size_t)-1;
         break;
 #elif defined( USE_LZMA )
 #endif
@@ -316,7 +313,7 @@ static size_t read_line( file_handle afh, char *buffer, size_t length )
          */
         if( afh->textpos == NULL ) {
             read_bytes = file_read( afh, afh->textbuf, TEXTBUF_SIZE );
-            if( (int)read_bytes <= 0 ) {
+            if( read_bytes == READ_ERROR || read_bytes == 0 ) {
                 return( read_bytes );
             }
             afh->textpos = afh->textbuf;

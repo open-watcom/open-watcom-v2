@@ -63,6 +63,7 @@
 #include "gui.h"
 #include "strvbuf.h"
 #include "memfuncs.h"
+#include "roundmac.h"
 
 
 #ifdef __OS2__
