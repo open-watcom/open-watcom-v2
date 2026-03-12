@@ -90,7 +90,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
 
 #ifdef __WINDOWS__
     slen = strlen( facename ) + 1;
-    data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+    data = MemAlloc( sizeof( WORD ) + slen );
     if( data != NULL ) {
         *(WORD *)data = pointsize;
         memcpy( data + sizeof( WORD ), facename, slen );
@@ -99,7 +99,7 @@ static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fid
     data = NULL;
     if( mbcs2unicode( facename, &uni_facename, &slen ) ) {
         slen *= sizeof( WCHAR );
-        data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
+        data = MemAlloc( sizeof( WORD ) + slen );
         if( data != NULL ) {
             *(WORD *)data = pointsize;
             memcpy( data + sizeof( WORD ), uni_facename, slen );
@@ -229,7 +229,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
         return( false );
     }
 
-    *facename = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
+    *facename = MemAlloc( strlen( lf.lfFaceName ) + 1 );
     if( *facename == NULL ) {
         return( false );
     }

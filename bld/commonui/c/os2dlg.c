@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -307,7 +307,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     psize = 0;
     if( facename != NULL ) {
         bufsize = strlen( facename ) + 10 + 1;
-        buf = (char *)MemAlloc( bufsize );
+        buf = MemAlloc( bufsize );
         if( buf != NULL ) {
             buf[0] = '\0';
             sprintf( buf, "%u.%s", pointsize, facename );
@@ -318,7 +318,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
             psize = sizeof( PRESPARAMS ) - sizeof( PARAM )
                     + sizeof( BYTE ) + 2 * sizeof( ULONG )
                     + bufsize;
-            pdata = (PRESPARAMS *)MemAlloc( psize );
+            pdata = MemAlloc( psize );
             if( pdata != NULL ) {
                 pdata->cb = psize - sizeof( ULONG );
                 pdata->aparam[0].id = PP_FONTNAMESIZE;

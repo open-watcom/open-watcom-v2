@@ -105,7 +105,7 @@ a_dialog_header *AddNewDialog( const char *name )
     a_dialog_header *old_dlg;
     a_dialog_header *new_dlg;
 
-    new_dlg = (a_dialog_header *)MemAllocSafe( sizeof( a_dialog_header ) );
+    new_dlg = MemAllocSafe( sizeof( a_dialog_header ) );
     memset( new_dlg, '\0', sizeof( *new_dlg ) );
     new_dlg->name = MemStrdupSafe( name );
     new_dlg->adjusted = false;

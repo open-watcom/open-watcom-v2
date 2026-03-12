@@ -109,14 +109,14 @@ static int parseList( char *list, unsigned **tabs )
     }
 
     size = 10 * sizeof( unsigned );
-    *tabs = (unsigned *)MemAlloc( size );
+    *tabs = MemAlloc( size );
     cnt = 0;
     old = 0;
 
     do {
         if( size <= cnt + 1 ) {
             size += 10 * sizeof( unsigned );
-            *tabs = (unsigned *)MemRealloc( *tabs, size );
+            *tabs = MemRealloc( *tabs, size );
         }
         p = strchr( list, ',' );
         if( p != NULL ) {
@@ -159,7 +159,7 @@ int main( int argc, char **argv )
         if( ch == -1 ) {
             break;
         } else if( ch == '#' ) {
-            list = (char *)MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            list = MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
             strcpy( list, OptArg );
             arg = true;
         } else if( ch == 'X' ) {
@@ -168,7 +168,7 @@ int main( int argc, char **argv )
     }
 
     if( !arg ) {
-        tabs = (unsigned *)MemAlloc( 2 * sizeof( unsigned ) );
+        tabs = MemAlloc( 2 * sizeof( unsigned ) );
         tabs[0] = 8;
         tabs[1] = 0;
     } else if( parseList( list, &tabs ) ) {

@@ -953,7 +953,7 @@ static  int     Parse( char *cmd )
 
                 // don't add linker-specific options to compiler command line
                 if( cmp_option ) {
-                    CmpOpts[cmp_opt_index] = (char *)MemAlloc( strlen( Word ) + 2 + 1 );
+                    CmpOpts[cmp_opt_index] = MemAlloc( strlen( Word ) + 2 + 1 );
                     CmpOpts[cmp_opt_index][0] = opt;
                     CmpOpts[cmp_opt_index][1] = *cmd;
                     CmpOpts[cmp_opt_index][2] = '\0';

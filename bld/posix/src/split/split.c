@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ static int splitFile( FILE *fp, int lines, char *prefix )
     unsigned char   e1   = 'a';
     unsigned char   e2   = 'a';
 
-    file = (char *)MemAlloc( ( strlen( prefix ) + 2 ) * sizeof( char ) + 1 );
+    file = MemAlloc( ( strlen( prefix ) + 2 ) * sizeof( char ) + 1 );
 
     for( ;; ) {
         ch = fgetc( fp );

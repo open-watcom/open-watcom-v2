@@ -113,7 +113,7 @@ static FILE *PP_Open( const char *filename )
     handle = fopen( filename, "rb" );
     if( handle != NULL ) {
         prev_file = PP_File;
-        PP_File = (FILELIST *)MemAllocSafe( sizeof( FILELIST ) );
+        PP_File = MemAllocSafe( sizeof( FILELIST ) );
         if( PP_File == NULL ) {
             fclose( handle );
             handle = NULL;
@@ -883,7 +883,7 @@ static void IncLevel( int value )
 {
     CPP_INFO    *cpp;
 
-    cpp = (CPP_INFO *)MemAllocSafe( sizeof( CPP_INFO ) );
+    cpp = MemAllocSafe( sizeof( CPP_INFO ) );
     cpp->prev_cpp = PPStack;
     cpp->cpp_type = PP_IF;
     cpp->processing = false;

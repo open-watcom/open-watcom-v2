@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -422,7 +422,7 @@ statwnd *StatusWndStart( void )
 {
     statwnd *sw;
 
-    sw = (statwnd *)MemAlloc( sizeof( statwnd ) );
+    sw = MemAlloc( sizeof( statwnd ) );
     if( sw != NULL ) {
         memset( sw, 0, sizeof( statwnd ) );
     }
@@ -469,7 +469,7 @@ static void updateParts( statwnd *sw )
     int     width;
     int     *parts;
 
-    parts = (int *)MemAlloc( sizeof( int ) * ( sw->numSections + 1 ) );
+    parts = MemAlloc( sizeof( int ) * ( sw->numSections + 1 ) );
     GetClientRect( sw->win, &rc );
     width = rc.right - rc.left;
     for( i = 0; i < sw->numSections; i++ ) {

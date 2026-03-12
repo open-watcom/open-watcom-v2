@@ -423,7 +423,7 @@ char *AddCreator( const char *sufsuf )
         }
     }
     if( pslist == NULL ) {
-        new = (CREATOR *)MemCAllocSafe( sizeof( CREATOR ) );
+        new = MemCAllocSafe( sizeof( CREATOR ) );
         new->suffix = src;
         new->slist = NULL;
         pslist = &new->slist;

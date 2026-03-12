@@ -732,7 +732,7 @@ bool MDINewWindow( HWND hwnd )
 {
     mdi_data    *md;
 
-    md = (mdi_data *)MemAlloc( sizeof( mdi_data ) );
+    md = MemAlloc( sizeof( mdi_data ) );
     if( md == NULL ) {
         return( false );
     }

@@ -73,7 +73,7 @@ static char *yytext( void ) {
     if ( (yytextlen = cursor - tok) > maxyytextlen - 1 ) {
         MemFree( _yytext );
         maxyytextlen = yytextlen + 1;
-        _yytext = (char *)MemAllocSafe( maxyytextlen );
+        _yytext = MemAllocSafe( maxyytextlen );
     }
     memcpy( _yytext, tok, yytextlen );
     _yytext[yytextlen] = 0;
@@ -196,7 +196,7 @@ static void fill( void ) {
         if((top - limit) < BSIZE) { // buffer needs to be expanded
             char *buf;
 
-            buf = (char *)MemAllocSafe( limit - bot + BSIZE );   // alloc new piece
+            buf = MemAllocSafe( limit - bot + BSIZE );   // alloc new piece
             memcpy(buf, tok, limit - tok);          // copy leftover
             tok = buf;                              // adjust all pointers
             marker = &buf[marker - bot];

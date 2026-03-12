@@ -66,12 +66,12 @@ static void reverseFile( FILE *fp )
     char       *buff;
 
     size = MIN_LINE_LEN * sizeof( char );
-    buff = (char *)MemAlloc( size );
+    buff = MemAlloc( size );
 
     for( ;; ) {
         if( size <= os + 1 ) {
             size += MIN_LINE_LEN * sizeof( char );
-            buff  = (char *)MemRealloc( buff, size );
+            buff  = MemRealloc( buff, size );
         }
         ch = fgetc( fp );
 

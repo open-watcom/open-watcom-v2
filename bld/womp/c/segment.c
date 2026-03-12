@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +68,7 @@ void SegKill( seghdr *seg ) {
 void SegAllocData( seghdr *seg, uint_16 seg_len ) {
 /***********************************************/
 /**/myassert( seg != NULL );
-    seg->data = (uint_8 *)MemAlloc( seg_len );
+    seg->data = MemAlloc( seg_len );
     seg->alloc = seg_len;
 }
 

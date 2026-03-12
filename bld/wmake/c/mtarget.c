@@ -69,7 +69,7 @@ FLIST *NewFList( void )
         memset( f, 0, sizeof( *f ) );
         return( f );
     }
-    return( (FLIST *)MemCAllocSafe( sizeof( FLIST ) ) );
+    return( MemCAllocSafe( sizeof( FLIST ) ) );
 }
 
 
@@ -86,7 +86,7 @@ NKLIST *NewNKList( void )
         memset( nk, 0, sizeof( *nk ) );
         return( nk );
     }
-    return( (NKLIST *)MemCAllocSafe( sizeof( NKLIST ) ) );
+    return( MemCAllocSafe( sizeof( NKLIST ) ) );
 }
 
 
@@ -103,7 +103,7 @@ SLIST *NewSList( void )
         memset( slist, 0, sizeof( *slist ) );
         return( slist );
     }
-    return( (SLIST *)MemCAllocSafe( sizeof( SLIST ) ) );
+    return( MemCAllocSafe( sizeof( SLIST ) ) );
 }
 
 
@@ -120,7 +120,7 @@ TLIST *NewTList( void )
         memset( t, 0, sizeof( *t ) );
         return( t );
     }
-    return( (TLIST *)MemCAllocSafe( sizeof( TLIST ) ) );
+    return( MemCAllocSafe( sizeof( TLIST ) ) );
 }
 
 STATIC TARGET *removeTarget( const char *name )
@@ -210,7 +210,7 @@ DEPEND *NewDepend( void )
         memset( dep, 0, sizeof( *dep ) );
         return( dep );
     }
-    return( (DEPEND *)MemCAllocSafe( sizeof( DEPEND ) ) );
+    return( MemCAllocSafe( sizeof( DEPEND ) ) );
 }
 
 
@@ -225,7 +225,7 @@ CLIST *NewCList( void )
         memset( c, 0, sizeof( *c ) );
         return( c );
     }
-    return( (CLIST *)MemCAllocSafe( sizeof( CLIST ) ) );
+    return( MemCAllocSafe( sizeof( CLIST ) ) );
 }
 
 

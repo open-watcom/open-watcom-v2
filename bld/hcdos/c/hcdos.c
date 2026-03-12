@@ -296,7 +296,7 @@ static bool pass1( FILE *fin, const char **helpstr )
     namebuff = NULL;
     namebuff_len = 0;
     while( !feof( fin ) ) {
-        h = (a_helpnode *)MemAllocSafe( sizeof( a_helpnode ) );
+        h = MemAllocSafe( sizeof( a_helpnode ) );
         h->fpos = fpos;
         buflen = strlen( buffer );
         if( buffer[buflen - 1] == '\n' ) {

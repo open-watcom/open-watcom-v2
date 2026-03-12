@@ -376,7 +376,7 @@ toolbar *ToolBarInit( HWND parent )
     btnColor = CLR_PALEGRAY;
 #endif
 
-    bar = (toolbar *)MemAlloc( sizeof( toolbar ) );
+    bar = MemAlloc( sizeof( toolbar ) );
     if ( bar ) {
         memset( bar, 0, sizeof( toolbar ) );
         bar->border_width = 1;
@@ -499,7 +499,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     TOOLINFO    ti;
 #endif
 
-    t = (tool *)MemAlloc( sizeof( tool ) );
+    t = MemAlloc( sizeof( tool ) );
     if( info->flags & ITEM_BLANK ) {
         t->u.blank_space = info->u.blank_space;
     } else {

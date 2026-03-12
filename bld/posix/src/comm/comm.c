@@ -74,13 +74,13 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *)MemAlloc( l->size );
+        l->buff = MemAlloc( l->size );
     }
 
     for( ;; ) {
         if( l->size <= os + 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *)MemRealloc( l->buff, l->size );
+            l->buff  = MemRealloc( l->buff, l->size );
         }
         ch = fgetc( fp );
 

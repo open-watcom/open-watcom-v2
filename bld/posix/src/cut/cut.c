@@ -96,7 +96,7 @@ static node *treeNode( int val, node *l, node *r )
 {
     node        *n;
 
-    n = (node *)MemAlloc( sizeof( node ) );
+    n = MemAlloc( sizeof( node ) );
 
     n->left  = l;
     n->right = r;
@@ -197,13 +197,13 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *)MemAlloc( l->size );
+        l->buff = MemAlloc( l->size );
     }
 
     for( ;; ) {
         if( l->size <= os + 1 ) {                   // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff  = (char *)MemRealloc( l->buff, l->size );
+            l->buff  = MemRealloc( l->buff, l->size );
         }
         ch = fgetc( fp );
 
@@ -327,12 +327,12 @@ int main( int argc, char **argv )
         switch( ch ) {
         case 'f':
             m = FIELD;
-            list = (char *)MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            list = MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
             strcpy( list, OptArg );
             break;
         case 'c':
             m = CHAR;
-            list = (char *)MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
+            list = MemRealloc( list, strlen( OptArg ) * sizeof( char ) + 1 );
             strcpy( list, OptArg );
             break;
         case 'd':

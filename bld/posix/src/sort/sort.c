@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -162,7 +162,7 @@ int main( int argc, char **argv )
     MemFree( argv );
 
     while( my_fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
-        lines[line_count] = (char *)MemAlloc( sizeof( char ) * strlen( buffer ) + 1 );
+        lines[line_count] = MemAlloc( sizeof( char ) * strlen( buffer ) + 1 );
         strcpy( lines[line_count], buffer );
         line_count++;
     }

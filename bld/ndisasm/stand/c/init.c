@@ -272,7 +272,7 @@ static return_val addListToPublics( label_list list )
 {
     label_list_ptr      list_ptr;
 
-    list_ptr = (label_list_ptr)MemAlloc( sizeof( label_list_ptr_struct ) );
+    list_ptr = MemAlloc( sizeof( label_list_ptr_struct ) );
     if( list_ptr != NULL ) {
         list_ptr->list = list;
         if( Publics.label_lists == NULL ) {

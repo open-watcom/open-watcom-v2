@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -232,8 +232,8 @@ static void dumpFile( FILE *fp, format *fmt )
     int         repeat = 0;
     int         size   = 0;
 
-    buf = (char *)MemAlloc( MAX_BYTES );
-    prv = (char *)MemAlloc( MAX_BYTES );
+    buf = MemAlloc( MAX_BYTES );
+    prv = MemAlloc( MAX_BYTES );
 
     fseek( fp, fmt->offset, SEEK_SET );
 

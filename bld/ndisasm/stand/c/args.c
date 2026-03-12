@@ -188,14 +188,14 @@ static char *getFileName( const char *start, const char *following )
     char        *tmp;
 
     length = following - start;
-    tmp = (char *)MemAlloc( length + 1 );
+    tmp = MemAlloc( length + 1 );
     strncpy( tmp, start, length );
     tmp[length] = '\0';
 
     if( strchr( tmp, '\"' ) == NULL )
         return tmp;
 
-    name = (char *)MemAlloc( length + 1 );
+    name = MemAlloc( length + 1 );
     UnquoteItem( name, length + 1, tmp, is_ws );
     MemFree( tmp );
 
@@ -212,14 +212,14 @@ static void composeFileNames( bool list_file )
     if( pg.ext[0] == '\0' ) {
         length = strlen( ObjFileName ) + 1 + strlen( OBJ_FILE_EXTENSION ) + 1;
         MemFree( ObjFileName );
-        ObjFileName = (char *)MemAlloc( length );
+        ObjFileName = MemAlloc( length );
         _makepath( ObjFileName, pg.drive, pg.dir, pg.fname, OBJ_FILE_EXTENSION );
     }
     if( list_file ) {
         if( ListFileName == NULL ) {
             // create list file name
             length = strlen( pg.drive ) + strlen( pg.dir ) + strlen( pg.fname ) + 1 + strlen( LIST_FILE_EXTENSION ) + 1;
-            ListFileName = (char *)MemAlloc( length );
+            ListFileName = MemAlloc( length );
             _makepath( ListFileName, pg.drive, pg.dir, pg.fname, LIST_FILE_EXTENSION );
         } else {
             // check extension
@@ -227,7 +227,7 @@ static void composeFileNames( bool list_file )
             if( pg.ext[0] == '\0' ) {
                 length = strlen( ListFileName ) + 1 + strlen( LIST_FILE_EXTENSION ) + 1;
                 MemFree( ListFileName );
-                ListFileName = (char *)MemAlloc( length );
+                ListFileName = MemAlloc( length );
                 _makepath( ListFileName, pg.drive, pg.dir, pg.fname, LIST_FILE_EXTENSION );
             }
         }

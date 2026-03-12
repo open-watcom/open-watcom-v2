@@ -80,7 +80,7 @@ static int getNextLine( FILE *fp, line *l )
 
     if( l->size == 0 ) {
         l->size = MIN_LINE_LEN * sizeof( char );
-        l->buff = (char *)MemAlloc( l->size );
+        l->buff = MemAlloc( l->size );
     }
 
     while( (ch = fgetc( fp )) != EOF ) {
@@ -91,7 +91,7 @@ static int getNextLine( FILE *fp, line *l )
         os++;
         if( l->size <= os ) {       // Buffer getting small.
             l->size += MIN_LINE_LEN * sizeof( char );
-            l->buff = (char *)MemRealloc( l->buff, l->size );
+            l->buff = MemRealloc( l->buff, l->size );
         }
     }
     *(l->buff + os) = '\0';
@@ -137,7 +137,7 @@ static void copyLines( line *dest, line *src )
 {
     if( dest->size < src->size ) {
         dest->size = src->size;
-        dest->buff = (char *)MemRealloc( dest->buff, dest->size * sizeof(char) );
+        dest->buff = MemRealloc( dest->buff, dest->size * sizeof(char) );
     }
     strcpy( dest->buff, src->buff );
 }

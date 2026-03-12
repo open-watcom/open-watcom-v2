@@ -59,7 +59,7 @@ void CreatePublicsArray( void )
     int                 index = 0;
 
     if( Publics.number ) {
-        Publics.public_symbols = (label_entry *)MemAlloc( sizeof( label_entry ) * Publics.number );
+        Publics.public_symbols = MemAlloc( sizeof( label_entry ) * Publics.number );
         for( ptr = Publics.label_lists; ptr != NULL; ptr = ptr->next ) {
             for( entry = ptr->list->first; entry != NULL; entry = entry->next ) {
                 for( ; entry != NULL; entry = entry->next ) {
