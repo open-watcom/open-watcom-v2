@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,11 +101,11 @@ static a_radio radio[] = {
     {  1,   "&Bill",      &neg_group }
 };
 
-static an_edit_control     buf[5];
+static an_edit_control     edit[5];
 
 static VFIELD FieldDialog[] = {  // Define Field Dialog
     {1,     4,      1,      8,      FLD_LABEL,      "Formula"},
-    {1,     13,     1,      27,     FLD_EDIT,       &buf[0]},
+    {1,     13,     1,      27,     FLD_EDIT,       &edit[0]},
     {3,     3,      4,      13,     FLD_FRAME,      "Auto"},
     {4,     5,      1,      9,      FLD_CHECK,      &check_home},
     {5,     5,      1,      9,      FLD_CHECK,      &check_clear},

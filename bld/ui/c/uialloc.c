@@ -141,7 +141,7 @@ TRMEMAPI( MemAllocSafe )
 void * MemAllocSafe( size_t size )
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else
     return( check_nomem( malloc( size ) ) );
 #endif
@@ -151,7 +151,7 @@ TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 2 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
 #else
     free( ptr );
 #endif
@@ -161,8 +161,18 @@ TRMEMAPI( MemRealloc )
 void * MemRealloc( void *old, size_t size )
 {
 #ifdef TRMEM
-    return( _trmem_realloc( old, size, _TRMEM_WHO( 3 ), TrHdl ) );
+    return( _trmem_realloc( old, size, _TRMEM_WHO( 4 ), TrHdl ) );
 #else
     return( realloc( old, size ) );
+#endif
+}
+
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
 #endif
 }

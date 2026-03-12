@@ -520,7 +520,7 @@ a_dialog *uibegdialog( const char *title, VFIELD *fields, unsigned rows, unsigne
     a_dialog            *ui_dlg_info;
 
     lines[0] = NULL;
-    ui_dlg_info = MemAlloc( sizeof( a_dialog ) );
+    ui_dlg_info = MemAlloc( sizeof( *ui_dlg_info ) );
     if( ui_dlg_info == NULL ) {
         return( NULL );
     }
@@ -568,7 +568,7 @@ void uiupdatecombobox( a_combo_box *combo )
 
     edit  = &combo->edit;
     list  = &combo->list;
-    str = (char *)MemAlloc( CTRL_BUF_LEN + 1 );
+    str = MemAlloc( CTRL_BUF_LEN + 1 );
     if( str != NULL ) {
         fn_get = list->get;
         if( fn_get == NULL )

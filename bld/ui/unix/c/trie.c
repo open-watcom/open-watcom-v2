@@ -90,7 +90,7 @@ static eTrie    KeyTrie;
 bool TrieInit( void )
 {
 
-    KeyTrie.child = MemAlloc( TRIE_TOP * sizeof( eNode ) );
+    KeyTrie.child = MemAlloc( TRIE_TOP * sizeof( *KeyTrie.child ) );
     if( KeyTrie.child == NULL )
         return( false );
     KeyTrie.alc_child = TRIE_TOP;
@@ -210,7 +210,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
 
         if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
-            trie->child[i].trie = MemAlloc( sizeof( eTrie ) );
+            trie->child[i].trie = MemAlloc( sizeof( trie->child->trie ) );
             if( trie->child[i].trie == NULL ) {
                 return( false );
             }

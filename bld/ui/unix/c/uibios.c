@@ -65,8 +65,7 @@ char *GetTermType( void )
         if( p == NULL ) {
             p = "";
         }
-        UITermType = MemAllocSafe( strlen( p ) + 1 );
-        strcpy( UITermType, p );
+        UITermType = MemStrdupSafe( p );
     }
     return( UITermType );
 }
@@ -79,8 +78,7 @@ void SetTermType( const char *new_term )
     if( new_term == NULL ) {
         new_term = "";
     }
-    UITermType = MemAllocSafe( strlen( new_term ) + 1 );
-    strcpy( UITermType, new_term );
+    UITermType = MemStrdupSafe( new_term );
 }
 
 bool intern initbios( void )

@@ -62,12 +62,11 @@ VSCREEN * intern uiopen( SAREA *area, const char *title, screen_flags flags )
 {
     VSCREEN             *vs;
 
-    vs = MemAlloc( sizeof( VSCREEN ) );
+    vs = MemAlloc( sizeof( *vs ) );
     if( vs != NULL ) {
         uiscreeninit( vs, area, flags );
         if( title != NULL ) {
-            vs->title = MemAlloc( strlen( title ) + 1 );
-            strcpy( (char *)vs->title, title );
+            vs->title = MemStrdupSafe( title );
             vs->dynamic_title = true;
         }
         uivopen( vs );

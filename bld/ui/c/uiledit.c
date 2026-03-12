@@ -108,7 +108,7 @@ a_ui_edit *uibegedit( VSCREEN *vs, ORD row, ORD col, unsigned len,
     unsigned        l;
     a_ui_edit       *edit;
 
-    edit = MemAlloc( sizeof( a_ui_edit ) );
+    edit = MemAlloc( sizeof( *edit ) );
     if( edit == NULL ) {
         return( NULL );
     }
