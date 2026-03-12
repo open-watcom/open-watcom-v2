@@ -59,7 +59,7 @@ static void setPrompt( void )
     if( EditVars.SpawnPrompt != NULL && EditVars.SpawnPrompt[0] != '\0' ) {
         tmp = getenv( PROMPT_ENVIRONMENT_VARIABLE );
         if( tmp != NULL ) {
-            oldPrompt = MemStrdup( tmp );
+            oldPrompt = MemStrdupSafe( tmp );
         } else {
             oldPrompt = NULL;
         }

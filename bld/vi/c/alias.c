@@ -61,7 +61,7 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
                 MemFree( curr->alias );
                 MemFree( DeleteLLItem( (ss **)head, (ss **)tail, (ss *)curr ) );
             } else {
-                curr->expand = MemStrdup( what );
+                curr->expand = MemStrdupSafe( what );
             }
         }
     }
@@ -70,8 +70,8 @@ static vi_rc setGenericAlias( const char *what, alias_list **head, alias_list **
      * add the new item
      */
     curr = MemAllocSafe( sizeof( alias_list ) );
-    curr->alias = MemStrdup( str );
-    curr->expand = MemStrdup( what );
+    curr->alias = MemStrdupSafe( str );
+    curr->expand = MemStrdupSafe( what );
 
     AddLLItemAtEnd( (ss **)head, (ss **)tail, (ss *)curr );
     Message1( "%s set to \"%s\"", str, what );

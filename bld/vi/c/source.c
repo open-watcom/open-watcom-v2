@@ -602,7 +602,7 @@ static void addResidentScript( const char *fn, sfile *sf, labels *lab )
     resident    *tmp;
 
     tmp = MemAllocSafe( sizeof( resident ) );
-    tmp->fn = MemStrdup( fn );
+    tmp->fn = MemStrdupSafe( fn );
     tmp->sf = sf;
     memcpy( &tmp->lab, lab, sizeof( labels ) );
     tmp->scriptcomp = EditFlags.ScriptIsCompiled;

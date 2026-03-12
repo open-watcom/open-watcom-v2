@@ -67,7 +67,7 @@ void *MemAllocSafe( size_t size )
 /*
  * MemStrdup - allocate and duplicate string
  */
-char *MemStrdup( const char *str )
+char *MemStrdupSafe( const char *str )
 {
     return( strdup( str ) );
 }

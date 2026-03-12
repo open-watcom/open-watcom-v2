@@ -69,7 +69,7 @@ char **BuildTokenList( int num, char *list )
         if( *t == 0 ) {
             break;
         }
-        arr[i] = MemStrdup( t );
+        arr[i] = MemStrdupSafe( t );
         off += strlen( t ) + 1;
         i++;
 

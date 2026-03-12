@@ -208,9 +208,9 @@ static void tossBoundData( void )
 
 
 /*
- * doMemAlloc - see above
+ * doAlloc - see above
  */
-static void *doMemAlloc( size_t size, WHO_PTR who )
+static void *doAlloc( size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -239,9 +239,9 @@ void *MemAllocSafe( size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemAlloc( size, _TRMEM_WHO( 1 ) );
+    tmp = doAlloc( size, _TRMEM_WHO( 1 ) );
 #else
-    tmp = doMemAlloc( size, NULL );
+    tmp = doAlloc( size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
@@ -257,18 +257,18 @@ TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
 #ifdef TRMEM
-    return( doMemAlloc( size, _TRMEM_WHO( 2 ) ) );
+    return( doAlloc( size, _TRMEM_WHO( 2 ) ) );
 #else
-    return( doMemAlloc( size, NULL ) );
+    return( doAlloc( size, NULL ) );
 #endif
 
 } /* MemAlloc */
 
 /*
- * MemStrdup - allocate memory and duplicate string
+ * MemStrdupSafe - allocate memory and duplicate string
  */
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
 {
     char        *ptr;
 
@@ -282,7 +282,7 @@ char *MemStrdup( const char *str )
     }
     return( ptr );
 
-} /* MemStrdup */
+} /* MemStrdupSafe */
 
 /*
  * MemFree - free up memory
@@ -316,9 +316,9 @@ void MemFreePtrArray( void **ptr, size_t count, void(*free_fn)(void *) )
 
 
 /*
- * doMemRealloc - reallocate a block, return NULL if it fails
+ * doRealloc - reallocate a block, return NULL if it fails
  */
-static void *doMemRealloc( void *ptr, size_t size, WHO_PTR who )
+static void *doRealloc( void *ptr, size_t size, WHO_PTR who )
 {
     void        *tmp;
 
@@ -346,7 +346,7 @@ static void *doMemRealloc( void *ptr, size_t size, WHO_PTR who )
 #endif
 #ifdef __WATCOMC__
     if( tmp == NULL ) {
-        tmp = doMemAlloc( size, who );
+        tmp = doAlloc( size, who );
         if( tmp == NULL ) {
             return( NULL );
         }
@@ -365,20 +365,20 @@ static void *doMemRealloc( void *ptr, size_t size, WHO_PTR who )
     {
 #endif
         if( size > orig_size ) {
-            memset( &(((char *)tmp)[orig_size]), 0, size - orig_size );
+            memset( (char *)tmp + orig_size, 0, size - orig_size );
         }
     }
     return( tmp );
 
-} /* doMemRealloc */
+} /* doRealloc */
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 {
 #ifdef TRMEM
-    return( doMemRealloc( ptr, size, _TRMEM_WHO( 5 ) ) );
+    return( doRealloc( ptr, size, _TRMEM_WHO( 5 ) ) );
 #else
-    return( doMemRealloc( ptr, size, NULL ) );
+    return( doRealloc( ptr, size, NULL ) );
 #endif
 }
 
@@ -391,9 +391,9 @@ void *MemReallocSafe( void *ptr, size_t size )
     void        *tmp;
 
 #ifdef TRMEM
-    tmp = doMemRealloc( ptr, size, _TRMEM_WHO( 6 ) );
+    tmp = doRealloc( ptr, size, _TRMEM_WHO( 6 ) );
 #else
-    tmp = doMemRealloc( ptr, size, NULL );
+    tmp = doRealloc( ptr, size, NULL );
 #endif
     if( tmp == NULL ) {
         AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );

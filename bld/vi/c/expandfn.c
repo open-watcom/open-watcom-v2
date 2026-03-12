@@ -71,7 +71,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
         // don't change to lowercase any more
         //FileLower( fullmask );
         *argv = _MemReallocPtrArraySafe( *argv, char, argc + 1 );
-        (*argv)[argc++] = MemStrdup( fullmask );
+        (*argv)[argc++] = MemStrdupSafe( fullmask );
         return( argc );
     }
 
@@ -81,7 +81,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
     rc = GetSortDir( fullmask, false );
     if( rc != ERR_NO_ERR ) {
         *argv = _MemReallocPtrArraySafe( *argv, char, argc + 1 );
-        (*argv)[argc++] = MemStrdup( fullmask );
+        (*argv)[argc++] = MemStrdupSafe( fullmask );
         return( argc );
     }
     _splitpath2( fullmask, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
@@ -94,7 +94,7 @@ list_linenum ExpandFileNames( const char *fullmask, char ***argv )
             continue;
         _makepath( pathin, pg.drive, pg.dir, DirFiles[i]->name, NULL );
         *argv = _MemReallocPtrArraySafe( *argv, char, argc + 1 );
-        (*argv)[argc++] = MemStrdup( pathin );
+        (*argv)[argc++] = MemStrdupSafe( pathin );
     }
     return( argc );
 

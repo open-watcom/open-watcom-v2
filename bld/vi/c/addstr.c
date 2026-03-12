@@ -40,6 +40,6 @@ void ReplaceString( char **where, const char *str )
 {
 
     MemFree( *where );
-    *where = MemStrdup( str );
+    *where = MemStrdupSafe( str );
 
 } /* ReplaceString */

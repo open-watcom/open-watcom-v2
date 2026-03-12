@@ -177,7 +177,7 @@ static vi_rc selectTag( FILE *fp, const char *str, char *fname, char *buff, int 
     p = GetNextWord1( buff, tag );
     for( ;; ) {
         tag_list = _MemReallocPtrArraySafe( tag_list, char, tag_count + 1 );
-        p1 = tag_list[tag_count] = MemStrdup( p );
+        p1 = tag_list[tag_count] = MemStrdupSafe( p );
         SKIP_NOSPACES( p1 );
         p1 = strchr( tag_list[tag_count], ' ' );
         if( p1 != tag_list[tag_count] )

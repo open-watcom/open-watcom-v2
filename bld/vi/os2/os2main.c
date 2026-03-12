@@ -50,7 +50,7 @@ static void getEXEName( char *name )
     } else {
         _makepath( tmppath, pg.drive, pg.dir, pg.fname, "exe" );
         _searchenv( tmppath, "PATH", path );
-        EXEName = MemStrdup( path );
+        EXEName = MemStrdupSafe( path );
     }
 
 } /* getEXEName */

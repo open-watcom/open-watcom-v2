@@ -287,7 +287,7 @@ file *FileAlloc( const char *name )
      * initialize file info
      */
     if( name != NULL ) {
-        cfile->name = MemStrdup( name );
+        cfile->name = MemStrdupSafe( name );
         GetCWD1( &(cfile->home) );
         MyGetFileSize( name, &(cfile->size) );
     }

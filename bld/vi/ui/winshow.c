@@ -158,7 +158,7 @@ void WindowTitleAOI( window_id wid, const char *title, bool active )
     if( title == NULL ) {
         w->title = NULL;
     } else {
-        w->title = MemStrdup( title );
+        w->title = MemStrdupSafe( title );
     }
     if( active ) {
         DrawBorder( wid );

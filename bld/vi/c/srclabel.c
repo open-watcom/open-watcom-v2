@@ -73,7 +73,7 @@ vi_rc AddLabel( sfile *sf, labels *labs, const char *lbl )
     /*
      * set name and position of label
      */
-    labs->name[labs->cnt] = MemStrdup( lbl );
+    labs->name[labs->cnt] = MemStrdupSafe( lbl );
     labs->pos[labs->cnt] = sf;
     labs->cnt++;
     return( ERR_NO_ERR );

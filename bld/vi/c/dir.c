@@ -53,7 +53,7 @@ void GetCWD1( char **str )
     char        bob[_MAX_PATH];
 
     GetCWD2( bob, sizeof( bob ) );
-    *str = MemStrdup( bob );
+    *str = MemStrdupSafe( bob );
 
 } /* GetCWD1 */
 

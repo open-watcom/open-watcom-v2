@@ -162,8 +162,8 @@ vi_rc AddMatchString( const char *data )
     if( *st2 == '\0' ) {
         return( ERR_INVALID_MATCH );
     }
-    MatchData[MatchCount] = MemStrdup( st );
-    MatchData[MatchCount + 1] = MemStrdup( st2 );
+    MatchData[MatchCount] = MemStrdupSafe( st );
+    MatchData[MatchCount + 1] = MemStrdupSafe( st2 );
     MatchCount += 2;
     Message1( "match pair \"%s\"-\"%s\" added", st, st2 );
     return( DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -172,10 +172,10 @@ vi_rc AddMatchString( const char *data )
 
 void MatchInit( void )
 {
-    MatchData[0] = MemStrdup( "{" );
-    MatchData[1] = MemStrdup( "}" );
-    MatchData[2] = MemStrdup( "\\(" );
-    MatchData[3] = MemStrdup( "\\)" );
+    MatchData[0] = MemStrdupSafe( "{" );
+    MatchData[1] = MemStrdupSafe( "}" );
+    MatchData[2] = MemStrdupSafe( "\\(" );
+    MatchData[3] = MemStrdupSafe( "\\)" );
 }
 
 void MatchFini( void )

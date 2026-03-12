@@ -224,7 +224,7 @@ char *GetInitialFileName( void )
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
-        ptr = MemStrdup( path );
+        ptr = MemStrdupSafe( path );
     } else {
         ptr = NULL;
     }

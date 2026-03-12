@@ -284,7 +284,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GetCWD1( &CurrentDirectory );
     SetCWD( StartDirectory );
     if( cfgFN == NULL ) {
-        cfgFN = MemStrdup( CFG_NAME );
+        cfgFN = MemStrdupSafe( CFG_NAME );
     }
 
     argv = ExpandEnv( &argc, argv, VIENV );
@@ -310,7 +310,7 @@ static void doInitializeEditor( int argc, char *argv[] )
      * initial configuration
      */
     strcpy( EditVars.Majick.str, "()~@" );
-    EditVars.FileEndString = MemStrdup( "[END_OF_FILE]" );
+    EditVars.FileEndString = MemStrdupSafe( "[END_OF_FILE]" );
     MatchInit();
     SetGadgetString( NULL );
     WorkLine = MemAllocSafe( sizeof( line ) + EditVars.MaxLineLen + 2 );
@@ -349,14 +349,14 @@ static void doInitializeEditor( int argc, char *argv[] )
      * more misc. setup
      */
     if( EditVars.WordDefn == NULL ) {
-        EditVars.WordDefn = MemStrdup( &WordDefnDefault[6] );
+        EditVars.WordDefn = MemStrdupSafe( &WordDefnDefault[6] );
         InitWordSearch( EditVars.WordDefn );
     }
     if( EditVars.WordAltDefn == NULL ) {
-        EditVars.WordAltDefn = MemStrdup( WordDefnDefault );
+        EditVars.WordAltDefn = MemStrdupSafe( WordDefnDefault );
     }
     if( EditVars.TagFileName == NULL ) {
-        EditVars.TagFileName = MemStrdup( "tags" );
+        EditVars.TagFileName = MemStrdupSafe( "tags" );
     }
     DotBuffer = _MemAllocArraySafe( vi_key, maxdotbuffer + 2 );
     AltDotBuffer = _MemAllocArraySafe( vi_key, maxdotbuffer + 2 );
@@ -575,7 +575,7 @@ static void doInitializeEditor( int argc, char *argv[] )
         LoadHistory( cmd );
     }
     if( EditVars.GrepDefault == NULL ) {
-        EditVars.GrepDefault = MemStrdup( "*.(c|h)" );
+        EditVars.GrepDefault = MemStrdupSafe( "*.(c|h)" );
     }
     if( goCmd[0] != '\0' ) {
         KeyAddString( goCmd );
@@ -597,7 +597,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GlobVarAddStr( GLOBVAR_OS386, "1" );
 #endif
     if( EditVars.StatusString == NULL ) {
-        EditVars.StatusString = MemStrdup( "L:$6L$nC:$6C" );
+        EditVars.StatusString = MemStrdupSafe( "L:$6L$nC:$6C" );
     }
     UpdateStatusWindow();
 #ifdef __WIN__

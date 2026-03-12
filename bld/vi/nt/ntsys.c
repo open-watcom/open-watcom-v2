@@ -107,7 +107,7 @@ void ScreenInit( void )
 
     tmp[0] = '\0';
     GetConsoleTitle( tmp, sizeof( tmp ) );
-    oldConTitle = MemStrdup( tmp );
+    oldConTitle = MemStrdupSafe( tmp );
     if( !EditFlags.Quiet ) {
         SetConsoleTitle( "Open Watcom vi" );
     }

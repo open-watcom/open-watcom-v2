@@ -701,7 +701,7 @@ vi_rc SelectLineInFile( selflinedata *sfd )
                     }
                     if( rc == ERR_NO_ERR ) {
                         MemFree( (void *)sfd->vals[cln - 1] );
-                        sfd->vals[cln - 1] = MemStrdup( tmp );
+                        sfd->vals[cln - 1] = MemStrdupSafe( tmp );
                         redraw = true;
                     }
                     break;

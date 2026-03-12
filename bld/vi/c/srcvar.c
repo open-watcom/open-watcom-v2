@@ -76,7 +76,7 @@ static void var_add( const char *name, const char *val, vars_list *vl )
     name_len = strlen( name );
     new = MemAllocSafe( offsetof( vars, name ) + name_len + 1 );
     memcpy( new->name, name, name_len + 1 );
-    new->value = MemStrdup( val );
+    new->value = MemStrdupSafe( val );
     new->len = len;
 
 #ifndef VICOMP
