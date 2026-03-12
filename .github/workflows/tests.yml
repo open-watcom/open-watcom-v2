@@ -55,7 +55,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:
@@ -75,7 +75,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:

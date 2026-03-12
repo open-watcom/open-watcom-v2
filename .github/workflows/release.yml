@@ -21,7 +21,7 @@ jobs:
       runit: ${{steps.check_tag.outputs.old}}
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - if: env.OWTESTMODE != '1'
       name: Check tag reference
       id: check_tag
@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: ${{matrix.title}}
       uses: ./.github/actions/relload
       with:
@@ -137,7 +137,7 @@ jobs:
       mrelid: ${{steps.mrelrel.outputs.relid}}
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: GitHub Release
       id: relrel
       uses: ./.github/actions/release
@@ -174,7 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - run: echo "drelid=${{needs.release.outputs.drelid}};mrelid=${{needs.release.outputs.mrelid}}"
       shell: bash
     - name: Load asset files artifact
@@ -200,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacs
       uses: ./.github/actions/artfdelc

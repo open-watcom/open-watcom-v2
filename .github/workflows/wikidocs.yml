@@ -58,7 +58,7 @@ jobs:
         git config --global core.eol lf
         git config --global core.autocrlf input
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Bootstrap
       uses: ./.github/actions/boot
       with:
@@ -92,7 +92,7 @@ jobs:
         git config --global core.eol lf
         git config --global core.autocrlf input
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Install DOSBOX
       uses: ./.github/actions/dosboxin
     - name: Build
@@ -129,19 +129,19 @@ jobs:
       shell: cmd
     - if: env.OWTESTMODE != '1'
       name: Download Artifact html
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'rel-wikihtml-vs2022'
         path: docs
     - if: env.OWTESTMODE != '1'
       name: Download Artifact pdf
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'rel-wikipdf-vs2022'
         path: docs
     - if: env.OWTESTMODE != '1'
       name: Download Artifact readme
-      uses: actions/download-artifact@v5
+      uses: actions/download-artifact@v8
       with:
         name: 'rel-readme-vs2022'
         path: docs
@@ -162,7 +162,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - if: vars.DELETEARTIFACTS == '1'
       name: Call to delete Artifacts
       uses: ./.github/actions/artfdelc

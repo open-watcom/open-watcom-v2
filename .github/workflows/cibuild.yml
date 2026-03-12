@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
   bootstrap-prev:
     needs: start-start
@@ -67,7 +67,7 @@ jobs:
     runs-on: ${{matrix.image}}
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Set OW environment
       uses: ./.github/actions/setowenv
       with:
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Load all release files and create snapshot
       id:   snapshot
       uses: ./.github/actions/relload
@@ -165,7 +165,7 @@ jobs:
         suffix_osx: 'clang'
     - if: github.event_name == 'pull_request' && env.OWTESTMODE != '1'
       name: Upload snapshot (Pull Request)
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name:           'owsnapshot'
         path:           ${{steps.snapshot.outputs.fullname}}

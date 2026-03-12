@@ -53,7 +53,7 @@ runs:
     shell: pwsh
   - if: env.OWTESTMODE != '1'
     name: Upload Artifact ${{steps.artifact_name.outputs.id}}
-    uses: actions/upload-artifact@v4
+    uses: actions/upload-artifact@v6
     with:
       name:             ${{steps.artifact_name.outputs.id}}
       path:             ${{steps.srcpath.outputs.path}}

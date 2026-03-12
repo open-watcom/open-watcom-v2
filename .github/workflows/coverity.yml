@@ -26,7 +26,7 @@ jobs:
       runit: ${{steps.check_tag.outputs.old}}
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Check tag reference
       id: check_tag
       uses: ./.github/actions/ghtagchk
@@ -43,7 +43,7 @@ jobs:
       OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.tgz'
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Install DOSBOX
       uses: ./.github/actions/dosboxin
     - name: Setup curl options
@@ -105,7 +105,7 @@ jobs:
       shell: bash
     - if: env.OWDEBUG == '1' && env.OWTESTMODE != '1'
       name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name:             'coverity'
         path:             ${{steps.tarname.outputs.fullname}}
@@ -172,7 +172,7 @@ jobs:
 #      OWCOV_RESULTS_ARCHIVE: 'open-watcom-v2.zip'
 #    steps:
 #    - name: checkout
-#      uses: actions/checkout@v4
+#      uses: actions/checkout@v6
 #    - name: Install DOSBOX
 #      uses: ./.github/actions/dosboxin
 #    - name: Setup curl options
