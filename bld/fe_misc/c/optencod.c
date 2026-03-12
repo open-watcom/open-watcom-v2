@@ -627,8 +627,8 @@ static void fail( const char *msg, ... )
 
 static void dumpUsage( void )
 {
-    const char **p;
-    int        i;
+    const char  **p;
+    unsigned    i;
 
     for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
@@ -758,7 +758,7 @@ static targmask findTarget( char const *t )
 
 static void initTargets( void )
 {
-    int         i;
+    unsigned    i;
     targmask    next_mask = 1;
 
     targetList = calloc( TARGETS_COUNT, sizeof( TARGET ) );
