@@ -1300,7 +1300,7 @@ static dir_handle      *DirOpenf( const char *fspec, object_loc fnloc )
     error_handle    errh;
     file_parse      parse;
 
-    dh = (dir_handle *)MemAlloc( sizeof( dir_handle ) );
+    dh = MemAlloc( sizeof( dir_handle ) );
     if( dh == NULL ) {
         NoMemory();
         /* never return */
