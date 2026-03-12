@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,13 +61,19 @@ typedef struct browser {
 
 static browser *FileList = NULL;
 
-static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid id )
+static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid id, const char *name )
 {
     browser     *hndl;
 
     _SMAlloc( hndl, sizeof( browser ) );
     if( hndl == NULL )
         return( NULL );
+    _SMAlloc( hndl->open_name, strlen( name ) + 1 );
+    if( hndl->open_name == NULL ) {
+        _SMFree( hndl );
+        return( NULL );
+    }
+    strcpy( hndl->open_name, name );
     hndl->next = FileList;
     FileList = hndl;
     hndl->file_off = (unsigned long)(-(long)SM_BUF_SIZE);
@@ -79,7 +85,6 @@ static browser *FInitSource( sm_file_handle fp, sm_mod_handle mod, sm_cue_fileid
     SMSeekEnd( fp );
     hndl->eof_off = SMTell( fp );
     SMSeekOrg( fp, hndl->bias );
-    hndl->open_name = NULL;
     hndl->use = 1;
     hndl->mod = mod;
     hndl->id = id;
@@ -112,12 +117,9 @@ browser *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id )
     fp = SMOpenRead( name );
     if( SMNilHandle( fp ) )
         return( NULL );
-    hndl = FInitSource( fp, mod, id );
+    hndl = FInitSource( fp, mod, id, name );
     if( hndl == NULL ) {
         SMClose( fp );
-    } else {
-        _SMAlloc( hndl->open_name, strlen( name ) + 1 );
-        strcpy( hndl->open_name, name );
     }
     return( hndl );
 }
