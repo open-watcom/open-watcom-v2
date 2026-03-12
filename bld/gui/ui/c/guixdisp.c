@@ -201,13 +201,13 @@ static char *tabFilter( const char *message )
 
     /* allocate another chunk of memory since */
     /* reallocating space for string literals is a no no */
-    new_message = (char *)MemStrdup( message );
+    new_message = MemStrdup( message );
     for( ;; ) {
         tab_pos = strcspn( new_message, "\t" );
         len = strlen( new_message );
         if( tab_pos == len )
             break;      /* no more tabs */
-        new_message = (char *)MemRealloc( new_message, len + TAB_SIZE + 1 );
+        new_message = MemRealloc( new_message, len + TAB_SIZE + 1 );
         /* don't forget the NULL */
         start = new_message + tab_pos;
         memmove( start + TAB_SIZE, start + 1, strlen( start + 1 ) + 1 );
@@ -284,7 +284,7 @@ static bool getNumStringControls( int *num_controls, const char *old_message, st
             }
         }                                   /* add new line to error box */
         new_num = *num_controls + 1;
-        new_info = (string_info *)MemRealloc( *info, sizeof( string_info ) * new_num );
+        new_info = MemRealloc( *info, sizeof( string_info ) * new_num );
         ok = ( new_info != NULL );
         if( !ok ) {
             break;
@@ -440,7 +440,7 @@ gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *messag
     }
 
     num_controls += num_string_controls;
-    controls_info = (gui_control_info *)MemAlloc( sizeof( gui_control_info ) * num_controls );
+    controls_info = MemAlloc( sizeof( gui_control_info ) * num_controls );
     if( controls_info == NULL ) {
         freeStringControls( num_string_controls, strings );
         return( GUI_RET_CANCEL );

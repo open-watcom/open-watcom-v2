@@ -73,7 +73,7 @@ bool GUIXCreateFixedToolbar( gui_window *wnd )
         with_excl = NULL;
         menu.label = tbar->toolinfo.toolbar[i].label;
         if( menu.label != NULL ) {
-            with_excl = (char *)MemAlloc( strlen( menu.label ) + strlen( LIT_GUI( Exclamation ) ) + 1 );
+            with_excl = MemAlloc( strlen( menu.label ) + strlen( LIT_GUI( Exclamation ) ) + 1 );
             if( with_excl != NULL ) {
                 strcpy( with_excl, menu.label );
                 strcat( with_excl, LIT_GUI( Exclamation ) );
@@ -286,7 +286,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
     }
-    tbar = wnd->tbar = (toolbarinfo *)MemAlloc( sizeof( toolbarinfo ) );
+    tbar = wnd->tbar = MemAlloc( sizeof( toolbarinfo ) );
     if( tbar == NULL ) {
         return( false );
     }
@@ -294,7 +294,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         tbar->toolinfo = NoToolbar;
     } else {
         size = sizeof( gui_toolbar_struct ) * toolinfo->num_items;
-        new_toolinfo = (gui_toolbar_struct *)MemAlloc( size );
+        new_toolinfo = MemAlloc( size );
         if( new_toolinfo == NULL ) {
             MemFree( tbar );
             wnd->tbar = NULL;

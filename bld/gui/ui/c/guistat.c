@@ -67,7 +67,7 @@ bool GUIAPI GUICreateStatusWindow( gui_window *wnd, gui_ord x, gui_ord height, g
     if( ( wnd->parent != NULL ) || ( wnd->status != NULL ) || ( colour == NULL ) ) {
         return( false );
     }
-    stat_info = (statusinfo *)MemAlloc( sizeof( statusinfo ) );
+    stat_info = MemAlloc( sizeof( statusinfo ) );
     if( stat_info == NULL ) {
         return( false );
     }

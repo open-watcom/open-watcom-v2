@@ -310,7 +310,7 @@ char *GUIMakeEditCopy( char *buffer, int length )
     char        *copy;
 
     if( length > 0 ) {
-        copy = (char *)MemAlloc( length + 1 );
+        copy = MemAlloc( length + 1 );
         if( copy != NULL ) {
             memcpy( copy, buffer, length );
             copy[length] = '\0';

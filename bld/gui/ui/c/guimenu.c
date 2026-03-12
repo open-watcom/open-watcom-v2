@@ -101,7 +101,7 @@ static bool MenuConvert( const char *text, unsigned short *flags, char **new, bo
     if( end == NULL ) {
         length++; /* no & so need room for NULL as it doesn't replace & */
     }
-    new_str = (char *)MemAlloc( length );
+    new_str = MemAlloc( length );
     *new = new_str;
     if( new_str == NULL ) {
         return( false );
@@ -143,7 +143,7 @@ UIMENUITEM *GUIAllocMenuItems( int num_items )
 {
     UIMENUITEM  *menuitems;
 
-    menuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 1 ) );
+    menuitems = MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 1 ) );
     if( menuitems != NULL ) {
         memset( menuitems, 0, sizeof( UIMENUITEM ) * ( num_items + 1 ) );
     }
@@ -412,7 +412,7 @@ static VBARMENU *GUIAllocVBarMenu( void )
 {
     VBARMENU    *vbarmenu;
 
-    vbarmenu = (VBARMENU *)MemAlloc( sizeof( VBARMENU ) );
+    vbarmenu = MemAlloc( sizeof( VBARMENU ) );
     if( vbarmenu != NULL ) {
         vbarmenu->titles = NULL;
         vbarmenu->currmenu = -1;
@@ -468,7 +468,7 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
     if( ( position > num_items ) || ( position == -1 ) ) {
         position = num_items;
     }
-    newmenuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 2 ) );
+    newmenuitems = MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 2 ) );
     if( newmenuitems == NULL ) {
         return( false );
     }
@@ -610,7 +610,7 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
     if( num_items == 1 ) {
         newmenuitems = NULL;
     } else {
-        newmenuitems = (UIMENUITEM *)MemAlloc( sizeof( UIMENUITEM ) * num_items );
+        newmenuitems = MemAlloc( sizeof( UIMENUITEM ) * num_items );
         if( newmenuitems == NULL ) {
             return( false );
         }

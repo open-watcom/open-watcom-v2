@@ -227,7 +227,7 @@ static bool InsertPopup( gui_window *wnd, gui_ctl_id id, HMENU hpopup, hint_type
 
     hmenu = GetPopupHMENU( wnd, GUIGetHMENU( wnd ), id, NULL, NULL, type );
     if( hmenu != hpopup ) {
-        info = (popup_info *)MemAlloc( sizeof( popup_info ) );
+        info = MemAlloc( sizeof( popup_info ) );
         if( info == NULL )
             return( false );
         info->next = wnd->popup;

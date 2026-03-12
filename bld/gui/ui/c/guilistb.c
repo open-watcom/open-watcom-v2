@@ -44,7 +44,7 @@ typedef const char  **lb_data;
 static bool FillInEmptyList( a_list *list )
 {
     list->choice = 0;
-    list->data_handle = (const void *)MemAlloc( sizeof( char * ) );
+    list->data_handle = MemAlloc( sizeof( char * ) );
     if( list->data_handle == NULL ) {
         return( false );
     }
@@ -73,7 +73,7 @@ bool GUIListBoxDeleteItem( a_list *list, int choice )
     if( choice >= num_items ) {
         return( false );
     }
-    new_data = (lb_data)MemAlloc( sizeof( char * ) * num_items );
+    new_data = MemAlloc( sizeof( char * ) * num_items );
     if( new_data == NULL ) {
         return( false );
     }
@@ -125,7 +125,7 @@ a_list *GUICreateListBox( void )
 {
     a_list      *list;
 
-    list = (a_list *)MemAlloc( sizeof( a_list ) );
+    list = MemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
@@ -145,7 +145,7 @@ a_list *GUICreateEditMLE( const char *text )
     char        *absolute_end;
     #define     MLE_NEWLINE     "\r\n"
 
-    list = (a_list *)MemAlloc( sizeof( a_list ) );
+    list = MemAlloc( sizeof( a_list ) );
     if( list == NULL ) {
         return( NULL );
     }
@@ -186,7 +186,7 @@ static lb_data ResizeList( a_list *list, unsigned num_to_add, int *choice )
     lb_data     new_data;
 
     num_items = GUIListSize( list );
-    new_data = (lb_data)MemAlloc( ( num_items + num_to_add + 1 ) * sizeof( char * ) );
+    new_data = MemAlloc( ( num_items + num_to_add + 1 ) * sizeof( char * ) );
     if( new_data == NULL ) {
         return( NULL );
     }
@@ -210,14 +210,14 @@ static bool AddString( lb_data data, const char *text, int choice )
 
     if( text != NULL ) {
         length = strlen( text );
-        str = (char *)MemAlloc( length + 1 );
+        str = MemAlloc( length + 1 );
         if( str == NULL ) {
             MemFree( (void *)data );
             return( false );
         }
         strcpy( str, text );
     } else {
-        str = (char *)MemAlloc( sizeof( char ) );
+        str = MemAlloc( sizeof( char ) );
         if( str == NULL ) {
             MemFree( (void *)data );
             return( false );

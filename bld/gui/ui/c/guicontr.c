@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,7 +144,7 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
     if( dlg_node == NULL ) {
         return( NULL );
     }
-    control = (gui_control *)MemAlloc( sizeof( gui_control ) );
+    control = MemAlloc( sizeof( gui_control ) );
     if( control != NULL ) {
         control->control_class = ctl_info->control_class;
         control->id = ctl_info->id;

@@ -96,7 +96,7 @@ static bool WAllocMenuEntry( GUIRMenuEntry **entry )
     ok = ( entry != NULL );
 
     if( ok ) {
-        *entry = (GUIRMenuEntry *)MemAlloc( sizeof( GUIRMenuEntry ) );
+        *entry = MemAlloc( sizeof( GUIRMenuEntry ) );
         ok = ( *entry != NULL );
     }
 

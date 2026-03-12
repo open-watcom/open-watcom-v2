@@ -113,7 +113,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
 
     if( ok ) {
         *cntls = NULL;
-        *hdr = (DialogBoxHeader *)MemAlloc( sizeof(DialogBoxHeader) );
+        *hdr = MemAlloc( sizeof(DialogBoxHeader) );
         ok = ( *hdr != NULL );
     }
 
@@ -122,7 +122,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
     }
 
     if( ok ) {
-        *cntls = (DialogBoxControl *)MemAlloc( (*hdr)->NumOfItems * sizeof( DialogBoxControl ) );
+        *cntls = MemAlloc( (*hdr)->NumOfItems * sizeof( DialogBoxControl ) );
         ok = ( *cntls != NULL );
     }
 
@@ -343,7 +343,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     if( hdr == NULL )
         return( NULL ) ;
-    dlg_info = (gui_create_info *)MemAlloc( sizeof( gui_create_info ) );
+    dlg_info = MemAlloc( sizeof( gui_create_info ) );
     if( dlg_info == NULL )
         return( NULL ) ;
 
@@ -437,7 +437,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent_wnd, GUIE
     }
 
     if( ok ) {
-        controls_info = (gui_control_info *)MemAlloc( sizeof( gui_control_info ) * hdr->NumOfItems );
+        controls_info = MemAlloc( sizeof( gui_control_info ) * hdr->NumOfItems );
         ok = ( controls_info != NULL );
     }
 

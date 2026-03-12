@@ -51,7 +51,7 @@ bool GUICreateHot( gui_control_info *ctl_info, VFIELD *field )
     if( field == NULL ) {
         return( false );
     }
-    hot_spot = (a_hot_spot *)MemAlloc( sizeof( a_hot_spot ) );
+    hot_spot = MemAlloc( sizeof( a_hot_spot ) );
     field->u.hs = hot_spot;
     if( hot_spot == NULL ) {
         return( false );

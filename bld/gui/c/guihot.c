@@ -56,7 +56,7 @@ bool GUIAPI GUIInitHotSpots( int num_hot_spots, gui_resource *hot )
         GUIHotSpots = NULL;
         return( true );
     }
-    GUIHotSpots = (hotspot_info *)MemAlloc( sizeof( hotspot_info ) * num_hot_spots );
+    GUIHotSpots = MemAlloc( sizeof( hotspot_info ) * num_hot_spots );
     if( GUIHotSpots == NULL ) {
         GUINumHotSpots = 0;
         return( false );
