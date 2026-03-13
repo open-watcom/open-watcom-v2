@@ -461,7 +461,7 @@ void PopInpStack( void )
     if( old == NULL )
         return;
     if( old->lang != NULL ) {
-        StrCopyDst( old->lang, buff );
+        strcpy( buff, old->lang );
         MemFree( old->lang );
         old->lang = NULL; /* in case NewLang gets an error */
         NewLang( buff, 0 );

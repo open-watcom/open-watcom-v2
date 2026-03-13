@@ -299,8 +299,7 @@ static void GetInitCmd( int pass )
     GetRawItem( cmd );
     if( pass == 2 ) {
         MemFree( InitCmdList );
-        InitCmdList = MemAllocSafe( strlen( cmd ) + 1 );
-        StrCopyDst( cmd, InitCmdList );
+        InitCmdList = MemStrdupSafe( cmd );
     }
 }
 

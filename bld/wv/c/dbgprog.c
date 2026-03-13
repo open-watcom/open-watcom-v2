@@ -139,13 +139,7 @@ bool InitCmd( void )
             start = curr;
             while( *curr != ' ' && *curr != '\t' && *curr != NULLCHAR )
                 ++curr;
-            parm = MemAlloc( curr - start + 1 );
-            if( parm == NULL )
-                return( false );
-            SymFileName = parm;
-            while( start < curr )
-                *parm++ = *start++;
-            *parm = NULLCHAR;
+            SymFileName = parm = MemToStringSafe( start, curr - start );
             while( *curr == ' ' || *curr == '\t' )
                 ++curr;
             argc = 0;
@@ -1118,7 +1112,7 @@ void SetSymFileName( const char *file )
 {
     if( SymFileName != NULL )
         MemFree( SymFileName );
-    SymFileName = MemStrdup( file );
+    SymFileName = MemStrdupSafe( file );
 }
 
 
@@ -1206,12 +1200,13 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     fh_lcl = FileOpen( local, OP_READ );
     if( fh_lcl == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), local );
-        return( false );
+        /* never return */
     }
     fh_rem = FileOpen( remote, OP_REMOTE | OP_WRITE | OP_CREATE | OP_TRUNC | OP_EXEC );
     if( fh_rem == NIL_HANDLE ) {
         FileClose( fh_lcl );
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), remote );
+        /* never return */
     }
     bsize = 0x8000;
     buff = MemAlloc( bsize );
@@ -1317,7 +1312,6 @@ static void ProgNew( void )
     char        *cmd;
     char        *parm;
     char        *end;
-    char        *new;
     const char  *symfile;
     size_t      len;
     size_t      clen;
@@ -1349,10 +1343,7 @@ static void ProgNew( void )
                     ++start;
                     --len;
                 }
-                new = MemAllocSafe( start - symfile + 1 );
-                SymFileName = new;
-                memcpy( new, symfile, start - symfile );
-                new[start - symfile] = NULLCHAR;
+                SymFileName = MemToStringSafe( symfile, start - symfile );
                 SKIP_SPACES;
             }
         }

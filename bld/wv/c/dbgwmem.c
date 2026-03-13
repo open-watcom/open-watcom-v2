@@ -535,7 +535,7 @@ static void MemNewBackout( a_window wnd )
     backout->curr_offset = MemCurrOffset( wnd );
     backout->total_size = mem->total_size;
     backout->has_current = WndHasCurrent( wnd );
-    if( mem->u.m.follow ) {
+    if( mem->u.m.follow != NULL ) {
         backout->follow = MemStrdupSafe( mem->u.m.follow );
     } else {
         backout->follow = NULL;

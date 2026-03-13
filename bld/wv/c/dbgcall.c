@@ -113,7 +113,7 @@ static void DoCallSet( void )
             const char  *arg;
             char        *start;
         } u;
-        unsigned        len;
+        size_t          len;
     }                   new_parms[MAX_PARMS];
     location_list       ll;
     dig_type_info       ti;
@@ -158,14 +158,8 @@ static void DoCallSet( void )
     }
     ReqEOC();
     if( start != NULL ) {
-        char *new_return;
-
-        i = ScanPos() - start;
-        new_return = MemAllocSafe( i + 1 );
-        memcpy( new_return, start, i );
-        new_return[i] = NULLCHAR;
         MemFree( DefReturn );
-        DefReturn = new_return;
+        DefReturn = MemToStringSafe( start, ScanPos() - start );
     }
     if( parm >= 0 ) {
         for( i = 0; i < parm; ++i ) {
@@ -181,7 +175,7 @@ static void DoCallSet( void )
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 break;
             } else {
-                memcpy( new_arg, new_parms[i].u.arg, new_parms[i].len );
+                strncpy( new_arg, new_parms[i].u.arg, new_parms[i].len );
                 new_arg[new_parms[i].len] = NULLCHAR;
                 new_parms[i].u.start = new_arg;
             }
