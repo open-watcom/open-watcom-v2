@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -272,12 +272,12 @@ static void InitStatDialog( HWND hwnd )
     combo = GetDlgItem( hwnd, STAT_REGISTER_COMBO );
     MADRegSetWalk( MTK_ALL, CreateAllRegLists, &data );
     if( data.index == 1 ) {
-        SendMessage( combo, CB_GETLBTEXT, (WPARAM)0, (LPARAM)(LPSTR)buff );
+        SendMessage( combo, CB_GETLBTEXT, 0, (LPARAM)(LPSTR)buff );
         SetDlgItemText( hwnd, STAT_REGISTER_SET, buff );
         DestroyWindow( combo );
     } else {
         GetChildPos( hwnd, combo, &c_rect );
-        SendMessage( combo, CB_SETCURSEL, (WPARAM)0, (LPARAM)0 );
+        SendMessage( combo, CB_SETCURSEL, 0, 0 );
         c_rect.right += data.max_len;
         c_rect.bottom += SendMessage( combo, CB_GETITEMHEIGHT, 0, 0 ) * ( data.index + 1);
         MoveWindow( combo, c_rect.left, c_rect.top, c_rect.right, c_rect.bottom, FALSE );
@@ -353,8 +353,8 @@ static void SwitchRegSets( HWND hwnd, StatData *statdata )
     if( old_index == new_index ) {
         return;
     }
-    SendDlgItemMessage( hwnd, old_index + REG_LIST_FIRST, HIDE_REG_LIST, (WPARAM)0, (LPARAM)0 );
-    SendDlgItemMessage( hwnd, new_index + REG_LIST_FIRST, UNHIDE_REG_LIST, (WPARAM)0, (LPARAM)0 );
+    SendDlgItemMessage( hwnd, old_index + REG_LIST_FIRST, HIDE_REG_LIST, 0, 0 );
+    SendDlgItemMessage( hwnd, new_index + REG_LIST_FIRST, UNHIDE_REG_LIST, 0, 0 );
     statdata->reg_set_index = new_index;
 }
 

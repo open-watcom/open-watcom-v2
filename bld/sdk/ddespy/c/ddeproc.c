@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,7 +152,7 @@ static void resetFonts( DDEWndInfo *info )
     info->horz_extent = info->horz_extent * (new_char_extent / info->char_extent + 1);
     info->char_extent = new_char_extent;
     SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, info->horz_extent, 0L );
-    SendMessage( info->list.box, WM_SETFONT, (WPARAM)GetMonoFont(), MAKELONG( TRUE, 0 ) );
+    SendMessage( info->list.box, WM_SETFONT, (WPARAM)GetMonoFont(), TRUE );
     SetTrackFont();
 
 } /* resetFonts */

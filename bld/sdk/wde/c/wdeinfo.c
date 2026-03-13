@@ -728,7 +728,7 @@ INT_PTR CALLBACK WdeInfoWndDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPAR
 #if defined( __NT__ )
         if( WdeInfoColor != GetSysColor( COLOR_BTNFACE ) ) {
             /* Fake it, this proc does not get it ... */
-            SendMessage( hWnd, WM_SYSCOLORCHANGE, (WPARAM)0, (LPARAM)0 );
+            SendMessage( hWnd, WM_SYSCOLORCHANGE, 0, 0 );
         }
 #endif
         GetClientRect( hWnd, &r );

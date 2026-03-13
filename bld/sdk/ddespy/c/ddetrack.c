@@ -178,7 +178,7 @@ void SetTrackFont( void )
         makePushWin( info, Tracking[i].hwnd, info->hdrinfo, info->hdrcnt );
         GetClientRect( Tracking[i].hwnd, &area );
         ResizeListBox( (WORD)( area.right - area.left ), (WORD)( area.bottom - area.top ), &info->list );
-        SendMessage( info->list.box, WM_SETFONT, (WPARAM)font, MAKELONG( TRUE, 0 ) );
+        SendMessage( info->list.box, WM_SETFONT, (WPARAM)font, TRUE );
     }
 
 } /* SetTrackFont */

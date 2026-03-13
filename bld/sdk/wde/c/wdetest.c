@@ -260,16 +260,14 @@ INT_PTR CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         switch( LOWORD( wParam ) ) {
         case IDOK:
         case IDCANCEL:
-            PostMessage( WdeGetMainWindowHandle(), WM_COMMAND,
-                         IDM_TEST_MODE, MAKELONG( 0, 0 ) );
+            PostMessage( WdeGetMainWindowHandle(), WM_COMMAND, IDM_TEST_MODE, 0 );
             break;
         }
         break;
 
     case WM_CLOSE:
         /* send a IDM_TEST message to the parent to toggle test mode off */
-        PostMessage( WdeGetMainWindowHandle(), WM_COMMAND,
-                     IDM_TEST_MODE, MAKELONG( 0, 0 ) );
+        PostMessage( WdeGetMainWindowHandle(), WM_COMMAND, IDM_TEST_MODE, 0 );
         break;
     }
 

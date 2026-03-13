@@ -2612,7 +2612,6 @@ bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE 
 
 INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    LPARAM  new_lparam;
     bool    ret;
 
     ret = false;
@@ -2663,8 +2662,7 @@ INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARA
         if( LOWORD( lParam ) != (WORD)HTCLIENT && LOWORD( lParam ) != (WORD)HTERROR &&
             LOWORD( lParam ) != (WORD)HTTRANSPARENT &&
             LOWORD( lParam ) != (WORD)HTNOWHERE ) {
-            new_lparam = MAKELONG( HTCLIENT, HIWORD( lParam ) );
-            SendMessage( hWnd, message, wParam, new_lparam );
+            SendMessage( hWnd, message, wParam, MAKELPARAM( HTCLIENT, HIWORD( lParam ) ) );
         }
         ret = true;
         break;

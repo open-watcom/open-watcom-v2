@@ -877,7 +877,7 @@ DWORD CALLBACK WdeStrToID( LPSTR str )
 
     num = (uint_32)strtoul( str, &ep, 0 );
     if( *ep != '\0' ) {
-        ret = MAKELONG( (UINT)0, (UINT)0 );
+        ret = 0;
     } else {
         ret = MAKELONG( (UINT)1, (UINT)num );
     }
