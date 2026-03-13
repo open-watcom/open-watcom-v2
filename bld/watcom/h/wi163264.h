@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,6 +107,8 @@
 #define GET_WM_PARENTNOTIFY_ID(wp,lp)           HIWORD(lp)
 #define GET_WM_PARENTNOTIFY_HANDLE(wp,lp)       LOWORD(lp)
 #define GET_WM_PARENTNOTIFY_POINT(wp,lp)        (lp)
+
+#define MAKEWPARAM( p1, p2 )                    ((WPARAM)(DWORD)MAKELONG( p1, p2 ))
 
 #define WC_BUTTON                               "Button"
 #define WC_COMBOBOX                             "ComboBox"
