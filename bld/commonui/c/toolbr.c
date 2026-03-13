@@ -246,7 +246,7 @@ static void reinsertButtons( toolbar *bar )
         for( t = bar->tool_list; t != NULL; t = t->next ) {
             if( !(t->flags & ITEM_BLANK) ) {
                 GetObject( t->u.hbitmap, sizeof( BITMAP ), &bm );
-                SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELONG( bm.bmWidth, bm.bmHeight ) );
+                SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELPARAM( bm.bmWidth, bm.bmHeight ) );
                 tbab.hInst = NULL;
                 tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( t->u.hbitmap, bm.bmWidth, bm.bmHeight );
                 tbb.iBitmap = (int)SendMessage( bar->hwnd, TB_ADDBITMAP, 1, (LPARAM)&tbab );
@@ -522,7 +522,7 @@ void ToolBarAddItem( toolbar *bar, TOOLITEMINFO *info )
     if( IsCommCtrlLoaded() ) {
         if( !(info->flags & ITEM_BLANK) ) {
             GetObject( info->u.hbitmap, sizeof( BITMAP ), &bm );
-            SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELONG( bm.bmWidth, bm.bmHeight ) );
+            SendMessage( bar->hwnd, TB_SETBITMAPSIZE, 0, MAKELPARAM( bm.bmWidth, bm.bmHeight ) );
             tbab.hInst = NULL;
             tbab.nID = (UINT_PTR)TB_CreateTransparentBitmap( info->u.hbitmap, bm.bmWidth, bm.bmHeight );
             tbb.iBitmap = (int)SendMessage( bar->hwnd, TB_ADDBITMAP, 1, (LPARAM)&tbab );
@@ -573,7 +573,7 @@ void ToolBarSetState( toolbar *bar, ctl_id id, WORD state )
         _wpi_invalidaterect( bar->hwnd, &t->area, FALSE );
 #ifdef __NT__
     } else {
-        SendMessage( bar->hwnd, TB_CHECKBUTTON, (WPARAM)id, MAKELONG( state & BUTTON_DOWN, 0 ) );
+        SendMessage( bar->hwnd, TB_CHECKBUTTON, (WPARAM)id, MAKELPARAM( state & BUTTON_DOWN, 0 ) );
     }
 #endif
 

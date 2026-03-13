@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -507,7 +507,7 @@ static void sendDragMessage( HWND hwnd )
 {
     if( timerID ) {
         if( isMouseButtonDown() ) {
-            SendMessage( hwnd, WM_MOUSEMOVE, 0, MAKELONG( MouseX, MouseY ) );
+            SendMessage( hwnd, WM_MOUSEMOVE, 0, MAKELPARAM( MouseX, MouseY ) );
         } else {
             /* it's possible that someone ate our WM_BUTTONUP
              * or something stupid (WVIDEO perhaps...) */

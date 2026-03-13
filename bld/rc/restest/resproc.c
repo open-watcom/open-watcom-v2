@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,7 @@ void LBPrintf( HWND lb, char *str, ... )
 
     va_start( args, str );
     vsprintf( tmp, str, args );
-    SendMessage( lb, LB_ADDSTRING, 0, (LONG)(LPSTR)tmp );
+    SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
     va_end( args );
 } /* LBPrintf */
 
