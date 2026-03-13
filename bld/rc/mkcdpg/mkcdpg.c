@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,8 +121,8 @@ static DBInformation *buildInfo( char *page ) {
     /* getting the code page info */
     memset( &theCPInfo, 0, sizeof( CPINFO ) );
     if( GetCPInfo( cp, &theCPInfo ) == 0 ) {
-        printf( "Error - unable to get info for code page %d\n", cp );
-        printf( "Error code - %d\n", GetLastError() );
+        printf( "Error - unable to get info for code page %lu\n", cp );
+        printf( "Error code - %lu\n", GetLastError() );
         freeInfo( ret );
         ret = NULL;
         goto FINISHED;
@@ -188,8 +188,8 @@ static DBInformation *buildInfo( char *page ) {
     for( i=0; i < 256; i++ ) {
         ch[0] = (char)i;
         if( MultiByteToWideChar( cp, MB_PRECOMPOSED, ch, 1, ret->table + i, 1 ) == 0 ) {
-            printf( "Error - unable to convert characters for code page %d\n", cp );
-            printf( "Error code - %d\n", GetLastError() );
+            printf( "Error - unable to convert characters for code page %lu\n", cp );
+            printf( "Error code - %lu\n", GetLastError() );
             freeInfo( ret );
             ret = NULL;
             goto FINISHED;
@@ -216,8 +216,8 @@ static DBInformation *buildInfo( char *page ) {
                     /* then ignore it, and place NULL in the array    */
                     /* otherwise we're in trouble and we should fail. */
                     if( rc != ERROR_NO_UNICODE_TRANSLATION ) {
-                        printf( "Error - unable to convert characters for code page %d\n", cp );
-                        printf( "Error code - %d\n", rc );
+                        printf( "Error - unable to convert characters for code page %lu\n", cp );
+                        printf( "Error code - %lu\n", rc );
                         freeInfo( ret );
                         ret = NULL;
                         goto FINISHED;

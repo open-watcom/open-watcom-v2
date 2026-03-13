@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ static void PrintIconDirEntry( IconDirEntry * entry, int entrynum )
             entry->Info.Width, entry->Info.Height, entry->Info.ColourCount );
     printf( "\tReserved: %d   Planes: %d   Bit count: %d\n",
             entry->Info.Reserved, entry->Info.Planes, entry->Info.BitCount );
-    printf( "\tLength: %ld   Resource name: %d\n", entry->Info.Length,
+    printf( "\tLength: %d   Resource name: %d\n", entry->Info.Length,
             entry->IconID );
 }
 

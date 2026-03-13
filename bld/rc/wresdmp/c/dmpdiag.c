@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ static void PrintDialogBoxHeader( DialogBoxHeader * head )
 /********************************************************/
 {
     puts( "Dialog Header:" );
-    printf("\tStyle: 0x%08lx  No. of items: %d\n",
+    printf("\tStyle: 0x%08x  No. of items: %d\n",
                 head->Style, head->NumOfItems );
     printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->SizeInfo.x, head->SizeInfo.y,
                 head->SizeInfo.width, head->SizeInfo.height );
@@ -105,7 +105,7 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
     printf( "x: %d   y: %d   w: %d   h: %d\n",
             control->SizeInfo.x, control->SizeInfo.y, control->SizeInfo.width,
             control->SizeInfo.height );
-    printf( "\tId: %d   Style: 0x%08lx\n", control->ID, control->Style );
+    printf( "\tId: %d   Style: 0x%08x\n", control->ID, control->Style );
     PrintControlClass( control->ClassID );
     printf( "Extra bytes: %d\n", control->ExtraBytes );
     fputs( "\tText: ", stdout );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@ static void PrintCurDirEntry( CurDirEntry * entry )
 {
     printf( "Width: %d   Height: %d   Planes: %d   BitCount: %d\n",
             entry->Width, entry->Height, entry->Planes, entry->BitCount );
-    printf( "\tLength: %ld   Resource Name: %d\n", entry->Length, entry->CurID );
+    printf( "\tLength: %u   Resource Name: %d\n", entry->Length, entry->CurID );
 }
 
 bool DumpCursorGroup( uint_32 offset, uint_32 length, FILE *fp )

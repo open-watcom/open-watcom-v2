@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,7 @@ bool DumpContents( WResTypeInfo *type, WResResInfo *res,
     bool    error;
 
     res = res;
-    fprintf( stdout, "\tOffset: 0x%08lx  Length: 0x%08lx\n",
+    fprintf( stdout, "\tOffset: 0x%08x  Length: 0x%08x\n",
             lang->Offset, lang->Length );
 
     if( type->TypeName.IsName ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,9 +101,9 @@
 #define MSG_PE_MAGIC                    "Magic (reserved):                             0x%8.4X\n"
 #define MSG_PE_LNKMAJOR                 "Link major version number:                    0x%8.2X\n"
 #define MSG_PE_LNKMINOR                 "Link minor version number:                    0x%8.2X\n"
-#define MSG_PE_CODESIZE                 "Code size:                                    0x%8.8X (%li bytes)\n"
-#define MSG_PE_INITDATASIZE             "Initialized data size:                        0x%8.8X (%li bytes)\n"
-#define MSG_PE_UNINITDATASIZE           "Uninitialized data size:                      0x%8.8X (%li bytes)\n"
+#define MSG_PE_CODESIZE                 "Code size:                                    0x%8.8X (%d bytes)\n"
+#define MSG_PE_INITDATASIZE             "Initialized data size:                        0x%8.8X (%d bytes)\n"
+#define MSG_PE_UNINITDATASIZE           "Uninitialized data size:                      0x%8.8X (%d bytes)\n"
 #define MSG_PE_ENTRYRVA                 "Entrypoint rva:                               0x%8.8X\n"
 #define MSG_PE_CODEBASE                 "Code base:                                    0x%8.8X\n"
 #define MSG_PE32_DATABASE               "Data base:                                    0x%8.8X\n"
@@ -164,11 +164,11 @@
 #define MSG_DIR_ID                      "ID:            0x%8.4X\n"
 #define MSG_DIR_IDTYPE                  "Type:          %s\n"
 #define MSG_DIR_NAME                    "Name:          "
-#define MSG_DIR_NAMEADDRESS             "Name Address:  0x%8.8X\n"
+#define MSG_DIR_NAMEADDRESS             "Name Address:  0x%8.8lX\n"
 #define MSG_DIR_NAMESIZE                "Name Size:       %8i (16-bit)\n"
 #define MSG_DIR_ENTRYRVA                "Entry rva:     0x%8.8X\n"
 
-#define MSG_DATA_RVA                    "Data rva:      0x%8.8X\n"
+#define MSG_DATA_RVA                    "Data rva:      0x%8.8lX\n"
 #define MSG_DATA_SIZE                   "Size:          0x%8.8X (%i bytes)\n"
 #define MSG_DATA_CODEPAGE               "Code page:     0x%8.8X\n"
 #define MSG_DATA_RSVD                   "RSVD:          0x%8.8X (must be 0)\n"

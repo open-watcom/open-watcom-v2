@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -392,7 +392,7 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
         printf( MSG_PE_ENTRYRVA ,               PE( exeFile->pexHdr, entry_rva ) );
         printf( MSG_PE_CODEBASE ,               PE( exeFile->pexHdr, code_base ) );
         if( IS_PE64( exeFile->pexHdr ) ) {
-            printf( MSG_PE64_IMAGEBASE ,        PE64( exeFile->pexHdr ).image_base );
+            printf( MSG_PE64_IMAGEBASE ,        PE64( exeFile->pexHdr ).image_base.u._64[0] );
         } else {
             printf( MSG_PE32_DATABASE ,         PE32( exeFile->pexHdr ).data_base );
             printf( MSG_PE32_IMAGEBASE ,        PE32( exeFile->pexHdr ).image_base );
@@ -425,10 +425,10 @@ void printPeHeader( ExeFile *exeFile, Parameters *param )
                     dll_masks_table, ED_PE_DLL_COUNT, dll_flags_labels,
                     MSG_PE_DLLFLAGSINDENT );
         if( IS_PE64( exeFile->pexHdr ) ) {
-            printf( MSG_PE64_STACKRESERVESIZE , PE64( exeFile->pexHdr ).stack_reserve_size );
-            printf( MSG_PE64_STACKCOMMITSIZE ,  PE64( exeFile->pexHdr ).stack_commit_size );
-            printf( MSG_PE64_HEAPRESERVESIZE ,  PE64( exeFile->pexHdr ).heap_reserve_size );
-            printf( MSG_PE64_HEAPCOMMITSIZE ,   PE64( exeFile->pexHdr ).heap_commit_size );
+            printf( MSG_PE64_STACKRESERVESIZE , PE64( exeFile->pexHdr ).stack_reserve_size.u._64[0] );
+            printf( MSG_PE64_STACKCOMMITSIZE ,  PE64( exeFile->pexHdr ).stack_commit_size.u._64[0] );
+            printf( MSG_PE64_HEAPRESERVESIZE ,  PE64( exeFile->pexHdr ).heap_reserve_size.u._64[0] );
+            printf( MSG_PE64_HEAPCOMMITSIZE ,   PE64( exeFile->pexHdr ).heap_commit_size.u._64[0] );
         } else {
             printf( MSG_PE32_STACKRESERVESIZE , PE32( exeFile->pexHdr ).stack_reserve_size );
             printf( MSG_PE32_STACKCOMMITSIZE ,  PE32( exeFile->pexHdr ).stack_commit_size );
@@ -479,7 +479,7 @@ void printTableContents( ResTableEntry *table, ExeFile *exeFile,
     printf( LBL_DIRHEADER );
     printf( ":   " );
     if( param->dumpOffsets ) {
-        printf( "0x%-8.8X  ", addr );
+        printf( "0x%-8.8lX  ", addr );
     }
     if( param->dumpHexHeaders ) {
         printHexBytes( addr, sizeof( resource_dir_header ), exeFile );
@@ -532,7 +532,7 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
     printf( LBL_DIRENTRY );
     printf( ":     " );
     if( param->dumpOffsets ) {
-        printf( "0x%-8.8X   ", addr );
+        printf( "0x%-8.8lX   ", addr );
     }
     if( param->dumpHexHeaders ) {
         printHexBytes( addr, sizeof( resource_dir_entry ), exeFile );
@@ -577,7 +577,7 @@ void printDataContents( ResDataEntry *data, ExeFile *exeFile,
     printf( LBL_DATAENTRY );
     printf( ":    " );
     if( param->dumpOffsets ) {
-        printf( "0x%-8.8X   ", addr );
+        printf( "0x%-8.8lX   ", addr );
     }
     if( param->dumpHexHeaders ) {
         printHexBytes( addr, sizeof( resource_entry ), exeFile );
@@ -705,7 +705,7 @@ void printHexDump( unsigned long addr, unsigned long length, ExeFile *exeFile,
         } else {
             printf( "%*s", param->hexIndentSpaces, "" );
         }
-        printf( "0x%8.8X  ", i );
+        printf( "0x%8.8lX  ", i );
 
         printHexLine( i, addr + length, exeFile,
                       "%2.2X ", "-- ", "", false, true );
