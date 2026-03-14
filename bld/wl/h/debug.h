@@ -42,6 +42,7 @@
 #define DBG_VIRTMEM     0x10
 #define DBG_DEADCODE    0x20
 #define DBG_DBGINFO     0x40
+#define DBG_HLL         0x80
 #define DBG_NOCRLF      0x8000
 #define DBG_INFO_MASK   0x7FFF
 

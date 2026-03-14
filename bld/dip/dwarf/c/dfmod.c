@@ -451,7 +451,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
         iih = info->iih;
         DCMapAddr( &info->ret->mach, iih->dcmap );
         off = FindMapAddr( iih->addr_map, info->ret );
-        if( off->imh == info->imh ) {
+        if( off && off->imh == info->imh ){ /* bird: why does dipdump crash here? */
             ret = false;
         }
     }

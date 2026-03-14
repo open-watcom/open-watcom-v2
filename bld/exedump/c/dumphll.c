@@ -41,6 +41,10 @@
 #include "hll.h"
 
 
+// prefix indicatees how to format field data
+// 1, 2 or 4 formats bytes in hex
+// 0dd formats asciiz string as fixed width string of dd chars
+
 static  const_string_table hll_dir_info_msg[] = {
     "2cbDirHeader - length of directory header      = ",
     "2cbDirEntry  - lentgh of each entry            = ",
@@ -127,7 +131,6 @@ static  const_string_table cv_seg_msg[] = {
     NULL
 };
 
-#if 0 /* not currently used, code is broken. */
 static  const_string_table hl4_linnum_first_msg[] = {
     "2  line        - line number (must be zero)     = ",
     "1  entryType   - format of entry                = ",
@@ -145,6 +148,7 @@ static  const_string_table hl4_filetab_entry_msg[] = {
     NULL
 };
 
+#if 0 // SHL FIXME to work somewhen - we don't do hll NB03 yetP
 static  const_string_table hl3_linnum_first_msg[] = {
     "2  line        - line number (must be zero)     = ",
     "1  entry_type  - format of entry                = ",
@@ -161,6 +165,7 @@ static  const_string_table hl3_filetab_entry_msg[] = {
     "4  numFiles   - number of files in table       = ",
     NULL
 };
+#endif
 
 static  const_string_table hll_linnum_entry_msg[] = {
     "2    line     - line number                    = ",
@@ -168,7 +173,6 @@ static  const_string_table hll_linnum_entry_msg[] = {
     "4    offset   - offset within segment          = ",
     NULL
 };
-#endif
 
 static  int     hll_level;
 
@@ -210,7 +214,9 @@ static void dump_hll_sstPublics( unsigned_32 base, unsigned_32 offset,
     unsigned_32         read;
 
     Wlseek( base + offset );
-    Wdputs( "==== sstPublics at offset " );
+    Wdputs( "==== sstPublics (" );
+    Puthex( hll_sstPublics, 3 );
+    Wdputs( "H) at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     for( read = 0; read < size; read += sizeof( pub32 ) + pub32.name_len ) {
@@ -281,6 +287,7 @@ static void dump_cv_sstTypes( unsigned_32 base, unsigned_32 offset,
     Wdputslc( "\n" );
 }
 
+#if 0 // FIXME to be gone
 /*
  * dump_cv_sstSymbols - dump CV sstSymbols at 'offset'
  * from 'base 'containing 'size' bytes
@@ -400,7 +407,411 @@ static void dump_cv_sstSymbols( unsigned_32 base, unsigned_32 offset,
     }
     Wdputslc( "\n" );
 }
+#endif // FIXME to be gone
 
+/*
+ * put_name - output string with single byte length prefix
+ * @param p is pointer to name length prefix
+ * @returns pointer to byte following name string
+ * FIXME to be in wdio maybe
+ */
+
+static unsigned_8 *put_name( unsigned_8 *p)
+{
+    unsigned_8 len;
+    len = *p;
+    p++;
+    fprintf( stdout, "%.*s", len, p );
+    return p + len;
+}
+
+/*
+ * put_name2 - output string with encoded length prefix
+ * @param p is pointer to name length prefix
+ * @returns pointer to byte following name string
+ * FIXME to be in wdio maybe
+ */
+
+static unsigned_8 *put_name2( unsigned_8 *p)
+{
+    unsigned_16 len;
+    len = *p++;
+    if( len & 0x80 ) {
+        len = ((len & 0x7f) << 16) | *p;
+        p++;
+    }
+    else
+      len &= 0x7f;
+    fprintf( stdout, "%.*s", len, p );
+    return p + len;
+}
+
+/*
+ * dump_hll_sstSymbols - dump HLL sstSymbols at 'offset'
+ * from 'base 'containing 'size' bytes
+ */
+static void dump_hll_sstSymbols( unsigned_32 base, unsigned_32 offset,
+                                                  unsigned_32 size )
+/*******************************************************************/
+{
+    // SHL FIXME to be finished
+    union ssr_data {
+        char            buf[300];
+        hll_ssr_all     ssr;
+    } u;
+    unsigned_32         read = 0;
+    unsigned_16         rec_len;
+    unsigned_8 *        puch;
+
+    // SHL FIXME hack cough - make work for all platforms - from bsedos.h
+    typedef unsigned char UCHAR;
+    typedef unsigned short USHORT;
+    typedef short SHORT;
+    typedef struct _DATETIME {
+        UCHAR   hours;
+        UCHAR   minutes;
+        UCHAR   seconds;
+        UCHAR   hundredths;
+        UCHAR   day;
+        UCHAR   month;
+        USHORT  year;
+        SHORT   timezone;
+        UCHAR   weekday;
+    } DATETIME;
+    DATETIME *pdt;
+
+    Wlseek( base + offset );
+    Wdputs( "==== sstSymbols (" );
+    Puthex( hll_sstSymbols, 3 );
+    Wdputs( "H) at offset " );
+    Puthex( offset, 8 );
+    Wdputslc( "\n" );
+    Wdputslc( "len/code/desc\n" );
+    while( read < size ) {
+        Wread( &rec_len, sizeof( unsigned_8 ) );
+
+        // Read encoded length and check overflows
+        if( rec_len & 0x80 ) {
+          rec_len &= 0x7f;
+          rec_len <<= 8;
+          Wread( &rec_len, sizeof( unsigned_8 ) );
+          read += 2;
+        }
+        else {
+          rec_len &= 0x7f;
+          read++;
+        }
+
+        Wdputs( "  " );
+        Puthex( rec_len, 2 );
+        Wdputs( "/" );
+
+        if( rec_len > sizeof(u.buf) ) {
+            Wdputs( " sstSymbols sub-record length exceeds 300 byte limit" );
+            Wdputslc( "!\n" );
+            break;
+        }
+
+        /* read sub-record data */
+        Wread( &u.ssr, rec_len);
+        read += rec_len;
+
+        Puthex( u.ssr.common.code, 2 );
+        Wdputs( "/" );
+
+        switch( u.ssr.common.code ) {
+        case HLL_SSR_BEGIN:
+            Wdputs( "BEGIN:    offset=" );
+            Puthex( u.ssr.begin.offset, 8 );
+            Wdputs( " length=" );
+            Puthex( u.ssr.begin.len, 4 );
+            Wdputslc( "\n" );
+            break;
+        case HLL_SSR_PROC:
+            u.ssr.proc.name[u.ssr.proc.name_len] = '\0';
+            Wdputs( "PROC:     offset=" );
+            Puthex( u.ssr.proc.offset, 8 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.proc.type, 4 );
+            Wdputs( " len=" );
+            Puthex( u.ssr.proc.len, 8 );
+            Wdputs( " pro=" );
+            Puthex( u.ssr.proc.prologue_len, 4 );
+            Wdputs( " epi=" );
+            Puthex( u.ssr.proc.prologue_body_len, 8 );
+            Wdputs( " flg=" );
+            Puthex( u.ssr.proc.flags, 2 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.proc.name_len);
+            Wdputslc( "\"\n" );
+            break;
+        case HLL_SSR_END:
+            Wdputslc( "ENDBLK:\n" );
+            break;
+        case HLL_SSR_AUTO:
+            Wdputs( "AUTO:     offset=" );
+            Puthex( u.ssr.auto_.offset, 8 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.auto_.type, 4 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.auto_.name_len );
+            Wdputslc( "\"\n" );
+            break;
+        case HLL_SSR_STATIC:
+            Wdputs( "STATIC:   offset=" );
+            Puthex( u.ssr.static_.offset, 8 );
+            Wdputs( " segment=" );
+            Puthex( u.ssr.static_.seg, 4 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.static_.type, 4 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.static_.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_TLS:
+            Wdputs( "TLS:      offset=" );
+            Puthex( u.ssr.tls.offset, 8 );
+            Wdputs( " res=" );
+            Puthex( u.ssr.tls.reserved, 2 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.tls.type, 2 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.tls.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_CODE_LABEL:
+            Wdputs( "CODELABEL: offset=" );
+            Puthex( u.ssr.code_label.offset, 8 );
+            Wdputs( " flg=" );
+            Puthex( u.ssr.code_label.flags, 2 );
+            Wdputslc( "\n" );
+            Wdputs( " name: \"" );
+            put_name( &u.ssr.code_label.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_REG:
+            Wdputs( "REGISTER: type=" );
+            Puthex( u.ssr.reg.type, 4 );
+            Wdputs( " no=" );
+            Puthex( u.ssr.reg.reg, 2 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.reg.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_REG_RELATIVE:
+            Wdputs( "REGISTER RELATIVE: type=" );
+            Puthex( u.ssr.reg_relative.type, 4 );
+            Wdputs( " no=" );
+            Puthex( u.ssr.reg_relative.reg, 2 );
+            Wdputs( " offset=" );
+            Puthex( u.ssr.reg_relative.offset, 8 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.reg_relative.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_CONSTANT:
+            Wdputs( "CONSTANT:    : val=" );
+            switch( u.ssr.constant.val_len) {
+            case 1:
+                Puthex( *u.ssr.constant.val, 1 );
+                break;
+            case 2:
+                Puthex( *(unsigned_16*)u.ssr.constant.val, 2 );
+                break;
+            case 4:
+                Puthex( *(unsigned_32*)u.ssr.constant.val, 4 );
+                break;
+            default:
+                fprintf( stdout, "FIXME to decode val_len %u", u.ssr.constant.val_len );
+            } // switch
+            puch = u.ssr.constant.val + u.ssr.constant.val_len;      // Point at name length
+            Wdputs( " name: \"" );
+            put_name( puch );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_SKIP:
+            Wdputs( "SKIP:    : type=FIXME - need struct" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_CHANGE_SEG:
+            Wdputs( "CHG_SEG:  segment=" );
+            Puthex( u.ssr.change_seg.seg, 4 );
+            Wdputs( " reserved=" );
+            Puthex( u.ssr.change_seg.reserved, 4 );
+            Wdputslc( "\n" );
+            break;
+        case HLL_SSR_TYPEDEF:
+            Wread( &u.ssr, sizeof( cv3_ssr_typedef ) );
+            Wdputs( "TYPEDEF:  type=" );
+            Puthex( u.ssr.typedef_.type, 4 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.reg.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_PUBLIC:
+            Wdputs( "PUBLIC:    : offset=" );
+            Puthex( u.ssr.public_.offset, 8 );
+            Wdputs( " seg=" );
+            Puthex( u.ssr.public_.seg, 4 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.public_.type, 4 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.public_.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_MEMBER:
+            Wdputs( "MEMBER:    : offset=" );
+            Puthex( u.ssr.member.off_sub_rec, 8 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.member.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_BASED:
+            Wdputs( "BASED:    : offset=" );
+            Puthex( u.ssr.based.off_sub_rec, 8 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.based.type, 4 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.based.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_TAG:
+            Wdputs( "TAG:" );
+            Wdputs( "      name: \"" );
+            put_name( &u.ssr.tag.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_TABLE:
+            Wdputs( "TABLE : type=FIXME" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_MAP:
+            Wdputs( "MAP   : type=FIXME" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_TAG2:
+            Wdputs( "TAG2:" );
+            Wdputs( "     name: \"" );
+            put_name2( &u.ssr.tag.name_len );
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_MEM_FUNC:
+            Wdputs( "MEM_FUNC: offset=" );
+            Puthex( u.ssr.mem_func.offset, 8 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.mem_func.type, 4 );
+            Wdputs( " len=" );
+            Puthex( u.ssr.mem_func.len, 8 );
+            Wdputs( " pro=" );
+            Puthex( u.ssr.mem_func.prologue_len, 4 );
+            Wdputs( " epi=" );
+            Puthex( u.ssr.mem_func.prologue_body_len, 8 );
+            Wdputs( " flg=" );
+            Puthex( u.ssr.mem_func.flags, 2 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name2( &u.ssr.mem_func.name_len );      // name length is encoded
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_AUTO_SCOPED:
+            Wdputs( "AUTO_SCOPED: type=FIXME" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_PROC2:
+            // SHL FIXME to be done
+            Wdputs( "PROC2:    offset=" );
+            Puthex( u.ssr.proc2.offset, 8 );
+            Wdputs( " type=" );
+            Puthex( u.ssr.proc2.type, 4 );
+            Wdputs( " len=" );
+            Puthex( u.ssr.proc2.len, 8 );
+            Wdputslc( "\n" );
+            Wdputs( "      pro=" );
+            Puthex( u.ssr.proc2.prologue_len, 8 );
+            Wdputs( " epi=" );
+            Puthex( u.ssr.proc2.prologue_body_len, 8 );
+            Wdputs( " flg=" );
+            Puthex( u.ssr.proc2.flags, 2 );
+            Wdputslc( "\n" );
+            Wdputs( "      name: \"" );
+            put_name2( &u.ssr.proc2.name_len );       // name length is encoded
+            Wdputslc( "\"\n" );
+            break;
+
+        case HLL_SSR_STATIC2:
+            Wdputs( "STATIC2 : type=FIXME" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_BASED_MEMBER:
+            Wdputs( "BASED_MEMBER: type=FIXME" );
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_CU_INFO:
+            // SHL FIXME to be done
+            Wdputs( "CUINFO:   language=" );
+            Puthex( u.ssr.cu_info.language, 2 );
+            Wdputs( " options =\"" );
+            puch = put_name( &u.ssr.cu_info.options_len);
+            Wdputslc( "\"\n" );
+            // puch points at compiler date string length field
+            Wdputs( "      build date=\"" );
+            pdt = (DATETIME*)put_name( puch );
+            // pdt points at timestamp
+            Wdputs( "\" timestamp=" );
+            // DATETIME        timestamp; /* DosGetDateTime() */
+            fprintf(stdout, "%u/%u/%u %u:%02u:%02u",
+                    pdt->month > 0 ? pdt->month - 1: pdt->month,
+                    pdt->day,
+                    pdt->year,
+                    pdt->hours,
+                    pdt->minutes,
+                    pdt->seconds);
+            Wdputslc( "\n" );
+            break;
+
+        case HLL_SSR_CU_FUNC_NUM:
+            Wdputs( "FUNC_NUM: type=" );
+            Wdputslc( "FIXME\n" );
+            break;
+
+        default:
+            Wdputs( " unknown symbol code " );
+            Puthex( u.ssr.common.code, 2 );
+            Wdputslc( "!\n" );
+            return;
+        }
+    }
+    Wdputslc( "\n" );
+}
 
 /*
  * dump_cv_sstLibraries - dump CV sstLibraries at 'offset'
@@ -474,7 +885,9 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
     bool                first = true;
 
     Wlseek( base + offset );
-    Wdputs( "==== sstModules at offset " );
+    Wdputs( "==== sstModules (" );
+    Puthex( hll_sstModules, 3 );
+    Wdputs( "H) at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
     Wread( &mod, sizeof( mod ) );
@@ -532,49 +945,53 @@ static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_3
 {
     /* unused parameters */ (void)size;
 
+    hl4_linnum_first_lines first_entry;
+    unsigned_32         count = 0;
+
     Wlseek( base + offset );
-    Wdputs( "==== sstHLLSrc at offset " );
+    Wdputs( "==== sstHLLSrc (" );
+    Puthex( hll_sstHLLSrc, 3 );
+    Wdputs( "H) at offset " );
     Puthex( offset, 8 );
     Wdputslc( "\n" );
-#if 0/* FIXME: structure changes broke this. */
-    if( hll_level >= 0x04 ) {
-        hl4_linnum_first_lines first_entry;
-        unsigned_32         count = 0;
 
-        while( count < size ) {
-            Wread( &first_entry, sizeof( first_entry ) );
-            Dump_header( &first_entry, hl4_linnum_first_msg, 4 );
-            count += sizeof( first_entry );
-            if( first_entry.core.entry_type == 0x03 ) {
-                hl4_filetab_entry   ftab_entry;
-                unsigned_32         index;
+    while( count < size ) {
+        Wread( &first_entry, sizeof( first_entry ) );
+        Dump_header( &first_entry, hl4_linnum_first_msg, 4 );
+        count += sizeof( first_entry );
+        if( first_entry.core.entry_type == 0x03 ) {
+            hl4_filetab_entry   ftab_entry;
+            unsigned_32         index;
 
-                Wread( &ftab_entry, sizeof( ftab_entry ) );
-                Dump_header( &ftab_entry, hl4_filetab_entry_msg, 4 );
-                count += sizeof( ftab_entry );
+            Wread( &ftab_entry, sizeof( ftab_entry ) );
+            Dump_header( &ftab_entry, hl4_filetab_entry_msg, 4 );
+            count += sizeof( ftab_entry );
 
-                for( index = 0; index < ftab_entry.numFiles; ++index ) {
-                    Wdputs( "  file index: " );
-                    Puthex( index, 4 );
-                    Wdputs( "H name: \"" );
-                    count += Dump_name() + 1;
-                    Wdputslc( "\"\n" );
-                }
-                Wdputslc( "\n" );
-            } else if( first_entry.core.entry_type == 0x00 ) {
-                hl3_linnum_entry    lnum_entry;
-                unsigned_32         index;
-
-                for( index = 0; index < first_entry.num_line_entries; ++index ) {
-                    Wread( &lnum_entry, sizeof( lnum_entry ) );
-                    count += sizeof( lnum_entry );
-                    Dump_header( &lnum_entry, hll_linnum_entry_msg, 4 );
-                }
-                Wdputslc( "\n" );
-            } else {
-                Wdputslc( "unsupported linnum table entry format\n" );
+            for( index = 0; index < ftab_entry.numFiles; ++index ) {
+                Wdputs( "  file index: " );
+                Puthex( index, 4 );
+                Wdputs( "H name: \"" );
+                count += Dump_name();
+                Wdputslc( "\"\n" );
             }
+            Wdputslc( "\n" );
+        } else if( first_entry.core.entry_type == 0x00 ) {
+            hl3_linnum_entry    lnum_entry;
+            unsigned_32         index;
+
+            for( index = 0; index < first_entry.num_line_entries; ++index ) {
+                Wread( &lnum_entry, sizeof( lnum_entry ) );
+                count += sizeof( lnum_entry );
+                Dump_header( &lnum_entry, hll_linnum_entry_msg, 4 );
+            }
+            Wdputslc( "\n" );
+        } else {
+            Wdputslc( "unsupported linnum table entry format\n" );
         }
+    }
+
+#if 0 /* FIXME: structure changes broke this - probably for not NB04. */
+    if( hll_level >= 0x04 ) {
     } else {
         hl2_linnum_first    first_entry;
         unsigned_32         index;
@@ -636,13 +1053,15 @@ static void dump_cv_subsection( unsigned_32 base, cv3_dir_entry *dir )
         break;
     case hll_sstSymbols:
         if( Debug_options & MODULE_INFO ) {
-            dump_cv_sstSymbols( base, dir->lfo, dir->cb );
+            dump_hll_sstSymbols( base, dir->lfo, dir->cb );
         }
         break;
     case hll_sstLibraries:
+        // FIXME to be dump_hll_..
         dump_cv_sstLibraries( base, dir->lfo, dir->cb );
         break;
     case hll_sstSrcLnSeg:
+        // FIXME to be dump_hll_..
         if( Debug_options & LINE_NUMS ) {
             dump_cv_sstSrcLnSeg( base, dir->lfo );
         }
@@ -669,6 +1088,11 @@ static void dump_hll_subsection( unsigned_32 base, hll_dir_entry *dir )
     case hll_sstPublics:
         if( Debug_options & GLOBAL_INFO ) {
             dump_hll_sstPublics( base, dir->lfo, dir->cb );
+        }
+        break;
+    case hll_sstSymbols:
+        if( Debug_options & MODULE_INFO ) {
+            dump_hll_sstSymbols( base, dir->lfo, dir->cb );
         }
         break;
     case hll_sstLibraries:
@@ -732,7 +1156,14 @@ static void dump_hll( unsigned_32 base )
     Dump_header( &dir_info , hll_dir_info_msg, 4 );
     Wdputslc( "\n" );
     for( i = 0; i < dir_info.cDir; ++i ) {
-        Wlseek( base + header.offset + dir_info.cbDirHeader + i * dir_info.cbDirEntry );
+        unsigned_32 offset = header.offset + dir_info.cbDirHeader + i * dir_info.cbDirEntry;
+        Wdputs( "==== Directory entry #" );
+        Putdec( i + 1 );
+        Wdputs( " at offset " );
+        Puthex( offset, 8 );
+        Wdputslc( "\n" );
+
+        Wlseek( base + offset );
         Wread( &dir_entry, sizeof( dir_entry ) );
         Dump_header( &dir_entry, hll_dir_entry_msg, 4 );
         Wdputslc( "\n" );

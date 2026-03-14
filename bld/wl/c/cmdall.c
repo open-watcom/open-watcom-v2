@@ -139,6 +139,18 @@ static bool ProcCodeviewDBI( void )
     return( true );
 }
 
+extern bool ProcHllDBI( void )
+/*********************************/
+{
+    if( LinkFlags & (LF_ANY_DBI_FLAG & ~LF_HLL_DBI_FLAG) ) {
+        LnkMsg( LOC+LINE+WRN+MSG_MULT_DBI_FORMATS, NULL );
+        return( true );
+    }
+    LinkFlags |= LF_HLL_DBI_FLAG;
+    return( true );
+}
+
+
 static bool ProcLine( void )
 /**************************/
 {
@@ -692,6 +704,13 @@ static bool ProcCVPack( void )
 /*********************/
 {
     LinkFlags |= LF_CVPACK_FLAG;
+    return( true );
+}
+
+extern bool ProcHLLPack( void )
+/****************************/
+{
+    LinkFlags |= LF_HLLPACK_FLAG;
     return( true );
 }
 
@@ -1910,6 +1929,7 @@ static parse_entry  DbgMods[] = {
     "Watcom",       ProcWatcomDBI,      MK_ALL, 0,
     "Dwarf",        ProcDwarfDBI,       MK_ALL, 0,
     "Codeview",     ProcCodeviewDBI,    MK_ALL, 0,
+    "Hll",          ProcHllDBI,         MK_ALL, 0,
 #ifdef _NOVELL
     "Novell",       ProcNovDBI,         MK_NOVELL, 0,
 #endif
@@ -1972,6 +1992,7 @@ static parse_entry  MainOptions[] = {
     "REDefsok",     ProcRedefsOK,       MK_ALL, 0,
     "NOREDefsok",   ProcNoRedefs,       MK_ALL, 0,
     "CVPack",       ProcCVPack,         MK_ALL, 0,
+    "HLLPack",      ProcHLLPack,        MK_ALL, 0,
     "INCremental",  ProcIncremental,    MK_ALL, 0,
     "FILLchar",     ProcFillchar,       MK_ALL, 0,
 #if defined( _OS2 ) || defined( _EXE ) || defined( _DOS16M ) || defined( _QNX )

@@ -146,7 +146,7 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *iih, imp_mod_handle imh,
     return( 0 );
 }
 
-hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
+hll_ssr_cu_info *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
 /**************************************************************************
  * Gets the compiler unit infomation record (unit = module, so for a module).
  */
@@ -156,11 +156,11 @@ hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *iih, imp_mod_handle imh )
         virt_mem        pos = hdd->lfo;
         const virt_mem  end = pos + hdd->cb;
         while( pos < end ) {
-            hll_ssr_cuinfo *cuinfo = VMRecord( iih, pos, &pos, NULL );
-            if( cuinfo != NULL
-             || cuinfo->common.code == HLL_SSR_CU_INFO ) {
+            hll_ssr_cu_info *cu_info = VMRecord( ii, pos, &pos, NULL );
+            if( cu_info != NULL
+             || cu_info->common.code == HLL_SSR_CU_INFO ) {
                 //FIXME: check CV3 format!
-                return cuinfo;
+                return cu_info;
             }
         }
     }
@@ -172,9 +172,9 @@ const char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *iih, imp_mod_handle imh
  * Gets the source language for a module.
  */
 {
-    hll_ssr_cuinfo *cuinfo = hllGetCompInfo( iih, imh );
-    if( cuinfo != NULL ) {
-        switch( cuinfo->language ) {
+    hll_ssr_cu_info *cu_info = hllGetCompInfo( ii, im );
+    if( cu_info != NULL ) {
+        switch( cu_info->language ) {
         case HLL_LANG_C:        return( FE_LANG_C );
         case HLL_LANG_CPP:      return( FE_LANG_CPP );
 #if 1 /* additional */

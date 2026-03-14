@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "linkstd.h"
+#include "specials.h"
 #include "pcobj.h"
 #include "obj2supp.h"
 #include "objnode.h"
@@ -237,18 +238,26 @@ static void DoMSOMF( void )
     if( ObjBuff == EOObjRec ) {
         CurrMod->omfdbg = OMF_DBG_CODEVIEW;    /* Assume MS style */
     } else {
-//        unsigned_8  version;
+        unsigned_8 version;
 
-        /* version = * */ ObjBuff++;
+        version = *ObjBuff++;
         if( ObjBuff[0] == 'C'
           && ObjBuff[1] == 'V' ) {
             CurrMod->omfdbg = OMF_DBG_CODEVIEW;
         } else if( ObjBuff[0] == 'H'
           && ObjBuff[1] == 'L' ) {
-            CurrMod->omfdbg = OMF_DBG_HLL;
+            switch( version ) {
+            case 3: CurrMod->omfdbg = OMF_DBG_HLL_03; break;
+            case 4: CurrMod->omfdbg = OMF_DBG_HLL_04; break;
+            case 6: CurrMod->omfdbg = OMF_DBG_HLL_06; break;
+            default:
+                CurrMod->omfdbg = OMF_DBG_UNKNOWN;
+                break;
+            }
         } else {
             CurrMod->omfdbg = OMF_DBG_UNKNOWN;
         }
+        ObjBuff += 2;
     }
 }
 
@@ -718,6 +727,21 @@ static void ProcLinnum( void )
     DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 
+static void EnumFindLinesSeg( void *_seg, void *_result_seg )
+/****************************/
+{
+    segnode **result_seg = (segnode **)_result_seg;
+    segnode *seg = _seg;
+
+    if (    seg->entry->bits == BITS_32
+        &&  !seg->entry->align
+        &&  !seg->entry->iscode
+        &&  !strcmp( seg->entry->u.leader->segname.u.ptr, "$$LINES" )
+        /* FIXME: compare class? */) {
+        *result_seg = seg;
+    }
+}
+
 static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
 /****************************************************************************
  * Process logically iterated data blocks.
@@ -845,6 +869,95 @@ static void ProcLxdata( bool islidata )
     }
 #endif
     GetObject( seg->entry, obj_offset, islidata );
+}
+
+static void ProcHllLinnum( void )
+/****************************/
+// Because HLL have FIXUPs to the LINNUM records we treat it as
+// a LEDATA record for a special $$LINES segment.
+// The leading group & segment indexes doesn't figure in
+// the 'LEDATA' - at least not for HLL v4.
+// FIXME: check what the LINNUM records looks like in the other HLL versions!
+{
+    static unsigned_32 HllLineNumOffset;
+    segnode *   seg;
+    unsigned_32 obj_offset;
+
+    if( !(LinkFlags & LF_HLL_DBI_FLAG) )
+        return;
+
+    /* find the $$LINES segment, create it if not found with this module. */
+    seg = NULL;
+    IterateNodelist( SegNodes, EnumFindLinesSeg, &seg );
+    if (!seg) {
+        segdata *           sdata;
+        segnode *           snode;
+        omf_record *        rec;
+        unsigned_32         loc;
+        unsigned_32         loc_1st_linnum;
+        unsigned_32         len_1st_linnum;
+        byte *              buf;
+
+        sdata = AllocSegData();
+        sdata->u.name.u.ptr  = "$$LINES";
+        sdata->combine = COMBINE_ADD;
+        sdata->align   = 0;
+        sdata->bits = BITS_32;
+        sdata->iscode  = false;
+
+        /* This is EXTEREMLY UGLY! Sorry about that.
+         * But, we need to get the segment size right when defining
+         * the segment if I understand the code correctly. Since
+         * there is only this pass thru the object file, we have to
+         * cook our own pass here so we can count up the LINNUM
+         * bits.
+         * We assume we're in the very first LINNUM record.
+         */
+        loc_1st_linnum = -1;
+        len_1st_linnum = 0;
+        loc = CurrMod->location;
+        DEBUG(( DBG_HLL, "ProcHllLinnum: counting LINNUM data for %s", CurrMod->name ));
+        do {
+            rec = CacheRead( CurrMod->u1.source, loc, sizeof( *rec ) );
+            if (!rec) {
+                break;
+            }
+            if ( rec->command == CMD_LINNUM32 || rec->command == CMD_LINNUM ) {
+                if ( !sdata->length ) {
+                    loc_1st_linnum = loc + sizeof( *rec );
+                    len_1st_linnum = rec->length;
+                }
+                DEBUG(( DBG_HLL, "ProcHllLinnum: %h: +%h", loc, rec->length - 3 ));
+                sdata->length += rec->length - 3; /* 0 grp idx, 0 seg idx, crc */
+            }
+            loc += rec->length + sizeof( omf_record );
+        } while ( rec->command != CMD_MODEND && rec->command != CMD_MODE32 );
+
+        /* get the current record from the cache */
+        buf = CacheRead( CurrMod->u1.source, loc_1st_linnum, len_1st_linnum );
+        if ( buf != ObjBuff ) {
+            EOObjRec = buf + len_1st_linnum - 1;
+            ObjBuff = buf;
+        }
+
+        snode = AllocNode( SegNodes );
+        snode->entry = sdata;
+        AllocateSegment( snode, _HllLineClass );
+
+        HllLineNumOffset = 0;
+        IterateNodelist( SegNodes, EnumFindLinesSeg, &seg );
+    }
+
+    SkipIdx(); // group idx (0)
+    SkipIdx(); // segment idx (ignored)
+
+    /* Do like ProcLxData */
+    obj_offset = HllLineNumOffset;
+    DEBUG(( DBG_HLL, "ProcHllLinnum: HllLineNumOffset=%h length=%h", HllLineNumOffset, EOObjRec - ObjBuff ));
+    HllLineNumOffset += EOObjRec - ObjBuff;
+   seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
+    seg->info |= SEGINF_LXDATA_SEEN;
+    GetObject( seg->entry, obj_offset, false );
 }
 
 static void LinkDirective( void )
@@ -1024,6 +1137,8 @@ static void Pass1Cmd( byte cmd )
     case CMD_LINNUM:
         if( CurrMod->omfdbg == OMF_DBG_CODEVIEW )
             ProcLinnum();
+        else if ( IS_OMF_DBG_HLL( CurrMod->omfdbg ) )
+            ProcHllLinnum();
         break;
     case CMD_LINS32:
         ObjFormat |= OBJ_FMT_MS_386;

@@ -43,6 +43,7 @@
 #include "dbgcomm.h"
 #include "dbgall.h"
 #include "dbgcv.h"
+#include "dbghll.h"
 #include "objfree.h"
 #include "overlays.h"
 #include "dbgdwarf.h"
@@ -77,6 +78,8 @@ void DBIInit( void )
         CVInit();
     } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
         DwarfInit();
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllInit();
     }
 }
 
@@ -99,6 +102,8 @@ void DBIInitModule( mod_entry *obj )
         DwarfInitModule( obj );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVInitModule( obj );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllInitModule( obj );
     }
 }
 
@@ -124,7 +129,8 @@ section *DBIGetSect( const char *clname )
 /***************************************/
 {
     if( ( stricmp( clname, _MSTypeClass ) == 0 )
-      || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
+      || ( stricmp( clname, _MSLocalClass ) == 0 )
+      || stricmp( clname, _HllLineClass ) == 0) {
         return( CurrSect );
     } else if( stricmp( clname, _DwarfClass ) == 0 ) {
         return( Root );
@@ -141,6 +147,8 @@ void DBIColClass( class_entry *class )
         class->flags |= CLASS_MS_TYPE;
     } else if( stricmp( class->name.u.ptr, _MSLocalClass ) == 0 ) {
         class->flags |= CLASS_MS_LOCAL;
+    } else if( stricmp( class->name.u.ptr, _HllLineClass ) == 0 ) {
+        class->flags |= CLASS_HLL_LINE;
     }
 }
 
@@ -157,6 +165,8 @@ unsigned_16 DBIColSeg( class_entry *class )
         return( MS_TYPE );
     case CLASS_MS_LOCAL:
         return( MS_LOCAL );
+    case CLASS_HLL_LINE:
+        return( HLL_LINE );
     }
     return( NOT_DEBUGGING_INFO );
 }
@@ -174,6 +184,8 @@ void DBIP1ModuleScanned( void )
         DwarfP1ModuleScanned();
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVP1ModuleScanned();
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllP1ModuleScanned();
     }
 }
 
@@ -186,7 +198,7 @@ static bool MSSkip( void )
     if( ObjFileFormat != FILE_FMT_OMF ) {
         return( LinkFlags & LF_DWARF_DBI_FLAG );
     } else {
-        iscv = ( (LinkFlags & LF_CV_DBI_FLAG) != 0 );
+        iscv = ( (LinkFlags & (LF_CV_DBI_FLAG | LF_HLL_DBI_FLAG) ) != 0 );
         seencmt = ( (ObjFormat & OBJ_FMT_DEBUG_COMENT) != 0 );
         return( (iscv ^ seencmt) == 0 || (LinkFlags & LF_DWARF_DBI_FLAG) );
     }
@@ -202,6 +214,8 @@ bool DBISkip( seg_leader *seg )
         return( (CurrMod->flags_dbi & DBI_TYPE) == 0 || MSSkip() );
     case MS_LOCAL:
         return( (CurrMod->flags_dbi & DBI_LOCAL) == 0 || MSSkip() );
+    case HLL_LINE:
+        return( (CurrMod->flags_dbi & DBI_LINE) == 0 || MSSkip() );
     case NOT_DEBUGGING_INFO:
         return( false );
     default:
@@ -243,6 +257,9 @@ void DBIPreAddrCalc( void )
     } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
         modptr = DwarfP1ModuleFinished;
         segptr = DwarfAddAddrInfo;
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        modptr = HllP1ModuleFinished;
+        segptr = HllAddAddrInfo;
     } else {
         modptr = CVP1ModuleFinished;
         segptr = CVAddAddrInfo;
@@ -317,6 +334,8 @@ void DBIAddModule( mod_entry *obj, section *sect )
         DwarfAddModule( obj, sect );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddModule( obj, sect );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllAddModule( obj, sect );
     }
 }
 
@@ -339,6 +358,8 @@ static void DBIGenLines( mod_entry *mod )
         DBILineWalk( mod->lines, DwarfGenLines );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         DBILineWalk( mod->lines, CVGenLines );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        DBILineWalk( mod->lines, HllGenLines);
     }
 }
 
@@ -355,6 +376,8 @@ void DBIGenModule( void )
             ODBIGenModule();
         } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
             DwarfGenModule();
+        } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+            HllGenModule();
         } else {
             CVGenModule();
         }
@@ -371,6 +394,8 @@ void DBIDefClass( class_entry *class, unsigned_32 size )
         DwarfDefClass( class, size );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVDefClass( class, size );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllDefClass( class, size );
     }
 }
 
@@ -382,6 +407,8 @@ void DBIAddLocal( seg_leader *seg, offset length )
         ODBIAddLocal( seg, length );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddLocal( seg, length );
+   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllAddLocal( seg, length );
     }
 }
 
@@ -411,6 +438,8 @@ void DBIAddGlobal( symbol *sym )
         DwarfAddGlobal( sym );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddGlobal( sym );
+   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllAddGlobal( sym );
     }
 }
 
@@ -425,6 +454,8 @@ void DBIGenGlobal( symbol *sym, section *sect )
         DwarfGenGlobal( sym, sect );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVGenGlobal( sym, sect );
+   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
     if( ( (sym->info & SYM_STATIC) == 0 )
@@ -501,6 +532,8 @@ void DBIAddrStart( void )
 #endif
     if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddrStart();
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllAddrStart();
     }
     WalkAllSects( DBIAddrSectStart );
 }
@@ -526,6 +559,8 @@ void DBIP2Start( section *sect )
         SectWalkClass( sect, DwarfGenAddrInfo );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         SectWalkClass( sect, CVGenAddrInfo );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        SectWalkClass( sect, HllGenAddrInfo );
     }
 }
 
@@ -537,6 +572,8 @@ void DBIFini( section *sect )
         ODBIFini( sect );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVFini( sect );
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllFini( sect );
     }
 }
 
@@ -565,6 +602,8 @@ static void do_DBIWrite( void )
         DwarfWrite();
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVWrite();
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+        HllWrite();
     }
 }
 
