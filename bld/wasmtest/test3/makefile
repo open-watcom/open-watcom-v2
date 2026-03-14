@@ -50,7 +50,8 @@ structdd.dis &
 support.dis &
 tbyte.dis &
 testequ.dis &
-tst1.dis
+tst1.dis &
+irpx.dis
 
 asm_flags_callcnv1 = -zcm
 asm_flags_callcnv3 = -3r
