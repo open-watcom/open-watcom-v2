@@ -39,6 +39,23 @@
 #include "guixutil.h"
 #include "guiutil.h"
 
+
+static char *makeEditCopy( char *buffer, int length )
+{
+    char        *copy;
+
+    if( length > 0 ) {
+        copy = MemAlloc( length + 1 );
+        if( copy != NULL ) {
+            memcpy( copy, buffer, length );
+            copy[length] = '\0';
+        }
+    } else {
+        copy = NULL;
+    }
+    return( copy );
+}
+
 static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr )
 {
     VFIELD              *field;
@@ -88,12 +105,12 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
         case FLD_EDIT:
         case FLD_INVISIBLE_EDIT:
             edit_control = field->u.edit;
-            return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
+            return( makeEditCopy( edit_control->buffer, edit_control->length ) );
         case FLD_COMBOBOX:
             if( get_curr ) {
                 combo_box = field->u.combo;
                 edit_control = &combo_box->edit;
-                return( GUIMakeEditCopy( edit_control->buffer, edit_control->length ) );
+                return( makeEditCopy( edit_control->buffer, edit_control->length ) );
             }
             /* fall through */
         case FLD_PULLDOWN:

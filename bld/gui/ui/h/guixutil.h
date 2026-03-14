@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,6 @@ extern bool         GUIOverlap( const SAREA *one, const SAREA *two );
 extern bool         GUISetArea( SAREA *, const gui_rect *, gui_window *parent_wnd, bool check_min, bool adjust );
 extern bool         GUISetDialogArea( gui_window *wnd, SAREA *area, const gui_rect *rect, const SAREA *parent_area );
 extern bool         GUIIsOpen( gui_window *wnd );
-extern char         *GUIMakeEditCopy( char *buffer, int length );
 extern void         GUIRedrawTitle( gui_window *wnd );
 extern void         GUIMakeRelative( gui_window *wnd, const guix_point *scr_point, gui_point *point );
 extern bool         GUIJustSetWindowText( gui_window *wnd, const char *title );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,5 +33,5 @@
 
 #ifndef _GUIXEDIT_H_
 #define _GUIXEDIT_H_
-extern bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data );
+extern bool GUISetEditText( an_edit_control *edit_control, char const *text );
 #endif // _GUIXEDIT_H_

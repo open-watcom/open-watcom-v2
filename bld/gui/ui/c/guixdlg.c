@@ -296,13 +296,9 @@ a_list *GUIGetList( VFIELD *field )
     return( list );
 }
 
-static void FreeEdit( an_edit_control *edit_control, bool free_edit, bool is_GUI_data )
+static void FreeEdit( an_edit_control *edit_control, bool free_edit )
 {
-    if( is_GUI_data ) {
-        MemFree( edit_control->buffer );
-    } else {
-        MemFree( edit_control->buffer );
-    }
+    MemFree( edit_control->buffer );
     if( free_edit ) {
         MemFree( edit_control );
     }
@@ -370,14 +366,12 @@ void GUIDoFreeField( VFIELD *field, a_radio_group **group )
     case FLD_COMBOBOX:
         combo_box = field->u.combo;
         GUIFreeList( &combo_box->list, false );
-        FreeEdit( &combo_box->edit, false, true );
+        FreeEdit( &combo_box->edit, false );
         MemFree( combo_box );
         break;
     case FLD_EDIT:
-        FreeEdit( field->u.edit, true, false );
-        break;
     case FLD_INVISIBLE_EDIT:
-        FreeEdit( field->u.edit, true, true );
+        FreeEdit( field->u.edit, true );
         break;
     case FLD_EDIT_MLE:
     case FLD_LISTBOX:
@@ -522,7 +516,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
             return( false );
         }
         if( ctl_info->text != NULL ) {
-            if( !GUISetEditText( &combo_box->edit, ctl_info->text, false ) ) {
+            if( !GUISetEditText( &combo_box->edit, ctl_info->text ) ) {
                 return( false );
             }
         }
@@ -536,7 +530,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         field->u.edit = edit_control;
         edit_control->buffer = NULL;
-        GUISetEditText( edit_control, ctl_info->text, field->typ != FLD_EDIT );
+        GUISetEditText( edit_control, ctl_info->text );
         break;
     case FLD_PULLDOWN:
     case FLD_LISTBOX:

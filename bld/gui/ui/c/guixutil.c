@@ -304,23 +304,6 @@ bool GUISetArea( SAREA *area, const gui_rect *rect, gui_window *parent_wnd,
     return( valid );
 }
 
-
-char *GUIMakeEditCopy( char *buffer, int length )
-{
-    char        *copy;
-
-    if( length > 0 ) {
-        copy = MemAlloc( length + 1 );
-        if( copy != NULL ) {
-            memcpy( copy, buffer, length );
-            copy[length] = '\0';
-        }
-    } else {
-        copy = NULL;
-    }
-    return( copy );
-}
-
 void GUIRedrawTitle( gui_window *wnd )
 {
     wnd->flags |= TITLE_INVALID;

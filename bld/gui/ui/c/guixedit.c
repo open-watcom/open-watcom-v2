@@ -44,7 +44,7 @@
 //#include "memfuncs.h"
 
 
-bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GUI_data )
+bool GUISetEditText( an_edit_control *edit_control, char const *text )
 /*
  * "free" edit_control->buffer and "strdup" text to it.
  * isGUIdata chooses between local and ui functions to allow ui to realloc
@@ -56,20 +56,12 @@ bool GUISetEditText( an_edit_control *edit_control, char const *text, bool is_GU
 
     filler = ( text == NULL ) ? LIT_GUI( Empty ) : text;
     fillerLength = strlen( filler );
-    if( is_GUI_data ) {
-        new = MemAlloc( fillerLength + 1 );
-    } else {
-        new = MemAlloc( fillerLength + 1 );
-    }
+    new = MemAlloc( fillerLength + 1 );
     if( new == NULL ) {
         return( false );
     }
     strcpy( new, filler );
-    if( is_GUI_data ) {
-        MemFree( edit_control->buffer );
-    } else {
-        MemFree( edit_control->buffer );
-    }
+    MemFree( edit_control->buffer );
     edit_control->buffer = new;
     edit_control->length = fillerLength;
     return( true );
@@ -139,7 +131,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         return( false );   /* without redrawing field */
     }
     if( ( edit != NULL ) && ( ui_dlg_info != NULL ) ) {
-        ret = GUISetEditText( edit, text, field->typ != FLD_EDIT );
+        ret = GUISetEditText( edit, text );
         if( ret ) {
             uiupdateedit( ui_dlg_info, field );
         }
