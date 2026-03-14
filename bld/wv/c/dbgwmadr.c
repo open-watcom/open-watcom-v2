@@ -503,7 +503,7 @@ a_window WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_resource 
     reg_window  *reg;
     a_window    wnd;
 
-    reg = MemAllocSafe( sizeof( reg_window ) );
+    reg = MemAllocSafe( sizeof( *reg ) );
     reg->kind = kind;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndclass, reg, icon );
     return( wnd );

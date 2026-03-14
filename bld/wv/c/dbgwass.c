@@ -1073,7 +1073,7 @@ a_window DoWndAsmOpen( address addr, bool track )
     asm_window  *asw;
     a_window    wnd;
 
-    asw = MemAllocSafe( sizeof( asm_window ) );
+    asw = MemAllocSafe( sizeof( *asw ) );
     asw->ddsize = MADDisasmDataSize();
     asw->cache_dd = MemAlloc( asw->ddsize );
     if( asw->cache_dd == NULL ) {

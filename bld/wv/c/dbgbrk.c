@@ -1194,7 +1194,7 @@ static brkp *AddPoint( address loc, mad_type_handle mth, bool unmapped )
 
     if( !IS_BP_EXECUTE( mth ) && !BrkCheckWatchLimit( loc, mth ) )
         return( NULL );
-    bp = MemAllocSafe( sizeof( brkp ) );
+    bp = MemAllocSafe( sizeof( *bp ) );
     InitMappableAddr( &bp->loc );
     bp->mth = mth;
     bp->arch = SysConfig.arch;

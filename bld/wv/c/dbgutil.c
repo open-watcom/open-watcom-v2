@@ -382,7 +382,7 @@ cmd_list *AllocCmdList( const char *start, size_t len )
 {
     cmd_list *cmds;
 
-    cmds = MemAllocSafe( sizeof( cmd_list ) + len );
+    cmds = MemAllocSafe( sizeof( *cmds ) + len );
     cmds->use = 1;
     cmds->buff[len] = NULLCHAR;
     memcpy( cmds->buff, start, len );
@@ -481,7 +481,7 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 {
     input_stack *new;
 
-    new = MemAllocSafe( sizeof( input_stack ) );
+    new = MemAllocSafe( sizeof( *new ) );
     if( save_lang ) {
         new->lang = MemStrdupSafe( GetLanguage() );
     } else {

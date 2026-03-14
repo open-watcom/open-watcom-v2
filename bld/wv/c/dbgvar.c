@@ -556,7 +556,7 @@ static var_node *NewNode( var_info *i, unsigned len )
     int         size;
 
     i->mem_lock = true;
-    size = sizeof( var_node ) + len;
+    size = sizeof( *new ) + len;
     new = MemAlloc( size + type_SIZE );
     i->mem_lock = false;
     if( new == NULL ) {
@@ -2265,7 +2265,7 @@ static scope_state *NilScope( void )
 {
     scope_state *s;
 
-    s = MemAllocSafe( sizeof( scope_state ) );
+    s = MemAllocSafe( sizeof( *s ) );
     memset( s, 0, sizeof( *s ) );
     InitMappableAddr( &s->scope );
     s->scope.addr = NilAddr;

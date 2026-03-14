@@ -86,11 +86,11 @@ static bool ReallocChain( traceback *curr, int new_size )
     chain = curr->chain;
     if( new_size >= (UINT_MAX / sizeof(call_chain)) )
         return( false );
-    new_chain = MemAlloc( new_size * sizeof(call_chain) );
+    new_chain = MemAlloc( new_size * sizeof( *new_chain ) );
     if( new_chain == NULL )
         return( false );
-    memset( new_chain, 0, new_size*sizeof( call_chain ) );
-    memcpy( new_chain, chain, curr->current_depth * sizeof(call_chain) );
+    memset( new_chain, 0, new_size * sizeof( *new_chain ) );
+    memcpy( new_chain, chain, curr->current_depth * sizeof( *new_chain ) );
     MemFree( chain );
     curr->chain = new_chain;
     curr->allocated_size = new_size;
@@ -179,8 +179,8 @@ static bool RecordTraceBackInfo( call_chain_entry *entry, void *_tb )
 
 static traceback *DoInitTraceBack( traceback *curr )
 {
-    curr->chain = MemAllocSafe( MODEST_CALL_LEVEL * sizeof( call_chain ) );
-    memset( curr->chain, 0, MODEST_CALL_LEVEL * sizeof( call_chain ) );
+    curr->chain = MemAllocSafe( MODEST_CALL_LEVEL * sizeof( *curr->chain ) );
+    memset( curr->chain, 0, MODEST_CALL_LEVEL * sizeof( *curr->chain ) );
     curr->allocated_size = MODEST_CALL_LEVEL;
     curr->total_depth = 0;
     return( curr );

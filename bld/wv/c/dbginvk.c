@@ -247,7 +247,7 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
 {
     invokes     *inv;
 
-    inv = MemAllocSafe( sizeof( invokes ) + strlen( name ) );
+    inv = MemAllocSafe( sizeof( *inv ) + strlen( name ) );
     inv->buff_size = CMD_LEN;
     inv->buff = MemAllocSafe( inv->buff_size + 1 ); /* extra for NULLCHAR */
     strcpy( inv->name, name );
@@ -331,7 +331,7 @@ void ProcInvoke( void )
     owner = &parmlist;
     while( !ScanEOC() ) {
         ScanItem( true, &start, &len );
-        path = MemAllocSafe( sizeof( char_ring ) + len );
+        path = MemAllocSafe( sizeof( *path ) + len );
         memcpy( path->name, start, len );
         path->name[len] = NULLCHAR;
         path->next = NULL;

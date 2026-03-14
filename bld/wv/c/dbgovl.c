@@ -57,7 +57,7 @@ bool InitOvlState( void )
     if( OvlRemap == NULL ) {
         OvlSize = RemoteOvlSectSize();
         OvlCount = ( OvlSize - 3 ) * 8;
-        OvlRemap = MemAlloc( OvlCount * sizeof( section_info ) );
+        OvlRemap = MemAlloc( OvlCount * sizeof( *OvlRemap ) );
         if( OvlRemap == NULL )
             return( false );
         TblCache = MemAlloc( OvlSize );

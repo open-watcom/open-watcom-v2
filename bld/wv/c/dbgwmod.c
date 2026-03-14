@@ -338,7 +338,7 @@ a_window DoWndModOpen( mod_handle handle )
 {
     mod_window  *mod;
 
-    mod = MemAllocSafe( sizeof( mod_window ) );
+    mod = MemAllocSafe( sizeof( *mod ) );
     mod->handle = handle;
     return( DbgWndCreate( LIT_DUI( WindowModules ), &ModInfo, WND_MODULES, mod, &ModIcon ) );
 }

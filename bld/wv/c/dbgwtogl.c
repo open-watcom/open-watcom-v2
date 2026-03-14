@@ -53,8 +53,8 @@ gui_menu_struct *WndAppendToggles( mad_toggle_strings const *toggles, unsigned *
 
     for( num_toggles = 0; toggles[num_toggles].menu != MAD_MSTR_NIL; ++num_toggles ) ;
     menu_items = num_old + num_toggles;
-    popup = MemAllocSafe( menu_items * sizeof( gui_menu_struct ) );
-    memcpy( popup, old, num_old * sizeof( gui_menu_struct ) );
+    popup = MemAllocSafe( menu_items * sizeof( *popup ) );
+    memcpy( popup, old, num_old * sizeof( *popup ) );
     for( i = 0; i < num_old; ++i ) {
         popup[i].style &= ~WND_MENU_ALLOCATED;
     }

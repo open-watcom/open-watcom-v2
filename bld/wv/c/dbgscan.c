@@ -103,7 +103,7 @@ static void SetRadixSpec( const char *str, size_t len, mad_radix value, bool cle
     if( radixstr == NULL || SYM_NAME_LEN( radixstr->string ) != len ) {
         if( clear )
             return;
-        radixstr = MemAllocSafe( sizeof( radix_str ) + len );
+        radixstr = MemAllocSafe( sizeof( *radixstr ) + len );
         memcpy( SYM_NAME_NAME( radixstr->string ), str, len );
         SET_SYM_NAME_LEN( radixstr->string, len );
         radixstr->next = *owner;

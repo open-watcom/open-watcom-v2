@@ -131,7 +131,7 @@ static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
     if( !CheckType( sym, name ) )
         return( WR_CONTINUE );
 //    p = TxtBuff;
-    curr = MemAlloc( sizeof( a_symbol ) + sym_SIZE - 1 );
+    curr = MemAlloc( sizeof( *curr ) - 1 + sym_SIZE );
     if( curr == NULL )
         return( WR_STOP );
     HDLAssign( sym, ASymHdl( curr ), sym );
@@ -207,7 +207,7 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
                                  SymCompare, MemAlloc, MemFree );
     UniqList( name, dup_ok );
     if( name->numrows > SKIP_ENTRIES ) {
-        name->skip = MemAlloc( (name->numrows/SKIP_ENTRIES + 1)*sizeof(a_symbol*) );
+        name->skip = MemAlloc( ( name->numrows / SKIP_ENTRIES + 1 ) * sizeof( a_symbol * ) );
     } else {
         name->skip = NULL;
     }

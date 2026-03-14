@@ -686,7 +686,7 @@ static void parsePathList( char_ring **owner, char *src )
             while( len > 0 && start[len - 1] == ' ' ) {
                 --len;
             }
-            new = MemAlloc( sizeof( char_ring ) + len );
+            new = MemAlloc( sizeof( *new ) + len );
             if( new == NULL )
                 break;
             *owner = new;

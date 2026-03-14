@@ -741,7 +741,7 @@ static void VarSaveWndToScope( a_window wnd )
 
     wnd_data = var->i.s->wnd_data;
     if( wnd_data == NULL ) {
-        wnd_data = MemAllocSafe( sizeof( var_wnd_data ) );
+        wnd_data = MemAllocSafe( sizeof( *wnd_data ) );
         var->i.s->wnd_data = wnd_data;
     }
     wnd_data->scroll = WndTop( wnd );
@@ -1074,7 +1074,7 @@ static  a_window        DoWndVarOpen( var_type vtype )
     var_window  *var;
     a_window    wnd;
 
-    var = MemAllocSafe( sizeof( var_window ) );
+    var = MemAllocSafe( sizeof( *var ) );
     var->vtype = vtype;
     wnd = DbgWndCreate( *VarNames[vtype], &VarInfo, VarWndClass[vtype], var, VarIcons[vtype] );
     if( wnd != NULL )

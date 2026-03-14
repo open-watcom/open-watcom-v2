@@ -63,7 +63,7 @@ void AddAliasInfo( unsigned seg, unsigned alias )
             }
         }
     } else {
-        curr = MemAlloc( sizeof( alias_info ) );
+        curr = MemAlloc( sizeof( *curr ) );
         if( curr != NULL ) {
             curr->seg = seg;
             curr->alias = alias;

@@ -138,7 +138,7 @@ void CreateEntry( void )
     stack_entry *new;
     unsigned    size;
 
-    size = sizeof( stack_entry ) + type_SIZE + sym_SIZE;
+    size = sizeof( *new ) + type_SIZE + sym_SIZE;
     new = MemAlloc( size );
     if( new == NULL ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );

@@ -306,13 +306,13 @@ void ResizeRegData( void )
         state = StateCurr;
         for( ;; ) {
             old = state;
-            state = MemAlloc( sizeof( save_state ) + new_size );
+            state = MemAlloc( sizeof( *state ) + new_size );
             if( state == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
             } else {
-                memset( state, 0, sizeof( save_state ) + new_size );
-                memcpy( state, old, sizeof( save_state ) );
+                memset( state, 0, sizeof( *state ) + new_size );
+                memcpy( state, old, sizeof( *state ) );
             }
             if( old == StateCurr )
                 StateCurr = state;
@@ -334,13 +334,13 @@ void ResizeRegData( void )
         if( !found_dbgregs ) {
             /* just a machine state on it's own */
             ms = DbgRegs;
-            ms = MemAlloc( sizeof( machine_state ) + new_size );
+            ms = MemAlloc( sizeof( *ms ) + new_size );
             if( ms == NULL ) {
                 ReportMADFailure( MS_NO_MEM );
                 new_size = CurrRegSize;
             } else {
-                memset( ms, 0, sizeof( machine_state ) + new_size );
-                memcpy( ms, DbgRegs, sizeof( machine_state ) );
+                memset( ms, 0, sizeof( *ms ) + new_size );
+                memcpy( ms, DbgRegs, sizeof( *ms ) );
                 if( DbgRegs == PrevRegs )
                     PrevRegs = ms;
                 DbgRegs = ms;
@@ -467,9 +467,9 @@ machine_state *AllocMachState( void )
     machine_state   *state;
     unsigned        state_size;
 
-    state_size = sizeof( machine_state ) + CurrRegSize;
+    state_size = sizeof( *state ) + CurrRegSize;
     state = MemAllocSafe( state_size );
-    memset( state, 0, sizeof( *state ) );
+    memset( state, 0, state_size );
     if( OvlSize != 0 ) {
         state->ovl = MemAllocSafe( OvlSize );
     }

@@ -106,7 +106,7 @@ static walk_result AddSrcFile( cue_handle *cueh, void *d )
     int         len;
 
     len = DIPCueFile( cueh, NULL, 0 ) + 1;
-    file = MemAllocSafe( sizeof( a_cue ) + cue_SIZE + len );
+    file = MemAllocSafe( sizeof( *file ) + cue_SIZE + len );
     file->cueh = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
     DIPCueFile( cueh, file->name, len );
     HDLAssign( cue, file->cueh, cueh );
@@ -355,7 +355,7 @@ static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie
     srch_window *srch;
     void        *rx;
 
-    srch = MemAllocSafe( sizeof( srch_window ) );
+    srch = MemAllocSafe( sizeof( *srch ) );
     srch->file_list = NULL;
     srch->expr = MemStrdupSafe( expr );
     srch->cookie = cookie;

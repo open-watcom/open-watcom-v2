@@ -668,7 +668,7 @@ static thread_state     *AddThread( dtid_t tid, unsigned state )
     } else {
         RemoteThdName( tid, name );
     }
-    thd = MemAlloc( sizeof( thread_state ) + strlen( name ) );
+    thd = MemAlloc( sizeof( *thd ) + strlen( name ) );
     if( thd == NULL )
         return( NULL );
     thd->link = *owner;
@@ -709,7 +709,7 @@ void NameThread( dtid_t tid, const char *name )
 
     for( owner = &HeadThd; (curr = *owner) != NULL; owner = &curr->link ) {
         if( curr->tid == tid ) {
-            new = MemAllocSafe( sizeof( thread_state ) + strlen( name ) );
+            new = MemAllocSafe( sizeof( *new ) + strlen( name ) );
             *new = *curr;
             *owner = new;
             strcpy( new->name, name );

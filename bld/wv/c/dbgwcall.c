@@ -252,6 +252,6 @@ a_window WndCallOpen( void )
 {
     call_window *call;
 
-    call = MemAllocSafe( sizeof( call_window ) );
+    call = MemAllocSafe( sizeof( *call ) );
     return( DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon ) );
 }

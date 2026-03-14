@@ -353,8 +353,8 @@ a_window DoWndIOOpen( address *addr, mad_type_handle mth )
 
     if( IOData.num_types == 0 )
         return( NULL );
-    io = MemAllocSafe( sizeof( io_window ) );
-    io->list = MemAllocSafe( sizeof( io_location ) );
+    io = MemAllocSafe( sizeof( *io ) );
+    io->list = MemAllocSafe( sizeof( *io->list ) );
     io->num_rows = 1;
     io->list->addr = *addr;
     io->list->type = PIECE_TYPE( MENU_IO_FIRST_TYPE );
@@ -378,7 +378,7 @@ a_window WndIOOpen( void )
     io_window   *io;
     a_window    wnd;
 
-    io = MemAllocSafe( sizeof( io_window ) );
+    io = MemAllocSafe( sizeof( *io ) );
     io->list = NULL;
     io->num_rows = 0;
     wnd = DbgWndCreate( LIT_DUI( WindowIO_Ports ), &IOInfo, WND_IO, io, &IOIcon );

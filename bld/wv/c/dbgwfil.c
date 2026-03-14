@@ -851,7 +851,7 @@ a_window    DoWndFileOpen( const char *name, void *viewhndl,
     a_window    wnd;
     unsigned    line;
 
-    file = MemAllocSafe( sizeof( file_window ) );
+    file = MemAllocSafe( sizeof( *file ) );
     file->viewhndl = viewhndl;
     if( cueh == NULL ) {
         file->mod = NO_MOD;

@@ -69,9 +69,9 @@ typedef struct lookup_list {
     struct lookup_list  *next;
     bool                respect_case;
     char                data[1];
-} lookup;
+} lookup_list;
 
-static  lookup      *DefLookup;
+static lookup_list      *DefLookup;
 
 static const char CaseTab[] = {
     #define pick(t,e)   t "\0"
@@ -79,9 +79,9 @@ static const char CaseTab[] = {
     #undef pick
 };
 
-static void FreeList( lookup *curr )
+static void FreeList( lookup_list *curr )
 {
-    lookup *next;
+    lookup_list *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;
@@ -96,9 +96,9 @@ static void FreeList( lookup *curr )
 
 static void AddLookSpec( const char *start, unsigned len, bool respect )
 {
-    lookup  *next;
+    lookup_list     *next;
 
-    next = MemAllocSafe( sizeof( struct lookup_list ) + len );
+    next = MemAllocSafe( sizeof( *next ) + len );
     next->next = DefLookup;
     next->respect_case = respect;
     memcpy( next->data, start, len );
@@ -127,7 +127,7 @@ void FiniLook( void )
 
 void LookCaseSet( bool respect )
 {
-    lookup  *curr;
+    lookup_list  *curr;
 
     for( curr = DefLookup; curr != NULL; curr = curr->next ) {
         curr->respect_case = respect;
@@ -142,11 +142,12 @@ void LookSet( void )
         size_t      len;
         bool        respect;
     }       *curr, new[20];
-    lookup  *old, *next;
-    bool    respect;
-    bool    just_respect;
-    bool    need_item;
-    bool    add;
+    lookup_list     *old;
+    lookup_list     *next;
+    bool            respect;
+    bool            just_respect;
+    bool            need_item;
+    bool            add;
 
     respect = true;
     add = false;
@@ -229,9 +230,9 @@ void LookSet( void )
 
 void LookConf( void )
 {
-    lookup *curr;
-    char   *ptr;
-    bool   respect;
+    lookup_list     *curr;
+    char            *ptr;
+    bool            respect;
 
     respect = true;
     ptr = TxtBuff;
@@ -408,12 +409,12 @@ static sym_list         *SymListHead;
 sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
                         lookup_item *li )
 {
-    lookup      *curr;
-    bool        save_case;
-    const char  *save_name;
-    unsigned    save_len;
-    bool        check_codeaddr_mod;
-    mod_handle  search_mod;
+    lookup_list     *curr;
+    bool            save_case;
+    const char      *save_name;
+    unsigned        save_len;
+    bool            check_codeaddr_mod;
+    mod_handle      search_mod;
 
     check_codeaddr_mod = false;
     if( ss == SS_SCOPED ) {
@@ -432,7 +433,7 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
     if( DefLookup == NULL || source_only ) {
         li->source = li->name;
         if( check_codeaddr_mod ) {
-            if(DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
+            if( DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead ) != SR_NONE ) {
                 return( SymListHead );
             }
         }

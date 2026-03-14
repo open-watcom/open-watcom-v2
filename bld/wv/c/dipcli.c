@@ -83,7 +83,7 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
 {
     sym_list        *new_sl;
 
-    new_sl = MemAlloc( sizeof( sym_list ) - sizeof( byte ) + sym_SIZE );
+    new_sl = MemAlloc( sizeof( *new_sl ) - sizeof( byte ) + sym_SIZE );
     if( new_sl == NULL ) {
         ErrorRet( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
         return( NULL );

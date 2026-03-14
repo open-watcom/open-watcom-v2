@@ -180,6 +180,6 @@ void    DlgCmd( void )
 {
     dlg_command *dlg;
 
-    dlg = MemAllocSafe( sizeof( dlg_command ) );
+    dlg = MemAllocSafe( sizeof( *dlg ) );
     DlgOpenRes( CmdGUIEventProc, dlg, DIALOG_CMD );
 }

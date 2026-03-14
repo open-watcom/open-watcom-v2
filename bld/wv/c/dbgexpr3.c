@@ -669,15 +669,15 @@ static bool (* const ConvFunc[])( stack_entry *, conv_class ) = {
  * ConvertTo -- convert 'entry' to the given 'class'.
  *      'entry' should be an rvalue.
  */
-void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size s )
+void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size size )
 {
     conv_class  from;
     char        *dest;
 
-    if( s == 0 && k == TK_INTEGER ) {
-        s = DefaultSize( DK_INT );
+    if( size == 0 && k == TK_INTEGER ) {
+        size = DefaultSize( DK_INT );
     }
-    if( entry->ti.kind == k && entry->ti.modifier == m && entry->ti.size == s )
+    if( entry->ti.kind == k && entry->ti.modifier == m && entry->ti.size == size )
         return;
     from = ConvIdx( &entry->ti );
     switch( from ) {
@@ -721,14 +721,14 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size 
         if( k != TK_STRING ) {
             Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
         }
-        if( s > entry->ti.size ) {
+        if( size > entry->ti.size ) {
             /* have to expand string */
-            dest = MemAlloc( s );
+            dest = MemAlloc( size );
             if( dest == NULL ) {
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
             } else {
                 memcpy( dest, entry->v.string.loc.e[0].u.p, entry->ti.size );
-                memset( &dest[entry->ti.size], ' ', s - entry->ti.size );
+                memset( &dest[entry->ti.size], ' ', size - entry->ti.size );
                 if( AllocatedString( entry ) ) {
                     MemFree( entry->v.string.allocated );
                 }
@@ -742,7 +742,7 @@ void ConvertTo( stack_entry *entry, type_kind k, type_modifier m, dig_type_size 
     }
     entry->ti.kind = k;
     entry->ti.modifier = m;
-    entry->ti.size = s;
+    entry->ti.size = size;
     if( !ConvFunc[ConvIdx( &entry->ti )]( entry, from ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_TYPE_CONVERSION ) );
     }

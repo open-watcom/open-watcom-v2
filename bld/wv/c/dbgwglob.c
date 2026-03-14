@@ -210,7 +210,7 @@ a_window DoWndGlobOpen( mod_handle mod )
 {
     glob_window *glob;
 
-    glob = MemAllocSafe( sizeof( glob_window ) );
+    glob = MemAllocSafe( sizeof( *glob ) );
     glob->mod = mod;
     return( DbgWndCreate( LIT_DUI( WindowGlobals ), &GlobInfo, WND_GLOBALS, glob, &GlobIcon ) );
 }

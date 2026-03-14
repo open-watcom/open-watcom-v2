@@ -1080,7 +1080,7 @@ a_window        DoWndMemOpen( address addr, mad_type_handle mth )
     a_window    wnd;
 
     MemValidAddr( addr );
-    mem = MemAllocSafe( sizeof( mem_window ) );
+    mem = MemAllocSafe( sizeof( *mem ) );
     mem->u.m.addr = mem->u.m.home = addr;
     mem->u.m.contents = NULL;
     SetDataDot( addr );
@@ -1103,7 +1103,7 @@ a_window        WndStkOpen( void )
     a_window    wnd;
     mem_window  *mem;
 
-    mem = MemAllocSafe( sizeof( mem_window ) );
+    mem = MemAllocSafe( sizeof( *mem ) );
     mem->u.m.addr = mem->u.m.home = Context.stack;
     mem->u.m.contents = NULL;
     mem->init_mth = GetMADTypeHandleDefaultAt( Context.stack, MTK_INTEGER );
@@ -1119,7 +1119,7 @@ a_window        DoWndBinOpen( const char *title, file_handle fh )
     mem_window  *mem;
     a_window    wnd;
 
-    mem = MemAllocSafe( sizeof( mem_window ) );
+    mem = MemAllocSafe( sizeof( *mem ) );
     mem->file = true;
     mem->stack = false;
     mem->init_mth = MAD_NIL_TYPE_HANDLE;
