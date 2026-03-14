@@ -854,7 +854,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret =  ( einfo->info->parent, MENU_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
+            ret = SendMessage( einfo->info->parent, MENU_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 
