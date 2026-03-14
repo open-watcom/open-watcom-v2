@@ -361,14 +361,15 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     i += 2;
 
     if( store_data ) {
-        for( ; i < tokbuf->count ; ) {
+        while( i < tokbuf->count ) {
             parm_list   *paramnode;
+
             /*
              * first get the param name
              */
             name = tokbuf->tokens[i].string_ptr;
             /*
-             * create parameter
+             * create new parameter
              */
             paramnode = MemAllocSafe( sizeof( parm_list ) );
             paramnode->replace = NULL;
@@ -387,29 +388,40 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             info->params.tail = paramnode;
 
             i++;
+            if( i >= tokbuf->count )
+                break;
             /*
              * now see if it has a default value or is required
              */
             if( tokbuf->tokens[i].class == TC_COLON ) {
                 i++;
+                if( i >= tokbuf->count )
+                    break;
                 if( *tokbuf->tokens[i].string_ptr == '=' ) {
                     i++;
+                    if( i >= tokbuf->count )
+                        break;
                     if( tokbuf->tokens[i].class != TC_STRING ) {
                         AsmError( SYNTAX_ERROR );
                         return( RC_ERROR );
                     }
                     paramnode->def = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
                     i++;
+                    if( i >= tokbuf->count ) {
+                        break;
+                    }
                 } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
                      * required parameter
                      */
                     paramnode->required = true;
                     i++;
+                    if( i >= tokbuf->count ) {
+                        break;
+                    }
                 }
             }
-            if( i < tokbuf->count
-              && tokbuf->tokens[i].class != TC_COMMA ) {
+            if( tokbuf->tokens[i].class != TC_COMMA ) {
                 AsmError( EXPECTING_COMMA );
                 return( RC_ERROR );
             }
@@ -620,7 +632,7 @@ bool ExpandMacro( token_buffer *tokbuf )
 {
     char            buffer[MAX_LINE_LEN];
     dir_node_handle dir;
-    asm_sym_handle  sym = NULL;
+    asm_sym_handle  sym;
     macro_info      *info;
     parm_list       *param;
     asmline         *lineinfo;
@@ -701,6 +713,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                  * blank param
                  */
                 if( param->required ) {
+                    reset_paramslist( info->params.head );
                     AsmError( PARM_REQUIRED );
                     return( RC_ERROR );
                 }
@@ -714,6 +727,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                     i++;
                     if( i < tokbuf->count
                       && tokbuf->tokens[i].class != TC_COMMA ) {
+                        reset_paramslist( info->params.head );
                         AsmError( EXPECTING_COMMA );
                         return( RC_ERROR );
                     }
@@ -792,6 +806,7 @@ bool ExpandMacro( token_buffer *tokbuf )
             }
         } else {
             if( param->required ) {
+                reset_paramslist( info->params.head );
                 AsmError( PARM_REQUIRED );
                 return( RC_ERROR );
             }

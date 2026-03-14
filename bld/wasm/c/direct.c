@@ -3320,7 +3320,6 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
 //    int_8           finish;
     proc_info       *info;
     regs_list       *regist;
-    regs_list       *temp_regist;
     int             type;
     paramsinfo      params;
 
@@ -3414,13 +3413,11 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
                 if( info->regslist == NULL ) {
                     info->regslist = regist;
                 } else {
-                    for( temp_regist = info->regslist;;
-                            temp_regist = temp_regist->next ) {
-                        if( temp_regist->next == NULL ) {
-                            break;
-                        }
-                    }
-                    temp_regist->next = regist;
+                    regs_list   *tmpreg;
+
+                    for( tmpreg = info->regslist; tmpreg->next != NULL; tmpreg = tmpreg->next )
+                    	/* nothing*/;
+                    tmpreg->next = regist;
                 }
             }
             if( tokbuf->tokens[i].class == TC_COMMA )
