@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -406,8 +406,8 @@ void    lay_banner( const gmltag * entry )
             wkb.next_refnum = ref_ban->next_refnum;
             regwkprev = NULL;
             for( regwk = ref_ban->region; regwk != NULL; regwk = regwk->next ) { // allocate + copy banregions
-                regwknew = MemAllocSafe( sizeof( region_lay_tag ) );
-                memcpy( regwknew, regwk, sizeof( region_lay_tag ) );
+                regwknew = MemAllocSafe( sizeof( *regwknew ) );
+                memcpy( regwknew, regwk, sizeof( *regwknew ) );
                 if( wkb.region == NULL ) {   // forward chain
                     wkb.region = regwknew;
                 } else {
@@ -486,8 +486,8 @@ void    lay_banner( const gmltag * entry )
             xx_err_exit( ERR_ALL_BAN_ATT_RQRD );
             /* never return */
         }
-        curr_ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-        memcpy( curr_ban, &wkb, sizeof( banner_lay_tag ) );
+        curr_ban = MemAllocSafe( sizeof( *curr_ban ) );
+        memcpy( curr_ban, &wkb, sizeof( *curr_ban ) );
 
         if( layout_work.banner == NULL ) {      // First banner initializes the list
             layout_work.banner = curr_ban;
@@ -1107,8 +1107,8 @@ void    lay_banregion( const gmltag *entry )
             xx_err_exit( ERR_ALL_REG_ATT_RQRD );
             /* never return */
         }
-        reg = MemAllocSafe( sizeof( region_lay_tag ) );
-        memcpy( reg, &wkr, sizeof( region_lay_tag ) );
+        reg = MemAllocSafe( sizeof( *reg ) );
+        memcpy( reg, &wkr, sizeof( *reg ) );
         if( prev_reg == NULL ) {    // first region in banner
             curr_ban->region = reg;
         } else {

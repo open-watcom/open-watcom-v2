@@ -268,7 +268,7 @@ void find_create_ix_e_entry( ix_h_blk *ixhwork, char *ref, unsigned len,
 
         /* Item not found and ixework points to insertion point */
 
-        ixewk = MemAllocSafe( sizeof( ix_e_blk ) );
+        ixewk = MemAllocSafe( sizeof( *ixewk ) );
         ixewk->next = NULL;
         ixewk->entry_typ = type;
         ixewk->prt_text = NULL;
@@ -352,7 +352,7 @@ void eol_index_page( eol_ix * eol_index, unsigned page_nr )
 
             /* Item not found and ixework points to insertion point */
 
-            ixewk = MemAllocSafe( sizeof( ix_e_blk ) );
+            ixewk = MemAllocSafe( sizeof( *ixewk ) );
             ixewk->next = NULL;
             ixewk->entry_typ = eol_index->type;
             ixewk->prt_text = NULL;
@@ -421,7 +421,7 @@ ix_h_blk * find_create_ix_h_entry( ix_h_blk *ixhwork, ix_h_blk *ixhbase,
 
         /* Item not found and ixhwork points to insertion point */
 
-        ixhwk = MemAllocSafe( sizeof( ix_h_blk ) );
+        ixhwk = MemAllocSafe( sizeof( *ixhwk ) );
         ixhwk->next  = NULL;
         ixhwk->lower = NULL;
         ixhwk->entry = NULL;
@@ -567,7 +567,7 @@ void    free_index_dict( ix_h_blk * * dict )
 void init_entry_list( ix_h_blk * term )
 
 {
-    term->entry = MemAllocSafe( sizeof( entry_list ) );
+    term->entry = MemAllocSafe( sizeof( *term->entry ) );
     term->entry->major_pgnum = NULL;
     term->entry->major_string = NULL;
     term->entry->normal_pgnum = NULL;

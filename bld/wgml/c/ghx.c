@@ -182,10 +182,8 @@ void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl
     doc_element     *cur_el;
     group_type      sav_group_type;         // save prior group type
     hdlvl           hlvl;
-    unsigned        current;
     unsigned        headlen;
     unsigned        prefixlen;
-    unsigned        txtlen;
     page_pos        old_line_pos;
     ref_entry       *cur_ref         = NULL;
     unsigned        bot_depth;
@@ -216,7 +214,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl
     if( hds_lvl < HDS_abstract ) {
         if( hds_lvl == HDS_appendix ) {
             prefixlen = strlen( layout_work.appendix.string ) + strlen( hd_nums[hn_lvl].hnumstr );
-            prefix = (char *)MemAllocSafe( prefixlen + 1 );
+            prefix = MemAllocSafe( prefixlen + 1 );
             strcpy( prefix, layout_work.appendix.string ); // prefix
             strcat( prefix, hd_nums[hn_lvl].hnumstr ); // numbered header
         } else {
@@ -224,7 +222,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl
             prefixlen = strlen( prefix );
         }
         headlen = prefixlen + strlen( h_text ) + 2;
-        headp = (char *)MemAllocSafe( headlen );
+        headp = MemAllocSafe( headlen );
         if( layout_work.hx.hx_head[hds_lvl].number_form != FORM_none ) {
             strcpy( headp, prefix ); // numbered header
             strcat( headp, " " );
@@ -234,7 +232,7 @@ void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl
     } else {
         prefix = hd_nums[hn_lvl].hnumstr;
         headlen = strlen( prefix ) + strlen( h_text ) + 2;
-        headp = (char *)MemAllocSafe( headlen );
+        headp = MemAllocSafe( headlen );
         *headp = '\0';
     }
     strcat( headp, h_text );
@@ -278,18 +276,14 @@ void gen_heading( char *h_text, const char *hdrefid, hdlvl hn_lvl, hdsrc hds_lvl
 
         if( hds_lvl < HDS_abstract ) {
             if( prefix[0] != '\0' ) {
-                current = strlen( prefix );
-                hd_entry->prefix = (char *)MemAllocSafe( current + 1 );
-                strcpy( hd_entry->prefix, prefix );
+                hd_entry->prefix = MemStrdupSafe( prefix );
                 if( layout_work.hx.hx_head[hds_lvl].number_form != FORM_none ) {
                     hd_entry->flags |= FFH_prefix;  // mark prefix for use
                 }
             }
         }
-        txtlen = strlen( h_text );
-        if( txtlen > 0 ) {              // text line not empty
-            hd_entry->text = (char *)MemAllocSafe( txtlen + 1 );
-            strcpy( hd_entry->text, h_text );
+        if( h_text[0] != '\0' ) {              // text line not empty
+            hd_entry->text = MemStrdupSafe( h_text );
         }
 
         /***********************************************************************/

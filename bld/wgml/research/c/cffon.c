@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -283,7 +284,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the 16-bit line_height. */
 
-        fread( &numeric_16, sizeof(numeric_16), 1, in_file );
+        fread( &numeric_16, sizeof( numeric_16 ), 1, in_file );
         if( ferror( in_file ) || feof( in_file ) ) {
             free( out_font );
             out_font = NULL;
@@ -487,7 +488,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Get the data into the array. */
 
-        if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->intrans->table )) ) {
+        if( out_font->allocated_size < ( sizeof( out_font->intrans->table ) + out_font->next_offset ) ) {
             out_font = resize_cop_font( out_font, sizeof( out_font->intrans->table ) );
             if( out_font == NULL ) {
                 return( out_font );
@@ -561,7 +562,7 @@ cop_font * parse_font( FILE * in_file )
 
             /* Reserve space for the outtrans_block struct instance. */
 
-            if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->outtrans->table )) ) {
+            if( out_font->allocated_size < ( sizeof( out_font->outtrans->table ) + out_font->next_offset ) ) {
                 out_font = resize_cop_font( out_font, sizeof( out_font->outtrans->table ) );
                 if( out_font == NULL ) {
                     return( out_font );
@@ -592,7 +593,7 @@ cop_font * parse_font( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_font->allocated_size < (out_font->next_offset + sizeof( translation )) ) {
+                    if( out_font->allocated_size < ( sizeof( translation ) + out_font->next_offset ) ) {
                         out_font = resize_cop_font( out_font, sizeof( translation ) );
                         if( out_font == NULL )
                             return( out_font );
@@ -665,7 +666,7 @@ cop_font * parse_font( FILE * in_file )
 
             /* Initialize outtrans_ptr and the outtrans pointer in out_font. */
 
-            if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->outtrans->table )) ) {
+            if( out_font->allocated_size < ( sizeof( out_font->outtrans->table ) + out_font->next_offset ) ) {
                 out_font = resize_cop_font( out_font, sizeof( out_font->outtrans->table ) );
                 if( out_font == NULL ) {
                     free( outtrans_data );
@@ -698,7 +699,7 @@ cop_font * parse_font( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_font->allocated_size < (out_font->next_offset + sizeof( translation )) ) {
+                    if( out_font->allocated_size < ( sizeof( translation ) + out_font->next_offset ) ) {
                         out_font = resize_cop_font( out_font, sizeof( translation ) );
                         if( out_font == NULL ) {
                             free( outtrans_data );
@@ -779,7 +780,7 @@ cop_font * parse_font( FILE * in_file )
 
         /* Reserve the space for width. */
 
-        if( out_font->allocated_size < (out_font->next_offset + sizeof( out_font->width->table )) ) {
+        if( out_font->allocated_size < ( sizeof( out_font->width->table ) + out_font->next_offset ) ) {
             out_font = resize_cop_font( out_font, sizeof( out_font->width->table ) );
             if( out_font == NULL ) {
                 return( out_font );

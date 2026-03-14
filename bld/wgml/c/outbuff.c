@@ -876,8 +876,7 @@ static void set_out_file( void )
     if( temp_outfile[0] != '\0' ) {
         if( out_file != NULL )
             MemFree( out_file );
-        out_file = MemAllocSafe( strlen( temp_outfile ) + 1 );
-        strcpy( out_file, temp_outfile );
+        out_file = MemStrdupSafe( temp_outfile );
     }
 
     return;

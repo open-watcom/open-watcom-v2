@@ -1036,7 +1036,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Set defaultfont_ptr and defaultfonts.font and adjust next_offset. */
 
-    size = out_device->defaultfonts.font_count * sizeof( default_font );
+    size = sizeof( *out_device->defaultfonts.fonts ) * out_device->defaultfonts.font_count;
 
     if( OUT_DEV_EXPAND_CHK( size ) ) {
         out_device = resize_cop_device( out_device, size );
@@ -1587,7 +1587,7 @@ cop_device * parse_device( FILE *fp )
 
     /* Get the Devicefonts. */
 
-    size = out_device->devicefonts.font_count * sizeof( device_font );
+    size = sizeof( *out_device->devicefonts.fonts ) * out_device->devicefonts.font_count;
     if( OUT_DEV_EXPAND_CHK( size ) ) {
         out_device = resize_cop_device( out_device, size );
     }

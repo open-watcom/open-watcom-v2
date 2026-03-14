@@ -371,7 +371,7 @@ static cop_driver *parse_font_style( FILE *fp, cop_driver *in_driver,
 
         /* Add the space for the line_proc struct instances. */
 
-        size = fontstyle_block_ptr->line_passes * sizeof( line_proc );
+        size = sizeof( line_proc ) * fontstyle_block_ptr->line_passes;
         if( IN_DRV_EXPAND_CHK( size ) ) {
             fontstyle_block_offset = IN_DRV_GET_OFF( fontstyle_block_ptr );
             in_driver = resize_cop_driver( in_driver, size );
@@ -770,7 +770,7 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
 
         /* Add the init_text struct instances. */
 
-        size = count * sizeof( init_text );
+        size = sizeof( init_text ) * count;
         if( IN_DRV_EXPAND_CHK( size ) ) {
             in_driver = resize_cop_driver( in_driver, size );
             init_block_ptr = IN_DRV_MAP_OFF( in_driver->inits.start );
@@ -835,7 +835,7 @@ static cop_driver *parse_init_block( cop_driver *in_driver, const char **current
 
         /* Add the init_text struct instances. */
 
-        size = count * sizeof( init_text );
+        size = sizeof( init_text ) * count;
         if( IN_DRV_EXPAND_CHK( size ) ) {
             in_driver = resize_cop_driver( in_driver, size );
             init_block_ptr = IN_DRV_MAP_OFF( in_driver->inits.document );
@@ -1215,7 +1215,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* Add the newline_block structs. */
 
-    size = out_driver->newlines.count * sizeof( newline_block );
+    size = sizeof( newline_block ) * out_driver->newlines.count;
     if( OUT_DRV_EXPAND_CHK( size ) ) {
         out_driver = resize_cop_driver( out_driver, size );
     }
@@ -1426,7 +1426,7 @@ cop_driver * parse_driver( FILE *fp )
 
         /* Add the fontswitch_block structs. */
 
-        size = out_driver->fontswitches.count * sizeof( fontswitch_block );
+        size = sizeof( fontswitch_block ) * out_driver->fontswitches.count;
         if( OUT_DRV_EXPAND_CHK( size ) ) {
             out_driver = resize_cop_driver( out_driver, size );
         }
@@ -1648,7 +1648,7 @@ cop_driver * parse_driver( FILE *fp )
 
     /* Add the fontstyle_block struct instances. */
 
-    size = out_driver->fontstyles.count * sizeof( fontstyle_block );
+    size = sizeof( fontstyle_block ) * out_driver->fontstyles.count;
     if( OUT_DRV_EXPAND_CHK( size ) ) {
         out_driver = resize_cop_driver( out_driver, size );
     }

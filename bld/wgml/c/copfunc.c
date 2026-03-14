@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,14 +64,14 @@
 
 code_block *get_code_blocks( const char **current, int count, const char *base )
 {
-    code_block      *out_block   = NULL;
+    code_block      *out_block;
     unsigned        difference;
     unsigned        position;
     int             i;
 
     /* Allocate out_block. */
 
-    out_block = MemAllocSafe( sizeof( code_block ) * count );
+    out_block = MemAllocSafe( sizeof( *out_block ) * count );
 
     /* Initialize each code_block. */
 
@@ -183,9 +184,8 @@ p_buffer * get_p_buffer( FILE *fp )
 
     /* Allocate the out_buffer. */
 
-    current = MemAllocSafe( sizeof( p_buffer ) + 80 * p_count );
-    out_buffer = (p_buffer *)current;
-    current += sizeof( p_buffer );
+    out_buffer = MemAllocSafe( sizeof( *out_buffer ) + 80 * p_count );
+    current = (char *)out_buffer + sizeof( *out_buffer );
     out_buffer->buffer = current;
     out_buffer->count = 80 * p_count;
 
@@ -255,7 +255,7 @@ functions_block *parse_functions_block( const char **current, const char *base )
 
     /* Allocate the out_block. */
 
-    out_block = MemAllocSafe( sizeof( functions_block ) );
+    out_block = MemAllocSafe( sizeof( *out_block ) );
     out_block->count = code_count;
 
     /* Now extract the CodeBlocks, if any. */

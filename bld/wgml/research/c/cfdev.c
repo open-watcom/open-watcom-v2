@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -902,7 +903,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Get the data into the array. */
 
-        if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->intrans->table )) ) {
+        if( out_device->allocated_size < ( sizeof( out_device->intrans->table ) + out_device->next_offset ) ) {
             out_device = resize_cop_device( out_device, sizeof( out_device->intrans->table ) );
             if( out_device == NULL ) return( out_device );
         }
@@ -970,7 +971,7 @@ cop_device * parse_device( FILE * in_file )
 
             /* Reserve space for the outtrans_block. */
 
-            if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->outtrans->table )) ) {
+            if( out_device->allocated_size < ( sizeof( out_device->outtrans->table ) + out_device->next_offset ) ) {
                 out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
                 if( out_device == NULL ) return( out_device );
             }
@@ -999,7 +1000,7 @@ cop_device * parse_device( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_device->allocated_size < ( out_device->next_offset + sizeof( translation )) ) {
+                    if( out_device->allocated_size < ( sizeof( translation ) + out_device->next_offset ) ) {
                         out_device = resize_cop_device( out_device, sizeof( translation ) );
                         if( out_device == NULL )
                             return( out_device );
@@ -1072,7 +1073,7 @@ cop_device * parse_device( FILE * in_file )
 
             /* Initialize outtrans_ptr and the outtrans pointer in out_device. */
 
-            if( out_device->allocated_size < (out_device->next_offset + sizeof( out_device->outtrans->table )) ) {
+            if( out_device->allocated_size < ( sizeof( out_device->outtrans->table ) + out_device->next_offset ) ) {
                 out_device = resize_cop_device( out_device, sizeof( out_device->outtrans->table ) );
                 if( out_device == NULL ) {
                     free( outtrans_data );
@@ -1105,7 +1106,7 @@ cop_device * parse_device( FILE * in_file )
 
                     /* Reserve space for the translation. */
 
-                    if( out_device->allocated_size < (out_device->next_offset + sizeof( translation )) ) {
+                    if( out_device->allocated_size < ( sizeof( translation ) + out_device->next_offset ) ) {
                         out_device = resize_cop_device( out_device, sizeof( translation ) );
                         if( out_device == NULL ) {
                             free( outtrans_data );
@@ -1431,7 +1432,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < ( sizeof( code_text ) + out_device->next_offset ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
             if( out_device == NULL ) {
                 free( raw_functions );
@@ -1554,7 +1555,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < ( sizeof( code_text ) + out_device->next_offset ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
             if( out_device == NULL ) {
                 free( raw_functions );
@@ -1677,7 +1678,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < ( sizeof( code_text ) + out_device->next_offset ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
             if( out_device == NULL ) {
                 free( raw_functions );
@@ -1800,7 +1801,7 @@ cop_device * parse_device( FILE * in_file )
 
         /* Allocate space for the code_text instance. */
 
-        if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
+        if( out_device->allocated_size < ( sizeof( code_text ) + out_device->next_offset ) ) {
             out_device = resize_cop_device( out_device, sizeof( code_text ) );
             if( out_device == NULL ) {
                 free( raw_functions );
@@ -1901,7 +1902,7 @@ cop_device * parse_device( FILE * in_file )
 
     /* Get the Devicefonts. */
 
-    size = out_device->devicefonts.font_count * sizeof( *out_device->devicefonts.fonts );
+    size = sizeof( *out_device->devicefonts.fonts ) * out_device->devicefonts.font_count;
     if( out_device->allocated_size < (out_device->next_offset + size ) ) {
         out_device = resize_cop_device( out_device, size );
         if( out_device == NULL ) {
@@ -2178,7 +2179,7 @@ cop_device * parse_device( FILE * in_file )
 
             /* Allocate space for the code_text instance. */
 
-            if( out_device->allocated_size < (out_device->next_offset + sizeof( code_text ) ) ) {
+            if( out_device->allocated_size < ( sizeof( code_text ) + out_device->next_offset ) ) {
                 out_device = resize_cop_device( out_device, sizeof( code_text ) );
                 devicefont_ptr = OUT_DEV_MAP( out_device->devicefonts.fonts );
                 pause_ptr = OUT_DEV_MAP( devicefont_ptr[i].font_pause );

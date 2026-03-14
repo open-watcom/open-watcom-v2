@@ -127,7 +127,7 @@ void split_input( char *buf, char *split_pos, i_flags fmflags )
 
     len = strlen( split_pos );          // length of second part
     if( len > 0 ) {
-        wk = MemAllocSafe( len + sizeof( inp_line ) );
+        wk = MemAllocSafe( sizeof( *wk ) + len );
         wk->next = input_cbs->hidden_head;
         wk->fmflags  = fmflags;
         wk->fm_symbol = false;
@@ -163,7 +163,7 @@ static void split_input_var( char *buf, char *split_pos, char *part2, i_flags fm
 
     len = strlen( split_pos ) + strlen( part2 );// length of second part
     if( len > 0 ) {
-        wk = MemAllocSafe( len + sizeof( inp_line ) );
+        wk = MemAllocSafe( sizeof( *wk ) + len );
         wk->next = input_cbs->hidden_head;
         wk->fmflags = fmflags;
         wk->fm_symbol = false;

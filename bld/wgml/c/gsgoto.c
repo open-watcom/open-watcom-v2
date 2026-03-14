@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -221,7 +221,7 @@ void    scr_label( void )
                         /* never return */
                     }
                     // new label
-                    lb              = MemAllocSafe( sizeof( labelcb ) );
+                    lb              = MemAllocSafe( sizeof( *lb ) );
                     memset( lb, 0, sizeof( labelcb ) );
                     lb->prev        = input_cbs->s.m->mac->label_cb;
                     input_cbs->s.m->mac->label_cb = lb;
@@ -238,7 +238,7 @@ void    scr_label( void )
                         /* never return */
                     }
                     // new label
-                    lb              = MemAllocSafe( sizeof( labelcb ) );
+                    lb              = MemAllocSafe( sizeof( *lb ) );
                     lb->prev        = input_cbs->s.f->label_cb;
                     input_cbs->s.f->label_cb = lb;
                     lb->pos         = input_cbs->s.f->pos;

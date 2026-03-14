@@ -600,7 +600,7 @@ void    init_def_lay( void )
     /*  :SL         values                                                 */
     /***********************************************************************/
     layout_work.sl.max_level = 1;
-    layout_work.sl.first = MemAllocSafe( sizeof( sl_lay_level ) );
+    layout_work.sl.first = MemAllocSafe( sizeof( *layout_work.sl.first ) );
     layout_work.sl.first->next = NULL;
     layout_work.sl.first->level = 1;
     lay_init_su( z0, &layout_work.sl.first->left_indent );
@@ -615,7 +615,7 @@ void    init_def_lay( void )
     /*  :OL         values                                                 */
     /***********************************************************************/
     layout_work.ol.max_level = 1;
-    layout_work.ol.first = MemAllocSafe( sizeof( ol_lay_level ) );
+    layout_work.ol.first = MemAllocSafe( sizeof( *layout_work.ol.first ) );
     layout_work.ol.first->next = NULL;
     layout_work.ol.first->level = 1;
     lay_init_su( z0, &layout_work.ol.first->left_indent );
@@ -633,7 +633,7 @@ void    init_def_lay( void )
     /*  :UL         values                                                 */
     /***********************************************************************/
     layout_work.ul.max_level = 1;
-    layout_work.ul.first = MemAllocSafe( sizeof( ul_lay_level ) );
+    layout_work.ul.first = MemAllocSafe( sizeof( *layout_work.ul.first ) );
     layout_work.ul.first->next = NULL;
     layout_work.ul.first->level = 1;
     lay_init_su( z0, &layout_work.ul.first->left_indent );
@@ -652,7 +652,7 @@ void    init_def_lay( void )
     /*  :DL         values                                                 */
     /***********************************************************************/
     layout_work.dl.max_level = 1;
-    layout_work.dl.first = MemAllocSafe( sizeof( dl_lay_level ) );
+    layout_work.dl.first = MemAllocSafe( sizeof( *layout_work.dl.first ) );
     layout_work.dl.first->next = NULL;
     layout_work.dl.first->level = 1;
     lay_init_su( z0, &layout_work.dl.first->left_indent );
@@ -668,7 +668,7 @@ void    init_def_lay( void )
     /*  :GL         values                                                 */
     /***********************************************************************/
     layout_work.gl.max_level = 1;
-    layout_work.gl.first = MemAllocSafe( sizeof( gl_lay_level ) );
+    layout_work.gl.first = MemAllocSafe( sizeof( *layout_work.gl.first ) );
     layout_work.gl.first->next = NULL;
     layout_work.gl.first->level = 1;
     lay_init_su( z0, &layout_work.gl.first->left_indent );

@@ -36,12 +36,38 @@
 /*  init banners for default layout                                         */
 /***************************************************************************/
 
+static banner_lay_tag *add_banner_layout( banner_lay_tag *ban )
+{
+    banner_lay_tag  *new;
+
+    new = MemAllocSafe( sizeof( *new ) );
+    if( ban == NULL ) {
+        memset( new, 0, sizeof( *new ) );
+    } else {
+        memcpy( new, ban, sizeof( *new ) );
+        ban->next = new;
+    }
+    return( new );
+}
+
+static region_lay_tag *add_region_layout( region_lay_tag *reg )
+{
+    region_lay_tag  *new;
+
+    new = MemAllocSafe( sizeof( *new ) );
+    if( reg == NULL ) {
+        memset( new, 0, sizeof( *new ) );
+    } else {
+        memcpy( new, reg, sizeof( *new ) );
+        new->next = NULL;
+    }
+    return( new );
+}
+
 void    banner_defaults( void )
 {
     banner_lay_tag  *   ban;
-    banner_lay_tag  *   wk;
     region_lay_tag  *   reg;
-    region_lay_tag  *   regwk;
 
     static  char        z0[2] = "0";
     static  char        n1[2] = "1";
@@ -52,31 +78,21 @@ void    banner_defaults( void )
     static  char        extendc[] = "extend";
     static  char        nr[] = "pgnumr";
 
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
+    ban = add_banner_layout( NULL );
+
     layout_work.banner = ban;
 
-    ban->next = NULL;
-    ban->region = NULL;
-    ban->by_line = NULL;
     lay_init_su( z0, &(ban->left_adjust) );
     lay_init_su( z0, &(ban->right_adjust) );
     lay_init_su( n3, &(ban->depth) );
     ban->place = bottom_place;
     ban->docsect = head0_ban;
-    ban->ban_left_adjust = 0;
-    ban->ban_right_adjust = 0;
-    ban->ban_depth = 0;
     ban->next_refnum = 2;
     ban->style = no_content;
 
-    reg = MemAllocSafe( sizeof( region_lay_tag ) );
+    reg = add_region_layout( NULL );
+
     ban->region = reg;
-    reg->next = NULL;
-    reg->reg_indent = 0;
-    reg->reg_hoffset = 0;
-    reg->reg_width = 0;
-    reg->reg_voffset = 0;
-    reg->reg_depth = 0;
     lay_init_su( z0, &(reg->indent) );
     lay_init_su( leftc, &(reg->hoffset) );
     lay_init_su( extendc, &(reg->width) );
@@ -105,19 +121,13 @@ void    banner_defaults( void )
     reg->final_content[1].string = NULL;
     reg->final_content[2].string = NULL;
 
-
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->docsect = body_ban;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
+    reg = add_region_layout( reg );
+
     ban->region = reg;
-    reg->next = NULL;
     strcpy( reg->contents.string, "/&$htext1.// &$pgnuma./" );
     reg->script_region[0].len = 0;
     reg->script_region[1].len = 0;
@@ -127,20 +137,15 @@ void    banner_defaults( void )
     reg->script_region[2].string = NULL;
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     lay_init_su( n4, &(ban->depth) );
     ban->docsect = abstract_ban;
     ban->style = pgnumr_content;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
+    reg = add_region_layout( reg );
+
     ban->region = reg;
-    reg->next = NULL;
     lay_init_su( n3, &(reg->voffset) );
     reg->region_position = PPOS_center;
     reg->script_format = false;
@@ -154,34 +159,24 @@ void    banner_defaults( void )
     reg->script_region[2].string = NULL;
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->docsect = preface_ban;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
-    ban->region = reg;
-    reg->next = NULL;
+    reg = add_region_layout( reg );
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban->region = reg;
+
+    ban = add_banner_layout( ban );
 
     lay_init_su( n3, &(ban->depth) );
     ban->place = top_place;
     ban->docsect = toc_ban;
     ban->style = no_content;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
+    reg = add_region_layout( reg );
+
     ban->region = reg;
-    reg->next = NULL;
     lay_init_su( n1, &(reg->voffset) );
     reg->font = FONT3;
     reg->contents.content_type = string_content;
@@ -194,52 +189,36 @@ void    banner_defaults( void )
     reg->script_region[2].string = NULL;
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->place = top_place;
     ban->docsect = figlist_ban;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
+    reg = add_region_layout( reg );
+
     ban->region = reg;
-    reg->next = NULL;
     strcpy( reg->contents.string, "List of Figures" );
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->place = top_place;
     ban->docsect = index_ban;
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
+    reg = add_region_layout( reg );
+
     ban->region = reg;
-    reg->next = NULL;
     strcpy( reg->contents.string, "Index" );
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->place = top_place;
     ban->docsect = letter_ban;
 
+    reg = add_region_layout( reg );
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
     ban->region = reg;
-    reg->next = NULL;
     lay_init_su( z0, &(reg->voffset) );
     reg->region_position = PPOS_left;
     reg->font = FONT0;
@@ -248,21 +227,14 @@ void    banner_defaults( void )
     strcpy( reg->contents.string, "/&date.// Page &$pgnuma./" );
 
 
-    wk = ban;
-    ban = MemAllocSafe( sizeof( banner_lay_tag ) );
-    memcpy( ban, wk, sizeof( banner_lay_tag ) );
-    wk->next = ban;
+    ban = add_banner_layout( ban );
 
     ban->place = topodd_place;
     ban->docsect = letlast_ban;
 
+    reg = add_region_layout( reg );
 
-    regwk = MemAllocSafe( sizeof( region_lay_tag ) );
-    memcpy( regwk, reg, sizeof( region_lay_tag ) );
-    reg = regwk;
     ban->region = reg;
-    reg->next = NULL;
-
 }
 
 

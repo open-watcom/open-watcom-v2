@@ -601,7 +601,7 @@ static void set_font( option * opt )
     opt_font    *   f;
 
     old_errs = err_count;
-    new_font = MemAllocSafe( sizeof( opt_font ) );
+    new_font = MemAllocSafe( sizeof( *new_font ) );
     new_font->nxt = NULL;
     new_font->font = FONT0;
     new_font->name = NULL;
@@ -902,7 +902,7 @@ static void set_layout( option * opt )
         /* never return */
     }
     len = tokennext->toklen;
-    laywk = MemAllocSafe( sizeof( laystack ) + len );
+    laywk = MemAllocSafe( sizeof( *laywk ) + len );
     strncpy( laywk->layfn, tokennext->token, len );
     laywk->layfn[len] = '\0';
     laywk->next = NULL;

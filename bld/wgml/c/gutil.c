@@ -1192,16 +1192,16 @@ num_style find_pgnum_style( void )
 
 ffh_entry * init_ffh_entry( ffh_entry * ffh_list, ffhflags flags )
 {
-    ffh_entry   *   curr;
+    ffh_entry   *curr;
 
     curr = ffh_list;
     if( curr == NULL ) {            // first entry
-        curr = (ffh_entry *)MemAllocSafe( sizeof( ffh_entry ) );
+        curr = MemAllocSafe( sizeof( *curr ) );
     } else {
         while( curr->next != NULL ) {
             curr = curr->next;
         }
-        curr->next = (ffh_entry *)MemAllocSafe( sizeof( ffh_entry ) );
+        curr->next = MemAllocSafe( sizeof( *curr->next ) );
         curr = curr->next;
     }
     curr->next = NULL;
@@ -1233,7 +1233,7 @@ fwd_ref *init_fwd_ref( fwd_ref *dict, const char *refid )
         }
         prev = local;
     }
-    curr = (fwd_ref *)MemAllocSafe( sizeof( fwd_ref ) );
+    curr = MemAllocSafe( sizeof( *curr ) );
     curr->next = NULL;
     strcpy( curr->refid, refid );
     if( dict == NULL ) {

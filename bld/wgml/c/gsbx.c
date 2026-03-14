@@ -222,8 +222,8 @@ static  unsigned    v_offset        = 0;        // space reserved for the box li
 static box_col_set * resize_box_cols( box_col_set * in_cols )
 {
     in_cols->length += BOXCOL_COUNT;               // add space for new box columns
-    in_cols->cols = MemReallocSafe( in_cols->cols, in_cols->length * sizeof( box_col_spec ) );
-    memset( &in_cols->cols[in_cols->current], 0, BOXCOL_COUNT * sizeof( box_col_spec ));
+    in_cols->cols = MemReallocSafe( in_cols->cols, sizeof( *in_cols->cols ) * in_cols->length );
+    memset( &in_cols->cols[in_cols->current], 0, sizeof( box_col_spec ) * BOXCOL_COUNT );
     return( in_cols );
 }
 

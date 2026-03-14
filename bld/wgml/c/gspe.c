@@ -102,8 +102,7 @@ static  void    init_pe_line( int pe_count )
     if( get_line( true ) ) {
         input_cbs->pe_cb.count = pe_count;
         input_cbs->pe_cb.ll    = strlen( buff2 ) + 1;
-        input_cbs->pe_cb.line  = MemAllocSafe( input_cbs->pe_cb.ll );
-        strcpy( input_cbs->pe_cb.line, buff2 );
+        input_cbs->pe_cb.line  = MemStrdupSafe( buff2 );
     }
     return;
 }

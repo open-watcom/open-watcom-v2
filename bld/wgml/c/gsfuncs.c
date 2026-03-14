@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -75,7 +75,7 @@ static char *alloc_resbuf( inp_line **in_wk )
 {
     inp_line  * wk;
 
-    wk = MemAllocSafe( sizeof( inp_line ) + BUF_SIZE );
+    wk = MemAllocSafe( sizeof( *wk ) + BUF_SIZE );
     if( *in_wk == NULL ) {
         wk->next = NULL;
     } else {

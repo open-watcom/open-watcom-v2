@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,7 +172,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
 
         /* Add the code_text struct itself. */
 
-        if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+        if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
             in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
             if( in_driver == NULL ) return( in_driver );
         }
@@ -238,7 +239,7 @@ static cop_driver *parse_finish_block( cop_driver *in_driver, char **current, ch
 
         /* Add the code_text struct itself. */
 
-        if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+        if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
             in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
             if( in_driver == NULL ) return( in_driver );
         }
@@ -428,7 +429,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
     } else {
 
         /* Add the space for the line_proc struct instances. */
-        size = fontstyle_block_ptr->passes * sizeof( line_proc );
+        size = sizeof( line_proc ) * fontstyle_block_ptr->passes;
         if( in_driver->allocated_size < (in_driver->next_offset + size ) ) {
             fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
             in_driver = resize_cop_driver( in_driver, size );
@@ -513,7 +514,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -569,7 +570,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -643,7 +644,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -712,7 +713,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -786,7 +787,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -855,7 +856,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -929,7 +930,7 @@ static cop_driver * parse_font_style( FILE * in_file, cop_driver * in_driver,
 
             /* Add the code_text struct. */
 
-            if( in_driver->allocated_size < (in_driver->next_offset + sizeof( code_text )) ) {
+            if( in_driver->allocated_size < ( sizeof( code_text ) + in_driver->next_offset ) ) {
                 fontstyle_block_offset = (char *)fontstyle_block_ptr - (char *)in_driver;
                 in_driver = resize_cop_driver( in_driver, sizeof( code_text ) );
                 if( in_driver == NULL ) {
@@ -1055,7 +1056,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
 
         /* Add the init_block struct itself. */
 
-        if( in_driver->allocated_size < (in_driver->next_offset + sizeof( init_block )) ) {
+        if( in_driver->allocated_size < ( sizeof( init_block ) + in_driver->next_offset ) ) {
             in_driver = resize_cop_driver( in_driver, sizeof( init_block ) );
             if( in_driver == NULL ) return( in_driver );
         }
@@ -1075,7 +1076,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
 
         /* Add the init_text struct instances. */
 
-        size = count * sizeof( init_text );
+        size = sizeof( init_text ) * count;
         if( in_driver->allocated_size < (in_driver->next_offset + size) ) {
             in_driver = resize_cop_driver( in_driver, size );
             if( in_driver == NULL ) {
@@ -1148,7 +1149,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
 
         /* Add the init_block struct itself. */
 
-        if( in_driver->allocated_size < (in_driver->next_offset + sizeof( init_block )) ) {
+        if( in_driver->allocated_size < ( sizeof( init_block ) + in_driver->next_offset ) ) {
             in_driver = resize_cop_driver( in_driver, sizeof( init_block ) );
             if( in_driver == NULL ) return( in_driver );
         }
@@ -1168,7 +1169,7 @@ static cop_driver * parse_init_block( cop_driver * in_driver, char **current, ch
 
         /* Add the init_text struct instances. */
 
-        size = count * sizeof( init_text );
+        size = sizeof( init_text ) * count;
         if( in_driver->allocated_size < (in_driver->next_offset + size) ) {
             in_driver = resize_cop_driver( in_driver, size );
             if( in_driver == NULL ) {
@@ -1576,7 +1577,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Add the newline_block structs. */
 
-    size = out_driver->newlines.count * sizeof( newline_block );
+    size = sizeof( newline_block ) * out_driver->newlines.count;
     if( out_driver->allocated_size < (out_driver->next_offset + size) ) {
         out_driver = resize_cop_driver( out_driver, size );
         if( out_driver == NULL ) {
@@ -1839,7 +1840,7 @@ cop_driver * parse_driver( FILE * in_file )
 
         /* Add the fontswitch_block structs. */
 
-        size = out_driver->fontswitches.count * sizeof( fontswitch_block );
+        size = sizeof( fontswitch_block ) * out_driver->fontswitches.count;
         if( out_driver->allocated_size < (out_driver->next_offset + size) ) {
             out_driver = resize_cop_driver( out_driver, size );
             if( out_driver == NULL ) {
@@ -1929,7 +1930,7 @@ cop_driver * parse_driver( FILE * in_file )
 
                         /* Add the code_text struct for endvalue. */
 
-                        if( out_driver->allocated_size < (out_driver->next_offset + sizeof( code_text )) ) {
+                        if( out_driver->allocated_size < ( sizeof( code_text ) + out_driver->next_offset ) ) {
                             out_driver = resize_cop_driver( out_driver, sizeof( code_text ) );
                             if( out_driver == NULL ) {
                                 free( p_buffer_set );
@@ -1972,7 +1973,7 @@ cop_driver * parse_driver( FILE * in_file )
 
                         /* Add the code_text struct for startvalue. */
 
-                        if( out_driver->allocated_size < (out_driver->next_offset + sizeof( code_text )) ) {
+                        if( out_driver->allocated_size < ( sizeof( code_text ) + out_driver->next_offset ) ) {
                             out_driver= resize_cop_driver( out_driver, sizeof( code_text ) );
                             if( out_driver == NULL ) {
                                 free( p_buffer_set );
@@ -2098,7 +2099,7 @@ cop_driver * parse_driver( FILE * in_file )
 
     /* Add the fontstyle_block struct instances. */
 
-    size = out_driver->fontstyles.count * sizeof( fontstyle_block );
+    size = sizeof( fontstyle_block ) * out_driver->fontstyles.count;
     if( out_driver->allocated_size < (out_driver->next_offset + size) ) {
         out_driver = resize_cop_driver( out_driver, size );
         if( out_driver == NULL ) return( out_driver );

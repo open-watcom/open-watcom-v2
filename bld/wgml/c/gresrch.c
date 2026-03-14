@@ -89,7 +89,7 @@ void add_GML_tag_research( char * tag )
         }
         wk = wk->nxt;
     }
-    new = MemAllocSafe( sizeof( taglist ) );
+    new = MemAllocSafe( sizeof( *new ) );
     if( wk == NULL ) {
         wk = new;
         if( ProcFlags.layout ) {
@@ -183,7 +183,7 @@ void    add_SCR_tag_research( char * tag )
             break;
         }
     }
-    new = MemAllocSafe( sizeof( taglist ) );
+    new = MemAllocSafe( sizeof( *new ) );
     if( wk == NULL ) {
         scrkws = new;
     } else {
@@ -254,7 +254,7 @@ void    add_multi_func_research( const char *fun )
             break;
         }
     }
-    new = MemAllocSafe( sizeof( taglist ) );
+    new = MemAllocSafe( sizeof( *new ) );
     if( wk == NULL ) {
         multi_funcs = new;
     } else {
@@ -325,7 +325,7 @@ void    add_single_func_research( const char *fun )
             break;
         }
     }
-    new = MemAllocSafe( sizeof( taglist ) );
+    new = MemAllocSafe( sizeof( *new ) );
     if( wk == NULL ) {
         single_funcs = new;
     } else {

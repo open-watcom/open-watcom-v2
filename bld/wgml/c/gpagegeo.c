@@ -508,7 +508,7 @@ static void finish_banners( void )
         sav_reg->next = NULL;
         while( sav_reg != NULL ) {
             if( cur_ban->by_line == NULL ) {    // first region
-                cur_ban->by_line = MemAllocSafe( sizeof(ban_reg_group) );
+                cur_ban->by_line = MemAllocSafe( sizeof( *cur_ban->by_line ) );
                 cur_ban->by_line->next = NULL;
                 cur_ban->by_line->first = sav_reg;
                 cur_ban->by_line->voffset = sav_reg->reg_voffset;
@@ -551,14 +551,14 @@ static void finish_banners( void )
                         break;
                     } else if( cur_grp->voffset > sav_reg->reg_voffset ) {  // insert/add new group
                         if( cur_grp == cur_ban->by_line ) {                 // insert before first group
-                            cur_grp = MemAllocSafe( sizeof(ban_reg_group) );
+                            cur_grp = MemAllocSafe( sizeof( *cur_grp ) );
                             cur_grp->next = cur_ban->by_line;
                             cur_ban->by_line = cur_grp;
                             cur_grp->first = sav_reg;
                             cur_grp->voffset = sav_reg->reg_voffset;
                             cur_grp->max_depth = sav_reg->reg_depth;
                         } else {                                            // insert before current group
-                            sav_grp = MemAllocSafe( sizeof(ban_reg_group) );
+                            sav_grp = MemAllocSafe( sizeof( *sav_grp ) );
                             old_grp->next = sav_grp;
                             sav_grp->next = cur_grp;
                             sav_grp->first = sav_reg;
@@ -573,7 +573,7 @@ static void finish_banners( void )
                     break;
                 }
                 if( sav_reg != NULL ) {                                     // add new group at end
-                    old_grp->next = MemAllocSafe( sizeof(ban_reg_group) );
+                    old_grp->next = MemAllocSafe( sizeof( *old_grp->next ) );
                     old_grp = old_grp->next;
                     old_grp->next = NULL;
                     old_grp->first = sav_reg;
@@ -723,14 +723,14 @@ static void finish_banners( void )
                             sav_reg = NULL;
                         } else if( cur_grp->voffset > sav_reg->reg_voffset ) {  // insert/add new group
                             if( cur_grp == sav_grp ) {                  // insert before first group
-                                cur_ban->by_line = MemAllocSafe( sizeof(ban_reg_group) );
+                                cur_ban->by_line = MemAllocSafe( sizeof( *cur_ban->by_line ) );
                                 cur_ban->by_line->next = cur_grp;
                                 cur_ban->by_line->first = sav_reg;
                                 cur_ban->by_line->voffset = sav_reg->reg_voffset;
                                 cur_ban->by_line->line_height = wgml_fonts[sav_reg->font].line_height;
                                 cur_ban->by_line->max_depth = sav_reg->reg_depth;
                             } else {                                            // insert before current group
-                                old_grp->next = MemAllocSafe( sizeof(ban_reg_group) );
+                                old_grp->next = MemAllocSafe( sizeof( *old_grp->next ) );
                                 old_grp->next->next = cur_grp;
                                 old_grp->next->first = sav_reg;
                                 old_grp->next->voffset = sav_reg->reg_voffset;
@@ -747,7 +747,7 @@ static void finish_banners( void )
                         break;
                     }
                     if( cur_ban->by_line == NULL ) {                // add new group at start
-                        cur_ban->by_line = MemAllocSafe( sizeof(ban_reg_group) );
+                        cur_ban->by_line = MemAllocSafe( sizeof( *cur_ban->by_line ) );
                         cur_ban->by_line->next = NULL;
                         cur_ban->by_line->first = sav_reg;
                         cur_ban->by_line->voffset = sav_reg->reg_voffset;
@@ -755,7 +755,7 @@ static void finish_banners( void )
                         cur_ban->by_line->max_depth = sav_reg->reg_depth;
                         sav_reg = NULL;
                     } else if( sav_reg != NULL ) {                  // add new group at end
-                        old_grp->next = MemAllocSafe( sizeof(ban_reg_group) );
+                        old_grp->next = MemAllocSafe( sizeof( *old_grp->next ) );
                         old_grp = old_grp->next;
                         old_grp->next = NULL;
                         old_grp->first = sav_reg;
@@ -887,14 +887,14 @@ static void finish_banners( void )
                             sav_reg = NULL;
                         } else if( cur_grp->line_height > wgml_fonts[sav_reg->font].line_height ) {    // insert/add new group
                             if( cur_grp == sav_grp ) {                  // insert before first group
-                                cur_ban->by_line = MemAllocSafe( sizeof(ban_reg_group) );
+                                cur_ban->by_line = MemAllocSafe( sizeof( *cur_ban->by_line ) );
                                 cur_ban->by_line->next = cur_grp;
                                 cur_ban->by_line->first = sav_reg;
                                 cur_ban->by_line->voffset = sav_reg->reg_voffset;
                                 cur_ban->by_line->line_height = wgml_fonts[sav_reg->font].line_height;
                                 cur_ban->by_line->max_depth = sav_reg->reg_depth;
                             } else {                                            // insert before current group
-                                old_grp->next = MemAllocSafe( sizeof(ban_reg_group) );
+                                old_grp->next = MemAllocSafe( sizeof( *old_grp->next ) );
                                 old_grp->next->next = cur_grp;
                                 old_grp->next->first = sav_reg;
                                 old_grp->next->voffset = sav_reg->reg_voffset;
@@ -911,7 +911,7 @@ static void finish_banners( void )
                         break;
                     }
                     if( cur_ban->by_line == NULL ) {                // add new group at start
-                        cur_ban->by_line = MemAllocSafe( sizeof(ban_reg_group) );
+                        cur_ban->by_line = MemAllocSafe( sizeof( *cur_ban->by_line ) );
                         cur_ban->by_line->next = NULL;
                         cur_ban->by_line->first = sav_reg;
                         cur_ban->by_line->voffset = sav_reg->reg_voffset;
@@ -919,7 +919,7 @@ static void finish_banners( void )
                         cur_ban->by_line->max_depth = sav_reg->reg_depth;
                         sav_reg = NULL;
                     } else if( sav_reg != NULL ) {                  // add new group at end
-                        old_grp->next = MemAllocSafe( sizeof(ban_reg_group) );
+                        old_grp->next = MemAllocSafe( sizeof( *old_grp->next ) );
                         old_grp = old_grp->next;
                         old_grp->next = NULL;
                         old_grp->first = sav_reg;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -557,7 +557,7 @@ void    lay_dl( const gmltag * entry )
 
     /* Make a copy of the level 1 DL LAYOUT */
 
-    dl_layout = MemAllocSafe( sizeof( dl_lay_level ) );
+    dl_layout = MemAllocSafe( sizeof( *dl_layout ) );
     dl_layout->next = NULL;
     dl_layout->left_indent = layout_work.dl.first->left_indent;
     dl_layout->right_indent = layout_work.dl.first->right_indent;
@@ -762,7 +762,7 @@ void    lay_gl( const gmltag * entry )
 
     /* Make a copy of the level 1 GL LAYOUT */
 
-    gl_layout = MemAllocSafe( sizeof( gl_lay_level ) );
+    gl_layout = MemAllocSafe( sizeof( *gl_layout ) );
     gl_layout->next = NULL;
     gl_layout->left_indent = layout_work.gl.first->left_indent;
     gl_layout->right_indent = layout_work.gl.first->right_indent;
@@ -969,7 +969,7 @@ void    lay_ol( const gmltag * entry )
 
     /* Make a copy of the level 1 OL LAYOUT */
 
-    ol_layout = MemAllocSafe( sizeof( ol_lay_level ) );
+    ol_layout = MemAllocSafe( sizeof( *ol_layout ) );
     ol_layout->next = NULL;
     ol_layout->left_indent = layout_work.ol.first->left_indent;
     ol_layout->right_indent = layout_work.ol.first->right_indent;
@@ -1199,7 +1199,7 @@ void    lay_sl( const gmltag * entry )
 
     /* Make a copy of the level 1 SL LAYOUT */
 
-    sl_layout = MemAllocSafe( sizeof( sl_lay_level ) );
+    sl_layout = MemAllocSafe( sizeof( *sl_layout ) );
     sl_layout->next = NULL;
     sl_layout->left_indent = layout_work.sl.first->left_indent;
     sl_layout->right_indent = layout_work.sl.first->right_indent;
@@ -1393,7 +1393,7 @@ void    lay_ul( const gmltag * entry )
 
     /* Make a copy of the level 1 UL LAYOUT */
 
-    ul_layout = MemAllocSafe( sizeof( ul_lay_level ) );
+    ul_layout = MemAllocSafe( sizeof( *ul_layout ) );
     ul_layout->next = NULL;
     ul_layout->left_indent = layout_work.ul.first->left_indent;
     ul_layout->right_indent = layout_work.ul.first->right_indent;

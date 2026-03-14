@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1150,7 +1150,7 @@ void gml_figcap( const gmltag * entry )
         sprintf( buffer, "%d", fig_entry->number );
         count += strlen( buffer );
         count++;                       // for the delimiter character
-        prefix = (char *)MemAllocSafe( count + 1 );
+        prefix = MemAllocSafe( count + 1 );
         strcpy( prefix, layout_work.figcap.string );
         current = strlen( prefix );
         strcat( &prefix[current], buffer );

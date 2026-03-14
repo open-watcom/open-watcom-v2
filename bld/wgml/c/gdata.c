@@ -74,8 +74,7 @@ void init_global_vars( void )
 
     alt_ext             = MemAllocSafe( 5 );   // alternate extension   .xxx
     *alt_ext            = '\0';
-    def_ext             = MemAllocSafe( sizeof( GML_EXT ) );
-    strcpy( def_ext, GML_EXT );
+    def_ext             = MemStrdupSafe( GML_EXT );
     ampchar             = '&';
 
     gotarget[0]         = '\0';         // no .go to target yet
@@ -151,7 +150,7 @@ void init_global_vars( void )
     t_page.max_width        = 0;
     t_page.cur_left         = 0;
     t_page.cur_width        = 0;
-    t_page.last_pane        = MemAllocSafe( sizeof(doc_pane) );
+    t_page.last_pane        = MemAllocSafe( sizeof( *t_page.last_pane ) );
     t_page.cur_col          = &t_page.last_pane->cols[0];
     t_page.last_col_main    = NULL;
     t_page.last_col_fn      = NULL;

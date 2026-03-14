@@ -116,7 +116,7 @@ void    init_dict( symdict_hdl *pdict )
 {
     symdict_hdl dict;
 
-    dict = MemAllocSafe( sizeof( symdict ) );
+    dict = MemAllocSafe( sizeof( *dict ) );
     dict->first    = NULL;
     dict->htbl     = NULL;
     dict->lookups  = 0;
@@ -527,7 +527,7 @@ static bool add_symvar_sub( symvar *var, const char *val, unsigned len, sub_inde
           && (subscript == var->last_auto_inc + 1) ) {
             var->last_auto_inc++;
         }
-        newsub            = MemAllocSafe( sizeof( symsub ) );
+        newsub            = MemAllocSafe( sizeof( *newsub ) );
         newsub->next      = NULL;
         newsub->base      = var;
         newsub->subscript = subscript;
@@ -595,7 +595,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     symvar      *new;
     symsub      *newsub;
 
-    new = MemAllocSafe( sizeof( symvar ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->next = NULL;
     strcpy( new->name, name );
     new->last_auto_inc  = 0;
@@ -603,7 +603,7 @@ static symvar *add_symsym( symdict_hdl dict, const char *name, symbol_flags f )
     new->subscripts = NULL;
     new->flags = f & ~SF_deleted;
 
-    newsub = MemAllocSafe( sizeof( symsub ) );
+    newsub = MemAllocSafe( sizeof( *newsub ) );
     new->sub_0 = newsub;
     newsub->next      = NULL;
     newsub->base      = new;

@@ -263,7 +263,7 @@ static void next_tab( void )
                 r_count /= TAB_COUNT;
                 r_count++;
                 r_length = def_tabs.length + (r_count * TAB_COUNT);
-                def_tabs.tabs = MemReallocSafe( def_tabs.tabs, r_length * sizeof( tab_stop ) );
+                def_tabs.tabs = MemReallocSafe( def_tabs.tabs, sizeof( *def_tabs.tabs ) * r_length );
                 for( i = def_tabs.length; i < r_length; i++ ) {
                     def_tabs.tabs[i].column = def_tabs.tabs[i - 1].column + inter_tab;
                     def_tabs.tabs[i].fill_char = ' ';

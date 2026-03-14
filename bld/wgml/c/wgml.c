@@ -174,7 +174,7 @@ static  char    * reuse_filename( const char * fn )
         }
     }
 
-    fnwk = MemAllocSafe( sizeof( fnstack ) + strlen( fn ) );
+    fnwk = MemAllocSafe( sizeof( *fnwk ) + strlen( fn ) );
     strcpy( fnwk->fn, fn );
 
     fnwk->prev = fn_stack;
@@ -192,14 +192,14 @@ static  void    add_file_cb_entry( FILE *fp, const char *fname )
     filecb  *   new;
     inputcb *   nip;
 
-    new = MemAllocSafe( sizeof( filecb ) );
+    new = MemAllocSafe( sizeof( *new ) );
     new->filename = reuse_filename( fname );
 
-    nip = MemAllocSafe( sizeof( inputcb ) );
+    nip = MemAllocSafe( sizeof( *nip ) );
     nip->hidden_head = NULL;
     nip->hidden_tail = NULL;
-    nip->if_cb       = MemAllocSafe( sizeof( ifcb ) );
-    memset( nip->if_cb, '\0', sizeof( ifcb ) );
+    nip->if_cb       = MemAllocSafe( sizeof( *nip->if_cb ) );
+    memset( nip->if_cb, '\0', sizeof( *nip->if_cb ) );
     nip->pe_cb.line  = NULL;
     nip->pe_cb.count = 0;
     nip->fmflags     = II_file;

@@ -592,7 +592,7 @@ void    scr_ga( void )
         }
     }
     if( g_att_entry == NULL ) {         // new attribute
-        g_att_entry = MemAllocSafe( sizeof( gaentry ) );
+        g_att_entry = MemAllocSafe( sizeof( *g_att_entry ) );
 
         g_att_entry->next = g_tag_entry->attribs;
         g_tag_entry->attribs = g_att_entry;
@@ -606,12 +606,12 @@ void    scr_ga( void )
 
     gaval = g_att_entry->vals;
     if( gaval == NULL ) {
-        gaval = g_att_entry->vals = MemAllocSafe( sizeof (gavalentry ) );
+        g_att_entry->vals = gaval = MemAllocSafe( sizeof ( *gaval ) );
     } else {
         while( gaval->next != NULL ) {  // find last entry
             gaval = gaval->next;
         }
-        gaval->next = MemAllocSafe( sizeof (gavalentry ) );
+        gaval->next = MemAllocSafe( sizeof( *gaval ) );
         gaval = gaval->next;
     }
     gaval->next = NULL;

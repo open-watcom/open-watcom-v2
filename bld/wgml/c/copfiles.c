@@ -743,7 +743,7 @@ void cop_setup( void )
 
     bin_fonts = NULL;
 
-    cur_token = MemAllocSafe( sizeof( record_buffer ) );
+    cur_token = MemAllocSafe( sizeof( *cur_token ) );
     init_record_buffer( cur_token, 10 );
 
     for( i = 0; i < 0x100; i++) {
@@ -885,7 +885,7 @@ void cop_setup( void )
 
     /* Initialize wgml_fonts, which is an array */
 
-    wgml_fonts = MemAllocSafe( wgml_font_cnt * sizeof( wgml_font ) );
+    wgml_fonts = MemAllocSafe( sizeof( *wgml_fonts ) * wgml_font_cnt );
     for( i = 0; i < wgml_font_cnt; i++ ) {
         wgml_fonts[i].bin_font = NULL;
         wgml_fonts[i].font_switch = NULL;
@@ -1207,7 +1207,7 @@ void cop_setup( void )
     first_tab = (6 * tab_col) - 1;
     inter_tab = 5 * tab_col;
 
-    def_tabs.tabs = MemAllocSafe( TAB_COUNT * sizeof( tab_stop ) );
+    def_tabs.tabs = MemAllocSafe( sizeof( *def_tabs.tabs ) * TAB_COUNT );
     def_tabs.length = TAB_COUNT;
     def_tabs.tabs[0].column = first_tab;
     def_tabs.tabs[0].fill_char = ' ';
@@ -1221,7 +1221,7 @@ void cop_setup( void )
 
     /* Initialize user_tabs. */
 
-    user_tabs.tabs = MemAllocSafe( TAB_COUNT * sizeof( tab_stop ) );
+    user_tabs.tabs = MemAllocSafe( sizeof( *user_tabs.tabs ) * TAB_COUNT );
     user_tabs.length = TAB_COUNT;
     user_tabs.current = 0;
 
@@ -1687,9 +1687,7 @@ void resize_record_buffer( record_buffer *recb, unsigned size )
 
 void init_record_buffer_fill( record_buffer *recb, unsigned size, unsigned char byte )
 {
-    recb->current = 0;
-    recb->size = size;
-    recb->text = MemAllocSafe( size + 1 );
+    init_record_buffer( recb, size );
     memset( recb->text, byte, size );
     recb->text[size] = '\0';
 }
