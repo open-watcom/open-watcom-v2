@@ -615,7 +615,7 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
             }
         }
 
-        SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)*font, (LPARAM)TRUE );
+        SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)*font, TRUE );
 
         SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }
@@ -820,7 +820,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     SET_WNDPROC( obj->window_handle, (LONG_PTR)new_proc );
 
     if( set_font ) {
-        SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)obj->font, (LPARAM)TRUE );
+        SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)obj->font, TRUE );
 
         SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }

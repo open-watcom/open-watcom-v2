@@ -246,8 +246,8 @@ static BOOL SaveLocalListState( HWND boxhwnd, LocalStateStruct *info ) {
 
     int     top, sel;
 
-    top = (int)SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0L );
-    sel = (int)SendMessage( boxhwnd, LB_GETCURSEL, 0, 0L );
+    top = (int)SendMessage( boxhwnd, LB_GETTOPINDEX, 0, 0 );
+    sel = (int)SendMessage( boxhwnd, LB_GETCURSEL, 0, 0 );
     if( sel != LB_ERR && sel < LocalHeapCount ) {
         info->sel = *LocalHeapList[sel];
         info->valid_sel = TRUE;

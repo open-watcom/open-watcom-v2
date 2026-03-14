@@ -266,7 +266,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 
     switch( msg ) {
     case UM_EXIT:
-        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
+        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0 );
         /* fall through */
 
     case UM_EXIT_NO_SAVE:
@@ -391,7 +391,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
         case IMGED_CLOSE:
             node = GetCurrentNode();
             if( node != NULL ) {
-                _wpi_sendmessage( node->hwnd, WM_CLOSE, 0, 0L );
+                _wpi_sendmessage( node->hwnd, WM_CLOSE, 0, 0 );
             }
             break;
 
@@ -594,24 +594,24 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 
         case IMGED_ARRANGE:
 #ifndef __OS2_PM__
-            SendMessage( ClientWindow, WM_MDIICONARRANGE, 0, 0L );
+            SendMessage( ClientWindow, WM_MDIICONARRANGE, 0, 0 );
 #endif
             break;
 
         case IMGED_TILE:
 #ifndef __OS2_PM__
-            SendMessage( ClientWindow, WM_MDITILE, MDITILE_VERTICAL, 0L );
+            SendMessage( ClientWindow, WM_MDITILE, MDITILE_VERTICAL, 0 );
 #endif
             break;
 
         case IMGED_CASCADE:
 #ifndef __OS2_PM__
-            SendMessage( ClientWindow, WM_MDICASCADE, MDITILE_SKIPDISABLED, 0L );
+            SendMessage( ClientWindow, WM_MDICASCADE, MDITILE_SKIPDISABLED, 0 );
 #endif
             break;
 
         case IMGED_EXIT:
-            _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
+            _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0 );
 
             if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
                 break;
@@ -646,7 +646,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
                 _wpi_showwindow( _wpi_getframe( hwnd ), SW_SHOWNORMAL );
             }
         }
-        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
+        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0 );
 
         if( _wpi_getfirstchild( _wpi_getclient( ClientWindow ) ) != NULL ) {
             return( 0 );
@@ -660,7 +660,7 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
             // DDE initialization
             return( 0 );
         }
-        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0L );
+        _wpi_sendmessage( hwnd, WM_COMMAND, IMGED_CLOSEALL, 0 );
 #ifdef __OS2_PM__
         return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );
 #else

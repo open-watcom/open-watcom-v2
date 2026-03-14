@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
         }
         ret = true;
         break;

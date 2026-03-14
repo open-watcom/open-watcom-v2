@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -578,11 +578,11 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
                     }
                     MemFree( selitems );
                 }
-                SendMessage( hwnd, WM_CLOSE, 0, 0L );
+                SendMessage( hwnd, WM_CLOSE, 0, 0 );
             }
             break;
         case IDCANCEL:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case DMP_SEL_ALL:
             SendDlgItemMessage( hwnd, DMP_BOX, LB_SELITEMRANGE, TRUE,

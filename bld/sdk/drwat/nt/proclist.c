@@ -352,7 +352,7 @@ void RemoveThread( DWORD processid, DWORD threadid )
             RemoveProcess( processid );
         }
         if( procDlg != NULL ) {
-            SendMessage( procDlg, DR_TASK_LIST_CHANGE, 0, 0L );
+            SendMessage( procDlg, DR_TASK_LIST_CHANGE, 0, 0 );
         }
     }
 }
@@ -400,7 +400,7 @@ void RemoveProcess( DWORD process )
         }
         freeProcNode( tmp );
         if( procDlg != NULL ) {
-            SendMessage( procDlg, DR_TASK_LIST_CHANGE, 0, 0L );
+            SendMessage( procDlg, DR_TASK_LIST_CHANGE, 0, 0 );
         }
     }
 }
@@ -500,16 +500,16 @@ static void fillTaskListBox( HWND hwnd, char *buf )
 
     RefreshInfo();
     lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
-    index = (int)SendMessage( lb, LB_GETTOPINDEX, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETTOPINDEX, 0, 0 );
     if( index == LB_ERR ) {
         topproc = -1;
         curproc = -1;
     } else {
         topproc = SendMessage( lb, LB_GETITEMDATA, index, 0 );
-        index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
+        index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0 );
         curproc = SendMessage( lb, LB_GETITEMDATA, index, 0 );
     }
-    SendMessage( lb, LB_RESETCONTENT, 0, 0L );
+    SendMessage( lb, LB_RESETCONTENT, 0, 0 );
     select = -1;
     topindex = -1;
     rc = GetNextProcess( &info, &place, TRUE );
@@ -532,11 +532,11 @@ static void fillTaskListBox( HWND hwnd, char *buf )
     if( select == -1 ) {
         enableProcChoices( hwnd, FALSE );
     } else {
-        SendMessage( lb, LB_SETCURSEL, select, 0L );
+        SendMessage( lb, LB_SETCURSEL, select, 0 );
     }
     /* if the old top item no longer exists choose the one before it */
     if( topindex == -1 && topproc != -1 ) {
-        itemcnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0L );
+        itemcnt = (int)SendMessage( lb, LB_GETCOUNT, 0, 0 );
         for( topindex = 0; topindex < itemcnt; topindex++ ) {
             tmp = SendMessage( lb, LB_GETITEMDATA, topindex, 0 );
             if( tmp > topproc ) {
@@ -546,7 +546,7 @@ static void fillTaskListBox( HWND hwnd, char *buf )
         }
     }
     if( topproc != -1 ) {
-        SendMessage( lb, LB_SETTOPINDEX, topindex, 0L );
+        SendMessage( lb, LB_SETTOPINDEX, topindex, 0 );
     }
 }
 
@@ -642,10 +642,10 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                  MessageBox( hwnd, buf, action, MB_OK | MB_ICONEXCLAMATION );
                  FreeRCString( action );
              }
-             SendMessage( hwnd, WM_CLOSE, 0, 0L );
+             SendMessage( hwnd, WM_CLOSE, 0, 0 );
              break;
          case IDCANCEL:
-             SendMessage( hwnd, WM_CLOSE, 0, 0L );
+             SendMessage( hwnd, WM_CLOSE, 0, 0 );
              break;
          }
         break;
@@ -708,7 +708,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         RefreshInfo();
         fillTaskListBox( hwnd, buf );
         if( ThreadDlg != NULL ) {
-            SendMessage( ThreadDlg, DR_TASK_LIST_CHANGE, 0, 0L );
+            SendMessage( ThreadDlg, DR_TASK_LIST_CHANGE, 0, 0 );
         }
         break;
     case WM_COMMAND:
@@ -717,7 +717,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
            || cmd == PROCCTL_VIEWMEM || cmd == PROCCTL_SET_PRIORITY
            || cmd == PROCCTL_ATTATCH || cmd == PROCCTL_MEM ) {
             lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
-            index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
+            index = SendMessage( lb, LB_GETCURSEL, 0, 0 );
             if( index == LB_ERR ) {
                 RCMessageBox( hwnd, STR_NO_SELECTED_PROCESS, AppName, MB_OK | MB_ICONEXCLAMATION );
                 break;
@@ -811,7 +811,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             fillProcInfo( hwnd, buf );
             break;
         case IDOK:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case PROCCTL_TASKLIST:
             if( HIWORD( wparam ) == LBN_SELCHANGE ) {

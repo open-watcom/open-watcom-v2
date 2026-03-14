@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,7 @@ WPI_DLGRESULT CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
         } else {
             SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)"Monochrome, 32x32" );
         }
-        SendMessage( hlistbox, LB_SETCURSEL, 0, 0L );
+        SendMessage( hlistbox, LB_SETCURSEL, 0, 0 );
         ret = true;
         break;
 
@@ -238,7 +238,7 @@ WPI_DLGRESULT CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDOK:
-            index = (int)SendMessage( hlistbox, LB_GETCURSEL, 0, 0L );
+            index = (int)SendMessage( hlistbox, LB_GETCURSEL, 0, 0 );
             if( index == 0 ) {
                 imgWidth = 32;
                 imgHeight = 32;

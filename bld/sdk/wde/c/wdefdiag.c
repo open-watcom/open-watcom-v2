@@ -1542,7 +1542,7 @@ bool WdeDialogOnTop( WdeDialogObject *obj, void *p1, void *p2 )
 
     WdeBringWindowToTop( obj->window_handle );
 #ifdef __NT__
-    SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, 0 );
+    SendMessage( obj->window_handle, WM_NCACTIVATE, TRUE, 0 );
 #endif
 
     return( true );
@@ -1717,7 +1717,7 @@ bool WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
         OffsetRect( &trect, -origin.x, -origin.y );
         RedrawWindow( obj->res_info->edit_win, &trect, (HRGN)NULL,
                       RDW_INTERNALPAINT /* | RDW_INVALIDATE */ | RDW_UPDATENOW );
-        //SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, NULL );
+        //SendMessage( obj->window_handle, WM_NCACTIVATE, TRUE, 0 );
     }
 
     OffsetRect( &rect, -origin.x, -origin.y );
@@ -1725,7 +1725,7 @@ bool WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
     SetWindowPos( obj->window_handle, (HWND)NULL, rect.left, rect.top, 0, 0,
                   SWP_NOZORDER | SWP_NOSIZE | (dc != NULL ? 0 : SWP_NOREDRAW) );
 
-    SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, 0 );
+    SendMessage( obj->window_handle, WM_NCACTIVATE, TRUE, 0 );
 
     return( true );
 }

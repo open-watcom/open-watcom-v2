@@ -294,7 +294,7 @@ int WRESEAPI WAccelCloseSession( WAccelHandle hndl, int force_exit )
     einfo = (WAccelEditInfo *)WGetEditSessionInfo( hndl );
 
     if( einfo != NULL && einfo->info != NULL ) {
-        if( SendMessage( einfo->win, WM_CLOSE, (WPARAM)force_exit, 0 ) != 0 ) {
+        if( SendMessage( einfo->win, WM_CLOSE, force_exit, 0 ) != 0 ) {
             return( FALSE );
         }
     }

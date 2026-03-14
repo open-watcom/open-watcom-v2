@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ void Win_CreateColorPal( void )
         }
     }
 
-    SendMessage( HColorPalette, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( HColorPalette, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
 } /* Win_CreateColorPal */
 
@@ -117,7 +117,7 @@ HWND Win_CreateCurrentDisp( HWND hparent )
 
     ShowWindow( hwnd, SW_NORMAL );
     UpdateWindow( hwnd );
-    SendMessage( hwnd, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( hwnd, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     return( hwnd );
 
@@ -148,7 +148,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
 
     ShowWindow( *colors, SW_NORMAL );
     UpdateWindow( *colors );
-    SendMessage( *colors, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( *colors, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     *screenclrs = CreateWindow(
             SCREEN_CLASS,                       /* Window class name */
@@ -164,7 +164,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
             NULL );                             /* Create parameters */
 
     ShowWindow( *screenclrs, SW_HIDE );
-    SendMessage( *screenclrs, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( *screenclrs, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     hwnd1 = CreateWindow(
             "STATIC",                           /* Window class name */
@@ -181,7 +181,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
 
     ShowWindow( hwnd1, SW_NORMAL );
     UpdateWindow( hwnd1 );
-    SendMessage( hwnd1, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( hwnd1, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     hwnd2 = CreateWindow(
             "STATIC",                           /* Window class name */
@@ -198,7 +198,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
 
     ShowWindow( hwnd2, SW_NORMAL );
     UpdateWindow( hwnd2 );
-    SendMessage( hwnd2, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( hwnd2, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     *screentxt = CreateWindow(
             "STATIC",                           /* Window class name */
@@ -215,7 +215,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
 
     ShowWindow( *screentxt, SW_NORMAL );
     UpdateWindow( *screentxt );
-    SendMessage( *screentxt, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( *screentxt, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     *inversetxt = CreateWindow(
             "STATIC",                           /* Window class name */
@@ -232,7 +232,7 @@ void Win_CreateColorCtrls( HWND hpar, HWND *colors, HWND *screenclrs,
 
     ShowWindow( *inversetxt, SW_NORMAL );
     UpdateWindow( *inversetxt );
-    SendMessage( *inversetxt, WM_SETFONT, (WPARAM)SmallFont, 0L );
+    SendMessage( *inversetxt, WM_SETFONT, (WPARAM)SmallFont, 0 );
 
     text = IEAllocRCString( WIE_DRAWTEXT );
     if( text != NULL ) {

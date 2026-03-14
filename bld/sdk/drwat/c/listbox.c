@@ -86,7 +86,7 @@ void ClearListBox( LBoxHdl *lb ) {
     lb->text_width = 0;
     lb->longest_item = -1;
     lb->line_cnt = 0;
-    SendMessage( lb->hwnd, LB_RESETCONTENT, 0, 0L );
+    SendMessage( lb->hwnd, LB_RESETCONTENT, 0, 0 );
     SendMessage( lb->hwnd, LB_SETHORIZONTALEXTENT, lb->text_width, 0 );
 }
 
@@ -153,7 +153,7 @@ static int doLBPrintf( LBoxHdl *lb, const char *str, va_list args )
     vsprintf( tmp, str, args );
     item = (int)SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
     lb->line_cnt++;
-    SendMessage( lb->hwnd, LB_SETCURSEL, item, 0L );
+    SendMessage( lb->hwnd, LB_SETCURSEL, item, 0 );
     dc = GetDC( lb->hwnd );
     newfont = GetMonoFont();
     oldfont = SelectObject( dc, newfont);

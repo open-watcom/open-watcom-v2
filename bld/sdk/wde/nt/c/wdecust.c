@@ -391,11 +391,11 @@ void WdeFreeSelectWinCBox( HWND win )
     WdeCurrCustControl  *current;
 
     cbox = GetDlgItem( win, IDB_CUST_DESC );
-    for( i = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0L ); i-- > 0; ) {
+    for( i = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0 ); i-- > 0; ) {
         current = (WdeCurrCustControl *)SendMessage( cbox, CB_GETITEMDATA, i, 0 );
         if( current != NULL ) {
             MemFree( current );
-            SendMessage( cbox, CB_SETITEMDATA, i, (LPARAM)NULL );
+            SendMessage( cbox, CB_SETITEMDATA, i, 0 );
         }
     }
 }

@@ -325,7 +325,7 @@ int WRESEAPI WMenuCloseSession( WMenuHandle hndl, int force_exit )
     einfo = (WMenuEditInfo *)WGetEditSessionInfo( hndl );
 
     if( einfo != NULL && einfo->info != NULL ) {
-        if( SendMessage( einfo->win, WM_CLOSE, (WPARAM)force_exit, 0 ) != 0 ) {
+        if( SendMessage( einfo->win, WM_CLOSE, force_exit, 0 ) != 0 ) {
             return( FALSE );
         }
     }
@@ -788,7 +788,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_SETFOCUS:
         if( einfo != NULL && einfo->preview_window != (HWND)NULL ) {
-            SendMessage( einfo->preview_window, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+            SendMessage( einfo->preview_window, WM_NCACTIVATE, TRUE, 0 );
         }
         break;
 
@@ -854,7 +854,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
                     break;
                 }
             }
-            ret = SendMessage( einfo->info->parent, MENU_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
+            ret =  ( einfo->info->parent, MENU_PLEASE_OPENME, 0, (LPARAM)einfo->hndl );
             ret = FALSE;
             break;
 

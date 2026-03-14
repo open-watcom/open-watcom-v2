@@ -66,7 +66,7 @@ WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
         case IDOK:
             fn = (void *)GET_DLGDATA( hwnd );
             edithwnd = GetDlgItem( hwnd, LOG_TEXT );
-            linecnt = (int)SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0L );
+            linecnt = (int)SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0 );
             for( i = 0; i < linecnt; i++ ) {
                 wptr = (WORD *) buf;
                 *wptr = BUF_SIZE - 1;
@@ -76,10 +76,10 @@ WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
                     fn( buf );
                 }
             }
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case IDCANCEL:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         }
         ret = true;

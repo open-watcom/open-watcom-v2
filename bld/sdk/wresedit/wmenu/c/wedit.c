@@ -1010,7 +1010,7 @@ WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND hDlg, UINT message, WPARAM wPa
 
     case WM_SETFOCUS:
         if( einfo != NULL && einfo->preview_window != (HWND)NULL ) {
-            SendMessage( einfo->preview_window, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+            SendMessage( einfo->preview_window, WM_NCACTIVATE, TRUE, 0 );
         }
         break;
 

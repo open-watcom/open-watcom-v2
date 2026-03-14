@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -171,10 +171,10 @@ INT_PTR CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
                 break;
             }
             info->really_kill = TRUE;
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case IDCANCEL:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         }
         ret = true;
@@ -293,10 +293,10 @@ INT_PTR CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
                 RCMessageBox( hwnd, STR_CANT_SET_THREAD_PRI, AppName,
                              MB_OK | MB_ICONEXCLAMATION );
             }
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case IDCANCEL:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         }
         ret = true;
@@ -327,14 +327,14 @@ static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
     BOOL        rc;
 
     lb = GetDlgItem( hwnd, THREAD_LIST );
-    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         strcpy( save, "bbbbbbbbbbbb" ); /* just some text that shouldn't
                                            match anything in the listbox */
     } else {
         SendMessage( lb, LB_GETTEXT, index, (LPARAM)(LPSTR)save );
     }
-    SendMessage( lb, LB_RESETCONTENT, 0, 0L );
+    SendMessage( lb, LB_RESETCONTENT, 0, 0 );
     rc = GetNextThread( &thdinfo, &place, info->pid, TRUE );
     while( rc ) {
         sprintf( buf, "tid = %08lX", thdinfo.tid );
@@ -345,7 +345,7 @@ static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
     if( index == LB_ERR ) {
         enableChoices( hwnd, FALSE );
     } else {
-        SendMessage( lb, LB_SETCURSEL, index, 0L );
+        SendMessage( lb, LB_SETCURSEL, index, 0 );
     }
 }
 
@@ -361,7 +361,7 @@ static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
 #endif
 
     lb = GetDlgItem( hwnd, THREAD_LIST );
-    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         SetDlgItemText( hwnd, THREAD_TID, "" );
         SetDlgItemText( hwnd, THREAD_SUSPEND_CNT, "" );
@@ -461,7 +461,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         switch( cmd ) {
         case IDOK:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case THREAD_REFRESH:
             RefreshInfo();
@@ -492,7 +492,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                         ResumeThread( thread->threadhdl );
                     }
                 }
-                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0L );
+                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0 );
             }
             FreeRCString( action );
             break;
@@ -517,7 +517,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                     MessageBox( hwnd, buf, action,
                                 MB_ICONEXCLAMATION | MB_OK );
                 }
-                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0L );
+                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0 );
             }
             FreeRCString( action );
             break;
@@ -532,7 +532,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                     MessageBox( hwnd, buf, action,
                                 MB_OK | MB_ICONEXCLAMATION );
                 }
-                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0L );
+                SendMessage( hwnd, WM_COMMAND, THREAD_REFRESH, 0 );
             }
             FreeRCString( action );
             break;

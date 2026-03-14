@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +195,7 @@ LONG __export FAR PASCAL MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
             DoAbout( &ai, FreeRCString );
             break;
         case MENU_EXIT:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         case MENU_RESET_FAULT_BIT:
             FaultHandlerEntered = false;

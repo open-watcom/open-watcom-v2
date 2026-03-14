@@ -283,7 +283,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             SetLogOptions( hwnd );
             break;
         case MENU_EXIT:
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             break;
         default:
             MessageBox( hwnd, "This function is not yet available", AppName, MB_OK );
@@ -304,7 +304,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         break;
     case WM_CLOSE:
         if( QueryEnd( hwnd ) ) {
-            SendMessage( hwnd, WM_DESTROY, 0, 0L );
+            SendMessage( hwnd, WM_DESTROY, 0, 0 );
         }
         break;
     case WM_DESTROY:

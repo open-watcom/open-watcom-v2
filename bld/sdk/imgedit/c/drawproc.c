@@ -228,7 +228,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             HideViewWindow( hwnd );
             DeleteActiveImage();
             ClearImageText();
-            SendMessage( ClientWindow, WM_MDINEXT, (WPARAM)(LPVOID)hwnd, 0L );
+            SendMessage( ClientWindow, WM_MDINEXT, (WPARAM)hwnd, 0 );
             wasicon = true;
 #endif
         }

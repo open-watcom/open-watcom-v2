@@ -856,13 +856,13 @@ void WdeFreeSelectWinCBox( HWND win )
 
     cbox = GetDlgItem( win, IDB_CUST_DESC );
 
-    count = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0L );
+    count = (int)SendMessage( cbox, CB_GETCOUNT, 0, 0 );
 
     for( i = 0; i < count; i++ ) {
         current = (WdeCurrCustControl *)SendMessage( cbox, CB_GETITEMDATA, i, 0 );
         if( current != NULL ) {
             MemFree( current );
-            SendMessage( cbox, CB_SETITEMDATA, i, (LPARAM)NULL );
+            SendMessage( cbox, CB_SETITEMDATA, i, 0 );
         } else {
             WdeWriteTrail( "WdeFreeSelectWinCBox: NULL current!" );
         }

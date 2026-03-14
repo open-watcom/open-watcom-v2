@@ -118,7 +118,7 @@ void SpyOut( const char *msg, LPMSG pmsg, const char *class_name )
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
         lvi.mask = LVIF_TEXT;
-        lvi.iItem = (int)SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
+        lvi.iItem = (int)SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0 );
         lvi.iSubItem = 0;
         lvi.pszText = NULL;
         i = (int)SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
@@ -154,7 +154,7 @@ void SpyOut( const char *msg, LPMSG pmsg, const char *class_name )
 #endif
         i = (int)SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
         if( SpyMessagesAutoScroll ) {
-            SendMessage( SpyListBox, LB_SETCURSEL, i, 0L );
+            SendMessage( SpyListBox, LB_SETCURSEL, i, 0 );
         }
 #ifdef __NT__
     }
@@ -273,10 +273,10 @@ void ClearSpyBox( void )
 {
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
-        SendMessage( SpyListBox, LVM_DELETEALLITEMS, 0, 0L );
+        SendMessage( SpyListBox, LVM_DELETEALLITEMS, 0, 0 );
     } else {
 #endif
-        SendMessage( SpyListBox, LB_RESETCONTENT, 0, 0L );
+        SendMessage( SpyListBox, LB_RESETCONTENT, 0, 0 );
 #ifdef __NT__
     }
 #endif
@@ -389,7 +389,7 @@ bool GetSpyBoxSelection( char *str )
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
-        sel = (int)SendMessage( SpyListBox, LB_GETCURSEL, 0, 0L );
+        sel = (int)SendMessage( SpyListBox, LB_GETCURSEL, 0, 0 );
         if( sel == LB_ERR ) {
             return( false );
         }

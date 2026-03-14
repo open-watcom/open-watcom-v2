@@ -107,7 +107,7 @@ INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     case WM_CLOSE:
         tmp = ExceptionAction;
         CheckDlgButton( hwnd, INT_TERMINATE, BST_CHECKED );
-        SendMessage( hwnd, WM_COMMAND, INT_ACT, 0L );
+        SendMessage( hwnd, WM_COMMAND, INT_ACT, 0 );
         ExceptionAction = tmp;
         ret = true;
         break;

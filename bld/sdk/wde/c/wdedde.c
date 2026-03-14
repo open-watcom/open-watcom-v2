@@ -578,7 +578,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         WdeServerConv = (HCONV)NULL;
         WdeClientConv = (HCONV)NULL;
         hmain = WdeGetMainWindowHandle();
-        SendMessage( hmain, WM_CLOSE, (WPARAM)1, 0 );
+        SendMessage( hmain, WM_CLOSE, 1, 0 );
         break;
 
     case XTYP_CONNECT:

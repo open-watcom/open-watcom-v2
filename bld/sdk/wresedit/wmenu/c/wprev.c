@@ -170,7 +170,7 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
         }
     }
 
-    SendMessage( einfo->preview_window, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+    SendMessage( einfo->preview_window, WM_NCACTIVATE, TRUE, 0 );
 
     return( TRUE );
 }
@@ -244,7 +244,7 @@ WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam,
     case WM_SETFOCUS:
         if( einfo != NULL && hWnd != (HWND)wParam ) {
             //SetFocus( einfo->win );
-            SendMessage( einfo->win, WM_NCACTIVATE, (WPARAM)TRUE, (LPARAM)NULL );
+            SendMessage( einfo->win, WM_NCACTIVATE, TRUE, 0 );
         }
         pass_to_def = FALSE;
         break;

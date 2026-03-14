@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ static void CreateTheListBox( HWND parent, TBinfo *info, DWORD style ) {
             info->id,                   /* Window menu handle */
             instance,                   /* Program instance handle */
             NULL );                     /* Create parameters */
-    SendMessage( info->boxhwnd, WM_SETFONT, (WPARAM)info->font, 0L );
+    SendMessage( info->boxhwnd, WM_SETFONT, (WPARAM)info->font, 0 );
 }
 
 static void SizeTheListBox( HWND hwnd, TBinfo *info ) {
@@ -153,7 +153,7 @@ LRESULT FAR PASCAL TextBoxProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         extent = LOWORD( GetTextExtent( dis->hDC, text,
                          strlen( text ) + 1 ) );
         if( extent > info->extent ) {
-            SendMessage( info->boxhwnd, LB_SETHORIZONTALEXTENT, extent, 0L );
+            SendMessage( info->boxhwnd, LB_SETHORIZONTALEXTENT, extent, 0 );
             info->extent = extent;
         }
 
@@ -298,7 +298,7 @@ void SetBoxCnt( TextBoxHdl hdl, unsigned cnt ) {
     info = (TBinfo *)GetWindowLong( (HWND)hdl, 0 );
     if( info->itemcnt > cnt ) {
         for( i = info->itemcnt - 1; i >= cnt; --i ) {
-            SendMessage( info->boxhwnd, LB_DELETESTRING, i, 0L );
+            SendMessage( info->boxhwnd, LB_DELETESTRING, i, 0 );
         }
     } else {
         for( i = info->itemcnt; i < cnt; ++i ) {
@@ -323,14 +323,14 @@ void SetBoxFont( TextBoxHdl hwnd, HFONT font ) {
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );
-    top = SendMessage( info->boxhwnd, LB_GETTOPINDEX, 0, 0L );
+    top = SendMessage( info->boxhwnd, LB_GETTOPINDEX, 0, 0 );
     DestroyWindow( info->boxhwnd );
     itemcnt = info->itemcnt;
     info->itemcnt = 0;
     info->font = font;
     CreateTheListBox( hwnd, info, style );
     SetBoxCnt( hwnd, itemcnt );
-    SendMessage( info->boxhwnd, LB_SETTOPINDEX, top, 0L );
+    SendMessage( info->boxhwnd, LB_SETTOPINDEX, top, 0 );
     SizeTheListBox( hwnd, info );
 }
 
@@ -343,7 +343,7 @@ void SetListBoxForAdd( TextBoxHdl hwnd, BOOL add ) {
 
     info = (TBinfo *)GetWindowLong( hwnd, 0 );
     style = GetWindowLong( info->boxhwnd, GWL_STYLE );
-    top = SendMessage( info->boxhwnd, LB_GETTOPINDEX, 0, 0L );
+    top = SendMessage( info->boxhwnd, LB_GETTOPINDEX, 0, 0 );
     DestroyWindow( info->boxhwnd );
     itemcnt = info->itemcnt;
     info->itemcnt = 0;
@@ -354,6 +354,6 @@ void SetListBoxForAdd( TextBoxHdl hwnd, BOOL add ) {
     }
     CreateTheListBox( hwnd, info, style );
     SetBoxCnt( hwnd, itemcnt );
-    SendMessage( info->boxhwnd, LB_SETTOPINDEX, top, 0L );
+    SendMessage( info->boxhwnd, LB_SETTOPINDEX, top, 0 );
     SizeTheListBox( hwnd, info );
 }

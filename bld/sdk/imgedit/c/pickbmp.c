@@ -230,7 +230,7 @@ LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         ReleaseDC( NULL, hdc );
         buttondown = false;
         ReleaseCapture();
-        SendMessage( hwnd, WM_CLOSE, 0, 0L );
+        SendMessage( hwnd, WM_CLOSE, 0, 0 );
         break;
 
     case WM_MOUSEMOVE:

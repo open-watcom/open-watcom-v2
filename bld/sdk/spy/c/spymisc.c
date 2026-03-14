@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -194,7 +194,7 @@ void DumpToComboBox( char *str, HWND cb )
     char        tmp[128];
     int         i;
 
-    SendMessage( cb, CB_RESETCONTENT, 0, 0L );
+    SendMessage( cb, CB_RESETCONTENT, 0, 0 );
     while( *str != '\0' ) {
         i = 0;
         while( *str != ' ' ) {
@@ -207,7 +207,7 @@ void DumpToComboBox( char *str, HWND cb )
             SendMessage( cb, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
         }
     }
-    SendMessage( cb, CB_SETCURSEL, 0, 0L );
+    SendMessage( cb, CB_SETCURSEL, 0, 0 );
 
 } /* DumpToComboBox */
 

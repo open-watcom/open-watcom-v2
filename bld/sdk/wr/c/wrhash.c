@@ -1186,7 +1186,7 @@ static bool WRRemoveSymbol( HWND hDlg, WRHashTable *table )
         return( false );
     }
 
-    rc = SendMessage( lbox, LB_DELETESTRING, index, 0 );
+    rc = SendMessage( lbox, LB_DELETESTRING, (WPARAM)index, 0 );
     if( rc != 0 ) {
         if( index != 0 && index == rc ) {
             index--;

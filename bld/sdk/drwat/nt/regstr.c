@@ -438,10 +438,10 @@ LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         RegStrPaint( hwnd );
         break;
     case WM_RBUTTONDOWN:
-        SendMessage( list, CHILD_R_CLICK, (WPARAM) hwnd, lparam );
+        SendMessage( list, CHILD_R_CLICK, (WPARAM)hwnd, lparam );
         break;
     case WM_LBUTTONDOWN:
-        SendMessage( list, CHILD_L_CLICK, (WPARAM) hwnd, lparam );
+        SendMessage( list, CHILD_L_CLICK, (WPARAM)hwnd, lparam );
         break;
     case REG_STRING_DESELECTED:
         SetRegSelectFlag( hwnd, false );

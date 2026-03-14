@@ -151,7 +151,7 @@ static void resetFonts( DDEWndInfo *info )
     /* estimate the new width of the text in the list box */
     info->horz_extent = info->horz_extent * (new_char_extent / info->char_extent + 1);
     info->char_extent = new_char_extent;
-    SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, info->horz_extent, 0L );
+    SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, info->horz_extent, 0 );
     SendMessage( info->list.box, WM_SETFONT, (WPARAM)GetMonoFont(), TRUE );
     SetTrackFont();
 
@@ -317,8 +317,8 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case DDEMENU_CLEAR:
             info->horz_extent = 0;
-            SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, 0, 0L );
-            SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
+            SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, 0, 0 );
+            SendMessage( info->list.box, LB_RESETCONTENT, 0, 0 );
             break;
         case DDEMENU_MARK:
             ProcessMark( hwnd, Instance, RecordMsg );

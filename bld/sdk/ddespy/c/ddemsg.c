@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -426,7 +426,7 @@ static void setHorzExtent( DDEWndInfo *info, char *text )
     font = SelectObject( dc, font );
     GetTextExtentPoint( dc, text, (int)strlen( text ), &sz );
     if( sz.cx > info->horz_extent ) {
-        SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, sz.cx, 0L );
+        SendMessage( info->list.box, LB_SETHORIZONTALEXTENT, sz.cx, 0 );
         info->horz_extent = sz.cx;
     }
     SelectObject( dc, font );
@@ -474,7 +474,7 @@ void RecordMsg( const char *ptr )
         ret = writeBuf( out_buf, info );
     }
     if( ConfigInfo.scroll && ConfigInfo.screen_out ) {
-        SendMessage( info->list.box, LB_SETTOPINDEX, (WPARAM)ret, 0L );
+        SendMessage( info->list.box, LB_SETTOPINDEX, (WPARAM)ret, 0 );
     }
     /* NYI do something if the list box is full */
 

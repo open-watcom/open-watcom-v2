@@ -51,7 +51,7 @@ void ShowSelector( HWND list ) {
     WORD        sel;
     char        *msgtitle;
 
-    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_GET_SELECTOR );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -78,7 +78,7 @@ BOOL GlobDiscardObj( HWND list ) {
     char        buf[100];
     char        *msgtitle;
 
-    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         msgtitle = HWAllocRCString( STR_DISCARD );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
@@ -111,7 +111,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
     char                buf[160];
     msg_id              strid;
 
-    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( list, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
                     HeapWalkName, MB_OK | MB_ICONEXCLAMATION );
@@ -181,7 +181,7 @@ INT_PTR CALLBACK AddDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         break;
     case WM_COMMAND:
         if( wparam == ADD_OK && HIWORD( lparam ) == BN_CLICKED ) {
-            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            SendMessage( hwnd, WM_CLOSE, 0, 0 );
             ret = true;
         }
         break;
@@ -261,7 +261,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd )
     char        buf[100];
 
     total = 0;
-    cnt = (int)SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0L );
+    cnt = (int)SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0 );
     items = MemAlloc( cnt * sizeof( int ) );
     if( cnt != 0 ) {
         if( items == NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +161,7 @@ static void closeTheImage( img_node *node )
 #ifdef __OS2_PM__
     ret = DestroyWindow( _wpi_getframe( hwnd ) );
 #else
-    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L );
+    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0 );
 #endif
 
 } /* closeTheImage */
@@ -187,10 +187,10 @@ void CloseAllImages( void )
             p1 = WPI_MAKEP1( current->hwnd, 0 );
             parent = _wpi_getparent( current->hwnd );
 #ifdef __OS2_PM__
-            _wpi_sendmessage( parent, WM_ACTIVATE, (WPI_PARAM1)p1, 0L );
+            _wpi_sendmessage( parent, WM_ACTIVATE, (WPI_PARAM1)p1, 0 );
 #else
-            _wpi_sendmessage( parent, WM_MDIRESTORE, (WPI_PARAM1)p1, 0L );
-            _wpi_sendmessage( ClientWindow, WM_MDIACTIVATE, (WPI_PARAM1)p1, 0L );
+            _wpi_sendmessage( parent, WM_MDIRESTORE, (WPI_PARAM1)p1, 0 );
+            _wpi_sendmessage( ClientWindow, WM_MDIACTIVATE, (WPI_PARAM1)p1, 0 );
 #endif
 
             if( !lastChanceSave( current ) ) {
@@ -244,7 +244,7 @@ void CloseCurrentImage( HWND hwnd )
 #ifdef __OS2_PM__
     ret = DestroyWindow( _wpi_getframe( hwnd ) );
 #else
-    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0L );
+    SendMessage( ClientWindow, WM_MDIDESTROY, (WPARAM)hwnd, 0 );
 #endif
 
 } /* CloseCurrentImage */

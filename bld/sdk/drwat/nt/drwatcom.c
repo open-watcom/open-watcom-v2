@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,8 +156,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         data.dwData = 0;
         data.cbData = strlen( cmdline ) + 1;
         data.lpData = cmdline;
-        SendMessage( prev_hwnd, WM_COPYDATA, (WPARAM)(HWND)NULL,
-                     (LPARAM)(PCOPYDATASTRUCT)&data );
+        SendMessage( prev_hwnd, WM_COPYDATA, 0, (LPARAM)(PCOPYDATASTRUCT)&data );
         return( 0 );
     }
 

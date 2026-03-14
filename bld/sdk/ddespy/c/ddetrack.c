@@ -256,7 +256,7 @@ static void displayServers( DDETrackInfo *info )
         break;
     }
     qsort( info->data, info->cnt, sizeof( ServerInfo * ), fn );
-    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
+    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0 );
     servers = info->data;
     for( i = 0; i < info->cnt; i++ ) {
         cur = servers[i];
@@ -471,7 +471,7 @@ static void redispStrTrk( DDETrackInfo *info )
     char        buf[80];
     char        hexstr[20];
 
-    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
+    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0 );
     switch( info->sorttype ) {
     default:
     case PUSH_STR_TEXT:
@@ -698,7 +698,7 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
     char        hexcli[20];
     char        hexsrv[20];
 
-    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
+    SendMessage( info->list.box, LB_RESETCONTENT, 0, 0 );
     switch( info->sorttype ) {
     default:
     case PUSH_CLIENT:

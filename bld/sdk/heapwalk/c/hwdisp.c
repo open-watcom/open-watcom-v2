@@ -545,7 +545,7 @@ void ShowHeapObject( HWND lbhandle )
     char        *rcstr;
 
     dispwnd = NULL;
-    index = (int)SendMessage( lbhandle, LB_GETCURSEL, 0 , 0L );
+    index = (int)SendMessage( lbhandle, LB_GETCURSEL, 0 , 0 );
     if( index == LB_ERR ) {
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED, rcstr, MB_OK | MB_ICONEXCLAMATION );
