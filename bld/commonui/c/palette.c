@@ -54,7 +54,7 @@ HPALETTE CreateDIBPalette( BITMAPINFO *info )
     palette_handle = (HPALETTE)0;
 
     if( num_colours != 0 ) {
-        palette = MemAlloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
+        palette = MemAlloc( sizeof( *palette ) +  sizeof( *palette->palPalEntry ) * num_colours );
         if( palette == NULL ) {
             return( (HPALETTE)0 );
         }

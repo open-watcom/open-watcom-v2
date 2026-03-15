@@ -112,25 +112,34 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) );
+#else
+    return( strdup( str ) );
+#endif
+}
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
 #ifdef TRMEM
-    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), TrHdl ) );
+    return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TrHdl ) );
 #else
     return( realloc( ptr, size ) );
 #endif
 }
-
 
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 /***********************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 3 ), TrHdl );
+    _trmem_free( ptr, _TRMEM_WHO( 4 ), TrHdl );
 #else
     free( ptr );
 #endif

@@ -45,10 +45,16 @@
 #include "wclbproc.h"
 
 
+#define CONST_LEN       15
+
+typedef struct AliasList {
+    AnAlias             *data;
+    void                (*updatefn)( ULONG_PTR, char *, char *, void * );
+    void                *userdata;
+} AliasList;
+
 /* Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
-#define CONST_LEN       15
 
 static AliasHdl         CurHdl;         /* used for dialog box processing */
 
@@ -79,7 +85,7 @@ void InitAliasHdl( AliasHdl *hdl,
                    void (*updatefn)( ULONG_PTR, char *, char *, void * ),
                    void *userdata )
 {
-    *hdl = MemAlloc( sizeof( AliasList ) );
+    *hdl = MemAlloc( sizeof( **hdl ) );
     (*hdl)->data = NULL;
     (*hdl)->userdata = userdata;
     (*hdl)->updatefn = updatefn;
@@ -113,11 +119,10 @@ static void insertAlias( AliasHdl hdl, AnAlias *alias )
 void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
 {
     AnAlias     *cur;
-    size_t      len;
 
     cur = findAlias( hdl, id );
     if( cur == NULL ) {
-        cur = MemAlloc( sizeof( AnAlias ) );
+        cur = MemAlloc( sizeof( *cur ) );
         cur->id = id;
         insertAlias( hdl, cur );
         if( hdl->updatefn != NULL ) {
@@ -129,9 +134,7 @@ void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
         }
         MemFree( cur->name );
     }
-    len = strlen( text ) + 1;
-    cur->name = MemAlloc( len );
-    strcpy( cur->name, text );
+    cur->name = MemStrdup( text );
 
 } /* AddAlias */
 

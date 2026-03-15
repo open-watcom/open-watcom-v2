@@ -90,6 +90,13 @@ void *MemAllocSafe( size_t size )
     return( p );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+    return( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) );
+}
+
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *old, size_t size )
 {

@@ -108,6 +108,13 @@ void *MemAllocSafe( size_t size )
     return( p );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+    return( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) );
+}
+
 /* function to replace this in mem.c in commonui */
 
 TRMEMAPI( MemRealloc )

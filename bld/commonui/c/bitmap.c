@@ -62,7 +62,7 @@ static BITMAPINFO *readDIBInfo( FILE *fp )
     BITMAPINFOHEADER    *header;
     long                bitmap_size;
 
-    header = MemAlloc( sizeof( BITMAPINFOHEADER ) );
+    header = MemAlloc( sizeof( *header ) );
     if( header == NULL ) {
         return( NULL );
     }
@@ -92,7 +92,7 @@ static BITMAPCOREINFO *readCoreInfo( FILE *fp )
     BITMAPCOREHEADER    *header;
     long                bitmap_size;
 
-    header = MemAlloc( sizeof( BITMAPCOREHEADER ) );
+    header = MemAlloc( sizeof( *header ) );
     if( header == NULL ) {
         return( NULL );
     }

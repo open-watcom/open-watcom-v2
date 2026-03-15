@@ -549,7 +549,7 @@ static void gotoIns( MemWndInfo *info, uint_32 ins_cnt )
     AsmInfo     *asm_info;
 
     if( info->asm_info == NULL ) {
-        size = sizeof( AsmInfo );
+        size = sizeof( *asm_info );
         backup_cnt = MAX_BACKUPS;
         if( info->limit > 0xffff ) {
             size += backup_cnt * sizeof( uint_32 );

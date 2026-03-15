@@ -365,20 +365,14 @@ void LogLoadConfig( char *fname, char *section )
  */
 void LogOut( char *res )
 {
-    size_t  len;
-
     if( !LogCurInfo.config.logging || LogCurInfo.config.paused ) {
         return;
     }
     if( LogCurInfo.config.type == LOG_TYPE_CONTINUOUS ) {
-        BufLines[LinesUsed] = res;
-        LinesUsed++;
+        BufLines[LinesUsed++] = res;
         flushLog( false );
     } else {
-        len = strlen( res ) + 1;
-        BufLines[LinesUsed] = MemAlloc( len );
-        strcpy( BufLines[LinesUsed], res );
-        LinesUsed++;
+        BufLines[LinesUsed++] = MemStrdup( res );
         if( LinesUsed == NO_BUF_LINES ) {
             flushLog( true );
         }

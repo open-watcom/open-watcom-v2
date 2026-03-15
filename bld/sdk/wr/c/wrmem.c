@@ -93,6 +93,16 @@ void * WRAPI WRMemAlloc( size_t size, _trmem_who who )
     }
 }
 
+char * WRAPI WRMemStrdup( const char *str, _trmem_who who )
+/*********************************************************/
+{
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( _trmem_strdup( str, who, TrHdl ) );
+    } else {
+        return( strdup( str ) );
+    }
+}
+
 void WRAPI WRMemFree( void *ptr, _trmem_who who )
 {
     if( TrHdl != _TRMEM_HDL_NONE ) {
@@ -172,6 +182,16 @@ void *MemAllocSafe( size_t size )
     }
 
     return( p );
+}
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+{
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( _trmem_strdup( str, _TRMEM_WHO( 1 ), TrHdl ) );
+    } else {
+        return( strdup( str ) );
+    }
 }
 
 /* function to replace this in mem.c in commonui */

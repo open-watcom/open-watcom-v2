@@ -422,9 +422,9 @@ statwnd *StatusWndStart( void )
 {
     statwnd *sw;
 
-    sw = MemAlloc( sizeof( statwnd ) );
+    sw = MemAlloc( sizeof( *sw ) );
     if( sw != NULL ) {
-        memset( sw, 0, sizeof( statwnd ) );
+        memset( sw, 0, sizeof( *sw ) );
     }
     return( sw );
 
@@ -598,7 +598,6 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
 {
     WPI_RECT    ir;
     WPI_RECT    draw_rect;
-    size_t      len;
     WPI_RECTDIM ext;
     int         width;
     WPI_RECTDIM ir_left;
@@ -623,19 +622,17 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
         }
     }
 
-    len = strlen( buff );
-    if( len == 0 ) {
+    if( buff[0] == '\0' ) {
         return;
     }
     MemFree( sw->sectionData[curr_block] );
-    sw->sectionData[curr_block] = MemAlloc( len + 1 );
-    memcpy( sw->sectionData[curr_block], buff, len + 1 );
+    sw->sectionData[curr_block] = MemStrdup( buff );
     sw->sectionDataFlags[curr_block] = flags | DT_TEXTATTRS;
 
 #ifndef __NT__
-    _wpi_gettextextent( pres, buff, (int)len, &ext, &height );
+    _wpi_gettextextent( pres, buff, (int)strlen( buff ), &ext, &height );
 #else
-    GetTextExtentPoint( pres, buff, (int)len, &sz );
+    GetTextExtentPoint( pres, buff, (int)strlen( buff ), &sz );
     ext = sz.cx;
 #endif
     ir = *r;

@@ -83,7 +83,7 @@ void *MemAllocSafe( size_t size )
 {
     void *p;
 
-    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
+    p = WRMemAlloc( size, _TRMEM_WHO( 2 ) );
 
     if( p != NULL ) {
         memset( p, 0, size );
@@ -92,8 +92,15 @@ void *MemAllocSafe( size_t size )
     return( p );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+    return( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) );
+}
+
 TRMEMAPI( MemFree )
 void MemFree( void *ptr )
 {
-    WRMemFree( ptr, _TRMEM_WHO( 2 ) );
+    WRMemFree( ptr, _TRMEM_WHO( 4 ) );
 }

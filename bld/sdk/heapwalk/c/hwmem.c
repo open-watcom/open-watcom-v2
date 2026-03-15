@@ -112,6 +112,17 @@ void *MemAlloc( size_t size )
     return( ptr );
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) );
+#else
+    return( strdup( str ) );
+#endif
+}
+
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/

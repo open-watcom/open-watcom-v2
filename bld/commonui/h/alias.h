@@ -40,13 +40,7 @@ typedef struct analias {
     struct analias      *next;
 } AnAlias;
 
-typedef struct {
-    AnAlias             *data;
-    void                (*updatefn)( ULONG_PTR, char *, char *, void * );
-    void                *userdata;
-} AliasList;
-
-typedef AliasList       *AliasHdl;
+typedef struct AliasList    *AliasHdl;
 
 void    InitAliasHdl( AliasHdl *hdl, void (*updatefn)( ULONG_PTR, char *, char *, void * ), void *userdata );
 void    AddAlias( AliasHdl hdl, char *text, ULONG_PTR id );

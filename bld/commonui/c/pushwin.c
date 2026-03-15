@@ -116,7 +116,7 @@ HWND CreatePushWin( HWND parent, char *txt, int id, HFONT font, HANDLE inst )
     size_t              len;
 
     len = strlen( txt ) + 1;
-    info = MemAlloc( sizeof( PushWinInfo ) + len );
+    info = MemAlloc( sizeof( *info ) + len );
     info->id = id;
     info->font = font;
     info->parent = parent;
