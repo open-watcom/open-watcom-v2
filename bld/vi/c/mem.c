@@ -265,6 +265,26 @@ void *MemAlloc( size_t size )
 } /* MemAlloc */
 
 /*
+ * MemStrdup - allocate memory and duplicate string
+ */
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+{
+    char        *ptr;
+
+#ifdef TRMEM
+    ptr = _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl );
+#else
+    ptr = strdup( str );
+#endif
+    if( ptr == NULL ) {
+        AbandonHopeAllYesWhoEnterHere( ERR_NO_MEMORY );
+    }
+    return( ptr );
+
+} /* MemStrdup */
+
+/*
  * MemStrdupSafe - allocate memory and duplicate string
  */
 TRMEMAPI( MemStrdupSafe )
