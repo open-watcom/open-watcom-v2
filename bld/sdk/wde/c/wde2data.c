@@ -368,7 +368,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
     ok = (data != NULL && size != 0);
 
     if( ok ) {
-        dbi = (WdeDialogBoxInfo *)MemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dbi = MemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = (dbi != NULL);
     }
 
@@ -636,7 +636,7 @@ ControlClass *WdeControlClassFromData( const char **pdata, bool is32bit )
         return( (ControlClass *)WRStringFromData( pdata, is32bit ) );
     }
 
-    new = (ControlClass *)MemAlloc( sizeof( ControlClass ) );
+    new = MemAlloc( sizeof( ControlClass ) );
     if( new == NULL ) {
         return( NULL );
     }

@@ -416,7 +416,7 @@ WREStringSession *WREAllocStringSession( void )
 {
     WREStringSession *session;
 
-    session = (WREStringSession *)MemAlloc( sizeof( WREStringSession ) );
+    session = MemAlloc( sizeof( WREStringSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREStringSession ) );
@@ -433,7 +433,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
         return( NULL );
     }
 
-    node = (WStringNode *)MemAlloc( sizeof( WStringNode ) );
+    node = MemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }

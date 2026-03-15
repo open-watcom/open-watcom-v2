@@ -76,7 +76,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -109,7 +109,7 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -142,7 +142,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
 
     text_length = SendDlgItemMessage( hDlg, id, CB_GETLBTEXTLEN, index, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }

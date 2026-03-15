@@ -222,7 +222,7 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 
     if( ok ) {
-        new = (WdeControlObject *)MemAlloc( sizeof( WdeControlObject ) );
+        new = MemAlloc( sizeof( WdeControlObject ) );
         ok = ( new != NULL );
         if( ok ) {
             memset( new, 0, sizeof( WdeControlObject ) );
@@ -1004,7 +1004,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR
         return( false );
     }
 
-    *new = (WdeControlObject *)MemAlloc( sizeof( WdeControlObject ) );
+    *new = MemAlloc( sizeof( WdeControlObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeControlCopyObject: Object malloc failed" );
@@ -1785,7 +1785,7 @@ bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOr
     style = GETCTL_STYLE( obj->control_info );
 
     if( obj->mode == WdeSelect ) {
-        o = (WdeSetOrderStruct *)MemAlloc( sizeof( WdeSetOrderStruct ) );
+        o = MemAlloc( sizeof( WdeSetOrderStruct ) );
         if( o == NULL ) {
             return( false );
         }

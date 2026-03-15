@@ -377,7 +377,7 @@ void SetIsSaved( HWND hwnd, bool issaved )
         strupr( title );
         _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
-        main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
+        main_title = MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
         if( main_title != NULL ) {
             strcpy( main_title, IEAppTitle );
             strcat( main_title, " - " );

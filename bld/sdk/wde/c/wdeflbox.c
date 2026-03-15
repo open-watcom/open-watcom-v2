@@ -148,7 +148,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
-    new = (WdeLBoxObject *)MemAlloc( sizeof( WdeLBoxObject ) );
+    new = MemAlloc( sizeof( WdeLBoxObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeLBoxCreate: Object malloc failed" );
         return( NULL );
@@ -296,7 +296,7 @@ bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeLBoxObject *)MemAlloc( sizeof( WdeLBoxObject ) );
+    *new = MemAlloc( sizeof( WdeLBoxObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeLBoxCopyObject: Object malloc failed" );

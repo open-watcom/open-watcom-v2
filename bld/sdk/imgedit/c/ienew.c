@@ -131,7 +131,7 @@ WPI_DLGRESULT CALLBACK SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpar
                 title = IEAllocRCString( WIE_NOTE );
                 text = IEAllocRCString( WIE_DIMENSIONSBETWEEN );
                 if( text != NULL ) {
-                    msg_text = (char *)MemAlloc( strlen( text ) + 20 + 1 );
+                    msg_text = MemAlloc( strlen( text ) + 20 + 1 );
                     if( msg_text != NULL ) {
                         sprintf( msg_text, text, MIN_DIM, MAX_DIM );
                         MessageBox( hwnd, msg_text, title, MB_OK | MB_ICONINFORMATION );

@@ -234,11 +234,11 @@ WToolBarInfo *WAllocToolBarInfo( int num )
 {
     WToolBarInfo *info;
 
-    info = (WToolBarInfo *)MemAlloc( sizeof( WToolBarInfo ) );
+    info = MemAlloc( sizeof( WToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)MemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = MemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
@@ -255,7 +255,7 @@ WToolBar *WAllocToolBar( void )
 {
     WToolBar *tbar;
 
-    tbar = (WToolBar *)MemAlloc( sizeof( WToolBar ) );
+    tbar = MemAlloc( sizeof( WToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WToolBar ) );
     }

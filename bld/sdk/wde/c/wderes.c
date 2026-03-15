@@ -776,7 +776,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *titl
         } else {
             WdeResCounter++;
             win_title_len = strlen( WdeResUntitled ) + 7;
-            win_title = (char *)MemAlloc( win_title_len );
+            win_title = MemAlloc( win_title_len );
             sprintf( win_title, "%s.%d", WdeResUntitled, 0xffff & WdeResCounter );
             mdics.szTitle = win_title;
         }

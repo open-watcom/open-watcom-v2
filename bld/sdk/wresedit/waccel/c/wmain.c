@@ -448,7 +448,7 @@ char *WCreateEditTitle( WAccelEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)MemAlloc( len );
+    title = MemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );

@@ -74,7 +74,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 
     if( ok ) {
         len = strlen( text );
-        str = (char *)MemAlloc( len + 1 );
+        str = MemAlloc( len + 1 );
         ok = (str != NULL);
     }
 

@@ -164,7 +164,7 @@ bool WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, size_t *rchsize, char
     if( ok ) {
         *rchsize = sizeof( RESCURSORHEADER );
         *rchsize += sizeof( RESCURSORDIRENTRY ) * (ih->idCount - 1);
-        *rch = (RESCURSORHEADER *)MemAlloc( *rchsize );
+        *rch = MemAlloc( *rchsize );
         ok = (*rch != NULL);
     }
 
@@ -210,7 +210,7 @@ bool WRAPI WRCreateIconResHeader( RESICONHEADER **rih, size_t *rihsize, char *da
     if( ok ) {
         *rihsize = sizeof( RESICONHEADER );
         *rihsize += sizeof( RESICONDIRENTRY ) * (ih->idCount - 1);
-        *rih = (RESICONHEADER *)MemAlloc( *rihsize );
+        *rih = MemAlloc( *rihsize );
         ok = (*rih != NULL);
     }
 

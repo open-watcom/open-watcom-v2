@@ -86,15 +86,15 @@ bool InitStatusLine( HWND parent )
     SetPosText = IEAllocRCString( WIE_STATUSPOSINFO );
 
     if( SetPosText != NULL ) {
-        PositionText = (char *)MemAlloc( strlen( leftBlock ) +
+        PositionText = MemAlloc( strlen( leftBlock ) +
                                          strlen( SetPosText ) + 20 + 1 );
         text = IEAllocRCString( WIE_STATUSSIZEINFO );
         if( text != NULL ) {
-            SetSizeText = (char *)MemAlloc( strlen( SetPosText ) + strlen( text ) + 1 );
+            SetSizeText = MemAlloc( strlen( SetPosText ) + strlen( text ) + 1 );
             if( SetSizeText != NULL ) {
                 strcpy( SetSizeText, SetPosText );
                 strcat( SetSizeText, text );
-                PositionSizeText = (char *)MemAlloc( strlen( leftBlock ) +
+                PositionSizeText = MemAlloc( strlen( leftBlock ) +
                     strlen( SetSizeText ) + strlen( nextBlock ) + 40 + 1 );
             }
             IEFreeRCString( text );
@@ -103,7 +103,7 @@ bool InitStatusLine( HWND parent )
 
     SetHotSpotText = IEAllocRCString( WIE_STATUSHOTSPOTINFO );
     if( SetHotSpotText != NULL ) {
-        HotSpotText = (char *)MemAlloc( strlen( hotspotPosition ) +
+        HotSpotText = MemAlloc( strlen( hotspotPosition ) +
                                         strlen( SetHotSpotText ) + 20 + 1 );
     }
 
@@ -120,7 +120,7 @@ bool InitStatusLine( HWND parent )
         if( len1 > len )
             len = len1;
         len += strlen( imgSizePosition ) + 30 + 1;
-        ImageText = (char *)MemAlloc( len );
+        ImageText = MemAlloc( len );
     }
 
     StatusWndInit( Instance, (statushook)NULL, sizeof( LPVOID ), NULL );
@@ -173,7 +173,7 @@ bool InitStatusLine( HWND parent )
 
     text = NULL;
     if( PosText != NULL && SizeText != NULL ) {
-        text = (char *)MemAlloc( strlen( PosText ) + strlen( SizeText ) +
+        text = MemAlloc( strlen( PosText ) + strlen( SizeText ) +
                                  strlen( leftBlock ) + strlen( nextBlock ) + 1 );
     }
 
@@ -434,7 +434,7 @@ void IEPrintAmtText( msg_id message, int amt )
 
     text = IEAllocRCString( message );
     if( text != NULL ) {
-        msg = (char *)MemAlloc( strlen( text ) + 10 + 1 );
+        msg = MemAlloc( strlen( text ) + 10 + 1 );
         if( msg != NULL ) {
             sprintf( msg, text, amt );
             SetHintText( msg );
@@ -455,7 +455,7 @@ void WriteSetSizeText( msg_id msg, int x, int y )
 
     text = IEAllocRCString( msg );
     if( text != NULL ) {
-        msg_text = (char *)MemAlloc( strlen( text ) + 20 + 1 );
+        msg_text = MemAlloc( strlen( text ) + 20 + 1 );
         if( msg_text != NULL ) {
             sprintf( msg_text, text, x, y );
             SetHintText( msg_text );
@@ -490,7 +490,7 @@ void PrintHintText( const char *msg, const char *fname )
 
     if( msg != NULL ) {
         if( fname != NULL ) {
-            text = (char *)MemAlloc( strlen(msg) + strlen( fname ) + 1 );
+            text = MemAlloc( strlen(msg) + strlen( fname ) + 1 );
             if( text != NULL ) {
                 sprintf( text, msg, fname );
                 SetHintText( text );
@@ -519,7 +519,7 @@ void SetHintText( const char *msg )
         len++;
     }
 
-    text = (char *)MemAlloc( len );
+    text = MemAlloc( len );
     if( text != NULL ) {
         strcpy( text, hintTextPosition );
         if( msg != NULL ) {

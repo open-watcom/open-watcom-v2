@@ -259,7 +259,7 @@ WRSaveIntoData *WREAllocSaveIntoData( void )
 {
     WRSaveIntoData *idata;
 
-    idata = (WRSaveIntoData *)MemAlloc( sizeof( WRSaveIntoData ) );
+    idata = MemAlloc( sizeof( WRSaveIntoData ) );
     if( idata != NULL ) {
         memset( idata, 0, sizeof( WRSaveIntoData ) );
     }

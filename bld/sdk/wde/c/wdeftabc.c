@@ -152,7 +152,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeTabCObject *)MemAlloc( sizeof( WdeTabCObject ) );
+    new = MemAlloc( sizeof( WdeTabCObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTabCCreate: Object malloc failed" );
         return( NULL );
@@ -297,7 +297,7 @@ bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeTabCObject *)MemAlloc( sizeof( WdeTabCObject ) );
+    *new = MemAlloc( sizeof( WdeTabCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTabCCopyObject: Object malloc failed" );

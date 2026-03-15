@@ -152,7 +152,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeHdrObject *)MemAlloc( sizeof( WdeHdrObject ) );
+    new = MemAlloc( sizeof( WdeHdrObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeHdrCreate: Object malloc failed" );
         return( NULL );
@@ -299,7 +299,7 @@ bool WdeHdrCopyObject( WdeHdrObject *obj, WdeHdrObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeHdrObject *)MemAlloc( sizeof( WdeHdrObject ) );
+    *new = MemAlloc( sizeof( WdeHdrObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeHdrCopyObject: Object malloc failed" );

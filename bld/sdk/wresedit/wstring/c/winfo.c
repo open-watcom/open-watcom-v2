@@ -59,7 +59,7 @@ WStringInfo *WRESEAPI WStrAllocStringInfo( void )
 {
     WStringInfo *info;
 
-    info = (WStringInfo *)MemAlloc( sizeof( WStringInfo ) );
+    info = MemAlloc( sizeof( WStringInfo ) );
 
     memset( info, 0, sizeof( WStringInfo ) );
 

@@ -71,7 +71,7 @@ static ResNameOrOrdinal *WRNameOrOrdinalFromData32( const void *data )
     data16 = (const uint_16 *)data;
 
     if( *data16 == 0xffff ) {
-        new = (ResNameOrOrdinal *)MemAlloc( sizeof( ResNameOrOrdinal ) );
+        new = MemAlloc( sizeof( ResNameOrOrdinal ) );
         if( new == NULL ) {
             return( NULL );
         }
@@ -111,7 +111,7 @@ static ResNameOrOrdinal *WRNameOrOrdinalFromData16( const void *data )
     len1 = len;
     if( len1 < sizeof( ResNameOrOrdinal ) )
         len1 = sizeof( ResNameOrOrdinal );
-    new = (ResNameOrOrdinal *)MemAlloc( len1 );
+    new = MemAlloc( len1 );
     if( new == NULL ) {
         return( NULL );
     }

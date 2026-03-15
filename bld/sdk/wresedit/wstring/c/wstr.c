@@ -74,7 +74,7 @@ WStringEditInfo *WAllocStringEditInfo( void )
 {
     WStringEditInfo *einfo;
 
-    einfo = (WStringEditInfo *)MemAlloc( sizeof( WStringEditInfo ) );
+    einfo = MemAlloc( sizeof( WStringEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WStringEditInfo ) );
@@ -263,7 +263,7 @@ WStringBlock *WAllocStringBlock( void )
 {
     WStringBlock *block;
 
-    block = (WStringBlock *)MemAlloc( sizeof( WStringBlock ) );
+    block = MemAlloc( sizeof( WStringBlock ) );
     if( block != NULL ) {
         memset( block, 0, sizeof( WStringBlock ) );
     }
@@ -328,7 +328,7 @@ WStringNode *WMakeStringNodeFromStringBlock( WStringBlock *block )
         return( NULL );
     }
 
-    node = (WStringNode *)MemAlloc( sizeof( WStringNode ) );
+    node = MemAlloc( sizeof( WStringNode ) );
     if( node == NULL ) {
         return( NULL );
     }
@@ -378,7 +378,7 @@ WStringTable *WAllocStringTable( bool is32bit )
 {
     WStringTable        *tbl;
 
-    tbl = (WStringTable *)MemAlloc( sizeof( WStringTable ) );
+    tbl = MemAlloc( sizeof( WStringTable ) );
 
     if( tbl == NULL ) {
         return( NULL );

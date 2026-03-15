@@ -375,7 +375,7 @@ bool WdeAddNewClassToList( char *class, char *new_name,
     WdeCustClassNode *node;
     char             *str;
 
-    node = (WdeCustClassNode *)MemAlloc( sizeof( WdeCustClassNode ) );
+    node = MemAlloc( sizeof( WdeCustClassNode ) );
     if( node == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: node alloc failed!" );
         return( false );
@@ -445,7 +445,7 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         return( false );
     }
 
-    *new_name = (char *)MemAlloc( strlen( class ) + 5 );
+    *new_name = MemAlloc( strlen( class ) + 5 );
     if( *new_name == NULL ) {
         WdeWriteTrail( "WdeCustomRegisterClass: new_name alloc failed!" );
         return( false );
@@ -502,7 +502,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeCustomObject *)MemAlloc( sizeof( WdeCustomObject ) );
+    new = MemAlloc( sizeof( WdeCustomObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeCustomCreate: Object malloc failed" );
         return( NULL );
@@ -652,7 +652,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeCustomObject *)MemAlloc( sizeof( WdeCustomObject ) );
+    *new = MemAlloc( sizeof( WdeCustomObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Object malloc failed" );

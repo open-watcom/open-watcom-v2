@@ -133,7 +133,7 @@ char *WREGetStrFromEdit( HWND edit, bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }

@@ -152,7 +152,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeProgObject *)MemAlloc( sizeof( WdeProgObject ) );
+    new = MemAlloc( sizeof( WdeProgObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeProgCreate: Object malloc failed" );
         return( NULL );
@@ -297,7 +297,7 @@ bool WdeProgCopyObject( WdeProgObject *obj, WdeProgObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeProgObject *)MemAlloc( sizeof( WdeProgObject ) );
+    *new = MemAlloc( sizeof( WdeProgObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeProgCopyObject: Object malloc failed" );

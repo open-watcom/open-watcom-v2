@@ -156,7 +156,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
     RECT                rect;
     status_block_desc   sbd[1];
 
-    wsb = (WStatBar *)MemAlloc( sizeof( WStatBar ) );
+    wsb = MemAlloc( sizeof( WStatBar ) );
     if( wsb != NULL ) {
         wsb->stat = StatusWndStart();
         if( wsb->stat == NULL ) {

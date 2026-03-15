@@ -905,7 +905,7 @@ bool WQueryMergeStrings( WResID *rname )
     text = WRAllocRCString( WR_REPLACESTR );
 
     if( text != NULL ) {
-        str = (char *)MemAlloc( strlen( text ) + 1 + 10 ); // space for 10 digits
+        str = MemAlloc( strlen( text ) + 1 + 10 ); // space for 10 digits
         if( str != NULL ) {
             sprintf( str, text, rname->ID.Num );
             ret = MessageBox( HWND_DESKTOP, str, title, style );

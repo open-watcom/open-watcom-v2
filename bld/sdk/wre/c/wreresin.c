@@ -66,7 +66,7 @@ WREResInfo *WREAllocResInfo( void )
 {
     WREResInfo  *info;
 
-    info = (WREResInfo *)MemAlloc( sizeof( WREResInfo ) );
+    info = MemAlloc( sizeof( WREResInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREResInfo ) );

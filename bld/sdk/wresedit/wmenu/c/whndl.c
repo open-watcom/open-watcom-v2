@@ -194,7 +194,7 @@ WHndlInfo *WAllocHndlInfo( void )
 {
     WHndlInfo *info;
 
-    info = (WHndlInfo *)MemAlloc( sizeof( WHndlInfo ) );
+    info = MemAlloc( sizeof( WHndlInfo ) );
 
     memset( info, 0, sizeof( WHndlInfo ) );
 

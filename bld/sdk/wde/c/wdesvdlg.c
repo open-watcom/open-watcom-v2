@@ -457,7 +457,7 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
         tlen += 7; // size of the string IMPURE and a space
     }
 
-    *text = (char *)MemAlloc( tlen + 1 );
+    *text = MemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( false );
     }
@@ -505,7 +505,7 @@ static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, c
         if( (flags & map->check_mask) == map->flag && (fs & map->style) ) {
             slen = strlen( map->text );
             new_tlen = tlen + 3 * not_first + slen + 1;
-            *text = (char *)MemRealloc( *text, new_tlen );
+            *text = MemRealloc( *text, new_tlen );
             if( not_first == 1 ) {
                 strcat( *text, " | " );
                 strcat( *text, map->text );
@@ -562,7 +562,7 @@ static bool WdeAddStyleString( char **text, char *str )
     } else {
         tlen = strlen( *text );
         tlen += slen + 3 + 1;
-        *text = (char *)MemRealloc( *text, tlen );
+        *text = MemRealloc( *text, tlen );
         if( *text != NULL ) {
             strcat( *text, " | " );
             strcat( *text, str );

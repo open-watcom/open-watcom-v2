@@ -355,7 +355,7 @@ bool WdeCreateWdePopupListItem( int num, HMENU hmenu, WdePopupHintItem *hint_ite
 {
     WdePopupListItem *p;
 
-    p = (WdePopupListItem *)MemAlloc( sizeof( WdePopupListItem ) );
+    p = MemAlloc( sizeof( WdePopupListItem ) );
 
     if( p != NULL ) {
         p->num = num;

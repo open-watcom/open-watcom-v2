@@ -280,7 +280,7 @@ uint_16 WdeGetNextControlID( void )
                 ids->id++;
             }
         } else {
-            ids = (WdeNextIDStruct *)MemAlloc( sizeof( WdeNextIDStruct ) );
+            ids = MemAlloc( sizeof( WdeNextIDStruct ) );
             if( ids != NULL ) {
                 ids->base = base;
                 ids->id = WDE_START_CONTROL_ID;

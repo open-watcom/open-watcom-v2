@@ -282,7 +282,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
     bool                is32bitEx;
     WdeDialogBoxHeader  *dh;
 
-    info = (WdeDialogBoxInfo *)MemAlloc( sizeof( WdeDialogBoxInfo ) );
+    info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
 
     if( info == NULL ) {
         WdeWriteTrail( "WdeAllocDBIFromObject: WdeResInfo alloc failed!" );
@@ -371,7 +371,7 @@ WResID *WdeCreateDialogTitle( void )
     name = NULL;
     text = WdeAllocRCString( WDE_DEFDIALOGNAME );
     if( text != NULL ) {
-        title = (char *)MemAlloc( strlen( text ) + 10 + 1 );
+        title = MemAlloc( strlen( text ) + 10 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, NumDialogTitles );
@@ -654,7 +654,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
         return( NULL );
     }
 
-    new = (WdeDialogObject *)MemAlloc( sizeof( WdeDialogObject ) );
+    new = MemAlloc( sizeof( WdeDialogObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeDialogCreater: Dialog object malloc failed" );
         return( new );
@@ -2348,7 +2348,7 @@ bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeDialogObject *)MemAlloc( sizeof( WdeDialogObject ) );
+    *new = MemAlloc( sizeof( WdeDialogObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeDialogCopyObject: Object malloc failed" );
@@ -2478,7 +2478,7 @@ bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrde
     }
 
     if( obj->mode == WdeSelect ) {
-        sol = (WdeSetOrderLists *)MemAlloc( sizeof( WdeSetOrderLists ) );
+        sol = MemAlloc( sizeof( WdeSetOrderLists ) );
         if( sol == NULL ) {
             return( false );
         }

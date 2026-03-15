@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *info, HELPFUNC hel
         return( NULL );
     }
 
-    siinfo = (WRSelectImageInfo *)MemAlloc( sizeof( WRSelectImageInfo ) );
+    siinfo = MemAlloc( sizeof( WRSelectImageInfo ) );
     if( siinfo == NULL ) {
         return( NULL );
     }

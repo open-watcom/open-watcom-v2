@@ -125,7 +125,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
 
     if( ok ) {
         file_name = res_info->info->tmp_file;
-        dlg_info = (WdeDialogBoxInfo *)MemAlloc( sizeof( WdeDialogBoxInfo ) );
+        dlg_info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
         ok = ( dlg_info != NULL );
     }
 

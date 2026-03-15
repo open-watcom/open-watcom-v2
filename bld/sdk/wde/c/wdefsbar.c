@@ -193,7 +193,7 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeSBarObject *)MemAlloc( sizeof( WdeSBarObject ) );
+    new = MemAlloc( sizeof( WdeSBarObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeSBarCreate: Object malloc failed" );
         return( NULL );
@@ -352,7 +352,7 @@ bool WdeSBarCopyObject( WdeSBarObject *obj, WdeSBarObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeSBarObject *)MemAlloc( sizeof( WdeSBarObject ) );
+    *new = MemAlloc( sizeof( WdeSBarObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeSBarCopyObject: Object malloc failed" );

@@ -153,7 +153,7 @@ WdeResDlgItem *WdeAllocResDlgItem( void )
 {
     WdeResDlgItem  *item;
 
-    item = (WdeResDlgItem *)MemAlloc( sizeof( WdeResDlgItem ) );
+    item = MemAlloc( sizeof( WdeResDlgItem ) );
 
     if( item != NULL ) {
         memset( item, 0, sizeof( WdeResDlgItem ) );
@@ -166,7 +166,7 @@ WdeResInfo *WdeAllocResInfo( void )
 {
     WdeResInfo  *res_info;
 
-    res_info = (WdeResInfo *)MemAlloc( sizeof( WdeResInfo ) );
+    res_info = MemAlloc( sizeof( WdeResInfo ) );
 
     if( res_info != NULL ) {
         memset( res_info, 0, sizeof( WdeResInfo ) );

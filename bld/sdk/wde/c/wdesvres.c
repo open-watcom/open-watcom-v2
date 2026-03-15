@@ -360,7 +360,7 @@ WResTypeNode *WdeAllocWResTypeNode( uint_16 type )
 {
     WResTypeNode *tnode;
 
-    tnode = (WResTypeNode *)MemAlloc( sizeof( WResTypeNode ) );
+    tnode = MemAlloc( sizeof( WResTypeNode ) );
 
     if( tnode != NULL ) {
         memset( tnode, 0, sizeof( WResTypeNode ) );
@@ -379,7 +379,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
         return( NULL );
     }
 
-    lnode = (WResLangNode *)MemAlloc( sizeof( WResLangNode ) );
+    lnode = MemAlloc( sizeof( WResLangNode ) );
 
     if( lnode != NULL ) {
         lnode->Next = NULL;
@@ -432,7 +432,7 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
             len += name->ID.Name.NumChars - 1;
         }
     }
-    new_rnode = (WResResNode *)MemAlloc( len );
+    new_rnode = MemAlloc( len );
     if( new_rnode != NULL ) {
         new_rnode->Head = NULL;
         new_rnode->Tail = NULL;

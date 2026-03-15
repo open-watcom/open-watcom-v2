@@ -735,7 +735,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 
     if( ok ) {
         cdata_size = sizeof( WREClipData ) + name_size + rdata_size - 1;
-        cdata = (WREClipData *)MemAlloc( cdata_size );
+        cdata = MemAlloc( cdata_size );
         ok = (cdata != NULL);
     }
 

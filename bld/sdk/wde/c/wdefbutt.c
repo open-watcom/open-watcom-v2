@@ -182,7 +182,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeButtonObject *)MemAlloc( sizeof( WdeButtonObject ) );
+    new = MemAlloc( sizeof( WdeButtonObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeButtonCreate: Object malloc failed" );
         return( NULL );
@@ -388,8 +388,7 @@ bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeButtonObject *)MemAlloc( sizeof( WdeButtonObject ) );
-
+    *new = MemAlloc( sizeof( WdeButtonObject ) );
     if( *new == NULL ) {
         WdeWriteTrail( "WdeButtonCopyObject: Object malloc failed" );
         return( false );

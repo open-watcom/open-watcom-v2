@@ -190,7 +190,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
         if( text != NULL ) {
-            str = (char *)MemAlloc( strlen( text ) + 10 + 1 );
+            str = MemAlloc( strlen( text ) + 10 + 1 );
             if( str == NULL ) {
                 WdeFreeRCString( text );
                 return( TRUE );

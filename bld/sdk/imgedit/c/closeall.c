@@ -92,7 +92,7 @@ static bool lastChanceSave( img_node *node )
         text = IEAllocRCString( WIE_QUERYIMAGESAVE );
     }
     if( text != NULL ) {
-        msg_text = (char *)MemAlloc( strlen( text ) + strlen( filename ) + 1 );
+        msg_text = MemAlloc( strlen( text ) + strlen( filename ) + 1 );
         if( msg_text != NULL ) {
             sprintf( msg_text, text, filename );
             retcode = _wpi_messagebox( HMainWindow, msg_text, title,

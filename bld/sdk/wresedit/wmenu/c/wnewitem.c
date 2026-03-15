@@ -242,7 +242,7 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
             }
             tlen = strlen( text ) + 1;
         }
-        lbtext = (char *)MemAlloc( depth * DEPTH_MULT + tlen + 14 );
+        lbtext = MemAlloc( depth * DEPTH_MULT + tlen + 14 );
         ok = (lbtext != NULL);
     }
 
@@ -295,7 +295,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
     WGetEditWindowFlags( einfo->edit_dlg, &flags );
     flags &= ~(MENU_POPUP | MENU_SEPARATOR);
 
-    new = (WMenuEntry *)MemAlloc( sizeof( WMenuEntry ) );
+    new = MemAlloc( sizeof( WMenuEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WMenuEntry ) );

@@ -338,7 +338,7 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
         return( NULL );
     }
 
-    lang = (WResLangType *)MemAlloc( sizeof( WResLangType ) );
+    lang = MemAlloc( sizeof( WResLangType ) );
     if( lang == NULL ) {
         MemFree( tname );
         return( NULL );
@@ -401,7 +401,7 @@ WRSaveIntoData *WAllocSaveIntoData( void )
 {
     WRSaveIntoData *idata;
 
-    idata = (WRSaveIntoData *)MemAlloc( sizeof( WRSaveIntoData ) );
+    idata = MemAlloc( sizeof( WRSaveIntoData ) );
     if( idata != NULL ) {
         memset( idata, 0, sizeof( WRSaveIntoData ) );
     }

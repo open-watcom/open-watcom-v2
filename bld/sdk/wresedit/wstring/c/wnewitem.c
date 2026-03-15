@@ -270,7 +270,7 @@ bool WAddEditWinLBoxEntry( WStringEditInfo *einfo, WStringBlock *block, uint_16 
         ++idlen;
         idtext[idlen] = '\0';
         tlen = strlen( text );
-        lbtext = (char *)MemAlloc( tlen + idlen + 4 );
+        lbtext = MemAlloc( tlen + idlen + 4 );
         ok = (lbtext != NULL);
     }
 

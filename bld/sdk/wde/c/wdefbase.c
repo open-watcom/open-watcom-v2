@@ -150,7 +150,7 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 
     WdeDebugCreate( "Base", parent, obj_rect, handle );
 
-    new = (WdeBaseObject *)MemAlloc( sizeof( WdeBaseObject ) );
+    new = MemAlloc( sizeof( WdeBaseObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeBaseCreate: Malloc failed" );
         return( (OBJPTR)new );

@@ -167,7 +167,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
         return( NULL );
     }
 
-    new = (WdeScrollObject *)MemAlloc( sizeof( WdeScrollObject ) );
+    new = MemAlloc( sizeof( WdeScrollObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeScrollCreate: Object malloc failed" );
         return( NULL );
@@ -365,7 +365,7 @@ bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeScrollObject *)MemAlloc( sizeof( WdeScrollObject ) );
+    *new = MemAlloc( sizeof( WdeScrollObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeScrollCopyObject: Object malloc failed" );

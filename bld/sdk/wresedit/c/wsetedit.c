@@ -198,7 +198,7 @@ char *WGetStrFromEdit( HWND edit, bool *mod )
 
     text_length = SendMessage( edit, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -300,7 +300,7 @@ char *WGetStrFromComboLBox( HWND combo, LRESULT pos )
 
     text_length = SendMessage( combo, CB_GETLBTEXTLEN, (WPARAM)pos, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }

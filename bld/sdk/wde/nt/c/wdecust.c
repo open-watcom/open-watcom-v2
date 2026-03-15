@@ -268,7 +268,7 @@ WdeCustLib *WdeAllocCustLib( void )
 {
     WdeCustLib  *lib;
 
-    lib = (WdeCustLib *)MemAlloc( sizeof( WdeCustLib ) );
+    lib = MemAlloc( sizeof( WdeCustLib ) );
 
     if( lib == NULL ) {
         WdeWriteTrail( "WdeAllocCustLib: WdeCustLib alloc failed!" );
@@ -407,7 +407,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
     LRESULT             index;
 
     for( i = 0; i < lib->num_classes; i++ ) {
-        current = (WdeCurrCustControl *)MemAlloc( sizeof( WdeCurrCustControl ) );
+        current = MemAlloc( sizeof( WdeCurrCustControl ) );
         if( current == NULL ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( false );

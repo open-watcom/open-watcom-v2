@@ -272,7 +272,7 @@ bool WRECreateWREPopupListItem ( int num, HMENU hmenu, WREPopupHintItem *hint_it
 {
     WREPopupListItem *p;
 
-    p = (WREPopupListItem *)MemAlloc( sizeof(WREPopupListItem) );
+    p = MemAlloc( sizeof(WREPopupListItem) );
 
     if ( p ) {
         p->num        = num;

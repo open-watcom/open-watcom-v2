@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ static WResID *WRWResIDFromData16( void *data )
         }
     }
 
-    new = (WResID *)MemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }
@@ -120,7 +120,7 @@ static WResID *WRWResIDFromData32( void *data )
     len = sizeof( WResID );
     if( tmpName->IsName ) {
         stringlen = tmpName->ID.Name.NumChars;
-        uni_str = (char *)MemAlloc( stringlen * 2 + 2 );
+        uni_str = MemAlloc( stringlen * 2 + 2 );
         if( uni_str == NULL ) {
             return( NULL );
         }
@@ -138,7 +138,7 @@ static WResID *WRWResIDFromData32( void *data )
         }
     }
 
-    new = (WResID *)MemAlloc( len );
+    new = MemAlloc( len );
     if( new == NULL ) {
         return( NULL );
     }

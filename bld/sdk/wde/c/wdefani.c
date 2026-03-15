@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,7 +150,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
         return( NULL );
     }
 
-    new = (WdeAniCObject *)MemAlloc( sizeof( WdeAniCObject ) );
+    new = MemAlloc( sizeof( WdeAniCObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeAniCCreate: Object malloc failed" );
         return( NULL );
@@ -297,7 +297,7 @@ bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeAniCObject *)MemAlloc( sizeof( WdeAniCObject ) );
+    *new = MemAlloc( sizeof( WdeAniCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeAniCCopyObject: Object malloc failed" );

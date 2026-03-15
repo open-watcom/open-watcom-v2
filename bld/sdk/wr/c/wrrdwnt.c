@@ -140,7 +140,7 @@ bool WRReadNTObjectTable( FILE *fp, pe_exe_header *pehdr, pe_object **ot )
     size_t  size;
 
     size = sizeof( pe_object ) * pehdr->fheader.num_objects;
-    *ot = (pe_object *)MemAlloc( size );
+    *ot = MemAlloc( size );
     if( *ot != NULL ) {
         if( RESREAD( fp, *ot, size ) != size ) {
             MemFree( *ot );
@@ -449,7 +449,7 @@ bool WRReadResourceHeader( FILE *fp, uint_32 offset,
 
     if( ok ) {
         res_size = sizeof( resource_dir_entry ) * ( resdir_hdr->num_name_entries + resdir_hdr->num_id_entries );
-        *resdir_entry = (resource_dir_entry *)MemAlloc( res_size );
+        *resdir_entry = MemAlloc( res_size );
         ok = ( *resdir_entry != NULL );
     }
 
@@ -485,7 +485,7 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
     if( ok ) {
         ResReadUint16( &len, fp );
         len *= 2;
-        unistr = (char *)MemAlloc( len + 2 );
+        unistr = MemAlloc( len + 2 );
         ok = ( unistr != NULL );
     }
 

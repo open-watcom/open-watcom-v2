@@ -134,7 +134,7 @@ WResID *WRECreateDialogTitle( void )
     name = NULL;
     text = AllocRCString( WRE_DEFDIALOGNAME );
     if( text != NULL ) {
-        title = (char *)MemAlloc( strlen( text ) + 10 + 1 );
+        title = MemAlloc( strlen( text ) + 10 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumDialogTitles );
@@ -573,7 +573,7 @@ WREDialogSession *WREAllocDialogSession( void )
 {
     WREDialogSession *session;
 
-    session = (WREDialogSession *)MemAlloc( sizeof( WREDialogSession ) );
+    session = MemAlloc( sizeof( WREDialogSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREDialogSession ) );

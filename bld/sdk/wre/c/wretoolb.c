@@ -235,11 +235,11 @@ WREToolBarInfo *WREAllocToolBarInfo( int num )
 {
     WREToolBarInfo *info;
 
-    info = (WREToolBarInfo *)MemAlloc( sizeof( WREToolBarInfo ) );
+    info = MemAlloc( sizeof( WREToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WREToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)MemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = MemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
@@ -256,7 +256,7 @@ WREToolBar *WREAllocToolBar( void )
 {
     WREToolBar *tbar;
 
-    tbar = (WREToolBar *)MemAlloc( sizeof( WREToolBar ) );
+    tbar = MemAlloc( sizeof( WREToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WREToolBar ) );
     }

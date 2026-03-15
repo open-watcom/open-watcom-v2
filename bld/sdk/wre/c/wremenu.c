@@ -129,7 +129,7 @@ WResID *WRECreateMenuTitle( void )
     name = NULL;
     text = AllocRCString( WRE_DEFMENUNAME );
     if( text != NULL ) {
-        title = (char *)MemAlloc( strlen( text ) + 20 + 1 );
+        title = MemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, WRENumMenuTitles );
@@ -467,7 +467,7 @@ WREMenuSession *WREAllocMenuSession( void )
 {
     WREMenuSession *session;
 
-    session = (WREMenuSession *)MemAlloc( sizeof( WREMenuSession ) );
+    session = MemAlloc( sizeof( WREMenuSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREMenuSession ) );

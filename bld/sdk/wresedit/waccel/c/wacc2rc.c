@@ -72,7 +72,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
         return( true );
     }
 
-    *text = (char *)MemAlloc( tlen + 1 );
+    *text = MemAlloc( tlen + 1 );
     if( *text == NULL ) {
         return( false );
     }

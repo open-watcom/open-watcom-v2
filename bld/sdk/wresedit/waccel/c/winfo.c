@@ -59,7 +59,7 @@ WAccelInfo *WRESEAPI WAccAllocAccelInfo( void )
 {
     WAccelInfo *info;
 
-    info = (WAccelInfo *)MemAlloc( sizeof( WAccelInfo ) );
+    info = MemAlloc( sizeof( WAccelInfo ) );
 
     memset( info, 0, sizeof( WAccelInfo ) );
 

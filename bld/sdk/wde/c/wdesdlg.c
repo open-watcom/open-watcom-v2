@@ -224,7 +224,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
         return( TRUE );
     }
 
-    sel = (int *)MemAlloc( count * sizeof( int ) );
+    sel = MemAlloc( count * sizeof( int ) );
     if( sel == NULL ) {
         WdeWriteTrail( "WdeGetSelectInfo: alloc failed!" );
         return( FALSE );

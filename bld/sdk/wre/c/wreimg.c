@@ -151,7 +151,7 @@ WResID *WRECreateImageTitle( uint_16 type )
     }
 
     if( text != NULL ) {
-        title = (char *)MemAlloc( strlen( text ) + 20 + 1 );
+        title = MemAlloc( strlen( text ) + 20 + 1 );
         if( title != NULL ) {
             title[0] = '\0';
             sprintf( title, text, num );
@@ -699,7 +699,7 @@ WREImageSession *WREAllocImageSession( void )
 {
     WREImageSession *session;
 
-    session = (WREImageSession *)MemAlloc( sizeof( WREImageSession ) );
+    session = MemAlloc( sizeof( WREImageSession ) );
 
     if( session != NULL ) {
         memset( session, 0, sizeof( WREImageSession ) );

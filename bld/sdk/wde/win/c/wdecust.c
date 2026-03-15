@@ -377,7 +377,7 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     class_list_size = sizeof( WdeBorlandClassList ) +
                       (num_classes - 1) * sizeof( WdeBorlandCtlClass );
 
-    class_list = (WdeBorlandClassList *)MemAlloc( class_list_size );
+    class_list = MemAlloc( class_list_size );
     if( class_list == NULL ) {
         WdeWriteTrail( "WdeLoadBorCustomControls: class list alloc failed!" );
         GlobalUnlock( list_global );
@@ -493,7 +493,7 @@ WdeCustLib *WdeAllocCustLib( void )
 {
     WdeCustLib  *lib;
 
-    lib = (WdeCustLib *)MemAlloc( sizeof( WdeCustLib ) );
+    lib = MemAlloc( sizeof( WdeCustLib ) );
 
     if( lib == NULL ) {
         WdeWriteTrail( "WdeAllocCustLib: WdeCustLib alloc failed!" );
@@ -533,7 +533,7 @@ WdeCustControl *WdeAllocCustControl( void )
 {
     WdeCustControl  *control;
 
-    control = (WdeCustControl *)MemAlloc( sizeof( WdeCustControl ) );
+    control = MemAlloc( sizeof( WdeCustControl ) );
 
     if( control == NULL ) {
         WdeWriteTrail( "WdeAllocCustControl: WdeCustControl alloc failed!" );
@@ -876,7 +876,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
     LRESULT             index;
 
     for( type = 0; type < control->control_info.ms.wCtlTypes; type++ ) {
-        current = (WdeCurrCustControl *)MemAlloc( sizeof( WdeCurrCustControl ) );
+        current = MemAlloc( sizeof( WdeCurrCustControl ) );
         if( current == NULL ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( false );

@@ -62,7 +62,7 @@ WAccelEditInfo *WAllocAccelEditInfo( void )
 {
     WAccelEditInfo *einfo;
 
-    einfo = (WAccelEditInfo *)MemAlloc( sizeof( WAccelEditInfo ) );
+    einfo = MemAlloc( sizeof( WAccelEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WAccelEditInfo ) );
@@ -192,7 +192,7 @@ static WAccelTable *WAllocAccelTable( size_t num )
     WAccelEntry *entry;
     size_t      i;
 
-    tbl = (WAccelTable *)MemAlloc( sizeof( WAccelTable ) );
+    tbl = MemAlloc( sizeof( WAccelTable ) );
     if( tbl == NULL ) {
         return( NULL );
     }
@@ -203,7 +203,7 @@ static WAccelTable *WAllocAccelTable( size_t num )
     if( num != 0 ) {
         prev = NULL;
         for( i = 0; i < num; i++ ) {
-            entry = (WAccelEntry *)MemAlloc( sizeof( WAccelEntry ) );
+            entry = MemAlloc( sizeof( WAccelEntry ) );
             if( prev == NULL ) {
                 tbl->first_entry = entry;
             } else {

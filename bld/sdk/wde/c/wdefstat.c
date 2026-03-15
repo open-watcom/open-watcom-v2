@@ -172,7 +172,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeStaticObject *)MemAlloc( sizeof( WdeStaticObject ) );
+    new = MemAlloc( sizeof( WdeStaticObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeStaticCreate: Object malloc failed" );
         return( NULL );
@@ -317,7 +317,7 @@ bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR ha
         return( false );
     }
 
-    *new = (WdeStaticObject *)MemAlloc( sizeof( WdeStaticObject ) );
+    *new = MemAlloc( sizeof( WdeStaticObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeStaticCopyObject: Object malloc failed" );

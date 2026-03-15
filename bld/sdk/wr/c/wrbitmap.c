@@ -323,7 +323,7 @@ static bool WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
         return( false );
     }
 
-    pe = (PALETTEENTRY *)MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
+    pe = MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
     if( pe == NULL ) {
         return( false );
     }
@@ -382,7 +382,7 @@ static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     }
     GetObject( hbitmap, sizeof( BITMAP ), &bm );
     size = DIB_INFO_SIZE( bm.bmPlanes );
-    bmi = (BITMAPINFO *)MemAlloc( size );
+    bmi = MemAlloc( size );
     if( bmi != NULL ) {
         if( !WRGetBitmapInfo( bmi, &bm ) ) {
             MemFree( bmi );

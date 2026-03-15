@@ -288,7 +288,7 @@ char * WRAPI WRGetTempFileName( const char *ext )
 
     len = strlen( fn_path ) + 1;
 
-    buf = (char *)MemAlloc( len );
+    buf = MemAlloc( len );
     if( buf != NULL ) {
         memcpy( buf, fn_path, len );
     }

@@ -193,7 +193,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf,
     WdeFontData *font_sibling;
     LIST        *olist;
 
-    font_data = (WdeFontData *)MemAlloc( sizeof( WdeFontData ) );
+    font_data = MemAlloc( sizeof( WdeFontData ) );
     if( font_data == NULL ) {
         WdeWriteTrail( "Could not allocate font data" );
         return( false );
@@ -255,7 +255,7 @@ int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, 
         }
     }
 
-    font_names = (WdeFontNames *)MemAlloc( sizeof( WdeFontNames ) );
+    font_names = MemAlloc( sizeof( WdeFontNames ) );
     if( font_names == NULL ) {
         WdeWriteTrail( "Could not allocate font names structure." );
         return( FALSE );

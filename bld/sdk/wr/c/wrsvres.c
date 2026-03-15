@@ -130,7 +130,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
     } else {
         if( rnode->Info.ResName.IsName ) {
             len = rnode->Info.ResName.ID.Name.NumChars;
-            str = (char *)MemAlloc( len + ( 1 + UINT16STRLEN ) * 2 + 1 );
+            str = MemAlloc( len + ( 1 + UINT16STRLEN ) * 2 + 1 );
             if( str == NULL ) {
                 return( NULL );
             }
@@ -138,7 +138,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
             sprintf( str + len, "_%u_%u",
                         lnode->Info.lang.lang, lnode->Info.lang.sublang );
         } else {
-            str = (char *)MemAlloc( UINT16STRLEN + ( 1 + UINT16STRLEN ) * 2 + 1 );
+            str = MemAlloc( UINT16STRLEN + ( 1 + UINT16STRLEN ) * 2 + 1 );
             if( str == NULL ) {
                 return( NULL );
             }

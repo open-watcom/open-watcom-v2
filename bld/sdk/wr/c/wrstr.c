@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -242,7 +242,7 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, char *data, size_
             if( is32bit ) {
                 str = NULL;
                 str_len = 0;
-                uni_str = (char *)MemAlloc( tlen + 2 );
+                uni_str = MemAlloc( tlen + 2 );
                 if( uni_str != NULL ) {
                     memcpy( uni_str, text, tlen );
                     uni_str[tlen] = '\0';

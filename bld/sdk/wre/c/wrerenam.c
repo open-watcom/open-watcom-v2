@@ -178,7 +178,7 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
         len += id->ID.Name.NumChars - 1;
     }
 
-    rnode = (WResResNode *)MemAlloc( len );
+    rnode = MemAlloc( len );
 
     if( rnode != NULL ) {
         memset( rnode, 0, len - id_len );

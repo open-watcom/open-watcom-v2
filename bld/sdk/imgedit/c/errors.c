@@ -206,7 +206,7 @@ void IEPrintErrorMsg( const char *title, const char *msg, const char *fname, UIN
 
     if( msg != NULL ) {
         if( fname != NULL ) {
-            text = (char *)MemAlloc( strlen( msg ) + strlen( fname ) + 1 );
+            text = MemAlloc( strlen( msg ) + strlen( fname ) + 1 );
             if( text != NULL ) {
                 sprintf( text, msg, fname );
                 _wpi_messagebox( HMainWindow, text, title, style );

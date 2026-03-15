@@ -151,7 +151,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
-    new = (WdeTViewObject *)MemAlloc( sizeof( WdeTViewObject ) );
+    new = MemAlloc( sizeof( WdeTViewObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTViewCreate: Object malloc failed" );
         return( NULL );
@@ -296,7 +296,7 @@ bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, OBJPTR handl
         return( false );
     }
 
-    *new = (WdeTViewObject *)MemAlloc( sizeof( WdeTViewObject ) );
+    *new = MemAlloc( sizeof( WdeTViewObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTViewCopyObject: Object malloc failed" );

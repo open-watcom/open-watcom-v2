@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -290,7 +290,7 @@ void FocusOnImage( HWND hwnd )
 
     GetFnameFromPath( activeImage->fname, current_file );
 
-    text = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( current_file ) + 3 + 1 );
+    text = MemAlloc( strlen( IEAppTitle ) + strlen( current_file ) + 3 + 1 );
     if( text != NULL ) {
         strcpy( text, IEAppTitle );
         strcat( text, " - " );

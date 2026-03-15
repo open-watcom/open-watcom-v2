@@ -267,7 +267,7 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
         return( NULL );
     }
 
-    type_node = (WResTypeNode *)MemAlloc( sizeof( WResTypeNode ) );
+    type_node = MemAlloc( sizeof( WResTypeNode ) );
     if( type_node == NULL ) {
         return( NULL );
     }
@@ -306,12 +306,12 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
     WResResNode     *rnode;
     WResLangNode    *lnode;
 
-    rnode = (WResResNode *)MemAlloc( sizeof( WResResNode ) );
+    rnode = MemAlloc( sizeof( WResResNode ) );
     if( rnode == NULL ) {
         return( NULL );
     }
 
-    lnode = (WResLangNode *)MemAlloc( sizeof( WResLangNode ) );
+    lnode = MemAlloc( sizeof( WResLangNode ) );
     if( lnode == NULL ) {
         MemFree( rnode );
         return( NULL );
@@ -362,7 +362,7 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
                 name_offset++;
             }
         } else {
-            name = (char *)MemAlloc( name_len + 1 );
+            name = MemAlloc( name_len + 1 );
             if( RESREAD( fp, name, name_len ) != name_len ) {
                 return( false );
             }
@@ -420,7 +420,7 @@ WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *type_node, const 
     size_t          len;
 
     len = strlen( name );
-    new_type_node = (WResTypeNode *)MemAlloc( sizeof( WResTypeNode ) + len - 1 );
+    new_type_node = MemAlloc( sizeof( WResTypeNode ) + len - 1 );
     if( new_type_node == NULL ) {
         return( NULL );
     }
@@ -459,7 +459,7 @@ WResResNode *WRRenameWResResNode( WResTypeNode *type_node,
     len1 = len - 1;
     if( len == 0 )
         len1 = 0;
-    new_res_node = (WResResNode *)MemAlloc( sizeof( WResResNode ) + len1 );
+    new_res_node = MemAlloc( sizeof( WResResNode ) + len1 );
     if( new_res_node == NULL ) {
         return( NULL );
     }
@@ -542,7 +542,7 @@ uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
         num_leftover = 0;
     }
 
-    *name_table = (uint_8 *)MemAlloc( len + num_leftover );
+    *name_table = MemAlloc( len + num_leftover );
     if( *name_table == NULL ) {
         return( 0 );
     }
@@ -572,7 +572,7 @@ uint_32 WRUseNameTable( WResDir dir, uint_8 *name_table, uint_32 len, uint_8 **l
         }
         if( name_pos + entry->length > len ) {
             num_leftover = len - name_pos;
-            *leftover = (uint_8 *)MemAlloc( num_leftover );
+            *leftover = MemAlloc( num_leftover );
             if( *leftover != NULL ) {
                 memcpy( *leftover, entry, num_leftover );
             } else {

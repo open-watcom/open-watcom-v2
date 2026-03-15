@@ -308,7 +308,7 @@ WRHashTable * WRAPI WRInitHashTable( void )
 {
     WRHashTable         *table;
 
-    table = (WRHashTable *)MemAlloc( sizeof( WRHashTable ) );
+    table = MemAlloc( sizeof( WRHashTable ) );
     if( table == NULL ) {
         return( NULL );
     }
@@ -706,7 +706,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
     }
 
     size = sizeof( WRHashEntry ) + strlen( symbol );
-    entry = (WRHashEntry *)MemAlloc( size );
+    entry = MemAlloc( size );
     if( entry != NULL ) {
         nhash = WRGetNameHash( symbol );
         vhash = WRGetValueHash( value );

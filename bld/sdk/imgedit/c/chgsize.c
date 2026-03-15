@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,7 +67,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpa
                 title = IEAllocRCString( WIE_NOTE );
                 text = IEAllocRCString( WIE_DIMENSIONSBETWEEN );
                 if( text != NULL ) {
-                    msg_text = (char *)MemAlloc( strlen( text ) + 20 + 1 );
+                    msg_text = MemAlloc( strlen( text ) + 20 + 1 );
                     if( msg_text != NULL ) {
                         sprintf( msg_text, text, MIN_DIM, MAX_DIM );
                         MessageBox( hwnd, msg_text, title, MB_OK | MB_ICONINFORMATION );

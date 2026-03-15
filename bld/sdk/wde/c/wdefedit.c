@@ -149,7 +149,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeEditObject *)MemAlloc( sizeof( WdeEditObject ) );
+    new = MemAlloc( sizeof( WdeEditObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeEditCreate: Object malloc failed" );
         return( NULL );
@@ -297,7 +297,7 @@ bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeEditObject *)MemAlloc( sizeof( WdeEditObject ) );
+    *new = MemAlloc( sizeof( WdeEditObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Object malloc failed" );

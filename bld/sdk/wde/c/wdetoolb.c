@@ -260,11 +260,11 @@ WdeToolBarInfo *WdeAllocToolBarInfo( int num )
 {
     WdeToolBarInfo *info;
 
-    info = (WdeToolBarInfo *)MemAlloc( sizeof( WdeToolBarInfo ) );
+    info = MemAlloc( sizeof( WdeToolBarInfo ) );
 
     if( info != NULL ) {
         memset( info, 0, sizeof( WdeToolBarInfo ) );
-        info->items = (TOOLITEMINFO *)MemAlloc( sizeof( TOOLITEMINFO ) * num );
+        info->items = MemAlloc( sizeof( TOOLITEMINFO ) * num );
         if( info->items != NULL ) {
             memset( info->items, 0, sizeof( TOOLITEMINFO ) * num );
             info->num_items = num;
@@ -281,7 +281,7 @@ WdeToolBar *WdeAllocToolBar( void )
 {
     WdeToolBar *tbar;
 
-    tbar = (WdeToolBar *)MemAlloc( sizeof( WdeToolBar ) );
+    tbar = MemAlloc( sizeof( WdeToolBar ) );
     if( tbar != NULL ) {
         memset( tbar, 0, sizeof( WdeToolBar ) );
     }

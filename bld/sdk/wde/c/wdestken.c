@@ -64,7 +64,7 @@ bool WdePushEnv( jmp_buf *e )
 {
     WdeStackEnvType *s;
 
-    s = (WdeStackEnvType *)MemAlloc( sizeof( WdeStackEnvType ) );
+    s = MemAlloc( sizeof( WdeStackEnvType ) );
     if( s == NULL ) {
         return( FALSE );
     }

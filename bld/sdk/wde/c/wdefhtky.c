@@ -152,7 +152,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeHtKyObject *)MemAlloc( sizeof( WdeHtKyObject ) );
+    new = MemAlloc( sizeof( WdeHtKyObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeHtKyCreate: Object malloc failed" );
         return( NULL );
@@ -299,7 +299,7 @@ bool WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeHtKyObject *)MemAlloc( sizeof( WdeHtKyObject ) );
+    *new = MemAlloc( sizeof( WdeHtKyObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Object malloc failed" );

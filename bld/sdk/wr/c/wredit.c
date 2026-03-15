@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,7 +72,7 @@ char *WRGetStrFromEdit( HWND hDlg, int id, bool *mod )
 
     text_length = SendDlgItemMessage( hDlg, id, WM_GETTEXTLENGTH, 0, 0 );
 
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
@@ -126,7 +126,7 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
 
     text_copied = 0;
     text_length = SendDlgItemMessage( hDlg, id, LB_GETTEXTLEN, index, 0 );
-    cp = (char *)MemAlloc( text_length + 1 );
+    cp = MemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }

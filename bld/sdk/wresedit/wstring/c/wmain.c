@@ -453,7 +453,7 @@ char *WCreateEditTitle( WStringEditInfo *einfo )
     offset = WRFindFnOffset( fname );
     fname = &fname[offset];
     len = strlen( fname ) + strlen( text ) + 6;
-    title = (char *)MemAlloc( len );
+    title = MemAlloc( len );
     if( title != NULL ) {
         strcpy( title, text );
         strcat( title, " - [" );
@@ -1010,7 +1010,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
     if( einfo != NULL && einfo->current_block != NULL && ntext != NULL ) {
         WSetStatusByID( einfo->wsb, W_CHANGESTRINGMEMFLAGS, 0 );
         // alloc space for ntext and two 16-bit ints
-        rtext = (char *)MemAlloc( strlen( ntext ) + 20 );
+        rtext = MemAlloc( strlen( ntext ) + 20 );
         if( rtext != NULL ) {
             sprintf( rtext, ntext, einfo->current_block->blocknum & 0xfff0,
                      (einfo->current_block->blocknum & 0xfff0) + 16 - 1 );

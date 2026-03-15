@@ -175,7 +175,7 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type_id )
                 text = WRAllocRCString( WR_STRINGIDS );
                 if( text != NULL ) {
                     // alloc string large enough for 'text' and 20 digits
-                    str = (char *)MemAlloc( strlen( text ) + 21 );
+                    str = MemAlloc( strlen( text ) + 21 );
                     if( str != NULL ) {
                         sprintf( str, text, (num - 1) * 16, num * 16 - 1 );
                         cp = WRStrdup( str );

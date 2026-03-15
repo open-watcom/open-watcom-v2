@@ -138,7 +138,7 @@ ControlClass *WdeStrToControlClass( char *str )
 
     slen = strlen( str );
 
-    c = (ControlClass *)MemAlloc( sizeof( ControlClass ) + slen );
+    c = MemAlloc( sizeof( ControlClass ) + slen );
 
     if( c != NULL ) {
         memcpy( c->ClassName, str, slen + 1 );
@@ -240,7 +240,7 @@ WResID *WdeCopyWResID( WResID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResID *)MemAlloc( len );
+    dest = MemAlloc( len );
 
     if( dest != NULL ) {
         memcpy( dest, src, len );
@@ -264,7 +264,7 @@ WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
         len += src->ID.Name.NumChars - 1;
     }
 
-    dest = (WResHelpID *)MemAlloc( len );
+    dest = MemAlloc( len );
 
     if( dest != NULL ) {
         memcpy ( dest, src, len );
@@ -331,7 +331,7 @@ WdeDialogBoxControl *WdeAllocDialogBoxControl( void )
 {
     WdeDialogBoxControl *c;
 
-    c = (WdeDialogBoxControl *)MemAlloc( sizeof( WdeDialogBoxControl ) );
+    c = MemAlloc( sizeof( WdeDialogBoxControl ) );
     if( c == NULL ) {
         return( NULL );
     }
@@ -367,7 +367,7 @@ WdeDialogBoxHeader *WdeAllocDialogBoxHeader( void )
 {
     WdeDialogBoxHeader *c;
 
-    c = (WdeDialogBoxHeader *)MemAlloc( sizeof( WdeDialogBoxHeader ) );
+    c = MemAlloc( sizeof( WdeDialogBoxHeader ) );
     if( c == NULL ) {
         return( NULL );
     }

@@ -59,7 +59,7 @@ WMenuInfo *WRESEAPI WMenuAllocMenuInfo( void )
 {
     WMenuInfo *info;
 
-    info = (WMenuInfo *)MemAlloc( sizeof( WMenuInfo ) );
+    info = MemAlloc( sizeof( WMenuInfo ) );
 
     memset( info, 0, sizeof( WMenuInfo ) );
 

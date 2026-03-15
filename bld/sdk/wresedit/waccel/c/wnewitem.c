@@ -184,7 +184,7 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, LRESULT po
         ++ilen;
         idtext[ilen] = '\0';
         klen = strlen( keytext );
-        lbtext = (char *)MemAlloc( klen + ilen + 2 );
+        lbtext = MemAlloc( klen + ilen + 2 );
         ok = (lbtext != NULL);
     }
 
@@ -206,7 +206,7 @@ WAccelEntry *WCreateNewAccelEntry( WAccelEditInfo *einfo )
 {
     WAccelEntry *new;
 
-    new = (WAccelEntry *)MemAlloc( sizeof( WAccelEntry ) );
+    new = MemAlloc( sizeof( WAccelEntry ) );
 
     if( new != NULL ) {
         memset( new, 0, sizeof( WAccelEntry ) );

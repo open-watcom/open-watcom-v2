@@ -68,7 +68,7 @@ static WMenuEntry   *WDummyMenuEntry = NULL;
 
 void WInitDummyMenuEntry( void )
 {
-    WDummyMenuEntry = (WMenuEntry *)MemAlloc( sizeof( WMenuEntry ) );
+    WDummyMenuEntry = MemAlloc( sizeof( WMenuEntry ) );
     memset( WDummyMenuEntry, 0, sizeof( WMenuEntry ) );
     WDummyMenuEntry->item = ResNewMenuItem();
     WDummyMenuEntry->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
@@ -85,7 +85,7 @@ WMenuEditInfo *WAllocMenuEditInfo( void )
 {
     WMenuEditInfo *einfo;
 
-    einfo = (WMenuEditInfo *)MemAlloc( sizeof( WMenuEditInfo ) );
+    einfo = MemAlloc( sizeof( WMenuEditInfo ) );
 
     if( einfo != NULL ) {
         memset( einfo, 0, sizeof( WMenuEditInfo ) );
@@ -295,7 +295,7 @@ static bool WAllocMenuEntryFromData( const char **data, size_t *dsize, WMenuEntr
     ok = (data != NULL && *data != NULL && dsize != NULL && *dsize != 0 && pentry != NULL);
 
     if( ok ) {
-        *pentry = entry = (WMenuEntry *)MemAlloc( sizeof( WMenuEntry ) );
+        *pentry = entry = MemAlloc( sizeof( WMenuEntry ) );
         ok = (entry != NULL);
     }
 
@@ -374,7 +374,7 @@ WMenu *WMakeMenuFromInfo( WMenuInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        menu = (WMenu *)MemAlloc( sizeof( WMenu ) );
+        menu = MemAlloc( sizeof( WMenu ) );
         ok = ( menu != NULL );
     }
 

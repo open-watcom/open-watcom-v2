@@ -154,7 +154,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new = (WdeTrakObject *)MemAlloc( sizeof( WdeTrakObject ) );
+    new = MemAlloc( sizeof( WdeTrakObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeTrakCreate: Object malloc failed" );
         return( NULL );
@@ -300,7 +300,7 @@ bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, OBJPTR handle )
         return( false );
     }
 
-    *new = (WdeTrakObject *)MemAlloc( sizeof( WdeTrakObject ) );
+    *new = MemAlloc( sizeof( WdeTrakObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Object malloc failed" );
