@@ -62,6 +62,14 @@
 /* static variables                                                         */
 /****************************************************************************/
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        exit( 1 );
+    }
+    return( ptr );
+}
+
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 {
@@ -81,20 +89,16 @@ void *MemAllocSafe( size_t size )
 {
     void *p;
 
-    p = WRMemAlloc( size, _TRMEM_WHO( 1 ) );
-
-    if( p != NULL ) {
-        memset( p, 0, size );
-    }
-
+    p = check_nomem( WRMemAlloc( size, _TRMEM_WHO( 1 ) ) );
+    memset( p, 0, size );
     return( p );
 }
 
-TRMEMAPI( MemStrdup )
-char *MemStrdup( const char *str )
-/********************************/
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
 {
-    return( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) );
+    return( check_nomem( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) ) );
 }
 
 TRMEMAPI( MemRealloc )

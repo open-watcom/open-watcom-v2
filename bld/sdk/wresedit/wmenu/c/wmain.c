@@ -172,6 +172,11 @@ int WINAPI WEP( int parm )
 }
 #endif
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 void WRESEAPI WMenuInit( void )
 {
     HINSTANCE   inst;
@@ -193,7 +198,7 @@ void WRESEAPI WMenuInit( void )
         InsertNoSub = LoadBitmap( inst, "InsertNoSub");
     }
     if( ref_count == 0 ) {
-        WRInit( false );
+        WRInit( false, nomemcb );
         SetRCInstance( inst );
         WInit( inst );
         WInitDummyMenuEntry();

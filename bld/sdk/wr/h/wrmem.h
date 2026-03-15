@@ -42,6 +42,7 @@
 WRDLLENTRY extern void *   WRAPI WRMemAlloc( size_t, _trmem_who );
 WRDLLENTRY extern void *   WRAPI WRMemAllocSafe( size_t, _trmem_who );
 WRDLLENTRY extern char *   WRAPI WRMemStrdup( const char *, _trmem_who );
+WRDLLENTRY extern char *   WRAPI WRMemStrdupSafe( const char *, _trmem_who );
 WRDLLENTRY extern void *   WRAPI WRMemRealloc( void *, size_t, _trmem_who );
 WRDLLENTRY extern void *   WRAPI WRMemReallocSafe( void *, size_t, _trmem_who );
 WRDLLENTRY extern void     WRAPI WRMemFree( void *, _trmem_who );

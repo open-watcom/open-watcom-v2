@@ -48,10 +48,12 @@ typedef struct WRSaveIntoData {
     struct WRSaveIntoData       *next;
 } WRSaveIntoData;
 
+typedef void wr_nomem_cb( void );
+
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern void             WRAPI WRInit( bool trace );
+WRDLLENTRY extern void             WRAPI WRInit( bool trace, wr_nomem_cb * );
 WRDLLENTRY extern void             WRAPI WRFini( void );
 WRDLLENTRY extern WRInfo *         WRAPI WRLoadResource( const char *, WRFileType );
 WRDLLENTRY extern bool             WRAPI WRUpdateTmp( WRInfo *info );

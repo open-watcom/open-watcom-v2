@@ -115,6 +115,13 @@ char *MemStrdup( const char *str )
     return( WRMemStrdup( str, _TRMEM_WHO( 3 ) ) );
 }
 
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
+{
+    return( WRMemStrdupSafe( str, _TRMEM_WHO( 3 ) ) );
+}
+
 /* function to replace this in mem.c in commonui */
 
 TRMEMAPI( MemRealloc )

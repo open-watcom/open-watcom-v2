@@ -229,6 +229,12 @@ char *MemStrdup( const char *a )
     return strdup( a );
 }
 
+char *MemStrdupSafe( const char *a )
+//--------------------------
+{
+    return strdup( a );
+}
+
 void *MemRealloc( void *ptr, unsigned size )
 //------------------------------------------
 {

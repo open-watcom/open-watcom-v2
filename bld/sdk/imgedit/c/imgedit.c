@@ -418,6 +418,11 @@ static void imgEditFini( void )
 
 } /* imgEditFini */
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 /*
  * WinMain - main entry point
  */
@@ -431,7 +436,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
     _argc = __argc;
     _argv = __argv;
 #endif
-    WRInit( false );
+    WRInit( false, nomemcb );
 
     if( _argc > 1 ) {
         parseArgs( _argc, _argv );

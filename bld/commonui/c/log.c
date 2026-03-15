@@ -372,7 +372,7 @@ void LogOut( char *res )
         BufLines[LinesUsed++] = res;
         flushLog( false );
     } else {
-        BufLines[LinesUsed++] = MemStrdup( res );
+        BufLines[LinesUsed++] = MemStrdupSafe( res );
         if( LinesUsed == NO_BUF_LINES ) {
             flushLog( true );
         }

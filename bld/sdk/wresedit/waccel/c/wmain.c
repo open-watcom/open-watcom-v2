@@ -162,7 +162,13 @@ int WINAPI WEP( int parm )
 
     return( TRUE );
 }
+
 #endif
+
+static void nomemcb( void )
+{
+    // handle no memory state
+}
 
 void WRESEAPI WAccelInit( void )
 {
@@ -173,7 +179,7 @@ void WRESEAPI WAccelInit( void )
         AccelTable = LoadAccelerators( inst, "WAccelAccelTable" );
     }
     if( ref_count == 0 ) {
-        WRInit( false );
+        WRInit( false, nomemcb );
         SetRCInstance( inst );
         WInit( inst );
     }

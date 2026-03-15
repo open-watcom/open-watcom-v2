@@ -229,10 +229,7 @@ static bool getSystemFontFaceName( char **facename, WORD *pointsize )
         return( false );
     }
 
-    *facename = MemStrdup( lf.lfFaceName );
-    if( *facename == NULL ) {
-        return( false );
-    }
+    *facename = MemStrdupSafe( lf.lfFaceName );
     hDC = GetDC( NULLHANDLE );
     logpixelsy = GetDeviceCaps( hDC, LOGPIXELSY );
     ReleaseDC( NULLHANDLE, hDC );

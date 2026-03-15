@@ -92,6 +92,17 @@ void MemClose( void )
 #endif
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+//        if( nomem_cb != NULL ) {
+//            nomem_cb();
+//        }
+        exit( 1 );
+    }
+    return( ptr );
+}
+
 TRMEMAPI( MemAlloc )
 void *MemAlloc( size_t size )
 /***************************/
@@ -115,6 +126,17 @@ char *MemStrdup( const char *str )
     return( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) );
 #else
     return( strdup( str ) );
+#endif
+}
+
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+/************************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 2 ), TrHdl ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
 #endif
 }
 

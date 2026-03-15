@@ -36,6 +36,11 @@
 #include "clibint.h"
 
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
@@ -64,9 +69,9 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     ret = TRUE;
 
 #ifdef TRMEM
-    WRInit( true );
+    WRInit( true, nomemcb );
 #else
-    WRInit( false );
+    WRInit( false, nomemcb );
 #endif
     if( _argc == 6 ) {
         ltype = atoi( _argv[2] );

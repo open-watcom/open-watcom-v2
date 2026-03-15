@@ -73,7 +73,7 @@ char *AllocRCString( msg_id id )
     if( len < 0 )
         len = 0;
     tmpBuf[len] = '\0';
-    return( MemStrdup( tmpBuf ) );
+    return( MemStrdupSafe( tmpBuf ) );
 
 } /* AllocRCString */
 

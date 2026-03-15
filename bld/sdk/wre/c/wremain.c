@@ -215,6 +215,11 @@ static void startEditors( void )
 
 bool WREIsResInfoWinMsg( LPMSG pmsg );
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine, int nCmdShow )
 {
@@ -231,7 +236,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     /* unused parameters */ (void)hinstPrevious;
 #endif
 
-    WRInit( false );
+    WRInit( false, nomemcb );
     WAccelInit();
     WMenuInit();
     WStringInit();

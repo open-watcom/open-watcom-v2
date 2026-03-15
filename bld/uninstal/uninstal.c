@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -48,6 +48,21 @@ void *MemAlloc( size_t size )
     return( calloc( 1, size ) );
 
 } /* MemAlloc */
+
+/*
+ * MemStrdupSafe - duplicate string
+ */
+char *MemStrdupSafe( const char *str )
+{
+    char    *ptr;
+
+    ptr = strdup( str );
+    if( ptr == NULL ) {
+        exit( 1 );
+    }
+    return( ptr );
+
+} /* MemStrdupSafe */
 
 /*
  * MemFree - free some memory

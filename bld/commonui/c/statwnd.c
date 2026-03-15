@@ -626,7 +626,7 @@ static void outputText( statwnd *sw, WPI_PRES pres, char *buff, WPI_RECT *r, UIN
         return;
     }
     MemFree( sw->sectionData[curr_block] );
-    sw->sectionData[curr_block] = MemStrdup( buff );
+    sw->sectionData[curr_block] = MemStrdupSafe( buff );
     sw->sectionDataFlags[curr_block] = flags | DT_TEXTATTRS;
 
 #ifndef __NT__

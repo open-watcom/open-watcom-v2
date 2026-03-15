@@ -134,7 +134,7 @@ void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
         }
         MemFree( cur->name );
     }
-    cur->name = MemStrdup( text );
+    cur->name = MemStrdupSafe( text );
 
 } /* AddAlias */
 

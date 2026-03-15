@@ -44,6 +44,7 @@
 
 static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 static FILE         *TrFile = NULL;
+static wr_nomem_cb  *nomem_cb = NULL;
 
 static void TRPrintLine( void *parm, const char *buff, size_t len )
 /*****************************************************************/
@@ -55,10 +56,11 @@ static void TRPrintLine( void *parm, const char *buff, size_t len )
     }
 }
 
-void WRMemOpen( bool trace )
+void WRMemOpen( bool trace, wr_nomem_cb *nomemcb )
 {
     char    *tmpdir;
 
+    nomem_cb = nomemcb;
     if( trace ) {
         TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
                                    NULL, TRPrintLine, _TRMEM_DEF );
@@ -84,12 +86,31 @@ void WRMemClose( void )
     }
 }
 
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        if( nomem_cb != NULL ) {
+            nomem_cb();
+        }
+    }
+    return( ptr );
+}
+
 void * WRAPI WRMemAlloc( size_t size, _trmem_who who )
 {
     if( TrHdl != _TRMEM_HDL_NONE ) {
         return( _trmem_alloc( size, who, TrHdl ) );
     } else {
         return( malloc( size ) );
+    }
+}
+
+void * WRAPI WRMemAllocSafe( size_t size, _trmem_who who )
+{
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( check_nomem( _trmem_alloc( size, who, TrHdl ) ) );
+    } else {
+        return( check_nomem( malloc( size ) ) );
     }
 }
 
@@ -100,6 +121,16 @@ char * WRAPI WRMemStrdup( const char *str, _trmem_who who )
         return( _trmem_strdup( str, who, TrHdl ) );
     } else {
         return( strdup( str ) );
+    }
+}
+
+char * WRAPI WRMemStrdupSafe( const char *str, _trmem_who who )
+/*************************************************************/
+{
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( check_nomem( _trmem_strdup( str, who, TrHdl ) ) );
+    } else {
+        return( check_nomem( strdup( str ) ) );
     }
 }
 
@@ -158,11 +189,9 @@ void *MemAlloc( size_t size )
     } else {
         p = malloc( size );
     }
-
     if( p != NULL ) {
         memset( p, 0, size );
     }
-
     return( p );
 }
 
@@ -172,9 +201,9 @@ void *MemAllocSafe( size_t size )
     void *p;
 
     if( TrHdl != _TRMEM_HDL_NONE ) {
-        p = _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl );
+        p = check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
     } else {
-        p = malloc( size );
+        p = check_nomem( malloc( size ) );
     }
 
     if( p != NULL ) {
@@ -194,32 +223,36 @@ char *MemStrdup( const char *str )
     }
 }
 
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+{
+    if( TrHdl != _TRMEM_HDL_NONE ) {
+        return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 1 ), TrHdl ) ) );
+    } else {
+        return( check_nomem( strdup( str ) ) );
+    }
+}
+
 /* function to replace this in mem.c in commonui */
 
 TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 {
-    void *p;
-
     if( TrHdl != _TRMEM_HDL_NONE ) {
-        p = _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TrHdl );
+        return( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TrHdl ) );
     } else {
-        p = realloc( ptr, size );
+        return( realloc( ptr, size ) );
     }
-    return( p );
 }
 
 TRMEMAPI( MemReallocSafe )
 void *MemReallocSafe( void *ptr, size_t size )
 {
-    void *p;
-
     if( TrHdl != _TRMEM_HDL_NONE ) {
-        p = _trmem_realloc( ptr, size, _TRMEM_WHO( 4 ), TrHdl );
+        return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 3 ), TrHdl ) ) );
     } else {
-        p = realloc( ptr, size );
+        return( check_nomem( realloc( ptr, size ) ) );
     }
-    return( p );
 }
 
 /* function to replace this in mem.c in commonui */

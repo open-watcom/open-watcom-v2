@@ -147,6 +147,11 @@ static jmp_buf      WdeEnv;
 
 bool WdeCreateNewFiles  = FALSE;
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
                     LPSTR lpszCmdLine,  int nCmdShow )
 {
@@ -168,7 +173,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     _argv = __argv;
 #endif
 
-    WRInit( false );
+    WRInit( false, nomemcb );
     WdeInitDisplayError( hinstCurrent );
 
     /* store the handle to this instance of Wde in a static variable */

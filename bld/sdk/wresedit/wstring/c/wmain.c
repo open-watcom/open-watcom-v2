@@ -165,6 +165,11 @@ int WINAPI WEP( int parm )
 }
 #endif
 
+static void nomemcb( void )
+{
+    // handle no memory state
+}
+
 void WRESEAPI WStringInit( void )
 {
     HINSTANCE   inst;
@@ -174,7 +179,7 @@ void WRESEAPI WStringInit( void )
         AccelTable = LoadAccelerators( inst, "WStringAccelTable" );
     }
     if( ref_count == 0 ) {
-        WRInit( false );
+        WRInit( false, nomemcb );
         SetRCInstance( inst );
         WInit( inst );
     }
