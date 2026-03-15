@@ -45,25 +45,16 @@
 
 
 bool GUISetEditText( an_edit_control *edit_control, char const *text )
-/*
+/*********************************************************************
  * "free" edit_control->buffer and "strdup" text to it.
  * isGUIdata chooses between local and ui functions to allow ui to realloc
  */
 {
-    char const  *filler;
-    size_t      fillerLength;
-    char        *new;
-
-    filler = ( text == NULL ) ? LIT_GUI( Empty ) : text;
-    fillerLength = strlen( filler );
-    new = MemAlloc( fillerLength + 1 );
-    if( new == NULL ) {
-        return( false );
-    }
-    strcpy( new, filler );
+    if( text == NULL )
+        text = "";
     MemFree( edit_control->buffer );
-    edit_control->buffer = new;
-    edit_control->length = fillerLength;
+    edit_control->buffer = MemStrdupSafe( text );
+    edit_control->length = strlen( edit_control->buffer );
     return( true );
 }
 

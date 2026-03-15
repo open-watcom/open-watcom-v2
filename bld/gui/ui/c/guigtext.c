@@ -69,39 +69,24 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
         switch( field->typ ) {
         case FLD_CHECK:
             text = field->u.check->str;
-            if( text == NULL )
-                return( text );
-            text = MemStrdup( text );
             if( text != NULL )
-                return( text );
-            break;
-
+                text = MemStrdup( text );
+            return( text );
         case FLD_RADIO:
             text = field->u.radio->str;
-            if( text == NULL )
-                return( text );
-            text = MemStrdup( text );
             if( text != NULL )
-                return( text );
-            break;
-
+                text = MemStrdup( text );
+            return( text );
         case FLD_HOT:
             text = field->u.hs->str;
-            if( text == NULL )
-                return( text );
-            text = MemStrdup( text );
             if( text != NULL )
-                return( text );
-            break;
-
+                text = MemStrdup( text );
+            return( text );
         case FLD_TEXT:
             text = field->u.str;
-            if( text == NULL )
-                return( text );
-            text = MemStrdup( text );
             if( text != NULL )
-                return( text );
-            break;
+                text = MemStrdup( text );
+            return( text );
         case FLD_EDIT:
         case FLD_INVISIBLE_EDIT:
             edit_control = field->u.edit;
