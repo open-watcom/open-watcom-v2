@@ -306,7 +306,11 @@ void _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
+#ifdef __WINDOWS__
 INT_PTR _WCNEAR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+#else
+INT_PTR _WCNEAR _DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+#endif
 {
     INT_PTR     rc;
 
