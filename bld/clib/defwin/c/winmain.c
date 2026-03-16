@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,6 @@
 #include "strdup.h"
 #include "initarg.h"
 #include "defwin.h"
-#include "wclbproc.h"
 #include "initwin.h"
 #include "wintitle.h"
 #include "winmenu.rh"
@@ -177,7 +176,11 @@ static bool _WCNEAR firstInstance( HANDLE inst )
      * register window classes
      */
     wc.style = 0;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( _MainDriver );
+#else
+    wc.lpfnWndProc = _MainDriver;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;
@@ -191,7 +194,11 @@ static bool _WCNEAR firstInstance( HANDLE inst )
         return( false );
 
     wc.style = 0;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( _MainDriver );
+#else
+    wc.lpfnWndProc = _MainDriver;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;

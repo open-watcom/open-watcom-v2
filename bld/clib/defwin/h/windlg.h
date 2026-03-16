@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,12 @@
 ****************************************************************************/
 
 
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
+
 #ifndef __OS2__
 
-#include "wclbproc.h"
 #include "_windlg.h"
 
 #ifdef __WINDOWS__
@@ -53,6 +57,10 @@ extern TEMPLATE_HANDLE  _WCNEAR _DialogTemplate( DWORD style, int x, int y, int 
 extern TEMPLATE_HANDLE  _WCNEAR _AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
                             const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern void             _WCNEAR _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+#ifdef __WINDOWS__
 extern INT_PTR          _WCNEAR _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
+#else
+extern INT_PTR          _WCNEAR _DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
+#endif
 
 #endif
