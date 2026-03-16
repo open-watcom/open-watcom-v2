@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,10 @@
 
 
 #include "wtimer.hpp"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
+
 
 WObjectMap WEXPORT WTimer::_timerMap;
 static int _timerId = 1;
@@ -54,7 +57,9 @@ WEXPORT WTimer::WTimer( WObject *owner, cbt notify, unsigned stack )
         , _stackSize( stack ) {
 /*****************************/
 
+#ifdef __WINDOWS__
     _procInst = MakeProcInstance_TIMER( timerProc, GUIMainHInst );
+#endif
 }
 
 
@@ -62,7 +67,9 @@ WEXPORT WTimer::~WTimer() {
 /*************************/
 
     stop();
+#ifdef __WINDOWS__
     FreeProcInstance_TIMER( _procInst );
+#endif
 }
 
 
@@ -70,7 +77,11 @@ bool WEXPORT WTimer::start( int interval, int count ) {
 /******************************************************/
 
     _count = count;
+#ifdef __WINDOWS__
     _id = SetTimer( NULL, _timerId++, interval, _procInst );
+#else
+    _id = SetTimer( NULL, _timerId++, interval, timerProc );
+#endif
     _timerMap.setThis( this, (WHANDLE)_id );
     return( _id != 0 );
 }

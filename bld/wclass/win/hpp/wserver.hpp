@@ -53,7 +53,9 @@ WCLASS WServer : public WObject {
         WObject*        _owner;
         sbc             _notify;
         bool            _ok;
+#ifdef __WINDOWS__
         PFNCALLBACK     _procInst;
+#endif
 };
 
 #endif

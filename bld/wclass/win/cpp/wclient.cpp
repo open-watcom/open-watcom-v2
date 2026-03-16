@@ -33,7 +33,9 @@
 
 #include "wclient.hpp"
 #include <ddeml.h>
-#include "wclbdde.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 WObjectMap WEXPORT WClient::_convMap;
@@ -71,10 +73,16 @@ WEXPORT WClient::WClient( WObject *owner, cbc notify )
     , _connected( false ) {
 /*************************/
 
+#ifdef __WINDOWS__
     _procInst = MakeProcInstance_DDE( clientCallback, GUIMainHInst );
     if( !DdeInitialize( &_procid, _procInst, INITFLAGS, 0L ) ) {
         _ok = true;
     }
+#else
+    if( !DdeInitialize( &_procid, clientCallback, INITFLAGS, 0L ) ) {
+        _ok = true;
+    }
+#endif
 }
 
 
@@ -82,8 +90,10 @@ WEXPORT WClient::~WClient() {
 /***************************/
 
     DdeUninitialize( _procid );
+#ifdef __WINDOWS__
     FreeProcInstance_DDE( _procInst );
     _procid = NULL;
+#endif
 }
 
 
