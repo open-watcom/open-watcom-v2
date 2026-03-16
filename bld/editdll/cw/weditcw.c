@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "weditcw.h"
 #include "wedit.h"
 #include "dllmain.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -53,7 +56,9 @@ static  HINSTANCE   hInstance = NULL;
 static  BOOL        bDdemlInitialized = FALSE;
 static  BOOL        bConnected = FALSE;
 static  BOOL        bAppSpawned = FALSE;
+#ifdef __WINDOWS__
 static  PFNCALLBACK lpDdeProc;
+#endif
 
 static void doReset( void )
 {
@@ -62,7 +67,9 @@ static void doReset( void )
     bDdemlInitialized = FALSE;
     bConnected = FALSE;
     bAppSpawned = FALSE;
+#ifdef __WINDOWS__
     FreeProcInstance_DDE( lpDdeProc );
+#endif
 }
 
 HDDEDATA __export FAR PASCAL DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
@@ -105,11 +112,17 @@ int __export FAR PASCAL EDITConnect( void )
 
     // initialize our idInstance in ddeml
     if( !bDdemlInitialized ) {
+#ifdef __WINDOWS__
         lpDdeProc = MakeProcInstance_DDE( DdeCallback, hInstance );
         if( DdeInitialize( &idInstance, lpDdeProc, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
             FreeProcInstance_DDE( lpDdeProc );
             return( FALSE );
         }
+#else
+        if( DdeInitialize( &idInstance, DdeCallback, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+            return( FALSE );
+        }
+#endif
         bDdemlInitialized = TRUE;
     }
 
@@ -135,7 +148,9 @@ int __export FAR PASCAL EDITConnect( void )
     DdeFreeStringHandle( idInstance, hszTopic );
 
     if( hConv == 0 ) {
+#ifdef __WINDOWS__
         FreeProcInstance_DDE( lpDdeProc );
+#endif
         return( FALSE );
     }
 
@@ -291,7 +306,6 @@ BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam )
 int __export FAR PASCAL EDITDisconnect( void )
 {
 //    DWORD       idTransaction;
-    WNDENUMPROC wndenumproc;
     HWND        hwndCodewright = NULL;
 
     if( !bConnected ) {
@@ -302,10 +316,15 @@ int __export FAR PASCAL EDITDisconnect( void )
     idInstance = 0;
     if( bAppSpawned ) {
         // look for a window with class name szClassName
-        wndenumproc = MakeProcInstance_WNDENUM( EnumWnd, hInstance );
-        EnumWindows( wndenumproc, (LPARAM)&hwndCodewright );
-        FreeProcInstance_WNDENUM( wndenumproc );
-
+#ifdef __WINDOWS__
+        {
+            WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( EnumWnd, hInstance );
+            EnumWindows( wndenumproc, (LPARAM)&hwndCodewright );
+            FreeProcInstance_WNDENUM( wndenumproc );
+        }
+#else
+        EnumWindows( EnumWnd, (LPARAM)&hwndCodewright );
+#endif
         if( hwndCodewright != NULL ) {
             // found a window called CodeWright - make a half-hearted
             // attempt at killing it (user could possibly Cancel)

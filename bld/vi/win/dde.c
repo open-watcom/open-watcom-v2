@@ -34,8 +34,11 @@
 #include "vi.h"
 #include <stddef.h>
 #include "ddedef.h"
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "myprintf.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -57,7 +60,9 @@ UINT            ClipboardFormat = CF_TEXT;
 UINT            ServerCount;
 bool            UseDDE;
 
+#ifdef __WINDOWS__
 static PFNCALLBACK  ddeproc = NULL;
+#endif
 
 /*
  * DDECallback - callback routine for DDE
@@ -174,7 +179,7 @@ bool DDEInit( void )
     if( UseDDE ) {
         return( true );
     }
-
+#ifdef __WINDOWS__
     ddeproc = MakeProcInstance_DDE( DDECallback, InstanceHandle );
 
     if( DdeInitialize( &DDEInstId, ddeproc, CBF_FAIL_EXECUTES |
@@ -183,7 +188,13 @@ bool DDEInit( void )
         FreeProcInstance_DDE( ddeproc );
         return( false );
     }
-
+#else
+    if( DdeInitialize( &DDEInstId, DDECallback, CBF_FAIL_EXECUTES |
+                       CBF_FAIL_ADVISES | CBF_SKIP_REGISTRATIONS |
+                       CBF_SKIP_UNREGISTRATIONS, 0L ) ) {
+        return( false );
+    }
+#endif
     UseDDE = true;
     return( true );
 
@@ -202,7 +213,9 @@ void DDEFini( void )
     }
     freeAllStringHandles();
     DdeUninitialize( DDEInstId );
+#ifdef __WINDOWS__
     FreeProcInstance_DDE( ddeproc );
+#endif
     UseDDE = false;
 
 } /* DDEFini */

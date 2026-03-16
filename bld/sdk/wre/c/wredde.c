@@ -32,7 +32,7 @@
 
 
 #include "wreglbl.h"
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "wresall.h"
 #include "wreres.h"
 #include "wregcres.h"
@@ -40,6 +40,10 @@
 #include "wredlg.h"
 #include "wredde.h"
 #include "wreimg.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -93,7 +97,9 @@ static WRETopic Topics[NUM_TOPICS] = {
 };
 
 static DWORD        IdInst          = 0;
+#ifdef __WINDOWS__
 static PFNCALLBACK  DdeProcInst     = NULL;
+#endif
 static HSZ          hServiceName    = NULL;
 static HSZ          hFileItem       = NULL;
 static HSZ          hIs32BitItem    = NULL;
@@ -124,17 +130,22 @@ bool WREDDEStart( HINSTANCE inst )
     if( IdInst != 0 ) {
         return( false );
     }
-
+#ifdef __WINDOWS__
     DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
     if( DdeProcInst == NULL ) {
         return( false );
     }
+#endif
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
+#ifdef __WINDOWS__
     ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
+#else
+    ret = DdeInitialize( &IdInst, DdeCallBack, flags, 0 );
+#endif
     if( ret != DMLERR_NO_ERROR ) {
         return( false );
     }
@@ -239,9 +250,11 @@ void WREDDEEnd( void )
         }
         DdeUninitialize( IdInst );
     }
+#ifdef __WINDOWS__
     if( DdeProcInst != NULL ) {
         FreeProcInstance_DDE( DdeProcInst );
     }
+#endif
 }
 
 bool WREPokeData( HCONV conv, char *data, DWORD size, bool retry )

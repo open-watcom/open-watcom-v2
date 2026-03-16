@@ -32,9 +32,12 @@
 
 
 #include "imgedit.h"
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "iebmpdat.h"
 #include "iedde.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 /****************************************************************************/
@@ -136,7 +139,9 @@ static IETopic IETopics[NUM_FORMATS] =
 
 static IEEditFormat EditFormat = DDENone;
 static DWORD        IdInst = 0;
+#ifdef __WINDOWS__
 static PFNCALLBACK  DdeProcInst = NULL;
+#endif
 static HSZ          hFileItem = NULL;
 static HSZ          hNameItem = NULL;
 static HSZ          hDataItem = NULL;
@@ -169,16 +174,22 @@ bool IEDDEStart( HINSTANCE inst )
             }
         }
 
+#ifdef __WINDOWS__
         if( ok ) {
             DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
             ok = ( DdeProcInst != NULL );
         }
+#endif
         if( ok ) {
             flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
                     CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
                     CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
+#ifdef __WINDOWS__
             ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
+#else
+            ret = DdeInitialize( &IdInst, DdeCallBack, flags, 0 );
+#endif
             ok = ( ret == DMLERR_NO_ERROR );
         }
 
@@ -244,9 +255,11 @@ void IEDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
+#ifdef __WINDOWS__
     if( DdeProcInst != NULL ) {
         FreeProcInstance_DDE( DdeProcInst );
     }
+#endif
 
 } /* IEDDEEnd */
 

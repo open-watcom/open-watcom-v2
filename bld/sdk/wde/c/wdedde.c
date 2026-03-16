@@ -32,7 +32,7 @@
 
 
 #include "wdeglbl.h"
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "wrdll.h"
 #include "wdemsgbx.h"
 #include "rcstr.grh"
@@ -45,6 +45,9 @@
 #include "wdemain.h"
 #include "wderesin.h"
 #include "wdedde.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 /****************************************************************************/
@@ -91,7 +94,9 @@ static void     WdeHandlePokedData( HDDEDATA hData );
 /* static variables                                                         */
 /****************************************************************************/
 static  DWORD       IdInst = 0;
+#ifdef __WINDOWS__
 static  PFNCALLBACK DdeProcInst = NULL;
+#endif
 static  HSZ         hDialogService = NULL;
 static  HSZ         hDialogTopic = NULL;
 static  HSZ         hService = NULL;
@@ -120,16 +125,22 @@ bool WdeDDEStart( HINSTANCE inst )
         return( false );
     }
 
+#ifdef __WINDOWS__
     DdeProcInst = MakeProcInstance_DDE( DdeCallBack, inst );
     if( DdeProcInst == NULL ) {
         return( false );
     }
+#endif
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
+#ifdef __WINDOWS__
     ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
+#else
+    ret = DdeInitialize( &IdInst, DdeCallBack, flags, 0 );
+#endif
     if( ret != DMLERR_NO_ERROR ) {
         return( false );
     }
@@ -194,9 +205,11 @@ void WdeDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
+#ifdef __WINDOWS__
     if( DdeProcInst != NULL ) {
         FreeProcInstance_DDE( DdeProcInst );
     }
+#endif
 }
 
 bool WdeDDEDumpConversation( HINSTANCE inst )

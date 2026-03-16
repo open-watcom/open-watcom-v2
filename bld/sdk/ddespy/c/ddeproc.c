@@ -32,13 +32,18 @@
 
 #include "wddespy.h"
 #include <math.h>
+#include <ddeml.h>
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
-#include "wclbdde.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
+#ifdef __WINDOWS__
 static PFNCALLBACK      DDEProcInst;
+#endif
 
 static const MenuItemHint menuHints[] = {
     DDEMENU_SAVE,                   STR_HINT_SAVE,
@@ -195,7 +200,6 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     DDEWndInfo          *info;
     char                *alias_title;
-    DLGPROC             dlgproc;
     RECT                area;
     HMENU               hmenu;
     UINT                flag;
@@ -212,12 +216,19 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_CREATE:
         DDEMainWnd = hwnd;
         MainWndConfig.hwnd = hwnd;
-        DDEProcInst = MakeProcInstance_DDE( DDEProc, Instance );
         initMonitoring( hwnd );
+#ifdef __WINDOWS__
+        DDEProcInst = MakeProcInstance_DDE( DDEProc, Instance );
         DdeInitialize( &DDEInstId, DDEProcInst,
                        APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
                        MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
                        MF_POSTMSGS | MF_SENDMSGS, 0L );
+#else
+        DdeInitialize( &DDEInstId, DDEProc,
+                       APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
+                       MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
+                       MF_POSTMSGS | MF_SENDMSGS, 0L );
+#endif
         info = MemAlloc( sizeof( DDEWndInfo ) );
         memset( info, 0, sizeof( DDEWndInfo ) );
         memset( &area, 0, sizeof( RECT ) );
@@ -385,14 +396,26 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             LogConfigure();
             break;
         case DDEMENU_MSG_FILTER:
-            dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, dlgproc, 1 );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
+                JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, dlgproc, 1 );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, FilterDlgProc, 1 );
+#endif
             break;
         case DDEMENU_CB_FILTER:
-            dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, dlgproc, 0 );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
+                JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, dlgproc, 0 );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, FilterDlgProc, 0 );
+#endif
             break;
         case DDEMENU_ABOUT:
             ai.owner = hwnd;
@@ -476,7 +499,9 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         HintWndDestroy( info->hintbar );
         HintFini();
         LogFini();
+#ifdef __WINDOWS__
         FreeProcInstance_DDE( DDEProcInst );
+#endif
         SaveConfigFile();
         FiniTrackWnd();
         DDEToolBarFini();

@@ -36,9 +36,12 @@
 #include <string.h>
 #include <stdio.h>
 #include <wwindows.h>
-#include "wclbdde.h"
+#include <ddeml.h>
 #include "wedit.h"
 #include "dllmain.h"
+#ifdef __WINDOWS__
+    #include "wclbdde.h"
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -49,7 +52,9 @@ static  HCONV       dde_hConv;
 static  DWORD       idInstance;
 static  HINSTANCE   hInstance;
 static  BOOL        bConnected = FALSE;
+#ifdef __WINDOWS__
 static  PFNCALLBACK VIW_DdeCallback_inst;
+#endif
 
 static BOOL doReset( void )
 {
@@ -112,11 +117,17 @@ int EDITAPI EDITConnect( void )
 
     // initialize our idInstance in ddeml
     if( idInstance == 0 ) {
+#ifdef __WINDOWS__
         VIW_DdeCallback_inst = MakeProcInstance_DDE( VIW_DdeCallback, hInstance );
         if( DdeInitialize( &idInstance, VIW_DdeCallback_inst, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
             FreeProcInstance_DDE( VIW_DdeCallback_inst );
             return( FALSE );
         }
+#else
+        if( DdeInitialize( &idInstance, VIW_DdeCallback, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+            return( FALSE );
+        }
+#endif
     }
 
     // get handles to access strings
@@ -181,7 +192,9 @@ int EDITAPI EDITConnect( void )
         bConnected = TRUE;
     }
     if( !bConnected ) {
+#ifdef __WINDOWS__
         FreeProcInstance_DDE( VIW_DdeCallback_inst );
+#endif
     }
 
     return( bConnected );
@@ -255,7 +268,9 @@ int EDITAPI EDITDisconnect( void )
 {
     if( idInstance != 0 ) {
         DdeUninitialize( idInstance );
+#ifdef __WINDOWS__
         FreeProcInstance_DDE( VIW_DdeCallback_inst );
+#endif
         idInstance = 0;
     }
     doReset();
