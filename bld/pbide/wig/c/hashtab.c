@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ hash_tab NewHashTable( int size )
     assert( size > 0 );
 
     tabsize = sizeof(hash_table) + ( sizeof(hash_entry) * ( size - 1 ) );
-    table = MemMalloc( tabsize );
+    table = MemAlloc( tabsize );
     memset( table, 0, tabsize );
     table->size = size;
     return( table );
@@ -107,7 +107,7 @@ void InsertHashValue( hash_tab tab, const char *key, int len, void *value )
     }
     hash %= htable->size;
 
-    htmp = MemMalloc( sizeof( hash_entry ) );
+    htmp = MemAlloc( sizeof( hash_entry ) );
 
     if( htable->tab[hash] ) {
         hfinger = htable->tab[hash];

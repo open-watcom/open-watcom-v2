@@ -164,9 +164,9 @@ static void mkConsDesNames( void )
     }
 
     len = strlen(classname);
-    SRU.con_name = MemMalloc( PB_NAME_LEN + 1 );
+    SRU.con_name = MemAlloc( PB_NAME_LEN + 1 );
     GetConstructor( classname, SRU.con_name );
-    SRU.des_name = MemMalloc( PB_NAME_LEN + 1 );
+    SRU.des_name = MemAlloc( PB_NAME_LEN + 1 );
     GetDestructor( classname, SRU.des_name );
 }
 
@@ -474,7 +474,7 @@ void AddParm( TypeInfo *typ, char *tname, ArrayInfo *array ) {
     assert( tname );
     assert( typ );
 
-    ptmp = MemMalloc( sizeof( var_rec ) );
+    ptmp = MemAlloc( sizeof( var_rec ) );
     memset( ptmp, 0, sizeof( var_rec ) );
     if( SRU.curr.sp.last_parm ) {
         SRU.curr.sp.last_parm->next = ptmp;
@@ -492,7 +492,7 @@ void AddParm( TypeInfo *typ, char *tname, ArrayInfo *array ) {
     if( array == NULL ) {
         ptmp->array = NULL;
     } else {
-        ptmp->array = MemMalloc( sizeof( ArrayInfo ) );
+        ptmp->array = MemAlloc( sizeof( ArrayInfo ) );
         memcpy( ptmp->array, array, sizeof( ArrayInfo ) );
     }
 }
@@ -949,7 +949,7 @@ static statement *mkStatement( char *stmt ) {
 
     assert( stmt );
 
-    ret = MemMalloc( sizeof( statement ) + strlen( stmt ) + 1 );
+    ret = MemAlloc( sizeof( statement ) + strlen( stmt ) + 1 );
     memset( ret, 0, sizeof( statement ) );
     strcpy( ret->stmt, stmt );
     return( ret );

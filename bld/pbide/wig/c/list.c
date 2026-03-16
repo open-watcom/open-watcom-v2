@@ -42,7 +42,7 @@ List *NewList( unsigned size ) {
 /*******************************/
     List        *ret;
 
-    ret = MemMalloc( sizeof( List ) );
+    ret = MemAlloc( sizeof( List ) );
     memset( ret, 0, sizeof( List ) );
     ret->itemsize = size;
     return( ret );

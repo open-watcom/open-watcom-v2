@@ -177,12 +177,12 @@ BOOL IDE_EXPORT WatIDE_RunWig( const char *sruname, const char *parentname,
 
     say( "RunWig %s", sruname );
     argv[0] = "";
-    argv[1] = MemMalloc( strlen( sruname ) + 1 );
+    argv[1] = MemAlloc( strlen( sruname ) + 1 );
     strcpy( argv[1], sruname );
     argv[2] = "-r";
     argc = 3;
     if( parentname != NULL ) {
-        argv[3] = MemMalloc( strlen( parentname ) + 4 );
+        argv[3] = MemAlloc( strlen( parentname ) + 4 );
         sprintf( argv[3], "-in=%s", parentname );
         argc++;
     }

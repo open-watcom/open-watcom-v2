@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,9 @@
 #include <ctype.h>
 #include <string.h>
 #include "winexprt.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 WINEXPORT BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam );
@@ -73,7 +75,6 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 {
     const char  *ptr;
     char        *dst;
-    WNDENUMPROC wndenumproc;
 
     /* unused parameters */ (void)previnst; (void)cmdshow;
 
@@ -114,9 +115,17 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         ptr++;
 
     TheWindow = NULL;
-    wndenumproc = MakeProcInstance_WNDENUM( EnumProc, currinst );
-    EnumWindows( wndenumproc, 0 );
-    FreeProcInstance_WNDENUM( wndenumproc );
+#ifdef __WINDOWS__
+    {
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( EnumProc, currinst );
+        EnumWindows( wndenumproc, 0 );
+        FreeProcInstance_WNDENUM( wndenumproc );
+    }
+#else
+    /* unused parameters */ (void)currinst;
+
+    EnumWindows( EnumProc, 0 );
+#endif
 
     if( TheWindow == NULL ) {
         WinExec( ptr, SW_SHOW );

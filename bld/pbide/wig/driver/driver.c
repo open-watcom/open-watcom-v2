@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,9 @@
 #include <stdlib.h>
 #include "driver.h"
 #include "pbide.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 static char     sruName[ _MAX_PATH ];
 static char     dllName[ _MAX_PATH ];
@@ -114,21 +116,21 @@ INT_PTR CALLBACK DriverDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
-    DLGPROC             dlgproc;
     unsigned            ver;
 
-    currinst = currinst;
-    previnst = previnst;
-    cmdshow = cmdshow;
-    cmdline = cmdline;
+    /* unused parameters */ (void)previnst; (void)cmdshow; (void)cmdline;
 
     ver = WatIDE_GetVersion();
     if( ver != WAT_IDE_DLL_CUR_VER ) {
         MessageBox( NULL, "Wrong DLL version", "Error", MB_OK );
     } else {
-        dlgproc = MakeProcInstance_DLG( DriverDlgProc, currinst );
+#ifdef __WINDOWS__
+        DLGPROC dlgproc = MakeProcInstance_DLG( DriverDlgProc, currinst );
         DialogBox( currinst, "DRIVER_DLG", NULL, dlgproc );
         FreeProcInstance_DLG( dlgproc );
+#else
+        DialogBox( currinst, "DRIVER_DLG", NULL, DriverDlgProc );
+#endif
     }
     return( 0 );
 }

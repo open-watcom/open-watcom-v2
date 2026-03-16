@@ -4,7 +4,7 @@ proj_name = pbide
 
 pbide_autodepends = .AUTODEPEND
 
-pbide_ntverrc = ..
+#pbide_ntverrc = ..
 
 name = dlldbg
 

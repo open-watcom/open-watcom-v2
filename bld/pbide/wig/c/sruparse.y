@@ -4,7 +4,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,108 +127,108 @@
 %%
 
 sru_statement
-        : sru_stmt                              
+        : sru_stmt
             { ProcessStatement(); }
         | ST_COMMENT
-            { SetComment(); } 
+            { SetComment(); }
         ;
-        
-sru_stmt 
-        : header                                
+
+sru_stmt
+        : header
             { DEBUGOUT( "header\n" ); }
-        | start_section                         
+        | start_section
             { DEBUGOUT( "start_section\n" ); }
-        | end_section                           
+        | end_section
             { DEBUGOUT( "end_section\n" ); }
-        | body                                  
+        | body
             { DEBUGOUT( "body\n" ); };
-        | global_declare                        
+        | global_declare
             { DEBUGOUT( "global_declare\n" ); }
-        | subprogram                            
-            { 
+        | subprogram
+            {
                 DEBUGOUT( "subprogram\n" );
-                UserCode(); 
+                UserCode();
             };
-        | end_subprogram                        
+        | end_subprogram
             { DEBUGOUT( "end_subprogram\n" ); }
-        | end                                   
-            { 
+        | end
+            {
                 DEBUGOUT( "end\n" );
-                YYABORT; /* finished */ 
+                YYABORT; /* finished */
             }
-        | error                                 
-            { 
+        | error
+            {
                 DEBUGOUT( "error\n" );
-                UserCode(); 
+                UserCode();
             }
-        | /* nothing */                                 
+        | /* nothing */
             { DEBUGOUT( "nothing\n" ); }
         ;
 
 header
-        : ST_DOLLAR ID_IDENTIFIER ST_PERIOD ID_IDENTIFIER       
+        : ST_DOLLAR ID_IDENTIFIER ST_PERIOD ID_IDENTIFIER
             { SetHeader( $2, $4 ); }
-        | ST_DOLLAR ID_IDENTIFIER ST_PERIOD CT_INTEGER          
-            { 
+        | ST_DOLLAR ID_IDENTIFIER ST_PERIOD CT_INTEGER
+            {
                 char    buff[5];
                 itoa( $4 % 1000, buff, 10 );
                 SetHeader( $2, buff );
             }
-        
-        | ST_DOLLAR ID_IDENTIFIER ST_PERIOD                     
+
+        | ST_DOLLAR ID_IDENTIFIER ST_PERIOD
             { SetHeader( $2, NULL ); }
-        | ST_DOLLAR ID_IDENTIFIER                               
+        | ST_DOLLAR ID_IDENTIFIER
             { SetHeader( $2, NULL ); }
         ;
-        
+
 start_section
-        : ST_FORWARD sec_type                   
+        : ST_FORWARD sec_type
             { StartSection( $1, $2 ); }
-        | ST_GLOBAL global_type                 
+        | ST_GLOBAL global_type
             { StartSection( $1, $2 ); }
-        | ST_TYPE sec_type                      
+        | ST_TYPE sec_type
             { StartSection( $1, $2 ); }
-        | ST_SHARED ST_VARIABLES                
+        | ST_SHARED ST_VARIABLES
             { StartSection( $1, $2 ); }
         ;
 
 global_type
-        : ST_TYPE global_object                 
+        : ST_TYPE global_object
             { $$ = $1; }
-        | /* nothing */         
+        | /* nothing */
         ;
-        
+
 global_object
-        : ID_IDENTIFIER ST_FROM ID_IDENTIFIER   
+        : ID_IDENTIFIER ST_FROM ID_IDENTIFIER
             {}
-        | /* nothing */                                 
+        | /* nothing */
             {}
         ;
-        
+
 end_section
-        : ST_END ST_FORWARD                     
+        : ST_END ST_FORWARD
             { EndSection(); }
-        | ST_END ST_GLOBAL                      
+        | ST_END ST_GLOBAL
             { EndSection(); }
-        | ST_END ST_TYPE                        
+        | ST_END ST_TYPE
             { EndSection(); }
-        | ST_END ST_PROTOTYPES                  
+        | ST_END ST_PROTOTYPES
             { EndSection(); }
-        | ST_END ST_VARIABLES                   
+        | ST_END ST_VARIABLES
             { EndSection(); }
         ;
-         
-body 
-        : sp_prototype                          
+
+body
+        : sp_prototype
             { StartSubProgram(); }
         | access_specifier ST_COLON
             { SetDefaultAccess( $1 ); }
-        | obj_variable          
+        | obj_variable
             {}
-        | event_header  
+        | event_header
             {}
         ;
-        
+
 sp_prototype
         : function_header
             {}
@@ -242,30 +242,30 @@ obj_variable
         | type variable_list
             { AddDataMethod2( &($1), $2 ); }
         ;
-        
+
 variable_list
         : var_dec
-            { 
-                $$ = NewList( sizeof( VarInfo ) ); 
+            {
+                $$ = NewList( sizeof( VarInfo ) );
                 AddToList( $$, &($1) );
             }
         | variable_list ST_COMMA var_dec
-            { 
-                AddToList( $1, &($3) ); 
+            {
+                AddToList( $1, &($3) );
                 $$ = $1;
             }
         ;
-        
+
 var_dec
         : variable
-            { 
-                $$.name = MemStrDup( $1 );
+            {
+                $$.name = MemStrdup( $1 );
                 $$.flags = 0;
                 $$.fake = false;
             }
         | variable array_spec
-            { 
-                $$.name = MemStrDup( $1 );
+            {
+                $$.name = MemStrdup( $1 );
                 $$.flags = VAR_ARRAY;
                 $$.array = $2;
                 $$.fake = true;
@@ -289,14 +289,14 @@ array_spec
         | ST_LSQ_BRACKET ST_RSQ_BRACKET
             { $$.flags = ARRAY_DYNAMIC; }
         ;
-        
+
 array_expr_list
         : array_expr ST_COMMA array_expr
             { $$.flags = ARRAY_MULTI_DIM; }
         | array_expr_list ST_COMMA array_expr
             { $$.flags = ARRAY_MULTI_DIM; }
         ;
-        
+
 array_expr
         : CT_INTEGER
             {
@@ -308,7 +308,7 @@ array_expr
                 $$.flags = ARRAY_RANGE;
             }
         ;
-        
+
 access_specifier
         : ST_PROTECTED
         | ST_PRIVATE
@@ -319,160 +319,160 @@ global_declare
         : ST_GLOBAL ID_IDENTIFIER ID_IDENTIFIER
             {}
         ;
-        
+
 end_subprogram
-        : ST_END ST_FUNCTION                    
+        : ST_END ST_FUNCTION
             { EndSubProgram(); }
-        | ST_END ST_SUBROUTINE                  
+        | ST_END ST_SUBROUTINE
             { EndSubProgram(); }
-        | ST_END ST_ON                  
+        | ST_END ST_ON
             {}
         ;
 
-sec_type 
-        : ST_PROTOTYPES                         
+sec_type
+        : ST_PROTOTYPES
             { $$ = $1; }
-        | ST_TYPE                               
+        | ST_TYPE
             { $$ = $1; }
-        | ST_VARIABLES                          
+        | ST_VARIABLES
             { $$ = $1; }
-        | /* nothing */                                 
+        | /* nothing */
             { $$ = 0; }
         ;
 
 function_header
-        : access_specifier ST_FUNCTION type ID_IDENTIFIER parm_list sp_modifier         
+        : access_specifier ST_FUNCTION type ID_IDENTIFIER parm_list sp_modifier
             { SetFunction( &($3), $4 ); }
-        | ST_FUNCTION type ID_IDENTIFIER parm_list sp_modifier  
+        | ST_FUNCTION type ID_IDENTIFIER parm_list sp_modifier
             { SetFunction( &($2), $3 ); }
         ;
-                                                
+
 subroutine_header
-        : access_specifier ST_SUBROUTINE ID_IDENTIFIER parm_list sp_modifier    
+        : access_specifier ST_SUBROUTINE ID_IDENTIFIER parm_list sp_modifier
             { SetSubroutine( $3 ); }
-        | ST_SUBROUTINE ID_IDENTIFIER parm_list sp_modifier     
+        | ST_SUBROUTINE ID_IDENTIFIER parm_list sp_modifier
             { SetSubroutine( $2 ); }
         ;
 
 event_header
-        : ST_ON ID_IDENTIFIER ST_PERIOD ID_IDENTIFIER 
+        : ST_ON ID_IDENTIFIER ST_PERIOD ID_IDENTIFIER
             {}
-        | ST_ON ID_IDENTIFIER                   
+        | ST_ON ID_IDENTIFIER
             { RegisterEvent( $2 ); }
         ;
-        
+
 
 sp_modifier
-        : ST_LIBRARY CT_STRING  
+        : ST_LIBRARY CT_STRING
             {}
-        | /* nothing */                 
+        | /* nothing */
             {}
         ;
-        
-parm_list 
-        : ST_LBRACKET parameters ST_RBRACKET                    
+
+parm_list
+        : ST_LBRACKET parameters ST_RBRACKET
             { FiniParmList(); }
         ;
-        
-parameters 
-        : parms         
+
+parameters
+        : parms
             {}
-        | /* nothing */ 
+        | /* nothing */
             {}
         ;
-        
+
 parms
-        : parm ST_COMMA parms   
+        : parm ST_COMMA parms
             {}
-        | parm          
+        | parm
             {}
         ;
-        
-parm    
-        : type ID_IDENTIFIER                    
+
+parm
+        : type ID_IDENTIFIER
             { AddParm( &($1), $2, NULL ); }
-        | type ID_IDENTIFIER array_spec                 
+        | type ID_IDENTIFIER array_spec
             { AddParm( &($1), $2, &($3) ); }
         ;
-        
+
 subprogram
-        : call                                  
+        : call
             {}
-        | ID_IDENTIFIER ST_EQ expr              
+        | ID_IDENTIFIER ST_EQ expr
             {}
-        | ST_RETURN expr                        
+        | ST_RETURN expr
              { SetReturn(); }
         ;
-        
+
 call
         : ID_IDENTIFIER call_list
             {}
         ;
-        
+
 call_list
-        : ST_LBRACKET call_args ST_RBRACKET 
+        : ST_LBRACKET call_args ST_RBRACKET
             {}
         ;
-        
+
 call_args
-        : args          
+        : args
             {}
-        | /* nothing */ 
+        | /* nothing */
             {}
         ;
-        
-args    
+
+args
         : arg ST_COMMA args
             {}
-        | arg   
+        | arg
             {}
         ;
-        
-arg     
+
+arg
         : expr
             {}
         ;
-        
+
 expr
-        : ST_LBRACKET expr ST_RBRACKET  
+        : ST_LBRACKET expr ST_RBRACKET
             {}
-        | variable      
+        | variable
             {}
-        | constant      
+        | constant
             {}
-        | ID_IDENTIFIER ST_EXCLAM 
+        | ID_IDENTIFIER ST_EXCLAM
             {}
-        | call          
+        | call
             {}
         ;
-        
+
 constant
         : CT_STRING
             {}
         | CT_INTEGER ST_PERIOD CT_INTEGER
             {}
-        | CT_INTEGER            
+        | CT_INTEGER
             {}
-        ;       
-
-variable 
-        : ID_IDENTIFIER 
         ;
-                
+
+variable
+        : ID_IDENTIFIER
+        ;
+
 type
-        : ST_REF ID_IDENTIFIER                  
-            { 
-                $$.name = $2; 
-                $$.isref = true; 
+        : ST_REF ID_IDENTIFIER
+            {
+                $$.name = $2;
+                $$.isref = true;
             }
-        | ID_IDENTIFIER                         
-            { 
-                $$.name = $1; 
+        | ID_IDENTIFIER
+            {
+                $$.name = $1;
                 $$.isref = false;
             }
         ;
-        
-end 
+
+end
         : FI_EOF
             {}
         ;

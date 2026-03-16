@@ -17,7 +17,7 @@ suppress_zc = 1
 #
 .c : ../c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h"
+inc_dirs = -I. -I"../h" -I"$(trmem_dir)"
 
 !ifdef sys_dll
 extra_cpp_flags = -D__DLL__

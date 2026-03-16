@@ -141,12 +141,12 @@ bool InitLex( char *fname )
 
     yyTextSize = BUF_SIZE_INCREMENT;
     yyTextLen = 0;
-    yyText = MemMalloc( BUF_SIZE_INCREMENT );
+    yyText = MemAlloc( BUF_SIZE_INCREMENT );
     *yyText = '\0';
 
     yyLineLen = 0;
     yyLineSize = 0;
-    yyLine = MemMalloc( BUF_SIZE_INCREMENT );
+    yyLine = MemAlloc( BUF_SIZE_INCREMENT );
     *yyLine = '\0';
 
     memset( idBuffer, 0, sizeof( idBuffer ) );

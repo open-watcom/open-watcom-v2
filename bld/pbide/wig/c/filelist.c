@@ -65,7 +65,7 @@ FILE *WigOpenFile( const char *name, const char *mode )
 {
     FileList    *node;
 
-    node = MemMalloc( sizeof( FileList ) );
+    node = MemAlloc( sizeof( FileList ) );
     node->fhdl = fopen( name, mode );
     if( node->fhdl == NULL ) {
         MemFree( node );

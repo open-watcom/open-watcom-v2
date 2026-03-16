@@ -114,7 +114,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         argc++;
         if( *ptr == '\0' ) break;
     }
-    argv = MemMalloc( argc * sizeof( char * ) );
+    argv = MemAlloc( argc * sizeof( char * ) );
     line = MemStrdup( cmdline );
     ptr = line;
     argv[0] = "";

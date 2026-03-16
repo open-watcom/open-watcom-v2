@@ -68,7 +68,7 @@ bool InitError( void )
 /********************/
 {
     errBufSize = ERR_BUF_INCRMT;
-    errBuf = MemMalloc( sizeof( WatIDEErrInfo ) + errBufSize );
+    errBuf = MemAlloc( sizeof( WatIDEErrInfo ) + errBufSize );
     errBuf->errcnt = 0;
     errBuf->warncnt = 0;
     errLen = 0;

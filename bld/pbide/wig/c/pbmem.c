@@ -40,25 +40,27 @@
 #include "trmemcvr.h"
 
 
-void    InitMem( void ) {
-/************************/
+void    InitMem( void )
+/*********************/
+{
 #ifdef TRMEM
     TRMemOpen();
     TRMemRedirect( stdout );
 #endif
 }
 
-void    FiniMem( void ) {
-/************************/
+void    FiniMem( void )
+/*********************/
+{
 #ifdef TRMEM
     TRMemPrtList();
     TRMemClose();
 #endif
 }
 
-void    *MemMalloc( int size ) {
+void    *MemAlloc( size_t size )
 /******************************/
-
+{
     void        *tmp;
 
 #ifdef TRMEM
@@ -76,9 +78,9 @@ void    *MemMalloc( int size ) {
 }
 
 
-void    *MemRealloc( void *old, int size ) {
-/******************************************/
-
+void    *MemRealloc( void *old, size_t size )
+/*******************************************/
+{
     void        *tmp;
 
 #ifdef TRMEM
@@ -97,9 +99,9 @@ void    *MemRealloc( void *old, int size ) {
 }
 
 
-void    MemFree( void *blck ) {
-/*****************************/
-
+void    MemFree( void *blck )
+/***************************/
+{
      if( blck != NULL ) {
 #ifdef TRMEM
          TRMemFree( blck );
@@ -113,16 +115,16 @@ void    MemFree( void *blck ) {
 }
 
 
-char    *MemStrdup( const char *src ) {
-/*************************************/
-
+char    *MemStrdup( const char *src )
+/***********************************/
+{
     char                *dst;
 
     if( src == NULL ) {
         return( NULL );
     }
 
-    dst = MemMalloc( strlen( src ) + 1 );
+    dst = MemAlloc( strlen( src ) + 1 );
     strcpy( dst, src );
     return( dst );
 }

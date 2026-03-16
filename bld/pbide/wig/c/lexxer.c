@@ -325,8 +325,8 @@ static void initLex( void ) {
     }
 
     yyTextSize = LINE_INC;
-    yyText = MemMalloc( LINE_INC );
-    yyLine = MemMalloc( LINE_INC );
+    yyText = MemAlloc( LINE_INC );
+    yyLine = MemAlloc( LINE_INC );
     idPtr = 0;
     idBuffer[ 0 ] = 0;
 //    atexit( destroyLex );
