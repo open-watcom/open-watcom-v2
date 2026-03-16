@@ -36,7 +36,9 @@
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "ideactiv.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -67,12 +69,17 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
 void StartIDE( HANDLE instance, bool dospawn )
 {
     bool        found;
-    WNDENUMPROC wndenumproc;
 
     found = false;
-    wndenumproc = MakeProcInstance_WNDENUM( FindWatIDEHwnd, instance );
-    EnumWindows( wndenumproc, (LPARAM)&found );
-    FreeProcInstance_WNDENUM( wndenumproc );
+#ifdef __WINDOWS__
+    {
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( FindWatIDEHwnd, instance );
+        EnumWindows( wndenumproc, (LPARAM)&found );
+        FreeProcInstance_WNDENUM( wndenumproc );
+    }
+#else
+    EnumWindows( FindWatIDEHwnd, (LPARAM)&found );
+#endif
     if( !found && dospawn ) {
         WinExec( "IDE.EXE", SW_SHOW );
     }

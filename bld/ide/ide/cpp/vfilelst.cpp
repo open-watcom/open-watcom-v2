@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,9 @@
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -600,7 +602,11 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
 #if !defined( _WIN64 )
         of.lpTemplateName = "ADD_SRC_DLG";
         of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK;
+  #ifdef __WINDOWS__
         of.lpfnHook = MakeProcInstance_OFNHOOK( AddSrcDlgProc, hinst );
+  #else
+        of.lpfnHook = AddSrcDlgProc;
+  #endif
 #endif
 #if defined( __NT__ )
   #if !defined( _WIN64 )
@@ -608,7 +614,9 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
   #endif
 #endif
     rc = GetOpenFileName( &of );
+  #ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
+  #endif
     last_filter_index = of.nFilterIndex;
 #if defined( __NT__ )
   #if !defined( _WIN64 )
