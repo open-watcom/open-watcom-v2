@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,9 @@
  *            of the file to the end.
  *************************************************************************/
 
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
     #define GlobalUnlockCheck( hmem ) GlobalUnlock( hmem )
 
@@ -56,10 +58,10 @@
 
 extern void _wpi_setpoint( WPI_POINT *pt, int x, int y );
 
-#ifdef __NT__
-    #define _wpi_moveto( pres, point ) MoveToEx( pres, (point)->x, (point)->y, NULL )
-#else
+#ifdef __WINDOWS__
     #define _wpi_moveto( pres, point ) MoveTo( pres, (point)->x, (point)->y )
+#else
+    #define _wpi_moveto( pres, point ) MoveToEx( pres, (point)->x, (point)->y, NULL )
 #endif
 
     #define _wpi_movetoex( pres, point, extra ) \
