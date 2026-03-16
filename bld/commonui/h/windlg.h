@@ -62,6 +62,10 @@ extern TEMPLATE_HANDLE  DialogTemplate( DWORD style, int x, int y, int cx, int c
 extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
                             const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern TEMPLATE_HANDLE  DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+#ifdef __WINDOWS__
 extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam );
+#else
+extern INT_PTR          DynamicDialogBox( DLGPROC fn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam );
+#endif
 
 #endif
