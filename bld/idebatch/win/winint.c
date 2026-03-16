@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,9 @@
 #include "link.h"
 #include "common.h"
 #include "winexprt.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 static void listBoxOut( char *str, ... );
@@ -103,12 +105,16 @@ int CALLBACK EnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, int ftyp
 static void getMonoFont( HDC hdc, HANDLE inst )
 {
     LOGFONT         logfont;
-    OLDFONTENUMPROC oldfontenumproc;
 
-    oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
-    EnumFonts( hdc, NULL, oldfontenumproc, 0 );
-    FreeProcInstance_OLDFONTENUM( oldfontenumproc );
-
+#ifdef __WINDOWS__
+    {
+        OLDFONTENUMPROC oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
+        EnumFonts( hdc, NULL, oldfontenumproc, 0 );
+        FreeProcInstance_OLDFONTENUM( oldfontenumproc );
+    }
+#else
+    EnumFonts( hdc, NULL, EnumFunc, 0 );
+#endif
     if( fixedFont == NULL ) {
         fixedFont = GetStockObject( ANSI_FIXED_FONT );
         GetObject( fixedFont, sizeof( LOGFONT ), (LPSTR) &logfont );
@@ -265,7 +271,6 @@ static int hasOL;
 
 LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
 {
-    DLGPROC     fp;
     char        buff[ MAX_BUFF + 1 ];
     int         len;
     HDC         hdc;
@@ -336,9 +341,13 @@ LONG WINAPI MainWindowProc( HWND hwnd, UINT msg, UINT wparam, LONG lparam )
             break;
 
         case MENU_ABOUT:
-            fp = MakeProcInstance_DLG( AboutDlgProc, ourInstance );
+#ifdef __WINDOWS__
+            DLGPROC fp = MakeProcInstance_DLG( AboutDlgProc, ourInstance );
             DialogBox( ourInstance,"AboutBox", hwnd, fp );
             FreeProcInstance_DLG( fp );
+#else
+            DialogBox( ourInstance,"AboutBox", hwnd, AboutDlgProc );
+#endif
             break;
 
         case MENU_EXIT:
