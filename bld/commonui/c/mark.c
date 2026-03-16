@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,9 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Window callback functions prototypes */
@@ -117,15 +119,19 @@ INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
  */
 void ProcessMark( HWND owner, HANDLE instance, void (*func)( const char * ) )
 {
-    DLGPROC     dlgproc;
-
     if( WriteFn != NULL ) {
         return;
     }
     WriteFn = func;
-    dlgproc = MakeProcInstance_DLG( MarkDlgProc, instance );
-    DialogBox( instance, "MARK_DLG", owner, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( MarkDlgProc, instance );
+        DialogBox( instance, "MARK_DLG", owner, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( instance, "MARK_DLG", owner, MarkDlgProc );
+#endif
     WriteFn = NULL;
 
 } /* ProcessMark */

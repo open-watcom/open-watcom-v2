@@ -93,7 +93,11 @@ bool RegPushWin( HANDLE instance )
     WNDCLASS    wc;
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( PushWinProc );
+#else
+    wc.lpfnWndProc = PushWinProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;

@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include "windlg.h"
 
+
 /*
  * copyString - copy from string to memory
  */
@@ -295,13 +296,18 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
  */
 INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam )
 {
-    DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
-    rc = DialogBoxIndirectParam( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc, lparam );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( dlgfn, inst );
+        rc = DialogBoxIndirectParam( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc, lparam );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBoxIndirectParam( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgfn, lparam );
+#endif
     TEMPLATE_UNLOCK( dlgtemplate );
-    FreeProcInstance_DLG( dlgproc );
     GlobalFree( dlgtemplate );
     return( rc );
 

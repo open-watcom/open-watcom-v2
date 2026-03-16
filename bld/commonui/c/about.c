@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,9 @@
 #endif
 #include "ldstr.h"
 #include "uistr.grh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 #if defined( _M_I86 ) && defined( __WINDOWS__ )
@@ -167,11 +169,15 @@ INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
  */
 void DoAbout( LPABOUTINFO ai, void(*free_fn)(char *) )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( AboutDlgProc, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( AboutDlgProc, ai->inst );
+        DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBoxParam( ai->inst, "About", ai->owner, AboutDlgProc, (LPARAM)ai );
+#endif
     if( free_fn != NULL ) {
         free_fn( (char *)ai->title );
         free_fn( (char *)ai->name );

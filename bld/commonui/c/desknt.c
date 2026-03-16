@@ -36,7 +36,9 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "desknt.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Window callback functions prototypes */
@@ -110,7 +112,11 @@ bool RegisterSnapClass( HANDLE instance )
 
     thisInstance = instance;
     wc.style = 0L;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( DesktopProc );
+#else
+    wc.lpfnWndProc = DesktopProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = thisInstance;

@@ -42,7 +42,9 @@
 #endif
 #include "ldstr.h"
 #include "uistr.grh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 #define CONST_LEN       15
@@ -316,18 +318,24 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
  */
 void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
 {
-    DLGPROC     dlgproc;
-    INT_PTR     ret;
-
     CurHdl = hdl;
-    dlgproc = MakeProcInstance_DLG( AliasDlgProc, instance );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( AliasDlgProc, instance );
+        for( ;; ) {
+            if( DialogBoxParam( instance, "ALIAS_DLG", hwnd, dlgproc, (LPARAM)(LPCSTR)title ) != ALIAS_DO_MORE ) {
+                break;
+            }
+        }
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
     for( ;; ) {
-        ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, dlgproc, (LPARAM)(LPCSTR)title );
-        if( ret != ALIAS_DO_MORE ) {
+        if( DialogBoxParam( instance, "ALIAS_DLG", hwnd, AliasDlgProc, (LPARAM)(LPCSTR)title ) != ALIAS_DO_MORE ) {
             break;
         }
     }
-    FreeProcInstance_DLG( dlgproc );
+#endif
     CurHdl = NULL;
 
 } /* Query4Aliases */

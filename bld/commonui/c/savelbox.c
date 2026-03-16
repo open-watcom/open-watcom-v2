@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +44,14 @@
 #endif
 #include "ldstr.h"
 #include "uistr.grh"
-#include "wclbproc.h"
-#include "pathgrp2.h"
-#ifdef __NT__
+#if defined( __WINDOWS__ )
+    #include "wclbproc.h"
+#elif defined( __NT__ )
     #undef _WIN32_IE
     #define _WIN32_IE   0x0400
     #include <commctrl.h>
 #endif
+#include "pathgrp2.h"
 
 #include "clibext.h"
 
@@ -167,11 +168,17 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
+  #ifdef __WINDOWS__
     of.lpfnHook = MakeProcInstance_OFNHOOK( LBSaveOFNHookProc, GET_HINSTANCE( mainhwnd ) );
+  #else
+    of.lpfnHook = LBSaveOFNHookProc;
+  #endif
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
+  #ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
+  #endif
 #endif
     return( rc != 0 );
 

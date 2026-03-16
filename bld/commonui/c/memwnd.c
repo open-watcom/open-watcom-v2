@@ -82,7 +82,7 @@ int                     FontHeight = 15;
 static  HFONT           CurFont;
 static  HWND            CurWindow;
 static  char            Buffer[MAX_BYTES * 4 + 20];
-#ifndef __NT__
+#ifdef __WINDOWS__
 static  DLGPROC         DialProc;
 static  unsigned        DialCount;
 #endif
@@ -310,7 +310,11 @@ bool RegMemWndClass( HANDLE instance )
     WNDCLASS    wc;
 
     wc.style = 0L;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( MemDisplayProc );
+#else
+    wc.lpfnWndProc = MemDisplayProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = instance;
@@ -896,7 +900,6 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     DWORD               state;
     DWORD               size;
     HBRUSH              wbrush;
-    DLGPROC             dlgproc;
     unsigned            cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
@@ -1050,9 +1053,15 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case MEMINFO_OFFSET:
             inst = GET_HINSTANCE( hwnd );
-            dlgproc = MakeProcInstance_DLG( OffsetDlgProc, inst );
-            DialogBox( inst, "OFFSETDLG", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( OffsetDlgProc, inst );
+                DialogBox( inst, "OFFSETDLG", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            DialogBox( inst, "OFFSETDLG", hwnd, OffsetDlgProc );
+#endif
             break;
         }
         break;
@@ -1167,7 +1176,7 @@ INT_PTR CALLBACK SegInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         EnableMenuItem( hmenu, MEMINFO_SHOW, MF_ENABLED );
         break;
     case WM_NCDESTROY:
-#ifndef __NT__
+#ifdef __WINDOWS__
         DialCount--;
         if( DialCount == 0 ) {
             FreeProcInstance_DLG( DialProc );
@@ -1202,14 +1211,19 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
 
     hmenu = GetMenu( parent );
     EnableMenuItem( hmenu, MEMINFO_SHOW, MF_GRAYED );
+#ifdef __WINDOWS__
     if( DialCount == 0 ) {
         DialProc = MakeProcInstance_DLG( SegInfoDlgProc, instance );
     }
     DialCount++;
+#endif
     if( info->isdpmi ) {
         GetADescriptor( info->sel, &desc );
+#ifdef __WINDOWS__
         hwnd = CreateDialog( instance, "SEL_INFO", parent, DialProc );
-
+#else
+        hwnd = CreateDialog( instance, "SEL_INFO", parent, SegInfoDlgProc );
+#endif
         sprintf( buf, "%04X", info->sel );
         SetDlgItemText( hwnd, SEL_INFO_SEL, buf );
 //      SetWORDStaticField( hwnd, SEL_INFO_SEL, info->sel );
@@ -1244,7 +1258,11 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     } else {
         ge.dwSize = sizeof( GLOBALENTRY );
         GlobalEntryHandle( &ge, (HGLOBAL)info->sel );
+#ifdef __WINDOWS__
         hwnd = CreateDialog( instance, "HDL_INFO", parent, DialProc );
+#else
+        hwnd = CreateDialog( instance, "HDL_INFO", parent, SegInfoDlgProc );
+#endif
 
         sprintf( buf, "%04X", ge.hBlock );
         SetDlgItemText( hwnd, HDL_INFO_HDL, buf );

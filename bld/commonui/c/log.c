@@ -45,7 +45,9 @@
 #endif
 #include "ldstr.h"
 #include "uistr.grh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 typedef struct loginfo {
@@ -118,11 +120,17 @@ static bool getLogName( char *buf, HWND hwnd )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
+  #ifdef __WINDOWS__
     of.lpfnHook = MakeProcInstance_OFNHOOK( LogSaveOFNHookProc, LogCurInfo.instance );
+  #else
+    of.lpfnHook = LogSaveOFNHookProc;
+  #endif
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
+  #ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
+  #endif
 #endif
     FreeRCString( (char *)of.lpstrTitle );
     if( !rc ) {
@@ -269,17 +277,21 @@ INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void LogConfigure( void )
 {
-    DLGPROC     dlgproc;
-
     if( !LogCurInfo.init ) {
         LogSetDef();
     }
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
         flushLog( true );
     }
-    dlgproc = MakeProcInstance_DLG( ConfigLogDlgProc, LogCurInfo.instance );
-    DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( ConfigLogDlgProc, LogCurInfo.instance );
+        DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, ConfigLogDlgProc );
+#endif
 
 } /* LogConfigure */
 
@@ -386,7 +398,6 @@ void LogOut( char *res )
 static bool LogOpen( void )
 {
     FILE        *f;
-    DLGPROC     dlgproc;
     INT_PTR     ret;
     char        *msgtitle;
     char        *fmode = "wt";
@@ -408,9 +419,15 @@ static bool LogOpen( void )
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
-            dlgproc = MakeProcInstance_DLG( LogExistsDlgProc, LogCurInfo.instance );
-            ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( LogExistsDlgProc, LogCurInfo.instance );
+                ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, LogExistsDlgProc );
+#endif
             switch( ret ) {
             case LOG_APPEND:
                 fmode = "at";

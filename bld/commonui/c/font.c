@@ -35,7 +35,9 @@
 #include <string.h>
 #include "bool.h"
 #include "font.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Window callback functions prototypes */
@@ -118,13 +120,20 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
 static void getCourierFont( HANDLE inst )
 {
     LOGFONT         logfont;
-    FONTENUMPROC    fontenumproc;
     HDC             hdc;
 
     hdc = GetDC( HWND_DESKTOP );
-    fontenumproc = MakeProcInstance_FONTENUM( EnumFontsEnumFunc, inst );
-    EnumFontFamilies( hdc, NULL, fontenumproc, 0 );
-    FreeProcInstance_FONTENUM( fontenumproc );
+#ifdef __WINDOWS__
+    {
+        FONTENUMPROC fontenumproc = MakeProcInstance_FONTENUM( EnumFontsEnumFunc, inst );
+        EnumFontFamilies( hdc, NULL, fontenumproc, 0 );
+        FreeProcInstance_FONTENUM( fontenumproc );
+    }
+#else
+    /* unused parameters */ (void)inst;
+
+    EnumFontFamilies( hdc, NULL, EnumFontsEnumFunc, 0 );
+#endif
     ReleaseDC( (HWND)NULL, hdc );
 
     if( courierFont == NULL ) {

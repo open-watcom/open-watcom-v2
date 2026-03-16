@@ -37,8 +37,9 @@
 #include "bool.h"
 #include "statwnd.h"
 #include "loadcc.h"
-#include "wclbproc.h"
-#ifdef __NT__
+#if defined( __WINDOWS__ )
+    #include "wclbproc.h"
+#elif defined( __NT__ )
     #include <commctrl.h>
 #endif
 
@@ -392,7 +393,11 @@ bool StatusWndInit( WPI_INST hinstance, statushook hook, int extra, HCURSOR hDef
             classHandle = hinstance;
             classWinExtra = extra;
             wc.style = CS_HREDRAW | CS_VREDRAW;
+#ifdef __WINDOWS__
             wc.lpfnWndProc = GetWndProc( StatusWndCallback );
+#else
+            wc.lpfnWndProc = StatusWndCallback;
+#endif
             wc.cbClsExtra = 0;
             wc.cbWndExtra = extra + sizeof( statwnd * );
             wc.hInstance = hinstance;

@@ -37,8 +37,9 @@
 #include "watcom.h"
 #include "toolbr.h"
 #include "loadcc.h"
-#include "wclbproc.h"
-#ifdef __NT__
+#if defined( __WINDOWS__ )
+    #include "wclbproc.h"
+#elif defined( __NT__ )
     #include <commctrl.h>
 #endif
 
@@ -315,7 +316,11 @@ toolbar *ToolBarInit( HWND parent )
     if( LoadCommCtrl() ) {
         if( !GetClassInfo( instance, containerClassName, &wc ) ) {
             wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+#ifdef __WINDOWS__
             wc.lpfnWndProc = GetWndProc( ToolContainerWndProc );
+#else
+            wc.lpfnWndProc = ToolContainerWndProc;
+#endif
             wc.cbClsExtra = 0;
             wc.cbWndExtra = 0;
             wc.hInstance = instance;
@@ -330,7 +335,11 @@ toolbar *ToolBarInit( HWND parent )
   #endif
         if( !GetClassInfo( instance, className, &wc ) ) {
             wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+#ifdef __WINDOWS__
             wc.lpfnWndProc = GetWndProc( ToolBarWndProc );
+#else
+            wc.lpfnWndProc = ToolBarWndProc;
+#endif
             wc.lpszMenuName = NULL;
             wc.cbClsExtra = 0;
             wc.cbWndExtra = sizeof( LPVOID );
@@ -364,9 +373,15 @@ toolbar *ToolBarInit( HWND parent )
     appInst.mod_handle = (HMODULE)0;
 
     if( !toolBarClassRegistered ) {
+#ifdef __WINDOWS__
         rc = WinRegisterClass( hab, className, GetWndProc( ToolBarWndProc ),
                                CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPSIBLINGS,
                                sizeof( PVOID ) );
+#else
+        rc = WinRegisterClass( hab, className, ToolBarWndProc,
+                               CS_MOVENOTIFY | CS_SIZEREDRAW | CS_CLIPSIBLINGS,
+                               sizeof( PVOID ) );
+#endif
         toolBarClassRegistered = true;
     }
     clr_btnshadow = CLR_DARKGRAY;
@@ -765,7 +780,11 @@ void ToolBarDisplay( toolbar *bar, TOOLDISPLAYINFO *disp )
         }
         bar->old_wndproc = (WNDPROC)GET_WNDPROC( bar->hwnd );
         SetProp( bar->hwnd, "bar", (LPVOID)bar );
+#ifdef __WINDOWS__
         SET_WNDPROC( bar->hwnd, (LONG_PTR)GetWndProc( WinToolWndProc ) );
+#else
+        SET_WNDPROC( bar->hwnd, (LONG_PTR)WinToolWndProc );
+#endif
         SendMessage( bar->hwnd, TB_BUTTONSTRUCTSIZE, sizeof( TBBUTTON ), 0L );
         if( disp->use_tips ) {
             bar->tooltips = CreateWindow( TOOLTIPS_CLASS, NULL,
