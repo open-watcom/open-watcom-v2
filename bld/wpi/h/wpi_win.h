@@ -311,36 +311,39 @@ extern void _wpi_getbitmapdim( WPI_HBITMAP hbitmap, int *pwidth, int *pheight );
     #define _wpi_getclassinfo( inst, name, info ) \
                                             GetClassInfo( NULL, name, info )
 
-    #define _wpi_makeprocinstance( proc, inst ) (WPI_PROC)MakeProcInstance( (FARPROC)proc, inst )
+#ifdef __WINDOWS__
+    #define _wpi_makeprocinstance( proc, inst )         (WPI_PROC)MakeProcInstance( (FARPROC)proc, inst )
+    #define _wpi_makedlgprocinstance( proc, inst )      MakeProcInstance_DLG( proc, inst )
+    #define _wpi_makeenumprocinstance( proc, inst )     MakeProcInstance_WNDENUM( proc, inst )
+    #define _wpi_makewndprocinstance( proc, inst )      MakeProcInstance_WND( proc, inst )
+    #define _wpi_makelineddaprocinstance( proc, inst )  MakeProcInstance_LINEDDA( proc, inst )
+    #define _wpi_makefontprocinstance( proc, inst )     MakeProcInstance_ENUMFONT( proc, inst )
+#else
+    #define _wpi_makeprocinstance( proc, inst )         ((void)inst, proc)
+    #define _wpi_makedlgprocinstance( proc, inst )      ((void)inst, proc)
+    #define _wpi_makeenumprocinstance( proc, inst )     ((void)inst, proc)
+    #define _wpi_makewndprocinstance( proc, inst )      ((void)inst, proc)
+    #define _wpi_makelineddaprocinstance( proc, inst )  ((void)inst, proc)
+    #define _wpi_makefontprocinstance( proc, inst )     ((void)inst, proc)
+#endif
 
-    #define _wpi_makedlgprocinstance( proc, inst ) \
-                                    (WPI_DLGPROC)MakeProcInstance_DLG( proc, inst )
+#ifdef __WINDOWS__
+    #define _wpi_freeprocinstance( proc )           FreeProcInstance( (FARPROC)proc )
+    #define _wpi_freedlgprocinstance( proc )        FreeProcInstance_DLG( proc )
+    #define _wpi_freeenumprocinstance( proc )       FreeProcInstance_WNDENUM( proc )
+    #define _wpi_freewndprocinstance( proc )        FreeProcInstance_WND( proc )
+    #define _wpi_freelineddaprocinstance( proc )    FreeProcInstance_LINEDDA( proc )
+    #define _wpi_freefontprocinstance( proc )       FreeProcInstance_ENUMFONT( proc )
+#else
+    #define _wpi_freeprocinstance( proc )           (void)proc
+    #define _wpi_freedlgprocinstance( proc )        (void)proc
+    #define _wpi_freeenumprocinstance( proc )       (void)proc
+    #define _wpi_freewndprocinstance( proc )        (void)proc
+    #define _wpi_freelineddaprocinstance( proc )    (void)proc
+    #define _wpi_freefontprocinstance( proc )       (void)proc
+#endif
 
-    #define _wpi_makeenumprocinstance( proc, inst ) \
-                                    (WPI_ENUMPROC)MakeProcInstance_WNDENUM( proc, inst )
-
-    #define _wpi_makewndprocinstance( proc, inst ) \
-                                    (WPI_WNDPROC)MakeProcInstance_WND( proc, inst )
-
-    #define _wpi_makelineddaprocinstance( proc, inst ) \
-                                    (WPI_LINEDDAPROC)MakeProcInstance_LINEDDA( proc, inst )
-
-    #define _wpi_makefontprocinstance( proc, inst ) \
-                                    (WPI_ENUMFONTPROC)MakeProcInstance_ENUMFONT( proc, inst )
-
-    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
-
-    #define _wpi_freedlgprocinstance( proc ) FreeProcInstance_DLG( proc )
-
-    #define _wpi_freeenumprocinstance( proc ) FreeProcInstance_WNDENUM( proc )
-
-    #define _wpi_freewndprocinstance( proc ) FreeProcInstance_WND( proc )
-
-    #define _wpi_freelineddaprocinstance( proc ) FreeProcInstance_LINEDDA( proc )
-
-    #define _wpi_freefontprocinstance( proc ) FreeProcInstance_ENUMFONT( proc )
-
-    #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 )  FALSE
 
     #define _wpi_getclassproc( class ) (class)->lpfnWndProc
 
