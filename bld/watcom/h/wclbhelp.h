@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2014-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2014-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,9 @@
 ****************************************************************************/
 
 
-#include "wclbproc.h"
+#if defined( __WINDOWS__ )
+    #include "wclbproc.h"
+#endif
 
 
 #ifdef __cplusplus
