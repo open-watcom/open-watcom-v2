@@ -149,7 +149,6 @@ INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 appl_action __cdecl __far FaultHandler( fault_frame ff )
 {
-    DLGPROC     dlgproc;
     appl_action appl_act;
     char        *fault_str;
     msg_id      faultid;
@@ -220,7 +219,7 @@ appl_action __cdecl __far FaultHandler( fault_frame ff )
 
     LoadDbgInfo();
     if( LogInfo.flags[LOGFL_AUTOLOG] != '1' ) {
-        dlgproc = MakeProcInstance_DLG( IntDialogDlgProc, Instance );
+        DLGPROC dlgproc = MakeProcInstance_DLG( IntDialogDlgProc, Instance );
         appl_act = JDialogBox( Instance, "INTERRUPT", NULL, dlgproc );
         FreeProcInstance_DLG( dlgproc );
     } else {

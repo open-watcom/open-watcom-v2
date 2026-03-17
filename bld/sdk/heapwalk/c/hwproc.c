@@ -240,7 +240,6 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     HMENU       hmenu2;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
-    DLGPROC     dlgproc;
     DWORD       index;
     heap_list   hl;
     GblWndInfo  *info;
@@ -449,9 +448,11 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             InitHeapList( info->list.box, TRUE );
             break;
         case HEAPMENU_GLOBAL_CODE_SIZE:
-            dlgproc = MakeProcInstance_DLG( SetCodeDlgProc, Instance );
-            JDialogBox( Instance, "CODE_AREA_DLG", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( SetCodeDlgProc, Instance );
+                JDialogBox( Instance, "CODE_AREA_DLG", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
             break;
         case HEAPMENU_FILE_SAVE:
             InitHeapList( info->list.box, TRUE );

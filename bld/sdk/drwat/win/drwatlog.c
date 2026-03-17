@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,9 +182,7 @@ WINEXPORT INT_PTR CALLBACK LogDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
  */
 void DoLogDialog( HWND hwnd )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( LogDialogDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( LogDialogDlgProc, Instance );
     JDialogBox( Instance, "LOG", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

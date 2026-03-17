@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,17 +62,18 @@ int CALLBACK EnumFontFunc( WPI_LOGFONT *lf, WPI_TEXTMETRIC *tm, UINT ftype, LPST
 void CreateStatusFont( void )
 {
     WPI_LOGFONT                 logfont;
-    WPI_FONTENUMPROC            fontenumproc;
     WPI_PRES                    pres;
 
     pres = _wpi_getpres( HWND_DESKTOP );
-    fontenumproc = _wpi_makeprocinstance( EnumFontFunc, Instance );
+    {
+        WPI_FONTENUMPROC fontenumproc = _wpi_makeprocinstance( EnumFontFunc, Instance );
 #ifdef __OS2_PM__
-    _wpi_enumfonts( pres, NULL, fontenumproc, "Helv" );
+        _wpi_enumfonts( pres, NULL, fontenumproc, "Helv" );
 #else
-    _wpi_enumfonts( pres, NULL, fontenumproc, "ms sans serif");
+        _wpi_enumfonts( pres, NULL, fontenumproc, "ms sans serif");
 #endif
-    _wpi_freeprocinstance( fontenumproc );
+        _wpi_freeprocinstance( fontenumproc );
+    }
 
     if( currentLogFont == NULL ) {
 //      SmallFont = GetStockObject( ANSI_FIXED_FONT );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -374,12 +374,12 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case STAT_SEG_MAP:
-#ifdef __WINDOWS__
-            DLGPROC dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
-            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
-#else
             {
+#ifdef __WINDOWS__
+                DLGPROC dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
+                JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+#else
                 HANDLE                  hdl;
                 DuplicateHandle(
                             GetCurrentProcess(),
@@ -390,8 +390,8 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam
                             FALSE,
                             DUPLICATE_SAME_ACCESS );
                 WalkMemory( hwnd, hdl, processID );
-            }
 #endif
+            }
             break;
 #ifdef __WINDOWS__
         case STAT_STACK_TRACE:

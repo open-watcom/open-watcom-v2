@@ -349,9 +349,6 @@ INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 {
     WORD        cmd;
     bool        ret;
-#ifndef __NT__
-    DLGPROC     dlgproc;
-#endif
 
     lparam = lparam;
 
@@ -379,11 +376,13 @@ INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
-#ifndef __NT__
+#ifdef __WINDOWS__
         case STAT_SEG_MAP:
-            dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
-            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
+                JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
             break;
         case STAT_STACK_TRACE:
             StartStackTraceDialog( hwnd );
@@ -436,9 +435,7 @@ INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 void DoStatDialog( HWND hwnd )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( StatDialogDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( StatDialogDlgProc, Instance );
     JDialogBox( Instance, "TASKSTATUS", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

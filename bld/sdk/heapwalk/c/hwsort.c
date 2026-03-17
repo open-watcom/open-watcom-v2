@@ -191,11 +191,10 @@ INT_PTR FAR PASCAL ExtendedSortDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 static ExtendedSort( void )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( ExtendedSortDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( ExtendedSortDlgProc, Instance );
     JDialogBox( Instance, "EXTEND_SORT", HeapWalkMainWindow, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+
 } /* ExtendedSort */
 #endif
 

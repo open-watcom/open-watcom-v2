@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -390,9 +390,11 @@ void DoShowSelectedDialog( HWND hwnd, bool *spyall )
         memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
     }
 #ifdef __WINDOWS__
-    DLGPROC dlgproc = MakeProcInstance_DLG( ShowSelectedDialogDlgProc, Instance );
-    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( ShowSelectedDialogDlgProc, Instance );
+        rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
 #else
     rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, ShowSelectedDialogDlgProc );
 #endif

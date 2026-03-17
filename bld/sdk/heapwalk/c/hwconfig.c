@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -367,9 +367,8 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
  */
 void HWConfigure( void )
 {
-    DLGPROC         dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
     JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+
 } /* HWConfigure */

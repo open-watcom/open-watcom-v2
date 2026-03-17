@@ -391,9 +391,7 @@ INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 void DumpTask( HWND hwnd )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( DumpDialogDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( DumpDialogDlgProc, Instance );
     JDialogBox( Instance, "DMPTASK", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 
@@ -487,7 +485,6 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     char        str[128];
     int         i, j;
-    DLGPROC     dlgproc;
     bool        ret;
 
     lparam = lparam;
@@ -531,9 +528,11 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             }
             break;
         case TASKCTL_DEBUG:
-            dlgproc = MakeProcInstance_DLG( DebuggerOptDlgProc, Instance );
-            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( DebuggerOptDlgProc, Instance );
+                JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
             break;
 #if( 0 )
         case TASKCTL_DUMP:
@@ -563,11 +562,9 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 void DumpATask( HWND hwnd )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( DumpAnyDialogDlgProc, Instance );
+    DLGPROC dlgproc = MakeProcInstance_DLG( DumpAnyDialogDlgProc, Instance );
     JDialogBox( Instance, "TASKCTL", hwnd, dlgproc );
-    DumpDialogHwnd = 0;
     FreeProcInstance_DLG( dlgproc );
+    DumpDialogHwnd = 0;
 
 } /* DumpATask */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -638,14 +638,14 @@ static bool getOpenFName( char *fname )
     of.nMaxFileTitle = sizeof( szFileTitle );
     of.lpstrTitle = IEOpenImageTitle;
     of.lpstrInitialDir = initialDir;
-#ifndef __NT__
+#ifdef __WINDOWS__
     /* Important! Do not use hook in Win32, you will not get the nice dialog! */
     of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     ok = ( GetOpenFileName( &of ) != 0 );
-#ifndef __NT__
+#ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
@@ -665,7 +665,6 @@ static bool readInResourceFile( const char *fullname )
     size_t              dsize;
     WRInfo              *info;
     WRSelectImageInfo   *siinfo;
-    HELPFUNC            hcb;
     bool                ok;
 
     info = NULL;
@@ -679,9 +678,13 @@ static bool readInResourceFile( const char *fullname )
     }
 
     if( ok ) {
-        hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
+#ifdef __WINDOWS__
+        HELPFUNC hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
         siinfo = WRSelectImage( HMainWindow, info, hcb );
         FreeProcInstance_HELP( hcb );
+#else
+        siinfo = WRSelectImage( HMainWindow, info, IEHelpCallBack );
+#endif
         ok = (siinfo != NULL && siinfo->lnode != NULL);
     }
 
@@ -843,12 +846,12 @@ static bool getOpenPalName( char *fname )
     of.lpstrTitle = IEOpenPaletteTitle;
     of.lpstrInitialDir = initialDir;
     of.Flags =  OFN_SHOWHELP | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-#ifndef __NT__
+#ifdef __WINDOWS__
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, Instance );
 #endif
     ok = ( GetOpenFileName( &of ) != 0 );
-#ifndef __NT__
+#ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( ok );

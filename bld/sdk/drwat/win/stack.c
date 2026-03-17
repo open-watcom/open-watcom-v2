@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,7 +136,6 @@ INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
  */
 void StartStackTraceDialog( HWND hwnd )
 {
-    DLGPROC     dlgproc;
     BOOL        first_try;
     INT_PTR     rc;
     int         currframe=0;
@@ -166,9 +165,11 @@ void StartStackTraceDialog( HWND hwnd )
             }
             first_try = FALSE;
         }
-        dlgproc = MakeProcInstance_DLG( STDialogDlgProc, Instance );
-        rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlgproc );
-        FreeProcInstance_DLG( dlgproc );
+        {
+            DLGPROC dlgproc = MakeProcInstance_DLG( STDialogDlgProc, Instance );
+            rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
+        }
         oldcurrframe = currframe;
         if( rc == ST_NEXT ) {
             currframe++;
