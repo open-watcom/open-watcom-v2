@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,9 @@
 #include "vi.h"
 #include "window.h"
 #include "win.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -52,7 +54,11 @@ bool RegisterMainWindow( HANDLE inst )
     WNDCLASS    wc;
 
     wc.style = CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( MainWindowProc );
+#else
+    wc.lpfnWndProc = MainWindowProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = inst;

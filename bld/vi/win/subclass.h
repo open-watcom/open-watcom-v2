@@ -33,8 +33,9 @@
 #ifndef _SUBCLASS_INCLUDED
 #define _SUBCLASS_INCLUDED
 
-#include "wclbproc.h"
-
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 typedef struct proc_entry {
     struct proc_entry   *next, *prev;
@@ -45,7 +46,11 @@ typedef struct proc_entry {
 
 void    SubclassGenericInit( void );
 void    SubclassGenericFini( void );
+#ifdef __WINDOWS__
 void    SubclassGenericAdd( HWND, WNDPROCx, HINSTANCE );
+#else
+void    SubclassGenericAdd( HWND, WNDPROC, HINSTANCE );
+#endif
 void    SubclassGenericRemove( HWND );
 WNDPROC SubclassGenericFindOldProc( HWND );
 

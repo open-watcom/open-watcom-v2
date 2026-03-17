@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,6 @@
 #include "restest.h"
 #include "getnum.h"
 #include "resname.h"
-#include "wclbproc.h"
 
 
 static DWORD    lastNum;
@@ -66,25 +65,30 @@ INT_PTR CALLBACK GetMsgNumDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     return( TRUE );
 }
 
-void DisplayMessageTable( void ) {
-
+void DisplayMessageTable( void )
+{
     DLGPROC     dlgproc;
     DWORD       lang;
     DWORD       id;
     char        buf[256];
     DWORD       ret;
 
+#ifdef __WINDOWS__
+    dlgproc = MakeProcInstance_DLG( GetMsgNumDlgProc, Instance );
+#else
+    dlgproc = GetMsgNumDlgProc;
+#endif
     /* get language id */
     getNumCaption = "Enter the language id for the message in hex";
-    dlgproc = MakeProcInstance_DLG( GetMsgNumDlgProc, Instance );
     DialogBox( Instance, "GET_NUM_DLG" , NULL, dlgproc );
     lang = lastNum;
-
     /* get msg number */
     getNumCaption = "Enter the message id for the message in hex";
     DialogBox( Instance, "GET_NUM_DLG" , NULL, dlgproc );
     id = lastNum;
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( dlgproc );
+#endif
     ret = FormatMessage(
                 FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_HMODULE,
                 GetModuleHandle( NULL ),

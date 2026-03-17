@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,10 @@
 #include "vifont.h"
 #include "utils.h"
 #include "win.h"
-#include "wclbproc.h"
 #include "winifini.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -60,7 +62,11 @@ bool CommandWindowInit( void )
     WNDCLASS        wc;
 
     wc.style = 0;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( CommandWindowProc );
+#else
+    wc.lpfnWndProc = CommandWindowProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

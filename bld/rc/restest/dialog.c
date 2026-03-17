@@ -35,7 +35,6 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
-#include "wclbproc.h"
 
 
 static char dialogName[256];
@@ -86,16 +85,27 @@ INT_PTR CALLBACK DispDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 void DisplayDialog( void )
 {
-    DLGPROC     dlgproc;
     int         ret;
     char        buf[256];
 
-    dlgproc = MakeProcInstance_DLG( GetDialogNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
-    dlgproc = MakeProcInstance_DLG( DispDialogDlgProc, Instance );
-    ret = DialogBox( Instance, dialogName , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( GetDialogNameDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, GetDialogNameDlgProc );
+#endif
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( DispDialogDlgProc, Instance );
+        ret = DialogBox( Instance, dialogName , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    ret = DialogBox( Instance, dialogName , NULL, DispDialogDlgProc );
+#endif
     if( ret == -1 ) {
         sprintf( buf, "Can't Load Dialog %s", dialogName );
         Error( "dialog", buf );

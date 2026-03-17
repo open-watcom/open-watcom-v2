@@ -35,8 +35,10 @@
 #include "vifont.h"
 #include "utils.h"
 #include "myprintf.h"
-#include "wclbproc.h"
 #include "winifini.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -60,7 +62,11 @@ bool MessageBarInit( void )
     msgString2[0] = '\0';
 
     wc.style = CS_HREDRAW | CS_VREDRAW;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( MessageWindowProc );
+#else
+    wc.lpfnWndProc = MessageWindowProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

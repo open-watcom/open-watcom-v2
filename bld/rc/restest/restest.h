@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,10 @@
 
 #include <stdarg.h>
 #include "bool.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
+
 
 #define MAIN_CLASS      "ResTestClass"
 #define MENU_CLASS      "MenuWindowClass"

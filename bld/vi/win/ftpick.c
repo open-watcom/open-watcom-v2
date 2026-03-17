@@ -35,7 +35,9 @@
 #include "ftbar.rh"
 #include "vifont.h"
 #include "sstyle.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -232,7 +234,11 @@ void InitFtPick( void )
     }
 
     wndclass.style          = CS_HREDRAW | CS_VREDRAW;
+#ifdef __WINDOWS__
     wndclass.lpfnWndProc    = GetWndProc( FtPickProc );
+#else
+    wndclass.lpfnWndProc    = FtPickProc;
+#endif
     wndclass.cbClsExtra     = 0;
     wndclass.cbWndExtra     = 0;
     wndclass.hInstance      = InstanceHandle;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -406,14 +406,20 @@ void RefreshSSbar( void )
         if( !BAD_ID( hSSbar ) ) {
             return;
         }
+#ifdef __WINDOWS__
         dlgproc = MakeProcInstance_DLG( SSDlgProc, InstanceHandle );
+#else
+        dlgproc = SSDlgProc;
+#endif
         hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, dlgproc );
     } else {
         if( BAD_ID( hSSbar ) ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
+#ifdef __WINDOWS__
         FreeProcInstance_DLG( dlgproc );
+#endif
     }
     UpdateStatusWindow();
 

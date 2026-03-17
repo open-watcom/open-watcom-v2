@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include <wwindows.h>
 #include "restest.h"
 #include "resname.h"
-#include "wclbproc.h"
 
 
 static char iconName[256];
@@ -58,14 +57,19 @@ INT_PTR CALLBACK GetIconNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 void DisplayIcon( HWND hwnd )
 {
-    DLGPROC     dlgproc;
     HICON       oldicon;
     HICON       newicon;
     char        buf[256];
 
-    dlgproc = MakeProcInstance_DLG( GetIconNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( GetIconNameDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, GetIconNameDlgProc );
+#endif
     newicon = LoadIcon( Instance, iconName );
     if( newicon == NULL ) {
         sprintf( buf, "Can't Load Icon %s", iconName );

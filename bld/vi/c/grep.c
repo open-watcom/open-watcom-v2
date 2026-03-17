@@ -48,7 +48,9 @@
         #define _WIN32_IE   0x0400
         #include <commctrl.h>
     #endif
+  #ifdef __WINDOWS__
     #include "wclbproc.h"
+  #endif
 #endif
 #include <assert.h>
 
@@ -436,21 +438,28 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
 
 static vi_rc doGREP( const char *dirlist )
 {
-    DLGPROC     dlgproc;
     vi_rc       rc;
+  #ifdef __WINDOWS__
+    DLGPROC     dlgproc;
+  #endif
 
   #ifdef __NT__
     if( LoadCommCtrl() ) {
-        dlgproc = MakeProcInstance_DLG( GrepListDlgProc95, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, dlgproc, (LPARAM)dirlist );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, GrepListDlgProc95, (LPARAM)dirlist );
     } else {
   #endif
+  #ifdef __WINDOWS__
         dlgproc = MakeProcInstance_DLG( GrepListDlgProc, InstanceHandle );
         rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, dlgproc, (LPARAM)dirlist );
+  #else
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, GrepListDlgProc, (LPARAM)dirlist );
+  #endif
   #ifdef __NT__
     }
   #endif
+  #ifdef __WINDOWS__
     FreeProcInstance_DLG( dlgproc );
+  #endif
     return( rc );
 }
 #else

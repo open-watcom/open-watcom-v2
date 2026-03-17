@@ -31,7 +31,9 @@
 
 
 #include "vi.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -170,7 +172,11 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
     oldEditProc = (WNDPROC)GET_WNDPROC( edit );
+#ifdef __WINDOWS__
     editProc = MakeProcInstance_WND( EditSubClassProc, InstanceHandle );
+#else
+    editProc = EditSubClassProc;
+#endif
     SET_WNDPROC( edit, (LONG_PTR)editProc );
     SendMessage( edit, EM_LIMITTEXT, MAX_INPUT_LINE, 0L );
 
@@ -185,7 +191,11 @@ void RemoveEditSubClass( HWND hwnd, int id )
 
     edit = GetDlgItem( hwnd, id );
     SET_WNDPROC( edit, (LONG_PTR)oldEditProc );
-    FreeProcInstance_WND( editProc );
+#ifdef __WINDOWS__
+    editProc = MakeProcInstance_WND( EditSubClassProc, InstanceHandle );
+#else
+    editProc = EditSubClassProc;
+#endif
     FinishFileComplete();
 
 } /* RemoveEditSubClass */

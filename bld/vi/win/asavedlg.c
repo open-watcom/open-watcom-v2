@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +32,9 @@
 
 #include "vi.h"
 #include "asavedlg.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -77,13 +79,17 @@ WINEXPORT INT_PTR CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
  */
 vi_key GetAutosaveResponse( void )
 {
-    DLGPROC     dlgproc;
     vi_key      key;
 
-    dlgproc = MakeProcInstance_DLG( ASaveDlgProc, InstanceHandle );
-    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( ASaveDlgProc, InstanceHandle );
+        key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, ASaveDlgProc );
+#endif
     return( key );
 
 } /* GetAutosaveResponse */

@@ -33,7 +33,9 @@
 
 #include "vi.h"
 #include "linedlg.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -84,14 +86,19 @@ WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
  */
 bool GetLineDialog( linenum *line )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
     lineStr[0] = '\0';
     lineVal = line;
-    dlgproc = MakeProcInstance_DLG( GotoLineDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( GotoLineDlgProc, InstanceHandle );
+        rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, GotoLineDlgProc );
+#endif
     SetWindowCursor();
     return( rc );
 

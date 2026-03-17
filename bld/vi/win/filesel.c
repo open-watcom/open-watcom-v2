@@ -34,7 +34,9 @@
 #include <dlgs.h>
 #include <cderr.h>
 #include <assert.h>
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -122,7 +124,11 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     } else {
 #endif
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
+#ifdef __WINDOWS__
         of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
+#else
+        of.lpfnHook = OpenOFNHookProc;
+#endif
 #if defined( __NT__ ) && !defined( _WIN64 )
     }
 #endif
@@ -130,7 +136,9 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
 #if defined( __NT__ ) && !defined( _WIN64 )
     if( !is_chicago ) {
 #endif
+#ifdef __WINDOWS__
         FreeProcInstance_OFNHOOK( of.lpfnHook );
+#endif
 #if defined( __NT__ ) && !defined( _WIN64 )
     }
 #endif
@@ -190,7 +198,11 @@ vi_rc SelectFileSave( char *result )
     } else {
 #endif
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
+#ifdef __WINDOWS__
         of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
+#else
+        of.lpfnHook = OpenOFNHookProc;
+#endif
 #if defined( __NT__ ) && !defined( _WIN64 )
     }
 #endif
@@ -198,7 +210,9 @@ vi_rc SelectFileSave( char *result )
 #if defined( __NT__ ) && !defined( _WIN64 )
     if( !is_chicago ) {
 #endif
+#ifdef __WINDOWS__
         FreeProcInstance_OFNHOOK( of.lpfnHook );
+#endif
 #if defined( __NT__ ) && !defined( _WIN64 )
     }
 #endif

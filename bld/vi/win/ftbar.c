@@ -202,17 +202,22 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 
 static void fillFaceNamesBox( HWND hwnd )
 {
-    FONTENUMPROC    fontenumproc;
     HDC             hdc;
 
-    hwnd = hwnd;
-
-    /* put facenames in combo box
-    */
+    (void)hwnd;
+    /*
+     * put facenames in combo box
+     */
     hdc = GetDC( edit_container_window_id );
-    fontenumproc = MakeProcInstance_FONTENUM( EnumFamFaceNames, InstanceHandle );
-    EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
-    FreeProcInstance_FONTENUM( fontenumproc );
+#ifdef __WINDOWS__
+    {
+        FONTENUMPROC fontenumproc = MakeProcInstance_FONTENUM( EnumFamFaceNames, InstanceHandle );
+        EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
+        FreeProcInstance_FONTENUM( fontenumproc );
+    }
+#else
+    EnumFontFamilies( hdc, NULL, EnumFamFaceNames, 0L );
+#endif
     ReleaseDC( edit_container_window_id, hdc );
 
     SendMessage( hwndFaceName, LB_SETCURSEL, 0, 0L );
@@ -237,7 +242,6 @@ static void fillStyleBox( void )
 
 static void fillInfoBoxes( HWND hwnd )
 {
-    FONTENUMPROC    fontenumproc;
     int             index;
     HDC             hdc;
     char            facename[LF_FACESIZE + 1];
@@ -274,11 +278,17 @@ static void fillInfoBoxes( HWND hwnd )
     fillStyleBox();
 
     SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)facename );
-    fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
     hdc = GetDC( edit_container_window_id );
-    EnumFontFamilies( hdc, facename, fontenumproc, (LPARAM)(&isTrueType) );
+#ifdef __WINDOWS__
+    {
+        FONTENUMPROC fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
+        EnumFontFamilies( hdc, facename, fontenumproc, (LPARAM)(&isTrueType) );
+        FreeProcInstance_FONTENUM( fontenumproc );
+    }
+#else
+    EnumFontFamilies( hdc, facename, EnumFamInfo, (LPARAM)(&isTrueType) );
+#endif
     ReleaseDC( edit_container_window_id, hdc );
-    FreeProcInstance_FONTENUM( fontenumproc );
 
     if( isTrueType ) {
         /* suggest a few truetype point values
@@ -378,7 +388,6 @@ static int setCurLogfont( int overrideSize )
     char                size[8];
     int                 height;
     HDC                 hdc;
-    FONTENUMPROC        fontenumproc;
 
     if( overrideSize == 0 ) {
         index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
@@ -417,9 +426,15 @@ static int setCurLogfont( int overrideSize )
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
     hdc = GetDC( edit_container_window_id );
-    fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
-    EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
-    FreeProcInstance_FONTENUM( fontenumproc );
+#ifdef __WINDOWS__
+    {
+        FONTENUMPROC fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
+        EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
+        FreeProcInstance_FONTENUM( fontenumproc );
+    }
+#else
+    EnumFontFamilies( hdc, CurLogfont.lfFaceName, SetupFontData, 0L );
+#endif
     ReleaseDC( edit_container_window_id, hdc );
 
     return( 1 );
@@ -522,21 +537,29 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 void RefreshFontbar( void )
 {
+#ifdef __WINDOWS__
     static DLGPROC  dlgproc = NULL;
+#endif
 
     if( EditFlags.Fontbar ) {
         if( !BAD_ID( hFontbar ) ) {
             return;
         }
+#ifdef __WINDOWS__
         dlgproc = MakeProcInstance_DLG( FtDlgProc, InstanceHandle );
         hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, dlgproc );
+#else
+        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, FtDlgProc );
+#endif
         SetMenuHelpString( "Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hFontbar ) ) {
             return;
         }
         SendMessage( hFontbar, WM_CLOSE, 0, 0L );
+#ifdef __WINDOWS__
         FreeProcInstance_DLG( dlgproc );
+#endif
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

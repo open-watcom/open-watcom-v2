@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,9 @@
 #define INCLUDE_TOOL_H
 #include "vi.h"
 #include <dos.h>
-#include "wclbtool.h"
+#ifdef __WINDOWS__
+    #include "wclbtool.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -80,7 +82,11 @@ long MySpawn( const char *cmd )
 
     GetSpawnCommandLine( path, cmd, &cmds );
     cmds.cmd[cmds.len] = '\0';
+#ifdef __WINDOWS__
     notifyproc = MakeProcInstance_NOTIFY( NotifyHandler, InstanceHandle );
+#else
+    notifyproc = NotifyHandler;
+#endif
     rc = -1;
     if( NotifyRegister( (HANDLE)NULLHANDLE, notifyproc, NF_NORMAL ) ) {
         strcat( path, " " );

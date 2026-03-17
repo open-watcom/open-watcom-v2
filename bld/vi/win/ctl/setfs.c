@@ -38,8 +38,10 @@
 #include "fts.h"
 #include "rcstr.grh"
 #include <assert.h>
-#include "wclbproc.h"
 #include "winctl.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -660,13 +662,17 @@ WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, 
  */
 bool GetSetFSDialog( void )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetFSDlgProc, InstanceHandle );
-    rc = ( DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc ) != 0 );
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( SetFSDlgProc, InstanceHandle );
+        rc = ( DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc ) != 0 );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = ( DialogBox( InstanceHandle, "SETFS", root_window_id, SetFSDlgProc ) != 0 );
+#endif
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( true );
     return( rc );

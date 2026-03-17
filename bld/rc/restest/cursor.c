@@ -35,7 +35,6 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
-#include "wclbproc.h"
 
 
 static char cursorName[256];
@@ -59,14 +58,19 @@ INT_PTR CALLBACK GetCursorNameDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
 void DisplayCursor( HWND hwnd )
 {
-    FARPROC     dlgproc;
     HCURSOR     oldcur;
     HCURSOR     newcur;
     char        buf[256];
 
-    dlgproc = MakeProcInstance_DLG( (FARPROC)GetCursorNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        FARPROC dlgproc = MakeProcInstance_DLG( (FARPROC)GetCursorNameDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, GetCursorNameDlgProc );
+#endif
     newcur = LoadCursor( Instance, cursorName );
     if( newcur == NULL ) {
         sprintf( buf, "Can't Load Cursor %s", cursorName );

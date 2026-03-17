@@ -33,7 +33,9 @@
 
 #include "vi.h"
 #include "cmd.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -128,14 +130,19 @@ WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 bool GetCmdDialog( char *str, int len )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
     cmdStr = str;
     cmdLen = len;
-    dlgproc = MakeProcInstance_DLG( CmdDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( CmdDlgProc, InstanceHandle );
+        rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, CmdDlgProc );
+#endif
 
     /* this is technically a bug of some kind - if the above command
      * was a DDE message to another window to take focus, we will

@@ -38,8 +38,10 @@
 #include "dyntpl.h"
 #include "util.h"
 #include "globals.h"
-#include "wclbproc.h"
 #include "winctl.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -326,12 +328,17 @@ WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam,
  */
 bool GetSetGenDialog( void )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetGenDlgProc, InstanceHandle );
-    rc = ( DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc ) != 0 );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( SetGenDlgProc, InstanceHandle );
+        rc = ( DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc ) != 0 );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = ( DialogBox( InstanceHandle, "SETGEN", root_window_id, SetGenDlgProc ) != 0 );
+#endif
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( false );

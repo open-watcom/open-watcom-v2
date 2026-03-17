@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,10 @@
 #include "color.h"
 #include "vifont.h"
 #include "utils.h"
-#include "wclbproc.h"
 #include "winifini.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -53,7 +55,11 @@ bool FileCompleteWindowInit( void )
     WNDCLASS        wc;
 
     wc.style = CS_DBLCLKS;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( FileCompleteWindowProc );
+#else
+    wc.lpfnWndProc = FileCompleteWindowProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = sizeof( LONG_PTR );
     wc.hInstance = InstanceHandle;

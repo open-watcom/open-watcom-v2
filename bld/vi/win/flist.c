@@ -33,7 +33,9 @@
 
 #include "vi.h"
 #include "filelist.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -153,11 +155,16 @@ WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
 
 vi_rc EditFileFromList( void )
 {
-    DLGPROC     dlgproc;
     vi_rc       rc;
 
-    dlgproc = MakeProcInstance_DLG( FileListDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( FileListDlgProc, InstanceHandle );
+        rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, FileListDlgProc );
+#endif
     return( rc );
 }

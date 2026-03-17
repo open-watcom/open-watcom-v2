@@ -37,10 +37,12 @@
 #include "vifont.h"
 #include "color.h"
 #include "utils.h"
-#include "wclbproc.h"
 #include "winifini.h"
 #include "myprintf.h"
 // #include "mdisim.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -67,7 +69,11 @@ bool EditWindowInit( void )
     WNDCLASS    wc;
 
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
+#ifdef __WINDOWS__
     wc.lpfnWndProc = GetWndProc( EditWindowProc );
+#else
+    wc.lpfnWndProc = EditWindowProc;
+#endif
     wc.cbClsExtra = 0;
     wc.cbWndExtra = EXTRA_WIN_DATA;
     wc.hInstance = InstanceHandle;
@@ -929,12 +935,14 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM lparam )
  */
 void ResetExtraRects( void )
 {
-    WNDENUMPROC     wndenumproc;
-
     if( !BAD_ID( edit_container_window_id ) ) {
-        wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
+#ifdef __WINDOWS__
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
         EnumChildWindows( edit_container_window_id, wndenumproc, 0L );
         FreeProcInstance_WNDENUM( wndenumproc );
+#else
+        EnumChildWindows( edit_container_window_id, ResizeExtra, 0L );
+#endif
     }
 
 } /* ResetExtraRects */

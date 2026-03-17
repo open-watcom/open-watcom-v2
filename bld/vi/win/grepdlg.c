@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,13 +32,17 @@
 
 #include "vi.h"
 #include "grep.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
+#ifdef __WINDOWS__
 static DLGPROC  grepProc;
+#endif
 static HWND     grepHwnd;
 static bool     cancelPressed;
 
@@ -74,9 +78,13 @@ WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
  */
 void InitGrepDialog( void )
 {
-    grepProc = MakeProcInstance_DLG( GrepDlgProc, InstanceHandle );
     cancelPressed = false;
+#ifdef __WINDOWS__
+    grepProc = MakeProcInstance_DLG( GrepDlgProc, InstanceHandle );
     grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, grepProc );
+#else
+    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, GrepDlgProc );
+#endif
 
 } /* InitGrepDialog */
 
@@ -90,8 +98,10 @@ void FiniGrepDialog( void )
     if( !BAD_ID( grepHwnd ) ) {
         DestroyWindow( grepHwnd );
     }
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( grepProc );
     grepProc = NULL;
+#endif
     grepHwnd = NO_WINDOW;
 
 } /* FiniGrepDialog */

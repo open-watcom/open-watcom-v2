@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,10 @@
 #include "stddef.h"
 #include "ctltype.h"
 #include "util.h"
-#include "wclbproc.h"
 #include "winctl.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -180,12 +182,17 @@ WINEXPORT INT_PTR CALLBACK SetScrDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam,
  */
 bool GetSetScrDialog( void )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetScrDlgProc, InstanceHandle );
-    rc = ( DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc ) != 0 );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( SetScrDlgProc, InstanceHandle );
+        rc = ( DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc ) != 0 );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = ( DialogBox( InstanceHandle, "SETSCR", root_window_id, SetScrDlgProc ) != 0 );
+#endif
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( false );

@@ -33,7 +33,9 @@
 #include "vi.h"
 #include "clrbar.rh"
 #include "utils.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -77,7 +79,9 @@ WINEXPORT INT_PTR CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 void RefreshColorbar( void )
 {
+#ifdef __WINDOWS__
     static DLGPROC      dlgproc = NULL;
+#endif
 
     if( EditFlags.Colorbar ) {
         if( !BAD_ID( hColorbar ) ) {
@@ -86,15 +90,21 @@ void RefreshColorbar( void )
         // if( dlgproc != NULL ) {
         //     dlgproc = NULL;
         // }
+#ifdef __WINDOWS__
         dlgproc = MakeProcInstance_DLG( ClrDlgProc, InstanceHandle );
         hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, dlgproc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
+#else
+        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, ClrDlgProc );
+#endif
     } else {
         if( BAD_ID( hColorbar ) ) {
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );
+#ifdef __WINDOWS__
         FreeProcInstance_DLG( dlgproc );
+#endif
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

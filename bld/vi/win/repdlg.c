@@ -33,7 +33,9 @@
 
 #include "vi.h"
 #include "repdlg.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -156,16 +158,21 @@ WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 bool GetReplaceStringDialog( fancy_find *ff )
 {
-    DLGPROC     dlgproc;
     bool        rc;
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
     findData.replace = ff->replace;
     findData.replacelen = ff->replacelen;
-    dlgproc = MakeProcInstance_DLG( RepDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, dlgproc ) != 0;
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( RepDlgProc, InstanceHandle );
+        rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, dlgproc ) != 0;
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, RepDlgProc ) != 0;
+#endif
     SetWindowCursor();
 
     if( strlen( findData.find ) == 0 ) {

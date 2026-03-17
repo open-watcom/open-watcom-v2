@@ -39,7 +39,6 @@
 #include "resname.h"
 #include "verinfo.h"
 #include "gettype.h"
-#include "wclbproc.h"
 
 
 static LPCSTR   dataType;
@@ -120,7 +119,6 @@ INT_PTR CALLBACK DataDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 
 void DisplayData( bool rcdata )
 {
-    DLGPROC     dlgproc;
     HRSRC       rchdl;
     HGLOBAL     rcmemhdl;
     char        buf[256];
@@ -128,13 +126,23 @@ void DisplayData( bool rcdata )
     if( rcdata ) {
         dataType = RT_RCDATA;
     } else {
-        dlgproc = MakeProcInstance_DLG( GetDataTypeDlgProc, Instance );
+#ifdef __WINDOWS__
+        DLGPROC dlgproc = MakeProcInstance_DLG( GetDataTypeDlgProc, Instance );
         DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, dlgproc );
         FreeProcInstance_DLG( dlgproc );
+#else
+        DialogBox( Instance, "GET_RES_TYPE_DLG" , NULL, GetDataTypeDlgProc );
+#endif
     }
-    dlgproc = MakeProcInstance_DLG( GetDataNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( GetDataNameDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, GetDataNameDlgProc );
+#endif
 
     rchdl = FindResource( Instance, dataName, dataType );
     if( rchdl == NULL ) {
@@ -155,8 +163,13 @@ void DisplayData( bool rcdata )
         Error( "data", buf );
         return;
     }
-
-    dlgproc = MakeProcInstance_DLG( DataDlgProc, Instance );
-    DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( DataDlgProc, Instance );
+        DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "VERINFODLG" , NULL, DataDlgProc );
+#endif
 }

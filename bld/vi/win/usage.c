@@ -33,7 +33,9 @@
 
 #include "vi.h"
 #include "usage.rh"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -84,14 +86,18 @@ WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
  */
 void UsageDialog( const char * const *list, const char *msg, int cnt )
 {
-    DLGPROC     dlgproc;
-
     usageList = list;
     usageStr = msg;
     usageCnt = cnt;
 
-    dlgproc = MakeProcInstance_DLG( UsageDlgProc, InstanceHandle );
-    DialogBox( InstanceHandle, "Usage", root_window_id, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( UsageDlgProc, InstanceHandle );
+        DialogBox( InstanceHandle, "Usage", root_window_id, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( InstanceHandle, "Usage", root_window_id, UsageDlgProc );
+#endif
 
 } /* UsageDialog */

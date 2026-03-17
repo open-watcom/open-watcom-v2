@@ -31,7 +31,9 @@
 
 #include "vi.h"
 #include "window.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -59,7 +61,11 @@ window_id CreateContainerWindow( RECT *size )
                 root_window_id, (HMENU)NULLHANDLE, InstanceHandle, (LPVOID)&client );
     SET_WNDINFO( wid, 0 );
     oldContainerProc = (WNDPROC)GET_WNDPROC( wid );
+#ifdef __WINDOWS__
     SET_WNDPROC( wid, (LONG_PTR)MakeProcInstance_WND( ContainerWindowProc, InstanceHandle ) );
+#else
+    SET_WNDPROC( wid, (LONG_PTR)ContainerWindowProc );
+#endif
     SetScrollRange( wid, SB_VERT, 1, 1, FALSE );
     SetScrollRange( wid, SB_HORZ, 1, 1, FALSE );
     return( wid );

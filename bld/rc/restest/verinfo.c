@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #endif
 #include "verinfo.h"
 #include "restest.h"
-#include "wclbproc.h"
 
 
 char *VerStringTypes[] = {
@@ -186,9 +185,11 @@ WINEXPORT INT_PTR CALLBACK VerInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
 void DisplayVerInfo( void )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( VerInfoDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( VerInfoDlgProc, Instance );
     DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    DialogBox( Instance, "VERINFODLG" , NULL, VerInfoDlgProc );
+#endif
 }

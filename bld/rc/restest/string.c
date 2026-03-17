@@ -33,7 +33,6 @@
 #include <windows.h>
 #include "restest.h"
 #include "verinfo.h"
-#include "wclbproc.h"
 
 
 void DisplayStrings( HWND hwnd )
@@ -81,9 +80,11 @@ INT_PTR CALLBACK StrTableDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
 
 void DisplayStringTable( void )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( StrTableDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( StrTableDlgProc, Instance );
     DialogBox( Instance, "VERINFODLG" , NULL, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    DialogBox( Instance, "VERINFODLG" , NULL, StrTableDlgProc );
+#endif
 }

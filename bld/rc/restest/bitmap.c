@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,6 @@
 #include <windows.h>
 #include "restest.h"
 #include "resname.h"
-#include "wclbproc.h"
 
 
 #define BITMAP_WND_CLASS    "BitmapWindowClass"
@@ -116,14 +115,19 @@ static void doDisplayBitmap( HBITMAP newbm )
 
 void DisplayBitmap( void )
 {
-    DLGPROC     dlgproc;
     HBITMAP     bitmap;
     char        buf[256];
     HWND        hwnd;
 
-    dlgproc = MakeProcInstance_DLG( GetBitmapNameDlgProc, Instance );
-    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( GetBitmapNameDlgProc, Instance );
+        DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    DialogBox( Instance, "GET_RES_NAME_DLG" , NULL, GetBitmapNameDlgProc );
+#endif
     bitmap = LoadBitmap( Instance, bitmapName );
     if( bitmap == NULL ) {
         sprintf( buf, "Can't Load bitmap %s", bitmapName );

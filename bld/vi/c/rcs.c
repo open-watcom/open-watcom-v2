@@ -333,7 +333,11 @@ vi_rc ViRCSCheckout( vi_rc rc )
     _RCSRegisterBatchCallback( r, fp, NULL );
   #elif defined( __WIN__ )
     r = _RCSInit( root_window_id, getenv( "WATCOM" ) );
+   #ifdef __WINDOWS__
     fp = MakeProcInstance( (FARPROC)Batcher, InstanceHandle );
+   #else
+    fp = Batcher;
+   #endif
     _RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
   #else
     r = _RCSInit( 0, getenv( "WATCOM" ) );
@@ -372,7 +376,11 @@ vi_rc ViRCSCheckin( vi_rc rc )
     _RCSRegisterBatchCallback( r, fp, NULL );
   #elif defined( __WIN__ )
     r = _RCSInit( root_window_id, getenv( "WATCOM" ) );
+   #ifdef __WINDOWS__
     fp = MakeProcInstance( (FARPROC)Batcher, InstanceHandle );
+   #else
+    fp = Batcher;
+   #endif
     _RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
   #else
     r = _RCSInit( 0, getenv( "WATCOM" ) );
