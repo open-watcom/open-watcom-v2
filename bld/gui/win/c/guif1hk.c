@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2018-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2018-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,9 @@
 #include "guixutil.h"
 #include "guicontr.h"
 #include "guixwind.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Windows callback functions prototypes */
@@ -43,10 +46,12 @@ int                     CALLBACK F1Proc( HAB hab, WPI_QMSG *qmsg, UINT fs );
 WINEXPORT LRESULT       CALLBACK F1Proc( int code, WPARAM dummy, LPARAM msg_param );
 #endif
 
-static  unsigned        F1Hooked = 0;
+static unsigned         F1Hooked = 0;
 #ifndef __OS2_PM__
-static  HHOOK           F1HookHandle = (HHOOK)NULL;
-static  HOOKPROC        F1ProcInst;
+static HHOOK            F1HookHandle = 0;
+#endif
+#ifdef __WINDOWS__
+static HOOKPROC         F1ProcInst;
 #endif
 
 // What the hell does this do??!!
@@ -141,18 +146,16 @@ void GUIAPI GUIHookF1( void )
         // in OS/2, it has to be an app. specific input filter (OS/2 has
         // bad problems, occassionally, with system input hooks)
         WinSetHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, (PFN)F1Proc, GUIMainHInst.mod_handle );
-#else
+#elif defined( __WINDOWS__ )
         // we use a hook to trap F1 in dialogs that were not
         // created using this instance yet on our behalf. IE COMMDLG stuff
 
         // we cant use a system wide hook because they only can be
         // used in DLL's
         F1ProcInst = MakeProcInstance_HOOK( F1Proc, GUIMainHInst );
-    #if defined( __WINDOWS__ )
         F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1ProcInst, GUIMainHInst, GetCurrentTask() );
-    #else
-        F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1ProcInst, GUIMainHInst, GetCurrentThreadId() );
-    #endif
+#else
+        F1HookHandle = SetWindowsHookEx( WH_MSGFILTER, F1Proc, GUIMainHInst, GetCurrentThreadId() );
 #endif
     }
     F1Hooked++;
@@ -163,9 +166,11 @@ void GUIAPI GUIUnHookF1( void )
     if( F1Hooked == 1 ) {
 #ifdef __OS2_PM__
         WinReleaseHook( GUIMainHInst.hab, HMQ_CURRENT, HK_INPUT, (PFN)F1Proc, GUIMainHInst.mod_handle );
-#else
+#elif defined( __WINDOWS__ )
         UnhookWindowsHookEx( F1HookHandle );
         FreeProcInstance_HOOK( F1ProcInst );
+#else
+        UnhookWindowsHookEx( F1HookHandle );
 #endif
     }
     if( F1Hooked != 0 ) {

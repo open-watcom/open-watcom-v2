@@ -48,6 +48,9 @@
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
 #include "guixwind.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -347,7 +350,11 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     wofn.lpstrInitialDir = ofn->initial_dir;
     wofn.lpfnHook = (LPOFNHOOKPROC)NULL;
     if( hookFileDlg ) {
+#ifdef __WINDOWS__
         wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, GUIMainHInst );
+#else
+        wofn.lpfnHook = OpenOFNHookProc;
+#endif
     }
 
     old_drive = 0;
@@ -361,9 +368,11 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
         rc = GetOpenFileName( &wofn );
     }
 
+#ifdef __WINDOWS__
     if( hookFileDlg ) {
         FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
+#endif
 
     if( LastPath && ( rc == 0 || (ofn->flags & FN_WANT_LAST_PATH) == 0 ) ) {
         MemFree( LastPath );

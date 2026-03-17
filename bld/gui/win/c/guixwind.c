@@ -58,6 +58,9 @@
 #include "guimdi.h"
 #include "guistat.h"
 #include "guix.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 #if !defined(__NT__)
@@ -181,18 +184,36 @@ void GUIAPI GUIDestroyWnd( gui_window *wnd )
     }
 }
 
-#ifdef __OS2_PM__
+#if defined( __OS2_PM__ )
 static bool DoRegisterClass( WPI_INST hinst, char *class_name, PFNWP win_call_back, UINT style, int extra )
 {
     return( WinRegisterClass( hinst.hab, class_name, win_call_back, CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY | style, extra ) );
 }
-#else
+#elif defined( __WINDOWS__ )
 static bool DoRegisterClass( WPI_INST hinst, char *class_name, WNDPROCx win_call_back, UINT style, int extra )
 {
     WNDCLASS    wc;
 
     wc.style = style;
     wc.lpfnWndProc = GetWndProc( win_call_back );
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = extra;
+    wc.hInstance = hinst;
+    wc.hIcon = _wpi_loadicon( NULLHANDLE, IDI_APPLICATION );
+    wc.hCursor = LoadCursor( NULLHANDLE, IDC_ARROW );
+    wc.hbrBackground = NULLHANDLE;
+    wc.lpszMenuName = NULL;
+    wc.lpszClassName = class_name;
+
+    return( RegisterClass( &wc ) != 0 );
+}
+#else
+static bool DoRegisterClass( WPI_INST hinst, char *class_name, WNDPROC win_call_back, UINT style, int extra )
+{
+    WNDCLASS    wc;
+
+    wc.style = style;
+    wc.lpfnWndProc = win_call_back;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
