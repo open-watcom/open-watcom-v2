@@ -938,7 +938,6 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
     char                *helpsymbol;
     char                *dlg_template;
     INT_PTR             redraw;
-    DLGPROC             dlgproc;
     HINSTANCE           app_inst;
     WdeOrderMode        mode;
 
@@ -985,10 +984,12 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     redraw = -1;
 #ifdef __WINDOWS__
-    dlgproc = MakeProcInstance_DLG( WdeControlDefineDlgProc, app_inst );
-    if( dlgproc != NULL ) {
-        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlgproc, (LPARAM)o_info );
-        FreeProcInstance_DLG( dlgproc );
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WdeControlDefineDlgProc, app_inst );
+        if( dlgproc != NULL ) {
+            redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlgproc, (LPARAM)o_info );
+            FreeProcInstance_DLG( dlgproc );
+        }
     }
 #else
     redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, WdeControlDefineDlgProc, (LPARAM)o_info );

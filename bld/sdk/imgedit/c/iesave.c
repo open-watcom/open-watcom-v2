@@ -250,14 +250,14 @@ static bool getSaveFName( char *fname, image_type img_type )
     of.nMaxFileTitle = sizeof( szFileTitle );
     of.lpstrTitle = IESaveImageTitle;
     of.lpstrInitialDir = initialDir;
-#ifdef __WINDOWS__ )
+#ifdef __WINDOWS__
     /* Important! Do not use hook in WIN32, you will not get the nice dialog! */
     of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
     ok = ( GetSaveFileName( &of ) != 0 );
-#ifdef __WINDOWS__ )
+#ifdef __WINDOWS__
     FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
@@ -868,7 +868,7 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
-#ifdef __WINDOWS__ )
+#ifdef __WINDOWS__
             HELPFUNC hcb = MakeProcInstance_HELP( IEHelpCallBack, Instance );
             save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, true, hcb );
             FreeProcInstance_HELP( hcb );
