@@ -43,7 +43,9 @@
 #include "wdectl3d.h"
 #include "wdegetfn.h"
 #include "wrdll.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -267,7 +269,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     wdeofn.lpstrInitialDir = wde_initial_dir;
     wdeofn.lpstrTitle = wdefntitle;
     wdeofn.Flags = flags;
-#if !defined( __NT__ )
+#ifdef __WINDOWS__
     wdeofn.lpfnHook = MakeProcInstance_OFNHOOK( WdeOpenOFNHookProc, app_inst );
 #endif
 

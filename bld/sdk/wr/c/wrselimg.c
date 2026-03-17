@@ -39,7 +39,6 @@
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -75,7 +74,6 @@ void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *siinfo )
 
 WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *info, HELPFUNC help_callback )
 {
-    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             modified;
     WRSelectImageInfo   *siinfo;
@@ -95,12 +93,15 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *info, HELPFUNC hel
 
     inst = WRGetInstance();
 
-    dlgproc = MakeProcInstance_DLG( WRSelectImageDlgProc, inst );
-
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlgproc, (LPARAM)(LPVOID)siinfo );
-
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WRSelectImageDlgProc, inst );
+        modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlgproc, (LPARAM)(LPVOID)siinfo );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, WRSelectImageDlgProc, (LPARAM)(LPVOID)siinfo );
+#endif
     if( modified == -1 || modified == IDCANCEL ) {
         MemFree( siinfo );
         siinfo = NULL;

@@ -72,7 +72,9 @@
 #include "aboutdlg.h"
 #include "ldstr.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 #include "clibint.h"
 
@@ -1030,11 +1032,13 @@ bool WREProcessArgs( char **argv, int argc )
 
 void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( WRESplashDlgProc, WREInst );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( WRESplashDlgProc, WREInst );
     JDialogBoxParam( inst, "WRESplashScreen", parent, dlgproc, (LPARAM)&msecs );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JDialogBoxParam( inst, "WRESplashScreen", parent, WRESplashDlgProc, (LPARAM)&msecs );
+#endif
 }
 
 INT_PTR CALLBACK WRESplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )

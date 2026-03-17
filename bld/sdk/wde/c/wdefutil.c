@@ -57,7 +57,9 @@
 #include "wdefutil.h"
 #include "wrstrdup.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -983,10 +985,16 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     redraw = -1;
 
+#ifdef __WINDOWS__
     dlgproc = MakeProcInstance_DLG( WdeControlDefineDlgProc, app_inst );
+#else
+    dlgproc = WdeControlDefineDlgProc;
+#endif
     if( dlgproc != NULL ) {
         redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlgproc, (LPARAM)o_info );
+#ifdef __WINDOWS__
         FreeProcInstance_DLG( dlgproc );
+#endif
     }
 
     if( redraw == -1 ) {

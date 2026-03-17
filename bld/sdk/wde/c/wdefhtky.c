@@ -95,7 +95,9 @@ static bool     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeHtKyDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultHtKy = NULL;
 static int                      WdeHtKyWndExtra;
 static WNDPROC                  WdeOriginalHtKyProc;
@@ -158,7 +160,11 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeHtKyDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeHtKyDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -253,14 +259,18 @@ bool WdeHtKyInit( bool first )
     SETCTL_TEXT( WdeDefaultHtKy, NULL );
     SETCTL_CLASSID( WdeDefaultHtKy, WdeStrToControlClass( WHOTKEY_CLASS ) );
 
+#ifdef __WINDOWS__
     WdeHtKyDispatch = MakeProcInstance_DISPATCHER( WdeHtKyDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeHtKyFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHtKy );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeHtKyDispatch );
+#endif
 }
 
 bool WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )

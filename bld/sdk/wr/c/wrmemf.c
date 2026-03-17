@@ -38,7 +38,6 @@
 #include "memflags.rh"
 #include "jdlg.h"
 #include "winexprt.h"
-#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -72,7 +71,6 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELPFUNC help_callback )
 {
     WRMFInfo    info;
-    DLGPROC     dlgproc;
     HINSTANCE   inst;
     INT_PTR     modified;
 
@@ -84,12 +82,15 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELPFUNC 
     info.name = name;
     info.mflags = *mflags;
     inst = WRGetInstance();
-
-    dlgproc = MakeProcInstance_DLG( WRMemFlagsDlgProc, inst );
-
-    modified = JDialogBoxParam( inst, "WRMemFlags", parent, dlgproc, (LPARAM)(LPVOID)&info );
-
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WRMemFlagsDlgProc, inst );
+        modified = JDialogBoxParam( inst, "WRMemFlags", parent, dlgproc, (LPARAM)(LPVOID)&info );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    modified = JDialogBoxParam( inst, "WRMemFlags", parent, WRMemFlagsDlgProc, (LPARAM)(LPVOID)&info );
+#endif
 
     if( modified == IDOK ) {
         *mflags = info.mflags;

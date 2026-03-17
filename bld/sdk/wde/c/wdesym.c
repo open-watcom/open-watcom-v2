@@ -51,8 +51,10 @@
 #include "preproc.h"
 #include "wresdefn.h"
 #include "pathgrp2.h"
-#include "wclbhelp.h"
 #include "jmpbuf.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 #include "clibext.h"
 
@@ -155,26 +157,22 @@ static void Add_PP_Symbols( WRHashTable *table )
 static bool WdeViewSymbols( WRHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
-    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = NULL;
     ok = (table != NULL);
 
     if( ok ) {
-        hcb = MakeProcInstance_HELP( WdeHelpRoutine, WdeGetAppInstance() );
-        ok = (hcb != NULL);
-    }
-
-    if( ok ) {
         flags = WR_HASHENTRY_ALL;
-        ok = WREditSym( parent, table, &flags, hcb );
+#ifdef __WINDOWS__
+        {
+            HELPFUNC hcb = MakeProcInstance_HELP( WdeHelpRoutine, WdeGetAppInstance() );
+            ok = WREditSym( parent, table, &flags, hcb );
+            FreeProcInstance_HELP( hcb );
+        }
+#else
+        ok = WREditSym( parent, table, &flags, WdeHelpRoutine );
+#endif
     }
-
-    if( hcb != NULL ) {
-        FreeProcInstance_HELP( hcb );
-    }
-
     return( ok );
 }
 

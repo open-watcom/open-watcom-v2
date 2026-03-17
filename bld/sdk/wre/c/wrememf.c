@@ -68,10 +68,8 @@ bool WREChangeMemFlags( void )
     char                *type_name;
     uint_16             type_id;
     uint_16             mflags;
-    HELPFUNC            hcb;
     bool                ok;
 
-    hcb = NULL;
     type_name = NULL;
     mflags = 0;
     type_id = 0;
@@ -87,21 +85,17 @@ bool WREChangeMemFlags( void )
     }
 
     if( ok ) {
-        hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
-        ok = (hcb != NULL);
-    }
-
-    if( ok ) {
         mflags = curr.lang->Info.MemoryFlags;
-        ok = WRChangeMemFlags( parent, type_name, &mflags, hcb );
-    }
-
-    if( ok ) {
+#ifdef __WINDOWS__
+        {
+            HELPFUNC hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
+            ok = WRChangeMemFlags( parent, type_name, &mflags, hcb );
+            FreeProcInstance_HELP( hcb );
+        }
+#else
+        ok = WRChangeMemFlags( parent, type_name, &mflags, WREHelpRoutine );
+#endif
         curr.lang->Info.MemoryFlags = mflags;
-    }
-
-    if( hcb != NULL ) {
-        FreeProcInstance_HELP( hcb );
     }
 
     if( type_name != NULL ) {

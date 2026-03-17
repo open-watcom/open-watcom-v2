@@ -168,13 +168,16 @@ void WdeSetFontList( HWND main )
 
     logpixelsy = GetDeviceCaps( hDc, LOGPIXELSY );
 
+#ifdef __WINDOWS__
     fontenumproc = MakeProcInstance_FONTENUM( WdeEnumFontsProc, WdeGetAppInstance() );
+#else
+    fontenumproc = WdeEnumFontsProc;
+#endif
 
     WdeFontList = NULL;
     WdeFontFamiliesList = NULL;
 
     EnumFontFamilies( hDc, NULL, fontenumproc, (LPARAM)&WdeFontFamiliesList );
-
     for( olist = WdeFontFamiliesList; olist != NULL; olist = ListNext( olist ) ) {
         font_names = (WdeFontNames *)ListElement( olist );
         if( EnumFontFamilies( hDc, font_names->name, fontenumproc, (LPARAM)&WdeFontList ) == 0 ) {
@@ -183,8 +186,9 @@ void WdeSetFontList( HWND main )
     }
 
     ReleaseDC( main, hDc );
-
+#ifdef __WINDOWS__
     FreeProcInstance_FONTENUM( fontenumproc );
+#endif
 }
 
 bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf, const NEWTEXTMETRIC *ntm, int fonttype )
@@ -381,7 +385,11 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *facename, int pointsize )
     inst = WdeGetAppInstance();
     dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, pointsize, facename, &templatelen );
     DoneAddingControls( dlgtemplate );
+#ifdef __WINDOWS__
     dlgproc = MakeProcInstance_DLG( WdeDummyDlgProc, inst );
+#else
+    dlgproc = WdeDummyDlgProc;
+#endif
     hDlg = CreateDialogIndirect( inst, GlobalLock( dlgtemplate ), (HWND)NULL, dlgproc );
     GlobalUnlock( dlgtemplate );
     GlobalFree( dlgtemplate );
@@ -395,9 +403,9 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *facename, int pointsize )
     } else {
         ok = false;
     }
-
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( dlgproc );
-
+#endif
     return( ok );
 }
 

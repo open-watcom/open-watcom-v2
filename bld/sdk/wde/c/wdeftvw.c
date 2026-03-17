@@ -95,7 +95,9 @@ static bool     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeTViewDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultTView = NULL;
 static int                      WdeTViewWndExtra;
 static WNDPROC                  WdeOriginalTViewProc;
@@ -157,7 +159,11 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeTViewDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeTViewDispatcher );
+#endif
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -250,14 +256,18 @@ bool WdeTViewInit( bool first )
     SETCTL_TEXT( WdeDefaultTView, NULL );
     SETCTL_CLASSID( WdeDefaultTView, WdeStrToControlClass( WWC_TREEVIEW ) );
 
+#ifdef __WINDOWS__
     WdeTViewDispatch = MakeProcInstance_DISPATCHER( WdeTViewDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeTViewFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTView );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeTViewDispatch );
+#endif
 }
 
 bool WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )

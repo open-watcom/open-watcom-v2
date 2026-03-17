@@ -94,7 +94,9 @@ static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeEditDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultEdit = NULL;
 static int                      WdeEditWndExtra;
 static WNDPROC                  WdeOriginalEditProc;
@@ -155,7 +157,11 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeEditDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeEditDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -250,15 +256,18 @@ bool WdeEditInit( bool first )
     SETCTL_TEXT( WdeDefaultEdit, NULL );
     SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
 
+#ifdef __WINDOWS__
     WdeEditDispatch = MakeProcInstance_DISPATCHER( WdeEditDispatcher, WdeGetAppInstance() );
-
+#endif
     return( true );
 }
 
 void WdeEditFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultEdit );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeEditDispatch );
+#endif
 }
 
 bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )

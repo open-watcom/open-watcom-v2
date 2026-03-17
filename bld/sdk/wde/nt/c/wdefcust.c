@@ -115,7 +115,6 @@ static void     WdeFreeClassNode( WdeCustClassNode * );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static DISPATCH_FN              *WdeCustomDispatch;
 static WdeDialogBoxControl      *WdeDefaultCustom = NULL;
 static LIST                     *WdeCustClassList = NULL;
 static char                     WdeClassName[MAX_NAME];
@@ -478,7 +477,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    OBJ_DISPATCHER_SET( new, WdeCustomDispatch );
+    OBJ_DISPATCHER_SET( new, WdeCustomDispatcher );
     new->object_id = id;
     new->cust_lib = cust_lib;
     new->cust_index = cust_index;
@@ -554,8 +553,6 @@ bool WdeCustomInit( bool first )
     SETCTL_TEXT( WdeDefaultCustom, NULL );
     SETCTL_CLASSID( WdeDefaultCustom, NULL );
 
-    WdeCustomDispatch = MakeProcInstance_DISPATCHER( WdeCustomDispatcher, WdeGetAppInstance() );
-
     return( true );
 }
 
@@ -563,7 +560,6 @@ void WdeCustomFini( void )
 {
     WdeFreeClassList();
     WdeFreeDialogBoxControl( &WdeDefaultCustom );
-    FreeProcInstance_DISPATCHER( WdeCustomDispatch );
 }
 
 bool WdeCustomDestroy( WdeCustomObject *obj, bool *flag, bool *p2 )

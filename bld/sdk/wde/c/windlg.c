@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -236,15 +237,24 @@ void DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
+#ifdef __WINDOWS__
 INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+#else
+INT_PTR DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+#endif
 {
-    DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
-    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( dlgfn, inst );
+        rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgfn );
+#endif
     TEMPLATE_UNLOCK( dlgtemplate );
-    FreeProcInstance_DLG( dlgproc );
     GlobalFree( dlgtemplate );
     return( rc );
 

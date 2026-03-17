@@ -95,7 +95,9 @@ static bool     WdeProgDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeProgDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultProg = NULL;
 static int                      WdeProgWndExtra;
 static WNDPROC                  WdeOriginalProgProc;
@@ -158,7 +160,11 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeProgDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeProgDispatcher );
+#endif
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -251,14 +257,18 @@ bool WdeProgInit( bool first )
     SETCTL_TEXT( WdeDefaultProg, NULL );
     SETCTL_CLASSID( WdeDefaultProg, WdeStrToControlClass( WPROGRESS_CLASS ) );
 
+#ifdef __WINDOWS__
     WdeProgDispatch = MakeProcInstance_DISPATCHER( WdeProgDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeProgFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultProg );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeProgDispatch );
+#endif
 }
 
 bool WdeProgDestroy( WdeProgObject *obj, bool *flag, bool *p2 )

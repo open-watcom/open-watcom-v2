@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,9 @@
 #include <io.h>
 #include "splash.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -175,10 +177,12 @@ WPI_DLGRESULT CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LP
  */
 void ImgDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( wTitleDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( wTitleDlgProc, Instance );
     JDialogBoxParam( inst, "ImgSplashScreen", parent, dlgproc, (LPARAM)&msecs );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JDialogBoxParam( inst, "ImgSplashScreen", parent, wTitleDlgProc, (LPARAM)&msecs );
+#endif
 
 } /* ImgDisplaySplashScreen */

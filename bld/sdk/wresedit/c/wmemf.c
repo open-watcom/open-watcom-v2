@@ -62,12 +62,10 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
 {
     char            *name;
     bool            ok;
-    HELPFUNC        hcb;
 
     /* unused parameters */ (void)inst;
 
     name = NULL;
-    hcb = NULL;
 
     ok = (mflags != NULL && res_name != NULL);
 
@@ -79,16 +77,13 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     }
 
     if( ok ) {
-        hcb = MakeProcInstance_HELP( help_callback, inst );
-        ok = ( hcb != NULL );
-    }
-
-    if( ok ) {
+#ifdef __WINDOWS__
+        HELPFUNC hcb = MakeProcInstance_HELP( help_callback, inst );
         ok = WRChangeMemFlags( parent, name, mflags, hcb );
-    }
-
-    if( hcb != NULL ) {
         FreeProcInstance_HELP( hcb );
+#else
+        ok = WRChangeMemFlags( parent, name, mflags, help_callback );
+#endif
     }
 
     if( name != NULL ) {

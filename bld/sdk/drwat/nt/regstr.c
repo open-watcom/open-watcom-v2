@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +33,6 @@
 
 #include "drwatcom.h"
 #include <errno.h>
-#include "wclbproc.h"
 #include "regstr.h"
 #include "regcmbo.rh"
 #include "jdlg.h"
@@ -379,7 +378,6 @@ INT_PTR CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
 static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
-    DLGPROC         dlgproc;
     INT_PTR         reg_modified;
     RegModifyData   modify_data;
     const char      *descript;
@@ -412,14 +410,10 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, dlgproc, (LPARAM)( &modify_data ) );
-        FreeProcInstance_DLG( dlgproc );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, ChangeRegisterDialogDlgProc, (LPARAM)( &modify_data ) );
         break;
     default:
-        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, dlgproc, (LPARAM)( &modify_data ) );
-        FreeProcInstance_DLG( dlgproc );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, ChangeRegisterDialogDlgProc, (LPARAM)( &modify_data ) );
     }
     if( reg_modified == 1 ) {
         MADRegUpdateStart( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );

@@ -65,13 +65,18 @@ WRFileType WSelectFileType( HWND parent, char *name,
                             HINSTANCE inst, HELPFUNC help_callback )
 {
     WRFileType          file_type;
-    HELPFUNC            hcb;
 
+#ifdef __WINDOWS__
+    {
+        HELPFUNC hcb = MakeProcInstance_HELP( help_callback, inst );
+        file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
+        FreeProcInstance_HELP( hcb );
+    }
+#else
     /* unused parameters */ (void)inst;
 
-    hcb = MakeProcInstance_HELP( help_callback, inst );
-    file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
-    FreeProcInstance_HELP( hcb );
+    file_type = WRSelectFileType( parent, name, is32bit, use_wres, help_callback );
+#endif
 
     return( file_type );
 }

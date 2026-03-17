@@ -47,7 +47,9 @@
 #include "sysall.rh"
 #include "ldstr.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -89,7 +91,9 @@ extern WAccelEntry      DefaultEntry = { FALSE, { ACCEL_ASCII, 'A', 101 }, NULL,
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
+#ifdef __WINDOWS__
 static DLGPROC  WAccelEditWinProc = NULL;
+#endif
 static HBRUSH   WEditWinBrush     = NULL;
 static COLORREF WEditWinColor     = 0;
 
@@ -100,7 +104,11 @@ void WInitEditWindows( HINSTANCE inst )
 {
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
+#ifdef __WINDOWS__
     WAccelEditWinProc = MakeProcInstance_DLG( WAcccelEditDlgProc, inst );
+#else
+    /* unused parameters */ (void)inst;
+#endif
 }
 
 void WFiniEditWindows( void )
@@ -108,7 +116,9 @@ void WFiniEditWindows( void )
     if( WEditWinBrush != NULL ) {
         DeleteObject( WEditWinBrush );
     }
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( WAccelEditWinProc );
+#endif
 }
 
 
@@ -116,9 +126,13 @@ bool WCreateAccelEditWindow( WAccelEditInfo *einfo, HINSTANCE inst )
 {
     int tabstop;
 
+#ifdef __WINDOWS__
     einfo->edit_dlg = JCreateDialogParam( inst, "WAccelEditDLG", einfo->win,
                                           WAccelEditWinProc, (LPARAM)einfo );
-
+#else
+    einfo->edit_dlg = JCreateDialogParam( inst, "WAccelEditDLG", einfo->win,
+                                          WAcccelEditDlgProc, (LPARAM)einfo );
+#endif
     if( einfo->edit_dlg == (HWND)NULL ) {
         return( false );
     }
@@ -931,9 +945,11 @@ WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam,
 
 void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
     JCreateDialog( inst, "WAccelEditDLG", parent, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JCreateDialog( inst, "WAccelEditDLG", parent, WTestDlgProc );
+#endif
 }

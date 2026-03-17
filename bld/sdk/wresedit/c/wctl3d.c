@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,11 +58,7 @@
 
 bool WCtl3DInit( HINSTANCE inst )
 {
-#if !defined( W_USE_3D )
-    /* unused parameters */ (void)inst;
-
-    return( TRUE );
-#else
+#if defined( W_USE_3D )
     bool ok;
 
     ok = WRCtl3dRegister( inst );
@@ -70,15 +67,19 @@ bool WCtl3DInit( HINSTANCE inst )
     }
 
     return( ok );
+#else
+    /* unused parameters */ (void)inst;
+
+    return( TRUE );
 #endif
 }
 
 void WCtl3DFini( HINSTANCE inst )
 {
-#if !defined( W_USE_3D )
-    /* unused parameters */ (void)inst;
-#else
+#if defined( W_USE_3D )
     WRCtl3dUnregister( inst );
+#else
+    /* unused parameters */ (void)inst;
 #endif
 }
 
@@ -91,29 +92,29 @@ void WCtl3dColorChange( void )
 
 void WCtl3dSubclassDlg( HWND win, WORD w )
 {
-#if !defined( W_USE_3D )
-    /* unused parameters */ (void)win; (void)w;
-#else
+#if defined( W_USE_3D )
     WRCtl3dSubclassDlg( win, w );
+#else
+    /* unused parameters */ (void)win; (void)w;
 #endif
 }
 
 void WCtl3dSubclassDlgAll( HWND win )
 {
-#if !defined( W_USE_3D )
-    /* unused parameters */ (void)win;
-#else
+#if defined( W_USE_3D )
     WRCtl3dSubclassDlgAll( win );
+#else
+    /* unused parameters */ (void)win;
 #endif
 }
 
 HBRUSH WCtl3dCtlColorEx( UINT msg, WPARAM wp, LPARAM lp )
 {
-#if !defined( W_USE_3D )
+#if defined( W_USE_3D )
+    return( WRCtl3dCtlColorEx( msg, wp, lp ) );
+#else
     /* unused parameters */ (void)msg; (void)wp; (void)lp;
 
     return( (HBRUSH)NULL );
-#else
-    return( WRCtl3dCtlColorEx( msg, wp, lp ) );
 #endif
 }

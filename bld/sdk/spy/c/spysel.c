@@ -32,7 +32,6 @@
 
 #include "spy.h"
 #include <ctype.h>
-#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
@@ -114,8 +113,6 @@ static HWND     hWndDialog;
  */
 BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    WNDENUMPROC wndenumproc;
-
     if( lparam != 0 ) {
         if( GetParent( hwnd ) != (HWND)lparam ) {
             return( 1 );
@@ -124,9 +121,15 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
     addFormattedWindow( hwnd );
 
     indentLevel += 3;
-    wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance );
-    EnumChildWindows( hwnd, wndenumproc, (LPARAM)hwnd );
-    FreeProcInstance_WNDENUM( wndenumproc );
+#ifdef __WINDOWS__
+    {
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance );
+        EnumChildWindows( hwnd, wndenumproc, (LPARAM)hwnd );
+        FreeProcInstance_WNDENUM( wndenumproc );
+    }
+#else
+    EnumChildWindows( hwnd, EnumWindowsFunc, (LPARAM)hwnd );
+#endif
     indentLevel -= 3;
     return( 1 );
 
@@ -177,13 +180,17 @@ static void addFormattedWindow( HWND hwnd )
  */
 static void setUpWindows( void )
 {
-    WNDENUMPROC wndenumproc;
-
     indentLevel = 0;
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_RESETCONTENT, 0, 0L );
-    wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance);
-    EnumWindows( wndenumproc, (LPARAM)NULL );
-    FreeProcInstance_WNDENUM( wndenumproc );
+#ifdef __WINDOWS__
+    {
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance);
+        EnumWindows( wndenumproc, (LPARAM)NULL );
+        FreeProcInstance_WNDENUM( wndenumproc );
+    }
+#else
+    EnumWindows( EnumWindowsFunc, (LPARAM)NULL );
+#endif
     addFormattedWindow( GetDesktopWindow() );
 
 } /* setUpWindows */
@@ -224,11 +231,13 @@ INT_PTR CALLBACK ShowInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
  */
 void ShowFramedInfo( HWND hwnd, HWND framed )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( ShowInfoDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( ShowInfoDlgProc, Instance );
     JDialogBoxParam( Instance, "PEEKWIN", hwnd, dlgproc, (LPARAM)framed );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JDialogBoxParam( Instance, "PEEKWIN", hwnd, ShowInfoDlgProc, (LPARAM)framed );
+#endif
 
 } /* ShowFramedInfo */
 
@@ -371,7 +380,6 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
  */
 void DoShowSelectedDialog( HWND hwnd, bool *spyall )
 {
-    DLGPROC     dlgproc;
     INT_PTR     rc;
 
     tmpWndCnt = WindowCount;
@@ -381,8 +389,13 @@ void DoShowSelectedDialog( HWND hwnd, bool *spyall )
         tmpWndList = MemAlloc( WindowCount * sizeof( HWND ) );
         memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
     }
-    dlgproc = MakeProcInstance_DLG( ShowSelectedDialogDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( ShowSelectedDialogDlgProc, Instance );
     rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
+#else
+    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, ShowSelectedDialogDlgProc );
+#endif
     if( rc ) {
         *spyall = tmpSpyAll;
         WindowCount = tmpWndCnt;
@@ -391,7 +404,6 @@ void DoShowSelectedDialog( HWND hwnd, bool *spyall )
     } else {
         MemFree( tmpWndList );
     }
-    FreeProcInstance_DLG( dlgproc );
 
 } /* DoShowSelectedDialog */
 

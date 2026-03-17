@@ -43,7 +43,9 @@
 #include "wrectl3d.h"
 #include "wregetfn.h"
 #include "wrdll.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -249,7 +251,11 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     wreofn.lpstrInitialDir = wre_initial_dir;
     wreofn.lpstrTitle = wrefntitle;
     wreofn.Flags = flags;
+#ifdef __WINDOWS__
     wreofn.lpfnHook = MakeProcInstance_OFNHOOK( WREOpenOFNHookProc, app_inst );
+#else
+    wreofn.lpfnHook = WREOpenOFNHookProc;
+#endif
 
 #if 0
     wreofn.nFileOffset = 0L;

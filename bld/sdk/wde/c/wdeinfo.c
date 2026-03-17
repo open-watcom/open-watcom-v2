@@ -46,7 +46,9 @@
 #include "wdeinfo.h"
 #include "wrdll.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -170,7 +172,11 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
         return( FALSE );
     }
 
+#ifdef __WINDOWS__
     WdeInfoWinProc = MakeProcInstance_DLG( WdeInfoWndDlgProc, inst );
+#else
+    WdeInfoWinProc = WdeInfoWndDlgProc;
+#endif
 
     WdeInfoColor = GetSysColor( COLOR_BTNFACE );
     WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
@@ -193,9 +199,11 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
 void WdeInfoFini( void )
 {
     WdeFiniInfoText();
+#ifdef __WINDOWS__
     if( WdeInfoWinProc != NULL ) {
         FreeProcInstance_DLG( WdeInfoWinProc );
     }
+#endif
     if( WdeInfoBrush != NULL ) {
         DeleteObject( WdeInfoBrush );
     }

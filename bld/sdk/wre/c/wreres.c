@@ -62,7 +62,9 @@
 #include "jdlg.h"
 #include "wreres.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -120,7 +122,9 @@ static LIST             *WREResList             = NULL;
 static unsigned         WREResCounter           = 0;
 static int              WRENumRes               = 0;
 static WREResInfo       *WRECurrentRes          = NULL;
+#ifdef __WINDOWS__
 static DLGPROC          WREResInfoWinProc       = NULL;
+#endif
 static HINSTANCE        WREAppInst              = NULL;
 static HBRUSH           WREResInfoBrush         = NULL;
 
@@ -1197,7 +1201,9 @@ bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
+#ifdef __WINDOWS__
     WREResInfoWinProc = MakeProcInstance_DLG( WREResInfoDlgProc, inst );
+#endif
     return( WREInitStaticVars() );
 }
 
@@ -1206,18 +1212,22 @@ void WREFiniResources( void )
     if( WREResInfoBrush != NULL ) {
         DeleteObject( WREResInfoBrush );
     }
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( WREResInfoWinProc );
+#endif
     WREFiniStaticVars();
 }
 
 bool WRECreateResInfoWindow( WREResInfo *info )
 {
+#ifdef __WINDOWS__
     info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win, WREResInfoWinProc, (LPARAM)(LPVOID)info );
-
+#else
+    info->info_win = JCreateDialogParam( WREAppInst, "WREResource", info->res_win, WREResInfoDlgProc, (LPARAM)(LPVOID)info );
+#endif
     if( info->info_win == (HWND)NULL ) {
         return( false );
     }
-
     return( true );
 }
 

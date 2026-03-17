@@ -95,7 +95,9 @@ static bool     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeTrakDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultTrak = NULL;
 static int                      WdeTrakWndExtra;
 static WNDPROC                  WdeOriginalTrakProc;
@@ -160,7 +162,11 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeTrakDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeTrakDispatcher );
+#endif
     new->object_id = id;
 
     if( handle == NULL ) {
@@ -254,14 +260,18 @@ bool WdeTrakInit( bool first )
     SETCTL_TEXT( WdeDefaultTrak, NULL );
     SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
 
+#ifdef __WINDOWS__
     WdeTrakDispatch = MakeProcInstance_DISPATCHER( WdeTrakDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeTrakFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTrak );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeTrakDispatch );
+#endif
 }
 
 bool WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )

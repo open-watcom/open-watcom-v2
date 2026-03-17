@@ -46,7 +46,9 @@
 #include "font.h"
 #include "savelbox.h"
 #include "ctl3dcvr.h"
-#ifdef __NT__
+#if defined( __WINDOWS__ )
+    #include "wclbproc.h"
+#elif defined( __NT__ )
     #include "desknt.h"
 #endif
 

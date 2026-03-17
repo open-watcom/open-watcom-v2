@@ -76,8 +76,10 @@
 #include "wwinhelp.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
-#include "wclbproc.h"
 #include "jmpbuf.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 #include "clibint.h"
 
@@ -1316,11 +1318,13 @@ bool WdeProcessArgs( char **argv, int argc )
 
 void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( WdeSplashDlgProc, hInstWde );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( WdeSplashDlgProc, hInstWde );
     JDialogBoxParam( inst, "WdeSplashScreen", parent, dlgproc, (LPARAM)&msecs );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JDialogBoxParam( inst, "WdeSplashScreen", parent, WdeSplashDlgProc, (LPARAM)&msecs );
+#endif
 }
 
 INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )

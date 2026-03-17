@@ -57,7 +57,9 @@
 #include "wrbitmap.h"
 #include "jdlg.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -957,7 +959,6 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
 {
     WREPasteData        pdata;
     HWND                dialog_owner;
-    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             ret;
 
@@ -971,12 +972,15 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
     *replace = false;
     dialog_owner  = WREGetMainWindowHandle();
     inst = WREGetAppInstance();
-    dlgproc = MakeProcInstance_DLG( WREResPasteDlgProc, inst );
-
-    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, dlgproc, (LPARAM)&pdata );
-
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WREResPasteDlgProc, inst );
+        ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, dlgproc, (LPARAM)&pdata );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, WREResPasteDlgProc, (LPARAM)&pdata );
+#endif
     if( ret == -1 || ret == IDCANCEL ) {
         return( false );
     }

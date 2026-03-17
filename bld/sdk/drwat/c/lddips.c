@@ -32,13 +32,15 @@
 
 
 #include "drwatcom.h"
-#include "wclbproc.h"
 #include "dip.h"
 #include "dipload.rh"
 #include "diplasth.h"
 #include "ldstr.h"
 #include "rcstr.grh"
 #include "jdlg.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -103,11 +105,13 @@ INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 void ShowDIPStatus( HWND hwnd )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( ShowDipStatDlgProc, Instance );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( ShowDipStatDlgProc, Instance );
     JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, ShowDipStatDlgProc );
+#endif
 }
 
 bool LoadTheDips( void )

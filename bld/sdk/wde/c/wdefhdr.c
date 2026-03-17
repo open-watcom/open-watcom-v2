@@ -95,7 +95,9 @@ static bool     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeHdrDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultHdr = NULL;
 static int                      WdeHdrWndExtra;
 static WNDPROC                  WdeOriginalHdrProc;
@@ -158,7 +160,11 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeHdrDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeHdrDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -253,14 +259,18 @@ bool WdeHdrInit( bool first )
     SETCTL_TEXT( WdeDefaultHdr, NULL );
     SETCTL_CLASSID( WdeDefaultHdr, WdeStrToControlClass( WWC_HEADER ) );
 
+#ifdef __WINDOWS__
     WdeHdrDispatch = MakeProcInstance_DISPATCHER( WdeHdrDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeHdrFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHdr );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeHdrDispatch );
+#endif
 }
 
 bool WdeHdrDestroy( WdeHdrObject *obj, bool *flag, bool *p2 )

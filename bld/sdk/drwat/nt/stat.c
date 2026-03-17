@@ -34,7 +34,6 @@
 #include "drwatcom.h"
 #include <ctype.h>
 #include <dos.h>
-#include "wclbproc.h"
 #include "segmap.rh"
 #include "jdlg.h"
 #include "srchmsg.h"
@@ -48,7 +47,7 @@
 #ifndef __NT__
 WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct{
     address curr_addr;
@@ -338,11 +337,13 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
             }
             ret = true;
             break;
+        }
         break;
     }
     return( ret );
 }
 #endif
+
 static void SwitchRegSets( HWND hwnd, StatData *statdata )
 {
     int         old_index;
@@ -375,19 +376,16 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
 {
     WORD        cmd;
     StatData    *statdata;
-#ifndef __NT__
-    DLGPROC     dlgproc;
-#endif
     bool        ret;
 
     ret = false;
     statdata = (StatData *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case STAT_FOREGROUND:
-#ifdef __NT__
-        SetForegroundWindow( hwnd );
-#else
+#ifdef __WINDOWS__
         SetActiveWindow( hwnd );
+#else
+        SetForegroundWindow( hwnd );
 #endif
         break;
     case WM_INITDIALOG:
@@ -423,18 +421,13 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
         }
         cmd = LOWORD( wparam );
         switch( cmd ) {
-#ifndef __NT__
-        case STAT_SEG_MAP:
-            dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
-            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
-            break;
-        case STAT_STACK_TRACE:
-            StartStackTraceDialog( hwnd );
-            break;
-#else
         case STAT_SEG_MAP:
             {
+#ifdef __WINDOWS__
+                DLGPROC dlgproc = MakeProcInstance_DLG( SegMapDlgProc, Instance );
+                JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+#else
                 HANDLE                  hdl;
                 ExceptDlgInfo * info;
 
@@ -449,7 +442,12 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
                             FALSE,
                             DUPLICATE_SAME_ACCESS );
                 WalkMemory( hwnd, hdl, info->procinfo->procid );
+#endif
             }
+            break;
+#ifdef __WINDOWS__
+        case STAT_STACK_TRACE:
+            StartStackTraceDialog( hwnd );
             break;
 #endif
         case STAT_SYMBOLS:
@@ -476,11 +474,17 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
  */
 int DoStatDialog( HWND hwnd )
 {
-    DLGPROC     dlgproc;
     INT_PTR     ret;
 
-    dlgproc = MakeProcInstance_DLG( StatDialogDlgProc, Instance );
-    ret = JDialogBox( Instance, "TASKSTATUS", hwnd, dlgproc );
-    FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( StatDialogDlgProc, Instance );
+        ret = JDialogBox( Instance, "TASKSTATUS", hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    ret = JDialogBox( Instance, "TASKSTATUS", hwnd, StatDialogDlgProc );
+#endif
     return( ret );
+
 } /* DoStatDialog */

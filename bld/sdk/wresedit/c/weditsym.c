@@ -178,7 +178,6 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
                    HINSTANCE inst, HELPFUNC help_callback )
 {
     WRHashEntryFlags    flags;
-    HELPFUNC            hcb;
     bool                ret;
 
     /* unused parameters */ (void)inst;
@@ -186,13 +185,16 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     if( symbol_table == NULL || *symbol_table == NULL ) {
         return( FALSE );
     }
-
     flags = WR_HASHENTRY_ALL;
-
-    hcb = MakeProcInstance_HELP( help_callback, inst );
-    ret = WREditSym( parent, symbol_table, &flags, hcb );
-    FreeProcInstance_HELP( hcb );
-
+#ifdef __WINDOWS__
+    {
+        HELPFUNC hcb = MakeProcInstance_HELP( help_callback, inst );
+        ret = WREditSym( parent, symbol_table, &flags, hcb );
+        FreeProcInstance_HELP( hcb );
+    }
+#else
+    ret = WREditSym( parent, symbol_table, &flags, help_callback );
+#endif
     return( ret );
 }
 

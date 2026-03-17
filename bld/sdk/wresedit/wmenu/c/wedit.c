@@ -46,7 +46,9 @@
 #include "wmsg.h"
 #include "sysall.rh"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -76,7 +78,9 @@ static void WExpandEditWindowItem( HWND, HWND, RECT * );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
+#ifdef __WINDOWS__
 static DLGPROC     WMenuEditWinProc = NULL;
+#endif
 static HBRUSH      WEditWinBrush    = NULL;
 static COLORREF    WEditWinColor    = 0;
 
@@ -87,7 +91,11 @@ void WInitEditWindows( HINSTANCE inst )
 {
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
+#ifdef __WINDOWS__
     WMenuEditWinProc = MakeProcInstance_DLG( WMenuEditDlgProc, inst );
+#else
+    /* unused parameters */ (void)inst;
+#endif
 }
 
 void WFiniEditWindows( void )
@@ -95,14 +103,19 @@ void WFiniEditWindows( void )
     if( WEditWinBrush != NULL ) {
         DeleteObject( WEditWinBrush );
     }
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( WMenuEditWinProc );
+#endif
 }
 
 
 bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
 {
+#ifdef __WINDOWS__
     einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win, WMenuEditWinProc, (LPARAM)einfo );
-
+#else
+    einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win, WMenuEditDlgProc, (LPARAM)einfo );
+#endif
     if( einfo->edit_dlg == (HWND)NULL ) {
         return( false );
     }
@@ -1109,9 +1122,11 @@ WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam,
 
 void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
     JCreateDialog( inst, "WMenuEditDLG", parent, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    JCreateDialog( inst, "WMenuEditDLG", parent, WTestDlgProc );
+#endif
 }

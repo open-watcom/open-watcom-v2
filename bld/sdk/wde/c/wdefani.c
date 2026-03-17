@@ -95,7 +95,9 @@ static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeAniCDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultAniC = NULL;
 static int                      WdeAniCWndExtra;
 static WNDPROC                  WdeOriginalAniCProc;
@@ -156,7 +158,11 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeAniCDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeAniCDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -251,14 +257,18 @@ bool WdeAniCInit( bool first )
     SETCTL_TEXT( WdeDefaultAniC, NULL );
     SETCTL_CLASSID( WdeDefaultAniC, WdeStrToControlClass( WANIMATE_CLASS ) );
 
+#ifdef __WINDOWS__
     WdeAniCDispatch = MakeProcInstance_DISPATCHER( WdeAniCDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeAniCFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultAniC );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeAniCDispatch );
+#endif
 }
 
 bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )

@@ -93,7 +93,9 @@ static void     WdeStaticGetDefineInfo( WdeDefineObjectInfo *, HWND );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeStaticDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultStatic = NULL;
 static int                      WdeStaticWndExtra;
 static WNDPROC                  WdeOriginalStaticProc;
@@ -178,7 +180,11 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeStaticDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeStaticDispatcher );
+#endif
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -271,14 +277,18 @@ bool WdeStaticInit( bool first )
     SETCTL_TEXT( WdeDefaultStatic, NULL );
     SETCTL_CLASSID( WdeDefaultStatic, ResNumToControlClass( CLASS_STATIC ) );
 
+#ifdef __WINDOWS__
     WdeStaticDispatch = MakeProcInstance_DISPATCHER( WdeStaticDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeStaticFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultStatic );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeStaticDispatch );
+#endif
 }
 
 bool WdeStaticDestroy( WdeStaticObject *obj, bool *flag, bool *p2 )

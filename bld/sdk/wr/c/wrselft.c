@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,6 @@
 #include "selft.rh"
 #include "jdlg.h"
 #include "winexprt.h"
-#include "wclbproc.h"
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -126,7 +125,6 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
                                        bool use_wres, HELPFUNC help_callback )
 {
-    DLGPROC     dlgproc;
     HINSTANCE   inst;
     INT_PTR     modified;
     WRSFT       sft;
@@ -149,12 +147,15 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
     sft.use_wres  = use_wres;
     inst = WRGetInstance();
 
-    dlgproc = MakeProcInstance_DLG( WRSelectFileTypeDlgProc, inst );
-
-    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, dlgproc, (LPARAM)(LPVOID)&sft );
-
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WRSelectFileTypeDlgProc, inst );
+        modified = JDialogBoxParam( inst, "WRSelectFileType", parent, dlgproc, (LPARAM)(LPVOID)&sft );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, WRSelectFileTypeDlgProc, (LPARAM)(LPVOID)&sft );
+#endif
     if( modified == -1 ) {
         return( WR_DONT_KNOW );
     }

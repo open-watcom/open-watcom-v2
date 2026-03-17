@@ -97,7 +97,9 @@ static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeButtonDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultButton = NULL;
 static int                      WdeButtonWndExtra;
 static WNDPROC                  WdeOriginalButtonProc;
@@ -188,7 +190,11 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeButtonDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeButtonDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -293,14 +299,18 @@ bool WdeButtonInit( bool first )
     SETCTL_TEXT( WdeDefaultButton, NULL );
     SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
 
+#ifdef __WINDOWS__
     WdeButtonDispatch = MakeProcInstance_DISPATCHER( WdeButtonDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeButtonFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultButton );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeButtonDispatch );
+#endif
 }
 
 bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )

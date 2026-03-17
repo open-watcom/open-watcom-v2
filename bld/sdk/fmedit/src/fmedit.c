@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +56,9 @@
 #include "align.def"
 #include "space.def"
 #include "clip.def"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 void FMEDITAPI CloseFormEdit( HWND wnd )
@@ -193,7 +196,6 @@ BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lpara
 /*********************************************************************************/
 {
     /* processes messages */
-    DLGPROC        dlgproc;
     HANDLE         inst;
     POINT          point;
     POINT          offset;
@@ -241,9 +243,15 @@ BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lpara
             CopyObjects();
             break;
         case IDM_GRID:
-            dlgproc = MakeProcInstance_DLG( FMGridDlgProc, inst );
-            DialogBox( inst, "GridBox", wnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( FMGridDlgProc, inst );
+                DialogBox( inst, "GridBox", wnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            DialogBox( inst, "GridBox", wnd, FMGridDlgProc );
+#endif
             InheritState( wnd );
             break;
         case IDM_FMLEFT:

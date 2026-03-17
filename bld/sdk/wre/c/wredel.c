@@ -56,7 +56,9 @@
 #include "wreimg.h"
 #include "jdlg.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -276,19 +278,21 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
 bool WREQueryDeleteName( char *name )
 {
     HWND        dialog_owner;
-    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
 
-    dlgproc = MakeProcInstance_DLG( WREResDeleteDlgProc, app_inst );
-
-    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, dlgproc, (LPARAM)name );
-
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WREResDeleteDlgProc, app_inst );
+        modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, dlgproc, (LPARAM)name );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, WREResDeleteDlgProc, (LPARAM)name );
+#endif
     return( modified != -1 && modified == IDOK );
 }
 

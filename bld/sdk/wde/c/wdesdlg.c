@@ -52,7 +52,9 @@
 #include "wde2data.h"
 #include "wdesdlg.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -148,27 +150,24 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
     INT_PTR             ret;
     HINSTANCE           inst;
-    DLGPROC             dlgproc;
     WdeDialogSelectInfo si;
 
     if( res_info == NULL ) {
         return( FALSE );
     }
-
     inst = WdeGetAppInstance();
-
-    dlgproc = MakeProcInstance_DLG( WdeSelectDialogDlgProc, inst );
-    if( dlgproc == NULL ) {
-        return( FALSE );
-    }
-
     si.res_info = res_info;
     si.selection = NULL;
     si.remove = remove;
-
-    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlgproc, (LPARAM)&si );
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WdeSelectDialogDlgProc, inst );
+        ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlgproc, (LPARAM)&si );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, WdeSelectDialogDlgProc, (LPARAM)&si );
+#endif
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
         WdeWriteTrail( "WdeSelectDialogs: dialog not created!" );

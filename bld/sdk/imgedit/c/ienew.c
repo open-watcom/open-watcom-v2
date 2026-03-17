@@ -34,7 +34,9 @@
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "jdlg.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 #include "pathgrp2.h"
 
 #include "clibext.h"
@@ -302,7 +304,6 @@ static void initializeImage( img_node *node, const char *filename )
  */
 bool NewImage( image_type img_type, const char *filename )
 {
-    WPI_DLGPROC         dlgproc;
     INT_PTR             button_type;
     short               width;
     short               height;
@@ -319,10 +320,15 @@ bool NewImage( image_type img_type, const char *filename )
     }
 
     if( img_type == UNDEF_IMG ) {
-        dlgproc = _wpi_makedlgprocinstance( SelImgDlgProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELECTIMAGE, 0L );
-        _wpi_freedlgprocinstance( dlgproc );
-
+#ifdef __WINDOWS__
+        {
+            WPI_DLGPROC dlgproc = _wpi_makedlgprocinstance( SelImgDlgProc, Instance );
+            button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELECTIMAGE, 0L );
+            _wpi_freedlgprocinstance( dlgproc );
+        }
+#else
+        button_type = _wpi_dialogbox( HMainWindow, SelImgDlgProc, Instance, SELECTIMAGE, 0L );
+#endif
         if( button_type == DLGID_CANCEL ) {
             return( false );
         }
@@ -335,9 +341,15 @@ bool NewImage( image_type img_type, const char *filename )
     ok = true;
     switch( imgType ) {
     case BITMAP_IMG:
-        dlgproc = _wpi_makedlgprocinstance( SelBitmapDlgProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, BITMAPTYPE, 0L );
-        _wpi_freedlgprocinstance( dlgproc );
+#ifdef __WINDOWS__
+        {
+            WPI_DLGPROC dlgproc = _wpi_makedlgprocinstance( SelBitmapDlgProc, Instance );
+            button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, BITMAPTYPE, 0L );
+            _wpi_freedlgprocinstance( dlgproc );
+        }
+#else
+        button_type = _wpi_dialogbox( HMainWindow, SelBitmapDlgProc, Instance, BITMAPTYPE, 0L );
+#endif
         if( button_type == DLGID_CANCEL ) {
             imgType = UNDEF_IMG;
             imageCount--;
@@ -379,9 +391,15 @@ bool NewImage( image_type img_type, const char *filename )
         imgHeight = height;
         bitCount = bcount;
 #else
-        dlgproc = MakeProcInstance_DLG( SelCursorDlgProc, Instance );
-        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlgproc );
-        FreeProcInstance_DLG( dlgproc );
+  #ifdef __WINDOWS__
+        {
+            WPI_DLGPROC dlgproc = MakeProcInstance_DLG( SelCursorDlgProc, Instance );
+            button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
+        }
+  #else
+        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, SelCursorDlgProc );
+  #endif
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
             ok = false;

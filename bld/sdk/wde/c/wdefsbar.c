@@ -97,7 +97,9 @@ static bool     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeSBarDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultSBar = NULL;
 static int                      WdeSBarWndExtra;
 static WNDPROC                  WdeOriginalSBarProc;
@@ -199,7 +201,11 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeSBarDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeSBarDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -296,14 +302,18 @@ bool WdeSBarInit( bool first )
     SETCTL_TEXT( WdeDefaultSBar, NULL );
     SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
 
+#ifdef __WINDOWS__
     WdeSBarDispatch = MakeProcInstance_DISPATCHER( WdeSBarDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeSBarFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultSBar );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeSBarDispatch );
+#endif
 }
 
 bool WdeSBarDestroy( WdeSBarObject *obj, bool *flag, bool *p2 )

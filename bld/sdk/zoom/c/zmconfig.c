@@ -33,10 +33,12 @@
 
 #include "wzoom.h"
 #include <ctype.h>
-#include "wclbproc.h"
 #include "watini.h"
 #include "inipath.h"
 #include "config.rh"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /* Local Window callback functions prototypes */
@@ -100,13 +102,13 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( ConfigDlgInfo ) );
         SET_DLGDATA( hwnd, info );
-#ifdef __NT__
-        ctl = GetDlgItem( hwnd, CFG_STICKY );
-        ShowWindow( ctl, SW_HIDE );
-#else
+#ifdef __WINDOWS__
         if( ConfigInfo.stickymagnifier ) {
             CheckDlgButton( hwnd, CFG_STICKY, BST_CHECKED );
         }
+#else
+        ctl = GetDlgItem( hwnd, CFG_STICKY );
+        ShowWindow( ctl, SW_HIDE );
 #endif
         if( ConfigInfo.topmost ) {
             CheckDlgButton( hwnd, CFG_TOP, BST_CHECKED );
@@ -196,13 +198,15 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 /*
  * DoConfig
  */
-void DoConfig( HWND hwnd ) {
-
-    DLGPROC     dlgproc;
-
-    dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
+void DoConfig( HWND hwnd )
+{
+#ifdef __WINDOWS__
+    DLGPROC dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
     DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
+#else
+    DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, ConfigDlgProc );
+#endif
 }
 
 /*

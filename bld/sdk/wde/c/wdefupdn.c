@@ -95,7 +95,9 @@ static bool     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeUpDnDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultUpDn = NULL;
 static int                      WdeUpDnWndExtra;
 static WNDPROC                  WdeOriginalUpDnProc;
@@ -160,7 +162,11 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeUpDnDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeUpDnDispatcher );
+#endif
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -253,14 +259,18 @@ bool WdeUpDnInit( bool first )
     SETCTL_TEXT( WdeDefaultUpDn, NULL );
     SETCTL_CLASSID( WdeDefaultUpDn, WdeStrToControlClass( WUPDOWN_CLASS ) );
 
+#ifdef __WINDOWS__
     WdeUpDnDispatch = MakeProcInstance_DISPATCHER( WdeUpDnDispatcher, WdeGetAppInstance() );
+#endif
     return( true );
 }
 
 void WdeUpDnFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultUpDn );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeUpDnDispatch );
+#endif
 }
 
 bool WdeUpDnDestroy( WdeUpDnObject *obj, bool *flag, bool *p2 )

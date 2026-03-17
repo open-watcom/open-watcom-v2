@@ -44,7 +44,9 @@
 #include "wdectl3d.h"
 #include "wde.rh"
 #include "wdetest.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -150,13 +152,16 @@ static bool WdeTestCurrentObject( void )
 
 bool WdeSetTestControlDefaults( HWND dialog )
 {
-    WNDENUMPROC wndenumproc;
     bool        ret;
 
     if( dialog != NULL ) {
-        wndenumproc = MakeProcInstance_WNDENUM( WdeSetControlEnumProc, WdeGetAppInstance() );
+#ifdef __WINDOWS__
+        WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( WdeSetControlEnumProc, WdeGetAppInstance() );
         ret = ( EnumChildWindows( dialog, wndenumproc, 0 ) != 0 );
         FreeProcInstance_WNDENUM( wndenumproc );
+#else
+        ret = ( EnumChildWindows( dialog, WdeSetControlEnumProc, 0 ) != 0 );
+#endif
     }
     return( ret );
 }

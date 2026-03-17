@@ -124,7 +124,11 @@ bool WdeInitCreateTable( void )
                     return( FALSE );
                 }
             }
+#ifdef __WINDOWS__
             WdeCreateTable[i] = (CREATE_RTN *)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
+#else
+            WdeCreateTable[i] = WdeObjectRoutines[i].create;
+#endif
         }
     }
 
@@ -140,7 +144,7 @@ void WdeFiniCreateTable( void )
             if( WdeObjectRoutines[i].fini != NULL ) {
                 WdeObjectRoutines[i].fini();
             }
-#ifndef __NT__
+#ifdef __WINDOWS__
             FreeProcInstance( (FARPROC)WdeCreateTable[i] );
 #endif
         }

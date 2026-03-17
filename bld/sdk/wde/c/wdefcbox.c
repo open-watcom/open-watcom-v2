@@ -96,7 +96,9 @@ static bool     WdeCBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeCBoxDispatch;
+#endif
 static WdeDialogBoxControl      *WdeDefaultCBox = NULL;
 static int                      WdeCBoxWndExtra;
 static WNDPROC                  WdeOriginalCBoxProc;
@@ -159,7 +161,11 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeCBoxDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeCBoxDispatcher );
+#endif
 
     new->object_id = id;
 
@@ -254,14 +260,18 @@ bool WdeCBoxInit( bool first )
     SETCTL_TEXT( WdeDefaultCBox, NULL );
     SETCTL_CLASSID( WdeDefaultCBox, ResNumToControlClass( CLASS_COMBOBOX ) );
 
+#ifdef __WINDOWS__
     WdeCBoxDispatch = MakeProcInstance_DISPATCHER( WdeCBoxDispatcher, WdeGetAppInstance());
+#endif
     return( true );
 }
 
 void WdeCBoxFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultCBox );
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeCBoxDispatch );
+#endif
 }
 
 bool WdeCBoxDestroy( WdeCBoxObject *obj, bool *flag, bool *p2 )

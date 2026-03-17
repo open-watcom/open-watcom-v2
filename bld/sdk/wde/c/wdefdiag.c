@@ -197,10 +197,12 @@ static void     WdeWriteDialogToInfo( WdeDialogObject * );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
+#ifdef __WINDOWS__
 static DISPATCH_FN              *WdeDialogDispatch;
 static DLGPROC                  WdeDialogDefineDlgProcInst;
 static DLGPROC                  WdeDialogDlgProcInst;
 static DLGPROC                  WdeTestDlgProcInst;
+#endif
 static HINSTANCE                WdeAppInst;
 static WdeDialogBoxHeader       *WdeDefaultDialog;
 
@@ -673,7 +675,11 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     new->parent = ancestor;
     new->object_id  = DIALOG_OBJ;
     new->mode = WdeSelect;
+#ifdef __WINDOWS__
     OBJ_DISPATCHER_SET( new, WdeDialogDispatch );
+#else
+    OBJ_DISPATCHER_SET( new, WdeDialogDispatcher );
+#endif
     new->mem_flags = DEFAULT_MEMFLAGS;
 
     resize_dialog_height = false;
@@ -826,10 +832,12 @@ bool WdeDialogInit( bool first )
         }
     }
 
+#ifdef __WINDOWS__
     WdeDialogDispatch = MakeProcInstance_DISPATCHER( WdeDialogDispatcher, WdeAppInst );
     WdeDialogDefineDlgProcInst = MakeProcInstance_DLG( WdeDialogDefineDlgProc, WdeAppInst );
     WdeTestDlgProcInst = MakeProcInstance_DLG( WdeTestDlgProc, WdeAppInst );
     WdeDialogDlgProcInst = MakeProcInstance_DLG( WdeDialogDlgProc, WdeAppInst );
+#endif
 
     return( true );
 }
@@ -837,10 +845,12 @@ bool WdeDialogInit( bool first )
 void WdeDialogFini( void )
 {
     WdeFreeDialogBoxHeader( &WdeDefaultDialog );
+#ifdef __WINDOWS__
     FreeProcInstance_DLG( WdeDialogDefineDlgProcInst);
     FreeProcInstance_DLG( WdeTestDlgProcInst );
     FreeProcInstance_DLG( WdeDialogDlgProcInst );
     FreeProcInstance_DISPATCHER( WdeDialogDispatch );
+#endif
 }
 
 bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
@@ -1090,7 +1100,11 @@ bool WdeDialogTest( WdeDialogObject *obj, TEMPLATE_HANDLE *p1, size_t *p2 )
         return( false );
     }
 
+#ifdef __WINDOWS__
     hwin = CreateDialogIndirectParam( WdeAppInst, template, obj->res_info->forms_win, WdeTestDlgProcInst, (LPARAM)obj );
+#else
+    hwin = CreateDialogIndirectParam( WdeAppInst, template, obj->res_info->forms_win, WdeTestDlgProc, (LPARAM)obj );
+#endif
 
     GlobalUnlock( dlgtemplate );
     GlobalFree( dlgtemplate );
@@ -1279,8 +1293,13 @@ bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         WdeSetStatusText( NULL, "", false );
         WdeSetStatusByID( WDE_DEFININGDIALOG, 0 );
 
+#ifdef __WINDOWS__
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
                                   WdeDialogDefineDlgProcInst, (LPARAM)&o_info ) != 0;
+#else
+        redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
+                                  WdeDialogDefineDlgProc, (LPARAM)&o_info ) != 0;
+#endif
 
         if( redraw != 0 ) {
             quick = true;
@@ -1477,9 +1496,11 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
         GlobalFree( dlgtemplate );
         return( false );
     }
-
+#ifdef __WINDOWS__
     obj->window_handle = CreateDialogIndirect( WdeAppInst, template, obj->parent_handle, WdeDialogDlgProcInst );
-
+#else
+    obj->window_handle = CreateDialogIndirect( WdeAppInst, template, obj->parent_handle, WdeDialogDlgProc );
+#endif
     GlobalUnlock( dlgtemplate );
     GlobalFree( dlgtemplate );
 

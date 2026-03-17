@@ -160,7 +160,9 @@ static bool WdeControlSizeToText( WdeControlObject *, void *, void * );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
+#ifdef __WINDOWS__
 static DISPATCH_FN       *WdeControlDispatch;
+#endif
 static HINSTANCE         WdeAppInst;
 
 static DISPATCH_ITEM WdeControlActions[] = {
@@ -240,7 +242,11 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
             Forward( ancestor, IDENTIFY, &id, NULL );
         }
         new->parent = ancestor;
+#ifdef __WINDOWS__
         OBJ_DISPATCHER_SET( new, WdeControlDispatch );
+#else
+        OBJ_DISPATCHER_SET( new, WdeControlDispatcher );
+#endif
         new->sizeable = true;
         new->mode = WdeSelect;
         if( handle == NULL ) {
@@ -330,13 +336,17 @@ bool WdeControlInit( bool first )
     /* unused parameters */ (void)first;
 
     WdeAppInst = WdeGetAppInstance();
+#ifdef __WINDOWS__
     WdeControlDispatch = MakeProcInstance_DISPATCHER( WdeControlDispatcher, WdeAppInst );
+#endif
     return( true );
 }
 
 void WdeControlFini( void )
 {
+#ifdef __WINDOWS__
     FreeProcInstance_DISPATCHER( WdeControlDispatch );
+#endif
 }
 
 bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )

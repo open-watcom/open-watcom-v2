@@ -45,7 +45,9 @@
 #include "wresall.h"
 #include "jdlg.h"
 #include "wresdefn.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 /****************************************************************************/
@@ -191,19 +193,20 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
 bool WREGetNewName( WREResRenameInfo *info )
 {
     HWND        dialog_owner;
-    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
-
-    dlgproc = MakeProcInstance_DLG( WREResRenameDlgProc, app_inst );
-
-    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, dlgproc, (LPARAM)info );
-
-    FreeProcInstance_DLG( dlgproc );
-
+#ifdef __WINDOWS__
+    {
+        DLGPROC dlgproc = MakeProcInstance_DLG( WREResRenameDlgProc, app_inst );
+        modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, dlgproc, (LPARAM)info );
+        FreeProcInstance_DLG( dlgproc );
+    }
+#else
+    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, WREResRenameDlgProc, (LPARAM)info );
+#endif
     return( modified != -1 && modified == IDOK );
 }
 
