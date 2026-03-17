@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ LBoxHdl *CreateListBox( HWND parent ) {
 
     LBoxHdl             *lb;
 
-    lb = MemAlloc( sizeof( LBoxHdl ) );
+    lb = MemAlloc( sizeof( *lb ) );
     lb->longest_item = -1;
     lb->text_width = 0;
     lb->line_cnt = 0;

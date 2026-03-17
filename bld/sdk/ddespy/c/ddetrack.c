@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -323,8 +323,7 @@ void TrackServerMsg( MONCBSTRUCT *info )
     if( info->wType == XTYP_REGISTER ) {
         if( entry == NULL ) {
            entry = getNextPos( listinfo );
-           cur = MemAlloc( sizeof( ServerInfo ) );
-           *entry = cur;
+           *entry = cur = MemAlloc( sizeof( *cur ) );
            cur->instname = inst;
            cur->server = HSZToString( info->hsz1 );
         } else {
@@ -361,8 +360,7 @@ static StringInfo *addStringInfo( MONHSZSTRUCT *info, DDETrackInfo *listinfo )
 #endif
 
     str = getNextPos( listinfo );
-    ret = MemAlloc( sizeof( StringInfo ) );
-    *str = ret;
+    *str = ret = MemAlloc( sizeof( *ret ) );
     ret->hsz = info->hsz;
     ret->cnt = 1;
     ret->str = NULL;
@@ -383,8 +381,7 @@ static StringInfo *addStringInfo( MONHSZSTRUCT *info, DDETrackInfo *listinfo )
   #endif
 #endif
     if( ret->str == NULL ) {
-        ret->str = MemAlloc( strlen( info->str ) + 1 );
-        strcpy( ret->str, info->str );
+        ret->str = MemStrdupSafe( info->str );
     }
     return( ret );
 
@@ -813,9 +810,7 @@ void TrackLinkMsg( MONLINKSTRUCT *info )
             return;
         }
         itempos = getNextPos( listinfo );
-        item = MemAlloc( sizeof( LinkInfo ) );
-        *itempos = item;
-
+        *itempos = item = MemAlloc( sizeof( *item ) );
         item->service = HSZToString( info->hszSvc );
         item->topic = HSZToString( info->hszTopic );
         item->item = HSZToString( info->hszItem );
@@ -916,9 +911,7 @@ void TrackConvMsg( MONCONVSTRUCT *info )
             return;
         }
         itempos = getNextPos( listinfo );
-        item = MemAlloc( sizeof( LinkInfo ) );
-        *itempos = item;
-
+        *itempos = item = MemAlloc( sizeof( *item ) );
         item->service = HSZToString( info->hszSvc );
         item->topic = HSZToString( info->hszTopic );
         item->client = info->hConvClient;
@@ -1000,7 +993,7 @@ static void makePushWin( DDETrackInfo *info, HWND hwnd,
     char        *win_title;
 
     if( info->hdr == NULL ) {
-        info->hdr = MemAlloc( hdrcnt * sizeof( HWND ) );
+        info->hdr = MemAlloc( sizeof( *info->hdr ) * hdrcnt);
         info->hdrcnt = hdrcnt;
         info->hdrinfo = hdrinfo;
     }
@@ -1045,8 +1038,8 @@ LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     info = (DDETrackInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {
     case WM_CREATE:
-        info = MemAlloc( sizeof( DDETrackInfo ) );
-        memset( info, 0, sizeof( DDETrackInfo ) );
+        info = MemAlloc( sizeof( *info ) );
+        memset( info, 0, sizeof( *info ) );
         info->type = *(WORD *)((CREATESTRUCT *)lparam)->lpCreateParams;
         SET_WNDINFO( hwnd, (LONG_PTR)info );
         switch( info->type ) {

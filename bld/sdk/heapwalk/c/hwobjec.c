@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -262,7 +262,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd )
 
     total = 0;
     cnt = (int)SendMessage( lbhwnd, LB_GETSELCOUNT, 0, 0 );
-    items = MemAlloc( cnt * sizeof( int ) );
+    items = MemAlloc( sizeof( *items ) * cnt );
     if( cnt != 0 ) {
         if( items == NULL ) {
             ErrorBox( HeapWalkMainWindow, STR_CANT_COMPLETE_ADD, MB_OK | MB_ICONINFORMATION );

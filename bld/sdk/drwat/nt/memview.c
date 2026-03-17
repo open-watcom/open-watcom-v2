@@ -131,7 +131,7 @@ static MemListItem *createMemListItem( char *objname, char *modname,
     DWORD               namelen;
 
     namelen = strlen( modname ) + 1;
-    new = MemAlloc( sizeof( MemListItem ) + namelen + strlen( objname ) + 1 );
+    new = MemAlloc( sizeof( *new ) + namelen + strlen( objname ) + 1 );
     strcpy( new->data, modname );
     strcpy( new->data + namelen, objname );
     new->mbi = *mbi;
@@ -398,7 +398,7 @@ LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         redrawMemList( info->lbox, &info->listdata );
         SendMessage( GetListBoxHwnd( info->lbox ), LB_SETCURSEL, 0, 0 );
         SetFocus( GetListBoxHwnd( info->lbox ) );
-        info->stats = MemAlloc( sizeof( ProcStats ) );
+        info->stats = MemAlloc( sizeof( *info->stats ) );
         if( GetProcessInfo( info->procid, info->stats ) ) {
             RCsprintf( buf, STR_MEM_WLK_NAMED_PROC, info->procid,
                         info->stats->name );
@@ -474,7 +474,7 @@ void WalkMemory( HWND parent, HANDLE hdl, DWORD procid ) {
             return;
         }
     }
-    info = MemAlloc( sizeof( MemWalkerInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     info->prochdl = hdl;
     info->procid = procid;
     title = AllocRCString( STR_MEMORY_WALKER_TITLE );

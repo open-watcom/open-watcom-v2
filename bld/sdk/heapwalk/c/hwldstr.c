@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ BOOL InitStringTable( void )
         return( FALSE );
     numstrings = *(WORD *)LockResource( rcmemhdl );
     FreeResource( rcmemhdl );
-    StringTbl = MemAlloc( numstrings * sizeof( char * ) );
+    StringTbl = MemAlloc( sizeof( *StringTbl ) * numstrings );
     if( StringTbl == NULL )
         return( FALSE );
     for( i = 0; i < numstrings; i++ ) {

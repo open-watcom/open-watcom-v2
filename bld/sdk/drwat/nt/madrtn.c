@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,10 +244,10 @@ void GetCurrAddr(address *curr, mad_registers *regs )
 
 void AllocMadRegisters( mad_registers **regs )
 {
-    unsigned    new;
+    unsigned    size;
 
-    new = MADRegistersSize();
-    *regs= MemAlloc( new );
+    size = MADRegistersSize();
+    *regs= MemAlloc( size );
 }
 
 void DeAllocMadRegisters( mad_registers *regs )

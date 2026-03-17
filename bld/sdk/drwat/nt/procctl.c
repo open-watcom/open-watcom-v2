@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,17 +63,15 @@ static void MsgBoxMain( void *_info )
  *                  so the debugger thread is never frozen waiting for
  *                  someone to hit OK
  */
-static void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
-
+static void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags )
+{
     MsgBoxInfo          *info;
 
-    info = MemAlloc( sizeof( MsgBoxInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     info->hwnd = hwnd;
     info->flags = flags;
-    info->text = MemAlloc( strlen( text ) + 1 );
-    strcpy( info->text, text );
-    info->title = MemAlloc( strlen( title ) + 1 );
-    strcpy( info->title, title );
+    info->text = MemStrdupSafe( text );
+    info->title = MemStrdupSafe( title );
     _beginthread( MsgBoxMain, 0, info );
 }
 #endif
@@ -232,7 +230,7 @@ void CallProcCtl( DWORD event, void *info, void (*hdler)(void *) )
 {
     ProcAttatchInfo     *threadinfo;
 
-    threadinfo = MemAlloc( sizeof( ProcAttatchInfo ) );
+    threadinfo = MemAlloc( sizeof( *threadinfo ) );
     threadinfo->type = event;
     switch( event ) {
     case MENU_ADD_RUNNING:

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -180,7 +181,7 @@ void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,
     int                 maxv;
 
     getRegSetInfo( reg_set, regs, &max_len, &maxv, &num_regs );
-    reg_create = MemAlloc( sizeof(RegStringCreateData) * num_regs );
+    reg_create = MemAlloc( sizeof( *reg_create ) * num_regs );
     for( i = 0; i < num_regs; i++ ){
         reg_create[i].buffer = MemAlloc( max_len + 1 );
         reg_create[i].value = MemAlloc( maxv + 1 );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -393,8 +393,7 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             i++;
         }
         str[i] = '\0';
-        strptr = MemAlloc( strlen( str ) + 1 );
-        strcpy( strptr, str );
+        strptr = MemStrdupSafe( str );
         SET_DLGDATA( hwnd, strptr );
         setMessageName( hwnd, str );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = '\0';

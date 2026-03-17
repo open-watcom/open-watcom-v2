@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,9 +58,9 @@ HPALETTE CreateDIBPalette( BITMAPINFO *info )
     palette_handle = (HPALETTE)0;
 
     if( num_colours ) {
-        palette = MemAlloc( sizeof( LOGPALETTE ) +
-                num_colours * sizeof( PALETTEENTRY ) );
-        if( palette == NULL ) return( (HPALETTE)0 );
+        palette = MemAlloc( sizeof( *palette ) + sizeof( *palette->palPalEntry ) * num_colours );
+        if( palette == NULL )
+            return( (HPALETTE)0 );
         palette->palNumEntries = num_colours;
         palette->palVersion = 0x300;
 
@@ -97,8 +98,9 @@ HPAL CreateDIBPalette( BITMAPINFO2 *info )
     palette_handle = (HPAL)0;
 
     if( num_colours ) {
-        clrtable = MemAlloc( sizeof(ULONG) * num_colours );
-        if( clrtable == NULL ) return( (HPAL)0 );
+        clrtable = MemAlloc( sizeof( *clrtable ) * num_colours );
+        if( clrtable == NULL )
+            return( (HPAL)0 );
 
         for( i = 0; i < num_colours; i++ ) {
             clrtable[i] = PC_RESERVED * 0xFFFFFF +

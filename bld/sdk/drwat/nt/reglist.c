@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -276,7 +277,7 @@ HWND CreateRegList( CreateRegListData *data )
         (HMENU)( REG_LIST_FIRST + data->index ),    //id
         Instance,
         NULL );
-    list_data = MemAlloc( sizeof( RegListData ) );
+    list_data = MemAlloc( sizeof( *list_data ) );
     SET_WNDINFO( list, (LONG_PTR)list_data );
     AddRegisters( list, data->reg_set );
     list_data->curr_reg = GetWindow( list, GW_CHILD );

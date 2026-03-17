@@ -238,12 +238,12 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
         return( false );
     }
 
-    lib->lpcci = (LPCCINFO)MemAlloc( sizeof( CCINFO ) * num_classes );
+    lib->lpcci = MemAlloc( sizeof( *lib->lpcci ) * num_classes );
     if( lib->lpcci == NULL ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: LPCCINFO alloc failed!" );
         return( false );
     }
-    memset( lib->lpcci, 0, sizeof( CCINFO ) * num_classes );
+    memset( lib->lpcci, 0, sizeof( *lib->lpcci ) * num_classes );
 
     lib->num_classes = (*info_proc)( lib->lpcci );
 

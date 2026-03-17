@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -249,13 +249,15 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     info = (GblWndInfo *)GetWindowLong( hwnd, 0 );
     switch( msg ) {
     case WM_CREATE:
+#ifdef __WINDOWS__
         InitPaintProc();
-        info = MemAlloc( sizeof( GblWndInfo ) );
+#endif
+        info = MemAlloc( sizeof( *info ) );
         if( info == NULL ) {
             ErrorBox( hwnd, STR_UNABLE_2_STARTUP, MB_OK | MB_ICONINFORMATION );
             PostQuitMessage( 0 );
         }
-        memset( info, 0, sizeof( GblWndInfo ) );
+        memset( info, 0, sizeof( *info ) );
         SetWindowLong( hwnd, 0, (DWORD)info );
 //      hdc = GetDC( hwnd );
 //      ReleaseDC(hwnd, hdc);
@@ -303,7 +305,9 @@ LRESULT FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         return( TRUE );
         break;
     case WM_DESTROY:
+#ifdef __WINDOWS__
         FiniPaintProc();
+#endif
         KillPushWin( info->list.title );
         SaveConfigFile( FALSE );
         if( info != NULL ) {

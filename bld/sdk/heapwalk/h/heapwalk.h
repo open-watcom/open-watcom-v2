@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -163,8 +163,10 @@ void CreateListBox( HWND parent, ListBoxInfo *info, WORD type  );
 void ResizeListBox( WORD width, WORD height, ListBoxInfo *info );
 void MoveListBox( WORD xpos, WORD ypos, ListBoxInfo *info );
 void PaintAllWindows( void );
+#ifdef __WINDOWS__
 void InitPaintProc( void );
 void FiniPaintProc( void );
+#endif
 void PositionListBox( ListBoxInfo *info, HWND parent );
 
 /* hwlist.c */

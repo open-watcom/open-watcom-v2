@@ -229,8 +229,8 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
                        MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
                        MF_POSTMSGS | MF_SENDMSGS, 0L );
 #endif
-        info = MemAlloc( sizeof( DDEWndInfo ) );
-        memset( info, 0, sizeof( DDEWndInfo ) );
+        info = MemAlloc( sizeof( *info ) );
+        memset( info, 0, sizeof( *info ) );
         memset( &area, 0, sizeof( RECT ) );
         info->hintbar = HintWndCreate( hwnd, &area, Instance, NULL );
         SetHintsText( info->hintbar, menuHints, sizeof( menuHints ) / sizeof( MenuItemHint ) );

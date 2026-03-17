@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -147,22 +147,22 @@ void AddImageNode( img_node *node )
 
     imagecount = node->num_of_images;
 
-    new_node = MemAlloc( sizeof( img_node ) );
-    memcpy( new_node, node, sizeof( img_node ) );
+    new_node = MemAlloc( sizeof( *new_node ) );
+    memcpy( new_node, node, sizeof( *new_node ) );
     new_node->next = NULL;
     prevnode = new_node;
     next_in_src = node->nexticon;
 
     for( i = 1; i < imagecount; i++ ) {
-        next_icon = MemAlloc( sizeof( img_node ) );
-        memcpy( next_icon, next_in_src, sizeof( img_node ) );
+        next_icon = MemAlloc( sizeof( *next_icon ) );
+        memcpy( next_icon, next_in_src, sizeof( *next_icon ) );
         prevnode->nexticon = next_icon;
         prevnode = next_icon;
         next_in_src = next_in_src->nexticon;
     }
     prevnode->nexticon = NULL;
 
-    new_index = MemAlloc( sizeof( index_table ) );
+    new_index = MemAlloc( sizeof( *new_index ) );
 
     new_index->index = 0;
     new_index->next = NULL;
@@ -399,8 +399,8 @@ void AddIconToList( img_node *icon, img_node *current_node )
     img_node            *new_icon;
 
 
-    new_icon = MemAlloc( sizeof( img_node ) );
-    memcpy( new_icon, icon, sizeof( img_node ) );
+    new_icon = MemAlloc( sizeof( *new_icon ) );
+    memcpy( new_icon, icon, sizeof( *new_icon ) );
 
     for( temp = current_node; temp != NULL; temp = temp->nexticon ) {
         if( temp->nexticon == NULL ) {

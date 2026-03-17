@@ -76,9 +76,9 @@ BOOL GetNextThread( ThreadList *info, ThreadPlace *place,
 
     noerror = FALSE;
     if( first ) {
-        place->thrddata = MemAlloc( sizeof( THREADENTRY32 ) );
-        memset( place->thrddata, 0, sizeof( THREADENTRY32 ) );
-        place->thrddata->dwSize =  sizeof( THREADENTRY32 );
+        place->thrddata = MemAlloc( sizeof( *place->thrddata ) );
+        memset( place->thrddata, 0, sizeof( *place->thrddata ) );
+        place->thrddata->dwSize =  sizeof( *place->thrddata );
         place->hdl = CreateToolhelp32Snapshot( TH32CS_SNAPTHREAD, 0 );
         noerror = Thread32First( place->hdl, place->thrddata );
         if( noerror ) {
@@ -115,9 +115,9 @@ BOOL GetNextProcess( ProcList *info, ProcPlace *place, BOOL first ) {
     tmpname = MemAlloc( MAX_PROC_NAME );
     noerror = TRUE;
     if( first ) {
-        place->procdata = MemAlloc( sizeof( PROCESSENTRY32 ) );
-        memset( place->procdata, 0, sizeof( PROCESSENTRY32 ) );
-        place->procdata->dwSize =  sizeof( PROCESSENTRY32 );
+        place->procdata = MemAlloc( sizeof( *place->procdata ) );
+        memset( place->procdata, 0, sizeof( *place->procdata ) );
+        place->procdata->dwSize = sizeof( *place->procdata );
         place->hdl = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
         noerror = Process32First( place->hdl, place->procdata );
     } else {
@@ -187,12 +187,13 @@ BOOL GetProcessInfo( DWORD pid, ProcStats *info ) {
 
     tmpname = MemAlloc( MAX_PROC_NAME );
     noerror = FALSE;
-    memset( &procinfo, 0, sizeof( PROCESSENTRY32 ) );
-    procinfo.dwSize = sizeof( PROCESSENTRY32 );
+    memset( &procinfo, 0, sizeof( procinfo ) );
+    procinfo.dwSize = sizeof( procinfo );
     hdl = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
     noerror = Process32First( hdl, &procinfo );
     while( noerror ) {
-        if( pid == procinfo.th32ProcessID ) break;
+        if( pid == procinfo.th32ProcessID )
+            break;
         noerror = Process32Next( hdl, &procinfo );
     }
     if( noerror && info != NULL ) {
@@ -240,29 +241,28 @@ char **GetModuleList( DWORD pid, DWORD *cnt ) {
     memerr = FALSE;
     ret = NULL;
     allocsize = INIT_ALLOCSIZE;
-    memset( &modinfo, 0, sizeof( MODULEENTRY32 ) );
-    modinfo.dwSize = sizeof( MODULEENTRY32 );
+    memset( &modinfo, 0, sizeof( modinfo ) );
+    modinfo.dwSize = sizeof( modinfo );
     hdl = CreateToolhelp32Snapshot( TH32CS_SNAPMODULE, pid );
-    ret = MemAlloc( allocsize * sizeof( char * ) );
+    ret = MemAlloc( sizeof( *ret ) * allocsize );
     if( ret == NULL ) {
         memerr = TRUE;
     } else {
-        memset( ret, 0, allocsize * sizeof( char * ) );
+        memset( ret, 0, sizeof( *ret ) * allocsize );
         noerror = Module32First( hdl, &modinfo );
     }
     for( *cnt = 0; noerror && !memerr; *cnt += 1 ) {
         if( allocsize == *cnt ) {
             allocsize += RE_ALLOCSIZE;
-            ret = MemRealloc( ret, allocsize * sizeof( char * ) );
+            ret = MemRealloc( ret, sizeof( *ret ) * allocsize );
             if( ret == NULL ) {
                 memerr = FALSE;
                 break;
             }
             memset( ret + ( allocsize - RE_ALLOCSIZE ), 0,
-                            RE_ALLOCSIZE * sizeof( char* ) );
+                            RE_ALLOCSIZE * sizeof( *ret ) );
         }
-        ret[*cnt] = MemAlloc( strlen( modinfo.szModule ) + 1 );
-        strcpy( ret[*cnt], modinfo.szModule );
+        ret[*cnt] = MemStrdupSafe( modinfo.szModule );
         noerror = Module32Next( hdl, &modinfo);
     }
     if( memerr ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -231,7 +231,7 @@ static void EnableLocalMenu( BOOL enable )
 
 static bool AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
 
-    LocalHeapList[i] = MemAlloc( sizeof( LOCALENTRY ) );
+    LocalHeapList[i] = MemAlloc( sizeof( *LocalHeapList ) );
     if( LocalHeapList[i] == NULL )
         return( false );
     *LocalHeapList[i] = *item;
@@ -291,12 +291,11 @@ static BOOL InitLocalHeapList( HWND hwnd, HWND listhdl, BOOL keeppos )
     LOCALINFO           info;
     LOCALENTRY          item;
     LocalStateStruct    state;
-    unsigned            size;
     unsigned            lim;
     bool                ret;
 
     /* get number of elements */
-    info.dwSize = sizeof( LOCALINFO );
+    info.dwSize = sizeof( info );
     info.wcItems = 0;
     if( keeppos ) {
         SaveLocalListState( listhdl, &state );
@@ -306,12 +305,11 @@ static BOOL InitLocalHeapList( HWND hwnd, HWND listhdl, BOOL keeppos )
         if( LocalInfo( &info, LocalHeapHandle ) == 0 )
             break;
         lim = info.wcItems;
-        size = lim * sizeof( LOCALENTRY * );
-        LocalHeapList = MemAlloc( size );
+        LocalHeapList = MemAlloc( sizeof( *LocalHeapList ) * lim );
         if( LocalHeapList == NULL )
             break;
-        memset( &item, 0, sizeof( LOCALENTRY ) );
-        item.dwSize = sizeof( LOCALENTRY );
+        memset( &item, 0, sizeof( item ) );
+        item.dwSize = sizeof( item );
         LocalHeapCount = 0;
         if( LocalFirst( &item, LocalHeapHandle ) == 0 )
             break;
@@ -319,7 +317,7 @@ static BOOL InitLocalHeapList( HWND hwnd, HWND listhdl, BOOL keeppos )
             ret = AddToLocalHeapList( &item, LocalHeapCount );
             if( !ret )
                 break;
-            LocalHeapCount ++;
+            LocalHeapCount++;
             if( LocalHeapCount == lim )
                 break;
             if( LocalNext( &item ) == 0 ) {
@@ -360,11 +358,11 @@ LRESULT FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     info = (LclWndInfo *)GetWindowLong( hwnd, 0 );
     switch( msg ) {
     case WM_CREATE:
-        info = MemAlloc( sizeof( LclWndInfo ) );
+        info = MemAlloc( sizeof( *info ) );
         if( info == NULL ) {
             ErrorBox( NULL, STR_LCL_HEAP_NO_MEM, MB_OK | MB_ICONINFORMATION );
         }
-        memset( info, 0, sizeof( LclWndInfo ) );
+        memset( info, 0, sizeof( *info ) );
         SetWindowLong( hwnd, 0, (DWORD)info );
         EnableLocalMenu( FALSE );
         info->list.title = CreateLocalPushWin( hwnd );

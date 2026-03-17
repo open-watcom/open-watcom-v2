@@ -137,7 +137,7 @@ static DWORD genIndex( void ) {
     }
     indexSize++;
     if( rc == ERROR_SUCCESS ) {
-        titleIndex = MemAlloc( indexSize * sizeof( char * ) );
+        titleIndex = MemAlloc( sizeof( *titleIndex ) * indexSize );
         if( titleIndex == NULL ) {
             rc = ERROR_OUTOFMEMORY;
         }
@@ -715,7 +715,7 @@ char **GetModuleList( DWORD pid, DWORD *cnt )
         error = !getProcessIndex( pid, &index );
     }
     if( !error ) {
-        ret = MemAlloc( allocsize * sizeof( char * ) );
+        ret = MemAlloc( sizeof( *ret ) * allocsize );
         if( ret == NULL ) {
             error = TRUE;
         }

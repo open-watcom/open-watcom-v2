@@ -167,8 +167,8 @@ static BITMAPFILEHEADER2 *fillFileHeader( img_node *node )
 {
     BITMAPFILEHEADER2   *fileheader;
 
-    fileheader = MemAlloc( sizeof( BITMAPFILEHEADER2 ) );
-    memset( fileheader, 0, sizeof( BITMAPFILEHEADER2 ) );
+    fileheader = MemAlloc( sizeof( *fileheader ) );
+    memset( fileheader, 0, sizeof( *fileheader ) );
 
     if( node->imgtype == ICON_IMG ) {
         fileheader->usType = BFT_COLORICON;

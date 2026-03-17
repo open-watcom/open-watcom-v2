@@ -232,7 +232,7 @@ void MakeDDEToolBar( HWND hwnd )
     ToolBarDisplay( ToolBar.hdl, &ToolBar.info );
     resizeForTB( &ToolBar.info.area, hwnd );
 
-    ToolBar.hbitmaps = MemAlloc( BUTTON_CNT * sizeof( HBITMAP ) );
+    ToolBar.hbitmaps = MemAlloc( sizeof( *ToolBar.hbitmaps ) * BUTTON_CNT );
     for( i=0; i < BUTTON_CNT; i++ ) {
         if( ButInfo[i].flags & ITEM_BLANK ) {
             ToolBar.hbitmaps[i] = NULL;

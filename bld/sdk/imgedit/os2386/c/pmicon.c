@@ -59,10 +59,11 @@ static BITMAPINFO2 *convertToBmp2( BITMAPINFO *bmi )
 
     info_size = BMPINFO2_SIZE( bmi->cBitCount );
     bmi2 = MemAlloc( info_size );
-    if (!bmi2) return(NULL);
+    if( bmi2 == NULL )
+        return( NULL );
 
-    memset(bmi2, 0, sizeof(info_size) );
-    bmi2->cbFix = sizeof(BITMAPINFO2) - sizeof(RGB2);
+    memset( bmi2, 0, info_size );
+    bmi2->cbFix = sizeof( *bmi2 ) - sizeof( RGB2 );
     bmi2->cx = bmi->cx;
     bmi2->cy = bmi->cy;
     bmi2->cPlanes = bmi->cPlanes;
@@ -93,27 +94,29 @@ static BITMAPINFO2 *readBitmapInfo( FILE *fp, bool is_bmp2 )
     file_pos = ftell( fp );
 
     if ( is_bmp2 ) {
-        bmih2 = MemAlloc( sizeof(BITMAPINFOHEADER2) );
-        fread( bmih2, sizeof(BITMAPINFOHEADER2), 1, fp );
+        bmih2 = MemAlloc( sizeof( *bmih2 ) );
+        fread( bmih2, sizeof( *bmih2 ), 1, fp );
         bitcount = bmih2->cBitCount;
         MemFree( bmih2 );
         fseek( fp, file_pos, SEEK_SET );
 
         size = BMPINFO2_SIZE( bitcount );
         bmi2 = MemAlloc( size );
-        if( !bmi2 ) return( NULL );
+        if( bmi2 == NULL )
+            return( NULL );
 
         fread( bmi2, size, 1, fp );
     } else {
-        bmih = MemAlloc( sizeof(BITMAPINFOHEADER) );
-        fread( bmih, sizeof(BITMAPINFOHEADER), 1, fp );
+        bmih = MemAlloc( sizeof( *bmih ) );
+        fread( bmih, sizeof( *bmih ), 1, fp );
         bitcount = bmih->cBitCount;
         MemFree( bmih );
         fseek( fp, file_pos, SEEK_SET );
 
         size = BMPINFO_SIZE( bitcount );
         bmi = MemAlloc( size );
-        if ( !bmi ) return (NULL);
+        if( bmi == NULL )
+            return( NULL );
 
         fread( bmi, size, 1, fp );
         bmi2 = convertToBmp2( bmi );
@@ -131,7 +134,7 @@ static BITMAPFILEHEADER2 *readFileHeader( FILE *fp )
     BITMAPFILEHEADER2   *bfh;
     USHORT              size;
 
-    size = sizeof(USHORT) + 2*(sizeof(SHORT) + sizeof(ULONG));
+    size = sizeof( USHORT ) + 2 * ( sizeof( SHORT ) + sizeof( ULONG ) );
     bfh = MemAlloc( size );
 
     fread( bfh, size, 1, fp );
@@ -174,10 +177,10 @@ a_pm_image_file *OpenPMImage( FILE *fp, int type, int *retcode )
 
     type = type;                // temporary
 
-    bafh = MemAlloc( sizeof(BITMAPARRAYFILEHEADER2) );
+    bafh = MemAlloc( sizeof( *bafh ) );
     fseek( fp, 0L, SEEK_SET );
     fread( bafh, PMFILE_HEADER_SIZE, 1, fp );
-    if ( bafh->usType != BFT_BITMAPARRAY ) {
+    if( bafh->usType != BFT_BITMAPARRAY ) {
         /*
          * Eventually we'll want to do other stuff here (old version,
          * windows bitmap file, etc...)
@@ -214,22 +217,22 @@ a_pm_image_file *OpenPMImage( FILE *fp, int type, int *retcode )
 
     i = 0;
     bafh_offset = 0L;
-    size = sizeof(a_pm_image_file) - sizeof(pm_image_info);
+    size = sizeof( *img_file ) - sizeof( *img_file->resources );
     img_file = MemAlloc( size );
     for( ;; ) {
-        size += sizeof( pm_image_info );
+        size += sizeof( img_file->resources );
         img_file = MemRealloc( img_file, size );
         img_file->resources[i].xhotspot = bafh->bfh2.xHotspot;
         img_file->resources[i].yhotspot = bafh->bfh2.yHotspot;
 
         assignImageInfo( &(img_file->resources[i]), filetype, fp, bafh_offset,
                                  bafh->bfh2.offBits, is_bmp2);
-        if ( bafh->offNext == 0 ) {
+        if( bafh->offNext == 0 ) {
             break;
         }
         fseek( fp, bafh->offNext, SEEK_SET );
         bafh_offset = bafh->offNext;
-        fread( bafh, sizeof(BITMAPARRAYFILEHEADER2), 1, fp );
+        fread( bafh, sizeof( BITMAPARRAYFILEHEADER2 ), 1, fp );
         ++i;
     }
     img_file->count = i + 1;
@@ -268,7 +271,7 @@ a_pm_image *GetPMImageBits( a_pm_image_file *img_file, FILE *fp, int img_num )
     bm = img_file->resources[img_num].xorinfo;
 
     if (img_file->type != PMBITMAP_FILETYPE) {
-        image = MemAlloc( sizeof(a_pm_image) );
+        image = MemAlloc( sizeof( *image ) );
         image->and_size = BITS_TO_BYTES( bm->cx, bm->cy );
         image->xor_size = image->and_size;
         image->clr_size = BITS_TO_BYTES( bm->cx * bm->cBitCount, bm->cy );
@@ -288,10 +291,10 @@ a_pm_image *GetPMImageBits( a_pm_image_file *img_file, FILE *fp, int img_num )
         fseek( fp, offset, SEEK_SET );
         fread( image->and_mask, 1, image->and_size, fp );
     } else {
-        image = MemAlloc( sizeof(a_pm_image) );
+        image = MemAlloc( sizeof( *image ) );
         image->and_size = 0;
         image->xor_size = BITS_TO_BYTES( bm->cx * bm->cBitCount, bm->cy );
-        image = MemRealloc( image, sizeof( a_pm_image ) + image->xor_size );
+        image = MemRealloc( image, sizeof( *image ) + image->xor_size );
         image->and_mask = NULL;
     }
 

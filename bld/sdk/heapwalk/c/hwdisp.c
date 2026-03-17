@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -92,7 +92,7 @@ static HWND ShowBitmapHeapItem( heap_list *hl, HWND parent )
     WORD                height;
     BITMAPINFOHEADER    *bmheader;
 
-    info = MemAlloc( sizeof( ResInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     if( info == NULL )
         return( NULL );
     info->type = GD_BITMAP;
@@ -125,7 +125,7 @@ static HWND ShowIconHeapItem( heap_list *hl, HWND parent )
     WORD                width;
     WORD                height;
 
-    info = MemAlloc( sizeof( ResInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     if( info == NULL )
         return( NULL );
     btinfo = (BITMAPINFOHEADER *)LockResource( hl->info.ge.hBlock );
@@ -157,7 +157,7 @@ static HWND ShowCursorHeapItem( heap_list *hl, HWND parent )
     WORD        width;
     WORD        height;
 
-    info = MemAlloc( sizeof( ResInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     if( info == NULL )
         return( NULL );
     hdl = MkDisplayWin( STR_CURSOR, parent );
@@ -179,7 +179,7 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent )
     void __far  *ptr;
     ResInfo     *info;
 
-    info = MemAlloc( sizeof( ResInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     if( info == NULL )
         return( NULL );
     info->type = GD_MENU;
@@ -236,7 +236,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
     ResInfo     *info;
     char        *rcstr;
 
-    info = MemAlloc( sizeof( ResInfo ) );
+    info = MemAlloc( sizeof( *info ) );
     if( info == NULL )
         return( NULL );
     info->type = GD_DIALOG;

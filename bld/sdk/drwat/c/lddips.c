@@ -65,7 +65,7 @@ static void initDipMsgs( void )
     for( base_name = DIPDefaults; *base_name != '\0'; base_name += strlen( base_name ) + 1 ) {
         dipCnt++;
     }
-    theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
+    theLoadInfo = MemAlloc( sizeof( *theLoadInfo ) * dipCnt );
 }
 
 INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
@@ -152,14 +152,13 @@ bool LoadTheDips( void )
             diploaded = true;
         }
         sprintf( buf, "%-18s %s", base_name, status );
-        theLoadInfo[i].loadmsg = MemAlloc( strlen( buf ) + 1 );
+        theLoadInfo[i].loadmsg = MemStrdupSafe( buf );
         theLoadInfo[i].loaded = ( (rc & DS_ERR) == 0 );
 #ifdef __WINDOWS__
         if( theLoadInfo[i].loaded ) {
             theLoadInfo[i].hinst = DIPLastHandle;
         }
 #endif
-        strcpy( theLoadInfo[i].loadmsg, buf );
         i++;
     }
     if( !diploaded ) {

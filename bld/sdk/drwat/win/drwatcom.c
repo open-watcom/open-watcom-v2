@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,11 +56,10 @@ static void setUpMemWnd( void ) {
     char                *fname;
     MemWndConfig        *cfginfo;
 
-    cfginfo = MemAlloc( sizeof( MemWndConfig ) );
+    cfginfo = MemAlloc( sizeof( *cfginfo ) );
     SetDefMemConfig();
     GetMemWndConfig( cfginfo );
-    fname = MemAlloc( strlen( cfginfo->fname ) + 1 );
-    strcpy( fname, cfginfo->fname );
+    fname = MemStrdupSafe( cfginfo->fname );
     _fullpath( cfginfo->fname, fname, MEMWND_MAX_FNAME );
     SetMemWndConfig( cfginfo );
     MemFree( fname );

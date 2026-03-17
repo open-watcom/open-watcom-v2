@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ bool GetSegmentList( ModuleNode *node )
     if( !getEXEHeader( node->fp, &pehdr ) )
         return( false );
     num_objects = pehdr.fheader.num_objects;
-    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + num_objects * sizeof( SegInfo ) );
+    node->syminfo = MemAlloc( sizeof( *node->syminfo ) + sizeof( *node->syminfo->seginfo ) * num_objects );
     node->syminfo->segcnt = num_objects;
     for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( node->fp, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
@@ -141,8 +141,7 @@ char *GetModuleName( FILE *fp )
     if( !seekRead( fp, obj.physical_offset + expdir.name_rva - obj.rva, buf, _MAX_PATH ) ) {
         return( NULL );
     }
-    ret = MemAlloc( strlen( buf ) + 1 );
-    strcpy( ret, buf );
+    ret = MemStrdupSafe( buf );
     return( ret );
 }
 
@@ -167,7 +166,7 @@ ObjectInfo *GetModuleObjects( FILE *fp, unsigned *objects_num )
     if( !getEXEHeader( fp, &pehdr ) )
         return( NULL );
     num_objects = pehdr.fheader.num_objects;
-    ret = MemAlloc( num_objects * sizeof( ObjectInfo ) );
+    ret = MemAlloc( sizeof( *ret ) * num_objects );
     for( i = 0; i < num_objects; i++ ) {
         if( DIGCli( Read )( fp, &obj, sizeof( obj ) ) != sizeof( obj ) )
             break;

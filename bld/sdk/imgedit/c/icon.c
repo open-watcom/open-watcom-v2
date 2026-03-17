@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ an_img_file *ImageOpen( FILE *fp )
 
     size = sizeof( an_img_file );
 
-    img_file = MemAlloc( sizeof( an_img_file ) );
+    img_file = MemAlloc( sizeof( *img_file ) );
     /* read the header once to find out how many images are in the file */
     fseek( fp, 0L, SEEK_SET );
     fread( img_file, sizeof( an_img_file ), 1, fp );
@@ -85,9 +85,8 @@ an_img_file *ImageOpenData( BYTE *data, unsigned *pos )
     }
 
     /* read the header once to find out how many images are in the file */
-    size = sizeof( an_img_file );
-    img_file = MemAlloc( size );
-    memcpy( img_file, data, size );
+    img_file = MemAlloc( sizeof( *img_file ) );
+    memcpy( img_file, data, sizeof( *img_file ) );
     if( img_file->type != ICON_FILE_TYPE && img_file->type != CURSOR_FILE_TYPE ) {
         MemFree( img_file );
         return( NULL );
@@ -118,9 +117,9 @@ static BITMAPINFO *readImgBitmap( FILE *fp )
     BITMAPINFOHEADER    *header;
     long                DIB_offset, bitmap_size;
 
-    header = MemAlloc( sizeof( BITMAPINFOHEADER ) );
+    header = MemAlloc( sizeof( *header ) );
     DIB_offset = ftell( fp );
-    fread( header, sizeof( BITMAPINFOHEADER ), 1, fp );
+    fread( header, sizeof( *header ), 1, fp );
     fseek( fp, DIB_offset, SEEK_SET );
     bitmap_size = BITMAP_SIZE( header );
     bm = MemRealloc( header, bitmap_size );
@@ -322,7 +321,7 @@ an_img *ImgResourceToImg( FILE *fp, an_img_file *img_file, unsigned i )
     fseek( fp, res->DIB_offset, SEEK_SET );
     bm = readImgBitmap( fp );
     if( bm != NULL ) {
-        img = MemAlloc( sizeof( an_img ) );
+        img = MemAlloc( sizeof( *img ) );
         img->bm = bm;
         h = &bm->bmiHeader;
         // h->biHeight /= 2;            /* code gen bug */
@@ -393,7 +392,7 @@ an_img *ImgResourceToImgData( BYTE *data, unsigned *pos, an_img_file *img_file, 
 
     bm = readImgBitmapData( data, pos );
     if( bm ) {
-        img = MemAlloc( sizeof( an_img ) );
+        img = MemAlloc( sizeof( *img ) );
         img->bm = bm;
         h = &bm->bmiHeader;
         // h->biHeight /= 2;            /* code gen bug */

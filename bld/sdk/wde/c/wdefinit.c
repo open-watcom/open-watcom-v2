@@ -117,7 +117,7 @@ bool WdeInitCreateTable( void )
     first_inst = WdeIsFirstInst();
     if( WdeCreateTable == NULL ) {
         inst = WdeGetAppInstance();
-        WdeCreateTable = (CREATE_TABLE)MemAlloc( sizeof( FARPROC ) * NUM_USER_OBJECTS );
+        WdeCreateTable = MemAlloc( sizeof( *WdeCreateTable ) * NUM_USER_OBJECTS );
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {

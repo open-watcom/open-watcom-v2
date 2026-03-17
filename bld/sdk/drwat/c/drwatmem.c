@@ -115,7 +115,6 @@ void *MemAlloc( size_t size )
     ptr = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
     ptr = malloc( size );
-    memset( ptr, 0, size );
 #endif
     return( ptr );
 }

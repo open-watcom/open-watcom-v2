@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -431,7 +431,7 @@ static bool saveImgFile( img_node *node )
     bool                ok;
 
     count = node->num_of_images;                // Will be 1 for cursors
-    imgfile_size = sizeof( an_img_file ) + sizeof( an_img_resource ) * ( count - 1 );
+    imgfile_size = sizeof( *img_file ) + sizeof( *img_file->resources ) * ( count - 1 );
     img_file = MemAlloc( imgfile_size );
 
     img_file->count = count;
@@ -442,7 +442,7 @@ static bool saveImgFile( img_node *node )
         img_file->type = 2;
     }
 
-    imginfo = MemAlloc( sizeof( BITMAPINFOHEADER ) * img_file->count );
+    imginfo = MemAlloc( sizeof( *imginfo ) * img_file->count );
 
     currentimage = node;
     for( i = 0; i < img_file->count; i++ ) {
@@ -639,7 +639,7 @@ bool SaveImgToData( img_node *node, char **data, size_t *size )
         img_file->type = 2;
     }
 
-    imginfo = MemAlloc( sizeof( BITMAPINFOHEADER ) * img_file->count );
+    imginfo = MemAlloc( sizeof( *imginfo ) * img_file->count );
 
     currentimage = node;
     for( i = 0; i < img_file->count; i++ ) {

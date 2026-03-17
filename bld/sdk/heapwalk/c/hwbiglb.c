@@ -235,7 +235,7 @@ TextBoxHdl CreateTextBox( HINSTANCE instance, HWND parent, HFONT font,
     HWND                hwnd;
     TBinfo              *info;
 
-    info = MemAlloc( sizeof( TBinfo ) );
+    info = MemAlloc( sizeof( *info ) );
     info->fmt = fmt;
     info->itemcnt = 0;
     info->font = font;

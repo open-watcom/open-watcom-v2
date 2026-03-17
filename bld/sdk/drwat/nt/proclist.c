@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,7 +103,7 @@ void AddThread( DWORD procid, DWORD threadid, HANDLE threadhdl )
     if( process != NULL ) {
         new = FindThread( process, threadid );
         if( new == NULL ) {
-            new = MemAlloc( sizeof( ThreadNode ) );
+            new = MemAlloc( sizeof( *new ) );
             new->threadid = threadid;
             new->threadhdl = threadhdl;
             new->next = process->thread;
@@ -147,7 +147,7 @@ void AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid,
         CONTEXT context;
 #endif
 
-        new = MemAlloc( sizeof( ProcNode ) );
+        new = MemAlloc( sizeof( *new ) );
         new->procid = procid;
         new->prochdl = prochdl;
         new->thread = NULL;
@@ -231,7 +231,7 @@ void AddModule( DWORD procid, FILE *fp, DWORD base, char *name )
                 break;
             }
         }
-        new = MemAlloc( sizeof( ModuleNode ) );
+        new = MemAlloc( sizeof( *new ) );
         new->next = (*cur);
         (*cur) = new;
         new->syminfo = NULL;

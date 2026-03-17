@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,7 @@ bitmap_bits *GetTheBits( WPI_HBITMAP hbitmap )
 
     _wpi_getbitmapparms( hbitmap, &width, &height, &planes, NULL, &bitspixel );
 
-    info = MemAlloc( sizeof( bitmap_bits ) );
+    info = MemAlloc( sizeof( *info ) );
     info->bitcount = planes * bitspixel;
 #if 0
     if( width > 32 ) {

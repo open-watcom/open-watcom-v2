@@ -564,7 +564,7 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
                     int     *selitems;
 
                     logStrPrintf( "\n" );
-                    selitems = MemAlloc( selcnt * sizeof( int ) );
+                    selitems = MemAlloc( sizeof( *selitems ) * selcnt );
                     SendMessage( lb, LB_GETSELITEMS, selcnt, (LPARAM)selitems );
                     for( i = 0; i < selcnt; i++ ) {
                         MEMORY_BASIC_INFORMATION    *mbi;

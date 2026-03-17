@@ -302,7 +302,7 @@ static bool readInIconFile( const char *fname )
     }
 #endif
 
-    node = MemAlloc( sizeof( img_node ) * num_of_images );
+    node = MemAlloc( sizeof( *node ) * num_of_images );
 
     hdc = GetDC( NULL );
     for( i = 0; i < num_of_images; i++ ) {
@@ -391,7 +391,7 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
     }
 #endif
 
-    node = MemAlloc( sizeof( img_node ) * num_of_images );
+    node = MemAlloc( sizeof( *node ) * num_of_images );
 
     hdc = GetDC( NULL );
     for( i = 0; i < num_of_images; i++ ) {
@@ -877,7 +877,7 @@ bool LoadColorPalette( void )
         return( true );
     }
 
-    pal_file = MemAlloc( sizeof( a_pal_file ) );
+    pal_file = MemAlloc( sizeof( *pal_file ) );
     fp = fopen( fname, "rb" );
     if( fp == NULL ) {
         WImgEditError( WIE_ERR_FILE_NOT_OPENED, fname );

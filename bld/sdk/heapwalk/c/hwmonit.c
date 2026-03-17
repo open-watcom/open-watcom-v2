@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -316,8 +316,8 @@ void BeginMonitor( heap_list *item ) {
     hight = GetSystemMetrics( SM_CYSCREEN );
     RCsprintf( title, STR_LCL_MONITOR_TITLE, item->szModule );
 
-    info = MemAlloc( sizeof( LocalMonInfo ) );
-    memset( info, 0, sizeof( LocalMonInfo ) );
+    info = MemAlloc( sizeof( *info ) );
+    memset( info, 0, sizeof( *info ) );
     info->instance = item->info.ge.hBlock;
     info->task_hdl = GetTaskHdl( info->instance );
     info->total_size = item->info.ge.dwBlockSize;

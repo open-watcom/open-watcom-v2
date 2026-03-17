@@ -98,7 +98,7 @@ static void deleteSelectedWindow( HWND hwnd )
     }
     if( found ) {
         tmpWndCnt--;
-        tmpWndList = realloc( tmpWndList, tmpWndCnt * sizeof( HWND ) );
+        tmpWndList = realloc( tmpWndList, sizeof( *tmpWndList ) * tmpWndCnt );
     }
 
 } /* deleteSelectedWindow */
@@ -185,11 +185,11 @@ static void setUpWindows( void )
 #ifdef __WINDOWS__
     {
         WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance);
-        EnumWindows( wndenumproc, (LPARAM)NULL );
+        EnumWindows( wndenumproc, 0 );
         FreeProcInstance_WNDENUM( wndenumproc );
     }
 #else
-    EnumWindows( EnumWindowsFunc, (LPARAM)NULL );
+    EnumWindows( EnumWindowsFunc, 0 );
 #endif
     addFormattedWindow( GetDesktopWindow() );
 
@@ -386,8 +386,8 @@ void DoShowSelectedDialog( HWND hwnd, bool *spyall )
     tmpSpyAll = *spyall;
     tmpWndList = NULL;
     if( WindowCount > 0 ) {
-        tmpWndList = MemAlloc( WindowCount * sizeof( HWND ) );
-        memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
+        tmpWndList = MemAlloc( sizeof( *tmpWndList ) * WindowCount );
+        memcpy( tmpWndList, WindowList, sizeof( *tmpWndList ) * WindowCount );
     }
 #ifdef __WINDOWS__
     {

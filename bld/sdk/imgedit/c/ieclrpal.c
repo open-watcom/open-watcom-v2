@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -247,7 +247,7 @@ void SetRGBValues( RGBQUAD *argbvals, int upperlimit )
     HDC                 hdc;
 
     hdc = GetDC( HColorPalette );
-    pe = MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
+    pe = MemAlloc( sizeof( *pe ) * upperlimit );
     num = GetSystemPaletteEntries( hdc, 0, upperlimit, pe );
     ReleaseDC( HColorPalette, hdc );
 

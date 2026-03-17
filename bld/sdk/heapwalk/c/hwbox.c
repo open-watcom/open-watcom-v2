@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,9 @@
 /* Local Window callback functions prototypes */
 BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam );
 
+#ifdef __WINDOWS__
 static WNDENUMPROC  PaintEnumProc;
+#endif
 
 /* position of the list window within the main window */
 
@@ -109,6 +112,7 @@ BOOL FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
     return( TRUE );
 }
 
+#ifdef __WINDOWS__
 /*
  * InitPaintProc - we need to always keep an instance of this procedure
  *                 because it is usually needed when memory is too scarce
@@ -124,6 +128,7 @@ void FiniPaintProc( void )
 {
     FreeProcInstance_WNDENUM( PaintEnumProc );
 }
+#endif
 
 /*
  * PaintListBox - force all windows to be painted in case our
@@ -135,5 +140,9 @@ void PaintAllWindows( void ) {
     HTASK       task;
 
     task = GetCurrentTask();
+#ifdef __WINDOWS__
     EnumTaskWindows( task, PaintEnumProc, 0 );
+#else
+    EnumTaskWindows( task, PaintAll, 0 );
+#endif
 }

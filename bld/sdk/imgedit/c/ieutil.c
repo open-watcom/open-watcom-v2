@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -561,7 +561,7 @@ void FindOrigin( WPI_POINT *new_origin )
 #ifdef __OS2_PM__
     imageMax = image_count;
 #endif
-    windowCoords = MemAlloc( image_count * sizeof( WPI_POINT ) );
+    windowCoords = MemAlloc( sizeof( *windowCoords ) * image_count );
     windowIndex = 0;
 
     wndenumproc = _wpi_makeenumprocinstance( GetPosProc, Instance );

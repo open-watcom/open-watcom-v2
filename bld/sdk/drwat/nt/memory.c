@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,7 +214,7 @@ INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     info = (MemDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
-        info = MemAlloc( sizeof( MemDlgInfo ) );
+        info = MemAlloc( sizeof( *info ) );
         info->procid = lparam;
         SET_DLGDATA( hwnd, info );
         fillMemInfo( hwnd, info->procid, TRUE );

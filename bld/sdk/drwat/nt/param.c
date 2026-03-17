@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,20 +64,20 @@ void ProcessCommandLine( char *cmdline ) {
 
     if( cmdline != NULL && *cmdline != '\0' ) {
         ptr = cmdline;
-        while( isspace( *ptr ) ) ptr ++;
+        while( isspace( *ptr ) )
+            ptr++;
         if( *ptr == '-' || *ptr == '/' ) {
             ptr++;
             if( ptr == '\0' ) return;
             switch( *ptr ) {
-                case 'p':
-                    ptr++;
-                    pid = atol( ptr );
-                    CallProcCtl( MENU_ADD_RUNNING, &pid, AppDebuggerErrMsg );
-                    break;
+            case 'p':
+                ptr++;
+                pid = atol( ptr );
+                CallProcCtl( MENU_ADD_RUNNING, &pid, AppDebuggerErrMsg );
+                break;
             }
         } else {
-            name = MemAlloc( strlen( ptr ) );
-            strcpy( name, ptr );
+            name = MemStrdupSafe( ptr );
             CallProcCtl( MENU_NEW_TASK, name, NULL );
         }
     }
