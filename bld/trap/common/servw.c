@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,9 @@
 #include "servio.h"
 #include "nothing.h"
 #include "options.h"
-#include "wclbproc.h"
+#ifdef __WINDOWS__
+    #include "wclbproc.h"
+#endif
 
 
 extern trap_version TrapVersion;
@@ -224,7 +226,6 @@ static bool Exit = false;
  */
 WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    DLGPROC     dlgproc;
     const char  *err;
     HMENU       hMenu;
 
@@ -234,9 +235,15 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case MENU_ABOUT:
-            dlgproc = MakeProcInstance_DLG( AboutDlgProc, Instance );
-            DialogBox( Instance,"AboutBox", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( AboutDlgProc, Instance );
+                DialogBox( Instance,"AboutBox", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            DialogBox( Instance,"AboutBox", hwnd, AboutDlgProc );
+#endif
             break;
 
         case MENU_DISCONNECT:
@@ -294,12 +301,18 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
                 ServTerminateWin( 0 );
             break;
         case MENU_OPTIONS:
-            dlgproc = MakeProcInstance_DLG( OptionsDlgProc, Instance );
             if( Linked )
                 RemoteUnLink();
             Linked = false;
-            DialogBox( Instance, "Options", hwnd, dlgproc );
-            FreeProcInstance_DLG( dlgproc );
+#ifdef __WINDOWS__
+            {
+                DLGPROC dlgproc = MakeProcInstance_DLG( OptionsDlgProc, Instance );
+                DialogBox( Instance, "Options", hwnd, dlgproc );
+                FreeProcInstance_DLG( dlgproc );
+            }
+#else
+            DialogBox( Instance, "Options", hwnd, OptionsDlgProc );
+#endif
             break;
         case MENU_EXIT:
             Disconnect = true;
