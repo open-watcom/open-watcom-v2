@@ -40,18 +40,16 @@
 #include "guiutil.h"
 
 
-static char *makeEditCopy( char *buffer, int length )
+static char *makeEditCopy( an_edit_control *edit )
 {
     char        *copy;
 
-    if( length > 0 ) {
-        copy = MemAlloc( length + 1 );
-        if( copy != NULL ) {
-            memcpy( copy, buffer, length );
-            copy[length] = '\0';
-        }
-    } else {
-        copy = NULL;
+    if( edit->buffer == NULL || edit->length == 0 )
+        return( NULL );
+    copy = MemAlloc( edit->length + 1 );
+    if( copy != NULL ) {
+        strncpy( copy, edit->buffer, edit->length );
+        copy[edit->length] = '\0';
     }
     return( copy );
 }
@@ -59,9 +57,7 @@ static char *makeEditCopy( char *buffer, int length )
 static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr )
 {
     VFIELD              *field;
-    an_edit_control     *edit_control;
     a_list              *list;
-    a_combo_box         *combo_box;
     char                *text;
 
     field = GUIGetField( wnd, id );
@@ -89,13 +85,10 @@ static char *GetText( gui_window *wnd, gui_ctl_id id, int choice, bool get_curr 
             return( text );
         case FLD_EDIT:
         case FLD_INVISIBLE_EDIT:
-            edit_control = field->u.edit;
-            return( makeEditCopy( edit_control->buffer, edit_control->length ) );
+            return( makeEditCopy( field->u.edit ) );
         case FLD_COMBOBOX:
             if( get_curr ) {
-                combo_box = field->u.combo;
-                edit_control = &combo_box->edit;
-                return( makeEditCopy( edit_control->buffer, edit_control->length ) );
+                return( makeEditCopy( &field->u.combo->edit ) );
             }
             /* fall through */
         case FLD_PULLDOWN:

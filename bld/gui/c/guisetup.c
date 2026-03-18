@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ gui_window *GUISetupWnd( gui_create_info *dlg_info )
 {
     gui_window *wnd;
 
-    wnd = MemAlloc( sizeof( gui_window ) );
+    wnd = MemAlloc( sizeof( *wnd ) );
     if( wnd != NULL ) {
         memset( wnd, 0, sizeof( gui_window ) );
         wnd->gui_call_back = dlg_info->gui_call_back;

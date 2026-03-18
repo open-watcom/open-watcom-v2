@@ -247,7 +247,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     if( wnd->tbar != NULL ) {
         GUICloseToolBar( wnd );
     }
-    tbar = wnd->tbar = MemAlloc( sizeof( toolbarinfo ) );
+    wnd->tbar = tbar = MemAlloc( sizeof( *tbar ) );
     if( tbar == NULL ) {
         return( false );
     }
@@ -255,7 +255,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
     memset( tbar, 0, sizeof( toolbarinfo ) );
     parent = wnd->root;
     tbar->fixed_wpi_rect = wnd->hwnd_client_rect;
-    tbar->hbitmaps = MemAlloc( num_items * sizeof( WPI_HBITMAP ) );
+    tbar->hbitmaps = MemAlloc( sizeof( *tbar->hbitmaps ) * num_items );
     if( tbar->hbitmaps == NULL ) {
         MemFree( tbar );
         wnd->tbar = NULL;

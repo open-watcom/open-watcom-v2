@@ -142,10 +142,12 @@ void GUIFreeMenuItems( UIMENUITEM *menuitems )
 UIMENUITEM *GUIAllocMenuItems( int num_items )
 {
     UIMENUITEM  *menuitems;
+    size_t      size;
 
-    menuitems = MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 1 ) );
+    size = sizeof( *menuitems ) * ( num_items + 1 );
+    menuitems = MemAlloc( size );
     if( menuitems != NULL ) {
-        memset( menuitems, 0, sizeof( UIMENUITEM ) * ( num_items + 1 ) );
+        memset( menuitems, 0, size );
     }
     return( menuitems );
 }
@@ -412,7 +414,7 @@ static VBARMENU *GUIAllocVBarMenu( void )
 {
     VBARMENU    *vbarmenu;
 
-    vbarmenu = MemAlloc( sizeof( VBARMENU ) );
+    vbarmenu = MemAlloc( sizeof( *vbarmenu ) );
     if( vbarmenu != NULL ) {
         vbarmenu->titles = NULL;
         vbarmenu->currmenu = -1;
@@ -468,19 +470,19 @@ static bool InsertMenu( gui_window *wnd, const gui_menu_struct *menu, int positi
     if( ( position > num_items ) || ( position == -1 ) ) {
         position = num_items;
     }
-    newmenuitems = MemAlloc( sizeof( UIMENUITEM ) * ( num_items + 2 ) );
+    newmenuitems = MemAlloc( sizeof( *newmenuitems ) * ( num_items + 2 ) );
     if( newmenuitems == NULL ) {
         return( false );
     }
     if( menuitems != NULL ) {
-        memcpy( newmenuitems, menuitems, sizeof( UIMENUITEM ) * position );
-        memcpy( &newmenuitems[position + 1], &menuitems[position], sizeof( UIMENUITEM ) * ( num_items - position + 1 ) );
+        memcpy( newmenuitems, menuitems, sizeof( *menuitems ) * position );
+        memcpy( &newmenuitems[position + 1], &menuitems[position], sizeof( *menuitems ) * ( num_items - position + 1 ) );
     } else {
-        memset( &newmenuitems[position + 1], 0, sizeof( UIMENUITEM ) );
+        memset( &newmenuitems[position + 1], 0, sizeof( *newmenuitems ) );
     }
     menus.num_items = 1;
     menus.menu = (gui_menu_struct *)menu;
-    memset( &newmenuitems[position], 0, sizeof( UIMENUITEM ) );
+    memset( &newmenuitems[position], 0, sizeof( *newmenuitems ) );
     if( !GUISetMenuItems( &menus, &newmenuitems[position] ) ) {
         MemFree( newmenuitems );
         return( false );
@@ -610,12 +612,12 @@ static bool DeleteMenu( gui_window *wnd, gui_ctl_id id, UIMENUITEM **pmenuitems,
     if( num_items == 1 ) {
         newmenuitems = NULL;
     } else {
-        newmenuitems = MemAlloc( sizeof( UIMENUITEM ) * num_items );
+        newmenuitems = MemAlloc( sizeof( *newmenuitems ) * num_items );
         if( newmenuitems == NULL ) {
             return( false );
         }
-        memcpy( newmenuitems, menuitems, sizeof( UIMENUITEM ) * position );
-        memcpy( &newmenuitems[position], &menuitems[position + 1], sizeof( UIMENUITEM ) * ( num_items - position ) );
+        memcpy( newmenuitems, menuitems, sizeof( *menuitems ) * position );
+        memcpy( &newmenuitems[position], &menuitems[position + 1], sizeof( *menuitems ) * ( num_items - position ) );
     }
     if( menuitems[position].popup != NULL ) {
         GUIFreeMenuItems( menuitems[position].popup );

@@ -90,7 +90,7 @@ static bool InsertDialog( gui_window *wnd, a_dialog *ui_dlg_info, int num_contro
 {
     dialog_node *curr;
 
-    curr = MemAlloc( sizeof( dialog_node ) );
+    curr = MemAlloc( sizeof( *curr ) );
     if( curr == NULL ) {
         return( false );
     }
@@ -234,7 +234,7 @@ bool GUIInsertDialog( gui_window *wnd )
     if( GUIGetDlgByWnd( wnd ) != NULL ) {
         return( true );
     } else {
-        ui_dlg_info = MemAlloc( sizeof( a_dialog ) );
+        ui_dlg_info = MemAlloc( sizeof( *ui_dlg_info ) );
         if( ui_dlg_info == NULL ) {
             return( false );
         }
@@ -424,7 +424,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     group_allocated = false;
     if( (ctl_info->style & GUI_STYLE_CONTROL_GROUP) && (ctl_info->control_class == GUI_RADIO_BUTTON) ) {
         if( !Group ) {
-            RadioGroup = MemAlloc( sizeof( a_radio_group ) );
+            RadioGroup = MemAlloc( sizeof( *RadioGroup ) );
             if( RadioGroup == NULL ) {
                 return( false );
             }
@@ -459,7 +459,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_RADIO:
-        radio = MemAlloc( sizeof( a_radio ) );
+        radio = MemAlloc( sizeof( *radio ) );
         field->u.radio = radio;
         ok = false;
         if( radio != NULL ) {
@@ -486,7 +486,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_CHECK:
-        check = MemAlloc( sizeof( a_check ) );
+        check = MemAlloc( sizeof( *check ) );
         field->u.check = check;
         if( check == NULL )
             return( false );
@@ -505,7 +505,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         }
         break;
     case FLD_COMBOBOX:
-        combo_box = MemAlloc( sizeof( a_combo_box ) );
+        combo_box = MemAlloc( sizeof( *combo_box ) );
         if( combo_box == NULL ) {
             return( false );
         }
@@ -524,7 +524,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_EDIT:
     case FLD_INVISIBLE_EDIT:
-        edit_control = MemAlloc( sizeof( an_edit_control ) );
+        edit_control = MemAlloc( sizeof( *edit_control ) );
         if( edit_control == NULL ) {
             return( false );
         }
@@ -587,7 +587,7 @@ bool GUIDeleteField( gui_window *wnd, gui_ctl_id id )
     field = GUIGetField( wnd, id );
     if( GetIndexOfField( ui_dlg_info, field, &index ) ) {
         GUIDoFreeField( field, NULL );
-        new_fields = MemAlloc( sizeof( VFIELD ) * dlg_node->num_controls );
+        new_fields = MemAlloc( sizeof( *new_fields ) * dlg_node->num_controls );
         for( i = 0; i <= dlg_node->num_controls; i++ ) {
             new_index = i;
             if( i != index ) {
@@ -820,7 +820,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         return( false );
     }
 
-    size = ( num_controls + 1 ) * sizeof( VFIELD );
+    size = sizeof( *fields ) * ( num_controls + 1 );
     fields = MemAlloc( size );
     if( fields == NULL ) {
        return( false );

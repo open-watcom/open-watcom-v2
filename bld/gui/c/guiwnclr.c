@@ -98,7 +98,7 @@ gui_colour_set * GUIAPI GUIGetWindowColours( gui_window *wnd )
 {
     gui_colour_set *colours;
 
-    colours = MemAlloc( wnd->num_attrs * sizeof( gui_colour_set ) );
+    colours = MemAlloc( sizeof( *colours ) * wnd->num_attrs );
     if( colours != NULL ) {
         GUIXGetWindowColours( wnd, colours );
     }

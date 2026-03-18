@@ -96,12 +96,12 @@ static bool WAllocMenuEntry( GUIRMenuEntry **entry )
     ok = ( entry != NULL );
 
     if( ok ) {
-        *entry = MemAlloc( sizeof( GUIRMenuEntry ) );
+        *entry = MemAlloc( sizeof( **entry ) );
         ok = ( *entry != NULL );
     }
 
     if( ok ) {
-        memset( *entry, 0, sizeof( GUIRMenuEntry ) );
+        memset( *entry, 0, sizeof( **entry ) );
         ok = WMakeMenuItem( &(*entry)->item );
     }
 
@@ -237,7 +237,7 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
     num_items = WCountMenuChildren( rmenu );
     ok = ( num_items > 0 );
     if( ok ) {
-        menu = MemAlloc( num_items * sizeof( gui_menu_struct ) );
+        menu = MemAlloc( sizeof( *menu ) * num_items );
         if( menu == NULL ) {
             ok = false;
         }

@@ -440,7 +440,7 @@ gui_message_return GUIAPI GUIDisplayMessage( gui_window *wnd, const char *messag
     }
 
     num_controls += num_string_controls;
-    controls_info = MemAlloc( sizeof( gui_control_info ) * num_controls );
+    controls_info = MemAlloc( sizeof( *controls_info ) * num_controls );
     if( controls_info == NULL ) {
         freeStringControls( num_string_controls, strings );
         return( GUI_RET_CANCEL );

@@ -80,7 +80,7 @@ bool GUIInsertCtrlWnd( gui_window *wnd )
 {
     dialog_wnd_node     *dlg_wnd_node;
 
-    dlg_wnd_node = MemAlloc( sizeof( dialog_wnd_node ) );
+    dlg_wnd_node = MemAlloc( sizeof( *dlg_wnd_node ) );
     if( dlg_wnd_node != NULL ) {
         dlg_wnd_node->wnd = wnd;
         dlg_wnd_node->next = DialogHead;
@@ -169,7 +169,7 @@ control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class contro
 {
     control_item        *item;
 
-    item = MemAlloc( sizeof( control_item ) );
+    item = MemAlloc( sizeof( *item ) );
     if( item != NULL ) {
         item->control_class = control_class;
         item->text = ctl_info->text;
@@ -195,7 +195,7 @@ control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent_wnd )
     if( ( parent_wnd == NULL ) || ( phwnd != parent_wnd->hwnd ) ) {
         return( NULL );
     }
-    item = MemAlloc( sizeof( control_item ) );
+    item = MemAlloc( sizeof( *item ) );
     if( item != NULL ) {
         memset( item, 0, sizeof( control_item ) );
         control_class = GUIGetControlClassFromHWND( hwnd );

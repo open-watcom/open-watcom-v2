@@ -144,7 +144,7 @@ gui_control *GUIInsertControl( gui_window *wnd, gui_control_info *ctl_info, int 
     if( dlg_node == NULL ) {
         return( NULL );
     }
-    control = MemAlloc( sizeof( gui_control ) );
+    control = MemAlloc( sizeof( *control ) );
     if( control != NULL ) {
         control->control_class = ctl_info->control_class;
         control->id = ctl_info->id;

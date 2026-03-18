@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -321,7 +321,7 @@ static bool addToList( const char ***list, int num_items, const char *data, size
 {
     char    *str;
 
-    *list = (const char **)MemRealloc( (void *)*list, ( num_items + 2 ) * sizeof( char * ) );
+    *list = (const char **)MemRealloc( (void *)*list, sizeof( **list ) * ( num_items + 2 ) );
     if( *list == NULL ) {
         return( false );
     }
@@ -794,16 +794,13 @@ static bool initDialog( gui_window *wnd, const char *ext, const char *name )
 
     if( ext != NULL && hasWild( ext ) ) {
         char    *str;
-        size_t  len;
 
-        len = strlen( ext ) + 1;
-        str = MemAlloc( len );
+        str = MemStrdup( ext );
         MemFree( dlg->currExt );
         dlg->currExt = str;
         if( str == NULL ) {
             return( false );
         }
-        memcpy( str, ext, len );
     }
     if( !setFileList( wnd, dlg->currExt ) ) {
         return( false );

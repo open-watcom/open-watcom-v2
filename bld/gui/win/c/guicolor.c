@@ -282,7 +282,7 @@ bool GUIXSetColours( gui_window *wnd, int num_attrs, gui_colour_set *colours )
     gui_colour_set  *attrs;
 
     if( colours != NULL ) {
-        size = sizeof( gui_colour_set ) * num_attrs;
+        size = sizeof( *attrs ) * num_attrs;
         attrs = MemAlloc( size );
         if( attrs != NULL ) {
             wnd->attrs = attrs;

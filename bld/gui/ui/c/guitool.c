@@ -286,14 +286,14 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
     }
-    tbar = wnd->tbar = MemAlloc( sizeof( toolbarinfo ) );
+    wnd->tbar = tbar = MemAlloc( sizeof( *tbar ) );
     if( tbar == NULL ) {
         return( false );
     }
     if( toolinfo->num_items == 0 ) {
         tbar->toolinfo = NoToolbar;
     } else {
-        size = sizeof( gui_toolbar_struct ) * toolinfo->num_items;
+        size = sizeof( *new_toolinfo ) * toolinfo->num_items;
         new_toolinfo = MemAlloc( size );
         if( new_toolinfo == NULL ) {
             MemFree( tbar );

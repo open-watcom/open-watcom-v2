@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -443,7 +443,7 @@ static change_struct *MakeChangeStruct( char *str, size_t length, gui_window *wn
 {
     change_struct       *old;
 
-    old = MemAlloc( sizeof( change_struct  ) );
+    old = MemAlloc( sizeof( *old ) );
     old->string = str;
     old->length = length;
     old->parent = 0;
@@ -1443,7 +1443,7 @@ bool Child2WndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param )
             }
             if( col < strlen( out->display[row].data ) ) {
                 PrevRow = row;
-                new_attr = MemAlloc( sizeof( attr_entry ) );
+                new_attr = MemAlloc( sizeof( *new_attr ) );
                 new_attr->start = col;
                 new_attr->end = col;
 #if default_colours
