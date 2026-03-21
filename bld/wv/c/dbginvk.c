@@ -219,9 +219,9 @@ static void Conclude( invokes *inv )
 }
 
 
-static bool DoneInvLine( inp_data_handle _inv, inp_rtn_action action )
+static bool DoneInvLine( inp_data_handle handle, inp_rtn_action action )
 {
-    invokes *inv = _inv;
+    invokes *inv = (invokes *)handle;
 
     switch( action ) {
     case INP_RTN_INIT:
@@ -259,7 +259,7 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
-    PushInpStack( inv, DoneInvLine, true );
+    PushInpStack( (inp_data_handle)inv, DoneInvLine, true );
     TypeInpStack( INP_CMD_FILE );
 }
 

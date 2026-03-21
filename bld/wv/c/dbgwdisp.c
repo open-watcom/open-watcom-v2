@@ -429,9 +429,9 @@ static void ProcStatus( void )
 }
 
 
-static bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
+static bool DoneRefresh( inp_data_handle handle, inp_rtn_action action )
 {
-    /* unused parameters */ (void)dummy;
+    /* unused parameters */ (void)handle;
 
     switch( action ) {
     case INP_RTN_INIT:
@@ -450,7 +450,7 @@ static bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
 
 static void PushRefresh( void )
 {
-    PushInpStack( NULL, DoneRefresh, false );
+    PushInpStack( (inp_data_handle)NULL, DoneRefresh, false );
     TypeInpStack( INP_NO_CMD );
 }
 

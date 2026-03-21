@@ -569,8 +569,10 @@ void PerformTrace( void )
  * DoneTraceCmd
  */
 
-static bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
+static bool DoneTraceCmd( inp_data_handle handle, inp_rtn_action action )
 {
+    char    *cmds = (char *)handle;
+
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds );
@@ -592,7 +594,7 @@ static bool DoneTraceCmd( inp_data_handle cmds, inp_rtn_action action )
 
 static void PushTraceCmd( void )
 {
-    PushInpStack( "\0", DoneTraceCmd, true );
+    PushInpStack( (inp_data_handle)"\0", DoneTraceCmd, true );
     TypeInpStack( INP_HOLD );
 }
 

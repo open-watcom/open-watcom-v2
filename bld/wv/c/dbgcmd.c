@@ -44,8 +44,10 @@
 #include "dbginit.h"
 
 
-static bool DoneCmd( inp_data_handle buff, inp_rtn_action action )
+static bool DoneCmd( inp_data_handle handle, inp_rtn_action action )
 {
+    char    *buff = (char *)handle;
+
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );
@@ -67,7 +69,7 @@ static void DoOneCmd( void *_cmd )
     if( cmd[0] == NULLCHAR ) {
         DUIDlgTxt( LIT_ENG( Empty ) );
     } else {
-        PushInpStack( cmd, DoneCmd, false );
+        PushInpStack( (inp_data_handle)cmd, DoneCmd, false );
         TypeInpStack( INP_DLG_CMD );
         TBreak();   /* clear any pending terminal interrupts */
     }

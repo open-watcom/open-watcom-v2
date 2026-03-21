@@ -508,9 +508,9 @@ void CopyInpFlags( void )
 }
 
 
-static bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
+static bool DoneCmdList( inp_data_handle handle, inp_rtn_action action )
 {
-    cmd_list    *cmds = _cmds;
+    cmd_list    *cmds = (cmd_list *)handle;
 
     switch( action ) {
     case INP_RTN_INIT:
@@ -533,13 +533,15 @@ static bool DoneCmdList( inp_data_handle _cmds, inp_rtn_action action )
 void PushCmdList( cmd_list *cmds )
 {
     cmds->use++;
-    PushInpStack( cmds, DoneCmdList, false );
+    PushInpStack( (inp_data_handle)cmds, DoneCmdList, false );
 }
 
 
 #ifdef DEADCODE
-static bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
+static bool DoneCmdText( inp_data_handle handle, inp_rtn_action action )
 {
+    char    *cmds = (char *)handle;
+
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( cmds );
@@ -551,17 +553,13 @@ static bool DoneCmdText( inp_data_handle cmds, inp_rtn_action action )
     }
     return( false ); // silence compiler
 }
-#endif
-
 
 /*
  * PushCmdText -- push a command string
  */
-
-#ifdef DEADCODE
 void PushCmdText( char *cmds )
 {
-    PushInpStack( cmds, DoneCmdText, false );
+    PushInpStack( (inp_data_handle)cmds, DoneCmdText, false );
 }
 #endif
 
@@ -580,8 +578,10 @@ bool PurgeInpStack( void )
     return( true );
 }
 
-static bool DoneNull( inp_data_handle buff, inp_rtn_action action )
+static bool DoneNull( inp_data_handle handle, inp_rtn_action action )
 {
+    char    *buff = (char *)handle;
+
     switch( action ) {
     case INP_RTN_INIT:
         ReScan( buff );
@@ -596,7 +596,7 @@ static bool DoneNull( inp_data_handle buff, inp_rtn_action action )
 
 void FreezeInpStack( void )
 {
-    PushInpStack( LIT_ENG( Empty ), DoneNull, false );
+    PushInpStack( (inp_data_handle)"", DoneNull, false );
     TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
 }
 

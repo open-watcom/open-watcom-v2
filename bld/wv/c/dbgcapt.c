@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,9 +71,9 @@ void CaptureError( void )
     CaptureOk = false;
 }
 
-static bool DoneCapture( inp_data_handle _cmds, inp_rtn_action action )
+static bool DoneCapture( inp_data_handle handle, inp_rtn_action action )
 {
-    cmd_list        *cmds = _cmds;
+    cmd_list        *cmds = (cmd_list *)handle;
     const char      *old;
 
     switch( action ) {
@@ -112,7 +112,7 @@ void ProcCapture( void )
     ReScan( old );
     cmds->use++;
     CaptureOk = true;
-    PushInpStack( cmds, DoneCapture, false );
+    PushInpStack( (inp_data_handle)cmds, DoneCapture, false );
     TypeInpStack( INP_CAPTURED );
     FreeCmdList( cmds );
 }

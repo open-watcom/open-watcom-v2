@@ -168,14 +168,16 @@ void RecordStart( void )
     RecordPointStart();
 }
 
-static bool DoneRadix( inp_data_handle parm, inp_rtn_action action )
+static bool DoneRadix( inp_data_handle handle, inp_rtn_action action )
 {
+    mad_radix   radix = (mad_radix)handle;
+
     switch( action ) {
     case INP_RTN_INIT:
     case INP_RTN_FINI:
         return( true );
     case INP_RTN_EOL:
-        NewCurrRadix( (mad_radix)(pointer_uint)parm );
+        NewCurrRadix( radix );
         return( false );
     default:
         return( false );
