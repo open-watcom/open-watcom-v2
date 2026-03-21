@@ -1066,7 +1066,7 @@ wnd_info VarInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( VarMenu )
+    GUI_MENU_ARRAY( VarMenu )
 };
 
 static  a_window        DoWndVarOpen( var_type vtype )

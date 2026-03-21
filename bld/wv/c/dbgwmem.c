@@ -1039,7 +1039,7 @@ wnd_info BinInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdateBin,
-    PopUp( MemMenu )
+    GUI_MENU_ARRAY( MemMenu )
 };
 
 wnd_info MemInfo = {
@@ -1055,7 +1055,7 @@ wnd_info MemInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdateMem,
-    PopUp( MemMenu )
+    GUI_MENU_ARRAY( MemMenu )
 };
 
 wnd_info StkInfo = {
@@ -1071,7 +1071,7 @@ wnd_info StkInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdateStk,
-    PopUp( MemMenu )
+    GUI_MENU_ARRAY( MemMenu )
 };
 
 a_window        DoWndMemOpen( address addr, mad_type_handle mth )

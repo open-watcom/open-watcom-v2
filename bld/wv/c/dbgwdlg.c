@@ -243,7 +243,7 @@ wnd_info LogInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    NoPopUp
+    GUI_NO_MENU
 };
 
 

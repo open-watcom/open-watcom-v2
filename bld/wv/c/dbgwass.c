@@ -1064,7 +1064,7 @@ wnd_info AsmInfo = {
     NoNextRow,
     AsmNotify,
     ChkUpdate,
-    PopUp( AsmMenu )
+    GUI_MENU_ARRAY( AsmMenu )
 };
 
 

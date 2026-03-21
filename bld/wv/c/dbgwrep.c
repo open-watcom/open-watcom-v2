@@ -251,7 +251,7 @@ wnd_info RepInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( RepMenu )
+    GUI_MENU_ARRAY( RepMenu )
 };
 
 

@@ -840,7 +840,7 @@ wnd_info FileInfo = {
     NoNextRow,
     FileNotify,
     ChkUpdate,
-    PopUp( FileMenu )
+    GUI_MENU_ARRAY( FileMenu )
 };
 
 a_window    DoWndFileOpen( const char *name, void *viewhndl,

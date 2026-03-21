@@ -335,7 +335,7 @@ wnd_info IOInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( IOMenu )
+    GUI_MENU_ARRAY( IOMenu )
 };
 
 void IONewAddr( a_window wnd, address *addr, int type )

@@ -313,7 +313,7 @@ wnd_info FuncInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( FuncMenu )
+    GUI_MENU_ARRAY( FuncMenu )
 };
 
 a_window DoWndFuncOpen( bool is_global, mod_handle mod )

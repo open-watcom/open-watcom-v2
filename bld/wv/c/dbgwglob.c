@@ -203,7 +203,7 @@ wnd_info GlobInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( GlobMenu )
+    GUI_MENU_ARRAY( GlobMenu )
 };
 
 a_window DoWndGlobOpen( mod_handle mod )

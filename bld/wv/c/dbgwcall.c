@@ -245,7 +245,7 @@ wnd_info CallInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( CallMenu )
+    GUI_MENU_ARRAY( CallMenu )
 };
 
 a_window WndCallOpen( void )

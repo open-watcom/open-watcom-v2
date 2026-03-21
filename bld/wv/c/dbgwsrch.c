@@ -347,7 +347,7 @@ wnd_info SrchInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( SrchMenu ),
+    GUI_MENU_ARRAY( SrchMenu ),
 };
 
 static a_window DoWndSrchOpen( const char *expr, SRCH_WALKER *walk, void *cookie )

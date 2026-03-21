@@ -342,7 +342,7 @@ wnd_info BrkInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( BrkMenu )
+    GUI_MENU_ARRAY( BrkMenu )
 };
 
 a_window WndBrkOpen( void )

@@ -647,7 +647,7 @@ wnd_info MacInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( MacMenu )
+    GUI_MENU_ARRAY( MacMenu )
 };
 
 a_window WndMacOpen( void )

@@ -489,7 +489,7 @@ wnd_info MadRegInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( RegMenu )
+    GUI_MENU_ARRAY( RegMenu )
 };
 
 void MadRegChangeOptions( a_window wnd )

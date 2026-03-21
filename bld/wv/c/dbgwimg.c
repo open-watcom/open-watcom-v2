@@ -282,7 +282,7 @@ wnd_info ImgInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( ImgMenu )
+    GUI_MENU_ARRAY( ImgMenu )
 };
 
 a_window WndImgOpen( void )

@@ -331,7 +331,7 @@ wnd_info ModInfo = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( ModMenu )
+    GUI_MENU_ARRAY( ModMenu )
 };
 
 a_window DoWndModOpen( mod_handle handle )
