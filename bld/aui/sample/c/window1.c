@@ -37,14 +37,14 @@
 static bool W1Init( a_window wnd );
 
 static gui_menu_struct W1Sub[] = {
-    { "&Align",    MENU_W1_ALIGN,   GUI_STYLE_MENU_ENABLED },
-    { "&UnAlign",  MENU_W1_UNALIGN, GUI_STYLE_MENU_ENABLED },
+    { "&Align",    MENU_W1_ALIGN,   GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "&UnAlign",  MENU_W1_UNALIGN, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
 };
 
 static gui_menu_struct W1PopUp[] = {
-    { "&Say",      MENU_W1_SAY,     GUI_STYLE_MENU_ENABLED },
-    { "&More",     MENU_W1_MORE,    GUI_STYLE_MENU_ENABLED, NULL, ArraySize( W1Sub ), W1Sub },
-    { "&NewWord",  MENU_W1_NEWWORD, GUI_STYLE_MENU_ENABLED },
+    { "&Say",      MENU_W1_SAY,     GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "&More",     MENU_W1_MORE,    GUI_STYLE_MENU_ENABLED, NULL, GUI_MENU_ARRAY( W1Sub ) },
+    { "&NewWord",  MENU_W1_NEWWORD, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
 };
 
 typedef struct {
@@ -242,7 +242,7 @@ static wnd_info W1Info = {
     NoNextRow,
     NoNotify,
     ChkUpdate,
-    PopUp( W1PopUp )
+    GUI_MENU_ARRAY( W1PopUp )
 };
 
 static gui_resource W1Icon = { ICON_WORDS, "W1" };

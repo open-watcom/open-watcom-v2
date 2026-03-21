@@ -69,10 +69,10 @@ static gui_menu_struct MDIMoreMenu = {
 };
 
 static gui_menu_struct MDIMenu[] = {
-    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
-    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
-    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
-    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,     NULL,    GUI_NO_MENU },
+    {  NULL,    GUI_MDI_CASCADE,        GUI_STYLE_MENU_GRAYED,  NULL,   GUI_NO_MENU },
+    {  NULL,    GUI_MDI_TILE_HORZ,      GUI_STYLE_MENU_GRAYED,  NULL,   GUI_NO_MENU },
+    {  NULL,    GUI_MDI_TILE_VERT,      GUI_STYLE_MENU_GRAYED,  NULL,   GUI_NO_MENU },
+    {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_STYLE_MENU_GRAYED,  NULL,   GUI_NO_MENU },
 };
 
 static  char MenuHint[MAX_NUM_MDI_WINDOWS][MAX_LENGTH];

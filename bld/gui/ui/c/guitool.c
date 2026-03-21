@@ -44,7 +44,7 @@
 #define FIX_TOOLBAR     1
 
 static gui_menu_struct Menu[] = {
-    NULL, FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL
+    NULL, FIX_TOOLBAR, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU
 };
 
 static gui_control_info Button = {

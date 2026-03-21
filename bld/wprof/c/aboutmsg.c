@@ -149,7 +149,7 @@ static wnd_info     AboutInfo = {
     NoNextRow,
     NoNotify,
     NoChkUpdate,
-    NoPopUp,
+    GUI_NO_MENU,
 };
 
 

@@ -82,9 +82,9 @@ keymap Key[] = {
 };
 
 static gui_menu_struct PopTart[] = {
-    { "Open &1", MENU_OPEN1, GUI_STYLE_MENU_ENABLED },
-    { "Open &2", MENU_OPEN2, GUI_STYLE_MENU_ENABLED },
-    { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED },
+    { "Open &1", MENU_OPEN1, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "Open &2", MENU_OPEN2, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "Open &3", MENU_OPEN3, GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
 };
 
 static gui_menu_items   menu_PopTart = GUI_MENU_ARRAY( PopTart );

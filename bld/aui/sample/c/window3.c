@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,8 @@
 
 
 static gui_menu_struct W3PopUp[] = {
-    { "Default Popup",      MENU_W3_POPUP,  GUI_STYLE_MENU_ENABLED },
-    { "Show Lisa The Bug",  MENU_W3_BUG,    GUI_STYLE_MENU_ENABLED },
+    { "Default Popup",      MENU_W3_POPUP,  GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "Show Lisa The Bug",  MENU_W3_BUG,    GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
 };
 
 static char *Stuff[] =
@@ -328,7 +328,7 @@ static wnd_info W3Info = {
     NoNextRow,
     NoNotify,
     NoChkUpdate,
-    PopUp( W3PopUp )
+    GUI_MENU_ARRAY( W3PopUp )
 };
 
 a_window W3Open( void )

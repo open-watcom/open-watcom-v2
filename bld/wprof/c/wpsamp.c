@@ -110,22 +110,22 @@ static char * statusHeaders[] = {
 };
 
 static gui_menu_struct graphBarMenu[] = {
-    { "&Stretch",       MENU_SAMP_BAR_MAX_TIME, GUI_STYLE_MENU_ENABLED, "Stretch the largest value to the edge of the window" },
-    { "&Absolute Bars", MENU_SAMP_ABS,          GUI_STYLE_MENU_ENABLED, "Show Absolute Graph Bars" },
-    { "&Relative Bars", MENU_SAMP_REL,          GUI_STYLE_MENU_ENABLED, "Show Relative Graph Bars" }
+    { "&Stretch",       MENU_SAMP_BAR_MAX_TIME, GUI_STYLE_MENU_ENABLED, "Stretch the largest value to the edge of the window",  GUI_NO_MENU },
+    { "&Absolute Bars", MENU_SAMP_ABS,          GUI_STYLE_MENU_ENABLED, "Show Absolute Graph Bars",                             GUI_NO_MENU },
+    { "&Relative Bars", MENU_SAMP_REL,          GUI_STYLE_MENU_ENABLED, "Show Relative Graph Bars",                             GUI_NO_MENU }
 };
 
 static gui_menu_struct sortMenu[] = {
-    { "&Sample Count",  MENU_SORT_COUNT,        GUI_STYLE_MENU_ENABLED, "Sort by the number of samples" },
-    { "&Name",          MENU_SORT_NAME,         GUI_STYLE_MENU_ENABLED, "Sort by the name" },
+    { "&Sample Count",  MENU_SORT_COUNT,        GUI_STYLE_MENU_ENABLED, "Sort by the number of samples",            GUI_NO_MENU },
+    { "&Name",          MENU_SORT_NAME,         GUI_STYLE_MENU_ENABLED, "Sort by the name",                         GUI_NO_MENU },
 };
 
 static gui_menu_struct sampleMenu[] = {
-    { "Zoom &In\tF3",           MENU_SAMP_ZOOM_IN,  GUI_STYLE_MENU_ENABLED, "Zoom in form more detail" },
-    { "Back &Out\tF4",          MENU_SAMP_BACK_OUT, GUI_STYLE_MENU_ENABLED, "Back out from the current display" },
-    { "&Gather Small Values",   MENU_SAMP_GATHER,   GUI_STYLE_MENU_ENABLED, "Gather small samples together" },
-    { "&Bar Graph",             MENU_SAMP_BAR,      GUI_STYLE_MENU_ENABLED, "Make adjustments to the bar graph",   ArraySize( graphBarMenu ),  graphBarMenu },
-    { "&Sort",                  MENU_SAMP_SORT,     GUI_STYLE_MENU_ENABLED, "Sort the values",                     ArraySize( sortMenu ),      sortMenu },
+    { "Zoom &In\tF3",           MENU_SAMP_ZOOM_IN,  GUI_STYLE_MENU_ENABLED, "Zoom in form more detail",             GUI_NO_MENU },
+    { "Back &Out\tF4",          MENU_SAMP_BACK_OUT, GUI_STYLE_MENU_ENABLED, "Back out from the current display",    GUI_NO_MENU },
+    { "&Gather Small Values",   MENU_SAMP_GATHER,   GUI_STYLE_MENU_ENABLED, "Gather small samples together",        GUI_NO_MENU },
+    { "&Bar Graph",             MENU_SAMP_BAR,      GUI_STYLE_MENU_ENABLED, "Make adjustments to the bar graph",    GUI_MENU_ARRAY( graphBarMenu ) },
+    { "&Sort",                  MENU_SAMP_SORT,     GUI_STYLE_MENU_ENABLED, "Sort the values",                      GUI_MENU_ARRAY( sortMenu ) },
 };
 
 static char *       nameBuff = NULL;
@@ -1427,7 +1427,7 @@ static wnd_info     WPSampleInfo = {
     NoNextRow,
     NoNotify,
     NoChkUpdate,
-    PopUp( sampleMenu )
+    GUI_MENU_ARRAY( sampleMenu )
 };
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,9 @@
 
 
 static gui_menu_struct W4PopUp[] = {
-    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED },
-    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED },
-    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED },
+    { "&Say",       MENU_W2_SAY,    GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "&Top",       MENU_W2_TOP,    GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
+    { "&Open 1",    MENU_W2_OPEN1,  GUI_STYLE_MENU_ENABLED, NULL, GUI_NO_MENU },
 };
 
 static char * Stuff[] = {
@@ -211,7 +211,7 @@ static wnd_info W4Info = {
     NoNextRow,
     NoNotify,
     NoChkUpdate,
-    PopUp( W4PopUp )
+    GUI_MENU_ARRAY( W4PopUp )
 };
 
 a_window W4Open( void )

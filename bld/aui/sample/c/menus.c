@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,55 +40,55 @@
 void *SrchHistory;
 
 static gui_menu_struct FirstMenu[] = {
-    { "&Break",             MENU_BUG,               GUI_STYLE_MENU_ENABLED, "" },
-    { "&Search",            MENU_SEARCH,            GUI_STYLE_MENU_ENABLED, "This is help text for Search" },
-    { "&Next",              MENU_NEXT,              GUI_STYLE_MENU_ENABLED, "This is help text for Next" },
-    { "&Prev",              MENU_PREV,              GUI_STYLE_MENU_ENABLED },
-    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR },
-    { "&Get File",          MENU_GET_FILE,          GUI_STYLE_MENU_ENABLED },
-    { "&Options",           MENU_OPTIONS,           GUI_STYLE_MENU_ENABLED },
-    { "&Password",          MENU_PASSWORD,          GUI_STYLE_MENU_ENABLED },
-    { "&Command",           MENU_COMMAND,           GUI_STYLE_MENU_ENABLED },
-    { "P&ick One",          MENU_PICK,              GUI_STYLE_MENU_ENABLED },
-    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR },
-    { "&Tools",             MENU_TOOLS,             GUI_STYLE_MENU_ENABLED },
-    { "St&atus",            MENU_STATUS,            GUI_STYLE_MENU_ENABLED },
-    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR },
-    { "&Match",             MENU_MATCH,             GUI_STYLE_MENU_ENABLED },
-    { "Sc&ramble Menus",    MENU_SCRAMBLE_MENUS,    GUI_STYLE_MENU_ENABLED },
-    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR },
-    { "Inactive",           0,                      GUI_STYLE_MENU_GRAYED },
-    { "E&xit",              MENU_QUIT,              GUI_STYLE_MENU_ENABLED },
+    { "&Break",             MENU_BUG,               GUI_STYLE_MENU_ENABLED,     "",                             GUI_NO_MENU },
+    { "&Search",            MENU_SEARCH,            GUI_STYLE_MENU_ENABLED,     "This is help text for Search", GUI_NO_MENU },
+    { "&Next",              MENU_NEXT,              GUI_STYLE_MENU_ENABLED,     "This is help text for Next",   GUI_NO_MENU },
+    { "&Prev",              MENU_PREV,              GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                           GUI_NO_MENU },
+    { "&Get File",          MENU_GET_FILE,          GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "&Options",           MENU_OPTIONS,           GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "&Password",          MENU_PASSWORD,          GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "&Command",           MENU_COMMAND,           GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "P&ick One",          MENU_PICK,              GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                           GUI_NO_MENU },
+    { "&Tools",             MENU_TOOLS,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "St&atus",            MENU_STATUS,            GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                           GUI_NO_MENU },
+    { "&Match",             MENU_MATCH,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Sc&ramble Menus",    MENU_SCRAMBLE_MENUS,    GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "",                   0,                      GUI_STYLE_MENU_SEPARATOR,   NULL,                           GUI_NO_MENU },
+    { "Inactive",           0,                      GUI_STYLE_MENU_GRAYED,      NULL,                           GUI_NO_MENU },
+    { "E&xit",              MENU_QUIT,              GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
 };
 static gui_menu_struct SecondSub[] = {
-    { "Open &4",    MENU_OPEN4,     GUI_STYLE_MENU_ENABLED },
-    { "Open 4&b",   MENU_OPEN4B,    GUI_STYLE_MENU_ENABLED },
-    { "Open &5",    MENU_OPEN5,     GUI_STYLE_MENU_ENABLED },
-    { "Open &6",    MENU_OPEN6,     GUI_STYLE_MENU_ENABLED },
-    { "Open &7",    MENU_OPEN7,     GUI_STYLE_MENU_ENABLED },
-    { "Open &8",    MENU_OPEN8,     GUI_STYLE_MENU_ENABLED },
+    { "Open &4",            MENU_OPEN4,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open 4&b",           MENU_OPEN4B,            GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &5",            MENU_OPEN5,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &6",            MENU_OPEN6,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &7",            MENU_OPEN7,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &8",            MENU_OPEN8,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
 };
 static gui_menu_struct SecondMenu[] = {
-    { "Open &1",    MENU_OPEN1,     GUI_STYLE_MENU_ENABLED },
-    { "Open 1&a",   MENU_OPEN1A,    GUI_STYLE_MENU_ENABLED },
-    { "Open &2",    MENU_OPEN2,     GUI_STYLE_MENU_ENABLED },
-    { "Open &3",    MENU_OPEN3,     GUI_STYLE_MENU_ENABLED },
-    { "&More",      MENU_MORE,      GUI_STYLE_MENU_ENABLED, NULL, ArraySize( SecondSub ), SecondSub },
+    { "Open &1",            MENU_OPEN1,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open 1&a",           MENU_OPEN1A,            GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &2",            MENU_OPEN2,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open &3",            MENU_OPEN3,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "&More",              MENU_MORE,              GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_MENU_ARRAY( SecondSub ) },
 };
 static gui_menu_struct ThirdMenu[] = {
-    { "Open &1",    MENU_OPEN1,     GUI_STYLE_MENU_ENABLED },
-    { "Open 1&a",   MENU_OPEN1A,    GUI_STYLE_MENU_ENABLED },
+    { "Open &1",            MENU_OPEN1,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
+    { "Open 1&a",           MENU_OPEN1A,            GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
 };
 
 static gui_menu_struct ForthMenu[] = {
-    { "Open &1",    MENU_OPEN1,     GUI_STYLE_MENU_ENABLED },
+    { "Open &1",            MENU_OPEN1,             GUI_STYLE_MENU_ENABLED,     NULL,                           GUI_NO_MENU },
 };
 
 static gui_menu_struct SampleMainMenu[] = {
-    { "&First",     MENU_FIRST,     GUI_STYLE_MENU_ENABLED,                             "This is help for First",   WndMenuFields( FirstMenu ) },
-    { "&Second",    MENU_SECOND,    GUI_STYLE_MENU_ENABLED,                             "This is help for Second",  WndMenuFields( SecondMenu ) },
-    { "&Windows",   MENU_THIRD,     GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_MDIWINDOW,  "This is help for Windows", WndMenuFields( ThirdMenu ) },
-    { "&Popup",     MENU_POPUP,     GUI_STYLE_MENU_ENABLED | WND_MENU_POPUP,            "This is help for Popup",   WndMenuFields( ForthMenu ) },
+    { "&First",             MENU_FIRST,             GUI_STYLE_MENU_ENABLED,                             "This is help for First",   GUI_MENU_ARRAY( FirstMenu ) },
+    { "&Second",            MENU_SECOND,            GUI_STYLE_MENU_ENABLED,                             "This is help for Second",  GUI_MENU_ARRAY( SecondMenu ) },
+    { "&Windows",           MENU_THIRD,             GUI_STYLE_MENU_ENABLED | GUI_STYLE_MENU_MDIWINDOW,  "This is help for Windows", GUI_MENU_ARRAY( ThirdMenu ) },
+    { "&Popup",             MENU_POPUP,             GUI_STYLE_MENU_ENABLED | WND_MENU_POPUP,            "This is help for Popup",   GUI_MENU_ARRAY( ForthMenu ) },
 };
 
 gui_menu_items WndMainMenu = { ArraySize( SampleMainMenu ), SampleMainMenu };

@@ -62,46 +62,46 @@
 #define OFN_SAMPLE_FILE (OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST)
 
 static gui_menu_struct fileMenu[] = {
-    { "&Open...",               MENU_OPEN_SAMPLE,   GUI_STYLE_MENU_ENABLED, "Open a sample file." },
-    { "&Close",                 MENU_CLOSE_SAMPLE,  GUI_STYLE_MENU_ENABLED, "Close the current sample information." },
-    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
-    { "Op&tions...",            MENU_OPTIONS,       GUI_STYLE_MENU_ENABLED, "Set profiler options." },
+    { "&Open...",               MENU_OPEN_SAMPLE,   GUI_STYLE_MENU_ENABLED, "Open a sample file.",                      GUI_NO_MENU },
+    { "&Close",                 MENU_CLOSE_SAMPLE,  GUI_STYLE_MENU_ENABLED, "Close the current sample information.",    GUI_NO_MENU },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR, NULL,                                     GUI_NO_MENU },
+    { "Op&tions...",            MENU_OPTIONS,       GUI_STYLE_MENU_ENABLED, "Set profiler options.",                    GUI_NO_MENU },
 #if !defined( __WINDOWS__ ) && !defined( __NT__ ) && !defined( __OS2__ ) && !defined( __UNIX__ )
-    { "S&ystem",                MENU_SYSTEM,        GUI_STYLE_MENU_ENABLED, "Start an operating system shell." },
+    { "S&ystem",                MENU_SYSTEM,        GUI_STYLE_MENU_ENABLED, "Start an operating system shell.",         GUI_NO_MENU },
 #endif
 #ifdef TRMEM
-    { "&Memory Usage(Debug)",   MENU_MEMPRT,        GUI_STYLE_MENU_ENABLED, "Print out current memory usage." },
+    { "&Memory Usage(Debug)",   MENU_MEMPRT,        GUI_STYLE_MENU_ENABLED, "Print out current memory usage.",          GUI_NO_MENU },
 #endif
-    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
-    { "E&xit",                  MENU_EXIT,          GUI_STYLE_MENU_ENABLED, "Exit the Open Watcom Profiler." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR, NULL,                                     GUI_NO_MENU },
+    { "E&xit",                  MENU_EXIT,          GUI_STYLE_MENU_ENABLED, "Exit the Open Watcom Profiler.",           GUI_NO_MENU },
 };
 
 
 static gui_menu_struct convertMenu[] = {
-    { "Current &Module...", MENU_CONVERT_MODULE,    GUI_STYLE_MENU_ENABLED, "Convert the current module." },
-    { "Current &Image...",  MENU_CONVERT_IMAGE,     GUI_STYLE_MENU_ENABLED, "Convert the current image." },
-    { "&All Images...",     MENU_CONVERT_ALL,       GUI_STYLE_MENU_ENABLED, "Convert all of the images." },
+    { "Current &Module...", MENU_CONVERT_MODULE,    GUI_STYLE_MENU_ENABLED, "Convert the current module.",              GUI_NO_MENU },
+    { "Current &Image...",  MENU_CONVERT_IMAGE,     GUI_STYLE_MENU_ENABLED, "Convert the current image.",               GUI_NO_MENU },
+    { "&All Images...",     MENU_CONVERT_ALL,       GUI_STYLE_MENU_ENABLED, "Convert all of the images.",               GUI_NO_MENU },
 };
 
 
 static gui_menu_struct helpMenu[] = {
-    { "&Contents",              MENU_HELP_CONTENTS, GUI_STYLE_MENU_ENABLED, "List Open Watcom Profile help topics." },
+    { "&Contents",              MENU_HELP_CONTENTS, GUI_STYLE_MENU_ENABLED, "List Open Watcom Profile help topics.",    GUI_NO_MENU },
 #if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2_PM__ )
-    { "&Search for Help On...", MENU_HELP_SEARCH,   GUI_STYLE_MENU_ENABLED, "Search for help on a specific topic." },
-    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
-    { "&How to Use Help",       MENU_HELP_ONHELP,   GUI_STYLE_MENU_ENABLED, "Display information on how to use help." },
+    { "&Search for Help On...", MENU_HELP_SEARCH,   GUI_STYLE_MENU_ENABLED, "Search for help on a specific topic.",     GUI_NO_MENU },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR, NULL,                                     GUI_NO_MENU },
+    { "&How to Use Help",       MENU_HELP_ONHELP,   GUI_STYLE_MENU_ENABLED, "Display information on how to use help.",  GUI_NO_MENU },
 #endif
-    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR },
-    { "&About...",              MENU_ABOUT,         GUI_STYLE_MENU_ENABLED, "Display program information." },
+    { "",                       0,                  GUI_STYLE_MENU_SEPARATOR, NULL,                                     GUI_NO_MENU },
+    { "&About...",              MENU_ABOUT,         GUI_STYLE_MENU_ENABLED, "Display program information.",             GUI_NO_MENU },
 };
 
 
 static gui_menu_struct WPMainMenu[] = {
-    { "&File",      MENU_FILE,      GUI_STYLE_MENU_ENABLED,                             "",                                         WndMenuFields( fileMenu ) },
-    { "&Convert",   MENU_CONVERT,   GUI_STYLE_MENU_ENABLED,                             "Convert the data to an output format.",    WndMenuFields( convertMenu ) },
-    { "&Windows",   MENU_WINDOWS,   GUI_STYLE_MENU_ENABLED + GUI_STYLE_MENU_MDIWINDOW,  "Select an active window." },
-    { "&Actions",   MENU_ACTIONS,   GUI_STYLE_MENU_ENABLED + WND_MENU_POPUP,            "Select an action for the active window." },
-    { "&Help",      MENU_HELP,      GUI_STYLE_MENU_ENABLED,                             "Display Open Watcom Profiler help.",       WndMenuFields( helpMenu ) },
+    { "&File",      MENU_FILE,      GUI_STYLE_MENU_ENABLED,                             "",                                         GUI_MENU_ARRAY( fileMenu ) },
+    { "&Convert",   MENU_CONVERT,   GUI_STYLE_MENU_ENABLED,                             "Convert the data to an output format.",    GUI_MENU_ARRAY( convertMenu ) },
+    { "&Windows",   MENU_WINDOWS,   GUI_STYLE_MENU_ENABLED + GUI_STYLE_MENU_MDIWINDOW,  "Select an active window.",                 GUI_NO_MENU },
+    { "&Actions",   MENU_ACTIONS,   GUI_STYLE_MENU_ENABLED + WND_MENU_POPUP,            "Select an action for the active window.",  GUI_NO_MENU },
+    { "&Help",      MENU_HELP,      GUI_STYLE_MENU_ENABLED,                             "Display Open Watcom Profiler help.",       GUI_MENU_ARRAY( helpMenu ) },
 };
 
 gui_menu_items  WndMainMenu = { ArraySize( WPMainMenu ), WPMainMenu };

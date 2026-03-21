@@ -47,7 +47,7 @@ wnd_info NoInfo = {
     NoNextRow,
     NoNotify,
     NoChkUpdate,
-    NoPopUp
+    GUI_NO_MENU
 };
 
 bool WNDCALLBACK NoGetLine( a_window wnd, wnd_row row, wnd_piece piece, wnd_line_piece *line )

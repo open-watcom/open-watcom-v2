@@ -558,10 +558,6 @@ extern void                 WndGetGadgetSize( wnd_gadget_type type, gui_coord * 
 extern wnd_attr             WndMapTabAttr( wnd_attr );
 extern char                 WndBackgroundChar;
 
-#define PopUp( x )          (sizeof( x ) / sizeof( *(x) )), x
-#define NoPopUp             0, NULL
-
-#define WndMenuFields( x )  (sizeof( x ) / sizeof( *(x) )), x
 extern void                 WndSetMainMenu( gui_menu_items *menus );
 
 /* following function are all window refresh hooks */
