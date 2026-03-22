@@ -245,7 +245,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         fn_get = list->get;
         if( fn_get == NULL )
             fn_get = uigetlistelement;
-        (*fn_get)( list->data_handle, list->choice, ctrlbuf, CTRL_BUF_LEN );
+        (*fn_get)( list->data, list->choice, ctrlbuf, CTRL_BUF_LEN );
         /* ctrlbuf does not have to be null terminated */
         /* terminate it at maximum length */
         ctrlbuf[CTRL_BUF_LEN] = '\0';
@@ -573,7 +573,7 @@ void uiupdatecombobox( a_combo_box *combo )
         fn_get = list->get;
         if( fn_get == NULL )
             fn_get = uigetlistelement;
-        if( (*fn_get)( list->data_handle, list->choice, str, CTRL_BUF_LEN ) ) {
+        if( (*fn_get)( list->data, list->choice, str, CTRL_BUF_LEN ) ) {
             /* str does not have to be null terminated */
             /* terminate it at maximum length */
             str[CTRL_BUF_LEN] = '\0';

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ extern void GUIFreeList( a_list *list, bool free_list );
 extern a_list *GUICreateListBox( void );
 extern a_list *GUICreateEditMLE( const char *text );
 extern bool GUIListBoxAddText( a_list *, const char *, int choice );
-extern bool GUIListBoxAddTextList( a_list *, int num_items, const void *data_handle, GUIPICKGETTEXT *getstring );
+extern bool GUIListBoxAddTextList( a_list *, int num_items, const char **data, GUIPICKGETTEXT *getstring );
 extern bool GUIListBoxDeleteItem( a_list *list, int choice );
 extern bool GUIAddListBox( gui_control *control, gui_control_info *info,
                            gui_colour_set *plain, gui_colour_set *standout );

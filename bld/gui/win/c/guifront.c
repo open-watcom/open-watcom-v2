@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,7 @@ void ActivateNC( gui_window *wnd, bool activate )
 
     for( current = wnd; current != NULL; current = GUIGetParentWindow( current ) ) {
         if( current->flags & HAS_CAPTION ) {
-            GUISendMessage( current->hwnd_frame, WM_NCACTIVATE, (WPI_PARAM1)activate, (WPI_PARAM2)0 );
+            GUISendMessage( current->hwnd_frame, WM_NCACTIVATE, (WPI_PARAM1)activate, 0 );
             break;
         }
     }

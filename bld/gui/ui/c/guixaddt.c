@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,13 +95,13 @@ bool GUIAPI GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
 }
 
 bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
-                    const void *data_handle, GUIPICKGETTEXT *getstring )
+                    const char **data, GUIPICKGETTEXT *getstring )
 {
     VFIELD      *field;
     a_list      *list;
 
     if( GetList( wnd, id, &field, &list ) ) {
-        return( GUIListBoxAddTextList( list, num_items, data_handle, getstring ) );
+        return( GUIListBoxAddTextList( list, num_items, data, getstring ) );
     }
     return( false );
 }

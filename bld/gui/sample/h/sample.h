@@ -171,7 +171,7 @@ extern gui_control_info         ComboBoxControl;
 extern gui_control_info         ComboBoxControl2;
 extern gui_control_info         ListBoxControl;
 extern gui_control_info         ComboOkayControl;
-extern char                     *ListBoxData[];
+extern const char               *ListBoxData[];
 extern gui_create_info          Parent;
 extern gui_create_info          Child1;
 extern gui_create_info          Child2;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,16 +33,17 @@
 #include <string.h>
 #include "sample.h"
 #include "dlgstat.h"
+#include "watcom.h"
 
 
 #define GUI_NO_ID   ((gui_ctl_id)-1)
 
 extern out_info Child1_Out;
 
-bool            DialogScaled    = false;
-bool            ButtonsScaled   = false;
-bool            ControlsScaled  = false;
-char * ListBoxData[] = { "one", "two", "three" };
+bool            DialogScaled   = false;
+bool            ButtonsScaled  = false;
+bool            ControlsScaled = false;
+const char      *ListBoxData[] = { "one", "two", "three" };
 int    NUM_LIST_BOX_DATA = GUI_ARRAY_SIZE( ListBoxData );
 
 static  const char  *LongText = "inserted_really_long_piece_of_text";
@@ -171,9 +172,9 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char * GUICALLBACK ListBoxFunc( const void *data_handle, int item )
+static const char * GUICALLBACK ListBoxFunc( const char **data, int item )
 {
-    return( ((const char **)data_handle)[item] );
+    return( data[item] );
 }
 
 static void GUICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
@@ -304,8 +305,8 @@ bool StaticDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param
             GUIGetCurrSelect( wnd, id, &num );
             text = GUIGetListItem( wnd, id, num );
             MemFree( text );
-            GUISetListItemData( wnd, id, num, (void *)num );
-            num = (int)GUIGetListItemData( wnd, id, num );
+            GUISetListItemData( wnd, id, num, (void *)(pointer_uint)num );
+            num = (int)(pointer_uint)GUIGetListItemData( wnd, id, num );
             break;
         case EDIT_CONTROL:
             new = GUIGetText( wnd, id );

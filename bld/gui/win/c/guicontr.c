@@ -390,7 +390,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     case WM_ERASEBKGND:
         hdc = _wpi_getpres( hwnd );
         _wpi_getupdaterect( hwnd, &wpi_rect );
-        _wpi_fillrect( hdc, &wpi_rect, (WPI_COLOUR)0, wnd->bk_brush );
+        _wpi_fillrect( hdc, &wpi_rect, 0, wnd->bk_brush );
         _wpi_releasepres( hwnd, hdc );
         break;
     }
@@ -618,7 +618,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent_wnd, c
         }
   #endif
 
-        SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, (LPARAM)0 );
+        SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, 0 );
     }
 #endif
 
@@ -712,9 +712,9 @@ bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id )
                         }
                         if( in_group ) {
                             if( curr->id == id ) {
-                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, (WPI_PARAM2)0 );
+                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)true, 0 );
                             } else {
-                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, (WPI_PARAM2)0 );
+                                GUISendMessage( curr->hwnd, BM_SETCHECK, (WPI_PARAM1)false, 0 );
                             }
                         }
                         if( curr->id == last ) {

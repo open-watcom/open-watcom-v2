@@ -500,7 +500,7 @@ typedef void (GUICALLBACK GUIPICKCALLBACK)( gui_window *wnd, gui_ctl_id id );
 typedef void (GUICALLBACK PICKDLGOPEN)( const char *title, gui_text_ord rows, gui_text_ord cols,
                              gui_control_info *controls_info, int num_controls,
                              GUIEVCALLBACK *gui_call_back, void *extra );
-typedef const char *(GUICALLBACK GUIPICKGETTEXT)( const void *data_handle, int item );
+typedef const char *(GUICALLBACK GUIPICKGETTEXT)( const char **data, int item );
 
 typedef struct gui_create_info {
     const char          *title;
@@ -926,7 +926,7 @@ extern bool     GUIAPI GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool
 extern bool     GUIAPI GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text );
 extern bool     GUIAPI GUISetListItemData( gui_window *wnd, gui_ctl_id id, int choice, void *data );
 extern void     * GUIAPI GUIGetListItemData( gui_window *wnd, gui_ctl_id id, int choice );
-extern bool     GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items, const void *data_handle, GUIPICKGETTEXT *getstring );
+extern bool     GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items, const char **data, GUIPICKGETTEXT *getstring );
 extern bool     GUIAPI GUIInsertText( gui_window *wnd, gui_ctl_id id, int choice, const char *text );
 extern bool     GUIAPI GUISetTopIndex( gui_window *wnd, gui_ctl_id id, int choice );
 extern int      GUIAPI GUIGetTopIndex( gui_window *wnd, gui_ctl_id id );

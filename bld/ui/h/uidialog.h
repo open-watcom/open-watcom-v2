@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +64,7 @@ typedef enum {
     FLD_EDIT_MLE
 } a_field_type;
 
-typedef bool (UIPICKGETTEXT)( const void *data_handle, unsigned item, char *buff, unsigned buff_len );
+typedef bool (UIPICKGETTEXT)( const char **data, unsigned item, char *buff, unsigned buff_len );
 
 typedef struct an_edit_control {
     char            *buffer;
@@ -107,7 +107,7 @@ typedef struct a_toggle {
 
 typedef struct a_list {
     unsigned        choice;
-    const void      *data_handle;
+    const char      **data;
     UIPICKGETTEXT   *get;
     a_list_info     *box;
 } a_list;

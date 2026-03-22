@@ -573,11 +573,11 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
 #if defined( _M_I86 )
     frame_hwnd = WinCreateStdWindow( parent_hwnd, frame_flags | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, &flags,
                                      NULL, (char *)dlg_info->title,
-                                     0, (HMODULE)0, 0, NULL );
+                                     0, 0, 0, NULL );
 #else
     frame_hwnd = WinCreateStdWindow( parent_hwnd, frame_flags | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, &flags,
                                      NULL, dlg_info->title,
-                                     0, (HMODULE)0, 0, NULL );
+                                     0, 0, 0, NULL );
 #endif
     if( frame_hwnd != NULLHANDLE ) {
         oldFrameProc = _wpi_subclasswindow( frame_hwnd, GUIFrameProc );

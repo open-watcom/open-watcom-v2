@@ -92,8 +92,8 @@ static bool GUICALLBACK TestDialogWndGUIEventProc( gui_window *wnd, gui_event gu
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             MemFree( text );
-            GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
+            GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)(pointer_uint)num );
+            num = (int)(pointer_uint)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL:
             new = GUIGetText( wnd, EDIT_CONTROL );

@@ -55,7 +55,7 @@ static unsigned long    listData;
 static UIPICKGETTEXT    GetListBoxItem;
 
 static a_list listBox = {
-    0, &listData, GetListBoxItem, NULL
+    0, (const char **)&listData, GetListBoxItem, NULL
 };
 
 static an_edit_control      editCtl;
@@ -73,23 +73,23 @@ static VFIELD   *editVField = &helpSearchDialog[0];
 static a_dialog         *curHelpDialog;
 static HelpHdl          searchHdl;
 
-static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
+static bool GetLBItemLiteral( const char **data, unsigned line, char *buf,
                               unsigned buflen )
 {
     char                *name;
-    unsigned long       *itemcnt;
+    unsigned long       itemcnt;
     unsigned            height;
 
-    itemcnt = info;
+    itemcnt = *(unsigned long *)data;
     if( listBox.box == NULL ) {
         height = 0;
     } else {
         height = listBox.box->area.height - 1;
     }
-    if( line >= *itemcnt + height )
+    if( line >= itemcnt + height )
         return( false );
     if( buf != NULL ) {
-        if( line >= *itemcnt ) {
+        if( line >= itemcnt ) {
             buf[0] = '\0';
         } else {
             name = HelpGetIndexedTopic( searchHdl, line );
@@ -102,25 +102,25 @@ static bool GetLBItemLiteral( void *info, unsigned line, char *buf,
     return( true );
 }
 
-static bool GetListBoxItem( const void *data_handle, unsigned item, char *buf, unsigned buflen )
+static bool GetListBoxItem( const char **data, unsigned item, char *buf, unsigned buflen )
 {
     const char          *name;
-    unsigned long       *itemcnt;
+    unsigned long       itemcnt;
     unsigned            height;
 
     //
     // NYI - this should call GetLBItemLiteral
     //
-    itemcnt = (unsigned long *)data_handle;
+    itemcnt = *(unsigned long *)data;
     if( listBox.box == NULL ) {
         height = 0;
     } else {
         height = listBox.box->area.height - 1;
     }
-    if( item >= *itemcnt + height )
+    if( item >= itemcnt + height )
         return( false );
     if( buf != NULL ) {
-        if( item >= *itemcnt ) {
+        if( item >= itemcnt ) {
             name = "";
         } else {
             name = HelpGetIndexedTopic( searchHdl, item );
@@ -166,7 +166,7 @@ static void copyLBLinetoEditCtl( unsigned index )
     size_t      len;
 
     lb_item = MemAllocSafe( MAX_EDIT_LINE_LEN );
-    GetListBoxItem( &listData, index, lb_item, MAX_EDIT_LINE_LEN );
+    GetListBoxItem( (const char **)&listData, index, lb_item, MAX_EDIT_LINE_LEN );
     len = strlen( lb_item );
     MemFree( editCtl.buffer );
     editCtl.buffer = lb_item;
@@ -255,7 +255,7 @@ char *HelpSearch( HelpHdl hdl )
         case EV_ENTER:
         case EV_LIST_BOX_DCLICK:
             ret = MemAllocSafe( MAX_EDIT_LINE_LEN );
-            GetLBItemLiteral( &listData, listBox.box->row, ret, MAX_EDIT_LINE_LEN );
+            GetLBItemLiteral( (const char **)&listData, listBox.box->row, ret, MAX_EDIT_LINE_LEN );
             if( ret[0] == '\0' ) {
                 MemFree( ret );
                 ret = NULL;

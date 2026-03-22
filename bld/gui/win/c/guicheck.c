@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@ unsigned GUIAPI GUIIsChecked( gui_window *wnd, gui_ctl_id id )
 {
     unsigned    ret;
 
-    ret = (unsigned)GUISendDlgItemMessage( wnd->hwnd, id, BM_GETCHECK, (WPI_PARAM1)0, (WPI_PARAM2)0 );
+    ret = (unsigned)GUISendDlgItemMessage( wnd->hwnd, id, BM_GETCHECK, 0, 0 );
 
     return( ret & 0x3 );
 }
@@ -51,7 +51,7 @@ bool GUIAPI GUISetChecked( gui_window *wnd, gui_ctl_id id, unsigned check )
             return( GUIProcessControlNotification( id, BN_CLICKED, wnd ) );
         }
     } else {
-        GUISendDlgItemMessage( wnd->hwnd, id, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)0 );
+        GUISendDlgItemMessage( wnd->hwnd, id, BM_SETCHECK, (WPI_PARAM1)check, 0 );
     }
 
     return( true );

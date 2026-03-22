@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,20 +34,20 @@
 #include "_aui.h"
 
 static int              _def_item;
-static const void       *_data_handle;
+static const char       **_data;
 static GUIPICKGETTEXT   *_getstring;
 static int              _num_items;
 
 static void GUICALLBACK PickInit( gui_window *gui, gui_ctl_id list_id )
 {
-    GUIAddTextList( gui, list_id, _num_items, _data_handle, _getstring );
+    GUIAddTextList( gui, list_id, _num_items, _data, _getstring );
     GUISetCurrSelect( gui, list_id, _def_item );
 }
 
-bool WNDAPI DlgPickWithRtn2( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice )
+bool WNDAPI DlgPickWithRtn2( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice )
 {
     _def_item = def_item;
-    _data_handle = data_handle;
+    _data = data;
     _getstring = getstring;
     _num_items = num_items;
     return( pickfn( title, &PickInit, choice ) );
@@ -63,17 +63,17 @@ static bool WNDCALLBACK doDlgPick( const char *title, GUIPICKCALLBACK *pickinit,
     return( GUIDlgPickWithRtn( title, pickinit, doDlgOpen, choice ) );
 }
 
-bool WNDAPI DlgPickWithRtn( const char *title, const void *data_handle, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
+bool WNDAPI DlgPickWithRtn( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( title, data_handle, def_item, getstring, num_items, doDlgPick, choice ) );
+    return( DlgPickWithRtn2( title, data, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
-static const char * GUICALLBACK doDlgPickText( const void *data_handle, int item )
+static const char * GUICALLBACK doDlgPickText( const char **data, int item )
 {
-    return( ((const char **)data_handle)[item] );
+    return( (data)[item] );
 }
 
-bool WNDAPI DlgPick( const char *title, const void *data_handle, int def_item, int num_items, int *choice )
+bool WNDAPI DlgPick( const char *title, const char **data, int def_item, int num_items, int *choice )
 {
-    return( DlgPickWithRtn( title, data_handle, def_item, doDlgPickText, num_items, choice ) );
+    return( DlgPickWithRtn( title, data, def_item, doDlgPickText, num_items, choice ) );
 }

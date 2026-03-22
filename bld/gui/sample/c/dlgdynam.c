@@ -34,6 +34,7 @@
 #include "sample.h"
 #include "dlgstat.h"
 #include "dlgdynam.h"
+#include "watcom.h"
 
 
 static bool GUICALLBACK DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, void *param );
@@ -54,9 +55,9 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char * GUICALLBACK ListBoxFunc( const void *data_handle, int item )
+static const char * GUICALLBACK ListBoxFunc( const char **data, int item )
 {
-    return( ((const char **)data_handle)[item] );
+    return( data[item] );
 }
 
 static void GUICALLBACK ContrCallBack( gui_window *wnd, gui_ctl_id id, void *param )
@@ -178,8 +179,8 @@ static bool DynamicDialogWndGUIEventProc( gui_window *wnd, gui_event gui_ev, voi
             GUIGetCurrSelect( wnd, LISTBOX_CONTROL, &num );
             text = GUIGetListItem( wnd, LISTBOX_CONTROL, num );
             MemFree( text );
-            GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
+            GUISetListItemData( wnd, LISTBOX_CONTROL, num, (void *)(pointer_uint)num );
+            num = (int)(pointer_uint)GUIGetListItemData( wnd, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL:
             new = GUIGetText( wnd, EDIT_CONTROL );
