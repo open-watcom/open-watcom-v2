@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,12 +60,12 @@ static bool WNDCALLBACK SymPick( const char *text, GUIPICKCALLBACK *pick_call_ba
     return( true );
 }
 
-static const char * GUICALLBACK SymPickText( const void *data_handle, int item )
+static const char * GUICALLBACK SymPickText( const char **data, int item )
 {
     sym_list            *sym;
     unsigned            len;
     const char          *image_name;
-    const ambig_info    *ambig = data_handle;
+    const ambig_info    *ambig = (const ambig_info *)data;
 
     sym = ambig->sym;
     while( item-- > 0 ) {
@@ -84,5 +84,5 @@ static const char * GUICALLBACK SymPickText( const void *data_handle, int item )
 
 bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( "", ambig, 0, SymPickText, num_items, SymPick, choice ) );
+    return( DlgPickWithRtn2( "", (const char **)ambig, 0, SymPickText, num_items, SymPick, choice ) );
 }

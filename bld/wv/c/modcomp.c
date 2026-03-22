@@ -43,9 +43,9 @@
 #include "litdui.h"
 
 
-static const char * GUICALLBACK ModGetName( const void *data_handle, int item )
+static const char * GUICALLBACK ModGetName( const char **data, int item )
 {
-    const module_list *list = data_handle;
+    const module_list *list = (const module_list *)data;
 
     if( item >= ModListNumRows( list ) )
         return( NULL );
@@ -75,7 +75,7 @@ void ModComplete( gui_window *gui, gui_ctl_id id )
         break;
     default:
         new = -1;
-        DlgPickWithRtn( LIT_DUI( Modules ), &list, 0, ModGetName, ModListNumRows( &list ), &new );
+        DlgPickWithRtn( LIT_DUI( Modules ), (const char **)&list, 0, ModGetName, ModListNumRows( &list ), &new );
         break;
     }
     strcpy( TxtBuff, savebuff );
