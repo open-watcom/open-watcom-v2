@@ -246,7 +246,7 @@ static int GetRegIdx( reg_window *reg, wnd_row row, wnd_piece piece )
 }
 
 
-static const char * GUICALLBACK RegValueName( const char **data, int item )
+static const char * GUICALLBACK RegValueName( data_handle data, int item )
 {
     mad_modify_list const *possible = (const mad_modify_list *)data + item;
     size_t          buff_len;
@@ -308,7 +308,7 @@ static  void    WNDCALLBACK RegModify( a_window wnd, wnd_row row, wnd_piece piec
             }
             RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
         } else {  //MJC const cast
-            if( DlgPickWithRtn( TxtBuff, (const char **)possible, i, RegValueName, num_possible, &i ) ) {
+            if( DlgPickWithRtn( TxtBuff, (data_handle)possible, i, RegValueName, num_possible, &i ) ) {
                 RegNewValue( disp.reginfo, possible[i].data, possible[i].mth );
             }
         }

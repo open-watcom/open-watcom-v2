@@ -60,7 +60,7 @@ static bool WNDCALLBACK SymPick( const char *text, GUIPICKCALLBACK *pick_call_ba
     return( true );
 }
 
-static const char * GUICALLBACK SymPickText( const char **data, int item )
+static const char * GUICALLBACK SymPickText( data_handle data, int item )
 {
     sym_list            *sym;
     unsigned            len;
@@ -84,5 +84,5 @@ static const char * GUICALLBACK SymPickText( const char **data, int item )
 
 bool DUIDisambiguate( const ambig_info *ambig, int num_items, int *choice )
 {
-    return( DlgPickWithRtn2( "", (const char **)ambig, 0, SymPickText, num_items, SymPick, choice ) );
+    return( DlgPickWithRtn2( "", (data_handle)ambig, 0, SymPickText, num_items, SymPick, choice ) );
 }

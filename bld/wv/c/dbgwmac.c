@@ -106,9 +106,9 @@ static gui_menu_struct MacMenu[] = {
     #include "menumac.h"
 };
 
-static const char * GUICALLBACK WndGetName( const char **_data, int item )
+static const char * GUICALLBACK WndGetName( data_handle _data, int item )
 {
-    const char ***data = (const char ***)_data;
+    data_handle *data = (data_handle *)_data;
 
     return( *data[item] );
 }
@@ -185,11 +185,11 @@ static bool MacModWhat( a_window wnd, wnd_row row )
     old = mac->type;
     new = -1;
     if( mac->wndclass == WND_ALL ) {
-        if( DlgPickWithRtn( LIT_DUI( Macro_Type ), (const char **)WhatList + 1, old - 1, WndGetName, ArraySize( WhatList ) - 1, &new ) ) {
+        if( DlgPickWithRtn( LIT_DUI( Macro_Type ), (data_handle)WhatList + 1, old - 1, WndGetName, ArraySize( WhatList ) - 1, &new ) ) {
             ++new;
         }
     } else {
-        DlgPickWithRtn( LIT_DUI( Macro_Type ), (const char **)WhatList, old, WndGetName, ArraySize( WhatList ), &new );
+        DlgPickWithRtn( LIT_DUI( Macro_Type ), (data_handle)WhatList, old, WndGetName, ArraySize( WhatList ), &new );
     }
     if( new != -1 ) {
         mac->type = new;
@@ -225,7 +225,7 @@ bool MacKeyHit( a_window wnd, gui_key key )
                 MacChangeMac( wnd, mac, key, mac->wndclass, wndmac->change_row );
             } else if( wndmac->creating ) {
                 wndmac->creating = false;
-                if( DlgPickWithRtn( LIT_DUI( Enter_Window ), (const char **)WndDisplayNames, WND_ALL, WndGetName, NUM_WNDCLS, &new ) ) {
+                if( DlgPickWithRtn( LIT_DUI( Enter_Window ), (data_handle)WndDisplayNames, WND_ALL, WndGetName, NUM_WNDCLS, &new ) ) {
                     curr = MacAddDel( key, (wnd_class_wv)new, AllocCmdList( LIT_ENG( Quest_Marks ), strlen( LIT_ENG( Quest_Marks ) ) ) );
                     row = 0;
                     for( mac = WndMacroList; mac != curr; mac = mac->link ) {
@@ -317,7 +317,7 @@ static void MacModWhere( a_window wnd, wnd_row row )
     /* unused parameters */ (void)wnd;
 
     mac = MacGetMacro( row );
-    if( DlgPickWithRtn( LIT_DUI( Enter_Window ), (const char **)WndDisplayNames, mac->wndclass, WndGetName, NUM_WNDCLS, &new ) ) {
+    if( DlgPickWithRtn( LIT_DUI( Enter_Window ), (data_handle)WndDisplayNames, mac->wndclass, WndGetName, NUM_WNDCLS, &new ) ) {
 //        WndSetRepaint( wnd );
         MacChangeMac( wnd, mac, mac->key, (wnd_class_wv)new, row );
     }

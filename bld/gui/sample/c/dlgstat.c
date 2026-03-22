@@ -172,7 +172,7 @@ static gui_create_info DialogControl = {
     NULL                            // Menu Resource
 };
 
-static const char * GUICALLBACK ListBoxFunc( const char **data, int item )
+static const char * GUICALLBACK ListBoxFunc( data_handle data, int item )
 {
     return( data[item] );
 }

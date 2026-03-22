@@ -306,9 +306,9 @@ typedef struct {
     bool        cancel;
 } dlgnew_ctl;
 
-extern bool                 WNDAPI DlgPickWithRtn( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
-extern bool                 WNDAPI DlgPickWithRtn2( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
-extern bool                 WNDAPI DlgPick( const char *title, const char **data, int def_item, int num_items, int *choice );
+extern bool                 WNDAPI DlgPickWithRtn( const char *title, data_handle data, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice );
+extern bool                 WNDAPI DlgPickWithRtn2( const char *title, data_handle data, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice );
+extern bool                 WNDAPI DlgPick( const char *title, data_handle data, int def_item, int num_items, int *choice );
 extern bool                 WNDAPI DlgNew( const char *title, char *buff, size_t buff_len );
 extern bool                 WNDAPI DlgNewWithCtl( const char *title, char *buff, size_t buff_len, gui_control_info *controls, int num_controls,
                                             GUIEVCALLBACK *gui_call_back, gui_text_ord rows, gui_text_ord cols, gui_text_ord max_cols );

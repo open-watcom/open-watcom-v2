@@ -45,7 +45,7 @@
 
 static name_list *SortedNames;
 
-static const char * GUICALLBACK SymGetName( const char **data, int item )
+static const char * GUICALLBACK SymGetName( data_handle data, int item )
 {
     item += *(const int *)data;
     if( item >= NameListNumRows( SortedNames ) )
@@ -105,7 +105,7 @@ void SymComplete( gui_window *gui, gui_ctl_id id )
         break;
     default:
         new = -1;
-        DlgPickWithRtn( LIT_DUI( Symbol_List ), (const char **)&first, 0, SymGetName, num, &new );
+        DlgPickWithRtn( LIT_DUI( Symbol_List ), (data_handle)&first, 0, SymGetName, num, &new );
         break;
     }
     strcpy( TxtBuff, savebuff );

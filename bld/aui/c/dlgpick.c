@@ -34,7 +34,7 @@
 #include "_aui.h"
 
 static int              _def_item;
-static const char       **_data;
+static data_handle      _data;
 static GUIPICKGETTEXT   *_getstring;
 static int              _num_items;
 
@@ -44,7 +44,7 @@ static void GUICALLBACK PickInit( gui_window *gui, gui_ctl_id list_id )
     GUISetCurrSelect( gui, list_id, _def_item );
 }
 
-bool WNDAPI DlgPickWithRtn2( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice )
+bool WNDAPI DlgPickWithRtn2( const char *title, data_handle data, int def_item, GUIPICKGETTEXT *getstring, int num_items, WNDPICKER *pickfn, int *choice )
 {
     _def_item = def_item;
     _data = data;
@@ -63,17 +63,17 @@ static bool WNDCALLBACK doDlgPick( const char *title, GUIPICKCALLBACK *pickinit,
     return( GUIDlgPickWithRtn( title, pickinit, doDlgOpen, choice ) );
 }
 
-bool WNDAPI DlgPickWithRtn( const char *title, const char **data, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
+bool WNDAPI DlgPickWithRtn( const char *title, data_handle data, int def_item, GUIPICKGETTEXT *getstring, int num_items, int *choice )
 {
     return( DlgPickWithRtn2( title, data, def_item, getstring, num_items, doDlgPick, choice ) );
 }
 
-static const char * GUICALLBACK doDlgPickText( const char **data, int item )
+static const char * GUICALLBACK doDlgPickText( data_handle data, int item )
 {
     return( (data)[item] );
 }
 
-bool WNDAPI DlgPick( const char *title, const char **data, int def_item, int num_items, int *choice )
+bool WNDAPI DlgPick( const char *title, data_handle data, int def_item, int num_items, int *choice )
 {
     return( DlgPickWithRtn( title, data, def_item, doDlgPickText, num_items, choice ) );
 }

@@ -95,7 +95,7 @@ bool GUIAPI GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
 }
 
 bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items,
-                    const char **data, GUIPICKGETTEXT *getstring )
+                    data_handle data, GUIPICKGETTEXT *getstring )
 {
     VFIELD      *field;
     a_list      *list;

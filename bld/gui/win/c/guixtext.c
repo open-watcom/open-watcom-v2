@@ -79,13 +79,13 @@ bool GUIAPI GUIAddText( gui_window *wnd, gui_ctl_id id, const char *text )
     return( false );
 }
 
-bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items, const char **data, GUIPICKGETTEXT *getstring )
+bool GUIAPI GUIAddTextList( gui_window *wnd, gui_ctl_id id, int num_items, data_handle data, GUIPICKGETTEXT *getstring )
 {
     int     i;
 
     GUIControlSetRedraw( wnd, id, false );
     for( i = 0; i < num_items; i++ ) {
-        GUIAddText( wnd, id, (*getstring)( data, i ) );
+        GUIAddText( wnd, id, getstring( data, i ) );
     }
     GUIControlSetRedraw( wnd, id, true );
     GUIWndDirtyControl( wnd, id );
