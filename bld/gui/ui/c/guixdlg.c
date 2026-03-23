@@ -238,7 +238,7 @@ bool GUIInsertDialog( gui_window *wnd )
         if( ui_dlg_info == NULL ) {
             return( false );
         }
-        memset( ui_dlg_info, 0, sizeof( a_dialog ) );
+        memset( ui_dlg_info, 0, sizeof( *ui_dlg_info ) );
         ui_dlg_info->vs = &wnd->vs;
         if( InsertDialog( wnd, ui_dlg_info, 0, NULL, false ) ) {
             dlg_node = GUIGetDlgByWnd( wnd );
@@ -296,11 +296,14 @@ a_list *GUIGetList( VFIELD *field )
     return( list );
 }
 
-static void FreeEdit( an_edit_control *edit_control, bool free_edit )
+static void FreeEdit( an_edit_control *edit, bool free_edit )
 {
-    MemFree( edit_control->buffer );
+    MemFree( edit->buffer );
     if( free_edit ) {
-        MemFree( edit_control );
+        MemFree( edit );
+    } else {
+        edit->buffer = NULL;
+        edit->length = 0;
     }
 }
 
@@ -416,7 +419,7 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
     a_radio             *radio;
     a_check             *check;
     a_combo_box         *combo_box;
-    an_edit_control     *edit_control;
+    an_edit_control     *edit;
     bool                group_allocated;
     SAREA               area;
     bool                ok;
@@ -524,13 +527,14 @@ bool GUIDoAddControl( gui_control_info *ctl_info, gui_window *wnd, VFIELD *field
         break;
     case FLD_EDIT:
     case FLD_INVISIBLE_EDIT:
-        edit_control = MemAlloc( sizeof( *edit_control ) );
-        if( edit_control == NULL ) {
+        edit = MemAlloc( sizeof( *edit ) );
+        if( edit == NULL ) {
             return( false );
         }
-        field->u.edit = edit_control;
-        edit_control->buffer = NULL;
-        GUISetEditText( edit_control, ctl_info->text );
+        edit->buffer = NULL;
+        edit->length = 0;
+        field->u.edit = edit;
+        GUISetEditText( edit, ctl_info->text );
         break;
     case FLD_PULLDOWN:
     case FLD_LISTBOX:

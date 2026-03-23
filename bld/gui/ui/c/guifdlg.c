@@ -793,12 +793,9 @@ static bool initDialog( gui_window *wnd, const char *ext, const char *name )
     dlg_info    *dlg = GUIGetExtra( wnd );
 
     if( ext != NULL && hasWild( ext ) ) {
-        char    *str;
-
-        str = MemStrdup( ext );
         MemFree( dlg->currExt );
-        dlg->currExt = str;
-        if( str == NULL ) {
+        dlg->currExt = MemStrdup( ext );
+        if( dlg->currExt == NULL ) {
             return( false );
         }
     }

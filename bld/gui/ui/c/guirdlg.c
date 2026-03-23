@@ -348,7 +348,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
         return( NULL ) ;
 
     // initialize the create struct
-    memset( dlg_info, 0, sizeof( gui_create_info ) );
+    memset( dlg_info, 0, sizeof( *dlg_info ) );
 
     // set the initial text
     dlg_info->title = hdr->Caption; // NULL text is ok

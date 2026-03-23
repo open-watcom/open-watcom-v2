@@ -252,7 +252,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord in_height,
         return( false );
     }
     num_items = toolinfo->num_items;
-    memset( tbar, 0, sizeof( toolbarinfo ) );
+    memset( tbar, 0, sizeof( *tbar ) );
     parent = wnd->root;
     tbar->fixed_wpi_rect = wnd->hwnd_client_rect;
     tbar->hbitmaps = MemAlloc( sizeof( *tbar->hbitmaps ) * num_items );

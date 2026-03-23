@@ -112,7 +112,7 @@ bool GUIAPI GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
 
     case FLD_EDIT:
     case FLD_INVISIBLE_EDIT:
-        edit = (an_edit_control *)field->u.edit;
+        edit = field->u.edit;
         break;
     case FLD_COMBOBOX:
         combo_box = field->u.combo;

@@ -680,9 +680,9 @@ WPI_FONT GUIGetSystemFont( void )
 
     font = NULL;
     ret = _wpi_getsystemfont();
-    if( ret ) {
+    if( ret != NULL ) {
         font = MemAlloc( sizeof( *font ) );
-        if( font ) {
+        if( font != NULL ) {
             *font = *ret;
         }
     }

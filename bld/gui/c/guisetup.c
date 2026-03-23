@@ -47,7 +47,7 @@ gui_window *GUISetupWnd( gui_create_info *dlg_info )
 
     wnd = MemAlloc( sizeof( *wnd ) );
     if( wnd != NULL ) {
-        memset( wnd, 0, sizeof( gui_window ) );
+        memset( wnd, 0, sizeof( *wnd ) );
         wnd->gui_call_back = dlg_info->gui_call_back;
         wnd->extra = dlg_info->extra;
         GUIXSetupWnd( wnd );

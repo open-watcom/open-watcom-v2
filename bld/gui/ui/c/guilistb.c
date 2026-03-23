@@ -186,7 +186,7 @@ static const char **ResizeList( a_list *list, unsigned num_to_add, int *choice )
     num_items = GUIListSize( list );
     new_data = MemAlloc( sizeof( *new_data ) * ( num_items + num_to_add + 1 ) );
     if( new_data == NULL ) {
-        return( NULL );
+        return( new_data );
     }
     if( *choice == -1 ) {
         *choice = num_items;
