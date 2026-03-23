@@ -75,7 +75,6 @@
 #include "dlgbreak.h"
 
 
-extern void         ErrorBox( char * );
 extern bool         CheckBPIns( void );
 extern bool         DlgAreYouNuts( unsigned long );
 
@@ -1601,10 +1600,10 @@ bool BreakOnRawMemory( address addr, const char *comment, dig_type_size size )
     s.addr = addr;
     s.comment = comment;
     s.size = size;
-    return( SpawnP( BreakOnAddress, &s ) == 0 );
+    return( SpawnP( BreakOnAddress, (wspawn_parm)&s ) == 0 );
 }
 
-void BreakOnExprSP( void *_comment )
+void BreakOnExprSP( const char *comment )
 {
     address             addr;
     dig_type_info       ti;
@@ -1623,7 +1622,7 @@ void BreakOnExprSP( void *_comment )
     case INSP_RAW_DATA:
         s.addr = addr;
         s.size = ti.size;
-        s.comment = _comment;
+        s.comment = comment;
         BreakOnAddress( &s );
         break;
     }
@@ -1782,7 +1781,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                 SetProgState( run_conditions );
                 state_set = true;
             }
-            if( SpawnP( TestExpression, bp ) == 0 ) {
+            if( SpawnP( TestExpression, (wspawn_parm)bp ) == 0 ) {
                 if( !bp->status.b.expr_true ) {
                     hit = false;
                 } else {

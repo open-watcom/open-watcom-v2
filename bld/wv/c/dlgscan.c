@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ static bool DlgDoScan( const char *str, void *value, wspawn_funcP *rtn )
     old = ReScan( str );
     _SwitchOn( SW_ERR_IN_TXTBUFF );
     FreezeStack();
-    ok = ( SpawnP( rtn, value ) == 0 );
+    ok = ( SpawnP( rtn, (wspawn_parm)value ) == 0 );
     UnFreezeStack( false );
     _SwitchOff( SW_ERR_IN_TXTBUFF );
     ReScan( old );

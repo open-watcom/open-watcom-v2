@@ -58,7 +58,7 @@ void BreakOnSelected( const char *item )
     old = ReScan( item );
     EvalLValExpr( 1 );
     ReScan( old );
-    BreakOnExprSP( (void *)item );
+    BreakOnExprSP( item );
 }
 
 

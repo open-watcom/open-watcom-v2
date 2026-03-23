@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,7 +71,7 @@ extern char     *GetBPPatch( brkp *bp );
 extern int      GetBPResume( brkp *bp );
 extern bool     BreakWrite( address addr, mad_type_handle mth, const char *comment );
 extern bool     BreakOnRawMemory( address addr, const char *comment, dig_type_size size );
-extern void     BreakOnExprSP( void *comment );
+extern void     BreakOnExprSP( const char *comment );
 extern void     PointFini( void );
 extern void     CheckBPErrors( void );
 extern void     BrkCmdError( void );

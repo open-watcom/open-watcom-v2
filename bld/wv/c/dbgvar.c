@@ -962,7 +962,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     ok = true;
     switch( ExprSP->ti.kind ) {
     case TK_STRUCT:
-        ok = SpawnP( PushFirstField, ExprSP->th ) == 0;
+        ok = SpawnP( PushFirstField, (wspawn_parm)ExprSP->th ) == 0;
         if( ok )
             PopEntry();
         break;
@@ -1401,7 +1401,7 @@ static var_node *DoVarFindRow( var_info *i, int row )
         return( NULL );
     v = VarFindRoot( i, row, &skipped );
     TargRow -= skipped;
-    if( SpawnP( VarScanForward, v ) != 0 ) {
+    if( SpawnP( VarScanForward, (wspawn_parm)v ) != 0 ) {
         VarError = true;
         return( NULL );
     }
@@ -1959,13 +1959,18 @@ void VarDisplaySetPointer( var_node *v )
     VarSetType( v, 0, 0, 0, 0, 1 );
 }
 
+static void _BreakOnExprSP( void *comment )
+{
+    BreakOnExprSP( comment );
+}
+
 void VarBreakOnWrite( var_info *i, var_node *v )
 {
     char                *name;
 
     VarBuildName( i, v, false );
     name = MemStrdupSafe( TxtBuff );
-    SpawnP( BreakOnExprSP, name );
+    SpawnP( _BreakOnExprSP, (wspawn_parm)name );
     MemFree( name );
 }
 
@@ -2124,7 +2129,7 @@ static char *VarDisplayTop( char *p, char *end, var_info *i, type_display *type 
                 p = Append( end, p, ", " );
             FreezeStack();
             DupStack();
-            dotted = ( SpawnPP( DotNamedField, ExprSP->th, type->name ) == 0 );
+            dotted = ( SpawnPP( DotNamedField, (wspawn_parm)ExprSP->th, (wspawn_parm)type->name ) == 0 );
             if( !dotted ) {
                 UnFreezeStack( true );
                 continue;

@@ -66,7 +66,7 @@ int Spawn( wspawn_func *func )
     return( ret );
 }
 
-int SpawnP( wspawn_funcP *func, void *parm )
+int SpawnP( wspawn_funcP *func, wspawn_parm p1 )
 {
     jmp_buf env;
     jmp_buf *old;
@@ -75,7 +75,7 @@ int SpawnP( wspawn_funcP *func, void *parm )
     old = ExitSP;
     ExitSP = JMPBUF_PTR( env );
     if( setjmp( env ) == 0 ) {
-        func( parm );
+        func( p1 );
         ret = 0;
     } else {
         ret = 1;
@@ -84,7 +84,7 @@ int SpawnP( wspawn_funcP *func, void *parm )
     return( ret );
 }
 
-int SpawnPP( wspawn_funcPP *func, void *p1, void *p2 )
+int SpawnPP( wspawn_funcPP *func, wspawn_parm p1, wspawn_parm p2 )
 {
     jmp_buf env;
     jmp_buf *old;

@@ -77,5 +77,5 @@ static void DoOneCmd( void *_cmd )
 
 void DoCmd( char *cmd )
 {
-    SpawnP( DoOneCmd, cmd );
+    SpawnP( DoOneCmd, (wspawn_parm)cmd );
 }
