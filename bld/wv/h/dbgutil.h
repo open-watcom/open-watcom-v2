@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +44,7 @@ extern char             *StrAddr( address *addr, char *buff, size_t buff_len );
 extern char             *UniqStrAddr( address *addr, char *buff, size_t buff_len );
 extern char             *LineAddr( address  *addr, char *buff, size_t buff_len );
 extern void             RingBell( void );
-extern void             Warn( char *p );
+extern void             Warn( const char *p );
 extern cmd_list         *AllocCmdList( const char *start, size_t len );
 extern void             FreeCmdList( cmd_list *cmds );
 extern void             LockCmdList( cmd_list *cmds );

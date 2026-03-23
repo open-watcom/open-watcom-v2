@@ -62,7 +62,7 @@
   #define ALLFILES      "All Files\0*.*\0"
 #endif
 
-static char *SourceFilter = {
+static const char *SourceFilter = {
 #if defined(__UNIX__)
     "C/C++ Files (*.c *.C *.cpp *.cc *.h *.hpp)\0*.c;*.C;*.cpp;*.cc;*.h;*.hpp\0"
 #else
@@ -73,20 +73,20 @@ static char *SourceFilter = {
     ALLFILES
 };
 
-static char *ConfigFilter = {
+static const char *ConfigFilter = {
     "Debugger Files (*.dbg)\0*.dbg\0"
     ALLFILES
 };
 
 
-static char *ExeFilter = {
+static const char *ExeFilter = {
 #if !defined(__UNIX__)
     "EXE Files (*.exe *exp *.com)\0*.exe;*.exp;*.com\0"
 #endif
     ALLFILES
 };
 
-static char *SymFilter = {
+static const char *SymFilter = {
 #if defined(__UNIX__)
     ALLFILES
 #else
@@ -98,20 +98,20 @@ static char *SymFilter = {
 #endif
 };
 
-static char *AllFilter = {
+static const char *AllFilter = {
     ALLFILES
 };
 
-static  char    *LastFile;
-static  char    *LastExe;
-static  char    *LastDmp;
-static  char    *LastCfg;
-static  char    *LastBrk;
-static  char    *LastRep;
+static const char   *LastFile;
+static const char   *LastExe;
+static const char   *LastDmp;
+static const char   *LastCfg;
+static const char   *LastBrk;
+static const char   *LastRep;
 
-static void SetLast( char **what, const char *to )
+static void SetLast( const char **what, const char *to )
 {
-    MemFree( *what );
+    MemFree( (void *)*what );
     if( to == NULL )
         to = LIT_ENG( Empty );
     *what = MemStrdupSafe( to );
@@ -122,7 +122,7 @@ void SetLastExe( const char *to )
     SetLast( &LastExe, to );
 }
 
-char *GetLastExe( void )
+const char *GetLastExe( void )
 {
     return( LastExe );
 }
@@ -155,12 +155,12 @@ void InitBrowse( void )
 
 void FiniBrowse( void )
 {
-    MemFree( LastFile );
-    MemFree( LastExe );
-    MemFree( LastDmp );
-    MemFree( LastCfg );
-    MemFree( LastBrk );
-    MemFree( LastRep );
+    MemFree( (void *)LastFile );
+    MemFree( (void *)LastExe );
+    MemFree( (void *)LastDmp );
+    MemFree( (void *)LastCfg );
+    MemFree( (void *)LastBrk );
+    MemFree( (void *)LastRep );
     LastFile = NULL;
     LastExe = NULL;
     LastDmp = NULL;
@@ -169,7 +169,7 @@ void FiniBrowse( void )
     LastRep = NULL;
 }
 
-static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags )
+static bool DoFileBrowse( const char **last, const char *title, const char *filter, fn_flags flags )
 {
     bool        rc;
 
@@ -179,7 +179,7 @@ static bool DoFileBrowse( char **last, char *title, char *filter, fn_flags flags
         strcpy( TxtBuff, *last );
     }
     rc = DlgFileBrowse( title, filter, TxtBuff, TXT_LEN, flags );
-    MemFree( *last );
+    MemFree( (void *)*last );
     *last = MemStrdupSafe( TxtBuff );
     return( rc );
 }
@@ -291,7 +291,7 @@ bool ExeBrowse( void )
 }
 
 
-bool SymBrowse( char **name )
+bool SymBrowse( const char **name )
 {
     return( DoFileBrowse( name, LIT_DUI( Symbol_File ), SymFilter, FN_READABLE ) );
 }
@@ -303,7 +303,7 @@ bool AllBrowse( char *name )
 }
 
 
-char *GetDmpName( void )
+const char *GetDmpName( void )
 {
     bool        rc;
 

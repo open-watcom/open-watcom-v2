@@ -347,7 +347,7 @@ void RingBell( void )
  * Warn - output a warning message and ring the bell
  */
 
-void Warn( char *p )
+void Warn( const char *p )
 {
     DUIMsgBox( p );
     DUIFlushKeys(); /* clear any pending keystrokes */

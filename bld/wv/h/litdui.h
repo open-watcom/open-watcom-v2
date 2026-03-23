@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #include "litdui.gh"
 
 #define LIT_DUI(x)      _LIT_DBG_DUI_##x
-#define LITREF_DUI(x)   &LIT_DUI( x )
+#define LITREF_DUI(x)   (const char **)&LIT_DUI( x )
 
-#define pick(c,e,j)     extern char *LIT_DUI( c );
+#define pick(c,e,j)     extern const char *LIT_DUI( c );
 #include "wddui.gh"
 #undef pick

@@ -91,7 +91,7 @@ typedef void            VARDIRTRTN( a_window, int );
 
 extern void             WndVarNewWindow( char * );
 
-static char **VarNames[] = {
+static const char **VarNames[] = {
     #define pick(e,name,wndclass,icon)    name,
     #include "_dbgvar.h"
     #undef pick
@@ -856,7 +856,7 @@ static void VarWndRefreshVisible( var_info *i, int top, int rows, VARDIRTRTN *di
 {
     int             row;
     var_node        *v;
-    char            *value;
+    const char      *value;
     var_gadget_type gadget;
     bool            standout;
     bool            on_top;

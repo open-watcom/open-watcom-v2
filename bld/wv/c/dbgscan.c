@@ -223,7 +223,7 @@ static walk_result      FindTypeName( mad_type_handle mth, void *d )
     return( WR_CONTINUE );
 }
 
-static mad_type_handle DoScanType( mad_type_kind tk, char *prefix )
+static mad_type_handle DoScanType( mad_type_kind tk, const char *prefix )
 {
     struct type_name    data;
     size_t              len;

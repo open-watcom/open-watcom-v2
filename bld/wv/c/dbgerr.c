@@ -67,7 +67,7 @@ static int error( dbg_err_flags flg, const char *fmt, va_list args )
     char            *ptr;
     invokes         *inv;
     input_stack     *inp;
-    char            *where;
+    const char      *where;
     bool            cmderror;
 
     ptr = buff;

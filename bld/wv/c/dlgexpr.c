@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +65,7 @@ static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, rtn_func *rtn
 
     str = GUIGetText( gui, id );
     if( str == NULL ) {
-        str = LIT_ENG( Empty );
-        ok = rtn( LIT_ENG( Empty ), value );
+        ok = rtn( "", value );
     } else {
         ok = rtn( str, value );
         MemFree( str );
@@ -74,20 +73,39 @@ static bool DoDlgGet( gui_window *gui, gui_ctl_id id, void *value, rtn_func *rtn
     return( ok );
 }
 
+static bool _DlgScanLong( const char *str, void *value )
+{
+    return( DlgScanLong( str, (long *)value ) );
+}
+
+static bool _DlgScanCodeAddr( const char *str, void *value )
+{
+    return( DlgScanCodeAddr( str, (address *)value ) );
+}
+
+static bool _DlgScanDataAddr( const char *str, void *value )
+{
+    return( DlgScanDataAddr( str, (address *)value ) );
+}
+
+static bool _DlgScanGivenAddr( const char *str, void *value )
+{
+    return( DlgScanGivenAddr( str, (address *)value ) );
+}
 
 bool DlgGetLong( gui_window *gui, gui_ctl_id id, long *value )
 {
-    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanLong ) );
+    return( DoDlgGet( gui, id, value, _DlgScanLong ) );
 }
 
 bool DlgGetCodeAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
-    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanCodeAddr ) );
+    return( DoDlgGet( gui, id, value, _DlgScanCodeAddr ) );
 }
 
 bool DlgGetDataAddr( gui_window *gui, gui_ctl_id id, address *value )
 {
-    return( DoDlgGet( gui, id, value, (rtn_func *)DlgScanDataAddr ) );
+    return( DoDlgGet( gui, id, value, _DlgScanDataAddr ) );
 }
 
 void DlgSetLong( gui_window *gui, gui_ctl_id id, long value )
@@ -122,12 +140,12 @@ bool    DlgLongExpr( const char *title, long *value )
     char        new[EXPR_LEN];
 
     CnvLong( *value, new, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanLong ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, _DlgScanLong ) );
 }
 
 bool    DlgAnyExpr( const char *title, char *buff, size_t buff_len )
 {
-    return( DlgGetItem( buff, buff_len, title, NULL, (rtn_func *)DlgScanAny ) );
+    return( DlgGetItem( buff, buff_len, title, NULL, DlgScanAny ) );
 }
 
 
@@ -145,7 +163,7 @@ bool    DlgCodeAddr( const char *title, address *value )
     char        new[EXPR_LEN];
 
     InitAddr( new, value, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanCodeAddr ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, _DlgScanCodeAddr ) );
 }
 
 bool    DlgDataAddr( const char *title, address *value )
@@ -153,7 +171,7 @@ bool    DlgDataAddr( const char *title, address *value )
     char        new[EXPR_LEN];
 
     InitAddr( new, value, sizeof( new ) );
-    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanDataAddr ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, _DlgScanDataAddr ) );
 }
 
 bool    DlgGivenAddr( const char *title, address *value )
@@ -161,7 +179,7 @@ bool    DlgGivenAddr( const char *title, address *value )
     char        new[EXPR_LEN];
 
     new[0] = NULLCHAR;
-    return( DlgGetItem( new, EXPR_LEN, title, value, (rtn_func *)DlgScanGivenAddr ) );
+    return( DlgGetItem( new, EXPR_LEN, title, value, _DlgScanGivenAddr ) );
 }
 
 bool    DlgModName( const char *title, mod_handle *mod )

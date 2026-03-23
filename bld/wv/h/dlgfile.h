@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 extern void SetLastExe( const char *to );
-extern char *GetLastExe( void );
+extern const char *GetLastExe( void );
 extern void SetLastCfg( const char *to );
 extern void InitBrowse( void );
 extern void FiniBrowse( void );
@@ -41,6 +42,6 @@ extern bool BreakSave( bool writing );
 extern bool ReplaySave( bool writing );
 extern void FileBrowse( void );
 extern bool ExeBrowse( void );
-extern bool SymBrowse( char **name );
+extern bool SymBrowse( const char **name );
 extern bool AllBrowse( char *name );
-extern char *GetDmpName( void );
+extern const char *GetDmpName( void );

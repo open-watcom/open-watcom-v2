@@ -124,7 +124,7 @@ size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
 
 size_t MADCLIENTRY( String )( mad_string mstr, char *buff, size_t buff_len )
 {
-    static  char ** strings[] = {
+    static const char **strings[] = {
         #define pick(c,e,j)     LITREF_ENG( c ),
         #include "mad.str"
         #undef pick

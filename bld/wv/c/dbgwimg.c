@@ -135,7 +135,7 @@ static void     WNDCALLBACK ImgMenuItem( a_window wnd, gui_ctl_id id, wnd_row ro
             ReLoadImgSymInfo( image );
         } else {
             new_name = MemStrdupSafe( ImgSymFileName( image, true ) );
-            if( !SymBrowse( &new_name ) ) {
+            if( !SymBrowse( (const char **)&new_name ) ) {
                 MemFree( new_name );
             } else {
                 UnLoadImgSymInfo( image, true );

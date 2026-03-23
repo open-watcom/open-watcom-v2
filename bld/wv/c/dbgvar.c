@@ -1573,12 +1573,13 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
         switch( v->path->node_type ) {
         case NODE_FIELD:
             if( VarError || !FindField( field, v->path ) ) {
-                name = LIT_ENG( field );
                 len = strlen( LIT_ENG( field ) );
+                _AllocA( name, len + 1 );
+                strcpy( name, LIT_ENG( field ) );
             } else {
                 len = DIPSymName( field, NULL, SNT_SOURCE, NULL, 0 );
-                _AllocA( name, len+1 );
-                DIPSymName( field, NULL, SNT_SOURCE, name, len+1 );
+                _AllocA( name, len + 1 );
+                DIPSymName( field, NULL, SNT_SOURCE, name, len + 1 );
             }
             if( delay_indirect ) {
                 prio = AddToName( T_SSL_SPEC_POINTER_FIELD, name, len, prio );
@@ -2142,10 +2143,10 @@ static char *VarDisplayTop( char *p, char *end, var_info *i, type_display *type 
     return( Append( end, p, " }" ) );
 }
 
-char *VarGetValue( var_info *i, var_node *v )
+const char *VarGetValue( var_info *i, var_node *v )
 {
     mad_radix           old_radix;
-    char                *value;
+    const char          *value;
     char                buff[TXT_LEN];
     char                *p, *end;
 
@@ -2165,7 +2166,6 @@ char *VarGetValue( var_info *i, var_node *v )
     if( VarError ) {
         value = LIT_ENG( Quest_Marks );
     } else {
-        value = " ";
         switch( ExprSP->ti.kind ) {
         case TK_POINTER:
             FreezeStack();
@@ -2174,9 +2174,7 @@ char *VarGetValue( var_info *i, var_node *v )
                 v->display_type->has_top && PointerToStruct() ) {
                 VarDisplayTop( buff, buff + TXT_LEN, i, v->display_type );
                 strcpy( TxtBuff, buff );
-                value = TxtBuff;
             } else {
-                value = TxtBuff;
                 VarPrintValue( TxtBuff, TXT_LEN, i, v->display, v->is_string );
             }
             UnFreezeStack( true );
@@ -2185,26 +2183,22 @@ char *VarGetValue( var_info *i, var_node *v )
             if( v->display_type != NULL && v->display_type->has_top ) {
                 VarDisplayTop( buff, buff + TXT_LEN, i, v->display_type );
                 strcpy( TxtBuff, buff );
-                value = TxtBuff;
             } else {
-                end = TxtBuff+TXT_LEN;
+                end = TxtBuff + TXT_LEN;
                 p = TxtBuff;
                 p = Append( end, p, "(" );
-                p = VarDisplayType( v, p, TXT_LEN-2 );
+                p = VarDisplayType( v, p, TXT_LEN - 2 );
                 if( p == NULL ) {
-                    value = LIT_ENG( Struct );
+                    strcpy( TxtBuff, LIT_ENG( Struct ) );
                 } else {
                     p = Append( end, p, ")" );
-                    value = TxtBuff;
                 }
             }
             break;
         case TK_ARRAY:
             if( ( v->display & VARDISP_STRING ) ) {
-                value = TxtBuff;
                 PrintAString( i, TxtBuff, TXT_LEN, true );
             } else if( v->is_string ) {
-                value = TxtBuff;
                 if( !PrintAString( i, TxtBuff, TXT_LEN, false ) ) {
                     value = LIT_ENG( Array );
                 }
@@ -2213,10 +2207,10 @@ char *VarGetValue( var_info *i, var_node *v )
             }
             break;
         default:
-            value = TxtBuff;
             VarPrintValue( TxtBuff, TXT_LEN, i, v->display, v->is_string );
             break;
         }
+        value = TxtBuff;
     }
     NewCurrRadix( old_radix );
     return( value );

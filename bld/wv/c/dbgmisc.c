@@ -545,19 +545,20 @@ void ProcQuit( void )
 
 static void FormThdState( thread_state *thd, char *buff, unsigned buff_len )
 {
-    char *p;
-    char *p1;
+    char        *p;
+    char        *p1;
+    const char  *s;
 
     p = CnvULongHex( thd->tid, buff, buff_len );
     *p++ = ' ';
     *p++ = ' ';
     switch( thd->state ) {
-    case THD_THAW:  p1 = LIT_ENG( Runnable ); break;
-    case THD_FREEZE:p1 = LIT_ENG( Frozen );   break;
-    case THD_DEAD:  p1 = LIT_ENG( Dead );     break;
-    default:        p1 = "";              break;
+    case THD_THAW:      s = LIT_ENG( Runnable );    break;
+    case THD_FREEZE:    s = LIT_ENG( Frozen );      break;
+    case THD_DEAD:      s = LIT_ENG( Dead );        break;
+    default:            s = "";                     break;
     }
-    p1 = StrCopyDst( p1, p );
+    p1 = StrCopyDst( s, p );
     while( (p1 - p) < 10 )
         *p1++ = ' ';
     StrCopyDst( thd->name, p1 );

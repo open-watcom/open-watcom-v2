@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,5 +31,5 @@
 ****************************************************************************/
 
 
-extern char     *ImgSymFileName( image_entry *img, bool always );
-extern void     ImgSort( void );
+extern const char   *ImgSymFileName( image_entry *img, bool always );
+extern void         ImgSort( void );

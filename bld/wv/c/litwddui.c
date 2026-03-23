@@ -43,11 +43,11 @@
 #include "wv.rh"
 
 
-#define pick(c,e,j)     char *LIT_DUI( c );
+#define pick(c,e,j)     const char *LIT_DUI( c );
 #include "wddui.gh"
 #undef pick
 
-#define pick(c,e,j)     char *LIT_MENU( c );
+#define pick(c,e,j)     const char *LIT_MENU( c );
 #include "wdmenu.gh"
 #undef pick
 
@@ -63,10 +63,10 @@ void DUIInitLiterals( void )
 
 void DUIFiniLiterals( void )
 {
-    #define pick(c,e,j)     DUIFreeString( LIT_MENU( c ) );
+    #define pick(c,e,j)     DUIFreeString( (void *)LIT_MENU( c ) );
     #include "wdmenu.gh"
     #undef pick
-    #define pick(c,e,j)     DUIFreeString( LIT_DUI( c ) );
+    #define pick(c,e,j)     DUIFreeString( (void *)LIT_DUI( c ) );
     #include "wddui.gh"
     #undef pick
 }

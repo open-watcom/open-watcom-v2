@@ -41,9 +41,8 @@
 
 
 extern void             SetLastSym( char *to );
-extern bool             SymBrowse( char **name );
 
-char *ImgSymFileName( image_entry *image, bool always )
+const char *ImgSymFileName( image_entry *image, bool always )
 {
     if( image->dip_handle != NO_MOD || always ) {
         if( image->symfile_name != NULL ) {

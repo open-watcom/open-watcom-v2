@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -215,7 +215,7 @@ extern void             VarDeExpand(var_node *v);
 extern void             VarDelete(var_info *i,var_node *v);
 extern bool             VarExpand(var_info *i,var_node *v,long start,long end);
 extern void             VarOkToCache(var_info *i,bool ok);
-extern char             *VarGetValue(var_info *i,var_node *v);
+extern const char       *VarGetValue(var_info *i,var_node *v);
 extern var_node         *VarNextRowNode(var_info *i,var_node *v);
 extern void             VarSetGadget(var_node *v,var_gadget_type gadget);
 extern void             VarSetOnTop(var_node *v,bool);

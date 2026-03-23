@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,9 +64,9 @@ extern void             LastMachState( void );
 extern void             LastStackPos( void );
 extern void             ProcRegister( void );
 extern void             ProcUndo( void );
-extern char             *GetActionString( int action );
-extern char             *GetUndoString( void );
-extern char             *GetRedoString( void );
+extern const char       *GetActionString( int action );
+extern const char       *GetUndoString( void );
+extern const char       *GetRedoString( void );
 extern void             ProcStackPos( void );
 extern void             GoHome( void );
 extern void             ParseRegSet( bool multiple, location_list *ll, dig_type_info * );

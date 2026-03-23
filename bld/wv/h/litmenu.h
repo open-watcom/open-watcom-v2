@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,9 @@
 #include "litmenu.gh"
 
 #define LIT_MENU(x)     _LIT_DBG_MENU_##x
-#define LITREF_MENU(x)  ((char *)&LIT_MENU( x ))
+#define LITREF1_MENU(x) ((char *)&LIT_MENU( x ))
+#define LITREF_MENU(x)  ((const char **)&LIT_MENU( x ))
 
-#define pick(c,e,j)     extern char *LIT_MENU( c );
+#define pick(c,e,j)     extern const char *LIT_MENU( c );
 #include "wdmenu.gh"
 #undef pick

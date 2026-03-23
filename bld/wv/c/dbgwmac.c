@@ -81,19 +81,19 @@ typedef struct {
     boolbit             changing  : 1;
 } mac_window;
 
-static char **WndDisplayNames[] = {
+static const char **WndDisplayNames[] = {
     #define pick( a,b,c,d,e,f ) LITREF_DUI( f ),
     #include "wndnames.h"
     #undef pick
 };
 
-static char **WhatList[] = {
+static const char **WhatList[] = {
     LITREF_DUI( Mac_PopupMenu ),
     LITREF_DUI( Mac_MainMenu ),
     LITREF_DUI( Mac_CommandString ),
 };
 
-static char **Titles[] = {
+static const char **Titles[] = {
     LITREF_DUI( Key_Name ),
     LITREF_DUI( Mac_Window ),
     LITREF_DUI( Macro_Type ),

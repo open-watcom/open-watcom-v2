@@ -610,7 +610,7 @@ a_window DbgWndCreate( const char *title, wnd_info *info,
     return( DbgWndCreateTitle( title, info, wndclass, extra, icon, 0, true ) );
 }
 
-static char **RXErrTxt[] = {
+static const char **RXErrTxt[] = {
     LITREF_DUI( ERR_RX_1 ),
     LITREF_DUI( ERR_RX_2 ),
     LITREF_DUI( ERR_RX_3 ),

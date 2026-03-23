@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "dbglit.h"
 
 
-#define pick(c,e,j)     char *LIT_ENG( c );
+#define pick(c,e,j)     const char *LIT_ENG( c );
 #include "wdeng.gh"
 #undef pick
 
@@ -49,7 +49,7 @@ void InitEngineLiterals( void )
 
 void FiniEngineLiterals( void )
 {
-    #define pick(c,e,j)     DUIFreeString( LIT_ENG( c ) );
+    #define pick(c,e,j)     DUIFreeString( (void *)LIT_ENG( c ) );
     #include "wdeng.gh"
     #undef pick
 }

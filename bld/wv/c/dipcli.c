@@ -952,7 +952,7 @@ static dip_imp_routines InternalInterface = {
     WVImp( LookupSymEx ),
 };
 
-static char **DIPErrTxt[] = {
+static const char **DIPErrTxt[] = {
     LITREF_ENG( Empty ),
     LITREF_ENG( Empty ),
     LITREF_ENG( LDS_TOO_MANY_DIPS ),
@@ -980,7 +980,7 @@ static char **DIPErrTxt[] = {
     LITREF_ENG( Empty ),
 };
 
-char *DIPMsgText( dip_status ds )
+const char *DIPMsgText( dip_status ds )
 {
     ds &= ~DS_ERR;
     if( ds > DS_INVALID_OPERATOR )

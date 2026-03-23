@@ -33,7 +33,7 @@
 
 #include "litmenu.h"
 
-#define MENU_LIT( x )               LITREF_MENU( x )
+#define MENU_LIT( x )               LITREF1_MENU( x )
 #define MENU_DO_ITEM( a, b, c, d )  { MENU_LIT( b ), a, GUI_STYLE_MENU_ENABLED, MENU_LIT( HELP_##b ), { c, d } },
 #define MENU_ITEM( a, b )           MENU_DO_ITEM( a, b, 0, NULL )
 #define MENU_CASCADE( a, b, c )     MENU_DO_ITEM( a, b, ArraySize( c ), c )

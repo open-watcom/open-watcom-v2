@@ -69,7 +69,7 @@ enum {
 
 bool                    DownLoadTask = false;
 
-NO_RETURN( static void OptError( char *err ) );
+NO_RETURN( static void OptError( const char *err ) );
 static char             *(*GetArg)( int );
 static int              CurrArgc;
 static char             *CurrArgp;
@@ -105,7 +105,7 @@ static void NextChar( void )
 }
 
 
-static void OptError( char *err )
+static void OptError( const char *err )
 {
     char        *curr;
     char        buff[CMD_LEN];

@@ -427,7 +427,7 @@ brkp *FindBreak( address addr )
  * DispBPMsg -- display breakpoints that were hit
  */
 
-static char *StrVal( char *which, brkp *wp, char *p )
+static char *StrVal( const char *which, brkp *wp, char *p )
 {
     size_t      max;
 
@@ -521,8 +521,8 @@ bool DispBPMsg( bool stack_cmds )
 
 static char *GetBPCmd( brkp *bp, brk_event event, char *buff, unsigned buff_len )
 {
-    char        *cmds;
-    char        *cond;
+    const char  *cmds;
+    const char  *cond;
     char        *p;
     char        *end = buff + buff_len ;
 

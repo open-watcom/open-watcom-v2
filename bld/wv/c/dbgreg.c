@@ -890,8 +890,8 @@ void ProcUndo( void )
 }
 
 
-char *GetActionString( int action )
-/*********************************/
+const char *GetActionString( int action )
+/***************************************/
 {
     switch( action ) {
     case ACTION_EXECUTE:
@@ -915,16 +915,16 @@ char *GetActionString( int action )
     }
 }
 
-char *GetUndoString( void )
-/*************************/
+const char *GetUndoString( void )
+/*******************************/
 {
     if( StateCurr == NULL )
         return( NULL );
     return( GetActionString( StateCurr->action ) );
 }
 
-char *GetRedoString( void )
-/*************************/
+const char *GetRedoString( void )
+/*******************************/
 {
     if( StateCurr == NULL )
         return( NULL );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #include "liteng.gh"
 
 #define LIT_ENG(x)      _LIT_DBG_ENG_##x
-#define LITREF_ENG(x)   &LIT_ENG( x )
+#define LITREF_ENG(x)   (const char **)&LIT_ENG( x )
 
-#define pick(c,e,j)     extern char *LIT_ENG( c );
+#define pick(c,e,j)     extern const char *LIT_ENG( c );
 #include "wdeng.gh"
 #undef pick
