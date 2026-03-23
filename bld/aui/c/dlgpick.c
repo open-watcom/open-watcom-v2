@@ -70,7 +70,7 @@ bool WNDAPI DlgPickWithRtn( const char *title, data_handle data, int def_item, G
 
 static const char * GUICALLBACK doDlgPickText( data_handle data, int item )
 {
-    return( (data)[item] );
+    return( data[item] );
 }
 
 bool WNDAPI DlgPick( const char *title, data_handle data, int def_item, int num_items, int *choice )
