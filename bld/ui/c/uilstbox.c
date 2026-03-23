@@ -57,7 +57,7 @@ bool uigetlistelement( const char **data, unsigned item, char *buff, unsigned bu
  * caller must handle this if need C null terminated string
  */
 {
-    const char **p;
+    const char  **p;
 
     if( data == NULL ) {
         return( false );
