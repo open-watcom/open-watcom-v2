@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ int WNDAPI DlgGetFileName( open_file_name *ofn )
     return( rc );
 }
 
-bool WNDAPI DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags )
+bool WNDAPI DlgFileBrowse( const char *title, const char *filter, char *path, unsigned len, fn_flags flags )
 {
     open_file_name      ofn;
     char                fname[_MAX_PATH];

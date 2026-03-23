@@ -177,7 +177,7 @@ typedef struct wnd_line_piece {
 
 typedef struct wnd_create_struct {
     struct wnd_info     *info;
-    char                *title;
+    const char          *title;
     wnd_class           wndclass;
     void                *extra;
     gui_create_styles   style;
@@ -315,7 +315,7 @@ extern bool                 WNDAPI DlgNewWithCtl( const char *title, char *buff,
 extern void                 WNDAPI DlgOpen( const char *title, gui_text_ord, gui_text_ord, gui_control_info *, int, GUIEVCALLBACK *, void * );
 extern void                 WNDAPI DlgOpenRes( GUIEVCALLBACK *, void *, int dlg_id );
 extern int                  WNDAPI DlgGetFileName( open_file_name *ofn );
-extern bool                 WNDAPI DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
+extern bool                 WNDAPI DlgFileBrowse( const char *title, const char *filter, char *path, unsigned len, fn_flags flags );
 extern int                  WNDAPI DlgSearch( a_window wnd, void *history );
 extern bool                 WNDAPI DlgSearchAll( char **expr, void *history );
 
@@ -364,8 +364,8 @@ extern void                 WndInitCreateStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStruct( wnd_create_struct * );
 extern a_window             WndCreateWithStructAndMenuRes( wnd_create_struct *, res_name_or_id menu_id );
 extern void                 WndShrinkToMouse( a_window wnd, wnd_metrics * );
-extern bool                 WndInit( char *title );
-extern bool                 WndInitWithMenuRes( char *title, res_name_or_id menu_id );
+extern bool                 WndInit( const char *title );
+extern bool                 WndInitWithMenuRes( const char *title, res_name_or_id menu_id );
 extern bool                 WndFini( void );
 extern bool                 WndMainMenuProc( a_window, gui_ctl_id id );
 extern GUIEVCALLBACK        WndMainGUIEventProc;
