@@ -2117,7 +2117,7 @@ static char *Append( char *end, char *p, char *str )
 }
 
 static char *VarDisplayTop( char *p, char *end, var_info *i, type_display *type )
-/********************************************************************************/
+/*******************************************************************************/
 {
     bool        comma, dotted;
 
@@ -2178,33 +2178,37 @@ const char *VarGetValue( var_info *i, var_node *v )
             if( v->display_type != NULL &&
                 v->display_type->has_top && PointerToStruct() ) {
                 VarDisplayTop( buff, buff + TXT_LEN, i, v->display_type );
-                strcpy( TxtBuff, buff );
             } else {
-                VarPrintValue( TxtBuff, TXT_LEN, i, v->display, v->is_string );
+                VarPrintValue( buff, TXT_LEN, i, v->display, v->is_string );
             }
+            value = strcpy( TxtBuff, buff );
             UnFreezeStack( true );
             break;
         case TK_STRUCT:
             if( v->display_type != NULL && v->display_type->has_top ) {
                 VarDisplayTop( buff, buff + TXT_LEN, i, v->display_type );
-                strcpy( TxtBuff, buff );
+                value = strcpy( TxtBuff, buff );
             } else {
-                end = TxtBuff + TXT_LEN;
-                p = TxtBuff;
+                end = buff + TXT_LEN;
+                p = buff;
                 p = Append( end, p, "(" );
                 p = VarDisplayType( v, p, TXT_LEN - 2 );
                 if( p == NULL ) {
-                    strcpy( TxtBuff, LIT_ENG( Struct ) );
+                    value = LIT_ENG( Struct );
                 } else {
                     p = Append( end, p, ")" );
+                    value = strcpy( TxtBuff, buff );
                 }
             }
             break;
         case TK_ARRAY:
             if( ( v->display & VARDISP_STRING ) ) {
-                PrintAString( i, TxtBuff, TXT_LEN, true );
+                PrintAString( i, buff, TXT_LEN, true );
+                value = strcpy( TxtBuff, buff );
             } else if( v->is_string ) {
-                if( !PrintAString( i, TxtBuff, TXT_LEN, false ) ) {
+                if( PrintAString( i, buff, TXT_LEN, false ) ) {
+                    value = strcpy( TxtBuff, buff );
+                } else {
                     value = LIT_ENG( Array );
                 }
             } else {
@@ -2212,10 +2216,10 @@ const char *VarGetValue( var_info *i, var_node *v )
             }
             break;
         default:
-            VarPrintValue( TxtBuff, TXT_LEN, i, v->display, v->is_string );
+            VarPrintValue( buff, TXT_LEN, i, v->display, v->is_string );
+            value = strcpy( TxtBuff, buff );
             break;
         }
-        value = TxtBuff;
     }
     NewCurrRadix( old_radix );
     return( value );
