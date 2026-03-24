@@ -594,8 +594,9 @@ static bool DoneTraceCmd( inp_data_handle handle, inp_rtn_action action )
 
 static void PushTraceCmd( void )
 {
-    PushInpStack( (inp_data_handle)"\0", DoneTraceCmd, true );
-    TypeInpStack( INP_HOLD );
+    if( PushInpStack( (inp_data_handle)"\0", DoneTraceCmd, true ) ) {
+        TypeInpStack( INP_HOLD );
+    }
 }
 
 /*

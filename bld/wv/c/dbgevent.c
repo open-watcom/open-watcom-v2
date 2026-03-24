@@ -187,8 +187,9 @@ static bool DoneRadix( inp_data_handle handle, inp_rtn_action action )
 
 static void PushRadixChange( mad_radix radix )
 {
-    PushInpStack( (inp_data_handle)(pointer_uint)radix, DoneRadix, false );
-    TypeInpStack( INP_NO_CMD );
+    if( PushInpStack( (inp_data_handle)(pointer_uint)radix, DoneRadix, false ) ) {
+        TypeInpStack( INP_NO_CMD );
+    }
 }
 
 void ReplayTo( event_record *ev )
@@ -203,8 +204,8 @@ void ReplayTo( event_record *ev )
             for( ev = EventList; ev->next != NULL; ev = ev->next ) ;
         }
         for( ;; ) {
-            PushCmdList( ev->cmd );
-            TypeInpStack( INP_REPLAYED );
+            if( PushCmdList( ev->cmd ) )
+                TypeInpStack( INP_REPLAYED );
             PushRadixChange( ev->radix );
             TypeInpStack( INP_REPLAYED );
             if( ev == EventList )

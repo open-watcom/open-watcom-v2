@@ -404,16 +404,6 @@ void FreeCmdList( cmd_list *cmds )
     }
 }
 
-/* Lock List -- increment use count */
-
-void LockCmdList( cmd_list *cmds )
-{
-    if( cmds == NULL )
-        return;
-    cmds->use++;
-}
-
-
 /*
  * TypeInpStack -- set new type on input stack
  */
@@ -477,9 +467,10 @@ void PopInpStack( void )
  * PushInpStack -- add a new level to the input stack
  */
 
-void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
+bool PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
 {
     input_stack *new;
+    bool        rc;
 
     new = MemAllocSafe( sizeof( *new ) );
     if( save_lang ) {
@@ -493,9 +484,11 @@ void PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang )
     new->scan = ScanPos();
     new->link = InpStack;
     InpStack = new;
-    if( !new->rtn( handle, INP_RTN_INIT ) ) {
+    rc = new->rtn( handle, INP_RTN_INIT );
+    if( !rc ) {
         PopInpStack();
     }
+    return( rc );
 }
 
 void CopyInpFlags( void )
@@ -530,10 +523,10 @@ static bool DoneCmdList( inp_data_handle handle, inp_rtn_action action )
  * PushCmdList -- push a command list onto the input stack
  */
 
-void PushCmdList( cmd_list *cmds )
+bool PushCmdList( cmd_list *cmds )
 {
     cmds->use++;
-    PushInpStack( (inp_data_handle)cmds, DoneCmdList, false );
+    return( PushInpStack( (inp_data_handle)cmds, DoneCmdList, false ) );
 }
 
 
@@ -557,9 +550,9 @@ static bool DoneCmdText( inp_data_handle handle, inp_rtn_action action )
 /*
  * PushCmdText -- push a command string
  */
-void PushCmdText( char *cmds )
+bool PushCmdText( char *cmds )
 {
-    PushInpStack( (inp_data_handle)cmds, DoneCmdText, false );
+    return( PushInpStack( (inp_data_handle)cmds, DoneCmdText, false ) );
 }
 #endif
 
@@ -596,8 +589,9 @@ static bool DoneNull( inp_data_handle handle, inp_rtn_action action )
 
 void FreezeInpStack( void )
 {
-    PushInpStack( (inp_data_handle)"", DoneNull, false );
-    TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
+    if( PushInpStack( (inp_data_handle)"", DoneNull, false ) ) {
+        TypeInpStack( INP_NEW_LANG | INP_HOLD | INP_STOP_PURGE );
+    }
 }
 
 void UnAsm( address addr, char *buff, size_t buff_len )

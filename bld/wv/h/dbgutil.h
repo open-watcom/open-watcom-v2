@@ -47,16 +47,15 @@ extern void             RingBell( void );
 extern void             Warn( const char *p );
 extern cmd_list         *AllocCmdList( const char *start, size_t len );
 extern void             FreeCmdList( cmd_list *cmds );
-extern void             LockCmdList( cmd_list *cmds );
 extern void             TypeInpStack( input_type set );
 extern void             ClearInpStack( input_type clear );
 extern input_type       SetInpStack( input_type new );
 extern void             PopInpStack( void );
-extern void             PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang );
+extern bool             PushInpStack( inp_data_handle handle, inp_rtn_func *rtn, bool save_lang );
 extern void             CopyInpFlags( void );
-extern void             PushCmdList( cmd_list *cmds );
+extern bool             PushCmdList( cmd_list *cmds );
 #ifdef DEADCODE
-extern void             PushCmdText( char *cmds );
+extern bool             PushCmdText( char *cmds );
 #endif
 extern bool             PurgeInpStack( void );
 extern void             FreezeInpStack( void );

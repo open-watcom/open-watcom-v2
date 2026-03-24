@@ -151,7 +151,7 @@ static void MacChangeMac( a_window wnd, wnd_macro *mac, gui_key key, wnd_class_w
     wnd_row     i;
 
     cmds = mac->cmd;
-    LockCmdList( cmds );
+    cmds->use++;
     MacAddDel( mac->key, mac->wndclass, NULL );
     curr = MacAddDel( key, wndclass, cmds );
     for( owner = &WndMacroList; *owner; owner = &(*owner)->link ) {

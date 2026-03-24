@@ -69,8 +69,8 @@ static void DoOneCmd( void *_cmd )
     if( cmd[0] == NULLCHAR ) {
         DUIDlgTxt( LIT_ENG( Empty ) );
     } else {
-        PushInpStack( (inp_data_handle)cmd, DoneCmd, false );
-        TypeInpStack( INP_DLG_CMD );
+        if( PushInpStack( (inp_data_handle)cmd, DoneCmd, false ) )
+            TypeInpStack( INP_DLG_CMD );
         TBreak();   /* clear any pending terminal interrupts */
     }
 }

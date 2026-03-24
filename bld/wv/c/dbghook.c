@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,8 +140,8 @@ void HookNotify( bool immediate, hook_type hook )
         list = HookCmdLists[hook];
         if( list != NULL ) {
             save = SetInpStack( INP_STOP_PURGE );
-            PushCmdList( list );
-            TypeInpStack( INP_HOOK );
+            if( PushCmdList( list ) )
+                TypeInpStack( INP_HOOK );
             Spawn( DoProcPending );
             SetInpStack( save );
         }
@@ -167,8 +167,9 @@ bool HookPendingPush( void )
     }
     RESET_HOOK_BIT( test );
     if( *list != NULL ) {
-        PushCmdList( *list );
-        TypeInpStack( INP_HOOK );
+        if( PushCmdList( *list ) ) {
+            TypeInpStack( INP_HOOK );
+        }
     }
     if( test != HOOK_NEW_MODULE )
         return( true );

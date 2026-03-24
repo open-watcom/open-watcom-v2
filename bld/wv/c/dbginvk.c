@@ -259,8 +259,9 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;
-    PushInpStack( (inp_data_handle)inv, DoneInvLine, true );
-    TypeInpStack( INP_CMD_FILE );
+    if( PushInpStack( (inp_data_handle)inv, DoneInvLine, true ) ) {
+        TypeInpStack( INP_CMD_FILE );
+    }
 }
 
 void Invoke( const char *invfile, size_t len, char_ring *parmlist )

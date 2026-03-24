@@ -450,8 +450,9 @@ static bool DoneRefresh( inp_data_handle handle, inp_rtn_action action )
 
 static void PushRefresh( void )
 {
-    PushInpStack( (inp_data_handle)NULL, DoneRefresh, false );
-    TypeInpStack( INP_NO_CMD );
+    if( PushInpStack( (inp_data_handle)NULL, DoneRefresh, false ) ) {
+        TypeInpStack( INP_NO_CMD );
+    }
 }
 
 /*

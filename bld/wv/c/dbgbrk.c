@@ -491,15 +491,15 @@ bool DispBPMsg( bool stack_cmds )
         }
         if( stack_cmds && bp->status.b.resume ) {
             cmds = AllocCmdList( "go/keep", sizeof( "go/keep" ) );
-            PushCmdList( cmds );
-            TypeInpStack( INP_HOOK );
+            if( PushCmdList( cmds ) )
+                TypeInpStack( INP_HOOK );
             FreeCmdList( cmds );
             ret = true;
         }
         if( stack_cmds && ( bp->cmds != NULL ) && bp->status.b.use_cmds ) {
             bp->status.b.cmds_pushed = true;
-            PushCmdList( bp->cmds );
-            TypeInpStack( INP_BREAK_POINT );
+            if( PushCmdList( bp->cmds ) )
+                TypeInpStack( INP_BREAK_POINT );
             ret = true;
         }
     }

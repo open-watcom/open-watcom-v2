@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,13 +153,13 @@ bool SetMsgText( char *message, unsigned *conditions )
         DEBUGGER_COMMAND_SKIP( message, EXECUTE );
         if( InCall == 0 ) {
             cmds = AllocCmdList( "go/keep", sizeof( "go/keep" ) - 1 );
-            PushCmdList( cmds );
-            TypeInpStack( INP_HOOK );
+            if( PushCmdList( cmds ) )
+                TypeInpStack( INP_HOOK );
             FreeCmdList( cmds );
         }
         cmds = AllocCmdList( message, strlen( message ) );
-        PushCmdList( cmds );
-        TypeInpStack( INP_HOOK );
+        if( PushCmdList( cmds ) )
+            TypeInpStack( INP_HOOK );
         FreeCmdList( cmds );
         *conditions |= COND_STOP;
         return( false );

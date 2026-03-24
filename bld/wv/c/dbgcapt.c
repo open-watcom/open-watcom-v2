@@ -112,7 +112,7 @@ void ProcCapture( void )
     ReScan( old );
     cmds->use++;
     CaptureOk = true;
-    PushInpStack( (inp_data_handle)cmds, DoneCapture, false );
-    TypeInpStack( INP_CAPTURED );
+    if( PushInpStack( (inp_data_handle)cmds, DoneCapture, false ) )
+        TypeInpStack( INP_CAPTURED );
     FreeCmdList( cmds );
 }
