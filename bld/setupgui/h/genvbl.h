@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,10 +46,10 @@ extern const char   *VarGetStrVal( vhandle var_handle );
 extern bool         GetVariableBoolVal( const char *vbl_name );
 extern int          GetVariableIntVal( const char *vbl_name );
 extern const char   *GetVariableStrVal( const char *vbl_name );
-extern vhandle      SetBoolVariableByHandle( vhandle var_handle, bool bval );
-extern vhandle      SetBoolVariableByName( const char *vbl_name, bool bval );
-extern vhandle      SetVariableByHandle( vhandle var_handle, const char *strval );
-extern vhandle      SetVariableByName( const char *vbl_name, const char *strval );
+extern void         SetBoolVariableByHandle( vhandle var_handle, bool bval );
+extern void         SetBoolVariableByName( const char *vbl_name, bool bval );
+extern void         SetVariableByHandle( vhandle var_handle, const char *strval );
+extern void         SetVariableByName( const char *vbl_name, const char *strval );
 extern void         SetDefaultVarsList( void );
 extern void         FreeVarsList( bool );
 extern const char   *VarGetName( vhandle var_handle );

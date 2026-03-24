@@ -52,9 +52,9 @@
 #define HASH_SIZE   1021
 
 typedef struct  a_variable {
-    char        *name;
-    char        *strval;    /* value */
-    char        *autoset;
+    const char  *name;
+    const char  *strval;    /* value */
+    const char  *autoset;
     bool        has_value;
     char        restriction;
     void        (*hook)( vhandle );
@@ -96,7 +96,7 @@ void InitVarsList( void )
 void VarSetAutoSetCond( vhandle var_handle, const char *cond )
 /************************************************************/
 {
-    Vars.list[var_handle].autoset = MemStrdupSafe( cond );
+    Vars.list[var_handle].autoset = cond;
 }
 
 
@@ -136,16 +136,19 @@ vhandle GetVariableByName( const char *vbl_name )
 {
     vhandle     var_handle;
 
-    if( Vars.hash != NULL ) {
-        return( HashFind( Vars.hash, vbl_name ) );
-    } else {
-        for( var_handle = 0; var_handle < Vars.array.num; var_handle++ ) {
-            if( stricmp( Vars.list[var_handle].name, vbl_name ) == 0 ) {
-                return( var_handle );
+    var_handle = NO_VAR;
+    if( *vbl_name != '\0' ) {
+        if( Vars.hash != NULL ) {
+            var_handle = HashFind( Vars.hash, vbl_name );
+        } else {
+            for( var_handle = 0; var_handle < Vars.array.num; var_handle++ ) {
+                if( stricmp( Vars.list[var_handle].name, vbl_name ) == 0 ) {
+                    break;
+                }
             }
         }
     }
-    return( NO_VAR );
+    return( var_handle );
 }
 
 vhandle GetVariableById( gui_ctl_id id )
@@ -257,69 +260,70 @@ vhandle AddVariable( const char *vbl_name )
 {
     vhandle var_handle;
 
-    var_handle = GetVariableByName( vbl_name );
-    if( var_handle == NO_VAR )
-        var_handle = NewVariable( vbl_name );
+    var_handle = NO_VAR;
+    if( *vbl_name != '\0' ) {
+        var_handle = GetVariableByName( vbl_name );
+        if( var_handle == NO_VAR ) {
+            var_handle = NewVariable( vbl_name );
+        }
+    }
     return( var_handle );
 }
 
-static vhandle DoSetVariable( vhandle var_handle, const char *strval, const char *vbl_name )
-/******************************************************************************************/
+static vhandle DoSetVariable( vhandle var_handle, const char *strval )
+/********************************************************************/
 {
     a_variable  *tmp_variable;
 
-    if( strval == NULL ) {
-        strval = "";
-    }
     if( var_handle != NO_VAR ) {
-        tmp_variable = &Vars.list[var_handle];
-        if( tmp_variable->has_value ) {
-            if( strcmp( tmp_variable->strval, strval ) == 0 ) {
-                if( tmp_variable->hook ) {
-                    tmp_variable->hook( var_handle );
-                }
-                return( var_handle );
-            }
-            MemFree( tmp_variable->strval );   // free the old string
+        if( strval == NULL ) {
+            strval = "";
         }
-    } else {
-        var_handle = NewVariable( vbl_name );
-    }
-    tmp_variable = &Vars.list[var_handle];
-    tmp_variable->strval = MemStrdupSafe( strval );
-    tmp_variable->has_value = true;
-    if( tmp_variable->hook ) {
-        tmp_variable->hook( var_handle );
+        tmp_variable = &Vars.list[var_handle];
+        if( !tmp_variable->has_value || strcmp( tmp_variable->strval, strval ) != 0 ) {
+            if( tmp_variable->has_value ) {
+                MemFree( (void *)tmp_variable->strval );   // free the old string
+            }
+            tmp_variable->strval = MemStrdupSafe( strval );
+        }
+        tmp_variable->has_value = true;
+        if( tmp_variable->hook != NULL ) {
+            tmp_variable->hook( var_handle );
+        }
     }
     return( var_handle );
 }
 
-vhandle SetBoolVariableByName( const char *vbl_name, bool bval )
+void    SetBoolVariableByHandle( vhandle var_handle, bool bval )
 /**************************************************************/
 {
-    return( DoSetVariable( GetVariableByName( vbl_name ), bval ? "1" : "0", vbl_name ) );
+    if( var_handle != NO_VAR ) {
+        DoSetVariable( var_handle, bval ? "1" : "0" );
+    }
 }
 
-vhandle SetBoolVariableByHandle( vhandle var_handle, bool bval )
+void    SetBoolVariableByName( const char *vbl_name, bool bval )
 /**************************************************************/
 {
-    if( var_handle == NO_VAR )
-        return( NO_VAR );
-    return( DoSetVariable( var_handle, bval ? "1" : "0", NULL ) );
+    if( *vbl_name != '\0' ) {
+        SetBoolVariableByHandle( AddVariable( vbl_name ), bval );
+    }
 }
 
-vhandle SetVariableByName( const char *vbl_name, const char *strval )
+void    SetVariableByHandle( vhandle var_handle, const char *strval )
 /*******************************************************************/
 {
-    return( DoSetVariable( GetVariableByName( vbl_name ), strval, vbl_name ) );
+    if( var_handle != NO_VAR ) {
+        DoSetVariable( var_handle, strval );
+    }
 }
 
-vhandle SetVariableByHandle( vhandle var_handle, const char *strval )
+void    SetVariableByName( const char *vbl_name, const char *strval )
 /*******************************************************************/
 {
-    if( var_handle == NO_VAR )
-        return( NO_VAR );
-    return( DoSetVariable( var_handle, strval, NULL ) );
+    if( *vbl_name != '\0' ) {
+        SetVariableByHandle( AddVariable( vbl_name ), strval );
+    }
 }
 
 void SetDefaultVarsList( void )
@@ -455,6 +459,12 @@ void SetDefaultVarsList( void )
     SetVariableByName( "Command", szBuf );
 }
 
+static void var_free( a_variable *var )
+{
+    MemFree( (void *)var->name );
+    MemFree( (void *)var->strval );
+    MemFree( (void *)var->autoset );
+}
 
 void FreeVarsList( bool delete_all_vars )
 /****************************************
@@ -482,9 +492,7 @@ void FreeVarsList( bool delete_all_vars )
     j = 0;
     if( delete_all_vars ) {
         for( i = 0; i < Vars.array.num; i++ ) {
-            MemFree( Vars.list[i].name );
-            MemFree( Vars.list[i].strval );
-            MemFree( Vars.list[i].autoset );
+            var_free( Vars.list + i );
         }
     } else {
         for( i = 0; i < Vars.array.num; i++ ) {
@@ -497,9 +505,7 @@ void FreeVarsList( bool delete_all_vars )
                 }
                 j++;
             } else {
-                MemFree( Vars.list[i].name );
-                MemFree( Vars.list[i].strval );
-                MemFree( Vars.list[i].autoset );
+                var_free( Vars.list + i );
             }
         }
     }

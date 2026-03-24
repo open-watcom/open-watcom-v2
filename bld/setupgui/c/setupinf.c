@@ -664,11 +664,10 @@ static char *NextToken( char *buf, char delim )
     char            *p;
     char            *q;
 
-    if( buf == NULL ) {
-        return( NULL );
-    }
     p = strchr( buf, delim );
-    if( p != NULL ) {
+    if( p == NULL ) {
+        p = strchr( buf, '\0' );
+    } else {
         *p = '\0';
         q = p - 1;
         while( q >= buf && IS_WS( *q ) ) {
@@ -877,7 +876,7 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
 
 static char *get_cond( const char *str )
 {
-    if( str == NULL )
+    if( str == NULL || *str == '\0' )
         return( NULL );
     return( MemStrdupSafe( str ) );
 }
@@ -894,9 +893,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
     VbufInit( &text );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    if( line != NULL ) {
-        VbufConcStr( &text, line );
-    }
+    VbufConcStr( &text, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1056,7 +1053,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
     }
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    if( line == NULL ) {
+    if( *line == '\0' ) {
         rc = false;
     } else {
         if( *line == '@' ) {
@@ -1119,20 +1116,18 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
     int                 len;
     char                *line;
     vhandle             var_handle;
-    char                *vbl_name;
     char                *text;
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdupSafe( line );
+    var_handle = AddVariable( line );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    var_handle = AddVariable( vbl_name );
-    text = MemStrdupSafe( line );
+    text = line;
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
-        if( text != NULL ) {
+        if( *text != '\0' ) {
             SetVariableByHandle( var_handle, text );
         }
         parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
@@ -1154,8 +1149,6 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    MemFree( vbl_name );
-    MemFree( text );
     return( rc );
 }
 
@@ -1204,7 +1197,6 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
 {
 //    int                 len;
     char                *line;
-    char                *vbl_name;
     const char          *val;
     char                *section;
     char                *button_text;
@@ -1218,8 +1210,7 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdupSafe( line );
-    var_handle = AddVariable( vbl_name );
+    var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
     val = NULL;
     VbufInit( &buff );
@@ -1315,7 +1306,6 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    MemFree( vbl_name );
     VbufFree( &buff );
     return( rc );
 }
@@ -1377,18 +1367,14 @@ static vhandle dialog_set_variable( DIALOG_PARSER_INFO *parse_dlg, const char *v
 
     var_handle = AddVariable( vbl_name );
     parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
-    if( init_cond != NULL ) {
-        if( *init_cond == '\0' ) {
-            init_cond = NULL;
-        } else {
-            if( SkipDialogs ) {
-                if( stricmp( init_cond, "true" ) == 0 ) {
-                    SetBoolVariableByHandle( var_handle, true );
-                } else if( stricmp( init_cond, "false" ) == 0 ) {
-                    SetBoolVariableByHandle( var_handle, false );
-                } else {
-                    SetVariableByHandle( var_handle, init_cond );
-                }
+    if( *init_cond != '\0' ) {
+        if( SkipDialogs ) {
+            if( stricmp( init_cond, "true" ) == 0 ) {
+                SetBoolVariableByHandle( var_handle, true );
+            } else if( stricmp( init_cond, "false" ) == 0 ) {
+                SetBoolVariableByHandle( var_handle, false );
+            } else {
+                SetVariableByHandle( var_handle, init_cond );
             }
         }
     }
@@ -1410,12 +1396,12 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdupSafe( line );
+    vbl_name = line;
     line = next; next = NextToken( line, ',' );
-    init_cond = MemStrdupSafe( line );
+    init_cond = line;
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    text = MemStrdupSafe( line );
+    text = line;
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1435,9 +1421,6 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     } else {
         rc = false;
     }
-    MemFree( init_cond );
-    MemFree( vbl_name );
-    MemFree( text );
     return( rc );
 }
 
@@ -1466,12 +1449,12 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
         button_text = line;
     }
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdupSafe( line );
+    vbl_name = line;
     line = next; next = NextToken( line, ',' );
-    init_cond = MemStrdupSafe( line );
+    init_cond = line;
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
-    text = MemStrdupSafe( line );
+    text = line;
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
@@ -1514,9 +1497,6 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
     } else {
         rc = false;
     }
-    MemFree( init_cond );
-    MemFree( vbl_name );
-    MemFree( text );
     return( rc );
 }
 
@@ -1532,7 +1512,6 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
 /*************************************************************************/
 {
     char                *line;
-    char                *vbl_name;
     const char          *val;
     char                *section;
 #if defined( __NT__ )
@@ -1543,8 +1522,7 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
     bool                rc = true;
 
     line = next; next = NextToken( line, ',' );
-    vbl_name = MemStrdupSafe( line );
-    var_handle = AddVariable( vbl_name );
+    var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
     val = NULL;
     VbufInit( &buff );
@@ -1626,7 +1604,6 @@ static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
         rc = false;
     }
     VbufFree( &buff );
-    MemFree( vbl_name );
     return( rc );
 }
 
@@ -1983,7 +1960,7 @@ static bool ProcLine( char *line, pass_type pass )
     case RS_AUTOSET:
         next = NextToken( line, '=' );
         if( VariablesFile == NULL ) {
-            VarSetAutoSetCond( AddVariable( line ), next );
+            VarSetAutoSetCond( AddVariable( line ), get_cond( next ) );
         } else {
             AddVariable( line );
         }
