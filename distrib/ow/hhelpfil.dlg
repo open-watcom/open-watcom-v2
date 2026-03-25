@@ -6,11 +6,11 @@ static_text=\
         //-1
 static_text=
 static_text=\
-        //0"Choose help file formats you wish to install."
+        //0"Choose help file formats you wish to install."\
         //1"インストールしたいヘルプファイル形式を選択してください。"\
         //-1
 static_text=\
-        //0"Online books contain all compiler documentation."
+        //0"Online books contain all compiler documentation."\
         //1"オンライン書籍には、コンパイラに関するすべてのドキュメントが含まれています。"\
         //-1
 static_text=
