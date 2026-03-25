@@ -473,8 +473,10 @@ void InitGadget( void )
         WndGadgetHint[i] = WndLoadString( (gui_res_id)(pointer_uint)WndGadgetHint[i] );
     }
     for( i = 1; i <= WndGadgetArraySize - 1; ++i ) {
-        if( GUIGetHotSpotSize( i, &size ) && size.x > MaxGadgetLength ) {
-            MaxGadgetLength = size.x;
+        if( GUIGetHotSpotSize( i, &size ) ) {
+            if( MaxGadgetLength < size.x ) {
+                MaxGadgetLength = size.x;
+            }
         }
     }
 }
