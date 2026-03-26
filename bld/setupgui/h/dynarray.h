@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +36,11 @@ typedef int  array_idx;
 typedef struct array_info {
     array_idx   num;
     array_idx   alloc;
-    array_idx   esize;
+    array_idx   elem_size;
     void        **array;
     array_idx   increment;
 } array_info;
 
-extern void InitArray( void **array, array_idx esize, array_info *info );
+extern void InitArray( void **array, array_idx elem_size, array_info *info );
 extern bool BumpArray( array_info *info );
 extern bool BumpDownArray( array_info *info );
