@@ -82,8 +82,8 @@ static_text=\
     //0"open with the Open Watcom tools."\
     //1"open with the Open Watcom tools."\
     //-1
-radio_button=ModEnv,1,="&Modify associations"
-radio_button=NoModEnv,0,="&Don't modify associations"
+radio_button=ModEnv,1,"&Modify associations"
+radio_button=NoModEnv,0,"&Don't modify associations"
 static_text=
 push_button=+"&OK"
 push_button=?"&Help"
