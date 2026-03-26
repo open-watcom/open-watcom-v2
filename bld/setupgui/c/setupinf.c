@@ -889,6 +889,10 @@ static const char *set_var_default_value( vhandle var_handle, const char *line, 
     char            *value;
 #endif
 
+#ifndef __NT__
+    /* unused parameters */ (void)buff;
+#endif
+
     val = NULL;
     if( line[0] != '\0' ) {
         if( line[0] == '%' ) {
