@@ -210,7 +210,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
 
         if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
-            trie->child[i].trie = MemAlloc( sizeof( trie->child->trie ) );
+            trie->child[i].trie = MemAlloc( sizeof( *trie->child->trie ) );
             if( trie->child[i].trie == NULL ) {
                 return( false );
             }
