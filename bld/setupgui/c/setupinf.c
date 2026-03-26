@@ -681,6 +681,17 @@ static char *NextToken( char *buf, char delim )
     return( next );
 }
 
+static char *NextTokenQuoted( char **buf, char delim )
+{
+    char    *line;
+    char    *next;
+
+    line = *buf; next = NextToken( line, '"' );
+    line = next; next = NextToken( line, '"' );
+    *buf = line;
+    line = next; next = NextToken( line, delim );
+    return( next );
+}
 
 static char *StripBlanks( char *p )
 /*********************************/
@@ -947,10 +958,8 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
     vhandle             var_handle;
 
     VbufInit( &text );
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     VbufConcStr( &text, line );
-    line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
@@ -1108,8 +1117,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
     if( rows > 0 ) {
         rows -= 1;
     }
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     if( *line == '\0' ) {
         rc = false;
     } else {
@@ -1135,7 +1143,6 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
             text = textwindow_wrap( text, parse_dlg, true, false );
         }
 
-        line = next; next = NextToken( line, ',' );
         line = next; next = NextToken( line, ',' );
         if( EvalCondition( line )
           && text != NULL ) {
@@ -1179,10 +1186,8 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
 
     line = next; next = NextToken( line, ',' );
     var_handle = AddVariable( line );
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     text = line;
-    line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
@@ -1269,12 +1274,9 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
     set_var_default_value( var_handle, line, &buff );
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     ReplaceVars( &buff, line );
     line = next; next = NextToken( line, ',' );
-    line = next; next = NextToken( line, ',' );
-
     line = TrimQuote( line );
     var_handle_2 = AddVariable( line );
 //    len = max( BW, strlen( line + 2 ) );
@@ -1414,10 +1416,8 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     vbl_name = line;
     line = next; next = NextToken( line, ',' );
     init_cond = line;
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     text = line;
-    line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
@@ -1468,10 +1468,8 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
     vbl_name = line;
     line = next; next = NextToken( line, ',' );
     init_cond = line;
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     text = line;
-    line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
@@ -1539,10 +1537,8 @@ static bool dialog_edit_control( char *next, DIALOG_PARSER_INFO *parse_dlg )
     var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
     set_var_default_value( var_handle, line, &buff );
-    line = next; next = NextToken( line, '"' );
-    line = next; next = NextToken( line, '"' );
+    line = next; next = NextTokenQuoted( &line, ',' );
     ReplaceVars( &buff, line );
-    line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
