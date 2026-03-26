@@ -881,6 +881,57 @@ static char *get_cond( const char *str )
     return( MemStrdupSafe( str ) );
 }
 
+static const char *set_var_default_value( vhandle var_handle, const char *line, VBUF *buff )
+{
+    const char      *val;
+    char            *section;
+#if defined( __NT__ )
+    char            *value;
+#endif
+
+    val = NULL;
+    if( line[0] != '\0' ) {
+        if( line[0] == '%' ) {
+            val = GetVariableStrVal( line + 1 );
+        } else if( line[0] == '@' ) {
+            /*
+             * support @envvar@section:value - 2nd part is optional
+             */
+            section = strchr( line + 1, '@' );
+            if( section != NULL ) {
+                /* terminate envvar */
+                *section = '\0';
+#if defined( __NT__ )
+                ++section;
+                value = strchr( section, ':' );
+                if( value != NULL ) {
+                    *value = '\0';
+                    ++value;
+                    if( GetRegString( HKEY_CURRENT_USER, section, value, buff ) ) {
+                        val = VbufString( buff );
+                    }
+                }
+#endif
+            }
+            if( val == NULL
+              && line[1] != '\0' ) {
+                val = getenv( line + 1 );
+            }
+        } else {
+            val = line;
+        }
+    }
+    if( val == NULL
+      || val[0] == '\0' ) {
+        val = VarGetStrVal( var_handle );
+    }
+    SetVariableByHandle( var_handle, val );
+    if( VariablesFile != NULL ) {
+        ReadVariablesFile( VarGetName( var_handle ) );
+    }
+    return( val );
+}
+
 static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
 /********************************************************************/
 {
@@ -898,6 +949,7 @@ static bool dialog_static( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
         line = next; next = NextToken( line, ',' );
+
         /*
          * condition for visibility (dynamic)
          */
@@ -1083,6 +1135,7 @@ static bool dialog_textwindow( char *next, DIALOG_PARSER_INFO *parse_dlg, bool l
         if( EvalCondition( line )
           && text != NULL ) {
             line = next; next = NextToken( line, ',' );
+
             /*
              * condition for visibility (dynamic)
              */
@@ -1127,15 +1180,15 @@ static bool dialog_dynamic( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
-        if( *text != '\0' ) {
+        line = next; next = NextToken( line, ',' );
+
+        len = (int)strlen( text );
+        if( len > 0 ) {
             SetVariableByHandle( var_handle, text );
         }
         parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
         parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
         parse_dlg->num_variables++;
-        len = (int)strlen( text );
-        line = next;
-        next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1166,6 +1219,8 @@ static bool dialog_pushbutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line_start = next; next = NextToken( line_start, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
+
         parse_dlg->num_push_buttons += 1;
         def_ret = false;
         if( *line_start == '.' ) {
@@ -1181,7 +1236,6 @@ static bool dialog_pushbutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
         }
         if( parse_dlg->max_width < parse_dlg->num_push_buttons * ( ( 3 * BW ) / 2 ) )
             parse_dlg->max_width = parse_dlg->num_push_buttons * ( ( 3 * BW ) / 2 );
-        line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1197,61 +1251,19 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
 {
 //    int                 len;
     char                *line;
-    const char          *val;
-    char                *section;
     char                *button_text;
     char                *dialog_name;
-#if defined( __NT__ )
-    char                *value;
-#endif
     vhandle             var_handle;
     vhandle             var_handle_2;
     VBUF                buff;
     bool                rc = true;
 
+    VbufInit( &buff );
+
     line = next; next = NextToken( line, ',' );
     var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
-    val = NULL;
-    VbufInit( &buff );
-    if( line[0] != '\0' ) {
-        if( line[0] == '%' ) {
-            val = GetVariableStrVal( &line[1] );
-        } else if( line[0] == '@' ) {
-            /*
-             * support @envvar@section:value - 2nd part is optional
-             */
-            section = strchr( &line[1], '@' );
-            if( section != NULL ) {
-                /* terminate envvar */
-                *section = '\0';
-#if defined( __NT__ )
-                ++section;
-                value = strchr( section, ':' );
-                if( value != NULL ) {
-                    *value = '\0';
-                    ++value;
-                    if( GetRegString( HKEY_CURRENT_USER, section, value, &buff ) ) {
-                        val = VbufString( &buff );
-                    }
-                }
-#endif
-            }
-            if( val == NULL
-              && line[1] != '\0' ) {
-                val = getenv( &line[1] );
-            }
-        } else {
-            val = line;
-        }
-    }
-    if( val == NULL
-      || val[0] == '\0' )
-        val = VarGetStrVal( var_handle );
-    SetVariableByHandle( var_handle, val );
-    if( VariablesFile != NULL ) {
-        ReadVariablesFile( VarGetName( var_handle ) );
-    }
+    set_var_default_value( var_handle, line, &buff );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
     ReplaceVars( &buff, line );
@@ -1265,12 +1277,12 @@ static bool dialog_edit_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line = next; next = NextToken( line, ',' );
     dialog_name = line;
     line = next; next = NextToken( line, ',' );
-
     if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
+
         parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
         parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
         parse_dlg->num_variables++;
-        line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1318,7 +1330,6 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     char                *next_copy;
     char                *text;
     char                *dialog_name;
-    char                *condition;
     vhandle             var_handle;
     bool                rc = true;
 
@@ -1330,10 +1341,9 @@ static bool dialog_other_button( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line = next; next = NextToken( line, ',' );
     text = line;
     line = next; next = NextToken( line, ',' );
-    condition = line;
-    line = next; next = NextToken( line, ',' );
+    if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
 
-    if( EvalCondition( condition ) ) {
         var_handle = MakeDummyVar();
         SetVariableByHandle( var_handle, dialog_name );
         set_dlg_push_button( var_handle, button_text, parse_dlg->curr_dialog->controls,
@@ -1405,10 +1415,11 @@ static bool dialog_radiobutton( char *next, DIALOG_PARSER_INFO *parse_dlg )
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
+
         var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
         parse_dlg->num_radio_buttons += 1;
         len = (int)strlen( text ) + 4; /* room for button */
-        line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1458,13 +1469,14 @@ static bool dialog_checkbox( char *next, DIALOG_PARSER_INFO *parse_dlg, bool det
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
+
         if( detail_button ) {
             dlg_var_handle = MakeDummyVar();
             SetVariableByHandle( dlg_var_handle, dialog_name );
         }
         var_handle = dialog_set_variable( parse_dlg, vbl_name, init_cond );
         len = (int)strlen( text ) + 4; /* room for button */
-        line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1508,75 +1520,31 @@ void SimSetNeedGetDiskSizes( void )
 }
 
 
-static bool dialog_editcontrol( char *next, DIALOG_PARSER_INFO *parse_dlg )
-/*************************************************************************/
+static bool dialog_edit_control( char *next, DIALOG_PARSER_INFO *parse_dlg )
+/**************************************************************************/
 {
     char                *line;
-    const char          *val;
-    char                *section;
-#if defined( __NT__ )
-    char                *value;
-#endif
     vhandle             var_handle;
     VBUF                buff;
     bool                rc = true;
 
+    VbufInit( &buff );
+
     line = next; next = NextToken( line, ',' );
     var_handle = AddVariable( line );
     line = next; next = NextToken( line, ',' );
-    val = NULL;
-    VbufInit( &buff );
-    if( line[0] != '\0' ) {
-        if( line[0] == '%' ) {
-            val = GetVariableStrVal( &line[1] );
-        } else if( line[0] == '@' ) {
-            /*
-             * support @envvar@section:value - 2nd part is optional
-             */
-            section = strchr( &line[1], '@' );
-            if( section != NULL ) {
-                /*
-                 * terminate envvar
-                 */
-                *section = '\0';
-#if defined( __NT__ )
-                ++section;
-                value = strchr( section, ':' );
-                if( value != NULL ) {
-                    *value = '\0';
-                    ++value;
-                    if( GetRegString( HKEY_CURRENT_USER, section, value, &buff ) ) {
-                        val = VbufString( &buff );
-                    }
-                }
-#endif
-            }
-            if( val == NULL
-              && line[1] != '\0' ) {
-                val = getenv( &line[1] );
-            }
-        } else {
-            val = line;
-        }
-    }
-    if( val == NULL
-      || val[0] == '\0' ) {
-        val = VarGetStrVal( var_handle );
-    }
-    SetVariableByHandle( var_handle, val );
-    if( VariablesFile != NULL ) {
-        ReadVariablesFile( VarGetName( var_handle ) );
-    }
+    set_var_default_value( var_handle, line, &buff );
     line = next; next = NextToken( line, '"' );
     line = next; next = NextToken( line, '"' );
     ReplaceVars( &buff, line );
     line = next; next = NextToken( line, ',' );
     line = next; next = NextToken( line, ',' );
     if( EvalCondition( line ) ) {
+        line = next; next = NextToken( line, ',' );
+
         parse_dlg->curr_dialog->pVariables[parse_dlg->num_variables] = var_handle;
         parse_dlg->curr_dialog->pConditions[parse_dlg->num_variables] = NULL;
         parse_dlg->num_variables++;
-        line = next; next = NextToken( line, ',' );
         /*
          * condition for visibility (dynamic)
          */
@@ -1793,7 +1761,7 @@ static bool ProcLine( char *line, pass_type pass )
                     parse_dlg.row_num -= 1;
                     added = dialog_checkbox( next, &parse_dlg, false );
                 } else if( stricmp(line, "edit_control") == 0 ) {
-                    added = dialog_editcontrol( next, &parse_dlg );
+                    added = dialog_edit_control( next, &parse_dlg );
                 } else if( stricmp(line, "text_window") == 0 ) {
                     added = dialog_textwindow( next, &parse_dlg, false );
                 } else if( stricmp(line, "text_window_license") == 0 ) {
@@ -1918,12 +1886,12 @@ static bool ProcLine( char *line, pass_type pass )
                     file->date = SetupInfo.stamp;
                 }
                 line = p; p = NextToken( line, '!' );
-                if( p != NULL
-                  && *p != '\0'
-                  && *p != '!' ) {
-                    file->dst_var = AddVariable( p );
-                } else {
+                if( p == NULL
+                  || *p == '\0'
+                  || *p == '!' ) {
                     file->dst_var = NO_VAR;
+                } else {
+                    file->dst_var = AddVariable( p );
                 }
                 line = p; p = NextToken( line, '!' );
                 file->executable = false;
@@ -3874,6 +3842,8 @@ static char *CompileCondition( const char *str )
         }
     }
     MemFree( str2 );
+    if( buff[0] == '\0' )
+        return( NULL );
     return( MemStrdupSafe( buff ) );
 }
 
