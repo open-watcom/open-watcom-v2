@@ -662,22 +662,23 @@ static char *NextToken( char *buf, char delim )
  */
 {
     char            *p;
-    char            *q;
+    char            *next;
 
     p = strchr( buf, delim );
     if( p == NULL ) {
-        p = strchr( buf, '\0' );
+        next = p = strchr( buf, '\0' );
     } else {
-        *p = '\0';
-        q = p - 1;
-        while( q >= buf && IS_WS( *q ) ) {
-            *q = '\0';
-            --q;
-        }
-        ++p;
-        SKIP_WS( p );
+        next = p;
+        *next++ = '\0';
+        SKIP_WS( next );
     }
-    return( p );
+    if( p != buf ) {
+        p--;
+        while( p >= buf && IS_WS( *p ) ) {
+            *p-- = '\0';
+        }
+    }
+    return( next );
 }
 
 
