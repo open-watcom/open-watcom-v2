@@ -268,11 +268,12 @@ _WCNORETURN void _WCNEAR _CMain( free, n, cmd, stk_bot, pid )
 
 #else   /* !defined( _M_I86 ) */
 
+
 #pragma aux _s_EFG_printf __parm [__eax] [__edx] [__ebx]
-static char * _WCFAR _s_EFG_printf(
-    char    *buffer,
-    va_list *pargs,
-    void    *specs )
+static char * __far _s_EFG_printf( char *buffer, va_list *pargs, void *specs )
+/*****************************************************************************
+ * 32-bit QNX callback must be __far function
+ */
 {
     return( (*__EFG_printf)( buffer, pargs, specs ) );
 }
@@ -301,7 +302,7 @@ _WCNORETURN void _WCNEAR _CMain( int argc, char **argv, char **arge )
     environ             = arge;
     tmp.p               = &def_errno;
     __setmagicvar( &tmp.p, _m_errno_ptr );
-    tmp.f               = (void (*)())_s_EFG_printf;
+    tmp.f               = (void (*)())(unsigned)_s_EFG_printf;
     __setmagicvar( &tmp.f, _m_efgfmt_off );
     tmp.s               = _cs();
     __setmagicvar( &tmp.s, _m_efgfmt_cs );
