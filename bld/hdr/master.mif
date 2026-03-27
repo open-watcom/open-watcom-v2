@@ -42,7 +42,7 @@ qnx_dirs   = h h/sys
 rdos_dirs  = h h/sys h/netinet h/arpa
 
 mh_dir = ../watcom
-qnx_mh_dir = ../quantum
+qnx_mh_dir = $(quantum_root)
 
 .EXTENSIONS
 .EXTENSIONS : . .h .hpp .cnv .gsp .sp .mh .mhp
