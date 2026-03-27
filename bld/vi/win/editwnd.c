@@ -938,10 +938,10 @@ void ResetExtraRects( void )
     if( !BAD_ID( edit_container_window_id ) ) {
 #ifdef __WINDOWS__
         WNDENUMPROC wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
-        EnumChildWindows( edit_container_window_id, wndenumproc, 0L );
+        EnumChildWindows( edit_container_window_id, wndenumproc, 0 );
         FreeProcInstance_WNDENUM( wndenumproc );
 #else
-        EnumChildWindows( edit_container_window_id, ResizeExtra, 0L );
+        EnumChildWindows( edit_container_window_id, ResizeExtra, 0 );
 #endif
     }
 
