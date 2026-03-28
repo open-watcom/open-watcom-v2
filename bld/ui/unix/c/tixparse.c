@@ -220,7 +220,7 @@ static int do_default( void )
     esc_str[0] = _ESC_CHAR;
     esc_str[1] = 'A';
     esc_str[2] = '\0';
-    for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {
+    for( i = 0; i < _ARRAY_SIZE( default_tix ); i++ ) {
         c = default_tix[i].vt100;
         if( (c & 0x80) == 0 )
             c = set_ti_alt_map( i, c );
@@ -281,7 +281,7 @@ tix_status ti_read_tix( const char *termname )
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ ) {
+    for( i = 0; i < _ARRAY_SIZE( ti_char_map ); i++ ) {
         ti_char_map[i][0] = i;
         ti_char_map[i][1] = 0;
     }
@@ -325,7 +325,7 @@ tix_status ti_read_tix( const char *termname )
         if( utf8_mode ) {
             uiwritec( _ESC "%G" );
             /* use UTF-8 characters instead of ACS */
-            for( i = 0; i < sizeof( default_tix ) / sizeof( default_tix[0] ); i++ ) {
+            for( i = 0; i < _ARRAY_SIZE( default_tix ); i++ ) {
                 wctomb( ti_char_map[i], default_tix[i].unicode );
             }
         } else {

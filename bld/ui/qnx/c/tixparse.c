@@ -170,7 +170,7 @@ tix_status ti_read_tix( const char *termname )
 
     memset( _ti_alt_map, 0, sizeof( _ti_alt_map ) );
 
-    for( i = 0; i < sizeof( ti_char_map ) / sizeof( ti_char_map[0] ); i++ ) {
+    for( i = 0; i < _ARRAY_SIZE( ti_char_map ); i++ ) {
         ti_char_map[i][0] = i;
         ti_char_map[i][1] = 0;
     }

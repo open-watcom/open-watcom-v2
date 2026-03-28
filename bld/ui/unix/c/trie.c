@@ -90,7 +90,7 @@ static eTrie    KeyTrie;
 bool TrieInit( void )
 {
 
-    KeyTrie.child = MemAlloc( TRIE_TOP * sizeof( *KeyTrie.child ) );
+    KeyTrie.child = MemAlloc( sizeof( *KeyTrie.child ) * TRIE_TOP );
     if( KeyTrie.child == NULL )
         return( false );
     KeyTrie.alc_child = TRIE_TOP;
@@ -180,7 +180,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
 
                 // the array isn't big enough, expand it a bit
                 trie->alc_child += TRIE_ARRAY_GROWTH;
-                trie->child = MemRealloc( trie->child, trie->alc_child * sizeof( eNode ) );
+                trie->child = MemRealloc( trie->child, sizeof( *trie->child ) * trie->alc_child );
                 if( trie->child == NULL ) {
                     trie->alc_child = 0;
                     return( false );
@@ -190,7 +190,7 @@ bool TrieAdd( ui_event ui_ev, const char *str )
             if( i < ( trie->num_child - 1 ) ) {
                 // We're in the middle of the list, so clear a spot
                 memmove( &(trie->child[i + 1]), &(trie->child[i]),
-                                ( trie->num_child - i - 1 ) * sizeof( eNode ) );
+                                sizeof( *trie->child ) * ( trie->num_child - i - 1 ) );
             }
 
             trie->child[i].c = *str;

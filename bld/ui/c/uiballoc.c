@@ -68,7 +68,7 @@ bool intern balloc( BUFFER *bptr, uisize height, uisize width )
 
     bptr->increment = width;
 #if defined( __DOS__ ) && !defined( _M_I86 )
-    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
+    ptr = MemAlloc( sizeof( *ptr ) * height * width );
     if( ptr != NULL ) {
         /* convert ptr to far if necessary: use DS for segment value */
         bptr->origin = ptr;
@@ -78,11 +78,11 @@ bool intern balloc( BUFFER *bptr, uisize height, uisize width )
     bptr->origin = NULL;
     return( false );
 #elif defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
-    ptr = _fmalloc( height * width * sizeof( PIXEL ) );
+    ptr = _fmalloc( sizeof( *ptr ) * height * width );
     bptr->origin = ptr;
     return( ptr != NULL );
 #else
-    ptr = MemAlloc( height * width * sizeof( PIXEL ) );
+    ptr = MemAlloc( sizeof( *ptr ) * height * width );
     bptr->origin = ptr;
     return( ptr != NULL );
 #endif

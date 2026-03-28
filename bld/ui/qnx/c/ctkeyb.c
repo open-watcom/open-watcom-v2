@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +60,6 @@
 #include "tixparse.h"
 #include "kbwait.h"
 
-
-#define NUM_ELTS( a )       (sizeof( a ) / sizeof( a[0] ))
 
 #define BUFF2CODE( __b )    (*(unsigned char *)__b + (*(unsigned char *)(__b + 1) << 8 ))
 
@@ -276,7 +274,7 @@ static bool init_interminfo( void )
     evmap( EV_TAB_BACKWARD,        key_btab );
 
     // Check to see that the correct number of events were added
-    return( NUM_ELTS( InTerminfo ) == NUM_IN_TERM_INFO_MAPPINGS );
+    return( _ARRAY_SIZE( InTerminfo ) == NUM_IN_TERM_INFO_MAPPINGS );
 }
 
 void intern clear_shift( void )
@@ -498,7 +496,7 @@ ui_event ck_keyboardevent( void )
             } else {
                 search_ev = ui_ev;
             }
-            entry = bsearch( &search_ev, ShiftMap, NUM_ELTS( ShiftMap ), sizeof( ShiftMap[0] ), find_entry );
+            entry = bsearch( &search_ev, ShiftMap, _ARRAY_SIZE( ShiftMap ), sizeof( ShiftMap[0] ), find_entry );
             if( entry != NULL ) {
                 if( shift_state & S_SHIFT ) {
                     ui_ev = entry->shift;
@@ -615,7 +613,7 @@ static bool ck_init( void )
         return( false );
     case TIX_NOFILE:
         if( UIConCtrl != NULL ) {
-            for( i = 0; i < NUM_ELTS( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
+            for( i = 0; i < _ARRAY_SIZE( ConEscapes ); i += strlen( ConEscapes + i ) + 1 ) {
                 ui_ev = BUFF2CODE( ConEscapes );
                 i += 2;
                 if( !TrieAdd( ui_ev, ConEscapes + i ) ) {
@@ -676,7 +674,7 @@ static bool init_trie( void )
         return( false );
 
     buff[1] = '\0';
-    for( i = 0; i < NUM_ELTS( InStandard ); ++i ) {
+    for( i = 0; i < _ARRAY_SIZE( InStandard ); ++i ) {
         buff[0] = InStandard[i].ch;
         if( !TrieAdd( InStandard[i].ui_ev, buff ) ) {
             TrieFini();

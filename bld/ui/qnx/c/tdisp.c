@@ -799,17 +799,17 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         unsigned        seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
+            seg = qnx_segment_alloc( sizeof( *scrn ) * size );
         } else {
-            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), sizeof( *scrn ) * size );
         }
         if( seg == -1 )
             return( false );
         scrn = _MK_FP( seg, 0 );
         if( shadow == NULL ) {
-            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
+            seg = qnx_segment_alloc( sizeof( *shadow ) * size );
         } else {
-            seg = qnx_segment_realloc( _FP_SEG( shadow ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( shadow ), sizeof( *shadow ) * size );
         }
         if( seg == -1 ) {
             qnx_segment_free( _FP_SEG( scrn ) );
@@ -817,10 +817,10 @@ static bool setupscrnbuff( uisize srows, uisize scols )
         }
         shadow = _MK_FP( seg, 0 );
 #else
-        scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
+        scrn = MemRealloc( scrn, sizeof( *scrn ) * size );
         if( scrn == NULL )
             return( false );
-        if( (shadow = MemRealloc( shadow, size * sizeof( PIXEL ) )) == NULL ) {
+        if( (shadow = MemRealloc( shadow, sizeof( *shadow ) * size )) == NULL ) {
             MemFree( scrn );
             return( false );
         }
@@ -1221,20 +1221,23 @@ UIDebugPrintf2("cursor address %d,%d\n",j,i);
 static void update_shadow( void )
 /*******************************/
 {
-    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    int         incr = UIData->screen.increment;
+    LP_PIXEL    bufp;   // buffer
+    LP_PIXEL    sbufp;  // shadow buffer
+    unsigned    incr;
+    unsigned    pos;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
     ostream_flush();
 
     // copy buffer to shadow buffer
+    incr = UIData->screen.increment;
     bufp = UIData->screen.origin;
     sbufp = shadow;
     for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
-        _fmemcpy( sbufp + incr * dirty_area.row0 + dirty_area.col0,
-                bufp + incr * dirty_area.row0 + dirty_area.col0,
-                ( dirty_area.col1 - dirty_area.col0 ) * sizeof( PIXEL ) );
+        pos = incr * dirty_area.row0 + dirty_area.col0;
+        _fmemcpy( sbufp + pos, bufp + pos,
+                 sizeof( *bufp ) * ( dirty_area.col1 - dirty_area.col0 ) );
     }
 
     // set dirty_area rectangle to be empty

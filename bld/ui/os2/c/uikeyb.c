@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +136,7 @@ ui_event intern keyboardevent( void )
         changed = ( newshift ^ UIData->old_shift ) & ~S_INSERT;
         if( changed != 0 ) {
             scan = 1;
-            for( key = 0; key < sizeof( ShiftkeyEvents ) / sizeof( ShiftkeyEvents[0] ); key++ ) {
+            for( key = 0; key < _ARRAY_SIZE( ShiftkeyEvents ); key++ ) {
                 if( changed & scan ) {
                     if( newshift & scan ) {
                         UIData->old_shift |= scan;

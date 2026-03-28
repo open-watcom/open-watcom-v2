@@ -101,7 +101,7 @@ bool intern initbios( void )
     BSize.Y = UIData->height = sbi.dwMaximumWindowSize.Y;
     UIData->colour = M_VGA;
 
-    UIData->screen.origin = MemAlloc( UIData->width * UIData->height * sizeof( PIXEL ) );
+    UIData->screen.origin = MemAlloc( sizeof( *UIData->screen.origin ) * UIData->width * UIData->height );
     UIData->screen.increment = UIData->width;
     uiinitcursor();
     initkeyboard();

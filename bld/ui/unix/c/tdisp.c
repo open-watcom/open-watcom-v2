@@ -799,10 +799,10 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     size = UIData->width * UIData->height;
     scrn = UIData->screen.origin;
 
-    scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
+    scrn = MemRealloc( scrn, sizeof( *scrn ) * size );
     if( scrn == NULL )
         return( false );
-    shadow = MemRealloc( shadow, size * sizeof( PIXEL ) );
+    shadow = MemRealloc( shadow, sizeof( *shadow ) * size );
     if( shadow == NULL ) {
         MemFree( scrn );
         return( false );

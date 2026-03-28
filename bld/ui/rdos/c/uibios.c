@@ -71,9 +71,8 @@ bool intern initbios( void )
     RdosGetTextSize( &height, &width );
     UIData->height = height;
     UIData->width = width;
-    size = UIData->width * UIData->height * sizeof( PIXEL );
-    bufptr = MemAllocSafe( size );
-    size /= sizeof( PIXEL );
+    size = UIData->width * UIData->height;
+    bufptr = MemAllocSafe( sizeof( *bufptr ) * size );
     for( i = 0; i < size; i++ ) {
         bufptr[i].ch = ' ';
         bufptr[i].attr = 0x07;

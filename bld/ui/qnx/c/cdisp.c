@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,15 +108,15 @@ static bool setupscrnbuff( void )
         unsigned    seg;
 
         if( scrn == NULL ) {
-            seg = qnx_segment_alloc( size * sizeof( PIXEL ) );
+            seg = qnx_segment_alloc( sizeof( *scrn ) * size );
         } else {
-            seg = qnx_segment_realloc( _FP_SEG( scrn ), size * sizeof( PIXEL ) );
+            seg = qnx_segment_realloc( _FP_SEG( scrn ), sizeof( *scrn ) * size );
         }
         if( seg == -1 )
             return( false );
         scrn = _MK_FP( seg, 0 );
 #else
-        scrn = MemRealloc( scrn, size * sizeof( PIXEL ) );
+        scrn = MemRealloc( scrn, sizeof( *scrn ) * size );
         if( scrn == NULL ) {
             return( false );
         }
@@ -311,9 +311,9 @@ static int cd_update( SAREA *area )
                         (LP_STRING)UIData->screen.origin, 0,
                         crow, ccol, type );
     } else {
-        count = area->width * sizeof( PIXEL );
+        count = sizeof( *UIData->screen.origin ) * area->width;
         for( i = area->row; i < ( area->row + area->height ); i++ ) {
-            offset = ( i * UIData->width + area->col ) * sizeof( PIXEL );
+            offset = sizeof( *UIData->screen.origin ) * ( i * UIData->width + area->col );
             my_console_write( UIConCtrl, UIConsole, offset,
                             (LP_STRING)UIData->screen.origin + offset, count,
                             crow, ccol, type );

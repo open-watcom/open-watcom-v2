@@ -152,17 +152,17 @@ void intern farcopy( LP_PIXEL src, LP_PIXEL dst, uisize len, bool snow )
 {
 #ifdef _M_I86
     if( snow ) {
-        _snowmove( dst, src, len * sizeof( PIXEL ) );
+        _snowmove( dst, src, sizeof( *src ) * len );
     } else {
-        _fmemmove( dst, src, len * sizeof( PIXEL ) );
+        _fmemmove( dst, src, sizeof( *src ) * len );
     }
 #else
     /* unused parameters */ (void)snow;
 
   #if defined( __DOS__ )
-    _fmemmove( dst, src, len * sizeof( PIXEL ) );
+    _fmemmove( dst, src, sizeof( *src ) * len );
   #else
-    memmove( dst, src, len * sizeof( PIXEL ) );
+    memmove( dst, src, sizeof( *src ) * len );
   #endif
 #endif
 }

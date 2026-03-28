@@ -48,6 +48,8 @@
 #define CHAR_VALUE(c)       (char)(unsigned char)(c)
 #define UCHAR_VALUE(c)      (unsigned char)(c)
 
+#define _ARRAY_SIZE( a )    ( sizeof(a) / sizeof( (a)[0] ) )
+
 #if defined( __DOS__ ) || defined( _M_I86 )
 typedef char        __far *LP_STRING;
 typedef const char  __far *LPC_STRING;
