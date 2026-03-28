@@ -166,6 +166,17 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
              * don't store '\r' character in string
              */
             continue;
+        case 0x1A:
+            /*
+             * DOS text files may use Ctrl-Z as an end-of-file marker.
+             * Stop reading the file instead of passing a bare SUB line
+             * through the scanner as a string token.
+             */
+            if( quote == '\0' ) {
+                *ptr = '\0';
+                return( got_something );
+            }
+            break;
         case '\n':
             /*
              * if continuation character found, pass over newline

@@ -30,7 +30,8 @@ error1.dum &
 extern1.dum &
 include.dum &
 irp.dum &
-cpureq.dum
+cpureq.dum &
+ctrlzeof.dum
 
 asm_flags_diag01 = -4s
 asm_flags_diag02 = -3
