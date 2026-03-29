@@ -223,9 +223,9 @@ static bool initmonitor( void )
 static void my_console_write(
     struct _console_ctrl    *cc,
     int                     console,
-    unsigned                offset,
+    unsigned short          offset,
     LP_STRING               buf,
-    int                     nbytes,
+    unsigned short          nbytes,
     CURSORORD               crow,
     CURSORORD               ccol,
     int                     type )
