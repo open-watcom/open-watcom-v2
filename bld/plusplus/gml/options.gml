@@ -1013,6 +1013,11 @@
 :usage.  preserve comments
 :jusage. コメントを残します
 
+:option. pm
+:target. any
+:usage.  dump predefined macros to output
+:jusage.
+
 :option. pw
 :target. any
 :number. checkPPWidth

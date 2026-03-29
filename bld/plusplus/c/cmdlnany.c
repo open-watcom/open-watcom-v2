@@ -1033,6 +1033,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_mode = true;
         CompFlags.cpp_keep_comments = true;
     }
+    if( data->pm ) {
+        CompFlags.cpp_mode = true;
+        CompFlags.cpp_dump_macros = true;
+    }
     if( data->pe ) {
         CompFlags.cpp_mode = true;
         CompFlags.encrypt_preproc_output = true;

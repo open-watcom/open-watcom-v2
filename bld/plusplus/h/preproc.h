@@ -153,6 +153,9 @@ bool MacroExists(               // TEST IF MACRO EXISTS
     const char *macname,        // - macro name
     size_t len )                // - length of macro name
 ;
+void DumpAllMacros(             // DUMP ALL PREDEFINED MACROS
+    void )
+;
 void MacroFini(                 // MACRO PROCESSING -- COMPLETION
     void )
 ;

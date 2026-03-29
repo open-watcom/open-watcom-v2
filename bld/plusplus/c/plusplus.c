@@ -292,28 +292,32 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             CompFlags.srcfile_compiled = true;
             ExitPointAcquire( cpp_preproc );
             if( CompFlags.cpp_output ) {
-                CtxSetCurrContext( CTX_SOURCE );
-                ExitPointAcquire( cpp_preproc_only );
-                CompFlags.cpp_output = false;
-                if( ForcePreInclude != NULL ) {
-                    CtxSetCurrContext( CTX_PREINCL );
-                    if( openForcePreIncludeFile() ) {
-                        PpParse();
-                        SrcFileClose( true );
+                if( CompFlags.cpp_dump_macros ) {
+                    DumpAllMacros();
+                } else {
+                    CtxSetCurrContext( CTX_SOURCE );
+                    ExitPointAcquire( cpp_preproc_only );
+                    CompFlags.cpp_output = false;
+                    if( ForcePreInclude != NULL ) {
+                        CtxSetCurrContext( CTX_PREINCL );
+                        if( openForcePreIncludeFile() ) {
+                            PpParse();
+                            SrcFileClose( true );
+                        }
                     }
-                }
-                CompFlags.cpp_output = true;
-                if( ForceInclude != NULL ) {
-                    CppEmitPoundLine( 1, WholeFName, EL_NULL );
-                    CtxSetCurrContext( CTX_FORCED_INCS );
-                    if( openForceIncludeFile() ) {
-                        PpParse();
-                        SrcFileClose( true );
+                    CompFlags.cpp_output = true;
+                    if( ForceInclude != NULL ) {
+                        CppEmitPoundLine( 1, WholeFName, EL_NULL );
+                        CtxSetCurrContext( CTX_FORCED_INCS );
+                        if( openForceIncludeFile() ) {
+                            PpParse();
+                            SrcFileClose( true );
+                        }
                     }
+                    OpenPgmFile();
+                    PpParse();
+                    ExitPointRelease( cpp_preproc_only );
                 }
-                OpenPgmFile();
-                PpParse();
-                ExitPointRelease( cpp_preproc_only );
             } else {
                 if( ForcePreInclude != NULL ) {
                     CtxSetCurrContext( CTX_PREINCL );
