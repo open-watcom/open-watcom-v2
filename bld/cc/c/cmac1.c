@@ -222,6 +222,79 @@ void MacroPurge( void )
 #endif
 }
 
+
+static void DumpMacroDefn( const char *p )
+/****************************************/
+{
+    unsigned char   c;
+    TOKEN           token;
+
+    while( (token = MTOK( p )) != T_NULL ) {
+        MTOKINC( p );
+        switch( token ) {
+        case T_CONSTANT:
+        case T_PPNUMBER:
+        case T_BAD_TOKEN:
+        case T_ID:
+        case T_UNEXPANDABLE_ID:
+            for( ; (c = *p++) != '\0'; ) {
+                fputc( c, CppFile );
+            }
+            break;
+        case T_LSTRING:
+            fputc( 'L', CppFile );
+            /* fall through */
+        case T_STRING:
+            fputc( '"', CppFile );
+            for( ; (c = *p++) != '\0'; ) {
+                fputc( c, CppFile );
+            }
+            fputc( '"', CppFile );
+            break;
+        case T_WHITE_SPACE:
+            fputc( ' ', CppFile );
+            break;
+        case T_BAD_CHAR:
+            fputc( *p++, CppFile );
+            break;
+        case T_MACRO_PARM:
+        case T_MACRO_VAR_PARM:
+            MTOKPARMINC( p );
+            break;
+        default:
+            fprintf( CppFile, "%s", Tokens[token] );
+            break;
+        }
+    }
+}
+
+
+void DumpAllMacros( void )
+/************************/
+{
+    mac_hash_idx    hash;
+    MEPTR           mentry;
+    const char      *p;
+
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        for( mentry = MacHash[hash]; mentry != NULL; mentry = mentry->next_macro ) {
+            if( mentry->macro_flags & MFLAG_HIDDEN )
+                continue;
+            if( MacroIsSpecial( mentry ) )
+                continue;
+            fprintf( CppFile, "#define %s", mentry->macro_name );
+            p = (char *)mentry + mentry->macro_defn;
+            if( MTOK( p ) != T_NULL ) {
+                fputc( ' ', CppFile );
+                DumpMacroDefn( p );
+            }
+            fputc( '\n', CppFile );
+        }
+    }
+    fflush( CppFile );
+}
+
+
 static void DeleteNestedMacro( void )
 /***********************************/
 {

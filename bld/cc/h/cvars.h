@@ -598,6 +598,7 @@ extern void         MacroInit( void );
 extern void         MacroAddComp( void );
 extern void         MacroFini( void );
 extern void         MacroPurge( void );
+extern void         DumpAllMacros( void );
 extern TOKEN        GetMacroToken( void );
 extern TOKEN        SpecialMacro( MEPTR );
 extern void         DoMacroExpansion( MEPTR );

@@ -1031,26 +1031,33 @@ static void DoCCompile( char **cmdline )
         ParseAuxFile();
 #endif
         if( CompFlags.cpp_mode ) {
-            PrintWhiteSpace = true;
-            if( ForcePreInclude != NULL ) {
+            if( CompFlags.cpp_dump_macros ) {
                 if( CppFile == NULL )
                     OpenCppFile();
-                CompFlags.cpp_output = false;
-                if( openForcePreInclude() ) {
-                    CurToken = T_NULL;
-                    while( CurToken != T_EOF ) {
-                        CurToken = GetNextToken();
+                DumpAllMacros();
+                MacroFini();
+            } else {
+                PrintWhiteSpace = true;
+                if( ForcePreInclude != NULL ) {
+                    if( CppFile == NULL )
+                        OpenCppFile();
+                    CompFlags.cpp_output = false;
+                    if( openForcePreInclude() ) {
+                        CurToken = T_NULL;
+                        while( CurToken != T_EOF ) {
+                            CurToken = GetNextToken();
+                        }
                     }
+                    CompFlags.cpp_output = true;
                 }
-                CompFlags.cpp_output = true;
-            }
-            OpenPgmFile();
-            CPP_Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
+                OpenPgmFile();
+                CPP_Parse();
+                if( !CompFlags.quiet_mode ) {
+                    PrintStats();
+                }
+                if( CompFlags.warnings_cause_bad_exit ) {
+                    ErrCount += WngCount;
+                }
             }
         } else {
             OpenPgmFile();
