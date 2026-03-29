@@ -166,5 +166,6 @@ extern void     AddDirectivePath( const char *directive, const char *path );
 extern char     *RemoveExt( char * );
 extern int      HasFileExtension( const char *p, const char *ext );
 extern void     MakeName( char *name, const char *ext );
+extern int      UseCPlusPlus( const char *p );
 
 extern char     *MemStrLenDup( const char *str, size_t len );

@@ -519,3 +519,20 @@ void  MakeName( char *name, const char *ext )
         strcat( name, ext );
     }
 }
+
+
+int UseCPlusPlus( const char *p )
+/*******************************/
+{
+    return( *p++ == '.' && (
+        fname_cmp( p, "cp" ) == 0 ||
+        fname_cmp( p, "cpp" ) == 0 ||
+        fname_cmp( p, "cxx" ) == 0 ||
+        fname_cmp( p, "cc" )  == 0 ||
+#ifdef __UNIX__
+        strcmp( p, "c++" ) == 0 ||
+        strcmp( p, "C" ) == 0 ||
+#endif
+        fname_cmp( p, "hpp" ) == 0 ||
+        fname_cmp( p, "hxx" ) == 0 ) );
+}

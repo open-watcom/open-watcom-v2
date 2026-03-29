@@ -782,18 +782,6 @@ static int Parse( const char *cmd )
 }
 
 
-static int useCPlusPlus( const char *p )
-/**************************************/
-{
-    return( *p++ == '.' && (
-        fname_cmp( p, "cpp" ) == 0 ||
-        fname_cmp( p, "cxx" ) == 0 ||
-        fname_cmp( p, "cc" )  == 0 ||
-        fname_cmp( p, "hpp" ) == 0 ||
-        fname_cmp( p, "hxx" ) == 0 ) );
-}
-
-
 static etool *FindToolGetPath( tool_type utl )
 /********************************************/
 {
@@ -848,6 +836,25 @@ static int tool_exec( tool_type utl, const char *p1, const char *p2 )
 static tool_type SrcName( char *name )
 /************************************/
 {
+#if 1
+    const char  *p;
+    tool_type   utl;
+
+    p = strrchr( name, '.' );
+    if( p == NULL || strpbrk( p, PATH_SEPS_STR ) != NULL )
+        p = name + strlen( name );
+    if( IS_ASM( p ) ) {
+        utl = TYPE_ASM;
+    } else {
+        utl = TYPE_C;               // assume C compiler
+        if( !Flags.force_c ) {
+            if( Flags.force_c_plus || UseCPlusPlus( p ) ) {
+                utl = TYPE_CPP;     // use C++ compiler
+            }
+        }
+    }
+    return( utl );
+#else
     pgroup2     pg;
     tool_type   utl;
 
@@ -873,12 +880,13 @@ static tool_type SrcName( char *name )
     } else {
         utl = TYPE_C;               // assume C compiler
         if( !Flags.force_c ) {
-            if( Flags.force_c_plus || useCPlusPlus( pg.ext ) ) {
+            if( Flags.force_c_plus || UseCPlusPlus( pg.ext ) ) {
                 utl = TYPE_CPP;     // use C++ compiler
             }
         }
     }
     return( utl );
+#endif
 }
 
 void BuildSystemLink( FILE *fp )

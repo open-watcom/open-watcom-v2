@@ -592,7 +592,7 @@ static void initialize_Flags( void )
 static bool find_mapping( char c )
 /********************************/
 {
-    int     i;
+    unsigned    i;
 
     for( i = 0; i < sizeof( mappings ) / sizeof( mappings[0] ); i++ ) {
         option_mapping  *m;
@@ -1202,22 +1202,6 @@ static  int  Parse( int argc, char **argv )
     return( ret );
 }
 
-static int useCPlusPlus( const char *p )
-/**************************************/
-{
-    return( *p++ == '.' && (
-        fname_cmp( p, "cp" ) == 0 ||
-        fname_cmp( p, "cpp" ) == 0 ||
-#ifdef __UNIX__
-        strcmp( p, "c++" ) == 0 ||
-        strcmp( p, "C" ) == 0 ||
-#endif
-        fname_cmp( p, "cxx" ) == 0 ||
-        fname_cmp( p, "cc" )  == 0 ||
-        fname_cmp( p, "hpp" ) == 0 ||
-        fname_cmp( p, "hxx" ) == 0 ) );
-}
-
 static etool *FindToolGetPath( tool_type utl )
 /********************************************/
 {
@@ -1324,7 +1308,7 @@ static tool_type SrcName( const char *name )
     } else {
         utl = TYPE_C;               // assume C compiler
         if( !Flags.force_c ) {
-            if( Flags.force_c_plus || useCPlusPlus( p ) ) {
+            if( Flags.force_c_plus || UseCPlusPlus( p ) ) {
                 utl = TYPE_CPP;     // use C++ compiler
             }
         }
