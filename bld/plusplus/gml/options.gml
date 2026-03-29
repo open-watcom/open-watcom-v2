@@ -987,6 +987,13 @@
 :usage.  preprocessor ignores #line directives
 :jusage. preprocessor ignores #line directives
 
+:option. pm
+:target. any
+:nochain.
+:usagenochain.
+:usage.  dump predefined macros to output
+:jusage.
+
 :option. p
 :target. any
 :usage. preprocess source file
@@ -1012,11 +1019,6 @@
 :target. any
 :usage.  preserve comments
 :jusage. コメントを残します
-
-:option. pm
-:target. any
-:usage.  dump predefined macros to output
-:jusage.
 
 :option. pw
 :target. any

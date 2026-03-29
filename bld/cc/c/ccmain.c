@@ -1020,23 +1020,22 @@ static void DoCCompile( char **cmdline )
     }
     ParseInit();
     if( ParseCmdLine( cmdline ) ) {
-        if( WholeFName == NULL ) {
+        if( CompFlags.cpp_dump_macros ) {
+            if( CppFile == NULL )
+                OpenCppFile();
+            DumpAllMacros();
+            MacroFini();
+        } else if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
             return;
-        }
-        MakePgmName();
-        DelErrFile();               /* delete old error file */
-        CPragmaInit();              /* memory model is known now */
+        } else {
+            MakePgmName();
+            DelErrFile();               /* delete old error file */
+            CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
-        ParseAuxFile();
+            ParseAuxFile();
 #endif
-        if( CompFlags.cpp_mode ) {
-            if( CompFlags.cpp_dump_macros ) {
-                if( CppFile == NULL )
-                    OpenCppFile();
-                DumpAllMacros();
-                MacroFini();
-            } else {
+            if( CompFlags.cpp_mode ) {
                 PrintWhiteSpace = true;
                 if( ForcePreInclude != NULL ) {
                     if( CppFile == NULL )
@@ -1058,35 +1057,34 @@ static void DoCCompile( char **cmdline )
                 if( CompFlags.warnings_cause_bad_exit ) {
                     ErrCount += WngCount;
                 }
-            }
-        } else {
-            OpenPgmFile();
-            MacroAddComp(); // Add any compile time only macros
-            Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
-            }
-            if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
-                if( CompFlags.emit_browser_info ) {
-                    DwarfBrowseEmit();
-                }
-                FreeMacroSegments();
-                DoCompile();
             } else {
-                FreeMacroSegments();
+                OpenPgmFile();
+                MacroAddComp(); // Add any compile time only macros
+                Parse();
+                if( !CompFlags.quiet_mode ) {
+                    PrintStats();
+                }
+                if( CompFlags.warnings_cause_bad_exit ) {
+                    ErrCount += WngCount;
+                }
+                if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
+                    if( CompFlags.emit_browser_info ) {
+                        DwarfBrowseEmit();
+                    }
+                    FreeMacroSegments();
+                    DoCompile();
+                } else {
+                    FreeMacroSegments();
+                }
             }
+            if( ErrCount == 0 ) {
+                DumpDepFile();
+            } else {
+                DelDepFile();
+            }
+            SymFini();
+            CPragmaFini();
         }
-        if( ErrCount == 0 ) {
-            DumpDepFile();
-        } else {
-            DelDepFile();
-        }
-
-        SymFini();
-        CPragmaFini();
     } else {
         ErrCount = 1;
     }

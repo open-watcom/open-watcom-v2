@@ -269,6 +269,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             } else {
                 exit_status |= WPP_BATCH_FILES;
             }
+        } else if( CompFlags.cpp_dump_macros ) {
+            PpOpen();
+            DumpAllMacros();
         } else if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
             CompFlags.cmdline_error = true;
@@ -292,32 +295,28 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             CompFlags.srcfile_compiled = true;
             ExitPointAcquire( cpp_preproc );
             if( CompFlags.cpp_output ) {
-                if( CompFlags.cpp_dump_macros ) {
-                    DumpAllMacros();
-                } else {
-                    CtxSetCurrContext( CTX_SOURCE );
-                    ExitPointAcquire( cpp_preproc_only );
-                    CompFlags.cpp_output = false;
-                    if( ForcePreInclude != NULL ) {
-                        CtxSetCurrContext( CTX_PREINCL );
-                        if( openForcePreIncludeFile() ) {
-                            PpParse();
-                            SrcFileClose( true );
-                        }
+                CtxSetCurrContext( CTX_SOURCE );
+                ExitPointAcquire( cpp_preproc_only );
+                CompFlags.cpp_output = false;
+                if( ForcePreInclude != NULL ) {
+                    CtxSetCurrContext( CTX_PREINCL );
+                    if( openForcePreIncludeFile() ) {
+                        PpParse();
+                        SrcFileClose( true );
                     }
-                    CompFlags.cpp_output = true;
-                    if( ForceInclude != NULL ) {
-                        CppEmitPoundLine( 1, WholeFName, EL_NULL );
-                        CtxSetCurrContext( CTX_FORCED_INCS );
-                        if( openForceIncludeFile() ) {
-                            PpParse();
-                            SrcFileClose( true );
-                        }
-                    }
-                    OpenPgmFile();
-                    PpParse();
-                    ExitPointRelease( cpp_preproc_only );
                 }
+                CompFlags.cpp_output = true;
+                if( ForceInclude != NULL ) {
+                    CppEmitPoundLine( 1, WholeFName, EL_NULL );
+                    CtxSetCurrContext( CTX_FORCED_INCS );
+                    if( openForceIncludeFile() ) {
+                        PpParse();
+                        SrcFileClose( true );
+                    }
+                }
+                OpenPgmFile();
+                PpParse();
+                ExitPointRelease( cpp_preproc_only );
             } else {
                 if( ForcePreInclude != NULL ) {
                     CtxSetCurrContext( CTX_PREINCL );

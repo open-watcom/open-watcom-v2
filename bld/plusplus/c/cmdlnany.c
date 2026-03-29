@@ -1033,10 +1033,6 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_mode = true;
         CompFlags.cpp_keep_comments = true;
     }
-    if( data->pm ) {
-        CompFlags.cpp_mode = true;
-        CompFlags.cpp_dump_macros = true;
-    }
     if( data->pe ) {
         CompFlags.cpp_mode = true;
         CompFlags.encrypt_preproc_output = true;
@@ -1061,6 +1057,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
+        CompFlags.quiet_mode = true;
+    }
+    if( data->pm ) {
+        CompFlags.cpp_dump_macros = true;
         CompFlags.quiet_mode = true;
     }
     if( data->p_sharp ) {

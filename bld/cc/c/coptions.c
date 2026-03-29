@@ -726,10 +726,6 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_mode = true;
         CompFlags.cpp_keep_comments = true;
     }
-    if( data->pm ) {
-        CompFlags.cpp_mode = true;
-        CompFlags.cpp_dump_macros = true;
-    }
     if( data->pw ) {
         CompFlags.cpp_mode = true;
         SetPPWidth( data->pw_value );
@@ -744,6 +740,10 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( CompFlags.cpp_mode ) {
         CompFlags.cpp_output = true;
+        CompFlags.quiet_mode = true;
+    }
+    if( data->pm ) {
+        CompFlags.cpp_dump_macros = true;
         CompFlags.quiet_mode = true;
     }
     if( data->rod ) {
