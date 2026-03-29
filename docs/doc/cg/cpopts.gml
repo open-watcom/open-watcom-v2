@@ -304,6 +304,11 @@ set preprocessor output file name
 preprocessor ignores #line directives
 :optref refid='SWpil'.
 .do end
+.if &e'&$SWpm ne 0 .do begin
+.note pm
+list of current predefined macros and their values
+:optref refid='SWpm'.
+.do end
 .if &e'&$SWp ne 0 .do begin
 .note p{e,l,c,w=<num>}
 preprocess file
@@ -2353,6 +2358,11 @@ will be used as a basis for file name and line number information in error
 messages, __FILE__ and __LINE__ symbols, etc. The "pil" option causes the
 preprocessor to ignore #line directives and refer to actual file names and
 line numbers.
+.do end
+.if &e'&$SWpm ne 0 .do begin
+:OPT refid='SWpm' name='pm'.
+.ix 'options' 'pm'
+It lists current predefined macros and their values.
 .do end
 .*
 .if &e'&$SWp ne 0 .do begin

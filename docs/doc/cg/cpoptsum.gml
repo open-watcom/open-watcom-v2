@@ -676,6 +676,10 @@ control optimization
 preprocessor ignores #line directives
 :optref refid='SWpil'.
 .*
+.note pm
+list of current predefined macros and their values
+:optref refid='SWpm'.
+.*
 .note p{e,l,c,w=<num>}
 :CMT. .ix 'options' 'pe'
 :CMT. .ix 'options' 'pl'
