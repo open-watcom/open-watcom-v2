@@ -334,6 +334,52 @@ static bool macro_local( token_buffer *tokbuf, macro_info *info )
     return( RC_OK );
 }
 
+static bool expand_macro_default( token_buffer *tokbuf, token_idx start,
+                                  token_idx end, char *buffer, size_t buffer_len )
+{
+    token_buffer    work;
+    token_idx       i;
+    char            *p;
+
+    if( end <= start ) {
+        buffer[0] = '\0';
+        return( RC_OK );
+    }
+    for( i = 0; start + i < end; ++i ) {
+        work.tokens[i] = tokbuf->tokens[start + i];
+    }
+    SetFinalToken( &work, i );
+    if( ExpandAllConsts( &work, 0, false ) ) {
+        return( RC_ERROR );
+    }
+
+    p = buffer;
+    for( i = 0; i < work.count; i++ ) {
+        size_t  len;
+
+        if( i > 0 ) {
+            if( p + 1 >= buffer + buffer_len ) {
+                AsmError( EXPANDED_LINE_TOO_LONG );
+                return( RC_ERROR );
+            }
+            *p++ = ' ';
+        }
+        if( work.tokens[i].class == TC_NUM ) {
+            len = sprintf( p, "%lu", work.tokens[i].u.value );
+        } else {
+            len = strlen( work.tokens[i].string_ptr );
+            if( p + len >= buffer + buffer_len ) {
+                AsmError( EXPANDED_LINE_TOO_LONG );
+                return( RC_ERROR );
+            }
+            memcpy( p, work.tokens[i].string_ptr, len );
+        }
+        p += len;
+    }
+    *p = '\0';
+    return( RC_OK );
+}
+
 static bool macro_exam( token_buffer *tokbuf, token_idx i )
 /*********************************************************/
 {
@@ -341,6 +387,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     char            *line;
     char            *name;
     char            buffer[ MAX_LINE_LEN ];
+    char            def_buffer[ MAX_LINE_LEN ];
     dir_node_handle dir;
     uint            nesting_depth = 0;
     bool            store_data;
@@ -412,15 +459,20 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              * now see if it has a default value
              */
             if( tokbuf->tokens[i].class == TC_COLON_EQU ) {
+                token_idx   def_start;
+
                 i++;
                 if( i >= tokbuf->count )
                     break;
-                if( tokbuf->tokens[i].class != TC_STRING ) {
-                    AsmError( SYNTAX_ERROR );
+                def_start = i;
+                while( i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA ) {
+                    i++;
+                }
+                if( expand_macro_default( tokbuf, def_start, i,
+                                          def_buffer, sizeof( def_buffer ) ) ) {
                     return( RC_ERROR );
                 }
-                paramnode->def = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
-                i++;
+                paramnode->def = MemStrdupSafe( def_buffer );
                 if( i >= tokbuf->count ) {
                     break;
                 }
