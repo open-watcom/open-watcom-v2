@@ -67,6 +67,7 @@ proc.dis &
 proc3.dis &
 pub.dis &
 pub2.dis &
+pubcase.dis &
 pubdef.dis &
 q.dis &
 qnxstrt.dis &
@@ -91,5 +92,6 @@ xx.dis
 asm_flags_x = -c
 asm_flags_loader2 = -c
 asm_flags_getenv = -I"$(watcom_dir)/h"
+asm_flags_pubcase = -zcm=masm
 
 !include ../test.mif

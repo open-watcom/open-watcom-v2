@@ -1225,6 +1225,19 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
                 return( PubDef( tokbuf, i ) );
             }
         }
+        /*
+         * In MASM-compatible case-insensitive mode, a label definition can
+         * create the symbol first using one spelling (for example `arg_buf`)
+         * and a later PUBLIC directive can refer to the same symbol with a
+         * different spelling (`ARG_BUF`).  Keep the PUBLIC spelling as the
+         * canonical exported name so OMF PUBDEF matches MASM behavior.
+         */
+        if( Options.symbols_nocasesensitive
+          && strcmp( name, dir->sym.name ) != 0
+          && stricmp( name, dir->sym.name ) == 0 ) {
+            AsmChangeName( dir->sym.name, name );
+            dir = (dir_node_handle)AsmGetSymbol( name );
+        }
         SetMangler( &dir->sym, mangler, langtype );
         if( !dir->sym.public ) {
             /*
