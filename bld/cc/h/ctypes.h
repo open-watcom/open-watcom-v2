@@ -609,6 +609,7 @@ typedef struct comp_flags {
     boolbit debug_info_some                     : 1;    /* d1 + some typing info     */
     boolbit emit_names                          : 1;    /* /en switch used           */
     boolbit cpp_mode                            : 1;    /* compiler CPP mode         */
+    boolbit cpp_dump_macros                     : 1;    /* dump predefined macros    */
     boolbit warnings_cause_bad_exit             : 1;    /* warnings=>non-zero exit   */
 
     boolbit save_restore_segregs                : 1;    /* save/restore segregs      */

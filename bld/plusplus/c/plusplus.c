@@ -269,6 +269,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             } else {
                 exit_status |= WPP_BATCH_FILES;
             }
+        } else if( CompFlags.cpp_dump_macros ) {
+            PpOpen();
+            DumpAllMacros();
         } else if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
             CompFlags.cmdline_error = true;

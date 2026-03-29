@@ -123,6 +123,7 @@ typedef struct comp_flags {
     boolbit     cpp_output                      : 1;    // compiler doing CPP output
     boolbit     cpp_output_to_file              : 1;    // compiler doing CPP output to file (default extension .i)
     boolbit     cpp_mode                        : 1;    // compiler CPP mode
+    boolbit     cpp_dump_macros                 : 1;    // dump predefined macros
     boolbit     no_debug_type_names             : 1;
     boolbit     emit_names                      : 1;
     boolbit     warnings_cause_bad_exit         : 1;

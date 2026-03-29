@@ -777,3 +777,75 @@ void MacroSegmentAddMem(            // MacroSegment: ADD A SEQUENCE OF BYTES
     memcpy( MacroOffset + clen, buff, len );
     *mlen += len;
 }
+
+
+static void dumpMacroDefn(          // DUMP TOKENIZED MACRO DEFINITION
+    const char *p )                 // - pointer to token stream
+{
+    unsigned char   c;
+    TOKEN           token;
+
+    while( (token = *(TOKEN *)p) != T_NULL ) {
+        p += sizeof( TOKEN );
+        switch( token ) {
+        case T_CONSTANT:
+        case T_PPNUMBER:
+        case T_BAD_TOKEN:
+        case T_ID:
+        case T_UNEXPANDABLE_ID:
+            for( ; (c = *p++) != '\0'; ) {
+                fputc( c, CppFile );
+            }
+            break;
+        case T_LSTRING:
+            fputc( 'L', CppFile );
+            /* fall through */
+        case T_STRING:
+            fputc( '"', CppFile );
+            for( ; (c = *p++) != '\0'; ) {
+                fputc( c, CppFile );
+            }
+            fputc( '"', CppFile );
+            break;
+        case T_WHITE_SPACE:
+            fputc( ' ', CppFile );
+            break;
+        case T_BAD_CHAR:
+            fputc( *p++, CppFile );
+            break;
+        case T_MACRO_PARM:
+        case T_MACRO_VAR_PARM:
+            ++p;
+            break;
+        default:
+            fprintf( CppFile, "%s", Tokens[token] );
+            break;
+        }
+    }
+}
+
+
+void DumpAllMacros(                 // DUMP ALL PREDEFINED MACROS
+    void )
+{
+    unsigned        hash;
+    MEPTR           mentry;
+    const char      *p;
+
+    for( hash = 0; hash < MACRO_HASH_SIZE; hash++ ) {
+        RingIterBeg( macroHashTable[hash], mentry ) {
+            if( mentry->macro_flags & MFLAG_HIDDEN )
+                continue;
+            if( MacroIsSpecial( mentry ) )
+                continue;
+            fprintf( CppFile, "#define %s", mentry->macro_name );
+            p = (char *)mentry + mentry->macro_defn;
+            if( *(TOKEN *)p != T_NULL ) {
+                fputc( ' ', CppFile );
+                dumpMacroDefn( p );
+            }
+            fputc( '\n', CppFile );
+        } RingIterEnd( mentry )
+    }
+    fflush( CppFile );
+}

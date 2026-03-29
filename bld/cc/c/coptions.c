@@ -742,6 +742,10 @@ static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }
+    if( data->pm ) {
+        CompFlags.cpp_dump_macros = true;
+        CompFlags.quiet_mode = true;
+    }
     if( data->rod ) {
         OPT_STRING *s;
         for( s = data->rod_value; s != NULL; s = s->next ) {

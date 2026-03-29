@@ -1020,66 +1020,71 @@ static void DoCCompile( char **cmdline )
     }
     ParseInit();
     if( ParseCmdLine( cmdline ) ) {
-        if( WholeFName == NULL ) {
+        if( CompFlags.cpp_dump_macros ) {
+            if( CppFile == NULL )
+                OpenCppFile();
+            DumpAllMacros();
+            MacroFini();
+        } else if( WholeFName == NULL ) {
             CErr1( ERR_FILENAME_REQUIRED );
             return;
-        }
-        MakePgmName();
-        DelErrFile();               /* delete old error file */
-        CPragmaInit();              /* memory model is known now */
+        } else {
+            MakePgmName();
+            DelErrFile();               /* delete old error file */
+            CPragmaInit();              /* memory model is known now */
 #if _CPU == 370
-        ParseAuxFile();
+            ParseAuxFile();
 #endif
-        if( CompFlags.cpp_mode ) {
-            PrintWhiteSpace = true;
-            if( ForcePreInclude != NULL ) {
-                if( CppFile == NULL )
-                    OpenCppFile();
-                CompFlags.cpp_output = false;
-                if( openForcePreInclude() ) {
-                    CurToken = T_NULL;
-                    while( CurToken != T_EOF ) {
-                        CurToken = GetNextToken();
+            if( CompFlags.cpp_mode ) {
+                PrintWhiteSpace = true;
+                if( ForcePreInclude != NULL ) {
+                    if( CppFile == NULL )
+                        OpenCppFile();
+                    CompFlags.cpp_output = false;
+                    if( openForcePreInclude() ) {
+                        CurToken = T_NULL;
+                        while( CurToken != T_EOF ) {
+                            CurToken = GetNextToken();
+                        }
                     }
+                    CompFlags.cpp_output = true;
                 }
-                CompFlags.cpp_output = true;
-            }
-            OpenPgmFile();
-            CPP_Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
-            }
-        } else {
-            OpenPgmFile();
-            MacroAddComp(); // Add any compile time only macros
-            Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
-            }
-            if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
-                if( CompFlags.emit_browser_info ) {
-                    DwarfBrowseEmit();
+                OpenPgmFile();
+                CPP_Parse();
+                if( !CompFlags.quiet_mode ) {
+                    PrintStats();
                 }
-                FreeMacroSegments();
-                DoCompile();
+                if( CompFlags.warnings_cause_bad_exit ) {
+                    ErrCount += WngCount;
+                }
             } else {
-                FreeMacroSegments();
+                OpenPgmFile();
+                MacroAddComp(); // Add any compile time only macros
+                Parse();
+                if( !CompFlags.quiet_mode ) {
+                    PrintStats();
+                }
+                if( CompFlags.warnings_cause_bad_exit ) {
+                    ErrCount += WngCount;
+                }
+                if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
+                    if( CompFlags.emit_browser_info ) {
+                        DwarfBrowseEmit();
+                    }
+                    FreeMacroSegments();
+                    DoCompile();
+                } else {
+                    FreeMacroSegments();
+                }
             }
+            if( ErrCount == 0 ) {
+                DumpDepFile();
+            } else {
+                DelDepFile();
+            }
+            SymFini();
+            CPragmaFini();
         }
-        if( ErrCount == 0 ) {
-            DumpDepFile();
-        } else {
-            DelDepFile();
-        }
-
-        SymFini();
-        CPragmaFini();
     } else {
         ErrCount = 1;
     }

@@ -1059,6 +1059,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.cpp_output = true;
         CompFlags.quiet_mode = true;
     }
+    if( data->pm ) {
+        CompFlags.cpp_dump_macros = true;
+        CompFlags.quiet_mode = true;
+    }
     if( data->p_sharp ) {
         PreProcChar = (char)data->p_sharp_value;
     }
