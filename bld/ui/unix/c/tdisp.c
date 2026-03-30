@@ -451,7 +451,8 @@ static void TI_CURSOR_MOVE( int c, int r )
     int                 col;
 
     struct {
-        int     r,c;
+        int     r;
+        int     c;
     }                   len= { 0, 0 };
 
     struct {
@@ -761,7 +762,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     unsigned            size;
     unsigned            i;
     struct winsize      wsize;
-    int                 rows, cols;
+    int                 rows;
+    int                 cols;
 
     rows = 0;
     cols = 0;
@@ -1015,8 +1017,10 @@ static bool ti_fini( void )
 
 
 static struct {
-    int     row0, col0;
-    int     row1, col1;
+    int     row0;
+    int     col0;
+    int     row1;
+    int     col1;
 } dirty_area;
 
 
@@ -1099,17 +1103,18 @@ static int ti_hwcursor( void )
 static void update_shadow( void )
 /*******************************/
 {
-    LP_PIXEL    bufp, sbufp;    // buffer and shadow buffer
-    int         incr = UIData->screen.increment;
+    LP_PIXEL    bufp;       // buffer
+    LP_PIXEL    sbufp;      // shadow buffer
+    int         incr;
 
     // make sure cursor is back where it belongs
     ti_hwcursor();
     ostream_flush();
 
     // copy buffer to shadow buffer
+    incr = UIData->screen.increment;
     bufp = UIData->screen.origin;
     sbufp = shadow;
-
     for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
         memcpy( sbufp + incr * dirty_area.row0 + dirty_area.col0,
                 bufp + incr * dirty_area.row0 + dirty_area.col0,
@@ -1125,7 +1130,8 @@ static int ti_refresh( bool must )
 {
     int         i;
     int         incr;               // chars per line
-    LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
+    LP_PIXEL    bufp;               // buffer
+    LP_PIXEL    sbufp;              // shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete
                                     // draw
@@ -1183,7 +1189,8 @@ static int ti_refresh( bool must )
         lastattr = -1;
 
         if( !must ) {
-            int     r,c;
+            int     r;
+            int     c;
             int     pos;
             bool    diff;
 

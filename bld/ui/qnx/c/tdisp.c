@@ -130,7 +130,8 @@ bool TInfCheck( void )
  * Mini buffered IO code...
  */
 struct ostream {
-    char    *sbuf, *ebuf;
+    char    *sbuf;
+    char    *ebuf;
     char    *curp;
     int     fd;
 };
@@ -180,7 +181,7 @@ static void ostream_puts( char *s )
 
     if( s == NULL )
         return;
-    while( (c = (unsigned char)*s++) != '\0' ) {
+    while( (c = *(unsigned char *)s++) != '\0' ) {
         ostream_putc( c );
     }
 }
@@ -244,21 +245,21 @@ static void ostream_putp( char *s )
 
     if( s == NULL )
         return;
-    while( (c = (unsigned char)*s++) != '\0' ) {
+    while( (c = *(unsigned char *)s++) != '\0' ) {
         // check and see if we're at the start of a padding sequence
         if( c == '$' && *s == '<' ) {
             bbuf = s;
             s++;
             pad = 0;
             // read until the end of the sequence or the end of the string
-            while( (c = (unsigned char)*s++) != '\0' && ( c != '>' ) ) {
+            while( (c = *(unsigned char *)s++) != '\0' && ( c != '>' ) ) {
                 // suck up digits
                 if( c >= '0' && c <= '9' ) {
                     pad *= 10;
                     pad += c;
                 } else if( c == '.' ) {
                     // Skip tenth's
-                    c = (unsigned char)*s;
+                    c = *(unsigned char *)s;
                     if( c >= '0' && c <= '9' ) {
                         s++;
                         // cheap rounding
@@ -462,7 +463,8 @@ static void TI_CURSOR_MOVE( int c, int r )
     int                 i;
 
     struct {
-        int     r,c;
+        int     r;
+        int     c;
     }                   len = { 0, 0 };
 
     struct {
@@ -696,9 +698,10 @@ static int TI_PUT_FILE( char *fnam )
 
 static int TI_EXEC_PROG( char *pnam )
 {
-    int         oStdIn, oStdOut;        // old stdin/stdout
-    char        *ppath;                 // program path
-    int         ret;                    // return code
+    int         oStdIn;     // old stdin
+    int         oStdOut;    // old stdout
+    char        *ppath;     // program path
+    int         ret;        // return code
 
     if( pnam != NULL && pnam[0] != '\0' ) {
         // get full path name of program
@@ -1050,8 +1053,10 @@ static bool td_fini( void )
 
 
 static struct {
-    int     row0, col0;
-    int     row1, col1;
+    int     row0;
+    int     col0;
+    int     row1;
+    int     col1;
 } dirty_area;
 
 
@@ -1133,7 +1138,8 @@ static int td_refresh( bool must )
 {
     int             i;
     int             incr;
-    LP_PIXEL        bufp, sbufp;
+    LP_PIXEL        bufp;
+    LP_PIXEL        sbufp;
 
     must |= UserForcedTermRefresh;
     UserForcedTermRefresh = false;
@@ -1250,7 +1256,8 @@ static int ti_refresh( bool must )
 {
     int         i;
     int         incr;               // chars per line
-    LP_PIXEL    bufp, sbufp;        // buffer and shadow buffer
+    LP_PIXEL    bufp;               // buffer
+    LP_PIXEL    sbufp;              // shadow buffer
     LP_PIXEL    pos;                // the address of the current char
     LP_PIXEL    blankStart;         // start of spaces to eos and then complete
                                     // draw
@@ -1310,7 +1317,8 @@ UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.
         lastattr = -1;
 
         if( !must ) {
-            int         r,c;
+            int         r;
+            int         c;
             int         pos;
             bool        diff;
 
