@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ bool DumpString( uint_32 offset, uint_32 length, FILE *fp )
             cursor = 0;
         }
         if( stringlen == 0 ) {
-            stringlen = (unsigned char)stringbuff[cursor++];
+            stringlen = *(unsigned char *)( stringbuff + cursor++ );
             if( stringlen != 0 ) {
                 printf( "\n\t\t   " );
             }
