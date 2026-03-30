@@ -331,15 +331,19 @@ void intern physupdate( SAREA *area )
  * update the physical screen with contents of virtual copy
  */
 {
-    unsigned short  i;
-    unsigned short  offset;
-    unsigned short  count;
+    uisize          count;
+    uisize          incr;
+    uisize          height;
+    uisize          offset;
 
     if( UIData->desqview ) {
+        incr = UIData->width;
+        offset = area->row * incr + area->col;
         count = area->width;
-        for( i = area->row; i < (area->row + area->height); i++ ) {
-            offset = i * UIData->width + area->col;
+        height = area->height;
+        while( height-- > 0 ) {
             desqview_update( offset, count );
+            offset += incr;
         }
     }
 }

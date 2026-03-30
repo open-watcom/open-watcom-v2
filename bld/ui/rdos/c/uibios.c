@@ -99,13 +99,18 @@ void intern finibios( void )
 
 void intern physupdate( SAREA *area )
 {
-    int i;
-    int pos;
-    short *bufptr = (short *)UIData->screen.origin;
+    uisize      row;
+    uisize      incr;
+    uisize      height;
+    LP_PIXEL    bufptr;
 
-    for( i = 0; i < area->height; i++ ) {
-        pos = UIData->width * (i + area->row) + area->col;
-        bufptr = (short *)UIData->screen.origin + pos;
-        RdosWriteAttributeString( i + area->row, area->col, bufptr, area->width );
+    incr = UIData->width;
+    row = area->row;
+    bufptr = UIData->screen.origin + incr * row + area->col;
+    height = area->height;
+    while( height-- > 0 ) {
+        RdosWriteAttributeString( row, area->col, (short *)bufptr, area->width );
+        row++;
+        bufptr += incr;
     }
 }

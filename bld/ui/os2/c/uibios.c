@@ -144,10 +144,18 @@ void intern finibios( void )
 void intern physupdate( SAREA *area )
 /***********************************/
 {
-    int i;
+    uisize      height;
+    uisize      incr;
+    uisize      offset;
+    uisize      count;
 
-    for( i = area->row; i < (area->row + area->height); i++ ) {
-        VioShowBuf( sizeof( *UIData->screen.origin ) * ( i * UIData->width + area->col ), sizeof( *UIData->screen.origin ) * area->width, 0 );
+    incr = sizeof( *UIData->screen.origin ) * UIData->width;
+    offset = area->row * incr + sizeof( *UIData->screen.origin ) * area->col;
+    count = sizeof( *UIData->screen.origin ) * area->width;
+    height = area->height;
+    while( height-- > 0 ) {
+        VioShowBuf( offset, count, 0 );
+        offset += incr;
     }
 }
 

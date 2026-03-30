@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,21 +43,28 @@ void intern drawbox( BUFFER *bptr, SAREA area, const char *box, ATTR attr, bool 
 /************************************************************************************/
 {
     uisize      row;
+    uisize      width;
+    uisize      height;
 
-    bpixel( bptr, area.row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
-    if( area.width > 2 )
-        bfill( bptr, area.row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), area.width - 2 );
-    bpixel( bptr, area.row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
-    for( row = area.row + 1; row < area.row + area.height - 1; ++row ) {
+    width = ( area.width > 2 ) ? area.width - 2 : 0;
+    height = ( area.height > 2 ) ? area.height - 2 : 0;
+    row = area.row;
+    bpixel( bptr, row, area.col, attr, BOX_CHAR( box, TOP_LEFT ) );
+    if( width > 0 )
+        bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, TOP_LINE ), width );
+    bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, TOP_RIGHT ) );
+    row++;
+    while( height-- > 0 ) {
         bpixel( bptr, row, area.col, attr, BOX_CHAR( box, LEFT_LINE ) );
-        if( fill && area.width > 2 ) {
-            bfill( bptr, row, area.col + 1, attr, ' ', area.width - 2 );
+        if( fill && width > 0 ) {
+            bfill( bptr, row, area.col + 1, attr, ' ', width );
         }
         bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, RIGHT_LINE ) );
+        row++;
     }
     bpixel( bptr, row, area.col, attr, BOX_CHAR( box, BOTTOM_LEFT ) );
-    if( area.width > 2 )
-        bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), area.width - 2 );
+    if( width > 0 )
+        bfill( bptr, row, area.col + 1, attr, BOX_CHAR( box, BOTTOM_LINE ), width );
     bpixel( bptr, row, area.col + area.width - 1, attr, BOX_CHAR( box, BOTTOM_RIGHT ) );
     physupdate( &area );
 }
@@ -69,7 +77,7 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
     if( area->width > 1 ) {
         drawbox( &(vs->window.buffer), *area, SBOX_CHARS(), attr, false );
         if( title != NULL ) {
-            field_len = strlen( title );
+            field_len = (uisize)strlen( title );
             if( field_len > area->width - 2 ) {
                 field_len = area->width - 2;
             }

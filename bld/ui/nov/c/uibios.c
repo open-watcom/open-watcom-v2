@@ -164,11 +164,21 @@ void intern finibios( void )
 void intern physupdate( SAREA *area )
 /***********************************/
 {
-    int i;
+    int         i;
+    LP_PIXEL    ptr;
+    uisize      row;
+    uisize      height;
+    uisize      incr;
 
-    for( i = area->row; i < area->row + area->height; ++i ) {
-        CopyToScreenMemory( 1, area->width, (void *)( UIData->screen.origin + i * UIData->width + area->col ), area->col, i );
-    } /* end for */
+    incr = UIData->width;
+    row = area->row;
+    ptr = UIData->screen.origin + row * incr + area->col;
+    height = area->height;
+    while( height-- > 0 ) {
+        CopyToScreenMemory( 1, area->width, (void *)ptr, area->col, row );
+        row++;
+        ptr += incr;
+    }
 
 } /* end physupdate */
 
