@@ -437,7 +437,7 @@ static unsigned_8 *put_name2( unsigned_8 *p)
     unsigned_16 len;
     len = *p++;
     if( len & 0x80 ) {
-        len = ((len & 0x7f) << 16) | *p;
+        len = ((len & 0x7f) << 8) | *p;
         p++;
     }
     else
