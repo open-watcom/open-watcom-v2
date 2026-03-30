@@ -110,7 +110,7 @@ def_msg_type( JCK, "JCK_" ) \
 
 #define LINE_SIZE       (512)
 
-#define SKIP_SPACES(s)  while( isspace( (unsigned char)*s ) ) s++
+#define SKIP_SPACES(s)  while( isspace( *(unsigned char *)s ) ) s++
 
 #define BLANKARG( s )   ((s)[0] == '.' && (s)[1] == '\0')
 
@@ -375,7 +375,7 @@ static FILE *initFILE( const char *fnam, const char *fmod )
 static const char *nextWord( char *t, const char *s )
 {
     while( *s != '\0' ) {
-        if( isspace( (unsigned char)*s ) ) {
+        if( isspace( *(unsigned char *)s ) ) {
             break;
         }
         *t++ = *s++;
@@ -387,7 +387,7 @@ static const char *nextWord( char *t, const char *s )
 static const char *nextTag( char *t, const char *s )
 {
     while( *s != '\0' ) {
-        if( isspace( (unsigned char)*s ) ) {
+        if( isspace( *(unsigned char *)s ) ) {
             break;
         }
         if( *s == '.' ) {
@@ -787,23 +787,26 @@ static void (*processLine[])( const char * ) = {
 
 static void checkForGMLEscape( const char *p )
 {
-    bool is_escape;
-    char c1, c2;
+    bool            is_escape;
+    int             c1;
+    int             c2;
+    int             c3;
 
     ++p;
-    c1 = *p++;
+    c1 = *(unsigned char *)p++;
     if( c1 == '\0'
-      || ! isalpha( (unsigned char)c1 ) ) {
+      || !isalpha( c1 ) ) {
         return;
     }
-    c2 = *p++;
+    c2 = *(unsigned char *)p++;
     if( c2 == '\0'
-      || ! isalpha( (unsigned char)c2 ) ) {
+      || !isalpha( c2 ) ) {
         return;
     }
     is_escape = false;
-    if( *p == '\0'
-      || ! isalpha( (unsigned char)*p ) ) {
+    c3 = *(unsigned char *)p;
+    if( c3 == '\0'
+      || !isalpha( c3 ) ) {
         is_escape = true;
     }
     if( is_escape ) {
@@ -1118,8 +1121,8 @@ static void splitIntoWords( void )
         p = m->lang_txt[LANG_RLE_ENGLISH];
         a = &(m->words);
         for( ;; ) {
-            if( isspace( (unsigned char)p[0] )
-              && isspace( (unsigned char)p[1] ) ) {
+            if( isspace( ((unsigned char *)p)[0] )
+              && isspace( ((unsigned char *)p)[1] ) ) {
                 errorLocn( m->fname, m->line, "MSGSYM %s text has too many blanks '%s'\n", m->name, p );
             }
             SKIP_SPACES( p );
@@ -1212,16 +1215,16 @@ static void writeMsgH( void )
     }
 }
 
-static void outputChar( FILE *fp, char c )
+static void outputChar( FILE *fp, int c )
 {
     if( c == '\'' ) {
         fprintf( fp, "'\\''," );
     } else if( c == '\\' ) {
         fprintf( fp, "'\\\\'," );
-    } else if( isprint( (unsigned char)c ) ) {
+    } else if( isprint( c ) ) {
         fprintf( fp, "'%c',", c );
     } else {
-        fprintf( fp, "'\\x%x',", (unsigned char)c );
+        fprintf( fp, "'\\x%x',", c );
     }
 }
 
@@ -1253,7 +1256,7 @@ static void doEncodeWORD( MSGWORD *w, void *d )
     data->keep_base[w->index] = w;
     data->current_text += w->len;
     for( p = w->name; *p; ++p ) {
-        outputChar( o_msgc, *p );
+        outputChar( o_msgc, *(unsigned char *)p );
     }
     fputc( '\n', o_msgc );
 }
@@ -1314,7 +1317,7 @@ static void writeMsgTable( void )
             if( w->index == NO_INDEX ) {
                 fprintf( o_msgc, "%u,", w->len );
                 for( p = w->name; *p != '\0'; ++p ) {
-                    outputChar( o_msgc, *p );
+                    outputChar( o_msgc, *(unsigned char *)p );
                 }
                 fputc( '\n', o_msgc );
                 current_text += 1 + w->len;
@@ -1378,7 +1381,7 @@ static size_t utf8_to_cp932( const char *src, char *dst )
     src_len = strlen( src );
     o = 0;
     for( i = 0; i < src_len && o < LINE_SIZE - 6; i++ ) {
-        x.u = (unsigned char)src[i];
+        x.u = ((unsigned char *)src)[i];
         if( IS_ASCII( x.u ) ) {
             /*
              * ASCII (0x00-0x7F), no conversion
@@ -1390,11 +1393,11 @@ static size_t utf8_to_cp932( const char *src, char *dst )
              */
             if( (x.u & 0xF0) == 0xE0 ) {
                 x.u &= 0x0F;
-                x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+                x.u = (x.u << 6) | (((unsigned char *)src)[++i] & 0x3F);
             } else {
                 x.u &= 0x1F;
             }
-            x.u = (x.u << 6) | ((unsigned char)src[++i] & 0x3F);
+            x.u = (x.u << 6) | (((unsigned char *)src)[++i] & 0x3F);
             /*
              * UNICODE to CP932 encoding conversion
              */
@@ -1671,7 +1674,7 @@ static char *ProcessOption( char *p, char *option_start )
 
             i = 0;
             while( *p != '\0'
-              && !isspace( (unsigned char)*p ) ) {
+              && !isspace( *(unsigned char *)p ) ) {
                 if( i < ( sizeof( flags.rc_macro ) - 1 ) ) {
                     flags.rc_macro[i++] = *p;
                 }
@@ -1706,7 +1709,7 @@ static char *getFileName( char *str, char *name )
 {
     char        ch;
 
-    while( isspace( (unsigned char)*str ) )
+    while( isspace( *(unsigned char *)str ) )
         ++str;
     if( *str == '\"' ) {
         str++;
@@ -1723,7 +1726,7 @@ static char *getFileName( char *str, char *name )
         }
     } else {
         while( *str != '\0'
-          && !isspace( (unsigned char)*str ) ) {
+          && !isspace( *(unsigned char *)str ) ) {
             *name++ = *str++;
         }
     }
@@ -1737,7 +1740,7 @@ static char *ReadIndirectFile( char *name )
     char        *str;
     FILE        *fp;
     size_t      len;
-    char        ch;
+    int         ch;
 
     str = NULL;
     fp = fopen( name, "rb" );
@@ -1750,13 +1753,13 @@ static char *ReadIndirectFile( char *name )
         str[len] = '\0';
         fclose( fp );
         // go through characters changing \r, \n etc into ' '
-        for( ; (ch = *str) != '\0'; str++ ) {
+        for( ; (ch = *(unsigned char *)str) != '\0'; str++ ) {
             if( ch == 0x1A ) {      // if end of file
                 *str = '\0';        // - mark end of str
                 break;
             }
             if( ch != ' '
-              && isspace( (unsigned char)ch ) ) {
+              && isspace( ch ) ) {
                 *str = ' ';
             }
         }
@@ -1775,7 +1778,7 @@ static bool ProcessOptions( char *str )
     fstr = NULL;
     name[0] = '\0';
     while( *str != '\0' ) {
-        while( isspace( (unsigned char)*str ) )
+        while( isspace( *(unsigned char *)str ) )
             ++str;
         if( *str == '@' ) {
             str = getFileName( str + 1, name );
