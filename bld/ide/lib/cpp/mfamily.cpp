@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +74,7 @@ bool StrMapItem::isTextEqual( const char* text, int kludge ) const
 {
     for( int i = 0; i < _textlen; i++ ) {
         int ct = (unsigned char)_text[i];
-        int cs = (unsigned char)*text++;
+        int cs = *(unsigned char *)text++;
         if( cs == '\0' )
             return( false );
         if( ct == cs )
