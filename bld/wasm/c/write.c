@@ -1238,6 +1238,7 @@ static void OnePassInit( void )
     LineNumber = 0;
     lastLineNumber = 0;
     MacroIntState = MACSTATE_NONE;
+    InputLineInit();
 }
 
 static unsigned long OnePass( char *string )
