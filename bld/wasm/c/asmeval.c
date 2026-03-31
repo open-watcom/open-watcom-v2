@@ -1726,7 +1726,9 @@ static bool is_expr1( token_buffer *tokbuf, token_idx i )
     case TC_COLON:
 #if defined( _STANDALONE_ )
         if( i == 1 ) {
-            /* It is the colon following the label */
+            /*
+             * It is the colon following the label
+             */
             break;
         }
 #endif

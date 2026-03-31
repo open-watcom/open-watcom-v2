@@ -487,42 +487,49 @@ static bool get_id( asm_tok *tok, const char **input, char **output )
             break;
         }
 #endif
-
+        tok->class = TC_INSTR;
         if( ins->opnd_type1 == OP_SPECIAL ) {
-            if( ins->rm_byte == OP_REGISTER ) {
+            switch( ins->rm_byte ) {
+            case OP_REGISTER:
                 tok->class = TC_REG;
-            } else if( ins->rm_byte == OP_RES_ID ) {
+                break;
+            case OP_RES_ID:
                 tok->class = TC_RES_ID;
                 if( tok->u.token == T_DP ) {
                     tok->u.token = T_DF;
                 }
-            } else if( ins->rm_byte == OP_RES_ID_PTR_MODIF ) {
+                break;
+            case OP_RES_ID_PTR_MODIF:
                 tok->class = TC_RES_ID;
                 if( tok->u.token == T_PWORD ) {
                     tok->u.token = T_FWORD;
                 }
-            } else if( ins->rm_byte == OP_UNARY_OPERATOR ) {
+                break;
+            case OP_UNARY_OPERATOR:
                 tok->class = TC_UNARY_OPERATOR;
+                break;
 #if defined( _STANDALONE_ )
-            } else if( ins->rm_byte == OP_RELATION_OPERATOR ) {
+            case OP_RELATION_OPERATOR:
                 tok->class = TC_RELATION_OPERATOR;
+                break;
 #endif
-            } else if( ins->rm_byte == OP_ARITH_OPERATOR ) {
+            case OP_ARITH_OPERATOR:
                 tok->class = TC_ARITH_OPERATOR;
-            } else if( ins->rm_byte == OP_DIRECTIVE ) {
+                break;
+            case OP_DIRECTIVE:
                 tok->class = TC_DIRECTIVE;
 #if defined( _STANDALONE_ )
                 if( ins->token == T_ENUM ) {
                     EnumDirective = true;
                 }
-            } else if( ins->rm_byte == OP_DIRECT_EXPR ) {
-                tok->class = TC_DIRECT_EXPR;
 #endif
-            } else {
-                tok->class = TC_INSTR;
+                break;
+#if defined( _STANDALONE_ )
+            case OP_DIRECT_EXPR:
+                tok->class = TC_DIRECT_EXPR;
+                break;
+#endif
             }
-        } else {
-            tok->class = TC_INSTR;
         }
     }
     return( RC_OK );
