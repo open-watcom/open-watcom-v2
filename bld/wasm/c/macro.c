@@ -391,26 +391,13 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             if( i >= tokbuf->count )
                 break;
             /*
-             * now see if it has a default value or is required
+             * now see if parameter is required
              */
             if( tokbuf->tokens[i].class == TC_COLON ) {
                 i++;
                 if( i >= tokbuf->count )
                     break;
-                if( *tokbuf->tokens[i].string_ptr == '=' ) {
-                    i++;
-                    if( i >= tokbuf->count )
-                        break;
-                    if( tokbuf->tokens[i].class != TC_STRING ) {
-                        AsmError( SYNTAX_ERROR );
-                        return( RC_ERROR );
-                    }
-                    paramnode->def = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
-                    i++;
-                    if( i >= tokbuf->count ) {
-                        break;
-                    }
-                } else if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
+                if( CMPLIT( tokbuf->tokens[i].string_ptr, "REQ" ) == 0 ) {
                     /*
                      * required parameter
                      */
@@ -419,6 +406,23 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                     if( i >= tokbuf->count ) {
                         break;
                     }
+                }
+            }
+            /*
+             * now see if it has a default value
+             */
+            if( tokbuf->tokens[i].class == TC_COLON_EQU ) {
+                i++;
+                if( i >= tokbuf->count )
+                    break;
+                if( tokbuf->tokens[i].class != TC_STRING ) {
+                    AsmError( SYNTAX_ERROR );
+                    return( RC_ERROR );
+                }
+                paramnode->def = MemStrdupSafe( tokbuf->tokens[i].string_ptr );
+                i++;
+                if( i >= tokbuf->count ) {
+                    break;
                 }
             }
             if( tokbuf->tokens[i].class != TC_COMMA ) {
