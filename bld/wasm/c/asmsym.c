@@ -146,11 +146,7 @@ static asm_sym_handle *AsmFind( const char *name )
 #endif
     for( ; *sym != NULL; sym = &((*sym)->next) ) {
 #if defined( _STANDALONE_ )
-        if( Options.mode & MODE_IDEAL ) {
-            if( strcmp( name, (*sym)->name ) == 0 ) {
-                break;
-            }
-        } else if( Options.symbols_nocasesensitive ) {
+        if( Options.symbols_nocasesensitive ) {
             if( stricmp( name, (*sym)->name ) == 0 ) {
                 break;
             }
