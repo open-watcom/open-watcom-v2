@@ -591,6 +591,13 @@ static bool get_special_symbol( asm_tok *tok, const char **input, char **output 
         cls = TC_CL_BRACKET;
         break;
     case ':' :
+#if defined( _STANDALONE_ )
+        if( (*input)[1] == '=' ) {
+            cls = TC_COLON_EQU;
+            *(*output)++ = *(*input)++;
+            break;
+        }
+#endif
         cls = TC_COLON;
         break;
     case '%' :

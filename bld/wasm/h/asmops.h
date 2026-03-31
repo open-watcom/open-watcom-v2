@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -109,6 +109,7 @@ typedef enum tok_class {
     TC_CL_BRACE,         // '}'
     TC_COMMA,            // ',',
     TC_COLON,            // ':',
+    TC_COLON_EQU,        // ':=',
     TC_SEMI_COLON,       // ';',
     TC_PLUS,             // '+',
     TC_MINUS,            // '-',
