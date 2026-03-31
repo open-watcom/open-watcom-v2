@@ -1154,6 +1154,19 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             {}
 
         dir = (dir_node_handle)AsmGetSymbol( name );
+        /*
+         * In MASM-compatible case-insensitive mode, use the EXTERN/EXTERNDEF
+         * spelling as the canonical name, matching MASM behavior where
+         * import/export directives determine the external symbol name
+         * rather than the first-seen spelling.
+         */
+        if( dir != NULL
+          && Options.symbols_nocasesensitive
+          && strcmp( name, dir->sym.name ) != 0
+          && stricmp( name, dir->sym.name ) == 0 ) {
+            AsmChangeName( dir->sym.name, name );
+            dir = (dir_node_handle)AsmGetSymbol( name );
+        }
         if( dir == NULL ) {
             dir = dir_insert( name, TAB_EXT );
             if( dir == NULL ) {

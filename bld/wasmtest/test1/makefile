@@ -25,6 +25,9 @@ dosstart.dis &
 do_ax.dis &
 dup.dis &
 empty.dis &
+extcase.dis &
+extcas2.dis &
+extcas3.dis &
 f.dis &
 farjmp.dis &
 fcom.dis &
@@ -93,5 +96,8 @@ asm_flags_x = -c
 asm_flags_loader2 = -c
 asm_flags_getenv = -I"$(watcom_dir)/h"
 asm_flags_pubcase = -zcm=masm
+asm_flags_extcase = -zcm=masm
+asm_flags_extcas2 = -zcm=masm
+asm_flags_extcas3 = -zcm=masm
 
 !include ../test.mif
