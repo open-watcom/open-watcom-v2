@@ -1725,17 +1725,12 @@ static bool is_expr1( token_buffer *tokbuf, token_idx i )
         return( true );
     case TC_COLON:
 #if defined( _STANDALONE_ )
-        if( i == 1
-          || ( tokbuf->tokens[i+1].class == TC_DIRECTIVE
-          && tokbuf->tokens[i+1].u.token == T_EQU2 ) ) {
-            /* It is the colon following the label or it is a := */
+        if( i == 1 ) {
+            /* It is the colon following the label */
             break;
-        } else {
-            return( true );
         }
-#else
-        return( true );
 #endif
+        return( true );
     case TC_ID:
         if( i != 0 )
             /* It is not a label */
@@ -1831,12 +1826,6 @@ static bool is_expr2( token_buffer *tokbuf, token_idx i )
     case TC_CL_SQ_BRACKET:
         return( true );
     case TC_COLON:
-#if defined( _STANDALONE_ )
-        if( ( tokbuf->tokens[i+1].class == TC_DIRECTIVE )
-            && ( tokbuf->tokens[i+1].u.token == T_EQU2 ) )
-            /* It is a := */
-            break;
-#endif
         return( true );
     case TC_ID:
         return( true );
