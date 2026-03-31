@@ -465,12 +465,10 @@ static char *ReadIndirectFile( char *name )
             if( ch == '\r' || ch == '\n' ) {
                 *str = ' ';
             }
-#if !defined(__UNIX__)
             if( ch == 0x1A ) {      // if end of file
                 *str = '\0';        // - mark end of str
                 break;
             }
-#endif
         }
     }
     return( env );

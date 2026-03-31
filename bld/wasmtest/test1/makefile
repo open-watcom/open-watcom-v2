@@ -44,7 +44,9 @@ loader2.dis &
 lods.dis &
 maaak.dis &
 macro.dis &
+macrdefl.dis &
 macroloc.dis &
+macrparm.dis &
 macrotst.dis &
 main.dis &
 mainnew.dis &

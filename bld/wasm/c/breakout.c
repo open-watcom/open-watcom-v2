@@ -317,7 +317,11 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
         /* expand any constants and simplify any expressions */
         ExpandTheConstant( tokbuf, 0, false, true );
         break;
-    case T_NAME:        /* no expand parameters */
+    case T_NAME:
+    case T_MACRO:
+        /*
+         * nothing expands, preserve all
+         */
         break;
     case T_DOT_STARTUP:
     case T_DOT_EXIT:
