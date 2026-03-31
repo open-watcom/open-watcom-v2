@@ -166,6 +166,19 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
              * don't store '\r' character in string
              */
             continue;
+        case 0x1A:
+            /*
+             * DOS text files may use Ctrl-Z as an end-of-file marker.
+             * It can appear before the physical end of file (CP/M-era
+             * files), so seek to physical EOF to stop all subsequent
+             * reads from returning data past the logical end.
+             */
+            if( quote == '\0' ) {
+                *ptr = '\0';
+                fseek( fp, 0, SEEK_END );
+                return( got_something );
+            }
+            break;
         case '\n':
             /*
              * if continuation character found, pass over newline
