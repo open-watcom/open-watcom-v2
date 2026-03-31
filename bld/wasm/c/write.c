@@ -1321,7 +1321,7 @@ void WriteObjModule( void )
             break;
         writepass1stuff( name );
         ++Parse_Pass;
-        rewind( AsmFiles.file[ASM] );
+        rewind( AsmFiles.fp[ASM] );
         reset_seg_len();
         BufSize = 0;
         MacroLocalVarCounter = 0;

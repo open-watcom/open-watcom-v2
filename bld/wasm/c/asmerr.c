@@ -182,16 +182,16 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
 // print standard WASM messages
 {
     PrintBanner();
-    if( AsmFiles.file[ERR] == NULL ) {
+    if( AsmFiles.fp[ERR] == NULL ) {
         if( AsmFiles.fname[ERR] != NULL ) {
-            AsmFiles.file[ERR] = fopen( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ), "w" );
+            AsmFiles.fp[ERR] = fopen( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ), "w" );
         }
     }
     PutMsg( stderr, prefix, msgnum, args1 );
     fflush( stderr );
-    if( AsmFiles.file[ERR] != NULL ) {
+    if( AsmFiles.fp[ERR] != NULL ) {
         Errfile_Written = true;
-        PutMsg( AsmFiles.file[ERR], prefix, msgnum, args2 );
+        PutMsg( AsmFiles.fp[ERR], prefix, msgnum, args2 );
     }
 }
 
@@ -207,9 +207,9 @@ void LstMsg( const char *format, ... )
 {
     va_list     args;
 
-    if( AsmFiles.file[LST] != NULL ) {
+    if( AsmFiles.fp[LST] != NULL ) {
         va_start( args, format );
-        vfprintf( AsmFiles.file[LST], format, args );
+        vfprintf( AsmFiles.fp[LST], format, args );
         va_end( args );
     }
 }
@@ -218,7 +218,7 @@ void OpenLstFile( void )
 /**********************/
 {
     if( AsmFiles.fname[LST] != NULL && Options.write_listing ) {
-        AsmFiles.file[LST] = fopen( CreateFileName( AsmFiles.fname[LST], LST_EXT, false ), "w" );
+        AsmFiles.fp[LST] = fopen( CreateFileName( AsmFiles.fname[LST], LST_EXT, false ), "w" );
     }
 }
 

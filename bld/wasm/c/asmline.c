@@ -71,7 +71,7 @@ typedef struct input_queue {
 typedef struct file_list {
     struct file_list    *next;
     union {
-        FILE            *file;
+        FILE            *fp;
         input_queue     *data;
     } u;
     const FNAME         *srcfile;   /* name of include file */
@@ -166,19 +166,6 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
              * don't store '\r' character in string
              */
             continue;
-        case 0x1A:
-            /*
-             * DOS text files may use Ctrl-Z as an end-of-file marker.
-             * It can appear before the physical end of file (CP/M-era
-             * files), so seek to physical EOF to stop all subsequent
-             * reads from returning data past the logical end.
-             */
-            if( quote == '\0' ) {
-                *ptr = '\0';
-                fseek( fp, 0, SEEK_END );
-                return( got_something );
-            }
-            break;
         case '\n':
             /*
              * if continuation character found, pass over newline
@@ -202,6 +189,15 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
              * we have found the end of the line
              */
             return( true );
+        case 0x1A:
+            /*
+             * DOS text files may use Ctrl-Z as an end-of-file marker.
+             * It can appear before the physical end of file (CP/M-era
+             * files), so seek to physical EOF to stop all subsequent
+             * reads from returning data past the logical end.
+             */
+            fseek( fp, 0, SEEK_END );
+            /* fall through */
         case EOF:
             *ptr = '\0';
             return( got_something );
@@ -364,7 +360,7 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
 {
     char            *path_list;
     char            *p;
-    FILE            *file = NULL;
+    FILE            *fp = NULL;
     char            c;
 
     while( isspace( *name ) )
@@ -386,31 +382,31 @@ static FILE *open_file_in_include_path( const char *name, char *fullpath )
                 *p++ = DIR_SEP;
             }
             strcpy( p, name );
-            file = fopen( fullpath, "r" );
-            if( file != NULL ) {
+            fp = fopen( fullpath, "r" );
+            if( fp != NULL ) {
                 break;
             }
         }
     }
-    return( file );
+    return( fp );
 }
 
 bool InputQueueFile( const char *path )
 /*************************************/
 {
-    FILE        *file;
+    FILE        *fp;
     file_list   *new;
     char        fullpath[ _MAX_PATH ];
     pgroup2     pg;
 
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( fullpath, pg.drive, pg.dir, pg.fname, pg.ext );
-    file = fopen( fullpath, "r" );
-    if( file == NULL ) {
+    fp = fopen( fullpath, "r" );
+    if( fp == NULL ) {
         if( IncludePath != NULL ) {
-            file = open_file_in_include_path( path, pg.buffer );
+            fp = open_file_in_include_path( path, pg.buffer );
         }
-        if( file == NULL ) {
+        if( fp == NULL ) {
             AsmErr( CANNOT_OPEN_INCLUDE_FILE, fullpath );
             return( RC_ERROR );
         }
@@ -418,7 +414,7 @@ bool InputQueueFile( const char *path )
     } else {
         new = push_flist( path, true );
     }
-    new->u.file = file;
+    new->u.fp = fp;
     return( RC_OK );
 }
 
@@ -449,14 +445,14 @@ static char *input_get( char *string )
     while( file_stack != NULL ) {
         inputfile = file_stack;
         if( inputfile->is_a_file ) {
-            if( get_asmline( string, MAX_LINE_LEN, inputfile->u.file ) ) {
+            if( get_asmline( string, MAX_LINE_LEN, inputfile->u.fp ) ) {
                 LineNumber++;
                 return( string );
             }
             /*
              * EOF is reached
              */
-            fclose( inputfile->u.file );
+            fclose( inputfile->u.fp );
         } else {
             /*
              * this "file" is just a line queue for a macro
@@ -494,7 +490,7 @@ char *ReadTextLine( char *string )
     line = input_get( string );
     if( line != NULL )
         return( line );
-    if( !get_asmline( string, MAX_LINE_LEN, AsmFiles.file[ASM] ) ) {
+    if( !get_asmline( string, MAX_LINE_LEN, AsmFiles.fp[ASM] ) ) {
         return( NULL );
     }
     LineNumber++;

@@ -705,7 +705,7 @@ void WriteListing( void )
     asm_sym_handle  *syms;
     unsigned        i;
 
-    if( AsmFiles.file[LST] == NULL ) {
+    if( AsmFiles.fp[LST] == NULL ) {
         return; // no point going through the motions if lst file isn't open
     }
     syms = SortAsmSyms();

@@ -381,7 +381,7 @@ static void main_init( void )
     int         i;
 
     for( i = 0; i < FILE_TYPES; i++ ) {
-        AsmFiles.file[i] = NULL;
+        AsmFiles.fp[i] = NULL;
         AsmFiles.fname[i] = NULL;
     }
     AsmFiles.fname[ERR] = MemStrdupSafe( "*" );
@@ -390,11 +390,11 @@ static void main_init( void )
 
 void CloseAsmFile( int i )
 {
-    if( AsmFiles.file[i] != NULL ) {
-        if( fclose( AsmFiles.file[i] ) != 0 ) {
+    if( AsmFiles.fp[i] != NULL ) {
+        if( fclose( AsmFiles.fp[i] ) != 0 ) {
             Fatal( CANNOT_CLOSE_FILE, AsmFiles.fname[i] );
         }
-        AsmFiles.file[i] = NULL;
+        AsmFiles.fp[i] = NULL;
     }
 }
 
@@ -428,8 +428,8 @@ static void open_files( void )
 /****************************/
 {
     /* open ASM file */
-    AsmFiles.file[ASM] = fopen( AsmFiles.fname[ASM], "r" );
-    if( AsmFiles.file[ASM] == NULL ) {
+    AsmFiles.fp[ASM] = fopen( AsmFiles.fname[ASM], "r" );
+    if( AsmFiles.fp[ASM] == NULL ) {
         Fatal( CANNOT_OPEN_FILE, AsmFiles.fname[ASM] );
     }
 

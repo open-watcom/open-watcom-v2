@@ -121,7 +121,7 @@ enum {
 #define FILE_TYPES      4
 
 typedef struct {
-    FILE        *file[FILE_TYPES];      // ASM, ERR and OBJ
+    FILE        *fp[FILE_TYPES];        // ASM, ERR and OBJ
     char        *fname[FILE_TYPES];
 } File_Info;    // Information about the source and object files
 
