@@ -94,7 +94,7 @@ bool StructDef( token_buffer *tokbuf, token_idx i )
             } else if( ( dir->sym.state == SYM_STRUCT )
               && (Options.mode & MODE_IDEAL) ) {
                 /* Redefinition of structure */
-                FreeInfo( dir );
+                dir_fini( dir );
                 dir_init( dir, TAB_STRUCT );
             } else {
                 AsmError( SYMBOL_ALREADY_DEFINED );

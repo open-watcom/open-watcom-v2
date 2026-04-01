@@ -342,7 +342,7 @@ void AsmTakeOut( const char *name )
         /* found it -- so take it out */
         sym = *sym_ptr;
         *sym_ptr = sym->next;
-        FreeInfo( (dir_node_handle)sym );
+        dir_fini( (dir_node_handle)sym );
         FreeASym( sym );
     }
     return;
@@ -458,7 +458,7 @@ void AsmSymFini( void )
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {
         for( sym = sym_table[i]; sym != NULL; sym = next ) {
             next = sym->next;
-            FreeInfo( (dir_node_handle)sym );
+            dir_fini( (dir_node_handle)sym );
             FreeASym( sym );
         }
     }

@@ -312,7 +312,7 @@ static bool AddPredefinedConstant( char *name, const_info *info )
         return( RC_ERROR );
     }
     if( !dir->e.constinfo->predef ) {
-        FreeInfo( dir );
+        dir_fini( dir );
         dir->e.constinfo = info;
     }
     return( RC_OK );
@@ -741,7 +741,7 @@ void dir_to_sym( dir_node_handle dir )
  * Remove node type/info to be symbol only again
  */
 {
-    FreeInfo( dir );
+    dir_fini( dir );
     dir_reset( dir );
     dir->sym.state = SYM_UNDEFINED;
 }
@@ -751,7 +751,7 @@ void dir_change( dir_node_handle dir, int tab )
  * Change node type and insert it into the table specified by tab
  */
 {
-    FreeInfo( dir );
+    dir_fini( dir );
     dir_reset( dir );
     dir_init( dir, tab );
 }
@@ -784,7 +784,7 @@ static void set_macro__at_code( const char *name )
     strcpy( code_segment_name, get_sim_name( SIM_CODE, name ) );
 }
 
-void FreeInfo( dir_node_handle dir )
+void dir_fini( dir_node_handle dir )
 /**********************************/
 {
     int i;
@@ -3416,7 +3416,7 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
                     regs_list   *tmpreg;
 
                     for( tmpreg = info->regslist; tmpreg->next != NULL; tmpreg = tmpreg->next )
-                    	/* nothing*/;
+                        /* nothing*/;
                     tmpreg->next = regist;
                 }
             }
