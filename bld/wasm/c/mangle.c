@@ -143,8 +143,8 @@ static char *CMangler( asm_sym_handle sym )
     return( UScoreMangler( sym ) );
 }
 
-static mangle_func GetMangler( const char *mangle_type )
-/******************************************************/
+mangle_func GetMangler( const char *mangle_type )
+/***********************************************/
 {
     mangle_func mangler;
 
@@ -197,14 +197,11 @@ char *Mangle( asm_sym_handle sym )
     return( mangler( sym ) );
 }
 
-void SetMangler( asm_sym_handle sym, const char *mangle_type, int langtype )
-/**************************************************************************/
+void SetMangler( asm_sym_handle sym, mangle_func mangler, lang_type langtype )
+/****************************************************************************/
 {
-    mangle_func mangler;
-
     if( langtype != WASM_LANG_NONE )
         sym->langtype = langtype;
-    mangler = GetMangler( mangle_type );
     if( mangler == NULL ) {
         /* nothing to do */
     } else if( sym->mangler == NULL ) {

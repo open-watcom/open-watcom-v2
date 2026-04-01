@@ -403,7 +403,7 @@ static bool MakeFpFixup( const char *patch_name )
             dir->sym.offset = 0;
             dir->sym.referenced = true;
             dir->sym.mem_type = MT_FAR;
-            SetMangler( &dir->sym, "N", WASM_LANG_NONE );
+            SetMangler( &dir->sym, GetMangler( "N" ), WASM_LANG_NONE );
         }
     }
     if( dir != NULL ) {
