@@ -366,6 +366,7 @@ extern dir_node_handle  dir_insert( const char *, int );
 extern void             dir_to_sym( dir_node_handle );
 extern void             dir_change( dir_node_handle, int );
 extern void             dir_init( dir_node_handle, int );
+extern void             dir_fini( dir_node_handle );
 
 extern uint_32          GetCurrAddr( void );    // Get offset from current segment
 
@@ -452,7 +453,6 @@ extern bool             NameDirective( token_buffer *tokbuf, token_idx );
 extern bool             Comment( int, token_buffer *tokbuf, token_idx, const char * ); /* handle COMMENT directives */
 
 extern bool             AddAlias( token_buffer *tokbuf, token_idx );
-extern void             FreeInfo( dir_node_handle );
 extern void             push( void *stack, void *elt );
 extern void             *pop( void *stack );
 extern uint_32          GetCurrSegAlign( void );
