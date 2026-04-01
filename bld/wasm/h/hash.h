@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,17 +33,22 @@
 
 #define HASH_TABLE_SIZE 211
 
-/* use the same hash fcn */
 static unsigned int hashpjw( const char *s )
-/******************************************/
+/*******************************************
+ * this hash function is case-insensitive
+ * it means it return same hash value for all case variants of string
+ */
 {
     unsigned        h;
     unsigned        g;
     unsigned char   c;
 
     for( h = 0; (c = *s) != '\0'; ++s ) {
-        /* ( h & ~0x0fff ) == 0 is always true here */
+        /*
+         * following works only for ASCII character set
+         */
         h = (h << 4) + (c | ' ');
+        /* ( h & ~0x0fff ) == 0 is always true here */
         g = h & ~0x0fff;
         h ^= g;
         h ^= g >> 12;
