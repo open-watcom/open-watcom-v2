@@ -1210,7 +1210,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
          * get the symbol name
          */
         for( ;; ) {
-        	name = tokbuf->tokens[i].string_ptr;
+            name = tokbuf->tokens[i].string_ptr;
             dir = (dir_node_handle)AsmGetSymbol( name );
             if( dir == NULL ) {
                 dir = (dir_node_handle)AllocDSym( name );
@@ -4145,7 +4145,7 @@ bool NameDirective( token_buffer *tokbuf, token_idx i )
 bool CommDef( token_buffer *tokbuf, token_idx i )
 /***********************************************/
 {
-    const char      *token;
+    const char      *name;
     const char      *typetoken;
     mangle_func     mangler;
     int             type;
@@ -4179,7 +4179,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
         /*
          * get the symbol name
          */
-        token = tokbuf->tokens[i].string_ptr;
+        name = tokbuf->tokens[i].string_ptr;
         i++;
         /*
          * go past the colon
@@ -4210,17 +4210,21 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
             }
         }
         mem_type = TypeInfo[type].value;
-        dir = (dir_node_handle)AsmGetSymbol( token );
+        dir = (dir_node_handle)AsmGetSymbol( name );
         if( dir == NULL ) {
-            dir = dir_insert( token, TAB_EXT );
+            dir = dir_insert( name, TAB_EXT );
             if( dir == NULL ) {
                 return( RC_ERROR );
             }
-        } else if( dir->sym.state == SYM_UNDEFINED ) {
-            dir_change( dir, TAB_EXT );
-        } else if( dir->sym.mem_type != mem_type ) {
+        } else if( dir->sym.state != SYM_UNDEFINED
+          && dir->sym.mem_type != mem_type ) {
             AsmError( EXT_DEF_DIFF );
             return( RC_ERROR );
+        } else {
+            AsmSetMandatoryName( &dir->sym, name );
+            if( dir->sym.state == SYM_UNDEFINED ) {
+                dir_change( dir, TAB_EXT );
+            }
         }
         dir->sym.referenced = true;
         dir->e.extinfo->comm = true;
