@@ -1154,18 +1154,8 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             {}
 
         dir = (dir_node_handle)AsmGetSymbol( name );
-        /*
-         * In MASM-compatible case-insensitive mode, use the EXTERN/EXTERNDEF
-         * spelling as the canonical name, matching MASM behavior where
-         * import/export directives determine the external symbol name
-         * rather than the first-seen spelling.
-         */
-        if( dir != NULL
-          && Options.symbols_nocasesensitive
-          && strcmp( name, dir->sym.name ) != 0
-          && stricmp( name, dir->sym.name ) == 0 ) {
-            AsmChangeName( dir->sym.name, name );
-            dir = (dir_node_handle)AsmGetSymbol( name );
+        if( dir != NULL ) {
+            AsmSetMandatoryName( &dir->sym, name );
         }
         if( dir == NULL ) {
             dir = dir_insert( name, TAB_EXT );
@@ -1238,19 +1228,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
                 return( PubDef( tokbuf, i ) );
             }
         }
-        /*
-         * In MASM-compatible case-insensitive mode, a label definition can
-         * create the symbol first using one spelling (for example `arg_buf`)
-         * and a later PUBLIC directive can refer to the same symbol with a
-         * different spelling (`ARG_BUF`).  Keep the PUBLIC spelling as the
-         * canonical exported name so OMF PUBDEF matches MASM behavior.
-         */
-        if( Options.symbols_nocasesensitive
-          && strcmp( name, dir->sym.name ) != 0
-          && stricmp( name, dir->sym.name ) == 0 ) {
-            AsmChangeName( dir->sym.name, name );
-            dir = (dir_node_handle)AsmGetSymbol( name );
-        }
+        AsmSetMandatoryName( &dir->sym, name );
         SetMangler( &dir->sym, mangler, langtype );
         if( !dir->sym.public ) {
             /*

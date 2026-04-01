@@ -331,6 +331,17 @@ bool AsmChangeName( const char *old, const char *new )
     return( false );
 }
 
+void AsmSetMandatoryName( asm_sym_handle sym, const char *name )
+/**************************************************************/
+{
+    if( Options.symbols_nocasesensitive ) {
+        if( strcmp( sym->name, name ) != 0 ) {
+            MemFree( sym->name );
+            sym->name = MemStrdupSafe( name );
+        }
+    }
+}
+
 void AsmTakeOut( const char *name )
 /*********************************/
 {
