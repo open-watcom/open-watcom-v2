@@ -1241,7 +1241,7 @@ static bool get_stack_argument( token_buffer *tokbuf, token_idx idx, char *buffe
     return( RC_OK );
 }
 
-static bool expand_call( token_buffer *tokbuf, token_idx index, int lang_type )
+static bool expand_call( token_buffer *tokbuf, token_idx index, lang_type langtype )
 {
     token_idx   i, j;
     token_idx   arglist[16];
@@ -1252,7 +1252,7 @@ static bool expand_call( token_buffer *tokbuf, token_idx index, int lang_type )
 
     argcount = cleanup = reversed = register_count = register_arguments = 0;
     parameter_on_stack = true;
-    switch( lang_type ) {
+    switch( langtype ) {
     case WASM_LANG_C:
     case WASM_LANG_SYSCALL:
         cleanup++;
@@ -2294,7 +2294,7 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
     int             jmp_flags;
     bool            flag;
 #if defined( _STANDALONE_ )
-    int             temp;
+    lang_type       langtype;
     static bool     in_epilogue = false;
 #endif
 
@@ -2405,8 +2405,8 @@ bool AsmParse( token_buffer *tokbuf, const char *curline )
             case T_CALL:
                 if( Options.mode & MODE_IDEAL ) {
                     for( n = i + 2; n < tokbuf->count; n++ ) {
-                        if( !CheckForLang( tokbuf, n, &temp ) ) {
-                            return( expand_call( tokbuf, n + 1, temp ) );
+                        if( !CheckForLang( tokbuf, n, &langtype ) ) {
+                            return( expand_call( tokbuf, n + 1, langtype ) );
                         }
                     }
                 }
