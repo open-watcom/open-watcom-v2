@@ -1154,31 +1154,31 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             {}
 
         dir = (dir_node_handle)AsmGetSymbol( name );
-        if( dir != NULL ) {
-            AsmSetMandatoryName( &dir->sym, name );
-        }
         if( dir == NULL ) {
             dir = dir_insert( name, TAB_EXT );
             if( dir == NULL ) {
                 return( RC_ERROR );
             }
-        } else if( dir->sym.state == SYM_UNDEFINED ) {
-            dir_change( dir, TAB_EXT );
-        } else if( dir->sym.mem_type != mem_type ) {
+        } else if( dir->sym.state != SYM_UNDEFINED
+          && dir->sym.mem_type != mem_type ) {
             AsmError( EXT_DEF_DIFF );
             return( RC_ERROR );
-        } else if( dir->sym.state != SYM_EXTERNAL ) {
-            SetMangler( &dir->sym, mangler, langtype );
-            if( glob_def
-              && !dir->sym.public ) {
-                AddPublicData( dir );
-            }
-            return( RC_OK );
         } else {
-            SetMangler( &dir->sym, mangler, langtype );
-            return( RC_OK );
+            AsmSetMandatoryName( &dir->sym, name );
+            if( dir->sym.state == SYM_UNDEFINED ) {
+                dir_change( dir, TAB_EXT );
+            } else if( dir->sym.state != SYM_EXTERNAL ) {
+                SetMangler( &dir->sym, mangler, langtype );
+                if( glob_def
+                  && !dir->sym.public ) {
+                    AddPublicData( dir );
+                }
+                return( RC_OK );
+            } else {
+                SetMangler( &dir->sym, mangler, langtype );
+                return( RC_OK );
+            }
         }
-
         if( glob_def ) {
             dir->e.extinfo->global = true;
         } else {
@@ -1186,7 +1186,6 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
         }
         GetSymInfo( &dir->sym );
         dir->sym.offset = 0;
-        // FIXME !! symbol can have different type
         dir->sym.mem_type = mem_type;
         SetMangler( &dir->sym, mangler, langtype );
     }
@@ -1210,25 +1209,24 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
         /*
          * get the symbol name
          */
-        name = tokbuf->tokens[i].string_ptr;
-        /*
-         * Add the public name
-         */
-        dir = (dir_node_handle)AsmGetSymbol( name );
-        if( dir == NULL ) {
-            dir = (dir_node_handle)AllocDSym( name );
-            AddPublicData( dir );
-        } else if( dir->sym.state == SYM_CONST ) {
+        for( ;; ) {
+        	name = tokbuf->tokens[i].string_ptr;
+            dir = (dir_node_handle)AsmGetSymbol( name );
+            if( dir == NULL ) {
+                dir = (dir_node_handle)AllocDSym( name );
+                break;
+            }
             /*
              * check if the symbol expands to another symbol,
              * and if so, expand it
              */
-            if( dir->e.constinfo->tokens[0].class == TC_ID ) {
-                ExpandTheWorld( tokbuf, i, false, true );
-                return( PubDef( tokbuf, i ) );
+            if( dir->sym.state != SYM_CONST
+              || dir->e.constinfo->tokens[0].class != TC_ID ) {
+                AsmSetMandatoryName( &dir->sym, name );
+                break;
             }
+            ExpandTheWorld( tokbuf, i, false, true );
         }
-        AsmSetMandatoryName( &dir->sym, name );
         SetMangler( &dir->sym, mangler, langtype );
         if( !dir->sym.public ) {
             /*
