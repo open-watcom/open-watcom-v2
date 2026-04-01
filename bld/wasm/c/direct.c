@@ -1057,8 +1057,8 @@ static int token_cmp( const char *token, int start, int end )
     return( TOK_INVALID );      // No type is found
 }
 
-bool CheckForLang( token_buffer *tokbuf, token_idx i, int *lang )
-/***************************************************************/
+bool CheckForLang( token_buffer *tokbuf, token_idx i, lang_type *langtype )
+/*************************************************************************/
 {
     const char  *token;
     int         lang_idx;
@@ -1074,23 +1074,23 @@ bool CheckForLang( token_buffer *tokbuf, token_idx i, int *lang )
             lang_idx = token_cmp( token, TOK_LANG_BASIC, TOK_LANG_SYSCALL );
         }
         if( lang_idx != TOK_INVALID ) {
-            *lang = TypeInfo[lang_idx].value;
+            *langtype = TypeInfo[lang_idx].value;
             return( RC_OK );
         }
     }
     return( RC_ERROR );
 }
 
-static int GetLangType( token_buffer *tokbuf, token_idx *i )
-/**********************************************************/
+static lang_type GetLangType( token_buffer *tokbuf, token_idx *i )
+/****************************************************************/
 {
-    int         lang_type;
+    lang_type       langtype;
 
-    if( CheckForLang( tokbuf, *i, &lang_type ) ) {
+    if( CheckForLang( tokbuf, *i, &langtype ) ) {
         return( ModuleInfo.langtype );
     }
     (*i)++;
-    return( lang_type );
+    return( langtype );
 }
 
 static const char *Check4Mangler( token_buffer *tokbuf, token_idx *i )
@@ -1119,14 +1119,14 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
     int             type;
     memtype         mem_type;
     dir_node_handle dir;
-    int             lang_type;
+    lang_type       langtype;
 
     mangle_type = Check4Mangler( tokbuf, &i );
     for( ; i < tokbuf->count; i++ ) {
         /*
          * get the symbol language type if present
          */
-        lang_type = GetLangType( tokbuf, &i );
+        langtype = GetLangType( tokbuf, &i );
         /*
          * get the symbol name
          */
@@ -1165,14 +1165,14 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             AsmError( EXT_DEF_DIFF );
             return( RC_ERROR );
         } else if( dir->sym.state != SYM_EXTERNAL ) {
-            SetMangler( &dir->sym, mangle_type, lang_type );
+            SetMangler( &dir->sym, mangle_type, langtype );
             if( glob_def
               && !dir->sym.public ) {
                 AddPublicData( dir );
             }
             return( RC_OK );
         } else {
-            SetMangler( &dir->sym, mangle_type, lang_type );
+            SetMangler( &dir->sym, mangle_type, langtype );
             return( RC_OK );
         }
 
@@ -1185,7 +1185,7 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
         dir->sym.offset = 0;
         // FIXME !! symbol can have different type
         dir->sym.mem_type = mem_type;
-        SetMangler( &dir->sym, mangle_type, lang_type );
+        SetMangler( &dir->sym, mangle_type, langtype );
     }
     return( RC_OK );
 }
@@ -1196,14 +1196,14 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
     const char      *name;
     const char      *mangle_type = NULL;
     dir_node_handle dir;
-    int             lang_type;
+    lang_type       langtype;
 
     mangle_type = Check4Mangler( tokbuf, &i );
     for( ; i < tokbuf->count; i += 2 ) {
         /*
          * get the symbol language type if present
          */
-        lang_type = GetLangType( tokbuf, &i );
+        langtype = GetLangType( tokbuf, &i );
         /*
          * get the symbol name
          */
@@ -1225,7 +1225,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
                 return( PubDef( tokbuf, i ) );
             }
         }
-        SetMangler( &dir->sym, mangle_type, lang_type );
+        SetMangler( &dir->sym, mangle_type, langtype );
         if( !dir->sym.public ) {
             /*
              * put it into the pub table
@@ -4150,7 +4150,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
     int             distance;
     int             count;
     dir_node_handle dir;
-    int             lang_type;
+    lang_type       langtype;
     memtype         mem_type;
 
     mangle_type = Check4Mangler( tokbuf, &i );
@@ -4173,7 +4173,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
         /*
          * get the symbol language type if present
          */
-        lang_type = GetLangType( tokbuf, &i );
+        langtype = GetLangType( tokbuf, &i );
         /*
          * get the symbol name
          */
@@ -4227,7 +4227,7 @@ bool CommDef( token_buffer *tokbuf, token_idx i )
         dir->sym.mem_type = mem_type;
         dir->e.extinfo->comm_size = count;
         dir->e.extinfo->comm_distance = TypeInfo[distance].value;
-        SetMangler( &dir->sym, mangle_type, lang_type );
+        SetMangler( &dir->sym, mangle_type, langtype );
     }
     return( RC_OK );
 }

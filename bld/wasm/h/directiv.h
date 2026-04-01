@@ -398,7 +398,7 @@ extern bool             Include( token_buffer *tokbuf, token_idx );         // h
 extern bool             IncludeLib( token_buffer *tokbuf, token_idx );      // handle an INCLUDELIB statement
 extern bool             Model( token_buffer *tokbuf, token_idx );           // handle .MODEL statement
 
-extern bool             CheckForLang( token_buffer *tokbuf, token_idx, int *lang );
+extern bool             CheckForLang( token_buffer *tokbuf, token_idx, lang_type *langtype );
 
 /* Init/fini the information about the module, which are contained in ModuleInfo */
 extern void             ModuleInit( void );
