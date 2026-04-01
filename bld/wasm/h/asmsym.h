@@ -107,6 +107,7 @@ extern void             FreeASym( asm_sym_handle sym );
 
 extern void             AsmTakeOut( const char *name );
 extern bool             AsmChangeName( const char *old, const char *new );
+extern void             AsmSetMandatoryName( asm_sym_handle sym, const char *name );
 extern void             WriteListing( void );
 
 extern asm_sym_handle   AllocDSym( const char * );

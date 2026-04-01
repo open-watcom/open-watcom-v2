@@ -1154,6 +1154,9 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             {}
 
         dir = (dir_node_handle)AsmGetSymbol( name );
+        if( dir != NULL ) {
+            AsmSetMandatoryName( &dir->sym, name );
+        }
         if( dir == NULL ) {
             dir = dir_insert( name, TAB_EXT );
             if( dir == NULL ) {
@@ -1225,6 +1228,7 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
                 return( PubDef( tokbuf, i ) );
             }
         }
+        AsmSetMandatoryName( &dir->sym, name );
         SetMangler( &dir->sym, mangler, langtype );
         if( !dir->sym.public ) {
             /*
