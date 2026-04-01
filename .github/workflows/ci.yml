@@ -1,0 +1,97 @@
+name: CI
+run-name: CI Build & Test (Linux)
+
+on:
+  pull_request:
+    branches: '*'
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!README.md'
+  push:
+    branches:
+      - master
+    paths:
+      - '**'
+      - '!.github/**'
+      - '!README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+env:
+  OWUSETARARCHIVE: '1'
+
+jobs:
+  boot:
+    name: Bootstrap
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6
+    - name: Bootstrap
+      uses: ./.github/actions/boot
+      with:
+        args:    gcc
+        suffix:  lnx x64 gcc
+        owtools: GCC
+
+  build:
+    name: Build
+    needs: boot
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6
+    - name: Install DOSBOX
+      uses: ./.github/actions/dosboxin
+    - name: Build
+      uses: ./.github/actions/build
+      with:
+        args:    gcc
+        gitpath: rel
+        suffix:  lnx x64 gcc
+        owtools: GCC
+
+  tests:
+    needs: build
+    strategy:
+      matrix:
+        include:
+          - title:   Wmake tests
+            path:    wmaktest
+            timeout: 10
+          - title:   Wasm tests
+            path:    wasmtest
+            timeout: 10
+          - title:   C tests
+            path:    ctest
+            timeout: 30
+          - title:   C++ tests
+            path:    plustest
+            timeout: 90
+          - title:   Fortran tests
+            path:    f77test
+            timeout: 30
+          - title:   C run-time library tests
+            path:    clibtest
+            timeout: 30
+    timeout-minutes: ${{matrix.timeout}}
+    runs-on: ubuntu-latest
+    name: ${{matrix.title}}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v6
+    - name: Set OW environment
+      uses: ./.github/actions/setowenv
+      with:
+        suffix: lnx x64 gcc
+        bits:   '64'
+    - name: ${{matrix.title}}
+      uses: ./.github/actions/tests
+      with:
+        suffix: lnx x64 gcc
+        path:   ${{matrix.path}}
