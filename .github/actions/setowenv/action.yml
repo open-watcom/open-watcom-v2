@@ -25,7 +25,7 @@ runs:
   steps:
   - if: inputs.ow_version != ''
     name: Open Watcom setup
-    uses: open-watcom/setup-watcom@v0
+    uses: open-watcom/setup-watcom@v1
     with:
       version: ${{inputs.ow_version}}
       tag:     ${{inputs.ow_tag}}
