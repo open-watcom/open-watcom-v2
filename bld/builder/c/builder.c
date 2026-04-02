@@ -231,7 +231,8 @@ static int parse_string( const char *env, char **args )
     char        parm_buff[_MAX_PATH];
     int         pos;
     bool        quoted;
-    char        prev, c;
+    char        prev;
+    char        c;
     int         argc;
 
     quoted = false;
@@ -385,7 +386,7 @@ static char *SubstOne( const char **inp, char *out )
              * copy from parameter n to the end to out. E.g. <2*>
              */
             parm = 1;
-            for( starpos = out; isdigit( (unsigned char)*starpos ); starpos++ )
+            for( starpos = out; isdigit( *(unsigned char *)starpos ); starpos++ )
                 ;
             if( stricmp( starpos, "*" ) == 0 ) {
                 rep = NULL;
