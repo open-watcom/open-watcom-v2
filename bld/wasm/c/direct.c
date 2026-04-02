@@ -1167,15 +1167,14 @@ bool ExtDef( token_buffer *tokbuf, token_idx i, bool glob_def )
             AsmSetMandatoryName( &dir->sym, name );
             if( dir->sym.state == SYM_UNDEFINED ) {
                 dir_change( dir, TAB_EXT );
-            } else if( dir->sym.state != SYM_EXTERNAL ) {
-                SetMangler( &dir->sym, mangler, langtype );
-                if( glob_def
-                  && !dir->sym.public ) {
-                    AddPublicData( dir );
-                }
-                return( RC_OK );
             } else {
                 SetMangler( &dir->sym, mangler, langtype );
+                if( dir->sym.state != SYM_EXTERNAL ) {
+                    if( glob_def
+                      && !dir->sym.public ) {
+                        AddPublicData( dir );
+                    }
+                }
                 return( RC_OK );
             }
         }
@@ -1209,28 +1208,36 @@ bool PubDef( token_buffer *tokbuf, token_idx i )
         /*
          * get the symbol name
          */
-        for( ;; ) {
-            name = tokbuf->tokens[i].string_ptr;
-            dir = (dir_node_handle)AsmGetSymbol( name );
-            if( dir == NULL ) {
-                dir = (dir_node_handle)AllocDSym( name );
-                break;
-            }
+        name = tokbuf->tokens[i].string_ptr;
+        /*
+         * Add the public name
+         */
+        dir = (dir_node_handle)AsmGetSymbol( name );
+        if( dir == NULL ) {
             /*
-             * check if the symbol expands to another symbol,
-             * and if so, expand it
+             * new symbol
              */
-            if( dir->sym.state != SYM_CONST
-              || dir->e.constinfo->tokens[0].class != TC_ID ) {
-                AsmSetMandatoryName( &dir->sym, name );
-                break;
-            }
+            dir = (dir_node_handle)AllocDSym( name );
+        } else if( dir->sym.state == SYM_CONST
+          && dir->e.constinfo->tokens[0].class == TC_ID ) {
+            /*
+             * symbol expands to another symbol
+             */
             ExpandTheWorld( tokbuf, i, false, true );
+            /*
+             * call PubDef recursively for more expansions
+             */
+            return( PubDef( tokbuf, i ) );
+        } else {
+            /*
+             * existing symbol, need update
+             */
+            AsmSetMandatoryName( &dir->sym, name );
         }
         SetMangler( &dir->sym, mangler, langtype );
         if( !dir->sym.public ) {
             /*
-             * put it into the pub table
+             * put it into the public table
              */
             AddPublicData( dir );
         }
