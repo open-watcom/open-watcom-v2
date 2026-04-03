@@ -178,8 +178,8 @@ static void array_index( unsigned_8 *ptr, unsigned_8 size )
     switch (size)
     {
     case 1: Puthex( *ptr, 2 ); break;
-    case 2: Puthex( *(unsigned_16*)ptr, 4 ); break;
-    default: Puthex( *(unsigned_32*)ptr, 8 ); break;
+    case 2: Puthex( *(unsigned_16 *)ptr, 4 ); break;
+    default: Puthex( *(unsigned_32 *)ptr, 8 ); break;
     }
 
     base_type_index( ptr+size );
