@@ -340,6 +340,6 @@ static  void    SetHigh( sym_id sym ) {
 
     sym->u.ns.si.va.vi.ec_ext->high = _SymSize( sym );
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-       sym->u.ns.si.va.vi.ec_ext->high *= sym->u.ns.si.va.u.dim_ext->num_elts;
+       sym->u.ns.si.va.vi.ec_ext->high *= sym->u.ns.si.va.u.dim_ext->num_elems;
     }
 }

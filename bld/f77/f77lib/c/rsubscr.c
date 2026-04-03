@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,15 +59,15 @@ intstar4        Subscript( int dim_cnt, adv_entry *adv, ... ) {
     for( ;; ) {
         ss = va_arg( args, intstar4 );
         // 0 elements in a dimension implies assumed-size dimension
-        if( adv->num_elts != 0 ) {
+        if( adv->num_elems != 0 ) {
             if( ( ss < adv->lo_bound ) ||
-                ( ss > adv->lo_bound + (int_32)(adv->num_elts) - 1 ) ) {
+                ( ss > adv->lo_bound + (int_32)(adv->num_elems) - 1 ) ) {
                 va_start( args, adv );
                 SubscriptError( dim_cnt, args, *((char **)&adv[dim_cnt - dim_no]) );
             }
         }
         offset += ( ss - adv->lo_bound ) * multiplier;
-        multiplier *= adv->num_elts;
+        multiplier *= adv->num_elems;
         ++dim_no;
         if( dim_no == dim_cnt )
             break;
@@ -116,7 +117,7 @@ void    ADVFillHi( adv_entry *adv, int ss, intstar4 hi )
     if( lo > hi ) {
         RTErr( SV_BAD_SSCR );
     }
-    adv[ss - 1].num_elts = hi - lo + 1;
+    adv[ss - 1].num_elems = hi - lo + 1;
 }
 
 
@@ -128,5 +129,5 @@ void    ADVFillHiLo1( adv_entry *adv, int ss, intstar4 hi )
         RTErr( SV_DIMENSION_LIMIT );
     }
 #endif
-    adv[ss - 1].num_elts = hi;
+    adv[ss - 1].num_elems = hi;
 }

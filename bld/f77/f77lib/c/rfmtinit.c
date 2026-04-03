@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ void    FmtScan( string *fmt, uint extend_format ) {
 }
 
 
-void    FmtAScan( char PGM *array, long num_elts, int elt_size,
+void    FmtAScan( char PGM *array, long num_elems, int elt_size,
                   uint extend_format ) {
 //=================================================================
 
@@ -86,7 +86,7 @@ void    FmtAScan( char PGM *array, long num_elts, int elt_size,
 
     _SetIOCB();
     scb.strptr = array;
-    scb.len = num_elts * elt_size;
+    scb.len = num_elems * elt_size;
     FmtScan( &scb, extend_format );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -310,7 +310,7 @@ extern int      IOInq( void );
 extern int      IOOpen( void );
 extern int      IORew( void );
 extern void     FmtScan( string *fmt, uint extend_format );
-extern void     FmtAScan( char PGM *array, long num_elts, int elt_size, uint extend_format );
+extern void     FmtAScan( char PGM *array, long num_elems, int elt_size, uint extend_format );
 extern void     Stop( string PGM *ptr );
 extern void     Pause( string PGM *ptr );
 extern void     Cat( uint num_args, string *dest, ... );

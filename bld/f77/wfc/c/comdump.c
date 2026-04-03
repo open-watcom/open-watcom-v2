@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +96,7 @@ void    STComDump( void )
                 }
                 size = _SymSize( sym );
                 if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-                    size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+                    size *= sym->u.ns.si.va.u.dim_ext->num_elems;
                     sym->u.ns.si.va.u.dim_ext->dim_flags &= ~DIM_PVD;
                 }
                 if( sym->u.ns.flags & SY_IN_EQUIV ) {

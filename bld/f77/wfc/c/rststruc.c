@@ -241,7 +241,7 @@ static sym_id LookupField( sym_id field, const char *name, size_t len, intstar4 
             }
             size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
-                size *= field->u.fd.dim_ext->num_elts;
+                size *= field->u.fd.dim_ext->num_elems;
             }
         }
         f_offset += size;
@@ -306,7 +306,7 @@ bool    CalcStructSize( sym_id sd ) {
             }
             size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
-                size *= field->u.fd.dim_ext->num_elts;
+                size *= field->u.fd.dim_ext->num_elems;
             }
         }
         total_size += size;

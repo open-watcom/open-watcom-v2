@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1616,15 +1616,15 @@ dip_status hllTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
         ds = hllTypeArrayInfo( iih, ith, lc, &ai, NULL );
         if( ds != DS_OK )
             return( ds );
-        if( ai.column_major && ai.num_dims > 1 ) {
+        if( ai.column_major && ai.dims > 1 ) {
             real = *ith;
-            real.array_dim += ai.num_dims - 1;
+            real.array_dim += ai.dims - 1;
             ds = hllTypeArrayInfo( iih, ith, lc, &ai, NULL );
             if( ds != DS_OK ) {
                 return( ds );
             }
         }
-        ti->size = ai.num_elts * ai.stride;
+        ti->size = ai.num_elems * ai.stride;
         break;
     case LF_PRECOMP:
     case LF_ENDPRECOMP:
@@ -1888,7 +1888,7 @@ static dip_status GetArrayRange( imp_image_handle *iih, location_context *lc,
         hllConfused();
         return( DS_ERR | DS_FAIL );
     }
-    ai->num_elts = hi_bound - ai->low_bound + 1;
+    ai->num_elems = hi_bound - ai->low_bound + 1;
     return( DS_OK );
 }
 
@@ -1911,9 +1911,9 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
     if( ds != DS_OK )
         return( ds );
     ai->low_bound = 0;
-    ai->num_elts = 0;
+    ai->num_elems = 0;
     ai->stride = 0;
-    ai->num_dims = 0;
+    ai->dims = 0;
     ai->column_major = IsFortranModule( iih, lc );
     /*
      * map in enough to get integer values from numeric leaves
@@ -1924,7 +1924,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
     switch( p->common.code ) {
     case LF_ARRAY:
         idx = p->array.f.idxtype;
-        ai->num_dims = 1;
+        ai->dims = 1;
         hllGetNumLeaf( &p->array + 1, &val );
         ds = hllTypeIndexFillIn( iih, p->array.f.elemtype, &real );
         if( ds != DS_OK )
@@ -1933,7 +1933,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
         if( ds != DS_OK )
             return( ds );
         ai->stride = ti.size;
-        ai->num_elts = val.int_val / ti.size;
+        ai->num_elems = val.int_val / ti.size;
         break;
     case LF_DIMARRAY:
         utype = p->dimarray.f.utype;
@@ -1946,7 +1946,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
         idx = p->dimconu.f.index;
         code = p->common.code;
         dim_hdl = real.handle;
-        ai->num_dims = p->dimconu.f.rank - array_ith->array_dim;
+        ai->dims = p->dimconu.f.rank - array_ith->array_dim;
         if( ai->column_major ) {
             ds = hllTypeIndexFillIn( iih, utype, &real );
             if( ds != DS_OK )
@@ -1959,7 +1959,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
                 ds = GetArrayRange( iih, lc, code, dim_hdl, idx, i, ai );
                 if( ds != DS_OK )
                     return( ds );
-                ai->stride *= ai->num_elts;
+                ai->stride *= ai->num_elems;
             }
         } else {
             ds = hllTypeBase( iih, array_ith, &real );

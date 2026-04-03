@@ -529,7 +529,7 @@ static void WNDCALLBACK VarMenuItem( a_window wnd, gui_ctl_id id, wnd_row row, w
             DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
             start = ainfo.low_bound;
             varx.start = start;
-            varx.end = varx.start + ainfo.num_elts - 1;
+            varx.end = varx.start + ainfo.num_elems - 1;
             /* fall through */
         case TK_POINTER:
             {

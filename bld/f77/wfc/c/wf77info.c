@@ -947,7 +947,7 @@ void    DefStructs( void )
                 if( _Allocatable( sym ) )
                     continue;
                 BEDefType( user_cgtyp, SymAlign( sym ),
-                   _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elts );
+                   _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elems );
                 sym->u.ns.si.va.u.dim_ext->l.cgtyp = user_cgtyp;
                 user_cgtyp++;
             } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1605,7 +1605,7 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, uint f_offset )
             }
             size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
-                size *= field->u.fd.dim_ext->num_elts;
+                size *= field->u.fd.dim_ext->num_elems;
                 db_type = ArrayDbgType( field->u.fd.dim_ext, db_type );
             }
             DBAddField( db, f_offset, field_name, db_type );
@@ -1653,7 +1653,7 @@ static  dbg_type        DefCommonStruct( sym_id sym )
         size = _SymSize( sym );
         db_type = GetDbgType( sym );
         if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-            size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+            size *= sym->u.ns.si.va.u.dim_ext->num_elems;
             DBAddField( db, com_offset, field_name,
                         ArrayDbgType( sym->u.ns.si.va.u.dim_ext, db_type ) );
         } else {

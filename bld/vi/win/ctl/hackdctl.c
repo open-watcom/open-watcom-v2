@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ bool ctl_dlg_init( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
     ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
-    for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
+    for( num = ctl->num_ctls, elt = ctl->ctls; num > 0; --num, ++elt ) {
         // Initialize control element.
         if( !(Ctl_int_actions[elt->type].setup)( elt, inst, dlg, ptr, true ) ) {
             return( false );
@@ -143,7 +143,7 @@ bool ctl_dlg_done( WPI_INST inst, HWND dlg, void *ptr, void *ctl_ptr)
     ctl_def             *ctl = ctl_ptr;      // so app doesn't have to do type cast;
 
     // enumerate all control elements.
-    for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
+    for( num = ctl->num_ctls, elt = ctl->ctls; num > 0; --num, ++elt ) {
         // was the element modified?
         if( elt->modified ) {
             // yes: query new state
@@ -168,7 +168,7 @@ void ctl_dlg_process( void *ctl_ptr, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
     bool                mod;
 
     // enumerate all control elements.
-    for( num = ctl->num_ctls, elt = ctl->elts; num > 0; --num, ++elt ) {
+    for( num = ctl->num_ctls, elt = ctl->ctls; num > 0; --num, ++elt ) {
         // query if message modified the element
         mod = (Ctl_int_actions[elt->type].modified)( elt, wparam, lparam );
         // mark the modify state

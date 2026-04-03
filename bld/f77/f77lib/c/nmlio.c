@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,7 +154,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size )
     dim_list.dim_flags = 0;
     dim_cnt = _GetNMLSubScrs( info );
     _SetDimCount( dim_list.dim_flags, dim_cnt );
-    dim_list.num_elts = 1;
+    dim_list.num_elems = 1;
     bounds = &dim_list.subs_1_lo;
     ss_ptr = ss;
     for( ;; ) {
@@ -163,7 +163,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size )
         ++ss_ptr;
         lo = *(intstar4 PGM *)adv_ss_ptr;
         adv_ss_ptr += sizeof( intstar4 );
-        dim_list.num_elts *= *(uint PGM *)adv_ss_ptr;
+        dim_list.num_elems *= *(uint PGM *)adv_ss_ptr;
         *bounds++ = lo;
         *bounds++ = lo + *(uint PGM *)adv_ss_ptr - 1;
         adv_ss_ptr += sizeof( uint );
@@ -379,7 +379,7 @@ static  void    NmlIn( void )
                 if( NmlIn_ptyp == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                 }
-                NmlIn_count = adv_ptr->num_elts;
+                NmlIn_count = adv_ptr->num_elems;
                 adv_ss_ptr = (char PGM *)adv_ptr + ADV_BASE_SIZE;
             } else {
                 NmlIn_count = *(uint_32 PGM *)nml_entry;
@@ -456,7 +456,7 @@ static  void    NmlOut( void )
     byte        len;
     byte        info;
     PTYPE       ptyp;
-    uint_32     num_elts;
+    uint_32     num_elems;
     char        PGM *data;
     string      scb;
     lg_adv      PGM *adv_ptr;
@@ -478,7 +478,7 @@ static  void    NmlOut( void )
         if( _GetNMLSubScrs( info ) ) {
             if( info & NML_LG_ADV ) {
                 adv_ptr = *(lg_adv PGM * PGM *)nml;
-                num_elts = adv_ptr->num_elts;
+                num_elems = adv_ptr->num_elems;
                 if( ptyp == FPT_CHAR ) {
                     scb.len = adv_ptr->elt_size;
                     scb.strptr = adv_ptr->origin;
@@ -486,7 +486,7 @@ static  void    NmlOut( void )
                     data = adv_ptr->origin;
                 }
             } else {
-                num_elts = *(uint_32 PGM *)nml;
+                num_elems = *(uint_32 PGM *)nml;
                 nml += sizeof( uint_32 ) + _GetNMLSubScrs( info ) * ( sizeof( uint_32 ) + sizeof( int ) );
                 if( ptyp == FPT_CHAR ) {
                     scb.len = *(uint PGM *)nml;
@@ -496,7 +496,7 @@ static  void    NmlOut( void )
                     data = *(char PGM * PGM *)nml;
                 }
             }
-            while( num_elts-- > 0 ) {
+            while( num_elems-- > 0 ) {
                 if( ptyp == FPT_CHAR ) {
                     IORslt.string = scb;
                     OutRtn[ptyp]();

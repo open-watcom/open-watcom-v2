@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023 2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +161,7 @@ typedef struct dim_var {
     back_handle dims;
     int         off;
     cg_type     lo_bound_tipe;
-    cg_type     num_elts_tipe;
+    cg_type     num_elems_tipe;
 } dim_var;
 
 typedef struct dim_con {

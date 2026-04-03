@@ -159,7 +159,7 @@ static  bool    DumpVariable( sym_id sym )
         dim_list = sym->u.ns.si.va.u.dim_ext;
         cp_reloc = (flags & SY_SUB_PARM) == 0 && !_Allocatable( sym );
         if( cp_reloc
-          && ( dim_list->num_elts == 0 ) ) {
+          && ( dim_list->num_elems == 0 ) ) {
             NameErr( SV_ARR_PARM, sym );
         } else {
             if( cp_reloc ) {

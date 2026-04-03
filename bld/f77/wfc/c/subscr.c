@@ -64,7 +64,7 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
         offset += ( ss - lo ) * multiplier;
         if( offset < 0 )
             return( false );
-        if( offset > dims->num_elts )
+        if( offset > dims->num_elems )
             return( false );
         if( --dim_cnt == 0 )
             break;

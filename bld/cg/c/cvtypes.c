@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -824,8 +824,8 @@ dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
 }
 
 dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                 cg_type num_elts_tipe, int off, dbg_type base )
-/**************************************************************/
+                 cg_type num_elems_tipe, int off, dbg_type base )
+/***************************************************************/
 {
     dbg_type        itipe;
     dbg_type        symref[2];
@@ -834,7 +834,7 @@ dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
     lf_values       ret;
     const type_def  *tipe_addr;
 
-    /* unused parameters */ (void)num_elts_tipe;
+    /* unused parameters */ (void)num_elems_tipe;
 
     tipe_addr = TypeAddress( lo_bound_tipe );
     itipe = LFIntType( tipe_addr->length );

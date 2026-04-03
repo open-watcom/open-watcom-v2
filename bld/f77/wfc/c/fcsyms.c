@@ -183,7 +183,7 @@ static unsigned_32  CheckThreshold( sym_id sym, unsigned_32 g_offset )
 
     item_size = _SymSize( sym );
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-        item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+        item_size *= sym->u.ns.si.va.u.dim_ext->num_elems;
     }
     if( item_size > DataThreshold ) {
         sym->u.ns.si.va.vi.segid = GetGlobalSegId( g_offset );
@@ -1184,7 +1184,7 @@ static void     DumpNameLists( void )
             if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
                 _SetNMLSubScrs( nl_info, _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) );
                 DGInteger( nl_info, TY_UINT_1 );
-                DGInteger( sym->u.ns.si.va.u.dim_ext->num_elts, TY_UINT_4 );
+                DGInteger( sym->u.ns.si.va.u.dim_ext->num_elems, TY_UINT_4 );
                 DumpStaticAdv( sym, false ); // we do not want a name ptr dumped
                 if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                     DGInteger( sym->u.ns.xt.size, TY_INTEGER );

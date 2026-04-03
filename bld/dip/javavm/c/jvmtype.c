@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -260,9 +261,9 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
         ith->kind = JT_SIGNATURE;
     }
     ai->stride = ElementSize( ith->sig );
-    ai->num_elts = ElementCount( it->u.object );
+    ai->num_elems = ElementCount( it->u.object );
     ai->low_bound = 0;
-    ai->num_dims = 1;
+    ai->dims = 1;
     ai->column_major = 0; /* 1 for fortran */
     if( index_ith != NULL )
         index_ith->kind = JT_INTEGER;

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -156,16 +156,16 @@ cg_name ArrayNumElts( sym_id arr )
 //==================================
 // Get number of elements in an array.
 {
-    cg_name             num_elts;
+    cg_name             num_elems;
     act_dim_list        *dim;
 
     dim = arr->u.ns.si.va.u.dim_ext;
     if( _AdvRequired( dim ) ) {
-        num_elts = Multiplier( arr, _DimCount( dim->dim_flags ) );
+        num_elems = Multiplier( arr, _DimCount( dim->dim_flags ) );
     } else {
-        num_elts = CGInteger( dim->num_elts, TY_INT_4 );
+        num_elems = CGInteger( dim->num_elems, TY_INT_4 );
     }
-    return( num_elts );
+    return( num_elems );
 }
 
 
@@ -173,7 +173,7 @@ cg_name FieldArrayNumElts( sym_id arr )
 //=====================================
 // Get number of elements in an array.
 {
-    return( CGInteger( arr->u.fd.dim_ext->num_elts, TY_INT_4 ) );
+    return( CGInteger( arr->u.fd.dim_ext->num_elems, TY_INT_4 ) );
 }
 
 
@@ -345,7 +345,7 @@ void    FCAdvFillHi( void )
     int                 hi_size;
     int                 hi_offset;
     int                 ss;
-    cg_name             num_elts;
+    cg_name             num_elems;
     cg_name             hi;
     cg_name             adv;
     call_handle         call;
@@ -374,12 +374,12 @@ void    FCAdvFillHi( void )
         CGDone( CGUnary( O_POINTS, CGCall( call ), TY_INT_4 ) );
     } else {
         hi_offset = (ss - 1) * ( lo_size + hi_size ) + lo_size;
-        num_elts = CGBinary( O_PLUS, hi,
+        num_elems = CGBinary( O_PLUS, hi,
                              CGBinary( O_MINUS, CGInteger( 1, TY_INTEGER ),
                                        LoBound( arr, ss - 1 ),
                                        TY_ADV_HI ),
                              TY_ADV_HI );
-        CGDone( CGAssign( StructRef( adv, hi_offset ), num_elts, TY_ADV_HI ) );
+        CGDone( CGAssign( StructRef( adv, hi_offset ), num_elems, TY_ADV_HI ) );
     }
 }
 

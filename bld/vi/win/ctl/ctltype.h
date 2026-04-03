@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -213,7 +214,7 @@ typedef struct ctl_elt {
 // The control definition
 typedef struct {
     int                 num_ctls;
-    ctl_elt             elts[1];        // 'num_ctls' elts
+    ctl_elt             ctls[1];    // 'num_ctls' elts
                         // The array of control datas is stored in a continuous
                         // block of memory.
 } ctl_def;

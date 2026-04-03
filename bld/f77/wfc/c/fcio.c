@@ -65,27 +65,27 @@ static  bool            NmlSpecified;
 /* Forward declarations */
 void    FCChkIOStmtLabel( void );
 
-static  void    ChrArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts, cg_name elt_size )
-//=======================================================================================
+static  void    ChrArrayIO( RTCODE rtn, cg_name arr, cg_name num_elems, cg_name elt_size )
+//========================================================================================
 {
     call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, elt_size, TY_INTEGER );
-    CGAddParm( call, num_elts, TY_INT_4 );
+    CGAddParm( call, num_elems, TY_INT_4 );
     CGAddParm( call, arr, TY_POINTER );
     CGDone( CGCall( call ) );
 }
 
 
-static  void    NumArrayIO( RTCODE rtn, cg_name arr, cg_name num_elts, uint typ )
-//===============================================================================
+static  void    NumArrayIO( RTCODE rtn, cg_name arr, cg_name num_elems, uint typ )
+//================================================================================
 {
     call_handle     call;
 
     call = InitCall( rtn );
     CGAddParm( call, CGInteger( typ, TY_INTEGER ), TY_INTEGER );
-    CGAddParm( call, num_elts, TY_INT_4 );
+    CGAddParm( call, num_elems, TY_INT_4 );
     CGAddParm( call, arr, TY_POINTER );
     CGDone( CGCall( call ) );
 }
@@ -589,8 +589,8 @@ void    FCOutStruct( void )
 }
 
 
-static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz )
-//==========================================================================
+static  void    DoStructArrayIO( tmp_handle num_elems, struct field *fieldz )
+//===========================================================================
 // Perform structure array i/o.
 {
     label_handle    cglbl;
@@ -600,9 +600,9 @@ static  void    DoStructArrayIO( tmp_handle num_elts, struct field *fieldz )
     StructIO( fieldz );
     CGControl( O_IF_TRUE,
                CGCompare( O_NE,
-                          CGAssign( TmpPtr( num_elts, TY_INT_4 ),
+                          CGAssign( TmpPtr( num_elems, TY_INT_4 ),
                                     CGBinary( O_MINUS,
-                                              TmpVal( num_elts, TY_INT_4 ),
+                                              TmpVal( num_elems, TY_INT_4 ),
                                               CGInteger( 1, TY_INTEGER ),
                                               TY_INT_4 ),
                                     TY_INT_4 ),
@@ -616,10 +616,10 @@ static  void    StructIOArrayStruct( sym_id arr )
 //===============================================
 // Perform structure array i/o on a field.
 {
-    tmp_handle      num_elts;
+    tmp_handle      num_elems;
 
-    num_elts = MkTmp( FieldArrayNumElts( arr ), TY_INT_4 );
-    DoStructArrayIO( num_elts, arr->u.fd.xt.record->fl.fields );
+    num_elems = MkTmp( FieldArrayNumElts( arr ), TY_INT_4 );
+    DoStructArrayIO( num_elems, arr->u.fd.xt.record->fl.fields );
 }
 
 
@@ -649,18 +649,18 @@ static  void    StructIOItem( sym_id fd )
         }
         if( fd->u.fd.typ == FT_CHAR ) {
             ChrArrayIO( rtn + 1, TmpVal( TmpStructPtr, TY_POINTER ),
-                        CGInteger( fd->u.fd.dim_ext->num_elts, TY_INT_4 ),
+                        CGInteger( fd->u.fd.dim_ext->num_elems, TY_INT_4 ),
                         CGInteger( fd->u.fd.xt.size, TY_INTEGER ) );
         } else {
             NumArrayIO( rtn, TmpVal( TmpStructPtr, TY_POINTER ),
-                        CGInteger( fd->u.fd.dim_ext->num_elts, TY_INT_4 ),
+                        CGInteger( fd->u.fd.dim_ext->num_elems, TY_INT_4 ),
                         ParmType( fd->u.fd.typ, fd->u.fd.xt.size ) );
         }
         CGTrash( CGAssign( TmpPtr( TmpStructPtr, TY_POINTER ),
                            CGBinary( O_PLUS,
                                      TmpVal( TmpStructPtr, TY_POINTER ),
                                      CGInteger( fd->u.fd.xt.size *
-                                                fd->u.fd.dim_ext->num_elts,
+                                                fd->u.fd.dim_ext->num_elems,
                                                 TY_UINT_4 ),
                                      TY_POINTER ),
                            TY_POINTER ) );
@@ -673,12 +673,12 @@ static  void    StructArrayIO( void )
 // Perform structure array i/o.
 {
     sym_id          arr;
-    tmp_handle      num_elts;
+    tmp_handle      num_elems;
 
     arr = GetPtr();
-    num_elts = MkTmp( ArrayNumElts( arr ), TY_INT_4 );
+    num_elems = MkTmp( ArrayNumElts( arr ), TY_INT_4 );
     TmpStructPtr = MkTmp( SymAddr( arr ), TY_POINTER );
-    DoStructArrayIO( num_elts, arr->u.ns.xt.record->fl.fields );
+    DoStructArrayIO( num_elems, arr->u.ns.xt.record->fl.fields );
 }
 
 
@@ -787,28 +787,28 @@ static void    ArrayIO( RTCODE num_array, RTCODE chr_array )
     sym_id          arr;
     sym_id          field;
     cg_name         addr;
-    cg_name         num_elts;
+    cg_name         num_elems;
     cg_name         elt_size;
 
     arr = GetPtr();
     field = GetPtr();
     if( field == NULL ) {
         addr = SymAddr( arr );
-        num_elts = ArrayNumElts( arr );
+        num_elems = ArrayNumElts( arr );
         if( arr->u.ns.u1.s.typ == FT_CHAR ) {
-            ChrArrayIO( chr_array, addr, num_elts, ArrayEltSize( arr ) );
+            ChrArrayIO( chr_array, addr, num_elems, ArrayEltSize( arr ) );
         } else {
-            NumArrayIO( num_array, addr, num_elts,
+            NumArrayIO( num_array, addr, num_elems,
                         ParmType( arr->u.ns.u1.s.typ, arr->u.ns.xt.size ) );
         }
     } else { // must be a array field in a structure
         addr = XPop();
-        num_elts = FieldArrayNumElts( field );
+        num_elems = FieldArrayNumElts( field );
         if( field->u.fd.typ == FT_CHAR ) {
             elt_size = CGInteger( field->u.fd.xt.size, TY_INTEGER );
-            ChrArrayIO( chr_array, addr, num_elts, elt_size );
+            ChrArrayIO( chr_array, addr, num_elems, elt_size );
         } else {
-            NumArrayIO( num_array, addr, num_elts,
+            NumArrayIO( num_array, addr, num_elems,
                         ParmType( field->u.fd.typ, field->u.fd.xt.size ) );
         }
     }

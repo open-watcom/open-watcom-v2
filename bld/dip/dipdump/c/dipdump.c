@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -376,9 +376,9 @@ static walk_result Type2Callback( type_handle *th, void *_idx )
                 ds = DIPTypeArrayInfo( th, NULL, &ainfo, NULL );
                 if( ds == DS_OK ) {
                     printf( "       "
-                            "low_bound=%ld num_elts=%lu stride=%lu num_dims=%u column_major=%d\n",
-                            ainfo.low_bound, ainfo.num_elts, ainfo.stride,
-                            ainfo.num_dims, ainfo.column_major );
+                            "low_bound=%ld num_elems=%lu stride=%lu dims=%u column_major=%d\n",
+                            ainfo.low_bound, ainfo.num_elems, ainfo.stride,
+                            ainfo.dims, ainfo.column_major );
                 } else {
                     printf( "DIPTypeArrayInfo -> %d\n", ds );
                 }

@@ -82,7 +82,7 @@ typedef enum {
         (dim->dim_flags & (DIM_ASSUMED | DIM_VARIABLE | DIM_PVD | DIM_ALLOCATABLE))
 #define _Allocatable( sym )                     \
         (sym->u.ns.u1.s.xflags & (SY_ALLOCATABLE))
-#define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elts)
+#define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elems)
 
 typedef struct act_dim_list {
     union {
@@ -91,7 +91,7 @@ typedef struct act_dim_list {
     } l;
     dim_flags_type      dim_flags;      //  dimension flags
     back_handle         adv;            //  address of ADV
-    unsigned_32         num_elts;       //  number of elements
+    unsigned_32         num_elems;      //  number of elements
     intstar4            subs_1_lo;      //  low bound of 1st dimension
     intstar4            subs_1_hi;      //  high bound of 1st dimension
     intstar4            subs_2_lo;      //  low bound of 2nd dimension

@@ -920,7 +920,7 @@ static  void    IFPrmChk( void )
                 }
                 break;
             case USOPN_ARR:
-                MkConst( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->num_elts *
+                MkConst( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->num_elems *
                          _SymSize( CITNode->sym_ptr ) );
                 break;
             default:

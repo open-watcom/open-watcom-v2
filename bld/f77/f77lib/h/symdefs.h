@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -82,18 +82,18 @@ typedef enum {
         (dim->dim_flags & (DIM_ASSUMED|DIM_VARIABLE|DIM_PVD|DIM_ALLOCATABLE))
 #define _Allocatable( sym )                     \
         (sym->u.ns.u1.s.xflags & (SY_ALLOCATABLE))
-#define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elts)
+#define _ArrElements( sym ) (sym->u.ns.si.va.u.dim_ext->num_elems)
 
 typedef struct dim_list {
     dim_flags_type  dim_flags;      //  dimension flags
     pointer         adv;            //  address of ADV
-    unsigned_32     num_elts;       //  number of elements
+    unsigned_32     num_elems;      //  number of elements
 } dim_list;
 
 typedef struct act_dim_list {
     dim_flags_type      dim_flags;      //  dimension flags
     pointer             adv;            //  address of ADV
-    unsigned_32         num_elts;       //  number of elements
+    unsigned_32         num_elems;      //  number of elements
     intstar4            subs_1_lo;      //  low bound of 1st dimension
     intstar4            subs_1_hi;      //  high bound of 1st dimension
     intstar4            subs_2_lo;      //  low bound of 2nd dimension

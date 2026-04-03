@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -285,7 +285,7 @@ dbg_type    DFEndArray( dbg_array ar )
             if( lo_tipe == DBG_NIL_TYPE ) {
                 tipe_addr = TypeAddress( dim->u.var.lo_bound_tipe );
                 lo_tipe = DFScalar( "", dim->u.var.lo_bound_tipe );
-                count_tipe = DFScalar( "",  dim->u.var.num_elts_tipe );
+                count_tipe = DFScalar( "",  dim->u.var.num_elems_tipe );
             }
             varinfo.index_type = lo_tipe;
             varinfo.lo_data  =  MKBckVar( dim->u.var.dims, dim->u.var.off, lo_tipe);
@@ -300,8 +300,8 @@ dbg_type    DFEndArray( dbg_array ar )
 }
 
 dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                            cg_type num_elts_tipe, int off, dbg_type base )
-/*************************************************************************/
+                            cg_type num_elems_tipe, int off, dbg_type base )
+/**************************************************************************/
 {
     dw_vardim_info  varinfo;
     dbg_type        lo_tipe;
@@ -312,7 +312,7 @@ dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
     ret = DWBeginArray( Client, base, 0, NULL, 0, 0 );
     tipe_addr = TypeAddress( lo_bound_tipe );
     lo_tipe = DFScalar( "", lo_bound_tipe );
-    count_tipe = DFScalar( "", num_elts_tipe );
+    count_tipe = DFScalar( "", num_elems_tipe );
     varinfo.index_type = lo_tipe;
     varinfo.lo_data  =  MKBckVar( dims, off, lo_tipe);
     varinfo.count_data  = MKBckVar( dims, off+tipe_addr->length, count_tipe);

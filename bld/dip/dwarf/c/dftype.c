@@ -141,7 +141,7 @@ typedef struct {
     imp_image_handle    *iih;
     imp_type_handle     *ith;
     location_context    *lc;
-    uint_32             num_elts;
+    uint_32             num_elems;
     int                 dim;
     bool                cont;
 } array_wlk_wlk;
@@ -171,7 +171,7 @@ static void GetArraySize( imp_image_handle *iih,
     df.dim = 0;
     df.cont = false;
     DRWalkArraySibs( ith->array.index, ArrayWlk, &df );
-    ith->array.num_elts = df.count;
+    ith->array.num_elems = df.count;
     ith->array.low = df.low;
     df.cont = true;
     dim = GetArrayDim( ith->array.index, 1 );
@@ -182,7 +182,7 @@ static void GetArraySize( imp_image_handle *iih,
     ith->typeinfo.size = df.count * ith->array.base_stride;
     if( !ith->array.column_major ) {
         base_stride = ith->typeinfo.size;
-        n_el = ith->array.num_elts;
+        n_el = ith->array.num_elems;
         base_stride = n_el ? base_stride / n_el : 0;
         ith->array.base_stride = base_stride;
     }
@@ -207,11 +207,11 @@ static void GetArraySubSize( imp_image_handle *iih,
     df.cont = false;
     DRWalkArraySibs( ith->array.index, ArrayWlk, &df );
     new_size = ith->typeinfo.size;
-    n_el = ith->array.num_elts;
+    n_el = ith->array.num_elems;
     new_size = n_el ? new_size / n_el : 0;
     if( ith->array.column_major ) {
         base_stride = ith->array.base_stride;
-        base_stride *= ith->array.num_elts;
+        base_stride *= ith->array.num_elems;
         ith->array.base_stride = base_stride;
     } else {
         base_stride = ith->typeinfo.size;
@@ -219,7 +219,7 @@ static void GetArraySubSize( imp_image_handle *iih,
         ith->array.base_stride = base_stride;
     }
     ith->typeinfo.size = new_size;
-    ith->array.num_elts = df.count;
+    ith->array.num_elems = df.count;
     ith->array.low = df.low;
     --ith->array.dims;
     ith->array.is_set = true;
@@ -278,13 +278,13 @@ static void InitTypeHandle( imp_image_handle *iih,
                             info.count = 1;
                         }
                         ith->typeinfo.size = info.count * ith->array.base_stride;
-                        ith->array.num_elts= info.count;
+                        ith->array.num_elems= info.count;
                     }else{
                         ith->typeinfo.size = ith->array.base_stride;
                     }
                     if( !ith->array.column_major ) {
                         base_stride = ith->typeinfo.size;
-                        n_el = ith->array.num_elts;
+                        n_el = ith->array.num_elems;
                         base_stride = n_el ? base_stride / n_el : 0;
                         ith->array.base_stride = base_stride;
                     }
@@ -706,8 +706,8 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
         return( DS_ERR | DS_BAD_PARM  );
     }
     ai->low_bound = array_ith->array.low;
-    ai->num_elts = array_ith->array.num_elts;
-    ai->num_dims = array_ith->array.dims;
+    ai->num_elems = array_ith->array.num_elems;
+    ai->dims = array_ith->array.dims;
     ai->column_major = array_ith->array.column_major;
     ai->stride = array_ith->array.base_stride;
     if( index_ith != NULL ) {

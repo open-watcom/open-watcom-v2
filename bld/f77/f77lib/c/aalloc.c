@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -185,7 +185,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
             } else {
                 size = 1;
                 while( dim_cnt-- > 0 ) {
-                    size *= adv_ent->num_elts;
+                    size *= adv_ent->num_elems;
                     ++adv_ent;
                 }
             }

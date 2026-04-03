@@ -127,7 +127,7 @@ cg_type SymPtrType( sym_id sym )
             } else {
                 item_size = _SymSize( sym );
                 if( flags & SY_SUBSCRIPTED ) {
-                    item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+                    item_size *= sym->u.ns.si.va.u.dim_ext->num_elems;
                 }
                 if( offset + item_size <= MAX_SEG16_SIZE ) {
                     // object fits in first segment of common block
@@ -146,7 +146,7 @@ cg_type SymPtrType( sym_id sym )
 
                 item_size = _SymSize( sym );
                 if( flags & SY_SUBSCRIPTED ) {
-                    item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+                    item_size *= sym->u.ns.si.va.u.dim_ext->num_elems;
                 }
                 leader_segid = GetGlobalSegId( ce_ext->offset );
                 offset += ce_ext->offset;
@@ -173,7 +173,7 @@ cg_type SymPtrType( sym_id sym )
         } else {
             item_size = _SymSize( sym );
             if( flags & SY_SUBSCRIPTED ) {
-                item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+                item_size *= sym->u.ns.si.va.u.dim_ext->num_elems;
             }
             if( ce_ext->com_blk->u.ns.flags & SY_EQUIVED_NAME ) {
                 if( ce_ext->offset + item_size <= MAX_SEG16_SIZE ) {
@@ -204,7 +204,7 @@ cg_type SymPtrType( sym_id sym )
       || ( sym->u.ns.u1.s.typ == FT_STRUCTURE ) ) {
         item_size = _SymSize( sym );
         if( flags & SY_SUBSCRIPTED ) {
-            item_size *= sym->u.ns.si.va.u.dim_ext->num_elts;
+            item_size *= sym->u.ns.si.va.u.dim_ext->num_elems;
         }
 #if _CPU == 8086
         if( item_size > MAX_SEG16_SIZE ) {

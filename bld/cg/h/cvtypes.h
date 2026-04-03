@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +39,7 @@ extern  void            CVBackRefType( dbg_name name, dbg_type tipe );
 extern  dbg_type        CVCharBlock( uint_32 len );
 extern  dbg_type        CVIndCharBlock( back_handle len, cg_type len_type, int off );
 extern  dbg_type        CVLocCharBlock( dbg_loc loc, cg_type len_type );
-extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base );
+extern  dbg_type        CVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elems_tipe, int off, dbg_type base );
 extern  dbg_type        CVArray( dbg_type idx, dbg_type base );
 extern  dbg_type        CVIntArray( uint_32 hi, dbg_type base );
 extern  dbg_type        CVEndArray( dbg_array ar );

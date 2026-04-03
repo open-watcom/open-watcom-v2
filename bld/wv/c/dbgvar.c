@@ -794,7 +794,7 @@ static void     VarNodeFini( var_node *v )
 #define MAX_EXPAND_ARRAY_ELEMENTS 100000
 
 static int ExpandArray( var_info *i, var_node *v,
-                         long elts, long start, long end )
+                         long num_elems, long start, long end )
 /*
     Allocate and fill in var_nodes for an array expansion
 */
@@ -807,15 +807,15 @@ static int ExpandArray( var_info *i, var_node *v,
 
     owner = &v->expand;
     count = 0;
-    if( elts > MAX_EXPAND_ARRAY_ELEMENTS ) {
-        elts = MAX_EXPAND_ARRAY_ELEMENTS;
-        Format( buff, LIT_ENG( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS ), elts );
+    if( num_elems > MAX_EXPAND_ARRAY_ELEMENTS ) {
+        num_elems = MAX_EXPAND_ARRAY_ELEMENTS;
+        Format( buff, LIT_ENG( WARN_ONLY_MAX_EXPAND_ARRAY_ELEMENTS ), num_elems );
         Warn( buff );
     }
     for( element = start; element <= end; ++element ) {
-        if( elts == 0 )
+        if( num_elems == 0 )
             break;
-        --elts;
+        --num_elems;
         new = NewNode( i, 0 );
         if( new == NULL )
             break;
@@ -949,7 +949,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
 */
 {
     bool                ok;
-    unsigned long       elts;
+    unsigned long       num_elems;
     alloc_field_info    d;
     array_info          ainfo;
 
@@ -998,8 +998,8 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
                 }
             }
         } else {
-            elts = end - start + 1;
-            ExpandArray( i, v, elts, start, end );
+            num_elems = end - start + 1;
+            ExpandArray( i, v, num_elems, start, end );
             v->fake_array = true;
         }
         break;
@@ -1013,12 +1013,12 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
     case TK_ARRAY:
         if( end < start ) {
             DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
-            elts = ainfo.num_elts;
+            num_elems = ainfo.num_elems;
         } else {
-            elts = end - start + 1;
+            num_elems = end - start + 1;
             v->fake_array = true;
         }
-        ExpandArray( i, v, elts, start, end );
+        ExpandArray( i, v, num_elems, start, end );
         break;
     }
     return( true );

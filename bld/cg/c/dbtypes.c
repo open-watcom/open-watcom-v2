@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -324,7 +324,7 @@ dbg_type _CGAPI DBLocCharBlock( dbg_loc loc, cg_type len_type )
 
 
 dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
-                                    cg_type num_elts_tipe, int off,
+                                    cg_type num_elems_tipe, int off,
                                     dbg_type base )
 /***************************************************************************/
 {
@@ -332,15 +332,15 @@ dbg_type _CGAPI DBFtnArray( back_handle dims, cg_type lo_bound_tipe,
 
 #ifdef DEVBUILD
     EchoAPI( "DBFtnArray( %B,%t,%t,%i,%i)", dims, lo_bound_tipe,
-             num_elts_tipe, off, base );
+             num_elems_tipe, off, base );
 #endif
     if( _IsModel( CGSW_GEN_DBG_DF ) ) {
-        ret = DFFtnArray( dims, lo_bound_tipe, num_elts_tipe, off, base );
+        ret = DFFtnArray( dims, lo_bound_tipe, num_elems_tipe, off, base );
     } else if( _IsModel( CGSW_GEN_DBG_CV ) ) {
-        ret = CVFtnArray( dims, lo_bound_tipe, num_elts_tipe, off, base );
+        ret = CVFtnArray( dims, lo_bound_tipe, num_elems_tipe, off, base );
     } else {
 #if _TARGET_INTEL
-        ret = WVFtnArray( dims, lo_bound_tipe, num_elts_tipe, off, base );
+        ret = WVFtnArray( dims, lo_bound_tipe, num_elems_tipe, off, base );
 #else
         ret = 0;
 #endif
@@ -438,20 +438,20 @@ void _CGAPI DBDimCon( dbg_array ar, dbg_type idx, int_32 lo, int_32 hi )
 
 void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
                         cg_type lo_bound_tipe,
-                        cg_type num_elts_tipe )
+                        cg_type num_elems_tipe )
 /*************************************************/
 {
     dim_any     *dim;
 
 #ifdef DEVBUILD
-    EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe, num_elts_tipe);
+    EchoAPI( "DBDimVar(%i, %B, %i, %t, %t)\n", ar, dims, off, lo_bound_tipe, num_elems_tipe );
 #endif
     dim = CGAlloc( sizeof( *dim ) );
     dim->kind = DIM_VAR;
     dim->u.var.dims = dims;
     dim->u.var.off = off;
     dim->u.var.lo_bound_tipe = lo_bound_tipe;
-    dim->u.var.num_elts_tipe = num_elts_tipe;
+    dim->u.var.num_elems_tipe = num_elems_tipe;
     AddDim( ar, dim );
     ar->is_variable = true;
 }

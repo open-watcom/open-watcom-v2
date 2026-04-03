@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 #include "dwhandle.h"
 
 
-/* number of elts in a block; should be a power of 2 */
+/* number of elements in a block; should be a power of 2 */
 #define BLOCK_SIZE          1024
 
 typedef uint_16             dw_index_t;

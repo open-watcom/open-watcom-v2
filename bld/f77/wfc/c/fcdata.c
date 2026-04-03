@@ -1390,9 +1390,9 @@ static  void    InitArr( act_dim_list *dim, TYPE typ, size_t size )
 //=================================================================
 // Data initialize an array.
 {
-    unsigned_32 num_elts;
+    unsigned_32 num_elems;
 
-    for( num_elts = dim->num_elts; num_elts != 0; num_elts-- ) {
+    for( num_elems = dim->num_elems; num_elems != 0; num_elems-- ) {
         DtItemSize = size; // AsnVal() sets DtItemSize to 0 when done
         AsnVal( ParmType( typ, size ) );
         DtOffset += size;
@@ -1433,9 +1433,9 @@ static  void    InitStructArr( sym_id fd, act_dim_list *dim )
 //===========================================================
 // Data initialize an array.
 {
-    unsigned_32 num_elts;
+    unsigned_32 num_elems;
 
-    for( num_elts = dim->num_elts; num_elts != 0; num_elts-- ) {
+    for( num_elems = dim->num_elems; num_elems != 0; num_elems-- ) {
         StructInit( fd );
     }
 }

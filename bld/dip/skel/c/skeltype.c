@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,9 +118,9 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
  */
 {
     ai->low_bound = 0;
-    ai->num_elts = 0;
+    ai->num_elems = 0;
     ai->stride = 0;
-    ai->num_dims = 0;
+    ai->dims = 0;
     ai->column_major = 0; /* 1 for fortran */
     if( index_ith != NULL )
         *index_ith = *array_ith;

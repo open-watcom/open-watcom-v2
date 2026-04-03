@@ -277,7 +277,7 @@ static  void    TypeDecl( TYPE typ ) {
                     sym->u.fd.typ = MapTypes( typ, size );
                     sym->u.fd.xt.size = size;
                     if( sym->u.fd.dim_ext != NULL ) {
-                        size *= sym->u.fd.dim_ext->num_elts;
+                        size *= sym->u.fd.dim_ext->num_elems;
                     }
                     if( (typ == FT_CHAR) && (size == 0) ) {
                         NameErr( CV_CHARSTAR_ILLEGAL, sym );
@@ -417,8 +417,8 @@ void    ArrayDecl( sym_id sym ) {
     intstar4            *bounds;
     intstar4            lo_bound;
     intstar4            hi_bound;
-    signed_32           num_elts;
-    unsigned_32         dim_elts;
+    signed_32           num_elems;
+    unsigned_32         dim_elems;
     int                 ss;
     bool                var_dim;
     subscript_type      const_lo;
@@ -427,7 +427,7 @@ void    ArrayDecl( sym_id sym ) {
     bool                allocatable;
     act_dim_list        dim_list;
 
-    dim_list.num_elts = 0;
+    dim_list.num_elems = 0;
     dim_list.dim_flags = 0;
     dim_list.l.init_label = 0;
     allocatable = RecNoOpn() && RecNextOpr( OPR_COL );
@@ -448,7 +448,7 @@ void    ArrayDecl( sym_id sym ) {
         }
     }
     bounds = &dim_list.subs_1_lo;
-    num_elts = 1;
+    num_elems = 1;
     assumed = false;
     var_dim = false;
     for( ss = 0; ss < MAX_DIM; ) {
@@ -495,14 +495,14 @@ void    ArrayDecl( sym_id sym ) {
                                 GForceHiBound( ss, sym );
                             } else if( const_lo == SSB_CONSTANT ) {
                                 if( lo_bound <= hi_bound ) {
-                                    dim_elts = hi_bound - lo_bound + 1;
+                                    dim_elems = hi_bound - lo_bound + 1;
 #if _CPU == 8086
-                                    if( dim_elts > 65535 ) {
+                                    if( dim_elems > 65535 ) {
                                         Error( SV_DIMENSION_LIMIT );
                                     }
 #endif
-                                    num_elts *= dim_elts;
-                                    if( num_elts <= 0 ) {
+                                    num_elems *= dim_elems;
+                                    if( num_elems <= 0 ) {
                                         Error( SV_BAD_SSCR );
                                     }
                                 } else {
@@ -533,8 +533,8 @@ void    ArrayDecl( sym_id sym ) {
                             Error( SV_DIMENSION_LIMIT );
                         }
 #endif
-                        num_elts *= hi_bound;
-                        if( num_elts <= 0 ) {
+                        num_elems *= hi_bound;
+                        if( num_elems <= 0 ) {
                             Error( SV_BAD_SSCR );
                         }
                     } else {
@@ -564,12 +564,12 @@ void    ArrayDecl( sym_id sym ) {
         } else if( allocatable ) {
             Error( SP_ALLOC_NOT_IN_STRUCT );
         } else {
-            dim_list.num_elts = num_elts;
+            dim_list.num_elems = num_elems;
             sym->u.fd.dim_ext = STSubsList( &dim_list );
         }
     } else {
         if( (ProgSw & PS_IN_SUBPROGRAM) && (ProgSw & PS_BLOCK_DATA) == 0 && pvd_ok ) {
-            dim_list.num_elts = num_elts;
+            dim_list.num_elems = num_elems;
             // for Psuedo-Variable Dimensioning ( WATFIVish )
             dim_list.dim_flags |= DIM_PVD;
             if( sym->u.ns.flags & SY_SUB_PARM ) {
@@ -590,7 +590,7 @@ void    ArrayDecl( sym_id sym ) {
             dim_list.dim_flags |= DIM_ALLOCATABLE;
             sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
         } else {
-            dim_list.num_elts = num_elts;
+            dim_list.num_elems = num_elems;
             if( sym->u.ns.flags & SY_SUB_PARM ) {
                 // we don't want an ADV generated in the following case:
                 //      SUBROUTINE SAM( A )

@@ -234,14 +234,14 @@ dbg_type        WVLocCharBlock( dbg_loc loc, cg_type len_type )
 }
 
 
-dbg_type    WVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elts_tipe, int off, dbg_type base )
-/**************************************************************************************************************/
+dbg_type    WVFtnArray( back_handle dims, cg_type lo_bound_tipe, cg_type num_elems_tipe, int off, dbg_type base )
+/***************************************************************************************************************/
 {
     temp_buff   temp;
 
     NewType( &temp, WT_ARRAY + FORTRAN_TYPE );
     BuffByte( GetScalar( lo_bound_tipe ) );
-    BuffByte( GetScalar( num_elts_tipe ) );
+    BuffByte( GetScalar( num_elems_tipe ) );
     BuffBack( dims, off );
     BuffIndex( base );
     EndType( true );
@@ -335,7 +335,7 @@ dbg_type    WVEndArray( dbg_array ar )
             break;
         case DIM_VAR:
             ret = WVFtnArray( dim->u.var.dims, dim->u.var.lo_bound_tipe,
-                     dim->u.var.num_elts_tipe, dim->u.var.off, ar->base );
+                     dim->u.var.num_elems_tipe, dim->u.var.off, ar->base );
             ar->base = ret;
             break;
 

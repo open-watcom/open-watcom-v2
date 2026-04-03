@@ -745,7 +745,7 @@ static void PrintArray( void )
     first_time = true;
     PrtChar( '{' );
     DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ai, NULL );
-    while( ai.num_elts != 0 ) {
+    while( ai.num_elems != 0 ) {
         ChkBreak();
         if( !first_time ) {
             /* not the first time through */
@@ -770,7 +770,7 @@ static void PrintArray( void )
         PrtStr( buff, len );
         PrintValue();
         PopEntry();
-        ai.num_elts--;
+        ai.num_elems--;
         ai.low_bound++;
         first_time = false;
     }
