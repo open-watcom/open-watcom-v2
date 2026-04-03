@@ -67,9 +67,19 @@
 #define CPP_EXT         "i"
 #define DEP_EXT         "d"
 
+#ifdef __UNIX__
+#define NULLDEV         "/dev/null"
+#else
+#define NULLDEV         "NUL"
+#endif
+
+#define STDIN_NAME      "stdin"
+#define NULLDEV_NAME    "nulldev"
+
 bool    PrintWhiteSpace;     // also refered from cmac2.c
 
 static  bool    IsStdIn;
+static  bool    IsNullDev;
 static  char    *FNameBuf = NULL;
 
 void FrontEndInit( bool reuse )
@@ -100,6 +110,7 @@ static void initGlobals( void )
 {
     InitStats();
     IsStdIn = false;
+    IsNullDev = false;
     FNames = NULL;
     RDirNames = NULL;
     IAliasNames = NULL;
@@ -331,8 +342,6 @@ static bool openForcePreInclude( void )
 }
 
 
-#define STDIN_NAME      "stdin"
-
 static void MakePgmName( void )
 /******************************
  * open the primary source file, and return pointer to root file name
@@ -348,9 +357,17 @@ static void MakePgmName( void )
      */
     if( WholeFName[0] == '.' && WholeFName[1] == '\0' ) {
         IsStdIn = true;
+        IsNullDev = false;
         CMemFree( WholeFName );
         WholeFName = CMemAlloc( sizeof( STDIN_NAME ) );
         strcpy( WholeFName, STDIN_NAME );
+        pg.fname = WholeFName;
+    } else if( FNAMECMPSTR( WholeFName, NULLDEV ) == 0 ) {
+        IsNullDev = true;
+        IsStdIn = false;
+        CMemFree( WholeFName );
+        WholeFName = CMemAlloc( sizeof( NULLDEV_NAME ) );
+        strcpy( WholeFName, NULLDEV_NAME );
         pg.fname = WholeFName;
     } else {
         _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
@@ -926,11 +943,24 @@ static void ParseInit( void )
 static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
-        if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
+        if( OpenFCB( stdin, STDIN_NAME, FT_SRC ) ) {
             if( CompFlags.cpp_mode ) {
                 if( CppFile == NULL )
                     OpenCppFile();
-                CppEmitPoundLine( 1, "stdin", true );
+                CppEmitPoundLine( 1, STDIN_NAME, true );
+                CppFirstChar = true;
+            }
+            MainSrcFile = SrcFiles;
+            return( true );
+        }
+        return( false );
+    }
+    if( IsNullDev ) {
+        if( OpenFCB( NULL, NULLDEV_NAME, FT_SRC ) ) {
+            if( CompFlags.cpp_mode ) {
+                if( CppFile == NULL )
+                    OpenCppFile();
+                CppEmitPoundLine( 1, NULLDEV_NAME, true );
                 CppFirstChar = true;
             }
             MainSrcFile = SrcFiles;

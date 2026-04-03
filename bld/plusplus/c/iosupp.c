@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +53,15 @@
 
 #include "clibext.h"
 
+
+#ifdef __UNIX__
+#define NULLDEV         "/dev/null"
+#else
+#define NULLDEV         "NUL"
+#endif
+
+#define STDIN_NAME      "stdin"
+#define NULLDEV_NAME    "nulldev"
 
 typedef struct buf_alloc BUF_ALLOC;
 struct buf_alloc {              // BUF_ALLOC -- allocated buffer
@@ -534,6 +543,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
     SRCFILE stdin_srcfile;      // - srcfile for stdin
+    SRCFILE nulldev_srcfile;    // - srcfile for null device
     pgroup2 idescr;             // - descriptor for included file
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[_MAX_PATH];    // - buffer for previous path
@@ -554,9 +564,21 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 // so the user thinks that the compiler is hung!
                 return( false );
             }
-            WholeFName = FNameAdd( "stdin" );
+            WholeFName = FNameAdd( STDIN_NAME );
             stdin_srcfile = SrcFileOpen( stdin, WholeFName, 0 );
             SrcFileNotAFile( stdin_srcfile );
+            ok = true;
+            break;
+        }
+        if( FNAMECMPSTR( fd->fname, NULLDEV ) == 0 ) {
+            if( ErrCount != 0 ) {
+                // command line errors may result in "." as the input name
+                // so the user thinks that the compiler is hung!
+                return( false );
+            }
+            WholeFName = FNameAdd( NULLDEV_NAME );
+            nulldev_srcfile = SrcFileOpen( NULL, WholeFName, 0 );
+            SrcFileNotAFile( nulldev_srcfile );
             ok = true;
             break;
         }
