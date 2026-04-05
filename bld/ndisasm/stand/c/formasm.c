@@ -224,7 +224,7 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
     unsigned_64 value;
 
 
-    if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
+    if( size < ( 8 * MIN_DUP_LINES ) || i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
         return( 0 );
 
     for( d = i + 8; d < ( size - 8 ); d += 8 ) {
