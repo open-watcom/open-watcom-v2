@@ -1,0 +1,8 @@
+.387
+_TEXT		SEGMENT	BYTE PUBLIC USE16 'CODE'
+		ASSUME CS:_TEXT, DS:DGROUP, SS:DGROUP
+L$1:
+    DB	0
+	mov		al,byte ptr cs:L$1
+_TEXT		ENDS
+		END
