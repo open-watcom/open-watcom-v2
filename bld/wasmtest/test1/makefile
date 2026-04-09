@@ -80,6 +80,7 @@ shell.dis &
 size.dis &
 sizebug.dis &
 sizlen.dis &
+smalldat.dis &
 stos.dis &
 strmang.dis &
 struct.dis &
