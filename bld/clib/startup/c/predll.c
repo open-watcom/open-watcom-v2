@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,23 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  Netware startup related functions declaration.
+* Description:  DLL prelude for NetWare shared library NLMs.
 *
 ****************************************************************************/
 
 
-#if defined( __NETWARE__ )
-
-extern void __WATCOM_Prelude( void );
-
-#if defined(_THIN_LIB_DLL)
-extern long _Prelude( void *, void *, unsigned char *, unsigned char *, long, long, long __cdecl (*)(), long, long );
-extern void _Stop( void );
-#elif !defined(_THIN_LIB)
-extern int  _cstart_( void );
-extern long _Prelude( void *, void *, unsigned char *, unsigned char *, long, long, long __cdecl (*)(), long, long );
-extern void _Stop( void );
-extern void __VersionEnforcement( void );
-#endif
-
-#endif
+#define _THIN_LIB_DLL
+#include "prelude.c"

@@ -383,7 +383,7 @@ system begin netware_clib_lite_dll
     option nodefault
     option start=_Prelude
     option exit=_Stop
-    file '%WATCOM%/lib386/netware/clibdpre.obj'
+    file '%WATCOM%/lib386/netware/predll.obj'
     library '%WATCOM%/lib386/netware/clib3sl.lib'
     import @'%NOVELLNDK%/imports/clib.imp'
 :endsegment
