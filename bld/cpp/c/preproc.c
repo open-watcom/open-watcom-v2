@@ -1355,7 +1355,7 @@ int PPENTRY PP_Char( void )
                 break;
             if( !IS_END_OF_MACRO( mtok ) ) {
                 PPTokenPtr = mtok->data;
-                return( (unsigned char)*PPTokenPtr++ );
+                return( *(unsigned char *)PPTokenPtr++ );
             }
             DeleteNestedMacro();
         }
@@ -1389,7 +1389,7 @@ int PPENTRY PP_Char( void )
             }
         }
     }
-    return( (unsigned char)*PPTokenPtr++ );
+    return( *(unsigned char *)PPTokenPtr++ );
 }
 
 void PPENTRY PP_Init( char c, unsigned char spec_macros )
