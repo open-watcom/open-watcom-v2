@@ -74,9 +74,9 @@ _nc_trace_buf(int bufnum, size_t want)
         if (have) {
             while (have--) {
                 if (list[have].text != 0)
-                    free(list[have].text);
+                    MemFree(list[have].text);
             }
-            free(list);
+            MemFree(list);
         }
     }
 #endif

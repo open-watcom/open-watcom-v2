@@ -46,8 +46,7 @@ _nc_rootname(char *path)
     static char *temp;
     char *s;
 
-    temp = strdup(result);
-    result = temp;
+    result = temp = MemStrdup(result);
 #if !defined(MIXEDCASE_FILENAMES)
     int n;
     for (s = result; *s != '\0'; ++s) {

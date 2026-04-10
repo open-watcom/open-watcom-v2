@@ -320,11 +320,12 @@ setupterm( NCURSES_CONST char *tname, int Filedes, int *errret )
 
     T(("your terminal name is %s", tname));
 
-    term_ptr = typeCalloc( TERMINAL, 1 );
+    term_ptr = typeAlloc( TERMINAL, 1 );
 
     if( term_ptr == NULL ) {
         ret_error0( -1, "Not enough memory to create terminal structure.\n" );
     }
+    memset( term_ptr, 0, sizeof(TERMINAL) * 1 );
 #if USE_DATABASE || USE_TERMCAP
     status = grab_entry( tname, &term_ptr->type );
 #else

@@ -238,8 +238,10 @@ read_termtype(int fd, TERMTYPE * ptr)
 
     if (str_size) {
         /* try to allocate space for the string table */
-        if (str_count * 2 >= max_entry_size
-            || (ptr->str_table = typeMalloc(char, (unsigned) str_size)) == 0) {
+        if (str_count * 2 >= max_entry_size) {
+            return (0);
+        }
+        if ((ptr->str_table = typeAlloc(char, (unsigned)str_size)) == 0) {
             return (0);
         }
     } else {
@@ -253,11 +255,10 @@ read_termtype(int fd, TERMTYPE * ptr)
     read(fd, buf, read_size);
     buf[MAX_NAME_SIZE] = '\0';
     TR(TRACE_DATABASE, ("TERMTYPE Name = %s", buf));
-    ptr->term_names = typeCalloc(char, strlen(buf) + 1);
+    ptr->term_names = MemStrdup(buf);
     if (ptr->term_names == NULL) {
         return (0);
     }
-    (void) strcpy(ptr->term_names, buf);
     if (name_size > MAX_NAME_SIZE)
         lseek(fd, (off_t) (name_size - MAX_NAME_SIZE), 1);
 
@@ -265,8 +266,11 @@ read_termtype(int fd, TERMTYPE * ptr)
     i = bool_count;
     if( i < BOOLCOUNT )
         i = BOOLCOUNT;
-    if( (ptr->Booleans = typeCalloc( NCURSES_SBOOL, i )) == 0
-        || read(fd, ptr->Booleans, (unsigned) bool_count) < bool_count) {
+    if( (ptr->Booleans = typeAlloc( NCURSES_SBOOL, i )) == 0 ) {
+        return (0);
+    }
+    memset( ptr->Booleans, 0, sizeof(NCURSES_SBOOL) * i );
+    if( read(fd, ptr->Booleans, (unsigned)bool_count) < bool_count ) {
         return (0);
     }
 
@@ -282,17 +286,20 @@ read_termtype(int fd, TERMTYPE * ptr)
     i = num_count;
     if( i < NUMCOUNT )
         i = NUMCOUNT;
-    if( (ptr->Numbers = typeCalloc( short, i )) == 0
-        || !read_numbers(fd, buf, num_count)) {
+    if( (ptr->Numbers = typeAlloc( short, i )) == 0 ) {
+        return (0);
+    }
+    memset(ptr->Numbers, 0, sizeof(short) * i);
+    if( !read_numbers(fd, buf, num_count) ) {
         return (0);
     }
     convert_numbers(buf, ptr->Numbers, num_count);
     i = str_count;
     if( i < STRCOUNT )
         i = STRCOUNT;
-    if( (ptr->Strings = typeCalloc( char *, i )) == 0 )
+    if( (ptr->Strings = typeAlloc( char *, i )) == 0 )
           return (0);
-
+    memset(ptr->Strings, 0, sizeof(char *) * i );
     if (str_count) {
         /* grab the string offsets */
         if (!read_shorts(fd, buf, str_count)) {
@@ -375,7 +382,7 @@ read_termtype(int fd, TERMTYPE * ptr)
                             ext_str_limit, tell(fd)));
 
         if (ext_str_limit) {
-            if ((ptr->ext_str_table = typeMalloc(char, ext_str_limit)) == 0)
+            if ((ptr->ext_str_table = typeAlloc(char, ext_str_limit)) == 0)
                   return (0);
             if (read(fd, ptr->ext_str_table, ext_str_limit) != ext_str_limit)
                 return (0);
@@ -405,8 +412,9 @@ read_termtype(int fd, TERMTYPE * ptr)
             if (ext_str_count >= (max_entry_size / 2)) {
                   return (0);
             }
-            if ((ptr->ext_Names = typeCalloc(char *, need)) == 0)
+            if ((ptr->ext_Names = typeAlloc(char *, need)) == 0)
                   return (0);
+            memset(ptr->ext_Names, 0, sizeof(char *) * need);
             TR(TRACE_DATABASE,
                ("ext_NAMES starting @%d in extended_strings, first = %s",
                 base, _nc_visbuf(ptr->ext_str_table + base)));
@@ -491,7 +499,7 @@ _nc_read_terminfo_dirs(const char *dirs, char *const filename, const char *const
     int code = 0;
 
     /* we'll modify the argument, so we must copy */
-    if ((b = a = list = strdup(dirs)) == NULL)
+    if ((b = a = list = MemStrdup(dirs)) == NULL)
         return (0);
 
     for (;;) {
@@ -511,7 +519,7 @@ _nc_read_terminfo_dirs(const char *dirs, char *const filename, const char *const
         a++;
     }
 
-    free(list);
+    MemFree(list);
     return (code);
 }
 

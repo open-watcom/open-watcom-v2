@@ -63,7 +63,7 @@ del_curterm(TERMINAL * termp)
 
     if (termp != 0) {
         _nc_free_termtype(&(termp->type));
-        free(termp);
+        MemFree(termp);
         if (termp == cur_term)
             cur_term = 0;
         returnCode(OK);

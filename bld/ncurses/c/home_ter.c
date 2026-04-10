@@ -53,7 +53,7 @@ _nc_home_terminfo(void)
         if (temp == 0) {
             if ((home = getenv("HOME")) != 0
               && my_length <= PATH_MAX) {
-                temp = typeMalloc(char, my_length);
+                temp = typeAlloc(char, my_length);
                 if (temp == 0)
                     _nc_err_abort(MSG_NO_MEMORY);
                 (void) sprintf(temp, PRIVATE_INFO, home);

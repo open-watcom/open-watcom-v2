@@ -30,7 +30,6 @@ c_flags += -DTRACE
 libtarg_ncurses_objs = &
     access.obj &
     comp_err.obj &
-    doalloc.obj &
     fallback.obj &
     free_tty.obj &
     getenv_n.obj &

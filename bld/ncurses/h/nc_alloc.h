@@ -73,16 +73,8 @@ extern void _nc_leaks_dump_entry(void);
 #define ExitProgram(code) exit(code)
 #endif
 
-/* doalloc.c */
-extern NCURSES_EXPORT(void *) _nc_doalloc(void *, size_t);
-#if !HAVE_STRDUP
-#define strdup _nc_strdup
-extern NCURSES_EXPORT(char *) _nc_strdup(const char *);
-#endif
-
-#define typeMalloc(type,elts) (type *)malloc((elts)*sizeof(type))
-#define typeCalloc(type,elts) (type *)calloc((elts),sizeof(type))
-#define typeRealloc(type,elts,ptr) (type *)_nc_doalloc(ptr, (elts)*sizeof(type))
+#define typeAlloc(type,elts) (type *)MemAlloc((elts)*sizeof(type))
+#define typeRealloc(type,elts,ptr) (type *)MemRealloc(ptr,(elts)*sizeof(type))
 
 #ifdef __cplusplus
 }

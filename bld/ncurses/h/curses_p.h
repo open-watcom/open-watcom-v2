@@ -98,6 +98,8 @@ extern int errno;
 #endif
 
 #include <nc_panel.h>
+/* include memory handling functions */
+#include "memfuncs.h"
 
 /* Some systems have a broken 'select()', but workable 'poll()'.  Use that */
 #if HAVE_WORKING_POLL
@@ -645,12 +647,12 @@ extern NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain;
 
 #define SIZEOF(v) (sizeof(v)/sizeof(v[0]))
 
-#define FreeIfNeeded(p)  if ((p) != 0) free(p)
+#define FreeIfNeeded(p)  if ((p) != 0) MemFree(p)
 
 /* FreeAndNull() is not a comma-separated expression because some compilers
  * do not accept a mixture of void with values.
  */
-#define FreeAndNull(p)   free(p); p = 0
+#define FreeAndNull(p)   MemFree(p); p = 0
 
 #include <nc_alloc.h>
 
@@ -997,7 +999,7 @@ extern NCURSES_EXPORT_VAR(int *) _nc_oldnums;
 
 /* current screen is private data; avoid possible linking conflicts too */
 extern NCURSES_EXPORT_VAR(SCREEN *) SP;
-#define _nc_alloc_screen() ((SP = typeCalloc(SCREEN, 1)) != 0)
+#define _nc_alloc_screen() ((SP = typeAlloc(SCREEN, 1)) != 0)
 #define _nc_set_screen(sp) SP = sp
 
 /*

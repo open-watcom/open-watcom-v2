@@ -59,7 +59,7 @@ NCURSES_EXPORT(void)
 _nc_set_type(const char *const name)
 {
     if (termtype == 0)
-        termtype = typeMalloc(char, MAX_NAME_SIZE + 1);
+        termtype = typeAlloc(char, MAX_NAME_SIZE + 1);
     if (termtype != 0) {
         termtype[0] = '\0';
         if (name)
