@@ -122,6 +122,7 @@
 !inject pgmptr_s.obj    d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject pgmptra.obj     d16 d32     nt  nta ntp ntm                 o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
 !inject prelude.obj                                 nvc ncl
+!inject predll.obj                                      ncl
 !inject pspptr.obj      d16 d32                                                     w16
 !inject rdllmwnt.obj                nt  nta ntp ntm
 !inject rtcntrl.obj     d16 d32 dpm nt  nta ntp ntm nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk

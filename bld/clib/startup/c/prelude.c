@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Prelude code for NetWare executables.
+* Description:  Prelude code for NetWare executables and shared libraries.
 *
 ****************************************************************************/
 
@@ -204,7 +204,7 @@ static void _WCNEAR MyExitRtn( void )
 #endif
 }
 
-#if defined (_THIN_LIB)
+#if defined( _THIN_LIB )
 
 int __init_environment(void *  reserved)
 {
@@ -241,7 +241,55 @@ int     __deinit_environment(void * reserved)
     return 0;
 }
 
-#endif
+#if defined( _THIN_LIB_DLL )
+
+/*
+ * DLL prelude for shared library NLMs (netware_clib_lite_dll).
+ * Bypasses _StartNLM (no console screen) and does not call main().
+ * A keep-alive thread blocks on a semaphore so the NLM stays resident.
+ */
+
+static long     _stop_sema;
+
+static void __keepalive_thread( void *arg )
+{
+    (void)arg;
+    WaitOnLocalSemaphore( _stop_sema );
+}
+
+long _Prelude( void *NLMHandle, void *initializationErrorScreenID,
+                      unsigned char *cmdLineP,
+                      unsigned char *loadDirectoryPath,
+                      long uninitializedDataLength, long NLMfileHandle,
+                      long __cdecl ( *readRoutineP )(), long customDataOffset,
+                      long customDataSize )
+{
+    (void)initializationErrorScreenID; (void)cmdLineP;
+    (void)loadDirectoryPath; (void)uninitializedDataLength;
+    (void)NLMfileHandle; (void)readRoutineP;
+    (void)customDataOffset; (void)customDataSize;
+
+    memset( (void *)&_edata, 0, (size_t)&_end - (size_t)&_edata );
+    if( __init_environment( NULL ) != 0 ) {
+        return( -1 );
+    }
+    _stop_sema = OpenLocalSemaphore( 0 );
+    BeginThread( __keepalive_thread, NULL, 16384, NULL );
+    return( 0 );
+}
+
+void _Stop( void )
+{
+    if( _stop_sema != 0 ) {
+        SignalLocalSemaphore( _stop_sema );
+        CloseLocalSemaphore( _stop_sema );
+    }
+    __deinit_environment( NULL );
+}
+
+#endif /* _THIN_LIB_DLL */
+
+#endif /* _THIN_LIB */
 
 
 #if !defined(_THIN_LIB)

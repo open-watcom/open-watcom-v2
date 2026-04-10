@@ -374,6 +374,20 @@ system begin netware_clib_lite
     import @'%NOVELLNDK%/imports/clib.imp'
 :endsegment
 end
+system begin netware_clib_lite_dll
+:segment Pspecs
+    ARCH i386 -bt=netware
+:elsesegment Pwlsystem
+    option osname='NetWare CLIB NLM DLL (Lite-RTL)'
+    format novell ^
+    option nodefault
+    option start=_Prelude
+    option exit=_Stop
+    file '%WATCOM%/lib386/netware/predll.obj'
+    library '%WATCOM%/lib386/netware/clib3sl.lib'
+    import @'%NOVELLNDK%/imports/clib.imp'
+:endsegment
+end
 system begin ads
 :segment Pspecs
     ARCH i386 -bt=dos

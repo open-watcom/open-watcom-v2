@@ -20,4 +20,5 @@ wildwarg.obj : ../../../c/wildwarg.c   ../../../c/wildargv.c
 wmndwnt.obj  : ../../../c/wmndwnt.c    ../../../c/wmainwnt.c
 wmndwwnt.obj : ../../../c/wmndwwnt.c   ../../../c/wmainwnt.c
 wmnwwnt.obj  : ../../../c/wmnwwnt.c    ../../../c/wmainwnt.c
+predll.obj   : ../../../c/predll.c     ../../../c/prelude.c
 ___wargc.obj : ../../../c/___wargc.c   ../../../c/___argc.c
