@@ -119,6 +119,16 @@ void *MemAllocSafe( size_t size )
 #endif
 }
 
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) );
+#else
+    return( strdup( str ) );
+#endif
+}
+
 TRMEMAPI( MemStrdupSafe )
 char *MemStrdupSafe( const char *str )
 {
