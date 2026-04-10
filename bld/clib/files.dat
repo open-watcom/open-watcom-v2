@@ -97,6 +97,7 @@ type="l"    usr="clib3sl.lib"
 type="l"    usr="libc3s.lib"
 type="l"    usr="libc3sl.lib"
 type="s"    usr="binmode.obj"
+type="s"    usr="predll.obj"
 
 [ DEFAULT dir="lib386/os2" cond="os2targ" where="c f77 jc jf77" ]
 type="l"    usr="clib3r.lib"    cond+="3r"

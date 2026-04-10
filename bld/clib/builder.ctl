@@ -148,6 +148,7 @@ set PROJDIR=<CWD>
     <CCCMD> library/nw_libcl.386/ms_sd/clib3s.lib           "<OWRELROOT>/lib386/netware/libc3sld.lib"
     <CCCMD> library/nw_clib.386/ms_sd/clib3s.lib            "<OWRELROOT>/lib386/netware/clib3sd.lib"
     <CCCMD> library/nw_clibl.386/ms_sd/clib3s.lib           "<OWRELROOT>/lib386/netware/clib3sld.lib"
+    <CCCMD> startup/library/nw_clibl.386/ms_s/predll.obj    "<OWRELROOT>/lib386/netware/predll.obj"
 #
 # Note binmode applies to both LIBC and CLIB libraries but only needs to be built once from the
 # fat CLIB source code.
