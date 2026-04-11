@@ -253,7 +253,7 @@ static void doInitializeEditor( int argc, char *argv[] )
             size_t  len;
 
             len = strlen( watcom );
-            edpath = malloc( len + 7 );
+            edpath = MemAlloc( len + 7 );
             if( edpath != NULL ) {
                 strcpy( edpath, watcom );
                 edpath[len++] = FILE_SEP;
@@ -263,7 +263,7 @@ static void doInitializeEditor( int argc, char *argv[] )
                      * Bail out silently on error, as we will get error message later on.
                      */
                 }
-                free( edpath );
+                MemFree( edpath );
             }
         }
     }
