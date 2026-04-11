@@ -1,10 +1,8 @@
-#ifndef _CLIB_H_6E48ECAB_182D_497B_949E_6CDFEE6824A5
-#define _CLIB_H_6E48ECAB_182D_497B_949E_6CDFEE6824A5
-
 /****************************************************************************
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
@@ -39,6 +37,9 @@
 *               exceptions.
 *
 ****************************************************************************/
+
+#ifndef _CLIB_H_6E48ECAB_182D_497B_949E_6CDFEE6824A5
+#define _CLIB_H_6E48ECAB_182D_497B_949E_6CDFEE6824A5
 
 #include <ownwsupp.h>
 #include <miniproc.h>

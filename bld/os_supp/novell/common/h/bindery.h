@@ -1,10 +1,8 @@
-#ifndef _BINDERY_H_F39997A6_88FC_434B_B339_554BE343B3E8
-#define _BINDERY_H_F39997A6_88FC_434B_B339_554BE343B3E8
 /****************************************************************************
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *    Portions Copyright (c) 1989-2002 Novell, Inc.  All Rights Reserved.
 *
@@ -37,6 +35,9 @@
 * Description:  Defines some bindery functions.
 *
 ****************************************************************************/
+
+#ifndef _BINDERY_H_F39997A6_88FC_434B_B339_554BE343B3E8
+#define _BINDERY_H_F39997A6_88FC_434B_B339_554BE343B3E8
 
 #include <ownwsupp.h>
 
