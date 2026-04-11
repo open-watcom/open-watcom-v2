@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,6 +101,11 @@ void *MemAlloc( size_t size )
 void MemFree( void *ptr )
 {
     free( ptr );
+}
+
+void *MemRealloc( void *ptr, size_t size )
+{
+    return( realloc( ptr, size ) );
 }
 
 static bool skipEntry( const char *path, const char *mask, struct dirent *dire )

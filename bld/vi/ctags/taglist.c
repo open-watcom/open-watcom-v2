@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +53,11 @@ static void addToTagList( char *res )
     size_t      len;
 
     len = strlen( res ) + 1;
-    tagList = realloc( tagList, ( tagCount + 1 ) * sizeof( char * ) );
+    tagList = MemRealloc( tagList, ( tagCount + 1 ) * sizeof( char * ) );
     if( tagList == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }
-    tagList[tagCount] = malloc( len );
+    tagList[tagCount] = MemAlloc( len );
     if( tagList[tagCount] == NULL ) {
         ErrorMsgExit( "Out of memory!\n" );
     }
@@ -138,13 +138,16 @@ void GenerateTagsFile( const char *fname )
         if( fp == NULL ) {
             ErrorMsgExit( "Could not open tags file \"%s\"\n", fname );
         }
-        if( tagList != NULL ) {
-            total_size += (unsigned long)( tagCount * sizeof( char * ) );
-        }
+        total_size += (unsigned long)( tagCount * sizeof( char * ) );
         for( i = 0; i < tagCount; i++ ) {
             fprintf( fp, "%s\n", tagList[i] );
         }
         fclose( fp );
+        for( i = 0; i < tagCount; i++ ) {
+            MemFree( tagList[i] );
+        }
+        MemFree( tagList );
+        tagList = NULL;
     }
     if( VerboseFlag ) {
         printf( "Wrote %u tags.\n", tagCount );
