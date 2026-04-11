@@ -29,9 +29,11 @@
 ****************************************************************************/
 
 
-#define MAGIC_COOKIE    "CGEXXX\0"
+#define MAGIC_COOKIE        "CGEXXX\0"
+#define MAGIC_COOKIE_SIZE   sizeof( MAGIC_COOKIE )
+#define TRAILER_SIZE        (sizeof( MAGIC_COOKIE ) + sizeof( bind_size ))
 
-#define SEEK_POSBACK(p) (-(long)(p))
+#define SEEK_POSBACK(p)     (-(long)(p))
 
-typedef unsigned short  bind_size;
+typedef unsigned short      bind_size;
 

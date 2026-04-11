@@ -53,7 +53,7 @@ void BoundDataInit( void )
 {
     int         h;
     size_t      size;
-    char        buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
+    char        buff[TRAILER_SIZE];
     char        *tmp;
     unsigned    dataFcnt;
 
@@ -64,18 +64,18 @@ void BoundDataInit( void )
     if( h == -1 ) {
         return;
     }
-    lseek( h, SEEK_POSBACK( sizeof( buff ) ), SEEK_END );
-    read( h, buff, sizeof( buff ) );
+    lseek( h, SEEK_POSBACK( TRAILER_SIZE ), SEEK_END );
+    read( h, buff, TRAILER_SIZE );
 
     /*
      * seek to start of data
      */
-    if( memcmp( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) ) ) {
+    if( memcmp( buff, MAGIC_COOKIE, MAGIC_COOKIE_SIZE ) ) {
         close( h );
         return;
     }
-    size = *(bind_size *)( buff + sizeof( MAGIC_COOKIE ) );
-    dataStart = SEEK_POSBACK( size + sizeof( buff ) );
+    size = *(bind_size *)( buff + MAGIC_COOKIE_SIZE );
+    dataStart = SEEK_POSBACK( size + TRAILER_SIZE );
     lseek( h, dataStart, SEEK_END );
 
     /*

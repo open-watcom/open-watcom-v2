@@ -148,7 +148,7 @@ static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_
 {
     FILE            *fp;
     FILE            *newfp;
-    char            buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
+    char            buff[TRAILER_SIZE];
     int             rc;
     unsigned long   tocopy;
 
@@ -169,11 +169,11 @@ static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_
     /*
      * get trailer
      */
-    if( fseek( fp, SEEK_POSBACK( sizeof( buff ) ), SEEK_END ) ) {
+    if( fseek( fp, SEEK_POSBACK( TRAILER_SIZE ), SEEK_END ) ) {
         fclose( fp );
         Abort( "Initial seek error on \"%s\"", exe );
     }
-    if( fread( buff, 1, sizeof( buff ), fp ) != sizeof( buff ) ) {
+    if( fread( buff, 1, TRAILER_SIZE, fp ) != TRAILER_SIZE ) {
         fclose( fp );
         Abort( "Read error on \"%s\"", exe );
     }
@@ -182,13 +182,13 @@ static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_
      * if trailer is one of ours, then set back to overwrite data;
      * else just set to write at end of file
      */
-    if( memcmp( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) ) ) {
+    if( memcmp( buff, MAGIC_COOKIE, MAGIC_COOKIE_SIZE ) ) {
         if( sflag ) {
             fclose( fp );
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        tocopy -= sizeof( buff ) + *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) ));
+        tocopy -= TRAILER_SIZE + *((bind_size *)( buff + MAGIC_COOKIE_SIZE ));
     }
     if( fseek( fp, 0, SEEK_SET ) ) {
         fclose( fp );
@@ -216,9 +216,9 @@ static void AddDataToEXE( const char *exe, const char *outexe, char *data, bind_
         if( fwrite( data, 1, data_len, newfp ) != data_len ) {
             Abort( "write 1 error on \"%s\"", exe );
         }
-        memcpy( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) );
-        *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) )) = data_len;
-        if( fwrite( buff, 1, sizeof( buff ), newfp ) != sizeof( buff ) ) {
+        memcpy( buff, MAGIC_COOKIE, MAGIC_COOKIE_SIZE );
+        *((bind_size *)( buff + MAGIC_COOKIE_SIZE )) = data_len;
+        if( fwrite( buff, 1, TRAILER_SIZE, newfp ) != TRAILER_SIZE ) {
             Abort( "write 2 error on \"%s\"", exe );
         }
     }
