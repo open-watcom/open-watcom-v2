@@ -374,6 +374,22 @@ noasan = 0
 ! endif
 !endif
 
+!ifeq %OWASAN 1
+asan = 1
+!else
+asan = 0
+!endif
+
+!ifeq %OWFORTIFY 1
+fortify = 1
+!else ifeq %OWFORTIFY 2
+fortify = 2
+!else ifeq %OWFORTIFY 3
+fortify = 3
+!else
+fortify = 0
+!endif
+
 # common release/debug options
 common_flags_rel = -O -g1 -gdwarf-2
 common_flags_dbg = -g -gdwarf
@@ -397,11 +413,11 @@ common_flags = $(common_flags_dbg) $(common_flags_compr)
 ! ifdef __CLANG_TOOLS__
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-pragma-pack -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 ! else
-common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
+common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wformat-overflow=1
 ! endif
-common_cflags = $(common_cflags_wng)
+common_cflags = $(common_cflags_wng) -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=$(fortify)
 ! ifeq noasan 1
-! else ifeq %ASAN 1
+! else ifeq asan 1
 common_cflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
 ! endif
 
@@ -413,7 +429,7 @@ common_ldflags = $(common_ldflags_rel)
 common_ldflags = $(common_ldflags_dbg)
 ! endif
 ! ifeq noasan 1
-! else ifeq %ASAN 1
+! else ifeq asan 1
 common_ldflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
 ! endif
 
@@ -427,7 +443,7 @@ common_clflags_exe =
 ! else ifeq noasan 1
 common_cflags_exe  = -static
 common_clflags_exe = -static
-! else ifeq %ASAN 1
+! else ifeq asan 1
 ! else
 common_cflags_exe  = -static
 common_clflags_exe = -static
