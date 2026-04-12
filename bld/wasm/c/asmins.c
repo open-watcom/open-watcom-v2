@@ -1674,7 +1674,7 @@ static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
             return( RC_ERROR );
         }
     } else {
-        if( MEM_TYPE( Code->mem_type, BYTE ) ) {
+        if( MEM_TYPE( Code->mem_type, BYTE ) && !opndx->abs ) {
             AsmError( OFFSET_TOO_SMALL );
             return( RC_ERROR );
         }
@@ -1689,6 +1689,12 @@ static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
         }
     }
     switch( Code->mem_type ) {
+#if defined( _STANDALONE_ )
+    case MT_SBYTE:
+#endif
+    case MT_BYTE:
+        Code->info.opnd_type[Opnd_Count] = OP_I8;
+        break;
     case MT_EMPTY:
         if( Opnd_Count > OPND1 ) {
             type = OperandSize( Code->info.opnd_type[OPND1] );
@@ -1763,7 +1769,9 @@ static bool idata_fixup( token_buffer *tokbuf, expr_list *opndx )
         }
     }
     ConstantOnly = true;
-    Code->info.opcode |= W_BIT;
+    if( !MEM_TYPE( Code->mem_type, BYTE ) ) {
+        Code->info.opcode |= W_BIT;
+    }
 
 #if defined( _STANDALONE_ )
     find_frame( opndx->sym );
