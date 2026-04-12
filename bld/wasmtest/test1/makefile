@@ -25,6 +25,8 @@ dosstart.dis &
 do_ax.dis &
 dup.dis &
 empty.dis &
+extabs.dis &
+extabsdb.dis &
 extcase.dis &
 extcas2.dis &
 extcas3.dis &

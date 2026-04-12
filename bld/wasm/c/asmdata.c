@@ -411,6 +411,12 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
 #endif
                 switch( no_of_bytes ) {
                 case 1:
+#if defined( _STANDALONE_ )
+                    if( init_sym->mem_type == MT_ABS ) {
+                        fixup_type = FIX_LOBYTE;
+                        break;
+                    }
+#endif
                     AsmError( OFFSET_TOO_SMALL ); // fixme
                     return( INVALID_IDX );
                 case 2:
