@@ -1259,14 +1259,14 @@ static int ti_refresh( bool must )
     LP_PIXEL    bufp;               // buffer
     LP_PIXEL    sbufp;              // shadow buffer
     LP_PIXEL    pos;                // the address of the current char
-    LP_PIXEL    blankStart;         // start of spaces to eos and then complete
-                                    // draw
-    int         lastattr = -1;
+    LP_PIXEL    blankStart;         // start of spaces to eos and then complete draw
+    int         lastattr;
     int         bufSize;
     LP_PIXEL    bufEnd;
-    bool        cls = dirty_area.row1;   // line on which we should clr_eos
-                                    // and then continue to draw
-    bool        done = false;
+    int         cls;   // line on which we should clr_eos and then continue to draw
+    bool        done;
+
+    cls = dirty_area.row1;
 
     // Need these for startup and the refresh key
     if( UserForcedTermRefresh ) {
@@ -1315,6 +1315,7 @@ UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.
         done = true;
     } else {
         lastattr = -1;
+        done = false;
 
         if( !must ) {
             int         r;
@@ -1418,12 +1419,12 @@ UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.
         }
     }
 
+    if( cls == 0 ) {
+        TI_RESTORE_COLOUR();
+    }
     if( cls == 0 || ( TI_FillColourSet && blankStart < bufp && TCAP_CLS ) ) {
         // Clear the screen if cls is set to 0 or if the screen
         // is supposed to be blank
-        if( cls == 0 ) {
-            TI_RESTORE_COLOUR();
-        }
         TI_CLS();
     } else {
         // we still have work to do if it turned out we couldn't use the
@@ -1458,17 +1459,21 @@ UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0, dirty_area.
 
             for( j = dirty_area.col0; j < dirty_area.col1; j++ ) {
                 pos = &bufp[j];
-                if( !must && (
-                    ( cls <= i )
-                    ? ( bufp[j].ch == ' ' && ( (bufp[j].attr & 0x70) == 0 ) )
-                    : ( PIXELEQUAL( bufp[j], sbufp[j] ) && pos <= blankStart ) ) ) {
-                    ca_valid = false;
-                    continue;
+                if( !must ) {
+                    if( i < cls ) {
+                        if( PIXELEQUAL( bufp[j], sbufp[j] ) && pos <= blankStart ) {
+                            ca_valid = false;
+                            continue;
+                        }
+                    } else {
+                        if( bufp[j].ch == ' ' && (bufp[j].attr & 0x70) == 0 ) {
+                            ca_valid = false;
+                            continue;
+                        }
+                    }
                 }
-
                 if( !ca_valid ) {
 UIDebugPrintf2( "cursor address %d, %d\n", j, i );
-
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
                     TI_CURSOR_MOVE( j, i );
