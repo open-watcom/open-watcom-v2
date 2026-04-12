@@ -277,9 +277,11 @@ static bool TI_FillColourSet = false;
 */
 
 // True if terminal is monochrome
-#define TCAP_MONOCHROME ( !( ( _capable_of( set_background ) && _capable_of( set_foreground ) ) || \
-                             ( _capable_of( set_a_background ) && _capable_of( set_a_foreground ) ) || \
-                             ( _capable_of( set_color_pair ) ) ) )
+#define TCAP_MONOCHROME ( !( ( _capable_of( set_background ) \
+                          && _capable_of( set_foreground ) ) \
+                          || ( _capable_of( set_a_background ) \
+                          && _capable_of( set_a_foreground ) ) \
+                          || ( _capable_of( set_color_pair ) ) ) )
 
 // True if terminal won't scroll on us
 #define TCAP_NOSCROLL   ( !auto_right_margin || _capable_of( exit_am_mode ) )
@@ -317,10 +319,10 @@ static void TI_SETATTR( void )
                         0, 0, TIAACS );
         ostream_putp( x );
 
-        UIDebugPrintf0( "\n[******]" );
-        UIDebugPrintf1( "%s", set_attributes );
-        UIDebugPrintf1( "%s", x );
-        UIDebugPrintf0( "[~~~~~~]\n" );
+UIDebugPrintf0( "\n[******]" );
+UIDebugPrintf1( "%s", set_attributes );
+UIDebugPrintf1( "%s", x );
+UIDebugPrintf0( "[~~~~~~]\n" );
     } else {
 /*
         fprintf(stderr, "Doing attributes %s %s %s %s %s\n",
@@ -333,19 +335,24 @@ static void TI_SETATTR( void )
 
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
-        if( TIAULine && _capable_of( enter_underline_mode ) )
+        if( TIAULine
+          && _capable_of( enter_underline_mode ) )
             ostream_putp( enter_underline_mode );
 
-        if( TIARev && _capable_of( enter_reverse_mode ) )
+        if( TIARev
+          && _capable_of( enter_reverse_mode ) )
             ostream_putp( enter_reverse_mode );
 
-        if( TIABlink && _capable_of( enter_blink_mode ) )
+        if( TIABlink
+          && _capable_of( enter_blink_mode ) )
             ostream_putp( enter_blink_mode );
 
-        if( TIABold && _capable_of( enter_bold_mode ) )
+        if( TIABold
+          && _capable_of( enter_bold_mode ) )
             ostream_putp( enter_bold_mode );
 
-        if( TIAACS && _capable_of( enter_alt_charset_mode ) ) {
+        if( TIAACS
+          && _capable_of( enter_alt_charset_mode ) ) {
             ostream_putp( enter_alt_charset_mode );
         }
     }
@@ -357,7 +364,8 @@ static void TI_SETATTR( void )
 static void ti_find_cutoff( void )
 /********************************/
 {
-    if( _capable_of( repeat_char ) && OptimizeTerminfo ) {
+    if( _capable_of( repeat_char )
+      && OptimizeTerminfo ) {
         int     i;
         for( i = 2; i < 80; i++ ) {
             if( strlen( UNIX_TPARM3( repeat_char, 'X', i ) ) < i ) {
@@ -403,7 +411,8 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
             TI_ACS_ON();
         }
 
-        if( n >= TI_repeat_cutoff && _capable_of( repeat_char ) ) {
+        if( n >= TI_repeat_cutoff
+          && _capable_of( repeat_char ) ) {
             ostream_putp( UNIX_TPARM3( repeat_char, c, n ) );
         } else {
             for( ; n > 0; n-- ) {
@@ -420,14 +429,28 @@ static void TI_REPEAT_CHAR( char c, int n, bool a, ORD x )
 int   OldCol = -1;
 int   OldRow = -1;
 
-// This macro will pick method "x" for axis "a" if method "x" is faster
-// and usable (ie: less chars, but not zero chars)
-#define pickMethod(a,x) \
-    do {                                                        \
-        if( (newLen < len.a || len.a == 0) && newLen != 0 ) {   \
-            len.a = newLen;                                     \
-            method.a = ( x );                                   \
-        }                                                       \
+/*
+ * These macros will pick method "x" for appropriate axis if method "x" is faster
+ * and usable (ie: less chars, but not zero chars)
+ */
+#define pickMethodRow(x)        \
+    do {                        \
+        if( ( newLen < len.row  \
+          || len.row == 0 )     \
+          && newLen != 0 ) {    \
+            len.row = newLen;   \
+            method.row = ( x ); \
+        }                       \
+    } while( 0 )
+
+#define pickMethodCol(x)        \
+    do {                        \
+        if( ( newLen < len.col  \
+          || len.col == 0 )     \
+          && newLen != 0 ) {    \
+            len.col = newLen;   \
+            method.col = ( x ); \
+        }                       \
     } while( 0 )
 
 // This macro will set v equal to strlen of function f with parameter p if
@@ -439,21 +462,19 @@ int   OldRow = -1;
         (v) = 0;                                    \
     }
 
-// move in the optimal way from (OldCol,OldRow) to (c,r)
-static void TI_CURSOR_MOVE( int c, int r )
-/****************************************/
+// move in the optimal way from (OldCol,OldRow) to (col,row)
+static void TI_CURSOR_MOVE( int col, int row )
+/********************************************/
 {
-    unsigned            newLen;
-    int                 i;
-    unsigned            len_cursor_address;
-    unsigned            len_cursor_home;
-    int                 row;
-    int                 col;
+    unsigned        newLen;
+    int             i;
+    unsigned        len_cursor_address;
+    unsigned        len_cursor_home;
 
     struct {
-        int     r;
-        int     c;
-    }                   len= { 0, 0 };
+        int     row;
+        int     col;
+    }               len = { 0, 0 };
 
     struct {
         enum {
@@ -463,11 +484,12 @@ static void TI_CURSOR_MOVE( int c, int r )
             relative_plus,
             rel_parm_minus,
             relative_minus
-        }       r,c;
-    }                   method= { none, none };
+        } row, col;
+    }               method= { none, none };
 
     // Return if we're in the right place
-    if( OldCol == c && OldRow == r ) {
+    if( OldCol == col
+      && OldRow == row ) {
         return;
     }
 
@@ -476,84 +498,85 @@ static void TI_CURSOR_MOVE( int c, int r )
     // cursor_down and cursor_left.
     if( !OptimizeTerminfo ) {
         if( _capable_of( cursor_address ) ) {
-            ostream_putp( UNIX_TPARM3( cursor_address, r, c ) );
+            ostream_putp( UNIX_TPARM3( cursor_address, row, col ) );
         } else if( _capable_of( cursor_home )
           && _capable_of( cursor_down )
           && _capable_of( cursor_right ) ) {
             ostream_putp( cursor_home );
-            for( row = 0; row < r; row++ ) {
+            for( i = 0; i < row; i++ ) {
                 ostream_putp( cursor_down );
             }
-            for( col = 0; col < c; col++ ) {
+            for( i = 0; i < col; i++ ) {
                 ostream_putp( cursor_right );
             }
         }
-        OldRow = r;
-        OldCol = c;
+        OldRow = row;
+        OldCol = col;
         return;
     }
 
     // If we're not supposed to optimize or if the term is
     // not capable of cursor_address:
     // if OldRow or OldCol <0 then the old position is invalid
-    if( OldCol >= 0 && OldRow >= 0 ) {
-        if( OldRow != r ) {
-            method.r = absolute;
-            setLenParm( len.r, row_address, r )
+    if( OldCol >= 0
+      && OldRow >= 0 ) {
+        if( OldRow != row ) {
+            method.row = absolute;
+            setLenParm( len.row, row_address, row )
 
-            if( OldRow < r ) {
-                setLenParm( newLen, parm_down_cursor, r - OldRow )
-                pickMethod( r, rel_parm_plus );
+            if( OldRow < row ) {
+                setLenParm( newLen, parm_down_cursor, row - OldRow )
+                pickMethodRow( rel_parm_plus );
 
                 if( _capable_of( cursor_down ) ) {
-                    newLen = ( r - OldRow ) * strlen( cursor_down );
+                    newLen = ( row - OldRow ) * strlen( cursor_down );
                 } else {
                     newLen = 0;
                 }
-                pickMethod( r, relative_plus );
+                pickMethodRow( relative_plus );
             } else {
-                setLenParm( newLen, parm_up_cursor, OldRow - r )
-                pickMethod( r, rel_parm_minus );
+                setLenParm( newLen, parm_up_cursor, OldRow - row )
+                pickMethodRow( rel_parm_minus );
 
                 if( _capable_of( cursor_up ) ) {
-                    newLen = ( OldRow - r ) * strlen( cursor_up );
+                    newLen = ( OldRow - row ) * strlen( cursor_up );
                 } else {
                     newLen = 0;
                 }
-                pickMethod( r, relative_minus );
+                pickMethodRow( relative_minus );
             }
         }
-        if( OldCol != c ) {
-            method.c = absolute;
-            setLenParm( len.c, column_address, c )
+        if( OldCol != col ) {
+            method.col = absolute;
+            setLenParm( len.col, column_address, col )
 
-            if( OldCol < c ) {
-                setLenParm( newLen, parm_right_cursor, c - OldCol )
-                pickMethod( c, rel_parm_plus );
+            if( OldCol < col ) {
+                setLenParm( newLen, parm_right_cursor, col - OldCol )
+                pickMethodCol( rel_parm_plus );
 
                 if( _capable_of( cursor_right ) ) {
-                    newLen = ( c - OldCol ) * strlen( cursor_right );
+                    newLen = ( col - OldCol ) * strlen( cursor_right );
                 } else {
                     newLen = 0;
                 }
-                pickMethod( c, relative_plus );
+                pickMethodCol( relative_plus );
             } else {
-                setLenParm( newLen, parm_left_cursor, OldCol - c )
-                pickMethod( c, rel_parm_minus );
+                setLenParm( newLen, parm_left_cursor, OldCol - col )
+                pickMethodCol( rel_parm_minus );
 
                 if( _capable_of( cursor_left ) ) {
-                    newLen = ( OldCol - c ) * strlen( cursor_left );
+                    newLen = ( OldCol - col ) * strlen( cursor_left );
                 } else {
                     newLen = 0;
                 }
-                pickMethod( c, relative_minus );
+                pickMethodCol( relative_minus );
             }
         }
     }
 
     // check to make sure the method we have so far is valid
     if( _capable_of( cursor_address ) ) {
-        len_cursor_address = strlen( UNIX_TPARM3( cursor_address, r, c ) );
+        len_cursor_address = strlen( UNIX_TPARM3( cursor_address, row, col ) );
     } else {
         len_cursor_address = 0;
     }
@@ -565,70 +588,73 @@ static void TI_CURSOR_MOVE( int c, int r )
     }
 
     // Apply the optimized method if one has been chosen
-    if( ( OldRow >= 0 && OldCol >= 0 )
-      && ( len.r != 0 || method.r == none )
-      && ( len.c != 0 || method.c == none )
-      && ( ( len.r + len.c ) < len_cursor_address )
-      && ( ( len.r + len.c ) < len_cursor_home ) ) {
-        switch( method.c ) {
+    if( ( OldRow >= 0
+      && OldCol >= 0 )
+      && ( len.row != 0
+      || method.row == none )
+      && ( len.col != 0
+      || method.col == none )
+      && ( ( len.row + len.col ) < len_cursor_address )
+      && ( ( len.row + len.col ) < len_cursor_home ) ) {
+        switch( method.col ) {
         case none:
             break;
         case absolute:
-            ostream_putp( UNIX_TPARM2( column_address, c ) );
+            ostream_putp( UNIX_TPARM2( column_address, col ) );
             break;
         case rel_parm_plus:
-            ostream_putp( UNIX_TPARM2( parm_right_cursor, c - OldCol ) );
+            ostream_putp( UNIX_TPARM2( parm_right_cursor, col - OldCol ) );
             break;
         case relative_plus:
-            for( i = 0; i < c - OldCol; i++ ) {
+            for( i = OldCol; i < col; i++ ) {
                 ostream_putp( cursor_right );
             }
             break;
         case rel_parm_minus:
-            ostream_putp( UNIX_TPARM2( parm_left_cursor, OldCol - c ) );
+            ostream_putp( UNIX_TPARM2( parm_left_cursor, OldCol - col ) );
             break;
         case relative_minus:
-            for( i = 0; i < OldCol - c; i++ ) {
+            for( i = col; i < OldCol; i++ ) {
                 ostream_putp( cursor_left );
             }
             break;
         }
 
-        switch( method.r ) {
+        switch( method.row ) {
         case none:
             break;
         case absolute:
-            ostream_putp( UNIX_TPARM2( row_address, r ) );
+            ostream_putp( UNIX_TPARM2( row_address, row ) );
             break;
         case rel_parm_plus:
-            ostream_putp( UNIX_TPARM2( parm_down_cursor, r - OldRow ) );
+            ostream_putp( UNIX_TPARM2( parm_down_cursor, row - OldRow ) );
             break;
         case relative_plus:
-            for( i = 0; i < r - OldRow; i++ ) {
+            for( i = OldRow; i < row; i++ ) {
                 ostream_putp( cursor_down );
             }
             break;
         case rel_parm_minus:
-            ostream_putp( UNIX_TPARM2( parm_up_cursor, OldRow - r ) );
+            ostream_putp( UNIX_TPARM2( parm_up_cursor, OldRow - row ) );
             break;
         case relative_minus:
-            for( i = 0; i < OldRow - r; i++ ) {
+            for( i = row; i < OldRow; i++ ) {
                 ostream_putp( cursor_up );
             }
             break;
         }
-    } else if( r == 0
-      && c == 0
+    } else if( row == 0
+      && col == 0
       && _capable_of( cursor_home )
       && _capable_of( cursor_address )
-      && strlen( cursor_home ) <= strlen( UNIX_TPARM3( cursor_address, r, c ) ) ) {
+      && strlen( cursor_home ) <= strlen( UNIX_TPARM3( cursor_address, row, col ) ) ) {
         ostream_putp( cursor_home );
     } else if( _capable_of( cursor_address ) ) {
-        ostream_putp( UNIX_TPARM3( cursor_address, r, c ) );
+        ostream_putp( UNIX_TPARM3( cursor_address, row, col ) );
     }
 
-    OldCol = c;
-    OldRow = r;
+    OldCol = col;
+    OldRow = row;
 }
 
 static void TI_SETCOLOUR( int f, int b )
@@ -639,15 +665,15 @@ static void TI_SETCOLOUR( int f, int b )
     // vga to ansi conversion table
     static int  colorans[] = { 0, 4, 2, 6, 1, 5, 3, 7 };
 
-    UIDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
+UIDebugPrintf2( "TI_SETCOLOUR: %d %d", f, b );
 
     if( TCAP_MONOCHROME ) {
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
-            UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-            UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
-            UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
+UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
             TI_FillColourSet = false;
         } else {
@@ -659,10 +685,12 @@ static void TI_SETCOLOUR( int f, int b )
         TI_SETATTR();
         TI_FillColourSet = ( b == 0 ) || back_color_erase;
         // If we can set a colour pair then do so
-        if( _capable_of( set_a_foreground ) && _capable_of( set_a_background ) ) {
+        if( _capable_of( set_a_foreground )
+          && _capable_of( set_a_background ) ) {
             ostream_putp( UNIX_TPARM2( set_a_foreground, colorans[f] ) );
             ostream_putp( UNIX_TPARM2( set_a_background, colorans[b] ) );
-        } else if( _capable_of( set_foreground ) && _capable_of( set_background ) ) {
+        } else if( _capable_of( set_foreground )
+          && _capable_of( set_background ) ) {
             ostream_putp( UNIX_TPARM2( set_foreground, colorans[f] ) );
             ostream_putp( UNIX_TPARM2( set_background, colorans[b] ) );
         } else if( _capable_of( set_color_pair ) ) {
@@ -678,7 +706,8 @@ static int TI_PUT_FILE( const char *fnam )
     int         c;
     FILE        *fil;
 
-    if( fnam != NULL && fnam[0] != '\0' ) {
+    if( fnam != NULL
+      && fnam[0] != '\0' ) {
         // open file
         fil = ti_fopen( fnam );
         if( fil == NULL )
@@ -703,7 +732,8 @@ static int TI_EXEC_PROG( char *pnam )
     char        *ppath;                 // program path
     int         ret;                    // return code
 
-    if( pnam != NULL && pnam[0] != '\0' ) {
+    if( pnam != NULL
+      && pnam[0] != '\0' ) {
         // get full path name of program
         ppath = walloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
@@ -871,7 +901,7 @@ static bool ti_initconsole( void )
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right = !TCAP_NOSCROLL;
-    UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -1027,14 +1057,14 @@ static struct {
 static int td_update( SAREA *area )
 {
     if( area == NULL ) {
-        UIDebugPrintf0( "td_update: no arg" );
+UIDebugPrintf0( "td_update: no arg" );
         dirty_area.row0 = 0;
         dirty_area.col0 = 0;
         dirty_area.row1 = UIData->height;
         dirty_area.col1 = UIData->width;
         return( 0 );
     }
-    UIDebugPrintf4( "td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width );
+UIDebugPrintf4( "td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width );
     if( area->row < dirty_area.row0 ) {
         dirty_area.row0 = area->row;
     }
@@ -1087,9 +1117,11 @@ static int ti_hwcursor( void )
 
 #define TI_SLURPCHAR( __c ) \
 { \
-    if( rcount != 0 && ( rchar != ti_char_map[__c][0] || ralt != ti_alt_map_chk( __c ) ) ) \
+    if( rcount != 0 \
+      && ( rchar != ti_char_map[__c][0] \
+      || ralt != ti_alt_map_chk( __c ) ) ) \
         TI_DUMPCHARS(); \
-    rcol = ( rcount == 0 ) ? j : rcol; \
+    rcol = ( rcount == 0 ) ? col : rcol; \
     rcount++; \
     if( ti_char_map[__c][1] ) { \
          /* a UTF-8 string: write it immediately, 1-byte repeats unlikely */ \
@@ -1128,19 +1160,18 @@ static void update_shadow( void )
 static int ti_refresh( bool must )
 /********************************/
 {
-    int         i;
-    int         incr;               // chars per line
-    LP_PIXEL    bufp;               // buffer
-    LP_PIXEL    sbufp;              // shadow buffer
-    LP_PIXEL    pos;                // the address of the current char
-    LP_PIXEL    blankStart;         // start of spaces to eos and then complete draw
-    int         lastattr;
-    int         bufSize;
-    LP_PIXEL    bufEnd;
-    int         cls;   // line on which we should clr_eos and then continue to draw
-    bool        done;
+    int             incr;       // chars per line
+    LP_PIXEL        bufp;       // buffer
+    LP_PIXEL        sbufp;      // shadow buffer
+    LP_PIXEL        pos;        // the address of the current char
+    LP_PIXEL        blankStart; // start of spaces to eos and then complete draw
+    int             lastattr;
+    int             bufSize;
+    LP_PIXEL        bufEnd;
+    int             row_cls;    // line on which we should clr_eos and then continue to draw
+    bool            done;
 
-    cls = dirty_area.row1;
+    row_cls = dirty_area.row1;
 
     // Need these for startup and the refresh key
     if( UserForcedTermRefresh ) {
@@ -1153,14 +1184,15 @@ static int ti_refresh( bool must )
     UserForcedTermRefresh = false;
 
     // Move the cursor & return if dirty box contains no chars
-    if( dirty_area.row0 == dirty_area.row1 && dirty_area.col0 == dirty_area.col1 ) {
+    if( dirty_area.row0 == dirty_area.row1
+      && dirty_area.col0 == dirty_area.col1 ) {
         ti_hwcursor();
         ostream_flush();
         return( 0 );
     }
 
-    UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", dirty_area.row0,
-                                    dirty_area.col0, dirty_area.row1, dirty_area.col1 );
+UIDebugPrintf4( "ti_refresh( %d, %d )->( %d, %d )", 
+    dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1 );
 
     // Disable cursor during draw if we can
     if( UIData->cursor_type != C_OFF ) {
@@ -1179,7 +1211,8 @@ static int ti_refresh( bool must )
     // Find a place where we could use clear to end of screen
     blankStart = bufEnd;
 
-    if( blankStart <= UIData->screen.origin && TCAP_CLS ) {
+    if( blankStart <= UIData->screen.origin
+      && TCAP_CLS ) {
         // if we could do it at the top then we might as well
         // not bother doing anything else
         lastattr = new_attr( UIData->screen.origin->attr, -1 );
@@ -1189,15 +1222,14 @@ static int ti_refresh( bool must )
         done = false;
 
         if( !must ) {
-            int     r;
-            int     c;
+            int     i;
             int     pos;
             bool    diff;
 
             diff = false;
             for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col0++ ) {
-                for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
-                    pos = r * incr + dirty_area.col0;
+                for( i = dirty_area.row0; i < dirty_area.row1; i++ ) {
+                    pos = i * incr + dirty_area.col0;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1210,8 +1242,8 @@ static int ti_refresh( bool must )
 
             diff = false;
             for( ; dirty_area.col0 < dirty_area.col1; dirty_area.col1-- ) {
-                for( r = dirty_area.row0; r < dirty_area.row1; r++ ) {
-                    pos = r * incr + dirty_area.col1 - 1;
+                for( i = dirty_area.row0; i < dirty_area.row1; i++ ) {
+                    pos = i * incr + dirty_area.col1 - 1;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1224,8 +1256,8 @@ static int ti_refresh( bool must )
 
             diff = false;
             for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row0++ ) {
-                for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
-                    pos = dirty_area.row0 * incr + c;
+                for( i = dirty_area.col0; i < dirty_area.col1; i++ ) {
+                    pos = dirty_area.row0 * incr + i;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1238,8 +1270,8 @@ static int ti_refresh( bool must )
 
             diff = false;
             for( ; dirty_area.row0 < dirty_area.row1; dirty_area.row1-- ) {
-                for( c = dirty_area.col0; c < dirty_area.col1; c++ ) {
-                    pos = ( dirty_area.row1 - 1 ) * incr + c;
+                for( i = dirty_area.col0; i < dirty_area.col1; i++ ) {
+                    pos = ( dirty_area.row1 - 1 ) * incr + i;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] ) ) {
                         diff = true;
                         break;
@@ -1252,26 +1284,25 @@ static int ti_refresh( bool must )
         }
 
         if( OptimizeTerminfo ) {
-            // Set cls if drawing box is bottom part (or whole) of screen
-            if( dirty_area.col0 == 0 &&
-                dirty_area.row1 == UIData->height &&
-                dirty_area.col1 == UIData->width &&
-                TCAP_CLS ) {
-
+            // Set row_cls if drawing box is bottom part (or whole) of screen
+            if( dirty_area.col0 == 0
+              && dirty_area.row1 == UIData->height
+              && dirty_area.col1 == UIData->width
+              && TCAP_CLS ) {
                 if( _capable_of( clr_eos ) ) {
-                    cls = dirty_area.row0;
+                    row_cls = dirty_area.row0;
                 } else if( dirty_area.row0 == 0 ) {
-                    cls = 0;
+                    row_cls = 0;
                 }
             }
 
             if( !must ) {
-                // Adjust cls so refresh looks pretty
-                for( ; cls < dirty_area.row1; cls++ ) {
+                // Adjust row_cls so refresh looks pretty
+                for( ; row_cls < dirty_area.row1; row_cls++ ) {
                     int         pos;
                     int         pos2;
 
-                    pos = cls * incr;
+                    pos = row_cls * incr;
                     pos2 = pos + UIData->width - 1;
                     if( !PIXELEQUAL( bufp[pos], sbufp[pos] )
                       && ( bufp[pos].ch != sbufp[pos2].ch
@@ -1281,19 +1312,22 @@ static int ti_refresh( bool must )
                 }
             }
 #if 0
-            if( cls < dirty_area.row1 ) {
-                // If cls is set to by this point we've decided to clear the area
+            if( row_cls < dirty_area.row1 ) {
+                // If row_cls is set to by this point we've decided to clear the area
                 blankStart = bufEnd;
             }
 #endif
         }
     }
 
-    if( cls == 0 ) {
+    if( row_cls == 0 ) {
         TI_RESTORE_COLOUR();
     }
-    if( cls == 0 || ( TI_FillColourSet && blankStart < bufp && TCAP_CLS ) ) {
-        // Clear the screen if cls is set to 0 or if the screen
+    if( row_cls == 0
+      || ( TI_FillColourSet
+      && blankStart < bufp
+      && TCAP_CLS ) ) {
+        // Clear the screen if row_cls is set to 0 or if the screen
         // is supposed to be blank
         TI_CLS();
     } else {
@@ -1304,7 +1338,8 @@ static int ti_refresh( bool must )
 
     if( !done ) {
         // If the screen isn't completely blank we have to do some work
-        int             j;
+        int             row;
+        int             col;
         bool            ca_valid;       // is cursor address valid?
 
         int             rcount;         // repeat count
@@ -1315,46 +1350,48 @@ static int ti_refresh( bool must )
         bufp += dirty_area.row0 * incr;
         sbufp += dirty_area.row0 * incr;
 
-        for( i = dirty_area.row0; i < dirty_area.row1; i++ ) {
+        for( row = dirty_area.row0; row < dirty_area.row1; row++ ) {
             ca_valid = false;
             rcount = 0;
 
-            if( i == cls ) {
+            if( row == row_cls ) {
                 TI_RESTORE_COLOUR();
-                TI_CURSOR_MOVE( 0, i );
+                TI_CURSOR_MOVE( 0, row );
                 ostream_putp( clr_eos );
                 ca_valid = true;
                 //assert( dirty_area.col0==0 && dirty_area.col1==UIData->width );
             }
 
-            for( j = dirty_area.col0; j < dirty_area.col1; j++ ) {
-                pos = &bufp[j];
+            for( col = dirty_area.col0; col < dirty_area.col1; col++ ) {
+                pos = &bufp[col];
                 if( !must ) {
-                    if( i < cls ) {
-                        if( PIXELEQUAL( bufp[j], sbufp[j] ) && pos <= blankStart ) {
+                    if( row < row_cls ) {
+                        if( PIXELEQUAL( bufp[col], sbufp[col] )
+                          && pos <= blankStart ) {
                             ca_valid = false;
                             continue;
                         }
                     } else {
-                        if( bufp[j].ch == ' ' && (bufp[j].attr & 0x70) == 0 ) {
+                        if( bufp[col].ch == ' '
+                          && (bufp[col].attr & 0x70) == 0 ) {
                             ca_valid = false;
                             continue;
                         }
                     }
                 }
                 if( !ca_valid ) {
-                    UIDebugPrintf2( "cursor address %d, %d\n", j, i );
+UIDebugPrintf2( "cursor address %d, %d\n", col, row );
 
                     // gotta dump chars before we move
                     TI_DUMPCHARS();
-                    TI_CURSOR_MOVE( j, i );
+                    TI_CURSOR_MOVE( col, row );
                     ca_valid = true;
                 }
 
-                if( bufp[j].attr != lastattr ) {
+                if( bufp[col].attr != lastattr ) {
                     // dump before changing attrs too...
                     TI_DUMPCHARS();
-                    lastattr = new_attr( bufp[j].attr, lastattr );
+                    lastattr = new_attr( bufp[col].attr, lastattr );
                 }
 
                 // Clear to end of screen if we can
@@ -1370,11 +1407,12 @@ static int ti_refresh( bool must )
                     }
                 }
 
-                if( !TI_ignore_bottom_right || ( j != UIData->width - 1 )
-                                            || ( i != UIData->height - 1 ) ) {
+                if( !TI_ignore_bottom_right
+                  || ( col != UIData->width - 1 )
+                  || ( row != UIData->height - 1 ) ) {
                     // Slurp up the char to be output. Will dump existing
                     // chars if new char is different.
-                    TI_SLURPCHAR( bufp[j].ch );
+                    TI_SLURPCHAR( bufp[col].ch );
                     OldCol++;
 
                     // if we walk off the edge our position is undefined
@@ -1411,9 +1449,9 @@ static int UIHOOK td_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, 
 {
     /* unused parameters */ (void)cattr;
 
-    if( ( ctype != UIData->cursor_type ) ||
-        ( crow != UIData->cursor_row ) ||
-        ( ccol != UIData->cursor_col ) ) {
+    if( ( ctype != UIData->cursor_type )
+      || ( crow != UIData->cursor_row )
+      || ( ccol != UIData->cursor_col ) ) {
         UIData->cursor_type = ctype;
         UIData->cursor_row = crow;
         UIData->cursor_col = ccol;
