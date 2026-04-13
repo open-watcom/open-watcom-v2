@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,10 +123,14 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
     error = false;
     if( name == NULL ) {
         /* a NULL name means write 0 length name */
-        numchars = 0;
-    } else {
-        numchars = name->NumChars;
+        if( use_unicode ) {
+            error = ResWriteUint16( 0, fp );
+        } else {
+            error = ResWriteUint8( 0, fp );
+        }
+        return( error );
     }
+    numchars = name->NumChars;
     // for short strings use a static buffer in improve performance
     if( numchars <= CONV_BUF_SIZE / 2 ) {
         ptr = ConvBuffer;
