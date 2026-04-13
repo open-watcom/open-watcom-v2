@@ -376,18 +376,18 @@ noasan = 0
 
 !ifeq %OWASAN 1
 bld_asan = 1
+bld_fortify = 0
 !else
 bld_asan = 0
-!endif
-
-!ifeq %OWFORTIFY 1
+! ifeq %OWFORTIFY 1
 bld_fortify = 1
-!else ifeq %OWFORTIFY 2
+! else ifeq %OWFORTIFY 2
 bld_fortify = 2
-!else ifeq %OWFORTIFY 3
+! else ifeq %OWFORTIFY 3
 bld_fortify = 3
-!else
+! else
 bld_fortify = 0
+! endif
 !endif
 
 # common release/debug options
