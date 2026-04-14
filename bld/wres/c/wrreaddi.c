@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -291,7 +291,7 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/
         if( !error ) {
-            if( !type->IsName && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
+            if( type->IsName == 0 && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = false;
             } else {
                 error = WResAddResource2( type, name, head->MemoryFlags,

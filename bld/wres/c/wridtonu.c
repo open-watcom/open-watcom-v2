@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ long WResIDToNum( const WResID * num )
 /************************************/
 /* return the value in a string if it is a number, -1 otherwise */
 {
-    if( num != NULL && !num->IsName ) {
+    if( num != NULL && num->IsName == 0 ) {
         return( num->ID.Num );
     } else {
         return( -1 );
@@ -46,10 +47,11 @@ long WResIDToNum( const WResID * num )
 
 
 long WResHelpIDToNum( const WResHelpID * num )
-/************************************/
-/* return the value in a string if it is a number, -1 otherwise */
+/*********************************************
+ * return the value in a string if it is a number, -1 otherwise
+ */
 {
-    if( num != NULL && !num->IsName ) {
+    if( num != NULL && num->IsName == 0 ) {
         return( num->ID.Num );
     } else {
         return( -1 );
