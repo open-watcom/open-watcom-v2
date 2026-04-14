@@ -668,8 +668,8 @@ static void CleanSystemList( bool burn )
         name = sys->name;
         if( burn
           || name == NULL
-          || memcmp( "286", name, 4 ) != 0
-          && memcmp( "386", name, 4 ) != 0 ) {
+          || strcmp( "286", name ) != 0
+          && strcmp( "386", name ) != 0 ) {
             *sysown = sys->next;
             if( name != NULL ) {
                 MemFree( name );
