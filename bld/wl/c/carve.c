@@ -42,6 +42,10 @@ struct blk {
     blk_t       *next;
     unsigned    index;
     boolbit     modified    : 1;
+    /*
+     * must be align to 8 bytes
+     */
+    boolbit     : 0;
     char        data[1];
 };
 
@@ -71,10 +75,11 @@ static blk_t *newBlk( cv_t *cv )
     blk_t       *newblk;
     blk_t       **blklist;
 
-    newblk = MemAllocSafe( sizeof( blk_t ) - 1 + cv->blk_size );
-    for( blklist = &cv->blk_list; *blklist > newblk; ) {    // keep list sorted by memory address
-        blklist = &(*blklist)->next;    // biggest first.
-    }
+    newblk = MemAllocSafe( offsetof( blk_t, data ) + cv->blk_size );
+    /*
+     * keep list sorted by memory address biggest first.
+     */
+    for( blklist = &cv->blk_list; *blklist > newblk; blklist = &(*blklist)->next ) {}
     newblk->next = *blklist;
     *blklist = newblk;
     cv->blk_count++;
@@ -105,19 +110,24 @@ static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
 }
 
 carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
-/******************************************************/
+/*********************************************************/
 {
-    cv_t    *cv;
+    cv_t        *cv;
+    unsigned    elm_count;
 
-    elm_size = __ROUND_UP_SIZE( elm_size, sizeof( int ) );
     if( elm_size < sizeof( free_t ) ) {
         elm_size = sizeof( free_t );
     }
+    /*
+     * element size must be align to 8 bytes
+     */
+    elm_size = __ROUND_UP_SIZE( elm_size, 8 );
+    elm_count = blk_size / elm_size;
     cv = MemAllocSafe( sizeof( *cv ) );
     cv->elm_size = elm_size;
     cv->blk_size = blk_size;
-    cv->elm_count = cv->blk_size / cv->elm_size;
-    cv->blk_top = cv->elm_count * elm_size;
+    cv->elm_count = elm_count;
+    cv->blk_top = elm_count * elm_size;
     cv->blk_count = 0;
     cv->blk_list = NULL;
     cv->free_list = NULL;
