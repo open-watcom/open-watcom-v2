@@ -4143,6 +4143,10 @@ bool NameDirective( token_buffer *tokbuf, token_idx i )
 /*****************************************************/
 {
     if( Options.module_name == NULL ) {
+        if( tokbuf->tokens[i + 1].class == TC_FINAL ) {
+            AsmError( OPERAND_EXPECTED );
+            return( RC_ERROR );
+        }
         Options.module_name = MemStrdupSafe( tokbuf->tokens[i + 1].string_ptr );
         ConvertModuleName( Options.module_name );
     }

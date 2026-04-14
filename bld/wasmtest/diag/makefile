@@ -30,6 +30,7 @@ error1.dum &
 extern1.dum &
 include.dum &
 irp.dum &
+namedir.dum &
 cpureq.dum &
 ctrlzeof.dum
 
