@@ -119,30 +119,34 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
     char            *ptr;
     bool            freebuf;
 
-    freebuf = false;
     error = false;
     if( name == NULL ) {
         /* a NULL name means write 0 length name */
-        if( use_unicode ) {
-            error = ResWriteUint16( 0, fp );
-        } else {
-            error = ResWriteUint8( 0, fp );
-        }
-        return( error );
-    }
-    numchars = name->NumChars;
-    // for short strings use a static buffer in improve performance
-    if( numchars <= CONV_BUF_SIZE / 2 ) {
-        ptr = ConvBuffer;
+        numchars = 0;
     } else {
-        freebuf = true;
-        ptr = WRESALLOC( 2 * numchars );
+        numchars = name->NumChars;
+    }
+    freebuf = false;
+    ptr = NULL;
+    if( numchars > 0 ) {
+        /*
+         * for short strings use a static buffer in improve performance
+         */
+        if( numchars <= CONV_BUF_SIZE / 2 ) {
+            ptr = ConvBuffer;
+        } else {
+            freebuf = true;
+            ptr = WRESALLOC( 2 * numchars );
+        }
+        if( use_unicode ) {
+            numchars = ConvToUnicode( numchars, name->Name, ptr );
+        } else {
+            numchars = ConvToMultiByte( numchars, name->Name, ptr );
+        }
     }
     if( use_unicode ) {
-        numchars = ConvToUnicode( numchars, name->Name, ptr );
         error = ResWriteUint16( numchars / 2, fp );
     } else {
-        numchars = ConvToMultiByte( numchars, name->Name, ptr );
         /* in 16-bit resources the string can be no more than 255 characters */
         if( numchars > 255 )
             numchars = 255;
