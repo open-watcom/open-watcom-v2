@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -286,7 +286,7 @@ unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = MGET_LE_16( ReadRecPtr );
+    word = MGET_LE_U16( ReadRecPtr );
     ReadRecPtr += sizeof( unsigned_16 );
     return( word );
 }
@@ -297,13 +297,13 @@ unsigned_32 GetOffset( bool wide )
     if( wide ) {
         unsigned_32 dword;
 
-        dword = MGET_LE_32( ReadRecPtr );
+        dword = MGET_LE_U32( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_32 );
         return( dword );
     } else {
         unsigned_16 word;
 
-        word = MGET_LE_16( ReadRecPtr );
+        word = MGET_LE_U16( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_16 );
         return( word );
     }

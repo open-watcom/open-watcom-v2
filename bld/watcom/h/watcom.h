@@ -199,32 +199,32 @@
 
 #if defined( __BIG_ENDIAN__ )
     /* Macros to get little endian data */
-    #define MGET_LE_16(p)       SWAPNC_16(MGET_U16(p))
-    #define MGET_LE_32(p)       SWAPNC_32(MGET_U32(p))
-    #define MGET_LE_64(p)       SWAPNC_64(MGET_U64(p))
+    #define MGET_LE_U16(p)      SWAPNC_16(MGET_U16(p))
+    #define MGET_LE_U32(p)      SWAPNC_32(MGET_U32(p))
+    #define MGET_LE_U64(p)      SWAPNC_64(MGET_U64(p))
 
-    #define MGET_LE_16_UN(p)    ((uint_16)((uint_8*)(p))[0] << 8 | (uint_16)((uint_8*)(p))[1])
-    #define MGET_LE_32_UN(p)    ((uint_32)((uint_8*)(p))[0] << 24 | (uint_32)((uint_8*)(p))[1] << 16 | (uint_32)((uint_8*)(p))[2] << 8 | (uint_32)((uint_8*)(p))[3])
+    #define MGET_LE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] << 8 | (uint_16)((uint_8*)(p))[1])
+    #define MGET_LE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] << 24 | (uint_32)((uint_8*)(p))[1] << 16 | (uint_32)((uint_8*)(p))[2] << 8 | (uint_32)((uint_8*)(p))[3])
 
     /* Macros to get big endian data */
-    #define MGET_BE_16(p)       (MGET_U16(p))
-    #define MGET_BE_32(p)       (MGET_U32(p))
-    #define MGET_BE_64(p)       (MGET_U64(p))
+    #define MGET_BE_U16(p)      (MGET_U16(p))
+    #define MGET_BE_U32(p)      (MGET_U32(p))
+    #define MGET_BE_U64(p)      (MGET_U64(p))
 
-    #define MGET_BE_16_UN(p)    (MGET_U16_UN(p))
-    #define MGET_BE_32_UN(p)    (MGET_U32_UN(p))
-    #define MGET_BE_64_UN(p)    (MGET_U64_UN(p))
+    #define MGET_BE_U16_UN(p)   (MGET_U16_UN(p))
+    #define MGET_BE_U32_UN(p)   (MGET_U32_UN(p))
+    #define MGET_BE_U64_UN(p)   (MGET_U64_UN(p))
     /* Macros to convert little endian data in place */
     #define MPUT_LE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
     #define MPUT_LE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
     #define MPUT_LE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
 
     #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_16)(w) >> 8); \
-                                 ((uint_8*)(p))[1] = (uint_8)(uint_16)(w); }
+                                ((uint_8*)(p))[1] = (uint_8)(uint_16)(w); }
     #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_32)(w) >> 24); \
-                                 ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 16); \
-                                 ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 8); \
-                                 ((uint_8*)(p))[3] = (uint_8)(uint_32)(w); }
+                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 16); \
+                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 8); \
+                                ((uint_8*)(p))[3] = (uint_8)(uint_32)(w); }
 
     /* Macros to convert big endian data in place */
     #define MPUT_BE_16(p,w)     (MGET_U16(p)) = (w)
@@ -232,32 +232,32 @@
     #define MPUT_BE_64(p,w)     (MGET_U64(p)) = (w)
 #else
     /* Macros to get little endian data */
-    #define MGET_LE_16(p)       (MGET_U16(p))
-    #define MGET_LE_32(p)       (MGET_U32(p))
-    #define MGET_LE_64(p)       (MGET_U64(p))
+    #define MGET_LE_U16(p)      (MGET_U16(p))
+    #define MGET_LE_U32(p)      (MGET_U32(p))
+    #define MGET_LE_U64(p)      (MGET_U64(p))
 
-    #define MGET_LE_16_UN(p)    ((uint_16)((uint_8*)(p))[0] | (uint_16)((uint_8*)(p))[1] << 8)
-    #define MGET_LE_32_UN(p)    ((uint_32)((uint_8*)(p))[0] | (uint_32)((uint_8*)(p))[1] << 8 | (uint_32)((uint_8*)(p))[2] << 16 | (uint_32)((uint_8*)(p))[3] << 24)
+    #define MGET_LE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] | (uint_16)((uint_8*)(p))[1] << 8)
+    #define MGET_LE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] | (uint_32)((uint_8*)(p))[1] << 8 | (uint_32)((uint_8*)(p))[2] << 16 | (uint_32)((uint_8*)(p))[3] << 24)
 
         /* Macros to get big endian data */
-    #define MGET_BE_16(p)       SWAPNC_16(MGET_U16(p))
-    #define MGET_BE_32(p)       SWAPNC_32(MGET_U32(p))
-    #define MGET_BE_64(p)       SWAPNC_64(MGET_U64(p))
+    #define MGET_BE_U16(p)      SWAPNC_16(MGET_U16(p))
+    #define MGET_BE_U32(p)      SWAPNC_32(MGET_U32(p))
+    #define MGET_BE_U64(p)      SWAPNC_64(MGET_U64(p))
 
-    #define MGET_BE_16_UN(p)    SWAPNC_16(MGET_U16_UN(p))
-    #define MGET_BE_32_UN(p)    SWAPNC_32(MGET_U32_UN(p))
-    #define MGET_BE_64_UN(p)    SWAPNC_64(MGET_U64_UN(p))
+    #define MGET_BE_U16_UN(p)   SWAPNC_16(MGET_U16_UN(p))
+    #define MGET_BE_U32_UN(p)   SWAPNC_32(MGET_U32_UN(p))
+    #define MGET_BE_U64_UN(p)   SWAPNC_64(MGET_U64_UN(p))
     /* Macros to convert little endian data in place */
     #define MPUT_LE_16(p,w)     (MGET_U16(p)) = (w)
     #define MPUT_LE_32(p,w)     (MGET_U32(p)) = (w)
     #define MPUT_LE_64(p,w)     (MGET_U64(p)) = (w)
 
     #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)(uint_16)(w); \
-                                 ((uint_8*)(p))[1] = (uint_8)((uint_16)(w) >> 8); }
+                                ((uint_8*)(p))[1] = (uint_8)((uint_16)(w) >> 8); }
     #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)(uint_32)(w); \
-                                 ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 8); \
-                                 ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 16); \
-                                 ((uint_8*)(p))[3] = (uint_8)((uint_32)(w) >> 24); }
+                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 8); \
+                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 16); \
+                                ((uint_8*)(p))[3] = (uint_8)((uint_32)(w) >> 24); }
 
     /* Macros to convert big endian data in place */
     #define MPUT_BE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
@@ -277,15 +277,15 @@
 #endif
 
 #if !defined(__sun__) && !defined(sun) && !defined(__sgi) && !defined(__hppa) && !defined(_AIX) && !defined(__alpha) && !defined(_TYPES_H_) && !defined(_SYS_TYPES_H)
-typedef unsigned        uint;
+typedef unsigned            uint;
 #endif
 
-typedef unsigned char   uint_8;
-typedef unsigned short  uint_16;
+typedef unsigned char       uint_8;
+typedef unsigned short      uint_16;
 #if defined( _M_I86 )
-typedef unsigned long   uint_32;
+typedef unsigned long       uint_32;
 #else
-typedef unsigned int    uint_32;
+typedef unsigned int        uint_32;
 #endif
 #if defined( _MSC_VER )
 typedef unsigned __int64    uint_64;
@@ -293,17 +293,17 @@ typedef unsigned __int64    uint_64;
 typedef unsigned long long  uint_64;
 #endif
 
-typedef signed char     int_8;
-typedef signed short    int_16;
+typedef signed char         int_8;
+typedef signed short        int_16;
 #if defined( _M_I86 )
-typedef signed long     int_32;
+typedef signed long         int_32;
 #else
-typedef signed int      int_32;
+typedef signed int          int_32;
 #endif
 #if defined( _MSC_VER )
-typedef __int64         int_64;
+typedef __int64             int_64;
 #else
-typedef long long       int_64;
+typedef long long           int_64;
 #endif
 
 #if defined( _WIN64 )
@@ -314,12 +314,12 @@ typedef long                pointer_int;
 typedef unsigned long       pointer_uint;
 #endif
 
-typedef unsigned char   unsigned_8;
-typedef unsigned short  unsigned_16;
+typedef unsigned char       unsigned_8;
+typedef unsigned short      unsigned_16;
 #if defined( _M_I86 )
-typedef unsigned long   unsigned_32;
+typedef unsigned long       unsigned_32;
 #else
-typedef unsigned int    unsigned_32;
+typedef unsigned int        unsigned_32;
 #endif
 typedef struct {
     union {
@@ -345,13 +345,13 @@ typedef struct {
     } u;
 } unsigned_64;
 
-typedef signed char     signed_8;
-typedef signed short    signed_16;
+typedef signed char         signed_8;
+typedef signed short        signed_16;
 #if defined( _M_I86 )
-typedef signed long     signed_32;
+typedef signed long         signed_32;
 #else
-typedef signed int      signed_32;
+typedef signed int          signed_32;
 #endif
-typedef unsigned_64     signed_64;
+typedef unsigned_64         signed_64;
 
 #endif
