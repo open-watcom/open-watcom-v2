@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,14 @@
 #include "read.h"
 #include "wresrtns.h"
 
+
 char *ResReadString( FILE *fp, size_t *strlen )
 /*********************************************/
 {
-    VarString *         newstring;
+    VarString           *newstring;
     bool                error;
     uint_8              nextchar;
-    char *              retstring;
+    char                *retstring;
 
     newstring = VarStringStart();
     error = ResReadUint8( &nextchar, fp );
