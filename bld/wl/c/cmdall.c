@@ -220,7 +220,7 @@ static bool AddReference( void )
     symbol      *sym;
 
     sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
-    sym->info |= SYM_DCE_REF;   /* make sure it stays around */
+    sym->info |= SYM_1_DCE_REF;   /* make sure it stays around */
     return( true );
 }
 

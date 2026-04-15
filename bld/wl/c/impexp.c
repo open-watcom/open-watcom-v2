@@ -295,7 +295,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
     dll_sym_info    *dll;
 
     if( (sym->info & SYM_DEFINED) == 0 ) {
-        sym->info |= SYM_DEFINED | SYM_DCE_REF;
+        sym->info |= SYM_DEFINED | SYM_1_DCE_REF;
         if( LinkFlags & LF_STRIP_CODE ) {
             DefStripImpSym( sym );
         }
@@ -304,7 +304,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
         sym->p.import = dll;
         if( FmtData.type & MK_PE ) {
             dll->iatsym = GetIATSym( sym );
-            dll->iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
+            dll->iatsym->info |= SYM_DEFINED | SYM_1_DCE_REF;
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
             dll->iatsym->p.import = NULL;
         }

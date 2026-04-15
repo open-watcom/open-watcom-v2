@@ -1815,7 +1815,7 @@ bool ImportPELocalSym( symbol *iatsym )
     if( IS_SYM_IMPORTED( sym ) )
         return( false );
     LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
-    iatsym->info |= SYM_DEFINED | SYM_DCE_REF;
+    iatsym->info |= SYM_DEFINED | SYM_1_DCE_REF;
     if( LinkFlags & LF_STRIP_CODE ) {
         DefStripImpSym( iatsym );
     }

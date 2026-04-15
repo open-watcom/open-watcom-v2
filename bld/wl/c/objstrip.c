@@ -155,7 +155,7 @@ void DataRef( symbol * sym )
     if( (sym->info & SYM_DEFINED) && !IS_SYM_IMPORTED( sym ) ) {
         RefSeg( sym->p.seg );
     }
-    sym->info |= SYM_DCE_REF;
+    sym->info |= SYM_1_DCE_REF;
 }
 
 void AddEdge( segdata * seg, symbol * sym )
@@ -178,7 +178,7 @@ void AddEdge( segdata * seg, symbol * sym )
         }
     } else {    /* symbol is undefined */
         if( seg->isrefd || !seg->iscode ) {
-            sym->info |= SYM_DCE_REF;
+            sym->info |= SYM_1_DCE_REF;
             PruneNonSymEdges( sym );
         } else {
             edge = AllocEdge();
@@ -241,7 +241,7 @@ void DefStripSym( symbol * sym, segdata * seg )
     edgelist *  list;
     edgelist *  next;
 
-    if( sym->info & SYM_DCE_REF ) {
+    if( sym->info & SYM_1_DCE_REF ) {
         RefSeg( seg );
     }
     for( list = sym->p.edges; list != NULL; list = next ) {
@@ -295,7 +295,7 @@ void DefStripImpSym( symbol * sym )
         next = list->next;
         if( !list->reverse_dir ) {
             if( list->issym ) {
-                list->u.sym->info |= SYM_DCE_REF;
+                list->u.sym->info |= SYM_1_DCE_REF;
             } else {
                 RefSeg(list->u.seg);
             }

@@ -89,7 +89,7 @@ void OvlFillOutFilePtrs( void )
 void OvlTryDefVector( symbol *sym )
 /*********************************/
 {
-    if( sym->info & SYM_DISTRIB ) {
+    if( sym->info & SYM_1_DISTRIB ) {
         DefDistribSym( sym );
     } else {
         OvlDefVector( sym );

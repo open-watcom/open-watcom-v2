@@ -124,7 +124,7 @@ static entry_export *ProcWlibDLLImportEntry( void )
     } else {
         exp->sym = SymOp( ST_CREATE_REFERENCE, symname.name, symname.len );
     }
-    exp->sym->info |= SYM_DCE_REF;      // make sure it isn't removed
+    exp->sym->info |= SYM_1_DCE_REF;    // make sure it isn't removed
     exp->ordinal = ordinal;
     if( ordinal == 0 ) {
         exp->isresident = true;   // no ord spec'd so must be resident
@@ -568,7 +568,7 @@ static bool getexport( void )
     } else {
         exp->sym = RefISymbol( exp->name.u.ptr );
     }
-    exp->sym->info |= SYM_DCE_REF;          //make sure it is not removed
+    exp->sym->info |= SYM_1_DCE_REF;        //make sure it is not removed
     if( exp->ordinal == 0 ) {
         exp->isresident = true;             // no ordinal spec'd so must be kept resident
     }

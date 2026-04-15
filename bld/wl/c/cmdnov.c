@@ -300,11 +300,11 @@ static bool GetNovSymbolImportExport( bool import )
         printf( "imported %s from %s\n", sym->name.u.ptr, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
         SET_SYM_TYPE( sym, SYM_IMPORTED );
-        sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
+        sym->info |= SYM_1_DCE_REF; // make sure we don't try to get rid of these.
         SetNovImportSymbol( sym );
     } else {
         sym = SymOpNWPfx( ST_CREATE_REFERENCE, name, namelen, prefix, prefixlen );
-        sym->info |= SYM_DCE_REF | SYM_EXPORTED;
+        sym->info |= SYM_1_DCE_REF | SYM_EXPORTED;
         AddNameTable( name, namelen, true, &FmtData.u.nov.exp.export );
     }
     Token.skipToNext = DoWeNeedToSkipASeparator( true );

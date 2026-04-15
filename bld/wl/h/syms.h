@@ -98,21 +98,23 @@ typedef enum {
     SYM_NAME_XLATED     = 0x01000000U,   // only used during permdata writing
     SYM_IS_FREE         = 0x10000000U,   // only used during permdata writing.
 
-// the top three bits are used for the floating point patch type during pass 2
-// SYM_DCE_REF, SYM_VF_REFS_DONE and SYM_VF_MARKED are only needed during
+// the top three bits are used for the
+// SYM_1_DCE_REF, SYM_1_VF_REFS_DONE and SYM_1_VF_MARKED are only needed during
 // pass 1 and before the syms are checked for.
-// SYM_VF_MARKED can be used at the same time as SYM_DISTRIB since
-// SYM_DISTRIB is only set when SYM_DEFINED is on, and SYM_VF_MARKED is only
+// SYM_1_VF_MARKED can be used at the same time as SYM_1_DISTRIB since
+// SYM_1_DISTRIB is only set when SYM_DEFINED is on, and SYM_1_VF_MARKED is only
 // needed when the symbol is not defined.
+// SYM_2_FPP_MASK floating point patch type during pass 2
 
-    SYM_DISTRIB         = 0x20000000U,   // DOS ONLY: symbol is in a distrib. lib.
-    SYM_VF_MARKED       = 0x20000000U,   // vf reference record seen for this sym.
-    SYM_DCE_REF         = 0x40000000U,   // referenced for the purposes of dead code
-    SYM_VF_REFS_DONE    = 0x80000000U,   // ALL: vf refs added to call graph
-    SYM_FPP_MASK        = 0xE0000000U,   // ALL: floatin point fixup symbol
+    SYM_1_DISTRIB       = 0x20000000U,   // DOS ONLY: symbol is in a distrib. lib.
+    SYM_1_VF_MARKED     = 0x20000000U,   // vf reference record seen for this sym.
+    SYM_1_DCE_REF       = 0x40000000U,   // referenced for the purposes of dead code
+    SYM_1_VF_REFS_DONE  = 0x80000000U,   // ALL: vf refs added to call graph
+    SYM_2_FPP_MASK      = 0xE0000000U,   // ALL: floating point mask for pass 2
 } sym_info;
 
-#define SYM_FPP_SHIFT   (32 - 3)    // floating point patch value is top 3 bits
+// floating point patch value is top 3 bits of sym_info
+#define SYM_2_FPP_SHIFT     (32 - 3)
 
 // values used to keep track of the special floating point patch symbols.
 typedef enum {
@@ -127,7 +129,7 @@ typedef enum {
 #define SYM_CDAT_SEL_SHIFT  16
 
 #define SYM_CLEAR_ON_P2  /* 0xE00000A0 flags to clear before pass 2 starts. */ \
-    (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FPP_MASK)
+    (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_2_FPP_MASK)
 #define SYM_CLEAR_ON_INC /* 0x010404F0 flags to clear when incremental linking. */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED \
     | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
@@ -155,8 +157,8 @@ typedef enum {
 
 #define SET_SYM_ADDR(sym,o,s)   (sym)->addr.seg=s;(sym)->addr.off=o
 
-#define SET_SYM_FPP(sym,value)  ((sym)->info = ((sym)->info & ~SYM_FPP_MASK)|((value) << SYM_FPP_SHIFT))
-#define GET_SYM_FPP(sym)        (((sym)->info & SYM_FPP_MASK) >> SYM_FPP_SHIFT)
+#define SET_SYM_2_FPP(sym,value) ((sym)->info = ((sym)->info & ~SYM_2_FPP_MASK)|((value) << SYM_2_FPP_SHIFT))
+#define GET_SYM_2_FPP(sym)      (((sym)->info & SYM_2_FPP_MASK) >> SYM_2_FPP_SHIFT)
 
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.

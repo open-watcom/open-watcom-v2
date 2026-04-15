@@ -132,7 +132,7 @@ static void DCERelocRef( symbol *sym, bool isdata )
 /*************************************************/
 {
     if( isdata ) {
-        if( (sym->info & SYM_VF_REFS_DONE) == 0 ) {
+        if( (sym->info & SYM_1_VF_REFS_DONE) == 0 ) {
             DataRef( sym );
         }
     } else {
@@ -1820,7 +1820,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
             RecordUndefinedSym( target->u.sym );
             return;
         }
-        fix.fpp_type = GET_SYM_FPP( target->u.sym );
+        fix.fpp_type = GET_SYM_2_FPP( target->u.sym );
         if( IS_SYM_IMPORTED( target->u.sym ) ) {
             if( FRAME_HAS_DATA( frame->type ) && ( target->u.sym != frame->u.sym ) ) {
                 if( FmtData.type & (MK_NOVELL | MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {

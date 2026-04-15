@@ -806,7 +806,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
 
         ClearSymUnion( sym );
         SetAddPubSym( sym, sym_type, CurrMod, off, frame );
-        sym->info &= ~SYM_DISTRIB;
+        sym->info &= ~SYM_1_DISTRIB;
         if( seg != NULL ) {
             if( LinkFlags & LF_STRIP_CODE ) {
                 DefStripSym( sym, seg->entry );
@@ -815,7 +815,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
 #ifdef _EXE
                 if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
                     if( LinkState & LS_SEARCHING_LIBRARIES ) {
-                        sym->info |= SYM_DISTRIB;
+                        sym->info |= SYM_1_DISTRIB;
                     }
                 }
 #endif
@@ -1112,7 +1112,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
     symbol      **symlist;
 
     symlist = GetVFList( defsym, sym, true, rtns );
-    sym->info |= SYM_VF_REFS_DONE;
+    sym->info |= SYM_1_VF_REFS_DONE;
     if( symlist != NULL ) {
         sym->e.vfdata = symlist;
         if( ispure ) {
@@ -1143,10 +1143,10 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
         /* if defined, still may have to keep track of conditional symbols
          * for dead code elimination */
         if( (LinkFlags & LF_STRIP_CODE)
-                        && (sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
+                        && (sym->info & (SYM_1_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
             GetVFList( defsym, sym, false, rtns );
             sym->e.def = defsym;
-            sym->info |= SYM_VF_REFS_DONE;
+            sym->info |= SYM_1_VF_REFS_DONE;
             DataRef( defsym );
         }
     } else if( !IS_SYM_IMPORTED( sym ) && !IS_SYM_COMMUNAL( sym ) ) {
@@ -1288,7 +1288,7 @@ void HandleImport( const length_name *intname, const length_name *modname,
         } else {
 #endif
             SET_SYM_TYPE( sym, SYM_IMPORTED );
-            sym->info |= SYM_DEFINED | SYM_DCE_REF;
+            sym->info |= SYM_DEFINED | SYM_1_DCE_REF;
 #ifdef _NOVELL
             if( FmtData.type & MK_NOVELL ) {
                 SetNovImportSymbol( sym );
@@ -1349,12 +1349,12 @@ bool CheckVFList( symbol *sym )
 {
     symbol      **symlist;
 
-    if( sym->info & SYM_VF_MARKED ) {
+    if( sym->info & SYM_1_VF_MARKED ) {
         ConvertVFSym( sym );
         return( true );
     }
     for( symlist = sym->e.vfdata + 1; *symlist != NULL; ++symlist ) {
-        if( (*symlist)->info & (SYM_DEFINED | SYM_VF_MARKED) ) {
+        if( (*symlist)->info & (SYM_DEFINED | SYM_1_VF_MARKED) ) {
             ConvertVFSym( sym );
             return( true );
         }

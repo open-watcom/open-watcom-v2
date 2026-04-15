@@ -413,7 +413,7 @@ void RefDistribSym( symbol *sym )
 
     arc.sym = sym;
     if( sym->info & SYM_DEFINED ) {
-        if( sym->info & SYM_DISTRIB ) {
+        if( sym->info & SYM_1_DISTRIB ) {
             mod = ModTable[sym->u.d.modnum];
             if( mod->modinfo & MOD_FIXED ) {        // add reference, as long
                 seg = sym->p.seg;                   // as it is a code ref.
@@ -502,7 +502,7 @@ static void ScanArcs( mod_entry *mod )
             } else {
                 sym = currarc.sym;
                 if( sym->info & SYM_DEFINED ) {
-                    if( sym->info & SYM_DISTRIB ) {
+                    if( sym->info & SYM_1_DISTRIB ) {
                         currarc.test = sym->u.d.modnum;
                         refmod = ModTable[currarc.mod];
                         if( refmod->modinfo & MOD_FIXED ) {

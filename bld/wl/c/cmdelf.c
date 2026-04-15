@@ -138,7 +138,7 @@ static bool GetELFImport( void )
         return( true );
     }
     SET_SYM_TYPE( sym, SYM_IMPORTED );
-    sym->info |= SYM_DCE_REF;
+    sym->info |= SYM_1_DCE_REF;
     SetELFImportSymbol( sym );
     return( true );
 }
@@ -170,7 +170,7 @@ static bool GetELFExport( void )
         return( true );
     }
     SET_SYM_TYPE( sym, SYM_EXPORTED );
-    sym->info |= SYM_DCE_REF;
+    sym->info |= SYM_1_DCE_REF;
     SetELFExportSymbol( sym );
     return( true );
 }

@@ -630,7 +630,7 @@ static void ProcVFReference( void )
         }
     }
     if( (ext->entry->info & SYM_DEFINED) == 0 ) {
-        ext->entry->info |= SYM_VF_MARKED;
+        ext->entry->info |= SYM_1_VF_MARKED;
     }
 }
 

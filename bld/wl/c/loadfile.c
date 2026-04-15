@@ -608,7 +608,7 @@ void SetStartSym( const char *name )
         }
     } else {
         StartInfo.targ.sym = RefISymbol( name );
-        StartInfo.targ.sym->info |= SYM_DCE_REF;
+        StartInfo.targ.sym->info |= SYM_1_DCE_REF;
         StartInfo.type = START_IS_SYM;
         StartInfo.mod = CurrMod;
         if( LinkFlags & LF_STRIP_CODE ) {

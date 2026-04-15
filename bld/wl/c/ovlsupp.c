@@ -425,7 +425,7 @@ void OvlIndirectCall( symbol *sym )
     if( NO_VECTOR( sym ) )
         return;
     if( sym->info & SYM_DEFINED ) {
-        if( sym->info & SYM_DISTRIB ) {
+        if( sym->info & SYM_1_DISTRIB ) {
             DistribIndirectCall( sym );
         } else if( sym->p.seg != NULL ) {
             ovlref = sym->p.seg->u.leader->class->section->ovlref;

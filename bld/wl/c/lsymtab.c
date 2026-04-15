@@ -1056,8 +1056,17 @@ void PurgeSymbols( void )
 }
 
 void ConvertLazyRefs( void )
-/*********************************/
-/* go through all symbols, & turn lazy refs to aliases to default sym. */
+/***************************
+ * go through all symbols, & turn lazy refs to aliases to default sym.
+ *
+ * NOTE 1:
+ * this is done because of pure virtual functions.  A pure virtual function
+ * can be referenced with a vf reference coment, and never be defined, yet we
+ * still want this vf reference to have an effect on the vf elimination call
+ * graph.  So... we look at all undefed lazy refs that have been referenced
+ * by a vf reference coment, and add a bogus segdata to the graph to register
+ * the effects of this references
+ */
 {
     symbol *    defsym;
     symbol *    sym;
@@ -1069,8 +1078,8 @@ void ConvertLazyRefs( void )
                 MemFree( sym->e.vfdata );
             } else {
                 defsym = sym->e.def;
-                if( sym->info & SYM_VF_MARKED ) {
-                    DefStripSym( sym, AllocSegData() ); // see note 1 below.
+                if( sym->info & SYM_1_VF_MARKED ) {
+                    DefStripSym( sym, AllocSegData() ); // see note 1 above.
                 }
             }
             WeldSyms( sym, defsym );
@@ -1083,16 +1092,6 @@ void ConvertLazyRefs( void )
         }
     }
 }
-
-/*
- * NOTE 1 for above function:
- * this is done because of pure virtual functions.  A pure virtual function
- * can be referenced with a vf reference coment, and never be defined, yet we
- * still want this vf reference to have an effect on the vf elimination call
- * graph.  So... we look at all undefed lazy refs that have been referenced
- * by a vf reference coment, and add a bogus segdata to the graph to register
- * the effects of this references
-*/
 
 static void MarkSymTraced( void *sym )
 /************************************/

@@ -558,16 +558,16 @@ static void FindFloatSyms( void )
     symbol      *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        SET_SYM_FPP( sym, FPP_NONE );
+        SET_SYM_2_FPP( sym, FPP_NONE );
     }
     for( index = 0; index < ( sizeof( FloatPatches ) / sizeof( FloatPatches[0] ) ); index++ ) {
         if( FloatPatches[index].name != NULL ) {
             sym = FindISymbol( FloatPatches[index].name );
             if( sym != NULL ) {
                 if( FmtData.type & MK_WIN_NE ) {
-                    SET_SYM_FPP( sym, FloatPatches[index].win_fpp );
+                    SET_SYM_2_FPP( sym, FloatPatches[index].win_fpp );
                 } else {
-                    SET_SYM_FPP( sym, FloatPatches[index].fpp );
+                    SET_SYM_2_FPP( sym, FloatPatches[index].fpp );
                 }
             }
         }
