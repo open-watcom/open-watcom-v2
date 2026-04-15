@@ -167,7 +167,11 @@ static void ProcTHEADR( void )
         if( sym_len == 0 ) {
             BadObject();
         }
-        CurrMod->name.u.ptr = MemToStringSafe( ObjBuff, sym_len );
+//        CurrMod->name.u.ptr = MemToStringSafe( ObjBuff, sym_len );
+// need to fix to handle separated module name and
+// source file name by multiple THEADR records
+// now not used, need to resolve backward compatibility
+// with modules created by older Open Watcom or WATCOM tools
     }
 }
 
