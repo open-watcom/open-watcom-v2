@@ -286,6 +286,41 @@ static bool lineis( char *str, char *substr )
     return( true );
 }
 
+static bool lineis_escaped_at( char *str, char *substr )
+/******************************************************
+ * Check if string at position starts with &keyword (e.g. &endm, &macro).
+ * If found, strip the & prefix and return true.
+ */
+{
+    size_t  len;
+
+    len = strlen( substr );
+    if( str[0] != '&' ) {
+        return( false );
+    }
+    if( strnicmp( str + 1, substr, len ) ) {
+        return( false );
+    }
+    if( str[1 + len] != '\0'
+      && !isspace( str[1 + len] ) ) {
+        return( false );
+    }
+    /*
+     * strip the & prefix: shift the string left by one character
+     */
+    memmove( str, str + 1, strlen( str ) );
+    return( true );
+}
+
+static bool lineis_escaped( char *str, char *substr )
+/***************************************************
+ * Check if line starts with &keyword, stripping leading spaces first.
+ */
+{
+    wipe_space( str );
+    return( lineis_escaped_at( str, substr ) );
+}
+
 static bool is_repeat_block( char *ptr )
 /**************************************/
 {
@@ -526,6 +561,12 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                 return( RC_OK );
             }
             nesting_depth--;
+        } else {
+            /*
+             * &endm is an escaped keyword: strip the & prefix
+             * but don't affect nesting depth
+             */
+            lineis_escaped( line, "endm" );
         }
         ptr = line;
         while( isspace( *ptr ) )
@@ -540,6 +581,12 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         if( is_repeat_block( ptr )
           || lineis( ptr, "macro" ) ) {
             nesting_depth++;
+        } else {
+            /*
+             * &macro is an escaped keyword: strip the & prefix
+             * but don't affect nesting depth
+             */
+            lineis_escaped_at( ptr, "macro" );
         }
 
         if( store_data ) {
