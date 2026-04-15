@@ -182,22 +182,28 @@
     #define MGET_U32(p)         (*(uint_32*)(p))
     #define MGET_U64(p)         (*(uint_64*)(p))
 
-    #define MGET_U8_UN(p)       (*(uint_8 _WCUNALIGNED*)(p))
-    #define MGET_U16_UN(p)      (*(uint_16 _WCUNALIGNED*)(p))
-    #define MGET_U32_UN(p)      (*(uint_32 _WCUNALIGNED*)(p))
-    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
-
     #define MPUT_8(p,w)         (MGET_U8(p)) = (w)
     #define MPUT_16(p,w)        (MGET_U16(p)) = (w)
     #define MPUT_32(p,w)        (MGET_U32(p)) = (w)
     #define MPUT_64(p,w)        (MGET_U64(p)) = (w)
 
-    #define MPUT_8_UN(p,w)      (MGET_U8_UN(p)) = (w)
-    #define MPUT_16_UN(p,w)     (MGET_U16_UN(p)) = (w)
-    #define MPUT_32_UN(p,w)     (MGET_U32_UN(p)) = (w)
-    #define MPUT_64_UN(p,w)     (MGET_U64_UN(p)) = (w)
-
 #if defined( __BIG_ENDIAN__ )
+    #define MGET_U16_UN(p)      ((uint_16)((uint_8*)(p))[0] << 8 \
+                                | (uint_16)((uint_8*)(p))[1])
+    #define MGET_U32_UN(p)      ((uint_32)((uint_8*)(p))[0] << 24 \
+                                | (uint_32)((uint_8*)(p))[1] << 16 \
+                                | (uint_32)((uint_8*)(p))[2] << 8 \
+                                | (uint_32)((uint_8*)(p))[3])
+//    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
+
+    #define MPUT_16_UN(p,w)     {((uint_8*)(p))[0] = (uint_8)((uint_16)(w) >> 8); \
+                                ((uint_8*)(p))[1] = (uint_8)(uint_16)(w); }
+    #define MPUT_32_UN(p,w)     {((uint_8*)(p))[0] = (uint_8)((uint_32)(w) >> 24); \
+                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 16); \
+                                ((uint_8*)(p))[2] = (uint_8)((uint_16)(w) >> 8); \
+                                ((uint_8*)(p))[3] = (uint_8)(uint_16)(w); }
+//    #define MPUT_64_UN(p,w)     (MGET_U64_UN(p)) = (w)
+
     /* Macros to get little endian data */
     #define MGET_LE_U16(p)      SWAPNC_16(MGET_U16(p))
     #define MGET_LE_U32(p)      SWAPNC_32(MGET_U32(p))
@@ -231,6 +237,22 @@
     #define MPUT_BE_32(p,w)     (MGET_U32(p)) = (w)
     #define MPUT_BE_64(p,w)     (MGET_U64(p)) = (w)
 #else
+    #define MGET_U16_UN(p)      ((uint_16)((uint_8*)(p))[0] \
+                                | (uint_16)((uint_8*)(p))[1] << 8)
+    #define MGET_U32_UN(p)      ((uint_32)((uint_8*)(p))[0] \
+                                | (uint_32)((uint_8*)(p))[1] << 8 \
+                                | (uint_32)((uint_8*)(p))[2] << 16 \
+                                | (uint_32)((uint_8*)(p))[3] << 24)
+//    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
+
+    #define MPUT_U16_UN(p,w)    {((uint_8*)(p))[0] = (uint_8)(uint_16)(w); \
+                                ((uint_8*)(p))[1] = (uint_8)((uint_16)(w) >> 8); }
+    #define MPUT_U32_UN(p,w)    {((uint_8*)(p))[0] = (uint_8)(uint_32)(w); \
+                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 8); \
+                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 16); \
+                                ((uint_8*)(p))[3] = (uint_8)((uint_32)(w) >> 24); }
+//    #define MPUT_64_UN(p,w)     (MGET_U64_UN(p)) = (w)
+
     /* Macros to get little endian data */
     #define MGET_LE_U16(p)      (MGET_U16(p))
     #define MGET_LE_U32(p)      (MGET_U32(p))
