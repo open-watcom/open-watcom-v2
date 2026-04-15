@@ -943,12 +943,13 @@ static void SaveRelocData( void *_curr, const char *data, size_t size )
 {
     char **curr = _curr;
 
-    if( ReadRelocs == NULL && SizeRelocs > 0 ) {
-        ReadRelocs = MemAllocSafe( SizeRelocs );
-        *curr = ReadRelocs;
+    if( SizeRelocs > 0 ) {
+        if( ReadRelocs == NULL ) {
+            *curr = ReadRelocs = MemAllocSafe( SizeRelocs );
+        }
+        memcpy( *curr, data, size );
+        *curr += size;
     }
-    memcpy( *curr, data, size );
-    *curr += size;
 }
 
 void IncP2Start( void )
