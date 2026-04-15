@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,7 +145,7 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, const ch
                 loc++;
                 memcpy( lib_block[h.block].name + loc, sym, len );
                 loc += len;
-                *(unsigned_16 *)( lib_block[h.block].name + loc ) = offset;
+                MPUT_LE_16_UN( lib_block[h.block].name + loc, offset );
                 return( true );
             }
             h.bucket += h.bucketd;
