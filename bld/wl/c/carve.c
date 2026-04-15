@@ -39,13 +39,16 @@
 
 
 struct blk {
-    blk_t       *next;
-    unsigned    index;
+    struct blk  *next;
     boolbit     modified    : 1;
+    unsigned    index;
+#if defined( _M_X64 ) || defined( _M_ARM64 )
+#else
+    unsigned    filler;
+#endif
     /*
      * must be align to 8 bytes
      */
-    boolbit     : 0;
     char        data[1];
 };
 
