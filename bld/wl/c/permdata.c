@@ -957,6 +957,7 @@ void IncP2Start( void )
 {
     char   *spare;
 
+    spare = NULL;
     MemFree( ReadRelocs );
     ReadRelocs = NULL;
     MemFree( OldExe );

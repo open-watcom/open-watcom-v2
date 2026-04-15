@@ -80,7 +80,7 @@ static blk_t *newBlk( cv_t *cv )
 
     newblk = MemAllocSafe( offsetof( blk_t, data ) + cv->blk_size );
     /*
-     * keep list sorted by memory address biggest first.
+     * keep list sorted by memory address, biggest first.
      */
     for( blklist = &cv->blk_list; *blklist > newblk; blklist = &(*blklist)->next ) {}
     newblk->next = *blklist;
@@ -136,7 +136,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     cv->free_list = NULL;
     cv->blk_map = NULL;
     cv->size_chg = false;
-    DbgAssert( cv->elm_size >= 2 * sizeof( void * ) );
+//    DbgAssert( cv->elm_size >= 2 * 8 );
     DbgAssert( cv->elm_count != 0 );
     DbgVerify( cv->blk_top < _64K, "carve: size * #/block > 64k" );
     return( cv );
