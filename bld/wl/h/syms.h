@@ -109,7 +109,10 @@ typedef enum {
     SYM_VF_MARKED       = 0x20000000U,   // vf reference record seen for this sym.
     SYM_DCE_REF         = 0x40000000U,   // referenced for the purposes of dead code
     SYM_VF_REFS_DONE    = 0x80000000U,   // ALL: vf refs added to call graph
+    SYM_FPP_MASK        = 0xE0000000U,   // ALL: floatin point fixup symbol
 } sym_info;
+
+#define SYM_FPP_SHIFT   (32 - 3)    // floating point patch value is top 3 bits
 
 // values used to keep track of the special floating point patch symbols.
 typedef enum {
@@ -117,12 +120,6 @@ typedef enum {
     // value 1...6 are encoded FPP patch system values, see bld/watcom/h/fppatche.h
     FPP_IGNORE = 7
 } fix_fpp_type;
-
-#define FPP_MASK            7           // floating point patch value is 3 bits wide
-
-#define SYM_FPP_SHIFT       (32 - 3)    // floating point patch value is top 3 bits
-#define SYM_FPP_MASK        (FPP_MASK << SYM_FPP_SHIFT)
-#define SYM_FPP_NONE        (FPP_NONE << SYM_FPP_SHIFT)
 
 // some handy macros for checking and setting symbol type bits
 
@@ -132,7 +129,8 @@ typedef enum {
 #define SYM_CLEAR_ON_P2  /* 0xE00000A0 flags to clear before pass 2 starts. */ \
     (SYM_OLDHAT | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_FPP_MASK)
 #define SYM_CLEAR_ON_INC /* 0x010404F0 flags to clear when incremental linking. */ \
-    (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
+    (SYM_DEAD | SYM_FREE_ALIAS | SYM_OLDHAT | SYM_REFERENCED | SYM_CHECKED \
+    | SYM_MAP_GLOBAL | SYM_TRACE | SYM_RELOC_REFD | SYM_NAME_XLATED)
 #define SYM_CLEAR_ON_ALT /* 0x00980010 */ \
     (SYM_DEAD | SYM_FREE_ALIAS | SYM_KILL | SYM_IS_ALTDEF | SYM_HAS_DATA)
 
@@ -154,11 +152,11 @@ typedef enum {
 #define IS_SYM_COMM32(sym)      (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
 
 #define SET_SYM_TYPE(sym,type)  ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
-#define SET_SYM_FPP(sym,value)  ((sym)->info = ((sym)->info & ~SYM_FPP_MASK)|((value) << SYM_FPP_SHIFT))
-
-#define GET_SYM_FPP(sym)        (((sym)->info >> SYM_FPP_SHIFT) & FPP_MASK)
 
 #define SET_SYM_ADDR(sym,o,s)   (sym)->addr.seg=s;(sym)->addr.off=o
+
+#define SET_SYM_FPP(sym,value)  ((sym)->info = ((sym)->info & ~SYM_FPP_MASK)|((value) << SYM_FPP_SHIFT))
+#define GET_SYM_FPP(sym)        (((sym)->info & SYM_FPP_MASK) >> SYM_FPP_SHIFT)
 
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.
