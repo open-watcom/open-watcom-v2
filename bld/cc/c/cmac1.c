@@ -926,15 +926,23 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
     mtok = *ptail;
     buf = Buffer;
     for( ; mtok != NULL; ) {
-        if( mtok->token != T_WHITE_SPACE ) {
+        if( mtok->token == T_WHITE_SPACE ) {
+            prev_ptail = ptail;
+            ptail = &mtok->next;
+            mtok = *ptail;
+        } else if( mtok->next == NULL ) {
+            break;
+        } else {
             next = mtok->next;
-            if( next == NULL )
-                break;
             if( next->token == T_WHITE_SPACE )
                 next = next->next;
             if( next == NULL )
                 break;
-            if( next->token == T_MACRO_SHARP_SHARP ) {  // let's paste
+            if( next->token != T_MACRO_SHARP_SHARP ) {
+                prev_ptail = ptail;
+                ptail = &mtok->next;
+                mtok = *ptail;
+            } else {    // T_MACRO_SHARP_SHARP
                 int         pos;
                 MACRO_TOKEN *rem;
 
@@ -943,9 +951,8 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                 /*
                  * glue mtok->token with next->token to make one token
                  */
-                if( ( mtok->token == T_COMMA && next->token == T_MACRO_EMPTY_VAR_PARM ) ||
-                    ( mtok->token == T_MACRO_EMPTY_VAR_PARM && next->token == T_COMMA ) )
-                {
+                if( ( mtok->token == T_COMMA && next->token == T_MACRO_EMPTY_VAR_PARM )
+                  || ( mtok->token == T_MACRO_EMPTY_VAR_PARM && next->token == T_COMMA ) ) {
                     /*
                      * delete [mtoken(a comma),##,empty __VA_ARGS__]
                      * delete [empty __VA_ARGS__,##,mtoken(a comma)]
@@ -1011,15 +1018,7 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         mtok = head;
                     }
                 }
-            } else {
-                prev_ptail = ptail;
-                ptail = &mtok->next;
-                mtok = *ptail;
             }
-        } else {
-            prev_ptail = ptail;
-            ptail = &mtok->next;
-            mtok = *ptail;
         }
     }
     return( head );
