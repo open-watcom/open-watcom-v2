@@ -50,6 +50,7 @@ lods.dis &
 maaak.dis &
 macro.dis &
 macrodef.dis &
+macroesc.dis &
 macroloc.dis &
 macropar.dis &
 macrotst.dis &
