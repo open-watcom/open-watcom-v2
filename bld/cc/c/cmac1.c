@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -701,7 +701,7 @@ void DumpMDefn( const char *p )
             for( ; (c = *p++) != '\0'; ) {
                 putchar( c );
             }
-            continue;
+            break;
         case T_LSTRING:
             putchar( 'L' );
             /* fall through */
@@ -711,24 +711,24 @@ void DumpMDefn( const char *p )
                 putchar( c );
             }
             putchar( '\"' );
-            continue;
+            break;
         case T_WHITE_SPACE:
             putchar( ' ' );
-            continue;
+            break;
         case T_BAD_CHAR:
             putchar( *p++ );
-            continue;
+            break;
         case T_MACRO_PARM:
             printf( "<parm#%d>", MTOKPARM( p ) );
             MTOKPARMINC( p );
-            continue;
+            break;
         case T_MACRO_VAR_PARM:
             printf( "<varparm#%d>", MTOKPARM( p ) );
             MTOKPARMINC( p );
-            continue;
+            break;
         default:
             printf( "%s", Tokens[token] );
-            continue;
+            break;
         }
     }
     putchar( '\n' );
@@ -1011,12 +1011,16 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                         mtok = head;
                     }
                 }
-                continue;          //ready to go
+            } else {
+                prev_ptail = ptail;
+                ptail = &mtok->next;
+                mtok = *ptail;
             }
+        } else {
+            prev_ptail = ptail;
+            ptail = &mtok->next;
+            mtok = *ptail;
         }
-        prev_ptail = ptail;
-        ptail = &mtok->next;
-        mtok = *ptail;
     }
     return( head );
 }
