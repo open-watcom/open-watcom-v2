@@ -738,6 +738,17 @@ bool ExpandMacro( token_buffer *tokbuf )
             return( RC_OK );
         }
     }
+    if( macro_name_loc > 0 ) {
+        i = macro_name_loc - 1;
+        if( tokbuf->tokens[i].class == TC_DIRECTIVE
+          && tokbuf->tokens[i].u.token == T_PURGE ) {
+            /*
+             * this is PURGE directive with macro name argument
+             * continue regular processing, don't expand the macro
+             */
+            return( RC_OK );
+        }
+    }
     if( macro_name_loc != 0 ) {
         /*
          * save the rest of the line from before the macro

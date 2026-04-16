@@ -296,9 +296,44 @@ bool directive( token_buffer *tokbuf, token_idx i, asm_token direct )
             AsmError( UNKNOWN_DIRECTIVE );
             return( RC_ERROR );
         }
+        AsmError( NOT_SUPPORTED );
+        return( RC_ERROR );
+    case T_PURGE:
+        /*
+         * PURGE macro_name [, macro_name ...]
+         * Remove macro definitions from the symbol table
+         */
+        {
+            token_idx   n;
+
+            for( n = i + 1; n < tokbuf->count; n++ ) {
+                if( tokbuf->tokens[n].class == TC_COMMA )
+                    continue;
+                if( tokbuf->tokens[n].class != TC_ID ) {
+                    AsmError( SYNTAX_ERROR );
+                    return( RC_ERROR );
+                }
+                {
+                    const char      *name;
+                    asm_sym_handle  sym;
+
+                    name = tokbuf->tokens[n].string_ptr;
+                    sym = AsmGetSymbol( name );
+                    if( sym == NULL ) {
+                        AsmErr( SYMBOL_NOT_DEFINED, name );
+                        return( RC_ERROR );
+                    }
+                    if( sym->state != SYM_MACRO ) {
+                        AsmError( SYNTAX_ERROR );
+                        return( RC_ERROR );
+                    }
+                    AsmTakeOut( name );
+                }
+            }
+        }
+        return( RC_OK );
     case T_CATSTR:
     case T_MASK:
-    case T_PURGE:
     case T_RECORD:
     case T_TYPEDEF:
     case T_UNION:

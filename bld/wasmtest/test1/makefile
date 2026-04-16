@@ -74,6 +74,7 @@ pub.dis &
 pub2.dis &
 pubcase.dis &
 pubdef.dis &
+purge.dis &
 q.dis &
 qnxstrt.dis &
 scas.dis &
