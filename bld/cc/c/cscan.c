@@ -1315,6 +1315,65 @@ int EncodeWchar( int c )
     return( c );
 }
 
+int IndexLower( int c )
+{
+    switch( c ) {
+    case 'z':
+        return( 25 );
+    case 'y':
+        return( 24 );
+    case 'x':
+        return( 23 );
+    case 'w':
+        return( 22 );
+    case 'v':
+        return( 21 );
+    case 'u':
+        return( 20 );
+    case 't':
+        return( 19 );
+    case 's':
+        return( 18 );
+    case 'r':
+        return( 17 );
+    case 'q':
+        return( 16 );
+    case 'p':
+        return( 15 );
+    case 'o':
+        return( 14 );
+    case 'n':
+        return( 13 );
+    case 'm':
+        return( 12 );
+    case 'l':
+        return( 11 );
+    case 'k':
+        return( 10 );
+    case 'j':
+        return( 9 );
+    case 'i':
+        return( 8 );
+    case 'h':
+        return( 7 );
+    case 'g':
+        return( 6 );
+    case 'f':
+        return( 5 );
+    case 'e':
+        return( 4 );
+    case 'd':
+        return( 3 );
+    case 'c':
+        return( 2 );
+    case 'b':
+        return( 1 );
+    case 'a':
+        return( 0 );
+    }
+    return( -1 );
+}
+
 static int read_inp( void )
 {
     return( NextChar() );

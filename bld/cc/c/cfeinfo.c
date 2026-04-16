@@ -180,10 +180,10 @@ bool VarFunc( SYMPTR sym )
     if( sym->flags & SYM_FUNCTION ) {
         p = sym->name;
         len = strlen( p );
-        c1 = ((unsigned char *)p)[0];
-        c2 = ((unsigned char *)p)[len - 1];
-        if( islower( c1 ) && islower( c2 ) ) {
-            hash = (len + VarFuncWeights[c1 - 'a'] + VarFuncWeights[c2 - 'a']) & 31;
+        c1 = IndexLower( ((unsigned char *)p)[0] );
+        c2 = IndexLower( ((unsigned char *)p)[len - 1] );
+        if( c1 >= 0 && c2 >= 0 ) {
+            hash = (len + VarFuncWeights[c1] + VarFuncWeights[c2]) & 0x1f;
             if( strcmp( p, VarParmFuncs[hash] ) == 0
               && ( CompFlags.extensions_enabled
               || (( 1 << hash ) & VAR_PARM_FUNCS_ANSI) ) ) {

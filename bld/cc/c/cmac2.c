@@ -42,8 +42,6 @@
 
 #define HasVarArgs(m)       (((m) & MFLAG_HAS_VAR_ARGS) != 0)
 
-#define PREPROC_WEIGHT(c)   ((c >= 'a' && c < 'a' + sizeof( PreProcWeights )) ? PreProcWeights[c - 'a'] : 0)
-
 extern bool PrintWhiteSpace;  //ppc printing   (from ccmain.c)
 
 static void    CSkip( void );
@@ -73,7 +71,7 @@ struct preproc {
 
 static unsigned char PreProcWeights[] = {
 /* a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z */
-   2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14
+   2, 0, 0, 9, 1, 4, 3, 0, 5, 0, 0, 7, 0, 0, 0,10, 0,11, 0,13,12, 0,14, 0, 0, 0
 };
 
 static struct preproc PreProcTable[] = {
@@ -176,17 +174,25 @@ static void PreProcStmt( void )
 {
     struct preproc      *pp;
     unsigned            hash;
+    int                 c1;
+    int                 c2;
 
     NextChar();                 /* skip over '#' */
     PPNextToken();
     if( CurToken == T_ID ) {
-        hash = ( TokenLen + PREPROC_WEIGHT( Buffer[0] ) + PREPROC_WEIGHT( Buffer[TokenLen - 1] ) ) & 0x0f;
-        pp = &PreProcTable[hash];
-        if( strcmp( pp->directive, Buffer ) == 0 ) {
-            if( SkipLevel == NestLevel ) {
-                pp->samelevel();
+        c1 = IndexLower( ((unsigned char *)p)[0] );
+        c2 = IndexLower( ((unsigned char *)p)[TokenLen - 1] );
+        if( c1 >= 0 && c2 >= 0 ) {
+            hash = (TokenLen + PreProcWeights[c1] + PreProcWeights[c2]) & 0x0f;
+            pp = &PreProcTable[hash];
+            if( strcmp( pp->directive, Buffer ) == 0 ) {
+                if( SkipLevel == NestLevel ) {
+                    pp->samelevel();
+                } else {
+                    pp->skipfunc();
+                }
             } else {
-                pp->skipfunc();
+                CUnknown();
             }
         } else {
             CUnknown();

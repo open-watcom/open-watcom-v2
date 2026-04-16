@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,8 +49,6 @@
 
 
 #define HasVarArgs(m)       ((m) & MFLAG_HAS_VAR_ARGS)
-
-#define PREPROC_WEIGHT(c)   ((c >= 'a' && c < 'a' + sizeof( preprocWeights )) ? preprocWeights[c - 'a'] : 0)
 
 typedef struct mac_parm MAC_PARM;
 struct mac_parm {
@@ -722,18 +720,26 @@ static void CIdent( void )
 static void preProcStmt( void )
 {
     const PPCTRL    *pp;
-    int             hash;
+    unsigned        hash;
+    int             c1;
+    int             c2;
 
     NextChar();
     NextToken();
     if( CurToken == T_ID ) {
-        hash = (TokenLen + PREPROC_WEIGHT( Buffer[0] ) + PREPROC_WEIGHT( Buffer[TokenLen - 1] )) & 0x0f;
-        pp = &controlTable[hash];
-        if( strcmp( pp->directive, Buffer ) == 0 ) {
-            if( SkipLevel == NestLevel ) {
-                pp->samelevel();
+        c1 = IndexLower( ((unsigned char *)Buffer)[0] );
+        c2 = IndexLower( ((unsigned char *)Buffer)[TokenLen - 1] );
+        if( c1 >= 0 && c2 >= 0 ) {
+            hash = (TokenLen + preprocWeights[c1] + preprocWeights[c2]) & 0x0f;
+            pp = &controlTable[hash];
+            if( strcmp( pp->directive, Buffer ) == 0 ) {
+                if( SkipLevel == NestLevel ) {
+                    pp->samelevel();
+                } else {
+                    pp->skiplevel();
+                }
             } else {
-                pp->skiplevel();
+                CUnknown();
             }
         } else {
             CUnknown();
