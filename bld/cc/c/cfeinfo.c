@@ -46,6 +46,7 @@
 #include "caux.h"
 #include "dwarfid.h"
 #include "felang.h"
+#include "scan.h"
 
 
 #define TRUNC_SYMBOL_HASH_LEN        4

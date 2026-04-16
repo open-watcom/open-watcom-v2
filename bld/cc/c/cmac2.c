@@ -180,8 +180,8 @@ static void PreProcStmt( void )
     NextChar();                 /* skip over '#' */
     PPNextToken();
     if( CurToken == T_ID ) {
-        c1 = IndexLower( ((unsigned char *)p)[0] );
-        c2 = IndexLower( ((unsigned char *)p)[TokenLen - 1] );
+        c1 = IndexLower( ((unsigned char *)Buffer)[0] );
+        c2 = IndexLower( ((unsigned char *)Buffer)[TokenLen - 1] );
         if( c1 >= 0 && c2 >= 0 ) {
             hash = (TokenLen + PreProcWeights[c1] + PreProcWeights[c2]) & 0x0f;
             pp = &PreProcTable[hash];
