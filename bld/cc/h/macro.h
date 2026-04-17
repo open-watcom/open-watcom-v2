@@ -30,9 +30,11 @@
 ****************************************************************************/
 
 
-#define MTOK(p)         (*(TOKEN *)(p))
-#define MTOKINC(p)      p += sizeof( TOKEN )
-#define MTOKDEC(p)      p -= sizeof( TOKEN )
+#define MTOK(p)         (*(unsigned char *)(p))
+#define MTOKINC(p)      p++
+#define MTOKDEC(p)      p--
+#define MTOKINCR(r)     ((r) + 1)
+#define MTOKDECR(r)     ((r) - 1)
 #define MTOKPARM(p)     (*(mac_parm_count *)(p))
 #define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
 

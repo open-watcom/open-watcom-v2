@@ -115,9 +115,9 @@ static void EnlargeTokenBuf( size_t size )
 static size_t WriteTokenBufToken( size_t i, TOKEN t )
 /***************************************************/
 {
-    EnlargeTokenBuf( i + sizeof( TOKEN ) );
-    *(TOKEN *)( TokenBuf + i ) = t;
-    return( i + sizeof( TOKEN ) );
+    EnlargeTokenBuf( MTOKINCR( i ) );
+    MTOK( TokenBuf + i ) = t;
+    return( MTOKINCR( i ) );
 }
 
 static size_t WriteTokenBufChar( size_t i, char c )
@@ -139,8 +139,8 @@ static size_t WriteTokenBufMem( size_t i, const char *buf, size_t len )
 static size_t TokenBufRemoveWSToken( size_t i )
 /*********************************************/
 {
-    if( i >= sizeof( TOKEN ) )
-        i -= sizeof( TOKEN );
+    if( i >= MTOKINCR( 0 ) )
+        return( MTOKDECR( i ) );
     return( i );
 }
 
