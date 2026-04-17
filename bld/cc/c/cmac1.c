@@ -404,61 +404,43 @@ TOKEN GetMacroToken( void )
     return( token );
 }
 
-static char *ExpandMacroToken( void )
-/************************************
+static char *expandMacroToken( MACRO_TOKEN *mtok )
+/*************************************************
  * returns Dynamically allocated buffer with expanded macro
  */
 {
-    size_t      i;
     size_t      len;
-    const char  *p;
+    const char  *src;
+    char        *dst;
     char        *buf;
-    TOKEN       tok;
 
-    tok = MTOK( MacroPtr );
-    if( tok == T_NULL )
-        return( NULL );
-    MTOKINC( MacroPtr );
-    p = NULL;
     len = 0;
-    switch( tok ) {
+    switch( mtok->token ) {
     case T_CONSTANT:
     case T_PPNUMBER:
     case T_ID:
     case T_UNEXPANDABLE_ID:
     case T_SAVED_ID:
     case T_BAD_TOKEN:
-        p = MacroPtr;
-        len = strlen( p );
-        MacroPtr += len;
-        break;
+        return( CMemStrdup( mtok->data ) );
     case T_LSTRING:
         len = 1;
         /* fall through */
     case T_STRING:
-        len += strlen( MacroPtr ) + 3;
-        buf = CMemAlloc( len );
-        i = 0;
-        if( tok == T_LSTRING )
-            buf[i++] = 'L';
-        buf[i++] = '"';
-        while( (buf[i] = *MacroPtr++) != '\0' )
-            ++i;
-        buf[i++] = '"';
-        buf[i] = '\0';
+        src = mtok->data;
+        dst = buf = CMemAlloc( len + strlen( src ) + 3 );
+        if( mtok->token == T_LSTRING )
+            *dst++ = 'L';
+        *dst++ = '"';
+        while( (*dst = *src++) != '\0' )
+            dst++;
+        *dst++ = '"';
+        *dst = '\0';
         return( buf );
     default:
-        p = TokenString[tok];
-        len = strlen( p );
-        break;
+        return( CMemStrdup( TokenString[mtok->token] ) );
     }
-    buf = NULL;
-    if( len > 0 ) {
-        buf = ToStringDup( p, len );
-    }
-    return( buf );
 }
-
 
 TOKEN SpecialMacro( MEPTR mentry )
 /********************************/
@@ -851,8 +833,7 @@ static char *GlueTokenToBuffer( MACRO_TOKEN *first, char *gluebuf )
 
     buf = NULL;
     if( first != NULL ) {
-        MacroPtr = (char *)&first->token;
-        buf = ExpandMacroToken();
+        buf = expandMacroToken( first );
     }
     if( buf == NULL ) {
         buf = gluebuf;
