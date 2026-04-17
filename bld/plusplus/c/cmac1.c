@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,13 +54,6 @@ typedef enum exp_state {
     EXPANDABLE_YES      = 1,    // macro is expandable
     EXPANDABLE_WSSKIP   = 2     // we skipped over some white space
 } exp_state;
-
-typedef struct _tokens TOKEN_LIST;
-struct _tokens {
-    TOKEN_LIST  *next;
-    unsigned    length;
-    char        buf[1];
-};
 
 typedef struct macro_token MACRO_TOKEN;
 struct macro_token {
@@ -431,25 +424,15 @@ static void saveParm(
     MEPTR               mentry,
     mac_parm_count      parmno,
     MACRO_ARG           *macro_parms,
-    TOKEN_LIST          *token_list,
     int                 total,
     BUFFER_HDR          **h )
 {
-    TOKEN_LIST *last_token;
     char *p;
 
     *h = TokenBufAddToken( *h, T_NULL );
     if( parmno < GetMacroParmCount( mentry ) ) {
         p = CMemAlloc( total + TokenBufTotalSize( *h ) + 1 );
         macro_parms[parmno].arg = p;
-        if( token_list != NULL ) {
-            last_token = token_list;
-            do {
-                token_list = token_list->next;
-                p = stxvcpy( p, token_list->buf, token_list->length );
-            } while( token_list != last_token );
-            RingFree( &token_list );
-        }
         *h = TokenBufMove( *h, p );
     }
 }
@@ -464,7 +447,6 @@ static MACRO_ARG *collectParms( MEPTR mentry )
     int             total;
     bool            ppscan_mode;
     MACRO_ARG       *macro_parms;
-    TOKEN_LIST      *token_head;
     BUFFER_HDR      *htokenbuf;
 
     macro_parms = NULL;
@@ -486,7 +468,6 @@ static MACRO_ARG *collectParms( MEPTR mentry )
         } while( token == T_WHITE_SPACE );
         /* token will now be a '(' */
         bracket = 0;
-        token_head = NULL;
         total = 0;
         for( ;; ) {
             prev_token = token;
@@ -518,10 +499,9 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                   !( MacroHasVarArgs( mentry ) && parmno == ( parm_count_reqd - 1 ) ) ) {
                 TokenBufRemoveWhiteSpace( htokenbuf );
                 if( macro_parms != NULL ) {     // if expecting parms
-                    saveParm( mentry, parmno, macro_parms, token_head, total, &htokenbuf );
+                    saveParm( mentry, parmno, macro_parms, total, &htokenbuf );
                 }
                 ++parmno;
-                token_head = NULL;
                 total = 0;
                 continue;
             }
@@ -555,7 +535,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
         }
         TokenBufRemoveWhiteSpace( htokenbuf );
         if( macro_parms != NULL ) {     // if expecting parms
-            saveParm( mentry, parmno, macro_parms, token_head, total, &htokenbuf );
+            saveParm( mentry, parmno, macro_parms, total, &htokenbuf );
             ++parmno;
         } else if( TokenBufSize( htokenbuf ) + total != 0 ) {
             ++parmno;
@@ -567,7 +547,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
             macroDiagNesting();
             do {
                 htokenbuf = TokenBufAddToken( htokenbuf, T_WHITE_SPACE );
-                saveParm( mentry, parmno, macro_parms, NULL, 1, &htokenbuf );
+                saveParm( mentry, parmno, macro_parms, 1, &htokenbuf );
                 ++parmno;
             } while( parmno < parm_count_reqd );
         } else if( !MacroHasVarArgs( mentry ) && ( parmno > parm_count_reqd ) ) {
