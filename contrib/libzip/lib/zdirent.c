@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 
 #include "wio.h"
@@ -77,7 +78,7 @@ _zip_cdir_new(int nentry, struct zip_error *error)
 {
     struct zip_cdir *cd;
 
-    if (nentry < 0 || (nentry > 0 && (size_t)nentry > (size_t)-1 / sizeof(struct zip_dirent))) {
+    if (nentry < 0 || nentry > INT_MAX / (int)sizeof(struct zip_dirent)) {
         _zip_error_set(error, ZIP_ER_MEMORY, 0);
         return NULL;
     }
@@ -90,7 +91,7 @@ _zip_cdir_new(int nentry, struct zip_error *error)
     if (nentry == 0) {
         cd->entry = NULL;
     }
-    else if ((cd->entry=ZIP_ALLOC(sizeof(*(cd->entry))*nentry)) == NULL) {
+    else if ((cd->entry=ZIP_ALLOC(sizeof(*(cd->entry))*(unsigned)nentry)) == NULL) {
         _zip_error_set(error, ZIP_ER_MEMORY, 0);
         ZIP_FREE(cd);
         return NULL;

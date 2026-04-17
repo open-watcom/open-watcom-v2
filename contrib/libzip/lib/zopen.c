@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 
 #include "wio.h"
@@ -193,8 +194,8 @@ zip_open(const char *fn, int flags, int *zep)
         return NULL;
     }
 
-    if (cdir->nentry > 0
-        && (size_t)cdir->nentry > (size_t)-1 / sizeof(struct zip_entry)) {
+    if (cdir->nentry < 0
+        || cdir->nentry > INT_MAX / (int)sizeof(struct zip_entry)) {
         set_error(zep, NULL, ZIP_ER_MEMORY);
         _zip_free(za);
         return NULL;
@@ -202,7 +203,7 @@ zip_open(const char *fn, int flags, int *zep)
     if (cdir->nentry == 0) {
         za->entry = NULL;
     }
-    else if ((za->entry=ZIP_ALLOC(sizeof(*(za->entry))*cdir->nentry)) == NULL) {
+    else if ((za->entry=ZIP_ALLOC(sizeof(*(za->entry))*(unsigned)cdir->nentry)) == NULL) {
         set_error(zep, NULL, ZIP_ER_MEMORY);
         _zip_free(za);
         return NULL;
