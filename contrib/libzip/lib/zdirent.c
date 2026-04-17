@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 
 #include "wio.h"
@@ -77,12 +78,20 @@ _zip_cdir_new(int nentry, struct zip_error *error)
 {
     struct zip_cdir *cd;
 
+    if (nentry < 0 || nentry > INT_MAX / (int)sizeof(struct zip_dirent)) {
+        _zip_error_set(error, ZIP_ER_MEMORY, 0);
+        return NULL;
+    }
+
     if ((cd=ZIP_ALLOC(sizeof(*cd))) == NULL) {
         _zip_error_set(error, ZIP_ER_MEMORY, 0);
         return NULL;
     }
 
-    if ((cd->entry=ZIP_ALLOC(sizeof(*(cd->entry))*nentry)) == NULL) {
+    if (nentry == 0) {
+        cd->entry = NULL;
+    }
+    else if ((cd->entry=ZIP_ALLOC(sizeof(*(cd->entry))*(unsigned)nentry)) == NULL) {
         _zip_error_set(error, ZIP_ER_MEMORY, 0);
         ZIP_FREE(cd);
         return NULL;
@@ -282,14 +291,18 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
         if (zde->extrafield_len) {
             zde->extrafield = _zip_readstr(&cur, zde->extrafield_len, 0,
                                            error);
-            if (!zde->extrafield)
+            if (!zde->extrafield) {
+                _zip_dirent_finalize(zde);
                 return -1;
+            }
         }
 
         if (zde->comment_len) {
             zde->comment = _zip_readstr(&cur, zde->comment_len, 0, error);
-            if (!zde->comment)
+            if (!zde->comment) {
+                _zip_dirent_finalize(zde);
                 return -1;
+            }
         }
     }
     else {
@@ -302,14 +315,18 @@ _zip_dirent_read(struct zip_dirent *zde, FILE *fp,
         if (zde->extrafield_len) {
             zde->extrafield = _zip_readfpstr(fp, zde->extrafield_len, 0,
                                              error);
-            if (!zde->extrafield)
+            if (!zde->extrafield) {
+                _zip_dirent_finalize(zde);
                 return -1;
+            }
         }
 
         if (zde->comment_len) {
             zde->comment = _zip_readfpstr(fp, zde->comment_len, 0, error);
-            if (!zde->comment)
+            if (!zde->comment) {
+                _zip_dirent_finalize(zde);
                 return -1;
+            }
         }
     }
 

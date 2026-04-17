@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 #include <sys/types.h>
 
 #include "wio.h"
@@ -193,7 +194,16 @@ zip_open(const char *fn, int flags, int *zep)
         return NULL;
     }
 
-    if ((za->entry=ZIP_ALLOC(sizeof(*(za->entry))*cdir->nentry)) == NULL) {
+    if (cdir->nentry < 0
+        || cdir->nentry > INT_MAX / (int)sizeof(struct zip_entry)) {
+        set_error(zep, NULL, ZIP_ER_MEMORY);
+        _zip_free(za);
+        return NULL;
+    }
+    if (cdir->nentry == 0) {
+        za->entry = NULL;
+    }
+    else if ((za->entry=ZIP_ALLOC(sizeof(*(za->entry))*(unsigned)cdir->nentry)) == NULL) {
         set_error(zep, NULL, ZIP_ER_MEMORY);
         _zip_free(za);
         return NULL;
@@ -269,6 +279,13 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
     cd->comment = NULL;
     cd->comment_len = _zip_read2(&cdp);
 
+    if (cd->size + cd->comment_len + EOCDLEN < cd->size) {
+        /* integer overflow in size calculation */
+        _zip_error_set(error, ZIP_ER_NOZIP, 0);
+        _zip_cdir_free(cd);
+        return NULL;
+    }
+
     /* some zip files are broken; their internal comment length
        says 0, but they have 1 or 2 comment bytes */
     if ((comlen-cd->comment_len < 0) || (comlen-cd->comment_len > 2)
@@ -308,6 +325,9 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
             return NULL;
         }
     }
+
+    for (i=0; i<cd->nentry; i++)
+        _zip_dirent_init(cd->entry+i);
 
     for (i=0; i<cd->nentry; i++) {
         if ((_zip_dirent_read(cd->entry+i, fp, bufp, eocd-cdp, 0,
