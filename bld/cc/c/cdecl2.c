@@ -718,7 +718,7 @@ bool DeclList( SYM_HANDLE *sym_head )
                         FlushBadCode();
                         continue;
                     default:
-                        CErr2p( ERR_EXPECTING_DECL_BUT_FOUND, Tokens[CurToken] );
+                        CErr2p( ERR_EXPECTING_DECL_BUT_FOUND, TokenString[CurToken] );
                         NextToken();
                         break;
                     }

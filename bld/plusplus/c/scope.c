@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -695,7 +695,7 @@ static void injectBool( void )
 
     /* 'bool' cannot be a keyword because the idiots at MS use it as an id */
     if( CompFlags.extensions_enabled ) {
-        name = NameCreateNoLen( Tokens[T_BOOL] );
+        name = NameCreateNoLen( TokenString[T_BOOL] );
         KwDisable( T_BOOL );
         SymCreateFileScope( GetBasicType( TYP_BOOL ), SYMC_TYPEDEF, SYMF_NONE, name );
     }

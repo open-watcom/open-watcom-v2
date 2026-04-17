@@ -70,7 +70,7 @@ TOKEN KwLookup(         // TRANSFORM TO T_ID OR KEYWORD TOKEN
     token = keyword_hash( Buffer, TokValue, len ) + FIRST_KEYWORD;
 
     ++len;
-    if( NameMemCmp( Tokens[token], Buffer, len ) != 0 || (kw_flags[token / BITSIZE] & _bits[token % BITSIZE]) ) {
+    if( NameMemCmp( TokenString[token], Buffer, len ) != 0 || (kw_flags[token / BITSIZE] & _bits[token % BITSIZE]) ) {
         ExtraRptIncrementCtr( ctr_ids );
         token = T_ID;
     }

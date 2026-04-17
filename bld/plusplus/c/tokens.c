@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@
     #define TC_A3 "\x00\x00\x00"
 #endif
 
-const char *Tokens[] = {
+const char *TokenString[] = {
     #define pick(token,string,class,prec) string class,
     #include "_ctokens.h"
     #undef pick

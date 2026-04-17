@@ -256,7 +256,7 @@ static void DumpMacroDefn( const char *p )
             MTOKPARMINC( p );
             break;
         default:
-            fprintf( CppFile, "%s", Tokens[token] );
+            fprintf( CppFile, "%s", TokenString[token] );
             break;
         }
     }
@@ -448,7 +448,7 @@ static char *ExpandMacroToken( void )
         buf[i] = '\0';
         return( buf );
     default:
-        p = Tokens[tok];
+        p = TokenString[tok];
         len = strlen( p );
         break;
     }
@@ -708,7 +708,7 @@ void DumpMDefn( const char *p )
             MTOKPARMINC( p );
             break;
         default:
-            printf( "%s", Tokens[token] );
+            printf( "%s", TokenString[token] );
             break;
         }
     }
@@ -1063,7 +1063,7 @@ static MACRO_TOKEN *BuildString( const char *p )
                 WriteBufferChar( *p++ );
                 break;
             default:
-                WriteBufferString( Tokens[tok] );
+                WriteBufferString( TokenString[tok] );
                 break;
             }
         }
@@ -1190,7 +1190,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             nested->substituting_parms = false;
             break;
         default:
-            mtok = BuildAToken( tok, Tokens[tok] );
+            mtok = BuildAToken( tok, TokenString[tok] );
             break;
         }
         if( mtok != NULL ) {

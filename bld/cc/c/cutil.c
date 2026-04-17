@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ static const char *NameOfCurToken( void )
         token = Buffer;
         break;
     default:
-        token = Tokens[CurToken];
+        token = TokenString[CurToken];
     }
     return( token );
 }
@@ -86,13 +86,13 @@ bool ExpectingToken( TOKEN token )
     if( CurToken == token ) {
         return( true );
     }
-    CErr3p( ERR_EXPECTING_BUT_FOUND, Tokens[token], NameOfCurToken() );
+    CErr3p( ERR_EXPECTING_BUT_FOUND, TokenString[token], NameOfCurToken() );
     return( false );
 }
 
 void ExpectingAfter( TOKEN token, TOKEN after_token )
 {
-    CErr4p( ERR_EXPECTING_AFTER_BUT_FOUND, Tokens[token], Tokens[after_token], NameOfCurToken() );
+    CErr4p( ERR_EXPECTING_AFTER_BUT_FOUND, TokenString[token], TokenString[after_token], NameOfCurToken() );
 }
 
 

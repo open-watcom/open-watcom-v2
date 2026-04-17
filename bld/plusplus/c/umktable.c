@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,7 @@
 #include "ctokens.h"
 #include "xlat.gh"
 
-const char *Tokens[] = {
+const char *TokenString[] = {
     #define pick(token,string,class,prec) string,
     #include "_ctokens.h"
     #undef pick
@@ -92,7 +93,7 @@ int main( int argc, char **argv )
     for( i = 0; i < 256; ++i ) {
         fprintf( ofp, "%3u,", toYACC[i] );
         if( i < T_LAST_TOKEN ) {
-            fprintf( ofp, "\t/* %s */", Tokens[i] );
+            fprintf( ofp, "\t/* %s */", TokenString[i] );
         }
         fprintf( ofp, "\n" );
     }

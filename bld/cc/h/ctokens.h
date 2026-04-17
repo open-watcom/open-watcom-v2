@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,6 +107,6 @@ typedef enum TOKEN {
 #define T_UNEXPANDABLE_ID   T_LAST_TOKEN
 #define T_PRAGMA_END        (T_LAST_TOKEN + 1)
 
-extern  const char  *Tokens[];
+extern  const char  *TokenString[];
 extern  token_class TokenClass[];
 

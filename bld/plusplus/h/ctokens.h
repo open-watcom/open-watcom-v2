@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,4 +43,4 @@ typedef enum TOKEN {
 #define T_REWRITE_MODS      T_LAST_TOKEN
 #define T_PRAGMA_END        (T_LAST_TOKEN + 1)
 
-extern  const char  *Tokens[];
+extern  const char  *TokenString[];

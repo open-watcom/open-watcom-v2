@@ -266,7 +266,7 @@ static void PrintPostNotes( void )
             PrintType( INFO_TGT_CNV_TYPE, PostList->u.o.types[1] );
             break;
         case POSTLIST_TWOTYPES_2:
-            CInfoMsg( INFO_OPERATOR, Tokens[PostList->u.o.opr] );
+            CInfoMsg( INFO_OPERATOR, TokenString[PostList->u.o.opr] );
             PrintType( INFO_FIRST_OPND_TYPE, PostList->u.o.types[0] );
             PrintType( INFO_SECOND_OPND_TYPE, PostList->u.o.types[1] );
             break;

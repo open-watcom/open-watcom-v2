@@ -241,7 +241,7 @@ TOKEN KwLookup( const char *buf, size_t len )
             return( T_ID );
         break;
     }
-    keyword = Tokens[token];
+    keyword = TokenString[token];
     if( *keyword == buf[0] ) {
         if( strcmp( keyword, buf ) == 0 ) {
             return( token );

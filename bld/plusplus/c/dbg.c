@@ -106,7 +106,7 @@ static void printToken(         // PRINT CURRENT TOKEN
     } else if( CurToken == T_CONSTANT ) {
         printf( "T_CONSTANT of type(%d) '%s'\n", ConstType, Buffer );
     } else {
-        printf( "'%s'\n", Tokens[CurToken] );
+        printf( "'%s'\n", TokenString[CurToken] );
     }
 }
 
@@ -205,7 +205,7 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
             printf( "parm#%c", '1' + *p++ );
             break;
         default:
-            printf( "%s", Tokens[tok] );
+            printf( "%s", TokenString[tok] );
             break;
         }
     }

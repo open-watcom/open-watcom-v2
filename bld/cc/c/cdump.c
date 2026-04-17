@@ -131,7 +131,7 @@ void DumpToken( void )
         } else if( CurToken == T_CONSTANT ) {
             printf( "%lld\n", Constant64.u._64[0] );
         } else {
-            printf( "'%s'\n", Tokens[CurToken] );
+            printf( "'%s'\n", TokenString[CurToken] );
         }
     }
 }
@@ -189,7 +189,7 @@ static TYPEPTR Object( TYPEPTR typ )
 
 static void put_keyword( int keyword, STRCHUNK *pch )
 {
-    ChunkSaveStrWord( pch, Tokens[keyword] );
+    ChunkSaveStrWord( pch, TokenString[keyword] );
 }
 
 

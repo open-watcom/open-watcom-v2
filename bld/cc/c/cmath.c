@@ -1340,7 +1340,7 @@ TREEPTR AddOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         }
     } else if( op2_type == PTR ) {      /* &&  op1_type != PTR */
         if( opr == T_PLUS_EQUAL || opr == T_MINUS_EQUAL || opr == T_MINUS ) {
-            CErr2p( ERR_RIGHT_OPERAND_IS_A_POINTER, Tokens[opr] );
+            CErr2p( ERR_RIGHT_OPERAND_IS_A_POINTER, TokenString[opr] );
         }
         res_type = TypeOf( op2 );
         size = SizeOfArg( res_type->object );

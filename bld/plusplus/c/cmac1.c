@@ -57,9 +57,9 @@ typedef enum exp_state {
 
 typedef struct macro_token MACRO_TOKEN;
 struct macro_token {
-    MACRO_TOKEN *next;
-    TOKEN       token;
-    char        data[1];
+    struct macro_token  *next;
+    TOKEN               token;
+    char                data[1];
 };
 
 typedef struct macro_arg {
@@ -275,7 +275,7 @@ static void expandMacroToken( MACRO_TOKEN *m )
         WriteBufferNullChar();
         break;
     default:
-        WriteBufferString( Tokens[m->token] );
+        WriteBufferString( TokenString[m->token] );
         break;
     }
 }
@@ -477,13 +477,15 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                     break;
                 }
             } while( TokenBufSize( htokenbuf ) == 0 );
-            if( token == T_EOF || token == T_NULL ) {
+            if( token == T_EOF
+              || token == T_NULL ) {
                 CErr( ERR_INCOMPLETE_MACRO, mentry->macro_name );
                 InfMacroDecl( mentry );
                 macroDiagNesting();
                 break;
             }
-            if( token == T_BAD_TOKEN && BadTokenInfo == ERR_MISSING_QUOTE ) {
+            if( token == T_BAD_TOKEN
+              && BadTokenInfo == ERR_MISSING_QUOTE ) {
                 CErr1( ERR_MISSING_QUOTE );
                 InfMacroDecl( mentry );
                 macroDiagNesting();
@@ -495,8 +497,10 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                 if( bracket == 0 )
                     break;
                 --bracket;
-            } else if( token == T_COMMA && bracket == 0 &&
-                  !( MacroHasVarArgs( mentry ) && parmno == ( parm_count_reqd - 1 ) ) ) {
+            } else if( token == T_COMMA
+              && bracket == 0
+              && !( MacroHasVarArgs( mentry )
+              && parmno == ( parm_count_reqd - 1 ) ) ) {
                 TokenBufRemoveWhiteSpace( htokenbuf );
                 if( macro_parms != NULL ) {     // if expecting parms
                     saveParm( mentry, parmno, macro_parms, total, &htokenbuf );
@@ -1031,7 +1035,7 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             last_non_ws = TokenLen;
             break;
         default:
-            WriteBufferString( Tokens[tok] );
+            WriteBufferString( TokenString[tok] );
             last_non_ws = TokenLen;
             break;
         }
@@ -1099,7 +1103,7 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
             prev_token = T_STRING;
             break;
         default:
-            ptail = buildTokenOnEnd( ptail, curr_token, Tokens[curr_token] );
+            ptail = buildTokenOnEnd( ptail, curr_token, TokenString[curr_token] );
             prev_token = curr_token;
             break;
         }

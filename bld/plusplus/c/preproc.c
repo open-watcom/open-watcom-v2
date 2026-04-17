@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -319,7 +319,7 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
         case T_NULL:
             break;
         default:
-            PrtString( Tokens[CurToken] );
+            PrtString( TokenString[CurToken] );
         }
     }
 }
@@ -338,7 +338,7 @@ void PpParse(                   // PARSE WHEN PREPROCESSING
 }
 
 
-const char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT TOK
+const char *CurTokenString(     // RETURN A PRINTABLE STRING FOR CURRENT TOK
     void )
 {
     const char *token;
@@ -354,7 +354,7 @@ const char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT T
         token = Buffer;
         break;
     default:
-        token = Tokens[CurToken];
+        token = TokenString[CurToken];
     }
     return( token );
 }
@@ -363,7 +363,7 @@ const char *TokenString(              // RETURN A PRINTABLE STRING FOR CURRENT T
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
     const char *a_token )       // - required token
 {
-    CErr( ERR_EXPECTING_BUT_FOUND, a_token, TokenString() );
+    CErr( ERR_EXPECTING_BUT_FOUND, a_token, CurTokenString() );
 }
 
 
@@ -393,7 +393,7 @@ bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     if( ( CurToken == token ) || ( CurToken == alt_token ) ) {
         return( true );
     }
-    CErr( ERR_EXPECTING_BUT_FOUND, Tokens[token], TokenString() );
+    CErr( ERR_EXPECTING_BUT_FOUND, TokenString[token], CurTokenString() );
     return( false );
 }
 

@@ -1375,13 +1375,13 @@ void CppPrtToken( TOKEN token )
             break;
         case T_WHITE_SPACE:
             if( PrintWhiteSpace || CompFlags.in_pragma ) {
-                CppPuts( Tokens[token] );
+                CppPuts( TokenString[token] );
             } else {
                 PrintWhiteSpace = true; //Toggle
             }
             break;
         default:
-            CppPuts( Tokens[token] );
+            CppPuts( TokenString[token] );
         }
     }
 }

@@ -3223,7 +3223,7 @@ static void setStorageClass( SYMBOL sym, stg_class_t sc )
 
 static void reportRepeatedInfo( TOKEN token )
 {
-    CErr2p( INF_REPEATED_ITEM, Tokens[token] );
+    CErr2p( INF_REPEATED_ITEM, TokenString[token] );
 }
 
 static void dumpInfoFunctionMods( type_flag repeats )

@@ -772,7 +772,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
         default:
             /* error! */
             PTreeFreeSubtrees( curr );
-            CErr2p( ERR_COLON_COLON_SYNTAX, TokenString() );
+            CErr2p( ERR_COLON_COLON_SYNTAX, CurTokenString() );
             return( Y_IMPOSSIBLE );
         }
     }
@@ -871,7 +871,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
             return( Y_TEMPLATE_SCOPED_TIMES );
         default:
             PTreeFreeSubtrees( curr );
-            CErr2p( ERR_COLON_COLON_SYNTAX, TokenString() );
+            CErr2p( ERR_COLON_COLON_SYNTAX, CurTokenString() );
             /* error! */
             return( Y_IMPOSSIBLE );
         }
@@ -914,7 +914,7 @@ static YYTOKENTYPE globalChain( PARSE_STACK *state, bool special_typename )
         return( Y_GLOBAL_DELETE );
     }
     PTreeFreeSubtrees( tree );
-    CErr2p( ERR_COLON_COLON_SYNTAX, TokenString() );
+    CErr2p( ERR_COLON_COLON_SYNTAX, CurTokenString() );
     /* error! */
     return( Y_IMPOSSIBLE );
 }
@@ -2301,7 +2301,7 @@ static void syntaxError( PARSE_STACK *state )
             break;
         default:
             if( state->expect != NULL ) {
-                CErr( ERR_SYNTAX_UNEXPECTED_TOKEN, TokenString(), state->expect );
+                CErr( ERR_SYNTAX_UNEXPECTED_TOKEN, CurTokenString(), state->expect );
             } else {
                 CErr1( ERR_SYNTAX );
             }
@@ -2692,7 +2692,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     LinkagePop();
     SrcFileSetTokenLocn( &locn );
     CurToken = T_EOF;
-    strcpy( Buffer, Tokens[T_EOF] );
+    strcpy( Buffer, TokenString[T_EOF] );
 }
 
 void ParseFunctionInstantiation( REWRITE *defn )
@@ -2748,7 +2748,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     LinkagePop();
     SrcFileSetTokenLocn( &locn );
     CurToken = T_EOF;
-    strcpy( Buffer, Tokens[T_EOF] );
+    strcpy( Buffer, TokenString[T_EOF] );
 }
 
 static unsigned decl_paren_depth;

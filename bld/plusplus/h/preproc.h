@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -249,7 +249,7 @@ void DoMacroExpansion(          // EXPAND A MACRO
 void Expecting(                 // ISSUE EXPECTING ERROR FOR A TOKEN
     const char *a_token )       // - required token
 ;
-const char *TokenString(        // RETURN A PRINTABLE STRING FOR CURRENT TOK
+const char *CurTokenString(     // RETURN A PRINTABLE STRING FOR CURRENT TOK
     void )
 ;
 bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN

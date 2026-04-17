@@ -133,7 +133,7 @@ void DbgDumpOperatorStack( void )       // dump PPEXPN_OPERATOR_STACK
     if( TOGGLEDBG( ppexpn ) ) {
         Stack_forall( HeadOperator, cur ) {
             printf("Token: %d %s Pos %d\n", cur->token
-                                          , Tokens[cur->token]
+                                          , TokenString[cur->token]
                                           , cur->loc.pos );
         }
     }
@@ -141,7 +141,7 @@ void DbgDumpOperatorStack( void )       // dump PPEXPN_OPERATOR_STACK
 
 void DbgDumpToken( TOKEN token )        // dump PPEXPN_OPERAND_STACK
 {
-    printf("Token: %s\n", Tokens[token] );
+    printf("Token: %s\n", TokenString[token] );
 }
 
 void DbgDumpOperandStack( void )        // dump PPEXPN_OPERAND_STACK
@@ -297,7 +297,7 @@ static bool PpNextToken( void )
 static void unexpectedCurToken( void )
 /************************************/
 {
-    CErr2p( ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION, Tokens[CurToken] );
+    CErr2p( ERR_UNEXPECTED_IN_CONSTANT_EXPRESSION, TokenString[CurToken] );
 }
 
 static bool COperand( void )
@@ -527,11 +527,11 @@ static bool Binary( TOKEN *token, ppvalue *e1, ppvalue *e2, loc_info *loc )
             return( true );
         } else {
             SetErrLoc( &loc->locn );
-            CErr2p( ERR_BINARY_MISSING_LEFT_OPERAND, Tokens[*token] );
+            CErr2p( ERR_BINARY_MISSING_LEFT_OPERAND, TokenString[*token] );
         }
     } else {
         SetErrLoc( &loc->locn );
-        CErr2p( ERR_BINARY_MISSING_RIGHT_OPERAND, Tokens[*token] );
+        CErr2p( ERR_BINARY_MISSING_RIGHT_OPERAND, TokenString[*token] );
     }
     return( false );
 }
@@ -841,7 +841,7 @@ static bool CUnary( void )
         PushOperand( p, &operator_info );
     } else {
         SetErrLoc( &operator_info.locn );
-        CErr2p( ERR_UNARY_OPERATOR_MISSING_OPERAND, Tokens[top] );
+        CErr2p( ERR_UNARY_OPERATOR_MISSING_OPERAND, TokenString[top] );
         return( true );
     }
     return( false );
