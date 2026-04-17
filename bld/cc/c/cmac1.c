@@ -51,12 +51,6 @@ typedef enum exp_state {
     EXPANDABLE_WSSKIP   = 2     // we skipped over some white space
 } exp_state;
 
-typedef struct tokens {
-    struct  tokens  *next;
-    size_t          length;
-    char            buf[1];
-} tokens;
-
 typedef struct macro_token {
     struct macro_token  *next;
     TOKEN               token;
@@ -539,27 +533,17 @@ static TOKEN NextMToken( void )
     return( token );
 }
 
-static void SaveParm( MEPTR mentry, size_t len, mac_parm_count parmno,
-                     MACRO_ARG *macro_parms, tokens *token_list )
-/*********************************************************************/
+static void SaveParm( MEPTR mentry, size_t len, mac_parm_count parmno, MACRO_ARG *macro_parms )
+/*********************************************************************************************/
 {
-    tokens          *token;
     char            *p;
-    size_t          total;
 
     len = WriteTokenBufToken( len, T_NULL );
     if( parmno < GetMacroParmCount( mentry ) ) {
         p = CMemAlloc( len );
         macro_parms[parmno].arg = p;
         if( p != NULL ) {
-            total = 0;
-            while( (token = token_list) != NULL ) {
-                token_list = token->next;
-                memcpy( &p[total], token->buf, token->length );
-                total += token->length;
-                CMemFree( token );
-            }
-            memcpy( &p[total], TokenBuf, len );
+            memcpy( p, TokenBuf, len );
         }
     }
 }
@@ -575,7 +559,6 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
     mac_parm_count  parm_count_reqd;
     bool            ppscan_mode;
     MACRO_ARG       *macro_parms;
-    tokens          *token_head;
 
     macro_parms = NULL;
     if( MacroWithParenthesis( mentry ) ) {     /* if () expected */
@@ -592,7 +575,6 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
          * token will now be a '('
          */
         bracket = 0;
-        token_head = NULL;
         len = 0;
         for( ;; ) {
             prev_token = token;
@@ -623,10 +605,9 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
                     len = TokenBufRemoveWSToken( len );
                 }
                 if( macro_parms != NULL ) {     // if expecting parms
-                    SaveParm( mentry, len, parmno, macro_parms, token_head );
+                    SaveParm( mentry, len, parmno, macro_parms );
                 }
                 ++parmno;
-                token_head = NULL;
                 len = 0;
                 continue;
             }
@@ -660,7 +641,7 @@ static MACRO_ARG *CollectParms( MEPTR mentry )
             len = TokenBufRemoveWSToken( len );
         }
         if( macro_parms != NULL ) {     // if expecting parms
-            SaveParm( mentry, len, parmno, macro_parms, token_head );
+            SaveParm( mentry, len, parmno, macro_parms );
             ++parmno;
         } else if( len != 0 ) {
             ++parmno;                   // will cause "too many parms" error
