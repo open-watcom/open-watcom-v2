@@ -41,19 +41,21 @@
 #include "symmem.h"
 
 
+#define ALLOC_ALIGN         sizeof( void  * )
+
 #define SYM_BLOCK_SIZE      _16K
 #define SYM_BLOCK_MIN       32
 
 typedef struct sym_block {
     struct sym_block    *next;       /* NOTE: this *must* be the first field */
     size_t              size;
-    char                block[1];
+//    char                block[];
 } sym_block;
 
-#define ALLOC_SIZE  (sizeof( sym_block ) - 1)
+#define BLOCK_SIZE(x)   (__ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
 
 typedef struct {
-    sym_block *     list;
+    sym_block       *list;
     size_t          currbrk;
 } block_data;
 
@@ -83,7 +85,7 @@ static bool ShrinkBlock( block_data *block )
         return( false );
     if( block->currbrk >= block->list->size )
         return( false );
-    new = MemReallocSafe( block->list, block->currbrk + ALLOC_SIZE );
+    new = MemReallocSafe( block->list, BLOCK_SIZE( block->currbrk ) );
     new->size = block->currbrk;
     /* assuming that a shrinkage will not move the block */
   #ifdef DEVBUILD
@@ -125,7 +127,7 @@ static void GetNewBlock( block_data *block, size_t size )
     if( try < size )
         try = size;
     for( ;; ) {
-        new = MemAlloc( try + ALLOC_SIZE );
+        new = MemAlloc( BLOCK_SIZE( try ) );
         if( new != NULL )
             break;
         try /= 2;
@@ -145,14 +147,14 @@ static void *AllocBlock( size_t size, block_data *block )
     void            *ptr;
     size_t          newbrk;
 
-    size = __ROUND_UP_SIZE( size, sizeof( int ) );
+    size = __ROUND_UP_SIZE( size, ALLOC_ALIGN );
     newbrk = block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );
     } else if( newbrk > block->list->size ) {
         GetNewBlock( block, size );
     }
-    ptr = block->list->block + block->currbrk;
+    ptr = (char *)block->list + BLOCK_SIZE( block->currbrk );
     block->currbrk += size;
     return( ptr );
 }
