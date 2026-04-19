@@ -42,20 +42,6 @@
   chunks.
 */
 
-typedef struct cv_t     *carve_t;
-
-extern carve_t  CarveCreate( unsigned elm_size, unsigned how_many );
-extern void     CarveRestart( carve_t carver, unsigned );
-extern void     CarvePurge( carve_t carver );
-extern void     CarveVerifyAllGone( carve_t carver, const char * );
-extern void     CarveDestroy( carve_t carver );
-
-extern void     *CarveAlloc( carve_t carver );
-extern void     *CarveZeroAlloc( carve_t carver );
-extern void     CarveFree( carve_t carver, void *elm );
-
-typedef unsigned_32             carve_index;
-
 #define CV_SHIFT                16
 #define CV_MASK                 ((1<<CV_SHIFT)-1)
 
@@ -69,6 +55,20 @@ enum {
     CARVE_NULL_INDEX    = MK_INDEX( 0, 0 ),
     CARVE_INVALID_INDEX = MK_INDEX( 0, 1 ),
 };
+
+typedef unsigned_32     carve_index;
+
+typedef struct cv_t     *carve_t;
+
+extern carve_t  CarveCreate( unsigned elm_size, unsigned how_many );
+extern void     CarveRestart( carve_t carver, unsigned );
+extern void     CarvePurge( carve_t carver );
+extern void     CarveVerifyAllGone( carve_t carver, const char * );
+extern void     CarveDestroy( carve_t carver );
+
+extern void     *CarveAlloc( carve_t carver );
+extern void     *CarveZeroAlloc( carve_t carver );
+extern void     CarveFree( carve_t carver, void *elm );
 
 extern void     *CarveGetIndex( carve_t, void * );
 extern void     CarveWalkBlocks( carve_t, void (*)(carve_t, void *, void *), void * );
