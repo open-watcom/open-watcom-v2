@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,18 +45,7 @@
 typedef struct blk blk_t;
 typedef struct free_t free_t;
 
-typedef struct {
-    free_t *    free_list;
-    free_t *    insert;
-    blk_t *     blk_list;
-    blk_t **    blk_map;
-    unsigned    elm_size;
-    unsigned    elm_count;
-    unsigned    blk_top;
-    unsigned    blk_count;
-    unsigned    blk_size;
-    boolbit     size_chg : 1;
-} cv_t, *carve_t;
+typedef struct cv_t *carve_t;
 
 extern carve_t CarveCreate( unsigned elm_size, unsigned how_many );
 extern void CarveRestart( carve_t cv, unsigned );

@@ -38,6 +38,19 @@
 #include "carve.h"
 
 
+typedef struct cv_t {
+    free_t *    free_list;
+    free_t *    insert;
+    blk_t *     blk_list;
+    blk_t **    blk_map;
+    unsigned    elm_size;
+    unsigned    elm_count;
+    unsigned    blk_top;
+    unsigned    blk_count;
+    unsigned    blk_size;
+    boolbit     size_chg : 1;
+} cv_t;
+
 struct blk {
     struct blk  *next;
     boolbit     modified    : 1;
