@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,16 +53,16 @@ typedef struct {
      carve_info         segdatas;       // segdata info
      carve_info         symbols;        // symbol info
      unsigned_32        altdefsize;     // size of altdef data
-     cv_index           rootmodidx;     // Root->mods swizzled pointer
-     cv_index           headsymidx;     // HeadSym swizzled pointer
-     cv_index           libmodidx;      // LibModules swizzled pointer
+     carve_index        rootmodidx;     // Root->mods swizzled pointer
+     carve_index        headsymidx;     // HeadSym swizzled pointer
+     carve_index        libmodidx;      // LibModules swizzled pointer
      unsigned_32        linkstate;      // value of LinkState
      unsigned_32        exename;        // name of the .exe
      unsigned_32        symname;        // name of the sym file
      unsigned_32        numdllsyms;     // OS/2&PE only: number of dll symbols
      unsigned_32        numexports;     // OS/2&PE only: number of exports
-     cv_index           startmodidx;    // start module swizzled pointer
-     cv_index           startidx;       // swizzled pointer to start object
+     carve_index        startmodidx;    // start module swizzled pointer
+     carve_index        startidx;       // swizzled pointer to start object
      unsigned_32        startoff;       // delta from object of start addr.
      unsigned_32        flags;          // miscellaneous flags
      unsigned_32        numuserlibs;    // number of user specified libs
@@ -92,7 +92,7 @@ struct perm_read_info_struct {
     char        *buffer;
     unsigned    num;
     void        (*cbfn)(void *, struct perm_read_info_struct *);
-    carve_t     cv;
+    carve_t     carver;
 };
 
 typedef struct perm_read_info_struct perm_read_info;

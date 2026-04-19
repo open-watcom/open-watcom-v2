@@ -471,13 +471,13 @@ static void PrepStartValue( inc_file_header *hdr )
 /************************************************/
 {
     if( StartInfo.mod != NULL && !StartInfo.user_specd ) {
-        hdr->startmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, StartInfo.mod );
+        hdr->startmodidx = (carve_index)(pointer_uint)CarveGetIndex( CarveModEntry, StartInfo.mod );
         if( StartInfo.type == START_IS_SDATA ) {
             hdr->flags |= INC_FLAG_START_SEG;
-            hdr->startidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
+            hdr->startidx = (carve_index)(pointer_uint)CarveGetIndex( CarveSegData, StartInfo.targ.sdata );
         } else {
             DbgAssert( StartInfo.type == START_IS_SYM );
-            hdr->startidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
+            hdr->startidx = (carve_index)(pointer_uint)CarveGetIndex( CarveSymbol, StartInfo.targ.sym );
         }
         hdr->startoff = StartInfo.off;
     } else {
@@ -568,9 +568,9 @@ void WritePermData( void )
     hdr.strtabsize = strsize;
     QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
     memcpy( hdr.signature, INC_FILE_SIG, INC_FILE_SIG_SIZE );
-    hdr.rootmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, Root->mods );
-    hdr.headsymidx = (cv_index)(pointer_uint)CarveGetIndex( CarveSymbol, HeadSym );
-    hdr.libmodidx = (cv_index)(pointer_uint)CarveGetIndex( CarveModEntry, LibModules );
+    hdr.rootmodidx = (carve_index)(pointer_uint)CarveGetIndex( CarveModEntry, Root->mods );
+    hdr.headsymidx = (carve_index)(pointer_uint)CarveGetIndex( CarveSymbol, HeadSym );
+    hdr.libmodidx = (carve_index)(pointer_uint)CarveGetIndex( CarveModEntry, LibModules );
     hdr.linkstate = (unsigned_32)( LinkState & ~LS_CLEAR_ON_INC );
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
@@ -746,10 +746,10 @@ static void RebuildSymbol( void *_sym, void *info )
     }
 }
 
-static void ReadBlockInfo( carve_t cv, void *blk, void *info )
-/************************************************************/
+static void ReadBlockInfo( carve_t carver, void *blk, void *info )
+/****************************************************************/
 {
-    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData( blk ), CarveBlockSize( cv ), IncFileName );
+    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData( blk ), CarveBlockSize( carver ), IncFileName );
 }
 
 static void SmallFreeCheck( void *data, void *_info )
@@ -763,22 +763,22 @@ static void SmallFreeCheck( void *data, void *_info )
         freeblk = BufPeekU32( info );
         if( freeblk == CARVE_INVALID_INDEX ) {
             info->currpos += sizeof( unsigned_32 );
-            CarveInsertFree( info->cv, data );
+            CarveInsertFree( info->carver, data );
         } else {
             info->cbfn( data, info );
         }
     }
 }
 
-static void RebuildSmallCarve( carve_t cv, unsigned num,
+static void RebuildSmallCarve( carve_t carver, unsigned num,
                                void (*fn)(void *,perm_read_info *),
                                perm_read_info * info )
 /*****************************************************************/
 {
-    info->cv = cv;
+    info->carver = carver;
     info->num = num;
     info->cbfn = fn;
-    CarveWalkAll( cv, SmallFreeCheck, info );
+    CarveWalkAll( carver, SmallFreeCheck, info );
 }
 
 static void PurgeRead( perm_read_info *info )

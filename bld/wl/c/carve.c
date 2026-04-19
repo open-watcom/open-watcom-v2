@@ -85,26 +85,26 @@ struct free_t {
     }
 
 
-static blk_t *newBlk( cv_t *cv )
-/******************************/
+static blk_t *newBlk( carve_t carver )
+/************************************/
 {
     blk_t       *newblk;
     blk_t       **blklist;
 
-    newblk = MemAllocSafe( offsetof( blk_t, data ) + cv->blk_size );
+    newblk = MemAllocSafe( offsetof( blk_t, data ) + carver->blk_size );
     /*
      * keep list sorted by memory address, biggest first.
      */
-    for( blklist = &cv->blk_list; *blklist > newblk; blklist = &(*blklist)->next ) {}
+    for( blklist = &carver->blk_list; *blklist > newblk; blklist = &(*blklist)->next ) {}
     newblk->next = *blklist;
     *blklist = newblk;
-    cv->blk_count++;
-    cv->size_chg = true;
+    carver->blk_count++;
+    carver->size_chg = true;
     return( newblk );
 }
 
-static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
-/******************************************************************/
+static void MakeFreeList( carve_t carver, blk_t *newblk, unsigned offset )
+/************************************************************************/
 {
     unsigned    elm_size;
     char        *top_elm;
@@ -112,23 +112,23 @@ static void MakeFreeList( cv_t *cv, blk_t *newblk, unsigned offset )
     char        *free_elm;
     free_t      *free_list;
 
-    elm_size = cv->elm_size;
+    elm_size = carver->elm_size;
     bottom_elm = newblk->data + offset;
-    top_elm = newblk->data + cv->blk_top;
-    free_list = cv->free_list;
+    top_elm = newblk->data + carver->blk_top;
+    free_list = carver->free_list;
     free_elm = top_elm;
     do {                         /* free_list must be maintained in order */
         free_elm -= elm_size;
         DbgZapFreed( free_elm, elm_size );
         _ADD_TO_FREE( free_list, free_elm );
     } while( free_elm != bottom_elm );
-    cv->free_list = free_list;
+    carver->free_list = free_list;
 }
 
 carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
 /*********************************************************/
 {
-    cv_t        *cv;
+    carve_t     carver;
     unsigned    elm_count;
 
     if( elm_size < sizeof( free_t ) ) {
@@ -139,25 +139,25 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
      */
     elm_size = __ROUND_UP_SIZE( elm_size, 8 );
     elm_count = blk_size / elm_size;
-    cv = MemAllocSafe( sizeof( *cv ) );
-    cv->elm_size = elm_size;
-    cv->blk_size = blk_size;
-    cv->elm_count = elm_count;
-    cv->blk_top = elm_count * elm_size;
-    cv->blk_count = 0;
-    cv->blk_list = NULL;
-    cv->free_list = NULL;
-    cv->blk_map = NULL;
-    cv->size_chg = false;
-//    DbgAssert( cv->elm_size >= 2 * 8 );
-    DbgAssert( cv->elm_count != 0 );
-    DbgVerify( cv->blk_top < _64K, "carve: size * #/block > 64k" );
-    return( cv );
+    carver = MemAllocSafe( sizeof( *carver ) );
+    carver->elm_size = elm_size;
+    carver->blk_size = blk_size;
+    carver->elm_count = elm_count;
+    carver->blk_top = elm_count * elm_size;
+    carver->blk_count = 0;
+    carver->blk_list = NULL;
+    carver->free_list = NULL;
+    carver->blk_map = NULL;
+    carver->size_chg = false;
+//    DbgAssert( carver->elm_size >= 2 * 8 );
+    DbgAssert( carver->elm_count != 0 );
+    DbgVerify( carver->blk_top < _64K, "carve: size * #/block > 64k" );
+    return( carver );
 }
 
 #ifdef DEVBUILD
-void CarveVerifyAllGone( carve_t cv, const char *node_name )
-/**********************************************************/
+void CarveVerifyAllGone( carve_t carver, const char *node_name )
+/**************************************************************/
 {
     free_t      *check;
     blk_t       *block;
@@ -166,12 +166,12 @@ void CarveVerifyAllGone( carve_t cv, const char *node_name )
     bool        some_unfreed;
 
     some_unfreed = false;
-    for( block = cv->blk_list; block != NULL; block = block->next ) {
-        compare = block->data + cv->blk_top;
+    for( block = carver->blk_list; block != NULL; block = block->next ) {
+        compare = block->data + carver->blk_top;
         do {
-            compare -= cv->elm_size;
+            compare -= carver->elm_size;
             /* verify every block has been freed */
-            for( check = cv->free_list; check != NULL; check = check->next_free ) {
+            for( check = carver->free_list; check != NULL; check = check->next_free ) {
                 if( compare == (char *)check ) {
                     break;
                 }
@@ -193,50 +193,50 @@ void CarveVerifyAllGone( carve_t cv, const char *node_name )
 }
 #endif
 
-void CarveDestroy( carve_t cv )
-/*****************************/
+void CarveDestroy( carve_t carver )
+/*********************************/
 {
     blk_t *cur;
     blk_t *next;
 
-    if( cv != NULL ) {
-        if( cv->blk_map != NULL ) {
-            MemFree( cv->blk_map );
+    if( carver != NULL ) {
+        if( carver->blk_map != NULL ) {
+            MemFree( carver->blk_map );
         }
-        for( cur = cv->blk_list; cur != NULL; cur = next ) {
+        for( cur = carver->blk_list; cur != NULL; cur = next ) {
             next = cur->next;
             MemFree( cur );
         }
-        MemFree( cv );
+        MemFree( carver );
     }
 }
 
-void *CarveAlloc( carve_t cv )
-/****************************/
+void *CarveAlloc( carve_t carver )
+/********************************/
 {
     void    *p;
 
-    if( cv->free_list == NULL ) {
-        MakeFreeList( cv, newBlk( cv ), 0 );
+    if( carver->free_list == NULL ) {
+        MakeFreeList( carver, newBlk( carver ), 0 );
     }
-    _REMOVE_FROM_FREE( cv, p );
-    DbgZapAlloc( p, cv->elm_size );
+    _REMOVE_FROM_FREE( carver, p );
+    DbgZapAlloc( p, carver->elm_size );
     return( p );
 }
 
-void *CarveZeroAlloc( carve_t cv )
-/********************************/
+void *CarveZeroAlloc( carve_t carver )
+/************************************/
 {
     void *v;
     void **p;
 
-    if( cv->free_list == NULL ) {
-        MakeFreeList( cv, newBlk( cv ), 0 );
+    if( carver->free_list == NULL ) {
+        MakeFreeList( carver, newBlk( carver ), 0 );
     }
-    _REMOVE_FROM_FREE( cv, v );
+    _REMOVE_FROM_FREE( carver, v );
     p = v;
-    DbgAssert( ( cv->elm_size / sizeof( *p ) ) <= 16 );
-    switch( cv->elm_size / sizeof( *p ) ) {
+    DbgAssert( ( carver->elm_size / sizeof( *p ) ) <= 16 );
+    switch( carver->elm_size / sizeof( *p ) ) {
     case 16:
         p[15] = 0;
     case 15:
@@ -275,7 +275,7 @@ void *CarveZeroAlloc( carve_t cv )
 
 
 #ifdef DEVBUILD
-static void CarveDebugFree( carve_t cv, void *elm )
+static void CarveDebugFree( carve_t carver, void *elm )
 {
     free_t      *check;
     blk_t       *block;
@@ -284,22 +284,22 @@ static void CarveDebugFree( carve_t cv, void *elm )
     unsigned    esize;
 
     /* make sure object hasn't been freed before */
-    for( check = cv->free_list; check != NULL; check = check->next_free ) {
+    for( check = carver->free_list; check != NULL; check = check->next_free ) {
         if( elm == (void *)check ) {
             LnkFatal( "carve: freed object was previously freed" );
         }
     }
     /* make sure object is from this carve allocator */
-    for( block = cv->blk_list; block != NULL; block = block->next ) {
+    for( block = carver->blk_list; block != NULL; block = block->next ) {
         start = block->data;
-        compare = start + cv->blk_top;
+        compare = start + carver->blk_top;
 #if ! ( defined(__COMPACT__) || defined(__LARGE__) )
         /* quick check */
         if( (char *)elm < start || (char *)elm > compare ) {
             continue;
         }
 #endif
-        esize = cv->elm_size;
+        esize = carver->elm_size;
         for( ;; ) {
             if( compare == start )
                 break;
@@ -315,25 +315,26 @@ static void CarveDebugFree( carve_t cv, void *elm )
     if( block == NULL ) {
         LnkFatal( "carve: freed object was never allocated" );
     }
-    DbgZapFreed( elm, cv->elm_size );
+    DbgZapFreed( elm, carver->elm_size );
 }
 #else
-#define CarveDebugFree( cv, elm )
+#define CarveDebugFree( carver, elm )
 #endif
 
-void CarveFree( carve_t cv, void *elm )
-/*************************************/
+void CarveFree( carve_t carver, void *elm )
+/*****************************************/
 {
     if( elm == NULL ) {
         return;
     }
-    CarveDebugFree( cv, elm );
-    _ADD_TO_FREE( cv->free_list, elm );
+    CarveDebugFree( carver, elm );
+    _ADD_TO_FREE( carver->free_list, elm );
 }
 
-void *CarveGetIndex( carve_t cv, void *elm )
-/******************************************/
-/* note this assumes carve block list sorted by size, biggest first */
+void *CarveGetIndex( carve_t carver, void *elm )
+/***********************************************
+ * note this assumes carve block list sorted by size, biggest first
+ */
 {
     blk_t       *block;
     unsigned    block_index;
@@ -341,21 +342,21 @@ void *CarveGetIndex( carve_t cv, void *elm )
     if( elm == NULL ) {
         return( (void *)CARVE_NULL_INDEX );
     }
-    block_index = cv->blk_count;
-    for( block = cv->blk_list; elm < (void *)block; block = block->next ) {
+    block_index = carver->blk_count;
+    for( block = carver->blk_list; elm < (void *)block; block = block->next ) {
         --block_index;
     }
     DbgAssert( block != NULL );
     return( (void *)MK_INDEX( block_index, (char *)elm - block->data ) );
 }
 
-void CarveWalkBlocks( carve_t cv, void (*cbfn)(carve_t, void *, void *), void *cookie )
-/*************************************************************************************/
+void CarveWalkBlocks( carve_t carver, void (*cbfn)(carve_t, void *, void *), void *cookie )
+/*****************************************************************************************/
 {
     blk_t       *block;
 
-    for( block = cv->blk_list; block != NULL; block = block->next ) {
-        cbfn( cv, block, cookie );
+    for( block = carver->blk_list; block != NULL; block = block->next ) {
+        cbfn( carver, block, cookie );
     }
 }
 
@@ -365,26 +366,26 @@ bool CarveBlockModified( void *blk )
     return( ((blk_t *)blk)->modified != 0 );
 }
 
-void CarveBlockScan( carve_t cv, void *blk, void (*rtn)(void *, void *), void *data )
-/***********************************************************************************/
+void CarveBlockScan( carve_t carver, void *blk, void (*rtn)(void *, void *), void *data )
+/***************************************************************************************/
 {
     char        *compare;
     char        *end;
     unsigned    esize;
 
-    esize = cv->elm_size;
+    esize = carver->elm_size;
     compare = ((blk_t *)blk)->data;
-    end = compare + cv->blk_top;
+    end = compare + carver->blk_top;
     do {
         (*rtn)( compare, data );
         compare += esize;
     } while( compare != end );
 }
 
-unsigned CarveBlockSize( carve_t cv )
-/***********************************/
+unsigned CarveBlockSize( carve_t carver )
+/***************************************/
 {
-    return( cv->blk_size );
+    return( carver->blk_size );
 }
 
 void *CarveBlockData( void *block )
@@ -393,24 +394,24 @@ void *CarveBlockData( void *block )
     return( ((blk_t *)block)->data );
 }
 
-bool CarveSizeChanged( carve_t cv )
-/*********************************/
-{
-    return( cv->size_chg != 0 );
-}
-
-unsigned CarveNumElements( carve_t cv )
+bool CarveSizeChanged( carve_t carver )
 /*************************************/
 {
-    return( cv->blk_count * cv->elm_count );
+    return( carver->size_chg != 0 );
 }
 
-void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
-/********************************************************/
+unsigned CarveNumElements( carve_t carver )
+/*****************************************/
+{
+    return( carver->blk_count * carver->elm_count );
+}
+
+void CarveWalkAllFree( carve_t carver, void (*rtn)( void * ) )
+/************************************************************/
 {
     free_t *check;
 
-    for( check = cv->free_list; check != NULL; check = check->next_free ) {
+    for( check = carver->free_list; check != NULL; check = check->next_free ) {
 #ifdef DEVBUILD
         free_t *check_next = check->next_free;
         (*rtn)( check );
@@ -423,18 +424,18 @@ void CarveWalkAllFree( carve_t cv, void (*rtn)( void * ) )
     }
 }
 
-void CarveWalkAll( carve_t cv, void (*rtn)( void *, void * ), void *data )
-/************************************************************************/
+void CarveWalkAll( carve_t carver, void (*rtn)( void *, void * ), void *data )
+/****************************************************************************/
 {
     blk_t   *block;
 
-    for( block = cv->blk_list; block != NULL; block = block->next ) {
-        CarveBlockScan( cv, block, rtn, data );
+    for( block = carver->blk_list; block != NULL; block = block->next ) {
+        CarveBlockScan( carver, block, rtn, data );
     }
 }
 
-void CarveRestart( carve_t cv, unsigned num )
-/**************************************************/
+void CarveRestart( carve_t carver, unsigned num )
+/***********************************************/
 {
     unsigned    numblks;
     unsigned    remainder;
@@ -443,57 +444,57 @@ void CarveRestart( carve_t cv, unsigned num )
 
     if( num == 0 )
         return;
-    numblks = (num + cv->elm_count - 1) / cv->elm_count;
+    numblks = (num + carver->elm_count - 1) / carver->elm_count;
     for( index = 0; index < numblks; index++ ) {
-        newBlk( cv );
+        newBlk( carver );
     }
-    cv->blk_map = MemAllocSafe( numblks * sizeof( blk_t * ) );
+    carver->blk_map = MemAllocSafe( numblks * sizeof( blk_t * ) );
     index = numblks - 1;
-    for( block = cv->blk_list; block != NULL; block = block->next ) {
-        cv->blk_map[index] = block;
+    for( block = carver->blk_list; block != NULL; block = block->next ) {
+        carver->blk_map[index] = block;
         index -= 1;
     }
-    remainder = num % cv->elm_count;
+    remainder = num % carver->elm_count;
     if( remainder != 0 ) {
-        MakeFreeList( cv, cv->blk_map[0], remainder * cv->elm_size );
+        MakeFreeList( carver, carver->blk_map[0], remainder * carver->elm_size );
     }
-    cv->insert = NULL;
+    carver->insert = NULL;
 }
 
-static void CarveZapBlock( carve_t cv, void *blk, void *dummy )
-/*************************************************************/
+static void CarveZapBlock( carve_t carver, void *blk, void *dummy )
+/*****************************************************************/
 {
     /* unused parameters */ (void)dummy;
 
-    MakeFreeList( cv, blk, 0 );
+    MakeFreeList( carver, blk, 0 );
 }
 
-void CarvePurge( carve_t cv )
-/**********************************/
+void CarvePurge( carve_t carver )
+/*******************************/
 /* clean out a carve block that had been prepared for incremental linking */
 {
-    cv->free_list = NULL;
-    CarveWalkBlocks( cv, CarveZapBlock, NULL );
+    carver->free_list = NULL;
+    CarveWalkBlocks( carver, CarveZapBlock, NULL );
 }
 
-void CarveInsertFree( carve_t cv, void *data )
-/********************************************/
+void CarveInsertFree( carve_t carver, void *data )
+/************************************************/
 {
     free_t      *freeblk;
 
     freeblk = data;
-    if( cv->insert == NULL ) {
-        freeblk->next_free = cv->free_list;
-        cv->free_list = freeblk;
+    if( carver->insert == NULL ) {
+        freeblk->next_free = carver->free_list;
+        carver->free_list = freeblk;
     } else {
-        freeblk->next_free = cv->insert->next_free;
-        cv->insert->next_free = freeblk;
+        freeblk->next_free = carver->insert->next_free;
+        carver->insert->next_free = freeblk;
     }
-    cv->insert = freeblk;
+    carver->insert = freeblk;
 }
 
-void *CarveMapIndex( carve_t cv, void *aindex )
-/*********************************************/
+void *CarveMapIndex( carve_t carver, void *aindex )
+/*************************************************/
 {
     unsigned    index = (unsigned)(pointer_uint)aindex;
     blk_t       *block;
@@ -507,7 +508,7 @@ void *CarveMapIndex( carve_t cv, void *aindex )
     }
     block_index = GET_BLOCK( index );
     block_offset = GET_OFFSET( index );
-    block_map = cv->blk_map;
+    block_map = carver->blk_map;
     block = block_map[block_index - 1];
     return( &(block->data[block_offset]) );
 }

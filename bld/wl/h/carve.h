@@ -48,16 +48,16 @@ typedef struct free_t free_t;
 typedef struct cv_t *carve_t;
 
 extern carve_t CarveCreate( unsigned elm_size, unsigned how_many );
-extern void CarveRestart( carve_t cv, unsigned );
-extern void CarvePurge( carve_t cv );
-extern void CarveVerifyAllGone( carve_t cv, const char * );
-extern void CarveDestroy( carve_t cv );
+extern void CarveRestart( carve_t carver, unsigned );
+extern void CarvePurge( carve_t carver );
+extern void CarveVerifyAllGone( carve_t carver, const char * );
+extern void CarveDestroy( carve_t carver );
 
-extern void *CarveAlloc( carve_t cv );
-extern void *CarveZeroAlloc( carve_t cv );
-extern void CarveFree( carve_t cv, void *elm );
+extern void *CarveAlloc( carve_t carver );
+extern void *CarveZeroAlloc( carve_t carver );
+extern void CarveFree( carve_t carver, void *elm );
 
-typedef unsigned_32             cv_index;
+typedef unsigned_32             carve_index;
 
 #define CV_SHIFT                16
 #define CV_MASK                 ((1<<CV_SHIFT)-1)
