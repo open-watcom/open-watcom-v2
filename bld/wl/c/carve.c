@@ -38,37 +38,6 @@
 #include "carve.h"
 
 
-typedef struct cv_t {
-    free_t *    free_list;
-    free_t *    insert;
-    blk_t *     blk_list;
-    blk_t **    blk_map;
-    unsigned    elm_size;
-    unsigned    elm_count;
-    unsigned    blk_top;
-    unsigned    blk_count;
-    unsigned    blk_size;
-    boolbit     size_chg : 1;
-} cv_t;
-
-struct blk {
-    struct blk  *next;
-    boolbit     modified    : 1;
-    unsigned    index;
-#if defined( _M_X64 ) || defined( _M_ARM64 )
-#else
-    unsigned    filler;
-#endif
-    /*
-     * must be align to 8 bytes
-     */
-    char        data[1];
-};
-
-struct free_t {
-    free_t      *next_free;
-};
-
 // assumes '->free_list' is non-NULL
 #define _REMOVE_FROM_FREE( pcv, p ) \
     { \
@@ -83,6 +52,37 @@ struct free_t {
         node->next_free = (fl); \
         (fl) = node; \
     }
+
+typedef struct blk_t {
+    struct blk_t    *next;
+    boolbit         modified    : 1;
+    unsigned        index;
+#if defined( _M_X64 ) || defined( _M_ARM64 )
+#else
+    unsigned        filler;
+#endif
+    /*
+     * must be align to 8 bytes
+     */
+    char        data[1];
+} blk_t;
+
+typedef struct free_t {
+    struct free_t   *next_free;
+} free_t;
+
+typedef struct cv_t {
+    free_t      *free_list;
+    free_t      *insert;
+    blk_t       *blk_list;
+    blk_t       **blk_map;
+    unsigned    elm_size;
+    unsigned    elm_count;
+    unsigned    blk_top;
+    unsigned    blk_count;
+    unsigned    blk_size;
+    boolbit     size_chg : 1;
+} cv_t;
 
 
 static blk_t *newBlk( carve_t carver )
@@ -196,8 +196,8 @@ void CarveVerifyAllGone( carve_t carver, const char *node_name )
 void CarveDestroy( carve_t carver )
 /*********************************/
 {
-    blk_t *cur;
-    blk_t *next;
+    blk_t       *cur;
+    blk_t       *next;
 
     if( carver != NULL ) {
         if( carver->blk_map != NULL ) {
@@ -448,7 +448,7 @@ void CarveRestart( carve_t carver, unsigned num )
     for( index = 0; index < numblks; index++ ) {
         newBlk( carver );
     }
-    carver->blk_map = MemAllocSafe( numblks * sizeof( blk_t * ) );
+    carver->blk_map = MemAllocSafe( numblks * sizeof( *carver->blk_map ) );
     index = numblks - 1;
     for( block = carver->blk_list; block != NULL; block = block->next ) {
         carver->blk_map[index] = block;
