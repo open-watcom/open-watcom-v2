@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,7 +228,6 @@ void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
     CodeHandle( occlass, OptInsSize( occlass, destattr ), lbl );
 }
 
-
 static  void    CodeSequence( const byte *p, byte_seq_len len )
 /**************************************************************
  * Dump an inline sequence, taking into account the floating fixups and
@@ -260,10 +259,18 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                 case FIX_SYM_SEGMENT:
                 case FIX_SYM_RELOFF:
                     p += 2;
-                    sym = *(BYTE_SEQ_SYM *)p;
-                    p += sizeof( BYTE_SEQ_SYM );
-                    off = *(BYTE_SEQ_OFF *)p;
-                    p += sizeof( BYTE_SEQ_OFF );
+                    {
+                        BYTE_SEQ_SYM    tmp;
+
+                        p = memcpy( &tmp, p, sizeof( BYTE_SEQ_SYM ) ) + sizeof( BYTE_SEQ_SYM );
+                        sym = tmp;
+                    }
+                    {
+                        BYTE_SEQ_OFF    tmp;
+
+                        p = memcpy( &tmp, p, sizeof( BYTE_SEQ_OFF ) ) + sizeof( BYTE_SEQ_OFF );
+                        off = tmp;
+                    }
                     attr = FEAttr( sym );
                     switch( type ) {
                     case FIX_SYM_SEGMENT:

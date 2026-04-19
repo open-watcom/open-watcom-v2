@@ -494,7 +494,10 @@ static  label_handle ExpandObj( byte *cur, int explen )
             break;
         }
         if( esc_class & ESCA_OFST ) {
-            val += *(offset *)cur;
+            offset  tmp;
+
+            memcpy( &tmp, cur, sizeof( offset ) );
+            val += tmp;
             cur += sizeof( offset );
         }
         if( class == F_BASE ) {
