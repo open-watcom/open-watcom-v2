@@ -731,9 +731,9 @@ static int insertFixups( VBUF *src_code )
                 }
                 if( skip != 0 ) {
                     dst[len++] = cg_fix;
-                    mecpy( dst + len, &sym, sizeof( BYTE_SEQ_SYM ) );
+                    memcpy( dst + len, &sym, sizeof( BYTE_SEQ_SYM ) );
                     len += sizeof( BYTE_SEQ_SYM );
-                    mecpy( dst + len, &fix->u_offset, sizeof( BYTE_SEQ_SYM ) );
+                    memcpy( dst + len, &fix->u_offset, sizeof( BYTE_SEQ_SYM ) );
                     len += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
