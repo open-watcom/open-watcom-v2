@@ -513,9 +513,9 @@ bool AsmInsertFixups( aux_info *info )
                 }
                 if( skip != 0 ) {
                     *dst++ = cg_fix;
-                    *(BYTE_SEQ_SYM *)dst = sym_handle;
+                    memcpy( dst, &sym_handle, sizeof( BYTE_SEQ_SYM ) );
                     dst += sizeof( BYTE_SEQ_SYM );
-                    *((BYTE_SEQ_OFF *)dst) = fix->u_offset;
+                    memcpy( dst, &fix->u_offset, sizeof( BYTE_SEQ_OFF ) );
                     dst += sizeof( BYTE_SEQ_OFF );
                     src += skip;
                 }
