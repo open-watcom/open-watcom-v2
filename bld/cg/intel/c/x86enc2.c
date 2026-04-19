@@ -262,13 +262,13 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                     {
                         BYTE_SEQ_SYM    tmp;
 
-                        p = memcpy( &tmp, p, sizeof( BYTE_SEQ_SYM ) ) + sizeof( BYTE_SEQ_SYM );
+                        p = (const byte *)memcpy( &tmp, p, sizeof( BYTE_SEQ_SYM ) ) + sizeof( BYTE_SEQ_SYM );
                         sym = tmp;
                     }
                     {
                         BYTE_SEQ_OFF    tmp;
 
-                        p = memcpy( &tmp, p, sizeof( BYTE_SEQ_OFF ) ) + sizeof( BYTE_SEQ_OFF );
+                        p = (const byte *)memcpy( &tmp, p, sizeof( BYTE_SEQ_OFF ) ) + sizeof( BYTE_SEQ_OFF );
                         off = tmp;
                     }
                     attr = FEAttr( sym );
