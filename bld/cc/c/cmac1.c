@@ -417,6 +417,8 @@ static char *expandMacroToken( MACRO_TOKEN *mtok )
 
     len = 0;
     switch( mtok->token ) {
+    case T_NULL:
+        return( NULL );
     case T_CONSTANT:
     case T_PPNUMBER:
     case T_ID:
