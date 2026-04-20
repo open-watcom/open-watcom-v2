@@ -3361,7 +3361,11 @@ static void CalcAddRemove( void )
     }
     if( ok ) {
         /* Estimate space used for directories. Be generous. */
-        if( !uninstall ) {
+        if( uninstall ) {
+            /*
+             * no action for uninstall
+             */
+        } else {
             for( i = 0; i < SetupInfo.target.num; ++i ) {
                 block_size = GetTargetBlockSize( i );
                 for( j = 0; j < SetupInfo.dirs.num; ++j ) {

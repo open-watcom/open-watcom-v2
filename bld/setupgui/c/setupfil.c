@@ -232,7 +232,11 @@ static void modify_value_list( VBUF *value, const VBUF *new_value, append_mode a
 /*****************************************************************************************************/
 {
     NoDupPaths( value, new_value );
-    if( !uninstall ) {
+    if( uninstall ) {
+        /*
+         * no action for uninstall
+         */
+    } else {
         if( append == AM_AFTER ) {
             VbufConcChr( value, PATH_LIST_SEP );
             VbufConcVbuf( value, new_value );
@@ -623,7 +627,11 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
         }
     }
     fclose( fp1 );
-    if( !uninstall ) {
+    if( uninstall ) {
+        /*
+         * no action for uninstall
+         */
+    } else {
         /*
          * handle any remaining variables
          */
@@ -1888,7 +1896,11 @@ bool ModifyRegAssoc( bool uninstall )
     int     num;
     int     i;
 
-    if( !uninstall ) {
+    if( uninstall ) {
+        /*
+         * no action for uninstall
+         */
+    } else {
         if( DoDialog( "ModifyAssociations" ) == DLG_CANCEL ) {
             return( false );
         }
@@ -1956,7 +1968,9 @@ bool AddToUninstallList( bool uninstall )
     VbufInit( &buf );
     VbufConcStr( &buf, "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\" );
     VbufConcStr( &buf, GetVariableStrVal( "UninstallKeyName" ) );
-    if( !uninstall ) {
+    if( uninstall ) {
+        RegDeleteKey( HKEY_LOCAL_MACHINE, VbufString( &buf ) );
+    } else {
         RegCreateKey( HKEY_LOCAL_MACHINE, VbufString( &buf ), &hkey );
         val = GetVariableStrVal( "UninstallDisplayName" );
         RegSetValueEx( hkey, "DisplayName", 0L, REG_SZ, (LPBYTE)val, (DWORD)( strlen( val ) + 1 ) );
@@ -1983,8 +1997,6 @@ bool AddToUninstallList( bool uninstall )
         RegSetValueEx( hkey, "NoModify", 0L, REG_DWORD, (LPBYTE)&dw, (DWORD)( sizeof( DWORD ) ) );
         RegSetValueEx( hkey, "NoRepair", 0L, REG_DWORD, (LPBYTE)&dw, (DWORD)( sizeof( DWORD ) ) );
         RegCloseKey( hkey );
-    } else {
-        RegDeleteKey( HKEY_LOCAL_MACHINE, VbufString( &buf ) );
     }
     VbufFree( &buf );
 
