@@ -33,7 +33,6 @@ win_sysobjs = &
     guifocus.obj &
     guiiscrl.obj &
     guiclear.obj &
-    guisys.obj   &
     guisysin.obj &
     guisysfi.obj &
     guitimer.obj &
