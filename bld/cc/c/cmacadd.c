@@ -36,7 +36,9 @@
 #include "cmacadd.h"
 
 
-#define macroSizeAlign(x)   _RoundUp( (x), sizeof( void * ) )
+#define MACRO_ALIGN         sizeof( void * )
+
+#define macroSizeAlign(x)   _RoundUp( (x), MACRO_ALIGN )
 
 typedef char        *MACADDR_T;         /* contains actual pointer to block of memory */
 
@@ -217,7 +219,7 @@ void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
 
     clen = *mlen;
     MacroReallocOverflow( MTOKINCR( clen ), clen );
-    MTOK( MacroOffset + clen ) = token;
+    MTOKW( MacroOffset + clen, token );
     *mlen = MTOKINCR( clen );
 }
 
