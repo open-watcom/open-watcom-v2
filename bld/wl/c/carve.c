@@ -38,8 +38,9 @@
 #include "carve.h"
 
 
-#define CARVE_SIZE(s)   (__ROUND_UP_SIZE( sizeof( blk_t ), sizeof( void * ) ) + (s))
-#define CARVE_DATA(c,d) ((char *)(c) + __ROUND_UP_SIZE( sizeof( blk_t ), sizeof( void * ) ) + (d))
+#define CARVE_ALIGN     sizeof( void * )
+#define CARVE_SIZE(s)   (__ROUND_UP_SIZE( sizeof( blk_t ), CARVE_ALIGN ) + (s))
+#define CARVE_DATA(c,d) ((char *)(c) + __ROUND_UP_SIZE( sizeof( blk_t ), CARVE_ALIGN ) + (d))
 
 // assumes '->free_list' is non-NULL
 #define _REMOVE_FROM_FREE( pcv, p ) \
@@ -129,7 +130,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     if( elm_size < sizeof( free_t ) ) {
         elm_size = sizeof( free_t );
     }
-    elm_size = __ROUND_UP_SIZE( elm_size, sizeof( void * ) );
+    elm_size = __ROUND_UP_SIZE( elm_size, CARVE_ALIGN );
     elm_count = blk_size / elm_size;
     carver = MemAllocSafe( sizeof( *carver ) );
     carver->elm_size = elm_size;
@@ -141,7 +142,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     carver->free_list = NULL;
     carver->blk_map = NULL;
     carver->size_chg = false;
-//    DbgAssert( carver->elm_size >= 2 * sizeof( void * ) );
+//    DbgAssert( carver->elm_size >= 2 * CARVE_ALIGN );
     DbgAssert( carver->elm_count != 0 );
     DbgVerify( carver->blk_top < _64K, "carve: size * #/block > 64k" );
     return( carver );

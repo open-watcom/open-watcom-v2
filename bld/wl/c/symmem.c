@@ -41,10 +41,13 @@
 #include "symmem.h"
 
 
-#define ALLOC_ALIGN         sizeof( void  * )
-
 #define SYM_BLOCK_SIZE      _16K
 #define SYM_BLOCK_MIN       32
+
+#define ALLOC_ALIGN         sizeof( void  * )
+
+#define BLOCK_SIZE(x)       (__ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
+#define BLOCK_DATA(b,x)     ((char *)(b) + __ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
 
 typedef struct sym_block {
     struct sym_block    *next;       /* NOTE: this *must* be the first field */
@@ -52,9 +55,7 @@ typedef struct sym_block {
 //    char                block[];
 } sym_block;
 
-#define BLOCK_SIZE(x)   (__ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
-
-typedef struct {
+typedef struct block_data {
     sym_block       *list;
     size_t          currbrk;
 } block_data;
@@ -154,7 +155,7 @@ static void *AllocBlock( size_t size, block_data *block )
     } else if( newbrk > block->list->size ) {
         GetNewBlock( block, size );
     }
-    ptr = (char *)block->list + BLOCK_SIZE( block->currbrk );
+    ptr = BLOCK_DATA( block->list, block->currbrk );
     block->currbrk += size;
     return( ptr );
 }
