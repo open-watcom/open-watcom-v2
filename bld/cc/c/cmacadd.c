@@ -219,7 +219,7 @@ void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
 
     clen = *mlen;
     MacroReallocOverflow( MTOKINCR( clen ), clen );
-    MTOKW( MacroOffset + clen, token );
+    MTOK( MacroOffset + clen ) = token;
     *mlen = MTOKINCR( clen );
 }
 
