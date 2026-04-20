@@ -33,6 +33,7 @@
 #include "cvars.h"
 #include "cgdefs.h"
 #include "feprotos.h"
+#include "roundmac.h"
 
 
 /*
@@ -43,29 +44,23 @@
  * NB: MEM_ALIGN must be at least int-sized
  */
 
-#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
-    #define MEM_ALIGN   8
-#elif defined( __AXP__ )
+#if defined( __AXP__ )
     #define MEM_ALIGN   8
 #else
-    #define MEM_ALIGN   4
+    #define MEM_ALIGN   sizeof( void * )
 #endif
 
 #define ALLOC_FLAG      1
 
-#define MCB_SHIFT       MEM_ALIGN
+#define BLK_HDR_SIZE    __ROUND_UP_SIZE( sizeof( mem_blk ), MEM_ALIGN )
+#define BLK_SIZE(s)     (BLK_HDR_SIZE + (s))
+#define BLK_DATA(m,x)   ((char *)(m) + BLK_HDR_SIZE + (x))
 
-/*
- * Mask to get real allocation size
- */
-#define SIZE_MASK       ~ALLOC_FLAG
-
-#define NEXT_MCB(x)     ((MCB *)((char *)(x) + ((x)->len & SIZE_MASK)))
-#define PTR2MCB(x)      ((MCB *)((char *)(x) - MCB_SHIFT))
-#define MCB2PTR(x)      ((void *)((char *)(x) + MCB_SHIFT))
-
-#define PTR2MCB_SIZE(x) ((x) + MCB_SHIFT)
-#define MCB2PTR_SIZE(x) ((x) - MCB_SHIFT)
+#define MCB_HDR_SIZE    __ROUND_UP_SIZE( sizeof( MCB ), MEM_ALIGN )
+#define MCB_SIZE(s)     (MCB_HDR_SIZE + (s))
+#define MCB_DATA(m,x)   ((char *)(m) + MCB_HDR_SIZE + (x))
+#define MCB_FROM_C(p)   ((MCB *)((char *)(p) - MCB_HDR_SIZE))
+#define MCB_NEXT(x)     ((MCB *)((char *)(x) + ((x)->size & ~ALLOC_FLAG)))
 
 /*
  * Size of permanent area. Needs to be reasonably big to satisfy
@@ -82,7 +77,7 @@ enum cmem_kind {
 };
 
 typedef struct  mem_block {
-    size_t              len;    /* length of stg */
+    size_t              size;   /* length of stg */
     struct mem_block    *prev;  /* pointer to previous free memory block */
     struct mem_block    *next;  /* pointer to next     free memory block */
 } MCB;
@@ -91,9 +86,6 @@ typedef struct mem_blk {
     struct mem_blk      *next;
     char                *ptr;   // old permanent area block pointer
     size_t              size;   // old permanent area block size
-#ifdef __AXP__
-    unsigned            pad;    // padding to get quadword aligned size
-#endif
 } mem_blk;
 
 /*
@@ -136,13 +128,13 @@ static void FiniPermArea( void )
     Blks = NULL;
 }
 
-static void addMCBtoFreeList( MCB *mcb, size_t mcb_len )
-/******************************************************/
+static void addMCBtoFreeList( MCB *mcb )
+/**************************************/
 {
     MCB     *mcb_prev;
     MCB     *mcb_next;
 
-    mcb->len = mcb_len;
+    mcb->size &= ~ALLOC_FLAG;
     mcb_prev = &CFreeList;
     for( ;; ) {         /* insert in sorted order */
         mcb_next = mcb_prev;
@@ -174,24 +166,22 @@ static void removeMCBfromFreeList( MCB *mcb )
 static void AllocPermArea( void )
 /*******************************/
 {
-    char    *perm_area;
-
-    perm_area = NULL;
     for( PermSize = MAX_PERM_SIZE; PermSize != 0; PermSize -= 0x20 ) {
         mem_blk *blk;
-        blk = calloc( 1, sizeof( mem_blk ) + PermSize + sizeof( size_t ) );
+        blk = calloc( 1, BLK_SIZE( PermSize + sizeof( blk->size ) ) );
         if( blk != NULL ) {
             blk->next = Blks;
+            Blks = blk;
             blk->ptr = PermPtr;
             blk->size = PermSize;
-            Blks = blk;
-            perm_area = (char *)blk + sizeof( mem_blk );
-            ((MCB *)(perm_area + PermSize))->len = PERM_BLK_END;    /* null length tag */
-            break;
+            ((MCB *)BLK_DATA( blk, PermSize ))->size = PERM_BLK_END;    /* null length tag */
+            PermPtr = BLK_DATA( blk, 0 );
+            PermAvail = PermSize;
+            return;
         }
     }
-    PermPtr = perm_area;
-    PermAvail = PermSize;
+    PermPtr = NULL;
+    PermAvail = PermSize = 0;
 }
 
 
@@ -199,7 +189,7 @@ void CMemInit( void )
 /*******************/
 {
     InitPermArea();
-    CFreeList.len = 0;
+    CFreeList.size = 0;
     CFreeList.next = &CFreeList;
     CFreeList.prev = &CFreeList;
 }
@@ -207,7 +197,7 @@ void CMemInit( void )
 void CMemFini( void )
 /*******************/
 {
-    CFreeList.len = 0;
+    CFreeList.size = 0;
     CFreeList.next = &CFreeList;
     CFreeList.prev = &CFreeList;
     FiniPermArea();
@@ -219,17 +209,17 @@ static void Ccoalesce( MCB *mcb1 )
     MCB *mcb2;
 
     for( ;; ) {
-        mcb2 = NEXT_MCB( mcb1 );
+        mcb2 = MCB_NEXT( mcb1 );
         /*
          * quit if next block not free
          * or if no more blocks follow in permanet block
          */
-        if( mcb2->len & ALLOC_FLAG )
+        if( mcb2->size & ALLOC_FLAG )
             break;
         /*
          * coalesce mcb1 and mcb2 and remove mcb2 from free list
          */
-        mcb1->len += mcb2->len;
+        mcb1->size += mcb2->size;
         removeMCBfromFreeList( mcb2 );
     }
 }
@@ -237,38 +227,39 @@ static void Ccoalesce( MCB *mcb1 )
 static void *CFastAlloc( size_t size )
 /************************************/
 {
-    size_t      mcb_len;
+    size_t      mcb_size;
     MCB         *mcb;
 
-    mcb_len = _RoundUp( PTR2MCB_SIZE( size ), MEM_ALIGN );
-    if( mcb_len < sizeof( MCB ) )
-        mcb_len = sizeof( MCB );
+    size = MCB_SIZE( size );
+    if( size < sizeof( MCB ) )
+        size = sizeof( MCB );
+    mcb_size = _RoundUp( size, MEM_ALIGN );
     /*
      * search free list before getting memory from permanent area
      */
     for( mcb = CFreeList.prev; mcb != &CFreeList; mcb = mcb->prev ) {
         Ccoalesce( mcb );
-        if( mcb->len >= mcb_len ) {
-            if( mcb->len - mcb_len > sizeof( MCB ) ) {
+        if( mcb->size >= mcb_size ) {
+            if( mcb->size - mcb_size > MCB_SIZE( 0 ) ) {
                 /*
                  * block is big enough to split it
                  */
-                mcb->len -= mcb_len;
-                mcb = NEXT_MCB( mcb );
-                mcb->len = mcb_len;
+                mcb->size -= mcb_size;
+                mcb = MCB_NEXT( mcb );
+                mcb->size = mcb_size;
             } else {
                 removeMCBfromFreeList( mcb );
             }
-            mcb->len |= ALLOC_FLAG;      /* indicate block allocated */
-            return( MCB2PTR( mcb ) );
+            mcb->size |= ALLOC_FLAG;      /* indicate block allocated */
+            return( MCB_DATA( mcb, 0 ) );
         }
     }
-    if( mcb_len > PermAvail )
+    if( mcb_size > PermAvail )
         return( NULL );
-    PermAvail -= mcb_len;
+    PermAvail -= mcb_size;
     mcb = (MCB *)( PermPtr + PermAvail );
-    mcb->len = mcb_len | ALLOC_FLAG;
-    return( MCB2PTR( mcb ) );
+    mcb->size = mcb_size | ALLOC_FLAG;
+    return( MCB_DATA( mcb, 0 ) );
 }
 
 
@@ -321,22 +312,22 @@ void *CMemRealloc( void *old_p, size_t size )
 {
     void            *p;
     size_t          old_size;
+    MCB             *mcb;
 
     if( old_p == NULL )
         return( CMemAlloc( size ) );
 
-    p = old_p;
-    old_size = MCB2PTR_SIZE( PTR2MCB( old_p )->len & SIZE_MASK );
+    mcb = MCB_FROM_C( old_p );
+    old_size = ((mcb)->size & ~ALLOC_FLAG) - MCB_SIZE( 0 );
     if( size > old_size ) {
         p = CMemAlloc( size );
         memcpy( p, old_p, old_size );
         CMemFree( old_p );
-#if 0
     } else {
         /*
          * the current block is big enough -- nothing to do (very lazy realloc)
          */
-#endif
+        p = old_p;
     }
     return( p );
 }
@@ -361,7 +352,7 @@ static enum cmem_kind CMemKind( const char *p )
             /*
              * check if dynamic memory (from end of block)
              */
-            if( p < ( (char *)blk + sizeof( mem_blk ) + size ) ) {
+            if( p < BLK_DATA( blk, size ) ) {
                 return( CMEM_MEM );
             }
         }
@@ -374,7 +365,6 @@ static enum cmem_kind CMemKind( const char *p )
 void CMemFree( void *p )
 /**********************/
 {
-    size_t      mcb_len;
     MCB         *mcb;
 
     /*
@@ -383,20 +373,19 @@ void CMemFree( void *p )
      * ignore precompiled header memory block
      */
     if( p != NULL && ( PCH_Start == NULL || (char *)p < PCH_Start || (char *)p >= PCH_End ) ) {
-        if( CMemKind( (char *)p ) == CMEM_MEM ) {
-            mcb = PTR2MCB( p );
-            mcb_len = mcb->len & SIZE_MASK;
+        if( CMemKind( p ) == CMEM_MEM ) {
+            mcb = MCB_FROM_C( p );
             if( (char *)mcb == PermPtr + PermAvail ) {
-                PermAvail += mcb_len;
-                mcb = (MCB *)( (char *)mcb + mcb_len );
-                if( (mcb->len & ALLOC_FLAG) == 0 ) {
+                PermAvail += mcb->size & ~ALLOC_FLAG;
+                mcb = MCB_NEXT( mcb );
+                if( (mcb->size & ALLOC_FLAG) == 0 ) {
                     if( (char *)mcb == PermPtr + PermAvail ) {
-                        PermAvail += mcb->len;
+                        PermAvail += mcb->size;
                         removeMCBfromFreeList( mcb );
                     }
                 }
             } else {
-                addMCBtoFreeList( mcb, mcb_len );
+                addMCBtoFreeList( mcb );
                 Ccoalesce( mcb );
             }
         }
