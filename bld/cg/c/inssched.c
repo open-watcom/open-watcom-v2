@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -733,8 +733,8 @@ static int StallCost( instruction *ins, instruction *top )
 }
 
 
-static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
-/************************************************************************
+static scale_typ ScaleAdjust( name *op, hw_reg_set reg )
+/*******************************************************
  * Figure out if we have to adjust this operand, and what the
  * scale factor is.
  */
@@ -742,16 +742,17 @@ static bool ScaleAdjust( name *op, hw_reg_set reg, scale_typ *scale_adj )
     hw_reg_set  idx_reg;
 
     if( op->n.class != N_INDEXED )
-        return( false );
+        return( SCALE_INVALID );
     idx_reg = op->i.index->r.reg;
     if( !HW_Ovlap( idx_reg, reg ) )
-        return( false );
-    *scale_adj = op->i.scale;
-    if( (op->i.index_flags & X_HIGH_BASE) && HW_Ovlap( HighReg( idx_reg ), reg )
-        || (op->i.index_flags & X_LOW_BASE) && HW_Ovlap( LowReg( idx_reg ), reg ) ) {
-        *scale_adj = SCALE_NONE;
+        return( SCALE_INVALID );
+    if( (op->i.index_flags & X_HIGH_BASE)
+      && HW_Ovlap( HighReg( idx_reg ), reg )
+      || (op->i.index_flags & X_LOW_BASE)
+      && HW_Ovlap( LowReg( idx_reg ), reg ) ) {
+        return( SCALE_NONE );
     }
-    return( true );
+    return( op->i.scale );
 }
 
 
@@ -806,7 +807,8 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         }
         for( i = chk->num_operands; i-- > 0; ) {
             op = chk->operands[i];
-            if( ScaleAdjust( op, reg, &scale_adj ) ) {
+            scale_adj = ScaleAdjust( op, reg );
+            if( scale_adj != SCALE_INVALID ) {
                 chk->operands[i] = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
                               op->n.type_class, op->n.size,
@@ -815,7 +817,8 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         }
         op = chk->result;
         if( op != NULL ) {
-            if( ScaleAdjust( op, reg, &scale_adj ) ) {
+            scale_adj = ScaleAdjust( op, reg );
+            if( scale_adj != SCALE_INVALID ) {
                 chk->result = ScaleIndex( op->i.index, op->i.base,
                               op->i.constant + (bias << scale_adj),
                               op->n.type_class, op->n.size,
