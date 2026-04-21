@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,7 +144,7 @@ obj_rec *ObjReadRec( OBJ_RFILE *obj ) {
 
     data = readData( obj, 3 );
     command = data[0];
-    length = MGET_LE_16( data + 1 );
+    length = MGET_LE_U16( data + 1 );
     --length;               /* we don't care about checksum */
     if( length > OBJ_MAX_REC ) {
         Fatal( MSG_MAX_REC_EXCEEDED, OBJ_MAX_REC );

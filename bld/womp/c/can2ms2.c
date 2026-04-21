@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -343,7 +344,7 @@ STATIC void symbChangeSeg( symb_handle cur ) {
     case FIX_POINTER:
         /* not so great, this is a pointer fixup and we can only do seg
            fixups */
-        codeOffset = (uint_32)MGET_LE_16( seg->data );
+        codeOffset = (uint_32)MGET_LE_U16( seg->data );
         offsetFixup = FixDup( newfix );
         offsetFixup->loc_method = FIX_OFFSET;
         newfix->loc_method = FIX_BASE;
@@ -353,7 +354,7 @@ STATIC void symbChangeSeg( symb_handle cur ) {
     case FIX_POINTER386:
         /* not so great, this is a pointer fixup and we can only do seg
            fixups */
-        codeOffset = MGET_LE_32( seg->data );
+        codeOffset = MGET_LE_U32( seg->data );
         offsetFixup = FixDup( newfix );
         offsetFixup->loc_method = FIX_OFFSET386;
         newfix->loc_method = FIX_BASE;

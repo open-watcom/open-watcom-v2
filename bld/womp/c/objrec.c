@@ -150,7 +150,7 @@ uint_16 ObjGet16( obj_rec *objr ) {
 
 /**/myassert( objr != NULL && objr->data != NULL );
     p = ObjGet( objr, 2 );
-    return( MGET_LE_16( p ) );
+    return( MGET_LE_U16( p ) );
 }
 
 #if ( _WOMP_OPT & _WOMP_WATFOR ) == 0
@@ -162,7 +162,7 @@ uint_32 ObjGet32( obj_rec *objr ) {
 /**/myassert( objr != NULL && objr->data != NULL );
 
     p = ObjGet( objr, 4 );
-    return( MGET_LE_32( p ) );
+    return( MGET_LE_U32( p ) );
 }
 
 uint_32 ObjGetEither( obj_rec *objr ) {

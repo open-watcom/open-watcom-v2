@@ -257,17 +257,17 @@ type_handle CanTSubRange( type_handle base_type, uint_32 low, uint_32 high ) {
     return( type->hdl );
 }
 
-STATIC unsigned log2( uint_32 num ) {
+STATIC unsigned get_log2( uint_32 num ) {
 
-    unsigned log2;
+    unsigned log2_val;
 
-    log2 = 0;
+    log2_val = 0;
     for(;;) {
         num >>= 1;
         if( num == 0 ) break;
-        ++log2;
+        ++log2_val;
     }
-    return( log2 );
+    return( log2_val );
 }
 
 type_handle CanTArray( type_handle base_hdl, type_handle idx_hdl ) {
@@ -319,7 +319,7 @@ type_handle CanTArray( type_handle base_hdl, type_handle idx_hdl ) {
     base_type = CanTFind( base_hdl );
     base_size = base_type->size;
     /* FIXME - this is a bad heuristic! */
-    if( log2( num_elm ) + log2( base_size ) >= 32 ) {
+    if( get_log2( num_elm ) + get_log2( base_size ) >= 32 ) {
         Fatal( MSG_ARRAY_TOO_LARGE, num_elm, base_size );
     }
     type->size = num_elm * base_size;
@@ -339,7 +339,7 @@ type_handle CanTArrayZ( type_handle base_hdl, uint_32 high ) {
     type->d.arrayz.high = high;
     base_type = CanTFind( base_hdl );
     base_size = base_type->size;
-    if( log2( high ) + log2( base_size ) >= 32 ) {
+    if( get_log2( high ) + get_log2( base_size ) >= 32 ) {
         Fatal( MSG_ARRAY_TOO_LARGE, high, base_size );
     }
     type->size = ( high + 1 ) * base_size;

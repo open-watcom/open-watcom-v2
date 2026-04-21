@@ -122,7 +122,7 @@ STATIC uint_16 get16( void ) {
 
     uint_16 word;
 
-    word = MGET_LE_16( wat->ptr );
+    word = MGET_LE_U16( wat->ptr );
     wat->ptr += 2;
     return( word );
 }
@@ -131,7 +131,7 @@ STATIC uint_32 get32( void ) {
 
     uint_32 dword;
 
-    dword = MGET_LE_32( wat->ptr );
+    dword = MGET_LE_U32( wat->ptr );
     wat->ptr += 4;
     return( dword );
 }

@@ -121,8 +121,6 @@ TRMEMAPI( MemRealloc )
 void *MemRealloc( void *ptr, size_t size )
 /****************************************/
 {
-    void *new;
-
 #ifdef TRMEM
     return( check_nomem( _trmem_realloc( ptr, size, _TRMEM_WHO( 2 ), TrHdl ) ) );
 #else

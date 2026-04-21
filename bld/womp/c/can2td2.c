@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,15 +67,15 @@ STATIC void symbChangeSeg( symb_handle symb ) {
     switch( fix->loc_method ) {
     case FIX_BASE:
         codeOffset = 0;
-        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_16( seg->data );
+        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_U16( seg->data );
         break;
     case FIX_POINTER:
-        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_16( seg->data + 2 );
-        codeOffset = fix->lr.target_offset + (int_32)MGET_LE_16( seg->data );
+        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_U16( seg->data + 2 );
+        codeOffset = fix->lr.target_offset + (int_32)MGET_LE_U16( seg->data );
         break;
     case FIX_POINTER386:
-        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_16( seg->data + 4 );
-        codeOffset = fix->lr.target_offset + (int_32)MGET_LE_32( seg->data );
+        codeSeg = fix->lr.target_datum + (int_16)MGET_LE_U16( seg->data + 4 );
+        codeOffset = fix->lr.target_offset + (int_32)MGET_LE_U32( seg->data );
         break;
     default:
 /**/    never_reach();
@@ -219,11 +219,11 @@ STATIC void symbMemLoc( symb_handle symb ) {
     switch( fix->loc_method ) {
     case FIX_POINTER:
     case FIX_OFFSET:
-        offset += (int_32)(int_16)MGET_LE_16( mem_loc->data );
+        offset += (int_32)(int_16)MGET_LE_U16( mem_loc->data );
         break;
     case FIX_POINTER386:
     case FIX_OFFSET386:
-        offset += (int_32)MGET_LE_32( mem_loc->data );
+        offset += (int_32)MGET_LE_U32( mem_loc->data );
         break;
     }
     if( offset > 0xffff ) {

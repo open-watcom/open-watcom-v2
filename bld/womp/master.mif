@@ -6,6 +6,8 @@ womp_autodepends = .AUTODEPEND
 
 womp_trmem = 1
 
+womp_wreslib_cli = text
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
