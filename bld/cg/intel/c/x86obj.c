@@ -2521,21 +2521,23 @@ void    OutLabel( label_handle lbl )
                     patchptr = &_ARRAYOF( &obj->data, byte )[tpatch->patch.where];
                     if( tpatch->patch.attr & ADD_PATCH ) {
                         if( tpatch->patch.attr & LONG_PATCH ) {
-                            MPUT_32_UN( patchptr, MGET_U32_UN( patchptr ) + lc );
-//                            _TargetAddL( *(uint_32 *)patchptr, lc );
+                            uint_32 val;
+
+                            val = MGET_U32_UN( patchptr ) + lc;
+                            MPUT_32_UN( patchptr, val );
                         } else if( tpatch->patch.attr & WORD_PATCH ) {
-                            MPUT_16_UN( patchptr, MGET_U16_UN( patchptr ) + lc );
-//                            _TargetAddW( *(uint_16 *)patchptr, lc );
+                            uint_16 val;
+
+                            val = MGET_U16_UN( patchptr ) + lc;
+                            MPUT_16_UN( patchptr, val );
                         } else {
                             *(byte *)patchptr += lc;
                         }
                     } else {
                         if( tpatch->patch.attr & LONG_PATCH ) {
                             MPUT_32_UN( patchptr, lc );
-//                            *(uint_32 *)patchptr = _TargetLongInt( lc );
                         } else if( tpatch->patch.attr & WORD_PATCH ) {
                             MPUT_16_UN( patchptr, lc );
-//                            *(uint_16 *)patchptr = _TargetShort( lc );
                         } else {
                             *(byte *)patchptr = lc;
                         }
