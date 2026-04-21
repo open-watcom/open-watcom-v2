@@ -130,17 +130,17 @@
 
 #if defined( __BIG_ENDIAN__ )
     /* Macros to get little endian data */
-    #define GET_LE_16(w)    SWAPNC_16(w)
-    #define GET_LE_32(w)    SWAPNC_32(w)
-    #define GET_LE_64(w)    SWAPNC_64(w)
+    #define GET_LE_16(w)    SWAPNC_16((w))
+    #define GET_LE_32(w)    SWAPNC_32((w))
+    #define GET_LE_64(w)    SWAPNC_64((w))
     /* Macros to get big endian data */
     #define GET_BE_16(w)    (w)
     #define GET_BE_32(w)    (w)
     #define GET_BE_64(w)    (w)
     /* Macros to convert little endian data in place */
-    #define CONV_LE_16(w)   (w) = SWAPNC_16(w)
-    #define CONV_LE_32(w)   (w) = SWAPNC_32(w)
-    #define CONV_LE_64(w)   (w) = SWAPNC_64(w)
+    #define CONV_LE_16(w)   (w) = SWAPNC_16((w))
+    #define CONV_LE_32(w)   (w) = SWAPNC_32((w))
+    #define CONV_LE_64(w)   (w) = SWAPNC_64((w))
     /* Macros to convert big endian data in place */
     #define CONV_BE_16(w)
     #define CONV_BE_32(w)
@@ -155,17 +155,17 @@
     #define GET_LE_32(w)    (w)
     #define GET_LE_64(w)    (w)
     /* Macros to get big endian data */
-    #define GET_BE_16(w)    SWAPNC_16(w)
-    #define GET_BE_32(w)    SWAPNC_32(w)
-    #define GET_BE_64(w)    SWAPNC_64(w)
+    #define GET_BE_16(w)    SWAPNC_16((w))
+    #define GET_BE_32(w)    SWAPNC_32((w))
+    #define GET_BE_64(w)    SWAPNC_64((w))
     /* Macros to convert little endian data in place */
     #define CONV_LE_16(w)
     #define CONV_LE_32(w)
     #define CONV_LE_64(w)
     /* Macros to convert big endian data in place */
-    #define CONV_BE_16(w)   (w) = SWAPNC_16(w)
-    #define CONV_BE_32(w)   (w) = SWAPNC_32(w)
-    #define CONV_BE_64(w)   (w) = SWAPNC_64(w)
+    #define CONV_BE_16(w)   (w) = SWAPNC_16((w))
+    #define CONV_BE_32(w)   (w) = SWAPNC_32((w))
+    #define CONV_BE_64(w)   (w) = SWAPNC_64((w))
     /* Macros to swap byte order */
     #define SWAP_16         CONV_BE_16
     #define SWAP_32         CONV_BE_32
@@ -182,10 +182,10 @@
     #define MGET_U32(p)         (*(uint_32*)(p))
     #define MGET_U64(p)         (*(uint_64*)(p))
 
-    #define MPUT_8(p,w)         (MGET_U8(p)) = (w)
-    #define MPUT_16(p,w)        (MGET_U16(p)) = (w)
-    #define MPUT_32(p,w)        (MGET_U32(p)) = (w)
-    #define MPUT_64(p,w)        (MGET_U64(p)) = (w)
+    #define MPUT_8(p,w)         (MGET_U8((p))) = (w)
+    #define MPUT_16(p,w)        (MGET_U16((p))) = (w)
+    #define MPUT_32(p,w)        (MGET_U32((p))) = (w)
+    #define MPUT_64(p,w)        (MGET_U64((p))) = (w)
 
 #if defined( __BIG_ENDIAN__ )
     /*
@@ -195,13 +195,13 @@
     /*
      * Macros to get/put aligned data
      */
-    #define MGET_LE_U16(p)      SWAPNC_16(MGET_U16(p))
-    #define MGET_LE_U32(p)      SWAPNC_32(MGET_U32(p))
-    #define MGET_LE_U64(p)      SWAPNC_64(MGET_U64(p))
+    #define MGET_LE_U16(p)      SWAPNC_16(MGET_U16((p)))
+    #define MGET_LE_U32(p)      SWAPNC_32(MGET_U32((p)))
+    #define MGET_LE_U64(p)      SWAPNC_64(MGET_U64((p)))
 
-    #define MPUT_LE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
-    #define MPUT_LE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
-    #define MPUT_LE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
+    #define MPUT_LE_16(p,w)     (MGET_U16((p))) = SWAPNC_16((w))
+    #define MPUT_LE_32(p,w)     (MGET_U32((p))) = SWAPNC_32((w))
+    #define MPUT_LE_64(p,w)     (MGET_U64((p))) = SWAPNC_64((w))
 
     /*
      * Macros to get/put unaligned data
@@ -229,13 +229,13 @@
     /*
      * Macros to get/put aligned data
      */
-    #define MGET_BE_U16(p)      (MGET_U16(p))
-    #define MGET_BE_U32(p)      (MGET_U32(p))
-    #define MGET_BE_U64(p)      (MGET_U64(p))
+    #define MGET_BE_U16(p)      (MGET_U16((p)))
+    #define MGET_BE_U32(p)      (MGET_U32((p)))
+    #define MGET_BE_U64(p)      (MGET_U64((p)))
 
-    #define MPUT_BE_16(p,w)     (MGET_U16(p)) = (w)
-    #define MPUT_BE_32(p,w)     (MGET_U32(p)) = (w)
-    #define MPUT_BE_64(p,w)     (MGET_U64(p)) = (w)
+    #define MPUT_BE_16(p,w)     (MGET_U16((p))) = (w)
+    #define MPUT_BE_32(p,w)     (MGET_U32((p))) = (w)
+    #define MPUT_BE_64(p,w)     (MGET_U64((p))) = (w)
 
     /*
      * Macros to get/put unaligned data
@@ -259,12 +259,12 @@
     /*
      * Macros to get/put unaligned data (endian neutral)
      */
-    #define MGET_U16_UN(p)      MGET_BE_U16_UN(p)
-    #define MGET_U32_UN(p)      MGET_BE_U32_UN(p)
-//    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
+    #define MGET_U16_UN(p)      MGET_BE_U16_UN((p))
+    #define MGET_U32_UN(p)      MGET_BE_U32_UN((p))
+//    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)((p)))
 
-    #define MPUT_16_UN(p,w)     MPUT_BE_16_UN(p,w)
-    #define MPUT_32_UN(p,w)     MPUT_BE_32_UN(p,w)
+    #define MPUT_16_UN(p,w)     MPUT_BE_16_UN((p),(w))
+    #define MPUT_32_UN(p,w)     MPUT_BE_32_UN((p),(w))
 //    #define MPUT_64_UN(p,w)
 
 #else
@@ -275,13 +275,13 @@
     /*
      * Macros to get/put aligned data
      */
-    #define MGET_LE_U16(p)      (MGET_U16(p))
-    #define MGET_LE_U32(p)      (MGET_U32(p))
-    #define MGET_LE_U64(p)      (MGET_U64(p))
+    #define MGET_LE_U16(p)      (MGET_U16((p)))
+    #define MGET_LE_U32(p)      (MGET_U32((p)))
+    #define MGET_LE_U64(p)      (MGET_U64((p)))
 
-    #define MPUT_LE_16(p,w)     (MGET_U16(p)) = (w)
-    #define MPUT_LE_32(p,w)     (MGET_U32(p)) = (w)
-    #define MPUT_LE_64(p,w)     (MGET_U64(p)) = (w)
+    #define MPUT_LE_16(p,w)     (MGET_U16((p))) = (w)
+    #define MPUT_LE_32(p,w)     (MGET_U32((p))) = (w)
+    #define MPUT_LE_64(p,w)     (MGET_U64((p))) = (w)
 
     /*
      * Macros to get/put unaligned data
@@ -309,13 +309,13 @@
     /*
      * Macros to get/put aligned data
      */
-    #define MGET_BE_U16(p)      SWAPNC_16(MGET_U16(p))
-    #define MGET_BE_U32(p)      SWAPNC_32(MGET_U32(p))
-    #define MGET_BE_U64(p)      SWAPNC_64(MGET_U64(p))
+    #define MGET_BE_U16(p)      SWAPNC_16(MGET_U16((p)))
+    #define MGET_BE_U32(p)      SWAPNC_32(MGET_U32((p)))
+    #define MGET_BE_U64(p)      SWAPNC_64(MGET_U64((p)))
 
-    #define MPUT_BE_16(p,w)     (MGET_U16(p)) = SWAPNC_16(w)
-    #define MPUT_BE_32(p,w)     (MGET_U32(p)) = SWAPNC_32(w)
-    #define MPUT_BE_64(p,w)     (MGET_U64(p)) = SWAPNC_64(w)
+    #define MPUT_BE_16(p,w)     (MGET_U16((p))) = SWAPNC_16((w))
+    #define MPUT_BE_32(p,w)     (MGET_U32((p))) = SWAPNC_32((w))
+    #define MPUT_BE_64(p,w)     (MGET_U64((p))) = SWAPNC_64((w))
 
     /*
      * Macros to get/put unaligned data
@@ -339,12 +339,12 @@
     /*
      * Macros to get/put unaligned data (endian neutral)
      */
-    #define MGET_U16_UN(p)      MGET_LE_U16_UN(p)
-    #define MGET_U32_UN(p)      MGET_LE_U32_UN(p)
+    #define MGET_U16_UN(p)      MGET_LE_U16_UN((p))
+    #define MGET_U32_UN(p)      MGET_LE_U32_UN((p))
 //    #define MGET_U64_UN(p)      (*(uint_64 _WCUNALIGNED*)(p))
 
-    #define MPUT_16_UN(p,w)     MPUT_LE_16_UN(p,w)
-    #define MPUT_32_UN(p,w)     MPUT_LE_32_UN(p,w)
+    #define MPUT_16_UN(p,w)     MPUT_LE_16_UN((p),(w))
+    #define MPUT_32_UN(p,w)     MPUT_LE_32_UN((p),(w))
 //    #define MPUT_64_UN(p,w)
 
 #endif
