@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -778,17 +778,17 @@ hw_reg_set      Low32Reg( hw_reg_set regs )
 
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
-    for( order = Reg32Order; ; ++order ) {
+    for( order = Reg32Order; !HW_CEqual( *order, HW_EMPTY ); ++order ) {
         if( HW_Ovlap( *order, regs ) ) {
-            break;
+            low = regs;
+            HW_OnlyOn( low, *order );
+            if( HW_Equal( low, regs ) ) {
+                low = HW_EMPTY;
+            }
+            return( low );
         }
     }
-    low = regs;
-    HW_OnlyOn( low, *order );
-    if( HW_Equal( low, regs ) ) {
-        HW_CAsgn( low, HW_EMPTY );
-    }
-    return( low );
+    return( HW_EMPTY );
 }
 
 
