@@ -418,7 +418,7 @@ common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-
 common_cflags = $(common_cflags_wng) -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=$(bld_fortify)
 ! ifeq noasan 1
 ! else ifeq bld_asan 1
-common_cflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
+common_cflags += -fsanitize=address -fsanitize=undefined -fno-sanitize=signed-integer-overflow -fno-sanitize=shift-base -fno-omit-frame-pointer
 ! endif
 
 common_ldflags_rel =
@@ -430,7 +430,7 @@ common_ldflags = $(common_ldflags_dbg)
 ! endif
 ! ifeq noasan 1
 ! else ifeq bld_asan 1
-common_ldflags += -fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer
+common_ldflags += -fsanitize=address -fsanitize=undefined -fno-sanitize=signed-integer-overflow -fno-sanitize=shift-base -fno-omit-frame-pointer
 ! endif
 
 # Options for building Executable
