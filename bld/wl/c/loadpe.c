@@ -308,7 +308,7 @@ static void GenPETransferTable( void )
               {
                 offset dest = FindIATSymAbsOff( sym );
 
-                *(unsigned_32 *)(CoffImportX86Text + 2) = dest;
+                MPUT_32_UN( CoffImportX86Text + 2, dest );
                 if( LinkState & LS_MAKE_RELOCS ) {
                     XFerReloc( sym->addr.off + 2, group, PE_FIX_HIGHLOW, 0 );
                 }
