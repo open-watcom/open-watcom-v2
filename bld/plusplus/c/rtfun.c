@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,12 +58,15 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 // function name array
 
 static const char *runTimeCodeString[] = {
-    #define QSTRING( name ) __STR( name )
-    #define RTFUN( code, name ) QSTRING(CPPLIB(name))
-    #define RTFUN1( code )      ""
-    #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
-    #define RTFNC( code, name ) QSTRING(name)
-    #define RTFNP( code, name ) #name
+    /*
+     * add memory extension by nulls for string processing as a 32-bit array
+     */
+    #define QSTRING( name ) __STR( name ) NAME_MEM_EXT
+    #define RTFUN( code, name ) QSTRING(CPPLIB(name)) NAME_MEM_EXT
+    #define RTFUN1( code )      "" NAME_MEM_EXT
+    #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name)) NAME_MEM_EXT
+    #define RTFNC( code, name ) QSTRING(name) NAME_MEM_EXT
+    #define RTFNP( code, name ) #name NAME_MEM_EXT
 
     #include "_rtfuns.h"
 

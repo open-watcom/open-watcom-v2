@@ -83,7 +83,10 @@ static CGOP const operatorSameAs[] = {
 };
 
 static const char *specialNamesStr[] = {
-    #define pick(e,s)    s,
+    /*
+     * add memory extension by nulls for string processing as a 32-bit array
+     */
+    #define pick(e,s)       s NAME_MEM_EXT,       
     #include "_specnam.h"
     #undef pick
 };

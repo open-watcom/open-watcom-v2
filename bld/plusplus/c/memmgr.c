@@ -40,6 +40,7 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "codegen.h"
+#include "roundmac.h"
 #ifdef TRMEM
     #include "trmem.h"
 #endif
@@ -77,6 +78,12 @@
     #define _addPerm(p,n)   addPerm( p )
 #endif
 
+#define PERM_ALIGN      sizeof( void * )
+
+#define PERM_HDR_SIZE   __ROUND_UP_SIZE( sizeof( perm_blk ), PERM_ALIGN )
+#define PERM_SIZE(x)    (PERM_HDR_SIZE + (x))
+#define PERM_DATA(p,x)  ((char *)(p) + PERM_HDR_SIZE + (x))
+
 typedef struct cleanup *CLEANPTR;
 struct cleanup {
     CLEANPTR            next;
@@ -88,7 +95,7 @@ typedef struct perm_blk {
     PERMPTR             next;
     size_t              amt_left;
     size_t              size;
-    char                mem[1];
+//    char                mem[1];
 } perm_blk;
 #define PERM_MAX_ALLOC  (1024)
 #define PERM_MIN_ALLOC  (128)
@@ -236,13 +243,13 @@ static void addPerm( size_t size )
     size_t amt;
 
     if( size > PERM_MAX_ALLOC ) {
-        p = _MemAllocW( offsetof( perm_blk, mem ) + size );
+        p = _MemAllocW( PERM_SIZE( size ) );
         linkPerm( p, size );
         return;
     }
     size = PERM_MAX_ALLOC;
     for(;;) {
-        amt = offsetof( perm_blk, mem ) + size;
+        amt = PERM_SIZE( size );
         p = alloc_mem( amt, 2 );
         if( p != NULL ) {
             linkPerm( p, size );
@@ -267,7 +274,7 @@ static void *cutPerm( PERMPTR find, size_t size )
     void *p;
 
     if( size <= find->amt_left ) {
-        p = &(find->mem[find->size - find->amt_left]);
+        p = PERM_DATA( find, find->size - find->amt_left );
         find->amt_left -= size;
         return( p );
     }
@@ -281,7 +288,7 @@ void *CPermAlloc( size_t size )
     void *p;
     PERMPTR find;
 
-    size = _RoundUp( size, sizeof( int ) );
+    size = _RoundUp( size, PERM_ALIGN );
     RingIterBeg( permList, find ) {
         p = cutPerm( find, size );
         if( p != NULL ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,6 +106,13 @@ typedef const char          *NAME;      // name pointer
 typedef const struct idname *NAME;      // name pointer
 #define NameStr(x)          (((x) == NULL) ? NULL : (x)->name)
 #endif
+/*
+ * nulls memory extension for constant string names processing as a 32-bit array
+ * used by name hash and compare routines
+ * on the constant string end is always 3 nulls that appropriate routines
+ * always access valid memory and not overflow
+ */
+#define NAME_MEM_EXT        "\0\0"
 
 #define VAL64(x)            (x.u._64[0])
 
