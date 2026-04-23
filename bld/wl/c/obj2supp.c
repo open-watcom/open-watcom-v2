@@ -63,8 +63,6 @@
 
 #define TOC_RESTORE_INSTRUCTION     0x804b0004
 
-#define MAX_ADDEND_SIZE             ( 2 * sizeof( unsigned_32 ) )
-
 #define GET_S16( P )                (*(signed_16 *)(P))
 
 #define FIX_POINTER_MASK            (FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK)
@@ -83,21 +81,35 @@ typedef struct {
 } fix_relo_data;
 
 typedef struct {
+    /*
+     * members must be in this order
+     * first two members are shared
+     */
+    void            *target;
     fix_type        flags;
     offset          off;
-    void            *target;
     void            *frame;
+    unsigned_8      data[];
 } fixupf_t;
 
 typedef struct {
+    /*
+     * members must be in this order
+     * first two members are shared
+     */
+    void            *target;
     fix_type        flags;
     offset          off;
-    void            *target;
+    unsigned_8      data[];
 } fixup_t;
 
 typedef struct {
-    fix_type        flags;
+    /*
+     * members must be in this order
+     * first two members are shared
+     */
     segdata         *sdata;
+    fix_type        flags;
 } sdata_t;
 
 typedef struct {
@@ -105,6 +117,7 @@ typedef struct {
         fixupf_t    fixupf;
         fixup_t     fixup;
         sdata_t     sdata;
+        unsigned_8  buff[40];   /* must be enought for 4 * 64-bit (32 bytes) */
     } u;
 } save_fixup;
 
@@ -205,33 +218,33 @@ void RelocStartMod( void )
 
 static byte     OffsetSizes[] = { 0, 1, 2, 4, 4, 4, 4 };
 
-static unsigned CalcFixupSize( fix_type type )
-/********************************************/
+static unsigned CalcFixupSize( fix_type fixtype )
+/***********************************************/
 {
     unsigned value;
 
-    value = OffsetSizes[FIX_GET_OFFSET( type )];
-    if( type & FIX_BASE ) {
+    value = OffsetSizes[FIX_GET_OFFSET( fixtype )];
+    if( fixtype & FIX_BASE ) {
         value += sizeof( unsigned_16 );
     }
     return( value );
 }
 
-static size_t CalcAddendSize( fix_type fixtype )
-/**********************************************/
+static unsigned CalcAddendSize( fix_type fixtype )
+/************************************************/
 {
     if( fixtype & FIX_ADDEND_ZERO ) {
         return( 0 );
     } else if( (fixtype & (FIX_OFFSET_MASK | FIX_BASE)) == FIX_BASE_OFFSET_32 ) {
-        return( MAX_ADDEND_SIZE );
+        return( 2 * sizeof( unsigned_32 ) );
     }
     return( sizeof( unsigned_32 ) );
 }
 
-static size_t CalcSavedFixSize( fix_type fixtype )
-/************************************************/
+static unsigned CalcSavedFixSize( fix_type fixtype )
+/**************************************************/
 {
-    size_t      retval;
+    unsigned    retval;
 
     if( fixtype & FIX_CHANGE_SEG ) {
         retval = sizeof( sdata_t );
@@ -240,7 +253,7 @@ static size_t CalcSavedFixSize( fix_type fixtype )
     } else {
         retval = sizeof( fixup_t ) + CalcAddendSize( fixtype );
     }
-    return( retval );
+    return( __ROUND_UP_SIZE( retval, sizeof( void  * ) ) );
 }
 
 static void UpdateFramePtr( frame_spec *frame )
@@ -450,26 +463,26 @@ static void FixTargetValue( target_type type, void **targ )
     }
 }
 
-size_t RelocMarkSyms( void *_fix )
+size_t RelocMarkSyms( void *_save )
 /********************************/
 {
-    save_fixup  *fix = _fix;
+    save_fixup  *save = _save;
     frame_type  frame;
     target_type target;
     symbol      *sym;
-    fix_type    fixtype = fix->u.fixup.flags;
+    fix_type    fixtype = save->u.sdata.flags;
 
     if( fixtype & FIX_CHANGE_SEG ) {
-        fix->u.sdata.sdata = CarveMapIndex( CarveSegData, fix->u.sdata.sdata );
+        save->u.sdata.sdata = CarveMapIndex( CarveSegData, save->u.sdata.sdata );
     } else {
         frame = FIX_GET_FRAME( fixtype );
         if( FRAME_HAS_DATA( frame ) ) {
-            FixFrameValue( frame, &fix->u.fixupf.frame );
+            FixFrameValue( frame, &save->u.fixupf.frame );
         }
         target = FIX_GET_TARGET( fixtype );
-        FixTargetValue( target, &fix->u.fixup.target );
+        FixTargetValue( target, &save->u.fixup.target );
         if( target == FIX_TARGET_EXT ) {
-            sym = (symbol *)fix->u.fixup.target;
+            sym = (symbol *)save->u.fixup.target;
             sym->info |= SYM_RELOC_REFD;
             sym = UnaliasSym( ST_FIND, sym );
             sym->info |= SYM_RELOC_REFD;
@@ -560,7 +573,8 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
         MPUT_32( code, oldval | val );
         break;
     case FIX_OFFSET_32:
-        MPUT_32( code, MGET_U32( code ) + val );
+        oldval = MGET_U32_UN( code );
+        MPUT_32_UN( code, oldval + val );
         break;
     default:
         LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
@@ -573,50 +587,50 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame, target_spec *targ
     save_fixup      save;
     fix_relo_data   fix;
     unsigned        size;
-    unsigned_8      buff[MAX_ADDEND_SIZE];
+    fix_type        fixtype;
+    unsigned_8      *data;
 
     if( LastSegData != CurrRec.seg ) {
         DbgAssert( CurrRec.seg != NULL );
         LastSegData = CurrRec.seg;
-        save.u.fixup.flags = FIX_CHANGE_SEG;
+        save.u.sdata.flags = FIX_CHANGE_SEG;
         save.u.sdata.sdata = CurrRec.seg;
-        PermSaveFixup( &save, sizeof( sdata_t ) );
+        PermSaveFixup( save.u.buff, __ROUND_UP_SIZE( sizeof( sdata_t ), sizeof( void * ) ) );
     }
-    save.u.fixup.flags = type | FIX_SET_TARGET( target->type ) | FIX_SET_FRAME( frame->type );
+    fixtype = type | FIX_SET_TARGET( target->type ) | FIX_SET_FRAME( frame->type );
     save.u.fixup.off = off + CurrRec.obj_offset;
     save.u.fixup.target = target->u.ptr;
     if( ObjFormat & FMT_UNSAFE_FIXUPP ) {
-        save.u.fixup.flags |= FIX_UNSAFE;
+        fixtype |= FIX_UNSAFE;
+    }
+    if( FRAME_HAS_DATA( frame->type ) ) {
+        save.u.fixupf.frame = frame->u.ptr;
+        data = save.u.fixupf.data;
+    } else {
+        data = save.u.fixup.data;
     }
     size = CalcFixupSize( type );
     if( CurrRec.data != NULL ) {
-        memcpy( buff, CurrRec.data + off, size );
+        memcpy( data, CurrRec.data + off, size );
     } else {
-        ReadInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, buff, size );
+        ReadInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, data, size );
     }
     fix.type = type;
-    fix.data = buff;
+    fix.data = data;
     if( (type & (FIX_OFFSET_MASK | FIX_HIGH)) == FIX_HIGH_OFFSET_16 ) {
         addend += FixupOverflow << 16;
     }
     PatchOffset( &fix, addend, true );
-    if( MemIsZero( buff, size ) ) {
-        save.u.fixup.flags |= FIX_ADDEND_ZERO;
+    if( MemIsZero( data, size ) ) {
+        fixtype |= FIX_ADDEND_ZERO;
     }
-    if( FRAME_HAS_DATA( frame->type ) ) {
-        save.u.fixupf.frame = frame->u.ptr;
-        PermSaveFixup( &save, sizeof( fixupf_t ) );
-    } else {
-        PermSaveFixup( &save, sizeof( fixup_t ) );
-    }
-    if( (save.u.fixup.flags & FIX_ADDEND_ZERO) == 0 )  {
-        PermSaveFixup( buff, CalcAddendSize( save.u.fixup.flags ) );
-    }
-    TraceFixup( save.u.fixup.flags, target );
+    save.u.fixup.flags = fixtype;
+    PermSaveFixup( save.u.buff, CalcSavedFixSize( fixtype ) );
+    TraceFixup( fixtype, target );
     if( CurrRec.data != NULL ) {
-        memcpy( CurrRec.data + off, buff, size );
+        memcpy( CurrRec.data + off, data, size );
     } else {
-        PutInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, buff, size );
+        PutInfo( CurrRec.seg->u1.vm_ptr + save.u.fixup.off, data, size );
     }
 }
 
@@ -628,8 +642,8 @@ size_t IncSaveRelocs( void *_save )
     target_spec target;
     size_t      fixsize;
     unsigned    datasize;
-    char        *data;
-    fix_type    fixtype = save->u.fixup.flags;
+    unsigned_8  *data;
+    fix_type    fixtype = save->u.sdata.flags;
 
     fixsize = CalcSavedFixSize( fixtype );
     if( fixtype & FIX_CHANGE_SEG ) {
@@ -647,9 +661,9 @@ size_t IncSaveRelocs( void *_save )
             PutInfoNulls( LastSegData->u1.vm_ptr + save->u.fixup.off, datasize );
         } else {
             if( FRAME_HAS_DATA( FIX_GET_FRAME( fixtype ) ) ) {
-                data = (char *)save + sizeof( fixupf_t );
+                data = save->u.fixupf.data;
             } else {
-                data = (char *)save + sizeof( fixup_t );
+                data = save->u.fixup.data;
             }
             PutInfo( LastSegData->u1.vm_ptr + save->u.fixup.off, data, datasize );
         }
@@ -1037,7 +1051,7 @@ static void PatchData( fix_relo_data *fix )
         fix->value += MGET_U16( data );
         break;
     case FIX_OFFSET_32:
-        fix->value += MGET_U32( data );
+        fix->value += MGET_U32_UN( data );
         break;
     }
     /*
@@ -1462,10 +1476,10 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             if( ftype != FIX_BASE ) {
                 if( target.off > 0xFFFF ) {
                     flags |= OSF_TFLAG_OFF_32BIT;
-                    MPUT_32( fixptr, target.off );
+                    MPUT_32_UN( fixptr, target.off );
                     fixptr += 4;
                 } else {
-                    MPUT_16( fixptr, target.off );
+                    MPUT_16_UN( fixptr, target.off );
                     fixptr += 2;
                 }
             }
@@ -1499,7 +1513,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     fixptr += 2;
                 }
             } else if( dll->u.ordinal > 0xFF ) {
-                MPUT_16( fixptr, dll->u.ordinal );
+                MPUT_16_UN( fixptr, dll->u.ordinal );
                 fixptr += 2;
             } else {
                 flags |= OSF_TFLAG_ORDINAL_8BIT;
@@ -1759,7 +1773,7 @@ static void Relocate( offset off, fix_relo_data *fix, target_spec *target )
 {
     int         shift;
     unsigned    datasize;
-    unsigned_8  addbuf[MAX_ADDEND_SIZE + 2];
+    unsigned_8  addbuf[2 * sizeof( unsigned_32 ) + 2];
 
     shift = 0;
     datasize = CalcFixupSize( fix->type );
@@ -1797,7 +1811,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
 {
     fix_relo_data   fix;
     targ_addr       faddr;
-    fix_type        fixtype = save->u.fixup.flags;
+    fix_type        fixtype = save->u.sdata.flags;
     offset          off = save->u.fixup.off;
 
     faddr.off = 0;
@@ -1893,7 +1907,7 @@ size_t IncExecRelocs( void *_save )
     segdata     *sdata;
     target_spec target;
     frame_spec  frame;
-    fix_type    fixtype = save->u.fixup.flags;
+    fix_type    fixtype = save->u.sdata.flags;
 
     if( fixtype & FIX_CHANGE_SEG ) {
         sdata = save->u.sdata.sdata;

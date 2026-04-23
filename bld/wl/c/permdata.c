@@ -932,9 +932,10 @@ void IterateModRelocs( size_t offset, size_t sizeleft, size_t (*fn)(void *) )
     size_t      size;
 
     fixoff = ReadRelocs + offset;
-    for( ; sizeleft > 0; sizeleft -= size ) {
+    while( sizeleft > 0 ) {
         size = fn( fixoff );
         fixoff += size;
+        sizeleft -= size;
     }
 }
 
