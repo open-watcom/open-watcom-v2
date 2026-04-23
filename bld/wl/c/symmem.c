@@ -41,13 +41,12 @@
 #include "symmem.h"
 
 
-#define SYM_BLOCK_SIZE      _16K
-#define SYM_BLOCK_MIN       32
-
 #define ALLOC_ALIGN         sizeof( void  * )
 
-#define BLOCK_SIZE(x)       (__ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
-#define BLOCK_DATA(b,x)     ((char *)(b) + __ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN ) + (x))
+#define SYM_BLOCK_MIN       32
+#define SYM_BLOCK_HDR_SIZE  __ROUND_UP_SIZE( sizeof( sym_block ), ALLOC_ALIGN )
+#define SYM_BLOCK_SIZE(x)   (SYM_BLOCK_HDR_SIZE + (x))
+#define SYM_BLOCK_DATA(b,x) ((char *)(b) + SYM_BLOCK_HDR_SIZE + (x))
 
 typedef struct sym_block {
     struct sym_block    *next;       /* NOTE: this *must* be the first field */
@@ -76,21 +75,21 @@ void ResetPass1Blocks( void )
     Pass1Blocks.list = NULL;
 }
 
-static bool ShrinkBlock( block_data *block )
-/******************************************/
+static bool ShrinkBlock( block_data *block_set )
+/**********************************************/
 {
 #ifdef __WATCOMC__
-    sym_block   *new;
+    sym_block   *block;
 
-    if( block->list == NULL )
+    if( block_set->list == NULL )
         return( false );
-    if( block->currbrk >= block->list->size )
+    if( block_set->currbrk >= block_set->list->size )
         return( false );
-    new = MemReallocSafe( block->list, BLOCK_SIZE( block->currbrk ) );
-    new->size = block->currbrk;
+    block = MemReallocSafe( block_set->list, SYM_BLOCK_SIZE( block_set->currbrk ) );
+    block->size = block_set->currbrk;
     /* assuming that a shrinkage will not move the block */
   #ifdef DEVBUILD
-    if( new != block->list ) {
+    if( block != block_set->list ) {
         LnkMsg( FTL+MSG_INTERNAL, "s", "realloc moved shrinked block!" );
     }
   #endif
@@ -98,7 +97,7 @@ static bool ShrinkBlock( block_data *block )
 #else
     /* There is no guarantee realloc() won't move memory - just don't do it */
 
-    /* unused parameters */ (void)block;
+    /* unused parameters */ (void)block_set;
 
     return( false );
 #endif
@@ -117,46 +116,46 @@ bool PermShrink( void )
     return( ret );
 }
 
-static void GetNewBlock( block_data *block, size_t size )
-/*******************************************************/
+static void GetNewBlock( block_data *block_set, size_t size )
+/***********************************************************/
 {
     size_t              try;
-    sym_block           *new;
+    sym_block           *block;
 
-    ShrinkBlock( block );
-    try = SYM_BLOCK_SIZE;
+    ShrinkBlock( block_set );
+    try = _16K;     /* default block size */
     if( try < size )
         try = size;
     for( ;; ) {
-        new = MemAlloc( BLOCK_SIZE( try ) );
-        if( new != NULL )
+        block = MemAlloc( SYM_BLOCK_SIZE( try ) );
+        if( block != NULL )
             break;
         try /= 2;
         if( try < size || try < SYM_BLOCK_MIN ) {
             LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
         }
     }
-    new->next = block->list;
-    block->list = new;
-    new->size = try;
-    block->currbrk = 0;
+    block->size = try;
+    block->next = block_set->list;
+    block_set->list = block;
+    block_set->currbrk = 0;
 }
 
-static void *AllocBlock( size_t size, block_data *block )
-/*******************************************************/
+static void *AllocBlock( size_t size, block_data *block_set )
+/***********************************************************/
 {
     void            *ptr;
     size_t          newbrk;
 
     size = __ROUND_UP_SIZE( size, ALLOC_ALIGN );
-    newbrk = block->currbrk + size;
-    if( block->list == NULL ) {
-        GetNewBlock( block, size );
-    } else if( newbrk > block->list->size ) {
-        GetNewBlock( block, size );
+    newbrk = block_set->currbrk + size;
+    if( block_set->list == NULL ) {
+        GetNewBlock( block_set, size );
+    } else if( newbrk > block_set->list->size ) {
+        GetNewBlock( block_set, size );
     }
-    ptr = BLOCK_DATA( block->list, block->currbrk );
-    block->currbrk += size;
+    ptr = SYM_BLOCK_DATA( block_set->list, block_set->currbrk );
+    block_set->currbrk += size;
     return( ptr );
 }
 
