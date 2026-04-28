@@ -1509,7 +1509,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     MPUT_32( fixptr, dll->u.entry->num );
                     fixptr += 4;
                 } else {
-                    MPUT_16( fixptr, dll->u.entry->num );
+                    MPUT_16_UN( fixptr, dll->u.entry->num );
                     fixptr += 2;
                 }
             } else if( dll->u.ordinal > 0xFF ) {
@@ -1530,7 +1530,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     MPUT_16( fix->data, 0 );
                     break;
                 case FIX_OFFSET_32:
-                    MPUT_32( fix->data, 0 );
+                    MPUT_32_UN( fix->data, 0 );
                     break;
                 }
                 if( fix->value > 0x7fff ) {
@@ -1538,7 +1538,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     MPUT_32( fixptr, fix->value );
                     fixptr += 4;
                 } else {
-                    MPUT_16( fixptr, fix->value );
+                    MPUT_16_UN( fixptr, fix->value );
                     fixptr += 2;
                 }
             }
