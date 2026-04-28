@@ -41,16 +41,21 @@
 #include "dfa.h"
 #include "mem.h"
 
-static Symbol *first = NULL;
+static Symbol *Symbol_first = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
 
 static void Symbol_init( Symbol *r, const SubStr *str )
 {
-    r->next = first;
+    r->next = Symbol_first;
     Str_init( &r->name, str );
     r->re = NULL;
-    first = r;
+    Symbol_first = r;
+}
+
+static void Symbol_fini( Symbol *r )
+{
+    Str_fini( &r->name );
 }
 
 static Symbol *Symbol_new( const SubStr *str )
@@ -62,11 +67,21 @@ static Symbol *Symbol_new( const SubStr *str )
     return( r );
 }
 
+void Symbol_delete_all( void )
+{
+    Symbol *sym;
+
+    for( sym = Symbol_first; sym != NULL; sym = sym->next ) {
+        Symbol_fini( sym );
+    }
+    Symbol_first = NULL;
+}
+
 Symbol *Symbol_find( SubStr str )
 {
     Symbol *sym;
 
-    for( sym = first; sym != NULL; sym = sym->next ) {
+    for( sym = Symbol_first; sym != NULL; sym = sym->next ) {
         if( SubStr_eq( &sym->name, &str ) ) {
             return( sym );
         }

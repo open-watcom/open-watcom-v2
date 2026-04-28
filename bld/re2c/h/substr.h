@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,6 +51,7 @@ extern void     SubStr_init( SubStr *, uchar *, size_t );
 extern void     SubStr_out( const SubStr *, FILE * );
 
 extern void     Str_init( Str *, const SubStr * );
+extern void     Str_fini( Str * );
 extern void     Str_copy( Str *, Str * );
 extern void     Str_destroy( Str * );
 

@@ -631,3 +631,9 @@ Scanner *Scanner_new( FILE *i )
     Scanner_init( r, i );
     return( r );
 }
+
+void Scanner_delete( Scanner *r )
+{
+    Symbol_delete_all();
+    MemFree( r );
+}

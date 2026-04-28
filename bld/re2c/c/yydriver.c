@@ -198,4 +198,6 @@ void parse( FILE *i, FILE *o )
             oline++;
         }
     }
+
+    Scanner_delete( in );
 }

@@ -65,3 +65,8 @@ void Str_init( Str *r, const SubStr* s )
     SubStr_init( r, MemAlloc( s->len ), s->len );
     memcpy( r->str, s->str, s->len );
 }
+
+void Str_fini( Str *r )
+{
+    MemFree( r->str );
+}
