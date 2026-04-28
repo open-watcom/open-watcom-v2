@@ -489,7 +489,7 @@ static CHAIN        *chainList;
 static USAGEGROUP   blankUsageGroup;
 static USAGEGROUP   *usageGroupList;
 static USAGEGROUP   *lastUsageGroup;
-static USAGECHAIN   *lastUsageChain = NULL;
+static USAGECHAIN   *lastUsageChain;
 static TEXT         *targetTitle;
 static TEXT         *targetFooter;
 
@@ -577,6 +577,47 @@ static const char *getLangData( lang_data langdata, wres_lang_id lang )
         p = langdata[LANG_RLE_ENGLISH];
     }
     return( p );
+}
+
+static void freeLangUsage( lang_data langdata )
+{
+    int     lang;
+
+    for( lang = 0; lang < LANG_RLE_MAX; lang++ ) {
+        if( langdata[lang] != NULL ) {
+            free( (void *)langdata[lang] );
+        }
+    }
+}
+
+static void *freeText( TEXT *t )
+{
+    TEXT    *next;
+
+    while( t != NULL ) {
+        next = t->next;
+        freeLangUsage( t->lang_usage );
+        freeLangUsage( t->lang_usageu );
+        free( t );
+        t = next;
+    }
+    return( NULL );
+}
+
+static void initLists( void )
+{
+    titleList = NULL;
+    footerList = NULL;
+}
+
+static void finiLists( void )
+{
+    if( titleList != NULL ) {
+        freeText( titleList );
+    }
+    if( footerList != NULL ) {
+        freeText( footerList );
+    }
 }
 
 static void outputInit( void )
@@ -835,6 +876,7 @@ static void initUsageGroup( void )
     memset( &blankUsageGroup, 0, sizeof( blankUsageGroup ) );
     usageGroupList = &blankUsageGroup;
     lastUsageGroup = NULL;
+    lastUsageChain = NULL;
 }
 
 static void addUsageGroup( const char *id )
@@ -865,13 +907,10 @@ static void finiUsageGroups( void )
         nextgr = ugr->next;
         for( ucn = ugr->usageChainList; ucn != NULL; ucn = nextcn ) {
             nextcn = ucn->next;
+            freeLangUsage( ucn->lang_usage );
             free( ucn );
         }
-        for( i = 0; i < LANG_RLE_MAX; i++ ) {
-            if( ugr->lang_usage[i] != NULL ) {
-                free( (void *)ugr->lang_usage[i] );
-            }
-        }
+        freeLangUsage( ugr->lang_usage );
         free( ugr );
     }
 }
@@ -3279,11 +3318,7 @@ static void finiDataOptions( void )
 
     while( (o = optionList) != NULL ) {
         optionList = optionList->next;
-        for( i = 0; i < LANG_RLE_MAX; i++ ) {
-            if( o->lang_usage[i] != NULL ) {
-                free( (void *)o->lang_usage[i] );
-            }
-        }
+        freeLangUsage( o->lang_usage );
         if( o->check_func != NULL ) {
             free( o->check_func );
         }
@@ -3578,6 +3613,7 @@ int main( int argc, char **argv )
     setlocale( LC_ALL, "C" );
     ok = true;
     initTargets();
+    initLists();
     initParams();
     for( i = 1; i < argc; i++ ) {
         if( ProcessParams( argv[i] ) ) {
@@ -3619,6 +3655,7 @@ int main( int argc, char **argv )
     }
     closeFiles();
     finiParams();
+    finiLists();
     finiTargets();
     if( ok )
         return( EXIT_SUCCESS );
