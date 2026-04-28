@@ -248,6 +248,11 @@ typedef struct text {
     lang_data       lang_usageu;
 } TEXT;
 
+typedef struct text_list {
+    TEXT			*head;
+    TEXT            *tail;
+} TEXT_LIST;
+
 typedef struct chain {
     struct chain    *next;
     size_t          len;
@@ -270,6 +275,10 @@ typedef struct usagegroup {
     char            id[1];
 } USAGEGROUP;
 
+typedef struct usagegroup_list {
+    USAGEGROUP      *head;
+    USAGEGROUP      *tail;
+} USAGEGROUP_LIST;
 
 typedef struct option {
     struct option   *next;
@@ -479,19 +488,18 @@ static struct {
     wres_lang_id lang;
 } paramFlags;
 
-static TARGET       *targetList;
-static ENAME        *enumList;
-static OPTION       *optionList;
-static OPTION       *uselessOptionList;
-static TEXT         *titleList;
-static TEXT         *footerList;
-static CHAIN        *chainList;
-static USAGEGROUP   blankUsageGroup;
-static USAGEGROUP   *usageGroupList;
-static USAGEGROUP   *lastUsageGroup;
-static USAGECHAIN   *lastUsageChain;
-static TEXT         *targetTitle;
-static TEXT         *targetFooter;
+static TARGET           *targetList;
+static ENAME            *enumList;
+static OPTION           *optionList;
+static OPTION           *uselessOptionList;
+static TEXT_LIST        titleList;
+static TEXT_LIST        footerList;
+static CHAIN            *chainList;
+static USAGEGROUP       blankUsageGroup;
+static USAGEGROUP_LIST  usageGroupList;
+static USAGECHAIN       *lastUsageChain;
+static TEXT             *targetTitle;
+static TEXT             *targetFooter;
 
 static void emitCode( CODESEQ *head, unsigned depth, flow_control control );
 
@@ -606,17 +614,17 @@ static void *freeText( TEXT *t )
 
 static void initLists( void )
 {
-    titleList = NULL;
-    footerList = NULL;
+    titleList.head = titleList.tail = NULL;
+    footerList.head = footerList.tail = NULL;
 }
 
 static void finiLists( void )
 {
-    if( titleList != NULL ) {
-        freeText( titleList );
+    if( titleList.head != NULL ) {
+        freeText( titleList.head );
     }
-    if( footerList != NULL ) {
-        freeText( footerList );
+    if( footerList.head != NULL ) {
+        freeText( footerList.head );
     }
 }
 
@@ -863,7 +871,7 @@ static USAGEGROUP *findUsageGroup( const char *id )
 {
     USAGEGROUP  *ugr;
 
-    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
+    for( ugr = usageGroupList.head; ugr != NULL; ugr = ugr->next ) {
         if( strcmp( ugr->id, id ) == 0 ) {
             break;
         }
@@ -874,8 +882,8 @@ static USAGEGROUP *findUsageGroup( const char *id )
 static void initUsageGroup( void )
 {
     memset( &blankUsageGroup, 0, sizeof( blankUsageGroup ) );
-    usageGroupList = &blankUsageGroup;
-    lastUsageGroup = NULL;
+    usageGroupList.head = &blankUsageGroup;
+    usageGroupList.tail = NULL;
     lastUsageChain = NULL;
 }
 
@@ -887,12 +895,12 @@ static void addUsageGroup( const char *id )
     id_len = strlen( id );
     ugr = calloc( 1, sizeof( *ugr ) + id_len );
     memcpy( ugr->id, id, id_len + 1 );
-    if( lastUsageGroup == NULL ) {
-        usageGroupList->next = ugr;
+    if( usageGroupList.tail == NULL ) {
+        usageGroupList.head->next = ugr;
     } else {
-        lastUsageGroup->next = ugr;
+        usageGroupList.tail->next = ugr;
     }
-    lastUsageGroup = ugr;
+    usageGroupList.tail = ugr;
 }
 
 static void finiUsageGroups( void )
@@ -902,7 +910,7 @@ static void finiUsageGroups( void )
     USAGECHAIN  *ucn;
     USAGECHAIN  *nextcn;
 
-    for( ugr = usageGroupList->next; ugr != NULL; ugr = nextgr ) {
+    for( ugr = usageGroupList.head->next; ugr != NULL; ugr = nextgr ) {
         nextgr = ugr->next;
         for( ucn = ugr->usageChainList; ucn != NULL; ucn = nextcn ) {
             nextcn = ucn->next;
@@ -1069,7 +1077,7 @@ static OPTION *pushNewOption( char *pattern, OPTION *o )
     newo->equal_char = '\0';
     newo->target_mask = targetAnyMask;
     newo->any_target = true;
-    newo->usageGroup = usageGroupList;
+    newo->usageGroup = usageGroupList.head;
     optionList = newo;
     return( newo );
 }
@@ -1602,20 +1610,20 @@ static void doUSAGE( const char *p )
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
         if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
-            free( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] );
+            free( (void *)lastUsageChain->lang_usage[LANG_RLE_ENGLISH] );
         }
         lastUsageChain->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
-        if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
-            free( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] );
+        if( usageGroupList.tail->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
+            free( (void *)usageGroupList.tail->lang_usage[LANG_RLE_ENGLISH] );
         }
-        lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+        usageGroupList.tail->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
             if( o->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
-                free( o->lang_usage[LANG_RLE_ENGLISH] );
+                free( (void *)o->lang_usage[LANG_RLE_ENGLISH] );
             }
             o->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         }
@@ -1638,17 +1646,17 @@ static void doJUSAGE( const char *p )
         if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagechain. hasn't define English text.\n" );
         } else {
-            free( lastUsageChain->lang_usage[LANG_RLE_JAPANESE] );
+            free( (void *)lastUsageChain->lang_usage[LANG_RLE_JAPANESE] );
         }
         lastUsageChain->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
-        if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
+        if( usageGroupList.tail->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagegroup. hasn't define English text.\n" );
         } else {
-            free( lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] );
+            free( (void *)usageGroupList.tail->lang_usage[LANG_RLE_JAPANESE] );
         }
-        lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
+        usageGroupList.tail->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
@@ -1658,7 +1666,7 @@ static void doJUSAGE( const char *p )
                 usage = strdup( o->lang_usage[LANG_RLE_ENGLISH] );
             }
             if( o->lang_usage[LANG_RLE_JAPANESE] != NULL ) {
-                free( o->lang_usage[LANG_RLE_JAPANESE] );
+                free( (void *)o->lang_usage[LANG_RLE_JAPANESE] );
             }
             o->lang_usage[LANG_RLE_JAPANESE] = usage;
         }
@@ -1673,20 +1681,19 @@ static void doTITLE( const char *p )
  * :title. <text>
  */
 {
-    TEXT    **i;
-    TEXT    *t;
+    TEXT    *title;
 
-    i = &titleList;
-    for( t = *i; t != NULL; t = *i ) {
-        i = &(t->next);
+    title = calloc( 1, sizeof( *title ) );
+    title->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+    title->target_mask = targetAnyMask;
+    title->any_target = true;
+    if( titleList.head == NULL ) {
+        titleList.head = title;
+    } else {
+        titleList.tail->next = title;
     }
-    t = calloc( 1, sizeof( *t ) );
-    t->next = *i;
-    *i = t;
-    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
-    t->target_mask = targetAnyMask;
-    t->any_target = true;
-    targetTitle = t;
+    titleList.tail = title;
+    targetTitle = title;
     targetFooter = NULL;
     getsUsage = TAG_TITLE;
 }
@@ -1734,20 +1741,19 @@ static void doFOOTER( const char *p )
  * :footer. <text>
  */
 {
-    TEXT    **i;
-    TEXT    *t;
+    TEXT    *footer;
 
-    i = &footerList;
-    for( t = *i; t != NULL; t = *i ) {
-        i = &(t->next);
+    footer = calloc( 1, sizeof( *footer ) );
+    footer->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
+    footer->target_mask = targetAnyMask;
+    footer->any_target = true;
+    if( footerList.head == NULL ) {
+        footerList.head = footer;
+    } else {
+        footerList.tail->next = footer;
     }
-    t = calloc( 1, sizeof( *t ) );
-    t->next = *i;
-    *i = t;
-    t->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
-    t->target_mask = targetAnyMask;
-    t->any_target = true;
-    targetFooter = t;
+    footerList.tail = footer;
+    targetFooter = footer;
     targetTitle = NULL;
     getsUsage = TAG_FOOTER;
 }
@@ -1995,7 +2001,7 @@ static void checkForMissingUsages( void )
         }
     }
     j = 1;
-    for( t = titleList; t != NULL; t = t->next ) {
+    for( t = titleList.head; t != NULL; t = t->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
             if( ( lang == LANG_RLE_ENGLISH || paramFlags.report_missing_data ) && t->lang_usage[lang] == NULL ) {
                 error( "title(%d) has no %s usage text\n", j, langName[lang] );
@@ -2004,7 +2010,7 @@ static void checkForMissingUsages( void )
         j++;
     }
     j = 1;
-    for( t = footerList; t != NULL; t = t->next ) {
+    for( t = footerList.head; t != NULL; t = t->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
             if( ( lang == LANG_RLE_ENGLISH || paramFlags.report_missing_data ) && t->lang_usage[lang] == NULL ) {
                 error( "footer(%d) has no %s usage text\n", j, langName[lang] );
@@ -2012,7 +2018,7 @@ static void checkForMissingUsages( void )
         }
         j++;
     }
-    for( ugr = usageGroupList->next; ugr != NULL; ugr = ugr->next ) {
+    for( ugr = usageGroupList.head->next; ugr != NULL; ugr = ugr->next ) {
         for( lang = start_lang; lang < end_lang; ++lang ) {
             if( paramFlags.report_missing_data && ugr->lang_usage[lang] == NULL ) {
                 error( "group '%s' has no %s usage text\n", ugr->id, langName[lang] );
@@ -3226,7 +3232,7 @@ static void processUsage( process_line_fn *process_line, USAGEGROUP *ugr )
             oo[i]->usage_used = false;
         }
 
-        if( ugr != usageGroupList ) {
+        if( ugr != usageGroupList.head ) {
             outputUsageGroupHeader( ugr->lang_usage, process_line );
         }
         for( i = 0; i < count; ++i ) {
@@ -3249,13 +3255,13 @@ static void outputUsage( process_line_fn *process_line )
 {
     USAGEGROUP  *ugr;
 
-    outputUsageCommon( titleList, process_line );
+    outputUsageCommon( titleList.head, process_line );
 
-    for( ugr = usageGroupList; ugr != NULL; ugr = ugr->next ) {
+    for( ugr = usageGroupList.head; ugr != NULL; ugr = ugr->next ) {
         processUsage( process_line, ugr );
     }
 
-    outputUsageCommon( footerList, process_line );
+    outputUsageCommon( footerList.head, process_line );
 }
 
 static void outputUsageH( void )
@@ -3329,7 +3335,6 @@ static void closeFiles( void )
 static void finiDataOptions( void )
 {
     OPTION      *o;
-    int         i;
 
     while( (o = optionList) != NULL ) {
         optionList = optionList->next;
