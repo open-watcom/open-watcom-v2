@@ -901,7 +901,6 @@ static void finiUsageGroups( void )
     USAGEGROUP  *nextgr;
     USAGECHAIN  *ucn;
     USAGECHAIN  *nextcn;
-    int         i;
 
     for( ugr = usageGroupList->next; ugr != NULL; ugr = nextgr ) {
         nextgr = ugr->next;
@@ -1602,13 +1601,22 @@ static void doUSAGE( const char *p )
 
     switch( getsUsage ) {
     case TAG_USAGECHAIN:
+        if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
+            free( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] );
+        }
         lastUsageChain->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
+        if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
+            free( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] );
+        }
         lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         break;
     case TAG_OPTION:
         for( o = optionList; o != NULL; o = o->synonym ) {
+            if( o->lang_usage[LANG_RLE_ENGLISH] != NULL ) {
+                free( o->lang_usage[LANG_RLE_ENGLISH] );
+            }
             o->lang_usage[LANG_RLE_ENGLISH] = pickUpRest( p );
         }
         break;
@@ -1629,12 +1637,16 @@ static void doJUSAGE( const char *p )
     case TAG_USAGECHAIN:
         if( lastUsageChain->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagechain. hasn't define English text.\n" );
+        } else {
+            free( lastUsageChain->lang_usage[LANG_RLE_JAPANESE] );
         }
         lastUsageChain->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
     case TAG_USAGEGROUP:
         if( lastUsageGroup->lang_usage[LANG_RLE_ENGLISH] == NULL ) {
             error( ":jusage. tag last :usagegroup. hasn't define English text.\n" );
+        } else {
+            free( lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] );
         }
         lastUsageGroup->lang_usage[LANG_RLE_JAPANESE] = pickUpRest( p );
         break;
@@ -1644,6 +1656,9 @@ static void doJUSAGE( const char *p )
             if( *usage == '\0' ) {
                 free( usage );
                 usage = strdup( o->lang_usage[LANG_RLE_ENGLISH] );
+            }
+            if( o->lang_usage[LANG_RLE_JAPANESE] != NULL ) {
+                free( o->lang_usage[LANG_RLE_JAPANESE] );
             }
             o->lang_usage[LANG_RLE_JAPANESE] = usage;
         }
