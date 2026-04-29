@@ -24,7 +24,7 @@ spec    :
                 { accept = 0;
                   spec = NULL; }
         |       spec rule
-                { spec = spec? mkAlt(spec, $2) : $2; }
+                { spec = ( spec != NULL ) ? mkAlt(spec, $2) : $2; }
         |       spec decl
         ;
 
