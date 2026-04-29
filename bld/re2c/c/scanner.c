@@ -84,7 +84,9 @@ static uchar *fill( Scanner *s, uchar *cursor )
         }
         if( ( s->top - s->lim ) < BSIZE ) {
             uchar *buf = MemAlloc( ( s->lim - s->bot ) + BSIZE );
-            memcpy( buf, s->tok, s->lim - s->tok );
+            if( s->tok != NULL ) {
+                memcpy( buf, s->tok, s->lim - s->tok );
+            }
             s->tok = buf;
             s->ptr = &buf[s->ptr - s->bot];
             cursor = &buf[cursor - s->bot];
@@ -635,5 +637,8 @@ Scanner *Scanner_new( FILE *i )
 void Scanner_delete( Scanner *r )
 {
     Symbol_delete_all();
+    if( r->bot != NULL ) {
+        MemFree( r->bot );
+    }
     MemFree( r );
 }

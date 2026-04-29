@@ -71,6 +71,8 @@ static void State_delete( State *s )
         MemFree( s->kernel );
     if( s->go.span != NULL )
         MemFree( s->go.span );
+    if( s->action != NULL )
+        MemFree( s->action );
     MemFree( s );
 }
 
