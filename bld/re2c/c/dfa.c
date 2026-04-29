@@ -71,8 +71,7 @@ static void State_delete( State *s )
         MemFree( s->kernel );
     if( s->go.span != NULL )
         MemFree( s->go.span );
-    if( s->action != NULL )
-        MemFree( s->action );
+    Action_delete( s );
     MemFree( s );
 }
 
@@ -206,6 +205,8 @@ DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
 
         s->go.span = MemAlloc( s->go.nSpans * sizeof( Span ) );
         memcpy( s->go.span, span, s->go.nSpans * sizeof( Span ) );
+
+        Action_delete( s );
 
         Action_new_Match( s );
 

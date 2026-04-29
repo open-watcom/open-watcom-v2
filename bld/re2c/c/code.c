@@ -773,7 +773,7 @@ void DFA_emit( DFA *d, FILE *o )
         if( s->rule != NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
                 if( s->go.span[i].to != NULL && s->go.span[i].to->rule == NULL ) {
-                    MemFree( s->action );
+                    Action_delete( s );
                     if( saves[s->rule->u.RuleOp.accept] == ~0 )
                         saves[s->rule->u.RuleOp.accept] = nSaves++;
                     Action_new_Save( s, saves[s->rule->u.RuleOp.accept] );
@@ -856,7 +856,7 @@ void DFA_emit( DFA *d, FILE *o )
 
     tree_reference( d->head, 0 );
 
-    MemFree( d->head->action );
+    Action_delete( d->head );
 
     Action_new_Enter( d->head );
 

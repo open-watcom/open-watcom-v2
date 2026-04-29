@@ -880,3 +880,9 @@ Action *Action_new_Accept( State *s, uint n, uint *sv, State **r )
     return( a );
 }
 
+void Action_delete( State *s )
+{
+    if( s->action != NULL ) {
+        MemFree( s->action );
+    }
+}

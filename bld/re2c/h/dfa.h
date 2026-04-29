@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,5 +115,6 @@ extern Action   *Action_new_Save( State *s, uint i );
 extern Action   *Action_new_Move( State *s );
 extern Action   *Action_new_Rule( State *s, RegExp *r );
 extern Action   *Action_new_Accept( State *s, uint n, uint *sv, State **r );
+extern void     Action_delete( State *s );
 
 #endif
