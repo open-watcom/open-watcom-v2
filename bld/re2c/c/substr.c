@@ -66,6 +66,12 @@ void Str_init( Str *r, const SubStr* s )
     memcpy( r->str, s->str, s->len );
 }
 
+void Str_init_len( Str *r, const uchar *s, size_t len )
+{
+    SubStr_init( r, MemAlloc( len ), len );
+    memcpy( r->str, s, len );
+}
+
 void Str_fini( Str *r )
 {
     MemFree( r->str );

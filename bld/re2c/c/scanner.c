@@ -108,12 +108,9 @@ static uchar *fill( Scanner *s, uchar *cursor )
 static Token *token( Scanner *s )
 {
     Token   *r = MemAlloc( sizeof( Token ) );
-    size_t  len = s->cur - s->tok;
 
     r->line = s->tline;
-    r->text.len = len;
-    r->text.str = MemAlloc( len );
-    memcpy( r->text.str, s->tok, len );
+    Str_init_len( &r->text, s->tok, s->cur - s->tok );
     return( r );
 }
 
