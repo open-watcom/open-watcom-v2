@@ -45,7 +45,7 @@ typedef struct Scanner {
 } Scanner;
 
 extern Scanner  *Scanner_new( FILE * );
-extern void     Scanner_delete( Scanner *r );
+extern void     Scanner_delete( Scanner * );
 extern int      Scanner_echo( Scanner *, FILE * );
 extern int      Scanner_scan( Scanner * );
 extern void     Scanner_fatal( Scanner *, const char * );

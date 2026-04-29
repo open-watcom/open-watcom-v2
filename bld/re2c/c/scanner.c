@@ -49,7 +49,7 @@ extern YYSTYPE yylval;
 #define YYCURSOR        cursor
 #define YYLIMIT         s->lim
 #define YYMARKER        s->ptr
-#define YYFILL(n)       {cursor = fill( s, cursor );}
+#define YYFILL(n)       {cursor = fill_buf( s, cursor );}
 
 #define RETURN(i)       {s->cur = cursor; return i;}
 
@@ -70,7 +70,14 @@ static SubStr Scanner_token( Scanner *s )
     return( r );
 }
 
-static uchar *fill( Scanner *s, uchar *cursor )
+static void delete_fill_buf( Scanner *s )
+{
+    if( s->bot != NULL ) {
+        MemFree( s->bot );
+    }
+}
+
+static uchar *fill_buf( Scanner *s, uchar *cursor )
 {
     if( s->eof == NULL ) {
         size_t cnt = s->tok - s->bot;
@@ -93,7 +100,7 @@ static uchar *fill( Scanner *s, uchar *cursor )
             s->pos = &buf[s->pos - s->bot];
             s->lim = &buf[s->lim - s->bot];
             s->top = &s->lim[BSIZE];
-            MemFree( s->bot );
+            delete_fill_buf( s );
             s->bot = buf;
         }
         if( (cnt = fread( s->lim, 1, BSIZE, s->in )) != BSIZE ) {
@@ -625,17 +632,15 @@ void Scanner_fatal( Scanner *s, const char *msg )
 
 Scanner *Scanner_new( FILE *i )
 {
-    Scanner *r = MemAlloc( sizeof( Scanner ) );
+    Scanner *s = MemAlloc( sizeof( Scanner ) );
 
-    Scanner_init( r, i );
-    return( r );
+    Scanner_init( s, i );
+    return( s );
 }
 
-void Scanner_delete( Scanner *r )
+void Scanner_delete( Scanner *s )
 {
     Symbol_delete_all();
-    if( r->bot != NULL ) {
-        MemFree( r->bot );
-    }
-    MemFree( r );
+    delete_fill_buf( s );
+    MemFree( s );
 }
