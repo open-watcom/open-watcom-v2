@@ -787,13 +787,24 @@ bool ExpandMacro( token_buffer *tokbuf )
     }
     if( macro_name_loc > 0 ) {
         i = macro_name_loc - 1;
-        if( tokbuf->tokens[i].class == TC_DIRECTIVE
-          && tokbuf->tokens[i].u.token == T_PURGE ) {
-            /*
-             * this is PURGE directive with macro name argument
-             * continue regular processing, don't expand the macro
-             */
-            return( RC_OK );
+        if( tokbuf->tokens[i].class == TC_DIRECTIVE ) {
+            switch( tokbuf->tokens[i].u.token ) {
+            case T_PURGE:
+            case T_IFDEF:
+            case T_IFNDEF:
+            case T_ELSEIFDEF:
+            case T_ELSEIFNDEF:
+            case T_DOT_ERRDEF:
+            case T_DOT_ERRNDEF:
+            case T_ERRIFDEF:
+            case T_ERRIFNDEF:
+                /*
+                 * this is a directive that takes a symbol/macro name as
+                 * its argument — don't expand the name as a macro
+                 * invocation, continue regular processing
+                 */
+                return( RC_OK );
+            }
         }
     }
     if( macro_name_loc != 0 ) {
