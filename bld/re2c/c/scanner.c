@@ -74,6 +74,7 @@ static void delete_fill_buf( Scanner *s )
 {
     if( s->bot != NULL ) {
         MemFree( s->bot );
+        s->bot = NULL;
     }
 }
 

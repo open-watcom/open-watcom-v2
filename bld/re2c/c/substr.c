@@ -74,5 +74,8 @@ void Str_init_len( Str *r, const uchar *s, size_t len )
 
 void Str_fini( Str *r )
 {
-    MemFree( r->str );
+    if( r->str != NULL ) {
+        MemFree( r->str );
+        SubStr_init( r, NULL, 0 );
+    }
 }
