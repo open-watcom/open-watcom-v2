@@ -194,7 +194,7 @@ void parse( FILE *i, FILE *o )
     while( Scanner_echo( in, o ) ) {
         yyparse();
         if( spec != NULL )
-            genCode( o, spec );
+            GenCode( o, spec );
         if( !iFlag ) {
             fprintf( o, "#line %u\n", in->cline );
             oline++;

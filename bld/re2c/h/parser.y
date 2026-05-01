@@ -24,7 +24,7 @@ spec    :
                 { accept = 0;
                   spec = NULL; }
         |       spec rule
-                { spec = ( spec != NULL ) ? mkAlt(spec, $2) : $2; }
+                { spec = ( spec != NULL ) ? MkAlt(spec, $2) : $2; }
         |       spec decl
         ;
 
@@ -47,13 +47,13 @@ look    :
 expr    :       diff
                 { $$ = $1; }
         |       expr '|' diff
-                { $$ =  mkAlt($1, $3); }
+                { $$ =  MkAlt($1, $3); }
         ;
 
 diff    :       term
                 { $$ = $1; }
         |       diff '\\' term
-                { $$ =  mkDiff($1, $3);
+                { $$ =  MkDiff($1, $3);
                     if($$ == NULL)
                        Scanner_fatal(in, "can only difference char sets");
                 }
@@ -71,13 +71,13 @@ factor  :       primary
                 {
                     switch($2){
                     case '*':
-                        $$ = mkAlt(RegExp_new_CloseOp($1), RegExp_new_NullOp());
+                        $$ = MkAlt(RegExp_new_CloseOp($1), RegExp_new_NullOp());
                         break;
                     case '+':
                         $$ = RegExp_new_CloseOp($1);
                         break;
                     case '?':
-                        $$ = mkAlt($1, RegExp_new_NullOp());
+                        $$ = MkAlt($1, RegExp_new_NullOp());
                         break;
                     }
                 }

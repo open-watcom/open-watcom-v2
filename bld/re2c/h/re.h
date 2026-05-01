@@ -113,10 +113,10 @@ extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
 extern RegExp   *RegExp_new_CloseOp( RegExp *e );
 extern RegExp   *RegExp_new_CloseVOp( RegExp *e, int lb, int ub );
 extern void     RegExp_delete( RegExp * );
-extern void     genCode( FILE *, RegExp * );
-extern RegExp   *mkAlt( RegExp *, RegExp * );
-extern RegExp   *mkDiff( RegExp *, RegExp * );
-extern RegExp   *ranToRE( SubStr );
-extern RegExp   *strToRE( SubStr );
+extern void     GenCode( FILE *, RegExp * );
+extern RegExp   *MkAlt( RegExp *, RegExp * );
+extern RegExp   *MkDiff( RegExp *, RegExp * );
+extern RegExp   *RangeToRE( SubStr );
+extern RegExp   *StringToRE( SubStr );
 
 #endif

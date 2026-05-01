@@ -395,7 +395,7 @@ yy45:   yych = *++YYCURSOR;
 //yy46:
         {
             s->cur = cursor;
-            yylval.regexp = ranToRE( Scanner_token( s ) );
+            yylval.regexp = RangeToRE( Scanner_token( s ) );
             return( RANGE );
         }
 yy47:   ++YYCURSOR;
@@ -425,7 +425,7 @@ yy50:   yych = *++YYCURSOR;
 //yy51:
         {
             s->cur = cursor;
-            yylval.regexp = strToRE( Scanner_token( s ) );
+            yylval.regexp = StringToRE( Scanner_token( s ) );
             return( STRING );
         }
 yy52:   yych = *++YYCURSOR;

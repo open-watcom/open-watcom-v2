@@ -595,7 +595,7 @@ static RegExp *RegExp_isA( RegExp *r, RegExpType t )
     return( r->type == t ? r : NULL );
 }
 
-RegExp *mkDiff( RegExp *e1, RegExp *e2 )
+RegExp *MkDiff( RegExp *e1, RegExp *e2 )
 {
     RegExp  *m1;
     RegExp  *m2;
@@ -620,7 +620,7 @@ static RegExp *doAlt( RegExp *e1, RegExp *e2 )
     return( RegExp_new_AltOp( e1, e2 ) );
 }
 
-RegExp *mkAlt( RegExp *e1, RegExp *e2 )
+RegExp *MkAlt( RegExp *e1, RegExp *e2 )
 {
     RegExp  *a;
     RegExp  *m1;
@@ -647,7 +647,7 @@ static RegExp *matchChar( Char c )
     return( RegExp_new_MatchOp( Range_new( c, c + 1 ) ) );
 }
 
-RegExp *strToRE( SubStr s )
+RegExp *StringToRE( SubStr s )
 {
     RegExp  *re;
 
@@ -661,7 +661,7 @@ RegExp *strToRE( SubStr s )
     return( re );
 }
 
-RegExp *ranToRE( SubStr s )
+RegExp *RangeToRE( SubStr s )
 {
     Range   *r;
 
@@ -810,7 +810,7 @@ void RegExp_delete( RegExp *re )
     }
 }
 
-void genCode( FILE *o, RegExp *re )
+void GenCode( FILE *o, RegExp *re )
 {
     CharSet     cs;
     uint        j;
