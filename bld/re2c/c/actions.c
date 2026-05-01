@@ -44,6 +44,7 @@
 static Symbol *Symbol_first = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
+static void RegExp_delete( RegExp *re );
 
 static void Symbol_init( Symbol *r, const SubStr *str )
 {
@@ -55,6 +56,10 @@ static void Symbol_init( Symbol *r, const SubStr *str )
 
 static void Symbol_fini( Symbol *r )
 {
+    if( r->re != NULL ) {
+        MemFree( r->re );
+        r->re = NULL;
+    }
     Str_fini( &r->name );
 }
 
@@ -103,6 +108,17 @@ static Range *Range_new( Char l, Char u )
 static Range *Range_new_copy( Range *r )
 {
     return( Range_new( r->lb, r->ub ) );
+}
+
+static void Range_delete( Range *r )
+{
+    Range *next;
+
+    while( r != NULL ) {
+        next = r->next;
+        MemFree( r );
+        r = next;
+    }
 }
 
 static Range *doUnion( Range *r1, Range *r2 )
@@ -380,6 +396,15 @@ static void MatchOp_compile( RegExp *re, Char *rep, Ins *i )
         }
     }
 }
+
+static void MatchOp_delete( RegExp *re )
+{
+    if( re->u.MatchOp.match != NULL ) {
+        Range_delete( re->u.MatchOp.match );
+        re->u.MatchOp.match = NULL;
+    }
+}
+
 static void MatchOp_split( RegExp *re, CharSet *s )
 {
     Range   *r;
@@ -691,6 +716,12 @@ static void AltOp_compile( RegExp *re, Char *rep, Ins *i )
     RegExp_compile( re->u.AltOp.exp2, rep, &j[1] );
 }
 
+static void AltOp_delete( RegExp *re )
+{
+    RegExp_delete( re->u.AltOp.exp1 );
+    RegExp_delete( re->u.AltOp.exp2 );
+}
+
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
 {
     Ins     *jumppoint;
@@ -745,6 +776,34 @@ static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
                 i++;
             }
         }
+        break;
+    }
+}
+
+static void RegExp_delete( RegExp *re )
+{
+    switch( re->type ) {
+    case NULLOP:
+        break;
+    case MATCHOP:
+        MatchOp_delete( re );
+        break;
+    case RULEOP:
+        RegExp_delete( re->u.RuleOp.exp );
+        RegExp_delete( re->u.RuleOp.ctx );
+        break;
+    case ALTOP:
+        AltOp_delete( re );
+        break;
+    case CATOP:
+        RegExp_delete( re->u.CatOp.exp1 );
+        RegExp_delete( re->u.CatOp.exp2 );
+        break;
+    case CLOSEOP:
+        RegExp_delete( re->u.CloseOp.exp );
+        break;
+    case CLOSEVOP:
+        RegExp_delete( re->u.CloseVOp.exp );
         break;
     }
 }

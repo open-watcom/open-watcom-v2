@@ -29,7 +29,7 @@ spec    :
         ;
 
 decl    :       ID '=' expr ';'
-                { if($1->re)
+                { if($1->re != NULL)
                       Scanner_fatal(in, "sym already defined");
                   $1->re = $3; }
         ;
@@ -94,7 +94,7 @@ close   :       CLOSE
         ;
 
 primary :       ID
-                { if(!$1->re)
+                { if($1->re == NULL)
                       Scanner_fatal(in, "can't find symbol");
                   $$ = $1->re; }
         |       RANGE
