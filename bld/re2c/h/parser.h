@@ -34,15 +34,8 @@
 #ifndef _parser_h
 #define _parser_h
 
-#include "scanner.h"
 #include "re.h"
 
-
-#if defined( _M_I86 )
-#define YYFAR           __far
-#else
-#define YYFAR
-#endif
 
 typedef struct Symbol {
     struct Symbol   *first;

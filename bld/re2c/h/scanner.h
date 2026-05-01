@@ -35,7 +35,9 @@
 #define _scanner_h
 
 #include <stdio.h>
-#include "token.h"
+#include "bool.h"
+#include "ytab.h"
+
 
 typedef struct Scanner {
     FILE        *in;
@@ -44,10 +46,10 @@ typedef struct Scanner {
     uint        tline, cline;
 } Scanner;
 
-extern Scanner  *Scanner_new( FILE * );
-extern void     Scanner_delete( Scanner * );
-extern int      Scanner_echo( Scanner *, FILE * );
-extern int      Scanner_scan( Scanner * );
-extern void     Scanner_fatal( Scanner *, const char * );
+extern Scanner      *Scanner_new( FILE * );
+extern void         Scanner_delete( Scanner * );
+extern bool         Scanner_echo( Scanner *, FILE * );
+extern YYTOKENTYPE  Scanner_scan( Scanner * );
+extern void         Scanner_fatal( Scanner *, const char * );
 
 #endif

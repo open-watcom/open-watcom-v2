@@ -54,7 +54,7 @@ diff    :       term
                 { $$ = $1; }
         |       diff '\\' term
                 { $$ =  mkDiff($1, $3);
-                  if(!$$)
+                    if($$ == NULL)
                        Scanner_fatal(in, "can only difference char sets");
                 }
         ;
@@ -82,9 +82,7 @@ factor  :       primary
                     }
                 }
         |       primary CLOSESIZE
-                {
-                        $$ = RegExp_new_CloseVOp($1, $2.minsize, $2.maxsize);
-                }
+                { $$ = RegExp_new_CloseVOp($1, $2.minsize, $2.maxsize); }
         ;
 
 close   :       CLOSE

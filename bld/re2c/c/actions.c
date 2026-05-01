@@ -41,6 +41,7 @@
 #include "dfa.h"
 #include "mem.h"
 
+
 static Symbol *Symbol_first = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );

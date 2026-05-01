@@ -35,9 +35,8 @@
 #include <string.h>
 #include <stdio.h>
 #include "wio.h"
-#include "scanner.h"
 #include "parser.h"
-#include "ytab.h"
+#include "scanner.h"
 #include "mem.h"
 
 
@@ -51,7 +50,7 @@ extern YYSTYPE yylval;
 #define YYMARKER        s->ptr
 #define YYFILL(n)       {cursor = fill_buf( s, cursor );}
 
-#define RETURN(i)       {s->cur = cursor; return i;}
+#define RETURN(i)       {s->cur = cursor; return( i );}
 
 static void Scanner_init( Scanner *s, FILE *i )
 {
@@ -123,7 +122,7 @@ static Token *token( Scanner *s )
 }
 
 
-int Scanner_echo( Scanner *s, FILE *out )
+bool Scanner_echo( Scanner *s, FILE *out )
 {
     uchar   *cursor = s->cur;
 
@@ -154,7 +153,7 @@ yy4:    yych = *++YYCURSOR;
 //yy5:
         {
             if( cursor == s->eof )
-                RETURN(0);
+                RETURN( false );
             fwrite( s->tok, 1, cursor - s->tok, out );
             s->tok = s->pos = cursor;
             s->cline++;
@@ -190,13 +189,13 @@ yy9:    yych = *++YYCURSOR;
         {
             fwrite( s->tok, 1, &cursor[-7] - s->tok, out );
             s->tok = cursor;
-            RETURN(1);
+            RETURN( true );
         }
     }
 }
 
 
-int Scanner_scan( Scanner *s )
+YYTOKENTYPE Scanner_scan( Scanner *s )
 {
     uchar   *cursor = s->cur;
     uint    depth;
@@ -286,14 +285,14 @@ yy19:   yych = *++YYCURSOR;
         if( yych == '*' )
             goto yy54;
 yy20:
-        { RETURN(*s->tok); }
+        { RETURN( *s->tok ); }
 yy21:   yych = *++YYCURSOR;
         if( yych == '/' )
             goto yy52;
 yy22:
         {
             yylval.op = *s->tok;
-            RETURN(CLOSE);
+            RETURN( CLOSE );
         }
 yy23:   yyaccept = 0;
         yych = *(YYMARKER = ++YYCURSOR);
@@ -317,7 +316,7 @@ yy30:
         {
             s->cur = cursor;
             yylval.symbol = Symbol_find( Scanner_token( s ) );
-            return ID;
+            return( ID );
         }
 yy31:   yych = *++YYCURSOR;
         goto yy38;
@@ -327,7 +326,7 @@ yy33:   yych = *++YYCURSOR;
 //yy34:
         {
             if( cursor == s->eof )
-                RETURN(0);
+                RETURN( 0 );
             s->pos = cursor;
             s->cline++;
             goto scan;
@@ -397,7 +396,7 @@ yy45:   yych = *++YYCURSOR;
         {
             s->cur = cursor;
             yylval.regexp = ranToRE( Scanner_token( s ) );
-            return RANGE;
+            return( RANGE );
         }
 yy47:   ++YYCURSOR;
         if( YYLIMIT == YYCURSOR )
@@ -427,13 +426,13 @@ yy50:   yych = *++YYCURSOR;
         {
             s->cur = cursor;
             yylval.regexp = strToRE( Scanner_token( s ) );
-            return STRING;
+            return( STRING );
         }
 yy52:   yych = *++YYCURSOR;
 //yy53:
         {
             s->tok = cursor;
-            RETURN(0);
+            RETURN( 0 );
         }
 yy54:   yych = *++YYCURSOR;
 //yy55:
@@ -484,7 +483,7 @@ code:
             if( --depth == 0 ) {
                 s->cur = cursor;
                 yylval.token = token( s );
-                return CODE;
+                return( CODE );
             }
             goto code;
         }
@@ -600,7 +599,7 @@ yy80:   yych = *++YYCURSOR;
 //yy81:
         {
             if( cursor == s->eof )
-                RETURN(0);
+                RETURN( 0 );
             s->tok = s->pos = cursor;
             s->cline++;
             goto comment;

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "globals.h"
 #include "parser.h"
+#include "scanner.h"
 
 
 static unsigned int accept;
@@ -30,7 +31,9 @@ static Scanner *in;
 #define YYPLHSTYPE      YYTABTYPE
 #endif
 
-#ifndef YYFAR
+#if defined( _M_I86 )
+#define YYFAR           __far
+#else
 #define YYFAR
 #endif
 
@@ -60,7 +63,7 @@ static void yyerror( const char *s )
     Scanner_fatal( in, s );
 }
 
-static int yylex( void )
+static YYTOKENTYPE yylex( void )
 {
     return( Scanner_scan( in ) );
 }
