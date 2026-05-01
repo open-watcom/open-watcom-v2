@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,6 +112,7 @@ extern RegExp   *RegExp_new_CatOp( RegExp *e1, RegExp *e2 );
 extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
 extern RegExp   *RegExp_new_CloseOp( RegExp *e );
 extern RegExp   *RegExp_new_CloseVOp( RegExp *e, int lb, int ub );
+extern void     RegExp_delete( RegExp * );
 extern void     genCode( FILE *, RegExp * );
 extern RegExp   *mkAlt( RegExp *, RegExp * );
 extern RegExp   *mkDiff( RegExp *, RegExp * );

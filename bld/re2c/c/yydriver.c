@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include "globals.h"
 #include "parser.h"
-#include "re.h"
 
 
 static unsigned int accept;

@@ -44,7 +44,6 @@
 static Symbol *Symbol_first = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
-static void RegExp_delete( RegExp *re );
 
 static void Symbol_init( Symbol *r, const SubStr *str )
 {
@@ -780,7 +779,7 @@ static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
     }
 }
 
-static void RegExp_delete( RegExp *re )
+void RegExp_delete( RegExp *re )
 {
     switch( re->type ) {
     case NULLOP:
