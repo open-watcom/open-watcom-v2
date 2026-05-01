@@ -781,6 +781,8 @@ static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
 
 void RegExp_delete( RegExp *re )
 {
+    if( re == NULL )
+        return;
     switch( re->type ) {
     case NULLOP:
         break;
@@ -942,5 +944,6 @@ void Action_delete( State *s )
 {
     if( s->action != NULL ) {
         MemFree( s->action );
+        s->action = NULL;
     }
 }
