@@ -166,6 +166,13 @@ bool InitializeStructure( asm_sym_handle sym, asm_sym_handle struct_symbol, toke
         /* put the lines to define the fields of the structure in,
          * using the values specified ( if any ) or the default ones otherwise
          */
+        if( f->initializer == NULL ) {
+            /*
+             * LABEL members in structures define an offset alias only; they do
+             * not emit data and must not consume a structure initializer.
+             */
+            continue;
+        }
         len = strlen( f->initializer );
         p = CATSTR( buffer, f->initializer, len );
         *p++ = ' ' ;
