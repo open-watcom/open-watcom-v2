@@ -32,7 +32,8 @@ include.dum &
 irp.dum &
 namedir.dum &
 cpureq.dum &
-ctrlzeof.dum
+ctrlzeof.dum &
+structlb.dum
 
 asm_flags_diag01 = -4s
 asm_flags_diag02 = -3
