@@ -42,51 +42,51 @@
 #include "mem.h"
 
 
-static Symbol *Symbol_first = NULL;
+static Symbol *sym_first = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
 
-static void Symbol_init( Symbol *r, const SubStr *str )
+static void Symbol_init( Symbol *sym, const SubStr *str )
 {
-    r->next = Symbol_first;
-    Str_init( &r->name, str );
-    r->re = NULL;
-    Symbol_first = r;
+    sym->next = sym_first;
+    Str_init( &sym->name, str );
+    sym->re = NULL;
+    sym_first = sym;
 }
 
-static void Symbol_fini( Symbol *r )
+static void Symbol_fini( Symbol *sym )
 {
-    if( r->re != NULL ) {
-        MemFree( r->re );
-        r->re = NULL;
+    if( sym->re != NULL ) {
+        MemFree( sym->re );
+        sym->re = NULL;
     }
-    Str_fini( &r->name );
+    Str_fini( &sym->name );
 }
 
 static Symbol *Symbol_new( const SubStr *str )
 {
-    Symbol *r;
+    Symbol *sym;
 
-    r = MemAlloc( sizeof( Symbol ) );
-    Symbol_init( r, str );
-    return( r );
+    sym = MemAlloc( sizeof( *sym ) );
+    Symbol_init( sym, str );
+    return( sym );
 }
 
 void Symbol_delete_all( void )
 {
     Symbol *sym;
 
-    for( sym = Symbol_first; sym != NULL; sym = sym->next ) {
+    for( sym = sym_first; sym != NULL; sym = sym->next ) {
         Symbol_fini( sym );
     }
-    Symbol_first = NULL;
+    sym_first = NULL;
 }
 
 Symbol *Symbol_find( SubStr str )
 {
     Symbol *sym;
 
-    for( sym = Symbol_first; sym != NULL; sym = sym->next ) {
+    for( sym = sym_first; sym != NULL; sym = sym->next ) {
         if( SubStr_eq( &sym->name, &str ) ) {
             return( sym );
         }
