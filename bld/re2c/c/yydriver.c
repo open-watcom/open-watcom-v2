@@ -73,7 +73,9 @@ static YYACTTYPE find_action( YYACTTYPE yyk, YYTOKENTYPE yytoken )
     int     yyi;
 
     while( (yyi = yyk + yytoken) < 0 || yyi >= YYUSED || yychktab[yyi] != yytoken ) {
-        if( (yyi = yyk + YYPARTOKEN) < 0 || yyi >= YYUSED || yychktab[yyi] != YYPARTOKEN ) {
+        if( (yyi = yyk + YYPARTOKEN) < 0
+          || yyi >= YYUSED
+          || yychktab[yyi] != YYPARTOKEN ) {
             return( YYNOACTION );
         }
         yyk = yyacttab[yyi];
@@ -116,7 +118,8 @@ yyerrlab:
                     yyerrflag = 3;
                     while( yysp >= yys ) {
                         yyaction = find_action( *yysp, YYERRTOKEN );
-                        if( yyaction != YYNOACTION && yyaction < YYUSED ) {
+                        if( yyaction != YYNOACTION
+                          && yyaction < YYUSED ) {
                             *++yysp = yyaction;
                             ++yyvp;
                             goto yynewact;

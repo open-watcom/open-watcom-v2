@@ -52,7 +52,7 @@ int main( int argc, char *argv[] )
 
     if( argc == 1 ) {
         usage();
-        return 2;
+        return( 2 );
     }
 
     while( --argc > 1 ){
@@ -71,18 +71,19 @@ int main( int argc, char *argv[] )
                 break;
             default:
                 usage();
-                return 2;
+                return( 2 );
             }
         }
     }
     fileName = *++argv;
-    if( fileName[0] == '-' && fileName[1] == '\0' ) {
+    if( fileName[0] == '-'
+      && fileName[1] == '\0' ) {
         fileName = "<stdin>";
         fi = stdin;
     } else {
         if( (fi = fopen( fileName, "r" )) == NULL ) {
             fprintf( stderr, "can't open %s\n", fileName );
-            return 1;
+            return( 1 );
         }
     }
     fileName = fname_normalize( fileName );
@@ -91,5 +92,5 @@ int main( int argc, char *argv[] )
 
     MemFini();
 
-    return 0;
+    return( 0 );
 }
