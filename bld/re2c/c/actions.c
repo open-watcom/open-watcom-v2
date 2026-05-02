@@ -102,7 +102,7 @@ static Range *Range_new( Char l, Char u )
     r->next = NULL;
     r->lb = l;
     r->ub = u;
-    return r;
+    return( r );
 }
 
 static Range *Range_new_copy( Range *r )
@@ -198,7 +198,7 @@ static Range *doDiff( Range *r1, Range *r2 )
 noMore: ;
     }
     *rP = NULL;
-    return r;
+    return( r );
 }
 
 static Char unescape( SubStr *s )
@@ -207,7 +207,8 @@ static Char unescape( SubStr *s )
     Char    v;
 
     s->len--;
-    if( (c = *s->str++) != '\\' || s->len == 0 )
+    if( (c = *s->str++) != '\\'
+      || s->len == 0 )
         return( c );
     s->len--;
     switch( c = *s->str++ ) {
@@ -248,7 +249,8 @@ static Range *getRange( SubStr *s )
     Char    ub;
 
     lb = unescape( s );
-    if( s->len < 2 || *s->str != '-' ) {
+    if( s->len < 2
+      || *s->str != '-' ) {
         ub = lb;
     } else {
         s->len--;
@@ -289,7 +291,8 @@ static uint AltOp_fixedLength( RegExp *r )
     l1 = RegExp_fixedLength( r->u.AltOp.exp1 );
     /* XXX? Should be exp2? */
     l2 = RegExp_fixedLength( r->u.AltOp.exp2 );
-    if( l1 != l2 || l1 == ~0u )
+    if( l1 != l2
+      || l1 == ~0u )
         return( ~0u );
     return( l1 );
 }
@@ -536,7 +539,7 @@ RegExp *RegExp_new_RuleOp( RegExp *e, RegExp *c, Token *t, uint a )
     r->u.RuleOp.ins = NULL;
     r->u.RuleOp.accept = a;
     r->u.RuleOp.code = t;
-    return r;
+    return( r );
 }
 
 RegExp *RegExp_new_NullOp( void )
@@ -592,7 +595,7 @@ static RegExp *merge( RegExp *m1, RegExp *m2 )
 
 static RegExp *RegExp_isA( RegExp *r, RegExpType t )
 {
-    return( r->type == t ? r : NULL );
+    return( ( r->type == t ) ? r : NULL );
 }
 
 RegExp *MkDiff( RegExp *e1, RegExp *e2 )
@@ -608,7 +611,9 @@ RegExp *MkDiff( RegExp *e1, RegExp *e2 )
     if( m2 == NULL )
         return( NULL );
     r = doDiff( m1->u.MatchOp.match, m2->u.MatchOp.match );
-    return( ( r != NULL ) ? RegExp_new_MatchOp( r ) : RegExp_new_NullOp() );
+    if( r == NULL )
+        return( RegExp_new_NullOp() );
+    return( RegExp_new_MatchOp( r ) );
 }
 
 static RegExp *doAlt( RegExp *e1, RegExp *e2 )
@@ -681,15 +686,17 @@ static void optimize( Ins *i )
         i->i.marked = true;
         if( i->i.tag == CHAR ) {
             i = (Ins *)i->i.link;
-        } else if( i->i.tag == GOTO || i->i.tag == FORK ) {
+        } else if( i->i.tag == GOTO
+          || i->i.tag == FORK ) {
             Ins *target = (Ins *)i->i.link;
             optimize( target );
             if( target->i.tag == GOTO )
-                i->i.link = target->i.link == target? i : target;
+                i->i.link = ( target->i.link == target ) ? i : target;
             if( i->i.tag == FORK ) {
                 Ins *follow = (Ins *)&i[1];
                 optimize( follow );
-                if( follow->i.tag == GOTO && follow->i.link == follow ) {
+                if( follow->i.tag == GOTO
+                  && follow->i.link == follow ) {
                     i->i.tag = GOTO;
                 } else if( i->i.link == i ) {
                     i->i.tag = GOTO;
@@ -770,7 +777,8 @@ static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
         for( st = 0; st < re->u.CloseVOp.min; st++ ) {
             RegExp_compile( re->u.CloseVOp.exp, rep, &i[0] );
             i += re->u.CloseVOp.exp->size;
-            if( re->u.CloseVOp.max < 0 && st == 0 ) {
+            if( re->u.CloseVOp.max < 0
+              && st == 0 ) {
                 i->i.tag = FORK;
                 i->i.link = i - re->u.CloseVOp.exp->size;
                 i++;
