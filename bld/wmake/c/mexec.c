@@ -429,7 +429,7 @@ STATIC char *RemoveBackSlash( const char *inString )
 {
     char        buffer[_MAX_PATH];
     const char  *p;
-    int         pos;
+    unsigned    pos;
     char        c;
 
     assert( inString != NULL );
