@@ -661,7 +661,7 @@ static uint maxDist( State *st )
     for( i = 0; i < st->go.nSpans; ++i ) {
         State *st_to = st->go.span[i].to;
 
-        if( st_to ) {
+        if( st_to != NULL ) {
             uint m = 1;
             if( st_to->link == NULL )
                 m += maxDist( st_to );

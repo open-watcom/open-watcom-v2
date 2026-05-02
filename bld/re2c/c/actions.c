@@ -600,17 +600,17 @@ static RegExp *RegExp_isA( RegExp *re, RegExpType t )
 
 RegExp *MkDiff( RegExp *re_i1, RegExp *re_i2 )
 {
-    RegExp  *re_o1;
-    RegExp  *re_o2;
+    RegExp  *re_m1;
+    RegExp  *re_m2;
     RegExp  *re;
     Range   *r;
 
     re = NULL;
-    re_o1 = RegExp_isA( re_i1, MATCHOP );
-    if( re_o1 != NULL ) {
-        re_o2 = RegExp_isA( re_i2, MATCHOP );
-        if( re_o2 != NULL ) {
-            r = doDiff( re_o1->u.MatchOp.match, re_o2->u.MatchOp.match );
+    re_m1 = RegExp_isA( re_i1, MATCHOP );
+    if( re_m1 != NULL ) {
+        re_m2 = RegExp_isA( re_i2, MATCHOP );
+        if( re_m2 != NULL ) {
+            r = doDiff( re_m1->u.MatchOp.match, re_m2->u.MatchOp.match );
             if( r != NULL ) {
                 re = RegExp_new_MatchOp( r );
             } else {
@@ -618,8 +618,8 @@ RegExp *MkDiff( RegExp *re_i1, RegExp *re_i2 )
             }
         }
     }
-    RegExp_delete( re_i1 );
-    RegExp_delete( re_i2 );
+//    RegExp_delete( re_i1 );
+//    RegExp_delete( re_i2 );
     return( re );
 }
 
@@ -633,8 +633,8 @@ static RegExp *doAlt( RegExp *re1, RegExp *re2 )
         re = re1;
     } else {
         re = RegExp_new_AltOp( re1, re2 );
-        RegExp_delete( re1 );
-        RegExp_delete( re2 );
+//        RegExp_delete( re1 );
+//        RegExp_delete( re2 );
     }
     return( re );
 }
@@ -642,25 +642,26 @@ static RegExp *doAlt( RegExp *re1, RegExp *re2 )
 RegExp *MkAlt( RegExp *re_i1, RegExp *re_i2 )
 {
     RegExp  *re;
-    RegExp  *re_o1;
-    RegExp  *re_o2;
+    RegExp  *re_m1;
+    RegExp  *re_m2;
 
     if( (re = RegExp_isA( re_i1, ALTOP )) != NULL ) {
-        if( (re_o1 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
+        if( (re_m1 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
             re_i1 = re->u.AltOp.exp2;
         }
-    } else if( (re_o1 = RegExp_isA( re_i1, MATCHOP )) != NULL ) {
+    } else if( (re_m1 = RegExp_isA( re_i1, MATCHOP )) != NULL ) {
         re_i1 = NULL;
     }
     if( (re = RegExp_isA( re_i2, ALTOP )) != NULL ) {
-        if( (re_o2 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
+        if( (re_m2 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
             re_i2 = re->u.AltOp.exp2;
         }
-    } else if( (re_o2 = RegExp_isA( re_i2, MATCHOP )) != NULL ) {
+    } else if( (re_m2 = RegExp_isA( re_i2, MATCHOP )) != NULL ) {
         re_i2 = NULL;
     }
-    return( doAlt( merge( re_o1, re_o2 ), doAlt( re_i1, re_i2 ) ) );
+    return( doAlt( merge( re_m1, re_m2 ), doAlt( re_i1, re_i2 ) ) );
 }
+
 static RegExp *matchChar( Char c )
 {
     return( RegExp_new_MatchOp( Range_new( c, c + 1 ) ) );

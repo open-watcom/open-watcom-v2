@@ -113,7 +113,7 @@ extern Action   *Action_new_Match( State *st );
 extern Action   *Action_new_Enter( State *st );
 extern Action   *Action_new_Save( State *st, uint i );
 extern Action   *Action_new_Move( State *st );
-extern Action   *Action_new_Rule( State *st, RegExp *r );
+extern Action   *Action_new_Rule( State *st, RegExp *rule );
 extern Action   *Action_new_Accept( State *st, uint n, uint *sv, State **rules );
 extern void     Action_delete( State *st );
 
