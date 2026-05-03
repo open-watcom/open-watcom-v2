@@ -114,6 +114,7 @@ extern RegExp   *RegExp_new_CatOp( RegExp *e1, RegExp *e2 );
 extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
 extern RegExp   *RegExp_new_CloseOp( RegExp *e );
 extern RegExp   *RegExp_new_CloseVOp( RegExp *e, int lb, int ub );
+extern void     Range_delete( void );
 extern void     RegExp_delete( void );
 extern void     GenCode( FILE *, RegExp * );
 extern RegExp   *MkAlt( RegExp *, RegExp * );

@@ -52,6 +52,8 @@ extern YYSTYPE yylval;
 
 #define RETURN(i)       {s->cur = cursor; return( i );}
 
+static Token            *token_pool = NULL;
+
 static void Scanner_init( Scanner *s, FILE *i )
 {
     s->in = i;
@@ -118,12 +120,23 @@ static Token *token( Scanner *s )
     Token   *t;
 
     SubStr_init( &substr, s->tok, s->cur - s->tok );
-    t = MemAlloc( sizeof( Token ) );
+    t = MemAlloc( sizeof( *t ) );
     t->line = s->tline;
     Str_init( &t->text, &substr );
+    t->next = token_pool;
+    token_pool = t;
     return( t );
 }
 
+static void Token_delete( void )
+{
+    while( token_pool != NULL ) {
+        Token   *next = token_pool->next;
+        Str_fini( &token_pool->text );
+        MemFree( token_pool );
+        token_pool = next;
+    }
+}
 
 bool Scanner_echo( Scanner *s, FILE *out )
 {
@@ -635,7 +648,7 @@ void Scanner_fatal( Scanner *s, const char *msg )
 
 Scanner *Scanner_new( FILE *i )
 {
-    Scanner *s = MemAlloc( sizeof( Scanner ) );
+    Scanner *s = MemAlloc( sizeof( *s ) );
 
     Scanner_init( s, i );
     return( s );
@@ -645,5 +658,6 @@ void Scanner_delete( Scanner *s )
 {
     delete_fill_buf( s );
     Symbol_delete();
+    Token_delete();
     MemFree( s );
 }

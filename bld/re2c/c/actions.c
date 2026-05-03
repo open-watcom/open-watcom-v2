@@ -48,29 +48,15 @@ static RegExp   *regexp_pool = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
 
-static void Symbol_init( Symbol *sym, const SubStr *str )
-{
-    Str_init( &sym->name, str );
-    sym->re = NULL;
-    sym->next = symbol_pool;
-    symbol_pool = sym;
-}
-
-static void Symbol_fini( Symbol *sym )
-{
-    if( sym->re != NULL ) {
-        MemFree( sym->re );
-        sym->re = NULL;
-    }
-    Str_fini( &sym->name );
-}
-
 static Symbol *Symbol_new( const SubStr *str )
 {
     Symbol *sym;
 
     sym = MemAlloc( sizeof( *sym ) );
-    Symbol_init( sym, str );
+    Str_init( &sym->name, str );
+    sym->re = NULL;
+    sym->next = symbol_pool;
+    symbol_pool = sym;
     return( sym );
 }
 
@@ -78,7 +64,11 @@ void Symbol_delete( void )
 {
     while( symbol_pool != NULL ) {
         Symbol *next = symbol_pool->next;
-        Symbol_fini( symbol_pool );
+//        if( symbol_pool->re != NULL ) {
+//            MemFree( symbol_pool->re );
+//            symbol_pool->re = NULL;
+//        }
+        Str_fini( &symbol_pool->name );
         symbol_pool = next;
     }
 }
@@ -99,7 +89,7 @@ static Range *Range_new( Char l, Char u )
 {
     Range   *r;
 
-    r = MemAlloc( sizeof( Range ) );
+    r = MemAlloc( sizeof( *r ) );
     r->next = NULL;
     r->lb = l;
     r->ub = u;
@@ -113,7 +103,7 @@ static Range *Range_new_copy( Range *r )
     return( Range_new( r->lb, r->ub ) );
 }
 
-static void Range_delete( void )
+void Range_delete( void )
 {
     while( range_pool != NULL ) {
         Range *next = range_pool->alloc_next;
@@ -830,8 +820,8 @@ void GenCode( FILE *o, RegExp *re )
     }
 
     RegExp_calcSize( re, rep );
-    ins = MemAlloc( ( re->size + 1 ) * sizeof( Ins ) );
-    memset( ins, 0, ( re->size + 1 ) * sizeof( Ins ) );
+    ins = MemAlloc( ( re->size + 1 ) * sizeof( *ins ) );
+    memset( ins, 0, ( re->size + 1 ) * sizeof( *ins ) );
     RegExp_compile( re, rep, ins );
     eoi = &ins[re->size];
     eoi->i.tag = GOTO;
@@ -854,26 +844,28 @@ void GenCode( FILE *o, RegExp *re )
     MemFree( ins );
 }
 
-Action *Action_new_Match( State *st )
+static Action *Action_new( State *st, ActionType type )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
-    a->type = MATCHACT;
+    a = MemAlloc( sizeof( *a ) );
+    a->type = type;
     a->state = st;
     st->action = a;
     return( a );
+}
+
+Action *Action_new_Match( State *st )
+{
+    return( Action_new( st, MATCHACT ) );
 }
 
 Action *Action_new_Enter( State *st )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
-    a->type = ENTERACT;
-    a->state = st;
+    a = Action_new( st, ENTERACT );
     a->u.Enter.label = st->label;
-    st->action = a;
     return( a );
 }
 
@@ -882,34 +874,22 @@ Action *Action_new_Save( State *st, uint i )
     Action  *a;
 
     bUsedYYAccept = true;
-    a = MemAlloc( sizeof( Action ) );
-    a->type = SAVEMATCHACT;
-    a->state = st;
+    a = Action_new( st, SAVEMATCHACT );
     a->u.SaveMatch.selector = i;
-    st->action = a;
     return( a );
 }
 
 Action *Action_new_Move( State *st )
 {
-    Action  *a;
-
-    a = MemAlloc( sizeof( Action ) );
-    a->type = MOVEACT;
-    a->state = st;
-    st->action = a;
-    return( a );
+    return( Action_new( st, MOVEACT ) );
 }
 
 Action *Action_new_Rule( State *st, RegExp *rule ) /* RuleOp */
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
-    a->type = RULEACT;
-    a->state = st;
+    a = Action_new( st, RULEACT );
     a->u.Rule.rule = rule;
-    st->action = a;
     return( a );
 }
 
@@ -917,13 +897,10 @@ Action *Action_new_Accept( State *st, uint n, uint *sv, State **rules )
 {
     Action  *a;
 
-    a = MemAlloc( sizeof( Action ) );
-    a->type = ACCEPTACT;
-    a->state = st;
+    a = Action_new( st, ACCEPTACT );
     a->u.Accept.nRules = n;
     a->u.Accept.saves = sv;
     a->u.Accept.rules = rules;
-    st->action = a;
     return( a );
 }
 
