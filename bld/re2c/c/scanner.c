@@ -640,7 +640,7 @@ Scanner *Scanner_new( FILE *i )
 
 void Scanner_delete( Scanner *s )
 {
-    Symbol_delete_all();
     delete_fill_buf( s );
+    Symbol_delete();
     MemFree( s );
 }

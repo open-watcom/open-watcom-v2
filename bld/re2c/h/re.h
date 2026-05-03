@@ -75,8 +75,9 @@ typedef enum {
 } RegExpType;
 
 typedef struct RegExp {
-    RegExpType  type;
-    uint        size;
+    struct RegExp   *next;
+    RegExpType      type;
+    uint            size;
     union {
         struct {
             Range           *match;
@@ -112,7 +113,7 @@ extern RegExp   *RegExp_new_CatOp( RegExp *e1, RegExp *e2 );
 extern RegExp   *RegExp_new_RuleOp( RegExp *, RegExp *, Token *, uint );
 extern RegExp   *RegExp_new_CloseOp( RegExp *e );
 extern RegExp   *RegExp_new_CloseVOp( RegExp *e, int lb, int ub );
-extern void     RegExp_delete( RegExp * );
+extern void     RegExp_delete( void );
 extern void     GenCode( FILE *, RegExp * );
 extern RegExp   *MkAlt( RegExp *, RegExp * );
 extern RegExp   *MkDiff( RegExp *, RegExp * );

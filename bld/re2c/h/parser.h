@@ -38,14 +38,13 @@
 
 
 typedef struct Symbol {
-    struct Symbol   *first;
     struct Symbol   *next;
     Str             name;
     RegExp          *re;
 } Symbol;
 
 extern Symbol   *Symbol_find( SubStr );
-extern void     Symbol_delete_all( void );
+extern void     Symbol_delete( void );
 extern void     parse( FILE *, FILE * );
 
 #endif

@@ -42,16 +42,17 @@
 #include "mem.h"
 
 
-static Symbol *sym_first = NULL;
+static Symbol   *symbol_pool = NULL;
+static RegExp   *regexp_pool = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
 
 static void Symbol_init( Symbol *sym, const SubStr *str )
 {
-    sym->next = sym_first;
     Str_init( &sym->name, str );
     sym->re = NULL;
-    sym_first = sym;
+    sym->next = symbol_pool;
+    symbol_pool = sym;
 }
 
 static void Symbol_fini( Symbol *sym )
@@ -72,21 +73,20 @@ static Symbol *Symbol_new( const SubStr *str )
     return( sym );
 }
 
-void Symbol_delete_all( void )
+void Symbol_delete( void )
 {
-    Symbol *sym;
-
-    for( sym = sym_first; sym != NULL; sym = sym->next ) {
-        Symbol_fini( sym );
+    while( symbol_pool != NULL ) {
+        Symbol *next = symbol_pool->next;
+        Symbol_fini( symbol_pool );
+        symbol_pool = next;
     }
-    sym_first = NULL;
 }
 
 Symbol *Symbol_find( SubStr str )
 {
     Symbol *sym;
 
-    for( sym = sym_first; sym != NULL; sym = sym->next ) {
+    for( sym = symbol_pool; sym != NULL; sym = sym->next ) {
         if( SubStr_eq( &sym->name, &str ) ) {
             return( sym );
         }
@@ -400,14 +400,6 @@ static void MatchOp_compile( RegExp *re, Char *rep, Ins *i )
     }
 }
 
-static void MatchOp_delete( RegExp *re )
-{
-    if( re->u.MatchOp.match != NULL ) {
-        Range_delete( re->u.MatchOp.match );
-        re->u.MatchOp.match = NULL;
-    }
-}
-
 static void MatchOp_split( RegExp *re, CharSet *s )
 {
     Range   *r;
@@ -507,12 +499,22 @@ static void RegExp_display( RegExp *re, FILE *o )
 }
 #endif
 
-static RegExp *RegExp_new_MatchOp( Range *r )
+static RegExp *RegExp_new( RegExpType type )
 {
     RegExp  *re;
 
     re = MemAlloc( sizeof( *re ) );
-    re->type = MATCHOP;
+    re->type = type;
+    re->next = regexp_pool;
+    regexp_pool = re;
+    return( re );
+}
+
+static RegExp *RegExp_new_MatchOp( Range *r )
+{
+    RegExp  *re;
+
+    re = RegExp_new( MATCHOP );
     re->u.MatchOp.match = r;
     return( re );
 }
@@ -521,8 +523,7 @@ static RegExp *RegExp_new_AltOp( RegExp *re1, RegExp *re2 )
 {
     RegExp  *re;
 
-    re = MemAlloc( sizeof( *re ) );
-    re->type = ALTOP;
+    re = RegExp_new( ALTOP );
     re->u.AltOp.exp1 = re1;
     re->u.AltOp.exp2 = re2;
     return( re );
@@ -532,8 +533,7 @@ RegExp *RegExp_new_RuleOp( RegExp *re_exp, RegExp *re_ctx, Token *t, uint a )
 {
     RegExp  *re;
 
-    re = MemAlloc( sizeof( RegExp ) );
-    re->type = RULEOP;
+    re = RegExp_new( RULEOP );
     re->u.RuleOp.exp = re_exp;
     re->u.RuleOp.ctx = re_ctx;
     re->u.RuleOp.ins = NULL;
@@ -544,19 +544,14 @@ RegExp *RegExp_new_RuleOp( RegExp *re_exp, RegExp *re_ctx, Token *t, uint a )
 
 RegExp *RegExp_new_NullOp( void )
 {
-    RegExp  *re;
-
-    re = MemAlloc( sizeof( RegExp ) );
-    re->type = NULLOP;
-    return( re );
+    return( RegExp_new( NULLOP ) );
 }
 
 RegExp *RegExp_new_CatOp( RegExp *re1, RegExp *re2 )
 {
     RegExp  *re;
 
-    re = MemAlloc( sizeof( RegExp ) );
-    re->type = CATOP;
+    re = RegExp_new( CATOP );
     re->u.CatOp.exp1 = re1;
     re->u.CatOp.exp2 = re2;
     return( re );
@@ -566,8 +561,7 @@ RegExp *RegExp_new_CloseOp( RegExp *re_exp )
 {
     RegExp  *re;
 
-    re = MemAlloc( sizeof( RegExp ) );
-    re->type = CLOSEOP;
+    re = RegExp_new( CLOSEOP );
     re->u.CloseOp.exp = re_exp;
     return( re );
 }
@@ -576,8 +570,7 @@ RegExp *RegExp_new_CloseVOp( RegExp *re_exp, int lb, int ub )
 {
     RegExp  *re;
 
-    re = MemAlloc( sizeof( RegExp ) );
-    re->type = CLOSEVOP;
+    re = RegExp_new( CLOSEVOP );
     re->u.CloseVOp.exp = re_exp;
     re->u.CloseVOp.min = lb;
     re->u.CloseVOp.max = ub;
@@ -593,12 +586,12 @@ static RegExp *merge( RegExp *re1, RegExp *re2 )
     return( RegExp_new_MatchOp( doUnion( re1->u.MatchOp.match, re2->u.MatchOp.match ) ) );
 }
 
-static RegExp *RegExp_isA( RegExp *re, RegExpType t )
+static RegExp *RegExp_isType( RegExp *re, RegExpType type )
 {
-    return( ( re->type == t ) ? re : NULL );
+    return( ( re->type == type ) ? re : NULL );
 }
 
-RegExp *MkDiff( RegExp *re_i1, RegExp *re_i2 )
+RegExp *MkDiff( RegExp *re1, RegExp *re2 )
 {
     RegExp  *re_m1;
     RegExp  *re_m2;
@@ -606,9 +599,9 @@ RegExp *MkDiff( RegExp *re_i1, RegExp *re_i2 )
     Range   *r;
 
     re = NULL;
-    re_m1 = RegExp_isA( re_i1, MATCHOP );
+    re_m1 = RegExp_isType( re1, MATCHOP );
     if( re_m1 != NULL ) {
-        re_m2 = RegExp_isA( re_i2, MATCHOP );
+        re_m2 = RegExp_isType( re2, MATCHOP );
         if( re_m2 != NULL ) {
             r = doDiff( re_m1->u.MatchOp.match, re_m2->u.MatchOp.match );
             if( r != NULL ) {
@@ -618,8 +611,6 @@ RegExp *MkDiff( RegExp *re_i1, RegExp *re_i2 )
             }
         }
     }
-//    RegExp_delete( re_i1 );
-//    RegExp_delete( re_i2 );
     return( re );
 }
 
@@ -633,33 +624,31 @@ static RegExp *doAlt( RegExp *re1, RegExp *re2 )
         re = re1;
     } else {
         re = RegExp_new_AltOp( re1, re2 );
-//        RegExp_delete( re1 );
-//        RegExp_delete( re2 );
     }
     return( re );
 }
 
-RegExp *MkAlt( RegExp *re_i1, RegExp *re_i2 )
+RegExp *MkAlt( RegExp *re1, RegExp *re2 )
 {
     RegExp  *re;
     RegExp  *re_m1;
     RegExp  *re_m2;
 
-    if( (re = RegExp_isA( re_i1, ALTOP )) != NULL ) {
-        if( (re_m1 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
-            re_i1 = re->u.AltOp.exp2;
+    if( (re = RegExp_isType( re1, ALTOP )) != NULL ) {
+        if( (re_m1 = RegExp_isType( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
+            re1 = re->u.AltOp.exp2;
         }
-    } else if( (re_m1 = RegExp_isA( re_i1, MATCHOP )) != NULL ) {
-        re_i1 = NULL;
+    } else if( (re_m1 = RegExp_isType( re1, MATCHOP )) != NULL ) {
+        re1 = NULL;
     }
-    if( (re = RegExp_isA( re_i2, ALTOP )) != NULL ) {
-        if( (re_m2 = RegExp_isA( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
-            re_i2 = re->u.AltOp.exp2;
+    if( (re = RegExp_isType( re2, ALTOP )) != NULL ) {
+        if( (re_m2 = RegExp_isType( re->u.AltOp.exp1, MATCHOP )) != NULL ) {
+            re2 = re->u.AltOp.exp2;
         }
-    } else if( (re_m2 = RegExp_isA( re_i2, MATCHOP )) != NULL ) {
-        re_i2 = NULL;
+    } else if( (re_m2 = RegExp_isType( re2, MATCHOP )) != NULL ) {
+        re2 = NULL;
     }
-    return( doAlt( merge( re_m1, re_m2 ), doAlt( re_i1, re_i2 ) ) );
+    return( doAlt( merge( re_m1, re_m2 ), doAlt( re1, re2 ) ) );
 }
 
 static RegExp *matchChar( Char c )
@@ -738,12 +727,6 @@ static void AltOp_compile( RegExp *re, Char *rep, Ins *i )
     RegExp_compile( re->u.AltOp.exp2, rep, &j[1] );
 }
 
-static void AltOp_delete( RegExp *re )
-{
-    RegExp_delete( re->u.AltOp.exp1 );
-    RegExp_delete( re->u.AltOp.exp2 );
-}
-
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
 {
     Ins     *jumppoint;
@@ -803,33 +786,12 @@ static void RegExp_compile( RegExp *re, Char *rep, Ins *i )
     }
 }
 
-void RegExp_delete( RegExp *re )
+void RegExp_delete( void )
 {
-    if( re == NULL )
-        return;
-    switch( re->type ) {
-    case NULLOP:
-        break;
-    case MATCHOP:
-        MatchOp_delete( re );
-        break;
-    case RULEOP:
-        RegExp_delete( re->u.RuleOp.exp );
-        RegExp_delete( re->u.RuleOp.ctx );
-        break;
-    case ALTOP:
-        AltOp_delete( re );
-        break;
-    case CATOP:
-        RegExp_delete( re->u.CatOp.exp1 );
-        RegExp_delete( re->u.CatOp.exp2 );
-        break;
-    case CLOSEOP:
-        RegExp_delete( re->u.CloseOp.exp );
-        break;
-    case CLOSEVOP:
-        RegExp_delete( re->u.CloseVOp.exp );
-        break;
+    while( regexp_pool != NULL ) {
+        RegExp  *next = regexp_pool->next;
+        MemFree( regexp_pool );
+        regexp_pool = next;
     }
 }
 
