@@ -33,6 +33,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "mem.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -69,7 +70,7 @@ void MemInit( void )
 {
 #ifdef TRMEM
     TrFile = fopen( "mem.trk", "w" );
-    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, strdup,
                                 NULL, memPrintLine, _TRMEM_DEF );
     if( TrHdl == _TRMEM_HDL_NONE ) {
         exit( EXIT_FAILURE );
@@ -112,5 +113,16 @@ void MemFree( void *ptr )
     _trmem_free( ptr, _TRMEM_WHO( 2 ), TrHdl );
 #else
     free( ptr );
+#endif
+}
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_strdup( str, _TRMEM_WHO( 3 ), TrHdl ) );
+#else
+    return( strdup( str ) );
 #endif
 }

@@ -659,5 +659,7 @@ void Scanner_delete( Scanner *s )
     delete_fill_buf( s );
     Symbol_delete();
     Token_delete();
+    Range_delete();
+    RegExp_delete();
     MemFree( s );
 }
