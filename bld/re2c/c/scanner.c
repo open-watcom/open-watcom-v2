@@ -114,11 +114,14 @@ static uchar *fill_buf( Scanner *s, uchar *cursor )
 
 static Token *token( Scanner *s )
 {
-    Token   *r = MemAlloc( sizeof( Token ) );
+    SubStr  substr;
+    Token   *t;
 
-    r->line = s->tline;
-    Str_init_len( &r->text, s->tok, s->cur - s->tok );
-    return( r );
+    SubStr_init( &substr, s->tok, s->cur - s->tok );
+    t = MemAlloc( sizeof( Token ) );
+    t->line = s->tline;
+    Str_init( &t->text, &substr );
+    return( t );
 }
 
 

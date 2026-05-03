@@ -51,9 +51,6 @@ extern void     SubStr_init( SubStr *, uchar *, size_t );
 extern void     SubStr_out( const SubStr *, FILE * );
 
 extern void     Str_init( Str *, const SubStr * );
-extern void     Str_init_len( Str *, const uchar *, size_t );
 extern void     Str_fini( Str * );
-extern void     Str_copy( Str *, Str * );
-extern void     Str_destroy( Str * );
 
 #endif
