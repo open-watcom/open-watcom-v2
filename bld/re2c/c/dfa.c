@@ -49,7 +49,7 @@ State *State_new( void )
 {
     State   *st;
 
-    st = MemAlloc( sizeof( State ) );
+    st = MemAlloc( sizeof( *st ) );
     st->label = 0;
     st->rule = NULL;
     st->next = NULL;
@@ -125,8 +125,8 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
         st = State_new();
         DFA_addState( d, d->tail, st );
         st->kCount = kCount;
-        st->kernel = MemAlloc( ( kCount + 1 ) * sizeof( Ins * ) );
-        memcpy( st->kernel, kernel, ( kCount + 1 ) * sizeof( Ins * ) );
+        st->kernel = MemAlloc( ( kCount + 1 ) * sizeof( *st->kernel ) );
+        memcpy( st->kernel, kernel, ( kCount + 1 ) * sizeof( *st->kernel ) );
         st->link = d->toDo;
         d->toDo = st;
     }
@@ -144,12 +144,12 @@ DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
     GoTo    *goTo;
     Span    *span;
 
-    d = MemAlloc( sizeof( DFA ) );
-    work = MemAlloc( ( ni + 1 ) * sizeof( Ins * ) );
+    d = MemAlloc( sizeof( *d ) );
+    work = MemAlloc( ( ni + 1 ) * sizeof( *work ) );
     nc = ub - lb;
-    goTo = MemAlloc( nc * sizeof( GoTo ) );
-    memset( goTo, 0, nc * sizeof( GoTo ) );
-    span = MemAlloc( nc * sizeof( Span ) );
+    goTo = MemAlloc( nc * sizeof( *goTo ) );
+    memset( goTo, 0, nc * sizeof( *goTo ) );
+    span = MemAlloc( nc * sizeof( *span ) );
     d->lbChar = lb;
     d->ubChar = ub;
     d->tail = &d->head;
@@ -205,17 +205,17 @@ DFA *DFA_new( Ins *ins, uint ni, Char lb, Char ub, Char *rep, uint nstate )
             goTo[goTo[j].ch - lb].to = NULL;
         }
 
-        st->go.span = MemAlloc( st->go.nSpans * sizeof( Span ) );
-        memcpy( st->go.span, span, st->go.nSpans * sizeof( Span ) );
+        st->go.span = MemAlloc( st->go.nSpans * sizeof( *st->go.span ) );
+        memcpy( st->go.span, span, st->go.nSpans * sizeof( *st->go.span ) );
 
         Action_delete( st );
 
         Action_new_Match( st );
 
     }
-    MemFree( work );
-    MemFree( goTo );
     MemFree( span );
+    MemFree( goTo );
+    MemFree( work );
 
     return( d );
 }
@@ -228,6 +228,7 @@ void DFA_delete( DFA *d )
         d->head = st->next;
         State_delete( st );
     }
+    MemFree( d );
 }
 
 void DFA_addState( DFA *d, State **st_before, State *st )
