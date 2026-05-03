@@ -59,6 +59,7 @@ typedef struct CharSet {
 } CharSet;
 
 typedef struct Range {
+    struct Range    *alloc_next;
     struct Range    *next;
     Char            lb;     // [lb,ub)
     Char            ub;     // [lb,ub)

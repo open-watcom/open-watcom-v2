@@ -43,6 +43,7 @@
 
 
 static Symbol   *symbol_pool = NULL;
+static Range    *range_pool = NULL;
 static RegExp   *regexp_pool = NULL;
 
 static void RegExp_compile( RegExp *re, Char *rep, Ins *i );
@@ -102,6 +103,8 @@ static Range *Range_new( Char l, Char u )
     r->next = NULL;
     r->lb = l;
     r->ub = u;
+    r->alloc_next = range_pool;
+    range_pool = r;
     return( r );
 }
 
@@ -110,14 +113,12 @@ static Range *Range_new_copy( Range *r )
     return( Range_new( r->lb, r->ub ) );
 }
 
-static void Range_delete( Range *r )
+static void Range_delete( void )
 {
-    Range *next;
-
-    while( r != NULL ) {
-        next = r->next;
-        MemFree( r );
-        r = next;
+    while( range_pool != NULL ) {
+        Range *next = range_pool->alloc_next;
+        MemFree( range_pool );
+        range_pool = next;
     }
 }
 

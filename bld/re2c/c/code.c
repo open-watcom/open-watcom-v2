@@ -46,9 +46,9 @@
 // same range
 
 typedef struct BitMap {
+    struct BitMap   *next;
     Go              *go;
     State           *on;
-    struct BitMap   *next;
     uint            i;
     byte            m;
 } BitMap;
@@ -58,7 +58,7 @@ typedef struct SCC {
     State       **stk;
 } SCC;
 
-static BitMap       *BitMap_first = NULL;
+static BitMap       *bitmap_pool = NULL;
 static const uint   cInfinity = ~0U;
 
 static char *prtCh( Char c )
@@ -179,11 +179,11 @@ static BitMap *BitMap_new( Go *g, State *st )
 {
     BitMap  *b;
 
-    b = MemAlloc( sizeof( BitMap ) );
+    b = MemAlloc( sizeof( *b ) );
     b->go = g;
     b->on = st;
-    b->next = BitMap_first;
-    BitMap_first = b;
+    b->next = bitmap_pool;
+    bitmap_pool = b;
     return( b );
 }
 
@@ -191,7 +191,7 @@ static BitMap *BitMap_find_go( Go *g, State *st )
 {
     BitMap  *b;
 
-    for( b = BitMap_first; b != NULL; b = b->next ) {
+    for( b = bitmap_pool; b != NULL; b = b->next ) {
         if( matches( b->go, b->on, g, st ) ) {
             return( b );
         }
@@ -203,7 +203,7 @@ static BitMap *BitMap_find( State *st )
 {
     BitMap  *b;
 
-    for( b = BitMap_first; b != NULL; b = b->next ) {
+    for( b = bitmap_pool; b != NULL; b = b->next ) {
         if( b->on == st ) {
             return( b );
         }
@@ -215,8 +215,7 @@ static void BitMap_gen( FILE *o, Char lb, Char ub )
 {
     BitMap *b;
 
-    b = BitMap_first;
-    if( b != NULL ) {
+    if( bitmap_pool != NULL ) {
         uint    n;
         byte    *bm;
         uint    i;
@@ -225,8 +224,9 @@ static void BitMap_gen( FILE *o, Char lb, Char ub )
 
         n = ub - lb;
         bm = MemAlloc( n );
-        fputs( "\tstatic unsigned char yybm[] = {", o );
         memset( bm, 0, n );
+        fputs( "\tstatic unsigned char yybm[] = {", o );
+        b = bitmap_pool;
         for( i = 0; b != NULL; i += n ) {
             for( m = 0x80; b != NULL && m; b = b->next, m >>= 1 ) {
                 b->i = i;
@@ -244,6 +244,15 @@ static void BitMap_gen( FILE *o, Char lb, Char ub )
         fputs( "\n\t};\n", o );
         oline += 2;
         MemFree( bm );
+    }
+}
+
+void BitMap_delete( void )
+{
+    while( bitmap_pool != NULL ) {
+        BitMap  *next = bitmap_pool->next;
+        MemFree( bitmap_pool );
+        bitmap_pool = next;
     }
 }
 
@@ -421,7 +430,7 @@ static void Go_genSwitch( Go *g, FILE *o, State *st )
     } else {
         State   *st_def = g->span[g->nSpans - 1].to;
         Span    **r, **s, **t;
-        Span    **sP = MemAlloc( ( g->nSpans - 1 ) * sizeof( Span * ) );
+        Span    **sP = MemAlloc( ( g->nSpans - 1 ) * sizeof( *sP ) );
 
         t = &sP[0];
         for( i = 0; i < g->nSpans; ++i ) {
@@ -531,7 +540,7 @@ static void Go_genGoto( Go *g, FILE *o, State *st )
                 if( b != NULL
                   && matches( b->go, b->on, g, st_to ) ) {
                     Go go;
-                    go.span = MemAlloc( g->nSpans * sizeof( Span ) );
+                    go.span = MemAlloc( g->nSpans * sizeof( *go.span ) );
                     Go_unmap( &go, g, st_to );
                     fprintf( o, "\tif(yybm[%u+yych] & %u)", b->i, (uint)b->m );
                     genGoTo( o, st_to );
@@ -618,7 +627,7 @@ static uint merge( Span *x0, State *st_fg, State *st_bg )
 
 static void SCC_init( SCC *s, uint size )
 {
-    s->top = s->stk = (State **)MemAlloc( size * sizeof( State * ) );
+    s->top = s->stk = (State **)MemAlloc( size * sizeof( *s->stk ) );
 }
 
 static void SCC_destroy( SCC *s )
@@ -729,7 +738,7 @@ static void DFA_split( DFA *d, State *st )
     st_move->go = st->go;
     st->rule = NULL;
     st->go.nSpans = 1;
-    st->go.span = MemAlloc( sizeof( Span ) );
+    st->go.span = MemAlloc( 1 * sizeof( *st->go.span ) );
     st->go.span[0].ub = d->ubChar;
     st->go.span[0].to = st_move;
 }
@@ -858,8 +867,8 @@ void DFA_emit( DFA *d, FILE *o )
                     if( nSpans < st->go.nSpans ) {
                         MemFree( st->go.span );
                         st->go.nSpans = nSpans;
-                        st->go.span = MemAlloc( nSpans * sizeof( Span ) );
-                        memcpy( st->go.span, span, nSpans * sizeof( Span ) );
+                        st->go.span = MemAlloc( nSpans * sizeof( *st->go.span ) );
+                        memcpy( st->go.span, span, nSpans * sizeof( *st->go.span ) );
                     }
                     tree_reference( st, 0 );
                     break;
@@ -883,6 +892,7 @@ void DFA_emit( DFA *d, FILE *o )
     }
     if( bFlag ) {
         BitMap_gen( o, d->lbChar, d->ubChar );
+        BitMap_delete();
     }
 
     fprintf( o, "\tgoto yy%u;\n", d->head->label );
@@ -895,8 +905,6 @@ void DFA_emit( DFA *d, FILE *o )
     fputs( "}\n", o );
     ++oline;
 
-    BitMap_first = NULL;
-
-    MemFree( saves );
     MemFree( rules );
+    MemFree( saves );
 }
