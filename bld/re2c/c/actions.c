@@ -69,6 +69,7 @@ void Symbol_delete( void )
 //            symbol_pool->re = NULL;
 //        }
         Str_fini( &symbol_pool->name );
+        MemFree( symbol_pool );
         symbol_pool = next;
     }
 }

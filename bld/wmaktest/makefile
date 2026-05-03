@@ -73,15 +73,6 @@ test_wmake = $(%WATCOM)\binw\wmake
 ! endif
 !endif
 
-!ifdef __OS2__
-testcmd=call test.cmd $(test_wmake)
-!else ifdef __LINUX__
-testcmd=sh test.sh $(test_wmake)
-!else ifdef __NT__
-testcmd=call test.bat $(test_wmake)
-!else	# DOS
-testcmd=call test.bat $(test_wmake)
-!endif
 testwmake=wmake -h test_wmake=$(test_wmake)
 
 from = $+$(%__CWD__)$-
@@ -109,6 +100,9 @@ from = $+$(%__CWD__)$-
     # display wmake banner to check version
     # =======================================
     @echo *****************************************************************
+    # ==================================
+    # display banner with wmake version
+    # ==================================
     @cd cmds
     @-!$(test_wmake) -?
     @cd $(from)
@@ -134,7 +128,13 @@ cmdline: .SYMBOLIC
     # =======================================
     @echo *****************************************************************
     @cd $@
-    @-!$(testcmd)
+!ifdef __OS2__
+    @-!call test.cmd $(test_wmake)
+!else ifdef __LINUX__
+    @-!sh test.sh $(test_wmake)
+!else	# NT and DOS
+    @-!call test.bat $(test_wmake)
+!endif
     @cd $(from)
 
 test1: .SYMBOLIC

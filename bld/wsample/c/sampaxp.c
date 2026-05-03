@@ -56,7 +56,7 @@
 #define SEGMENT         (0x0001)
 
 typedef struct {
-    BOOL        live;
+    bool        live;
     DWORD       id;
     HANDLE      th;
     unsigned    SampleIndex;
@@ -74,8 +74,8 @@ static int              threadCount;
 static DEBUG_EVENT      debugEvent;
 static HANDLE           processHandle;
 static DWORD            taskPid;
-static BOOL             doneSample;
-static BOOL             timeOut;
+static bool             doneSample;
+static bool             timeOut;
 
 /*
  * getThreadInfo - get info about a specific thread id
@@ -298,7 +298,7 @@ static bool seekRead( HANDLE handle, DWORD newpos, void *buff, WORD size )
 /*
  * getPEHeader - get the header of the .EXE
  */
-static int getPEHeader( HANDLE handle, pe_exe_header *pehdr )
+static bool getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 {
     WORD                data;
     DWORD               signature;
@@ -306,27 +306,27 @@ static int getPEHeader( HANDLE handle, pe_exe_header *pehdr )
 
     if( !seekRead( handle, 0, &data, sizeof( data ) )
       || data != DOS_SIGNATURE ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, DOS_RELOC_OFFSET, &data, sizeof( data ) )
       || !NE_HEADER_FOLLOWS( data ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, NE_HEADER_OFFSET, &ne_header_off, sizeof( ne_header_off ) ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, ne_header_off, &signature, sizeof( signature ) )
       || signature != PE_SIGNATURE ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !seekRead( handle, ne_header_off, pehdr, sizeof( *pehdr ) ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 
 } /* getPEHeader */
 
@@ -586,7 +586,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
     DWORD       code;
     DWORD       tid;
     CONTEXT     con;
-    BOOL        waiting_for_first_bp;
+    bool        waiting_for_first_bp;
     DWORD       continue_how;
     BOOL        rc;
     DWORD       ttid;

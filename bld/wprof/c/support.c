@@ -479,7 +479,7 @@ bool SetExeFile( FILE *fp, bool overlay )
             exeImageOffset = ne_header_off + PE_SIZE( pehdr );
         }
 #endif
-        cacheSegment = 0;       /* no 0 segment in OS/2 (03-may-90 AFS) */
+        cacheSegment = 0;       /* no 0 segment in OS/2 */
         break;
     case EXE_TYPE_OVL:
         /* overlay file (not an exe) */
