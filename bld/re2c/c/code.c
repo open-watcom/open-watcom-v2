@@ -625,29 +625,29 @@ static uint merge( Span *x0, State *st_fg, State *st_bg )
     }
 }
 
-static void SCC_init( SCC *s, uint size )
+static void SCC_init( SCC *scc, uint size )
 {
-    s->top = s->stk = (State **)MemAlloc( size * sizeof( *s->stk ) );
+    scc->top = scc->stk = (State **)MemAlloc( size * sizeof( *scc->stk ) );
 }
 
-static void SCC_destroy( SCC *s )
+static void SCC_fini( SCC *scc )
 {
-    MemFree( s->stk );
+    MemFree( scc->stk );
 }
 
-static void SCC_traverse( SCC *s, State *st )
+static void SCC_traverse( SCC *scc, State *st )
 {
     uint    k;
     uint    i;
 
-    *s->top = st;
-    k = (uint)( ++s->top - s->stk );
+    *scc->top = st;
+    k = (uint)( ++scc->top - scc->stk );
     st->depth = k;
     for( i = 0; i < st->go.nSpans; ++i ) {
         State *st_to = st->go.span[i].to;
         if( st_to != NULL ) {
             if( st_to->depth == 0 )
-                SCC_traverse( s, st_to );
+                SCC_traverse( scc, st_to );
             if( st->depth > st_to->depth ) {
                 st->depth = st_to->depth;
             }
@@ -655,9 +655,9 @@ static void SCC_traverse( SCC *s, State *st )
     }
     if( st->depth == k ) {
         do {
-            (*--s->top)->depth = cInfinity;
-            (*s->top)->link = st;
-        } while( *s->top != st );
+            (*--scc->top)->depth = cInfinity;
+            (*scc->top)->link = st;
+        } while( *scc->top != st );
     }
 }
 
@@ -723,7 +723,7 @@ static void DFA_findSCCs( DFA *d )
         }
     }
     DFA_calcDepth( d );
-    SCC_destroy( &scc );
+    SCC_fini( &scc );
 }
 
 static void DFA_split( DFA *d, State *st )
