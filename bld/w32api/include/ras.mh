@@ -959,7 +959,7 @@ typedef enum _RASPROJECTION_INFO_TYPE {
 /* RAS projection information */
 #if (WINVER >= 0x0601)
 typedef struct _RAS_PROJECTION_INFO {
-    RASAPIVERSION           verison;
+    RASAPIVERSION           version;
     RASPROJECTION_INFO_TYPE type;
     union {
         RASPPP_PROJECTION_INFO      ppp;
