@@ -2535,7 +2535,7 @@ void    OutLabel( label_handle lbl )
                         }
                     } else {
                         if( tpatch->patch.attr & LONG_PATCH ) {
-                            MPUT_32_UN( patchptr, lc );
+                            MPUT_32_UN( patchptr, (uint_32)lc );
                         } else if( tpatch->patch.attr & WORD_PATCH ) {
                             MPUT_16_UN( patchptr, lc );
                         } else {
