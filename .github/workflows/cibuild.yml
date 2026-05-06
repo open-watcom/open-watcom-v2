@@ -116,7 +116,7 @@ jobs:
           run_tests:    '1'
           image:        'windows-2025-vs2026'
           owtools:      'VISUALC'
-          args:         'vs2022'
+          args:         'vs2026'
           gitpath:      'rel'
         # OSX X64
         - name:         'OSX x64'
@@ -160,7 +160,7 @@ jobs:
       uses: ./.github/actions/relload
       with:
         asset:      'snapshot'
-        suffix_nt:  'vs2022'
+        suffix_nt:  'vs2026'
         suffix_lnx: 'gcc'
         suffix_osx: 'clang'
     - if: github.event_name == 'pull_request' && env.OWTESTMODE != '1'
