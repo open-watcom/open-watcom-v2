@@ -128,6 +128,23 @@
                             (((w) & 0xFF00000000000000ULL) >> 56)\
                         )
 
+#define __U8A0(x)			(((uint_8*)(x))[0])
+#define __U8A1(x)			(((uint_8*)(x))[1])
+#define __U8A2(x)			(((uint_8*)(x))[2])
+#define __U8A3(x)			(((uint_8*)(x))[3])
+#define __U16G0(x)			((uint_16)(x))
+#define __U16G1(x)			(((uint_16)(x)) >> 8)
+#define __U32G0(x)			((uint_32)(x))
+#define __U32G1(x)			(((uint_32)(x)) >> 8)
+#define __U32G2(x)			(((uint_32)(x)) >> 16)
+#define __U32G3(x)			(((uint_32)(x)) >> 24)
+#define __U16S0(x)			((uint_16)(x))
+#define __U16S1(x)			(((uint_16)(x)) << 8)
+#define __U32S0(x)			((uint_32)(x))
+#define __U32S1(x)			(((uint_32)(x)) << 8)
+#define __U32S2(x)			(((uint_32)(x)) << 16)
+#define __U32S3(x)			(((uint_32)(x)) << 24)
+
 #if defined( __BIG_ENDIAN__ )
     /* Macros to get little endian data */
     #define GET_LE_16(w)    SWAPNC_16((w))
@@ -206,20 +223,20 @@
     /*
      * Macros to get/put unaligned data
      */
-    #define MGET_LE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] << 8 \
-                                | (uint_16)((uint_8*)(p))[1])
-    #define MGET_LE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] << 24 \
-                                | (uint_32)((uint_8*)(p))[1] << 16 \
-                                | (uint_32)((uint_8*)(p))[2] << 8 \
-                                | (uint_32)((uint_8*)(p))[3])
+    #define MGET_LE_U16_UN(p)   ( __U16S1(__U8A0((p))) \
+                                | __U16S0(__U8A1((p))) )
+    #define MGET_LE_U32_UN(p)   ( __U32S3(__U8A0((p))) \
+                                | __U32S2(__U8A1((p))) \
+                                | __U32S1(__U8A2((p))) \
+                                | __U32S0(__U8A3((p))) )
 //    #define MGET_LE_U64_UN(p)
 
-    #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_16)(w) >> 8); \
-                                ((uint_8*)(p))[1] = (uint_8)(uint_16)(w); }
-    #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_32)(w) >> 24); \
-                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 16); \
-                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 8); \
-                                ((uint_8*)(p))[3] = (uint_8)(uint_32)(w); }
+    #define MPUT_LE_16_UN(p,w)  { __U8A0((p)) = __U16G1((w)); \
+                                  __U8A1((p)) = __U16G0((w)); }
+    #define MPUT_LE_32_UN(p,w)  { __U8A0((p)) = __U32G3((w)); \
+                                  __U8A1((p)) = __U32G2((w)); \
+                                  __U8A2((p)) = __U32G1((w)); \
+                                  __U8A3((p)) = __U32G0((w)); }
 //    #define MPUT_LE_64_UN(p,w)
 
     /*
@@ -240,20 +257,20 @@
     /*
      * Macros to get/put unaligned data
      */
-    #define MGET_BE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] \
-                                | (uint_16)((uint_8*)(p))[1] << 8)
-    #define MGET_BE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] \
-                                | (uint_32)((uint_8*)(p))[1] << 8 \
-                                | (uint_32)((uint_8*)(p))[2] << 16 \
-                                | (uint_32)((uint_8*)(p))[3] << 24)
+    #define MGET_BE_U16_UN(p)   ( __U16S0(__U8A0((p))) \
+                                | __U16S1(__U8A1((p))) )
+    #define MGET_BE_U32_UN(p)   ( __U32S0(__U8A0((p))) \
+                                | __U32S1(__U8A1((p))) \
+                                | __U32S2(__U8A2((p))) \
+                                | __U32S3(__U8A3((p))) )
 //    #define MGET_BE_U64_UN(p)
 
-    #define MPUT_BE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_16)(w)); \
-                                ((uint_8*)(p))[1] = (uint_8)(uint_16)(w) >> 8; }
-    #define MPUT_BE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_32)(w)); \
-                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 8); \
-                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 16); \
-                                ((uint_8*)(p))[3] = (uint_8)(uint_32)(w) >> 24; }
+    #define MPUT_BE_16_UN(p,w)  { __U8A0((p)) = __U16G0((w)); \
+                                  __U8A1((p)) = __U16G1((w)); }
+    #define MPUT_BE_32_UN(p,w)  { __U8A0((p)) = __U32G0((w)); \
+                                  __U8A1((p)) = __U32G1((w)); \
+                                  __U8A2((p)) = __U32G2((w)); \
+                                  __U8A3((p)) = __U32G3((w)); }
 //    #define MPUT_BE_64_UN(p,w)
 
     /*
@@ -286,20 +303,20 @@
     /*
      * Macros to get/put unaligned data
      */
-    #define MGET_LE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] \
-                                | (uint_16)((uint_8*)(p))[1] << 8)
-    #define MGET_LE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] \
-                                | (uint_32)((uint_8*)(p))[1] << 8 \
-                                | (uint_32)((uint_8*)(p))[2] << 16 \
-                                | (uint_32)((uint_8*)(p))[3] << 24)
+    #define MGET_LE_U16_UN(p)   ( __U16S0(__U8A0((p))) \
+                                | __U16S1(__U8A1((p))) )
+    #define MGET_LE_U32_UN(p)   ( __U32S0(__U8A0((p))) \
+                                | __U32S1(__U8A1((p))) \
+                                | __U32S2(__U8A2((p))) \
+                                | __U32S3(__U8A3((p))) )
 //    #define MGET_LE_U64_UN(p)
 
-    #define MPUT_LE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)(uint_16)(w); \
-                                ((uint_8*)(p))[1] = (uint_8)((uint_16)(w) >> 8); }
-    #define MPUT_LE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)(uint_32)(w); \
-                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 8); \
-                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 16); \
-                                ((uint_8*)(p))[3] = (uint_8)((uint_32)(w) >> 24); }
+    #define MPUT_LE_16_UN(p,w)  { __U8A0((p)) = __U16G0((w)); \
+                                  __U8A1((p)) = __U16G1((w)); }
+    #define MPUT_LE_32_UN(p,w)  { __U8A0((p)) = __U32G0((w)); \
+                                  __U8A1((p)) = __U32G1((w)); \
+                                  __U8A2((p)) = __U32G2((w)); \
+                                  __U8A3((p)) = __U32G3((w)); }
 //    #define MPUT_LE_64_UN(p,w)
 
     /*
@@ -320,20 +337,20 @@
     /*
      * Macros to get/put unaligned data
      */
-    #define MGET_BE_U16_UN(p)   ((uint_16)((uint_8*)(p))[0] << 8 \
-                                | (uint_16)((uint_8*)(p))[1])
-    #define MGET_BE_U32_UN(p)   ((uint_32)((uint_8*)(p))[0] << 24 \
-                                | (uint_32)((uint_8*)(p))[1] << 16 \
-                                | (uint_32)((uint_8*)(p))[2] << 8 \
-                                | (uint_32)((uint_8*)(p))[3])
+    #define MGET_BE_U16_UN(p)   ( __U16S1(__U8A0((p))) \
+                                | __U16S0(__U8A1((p))) )
+    #define MGET_BE_U32_UN(p)   ( __U32S3(__U8A0((p))) \
+                                | __U32S2(__U8A1((p))) \
+                                | __U32S1(__U8A2((p))) \
+                                | __U32S0(__U8A3((p))) )
 //    #define MGET_BE_U64_UN(p)
 
-    #define MPUT_BE_16_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_16)(w) >> 8); \
-                                ((uint_8*)(p))[1] = (uint_8)(uint_16)(w); }
-    #define MPUT_BE_32_UN(p,w)  {((uint_8*)(p))[0] = (uint_8)((uint_32)(w) >> 24); \
-                                ((uint_8*)(p))[1] = (uint_8)((uint_32)(w) >> 16); \
-                                ((uint_8*)(p))[2] = (uint_8)((uint_32)(w) >> 8); \
-                                ((uint_8*)(p))[3] = (uint_8)(uint_32)(w); }
+    #define MPUT_BE_16_UN(p,w)  { __U8A0((p)) = __U16G1((w)); \
+                                  __U8A1((p)) = __U16G0((w)); }
+    #define MPUT_BE_32_UN(p,w)  { __U8A0((p)) = __U32G3((w)); \
+                                  __U8A1((p)) = __U32G2((w)); \
+                                  __U8A2((p)) = __U32G1((w)); \
+                                  __U8A3((p)) = __U32G0((w)); }
 //    #define MPUT_BE_64_UN(p,w)
 
     /*
