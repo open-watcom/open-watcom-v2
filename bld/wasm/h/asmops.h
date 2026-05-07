@@ -121,7 +121,7 @@ typedef enum tok_class {
 typedef struct asm_tok {
     tok_class           class;
     char                *string_ptr;
-    char                string_delim; /* original TC_STRING opener stored by get_string; macro substitution re-wraps '\''/'"' only */
+    char                string_delim; /* opening delim of TC_STRING token; 0 if none */
     union {
         long            value;
         float           float_value;

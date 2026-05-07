@@ -890,7 +890,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                             char        *src;
                             char        delim;
 
-                            /* round-trip '...' / "..." delimiters; <...>/{...} stay raw text */
+                            /* re-wrap '...' / "..." only; everything else (<...>, {...}, comments, computed strings) stays raw */
                             delim = tokbuf->tokens[i].string_delim;
                             if( delim == '\'' || delim == '"' ) {
                                 *p++ = delim;
