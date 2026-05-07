@@ -87,7 +87,11 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
  * search through params list for word pointed at by start,
  * if you find it, set up the line string
  * this is similar to a printf format string
- * the placeholders are of the form #dd ( #, digit, digit )
+ * placeholders are of the form Xdd (digit, digit) where X is '#' for a
+ * standalone reference (preserve original quote delimiters at substitution)
+ * or '@' for an `&`-adjacent reference inside a string (raw substitution,
+ * matching MASM/TASM `&` text-substitution semantics that strip the arg's
+ * outer quotes -- mdef.inc relies on this for `extrn "&p1",...` patterns).
  * this allows up to 100 parameters - lots :)
  * fixme - this max. should be docmented & checked for.
  */
@@ -97,6 +101,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
     char            *old_line;
     size_t          before;             // length of text before placeholder
     char            count = 0;
+    char            kind;
 
     old_line = lineinfo->line;
     for( ; param != NULL; param = param->next ) {
@@ -106,6 +111,11 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
             /*
              * hey! it matches!
              */
+            kind = '#';
+            if( ( start > old_line && *(start - 1) == '&' )
+              || *(start + len) == '&' ) {
+                kind = '@';
+            }
             new_line = MemAllocSafe( strlen( old_line ) - len + PLACEHOLDER_SIZE + 1 );
             before = start - old_line;
             if( before > 0 ) {
@@ -114,7 +124,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
                 strncpy( new_line, old_line, before );
             }
             *(new_line + before) = '\0';
-            if( sprintf( buffer, "#%-2.2d", count ) != 3 ) {
+            if( sprintf( buffer, "%c%-2.2d", kind, count ) != 3 ) {
                 myassert( 0 );
             }
             strcat( new_line, buffer );
@@ -126,7 +136,7 @@ static char *replace_param( parm_list *param, char *start, size_t len, asmline *
 
             MemFree( old_line );
             /*
-             * ptr to char after #dd
+             * ptr to char after placeholder
              */
             return( new_line + before + PLACEHOLDER_SIZE );
         }
@@ -458,6 +468,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
             paramnode->label = MemStrdupSafe( name );
             paramnode->def = NULL;
             paramnode->required = false;
+            paramnode->delim = 0;
             /*
              * add to the tail of linked list
              */
@@ -610,16 +621,27 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     }
 }
 
-static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
-/***************************************************************************
+static size_t my_sprintf( char *dest, char *format, int argc, char *argv[], char delims[] )
+/******************************************************************************************
  * just like sprintf, except take argv & argc for params
  * so far it only handles string params
+ *
+ * placeholders are 3 chars: kind ('#' or '@') + 2 decimal digits.
+ * '#dd' wraps argv[dd] with delims[dd] (when non-zero), doubling embedded
+ *   delim chars -- this is the MASM-style round-trip for `m '/'` style use.
+ * '@dd' substitutes argv[dd] raw, with no surrounding quotes -- used for
+ *   `&p` references inside a body string, since `&` is a text-substitution
+ *   operator that should drop the arg's outer quotes.
  */
 {
-    char buffer[3];
-    char *start;
-    char *end;
-    int  paramno;
+    char    buffer[3];
+    char    *start;
+    char    *end;
+    char    *q;
+    char    *src;
+    char    delim;
+    char    kind;
+    int     paramno;
 
     /* unused parameters */ (void)argc;
 
@@ -627,12 +649,12 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
     start = format;
     for( end = start ; *end != '\0'; start = end + PLACEHOLDER_SIZE ) {
         /*
-         * scan till we hit a placeholdr ( #dd ) or the end of the string
+         * scan till we hit a placeholder (#dd or @dd) or the end of the string
          */
         for( end = start; *end != '\0'; end++ ) {
-            if( end[0] == '#'
-              && isdigit( end[1] )
-              && isdigit( end[2] ) ) {
+            if( ( end[0] == '#' || end[0] == '@' )
+              && isdigit( (unsigned char)end[1] )
+              && isdigit( (unsigned char)end[2] ) ) {
                 break;
             }
         }
@@ -640,9 +662,7 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
             strncat( dest, start, end - start );
             break;
         }
-        /*
-         * we have a placeholder ( #dd )
-         */
+        kind = end[0];
         buffer[0] = end[1];
         buffer[1] = end[2];
         buffer[2] = '\0';
@@ -650,7 +670,22 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[] )
         strncat( dest, start, end - start );
         /**/myassert( paramno < argc );
         if( argv[paramno] != NULL ) {
-            strcat( dest, argv[paramno] );
+            delim = ( kind == '#' && delims != NULL ) ? delims[paramno] : 0;
+            q = dest + strlen( dest );
+            if( delim != 0 ) {
+                *q++ = delim;
+                for( src = argv[paramno]; *src != '\0'; src++ ) {
+                    if( *src == delim ) {
+                        /* double an embedded delim, MASM idiom */
+                        *q++ = delim;
+                    }
+                    *q++ = *src;
+                }
+                *q++ = delim;
+                *q = '\0';
+            } else {
+                strcpy( q, argv[paramno] );
+            }
         }
     }
     return( strlen( dest ) );
@@ -688,17 +723,22 @@ static char *fill_in_params_and_labels( char *line, macro_info *info )
         count++;
     }
     if( count > 0 ) {
+        char *param_delims;
+
         param_array = MemAllocSafe( count * sizeof( char * ) );
+        param_delims = MemAllocSafe( count );
         count = 0;
         for( param = info->params.head; param != NULL; param = param->next ) {
             param_array[count] = param->replace;
+            param_delims[count] = param->delim;
             count++;
         }
         /*
          * replace parameters by actual values
          */
-        my_sprintf( buffer, line, count, param_array );
+        my_sprintf( buffer, line, count, param_array, param_delims );
         new_line = MemStrdupSafe( buffer );
+        MemFree( param_delims );
         MemFree( param_array );
     } else {
         new_line = MemStrdupSafe( line );
@@ -715,6 +755,7 @@ static void reset_paramslist( parm_list *param )
     for( ; param != NULL; param = param->next ) {
         MemFree( param->replace );
         param->replace = NULL;
+        param->delim = 0;
     }
 }
 
@@ -864,7 +905,17 @@ bool ExpandMacro( token_buffer *tokbuf )
             } else {
                 /*
                  * we have a param! :)
+                 *
+                 * Store the param content RAW (no surrounding quotes). The
+                 * delimiter is recorded separately in param->delim and reapplied
+                 * at substitution time only for non-`&` references -- see
+                 * my_sprintf. This split is what lets `m '/'` round-trip its
+                 * quotes while `extrn "&p1",...` (mdef.inc) still gets the
+                 * raw text inside its surrounding "...".
                  */
+                char    arg_first_delim = 0;
+                int     arg_token_count = 0;
+
                 for( ;; ) {
                     if( tokbuf->tokens[i].class == TC_FINAL )
                         break;
@@ -890,26 +941,19 @@ bool ExpandMacro( token_buffer *tokbuf )
                             char        *src;
                             char        delim;
 
-                            /* re-wrap '...' / "..." only; everything else (<...>, {...}, comments, computed strings) stays raw */
                             delim = tokbuf->tokens[i].string_delim;
-                            if( delim == '\'' || delim == '"' ) {
-                                *p++ = delim;
-                            } else {
-                                delim = 0;
+                            if( arg_token_count == 0
+                              && ( delim == '\'' || delim == '"' ) ) {
+                                arg_first_delim = delim;
                             }
                             src = tokbuf->tokens[i].string_ptr;
                             while( *src != '\0' ) {
-                                if( delim != 0 && *src == delim ) {
-                                    /* escape embedded delim */
-                                    *p++ = delim;
-                                }
                                 *p++ = *src++;
                             }
-                            if( delim != 0 )
-                                *p++ = delim;
                         } else {
                             p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                         }
+                        arg_token_count++;
                     } else {
                         bool expanded;
                         if( ExpandSymbol( tokbuf, i, false, &expanded ) ) {
@@ -934,6 +978,10 @@ bool ExpandMacro( token_buffer *tokbuf )
                 }
                 *p = '\0';
                 param->replace = MemStrdupSafe( buffer );
+                /* only honor the delim when the arg was a single TC_STRING
+                 * token; mixed/multi-token args (e.g. expressions) get raw */
+                if( arg_token_count == 1 )
+                    param->delim = arg_first_delim;
                 /*
                  * go past the comma
                  */

@@ -220,6 +220,7 @@ typedef struct parm_list {
     char                *replace;       // string that replaces the label
     bool                required;       // is parm required ( T/F )
     char                *def;           // is there a default parm?
+    char                delim;          // opening '\''/'"' delimiter of a single TC_STRING arg, 0 otherwise
 } parm_list;
 
 typedef struct asmline {
