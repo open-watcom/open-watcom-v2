@@ -503,6 +503,12 @@ static char *join_multiline_cmds( char *line, size_t max_len )
     size_t  linelen;
     size_t  i;
 
+    /*
+     * Trailing-comma line continuation is a WATCOM-mode extension; MASM
+     * and TASM treat it as a blank trailing argument (`mymacro 1,`).
+     */
+    if( (Options.mode & MODE_WATCOM) == 0 )
+        return( line );
     linelen = strlen( line );
     /*
      * if the last non-whitespace character is a comma

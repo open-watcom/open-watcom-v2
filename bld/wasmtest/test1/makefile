@@ -93,6 +93,7 @@ t2.dis &
 test.dis &
 tmp2.dis &
 tn.dis &
+trailcm.dis &
 wincall.dis &
 word.dis &
 x.dis &
@@ -105,5 +106,6 @@ asm_flags_pubcase = -zcm=masm
 asm_flags_extcase = -zcm=masm
 asm_flags_extcas2 = -zcm=masm
 asm_flags_extcas3 = -zcm=masm
+asm_flags_trailcm = -zcm=masm
 
 !include ../test.mif
