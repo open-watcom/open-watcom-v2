@@ -888,15 +888,25 @@ bool ExpandMacro( token_buffer *tokbuf )
                             }
                         } else if( tokbuf->tokens[i].class == TC_STRING ) {
                             char        *src;
+                            char        delim;
 
+                            /* round-trip '...' / "..." delimiters; <...>/{...} stay raw text */
+                            delim = tokbuf->tokens[i].string_delim;
+                            if( delim == '\'' || delim == '"' ) {
+                                *p++ = delim;
+                            } else {
+                                delim = 0;
+                            }
                             src = tokbuf->tokens[i].string_ptr;
                             while( *src != '\0' ) {
-                                if( *src == '\'' ) {
-                                    /* have to escape delim */
-                                    *p++ = '\'';
+                                if( delim != 0 && *src == delim ) {
+                                    /* escape embedded delim */
+                                    *p++ = delim;
                                 }
                                 *p++ = *src++;
                             }
+                            if( delim != 0 )
+                                *p++ = delim;
                         } else {
                             p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                         }

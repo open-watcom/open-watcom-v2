@@ -139,6 +139,7 @@ static bool get_string( asm_tok *tok, const char **input, char **output )
     symbol_o = **input;
 
     tok->class = TC_STRING;
+    tok->string_delim = symbol_o;
     switch( symbol_o ) {
     case '"':
     case '\'':
@@ -154,7 +155,7 @@ static bool get_string( asm_tok *tok, const char **input, char **output )
         /* this is an undelimited string,
          * so just copy it until we hit something that looks like the end
          */
-
+        tok->string_delim = 0;
         for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
             *(*output)++ = *(*input)++; /* keep the 2nd one */
         }
@@ -549,6 +550,7 @@ static bool get_comment( asm_tok *tok, const char **input, char **output )
     *(*output)++ = '\0';
     *input += len;
     tok->class = TC_STRING;
+    tok->string_delim = 0;
     tok->u.value = 0;
     return( RC_OK );
 }

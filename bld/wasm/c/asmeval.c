@@ -1915,6 +1915,7 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
             tokbuf->tokens[ start++ ].string_ptr = "";
         } else {
             tokbuf->tokens[ start ].class = TC_STRING;
+            tokbuf->tokens[ start ].string_delim = 0;
             tokbuf->tokens[ start++ ].string_ptr = res->string;
         }
 
