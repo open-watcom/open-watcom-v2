@@ -106,6 +106,6 @@ asm_flags_pubcase = -zcm=masm
 asm_flags_extcase = -zcm=masm
 asm_flags_extcas2 = -zcm=masm
 asm_flags_extcas3 = -zcm=masm
-asm_flags_trailcm = -zcm=masm
+asm_flags_trailcm = -zcm=tasm
 
 !include ../test.mif
