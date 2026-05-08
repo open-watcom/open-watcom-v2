@@ -272,6 +272,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
     InputQueueLine( buffer );
     tokbuf->tokens[0].class = 0;
     tokbuf->tokens[0].string_ptr = NULL;
+    tokbuf->tokens[0].string_delim = 0;
     tokbuf->tokens[0].u.value = 0;
     *expanded = true;
     return( RC_OK );
@@ -332,6 +333,7 @@ bool StoreConstantNumber( const char *name, long value, bool redefine )
     new = MemAllocSafe( sizeof( asm_tok ) );
     memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
     new[0].class = TC_NUM;
+    new[0].string_delim = 0;
     new[0].u.value = value;
     new[0].string_ptr = NULL;
     FreeConstData( dir->e.constinfo );
@@ -382,6 +384,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
             new = MemAllocSafe( sizeof( asm_tok ) );
             memset( new[0].u.bytes, 0, sizeof( new[0].u.bytes ) );
             new[0].class = TC_NUM;
+            new[0].string_delim = 0;
             new[0].u.value = 1;
             new[0].string_ptr = NULL;
             FreeConstData( dir->e.constinfo );
@@ -453,6 +456,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
             break;
         }
         new[i].class = tokbuf->tokens[start + i].class;
+        new[i].string_delim = tokbuf->tokens[start + i].string_delim;
         memcpy( new[i].u.bytes, tokbuf->tokens[start + i].u.bytes, sizeof( new[i].u.bytes ) );
         new[i].string_ptr = MemStrdupSafe( tokbuf->tokens[start + i].string_ptr );
     }

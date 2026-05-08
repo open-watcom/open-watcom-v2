@@ -684,6 +684,7 @@ void SetFinalToken( token_buffer *tokbuf, token_idx count )
         count = MAX_TOKEN_COUNT;
     tokbuf->tokens[count].class = TC_FINAL;
     tokbuf->tokens[count].string_ptr = NULL;
+    tokbuf->tokens[count].string_delim = 0;
     tokbuf->count = count;
 }
 
@@ -726,6 +727,7 @@ bool AsmScan( token_buffer *tokbuf, const char *string )
     i = 0;
     while( i < MAX_TOKEN_COUNT ) {
         tok[i].string_ptr = output_ptr;
+        tok[i].string_delim = 0;
         while( isspace( *ptr ) ) {
             ptr++;
         }
