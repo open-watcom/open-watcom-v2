@@ -245,6 +245,10 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
         new->value = tokbuf->tokens[i].u.value;
         break;
     case TC_STRING:
+    case TC_STRING_SQUOTE:
+    case TC_STRING_DQUOTE:
+    case TC_STRING_ANGLE:
+    case TC_STRING_BRACE:
         new->empty = false;
         new->type = EXPR_CONST;
         new->string = tokbuf->tokens[i].string_ptr;
@@ -426,10 +430,13 @@ static bool is_optr( token_buffer *tokbuf, token_idx i )
     case TC_NUM:
     case TC_ID:
     case TC_RES_ID:
-    case TC_STRING:
     case TC_PATH:
     case TC_OP_BRACKET:
         return( false );
+    default:
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
+            return( false );
+        }
     }
     return( true );
 }
@@ -1738,12 +1745,13 @@ static bool is_expr1( token_buffer *tokbuf, token_idx i )
             /* It is not a label */
             return( true );
         break;
-    case TC_STRING:
-        return( true );
     case TC_DOT:
         return( true );
     case TC_PATH:
     default:
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
+            return( true );
+        }
         break;
     }
     return( false );
@@ -1831,12 +1839,13 @@ static bool is_expr2( token_buffer *tokbuf, token_idx i )
         return( true );
     case TC_ID:
         return( true );
-    case TC_STRING:
-        return( true );
     case TC_DOT:
         return( true );
     case TC_PATH:
     default:
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
+            return( true );
+        }
         break;
     }
     return( false );
@@ -1915,7 +1924,6 @@ static token_idx fix( expr_list *res, token_buffer *tokbuf, token_idx start, tok
             tokbuf->tokens[ start++ ].string_ptr = "";
         } else {
             tokbuf->tokens[ start ].class = TC_STRING;
-            tokbuf->tokens[ start ].string_delim = 0;
             tokbuf->tokens[ start++ ].string_ptr = res->string;
         }
 
@@ -2327,9 +2335,10 @@ static bool is_expr_const( token_idx i )
         } else {
             return( true );
         }
-    case TC_STRING:
-        return( true );
     default:
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
+            return( true );
+        }
         return( false );
     }
 }

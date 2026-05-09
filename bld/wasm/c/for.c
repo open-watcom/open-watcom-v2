@@ -107,7 +107,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             return( RC_ERROR );
         }
         j++;
-        if( tokbuf->tokens[j].class != TC_STRING ) {
+        if( !IS_STRING_TOKEN( tokbuf->tokens[j].class ) ) {
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
@@ -130,15 +130,12 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     if( Options.mode & MODE_IDEAL ) {
         tokbuf->tokens[i + 1].string_ptr = buffer;
         tokbuf->tokens[i + 1].class = TC_ID;
-        tokbuf->tokens[i + 1].string_delim = 0;
     } else {
         tokbuf->tokens[i].string_ptr = buffer;
         tokbuf->tokens[i].class = TC_ID;
-        tokbuf->tokens[i].string_delim = 0;
         i++;
     }
     tokbuf->tokens[i].class = TC_DIRECTIVE;
-    tokbuf->tokens[i].string_delim = 0;
     tokbuf->tokens[i].u.token = T_MACRO;
     /*
      * process macro definition

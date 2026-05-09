@@ -1098,7 +1098,7 @@ static mangle_func  Check4Mangler( token_buffer *tokbuf, token_idx *i )
 {
     mangle_func     mangler;
 
-    if( tokbuf->tokens[*i].class != TC_STRING )
+    if( !IS_STRING_TOKEN( tokbuf->tokens[*i].class ) )
         return( NULL );
     mangler = GetMangler( tokbuf->tokens[*i].string_ptr );
     (*i)++;
@@ -1602,7 +1602,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
             i++;
         }
         for( ; i < tokbuf->count; i++ ) {
-            if( tokbuf->tokens[i].class == TC_STRING ) {
+            if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
                 /*
                  * the class name - the only token which is of type STRING
                  */
@@ -1793,6 +1793,10 @@ bool Include( token_buffer *tokbuf, token_idx i )
     switch( tokbuf->tokens[i].class ) {
     case TC_ID:
     case TC_STRING:
+    case TC_STRING_SQUOTE:
+    case TC_STRING_DQUOTE:
+    case TC_STRING_ANGLE:
+    case TC_STRING_BRACE:
     case TC_PATH:
         return( InputQueueFile( tokbuf->tokens[i].string_ptr ) );
     default:
@@ -3360,7 +3364,7 @@ static bool proc_exam( dir_node_handle proc, token_buffer *tokbuf, token_idx i )
     i++;
     for( ; i < tokbuf->count && tokbuf->tokens[i].class != TC_COMMA; i++ ) {
         token = tokbuf->tokens[i].string_ptr;
-        if( tokbuf->tokens[i].class == TC_STRING ) {
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
             /*
              * name mangling
              */

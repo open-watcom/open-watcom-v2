@@ -873,7 +873,7 @@ bool ExpandMacro( token_buffer *tokbuf )
         p = buffer;
         if( i < tokbuf->count ) {
             if( tokbuf->tokens[i].class == TC_COMMA
-              || ( tokbuf->tokens[i].class == TC_STRING
+              || ( IS_STRING_TOKEN( tokbuf->tokens[i].class )
               && strlen( tokbuf->tokens[i].string_ptr ) == 0 ) ) {
                 /*
                  * blank param
@@ -937,14 +937,12 @@ bool ExpandMacro( token_buffer *tokbuf )
                             } else {
                                 p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                             }
-                        } else if( tokbuf->tokens[i].class == TC_STRING ) {
+                        } else if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
                             char        *src;
-                            char        delim;
 
-                            delim = tokbuf->tokens[i].string_delim;
                             if( arg_token_count == 0
-                              && ( delim == '\'' || delim == '"' ) ) {
-                                arg_first_delim = delim;
+                              && IS_QUOTED_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
+                                arg_first_delim = STRING_TOKEN_DELIM( tokbuf->tokens[i].class );
                             }
                             src = tokbuf->tokens[i].string_ptr;
                             while( *src != '\0' ) {
@@ -978,7 +976,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                 }
                 *p = '\0';
                 param->replace = MemStrdupSafe( buffer );
-                /* only honor the delim when the arg was a single TC_STRING
+                /* only honor the delim when the arg was a single quoted string
                  * token; mixed/multi-token args (e.g. expressions) get raw */
                 if( arg_token_count == 1 )
                     param->delim = arg_first_delim;
