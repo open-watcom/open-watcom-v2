@@ -52,7 +52,9 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wppmps01.int   "<OWRELROOT>/binl/"
 
     <CCCMD> bsdx64/wppmps.exe       "<OWRELROOT>/binb64/wppmps"
+    <CCCMD> bsda64/wppmps.exe       "<OWRELROOT>/armb64/wppmps"
     <CCCMD> bsdx64/wppmps01.int     "<OWRELROOT>/binb64/"
+    <CCCMD> bsda64/wppmps01.int     "<OWRELROOT>/armb64/"
     <CCCMD> ntx64.dll/wppmps.exe    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppdmps.dll   "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppmps01.int  "<OWRELROOT>/binnt64/"

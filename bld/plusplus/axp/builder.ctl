@@ -52,7 +52,9 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wppaxp01.int   "<OWRELROOT>/binl/"
 
     <CCCMD> bsdx64/wppaxp.exe       "<OWRELROOT>/binb64/wppaxp"
+    <CCCMD> bsda64/wppaxp.exe       "<OWRELROOT>/armb64/wppaxp"
     <CCCMD> bsdx64/wppaxp01.int     "<OWRELROOT>/binb64/"
+    <CCCMD> bsda64/wppaxp01.int     "<OWRELROOT>/armb64/"
     <CCCMD> ntx64.dll/wppaxp.exe    "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppdaxp.dll   "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppaxp01.int  "<OWRELROOT>/binnt64/"

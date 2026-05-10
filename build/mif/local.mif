@@ -354,6 +354,7 @@ common_cppflags_linuxa64   = -D__LINUX_ARM64__
 
 common_cppflags_bsd386     = -D__BSD_386__
 common_cppflags_bsdx64     = -D__BSD_X64__
+common_cppflags_bsda64     = -D__BSD_ARM64__
 common_cppflags_bsdppc     =
 
 common_cppflags_haiku386   = -D__HAIKU_386__

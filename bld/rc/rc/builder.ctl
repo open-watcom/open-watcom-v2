@@ -69,7 +69,9 @@ set PROJDIR=<CWD>
     <CCCMD> ntx64.dll/*.uni         "<OWRELROOT>/binnt64/"
 
     <CCCMD> bsdx64/wrc.exe          "<OWRELROOT>/binb64/wrc"
+    <CCCMD> bsda64/wrc.exe          "<OWRELROOT>/armb64/wrc"
     <CCCMD> bsdx64/*.uni            "<OWRELROOT>/binb64/"
+    <CCCMD> bsda64/*.uni            "<OWRELROOT>/armb64/"
     <CCCMD> linuxarm/wrc.exe        "<OWRELROOT>/arml/wrc"
     <CCCMD> linuxarm/wrc.sym        "<OWRELROOT>/arml/"
     <CCCMD> linuxarm/*.uni          "<OWRELROOT>/arml/"

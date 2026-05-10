@@ -194,6 +194,8 @@ const char FAR BuiltIns[] = {
         "__BSD386__=\n"
     #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
         "__BSDPPC__=\n"
+    #elif defined( _M_ARM64 ) || defined( __arm64__ ) || defined( __aarch64__ )
+        "__BSDARM64__=\n"
     #else
         #error Unknown CPU architecture
     #endif

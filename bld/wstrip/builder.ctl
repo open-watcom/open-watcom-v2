@@ -35,6 +35,7 @@ set PROJDIR=<CWD>
     <CCCMD> qnx386/wstripx.exe    "<OWRELROOT>/qnx/binq/wstrip"
 
     <CCCMD> bsdx64/wstripx.exe    "<OWRELROOT>/binb64/wstrip"
+    <CCCMD> bsda64/wstripx.exe    "<OWRELROOT>/armb64/wstrip"
     <CCCMD> ntx64/wstripx.exe     "<OWRELROOT>/binnt64/wstrip.exe"
     <CCCMD> linuxx64/wstripx.exe  "<OWRELROOT>/binl64/wstrip"
     <CCCMD> linuxarm/wstripx.exe  "<OWRELROOT>/arml/wstrip"
