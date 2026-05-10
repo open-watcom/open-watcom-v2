@@ -1247,9 +1247,9 @@ static bool FarCallOpt( fix_relo_data *fix )
                 MPUT_8( code + 2, NEAR_CALL_ID );
             }
             if( is32bit ) {
-                MPUT_32( code + 3, temp32 );
+                MPUT_32_UN( code + 3, temp32 );
             } else {
-                MPUT_16( code + 3, temp16 );
+                MPUT_16_UN( code + 3, temp16 );
             }
         }
         return( true );

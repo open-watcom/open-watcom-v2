@@ -568,13 +568,13 @@ void DwarfGenLines( lineinfo *info )
     buff[1] = dwsize;
     buff[2] = DW_LNE_set_address;
     if( FmtData.type & MK_16BIT ) {
-        *( (unsigned_16 *)&buff[3] ) = seg->a.delta + seg->u.leader->seg_addr.off;
+        MPUT_16_UN( buff + 3, seg->a.delta + seg->u.leader->seg_addr.off );
     } else {
         off = seg->a.delta + seg->u.leader->seg_addr.off;
         if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
             off += GetLinearGroupOffset( seg->u.leader->group );
         }
-        *( (unsigned_32 *)&buff[3] ) = off;
+        MPUT_32_UN( buff + 3, off );
     }
     dwsize += 2;
     PutInfo( vmem_addr, buff, dwsize );
@@ -583,7 +583,7 @@ void DwarfGenLines( lineinfo *info )
         buff[1] = 3;
         buff[2] = DW_LNE_WATCOM_set_segment_OLD;
 //        buff[2] = DW_LNE_WATCOM_set_segment;
-        *( (unsigned_16 *)&buff[3] ) = seg->u.leader->seg_addr.seg;
+        MPUT_16_UN( buff + 3, seg->u.leader->seg_addr.seg );
         PutInfo( vmem_addr, buff, 5 );
         vmem_addr += 5;
     }
