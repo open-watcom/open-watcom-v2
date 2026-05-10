@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -428,6 +428,10 @@ int main( int argc, char *argv[] )
             len1 += (bind_size)len;
         }
         *buffn++ = '\0';                /* trailing zero */
+        if( len1 & 1 ) {
+            *buffn++ = '\0';            /* trailing zero */
+            len1++;
+        }
         *(bind_size *)buffs = len1;     /* size of token list */
         data_len += len1;
         index = (bind_size *)buffn;
