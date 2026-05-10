@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -118,7 +118,7 @@ int main( int argc, char *argv[] )
     max_len = 0;
     for( i = 0; i < count; i++ ) {
         size_t len = strlen( Words[i].word );
-        if( len > max_len )
+        if( max_len < len )
             max_len = len;
         fprintf( out, "    %s,\n", get_enum_key( Words[i].word ) );
     }
