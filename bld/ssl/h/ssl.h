@@ -89,31 +89,35 @@ typedef enum {
 #define NO_LOCATION ((unsigned short)-1)
 
 typedef struct instruction {
-    struct instruction      *flink, *blink;
+    struct instruction      *flink;
+    struct instruction      *blink;
+    union {
+        struct instruction  *lbl;
+        struct choice_entry *choice;
+    } u;
     unsigned short          location;
     unsigned short          operand;
-    void                    *ptr;
-    op_code                 ins;
+    op_code                 opcode;
 } instruction;
 
 typedef struct choice_entry {
     struct choice_entry     *link;
-    unsigned short          value;
     instruction             *lbl;
+    unsigned short          value;
 } choice_entry;
 
 typedef union {
     unsigned        token;          /* for tokens */
     struct {                        /* for semantic actions */
-        unsigned short value;
-        struct symbol  *ret;
-        struct symbol  *parm;
+        struct symbol   *ret;
+        struct symbol   *parm;
+        unsigned short  value;
     }               sem;
     struct {                        /* for rules */
-        instruction *lbl;
-        struct symbol    *ret;
-        unsigned short   exported        : 1;
-        unsigned short   defined         : 1;
+        instruction     *lbl;
+        struct symbol   *ret;
+        unsigned short  exported        : 1;
+        unsigned short  defined         : 1;
     }               rule;
     struct {                        /* for type values */
         struct symbol   *type;
