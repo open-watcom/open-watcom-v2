@@ -35,6 +35,7 @@ set PROJDIR=<CWD>
     <CCCMD> os2386/wclppc.sym     "<OWRELROOT>/binp/"
 
     <CCCMD> bsdx64/wclppc.exe     "<OWRELROOT>/binb64/wclppc"
+    <CCCMD> bsda64/wclppc.exe     "<OWRELROOT>/armb64/wclppc"
     <CCCMD> ntx64/wclppc.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wclppc.exe   "<OWRELROOT>/binl64/wclppc"
     <CCCMD> linuxx64/wclppc.sym   "<OWRELROOT>/binl64/"

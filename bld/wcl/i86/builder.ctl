@@ -39,6 +39,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntaxp/wcl.sym         "<OWRELROOT>/axpnt/"
 
     <CCCMD> bsdx64/wcl.exe        "<OWRELROOT>/binb64/wcl"
+    <CCCMD> bsda64/wcl.exe        "<OWRELROOT>/armb64/wcl"
     <CCCMD> ntx64/wcl.exe         "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wcl.exe      "<OWRELROOT>/binl64/wcl"
     <CCCMD> linuxx64/wcl.sym      "<OWRELROOT>/binl64/"

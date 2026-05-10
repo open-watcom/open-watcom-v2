@@ -27,6 +27,7 @@ set PROJDIR=<CWD>
     <CCCMD> wbind/linux386/wbind.exe    "<OWRELROOT>/binl/wbind"
 
     <CCCMD> wbind/bsdx64/wbind.exe      "<OWRELROOT>/binb64/wbind"
+    <CCCMD> wbind/bsda64/wbind.exe      "<OWRELROOT>/armb64/wbind"
     <CCCMD> wbind/ntx64/wbind.exe       "<OWRELROOT>/binnt64/"
     <CCCMD> wbind/linuxx64/wbind.exe    "<OWRELROOT>/binl64/wbind"
     <CCCMD> wbind/linuxarm/wbind.exe    "<OWRELROOT>/arml/wbind"

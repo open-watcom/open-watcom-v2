@@ -112,6 +112,9 @@ bld_os = bsd
 !else ifdef __BSDX64__
 bld_cpu = x64
 bld_os = bsd
+!else ifdef __BSDARM64__
+bld_cpu = a64
+bld_os = bsd
 !else ifdef __BSDPPC__
 bld_cpu = ppc
 bld_os = bsd

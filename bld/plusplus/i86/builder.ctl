@@ -55,7 +55,9 @@ set PROJDIR=<CWD>
     <CCCMD> linux386/wppi8601.int   "<OWRELROOT>/binl/"
 
     <CCCMD> bsdx64/wpp.exe          "<OWRELROOT>/binb64/wpp"
+    <CCCMD> bsda64/wpp.exe          "<OWRELROOT>/armb64/wpp"
     <CCCMD> bsdx64/wppi8601.int     "<OWRELROOT>/binb64/"
+    <CCCMD> bsda64/wppi8601.int     "<OWRELROOT>/armb64/"
     <CCCMD> ntx64.dll/wpp.exe       "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppdi86.dll   "<OWRELROOT>/binnt64/"
     <CCCMD> ntx64.dll/wppi8601.int  "<OWRELROOT>/binnt64/"

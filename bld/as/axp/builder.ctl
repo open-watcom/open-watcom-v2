@@ -39,6 +39,7 @@ set PROJDIR=<CWD>
     <CCCMD> ntaxp/wasaxp.sym      "<OWRELROOT>/axpnt/"
 
     <CCCMD> bsdx64/wasaxp.exe     "<OWRELROOT>/binb64/wasaxp"
+    <CCCMD> bsda64/wasaxp.exe     "<OWRELROOT>/armb64/wasaxp"
     <CCCMD> ntx64/wasaxp.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wasaxp.exe   "<OWRELROOT>/binl64/wasaxp"
     <CCCMD> linuxx64/wasaxp.sym   "<OWRELROOT>/binl64/"

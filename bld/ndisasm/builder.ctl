@@ -43,6 +43,7 @@ set PROJDIR=<CWD>
     <CCCMD> rdos386/wdis.sym    "<OWRELROOT>/rdos/"
 
     <CCCMD> bsdx64/wdis.exe     "<OWRELROOT>/binb64/wdis"
+    <CCCMD> bsda64/wdis.exe     "<OWRELROOT>/armb64/wdis"
     <CCCMD> ntx64/wdis.exe      "<OWRELROOT>/binnt64/"
     <CCCMD> linuxx64/wdis.exe   "<OWRELROOT>/binl64/wdis"
     <CCCMD> linuxx64/wdis.sym   "<OWRELROOT>/binl64/"
