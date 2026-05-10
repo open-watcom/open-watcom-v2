@@ -41,13 +41,13 @@
 instruction     *FirstIns;
 instruction     *LastIns;
 
-static instruction *NewIns( op_code op )
+static instruction *NewIns( op_code opcode )
 {
     instruction *ins;
 
     ins = MemAllocSafe( sizeof( instruction ) );
     memset( ins, 0, sizeof( instruction ) );
-    ins->opcode = op;
+    ins->opcode = opcode;
     ins->location = NO_LOCATION;
     return( ins );
 }
