@@ -171,6 +171,7 @@ void CSElse( void )
     TOS->type = CS_ELSE;
     GenJmp( TOS->end );
     GenLabel( TOS->top );
+    FreeLabel( TOS->top );
     TOS->top = NewLabel();
 
 } /* CSElse */
