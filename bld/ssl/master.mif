@@ -2,6 +2,8 @@ proj_name = ssl
 
 ssl_autodepends = .AUTODEPEND
 
+ssl_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -11,7 +13,7 @@ ssl_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c: ../c;$(cli_cpp_c_dirs);$(watcom_dir)/c
+.c: ../c;$(cli_cpp_c_dirs);$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I"../h" $(cli_cpp_inc_dirs)
 
@@ -27,5 +29,5 @@ exetarg_objs = &
     sslrule.obj     &
     sslsym.obj      &
     sslgen.obj      &
-    $(cli_cpp_objs) ppenv.obj ppmem.obj
+    $(cli_cpp_objs) ppenv.obj ppmem.obj $(trmem_objs)
 !include exetarg.mif
