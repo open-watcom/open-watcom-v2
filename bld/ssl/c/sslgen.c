@@ -600,7 +600,7 @@ void DumpGenCode( void )
             break;
         }
         DelStream( ins );
-        MemFree( ins );
+//        MemFree( ins );
     }
     OutEndSect();
 }
