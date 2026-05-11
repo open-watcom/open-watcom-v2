@@ -58,9 +58,8 @@ static bool LookupAndAdd( class typ, symbol **ptr )
             return( false );
         }
     }
-    curr = calloc( 1, sizeof( symbol ) );
-    if( curr == NULL )
-        Error( "out of memory" );
+    curr = MemAllocSafe( sizeof( symbol ) );
+    memset( curr, 0, sizeof( symbol ) );
     *owner = curr;
     curr->link = NULL;
     curr->name = MemAllocSafe( TokenLen + 1 );
@@ -182,6 +181,18 @@ static void OutList( char *name, token_list *list )
 }
 
 
+static void FreeList( token_entry *tentry )
+{
+    token_entry *next;
+
+    while( tentry != NULL ) {
+        next = tentry->link;
+        MemFree( tentry );
+        tentry = next;
+    }
+}
+
+
 void DumpSymTbl(void)
 {
     symbol      *curr;
@@ -246,4 +257,20 @@ void DumpSymTbl(void)
     OutList( "Keywords", &Keywords );
     OutList( "Delims", &Delimiters );
     OutList( "Exports", &Exports );
+    /*
+     * free all lists
+     */
+    FreeList( Keywords.head );
+    FreeList( Delimiters.head );
+    FreeList( Exports.head );
+    /*
+     * free all symbols
+     */
+    while( (curr = SymLst) != NULL ) {
+        SymLst = SymLst->link;
+        MemFree( curr->name );
+        if( curr->alias != NULL )
+            MemFree( curr->alias );
+        MemFree( curr );
+    }
 }
