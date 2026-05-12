@@ -86,6 +86,10 @@ typedef enum tok_class {
     TC_ID,
     TC_REG,
     TC_STRING,
+    TC_STRING_SQUOTE,
+    TC_STRING_DQUOTE,
+    TC_STRING_ANGLE,
+    TC_STRING_BRACE,
     TC_DIRECTIVE,
     TC_DIRECT_EXPR,
     TC_NUM,
@@ -128,5 +132,13 @@ typedef struct asm_tok {
         asm_token       token;
     } u;
 } asm_tok;
+
+#define IS_STRING_TOKEN( cls )      ((cls) == TC_STRING || (cls) == TC_STRING_SQUOTE \
+                                  || (cls) == TC_STRING_DQUOTE || (cls) == TC_STRING_ANGLE \
+                                  || (cls) == TC_STRING_BRACE)
+
+#define IS_QUOTED_STRING_TOKEN( cls )   ((cls) == TC_STRING_SQUOTE || (cls) == TC_STRING_DQUOTE)
+#define STRING_TOKEN_DELIM( cls )       ((cls) == TC_STRING_SQUOTE ? '\'' \
+                                      : ((cls) == TC_STRING_DQUOTE ? '"' : 0))
 
 #endif

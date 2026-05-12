@@ -107,7 +107,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             return( RC_ERROR );
         }
         j++;
-        if( tokbuf->tokens[j].class != TC_STRING ) {
+        if( !IS_STRING_TOKEN( tokbuf->tokens[j].class ) ) {
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }

@@ -238,7 +238,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
                     continue;   /*yes, skip it */
                 }
             }
-            if( tokbuf->tokens[i].class == TC_STRING ) {
+            if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
                 p += sprintf( p, "<%s>", tokbuf->tokens[i].string_ptr );
             } else {
                 p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
@@ -404,7 +404,7 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
             return( RC_ERROR );
 
         for( counta = 0, i = start; tokbuf->tokens[i].class != TC_FINAL; i++ ) {
-            if( ( tokbuf->tokens[i].class != TC_STRING ) || ( tokbuf->tokens[i].u.value != 0 ) ) {
+            if( !IS_STRING_TOKEN( tokbuf->tokens[i].class ) || ( tokbuf->tokens[i].u.value != 0 ) ) {
                 counta++;
             }
         }
@@ -422,6 +422,10 @@ static bool createconstant( const char *name, bool value, token_buffer *tokbuf, 
     for( i = 0; i < count; i++ ) {
         switch( tokbuf->tokens[start + i].class ) {
         case TC_STRING:
+        case TC_STRING_SQUOTE:
+        case TC_STRING_DQUOTE:
+        case TC_STRING_ANGLE:
+        case TC_STRING_BRACE:
             if( count != 1 && tokbuf->tokens[start + i].u.value == 0 ) {
                 i--;
                 count--;

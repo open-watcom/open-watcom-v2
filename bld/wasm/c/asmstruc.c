@@ -150,7 +150,7 @@ bool InitializeStructure( asm_sym_handle sym, asm_sym_handle struct_symbol, toke
     dir = (dir_node_handle)struct_symbol;
 
     PushLineQueue();
-    if( tokbuf->tokens[i].class != TC_STRING ) {
+    if( !IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
         AsmError( SYNTAX_ERROR ); // fixme
         return( RC_ERROR );
     }
@@ -245,7 +245,7 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
         if( tokbuf->tokens[i].string_ptr != NULL ) {
             count += strlen( tokbuf->tokens[i].string_ptr ) + 1;
         }
-        if( tokbuf->tokens[i].class == TC_STRING ) {
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
             count += 2;
         }
     }
@@ -255,13 +255,13 @@ int AddFieldToStruct( asm_sym_handle sym, token_buffer *tokbuf, token_idx loc )
     for( i = loc + 1; ISVALID_IDX( i ); i++ ) {
         if( tokbuf->tokens[i].class == TC_FINAL )
             break;
-        if( tokbuf->tokens[i].class == TC_STRING ) {
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
             strcat( f->value, "<" );
         }
         if( tokbuf->tokens[i].string_ptr != NULL ) {
             strcat( f->value, tokbuf->tokens[i].string_ptr );
         }
-        if( tokbuf->tokens[i].class == TC_STRING ) {
+        if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
             strcat( f->value, ">" );
         }
         strcat( f->value, " " );

@@ -320,6 +320,10 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
             break;
         case TC_STRING:
+        case TC_STRING_SQUOTE:
+        case TC_STRING_DQUOTE:
+        case TC_STRING_ANGLE:
+        case TC_STRING_BRACE:
 #if defined( _STANDALONE_ )
             if( struct_sym != NULL ) {
                 InitializeStructure( sym, struct_sym, tokbuf, cur_pos );

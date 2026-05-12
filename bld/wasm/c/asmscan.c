@@ -138,23 +138,28 @@ static bool get_string( asm_tok *tok, const char **input, char **output )
 
     symbol_o = **input;
 
-    tok->class = TC_STRING;
     switch( symbol_o ) {
     case '"':
+        tok->class = TC_STRING_DQUOTE;
+        symbol_c = 0;
+        break;  // end of string marker is the same
     case '\'':
+        tok->class = TC_STRING_SQUOTE;
         symbol_c = 0;
         break;  // end of string marker is the same
     case '<':
+        tok->class = TC_STRING_ANGLE;
         symbol_c = '>';
         break;
     case '{':
+        tok->class = TC_STRING_BRACE;
         symbol_c = '}';
         break;
     default:
         /* this is an undelimited string,
          * so just copy it until we hit something that looks like the end
          */
-
+        tok->class = TC_STRING;
         for( count = 0; **input != '\0' && !isspace( **input ) && **input != ','; count++ ) {
             *(*output)++ = *(*input)++; /* keep the 2nd one */
         }

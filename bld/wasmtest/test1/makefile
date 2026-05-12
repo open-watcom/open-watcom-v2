@@ -78,7 +78,9 @@ pubcase.dis &
 pubdef.dis &
 purge.dis &
 q.dis &
+qmacand.dis &
 qnxstrt.dis &
+quotmac.dis &
 scas.dis &
 segoff.dis &
 shell.dis &
