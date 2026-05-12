@@ -254,6 +254,7 @@ void Scan( void )
         #define DELIMS_DEF(a,b) a,
             DELIMS_DEFS
         #undef DELIMS_DEF
+        '\0'
     };
     static const char *Keywords[] = {
         #define KEYWORDS_DEF(a,b,c) a,
