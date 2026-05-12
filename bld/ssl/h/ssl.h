@@ -109,15 +109,15 @@ typedef struct instruction {
 typedef struct choice_entry {
     struct choice_entry     *link;
     instruction             *lbl;
-    unsigned                value;
+    int                     value;
 } choice_entry;
 
 typedef union {
-    unsigned        token;          /* for tokens */
+    int             token;          /* for tokens */
     struct {                        /* for semantic actions */
         struct symbol   *ret;
         struct symbol   *parm;
-        unsigned        value;
+        int             value;
     }               sem;
     struct {                        /* for rules */
         instruction     *lbl;
@@ -127,7 +127,7 @@ typedef union {
     }               rule;
     struct {                        /* for type values */
         struct symbol   *type;
-        unsigned        value;
+        int             value;
     }               enums;
 } values;
 

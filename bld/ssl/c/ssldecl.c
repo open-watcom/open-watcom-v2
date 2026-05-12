@@ -37,10 +37,10 @@
 
 
 
-static void ProcTokens( ssl_class typ, unsigned *next )
+static void ProcTokens( ssl_class typ, int *next )
 {
     symbol      *sym;
-    unsigned    value;
+    int         value;
 
     WantColon();
     do {
@@ -65,7 +65,7 @@ static void ProcTokens( ssl_class typ, unsigned *next )
             value = *next;
         }
         sym->v.token = value;
-        if( value >= *next ) {
+        if( *next <= value  ) {
             *next = value + 1;
         }
     } while( CurrToken != T_SEMI );
@@ -73,11 +73,11 @@ static void ProcTokens( ssl_class typ, unsigned *next )
 }
 
 
-static void ProcType(void)
+static void ProcType( void )
 {
     symbol      *type;
     symbol      *curr;
-    unsigned    next_value;
+    int         next_value;
 
     next_value = 0;
     type = NewSym( CLASS_TYPE );
@@ -94,7 +94,7 @@ static void ProcType(void)
         } else {
             curr->v.enums.value = next_value;
         }
-        if( curr->v.enums.value >= next_value ) {
+        if( next_value <= curr->v.enums.value ) {
             next_value = curr->v.enums.value + 1;
         }
     } while( CurrToken != T_SEMI );
@@ -102,7 +102,7 @@ static void ProcType(void)
 }
 
 
-static void ProcMech( unsigned *next )
+static void ProcMech( int *next )
 {
     symbol      *sym;
 
@@ -135,7 +135,7 @@ static void ProcMech( unsigned *next )
         } else {
             sym->v.sem.value = *next;
         }
-        if( sym->v.sem.value >= *next ) {
+        if( *next <= sym->v.sem.value ) {
             *next = sym->v.sem.value + 1;
         }
     } while( CurrToken != T_SEMI );
@@ -144,10 +144,10 @@ static void ProcMech( unsigned *next )
 
 void Decls(void)
 {
-    unsigned    next_inp;
-    unsigned    next_out;
-    unsigned    next_err;
-    unsigned    next_sem;
+    int         next_inp;
+    int         next_out;
+    int         next_err;
+    int         next_sem;
 
     next_inp = 0;
     next_out = 0;
@@ -160,10 +160,10 @@ void Decls(void)
             Scan();
             if( CurrToken == T_OUTPUT ) {
                 Scan();
-                if( next_out > next_inp )
+                if( next_inp < next_out )
                     next_inp = next_out;
                 ProcTokens( CLASS_INOUT, &next_inp );
-                if( next_inp > next_out ) {
+                if( next_out < next_inp ) {
                     next_out = next_inp;
                 }
             } else {

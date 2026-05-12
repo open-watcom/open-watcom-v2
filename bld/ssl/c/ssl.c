@@ -232,11 +232,11 @@ static void CloseFiles( void )
 }
 
 
-unsigned GetNum( void )
-/*********************/
+int GetNum( void )
+/****************/
 {
     char        *end;
-    unsigned    value;
+    int         value;
 
     if( CurrToken != T_NAME )
         Error( "expecting number" );
@@ -318,7 +318,7 @@ void Scan( void )
             if( ch == '\n' || ch == EOF ) {
                 Error( "missing closing quote" );
             }
-            TokenBuff[TokenLen++] = ch;
+            TokenBuff[TokenLen++] = (char)ch;
         }
         TokenBuff[TokenLen] = '\0';
         return;
@@ -326,7 +326,7 @@ void Scan( void )
     /* normal name, maybe keyword */
     CurrToken = T_NAME;
     do {
-        TokenBuff[TokenLen++] = ch;
+        TokenBuff[TokenLen++] = (char)ch;
         ch = NextChar();
     } while( ch == '_' || isalnum( ch ) );
     UngetChar( ch );
@@ -349,7 +349,7 @@ void Scan( void )
             ch = NextChar();
             if( ch == '\n' || ch == EOF )
                 break;
-            TokenBuff[TokenLen++] = ch;
+            TokenBuff[TokenLen++] = (char)ch;
         }
         TokenBuff[TokenLen] = '\0';
         Error( TokenBuff );

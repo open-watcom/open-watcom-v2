@@ -140,7 +140,7 @@ void GenExportLabel( instruction *lbl )
     lbl->operand++;     /* so it never gets deleted */
 }
 
-void GenInput( unsigned value )
+void GenInput( int value )
 {
     instruction *ins;
 
@@ -155,7 +155,7 @@ void GenInputAny( void )
     AddStream( LastIns, NewIns( INS_IN_ANY ) );
 }
 
-void GenOutput( unsigned value )
+void GenOutput( int value )
 {
     instruction *ins;
 
@@ -165,7 +165,7 @@ void GenOutput( unsigned value )
     AddStream( LastIns, ins );
 }
 
-void GenError( unsigned value )
+void GenError( int value )
 {
     instruction *ins;
 
@@ -185,12 +185,12 @@ void GenJump( instruction *lbl )
     AddStream( LastIns, ins );
 }
 
-void GenReturn(void)
+void GenReturn( void )
 {
     AddStream( LastIns, NewIns( INS_RETURN ) );
 }
 
-void GenSetParm( unsigned value )
+void GenSetParm( int value )
 {
     instruction *ins;
 
@@ -200,7 +200,7 @@ void GenSetParm( unsigned value )
     AddStream( LastIns, ins );
 }
 
-void GenSetResult( unsigned value )
+void GenSetResult( int value )
 {
     instruction *ins;
 
@@ -220,7 +220,7 @@ void GenLblCall( instruction *lbl )
     AddStream( LastIns, ins );
 }
 
-void GenSemCall( unsigned num )
+void GenSemCall( int num )
 {
     instruction *ins;
 
@@ -248,7 +248,7 @@ instruction *GenChoice( void )
     return( ins );
 }
 
-void GenTblLabel( instruction *choice, instruction *lbl, unsigned value )
+void GenTblLabel( instruction *choice, instruction *lbl, int value )
 {
     choice_entry *new;
     choice_entry **owner;
@@ -510,7 +510,7 @@ static void OutOper( instruction *ins )
     if( ins->opcode & INS_LONG ) {
         OutWord( ins->operand );
     } else {
-        OutByte( ins->operand );
+        OutByte( (unsigned char)ins->operand );
     }
 }
 
@@ -522,7 +522,7 @@ static void OutDisp( instruction *ins )
     if( ins->opcode & INS_LONG ) {
         OutWord( disp );
     } else {
-        OutByte( disp );
+        OutByte( (unsigned char)disp );
     }
 }
 
@@ -572,13 +572,13 @@ void DumpGenCode( void )
         case INS_IN_CHOICE:
         case INS_CHOICE:
             Dump( "%sCHOICE: %d\n", ((ins->opcode & INS_MASK) == INS_IN_CHOICE) ? "IN_" : "", ins->operand );
-            OutByte( ins->operand );
+            OutByte( (unsigned char)ins->operand );
             for( choice = ins->u.choice; choice != NULL; choice = choice->link ) {
                 Dump( "        %4d L%.4x\n", choice->value, choice->lbl->location );
                 if( ins->opcode & INS_LONG ) {
                     OutWord( choice->value );
                 } else {
-                    OutByte( choice->value );
+                    OutByte( (unsigned char)choice->value );
                 }
                 OutWord( choice->lbl->location );
             }

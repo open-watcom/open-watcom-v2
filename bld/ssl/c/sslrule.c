@@ -84,7 +84,7 @@ static void Choice( symbol *rule, instruction *exit )
     instruction *def_lbl;
     bool        def;
     ssl_class   typ = CLASS_INPUT;
-    unsigned    first_value = 0;
+    int         first_value = 0;
     instruction *first_lbl;
     instruction *bot;
     instruction *lbl;

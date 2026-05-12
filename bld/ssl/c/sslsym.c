@@ -135,7 +135,7 @@ static void AddToList( token_list *list, const char *name, unsigned value )
     token_entry *curr;
     token_entry *new;
 
-    len = strlen( name ) + sizeof( char ) + sizeof( short );
+    len = (unsigned)( strlen( name ) + sizeof( char ) + sizeof( short ) );
     list->len += len;
     for( owner = &list->head; (curr = *owner) != NULL; owner = &curr->link ) {
         if( len > curr->len ) {
