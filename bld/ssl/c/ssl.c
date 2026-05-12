@@ -411,6 +411,8 @@ int main( int argc, char *argv[] )
     DumpGenCode();
     Dump( "\n\n #### DECLS ####\n\n" );
     DumpSymTbl();
+    FreeGenCode();
+    FreeSymTbl();
     CloseFiles();
     PP_Fini();
     PP_MemFini();

@@ -37,6 +37,22 @@
 #include "sslint.h"
 
 
+typedef struct token_entry {
+    struct token_entry  *link;
+    char                *name;
+    unsigned            value;
+    unsigned            len;
+} token_entry;
+
+typedef struct {
+    token_entry *head;
+    unsigned    len;
+} token_list;
+
+token_list      Keywords;
+token_list      Delimiters;
+token_list      Exports;
+
 symbol          *SymLst;
 
 
@@ -111,22 +127,6 @@ symbol *Lookup( class typ )
     }
     return( curr );
 }
-
-typedef struct token_entry {
-    struct token_entry  *link;
-    char                *name;
-    unsigned            value;
-    unsigned            len;
-} token_entry;
-
-typedef struct {
-    token_entry *head;
-    unsigned    len;
-} token_list;
-
-token_list      Keywords;
-token_list      Delimiters;
-token_list      Exports;
 
 static void AddToList( token_list *list, char *name, unsigned value )
 {
@@ -257,6 +257,12 @@ void DumpSymTbl(void)
     OutList( "Keywords", &Keywords );
     OutList( "Delims", &Delimiters );
     OutList( "Exports", &Exports );
+}
+
+void FreeSymTbl( void )
+{
+    symbol      *curr;
+
     /*
      * free all lists
      */

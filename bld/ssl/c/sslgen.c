@@ -604,3 +604,14 @@ void DumpGenCode( void )
     }
     OutEndSect();
 }
+
+void FreeGenCode( void )
+{
+    instruction *next;
+
+    while( FirstIns != NULL ) {
+        next = FirstIns->flink;
+        MemFree( FirstIns );
+        FirstIns = next;
+    }
+}
