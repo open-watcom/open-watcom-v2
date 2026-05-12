@@ -442,8 +442,8 @@ static unsigned Locate( void )
             break;
         case INS_IN_CHOICE:
         case INS_CHOICE:
-            loc += sizeof( char ) + sizeof( char ) + ins->operand *
-                       ( sizeof( char ) + sizeof( unsigned short ) );
+            loc += sizeof( char ) + sizeof( char )
+                + ins->operand * ( sizeof( char ) + sizeof( short ) );
             if( ins->opcode & INS_LONG )
                 loc += ins->operand * sizeof( char );
             break;

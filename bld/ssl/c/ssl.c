@@ -48,7 +48,7 @@
 #include "clibext.h"
 
 
-token           CurrToken;
+ssl_token       CurrToken;
 char            TokenBuff[MAX_TOKEN_LEN];
 unsigned        TokenLen;
 FILE            *TblFile;
@@ -80,16 +80,16 @@ void OutByte( unsigned char byte )
     }
 }
 
-void OutWord( unsigned short word )
-/*********************************/
+void OutWord( unsigned word )
+/***************************/
 {
 
     OutByte( word & 0xff );
-    OutByte( word >> 8 );
+    OutByte( ( word >> 8 ) & 0xff );
 }
 
-void OutStartSect( const char *name, unsigned short len )
-/*******************************************************/
+void OutStartSect( const char *name, unsigned len )
+/*************************************************/
 {
     if( Language ) {
         fputs( "char ", PrsFile );
@@ -139,10 +139,11 @@ void Error( const char *fmt, ... )
 }
 
 
-static void Usage( void )
-/***********************/
+static int Usage( void )
+/**********************/
 {
-    Error( "Usage: ssl {-(v|c)} filename[.ssl] [out_file]" );
+    fprintf( stderr, "Usage: ssl {-(v|c)} filename[.ssl] [out_file]\n" );
+    return( 1 );
 }
 
 static void UngetChar( int c )
@@ -165,8 +166,8 @@ static int NextChar( void )
     return( next );
 }
 
-unsigned short SrcLine( void )
-/****************************/
+unsigned SrcLine( void )
+/**********************/
 {
     return( LineNum );
 }
@@ -231,8 +232,8 @@ static void CloseFiles( void )
 }
 
 
-unsigned short GetNum( void )
-/***************************/
+unsigned GetNum( void )
+/*********************/
 {
     char        *end;
     unsigned    value;
@@ -249,10 +250,17 @@ unsigned short GetNum( void )
 void Scan( void )
 /***************/
 {
-    static const char Delims[] =
-    {';',':','?','.','#','{','}','[',']','(',')','>','|','*','@',',','=','\0'};
-    static const char *Keywords[] =
-    {"input","output","error","type","mechanism","rules",NULL};
+    static const char Delims[] = {
+        #define DELIMS_DEF(a,b) a,
+            DELIMS_DEFS
+        #undef DELIMS_DEF
+    };
+    static const char *Keywords[] = {
+        #define KEYWORDS_DEF(a,b,c) a,
+            KEYWORDS_DEFS
+        #undef KEYWORDS_DEF
+        NULL
+    };
     int         ch;
     int         term;
     const char  *delim;
@@ -376,17 +384,17 @@ int main( int argc, char *argv[] )
     bool        verbose;
 
     if( argc < 2 )
-        Usage();
+        return( Usage() );
     file = argv[1];
     if( strcmp( file, "?" ) == 0 )
-        Usage();
+        return( Usage() );
     verbose = false;
     Language = false;
     PP_MemInit();
     for( ;; ) {
         file = *++argv;
         if( file == NULL )
-            Usage();
+            return( Usage() );
         if( file[0] != '-' )
             break;
         switch( file[1] ) {
@@ -397,8 +405,7 @@ int main( int argc, char *argv[] )
             Language = true;
             break;
         default:
-            Usage();
-            break;
+            return( Usage() );
         }
     }
     PP_Init( '!', PPSPEC_SSL );

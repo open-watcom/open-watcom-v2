@@ -32,11 +32,11 @@
 
 extern void             Error( const char *, ... );
 extern void             Dump( const char *, ... );
-extern void             OutStartSect( const char *, unsigned short );
+extern void             OutStartSect( const char *, unsigned );
 extern void             OutByte( unsigned char );
-extern void             OutWord( unsigned short );
+extern void             OutWord( unsigned );
 extern void             OutEndSect( void );
-extern unsigned short   SrcLine( void );
+extern unsigned         SrcLine( void );
 extern void             Decls( void );
 extern void             Rules( void );
 extern void             DumpSymTbl( void );
@@ -46,10 +46,10 @@ extern void             DumpGenCode( void );
 extern void             FreeGenCode( void );
 extern void             WantColon( void );
 extern void             Scan( void );
-extern symbol           *NewSym( class );
-extern symbol           *Lookup( class );
+extern symbol           *NewSym( ssl_class );
+extern symbol           *Lookup( ssl_class );
 extern void             NewAlias( symbol * );
-extern unsigned short   GetNum( void );
+extern unsigned         GetNum( void );
 extern void             WantColon( void );
 extern void             Scan( void );
 extern void             GenCode( void );

@@ -56,7 +56,7 @@ token_list      Exports;
 symbol          *SymLst;
 
 
-static bool LookupAndAdd( class typ, symbol **ptr )
+static bool LookupAndAdd( ssl_class typ, symbol **ptr )
 {
     symbol      **owner;
     symbol      *curr;
@@ -87,7 +87,7 @@ static bool LookupAndAdd( class typ, symbol **ptr )
 }
 
 
-symbol  *NewSym( class typ )
+symbol  *NewSym( ssl_class typ )
 {
     symbol      *curr;
     if( !LookupAndAdd( typ, &curr ) ) {
@@ -103,7 +103,7 @@ void NewAlias( symbol *sym )
 }
 
 
-symbol *Lookup( class typ )
+symbol *Lookup( ssl_class typ )
 {
     symbol      *curr;
 
@@ -135,7 +135,7 @@ static void AddToList( token_list *list, const char *name, unsigned value )
     token_entry *curr;
     token_entry *new;
 
-    len = strlen( name ) + ( sizeof( char ) + sizeof( unsigned short ) );
+    len = strlen( name ) + sizeof( char ) + sizeof( short );
     list->len += len;
     for( owner = &list->head; (curr = *owner) != NULL; owner = &curr->link ) {
         if( len > curr->len ) {
