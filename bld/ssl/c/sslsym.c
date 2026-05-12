@@ -39,7 +39,7 @@
 
 typedef struct token_entry {
     struct token_entry  *link;
-    char                *name;
+    const char          *name;
     unsigned            value;
     unsigned            len;
 } token_entry;
@@ -128,7 +128,7 @@ symbol *Lookup( class typ )
     return( curr );
 }
 
-static void AddToList( token_list *list, char *name, unsigned value )
+static void AddToList( token_list *list, const char *name, unsigned value )
 {
     unsigned    len;
     token_entry **owner;
@@ -151,7 +151,7 @@ static void AddToList( token_list *list, char *name, unsigned value )
 }
 
 
-static void AddToken( char *name, unsigned value )
+static void AddToken( const char *name, unsigned value )
 {
     if( name == NULL )
         return;
@@ -163,10 +163,10 @@ static void AddToken( char *name, unsigned value )
 }
 
 
-static void OutList( char *name, token_list *list )
+static void OutList( const char *name, token_list *list )
 {
-    token_entry *curr;
-    char        *ptr;
+    token_entry     *curr;
+    const char      *ptr;
 
     OutStartSect( name, list->len + 1 );
     for( curr = list->head; curr != NULL; curr = curr->link ) {

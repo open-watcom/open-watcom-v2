@@ -88,8 +88,8 @@ void OutWord( unsigned short word )
     OutByte( word >> 8 );
 }
 
-void OutStartSect( char *name, unsigned short len )
-/*************************************************/
+void OutStartSect( const char *name, unsigned short len )
+/*******************************************************/
 {
     if( Language ) {
         fputs( "char ", PrsFile );
@@ -110,8 +110,8 @@ void OutEndSect( void )
 }
 
 
-void Dump( char *fmt, ... )
-/*************************/
+void Dump( const char *fmt, ... )
+/*******************************/
 {
     va_list     args;
 
@@ -123,8 +123,8 @@ void Dump( char *fmt, ... )
 }
 
 
-void Error( char *fmt, ... )
-/**************************/
+void Error( const char *fmt, ... )
+/********************************/
 {
     va_list     args;
 
@@ -179,8 +179,8 @@ int PP_MBCharLen( const char *p )
     return( 1 );
 }
 
-static void OpenFiles( bool verbose, char *path, char *out_file )
-/***************************************************************/
+static void OpenFiles( bool verbose, const char *path, const char *out_file )
+/***************************************************************************/
 {
     pgroup2     pg;
     char        file_name[_MAX_PATH];
@@ -249,14 +249,14 @@ unsigned short GetNum( void )
 void Scan( void )
 /***************/
 {
-    static char Delims[] =
+    static const char Delims[] =
     {';',':','?','.','#','{','}','[',']','(',')','>','|','*','@',',','=','\0'};
-    static char *Keywords[] =
+    static const char *Keywords[] =
     {"input","output","error","type","mechanism","rules",NULL};
     int         ch;
     int         term;
-    char        *delim;
-    char        **key;
+    const char  *delim;
+    const char  **key;
 
 
     CurrToken = T_BAD_CHAR;

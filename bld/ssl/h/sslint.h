@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-extern void             Error( char *, ... );
-extern void             Dump( char *, ... );
-extern void             OutStartSect( char *, unsigned short );
+extern void             Error( const char *, ... );
+extern void             Dump( const char *, ... );
+extern void             OutStartSect( const char *, unsigned short );
 extern void             OutByte( unsigned char );
 extern void             OutWord( unsigned short );
 extern void             OutEndSect( void );
@@ -50,7 +50,6 @@ extern symbol           *NewSym( class );
 extern symbol           *Lookup( class );
 extern void             NewAlias( symbol * );
 extern unsigned short   GetNum( void );
-extern void             Error( char *, ... );
 extern void             WantColon( void );
 extern void             Scan( void );
 extern void             GenCode( void );
