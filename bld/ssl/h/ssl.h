@@ -35,7 +35,6 @@
 #include "sslops.h"
 #include "ppmem.h"
 
-#include "pushpck1.h"
 
 #define MAX_TOKEN_LEN   256
 
@@ -139,8 +138,6 @@ typedef struct symbol {
     values          v;
     ssl_class       typ;
 } symbol;
-
-#include "poppck.h"
 
 extern ssl_token       CurrToken;
 extern char            TokenBuff[MAX_TOKEN_LEN];
