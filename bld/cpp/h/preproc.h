@@ -77,11 +77,11 @@ typedef struct macro_entry {
 #define PPTYPE_MACRO        1
 
 typedef struct preproc_value {
-    int                 type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
     union {
         long            ivalue;
         unsigned long   uvalue;
     } val;
+    int                 type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
 } PREPROC_VALUE;
 
 typedef void        (* pp_walk_func)( const MACRO_ENTRY *me, const PREPROC_VALUE *val, void *cookie );
