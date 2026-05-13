@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,13 +40,13 @@
 
 static const char   *TblPtr;
 
-static ssl_value GetParm( op_code operation )
+static ssl_value GetParmUInt( bool parm_long )
 {
     ssl_value   parm;
 
     parm = MGET_U8( TblPtr );
     TblPtr++;
-    if( operation & INS_LONG ) {
+    if( parm_long ) {
         parm |= MGET_U8( TblPtr ) << 8;
         TblPtr++;
     }
@@ -54,13 +54,13 @@ static ssl_value GetParm( op_code operation )
 }
 
 
-static int GetParmInt( op_code operation )
+static int GetParmInt( bool parm_long )
 {
     int     parm;
 
     parm = MGET_S8( TblPtr );
     TblPtr++;
-    if( operation & INS_LONG ) {
+    if( parm_long ) {
         parm &= 0xff;
         parm |= MGET_S8( TblPtr ) << 8;
         TblPtr++;
@@ -78,6 +78,7 @@ static const char *GetTablePos( const char *table )
 int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned stk_size )
 {
     op_code         operation;
+    bool            parm_long;
     unsigned        num_items;
     signed int      disp;
     const char      *addr;
@@ -96,10 +97,11 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     token = SSLCurrToken();
     for( ;; ) {
         operation = (op_code)MGET_U8( TblPtr );
+        parm_long = ( (operation & INS_LONG) != 0 );
         TblPtr++;
         switch( operation & INS_MASK ) {
         case INS_INPUT:
-            wanted = GetParm( operation );
+            wanted = GetParmUInt( parm_long );
             if( token != (tokens)wanted ) {
                 if( SSLError( TERM_SYNTAX, wanted ) ) {
                     return( TERM_SYNTAX );
@@ -111,16 +113,16 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             token = SSLNextToken();
             break;
         case INS_OUTPUT:
-            SSLOutToken( (tokens)GetParm( operation ) );
+            SSLOutToken( (tokens)GetParmUInt( parm_long ) );
             break;
         case INS_ERROR:
-            if( SSLError( TERM_ERROR, GetParm( operation ) ) ) {
+            if( SSLError( TERM_ERROR, GetParmUInt( parm_long ) ) ) {
                 return( TERM_ERROR );
             }
             break;
         case INS_JUMP:
             addr = TblPtr - 1;
-            TblPtr = addr + GetParmInt( operation );
+            TblPtr = addr + GetParmInt( parm_long );
             break;
         case INS_CALL:
             if( stk_ptr >= stk_end ) {
@@ -129,22 +131,22 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
                 return( TERM_STK_OVERFLOW );
             }
             addr = TblPtr - 1;
-            disp = GetParmInt( operation );
+            disp = GetParmInt( parm_long );
             *stk_ptr++ = TblPtr;
             TblPtr = addr + disp;
             break;
         case INS_SET_RESULT:
-            result = GetParm( operation );
+            result = GetParmUInt( parm_long );
             break;
         case INS_SET_PARM:
-            parm = GetParm( operation );
+            parm = GetParmUInt( parm_long );
             break;
         case INS_SEMANTIC:
-            result = SSLSemantic( GetParm( operation ), parm );
+            result = SSLSemantic( GetParmUInt( parm_long ), parm );
             token = SSLCurrToken();
             break;
         case INS_KILL:
-            SSLError( TERM_KILL, GetParm( operation ) );
+            SSLError( TERM_KILL, GetParmUInt( parm_long ) );
             return( TERM_KILL );
         case INS_RETURN:
             if( stk_ptr <= stk_bot )
@@ -153,7 +155,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_IN_CHOICE:
             for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
-                if( token == (tokens)GetParm( operation ) ) {
+                if( token == (tokens)GetParmUInt( parm_long ) ) {
                     token = SSLNextToken();
                     TblPtr = GetTablePos( table );
                     break;
@@ -163,7 +165,7 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             break;
         case INS_CHOICE:
             for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
-                if( result == GetParm( operation ) ) {
+                if( result == GetParmUInt( parm_long ) ) {
                     TblPtr = GetTablePos( table );
                     break;
                 }
