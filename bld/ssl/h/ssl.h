@@ -125,8 +125,8 @@ typedef union {
     struct {                        /* for rules */
         instruction     *lbl;
         struct symbol   *ret;
-        unsigned        exported        : 1;
-        unsigned        defined         : 1;
+        unsigned        exported    : 1;
+        unsigned        defined     : 1;
     }               rule;
     struct {                        /* for type values */
         struct symbol   *type;

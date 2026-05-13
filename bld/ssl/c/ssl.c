@@ -139,13 +139,6 @@ void Error( const char *fmt, ... )
 }
 
 
-static int Usage( void )
-/**********************/
-{
-    fprintf( stderr, "Usage: ssl {-(v|c)} filename[.ssl] [out_file]\n" );
-    return( 1 );
-}
-
 static void UngetChar( int c )
 /****************************/
 {
@@ -384,46 +377,60 @@ int main( int argc, char *argv[] )
 {
     char        *file;
     bool        verbose;
+    int         rc;
 
-    if( argc < 2 )
-        return( Usage() );
-    file = argv[1];
-    if( strcmp( file, "?" ) == 0 )
-        return( Usage() );
     verbose = false;
     Language = false;
+    file = NULL;
     PP_MemInit();
-    for( ;; ) {
-        file = *++argv;
-        if( file == NULL )
-            return( Usage() );
-        if( file[0] != '-' )
-            break;
-        switch( file[1] ) {
-        case 'v':
-            verbose = true;
-            break;
-        case 'c':
-            Language = true;
-            break;
-        default:
-            return( Usage() );
+    if( argc < 2 ) {
+        rc = 1;
+    } else {
+        file = argv[1];
+        if( strcmp( file, "?" ) == 0 ) {
+            rc = 1;
+        } else {
+            rc = 0;
+            for( ; rc == 0; ) {
+                file = *++argv;
+                if( file == NULL ) {
+                    rc = 1;
+                    break;
+                }
+                if( file[0] != '-' )
+                    break;
+                switch( file[1] ) {
+                case 'v':
+                    verbose = true;
+                    break;
+                case 'c':
+                    Language = true;
+                    break;
+                default:
+                    rc = 1;
+                    break;
+                }
+            }
         }
     }
-    PP_Init( '!', PPSPEC_SSL );
-    PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
-    OpenFiles( verbose, file, argv[1] );
-    Scan();
-    Parse();
-    GenCode();
-    Dump( " #### CODE ####\n\n" );
-    DumpGenCode();
-    Dump( "\n\n #### DECLS ####\n\n" );
-    DumpSymTbl();
-    FreeGenCode();
-    FreeSymTbl();
-    CloseFiles();
-    PP_Fini();
+    if( rc == 0 ) {
+        PP_Init( '!', PPSPEC_SSL );
+        PP_IncludePathAdd( PPINCLUDE_SYS, PP_GetEnv( "INCLUDE" ) );
+        OpenFiles( verbose, file, argv[1] );
+        Scan();
+        Parse();
+        GenCode();
+        Dump( " #### CODE ####\n\n" );
+        DumpGenCode();
+        Dump( "\n\n #### DECLS ####\n\n" );
+        DumpSymTbl();
+        FreeGenCode();
+        FreeSymTbl();
+        CloseFiles();
+        PP_Fini();
+    } else {
+        fprintf( stderr, "Usage: ssl {-(v|c)} filename[.ssl] [out_file]\n" );
+    }
     PP_MemFini();
-    return( 0 );
+    return( rc );
 }

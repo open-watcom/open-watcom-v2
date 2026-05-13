@@ -249,7 +249,7 @@ void DumpSymTbl(void)
             }
             break;
         case CLASS_ENUMS:
-           Dump( "ENUM:   [%4d] %s >> %s\n", curr->v.enums.value,
+            Dump( "ENUM:   [%4d] %s >> %s\n", curr->v.enums.value,
                 curr->name, curr->v.enums.type->name );
             break;
         }

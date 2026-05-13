@@ -70,4 +70,3 @@ extern instruction      *GenNewLbl( void );
 extern void             GenSemCall( int );
 extern void             GenTblLabel( instruction *, instruction *, int );
 extern void             GenKill( void );
-
