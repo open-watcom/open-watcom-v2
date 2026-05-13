@@ -270,6 +270,7 @@ void Scan( void )
 
     CurrToken = T_BAD_CHAR;
     TokenLen = 0;
+    TokenBuff[0] = '\0';
     for( ;; ) {
         /* eat white space */
         for( ;; ) {
