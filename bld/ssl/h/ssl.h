@@ -102,7 +102,10 @@ typedef struct instruction {
         struct choice_entry *choice;
     } u;
     unsigned                location;
-    unsigned                operand;
+    union {
+        int                 operand;
+        int                 reference;
+    } u1;
     op_code                 opcode;
 } instruction;
 
