@@ -476,8 +476,10 @@ static bool Expand( void )
 {
     instruction *ins;
     instruction *dest;
-    signed int  diff;
+    int         diff;
     bool        change;
+    op_code     is_long;
+    op_code     old_is_long;
 
     change = false;
     for( ins = FirstIns; ins != NULL; ins = ins->flink ) {
@@ -486,8 +488,10 @@ static bool Expand( void )
         case INS_CALL: /* short form */
             dest = ins->u.lbl;
             diff = dest->location - ins->location;
-            if( diff != (signed char)diff ) {
-                ins->opcode |= INS_LONG; /* change to long form */
+            is_long = ( diff != (signed char)diff ) ? INS_LONG : 0;
+            old_is_long = ins->opcode & INS_LONG;
+            if( old_is_long != is_long ) {
+                ins->opcode = (ins->opcode & ~INS_LONG) | is_long;
                 change = true;
             }
             break;
