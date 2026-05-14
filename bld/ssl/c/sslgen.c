@@ -38,7 +38,7 @@
 #include "sslint.h"
 
 
-#define SKIP_LABELS(x)  while((x)->opcode == INS_LABEL; (x) = (x)->flink
+#define SKIP_LABELS(x)  while((x)->opcode == INS_LABEL) (x) = (x)->flink
 
 instruction     *FirstIns;
 instruction     *LastIns;
