@@ -118,12 +118,18 @@ static void DelStream( instruction *ins )
     case INS_CHOICE:
         for( choice = ins->u.choice; choice != NULL; choice = next ) {
             next = choice->link;
-            choice->lbl->u1.reference--; /* decrement label reference count */
+            /*
+             * remove reference to label
+             */
+            choice->lbl->u1.reference--;
             MemFree( choice );
         }
         break;
     case INS_JUMP:
     case INS_CALL:
+        /*
+         * remove reference to label
+         */
         ins->u.lbl->u1.reference--;
         break;
     }
@@ -138,7 +144,10 @@ void GenLabel( instruction *lbl )
 void GenExportLabel( instruction *lbl )
 {
     lbl->location = 0;
-    lbl->u1.reference = 1;      /* so it never gets deleted */
+    /*
+     * set reference to never gets deleted
+     */
+    lbl->u1.reference = 1;
     AddStream( LastIns, lbl );
 }
 
@@ -369,7 +378,9 @@ static bool Optimize( void )
             SKIP_LABELS( dest );
             switch( dest->opcode ) {
             case INS_KILL:
-                /* jump to kill */
+                /*
+                 * jump to kill
+                 */
                 next = NewIns( INS_KILL );
                 next->u1.operand = dest->u1.operand;
                 next->is_long = dest->is_long;
@@ -380,7 +391,9 @@ static bool Optimize( void )
                 change = true;
                 break;
             case INS_RETURN:
-                /* jump to return */
+                /*
+                 * jump to return
+                 */
                 next = NewIns( INS_RETURN );
                 AddStream( ins, next );
                 DelStream( ins );
@@ -389,7 +402,9 @@ static bool Optimize( void )
                 change = true;
                 break;
             case INS_JUMP:
-                /* jump to jump */
+                /*
+                 * jump to jump
+                 */
                 if( ins == dest ) {
                     next = NewIns( INS_KILL );
                     AddStream( ins, next );
@@ -413,7 +428,9 @@ static bool Optimize( void )
             SKIP_LABELS( dest );
             switch( dest->opcode ) {
             case INS_KILL:
-                /* call to kill */
+                /*
+                 * call to kill
+                 */
                 dead_code = true;
                 next = NewIns( INS_KILL );
                 next->u1.operand = dest->u1.operand;
@@ -424,13 +441,17 @@ static bool Optimize( void )
                 change = true;
                 break;
             case INS_RETURN:
-                /* call to return */
+                /*
+                 * call to return
+                 */
                 DelStream( ins );
                 MemFree( ins );
                 change = true;
                 break;
             case INS_JUMP:
-                /* call to jump */
+                /*
+                 * call to jump
+                 */
                 ins->u.lbl->u1.reference--;
                 ins->u.lbl = dest->u.lbl;
                 ins->u.lbl->u1.reference++;
@@ -440,7 +461,9 @@ static bool Optimize( void )
                 dest = ins->flink;
                 SKIP_LABELS( dest );
                 if( dest->opcode == INS_RETURN ) {
-                    /* call followed by a return */
+                    /*
+                     * call followed by a return
+                     */
                     ins->opcode = INS_JUMP;
                     change = true;
                     dead_code = true;
@@ -539,13 +562,13 @@ static bool Expand( void )
     change = false;
     for( ins = FirstIns; ins != NULL; ins = ins->flink ) {
         switch( ins->opcode ) {
-        case INS_JUMP: /* short form */
-        case INS_CALL: /* short form */
+        case INS_JUMP:
+        case INS_CALL:
             dest = ins->u.lbl;
             diff = dest->location - ins->location;
             is_long = ( diff != (signed char)diff );
             if( ins->is_long != is_long ) {
-                ins->is_long = is_long;     /* change to long form */
+                ins->is_long = is_long;
                 change = true;
             }
             break;
@@ -595,7 +618,7 @@ void DumpGenCode( void )
         next = ins->flink;
         if( ins->opcode == INS_LABEL ) {
             /*
-             * don't generate any code for label
+             * don't generate any code for labels
              */
             Dump( "[%.4x] - ", ins->location );
         } else if( ins->is_long ) {

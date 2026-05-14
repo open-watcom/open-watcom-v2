@@ -65,6 +65,8 @@
     DELIMS_DEF( ',', T_COMMA ) \
     DELIMS_DEF( '=', T_EQUALS )
 
+#define NO_LOCATION ((unsigned)-1)
+
 typedef enum {
     /* single character delimiters */
     #define DELIMS_DEF(a,b) b,
@@ -91,8 +93,6 @@ typedef enum {
     CLASS_ENUMS,
     CLASS_ANY,
 } ssl_class;
-
-#define NO_LOCATION ((unsigned)-1)
 
 typedef struct instruction {
     struct instruction      *flink;
