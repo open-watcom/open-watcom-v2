@@ -107,6 +107,7 @@ typedef struct instruction {
         int                 reference;
     } u1;
     op_code                 opcode;
+    bool                    is_long;
 } instruction;
 
 typedef struct choice_entry {
