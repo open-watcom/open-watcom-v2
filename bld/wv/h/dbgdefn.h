@@ -40,8 +40,6 @@
 #define NULLCHAR        '\0'
 #define ARG_TERMINATE   '\xff'
 
-#define GETWORD(x)      (MGET_U8((x)) + ( MGET_U8((x + 1)) << 8 ))
-
 #define FH2SYSH(sh,fh)  (sh).u._32[0]=fh;(sh).u._32[1]=0
 
 /* Handles */
