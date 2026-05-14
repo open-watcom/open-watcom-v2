@@ -254,6 +254,10 @@ static unsigned ReadSection( file_handle fh, unsigned off )
     if( ReadStream( fh, &len, sizeof( len ) ) != sizeof( len ) ) {
         return( 0 );
     }
+    /*
+     * numbers in PRS file (SSL) are in little-endian format
+     * convert it from little-endian format
+     */
     CONV_LE_16( len );
     last = off + len;
     if( last > ParseTableSize ) {
