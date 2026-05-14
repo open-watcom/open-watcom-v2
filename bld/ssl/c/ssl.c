@@ -81,6 +81,7 @@ void OutByte( unsigned char byte )
 }
 
 void OutWord( unsigned word )
+/***************************/
 {
     /*
      * numbers are output in little-endian format
@@ -294,9 +295,9 @@ void Scan( void )
                 ch = NextChar();
                 if( *delim == ch ) {
                     CurrToken = T_GT_GT;
-                    return;
+                } else {
+                    UngetChar( ch );
                 }
-                UngetChar( ch );
             }
             return;
         }
