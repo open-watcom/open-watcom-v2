@@ -38,6 +38,8 @@
 #include "sslint.h"
 
 
+#define SKIP_LABELS(x)  while((x)->opcode == INS_LABEL; (x) = (x)->flink
+
 instruction     *FirstIns;
 instruction     *LastIns;
 
@@ -296,9 +298,8 @@ static bool Optimize( void )
         next = ins->flink;
         for( ; ins != NULL; ins = next ) {
             next = ins->flink;
-            if( !dead_code )
-                break;
-            if( ins->opcode == INS_LABEL )
+            if( !dead_code
+              || ins->opcode == INS_LABEL )
                 break;
             DelStream( ins );
             MemFree( ins );
@@ -309,8 +310,8 @@ static bool Optimize( void )
         dead_code = false;
         switch( ins->opcode & INS_MASK ) {
         case INS_JUMP:
-            for( dest = ins->u.lbl; dest->opcode == INS_LABEL; dest = dest->flink )
-                ;
+            dest = ins->u.lbl;
+            SKIP_LABELS( dest );
             switch( dest->opcode & INS_MASK ) {
             case INS_KILL:
                 /* jump to kill */
@@ -354,8 +355,7 @@ static bool Optimize( void )
             dest = ins->u.lbl;
             if( dest->location == NO_LOCATION )
                 break;
-            for( ; dest->opcode == INS_LABEL; dest = dest->flink )
-                ;
+            SKIP_LABELS( dest );
             switch( dest->opcode & INS_MASK ) {
             case INS_KILL:
                 /* call to kill */
@@ -381,10 +381,8 @@ static bool Optimize( void )
                 change = true;
                 break;
             default:
-                for( dest = ins->flink;
-                     dest->opcode == INS_LABEL;
-                     dest = dest->flink )
-                    ;
+                dest = ins->flink;
+                SKIP_LABELS( dest );
                 if( dest->opcode == INS_RETURN ) {
                     /* call followed by a return */
                     ins->opcode = INS_JUMP;
@@ -539,9 +537,18 @@ void DumpGenCode( void )
     OutStartSect( "Code", Locate() );
     for( ins = FirstIns; ins != NULL; ins = next ) {
         next = ins->flink;
-        if( ins->opcode != INS_LABEL )
+        if( ins->opcode == INS_LABEL ) {
+            /*
+             * don't generate any code for labels
+             */
+            Dump( "[%.4x] - ", ins->location );
+        } else if( ins->opcode & INS_LONG ) {
             OutByte( ins->opcode );
-        Dump( "[%.4x] %c ", ins->location, (ins->opcode & INS_LONG) ? 'L' : 'S' );
+            Dump( "[%.4x] L ", ins->location );
+        } else {
+            OutByte( ins->opcode );
+            Dump( "[%.4x] S ", ins->location );
+        }
         switch( ins->opcode & INS_MASK ) {
         case INS_INPUT:
             Dump( "INPUT: %d\n", ins->u1.operand );
@@ -600,6 +607,9 @@ void DumpGenCode( void )
             OutOper( ins );
             break;
         case INS_LABEL:
+            /*
+             * don't generate any code for labels
+             */
             Dump( "LABEL: %d\n", ins->u1.operand );
             break;
         }
