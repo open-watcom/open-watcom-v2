@@ -535,7 +535,7 @@ void DumpGenCode( void )
              */
             Dump( "[%.4x] - ", ins->location );
         } else if( ins->is_long ) {
-            OutByte( ins->opcode | INS_LONG );
+            OutByte( (unsigned char)( ins->opcode | INS_LONG ) );
             Dump( "[%.4x] L ", ins->location );
         } else {
             OutByte( ins->opcode );

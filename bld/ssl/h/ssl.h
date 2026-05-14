@@ -101,11 +101,11 @@ typedef struct instruction {
         struct instruction  *lbl;
         struct choice_entry *choice;
     } u;
-    unsigned                location;
     union {
         int                 operand;
         int                 reference;
     } u1;
+    unsigned                location;
     op_code                 opcode;
     bool                    is_long;
 } instruction;
