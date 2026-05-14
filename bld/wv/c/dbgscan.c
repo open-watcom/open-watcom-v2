@@ -498,7 +498,7 @@ static bool ScanExprDelim( const char *table )
      * numbers in PRS file are in little-endian format
      * read it as little-endian unaligned data
      */
-    ssl_chr_eq = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ? ssl_chreq : ssl_chreqi;
+    ssl_chr_eq = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ) ? ssl_chreq : ssl_chreqi;
     for( ; *table != NULLCHAR; table += 3 ) {
         for( ptr = ScanPtr; ssl_chr_eq( table, ptr ) && *table != NULLCHAR; ptr++, table++ ) {
             /* nothing */;
@@ -723,7 +723,7 @@ static bool ScanKeyword( const char *table )
      * numbers in PRS file are in little-endian format
      * read it as little-endian unaligned data
      */
-    ssl_cmp = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ? strncmp : strnicmp;
+    ssl_cmp = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ) ? strncmp : strnicmp;
     namelen = ScanPtr - TokenStart;
     for( ; *table != NULLCHAR; table += (keylen + 3) ) {
          keylen = strlen( table );
