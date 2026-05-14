@@ -602,7 +602,7 @@ void DumpGenCode( void )
             /*
              * don't generate any code for labels
              */
-            Dump( "LABEL: %d\n", ins->u1.operand );
+            Dump( "LABEL: %d\n", ins->u1.reference );
             break;
         default:
             Dump( "UNKNOWN: %d\n", ins->opcode );
