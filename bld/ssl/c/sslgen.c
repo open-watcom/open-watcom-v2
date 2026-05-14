@@ -54,6 +54,11 @@ static instruction *NewIns( op_code opcode )
     return( ins );
 }
 
+instruction *NewLabel( void )
+{
+    return( NewIns( INS_LABEL ) );
+}
+
 static void SetOperand( instruction *ins, int value )
 {
     ins->u1.operand = value;
@@ -122,11 +127,6 @@ static void DelStream( instruction *ins )
         ins->u.lbl->u1.reference--;
         break;
     }
-}
-
-instruction *GenNewLbl( void )
-{
-    return( NewIns( INS_LABEL ) );
 }
 
 void GenLabel( instruction *lbl )

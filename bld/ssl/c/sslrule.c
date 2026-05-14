@@ -43,9 +43,9 @@ static void Cycle( symbol *rule )
     instruction      *bot;
 
     Scan();
-    top = GenNewLbl();
+    top = NewLabel();
     GenLabel( top );
-    bot = GenNewLbl();
+    bot = NewLabel();
     do {
         Action( rule, bot );
     } while( CurrToken != T_RITE_BRACE );
@@ -121,13 +121,13 @@ static void Choice( symbol *rule, instruction *exit )
         typ = CLASS_ENUMS;
         break;
     }
-    bot = GenNewLbl();
-    def_lbl = GenNewLbl();
+    bot = NewLabel();
+    def_lbl = NewLabel();
     GenJump( def_lbl );
     def = false;
     first_lbl = NULL;
     while( CurrToken == T_OR ) {
-        lbl = GenNewLbl();
+        lbl = NewLabel();
         Scan();
         for( ;; ) {
             if( CurrToken == T_STAR ) {

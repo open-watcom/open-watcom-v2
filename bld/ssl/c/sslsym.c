@@ -109,7 +109,7 @@ symbol *Lookup( ssl_class typ )
 
     if( LookupAndAdd( typ, &curr ) ) {
         if( typ == CLASS_RULE ) {
-            curr->v.rule.lbl = GenNewLbl();
+            curr->v.rule.lbl = NewLabel();
         } else {
             Error( "'%s' not previously defined", TokenBuff );
         }
