@@ -47,12 +47,12 @@
 #include "dbgreg.h"
 
 
+#define PARSE_STACK_SIZE 128
+#define PARSE_TABLE_INIT (1024*4)
+
 static char         *ParseTable;
 static unsigned     ParseTableSize;
 static token_table  ParseTokens;
-
-#define PARSE_STACK_SIZE 128
-
 
 static void start_expr( void )
 {
@@ -64,20 +64,17 @@ static void start_expr( void )
     ScanExpr( NULL );
 }
 
-
 void SetUpExpr( unsigned addr_depth )
 {
     SkipCount = 0;
     ExprAddrDepth = addr_depth;
 }
 
-
 void EvalLValExpr( unsigned addr_depth )
 {
     SetUpExpr( addr_depth );
     start_expr();
 }
-
 
 void EvalExpr( unsigned addr_depth )
 {
@@ -90,22 +87,19 @@ void NormalExpr( void )
     EvalExpr( 1 );
 }
 
-
-
 /*
  * ChkExpr -- check out expression syntax
  */
-
 void ChkExpr( void )
 {
     SkipCount = 1;
     ExprAddrDepth = 1;
     start_expr();
 }
+
 /*
  * ReqExpr -- get a required expression
  */
-
 unsigned_64 ReqU64Expr( void )
 {
     unsigned_64 rtn;
@@ -133,12 +127,10 @@ unsigned ReqExpr( void )
     return( U32FetchTrunc( tmp ) );
 }
 
-
+#ifdef DEADCODE
 /*
  * ReqXRealExpr -- get a required floating point expression
  */
-
-#ifdef DEADCODE
 xreal ReqXRealExpr( void )
 {
     xreal v;
@@ -151,14 +143,14 @@ xreal ReqXRealExpr( void )
 }
 #endif
 
-
 /*
  * OptExpr -- get an optional expression
  */
-
 unsigned OptExpr( unsigned def_val )
 {
-    if( CurrToken == T_COMMA || CurrToken == T_LEFT_BRACE || ScanEOC() )
+    if( CurrToken == T_COMMA
+      || CurrToken == T_LEFT_BRACE
+      || ScanEOC() )
         return( def_val );
     return( ReqExpr() );
 }
@@ -192,11 +184,9 @@ void MakeMemoryAddr( bool pops, memory_expr def_seg, address *val )
     }
 }
 
-
 /*
  * ReqMemAddr -- get a required memory address
  */
-
 void ReqMemAddr( memory_expr def_seg, address *out_val )
 {
     mad_radix   old_radix;
@@ -207,7 +197,6 @@ void ReqMemAddr( memory_expr def_seg, address *out_val )
     MakeMemoryAddr( true, def_seg, out_val );
     SetCurrRadix( old_radix );
 }
-
 
 /*
  * CallExpr -- get a call expression
@@ -223,18 +212,16 @@ void CallExpr( address *out_val )
     SetCurrRadix( old_radix );
 }
 
-
 /*
  * OptMemAddr -- get an optional memory address
  */
-
 void OptMemAddr( memory_expr def_seg, address *def_val )
 {
-    if( CurrToken == T_COMMA || ScanEOC() )
+    if( CurrToken == T_COMMA
+      || ScanEOC() )
         return;
     ReqMemAddr( def_seg, def_val );
 }
-
 
 void SetTokens( bool parse_tokens )
 {
@@ -244,10 +231,6 @@ void SetTokens( bool parse_tokens )
         ScanExpr( NULL );
     }
 }
-
-
-
-#define PARSE_TABLE_INIT (1024*4)
 
 void LangInit( void )
 {
@@ -291,15 +274,21 @@ static bool ReadAllSections( file_handle fh )
     unsigned    key_off;
     unsigned    delim_off;
 
-    /* read rules */
+    /*
+     * read rules
+     */
     key_off = ReadSection( fh, 0 );
     if( key_off == 0 )
         return( false );
-    /* read keywords */
+    /*
+     * read keywords
+     */
     delim_off = ReadSection( fh, key_off );
     if( delim_off == 0 )
         return( false );
-    /* read delimiters */
+    /*
+     * read delimiters
+     */
     if( ReadSection( fh, delim_off ) == 0 )
         return( false );
     ParseTokens.keywords = &ParseTable[key_off];
