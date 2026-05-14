@@ -299,14 +299,17 @@ bool ScanEOC( void )
 }
 
 
-static bool FindToken( const char *table, tokens token,
-                       const char **start, size_t *len )
+static bool FindToken( const char *table, tokens token, const char **start, size_t *len )
 {
+    /*
+     * numbers in PRS file are in little-endian format
+     * read numbers as little-endian unaligned data
+     */
     while( *table != NULLCHAR ) {
         *start = table;
-        for( ; *table != NULLCHAR; ++table )
-            ;
-        if( (tokens)GETWORD( table + 1 ) == token ) {
+        while( *table != NULLCHAR )
+            ++table;
+        if( (tokens)MGET_LE_U16_UN( table + 1 ) == token ) {
             *len = table - *start;
             return( true );
         }
@@ -476,20 +479,33 @@ void FlushEOC( void )
     }
 }
 
+static bool ssl_chreq( const char *table, const char *ptr )
+{
+    return( *table == *ptr );
+}
+
+static bool ssl_chreqi( const char *table, const char *ptr )
+{
+    return( toupper( *(unsigned char *)table ) == toupper( *(unsigned char *)ptr ) );
+}
 
 static bool ScanExprDelim( const char *table )
 {
     const char  *ptr;
+    bool (*ssl_chr_eq)(const char *, const char *);
 
+    /*
+     * numbers in PRS file are in little-endian format
+     * read it as little-endian unaligned data
+     */
+    ssl_chr_eq = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ? ssl_chreq : ssl_chreqi;
     for( ; *table != NULLCHAR; table += 3 ) {
-        for( ptr = ScanPtr; ( _IsOn( SW_SSL_CASE_SENSITIVE ) ?
-                *table == *ptr : toupper(*table) == toupper(*ptr) )
-                && *table != NULLCHAR; ptr++, table++ ) {
-            ;
+        for( ptr = ScanPtr; ssl_chr_eq( table, ptr ) && *table != NULLCHAR; ptr++, table++ ) {
+            /* nothing */;
         }
         if( *table == NULLCHAR ) {
             table++;
-            CurrToken = (tokens)GETWORD( table );
+            CurrToken = (tokens)MGET_LE_U16_UN( table );
             ScanPtr = ptr;
             return( true );
         }
@@ -701,15 +717,19 @@ static bool ScanKeyword( const char *table )
 {
     size_t  namelen;
     size_t  keylen;
+    int (*ssl_cmp)(const char *, const char *, size_t);
 
+    /*
+     * numbers in PRS file are in little-endian format
+     * read it as little-endian unaligned data
+     */
+    ssl_cmp = ( _IsOn( SW_SSL_CASE_SENSITIVE ) ? strncmp : strnicmp;
     namelen = ScanPtr - TokenStart;
     for( ; *table != NULLCHAR; table += (keylen + 3) ) {
          keylen = strlen( table );
-         if( keylen == namelen && ( _IsOn( SW_SSL_CASE_SENSITIVE )  ?
-                strncmp( table, TokenStart, namelen ) == 0 :
-                strnicmp( table, TokenStart, namelen ) == 0 ) ) {
+         if( keylen == namelen && ssl_cmp( table, TokenStart, namelen ) == 0 ) {
              table += (namelen + 1);
-             CurrToken = (tokens)GETWORD( table );
+             CurrToken = (tokens)MGET_LE_U16_UN( table );
              return( true );
          }
     }

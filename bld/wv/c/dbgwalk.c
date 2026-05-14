@@ -44,12 +44,17 @@ static ssl_value GetParmUInt( bool parm_long )
 {
     ssl_value   parm;
 
-    parm = MGET_U8( TblPtr );
-    TblPtr++;
+    /*
+     * numbers in PRS file are in little-endian format
+     * read it as little-endian unaligned data
+     */
     if( parm_long ) {
-        parm |= MGET_U8( TblPtr ) << 8;
+        parm = MGET_LE_U16_UN( TblPtr );
         TblPtr++;
+    } else {
+        parm = MGET_U8( TblPtr );
     }
+    TblPtr++;
     return( parm );
 }
 
@@ -58,20 +63,28 @@ static int GetParmInt( bool parm_long )
 {
     int     parm;
 
-    parm = MGET_S8( TblPtr );
-    TblPtr++;
+    /*
+     * numbers in PRS file are in little-endian format
+     * read it as little-endian unaligned data
+     */
     if( parm_long ) {
-        parm &= 0xff;
-        parm |= MGET_S8( TblPtr ) << 8;
+        parm = SSL2INT( MGET_LE_U16_UN( TblPtr ) );
         TblPtr++;
+    } else {
+        parm = MGET_S8( TblPtr );
     }
+    TblPtr++;
     return( parm );
 }
 
 
 static const char *GetTablePos( const char *table )
 {
-    return( table + GETWORD( TblPtr ) );
+    /*
+     * numbers in PRS file are in little-endian format
+     * read it as little-endian unaligned data
+     */
+    return( table + MGET_LE_U16_UN( TblPtr ) );
 }
 
 
