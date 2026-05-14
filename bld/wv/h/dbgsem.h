@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 #define SSL2BOOL(x)     (x != 0)
-#define SSL2INT(x)      ((signed short)(x))
+#define SSL2INT(x)      ((int)(signed short)(x))
 
 typedef enum {
     TERM_NORMAL,
