@@ -103,7 +103,7 @@ static void Choice( symbol *rule, instruction *exit )
         Scan();
         call = Lookup( CLASS_RULE );
         ret = call->v.rule.ret;
-        if( call->v.rule.defined & (ret == NULL) ) {
+        if( call->v.rule.defined && ( ret == NULL ) ) {
             Error( "rule has no return type" );
         }
         Scan();
@@ -270,7 +270,7 @@ void Rules(void)
         if( sym->v.rule.defined ) {
             Error( "multiple definitions" );
         }
-        sym->v.rule.defined = 1;
+        sym->v.rule.defined = true;
         Scan();
         if( CurrToken == T_GT_GT ) {
             Scan();
@@ -286,7 +286,7 @@ void Rules(void)
         WantColon();
         if( CurrToken == T_COLON ) {
             Scan();
-            sym->v.rule.exported = 1;
+            sym->v.rule.exported = true;
             exported = true;
         }
         if( exported ) {

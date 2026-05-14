@@ -66,7 +66,7 @@ void OutByte( unsigned char byte )
     static char Digs[] = "0123456789abcdef";
 
     if( Language ) {
-        if( Offset > 70 ) {
+        if( Offset > 90 ) {
             fputc( '\n', PrsFile );
             Offset = 0;
         }
