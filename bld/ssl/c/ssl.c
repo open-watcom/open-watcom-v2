@@ -86,8 +86,8 @@ void OutWord( unsigned word )
     /*
      * numbers are output in little-endian format
      */
-    OutByte( word & 0xff );
-    OutByte( ( word >> 8 ) & 0xff );
+    OutByte( (unsigned char)word );
+    OutByte( (unsigned char)( word >> 8 ) );
 }
 
 void OutStartSect( const char *name, unsigned len )

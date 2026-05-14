@@ -276,6 +276,65 @@ void GenKill( void )
     AddStream( LastIns, ins );
 }
 
+static bool remove_lbl_dup( void )
+{
+    bool            change;
+    instruction     *ins;
+    choice_entry    *choice;
+    instruction     *lbl;
+    instruction     *lbl_next;
+
+    lbl_next = NULL;
+    change = false;
+    do {
+        lbl = lbl_next;
+        lbl_next = NULL;
+        for( ins = FirstIns; ins != NULL; ins = ins->flink ) {
+            switch( ins->opcode ) {
+            case INS_JUMP:
+            case INS_CALL:
+                if( lbl == NULL )
+                    break;
+                if( ins->u.lbl == lbl ) {
+                    ins->u.lbl->u1.reference--;
+                    lbl->flink->u1.reference++;
+                    ins->u.lbl = lbl->flink;
+                    change = true;
+                }
+                break;
+            case INS_IN_CHOICE:
+            case INS_CHOICE:
+                if( lbl == NULL )
+                    break;
+                for( choice = ins->u.choice; choice != NULL; choice = choice->link ) {
+                    if( choice->lbl == lbl ) {
+                        choice->lbl->u1.reference--;
+                        lbl->flink->u1.reference++;
+                        choice->lbl = lbl->flink;
+                        change = true;
+                    }
+                }
+                break;
+            case INS_LABEL:
+                if( ins->u1.reference == 0
+                  || lbl_next != NULL
+                  || lbl != NULL
+                  && ins == lbl ) {
+                    break;
+                }
+                /*
+                 * check if next item is label
+                 */
+                if( ins->flink->opcode == INS_LABEL
+                  && ins->flink->u1.reference ) {
+                    lbl_next = ins;
+                }
+                break;
+            }
+        }
+    } while( lbl_next != NULL );
+    return( change );
+}
 
 static bool Optimize( void )
 {
@@ -284,6 +343,9 @@ static bool Optimize( void )
     instruction *next;
     instruction *dest;
     bool        dead_code;
+
+    if( remove_lbl_dup() )
+        return( true );
 
     next = NULL;
     dead_code = false;  /* want to keep code at location 0 */
@@ -394,7 +456,9 @@ static bool Optimize( void )
             break;
         case INS_LABEL:
             if( ins->u1.reference == 0 ) {
-                /* remove dead label */
+                /*
+                 * remove dead label
+                 */
                 DelStream( ins );
                 MemFree( ins );
                 change = true;
@@ -538,7 +602,7 @@ void DumpGenCode( void )
             OutByte( (unsigned char)( ins->opcode | INS_LONG ) );
             Dump( "[%.4x] L ", ins->location );
         } else {
-            OutByte( ins->opcode );
+            OutByte( (unsigned char)ins->opcode );
             Dump( "[%.4x] S ", ins->location );
         }
         switch( ins->opcode ) {
