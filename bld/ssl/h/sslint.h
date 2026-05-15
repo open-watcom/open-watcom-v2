@@ -52,7 +52,6 @@ extern void             NewAlias( symbol * );
 extern int              GetNum( void );
 extern void             WantColon( void );
 extern void             Scan( void );
-extern void             GenCode( void );
 extern instruction      *NewLabel( void );
 extern void             GenLabel( instruction *lbl );
 extern void             GenExportLabel( instruction *lbl );

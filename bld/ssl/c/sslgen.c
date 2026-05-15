@@ -67,6 +67,37 @@ static void SetOperand( instruction *ins, int value )
     ins->is_long = ( (unsigned int)value != (unsigned char)value );
 }
 
+static void DelIns( instruction *ins )
+{
+    choice_entry        *choice;
+    choice_entry        *next;
+
+    switch( ins->opcode ) {
+    case INS_IN_CHOICE:
+    case INS_CHOICE:
+        for( choice = ins->u.choice; choice != NULL; choice = next ) {
+            next = choice->link;
+            /*
+             * remove reference to label
+             */
+            choice->lbl->u1.reference--;
+        }
+        break;
+    case INS_JUMP:
+    case INS_CALL:
+        /*
+         * remove reference to label
+         */
+        ins->u.lbl->u1.reference--;
+        break;
+    }
+    /*
+     * move instruction to free memory pool for later deallocation
+     */
+    ins->flink = FreeInsPool;
+    ins->blink = NULL;
+    FreeInsPool = ins;
+}
 
 static void AddStream( instruction *after, instruction *ins )
 {
@@ -96,11 +127,19 @@ static void AddStream( instruction *after, instruction *ins )
 }
 
 
+static void ReplaceStream( instruction *old, instruction *new )
+{
+    new->flink = old->flink;
+    new->blink = old->blink;
+    old->flink->blink = new;
+    old->blink->flink = new;
+
+    DelIns( old );
+}
+
+
 static void DelStream( instruction *ins )
 {
-    choice_entry        *choice;
-    choice_entry        *next;
-
     if( ins == FirstIns ) {
         FirstIns = ins->flink;
         if( FirstIns != NULL ) {
@@ -115,31 +154,8 @@ static void DelStream( instruction *ins )
         ins->blink->flink = ins->flink;
         ins->flink->blink = ins->blink;
     }
-    switch( ins->opcode ) {
-    case INS_IN_CHOICE:
-    case INS_CHOICE:
-        for( choice = ins->u.choice; choice != NULL; choice = next ) {
-            next = choice->link;
-            /*
-             * remove reference to label
-             */
-            choice->lbl->u1.reference--;
-        }
-        break;
-    case INS_JUMP:
-    case INS_CALL:
-        /*
-         * remove reference to label
-         */
-        ins->u.lbl->u1.reference--;
-        break;
-    }
-    /*
-     * move instruction to free memory pool for later deallocation
-     */
-    ins->flink = FreeInsPool;
-    ins->blink = NULL;
-    FreeInsPool = ins;
+
+    DelIns( ins );
 }
 
 void GenLabel( instruction *lbl )
@@ -390,8 +406,7 @@ static bool Optimize( void )
                 next = NewIns( INS_KILL );
                 next->u1.operand = dest->u1.operand;
                 next->is_long = dest->is_long;
-                AddStream( ins, next );
-                DelStream( ins );
+                ReplaceStream( ins, next );
                 next = next->flink;
                 change = true;
                 break;
@@ -400,8 +415,7 @@ static bool Optimize( void )
                  * jump to return
                  */
                 next = NewIns( INS_RETURN );
-                AddStream( ins, next );
-                DelStream( ins );
+                ReplaceStream( ins, next );
                 next = next->flink;
                 change = true;
                 break;
@@ -411,8 +425,7 @@ static bool Optimize( void )
                  */
                 if( ins == dest ) {
                     next = NewIns( INS_KILL );
-                    AddStream( ins, next );
-                    DelStream( ins );
+                    ReplaceStream( ins, next );
                     next = next->flink;
                 } else {
                     ins->u.lbl->u1.reference--;
@@ -438,8 +451,7 @@ static bool Optimize( void )
                 next = NewIns( INS_KILL );
                 next->u1.operand = dest->u1.operand;
                 next->is_long = dest->is_long;
-                AddStream( ins, next );
-                DelStream( ins );
+                ReplaceStream( ins, next );
                 change = true;
                 break;
             case INS_RETURN:
