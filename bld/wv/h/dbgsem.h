@@ -41,11 +41,9 @@ typedef enum {
     TERM_KILL
 } ssl_error_class;
 
-typedef unsigned short  ssl_value;
-
 extern bool         SemAllowClosestLine( bool ok );
-extern ssl_value    SSLSemantic( ssl_value action, ssl_value parm );
-extern int          SSLError( ssl_error_class class, ssl_value error );
+extern unsigned     SSLSemantic( unsigned action, unsigned parm );
+extern int          SSLError( ssl_error_class class, unsigned error );
 extern void         SSLOutToken( tokens token );
 extern tokens       SSLNextToken( void );
 extern tokens       SSLCurrToken( void );

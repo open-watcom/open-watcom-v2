@@ -113,6 +113,134 @@ typedef enum {
                             */
 } stack_class;
 
+/*
+ * SSL mechanism core functions selection code definition
+ *
+ * must correspond with SSL definition in bld/wv/ssl/dbgintr.ssl
+ */
+typedef enum {
+    X_MISC_EXPR_DEPTH_ADJ,
+    X_MISC_EXPR_IS_CALL,
+    X_MISC_SKIP_COUNT_ADD,
+    X_MISC_SKIP_COUNT,
+    X_MISC___SPARE_ENTRY__,
+    X_MISC_SCAN_SAVE,
+    X_MISC_SCAN_RESTORE,
+    X_MISC_SCAN_POP,
+    X_MISC_SCAN_STRING,
+    X_MISC_MOVE_SCAN_PTR,
+    X_MISC_ADD_CHAR,
+    X_MISC_ADD_CESCAPE_CHAR,
+    X_MISC_ADD_CCHAR_ZERO,
+    X_MISC_SCAN_CCHAR_NUM,
+    X_MISC_NEXT_NESTED_CALL,
+    X_MISC_USE_SUBSTRING_INDEX1,
+    X_MISC_USE_SUBSTRING_INDEX2,
+    X_MISC_SET_EVAL_SUBSTRING,
+    X_MISC_EVAL_SUBSTRING,
+    X_MISC_PURGE_PGM_STACK,
+    X_MISC_SWITCH_ON,
+    X_MISC_SWITCH_OFF,
+    X_MISC_SWITCH_CHK,
+    X_MISC_MARK_ARRAY_ORDER,
+    X_MISC_START_SUBSCRIPT,
+    X_MISC_ADD_SUBSCRIPT_INDEX,
+    X_MISC_END_SUBSCRIPT
+} select_misc;
+
+typedef enum {
+    X_DO_ASSIGN,
+    X_DO_MUL,
+    X_DO_DIV,
+    X_DO_MOD,
+    X_DO_MINUS,
+    X_DO_SHIFT,
+    X_DO_AND,
+    X_DO_XOR,
+    X_DO_OR,
+    X_DO_ADDR,
+    X_DO_POINTS,
+    X_DO_FIELD,
+    X_DO_CALL,
+    X_DO_CONVERT,
+    X_DO_PLUS,
+    X_DO_MAKE_ADDR,
+    X_DO_TST_EQ,
+    X_DO_TST_LT,
+    X_DO_TST_TRUE,
+    X_DO_TST_EXIST,
+    X_DO_SIZE_TYPE,
+    X_DO_BASE_TYPE,
+    X_DO_POINT_TYPE,
+    X_DO_LKUP_TYPE,
+    X_DO_MAKE_COMPLEX,
+    X_DO_STRING_CONCAT,
+    X_DO_LCONVERT,
+    X_DO_PLUS_SCALED,
+    X_DO_MINUS_SCALED,
+    X_DO_POINTS2,
+    X_DO_POINT_TYPE2,
+    X_DO_SCOPE,
+} select_do;
+
+typedef enum {
+    X_PUSH_INT,
+    X_PUSH_DOT,
+    X_PUSH_REGSET,
+    X_PUSH_NUM,
+    X_PUSH_SCALAR,
+    X_PUSH_DUP,
+    X_PUSH_ENTRY,
+    X_PUSH_STRING,
+    X_PUSH_SSLVER,
+    X_PUSH_TYPE
+} select_push_n_pop;
+
+typedef enum {
+    X_STACK_SWAP,
+    X_STACK_MOVESP,
+    X_STACK_CLASS,
+    X_STACK_VALUE,
+    X_STACK_LVALUE,
+    X_STACK_RVALUE,
+    X_STACK_LRVALUE,
+    X_STACK_KIND,
+    X_STACK_SYMKIND,
+    X_STACK_SYMVALUE,
+    X_STACK_FORM
+} select_stack;
+
+typedef enum {
+    X_NUM_SET,
+    X_NUM_ADD,
+    X_NUM_PUSH,
+    X_NUM_POP,
+} select_num;
+
+typedef enum {
+    X_BITS_SET,
+    X_BITS_GET,
+    X_BITS_OR,
+    X_BITS_AND,
+} select_bits;
+
+typedef enum {
+    X_GET_INIT,
+    X_GET_FINI,
+    X_GET_MOD_CURR,
+    X_GET_MODNAME_LKUP,
+    X_GET_SCOPE_SET_FILE,
+    X_GET_SCOPE_SET_CURR,
+    X_GET_SCOPE_LKUP,
+    X_GET_NAME,
+    X_GET_OPERATOR_NAME,
+    X_GET_LINE_NUM,
+    X_GET_DTOR_NAME,
+    X_GET_SET_NAME_TYPE,
+    X_GET_QUERY_NAME,
+    X_GET_ADD_SCOPE,
+} select_get;
+
 extern void             AddChar( void );
 
 int                     ScanSavePtr;
@@ -268,40 +396,11 @@ static void FillInDefaults( dig_type_info *ti )
     }
 }
 
-static ssl_value MechMisc( unsigned select, ssl_value parm )
+static unsigned MechMisc( select_misc select, unsigned parm )
 {
     long                value;
-    ssl_value           result;
+    unsigned            result;
     mad_type_info       mti;
-    enum {
-        X_MISC_EXPR_DEPTH_ADJ,
-        X_MISC_EXPR_IS_CALL,
-        X_MISC_SKIP_COUNT_ADD,
-        X_MISC_SKIP_COUNT,
-        X_MISC___SPARE_ENTRY__,
-        X_MISC_SCAN_SAVE,
-        X_MISC_SCAN_RESTORE,
-        X_MISC_SCAN_POP,
-        X_MISC_SCAN_STRING,
-        X_MISC_MOVE_SCAN_PTR,
-        X_MISC_ADD_CHAR,
-        X_MISC_ADD_CESCAPE_CHAR,
-        X_MISC_ADD_CCHAR_ZERO,
-        X_MISC_SCAN_CCHAR_NUM,
-        X_MISC_NEXT_NESTED_CALL,
-        X_MISC_USE_SUBSTRING_INDEX1,
-        X_MISC_USE_SUBSTRING_INDEX2,
-        X_MISC_SET_EVAL_SUBSTRING,
-        X_MISC_EVAL_SUBSTRING,
-        X_MISC_PURGE_PGM_STACK,
-        X_MISC_SWITCH_ON,
-        X_MISC_SWITCH_OFF,
-        X_MISC_SWITCH_CHK,
-        X_MISC_MARK_ARRAY_ORDER,
-        X_MISC_START_SUBSCRIPT,
-        X_MISC_ADD_SUBSCRIPT_INDEX,
-        X_MISC_END_SUBSCRIPT
-    };
 
     result = 0;
     switch( select ) {
@@ -578,47 +677,13 @@ static void DoMinusScaled( void )
     DoMinus();
 }
 
-static ssl_value MechDo( unsigned select, ssl_value parm )
+static unsigned MechDo( select_do select, unsigned parm )
 {
     unsigned long       size;
-    ssl_value           result;
+    unsigned            result;
     DIPHDL( type, th );
     dig_type_info       ti;
     mad_type_info       mti;
-    enum {
-        X_DO_ASSIGN,
-        X_DO_MUL,
-        X_DO_DIV,
-        X_DO_MOD,
-        X_DO_MINUS,
-        X_DO_SHIFT,
-        X_DO_AND,
-        X_DO_XOR,
-        X_DO_OR,
-        X_DO_ADDR,
-        X_DO_POINTS,
-        X_DO_FIELD,
-        X_DO_CALL,
-        X_DO_CONVERT,
-        X_DO_PLUS,
-        X_DO_MAKE_ADDR,
-        X_DO_TST_EQ,
-        X_DO_TST_LT,
-        X_DO_TST_TRUE,
-        X_DO_TST_EXIST,
-        X_DO_SIZE_TYPE,
-        X_DO_BASE_TYPE,
-        X_DO_POINT_TYPE,
-        X_DO_LKUP_TYPE,
-        X_DO_MAKE_COMPLEX,
-        X_DO_STRING_CONCAT,
-        X_DO_LCONVERT,
-        X_DO_PLUS_SCALED,
-        X_DO_MINUS_SCALED,
-        X_DO_POINTS2,
-        X_DO_POINT_TYPE2,
-        X_DO_SCOPE,
-    };
 
     result = 0;
     switch( select ) {
@@ -786,11 +851,11 @@ static void BasicType( unsigned basic_type )
     PushType( th );
 }
 
-static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
+static unsigned MechPush_n_Pop( select_push_n_pop select, unsigned parm )
 {
     location_list           ll;
     dig_type_info           ti;
-    ssl_value               result;
+    unsigned                result;
     static const unsigned   TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),
         TI_CREATE( TK_INTEGER,  TM_UNSIGNED,     1 ),
@@ -803,18 +868,6 @@ static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
         TI_CREATE( TK_REAL,     TM_NONE,         8 ),
         TI_CREATE( TK_COMPLEX,  TM_NONE,         8 ),
         TI_CREATE( TK_COMPLEX,  TM_NONE,        16 ),
-    };
-    enum {
-        X_PUSH_INT,
-        X_PUSH_DOT,
-        X_PUSH_REGSET,
-        X_PUSH_NUM,
-        X_PUSH_SCALAR,
-        X_PUSH_DUP,
-        X_PUSH_ENTRY,
-        X_PUSH_STRING,
-        X_PUSH_SSLVER,
-        X_PUSH_TYPE
     };
 
     result = 0;
@@ -876,24 +929,11 @@ static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
     return( result );
 }
 
-static ssl_value MechStack( unsigned select, ssl_value parm )
+static unsigned MechStack( select_stack select, unsigned parm )
 {
-    ssl_value   result;
+    unsigned    result;
     stack_entry *entry;
     sym_info    info;
-    enum {
-        X_STACK_SWAP,
-        X_STACK_MOVESP,
-        X_STACK_CLASS,
-        X_STACK_VALUE,
-        X_STACK_LVALUE,
-        X_STACK_RVALUE,
-        X_STACK_LRVALUE,
-        X_STACK_KIND,
-        X_STACK_SYMKIND,
-        X_STACK_SYMVALUE,
-        X_STACK_FORM
-    };
 
     result = 0;
     switch( select ) {
@@ -955,15 +995,8 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
     return( result );
 }
 
-static ssl_value MechNum( unsigned select, ssl_value parm )
+static unsigned MechNum( select_num select, unsigned parm )
 {
-    enum {
-        X_NUM_SET,
-        X_NUM_ADD,
-        X_NUM_PUSH,
-        X_NUM_POP,
-    };
-
     switch( select ) {
     case X_NUM_SET:
         Num = SSL2INT( parm );
@@ -983,15 +1016,9 @@ static ssl_value MechNum( unsigned select, ssl_value parm )
     return( 0 );
 }
 
-static ssl_value MechBits( unsigned select, ssl_value parm )
+static unsigned MechBits( select_bits select, unsigned parm )
 {
-    ssl_value   result;
-    enum {
-        X_BITS_SET,
-        X_BITS_GET,
-        X_BITS_OR,
-        X_BITS_AND,
-    };
+    unsigned    result;
 
     result = 0;
     switch( select ) {
@@ -1135,9 +1162,9 @@ bool SemAllowClosestLine( bool ok )
     return( old );
 }
 
-static ssl_value MechGet( unsigned select, ssl_value parm )
+static unsigned MechGet( select_get select, unsigned parm )
 {
-    ssl_value   result;
+    unsigned    result;
     DIPHDL( cue, cueh );
     sym_list    *sym;
     address     addr;
@@ -1146,22 +1173,6 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
     const char  *mod_name;
     unsigned    mod_len;
     tokens      mod_spec_token;
-    enum {
-        X_GET_INIT,
-        X_GET_FINI,
-        X_GET_MOD_CURR,
-        X_GET_MODNAME_LKUP,
-        X_GET_SCOPE_SET_FILE,
-        X_GET_SCOPE_SET_CURR,
-        X_GET_SCOPE_LKUP,
-        X_GET_NAME,
-        X_GET_OPERATOR_NAME,
-        X_GET_LINE_NUM,
-        X_GET_DTOR_NAME,
-        X_GET_SET_NAME_TYPE,
-        X_GET_QUERY_NAME,
-        X_GET_ADD_SCOPE,
-    };
 
     result = 0;
     switch( select ) {
@@ -1334,41 +1345,60 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
 }
 
 
-ssl_value SSLSemantic( ssl_value action, ssl_value parm )
+unsigned SSLSemantic( unsigned action, unsigned parm )
 {
-    ssl_value   result;
-    unsigned    select;
+    unsigned    result;
 
     result = 0;
-    select = action & SEM_SELECTOR;
     switch( action & SEM_MECHANISM ) {
     case SEM_MISC:
+      {
+        select_misc select = (select_misc)(action & SEM_SELECTOR);
         result = MechMisc( select, parm );
+      }
         break;
     case SEM_DO:
+      {
+        select_do select = (select_do)(action & SEM_SELECTOR);
         result = MechDo( select, parm );
+      }
         break;
     case SEM_PUSH_N_POP:
+      {
+        select_push_n_pop select = (select_push_n_pop)(action & SEM_SELECTOR);
         result = MechPush_n_Pop( select, parm );
+      }
         break;
     case SEM_STACK:
+      {
+        select_stack select = (select_stack)(action & SEM_SELECTOR);
         result = MechStack( select, parm );
+      }
         break;
     case SEM_NUM:
+      {
+        select_num select = (select_num)(action & SEM_SELECTOR);
         result = MechNum( select, parm );
+      }
         break;
     case SEM_BITS:
+      {
+        select_bits select = (select_bits)(action & SEM_SELECTOR);
         result = MechBits( select, parm );
+      }
         break;
     case SEM_GET:
+      {
+        select_get select = (select_get)(action & SEM_SELECTOR);
         result = MechGet( select, parm );
+      }
         break;
     }
     return( result );
 }
 
 
-int SSLError( ssl_error_class class, ssl_value error )
+int SSLError( ssl_error_class class, unsigned error )
 {
     switch( class ) {
     case TERM_NORMAL:

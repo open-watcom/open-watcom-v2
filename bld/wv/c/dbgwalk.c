@@ -40,9 +40,9 @@
 
 static const char   *TblPtr;
 
-static ssl_value GetParmUInt( bool parm_long )
+static unsigned GetParmUInt( bool parm_long )
 {
-    ssl_value   parm;
+    unsigned    parm;
 
     /*
      * numbers in PRS file are in little-endian format
@@ -97,9 +97,9 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     const char      *addr;
     const char      **stk_ptr;
     const char      **stk_end;
-    ssl_value       result;
-    ssl_value       parm;
-    ssl_value       wanted;
+    unsigned        result;
+    unsigned        parm;
+    unsigned        wanted;
     tokens          token;
 
     result = 0;
