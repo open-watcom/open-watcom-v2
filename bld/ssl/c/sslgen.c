@@ -43,6 +43,8 @@
 instruction     *FirstIns;
 instruction     *LastIns;
 
+static instruction  *FreeInsPool;
+
 static instruction *NewIns( op_code opcode )
 {
     instruction *ins;
@@ -122,7 +124,6 @@ static void DelStream( instruction *ins )
              * remove reference to label
              */
             choice->lbl->u1.reference--;
-            MemFree( choice );
         }
         break;
     case INS_JUMP:
@@ -133,6 +134,12 @@ static void DelStream( instruction *ins )
         ins->u.lbl->u1.reference--;
         break;
     }
+    /*
+     * move instruction to free memory pool for later deallocation
+     */
+    ins->flink = FreeInsPool;
+    ins->blink = NULL;
+    FreeInsPool = ins;
 }
 
 void GenLabel( instruction *lbl )
@@ -366,7 +373,6 @@ static bool Optimize( void )
               || ins->opcode == INS_LABEL )
                 break;
             DelStream( ins );
-            MemFree( ins );
             change = true;
         }
         if( ins == NULL )
@@ -386,7 +392,6 @@ static bool Optimize( void )
                 next->is_long = dest->is_long;
                 AddStream( ins, next );
                 DelStream( ins );
-                MemFree( ins );
                 next = next->flink;
                 change = true;
                 break;
@@ -397,7 +402,6 @@ static bool Optimize( void )
                 next = NewIns( INS_RETURN );
                 AddStream( ins, next );
                 DelStream( ins );
-                MemFree( ins );
                 next = next->flink;
                 change = true;
                 break;
@@ -409,7 +413,6 @@ static bool Optimize( void )
                     next = NewIns( INS_KILL );
                     AddStream( ins, next );
                     DelStream( ins );
-                    MemFree( ins );
                     next = next->flink;
                 } else {
                     ins->u.lbl->u1.reference--;
@@ -437,7 +440,6 @@ static bool Optimize( void )
                 next->is_long = dest->is_long;
                 AddStream( ins, next );
                 DelStream( ins );
-                MemFree( ins );
                 change = true;
                 break;
             case INS_RETURN:
@@ -445,7 +447,6 @@ static bool Optimize( void )
                  * call to return
                  */
                 DelStream( ins );
-                MemFree( ins );
                 change = true;
                 break;
             case INS_JUMP:
@@ -483,7 +484,6 @@ static bool Optimize( void )
                  * remove dead label
                  */
                 DelStream( ins );
-                MemFree( ins );
                 change = true;
             }
             break;
@@ -698,13 +698,40 @@ void DumpGenCode( void )
     OutEndSect();
 }
 
+void InsMemFree( instruction *ins )
+{
+    choice_entry        *choice;
+
+    switch( ins->opcode ) {
+    case INS_IN_CHOICE:
+    case INS_CHOICE:
+        while( (choice = ins->u.choice) != NULL ) {
+            ins->u.choice = choice->link;
+            MemFree( choice );
+        }
+        break;
+    }
+    MemFree( ins );
+}
+
 void FreeGenCode( void )
 {
     instruction *next;
 
+    /*
+     * deallocate instructions in generated code
+     */
     while( FirstIns != NULL ) {
         next = FirstIns->flink;
-        MemFree( FirstIns );
+        InsMemFree( FirstIns );
         FirstIns = next;
+    }
+    /*
+     * deallocate pool of free instructions
+     */
+    while( FreeInsPool != NULL ) {
+        next = FreeInsPool->flink;
+        InsMemFree( FreeInsPool );
+        FreeInsPool = next;
     }
 }
