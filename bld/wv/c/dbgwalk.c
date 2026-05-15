@@ -61,7 +61,7 @@ static unsigned GetParmUInt( bool parm_long )
 
 static int GetParmInt( bool parm_long )
 {
-    int     parm;
+    int         parm;
 
     /*
      * numbers in PRS file are in little-endian format
@@ -90,7 +90,7 @@ static const char *GetTablePos( const char *table )
 
 int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned stk_size )
 {
-    op_code         operation;
+    op_code         opcode;
     bool            parm_long;
     unsigned        num_items;
     signed int      disp;
@@ -109,10 +109,10 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
     TblPtr = table + start;
     token = SSLCurrToken();
     for( ;; ) {
-        operation = (op_code)MGET_U8( TblPtr );
-        parm_long = ( (operation & INS_LONG) != 0 );
+        opcode = (op_code)MGET_U8( TblPtr );
+        parm_long = ( (opcode & INS_LONG) != 0 );
         TblPtr++;
-        switch( operation & INS_MASK ) {
+        switch( opcode & INS_MASK ) {
         case INS_INPUT:
             wanted = GetParmUInt( parm_long );
             if( token != (tokens)wanted ) {
@@ -167,22 +167,26 @@ int SSLWalk( const char *table, unsigned start, const char **stk_bot, unsigned s
             TblPtr = *--stk_ptr;
             break;
         case INS_IN_CHOICE:
-            for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
+            num_items = MGET_U8( TblPtr );
+            TblPtr++;
+            while( num_items-- > 0 ) {
                 if( token == (tokens)GetParmUInt( parm_long ) ) {
                     token = SSLNextToken();
                     TblPtr = GetTablePos( table );
                     break;
                 }
-                TblPtr += 2;
+                TblPtr += 2;    /* skip position 2-bytes */
             }
             break;
         case INS_CHOICE:
-            for( num_items = MGET_U8( TblPtr ), TblPtr++; num_items > 0; num_items-- ) {
+            num_items = MGET_U8( TblPtr );
+            TblPtr++;
+            while( num_items-- > 0 ) {
                 if( result == GetParmUInt( parm_long ) ) {
                     TblPtr = GetTablePos( table );
                     break;
                 }
-                TblPtr += 2;
+                TblPtr += 2;    /* skip position 2-bytes */
             }
             break;
         }
