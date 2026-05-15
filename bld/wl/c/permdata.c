@@ -330,10 +330,12 @@ static void PrepSymbol( void *_sym, void *info )
     }
     sym->mod = CarveGetIndex( CarveModEntry, sym->mod );
     if( IS_SYM_ALIAS( sym ) ) {
-        save = sym->p.alias.u.ptr;
-        sym->p.alias.u.offs = GetString( info, sym->p.alias.u.ptr );
         if( sym->info & SYM_FREE_ALIAS ) {
+            save = sym->p.alias.u.ptr;
+            sym->p.alias.u.offs = GetString( info, sym->p.alias.u.ptr );
             MemFree( save );
+        } else {
+            sym->p.alias.u.offs = 0;
         }
     } else if( IS_SYM_IMPORTED( sym ) ) {
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {

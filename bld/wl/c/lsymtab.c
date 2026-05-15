@@ -413,8 +413,9 @@ static void WipeSym( symbol *sym )
         }
         sym->p.import = NULL;
     } else if( IS_SYM_ALIAS( sym ) ) {
-        if( sym->info & SYM_FREE_ALIAS ) {
+        if( sym->p.alias.u.ptr != NULL ) {
             MemFree( sym->p.alias.u.ptr );
+            sym->p.alias.u.ptr = NULL;
         }
         sym->u.aliaslen = 0;    // make sure this is nulled again
     }
