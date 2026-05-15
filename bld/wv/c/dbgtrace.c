@@ -87,8 +87,8 @@ typedef struct {
      boolbit            unwinding    : 1;   /* unwinding from a recursive breakpoint ? */
      dtid_t             etid;           /* thread id that we're tracing */
      address            curraddr;       /* current address being traced */
-     mad_disasm_control prev_control;   /* control information for prev ins */
-     mad_disasm_control curr_control;   /* control information for curr ins */
+     mad_disasm_control prev_control;   /* control information for prev item */
+     mad_disasm_control curr_control;   /* control information for curr item */
      mad_trace_how      how;            /* how to trace this instruction */
      unsigned           ddsize;         /* size of a mad_disasm_data */
      unsigned           tdsize;         /* size of a mad_trace_data */
