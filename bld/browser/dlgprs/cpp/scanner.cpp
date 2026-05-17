@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,14 @@
 const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
 
 
+static void my_clear( std::vector<char*> *vec )
+{
+    for (size_t i = 0; i < vec->size(); ++i) {
+        delete[] (*vec)[i];
+    }
+    vec->clear();
+}
+
 Scanner::Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, int tokcnt )
 //-----------------------------------------------------------------------------------------------------------------------------
 {
@@ -62,7 +71,9 @@ Scanner::Scanner( const char * fileName, short t_string, short t_number, short t
 Scanner::~Scanner()
 //-----------------
 {
+    my_clear( _identifiers );
     delete _identifiers;
+    my_clear( _strings );
     delete _strings;
     delete _file;
 }
@@ -223,7 +234,7 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 
     buffer[bufPos] = '\0';
 
-    dupStr = new char [strlen( buffer ) + 1];
+    dupStr = new char[strlen( buffer ) + 1];
     strcpy( dupStr, buffer );
 
     lval = (YYSTYPE)_strings->size();
@@ -310,7 +321,7 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
     if( res ) {
         return res->token;
     } else {
-        dupStr = new char [strlen( tok ) + 1];
+        dupStr = new char[strlen( tok ) + 1];
         strcpy( dupStr, tok );
 
         lval = (YYSTYPE)_identifiers->size();
@@ -319,4 +330,3 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
         return _T_Ident;
     }
 }
-

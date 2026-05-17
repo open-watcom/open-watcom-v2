@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,10 +55,9 @@ int main( int argc, char * argv[] ) {
         if( CurrDialog != NULL ) {
             BindingParser bndparse( argv[2] );
             bndparse.yyparse();
-        }
-    
-        if( CurrDialog != NULL && CurrBinding != NULL ) {
-            CurrBinding->bind( CurrDialog, argv[3], argv[4] );
+            if( CurrBinding != NULL ) {
+                CurrBinding->bind( CurrDialog, argv[3], argv[4] );
+            }
         }
     
     } catch( FileExcept oops ) {
