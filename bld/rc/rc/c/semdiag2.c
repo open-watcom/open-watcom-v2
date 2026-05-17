@@ -433,7 +433,6 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
     PresParamsOS2       *presparams;
     DataElemList        *travptr;
     size_t              bytes;
-    uint_32             *data;
     unsigned            i;
     size_t              len;
 
@@ -442,8 +441,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
         return( 0 );
 
     // Total size of presparams
-    data  = (uint_32 *)ptr;
-    *data = list->size;
+    MPUT_32_UN( ptr, list->size );
     bytes = 4;
     ptr  += 4;
 
@@ -451,26 +449,23 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
         // Presparam ID or name length
         if( !(presparams->Name->ord.fFlag == 0xFF) ) {       // Presparam has name
             len     = strlen( presparams->Name->name ) + 1;
-            data    = (uint_32 *)ptr;
-            *data++ = 0;            // First ULONG is 0 to indicate this isn't numeric ID
-            *data   = (uint_32)len; // Next is string len
-            ptr    += 8;
+            MPUT_32_UN( ptr, 0 );           // First ULONG is 0 to indicate this isn't numeric ID
+            ptr += 4;
+            MPUT_32_UN( ptr, len );         // Next is string len
+            ptr += 4;
             strcpy( ptr, presparams->Name->name );
-            ptr    += len;
-            data    = (uint_32 *)ptr;
-            *data   = (uint_32)-1;           // Not sure what this is
+            ptr += len;
+            MPUT_32_UN( ptr, (uint_32)-1 );           // Not sure what this is
             ptr    += 4;
             bytes  += len + 12;
         } else {
-            data    = (uint_32 *)ptr;
-            *data   = presparams->Name->ord.wOrdinalID;
+            MPUT_32_UN( ptr, presparams->Name->ord.wOrdinalID );
             ptr    += 4;
             bytes  += 4;
         }
 
         // Following is the size of presparam data
-        data   = (uint_32 *)ptr;
-        *data  = presparams->size;
+        MPUT_32_UN( ptr, presparams->size );
         ptr   += 4;
         bytes += 4;
 
@@ -482,8 +477,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
                     ptr   += len;
                     bytes += len;
                 } else {
-                    data   = (uint_32 *)ptr;
-                    *data  = travptr->data[i].Item.Num;
+                    MPUT_32_UN( ptr, travptr->data[i].Item.Num );
                     ptr   += 4;
                     bytes += 4;         // Data elements are ULONGs
                 }
