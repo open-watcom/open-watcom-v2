@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,9 @@
 
 #define WHPCVT_GBL
 #include "whpcvt.h"
+#ifdef TRMEM
+    #include "trmem.h"
+#endif
 
 #include "clibint.h"
 #include "clibext.h"
@@ -96,6 +99,13 @@
     pick( ARG_HTML, "html" ) \
     pick( ARG_WIKI, "wiki" ) \
     pick( ARG_END,  NULL )
+
+#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
+#define _XSTR(s)    # s
+#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
+#else
+#define TRMEMAPI(x)
+#endif
 
 enum {
     TITLE_CASE_UPPER,
@@ -279,6 +289,19 @@ static int          List_level = 0;
 static tab_size     tabs_list[MAX_TABS];
 static int          tabs_num = 0;
 
+#ifdef TRMEM
+
+static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
+
+static void memPrintLine( void *fh, const char *buf, size_t len )
+{
+    /* unused parameters */ (void)fh; (void)len;
+
+    printf( "%s\n", buf );
+}
+
+#endif  /* TRMEM */
+
 static void print_help( void )
 /****************************/
 {
@@ -348,31 +371,87 @@ void warning_msg( const char *msg, int line_num )
     printf( "*** WARNING: %s on line %d.\n", msg, line_num );
 }
 
-
-void *check_alloc( size_t size )
-/******************************/
+static void  MemInit( void )
+/**************************/
 {
-    void                *p;
-
-    p = malloc( size );
-
-    if( p == NULL && size != 0) {
-        error_err( ERR_NO_MEMORY );
-    }
-
-    return( p );
+#ifdef TRMEM
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
+            NULL, memPrintLine, _TRMEM_DEF );
+#endif
 }
 
-void *check_realloc( void *ptr, size_t size )
+static void  MemFini( void )
+/**************************/
+{
+#ifdef TRMEM
+    _trmem_prt_usage( TrHdl );
+    _trmem_prt_list( TrHdl );
+    _trmem_close( TrHdl );
+#endif
+}
+
+static void *check_nomem( void *ptr )
+{
+    if( ptr == NULL ) {
+        error_err( ERR_NO_MEMORY );
+        exit( 1 );
+    }
+    return( ptr );
+}
+
+TRMEMAPI( MemAllocSafe )
+void  *MemAllocSafe( size_t size )
+/********************************/
+{
+#ifdef TRMEM
+    return( check_nomem( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) ) );
+#else
+    return( check_nomem( malloc( size ) ) );
+#endif
+}
+
+TRMEMAPI( MemAlloc )
+void  *MemAlloc( size_t size )
+/********************************/
+{
+#ifdef TRMEM
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
+#else
+    return( malloc( size ) );
+#endif
+}
+
+TRMEMAPI( MemReallocSafe )
+void  *MemReallocSafe( void *p, size_t size )
 /*******************************************/
 {
-    ptr = realloc( ptr, size );
+#ifdef TRMEM
+    return( check_nomem( _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl ) ) );
+#else
+    return( check_nomem( realloc( p, size ) ) );
+#endif
+}
 
-    if( ptr == NULL && size != 0 ) {
-        error_err( ERR_NO_MEMORY );
-    }
+TRMEMAPI( MemRealloc )
+void  *MemRealloc( void *p, size_t size )
+/***************************************/
+{
+#ifdef TRMEM
+    return( _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl ) );
+#else
+    return( realloc( p, size ) );
+#endif
+}
 
-    return( ptr );
+TRMEMAPI( MemFree )
+void  MemFree( void *ptr )
+/************************/
+{
+#ifdef TRMEM
+    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );;
+#else
+    free( ptr );
+#endif
 }
 
 static void check_brace( const char *str, size_t len )
@@ -482,7 +561,7 @@ static char *normalize_fname( char *file, const char *name, const char *fext )
     } else {
         len = strlen( name ) + 1;
     }
-    file = realloc( file, len );
+    file = MemRealloc( file, len );
     strcpy( file, name );
 #ifndef __UNIX__
     for( slash = file; (slash = strchr( slash, '/' )) != NULL; slash++ ) {
@@ -837,7 +916,7 @@ static int valid_args( int argc, char *argv[] )
             fclose( opt_file );
             opt_file = fopen( Options_File, "r" );
 
-            free( Options_File );
+            MemFree( Options_File );
             Options_File = NULL;
 
             _new( argv, argc );
@@ -853,9 +932,9 @@ static int valid_args( int argc, char *argv[] )
             fclose( opt_file );
             ret = process_args( argc, argv );
             for( i = 0 ; i < argc; i++ ) {
-                free( argv[i] );
+                MemFree( argv[i] );
             }
-            free( argv );
+            MemFree( argv );
             if( ret != argc ) {
                 return( -1 );
             }
@@ -1796,7 +1875,7 @@ static void output_kw_file( void )
                 }
             }
         }
-        free( kw );
+        MemFree( kw );
     }
     /*
      * the end
@@ -1930,7 +2009,7 @@ static void output_def_file( void )
         }
         len = strlen( ctx->ctx_name ) + 1;
         if( len > max_len ) {
-            buf = realloc( buf, len );
+            buf = MemRealloc( buf, len );
             max_len = len;
         }
         for( i = 0; i < len; i++ ) {
@@ -1938,7 +2017,7 @@ static void output_def_file( void )
         }
         whp_fprintf( Def_file, "#define %s%-50s\t%d\n", HELP_PREFIX, buf, ctx->ctx_id );
     }
-    free( buf );
+    MemFree( buf );
 }
 
 static void output_hdef_file( void )
@@ -2115,21 +2194,22 @@ int main( int argc, char *argv[] )
     _argv = argv;
 #endif
 
+    MemInit();
     file = NULL;
     if( setjmp( Jmp_buf ) ) {
         if( h_file_name != NULL ) {
-            free( h_file_name );
+            MemFree( h_file_name );
         }
         if( Header_File != NULL ) {
-            free( Header_File );
+            MemFree( Header_File );
         }
         if( Footer_File != NULL ) {
-            free( Footer_File );
+            MemFree( Footer_File );
         }
         if( Help_File != NULL ) {
-            free( Help_File );
+            MemFree( Help_File );
         }
-        free( file );
+        MemFree( file );
 
         if( Idx_file != NULL ) {
             fclose( Idx_file );
@@ -2163,9 +2243,9 @@ int main( int argc, char *argv[] )
          * do some big allocs to block out the space
          */
         for( size = 10; size > 0; size-- ) {
-            start_alloc = malloc( size * 1000 * 1024 );
+            start_alloc = MemAlloc( size * 1000 * 1024 );
             if( start_alloc != NULL ) {
-                free( start_alloc );
+                MemFree( start_alloc );
                 break;
             }
         }
@@ -2191,7 +2271,7 @@ int main( int argc, char *argv[] )
          * this is for the RTF 'Up' button support
          */
         if( Output_type == OUT_RTF ) {
-            Help_File = malloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
+            Help_File = MemAlloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
             strcpy( Help_File, file );
             strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
         }
@@ -2365,5 +2445,6 @@ int main( int argc, char *argv[] )
         rc = 0;
     }
 
+    MemFini();
     return( rc );
 }

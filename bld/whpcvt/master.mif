@@ -7,6 +7,8 @@ proj_name = whpcvt
 
 whpcvt_autodepends = .AUTODEPEND
 
+whpcvt_trmem = 1
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -14,9 +16,17 @@ whpcvt_autodepends = .AUTODEPEND
 #
 # cflags
 #
-.c: ../c
+.c: ../c;$(trmem_dir)
 
 inc_dirs = -I"../h"
+
+!ifeq trmem 1
+! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_whpcvt = -of+
+!  endif
+! endif
+!endif
 
 # explicit rules
 #################
@@ -30,5 +40,5 @@ exetarg_objs = &
     ipf.obj     &
     ib.obj      &
     wiki.obj    &
-    html.obj
+    html.obj $(trmem_objs)
 !include exetarg.mif

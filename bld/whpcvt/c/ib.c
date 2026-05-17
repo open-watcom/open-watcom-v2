@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1034,11 +1034,11 @@ void ib_output_file( void )
 
     if( IB_def_topic != NULL ) {
         whp_fprintf( Out_file, IB_DEFAULT_TOPIC "\"%s\"\n", IB_def_topic );
-        free( IB_def_topic );
+        MemFree( IB_def_topic );
     }
     if( IB_help_desc != NULL ) {
         whp_fprintf( Out_file, IB_DESCRIPTION "\"%s\"\n", IB_help_desc );
-        free( IB_help_desc );
+        MemFree( IB_help_desc );
     }
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( !Remove_empty || !ctx->empty || ctx->req_by_link ) {

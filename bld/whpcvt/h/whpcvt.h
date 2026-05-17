@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "bool.h"
+#include "memfuncs.h"
+
 
 /* for testing */
 //#define static
@@ -53,11 +55,11 @@
 
 #define _min( a, b )            ( a > b ) b ? a
 #define _max( a, b )            ( a > b ) a ? b
-#define _new( ptr, size )       ( ptr = check_alloc( sizeof( *(ptr) ) * (size) ) )
-#define _renew( ptr, size )     ( ptr = check_realloc( ptr, sizeof( *(ptr) ) * (size) ) )
-#define _free( x )              free( x )
-#define _alloc( size )          check_alloc( size )
-#define _realloc( ptr, size )   check_realloc( ptr, size )
+#define _new( ptr, size )       ( ptr = MemAllocSafe( sizeof( *(ptr) ) * (size) ) )
+#define _renew( ptr, size )     ( ptr = MemReallocSafe( ptr, sizeof( *(ptr) ) * (size) ) )
+#define _free( x )              MemFree( x )
+#define _alloc( size )          MemAllocSafe( size )
+#define _realloc( ptr, size )   MemReallocSafe( ptr, size )
 
 #define _is_nonblank( c )       ((c) != '\0' && (c) != ' ' && (c) != '\t')
 
@@ -288,8 +290,6 @@ WHPCVT_GBL char         *IB_help_desc;
 /**** externed functions ****/
 extern void         error( int err );
 extern void         warning_msg( const char *msg, int line_num );
-extern void         *check_alloc( size_t size );
-extern void         *check_realloc( void *ptr, size_t size );
 extern void         Tabs_read( char *tab_line );
 extern tab_size     Tabs_align( tab_size ch_len );
 extern tab_size     Tabs_get( int pos );
