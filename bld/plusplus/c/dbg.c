@@ -162,13 +162,13 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
     char *p )                  // - definition
 {
     int             c;
-    TOKEN           tok;
+    TOKEN           token;
 
     if( p == NULL )
         return;
-    for( ; (tok = *(TOKEN *)p) != T_NULL; ) {
-        p += sizeof( TOKEN );
-        switch( tok ) {
+    for( ; (token = GET_MTOKEN( p )) != T_NULL; ) {
+        p += SIZE_MTOKEN;
+        switch( token ) {
         case T_CONSTANT:
             switch( *p++ ) {
             case TYP_FLOAT :
@@ -205,7 +205,7 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
             printf( "parm#%c", '1' + *p++ );
             break;
         default:
-            printf( "%s", TokenString[tok] );
+            printf( "%s", TokenString[token] );
             break;
         }
     }

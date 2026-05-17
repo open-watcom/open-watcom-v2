@@ -744,9 +744,9 @@ void MacroSegmentAddToken(          // MacroSegment: ADD A TOKEN
     size_t  clen;
 
     clen = *mlen;
-    MacroReallocOverflow( clen + sizeof( TOKEN ), clen );
-    *(TOKEN *)( MacroOffset + clen ) = token;
-    *mlen = clen + sizeof( TOKEN );
+    MacroReallocOverflow( clen + SIZE_MTOKEN, clen );
+    SET_MTOKEN( MacroOffset + clen, token );
+    *mlen = clen + SIZE_MTOKEN;
 }
 
 
@@ -785,8 +785,8 @@ static void dumpMacroDefn(          // DUMP TOKENIZED MACRO DEFINITION
     unsigned char   c;
     TOKEN           token;
 
-    while( (token = *(TOKEN *)p) != T_NULL ) {
-        p += sizeof( TOKEN );
+    while( (token = GET_MTOKEN( p )) != T_NULL ) {
+        p += SIZE_MTOKEN;
         switch( token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
@@ -840,7 +840,7 @@ void DumpAllMacros(                 // DUMP ALL PREDEFINED MACROS
                 continue;
             fprintf( CppFile, "#define %s", mentry->macro_name );
             p = (char *)mentry + mentry->macro_defn;
-            if( *(TOKEN *)p != T_NULL ) {
+            if( GET_MTOKEN( p ) != T_NULL ) {
                 fputc( ' ', CppFile );
                 dumpMacroDefn( p );
             }

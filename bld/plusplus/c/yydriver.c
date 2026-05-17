@@ -230,7 +230,7 @@ static void recordTemplateCtorInitializer( PARSE_STACK * );
 static void dump_rule( YYACTIONTYPE rule )
 {
     unsigned                i;
-    const YYTOKENTYPE YYFAR *tok;
+    const YYTOKENTYPE YYFAR *token;
     const char YYFAR        *p;
 
     for( p = yytoknames[yyplhstab[rule]]; *p; ++p ) {
@@ -239,13 +239,13 @@ static void dump_rule( YYACTIONTYPE rule )
     putchar( ' ' );
     putchar( '<' );
     putchar( '-' );
-    tok = &yyrhstoks[yyrulebase[rule]];
+    token = &yyrhstoks[yyrulebase[rule]];
     for( i = yyplentab[rule]; i != 0; --i ) {
         putchar( ' ' );
-        for( p = yytoknames[*tok]; *p; ++p ) {
+        for( p = yytoknames[*token]; *p; ++p ) {
             putchar( *p );
         }
-        ++tok;
+        ++token;
     }
     putchar( '\n' );
 }
@@ -1440,13 +1440,13 @@ static void newLookAheadStack( PARSE_STACK *stack, PARSE_STACK *prev_stack )
     stack->ssp[0] = prev_stack->ssp[0];
 }
 
-static void newExprStack( PARSE_STACK *stack, YYTOKENTYPE tok )
+static void newExprStack( PARSE_STACK *stack, YYTOKENTYPE token )
 {
     initParseStacks( stack, false );
     /* initialize */
     commonInit( stack );
     /* go to correct state */
-    doAction( tok, stack );
+    doAction( token, stack );
 }
 
 static void newExceptionStack( PARSE_STACK *stack )
@@ -1822,7 +1822,7 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
     return( what );
 }
 
-static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
+static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, YYTOKENTYPE token )
 {
     look_ahead_storage *save;
 
@@ -1833,12 +1833,12 @@ static look_ahead_storage *lookAheadSaveToken( PARSE_STACK *state, YYTOKENTYPE t
     save = VstkPush( &(state->look_ahead_storage) );
     save->yylval = yylval;
     save->yylocation = yylocation;
-    save->yytok = tok;
+    save->yytok = token;
     state->look_ahead_count++;
     return( save );
 }
 
-static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
+static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE token )
 {
     look_ahead_storage *save;
 
@@ -1849,11 +1849,11 @@ static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
 #endif
     save = VstkPop( &(state->look_ahead_storage) );
 #ifdef DEVBUILD
-    if( save->yytok != tok ) {
+    if( save->yytok != token ) {
         CFatal( "trying to unsave an unaligned saved token" );
     }
 #else
-    /* unused parameters */ (void)tok;
+    /* unused parameters */ (void)token;
 #endif
     state->look_ahead_count--;
 }
@@ -2351,14 +2351,14 @@ static void recordTemplateCtorInitializer( PARSE_STACK *state )
     syntaxError( state );
 }
 
-static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg )
+static PTREE genericParseExpr( YYTOKENTYPE token, TOKEN end_token, MSG_NUM err_msg )
 {
     YYTOKENTYPE t;
     PARSE_STACK expr_state;
     p_action    what;
     PTREE       expr_tree;
 
-    newExprStack( &expr_state, tok );
+    newExprStack( &expr_state, token );
     syncLocation();
     /* do parse */
     for( ;; ) {

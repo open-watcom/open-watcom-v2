@@ -636,16 +636,16 @@ static void buildTokenAfter( MACRO_TOKEN *ptail, TOKEN token, const char *str )
 static MACRO_TOKEN *appendToken( MACRO_TOKEN *head, TOKEN token, const char *data )
 {
     MACRO_TOKEN *tail;
-    MACRO_TOKEN *new_tok;
+    MACRO_TOKEN *new_token;
 
-    new_tok = buildAToken( token, data );
+    new_token = buildAToken( token, data );
     if( head == NULL ) {
-        head = new_tok;
+        head = new_token;
     } else {
         tail = head;
         while( tail->next != NULL )
             tail = tail->next;
-        tail->next = new_tok;
+        tail->next = new_token;
     }
     return( head );
 }
@@ -994,20 +994,20 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
 static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
 {
     size_t      last_non_ws;
-    TOKEN       tok;
+    TOKEN       token;
 
     TokenLen = 0;
     last_non_ws = 0;
     // skip leading whitespace
-    while( *(TOKEN *)p == T_WHITE_SPACE ) {
-        p += sizeof( TOKEN );
+    while( GET_MTOKEN( p ) == T_WHITE_SPACE ) {
+        p += SIZE_MTOKEN;
     }
-    while( (tok = *(TOKEN *)p) != T_NULL ) {
-        p += sizeof( TOKEN );
-        switch( tok ) {
+    while( (token = GET_MTOKEN( p )) != T_NULL ) {
+        p += SIZE_MTOKEN;
+        switch( token ) {
         case T_WHITE_SPACE:
-            while( *(TOKEN *)p == T_WHITE_SPACE ) {
-                p += sizeof( TOKEN );
+            while( GET_MTOKEN( p ) == T_WHITE_SPACE ) {
+                p += SIZE_MTOKEN;
             }
             WriteBufferChar( ' ' );
             break;
@@ -1035,7 +1035,7 @@ static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
             last_non_ws = TokenLen;
             break;
         default:
-            WriteBufferString( TokenString[tok] );
+            WriteBufferString( TokenString[token] );
             last_non_ws = TokenLen;
             break;
         }
@@ -1054,8 +1054,8 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
 
     buf[1] = '\0';
     prev_token = T_NULL;
-    for( ; (curr_token = *(TOKEN *)p) != T_NULL; ) {
-        p += sizeof( TOKEN );
+    for( ; (curr_token = GET_MTOKEN( p )) != T_NULL; ) {
+        p += SIZE_MTOKEN;
         switch( curr_token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
@@ -1083,16 +1083,16 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
             prev_token = curr_token;
             break;
         case T_MACRO_SHARP:
-            while( *(TOKEN *)p == T_WHITE_SPACE )
-                p += sizeof( TOKEN );
-            if( *(TOKEN *)p != T_MACRO_PARM && *(TOKEN *)p != T_MACRO_VAR_PARM ) {
+            while( GET_MTOKEN( p ) == T_WHITE_SPACE )
+                p += SIZE_MTOKEN;
+            if( GET_MTOKEN( p ) != T_MACRO_PARM && GET_MTOKEN( p ) != T_MACRO_VAR_PARM ) {
                 // we had an error before; handle as T_BAD_CHAR
                 buf[0] = '#';
                 ptail = buildTokenOnEnd( ptail, T_BAD_CHAR, buf );
                 prev_token = T_BAD_CHAR;
                 break;
             }
-            p += sizeof( TOKEN );               // skip over T_MACRO_PARM
+            p += SIZE_MTOKEN;               // skip over T_MACRO_PARM
             if( macro_parms != NULL && macro_parms[(unsigned char)*p].arg != NULL ) {
                 ptail = buildString( ptail, macro_parms[(unsigned char)*p].arg );
             } else {
@@ -1130,7 +1130,7 @@ static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
     MACRO_TOKEN *list;
     MACRO_TOKEN *dummy_list;
     MACRO_TOKEN **ptail;
-    char        empty_var[sizeof( TOKEN ) + 1 + sizeof( TOKEN )];
+    char        empty_var[SIZE_MTOKEN + 1 + SIZE_MTOKEN];
     const char  *p;
 
     ptail = &head;
@@ -1144,9 +1144,9 @@ static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
             p = macro_parms[(unsigned char)mtok->data[0]].arg;
             if( mtok->token == T_MACRO_VAR_PARM || p != NULL ) {
                 if( p == NULL ) {
-                    *(TOKEN *)empty_var = T_MACRO_EMPTY_VAR_PARM;
-                    empty_var[sizeof( TOKEN )] = 0;
-                    *(TOKEN *)( empty_var + sizeof( TOKEN ) + 1 ) = T_NULL;
+                    SET_MTOKEN( empty_var, T_MACRO_EMPTY_VAR_PARM );
+                    empty_var[SIZE_MTOKEN] = 0;
+                    SET_MTOKEN( empty_var + SIZE_MTOKEN + 1, T_NULL );
                     p = empty_var;
                 }
                 buildMTokenList( &dummy_list, p, NULL );

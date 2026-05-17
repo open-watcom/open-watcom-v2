@@ -108,14 +108,14 @@ BUFFER_HDR *TokenBufAddToken(           // TokenBuf: ADD A TOKEN
     /*
      *  If not enough space on current buffer, allocate new one.
      */
-    if( ( tb->cur_pos + sizeof( TOKEN ) ) > BUF_SZ ) {
+    if( ( tb->cur_pos + SIZE_MTOKEN ) > BUF_SZ ) {
         token_hdr = TokenBufInit( token_hdr );
         tb = token_hdr->curr;
     }
 
-    *(TOKEN *)( tb->h + tb->cur_pos ) = token;
-    tb->cur_pos += sizeof( TOKEN );
-    token_hdr->total_size += sizeof( TOKEN );
+    SET_MTOKEN( tb->h + tb->cur_pos, token );
+    tb->cur_pos += SIZE_MTOKEN;
+    token_hdr->total_size += SIZE_MTOKEN;
 
     return( token_hdr );
 }
@@ -157,10 +157,10 @@ void TokenBufRemoveWhiteSpace(          // TokenBuf: REMOVE WHITE SPACE FROM END
 {
     TOKEN_BUFFER *tb = token_hdr->curr;
 
-    while( tb->cur_pos >= sizeof( TOKEN ) ) {
-        tb->cur_pos -= sizeof( TOKEN );
-        if( *(TOKEN *)&tb->h[tb->cur_pos] != T_WHITE_SPACE ) {
-            tb->cur_pos += sizeof( TOKEN );
+    while( tb->cur_pos >= SIZE_MTOKEN ) {
+        tb->cur_pos -= SIZE_MTOKEN;
+        if( GET_MTOKEN( &tb->h[tb->cur_pos] ) != T_WHITE_SPACE ) {
+            tb->cur_pos += SIZE_MTOKEN;
             break;
         }
     }

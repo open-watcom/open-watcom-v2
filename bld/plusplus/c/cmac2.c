@@ -394,7 +394,7 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
         }
     }
     if( prev_token == T_WHITE_SPACE ) {
-        mlen -= sizeof( TOKEN );
+        mlen -= SIZE_MTOKEN;
     }
     MacroSegmentAddToken( &mlen, T_NULL );
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {

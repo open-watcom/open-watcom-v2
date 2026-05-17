@@ -200,9 +200,11 @@ static void putBinary( REWRITE *r, uint_8 *bin, unsigned size )
     }
 }
 
-static void putToken( REWRITE *r, TOKEN token )
+static void putToken( REWRITE *r, TOKEN _token )
 {
-    putBinary( r, (uint_8 *)&token, sizeof( token ) );
+    TYPE_MTOKEN token = (TYPE_MTOKEN)_token;
+
+    putBinary( r, (uint_8 *)&token, SIZE_MTOKEN );
 }
 
 static uint_32 newSrcFileHandle( REWRITE *r, SRCFILE src_file )
@@ -1027,9 +1029,9 @@ static int getBinary( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop, uint_8 *bi
 
 static TOKEN getToken( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop )
 {
-    TOKEN       token;
+    TYPE_MTOKEN     token;
 
-    if( getBinary( r, rt, stop, (uint_8 *)&token, sizeof( token ) ) )
+    if( getBinary( r, rt, stop, (uint_8 *)&token, SIZE_MTOKEN ) )
         return( r->last_token );
     return( token );
 }
