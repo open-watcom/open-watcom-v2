@@ -1108,7 +1108,7 @@ void add_link( const char *link_name )
 
     _new( link, 1 );
 
-    link->next = NULL;
+    link->next = Link_list;
     Link_list = link;
     _new( link->link_name, strlen( link_name ) + 1 );
     strcpy( link->link_name, link_name );
@@ -1141,6 +1141,19 @@ keyword_def *find_keyword_all( const char *keyword )
     }
 
     return( NULL );
+}
+
+static void free_keyword_list( void )
+/***********************************/
+{
+    keyword_def     *key;
+
+    while( (key = Keyword_list) != NULL ) {
+        Keyword_list = key->next;
+        MemFree( key->keyword );
+        MemFree( key->ctx_list );
+        MemFree(key );
+    }
 }
 
 static void add_key_ctx( keyword_def *key, ctx_def *ctx )
@@ -1298,6 +1311,30 @@ ctx_def *find_ctx( const char *ctx_name )
     }
 
     return( NULL );
+}
+
+static void free_ctx_list( void )
+/*******************************/
+{
+    ctx_def         *ctx;
+    keylist_def     *x1;
+    section_def     *x2;
+
+    while( (ctx = Ctx_list) != NULL ) {
+        Ctx_list = ctx->next;
+        while( (x1 = ctx->keylist) != NULL ) {
+            ctx->keylist = x1->next;
+            MemFree( x1 );
+        }
+        while( (x2 = ctx->section_list) != NULL ) {
+            ctx->section_list = x2->next;
+            MemFree( x2->section_text );
+            MemFree( x2 );
+        }
+        MemFree( ctx->title );
+        MemFree( ctx->ctx_name );
+        MemFree( ctx );
+    }
 }
 
 static char *skip_prep( char *str )
@@ -1621,6 +1658,22 @@ static void set_browse_numbers( void )
             b_ctx->ctx->browse_num = order;
             order++;
         }
+    }
+}
+
+static void free_browse_list( void )
+/**********************************/
+{
+    browse_def      *browse;
+    browse_ctx      *x1;
+
+    while( (browse = Browse_list) != NULL ) {
+        Browse_list = browse->next;
+        while( (x1 = browse->ctx_list) != NULL ) {
+            browse->ctx_list = x1->next;
+            MemFree( x1 );
+        }
+        MemFree( browse );
     }
 }
 
@@ -2114,6 +2167,18 @@ static void check_links( void )
     }
 }
 
+static void free_link_list( void )
+/********************************/
+{
+    link_def            *link;
+
+    while( (link = Link_list) != NULL ) {
+        Link_list = link->next;
+        MemFree( link->link_name );
+        MemFree( link );
+    }
+}
+
 void NewList( const char *ptr, int indent, bool list_indent )
 /***********************************************************/
 {
@@ -2197,20 +2262,6 @@ int main( int argc, char *argv[] )
     MemInit();
     file = NULL;
     if( setjmp( Jmp_buf ) ) {
-        if( h_file_name != NULL ) {
-            MemFree( h_file_name );
-        }
-        if( Header_File != NULL ) {
-            MemFree( Header_File );
-        }
-        if( Footer_File != NULL ) {
-            MemFree( Footer_File );
-        }
-        if( Help_File != NULL ) {
-            MemFree( Help_File );
-        }
-        MemFree( file );
-
         if( Idx_file != NULL ) {
             fclose( Idx_file );
         }
@@ -2442,8 +2493,25 @@ int main( int argc, char *argv[] )
         if( Do_hdef ) {
             output_hdef_file();
         }
+        free_link_list();
+        free_keyword_list();
+        free_browse_list();
+        free_ctx_list();
         rc = 0;
     }
+    if( h_file_name != NULL ) {
+        MemFree( h_file_name );
+    }
+    if( Header_File != NULL ) {
+        MemFree( Header_File );
+    }
+    if( Footer_File != NULL ) {
+        MemFree( Footer_File );
+    }
+    if( Help_File != NULL ) {
+        MemFree( Help_File );
+    }
+    MemFree( file );
 
     MemFini();
     return( rc );
