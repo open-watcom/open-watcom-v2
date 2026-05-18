@@ -415,7 +415,7 @@ void  *MemAlloc( size_t size )
 /********************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 2 ), TrHdl ) );
 #else
     return( malloc( size ) );
 #endif
@@ -426,7 +426,7 @@ void  *MemReallocSafe( void *p, size_t size )
 /*******************************************/
 {
 #ifdef TRMEM
-    return( check_nomem( _trmem_realloc( p, size, _TRMEM_WHO( 4 ), TrHdl ) ) );
+    return( check_nomem( _trmem_realloc( p, size, _TRMEM_WHO( 3 ), TrHdl ) ) );
 #else
     return( check_nomem( realloc( p, size ) ) );
 #endif
@@ -443,12 +443,24 @@ void  *MemRealloc( void *p, size_t size )
 #endif
 }
 
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+{
+    if( str == NULL )
+        return( NULL );
+#ifdef TRMEM
+    return( check_nomem( _trmem_strdup( str, _TRMEM_WHO( 5 ), TrHdl ) ) );
+#else
+    return( check_nomem( strdup( str ) ) );
+#endif
+}
+
 TRMEMAPI( MemFree )
 void  MemFree( void *ptr )
 /************************/
 {
 #ifdef TRMEM
-    _trmem_free( ptr, _TRMEM_WHO( 5 ), TrHdl );;
+    _trmem_free( ptr, _TRMEM_WHO( 6 ), TrHdl );;
 #else
     free( ptr );
 #endif
@@ -527,7 +539,7 @@ void whp_fprintf( FILE *fp, const char *fmt, ... )
     va_list         args;
 
     if( Chk_buf == NULL ) {
-        _new( Chk_buf, 10000 );
+        Chk_buf = MemAllocSafe( 10000 );
     }
 
     if( Chk_buf != NULL ) {
@@ -754,8 +766,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_TL:
                 start_arg++;
                 if( start_arg < argc ) {
-                    _new( Ipf_or_Html_title, strlen( argv[start_arg] ) + 1 );
-                    strcpy( Ipf_or_Html_title, argv[start_arg] );
+                    Ipf_or_Html_title = MemStrdupSafe( argv[start_arg] );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -766,8 +777,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_DT:
                 start_arg++;
                 if( start_arg < argc ) {
-                    _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
-                    strcpy( IB_def_topic, argv[start_arg] );
+                    IB_def_topic = MemStrdupSafe( argv[start_arg] );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -775,8 +785,7 @@ static int process_args( int argc, char *argv[] )
             case ARG_DS:
                 start_arg++;
                 if( start_arg < argc ) {
-                    _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
-                    strcpy( IB_help_desc, argv[start_arg] );
+                    IB_help_desc = MemStrdupSafe( argv[start_arg] );
                 } else {
                     error_err( ERR_BAD_ARGS );
                 }
@@ -919,15 +928,14 @@ static int valid_args( int argc, char *argv[] )
             MemFree( Options_File );
             Options_File = NULL;
 
-            _new( argv, argc );
+            argv = MemAllocSafe( argc * sizeof( *argv ) );
             for( argc = 0;; argc++ ) {
                 if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
                     break;
                 }
                 line[sizeof( line ) - 1] = '\0';
                 trim_blanks( line );
-                _new( argv[argc], strlen( line ) + 1 );
-                strcpy( argv[argc], line );
+                argv[argc] = MemStrdupSafe( line );
             }
             fclose( opt_file );
             ret = process_args( argc, argv );
@@ -989,7 +997,7 @@ bool read_line( void )
             len++;
             if( len > Line_buf_size ) {
                 Line_buf_size += BUF_GROW;
-                Line_buf = _realloc( Line_buf, Line_buf_size );
+                Line_buf = MemReallocSafe( Line_buf, Line_buf_size );
                 buf = &Line_buf[len - 1];
             }
             *buf = (char)c;
@@ -1073,7 +1081,7 @@ size_t trans_add_char( char ch, section_def *section )
          * grow by a good, big amount
          */
         section->allocated_size += 1024;
-        _renew( section->section_text, section->allocated_size );
+        section->section_text = MemReallocSafe( section->section_text, section->allocated_size * sizeof( *section->section_text ) );
     }
     section->section_text[section->section_size - 1] = ch;
     return( 1 );
@@ -1106,12 +1114,11 @@ void add_link( const char *link_name )
 {
     link_def            *link;
 
-    _new( link, 1 );
+    link = MemAllocSafe( sizeof( *link ) );
 
     link->next = Link_list;
     Link_list = link;
-    _new( link->link_name, strlen( link_name ) + 1 );
-    strcpy( link->link_name, link_name );
+    link->link_name = MemStrdupSafe( link_name );
     link->line_num = Line_num;
 }
 
@@ -1160,7 +1167,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
 /*******************************************************/
 {
     if( key->ctx_list == NULL ) {
-        _new( key->ctx_list, 1 );
+        key->ctx_list = MemAllocSafe( sizeof( *key->ctx_list ) );
         key->ctx_list_alloc = 1;
         key->ctx_list_size = 0;
     }
@@ -1171,7 +1178,7 @@ static void add_key_ctx( keyword_def *key, ctx_def *ctx )
          * grow by a reasonable amount
          */
         key->ctx_list_alloc += 16;
-        _renew( key->ctx_list, key->ctx_list_alloc );
+        key->ctx_list = MemReallocSafe( key->ctx_list, key->ctx_list_alloc * sizeof( *key->ctx_list ) );
     }
     key->ctx_list[key->ctx_list_size - 1] = ctx;
 }
@@ -1188,11 +1195,10 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
         if( key != NULL ) {
             key->duplicate = true;
         } else {
-            _new( key, 1 );
+            key = MemAllocSafe( sizeof( *key ) );
             key->duplicate = false;
             key->defined_ctx = ctx;
-            _new( key->keyword, strlen( keyword ) + 1 );
-            strcpy( key->keyword, keyword );
+            key->keyword = MemStrdupSafe( keyword );
             key->next = Keyword_list;
             key->id = Keyword_id;
             Keyword_id++;
@@ -1202,7 +1208,7 @@ void add_ctx_keyword( ctx_def *ctx, const char *keyword )
         }
         add_key_ctx( key, ctx );
 
-        _new( keylist, 1 );
+        keylist = MemAllocSafe( sizeof( *keylist ) );
         keylist->key = key;
         keylist->next = ctx->keylist;
         ctx->keylist = keylist;
@@ -1274,7 +1280,7 @@ static bool read_topic_text( ctx_def *ctx, bool is_blank, int order_num )
             break;
         }
         if( section == NULL ) {
-            _new( section, 1 );
+            section = MemAllocSafe( sizeof( *section ) );
             section->section_text = NULL;
             section->allocated_size = 0;
             section->section_size = 0;
@@ -1392,9 +1398,8 @@ static browse_def *add_browse( const char *browse_name, ctx_def *ctx )
     browse_prev = NULL;
     for( browse = Browse_list;; browse_prev = browse, browse = browse->next ) {
         if( browse == NULL ) {
-            _new( browse, 1 );
-            _new( browse->browse_name, strlen( browse_name ) + 1 );
-            strcpy( browse->browse_name, browse_name );
+            browse = MemAllocSafe( sizeof( *browse ) );
+            browse->browse_name = MemStrdupSafe( browse_name );
             browse->ctx_list = NULL;
             browse->next =  NULL;
             /*
@@ -1411,7 +1416,7 @@ static browse_def *add_browse( const char *browse_name, ctx_def *ctx )
         }
     }
 
-    _new( b_ctx, 1 );
+    b_ctx = MemAllocSafe( sizeof( *b_ctx ) );
     b_ctx->ctx = ctx;
 
     for( b_ctx_list = &browse->ctx_list; *b_ctx_list != NULL; b_ctx_list = &((*b_ctx_list)->next) ) {
@@ -1437,8 +1442,7 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
     ctx_def             *ctx_list;
 
     if( title != NULL && ctx->title == NULL ) {
-        _new( ctx->title, strlen( title ) + 1 );
-        strcpy( ctx->title, title );
+        ctx->title = MemStrdupSafe( title );
     }
     if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
@@ -1475,7 +1479,7 @@ static ctx_def *init_ctx( char *ctx_name )
 {
     ctx_def             *ctx;
 
-    _new( ctx, 1 );
+    ctx = MemAllocSafe( sizeof( *ctx ) );
     ctx->section_list = NULL;
     if( Ctx_list == NULL ) {
         Ctx_list = ctx;
@@ -1490,8 +1494,7 @@ static ctx_def *init_ctx( char *ctx_name )
     ctx->ctx_id = -1;
     ctx->empty = true;
     ctx->req_by_link = false;
-    _new( ctx->ctx_name, strlen( ctx_name ) + 1 );
-    strcpy( ctx->ctx_name, ctx_name );
+    ctx->ctx_name = MemStrdupSafe( ctx_name );
 
     return( ctx );
 }
@@ -1847,7 +1850,7 @@ static void output_kw_file( void )
         /*
          * ... we allocate an array of pointers to keywords ...
          */
-        _new( kw, kw_num );
+        kw = MemAllocSafe( kw_num * sizeof( *kw ) );
         /*
          * ... fill it up ...
          */

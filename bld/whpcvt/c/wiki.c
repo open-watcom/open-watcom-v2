@@ -133,9 +133,9 @@ static char *translate_str_wiki( const char *str )
     }
     if( len > Trans_len ) {
         if( Trans_str != NULL ) {
-            _free( Trans_str );
+            MemFree( Trans_str );
         }
-        _new( Trans_str, len );
+        Trans_str = MemAllocSafe( len * sizeof( *Trans_str ) );
         Trans_len = len;
     }
     ptr = Trans_str;

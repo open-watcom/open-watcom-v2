@@ -55,11 +55,6 @@
 
 #define _min( a, b )            ( a > b ) b ? a
 #define _max( a, b )            ( a > b ) a ? b
-#define _new( ptr, size )       ( ptr = MemAllocSafe( sizeof( *(ptr) ) * (size) ) )
-#define _renew( ptr, size )     ( ptr = MemReallocSafe( ptr, sizeof( *(ptr) ) * (size) ) )
-#define _free( x )              MemFree( x )
-#define _alloc( size )          MemAllocSafe( size )
-#define _realloc( ptr, size )   MemReallocSafe( ptr, size )
 
 #define _is_nonblank( c )       ((c) != '\0' && (c) != ' ' && (c) != '\t')
 
