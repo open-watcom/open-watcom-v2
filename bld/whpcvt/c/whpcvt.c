@@ -1673,6 +1673,7 @@ static void free_browse_list( void )
             browse->ctx_list = x1->next;
             MemFree( x1 );
         }
+        MemFree( browse->browse_name );
         MemFree( browse );
     }
 }
