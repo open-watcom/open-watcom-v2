@@ -1081,7 +1081,7 @@ size_t trans_add_char( char ch, section_def *section )
          * grow by a good, big amount
          */
         section->allocated_size += 1024;
-        section->section_text = MemReallocSafe( section->section_text, section->allocated_size * sizeof( *section->section_text ) );
+        section->section_text = MemReallocSafe( section->section_text, section->allocated_size );
     }
     section->section_text[section->section_size - 1] = ch;
     return( 1 );
@@ -1159,7 +1159,7 @@ static void free_keyword_list( void )
         Keyword_list = key->next;
         MemFree( key->keyword );
         MemFree( key->ctx_list );
-        MemFree(key );
+        MemFree( key );
     }
 }
 
@@ -1319,24 +1319,38 @@ ctx_def *find_ctx( const char *ctx_name )
     return( NULL );
 }
 
+static void free_keylist( keylist_def *kl )
+/*****************************************/
+{
+    keylist_def     *tmp;
+
+    while( (tmp = kl) != NULL ) {
+        kl = tmp->next;
+        MemFree( tmp );
+    }
+}
+
+static void free_section_list( section_def *sl )
+/**********************************************/
+{
+    section_def     *tmp;
+
+    while( (tmp = sl) != NULL ) {
+        sl = tmp->next;
+        MemFree( tmp->section_text );
+        MemFree( tmp );
+    }
+}
+
 static void free_ctx_list( void )
 /*******************************/
 {
     ctx_def         *ctx;
-    keylist_def     *x1;
-    section_def     *x2;
 
     while( (ctx = Ctx_list) != NULL ) {
         Ctx_list = ctx->next;
-        while( (x1 = ctx->keylist) != NULL ) {
-            ctx->keylist = x1->next;
-            MemFree( x1 );
-        }
-        while( (x2 = ctx->section_list) != NULL ) {
-            ctx->section_list = x2->next;
-            MemFree( x2->section_text );
-            MemFree( x2 );
-        }
+        free_keylist( ctx->keylist );
+        free_section_list( ctx->section_list );
         MemFree( ctx->title );
         MemFree( ctx->ctx_name );
         MemFree( ctx );
@@ -1396,7 +1410,7 @@ static browse_def *add_browse( const char *browse_name, ctx_def *ctx )
     }
 
     browse_prev = NULL;
-    for( browse = Browse_list;; browse_prev = browse, browse = browse->next ) {
+    for( browse = Browse_list; /* nothing */; browse_prev = browse, browse = browse->next ) {
         if( browse == NULL ) {
             browse = MemAllocSafe( sizeof( *browse ) );
             browse->browse_name = MemStrdupSafe( browse_name );
@@ -1432,8 +1446,8 @@ static browse_def *add_browse( const char *browse_name, ctx_def *ctx )
 }
 
 
-static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char *browse_name, int head_level )
-/*************************************************************************************************************/
+static void add_ctx( ctx_def *ctx, char *keywords, const char *browse_name, int head_level )
+/******************************************************************************************/
 {
     char                *ptr;
     char                *end;
@@ -1441,12 +1455,10 @@ static void add_ctx( ctx_def *ctx, const char *title, char *keywords, const char
     ctx_def             *up_ctx;
     ctx_def             *ctx_list;
 
-    if( title != NULL && ctx->title == NULL ) {
-        ctx->title = MemStrdupSafe( title );
-    }
     if( keywords != NULL && ctx->keylist == NULL && *skip_blanks( keywords ) != '\0' ) {
         for( ptr = keywords;; ) {
-            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; end++ );
+            for( end = ptr; *end != ',' && *end != ';' && *end != '\0'; end++ )
+                /* nothing */;
             ch = *end;
             *end = '\0';
             if( !find_keyword( ctx, ptr ) ) {
@@ -1566,7 +1578,10 @@ static ctx_def *define_ctx( void )
         ctx = init_ctx( ctx_name );
     }
     ctx->title_fmt = title_fmt;
-    add_ctx( ctx, title, keywords, browse_name, head_level );
+    if( ctx->title == NULL ) {
+        ctx->title = MemStrdupSafe( title );
+    }
+    add_ctx( ctx, keywords, browse_name, head_level );
 
     if(( old_ctx != NULL ) && ( old_ctx != ctx ) && ( old_ctx->head_level == 0 )) {
         ptr = old_ctx->ctx_name;
@@ -1597,7 +1612,7 @@ static bool read_ctx_topic( void )
 
     if( ctx == NULL ) {
         ctx = init_ctx( ctx_name );
-        add_ctx( ctx, NULL, NULL, NULL, -1 );
+        add_ctx( ctx, NULL, NULL, -1 );
     }
     Curr_ctx = ctx;
 
@@ -1720,11 +1735,11 @@ bool is_special_topic( ctx_def *ctx, bool dump_popup )
     if( ctx == NULL ) {
         res = false;
     } else {
-        res = ( stricmp( ctx->ctx_name, "table_of_contents" ) == 0 ||
-                stricmp( ctx->ctx_name, "index_of_topics" ) == 0 ||
-                stricmp( ctx->ctx_name, "keyword_search" ) == 0 ||
-                stricmp( ctx->ctx_name, "browse_lists" ) == 0  ||
-                ( ctx->title_fmt == TITLE_FMT_NOLINE && dump_popup ) );
+        res = ( stricmp( ctx->ctx_name, "table_of_contents" ) == 0
+            || stricmp( ctx->ctx_name, "index_of_topics" ) == 0
+            || stricmp( ctx->ctx_name, "keyword_search" ) == 0
+            || stricmp( ctx->ctx_name, "browse_lists" ) == 0
+            || ( ctx->title_fmt == TITLE_FMT_NOLINE && dump_popup ) );
     }
     return( res );
 }
