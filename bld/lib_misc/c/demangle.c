@@ -153,6 +153,9 @@ typedef struct output_desc {
     boolbit         scope_name      : 1;
     boolbit         base_name       : 1;
     boolbit         dllimport       : 1;
+#if 0 || defined( TEST )
+    int             status;
+#endif
 } output_desc;
 
 // the simple demangler uses these to output & count chars in the output buffer
@@ -1542,10 +1545,13 @@ static bool mangled_name( output_desc *data )
     return( false );
 }
 
-static bool full_mangled_name( output_desc *data )
+static void full_mangled_name( output_desc *data )
 {
     unsigned advances;
 
+#if 0 || defined( TEST )
+    data->status = 0;
+#endif
     advances = 1;
     if( data->end == NULL || ( data->end - data->input ) >= IMPORT_PREFIX_LEN ) {
         if( CHECK_IMPORT_PREFIX( data->input ) ) {
@@ -1564,22 +1570,26 @@ static bool full_mangled_name( output_desc *data )
             for( ; advances != 0; --advances ) {
                 advanceChar( data );
                 if( currChar( data ) == NULL_CHAR ) {
-                    return( false );
+                    return;
                 }
             }
-            return( mangled_name( data ) );
+#if 0 || defined( TEST )
+            data->status = mangled_name( data );
+#else
+            mangled_name( data );
+#endif
         }
         break;
     }
-    return( false );
 }
 
-static void do_demangle( output_desc *data )
-{
 #if 0 || defined( TEST )
+static void disp_demangle_status( output_desc *data )
+{
     char const *input = data->input;
 
-    if( !full_mangled_name( data ) ) {
+    if( data->status == -1 ) {
+    } else if( data->status == 0 ) {
         if( ! no_errors ) {
             ++errors;
             printf( "ERROR: full_mangled_name failed\n" );
@@ -1595,10 +1605,8 @@ static void do_demangle( output_desc *data )
             printf( "-->%s<--\n", input );
         }
     }
-#else
-    full_mangled_name( data );
-#endif
 }
+#endif
 
 static void do_copy( output_desc *data )
 {
@@ -1606,6 +1614,9 @@ static void do_copy( output_desc *data )
     size_t      len;
     char        c;
 
+#if 0 || defined( TEST )
+    data->status = -1;
+#endif
     ptr = data->input;
     len = 0;
     c = currChar( data );
@@ -1719,11 +1730,14 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
         len = strlen( input );
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     if( __is_mangled( input, len ) ) {
-        do_demangle( &data );
+        full_mangled_name( &data );
     } else {
         do_copy( &data );
     }
     outlen = terminateOutput( &data );
+#if 0 || defined( TEST )
+    disp_demangle_status( &data );
+#endif
     /* size does not include '\0' */
     return( outlen );
 }
@@ -1882,11 +1896,14 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
     if( __is_mangled( input, len ) ) {
-        do_demangle( &data );
+        full_mangled_name( &data );
     } else {
         do_copy( &data );
     }
     outlen = terminateOutput( &data );
+#if 0 || defined( TEST )
+    disp_demangle_status( &data );
+#endif
     if( buffp != NULL ) {
         *buffp = data.output;
     }
@@ -1916,7 +1933,10 @@ bool __scope_name(                              // EXTRACT A C++ SCOPE
     init_descriptor( &data, &demangleEmit, &data, input, len, NULL, 0 );
     data.scope_name = true;
     data.scope_index = index;
-    do_demangle( &data );
+    full_mangled_name( &data );
+#if 0 || defined( TEST )
+    disp_demangle_status( &data );
+#endif
     if( data.scope_len != 0 ) {
         *scopep = data.scope_ptr;
         *scope_sizep = data.scope_len;
@@ -1941,11 +1961,14 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     data.suppress_output = 0;
     data.base_name = true;
     if( __is_mangled( input, len ) ) {
-        do_demangle( &data );
+        full_mangled_name( &data );
     } else {
         do_copy( &data );
     }
     outlen = terminateOutput( &data );
+#if 0 || defined( TEST )
+    disp_demangle_status( &data );
+#endif
     /* size does not include '\0' */
     return( outlen );
 }
@@ -2015,10 +2038,13 @@ void __parse_mangled_name(                      // PARSE MANGLED NAME
     init_descriptor( &data, ofn, cookie, input, len, NULL, 0 );
     data.suppress_output = 0;
     if( __is_mangled( input, len ) ) {
-        do_demangle( &data );
+        full_mangled_name( &data );
     } else {
         do_copy( &data );
     }
+#if 0 || defined( TEST )
+    disp_demangle_status( &data );
+#endif
 }
 
 #endif // TEST
