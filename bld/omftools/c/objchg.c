@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,10 +113,10 @@ static char *PutOffset( char *p, unsigned_32 data )
 /*************************************************/
 {
     if( RecHdr[0] & 1 ) {
-        MPUT_LE_32( p, data );
+        MPUT_LE_32_UN( p, data );
         p += sizeof( unsigned_32 );
     } else {
-        MPUT_LE_16( p, data );
+        MPUT_LE_16_UN( p, data );
         p += sizeof( unsigned_16 );
     }
     return( p );

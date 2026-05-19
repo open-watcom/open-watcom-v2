@@ -297,13 +297,13 @@ unsigned_32 GetOffset( bool wide )
     if( wide ) {
         unsigned_32 dword;
 
-        dword = MGET_LE_U32( ReadRecPtr );
+        dword = MGET_LE_U32_UN( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_32 );
         return( dword );
     } else {
         unsigned_16 word;
 
-        word = MGET_LE_U16( ReadRecPtr );
+        word = MGET_LE_U16_UN( ReadRecPtr );
         ReadRecPtr += sizeof( unsigned_16 );
         return( word );
     }
