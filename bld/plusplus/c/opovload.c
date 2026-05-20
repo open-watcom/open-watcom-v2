@@ -753,7 +753,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                                 , &fnov_diag );
         }
     }
-    MemFree( alist );
+    CMemFree( alist );
     switch( ovret ) {
     case FNOV_AMBIGUOUS:
       { FNOV_LIST* amb_list;    // - ambiguity list
