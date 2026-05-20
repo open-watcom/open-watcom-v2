@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -627,10 +627,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
     FNOV_RESULT ovret;          // - overload return
     unsigned num_args;          // - # of arguments
     SYMBOL fun;                 // - overloaded function to use
-    struct                      // - arg.list
-    {   arg_list    base;       // - - hdr, entry[1]
-        TYPE        arg2;       // - - entry[2]
-    } alist;
+    arg_list *alist;
     FNOV_DIAG fnov_diag;        // - diagnosis information
 
     ExtraRptIncrementCtr( ctrResolveOps );
@@ -647,14 +644,15 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         ScopeFreeResult( olinf->result_nonmem_namespace );
         return( olinf->expr );
     }
-    InitArgList( &alist.base );
+    alist = AllocArgListTemp( 2 );
+    InitArgList( alist );
     zero_node = NULL;
     ptlist[0] = olinf->left.operand;
-    alist.base.type_list[0] = olinf->left.node_type;
+    alist->type_list[0] = olinf->left.node_type;
     if( olinf->flags & PTO_BINARY ) {
         if( olinf->mask & OPM_ASSIGN ) {
             ptlist[1] = olinf->right.operand;
-            alist.base.type_list[1] = olinf->right.node_type;
+            alist->type_list[1] = olinf->right.node_type;
             num_args = 2;
         } else if( olinf->mask & OPM_LT ) {
             num_args = 1;
@@ -663,26 +661,26 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                 olinf->scalars = NULL;
             }
             ptlist[1] = olinf->right.operand;
-            alist.base.type_list[1] = olinf->right.node_type;
+            alist->type_list[1] = olinf->right.node_type;
             num_args = 2;
         }
     } else if( olinf->mask & OPM_POST ) {
         zero_node = NodeZero();
         setupOVOP( olinf, zero_node, &olinf->right );
         ptlist[1] = olinf->right.operand;
-        alist.base.type_list[1] = olinf->right.node_type;
+        alist->type_list[1] = olinf->right.node_type;
         num_args = 2;
     } else {
         num_args = 1;
     }
-    alist.base.num_args = num_args;
+    alist->num_args = num_args;
     // this qualifier is handled explicitly by the first entry in the arg_list
     ovret = OpOverloadedDiag( &fun
                         , olinf->result_mem
                         , olinf->result_nonmem
                         , olinf->result_nonmem_namespace
                         , olinf->scalars
-                        , (arg_list*)&alist
+                        , alist
                         , ptlist
                         , &fnov_diag );
     if( ovret == FNOV_AMBIGUOUS && CompFlags.extensions_enabled ) {
@@ -723,7 +721,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                                 , olinf->result_nonmem
                                 , olinf->result_nonmem_namespace
                                 , olinf->scalars
-                                , (arg_list*)&alist
+                                , alist
                                 , ptlist
                                 , FNC_STDOP_CV_VOID
                                 , &fnov_diag );
@@ -749,12 +747,13 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
                                 , olinf->result_nonmem
                                 , olinf->result_nonmem_namespace
                                 , olinf->scalars
-                                , (arg_list*)&alist
+                                , alist
                                 , ptlist
                                 , FNC_USE_WP13332
                                 , &fnov_diag );
         }
     }
+    MemFree( alist );
     switch( ovret ) {
     case FNOV_AMBIGUOUS:
       { FNOV_LIST* amb_list;    // - ambiguity list
