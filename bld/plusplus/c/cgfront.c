@@ -142,7 +142,7 @@ static CGFILE_GEN *getGenData(  // GET PTR TO GENERATION DATA
 
 
 static void cgEmitData(         // EMIT AN INSTRUCTION TO DATA FILE
-    CGINTER *instruction )      // - instruction to be emitted
+    CGINTER *ins )              // - instruction to be emitted
 {
     CGFILE *emit_file;          // - file for emit
 
@@ -152,13 +152,13 @@ static void cgEmitData(         // EMIT AN INSTRUCTION TO DATA FILE
         flags.init_data_beg = false;
         flags.init_data_end = true;
     }
-    cgWriteIC( emit_file, instruction );
+    cgWriteIC( emit_file, ins );
 }
 
 
 static void cgEmitIns(          // EMIT AN INSTRUCTION TO CODE FILE
     CGFILE_GEN *gen,            // - generation data
-    CGINTER *instruction )      // - instruction to be emitted
+    CGINTER *ins )              // - instruction to be emitted
 {
     if( gen->emit_init_beg ) {
         ins_init_beg.value.pvalue = gen->init_sym;
@@ -166,7 +166,7 @@ static void cgEmitIns(          // EMIT AN INSTRUCTION TO CODE FILE
         gen->emit_init_beg = false;
         gen->emit_init_end = true;
     }
-    cgWriteIC( codeCGFILE, instruction );
+    cgWriteIC( codeCGFILE, ins );
 }
 
 
@@ -292,16 +292,16 @@ static void emitSourcePosn(     // GENERATE DEBUG POSITION IF REQ'D
 
 static void cgEmit(             // EMIT INSTRUCTION TO CODE FILE, IF REQUIRED
     CGFILE_GEN *gen,            // - generation data
-    CGINTER *instruction )      // - instruction to be emitted
+    CGINTER *ins )              // - instruction to be emitted
 {
     emitSetType( gen );
-    switch( instruction->opcode ) {
+    switch( ins->opcode ) {
     case IC_INIT_DONE :
     case IC_FUNCTION_OPEN :
         gen->curr_type = NULL;
         break;
     }
-    cgEmitIns( gen, instruction );
+    cgEmitIns( gen, ins );
 }
 
 
