@@ -1733,6 +1733,15 @@ void FunctionBodyStartup(       // COMMON START-UP FOR ALL COMPILED FUNCTIONS
     doFnStartup( func, f, NULL, &func->locn->tl, flags );
 }
 
+void FunctionBodyStartupNoloc(  // START-UP FOR INTERNAL FUNCTIONS
+    SYMBOL func,                // - function being compiled
+    FUNCTION_DATA *f,           // - function data for current function
+    enum special_func flags )   // - extra flags
+{
+    initFunctionData( func, f );
+    doFnStartup( func, f, NULL, NULL, flags );
+}
+
 static void flushToDepth1( FUNCTION_DATA *f )
 {
     depth_t depth;

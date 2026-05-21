@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -153,6 +153,7 @@ extern void FunctionBodyDeadCode( void );
 extern INIT_VAR *FunctionBodyGetInit( FUNCTION_DATA * );
 extern void FunctionBodyShutdown( SYMBOL, FUNCTION_DATA * );
 extern void FunctionBodyStartup( SYMBOL, FUNCTION_DATA *, enum special_func );
+extern void FunctionBodyStartupNoloc( SYMBOL, FUNCTION_DATA *, enum special_func );
 extern void FunctionBodyDefargShutdown( FUNCTION_DATA * );
 extern void FunctionBodyDefargStartup( SYMBOL, FUNCTION_DATA * );
 extern PTREE FunctionCalled( PTREE, SYMBOL );
