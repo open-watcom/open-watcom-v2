@@ -87,7 +87,7 @@ jobs:
         include:
         - title: DOS
           doctype: docdos
-          timeout: 35
+          timeout: 40
         - title: OS/2
           doctype: docos2
           timeout: 35
