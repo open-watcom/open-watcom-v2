@@ -59,7 +59,8 @@
 /*
  * size of map file buffer
  */
-#define MAP_BUFFER_SIZE (16 * SECTOR_SIZE)
+#define MAP_BUFFER_SIZE     (16 * SECTOR_SIZE)
+#define MAP_LINEBUFF_SIZE   4096
 
 typedef struct {
     unsigned_32         address;
@@ -93,6 +94,8 @@ static time_t           StartT;
 static clock_t          ClockTicks;
 static bool             Absolute_Seg;
 static unsigned long    NumMapSyms;
+
+static char		*MapLineBuff;
 
 void ResetWriteMapIO( void )
 /**************************/
@@ -142,24 +145,21 @@ static void WriteMapMsgPrintf( int msgid, ... )
 {
     char        format[RESOURCE_MAX_SIZE];
     va_list     args;
-    char        buff[MAX_MSG_SIZE];
     size_t      len;
 
     Msg_Get( msgid, format );
     va_start( args, msgid );
-    len = DoFmtStr( buff, sizeof( buff ), format, args );
+    len = DoFmtStr( MapLineBuff, MAP_LINEBUFF_SIZE, format, args );
     va_end( args );
-    WriteMap( buff, len );
+    WriteMap( MapLineBuff, len );
     WriteMapNL();
 }
 
 static void WriteMapMsg( int msgid )
 /**********************************/
 {
-    char        buff[RESOURCE_MAX_SIZE];
-
-    Msg_Get( msgid, buff );
-    WriteMap( buff, strlen( buff ) );
+    Msg_Get( msgid, MapLineBuff );
+    WriteMap( MapLineBuff, strlen( MapLineBuff ) );
     WriteMapNL();
 }
 
@@ -167,19 +167,18 @@ static void WriteMapPrintf( const char *format, ... )
 /***************************************************/
 {
     va_list     args;
-    char        buff[MAX_MSG_SIZE];
     size_t      len;
 
     va_start( args, format );
-    len = DoFmtStr( buff, sizeof( buff ), format, args );
+    len = DoFmtStr( MapLineBuff, MAP_LINEBUFF_SIZE, format, args );
     va_end( args );
-    WriteMap( buff, len );
+    WriteMap( MapLineBuff, len );
     WriteMapNL();
 }
 
 static void WriteMapBox( int msgid )
 /**********************************/
-{
+{ 
     char        box_buff[RESOURCE_MAX_SIZE];
     char        msg_buff[RESOURCE_MAX_SIZE];
     size_t      i;
@@ -205,7 +204,6 @@ static void WriteMapColPrintf( size_t col, const char *str, ... )
     va_list         args;
     size_t          num;
     static  char    Blanks[]={"                                      "};
-    char            buff[MAX_MSG_SIZE];
     size_t          len;
 
     num = 0;
@@ -217,9 +215,9 @@ static void WriteMapColPrintf( size_t col, const char *str, ... )
     MapCol += num;
     WriteMap( Blanks, num );
     va_start( args, str );
-    len = DoFmtStr( buff, sizeof( buff ), str, args );
+    len = DoFmtStr( MapLineBuff, MAP_LINEBUFF_SIZE, str, args );
     va_end( args );
-    WriteMap( buff, len );
+    WriteMap( MapLineBuff, len );
     MapCol += len;
 }
 
@@ -1083,6 +1081,7 @@ void MapInit( void )
             LnkMsg( FTL+MSG_CANT_OPEN, "12", MapFName, strerror( errno ) );
             return;
         }
+        MapLineBuff = MemAlloc( MAP_LINEBUFF_SIZE );
         setvbuf( MapFile, NULL, _IOFBF, MAP_BUFFER_SIZE );
         localt = localtime( &StartT );
         MapCol = 0;
@@ -1154,6 +1153,7 @@ void MapFini( void )
         }
 
         MapFlags = 0;
+        MemFree( MapLineBuff );
 
         if( fclose( MapFile ) ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", MapFName, strerror( errno ) );
