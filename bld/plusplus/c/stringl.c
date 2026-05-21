@@ -412,6 +412,7 @@ pch_status PCHReadStringPool( void )
     STRING_CONSTANT *p;
     STRING_CONSTANT str;
     target_size_t str_len;
+    unsigned i;
 
     while( uniqueStrings != NULL ) {
         StringTrash( uniqueStrings );
