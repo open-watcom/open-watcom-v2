@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x34
+#define PHH_MINOR               0x35
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__

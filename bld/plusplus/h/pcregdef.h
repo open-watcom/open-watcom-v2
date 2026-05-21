@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,9 @@
 //          - must be before CGIO because ->open_ins in BLK_INITs in LABEL
 //            must be zapped when CGIO processes ICs (we don't want the CGIO
 //            zaps to be ruined by reading in BLK_INITs)
+//      - STRINGL
+//          - must be before PTREE and TYPE because they can use literal
+//            string for based pointers
 //
 PCH_EXEC( CMACADD,              Macros )
 PCH_EXEC( NAME,                 Names )

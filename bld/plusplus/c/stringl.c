@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -375,26 +375,27 @@ pch_status PCHInitStringPool( bool writing )
     STRING_CONSTANT curr;
     STRING_CONSTANT *p;
 
-    if( ! writing ) {
-        return( PCHCB_OK );
-    }
-    stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
-    p = stringTranslateTable;
-    for( curr = uniqueStrings; curr != NULL; curr = curr->next ) {
-        *p = curr;
-        ++p;
-    }
-    qsort( stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpString );
-#ifdef DEVBUILD
-    {
-        unsigned i;
-        for( i = 1; i < stringCount; ++i ) {
-            if( stringTranslateTable[i -1 ] == stringTranslateTable[i] ) {
-                CFatal( "two identical strings in translation table" );
+    if( writing ) {
+        if( stringCount > 0 ) {
+            stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
+            p = stringTranslateTable;
+            for( curr = uniqueStrings; curr != NULL; curr = curr->next ) {
+                *p = curr;
+                ++p;
             }
+            qsort( stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpString );
+#ifdef DEVBUILD
+            {
+                unsigned i;
+                for( i = 1; i < stringCount; ++i ) {
+                    if( stringTranslateTable[i -1 ] == stringTranslateTable[i] ) {
+                        CFatal( "two identical strings in translation table" );
+                    }
+                }
+            }
+#endif
         }
     }
-#endif
     return( PCHCB_OK );
 }
 
@@ -416,13 +417,16 @@ pch_status PCHReadStringPool( void )
         StringTrash( uniqueStrings );
     }
     stringCount = PCHReadUInt();
-    stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
-    p = stringTranslateTable;
-    for( ; (str_len = PCHReadUInt()) != 0; ) {
-        str = allocLiteral( str_len, PCHReadUInt() );
-        PCHRead( str->string, str_len );
-        stringAdd( str, &uniqueStrings );
-        *p++ = str;
+    if( stringCount > 0 ) {
+        stringTranslateTable = CMemAlloc( stringCount * sizeof( STRING_CONSTANT ) );
+        p = stringTranslateTable;
+        for( i = 0; i < stringCount; ++i ) {
+            str_len = PCHReadUInt();
+            str = allocLiteral( str_len, PCHReadUInt() );
+            PCHRead( str->string, str_len );
+            stringAdd( str, &uniqueStrings );
+            *p++ = str;
+        }
     }
     return( PCHCB_OK );
 }
@@ -434,29 +438,30 @@ pch_status PCHWriteStringPool( void )
     STRING_CONSTANT *p;
 
     PCHWriteUInt( stringCount );
-    p = stringTranslateTable;
-    for( i = 0; i < stringCount; ++i ) {
-        str = p[i];
-        PCHWriteUInt( str->len );
-        PCHWriteUInt( str->flags );
-        PCHWrite( str->string, str->len );
+    if( stringCount > 0 ) {
+        p = stringTranslateTable;
+        for( i = 0; i < stringCount; ++i ) {
+            str = p[i];
+            PCHWriteUInt( str->len );
+            PCHWriteUInt( str->flags );
+            PCHWrite( str->string, str->len );
+        }
     }
-    PCHWriteUInt( 0 );
     return( PCHCB_OK );
 }
 
 STRING_CONSTANT StringMapIndex( STRING_CONSTANT index )
 /*****************************************************/
 {
-    if( PCHGetUInt( index ) < PCH_FIRST_INDEX ) {
-        return( NULL );
-    }
+    if( PCHGetUInt( index ) >= PCH_FIRST_INDEX && stringCount > 0 ) {
 #ifdef DEVBUILD
-    if( PCHGetUInt( index ) >= stringCount + PCH_FIRST_INDEX ) {
-        CFatal( "invalid string index" );
-    }
+        if( PCHGetUInt( index ) >= stringCount + PCH_FIRST_INDEX ) {
+            CFatal( "invalid string index" );
+        }
 #endif
-    return( stringTranslateTable[PCHGetUInt( index ) - PCH_FIRST_INDEX] );
+        return( stringTranslateTable[PCHGetUInt( index ) - PCH_FIRST_INDEX] );
+    }
+    return( NULL );
 }
 
 static int cmpFindString( const void *kp, const void *tp )
@@ -477,13 +482,13 @@ STRING_CONSTANT StringGetIndex( STRING_CONSTANT str )
 {
     STRING_CONSTANT *found;
 
-    if( str == NULL ) {
-        return( PCHSetUInt( PCH_NULL_INDEX ) );
+    if( str != NULL && stringCount > 0 ) {
+        found = bsearch( &str, stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpFindString );
+        if( found == NULL ) {
+            DbgStmt( CFatal( "invalid string passed to StringGetIndex" ) );
+            return( PCHSetUInt( PCH_ERROR_INDEX ) );
+        }
+        return( PCHSetUInt( ( found - stringTranslateTable ) + PCH_FIRST_INDEX ) );
     }
-    found = bsearch( &str, stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpFindString );
-    if( found == NULL ) {
-        DbgStmt( CFatal( "invalid string passed to StringGetIndex" ) );
-        return( PCHSetUInt( PCH_ERROR_INDEX ) );
-    }
-    return( PCHSetUInt( ( found - stringTranslateTable ) + PCH_FIRST_INDEX ) );
+    return( PCHSetUInt( PCH_NULL_INDEX ) );
 }
