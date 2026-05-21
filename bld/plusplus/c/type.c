@@ -8838,6 +8838,7 @@ static void pchWriteArgLists( type_pch_walk *data )
 {
     unsigned count;
     unsigned i;
+    unsigned j;
     unsigned except_spec_count;
     TYPE *head;
     TYPE curr;
@@ -8874,7 +8875,6 @@ static void pchWriteArgLists( type_pch_walk *data )
     } RingIterEnd( curr )
     head = &fnHashTable[0][0];
     for( i = 0; i < ARGS_HASH; ++i ) {
-        int j;
         for( j = 0; j < TYPE_HASH_MODULUS; ++j ) {
             RingIterBeg( *head, curr ) {
                 *p = curr->u.f.args;
@@ -8910,8 +8910,8 @@ static void pchWriteArgLists( type_pch_walk *data )
         }
     }
     PCHWriteUInt( count );
-    for( p = table; p < &table[count]; ++p ) {
-        args = *p;
+    for( i = 0; i < count; ++i ) {
+        args = table[i];
         save_except_spec = args->except_spec;
         except_spec_count = 0;
         if( save_except_spec != NULL ) {
@@ -8921,8 +8921,8 @@ static void pchWriteArgLists( type_pch_walk *data )
         }
         args->except_spec = PCHSetUInt( except_spec_count );
         PCHWrite( args, offsetof( arg_list, type_list ) );
-        for( i = 0; i < args->num_args; ++i ) {
-            TypePCHWrite( args->type_list[i] );
+        for( j = 0; j < args->num_args; ++j ) {
+            TypePCHWrite( args->type_list[j] );
         }
         if( save_except_spec != NULL ) {
             for( etype = save_except_spec; *etype != NULL; ++etype ) {
