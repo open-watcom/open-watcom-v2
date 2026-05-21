@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,7 +121,7 @@ static void FiniOutFileBuffer( FILE *fo )
 {
     if( OutBuffer != NULL ) {
         if( OutBitCount ) {
-            *(unsigned_16 *)( OutBuffer + OutCtrl ) = OutWord << ( 16 - OutBitCount );
+            MPUT_16_UN( OutBuffer + OutCtrl, OutWord << ( 16 - OutBitCount ) );
         }
         fwrite( OutBuffer, 1, OutPos, fo );
         OutTotal += OutPos;
@@ -140,7 +140,7 @@ static void WriteBit( FILE *fo, int b )
     OutBitCount++;
     if( OutBitCount >= 16 ) {
         OutBitCount = 0;
-        *(unsigned_16 *)( OutBuffer + OutCtrl ) = OutWord;
+        MPUT_16_UN( OutBuffer + OutCtrl, OutWord );
         if( OutPos >= BUFFER_LEN ) {
             fwrite( OutBuffer, 1, OutPos, fo );
             OutTotal += OutPos;
@@ -312,7 +312,7 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
 
             if( xlen1 >= RepMinSize ) {
                 len = RepMinSize;
-                for( s = CodeHeads[ *(unsigned_16 *)data ].head; s != NULL; s = s->next ) {
+                for( s = CodeHeads[MGET_U16_UN( data )].head; s != NULL; s = s->next ) {
                     p1 = data;
                     p2 = s->data;
                     len1 = p1 - p2;
@@ -447,7 +447,7 @@ static unsigned_32 EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size
             if( trail_len < RepMaxSize ) {
                 ++trail_len;
             } else {
-                code = CodeHeads + *(unsigned_16 *)( data - trail_len );
+                code = CodeHeads + MGET_U16_UN( data - trail_len );
                 if( code->head == NULL ) {
                     // Error
 #ifdef _M_I86
