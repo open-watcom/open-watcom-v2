@@ -112,7 +112,7 @@ code_block *get_code_blocks( const char **current, int count, const char *base )
 
         /* Set function, which is the pointer to the actual compiled code. */
 
-        if( &out_block[i].count == 0 ) {
+        if( out_block[i].count == 0 ) {
             out_block[i].text = NULL;
         } else {
             out_block[i].text = *current;
