@@ -1323,7 +1323,7 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
         // The following comment is a trigger for the ICMASK program to start
         // scanning for case IC_* patterns.
         // ICMASK BEGIN DWARF (do not remove)
-        switch( ins->opcode ) {
+        switch( ins->opcode.id ) {
         case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
             break;
 //

@@ -335,7 +335,7 @@ static CGIOBUFF *switchToNextBuffer( CGIOBUFF *ctl )
 
     next = findWrBuffer();
     xfer = pointXfer( ctl );
-    xfer->leap_ins.opcode = IC_NEXT;
+    xfer->leap_ins.opcode.id = IC_NEXT;
     xfer->leap_ins.value.pvalue = 0;
     xfer->leap_ins.value.uvalue = next->disk_addr;
     xfer->offset = next->free_offset;
@@ -373,7 +373,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
                 dest = start;
                 stop = pointXferOffset( ctl, MAX_WRITE_AMT );
             }
-            opcode = p_instr->opcode;
+            opcode = p_instr->opcode.id;
             if( icMaskTable[opcode] & ICOPM_PCHREAD ) {
                 ctl->free_offset += ((char*)dest) - (char*)start;
                 *pctl = ctl;
@@ -384,7 +384,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
                     DbgAssert( c <= s_instr );
                     DbgAssert(( s_instr - c ) < CGINTER_BLOCKING );
                     while( c < s_instr ) {
-                        DbgAssert( c->opcode == IC_PCH_PAD );
+                        DbgAssert( c->opcode.id == IC_PCH_PAD );
                         ++c;
                     }
                 }
@@ -397,7 +397,7 @@ CGINTER CgioBuffPCHRead(        // READ FROM PCH AND WRITE INTO BUFFER
             } else {
                 dest->value = p_instr->value;
             }
-            dest->opcode = opcode;
+            dest->opcode.id = opcode;
             ++dest;
             ++p_instr;
         } while( p_instr < s_instr );
@@ -441,8 +441,8 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
     }
 #endif
 #ifdef DEVBUILD
-    DbgAssert( ins->opcode != IC_EOF );
-    if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
+    DbgAssert( ins->opcode.id != IC_EOF );
+    if( icMaskTable[ins->opcode.id] & ICOPM_BRINFO ) {
         if( TOGGLEDBG( browse_emit ) ) {
             DumpCgFront( "BiEm", ctl->disk_addr, ctl->free_offset, ins );
         }
@@ -450,7 +450,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
         if( TOGGLEDBG( dump_emit_ic ) ) {
             DumpCgFront( "Emit", ctl->disk_addr, ctl->free_offset, ins );
         }
-        if( ICOpTypes[ins->opcode] == ICOT_SYM ) {
+        if( ICOpTypes[ins->opcode.id] == ICOT_SYM ) {
             SYMBOL sym = ins->value.pvalue;
             if( sym != NULL && !SymIsCatchAlias( sym ) && SymIsAlias( sym ) ) {
                 if( ErrCount == 0 ) {
@@ -461,7 +461,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
     }
 #endif
     dest = pointXfer( ctl );
-    dest->opcode = ins->opcode;
+    dest->opcode.id = ins->opcode.id;
     dest->value = ins->value;
     ctl->free_offset += sizeof( CGINTER );
 #ifdef DEVBUILD
@@ -469,7 +469,7 @@ CGIOBUFF *CgioBuffWriteIC(      // WRITE AN IC RECORD
      * we will always be able to write an IC_NEXT so this is OK
      */
     ++dest;
-    dest->opcode = IC_NEXT;
+    dest->opcode.id = IC_NEXT;
     dest->value.pvalue = 0;
     dest->value.ivalue = -1;
 #endif
@@ -483,7 +483,7 @@ void CgioBuffWrClose(           // RELEASE BUFFER AFTER WRITING
     CGINTER *p;
 
     p = pointXfer( ctl );
-    p->opcode = IC_EOF;
+    p->opcode.id = IC_EOF;
     p->value.pvalue = 0;
     ctl->free_offset += sizeof( CGINTER );
     finishWrBuffer( ctl );
@@ -505,7 +505,7 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
 {
     char * prefix = NULL;       // - NULL or prefix when tracing
 
-    if( IC_EOF != curr->opcode && (icMaskTable[curr->opcode] & ICOPM_BRINFO) ) {
+    if( IC_EOF != curr->opcode.id && (icMaskTable[curr->opcode.id] & ICOPM_BRINFO) ) {
         if( TOGGLEDBG( browse_read ) ) {
             prefix = "BiRd";
         }
@@ -540,7 +540,7 @@ CGIOBUFF *CgioBuffReadIC(       // READ A RECORD
     CGINTER *curr;
 
     curr = (*ins) + 1;
-    if( curr->opcode == IC_NEXT ) {
+    if( curr->opcode.id == IC_NEXT ) {
         _NEXT_BLOCK( ctl, curr );
     }
     *ins = curr;
@@ -560,7 +560,7 @@ CGIOBUFF *CgioBuffReadICUntilOpcode(       // READ A RECORD UNTIL OPCODE IS FOUN
     curr = *ins;
     ++curr;
     for(;;) {
-        check_opcode = curr->opcode;
+        check_opcode = curr->opcode.id;
         if( check_opcode == opcode )
             break;
         if( check_opcode == IC_NEXT ) {
@@ -586,7 +586,7 @@ CGIOBUFF *CgioBuffReadICMask(   // READ A RECORD UNTIL OPCODE IN SET IS FOUND
     curr = *ins;
     ++curr;
     for(;;) {
-        opcode = curr->opcode;
+        opcode = curr->opcode.id;
         if( icMaskTable[opcode] & mask )
             break;
         if( opcode == IC_NEXT ) {
@@ -617,7 +617,7 @@ CGIOBUFF *CgioBuffReadICMaskCount(      // READ A RECORD UNTIL OPCODE IN SET IS 
     curr = *ins;
     ++curr;
     for(;;) {
-        opcode = curr->opcode;
+        opcode = curr->opcode.id;
         op_mask = icMaskTable[opcode];
         if( op_mask & count_mask ) {
             ++extra;
@@ -807,7 +807,7 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
 
     ctl = findRdBuffer( zap.block );
 #ifdef DEVBUILD
-    if( icMaskTable[ins->opcode] & ICOPM_BRINFO ) {
+    if( icMaskTable[ins->opcode.id] & ICOPM_BRINFO ) {
         if( TOGGLEDBG( browse_emit ) ) {
             DumpCgFront( "ZAP ", zap.block, zap.offset, ins );
         }
@@ -819,7 +819,7 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
 #endif
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
     dest = (CGINTER *)( ctl->data + zap.offset );
-    dest->opcode = ins->opcode;
+    dest->opcode.id = ins->opcode.id;
     dest->value = ins->value;
     ctl->written = false;
     finishRdBuffer( ctl );

@@ -50,7 +50,7 @@ static PTREE addPtIc(           // DECORATE TREE WITH PT_IC NODE
     PTREE *a_expr;              // - expression for side-effect
 
     if( tree == NULL ) {
-        CgFrontCodePtr( node->u.ic.opcode, node->u.ic.value.pvalue );
+        CgFrontCodePtr( node->u.ic.opcode.id, node->u.ic.value.pvalue );
         CgFrontCode( IC_EXPR_TRASH );
         PTreeFree( node );
         tree = NULL;

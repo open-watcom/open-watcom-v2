@@ -32,6 +32,7 @@
 
 
 #ifndef __DIALOG_H__
+#define __DIALOG_H__
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
@@ -82,6 +83,5 @@ private:
 };
 
 
-#define __DIALOG_H__
 #endif
 

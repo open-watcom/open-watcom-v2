@@ -116,9 +116,9 @@ static void EnlargeTokenBuf( size_t size )
 static size_t WriteTokenBufToken( size_t i, TOKEN t )
 /***************************************************/
 {
-    EnlargeTokenBuf( MTOKINCR( i ) );
-    MTOK( TokenBuf + i ) = t;
-    return( MTOKINCR( i ) );
+    EnlargeTokenBuf( i + SIZE_MTOKEN );
+    SET_MTOKEN( TokenBuf + i, t );
+    return( i + SIZE_MTOKEN );
 }
 
 static size_t WriteTokenBufChar( size_t i, char c )
@@ -140,8 +140,8 @@ static size_t WriteTokenBufMem( size_t i, const char *buf, size_t len )
 static size_t TokenBufRemoveWSToken( size_t i )
 /*********************************************/
 {
-    if( i >= MTOKINCR( 0 ) )
-        return( MTOKDECR( i ) );
+    if( i >= SIZE_MTOKEN )
+        return( i - SIZE_MTOKEN );
     return( i );
 }
 
@@ -224,8 +224,8 @@ static void DumpMacroDefn( const char *p )
     unsigned char   c;
     TOKEN           token;
 
-    while( (token = MTOK( p )) != T_NULL ) {
-        MTOKINC( p );
+    while( (token = GET_MTOKEN( p )) != T_NULL ) {
+        p += SIZE_MTOKEN;
         switch( token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
@@ -254,7 +254,7 @@ static void DumpMacroDefn( const char *p )
             break;
         case T_MACRO_PARM:
         case T_MACRO_VAR_PARM:
-            MTOKPARMINC( p );
+            p++;
             break;
         default:
             fprintf( CppFile, "%s", TokenString[token] );
@@ -279,7 +279,7 @@ void DumpAllMacros( void )
                 continue;
             fprintf( CppFile, "#define %s", mentry->macro_name );
             p = (char *)mentry + mentry->macro_defn;
-            if( MTOK( p ) != T_NULL ) {
+            if( GET_MTOKEN( p ) != T_NULL ) {
                 fputc( ' ', CppFile );
                 DumpMacroDefn( p );
             }
@@ -305,7 +305,8 @@ static void DeleteNestedMacro( void )
         mentry = nested->mentry;
         CMemFree( nested );
         if( macro_parms != NULL ) {
-            for( parmno = GetMacroParmCount( mentry ); parmno-- > 0; ) {
+            parmno = GetMacroParmCount( mentry );
+            while( parmno-- > 0 ) {
                 CMemFree( macro_parms[parmno].arg );
             }
             CMemFree( macro_parms );
@@ -657,8 +658,8 @@ void DumpMDefn( const char *p )
     unsigned char   c;
     TOKEN           token;
 
-    while( (token = MTOK( p )) != T_NULL ) {
-        MTOKINC( p );
+    while( (token = GET_MTOKEN( p )) != T_NULL ) {
+        p += SIZE_MTOKEN;
         switch( token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
@@ -685,12 +686,12 @@ void DumpMDefn( const char *p )
             putchar( *p++ );
             break;
         case T_MACRO_PARM:
-            printf( "<parm#%d>", MTOKPARM( p ) );
-            MTOKPARMINC( p );
+            printf( "<parm#%d>", *(unsigned char *)p );
+            p++;
             break;
         case T_MACRO_VAR_PARM:
-            printf( "<varparm#%d>", MTOKPARM( p ) );
-            MTOKPARMINC( p );
+            printf( "<varparm#%d>", *(unsigned char *)p );
+            p++;
             break;
         default:
             printf( "%s", TokenString[token] );
@@ -1001,11 +1002,11 @@ static MACRO_TOKEN *BuildString( const char *p )
     if( p != NULL ) {
         pmtok_tail = &mtok_head;
         TokenLen = 0;
-        while( MTOK( p ) == T_WHITE_SPACE ) {
-            MTOKINC( p );   //eat leading white space
+        while( GET_MTOKEN( p ) == T_WHITE_SPACE ) {
+            p += SIZE_MTOKEN;   //eat leading white space
         }
-        while( (token = MTOK( p )) != T_NULL ) {
-            MTOKINC( p );
+        while( (token = GET_MTOKEN( p )) != T_NULL ) {
+            p += SIZE_MTOKEN;
             switch( token ) {
             case T_CONSTANT:
             case T_PPNUMBER:
@@ -1033,15 +1034,15 @@ static MACRO_TOKEN *BuildString( const char *p )
                 WriteBufferChar( '"' );
                 break;
             case T_WHITE_SPACE:
-                while( (token = MTOK( p )) == T_WHITE_SPACE ) {
-                    MTOKINC( p );
+                while( (token = GET_MTOKEN( p )) == T_WHITE_SPACE ) {
+                    p += SIZE_MTOKEN;
                 }
                 if( token != T_NULL ) {
                     WriteBufferChar( ' ' );
                 }
                 break;
             case T_BAD_CHAR:
-                if( *p == '\\' && MTOK( p + 1 ) == T_NULL ) {
+                if( *p == '\\' && GET_MTOKEN( p + 1 ) == T_NULL ) {
                     CErr1( ERR_INVALID_STRING_LITERAL );
                 }
                 WriteBufferChar( *p++ );
@@ -1080,8 +1081,8 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
     token_prev = T_NULL;
     if( p == NULL )
         return( NULL );
-    while( (token = MTOK( p )) != T_NULL ) {
-        MTOKINC( p );
+    while( (token = GET_MTOKEN( p )) != T_NULL ) {
+        p += SIZE_MTOKEN;
         switch( token ) {
         case T_CONSTANT:
         case T_PPNUMBER:
@@ -1104,15 +1105,15 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             mtok = BuildAToken( T_BAD_CHAR, buf );
             break;
         case T_MACRO_SHARP:
-            while( MTOK( p ) == T_WHITE_SPACE ) {
-                MTOKINC( p );
+            while( GET_MTOKEN( p ) == T_WHITE_SPACE ) {
+                p += SIZE_MTOKEN;
             }
-            MTOKINC( p );   // skip over T_MACRO_PARM
+            p += SIZE_MTOKEN;   // skip over T_MACRO_PARM
             /*
              * If no macro arg given, result must be "", not empty
              */
-            parmno = MTOKPARM( p );
-            MTOKPARMINC( p );
+            parmno = *(unsigned char *)p;
+            p++;
             if( macro_parms != NULL && macro_parms[parmno].arg != NULL && macro_parms[parmno].arg[0] != '\0' ) {
                 mtok = BuildString( macro_parms[parmno].arg );
             } else {
@@ -1120,11 +1121,11 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             }
             break;
         case T_MACRO_PARM:
-            parmno = MTOKPARM( p );
-            MTOKPARMINC( p );
+            parmno = *(unsigned char *)p;
+            p++;
             p2 = p;
-            while( MTOK( p2 ) == T_WHITE_SPACE ) {
-                MTOKINC( p2 );
+            while( GET_MTOKEN( p2 ) == T_WHITE_SPACE ) {
+                p2 += SIZE_MTOKEN;
             }
             nested->substituting_parms = true;
             if( macro_parms != NULL ) {
@@ -1135,7 +1136,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             } else {
                 mtok = BuildAToken( T_WHITE_SPACE, "" );
             }
-            if( MTOK( p2 ) != T_MACRO_SHARP_SHARP && token_prev != T_MACRO_SHARP_SHARP ) {
+            if( GET_MTOKEN( p2 ) != T_MACRO_SHARP_SHARP && token_prev != T_MACRO_SHARP_SHARP ) {
                 if( mtok != NULL ) {
                     mtok = AppendToken( mtok, T_NULL, "P-<end of parm>" );
                     mtok = ExpandNestedMacros( mtok, false );
@@ -1146,17 +1147,17 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             nested->substituting_parms = false;
             break;
         case T_MACRO_VAR_PARM:
-            parmno = MTOKPARM( p );
-            MTOKPARMINC( p );
+            parmno = *(unsigned char *)p;
+            p++;
             p2 = p;
-            while( MTOK( p2 ) == T_WHITE_SPACE )
-                MTOKINC( p2 );
+            while( GET_MTOKEN( p2 ) == T_WHITE_SPACE )
+                p2 += SIZE_MTOKEN;
             nested->substituting_parms = true;
             if( macro_parms != NULL ) {
                 if( macro_parms[parmno].arg != NULL ) {
                     mtok = BuildMTokenList( macro_parms[parmno].arg, NULL );
                 } else {
-                    if( token_prev == T_MACRO_SHARP_SHARP || MTOK( p2 ) == T_MACRO_SHARP_SHARP ) {
+                    if( token_prev == T_MACRO_SHARP_SHARP || GET_MTOKEN( p2 ) == T_MACRO_SHARP_SHARP ) {
                         mtok = BuildAToken( T_MACRO_EMPTY_VAR_PARM, "" );
                     } else {
                         mtok = BuildAToken( T_WHITE_SPACE, "" );
@@ -1165,7 +1166,7 @@ static MACRO_TOKEN *BuildMTokenList( const char *p, MACRO_ARG *macro_parms )
             } else {
                 mtok = BuildAToken( T_WHITE_SPACE, "" );
             }
-            if( MTOK( p2 ) != T_MACRO_SHARP_SHARP && token_prev != T_MACRO_SHARP_SHARP ) {
+            if( GET_MTOKEN( p2 ) != T_MACRO_SHARP_SHARP && token_prev != T_MACRO_SHARP_SHARP ) {
                 if( mtok != NULL ) {
                     mtok = AppendToken( mtok, T_NULL, "P-<end of parm>" );
                     mtok = ExpandNestedMacros( mtok, false );

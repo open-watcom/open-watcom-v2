@@ -806,7 +806,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
         }
         break;
     case PT_IC :
-        switch( expr->u.ic.opcode ) {
+        switch( expr->u.ic.opcode.id ) {
         case IC_COND_TRUE :
             LabelCondTrue();
             break;
@@ -815,7 +815,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             break;
         default :
             generate_type( expr );
-            CgFrontCodePtr( expr->u.ic.opcode, expr->u.ic.value.pvalue );
+            CgFrontCodePtr( expr->u.ic.opcode.id, expr->u.ic.value.pvalue );
             break;
         }
         break;

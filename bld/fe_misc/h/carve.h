@@ -84,7 +84,7 @@ extern void CarveFree( carve_t cv, void *elm );
 
 #ifdef CARVEPCH
 
-#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
+#if defined( _M_X64 ) || defined( _M_ARM64 )
 #define CV_SHIFT                18
 #else
 #define CV_SHIFT                17

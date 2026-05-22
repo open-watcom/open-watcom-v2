@@ -47,7 +47,7 @@ struct token_buffer {
     char                h[BUF_SZ];
 };
 
-typedef struct buffer_hdr {
+typedef struct token_buffer_hdr {
     unsigned            no_of_buffers;
     unsigned            total_size;
     TOKEN_BUFFER        *list;

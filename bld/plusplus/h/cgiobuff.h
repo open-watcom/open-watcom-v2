@@ -49,7 +49,10 @@ struct cgiobuff {                       // CGIOBUFF -- buffer in memory
     unsigned    written     : 1;        // - block has been written (not dirty)
     unsigned    writing     : 1;        // - being written to now
     unsigned    active      : 1;        // - block is active
-    char        data[TMPBLOCK_BSIZE];   // - buffer in memory
+    union {
+        char    data[TMPBLOCK_BSIZE];   // - buffer in memory
+        void    *dummy;
+    } u;
 #ifdef DEVBUILD
     int         check;          // - consistency check
 #endif
