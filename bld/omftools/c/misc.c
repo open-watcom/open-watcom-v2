@@ -286,7 +286,7 @@ unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = MGET_LE_U16_UN( ReadRecPtr );
+    word = MGET_LE_U16( ReadRecPtr );
     ReadRecPtr += sizeof( unsigned_16 );
     return( word );
 }

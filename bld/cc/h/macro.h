@@ -30,10 +30,13 @@
 ****************************************************************************/
 
 
-#define TYPE_MTOKEN         unsigned char
-#define SIZE_MTOKEN         sizeof( TYPE_MTOKEN )
-#define GET_MTOKEN(x)       (*(TYPE_MTOKEN *)(x))
-#define SET_MTOKEN(x,v)     (*(TYPE_MTOKEN *)(x)=(v))
+#define MTOK(p)         (*(unsigned char *)(p))
+#define MTOKINC(p)      p++
+#define MTOKDEC(p)      p--
+#define MTOKINCR(r)     ((r) + 1)
+#define MTOKDECR(r)     ((r) - 1)
+#define MTOKPARM(p)     (*(mac_parm_count *)(p))
+#define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
 
 #define GetMacroParmCount(m)    ((m)->parm_count - 1)
 #define MacroWithParenthesis(m) ((m)->parm_count > 0)

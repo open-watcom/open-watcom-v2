@@ -104,7 +104,7 @@ static void usage( void )
 static char *PutUInt( char *p, unsigned_16 data )
 /***********************************************/
 {
-    MPUT_LE_16_UN( p, data );
+    MPUT_LE_16( p, data );
     p += sizeof( unsigned_16 );
     return( p );
 }

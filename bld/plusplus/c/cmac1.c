@@ -1076,10 +1076,6 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
             }
             break;
         case T_BAD_CHAR:
-            buf[0] = *p++;
-            ptail = buildTokenOnEnd( ptail, curr_token, buf );
-            prev_token = curr_token;
-            break;
         case T_MACRO_PARM:
         case T_MACRO_VAR_PARM:
             buf[0] = *p++;

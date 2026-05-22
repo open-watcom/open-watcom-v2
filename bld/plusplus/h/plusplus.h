@@ -168,16 +168,11 @@ typedef union cgvalue {             // CGVALUE: one of
 
 #include "icodes.h"
 
-typedef union cgopcode {            // CGVALUE: one of
-    CGINTEROP           id;         // - opcode for text
-    void                *dummy;     // - dummy pointer for alignment
-} CGOPCODE;
-
 // having 'value' first means it will be aligned in cases
 // were it is a singleton
-typedef struct cginter {            // CGINTER -- intermediate-code instruction
-    CGVALUE             value;      // - value
-    CGOPCODE            opcode;     // - opcode for text
+typedef struct cginter {        // CGINTER -- intermediate-code instruction
+    CGVALUE     value;          // - value
+    CGINTEROP   opcode;         // - opcode for text
 } CGINTER;
 
 /* Target System types */

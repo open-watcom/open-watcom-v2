@@ -535,7 +535,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         if( CurToken != T_WHITE_SPACE ) {
             if( prev_non_ws_token == T_MACRO_SHARP && CurToken != T_MACRO_PARM && CurToken != T_MACRO_VAR_PARM ) {
                 CErr1( ERR_MUST_BE_MACRO_PARM );
-//                SET_MTOKEN( MacroOffset + mlen - SIZE_MTOKEN, T_SHARP );
+//                MTOK( MacroOffset + MTOKDECR( mlen ) ) = T_SHARP;
             }
             prev_non_ws_token = CurToken;
         }
@@ -546,7 +546,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         CErr1( ERR_MUST_BE_MACRO_PARM );
     }
     if( prev_token == T_WHITE_SPACE ) {
-        mlen -= SIZE_MTOKEN;
+        MTOKDEC( mlen );
     }
     MacroSegmentAddToken( &mlen, T_NULL );
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {

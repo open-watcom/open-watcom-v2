@@ -203,7 +203,7 @@ void ModuleInitInit(            // START MODULE-INITIALIZATION FUNCTION
                                     , SYMF_NONE
                                     , CppSpecialName( SPECIAL_NAME_INIT_FUNCTION ) );
     module_init_func = module_init;
-    SetCurrScope( GetFileScope() );
+    SetCurrScope(GetFileScope());
     ScopeBeginFunction( module_init );
     FunctionBodyStartupNoloc( module_init, &module_fd, FUNC_NULL );
     module_fd.retn_opt = false;

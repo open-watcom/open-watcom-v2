@@ -1437,11 +1437,11 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 
     for( ;; ) {
         ins = CgioReadIC( file_ctl );
-        if( ins->opcode.id == IC_EOF )
+        if( ins->opcode == IC_EOF )
             break;
         ExtraRptIncrementCtr( ctr_ic_codes );
         ins_value = ins->value;
-        switch( ins->opcode.id ) {
+        switch( ins->opcode ) {
 //
 //          CONTROL OPCODES
 //

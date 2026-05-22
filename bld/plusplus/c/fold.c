@@ -63,8 +63,8 @@ static bool isCondDecor(        // TEST IF CONDITIONALLY DECORATED
     if( NodeIsBinaryOp( node, CO_COMMA ) ) {
         node = node->u.subtree[0];
         if( node->op == PT_IC ) {
-            if( node->u.ic.opcode.id == IC_COND_TRUE
-             || node->u.ic.opcode.id == IC_COND_FALSE ) {
+            if( node->u.ic.opcode == IC_COND_TRUE
+             || node->u.ic.opcode == IC_COND_FALSE ) {
                 ok = true;
             }
         }
@@ -1247,7 +1247,7 @@ PTREE FoldBinary( PTREE expr )
         //
         if( (expr->flags & PTF_COND_END)
          && op1->op == PT_IC
-         && op1->u.ic.opcode.id == IC_COND_TRUE ) {
+         && op1->u.ic.opcode == IC_COND_TRUE ) {
             expr = pruneExpr( expr, &expr->u.subtree[1], op2 );
         }
         return( expr );
