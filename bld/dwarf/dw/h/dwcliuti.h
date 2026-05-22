@@ -34,10 +34,10 @@
 #define DWCLIUTI_H_INCLUDED
 
 #ifndef __BIG_ENDIAN__
-#define WriteU16( __p, __v )    MPUT_U16_UN((__p), (__v))
-#define WriteU32( __p, __v )    MPUT_U32_UN((__p), (__v))
-#define WriteS16( __p, __v )    MPUT_U16_UN((__p), (__v))
-#define WriteS32( __p, __v )    MPUT_U32_UN((__p), (__v))
+#define WriteU16( __p, __v )    MPUT_16_UN((__p), (__v))
+#define WriteU32( __p, __v )    MPUT_32_UN((__p), (__v))
+#define WriteS16( __p, __v )    MPUT_16_UN((__p), (__v))
+#define WriteS32( __p, __v )    MPUT_32_UN((__p), (__v))
 #else
 #error "must define WriteU16/32 and WriteS16/32 functions"
 #endif
