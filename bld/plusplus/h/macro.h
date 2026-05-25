@@ -95,6 +95,15 @@ typedef struct macro_entry {
     uint_16             macro_defn;     /* offset to defn, 0 ==> special macro name*/
     uint_16             macro_len;      /* length of macro definition */
     macro_flags         macro_flags;    /* flags */
+        /*
+         * be careful
+         * parm_count field is used specialy
+         * 0    macro without parenthesis
+         * 1    macro with parenhesis without parameters
+         * 2    macro with parenhesis with 1 parameter
+         * ...
+         * real parameters count is parm_count - 1
+         */
     mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
     unsigned            : 0;            /* align macro_name to a DWORD boundary */
     char                macro_name[1];  /* name,parms, and macro definition */
