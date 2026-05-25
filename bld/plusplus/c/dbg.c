@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +47,7 @@
 #include "initdefs.h"
 #include "pragdefn.h"
 #include "togglesd.h"
+#include "floatsup.h"
 #include "dbg.h"
 #include "feprotos.h"
 
@@ -159,10 +160,11 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
 
 
 void DumpMDefn(                 // DUMP MACRO DEFINITION
-    char *p )                  // - definition
+    const char *p )             // - definition
 {
     int             c;
     TOKEN           token;
+    const char      *fmt;
 
     if( p == NULL )
         return;
@@ -202,7 +204,13 @@ void DumpMDefn(                 // DUMP MACRO DEFINITION
             putchar( *p++ );
             break;
         case T_MACRO_PARM:
-            printf( "parm#%c", '1' + *p++ );
+            fmt = "parm#%d";
+            /* fall through */
+        case T_MACRO_VAR_PARM:
+            if( token == T_MACRO_VAR_PARM )
+                fmt = "varparm#%d";
+            printf( fmt, GET_MPARM( p ) );
+            p += SIZE_MPARM;
             break;
         default:
             printf( "%s", TokenString[token] );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1214,8 +1214,8 @@ static void addDefaultImports( void )
 }
 
 #ifdef DEVBUILD
-    #define DbgNotSym() isSym = false;
-    #define DbgNotRetn() isRetn = false;
+    #define DbgNotSym() isSym = false
+    #define DbgNotRetn() isRetn = false
 #else
     #define DbgNotSym()
     #define DbgNotRetn()
@@ -1336,7 +1336,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
 #endif
     case FEINF_SOURCE_NAME:
       {
-        SRCFILE src_file
+        SRCFILE src_file;
 
         DbgNotSym();
         DbgNotRetn();

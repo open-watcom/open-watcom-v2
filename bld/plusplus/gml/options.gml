@@ -1146,7 +1146,7 @@
 :target. any
 :usagenochain.
 :internal.
-:usage.  internal experimental option, check prototypes defined already
+:usage.  internal - checks if prototypes are defined
 :jusage.
 
 :option. wx

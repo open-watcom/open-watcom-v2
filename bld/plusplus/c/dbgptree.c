@@ -41,6 +41,7 @@
 #include "vbuf.h"
 #include "fmttype.h"
 #include "codegen.h"
+#include "floatsup.h"
 
 
 static carve_t carveNode;       // memory: nodes

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 
 #include "dbgzap.h"
 #include "iosupp.h"
-#include "dumpapi.h"
+
 
 // PROTOTYPES:
 
@@ -131,7 +131,7 @@ void DumpMacToken(              // DUMP A MACRO TOKEN
     void )
 ;
 void DumpMDefn(                 // DUMP MACRO DEFINITION
-    char *p )                   // - definition
+    const char *p )             // - definition
 ;
 void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
     MEMBER_PTR_CAST *info )     // - the information
