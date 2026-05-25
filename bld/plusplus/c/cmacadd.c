@@ -73,7 +73,7 @@ ExtraRptCtr( macros_defined_with_parms );
 ExtraRptCtr( macros_redefined );
 ExtraRptSpace( macro_space );
 
-#define macroSizeAlign( s )     _RoundUp((s), sizeof( int ))
+#define macroSizeAlign( s )     _RoundUp((s), sizeof( void * ))
 
 static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
     size_t size )               // - size
