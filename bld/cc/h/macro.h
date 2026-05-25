@@ -78,6 +78,15 @@ typedef struct  macro_entry {
     size_t              macro_defn;     /* offset to defn, 0 ==>special macro name*/
     size_t              macro_len;      /* length of macro definition */
     union {
+        /*
+         * be careful
+         * parm_count field is used specialy
+         * 0    macro without parenthesis
+         * 1    macro with parenhesis without parameters
+         * 2    macro with parenhesis with 1 parameter
+         * ...
+         * real parameters count is parm_count - 1
+         */
         int             parm_count;     /* standard macro parameters count */
         special_macros  special_macro;  /* special macro if defn == 0 */
     } u;
