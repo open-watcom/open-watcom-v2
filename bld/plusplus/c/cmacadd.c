@@ -815,7 +815,7 @@ static void dumpMacroDefn(          // DUMP TOKENIZED MACRO DEFINITION
             break;
         case T_MACRO_PARM:
         case T_MACRO_VAR_PARM:
-            ++p;
+            p += SIZE_MPARM;
             break;
         default:
             fprintf( CppFile, "%s", TokenString[token] );

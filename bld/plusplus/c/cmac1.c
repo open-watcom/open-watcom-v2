@@ -544,8 +544,10 @@ static MACRO_ARG *collectParms( MEPTR mentry )
         } else if( TokenBufSize( htokenbuf ) + total != 0 ) {
             ++parm_idx;
         }
-        if( ( MacroHasVarArgs( mentry ) && ( parm_idx < parm_count_reqd - 1 ) )
-            || ( !MacroHasVarArgs( mentry ) && ( parm_idx < parm_count_reqd ) ) ) {
+        if( ( MacroHasVarArgs( mentry )
+          && ( parm_idx < parm_count_reqd - 1 ) )
+          || ( !MacroHasVarArgs( mentry )
+          && ( parm_idx < parm_count_reqd ) ) ) {
             CErr( ERR_TOO_FEW_MACRO_PARMS, mentry->macro_name );
             InfMacroDecl( mentry );
             macroDiagNesting();
@@ -554,7 +556,8 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                 saveParm( mentry, parm_idx, macro_parms, 1, &htokenbuf );
                 ++parm_idx;
             } while( parm_idx < parm_count_reqd );
-        } else if( !MacroHasVarArgs( mentry ) && ( parm_idx > parm_count_reqd ) ) {
+        } else if( !MacroHasVarArgs( mentry )
+          && ( parm_idx > parm_count_reqd ) ) {
             CErr( ANSI_TOO_MANY_MACRO_PARMS, mentry->macro_name );
             InfMacroDecl( mentry );
             macroDiagNesting();
@@ -1104,13 +1107,13 @@ static MACRO_TOKEN **buildMTokenList( MACRO_TOKEN **ptail, const char *p, MACRO_
             }
             p += SIZE_MTOKEN;               // skip over T_MACRO_PARM
             parm_idx = GET_MPARM( p );
+            p += SIZE_MPARM;
             if( macro_parms != NULL && macro_parms[parm_idx].arg != NULL ) {
                 ptail = buildString( ptail, macro_parms[parm_idx].arg );
             } else {
                 buf[0] = '\0';
                 ptail = buildTokenOnEnd( ptail, T_STRING, buf );
             }
-            p += SIZE_MPARM;
             prev_token = T_STRING;
             break;
         default:

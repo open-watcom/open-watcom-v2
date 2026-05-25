@@ -299,11 +299,11 @@ static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
     size_t          mlen,           // - length of macro def'n (so far)
     TOKEN_LOCN      *locn )         // - definition point
 {
-    MEPTR new_mentry;
-    MEPTR mentry;
-    int parm_num;
-    TOKEN prev_token;
-    TOKEN prev_non_ws_token;
+    MEPTR   new_mentry;
+    MEPTR   mentry;
+    int     parm_num;
+    TOKEN   prev_token;
+    TOKEN   prev_non_ws_token;
 
     /* unused parameters */ (void)name_len;
 
