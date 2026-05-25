@@ -34,10 +34,10 @@
 #include "i64.h"
 #include "scan.h"
 #include "cfeinfo.h"
-#include "dumpapi.h"
 #include "cmacadd.h"
 #include "ppexpn.h"
 #include "cscanbuf.h"
+#include "dumpapi.h"
 
 #include "clibext.h"
 
@@ -656,6 +656,7 @@ void DumpMDefn( const char *p )
 {
     unsigned char   c;
     TOKEN           token;
+    const char      *fmt;
 
     while( (token = GET_MTOKEN( p )) != T_NULL ) {
         p += SIZE_MTOKEN;
@@ -685,11 +686,12 @@ void DumpMDefn( const char *p )
             putchar( *p++ );
             break;
         case T_MACRO_PARM:
-            printf( "<parm#%d>", (int)GET_MPARM( p ) );
-            p += SIZE_MPARM;
-            break;
+            fmt = "<parm#%d>";
+            /* fall through */
         case T_MACRO_VAR_PARM:
-            printf( "<varparm#%d>", (int)GET_MPARM( p ) );
+            if( token == T_MACRO_VAR_PARM )
+                fmt = "<varparm#%d>";
+            printf( fmt, (int)GET_MPARM( p ) );
             p += SIZE_MPARM;
             break;
         default:
