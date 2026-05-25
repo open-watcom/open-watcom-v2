@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +132,8 @@ static bool okToPrintMsg( msg_codes msgnum, int *plevel )
     return( ok );
 }
 
-static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list args )
-/**********************************************************************************
+static void CMsgInfo( cmsg_info *info, int parm_num, msg_codes msgnum, va_list args )
+/************************************************************************************
  * fill cmsg_info struct
  */
 {
@@ -168,9 +168,9 @@ static void CMsgInfo( cmsg_info *info, int parmno, msg_codes msgnum, va_list arg
         }
     }
     prefix_len = 0;
-    if( parmno ) {
+    if( parm_num ) {
         msgstr = CGetMsgStr( PHRASE_PARAM );
-        prefix_len = sprintf( info->msgtxt, msgstr, parmno );
+        prefix_len = sprintf( info->msgtxt, msgstr, parm_num );
         info->msgtxt[prefix_len++] = ' ';
     }
     msgstr = CGetMsgStr( msgnum );
@@ -275,8 +275,8 @@ static void PrintPostNotes( void )
     }
 }
 
-static void CErr( int parmno, msg_codes msgnum, ... )
-/****************************************************
+static void CErr( int parm_num, msg_codes msgnum, ... )
+/******************************************************
  * Output error message
  */
 {
@@ -286,7 +286,7 @@ static void CErr( int parmno, msg_codes msgnum, ... )
     info.class = CMSG_ERRO;
     if( ErrLimit == ERRLIMIT_NOMAX || ErrCount < ErrLimit ) {
         va_start( args1, msgnum );
-        CMsgInfo( &info, parmno, msgnum, args1 );
+        CMsgInfo( &info, parm_num, msgnum, args1 );
         va_end( args1 );
         OutMsg( &info );
         ++ErrCount;
@@ -325,14 +325,14 @@ void CErr4p( msg_codes msgnum, const char *p1, const char *p2, const char *p3 )
     CErr( 0, msgnum, p1, p2, p3 );
 }
 
-void CErrP1( int parmno, msg_codes msgnum )
+void CErrP1( int parm_num, msg_codes msgnum )
 {
-    CErr( parmno, msgnum );
+    CErr( parm_num, msgnum );
 }
 
 
-static void CWarn( int parmno, msg_codes msgnum, ... )
-/*****************************************************
+static void CWarn( int parm_num, msg_codes msgnum, ... )
+/*******************************************************
  * Out warning message
  */
 {
@@ -344,7 +344,7 @@ static void CWarn( int parmno, msg_codes msgnum, ... )
         if( level <= WngLevel ) {
             info.class = CMSG_WARN;
             va_start( args1, msgnum );
-            CMsgInfo( &info, parmno, msgnum, args1 );
+            CMsgInfo( &info, parm_num, msgnum, args1 );
             OutMsg( &info );
             ++WngCount;
             PrintPostNotes();
@@ -368,9 +368,9 @@ void CWarn2p( msg_codes msgnum, const char *p1 )
     CWarn( 0, msgnum, p1 );
 }
 
-void CWarnP1( int parmno, msg_codes msgnum )
+void CWarnP1( int parm_num, msg_codes msgnum )
 {
-    CWarn( parmno, msgnum );
+    CWarn( parm_num, msgnum );
 }
 
 

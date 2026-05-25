@@ -49,7 +49,7 @@ call_list           *CallNodeList;
 static const struct mathfuncs {
     const char      *name;
     const char      *iname;
-    unsigned char   parm_count;
+    int             parm_count;
     unsigned char   mathop;
 } MathFuncs[] = {
     #define mathfunc(name,iname,num,op) {name,iname,num,op}
@@ -2202,7 +2202,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
     bool            optimized;
 //    bool            recursive = false;
     bool            far16_func = false;
-    unsigned char   parm_count;
+    int             parm_count;
     SYM_NAMEPTR     sym_name;
     SYM_ENTRY       sym;
 

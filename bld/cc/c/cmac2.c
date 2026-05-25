@@ -344,32 +344,32 @@ void CInclude( void )
 }
 
 
-static mac_parm_count FormalParm( MPPTR formal_parms )
+static int FormalParm( MPPTR formal_parms )
 {
-    mac_parm_count i;
+    int     parm_num;
 
-    i = 1;
+    parm_num = 1;
     for( ; formal_parms != NULL; formal_parms = formal_parms->next ) {
         if( strcmp( formal_parms->parm, Buffer ) == 0 ) {
-            return( i );
+            return( parm_num );
         }
-        ++i;
+        ++parm_num;
     }
     return( 0 );
 }
 
 
-static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
+static MEPTR GrabTokens( int parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
 {
     MEPTR           mentry;
     MEPTR           new_mentry;
     TOKEN           prev_token;
     TOKEN           prev_non_ws_token;
     size_t          mlen;
-    mac_parm_count  parmno;
+    int             parm_num;
 
     mentry = CreateMEntry( mac_name, 0 );
-    mentry->parm_count = parm_count;
+    mentry->u.parm_count = parm_count;
     mentry->src_loc = *loc;
     mlen = mentry->macro_len;
     mentry->macro_defn = mlen;
@@ -405,17 +405,17 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
             }
             break;
         case T_ID:
-            parmno = FormalParm( formal_parms );
-            if( parmno != 0 ) {
-                if( HasVarArgs( mflags ) && (parmno == parm_count - 1) ) {
+            parm_num = FormalParm( formal_parms );
+            if( parm_num != 0 ) {
+                if( HasVarArgs( mflags ) && (parm_num == parm_count - 1) ) {
                     CurToken = T_MACRO_VAR_PARM;
                 } else {
                     CurToken = T_MACRO_PARM;
                 }
             }
             MacroSegmentAddToken( &mlen, CurToken );
-            if( parmno != 0 ) {
-                MacroSegmentAddChar( &mlen, parmno - 1 );
+            if( parm_num != 0 ) {
+                MacroSegmentAddChar( &mlen, parm_num - 1 );
             } else {
                 MacroSegmentAddMem( &mlen, Buffer, TokenLen + 1 );
             }
@@ -447,7 +447,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         if( CurToken != T_WHITE_SPACE ) {
             if( prev_non_ws_token == T_MACRO_SHARP && CurToken != T_MACRO_PARM && CurToken != T_MACRO_VAR_PARM ) {
                 CErr1( ERR_MUST_BE_MACRO_PARM );
-//                MTOK( MacroOffset + MTOKDECR( mlen ) ) = T_SHARP;
+//                SET_MTOKEN( MacroOffset + mlen - SIZE_MTOKEN, T_SHARP );
             }
             prev_non_ws_token = CurToken;
         }
@@ -458,7 +458,7 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
         CErr1( ERR_MUST_BE_MACRO_PARM );
     }
     if( prev_token == T_WHITE_SPACE ) {
-        MTOKDEC( mlen );
+        mlen -= SIZE_MTOKEN;
     }
     MacroSegmentAddToken( &mlen, T_NULL );
     if( prev_non_ws_token == T_MACRO_SHARP_SHARP ) {
@@ -477,7 +477,7 @@ MEPTR MacroScan( void )
     MPPTR           mp;
     MPPTR           prev_mp;
     MPPTR           formal_parms;
-    mac_parm_count  parm_count;
+    int             parm_count;
     macro_flags     mflags;
     bool            ppscan_mode;
     char            *token_buf;

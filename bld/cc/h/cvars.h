@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -391,7 +391,7 @@ extern bool         CheckZeroConstant( TREEPTR tree );
 extern bool         CheckZero( TREEPTR tree );
 extern bool         CheckAssignBits( uint64 *val, unsigned width, bool mask );
 extern bool         CheckAssignRange( TYPEPTR typ1, TREEPTR opnd2 );
-extern void         CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parmno, bool asgn_check );
+extern void         CheckParmAssign( TYPEPTR typ1, TREEPTR opnd2, int parm_num, bool asgn_check );
 
 /* ccmain.c */
 extern void         FreeRDir( void );
@@ -488,13 +488,13 @@ extern void         CErr2( msg_codes msgnum, int );
 extern void         CErr2p( msg_codes msgnum, const char * );
 extern void         CErr3p( msg_codes msgnum, const char *, const char * );
 extern void         CErr4p( msg_codes msgnum, const char *, const char *, const char * );
-extern void         CErrP1( int parmno, msg_codes msgnum );
+extern void         CErrP1( int parm_num, msg_codes msgnum );
 extern void         SetErrLoc( source_loc * );
 extern void         InitErrLoc( void );
 extern void         CWarn1( msg_codes msgnum );
 extern void         CWarn2( msg_codes msgnum, int );
 extern void         CWarn2p( msg_codes msgnum, const char * );
-extern void         CWarnP1( int parmno, msg_codes msgnum );
+extern void         CWarnP1( int parm_num, msg_codes msgnum );
 extern void         PCHNote( msg_codes msgnum, ... );
 extern void         CInfoMsg( msg_codes msgnum, ... );
 extern void         CSuicide( void );

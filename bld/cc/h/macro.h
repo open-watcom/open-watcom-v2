@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,16 +30,18 @@
 ****************************************************************************/
 
 
-#define MTOK(p)         (*(unsigned char *)(p))
-#define MTOKINC(p)      p++
-#define MTOKDEC(p)      p--
-#define MTOKINCR(r)     ((r) + 1)
-#define MTOKDECR(r)     ((r) - 1)
-#define MTOKPARM(p)     (*(mac_parm_count *)(p))
-#define MTOKPARMINC(p)  p += sizeof( mac_parm_count )
+#define TYPE_MTOKEN     unsigned char
+#define SIZE_MTOKEN     sizeof(TYPE_MTOKEN)
+#define GET_MTOKEN(p)   (*(TYPE_MTOKEN *)(p))
+#define SET_MTOKEN(p,v) (*(TYPE_MTOKEN *)(p)=(v))
 
-#define GetMacroParmCount(m)    ((m)->parm_count - 1)
-#define MacroWithParenthesis(m) ((m)->parm_count > 0)
+#define TYPE_MPARM      unsigned char
+#define SIZE_MPARM      sizeof(TYPE_MPARM)
+#define GET_MPARM(p)    (*(TYPE_MPARM *)(p))
+#define SET_MPARM(p,v)  (*(TYPE_MPARM *)(p)=(v))
+
+#define GetMacroParmCount(m)    ((m)->u.parm_count - 1)
+#define MacroWithParenthesis(m) ((m)->u.parm_count > 0)
 #define MacroIsSpecial(m)       ((m)->macro_defn == 0)
 #define MacroHasVarArgs(m)      (((m)->macro_flags & MFLAG_HAS_VAR_ARGS) != 0)
 
@@ -53,8 +55,6 @@ typedef enum special_macros {
 #define MACRO_LAST          MACRO_TIME
 #define MACRO_COMP_FIRST    MACRO_FUNCTION
 #define MACRO_COMP_LAST     MACRO_FUNC
-
-typedef unsigned char   mac_parm_count;
 
 typedef struct macro_parm {
     struct macro_parm   *next;
@@ -77,7 +77,10 @@ typedef struct  macro_entry {
     struct macro_entry  *next_macro;    /* also used by pre-compiled header */
     size_t              macro_defn;     /* offset to defn, 0 ==>special macro name*/
     size_t              macro_len;      /* length of macro definition */
-    mac_parm_count      parm_count;     /* special macro indicator if defn == 0 */
+    union {
+        int             parm_count;     /* standard macro parameters count */
+        special_macros  special_macro;  /* special macro if defn == 0 */
+    } u;
     macro_flags         macro_flags;    /* flags */
     source_loc          src_loc;        /* where macro defined, for diagnostic */
     char                macro_name[1];  /* name, parms, and macro definition */
