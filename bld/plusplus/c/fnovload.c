@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1768,10 +1768,15 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
     FNOV_LIST   *match;
     FNOV_RESULT result;
     unsigned    i;
-
+    TOKEN_LOCN  *locn;
+    
+    if( sym->locn != NULL ) {
+        locn = &sym->locn->tl;
+    } else {
+        locn = NULL;
+    }
     for( i = 0; i < alist->num_args; i++ ) {
-        alist->type_list[i] = BindTemplateClass( alist->type_list[i],
-                                                 &sym->locn->tl, true );
+        alist->type_list[i] = BindTemplateClass( alist->type_list[i], locn, true );
     }
 
     *resolved = NULL;
@@ -1800,9 +1805,12 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
     fnovNumCandidatesSet( info.fnov_diag, *info.pcandidates );
     result = doOverload( &info );
     if( match != NULL ) {
-        match->sym->sym_type->of =
-            BindTemplateClass( match->sym->sym_type->of, &match->sym->locn->tl,
-                               true );
+        if( match->sym->locn != NULL ) {
+            locn = &match->sym->locn->tl;
+        } else {
+            locn = NULL;
+        }
+        match->sym->sym_type->of = BindTemplateClass( match->sym->sym_type->of, locn, true );
         *resolved = match->sym;
         FnovListFree( &match );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1729,8 +1729,15 @@ void FunctionBodyStartup(       // COMMON START-UP FOR ALL COMPILED FUNCTIONS
     FUNCTION_DATA *f,           // - function data for current function
     enum special_func flags )   // - extra flags
 {
+    TOKEN_LOCN  *locn;
+
     initFunctionData( func, f );
-    doFnStartup( func, f, NULL, &func->locn->tl, flags );
+    if( func->locn != NULL ) {
+        locn = &func->locn->tl;
+    } else {
+        locn = NULL;
+    }
+    doFnStartup( func, f, NULL, locn, flags );
 }
 
 void FunctionBodyStartupNoloc(  // START-UP FOR INTERNAL FUNCTIONS
