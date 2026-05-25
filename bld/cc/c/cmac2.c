@@ -60,9 +60,6 @@ static void    CError( void );
 static void    CIdent( void );
 static void    CWarning( void );
 
-static MEPTR   GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *src_loc );
-static mac_parm_count FormalParm( MPPTR formal_parms );
-
 struct preproc {
     char  *directive;
     void  (*samelevel)( void ); /* func to call when SkipLevel == NestLevel */
@@ -347,105 +344,20 @@ void CInclude( void )
 }
 
 
-MEPTR MacroScan( void )
+static mac_parm_count FormalParm( MPPTR formal_parms )
 {
-    MPPTR           mp;
-    MPPTR           prev_mp;
-    MPPTR           formal_parms;
-    mac_parm_count  parm_count;
-    macro_flags     mflags;
-    bool            ppscan_mode;
-    char            *token_buf;
-    source_loc      macro_loc;
-    MEPTR           mentry;
+    mac_parm_count i;
 
-    PPNextToken();
-    if( CurToken != T_ID ) {
-        ExpectIdentifier();
-        return( NULL );
-    }
-    if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
-        CErr1( ERR_CANT_DEFINE_DEFINED );
-        return( NULL );
-    }
-    token_buf = CMemStrdup( Buffer );
-    formal_parms = NULL;
-    macro_loc = SrcFileLoc;
-    parm_count = 0;             /* 0 ==> no () following */
-    mflags = MFLAG_NONE;
-    if( CurrChar == '(' ) {     /* parms present */
-        PPNextToken();          /* grab the '(' */
-        PPNextToken();
-        parm_count = 1;         /* 1 ==> () following */
-        prev_mp = NULL;
-        for( ; CurToken != T_RIGHT_PAREN; ) {
-            if( HasVarArgs( mflags ) ) {
-                ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
-                return( NULL );
-            }
-            if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
-                return( NULL );
-            }
-            ++parm_count;
-            if( CurToken == T_DOT_DOT_DOT ) {
-                mflags |= MFLAG_HAS_VAR_ARGS;   /* can have no more parms after this. */
-            }
-            mp = (MPPTR)CMemAlloc( sizeof( MPDEFN ) );
-            if( formal_parms == NULL ) {
-                formal_parms = mp;
-            } else {
-                if( FormalParm( formal_parms ) ) {
-                    CErr2p( ERR_DUPLICATE_MACRO_PARM, Buffer );
-                }
-                prev_mp->next = mp;
-            }
-            if( CurToken == T_DOT_DOT_DOT ) {
-                mp->parm = CMemStrdup( "__VA_ARGS__" );
-            } else {
-                mp->parm = CMemStrdup( Buffer );
-            }
-            prev_mp = mp;
-            PPNextToken();
-            if( CurToken == T_RIGHT_PAREN )
-                break;
-            if( CurToken == T_NULL ) {
-                CErr1( ERR_INVALID_MACRO_DEFN );
-                break;
-            }
-            if( HasVarArgs( mflags ) ) {
-                ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
-                return( NULL );
-            }
-            MustRecog( T_COMMA );
-            if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
-                return( NULL );
-            }
+    i = 1;
+    for( ; formal_parms != NULL; formal_parms = formal_parms->next ) {
+        if( strcmp( formal_parms->parm, Buffer ) == 0 ) {
+            return( i );
         }
+        ++i;
     }
-    /*
-     * grab replacement tokens
-     */
-    ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
-    mentry = GrabTokens( parm_count, mflags, formal_parms, token_buf, &macro_loc );
-    FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
-    for( ; (mp = formal_parms) != NULL; ) {
-        formal_parms = mp->next;
-        CMemFree( mp->parm );
-        CMemFree( mp );
-    }
-    CMemFree( token_buf );
-    return( mentry );
+    return( 0 );
 }
 
-static void CDefine( void )
-{
-    MEPTR           mentry;
-
-    mentry = MacroScan();
-    if( mentry != NULL ) {
-        mentry->macro_flags |= MFLAG_USER_DEFINED;
-    }
-}
 
 static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR formal_parms, const char *mac_name, source_loc *loc )
 {
@@ -560,20 +472,105 @@ static MEPTR GrabTokens( mac_parm_count parm_count, macro_flags mflags, MPPTR fo
 }
 
 
-static mac_parm_count FormalParm( MPPTR formal_parms )
+MEPTR MacroScan( void )
 {
-    mac_parm_count i;
+    MPPTR           mp;
+    MPPTR           prev_mp;
+    MPPTR           formal_parms;
+    mac_parm_count  parm_count;
+    macro_flags     mflags;
+    bool            ppscan_mode;
+    char            *token_buf;
+    source_loc      macro_loc;
+    MEPTR           mentry;
 
-    i = 1;
-    for( ; formal_parms != NULL; formal_parms = formal_parms->next ) {
-        if( strcmp( formal_parms->parm, Buffer ) == 0 ) {
-            return( i );
-        }
-        ++i;
+    PPNextToken();
+    if( CurToken != T_ID ) {
+        ExpectIdentifier();
+        return( NULL );
     }
-    return( 0 );
+    if( IS_PPOPERATOR_DEFINED( Buffer ) ) {
+        CErr1( ERR_CANT_DEFINE_DEFINED );
+        return( NULL );
+    }
+    token_buf = CMemStrdup( Buffer );
+    formal_parms = NULL;
+    macro_loc = SrcFileLoc;
+    parm_count = 0;             /* 0 ==> no () following */
+    mflags = MFLAG_NONE;
+    if( CurrChar == '(' ) {     /* parms present */
+        PPNextToken();          /* grab the '(' */
+        PPNextToken();
+        parm_count = 1;         /* 1 ==> () following */
+        prev_mp = NULL;
+        for( ; CurToken != T_RIGHT_PAREN; ) {
+            if( HasVarArgs( mflags ) ) {
+                ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
+                return( NULL );
+            }
+            if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
+                return( NULL );
+            }
+            ++parm_count;
+            if( CurToken == T_DOT_DOT_DOT ) {
+                mflags |= MFLAG_HAS_VAR_ARGS;   /* can have no more parms after this. */
+            }
+            mp = (MPPTR)CMemAlloc( sizeof( MPDEFN ) );
+            if( formal_parms == NULL ) {
+                formal_parms = mp;
+            } else {
+                if( FormalParm( formal_parms ) ) {
+                    CErr2p( ERR_DUPLICATE_MACRO_PARM, Buffer );
+                }
+                prev_mp->next = mp;
+            }
+            if( CurToken == T_DOT_DOT_DOT ) {
+                mp->parm = CMemStrdup( "__VA_ARGS__" );
+            } else {
+                mp->parm = CMemStrdup( Buffer );
+            }
+            prev_mp = mp;
+            PPNextToken();
+            if( CurToken == T_RIGHT_PAREN )
+                break;
+            if( CurToken == T_NULL ) {
+                CErr1( ERR_INVALID_MACRO_DEFN );
+                break;
+            }
+            if( HasVarArgs( mflags ) ) {
+                ExpectingAfter( T_RIGHT_PAREN, T_DOT_DOT_DOT );
+                return( NULL );
+            }
+            MustRecog( T_COMMA );
+            if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
+                return( NULL );
+            }
+        }
+    }
+    /*
+     * grab replacement tokens
+     */
+    ppscan_mode = InitPPScan();         // enable T_PPNUMBER tokens
+    mentry = GrabTokens( parm_count, mflags, formal_parms, token_buf, &macro_loc );
+    FiniPPScan( ppscan_mode );          // disable T_PPNUMBER tokens
+    for( ; (mp = formal_parms) != NULL; ) {
+        formal_parms = mp->next;
+        CMemFree( mp->parm );
+        CMemFree( mp );
+    }
+    CMemFree( token_buf );
+    return( mentry );
 }
 
+static void CDefine( void )
+{
+    MEPTR           mentry;
+
+    mentry = MacroScan();
+    if( mentry != NULL ) {
+        mentry->macro_flags |= MFLAG_USER_DEFINED;
+    }
+}
 
 static void CIfDef( void )
 {
