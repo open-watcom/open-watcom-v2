@@ -59,10 +59,15 @@
                                     && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
                                     && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA)) == 0)
 
-#define TYPE_MTOKEN         TOKEN
-#define SIZE_MTOKEN         sizeof( TYPE_MTOKEN )
-#define GET_MTOKEN(x)       (*(TYPE_MTOKEN *)(x))
-#define SET_MTOKEN(x,v)     (*(TYPE_MTOKEN *)(x)=(v))
+#define TYPE_MTOKEN     unsigned char
+#define SIZE_MTOKEN     sizeof(TYPE_MTOKEN)
+#define GET_MTOKEN(p)   (*(TYPE_MTOKEN *)(p))
+#define SET_MTOKEN(p,v) (*(TYPE_MTOKEN *)(p)=(v))
+
+#define TYPE_MPARM      unsigned char
+#define SIZE_MPARM      sizeof(TYPE_MPARM)
+#define GET_MPARM(p)    (*(TYPE_MPARM *)(p))
+#define SET_MPARM(p,v)  (*(TYPE_MPARM *)(p)=(v))
 
 enum {
     EL_NEW_LINE = 0x01,

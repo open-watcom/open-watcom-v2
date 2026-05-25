@@ -153,7 +153,7 @@ static int macroCompare(        // COMPARE TWO MACROS TO SEE IF IDENTICAL
         return( -1 );
     if( m1->macro_defn != m2->macro_defn )
         return( -1 );
-    if( m1->parm_count != m2->parm_count )
+    if( m1->u.parm_count != m2->u.parm_count )
         return( -1 );
     return( memcmp( m1->macro_name, m2->macro_name, m1->macro_len - offsetof( MEDEFN, macro_name ) ) );
 }
@@ -604,7 +604,7 @@ MEPTR MacroSpecialAdd(          // ADD A SPECIAL MACRO
     TokenLocnClear( mentry->defn );
     mentry->macro_defn = 0;     /* indicate special macro */
     mentry->macro_len = reqd;
-    mentry->parm_count = value;
+    mentry->u.special_macro = value;
     memcpy( mentry->macro_name, name, len + 1 );
     mentry = MacroDefine( mentry, reqd, mflags );
     return( mentry );

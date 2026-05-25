@@ -137,11 +137,11 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
 {
     const MEPTR mentry = (const MEPTR)p_mac; // - macro being pushed
     const char**args = (const char **)p_args;  // - arguments
-    unsigned count;
+    int count;
     if( TOGGLEDBG( dump_mtokens ) ) {
         printf( "Macro Push: %s", mentry->macro_name );
         if( !MacroIsSpecial( mentry ) && ( args != NULL ) ) {
-            count = mentry->parm_count;
+            count = mentry->u.parm_count;
             if( count == 1 ) {
                 printf( " = %s", *args );
             } else if( count > 0 ) {

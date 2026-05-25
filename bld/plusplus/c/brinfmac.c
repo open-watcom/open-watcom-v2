@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -140,7 +141,7 @@ static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
             } else {
                 if( curr_mentry->macro_len == src_len
                  && curr_mentry->macro_defn == src_defn
-                 && curr_mentry->parm_count == mentry->parm_count
+                 && curr_mentry->u.parm_count == mentry->u.parm_count
                  && (curr_mentry->macro_flags & MFLAG_BRINFO_DEFN) == (mentry->macro_flags & MFLAG_BRINFO_DEFN)
                  && curr_mentry->macro_name[0] == mentry->macro_name[0]
                  && 0 == strcmp( curr_mentry->macro_name, mentry->macro_name )
@@ -266,12 +267,12 @@ TOKEN_LOCN const* BrinfMacValueLocn // GET LOCATION FOR MACVALUE DECLARATION
 }
 
 
-unsigned BrinfMacValueParmCount // GET # PARAMETERS FOR MACVALUE DECLARATION
+int BrinfMacValueParmCount // GET # PARAMETERS FOR MACVALUE DECLARATION
     ( MACVALUE const *mv )      // - the MACVALUE
 {
     // note: the parm count is 1 + # parameters
     DbgVerify( mv->type == MVT_VALUE, "Cannot get # parms for non-value" );
-    return( mv->u.mentry->parm_count );
+    return( mv->u.mentry->u.parm_count );
 }
 
 
