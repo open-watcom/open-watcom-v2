@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -546,8 +546,9 @@ CGFILE* CgioLocateAnyFile(      // LOCATE LIVE OR REMOVED FILE FOR A SYMBOL
 #define doWriteOpSRC    SrcFileGetIndex
 
 static CGIRELOCFN *relocWriteOperand[] = {
-#define ITYPE( typ )    ((CGIRELOCFN*) doWriteOp##typ)
-#include "itypes.h"
+    #define ITYPE( typ )    ((CGIRELOCFN*) doWriteOp##typ)
+    #include "itypes.h"
+    #undef ITYPE
 };
 
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,10 @@
 // IOPTYPES -- define enumeration for IC operand types
 //
 
-#define ITYPE( xxx )    ICOT_##xxx
-
 typedef enum {
-#include "itypes.h"
+    #define ITYPE( typ )    ICOT_##typ
+    #include "itypes.h"
+    #undef ITYPE
 } ic_op_type;
 
 #endif

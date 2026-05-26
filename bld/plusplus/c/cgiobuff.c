@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -100,8 +100,9 @@ ic_op_type ICOpTypes[] = {
 #define doReadOpSRC     SrcFileMapIndex
 
 static CGIRELOCFN *relocReadOperand[] = {
-#define ITYPE( typ )    ((CGIRELOCFN*) doReadOp##typ)
-#include "itypes.h"
+    #define ITYPE( typ )    ((CGIRELOCFN*) doReadOp##typ)
+    #include "itypes.h"
+    #undef ITYPE
 };
 
 ExtraRptCtr( ctr_buffers );     // counts buffers
