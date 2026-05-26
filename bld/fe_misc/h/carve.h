@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ extern void CarveFree( carve_t cv, void *elm );
 
 #ifdef CARVEPCH
 
-#if defined( LONG_IS_64BIT ) || defined( _WIN64 )
+#if defined( _M_X64 ) || defined( _M_ARM64 )
 #define CV_SHIFT                18
 #else
 #define CV_SHIFT                17

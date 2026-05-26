@@ -86,7 +86,7 @@ essentially no worst case performance scenario.
 #define MIN_SIZE        4   /* 16    (2 ^ 4) */
 #define MAX_CLASS       (MAX_SIZE - MIN_SIZE)
 
-#if defined( LONG_IS_64BITS ) || defined( _WIN64 )
+#if defined( _M_X64 ) || defined( _M_ARM64 )
 #define MEM_WORD_SIZE   16  /* Needed to keep alignment. */
 #define MEMPTR_SIZE     8
 #define TAG_SIZE        8
