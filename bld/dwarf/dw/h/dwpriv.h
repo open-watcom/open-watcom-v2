@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +116,6 @@ struct references_private {
     dw_column           column;
 };
 
-#include "pushpck4.h"
 struct dw_client {
     jmp_buf                     exception_handler;
     dw_funcs                    funcs;
@@ -138,6 +137,5 @@ struct dw_client {
     dw_sym_handle               abbrev_sym;
     dw_sym_handle               dbg_pch;
 };
-#include "poppck.h"
 
 #endif
