@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1294,10 +1294,10 @@ TOKEN_LOCN* LocnForClass        // GET DEFINITION LOCATION, IF POSSIBLE
     SYMBOL sym;                 // - typedef for class
 
     sym = SymForClass( cltype );
-    if( NULL == sym ) {
-        retn = NULL;
-    } else {
+    if( NULL != sym ) {
         retn = &sym->locn->tl;
+    } else {
+        retn = NULL;
     }
     return( retn );
 }

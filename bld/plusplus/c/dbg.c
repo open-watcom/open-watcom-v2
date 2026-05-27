@@ -1019,15 +1019,20 @@ void DbgDumpTokenLocn           // DUMP A TOKEN_LOCN
     TOKEN_LOCN const * locn;    // - the location
 
     locn = parm;
-    if( NULL == locn
-     || NULL == locn->src_file ) {
-        printf( " <No SrcFile Location>" );
-    } else {
+    if( locn != NULL
+     && locn->src_file != NULL ) {
         printf( " SrcFile(%s,%d-%d)"
               , SrcFileName( locn->src_file )
               , locn->line
               , locn->column
               );
+    } else {
+        /*
+         * handling internal symbols which have no location in source file
+         * in the future can be defined some derived location
+         * for now this handle missing symbol source file location
+         */
+        printf( " <No SrcFile Location>" );
     }
 }
 

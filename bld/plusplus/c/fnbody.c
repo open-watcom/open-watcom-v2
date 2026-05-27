@@ -1735,6 +1735,11 @@ void FunctionBodyStartup(       // COMMON START-UP FOR ALL COMPILED FUNCTIONS
     if( func->locn != NULL ) {
         locn = &func->locn->tl;
     } else {
+        /*
+         * handling internal symbols which have no location in source file
+         * in the future can be defined some derived location
+         * for now this handle missing symbol source file location
+         */
         locn = NULL;
     }
     doFnStartup( func, f, NULL, locn, flags );
@@ -1824,10 +1829,10 @@ static TOKEN_LOCN *posnForFunction( // GET SOURCE POSITION FOR FUNCTION
     TOKEN_LOCN *srcposn;        // - source position
 
     tree = dinfo->id;
-    if( tree == NULL ) {
-        srcposn = NULL;
-    } else {
+    if( tree != NULL ) {
         srcposn = &tree->locn;
+    } else {
+        srcposn = NULL;
     }
     return( srcposn );
 }

@@ -1769,10 +1769,15 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
     FNOV_RESULT result;
     unsigned    i;
     TOKEN_LOCN  *locn;
-    
+
     if( sym->locn != NULL ) {
         locn = &sym->locn->tl;
     } else {
+        /*
+         * handling internal symbols which have no location in source file
+         * in the future can be defined some derived location
+         * for now this handle missing symbol source file location
+         */
         locn = NULL;
     }
     for( i = 0; i < alist->num_args; i++ ) {
@@ -1808,6 +1813,11 @@ FNOV_CONTROL control, PTREE templ_args, FNOV_DIAG *fnov_diag )
         if( match->sym->locn != NULL ) {
             locn = &match->sym->locn->tl;
         } else {
+            /*
+             * handling internal symbols which have no location in source file
+             * in the future can be defined some derived location
+             * for now this handle missing symbol source file location
+             */
             locn = NULL;
         }
         match->sym->sym_type->of = BindTemplateClass( match->sym->sym_type->of, locn, true );

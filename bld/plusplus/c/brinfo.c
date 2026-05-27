@@ -483,19 +483,24 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
 static bool activeScopesAdjust  // ADJUST ACTIVE SCOPES
     ( SYMBOL sym )
 {
-    bool ok;                    // - return: true ==> scope for symbol
-    TOKEN_LOCN *locn;
+    bool        ok;             // - return: true ==> scope for symbol
+    TOKEN_LOCN  *locn;
 
-    if( NULL == sym->name ) {
+    if( sym->name == NULL ) {
         ok = false;
     } else {
         SCOPE scope = sym->name->containing;
-        if( NULL == scope ) {
+        if( scope == NULL ) {
             ok = false;
         } else {
             if( sym->locn != NULL ) {
                 locn = &sym->locn->tl;
             } else {
+                /*
+                 * handling internal symbols which have no location in source
+                 * in the future can be defined some derived location
+                 * for now this handle missing symbol source file location
+                  */
                 locn = NULL;
             }
             ok = activeScopesReset( scope, locn );
