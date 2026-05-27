@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ static PTREE addPtIc(           // DECORATE TREE WITH PT_IC NODE
     PTREE *a_expr;              // - expression for side-effect
 
     if( tree == NULL ) {
-        CgFrontCodePtr( node->u.ic.opcode, node->u.ic.value.pvalue );
+        CgFrontCodePtr( node->u.ic.u.opcode, node->u.ic.value.pvalue );
         CgFrontCode( IC_EXPR_TRASH );
         PTreeFree( node );
         tree = NULL;

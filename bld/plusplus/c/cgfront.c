@@ -210,7 +210,7 @@ static void cgEmitCodeUint(     // EMIT INSTRUCTION TO CODE FILE WITH UINT PARM
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmitIns( gen, &ins );
@@ -224,7 +224,7 @@ static void cgEmitCodePtr(      // EMIT INSTRUCTION TO CODE FILE WITH PTR PARM
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = value;
     cgEmitIns( gen, &ins );
 }
@@ -295,7 +295,7 @@ static void cgEmit(             // EMIT INSTRUCTION TO CODE FILE, IF REQUIRED
     CGINTER *ins )              // - instruction to be emitted
 {
     emitSetType( gen );
-    switch( ins->opcode ) {
+    switch( ins->u.opcode ) {
     case IC_INIT_DONE :
     case IC_FUNCTION_OPEN :
         gen->curr_type = NULL;
@@ -332,7 +332,7 @@ void CgFrontCode(               // EMIT TO CODE SEGMENT
 {
     CGINTER ins = { 0 };        // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     cgEmit( getGenData(), &ins );
 }
 
@@ -343,7 +343,7 @@ void CgFrontCodeInt(            // EMIT (code,int) TO CODE SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.ivalue = value;
     cgEmit( getGenData(), &ins );
@@ -356,7 +356,7 @@ void CgFrontCodeUint(           // EMIT (code,unsigned) TO CODE SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmit( getGenData(), &ins );
@@ -369,7 +369,7 @@ void CgFrontCodePtr(            // EMIT (code,ptr) TO CODE SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = value;
     cgEmit( getGenData(), &ins );
 }
@@ -380,7 +380,7 @@ void CgFrontData(               // EMIT TO DATA SEGMENT
 {
     CGINTER ins = { 0 };        // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     cgEmitData( &ins );
 }
 
@@ -391,7 +391,7 @@ void CgFrontDataInt(            // EMIT (code,int) TO DATA SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.ivalue = value;
     cgEmitData( &ins );
@@ -404,7 +404,7 @@ void CgFrontDataUint(           // EMIT (code,unsigned) TO DATA SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.uvalue = value;
     cgEmitData( &ins );
@@ -417,7 +417,7 @@ void CgFrontDataPtr(            // EMIT (code,ptr) TO DATA SEGMENT
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = value;
     cgEmitData( &ins );
 }
@@ -454,7 +454,7 @@ void CgFrontZapPtr(             // ZAP A WRITTEN RECORD (PTR OPERAND)
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = operand;
     CgioRewriteRecord( location, &ins );
 }
@@ -467,7 +467,7 @@ void CgFrontZapUint(            // ZAP A WRITTEN RECORD (UNSIGNED OPERAND)
 {
     CGINTER ins;                // - instruction
 
-    ins.opcode = opcode;
+    ins.u.opcode = opcode;
     ins.value.pvalue = 0;
     ins.value.uvalue = operand;
     CgioRewriteRecord( location, &ins );
@@ -638,10 +638,10 @@ void CgFrontModInitInit(        // INITIALIZE MODULE-INITIALIZATION
     ModuleInitInit();
     codeCGFILE = NULL;
     emitDataCGFILE = &dataCGFILE;
-    DbgAssert( ins_def_seg.opcode == IC_DEF_SEG );
-    DbgAssert( ins_init_beg.opcode == IC_INIT_BEG );
-    DbgAssert( ins_init_done.opcode == IC_INIT_DONE );
-    DbgAssert( ins_init_test.opcode == IC_INIT_TEST );
+    DbgAssert( ins_def_seg.u.opcode == IC_DEF_SEG );
+    DbgAssert( ins_init_beg.u.opcode == IC_INIT_BEG );
+    DbgAssert( ins_init_done.u.opcode == IC_INIT_DONE );
+    DbgAssert( ins_init_test.u.opcode == IC_INIT_TEST );
 }
 
 

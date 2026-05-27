@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -474,7 +474,7 @@ PTREE PTreeIc(                  // CREATE PT_IC NODE
 
     node = PTreeAlloc();
     node->op = PT_IC;
-    node->u.ic.opcode = opcode;
+    node->u.ic.u.opcode = opcode;
     node->u.ic.value = value;
     node->flags |= PTF_LV_CHECKED;
     return( node );
@@ -1855,7 +1855,7 @@ static void savePTree( void *p, carve_walk_base *d )
         break;
     case PT_IC:
         save_value = s->u.ic.value;
-        s->u.ic.value = CgioGetIndex( s->u.ic.opcode, save_value );
+        s->u.ic.value = CgioGetIndex( s->u.ic.u.opcode, save_value );
         break;
     case PT_TYPE:
         save_next = s->u.type.next;
@@ -1977,7 +1977,7 @@ pch_status PCHReadPTrees( void )
             r->u.dup.node = PTreeMapIndex( r->u.dup.node );
             break;
         case PT_IC:
-            r->u.ic.value = CgioMapIndex( r->u.ic.opcode, r->u.ic.value );
+            r->u.ic.value = CgioMapIndex( r->u.ic.u.opcode, r->u.ic.value );
             break;
         case PT_UNARY:
         case PT_BINARY:

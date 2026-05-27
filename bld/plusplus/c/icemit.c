@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -806,7 +806,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
         }
         break;
     case PT_IC :
-        switch( expr->u.ic.opcode ) {
+        switch( expr->u.ic.u.opcode ) {
         case IC_COND_TRUE :
             LabelCondTrue();
             break;
@@ -815,7 +815,7 @@ static PTREE emitNode(          // EMIT A PTREE NODE
             break;
         default :
             generate_type( expr );
-            CgFrontCodePtr( expr->u.ic.opcode, expr->u.ic.value.pvalue );
+            CgFrontCodePtr( expr->u.ic.u.opcode, expr->u.ic.value.pvalue );
             break;
         }
         break;

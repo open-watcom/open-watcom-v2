@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1437,11 +1437,11 @@ static FN_CTL* emit_virtual_file(   // EMIT A VIRTUAL FILE
 
     for( ;; ) {
         ins = CgioReadIC( file_ctl );
-        if( ins->opcode == IC_EOF )
+        if( ins->u.opcode == IC_EOF )
             break;
         ExtraRptIncrementCtr( ctr_ic_codes );
         ins_value = ins->value;
-        switch( ins->opcode ) {
+        switch( ins->u.opcode ) {
 //
 //          CONTROL OPCODES
 //

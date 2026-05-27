@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -1323,7 +1323,7 @@ static void dwarfProcessFunction( CGFILE *file_ctl )
         // The following comment is a trigger for the ICMASK program to start
         // scanning for case IC_* patterns.
         // ICMASK BEGIN DWARF (do not remove)
-        switch( ins->opcode ) {
+        switch( ins->u.opcode ) {
         case IC_EOF :                     // TERMINATING IC FOR ICMASK PROGRAM
             break;
 //
