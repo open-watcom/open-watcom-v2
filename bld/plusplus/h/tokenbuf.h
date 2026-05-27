@@ -47,7 +47,7 @@ struct token_buffer {
     char                h[BUF_SZ];
 };
 
-typedef struct buffer_hdr {
+typedef struct token_buffer_hdr {
     unsigned            no_of_buffers;
     unsigned            total_size;
     TOKEN_BUFFER        *list;
@@ -56,38 +56,38 @@ typedef struct buffer_hdr {
 
 
 BUFFER_HDR *TokenBufAddChar(          // TokenBuf: ADD A CHARACTER
-    BUFFER_HDR *,                     // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,         // - token buffer header
     char character )                  // - character to be added
 ;
 BUFFER_HDR *TokenBufAddToken(         // TokenBuf: ADD A TOKEN
-    BUFFER_HDR *,                     // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,         // - token buffer header
     TOKEN token )                     // - token to be added
 ;
 BUFFER_HDR *TokenBufAddStr(           // TokenBuf: ADD A STRING
-    BUFFER_HDR *,                     // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,         // - token buffer header
     const char *str )                 // - string to be added
 ;
 BUFFER_HDR *TokenBufInit(             // TokenBuf: INITIALIZE FOR COLLECTION
-    BUFFER_HDR * )                    // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr )        // - token buffer header
 ;
 BUFFER_HDR *TokenBufMove(             // TokenBuf: MOVE CONTENTS, RE-INITIALIZE
-    BUFFER_HDR *token_hdr,            // - token header
+    BUFFER_HDR *tokenbuf_hdr,         // - token buffer header
     char *target )                    // - where to save
 ;
 void TokenBufRemoveWhiteSpace(        // TokenBuf: REMOVE WHITE SPACE FROM END
-    BUFFER_HDR * )                    // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr )        // - token buffer header
 ;
 size_t TokenBufSize(                  // TokenBuf: RETURN SIZE
-    BUFFER_HDR * )                    // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr )        // - token buffer header
 ;
 void TokenBufFini(                    // TokenBuf: FREE TOKEN BUF MEMORY
-    BUFFER_HDR *token_hdr )           // - token header
+    BUFFER_HDR *tokenbuf_hdr )        // - token header
 ;
 BUFFER_HDR *TokenBufNew(              // TokenBuf: ADD A STRING
-    BUFFER_HDR *,                     // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,         // - token buffer header
     const char *str )                 // - string to be added
 ;
 size_t TokenBufTotalSize(             // TokenBuf: RETURN SIZE
-    BUFFER_HDR * )
+    BUFFER_HDR *tokenbuf_hdr )        // - token buffer header
 ;
 #endif

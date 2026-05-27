@@ -40,127 +40,127 @@
 
 
 BUFFER_HDR *TokenBufInit(               // TokenBuf: INITIALIZE FOR COLLECTION
-    BUFFER_HDR *token_hdr )
+    BUFFER_HDR *tokenbuf_hdr )
 {
-    TOKEN_BUFFER    *token_buf;
+    TOKEN_BUFFER    *tokenbuf;
 
 
     /*
      *  Allocate tokenBuffer header structure
      */
-    if( !token_hdr ) {
-        token_hdr = (BUFFER_HDR *)CMemAlloc( sizeof( BUFFER_HDR ));
-        token_hdr->no_of_buffers = 0;
-        token_hdr->total_size = 0;
-        token_hdr->list = NULL;
-        token_hdr->curr = NULL;
+    if( tokenbuf_hdr == NULL ) {
+        tokenbuf_hdr = CMemAlloc( sizeof( *tokenbuf_hdr ));
+        tokenbuf_hdr->no_of_buffers = 0;
+        tokenbuf_hdr->total_size = 0;
+        tokenbuf_hdr->list = NULL;
+        tokenbuf_hdr->curr = NULL;
     }
 
 
     /*
      *  Allocate tokenBuffer list structure
      */
-    token_buf = (TOKEN_BUFFER *)CMemAlloc( sizeof(TOKEN_BUFFER));
-    token_buf->cur_pos = 0;
-    token_buf->h[0] = '\0';
+    tokenbuf = CMemAlloc( sizeof( *tokenbuf ));
+    tokenbuf->cur_pos = 0;
+    tokenbuf->h[0] = '\0';
 
 
     /*
      *  Add tokenBuffer entry to the end of the token list
-     *  in token_hdr structure.
+     *  in tokenbuf_hdr structure.
      */
-    RingAppend( &token_hdr->list, token_buf );
-    token_hdr->curr = token_buf;
+    RingAppend( &tokenbuf_hdr->list, tokenbuf );
+    tokenbuf_hdr->curr = tokenbuf;
 
 
-    ++(token_hdr->no_of_buffers);
-    return( token_hdr );
+    ++(tokenbuf_hdr->no_of_buffers);
+    return( tokenbuf_hdr );
 }
 
 
 BUFFER_HDR *TokenBufAddChar(            // TokenBuf: ADD A CHARACTER
-    BUFFER_HDR *token_hdr,              // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,           // - handle to token buffer
     char character )                    // - character to be added
 {
-    TOKEN_BUFFER *tb = token_hdr->curr;
+    TOKEN_BUFFER *tokenbuf = tokenbuf_hdr->curr;
 
 
     /*
      *  If not enough space on current buffer, allocate new one.
      */
-    if( ( tb->cur_pos + 1) > BUF_SZ ) {
-        token_hdr = TokenBufInit( token_hdr );
-        tb = token_hdr->curr;
+    if( ( tokenbuf->cur_pos + 1) > BUF_SZ ) {
+        tokenbuf_hdr = TokenBufInit( tokenbuf_hdr );
+        tokenbuf = tokenbuf_hdr->curr;
     }
 
-    tb->h[tb->cur_pos++] = character;
-    ++token_hdr->total_size;
+    tokenbuf->h[tokenbuf->cur_pos++] = character;
+    ++tokenbuf_hdr->total_size;
 
-    return( token_hdr );
+    return( tokenbuf_hdr );
 }
 
 BUFFER_HDR *TokenBufAddToken(           // TokenBuf: ADD A TOKEN
-    BUFFER_HDR *token_hdr,              // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,           // - handle to token buffer
     TOKEN token )                       // - token to be added
 {
-    TOKEN_BUFFER *tb = token_hdr->curr;
+    TOKEN_BUFFER *tokenbuf = tokenbuf_hdr->curr;
 
     /*
      *  If not enough space on current buffer, allocate new one.
      */
-    if( ( tb->cur_pos + SIZE_MTOKEN ) > BUF_SZ ) {
-        token_hdr = TokenBufInit( token_hdr );
-        tb = token_hdr->curr;
+    if( ( tokenbuf->cur_pos + SIZE_MTOKEN ) > BUF_SZ ) {
+        tokenbuf_hdr = TokenBufInit( tokenbuf_hdr );
+        tokenbuf = tokenbuf_hdr->curr;
     }
 
-    SET_MTOKEN( tb->h + tb->cur_pos, token );
-    tb->cur_pos += SIZE_MTOKEN;
-    token_hdr->total_size += SIZE_MTOKEN;
+    SET_MTOKEN( tokenbuf->h + tokenbuf->cur_pos, token );
+    tokenbuf->cur_pos += SIZE_MTOKEN;
+    tokenbuf_hdr->total_size += SIZE_MTOKEN;
 
-    return( token_hdr );
+    return( tokenbuf_hdr );
 }
 
 
 BUFFER_HDR *TokenBufAddStr(             // TokenBuf: ADD A STRING
-    BUFFER_HDR *token_hdr,              // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,           // - handle to token buffer
     const char *str )                   // - string to be added
 {
     unsigned len = strlen( str );
-    TOKEN_BUFFER *tb = token_hdr->curr;
+    TOKEN_BUFFER *tokenbuf = tokenbuf_hdr->curr;
 
     /*
      *  If not enough space on current buffer, allocate as many
      *  buffers as needed to store string.
      */
-    if( ( tb->cur_pos + len + 1) > BUF_SZ ) {
-        token_hdr = TokenBufNew( token_hdr, str );
-        tb = token_hdr->curr;
+    if( ( tokenbuf->cur_pos + len + 1) > BUF_SZ ) {
+        tokenbuf_hdr = TokenBufNew( tokenbuf_hdr, str );
+        tokenbuf = tokenbuf_hdr->curr;
     } else {
-        memcpy( &(tb->h[tb->cur_pos]), str, len );
-        tb->cur_pos += len;
-        token_hdr->total_size += len;
+        memcpy( &(tokenbuf->h[tokenbuf->cur_pos]), str, len );
+        tokenbuf->cur_pos += len;
+        tokenbuf_hdr->total_size += len;
     }
-    token_hdr = TokenBufAddChar( token_hdr, '\0' );
-    return( token_hdr );
+    tokenbuf_hdr = TokenBufAddChar( tokenbuf_hdr, '\0' );
+    return( tokenbuf_hdr );
 }
 
 
 size_t TokenBufSize(                    // TokenBuf: RETURN SIZE
-    BUFFER_HDR *token_hdr )             // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr )          // - handle to token buffer
 {
-    return( token_hdr->curr->cur_pos );
+    return( tokenbuf_hdr->curr->cur_pos );
 }
 
 
 void TokenBufRemoveWhiteSpace(          // TokenBuf: REMOVE WHITE SPACE FROM END
-    BUFFER_HDR *token_hdr )             // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr )          // - handle to token buffer
 {
-    TOKEN_BUFFER *tb = token_hdr->curr;
+    TOKEN_BUFFER *tokenbuf = tokenbuf_hdr->curr;
 
-    while( tb->cur_pos >= SIZE_MTOKEN ) {
-        tb->cur_pos -= SIZE_MTOKEN;
-        if( GET_MTOKEN( &tb->h[tb->cur_pos] ) != T_WHITE_SPACE ) {
-            tb->cur_pos += SIZE_MTOKEN;
+    while( tokenbuf->cur_pos >= SIZE_MTOKEN ) {
+        tokenbuf->cur_pos -= SIZE_MTOKEN;
+        if( GET_MTOKEN( &tokenbuf->h[tokenbuf->cur_pos] ) != T_WHITE_SPACE ) {
+            tokenbuf->cur_pos += SIZE_MTOKEN;
             break;
         }
     }
@@ -168,68 +168,68 @@ void TokenBufRemoveWhiteSpace(          // TokenBuf: REMOVE WHITE SPACE FROM END
 
 
 BUFFER_HDR *TokenBufMove(               // TokenBuf: MOVE CONTENTS, RE-INITIALIZE
-    BUFFER_HDR *token_hdr,              // - token header
+    BUFFER_HDR *tokenbuf_hdr,           // - token header
     char *target )                      // - where to save
 {
-    TOKEN_BUFFER  *tb;
+    TOKEN_BUFFER  *tokenbuf;
 
-    RingIterBeg( token_hdr->list, tb ) {
-        memcpy( target, tb->h, tb->cur_pos );
-        target += tb->cur_pos;
-    } RingIterEnd( tb )
+    RingIterBeg( tokenbuf_hdr->list, tokenbuf ) {
+        memcpy( target, tokenbuf->h, tokenbuf->cur_pos );
+        target += tokenbuf->cur_pos;
+    } RingIterEnd( tokenbuf )
     *target = '\0';
 
-    TokenBufFini( token_hdr );
-    token_hdr = TokenBufInit( NULL );
-    return( token_hdr );
+    TokenBufFini( tokenbuf_hdr );
+    tokenbuf_hdr = TokenBufInit( NULL );
+    return( tokenbuf_hdr );
 }
 
 
 void TokenBufFini(                      // TokenBuf: FREE MEMORY USED BY TOKEN BUFFER
-    BUFFER_HDR *token_hdr )
+    BUFFER_HDR *tokenbuf_hdr )
 {
-    RingFree( &token_hdr->list );
-    CMemFreePtr( &token_hdr );
+    RingFree( &tokenbuf_hdr->list );
+    CMemFreePtr( &tokenbuf_hdr );
 }
 
 BUFFER_HDR *TokenBufNew(                // TokenBuf: ADD A STRING
-    BUFFER_HDR *token_hdr,              // - handle to token buffer
+    BUFFER_HDR *tokenbuf_hdr,           // - handle to token buffer
     const char *str )                   // - string to be added
 {
-    TOKEN_BUFFER *tb = token_hdr->curr;
+    TOKEN_BUFFER *tokenbuf = tokenbuf_hdr->curr;
     int   len, req_len;
 
 
     req_len = strlen( str );
-    len = BUF_SZ - tb->cur_pos;
-    memcpy( &(tb->h[tb->cur_pos]), str, len );
-    tb->cur_pos = BUF_SZ;
-    token_hdr->total_size += len;
+    len = BUF_SZ - tokenbuf->cur_pos;
+    memcpy( &(tokenbuf->h[tokenbuf->cur_pos]), str, len );
+    tokenbuf->cur_pos = BUF_SZ;
+    tokenbuf_hdr->total_size += len;
     str += len;
     req_len -= len;
 
     while( req_len > 0 ) {
-        token_hdr = TokenBufInit( token_hdr );
-        tb = token_hdr->curr;
+        tokenbuf_hdr = TokenBufInit( tokenbuf_hdr );
+        tokenbuf = tokenbuf_hdr->curr;
         if( req_len > BUF_SZ ) {
-            memcpy( tb->h, str, BUF_SZ );
-            tb->cur_pos = BUF_SZ;
-            token_hdr->total_size += BUF_SZ;
+            memcpy( tokenbuf->h, str, BUF_SZ );
+            tokenbuf->cur_pos = BUF_SZ;
+            tokenbuf_hdr->total_size += BUF_SZ;
             str += BUF_SZ;
             req_len -= BUF_SZ;
         } else {
-            memcpy( tb->h, str, req_len );
-            tb->cur_pos += req_len;
-            token_hdr->total_size += req_len;
+            memcpy( tokenbuf->h, str, req_len );
+            tokenbuf->cur_pos += req_len;
+            tokenbuf_hdr->total_size += req_len;
             req_len = 0;
         }
     }
 
-    return( token_hdr );
+    return( tokenbuf_hdr );
 }
 
 size_t TokenBufTotalSize(               // TokenBuf: RETURN SIZE OF ALL BUFFERS
-    BUFFER_HDR *token_hdr )
+    BUFFER_HDR *tokenbuf_hdr )
 {
-   return( token_hdr->total_size );
+   return( tokenbuf_hdr->total_size );
 }

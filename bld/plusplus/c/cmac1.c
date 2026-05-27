@@ -420,21 +420,22 @@ static TOKEN nextMToken( TOKEN prev_token )
     return( token );
 }
 
-static void saveParm(
+static BUFFER_HDR *saveParm(
     MEPTR               mentry,
     int                 parm_idx,
     MACRO_ARG           *macro_parms,
     int                 total,
-    BUFFER_HDR          **h )
+    BUFFER_HDR          *tokenbuf_hdr )
 {
     char *p;
 
-    *h = TokenBufAddToken( *h, T_NULL );
+    tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, T_NULL );
     if( parm_idx < GetMacroParmCount( mentry ) ) {
-        p = CMemAlloc( total + TokenBufTotalSize( *h ) + 1 );
+        p = CMemAlloc( total + TokenBufTotalSize( tokenbuf_hdr ) + 1 );
         macro_parms[parm_idx].arg = p;
-        *h = TokenBufMove( *h, p );
+        tokenbuf_hdr = TokenBufMove( tokenbuf_hdr, p );
     }
+    return( tokenbuf_hdr );
 }
 
 static MACRO_ARG *collectParms( MEPTR mentry )
@@ -447,14 +448,14 @@ static MACRO_ARG *collectParms( MEPTR mentry )
     int             total;
     bool            ppscan_mode;
     MACRO_ARG       *macro_parms;
-    BUFFER_HDR      *htokenbuf;
+    BUFFER_HDR      *tokenbuf_hdr;
 
     macro_parms = NULL;
     if( MacroWithParenthesis( mentry ) ) { /* if () expected */
         // () = 1, (a) = 2, (a,b) = 3
         parm_count_reqd = GetMacroParmCount( mentry );
         ppscan_mode = InitPPScan();             // enable T_PPNUMBER tokens
-        htokenbuf = TokenBufInit( NULL );
+        tokenbuf_hdr = TokenBufInit( NULL );
         if( parm_count_reqd > 0 ) {
             macro_parms = CMemAlloc( parm_count_reqd * sizeof( *macro_parms ) );
             if( MacroHasVarArgs( mentry ) ) {
@@ -476,7 +477,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
                 if( token != T_WHITE_SPACE ) {
                     break;
                 }
-            } while( TokenBufSize( htokenbuf ) == 0 );
+            } while( TokenBufSize( tokenbuf_hdr ) == 0 );
             if( token == T_EOF
               || token == T_NULL ) {
                 CErr( ERR_INCOMPLETE_MACRO, mentry->macro_name );
@@ -501,9 +502,9 @@ static MACRO_ARG *collectParms( MEPTR mentry )
               && bracket == 0
               && !( MacroHasVarArgs( mentry )
               && parm_idx == ( parm_count_reqd - 1 ) ) ) {
-                TokenBufRemoveWhiteSpace( htokenbuf );
+                TokenBufRemoveWhiteSpace( tokenbuf_hdr );
                 if( macro_parms != NULL ) {     // if expecting parms
-                    saveParm( mentry, parm_idx, macro_parms, total, &htokenbuf );
+                    tokenbuf_hdr = saveParm( mentry, parm_idx, macro_parms, total, tokenbuf_hdr );
                 }
                 ++parm_idx;
                 total = 0;
@@ -512,14 +513,14 @@ static MACRO_ARG *collectParms( MEPTR mentry )
             switch( token ) {
             case T_WHITE_SPACE:
                 if( prev_token != T_WHITE_SPACE ) {
-                    htokenbuf = TokenBufAddToken( htokenbuf, token );
+                    tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, token );
                 }
                 break;
             case T_BAD_CHAR:
-                htokenbuf = TokenBufAddToken( htokenbuf, token );
-                htokenbuf = TokenBufAddChar( htokenbuf, Buffer[0] );
+                tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, token );
+                tokenbuf_hdr = TokenBufAddChar( tokenbuf_hdr, Buffer[0] );
                 if( Buffer[1] != '\0' ) {
-                    htokenbuf = TokenBufAddToken( htokenbuf, T_WHITE_SPACE );
+                    tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, T_WHITE_SPACE );
                 }
                 break;
             case T_CONSTANT:
@@ -529,19 +530,19 @@ static MACRO_ARG *collectParms( MEPTR mentry )
             case T_ID:
             case T_UNEXPANDABLE_ID:
             case T_BAD_TOKEN:
-                htokenbuf = TokenBufAddToken( htokenbuf, token );
-                htokenbuf = TokenBufAddStr( htokenbuf, Buffer );
+                tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, token );
+                tokenbuf_hdr = TokenBufAddStr( tokenbuf_hdr, Buffer );
                 break;
             default :
-                htokenbuf = TokenBufAddToken( htokenbuf, token );
+                tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, token );
                 break;
             }
         }
-        TokenBufRemoveWhiteSpace( htokenbuf );
+        TokenBufRemoveWhiteSpace( tokenbuf_hdr );
         if( macro_parms != NULL ) {     // if expecting parms
-            saveParm( mentry, parm_idx, macro_parms, total, &htokenbuf );
+            tokenbuf_hdr = saveParm( mentry, parm_idx, macro_parms, total, tokenbuf_hdr );
             ++parm_idx;
-        } else if( TokenBufSize( htokenbuf ) + total != 0 ) {
+        } else if( TokenBufSize( tokenbuf_hdr ) + total != 0 ) {
             ++parm_idx;
         }
         if( ( MacroHasVarArgs( mentry )
@@ -552,8 +553,8 @@ static MACRO_ARG *collectParms( MEPTR mentry )
             InfMacroDecl( mentry );
             macroDiagNesting();
             do {
-                htokenbuf = TokenBufAddToken( htokenbuf, T_WHITE_SPACE );
-                saveParm( mentry, parm_idx, macro_parms, 1, &htokenbuf );
+                tokenbuf_hdr = TokenBufAddToken( tokenbuf_hdr, T_WHITE_SPACE );
+                tokenbuf_hdr = saveParm( mentry, parm_idx, macro_parms, 1, tokenbuf_hdr );
                 ++parm_idx;
             } while( parm_idx < parm_count_reqd );
         } else if( !MacroHasVarArgs( mentry )
@@ -570,7 +571,7 @@ static MACRO_ARG *collectParms( MEPTR mentry )
             }
         }
         FiniPPScan( ppscan_mode );      // disable T_PPNUMBER tokens
-        TokenBufFini( htokenbuf );
+        TokenBufFini( tokenbuf_hdr );
     }
     return( macro_parms );
 }
