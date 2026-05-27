@@ -388,7 +388,7 @@ pch_status PCHInitStringPool( bool writing )
             {
                 unsigned i;
                 for( i = 1; i < stringCount; ++i ) {
-                    if( stringTranslateTable[i -1 ] == stringTranslateTable[i] ) {
+                    if( stringTranslateTable[i - 1] == stringTranslateTable[i] ) {
                         CFatal( "two identical strings in translation table" );
                     }
                 }
