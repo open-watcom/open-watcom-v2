@@ -171,8 +171,11 @@ typedef union cgvalue {             // CGVALUE: one of
 // having 'value' first means it will be aligned in cases
 // were it is a singleton
 typedef struct cginter {        // CGINTER -- intermediate-code instruction
-    CGVALUE     value;          // - value
-    CGINTEROP   opcode;         // - opcode for text
+    CGVALUE         value;      // - value
+    union {
+        CGINTEROP   opcode;     // - opcode for text
+        void        *dummy;     // - dummy for structure alignment
+    } u;
 } CGINTER;
 
 /* Target System types */

@@ -301,7 +301,7 @@ void CgioWriteIC(               // WRITE IC RECORD TO VIRTUAL FILE
 {
 #ifdef DEVBUILD
     ExtraRptIncrementCtr( cgio_write_ins );
-    if( ICOpTypes[ins->opcode] == ICOT_NUL ) {
+    if( ICOpTypes[ins->u.opcode] == ICOT_NUL ) {
         ExtraRptIncrementCtr( cgio_write_nul );
     }
 #endif
@@ -587,7 +587,7 @@ static unsigned padOutICBlock( unsigned ics )
     CGINTER pad_ic;
 
     if(( ics % CGINTER_BLOCKING ) != 0 ) {
-        pad_ic.opcode = IC_PCH_PAD;
+        pad_ic.u.opcode = IC_PCH_PAD;
         do {
             ++ics;
             pad_ic.value.pvalue = 0;
@@ -627,7 +627,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     if( file->u.s.done ) {
         // CGFILE contains a finished function
         for(;;) {
-            opcode = cursor->opcode;
+            opcode = cursor->u.opcode;
             op_class = ICOpTypes[opcode];
             reloc = relocWriteOperand[op_class];
             if( reloc != NULL ) {
@@ -656,28 +656,28 @@ static void saveCGFILE( void *e, carve_walk_base *d )
         // Note: this is the only case where we are reading a CGFILE that
         // is not terminated by an IC_EOF but the same precaution must be
         // taken if we ever do it in some other case
-        stop_cursor->opcode = IC_NO_OP;
-        DbgAssert( stop_cursor->opcode != IC_NEXT );
+        stop_cursor->u.opcode = IC_NO_OP;
+        DbgAssert( stop_cursor->u.opcode != IC_NEXT );
         for(;;) {
             if( h == stop_buffer && cursor == stop_cursor )
                 break;
-            opcode = cursor->opcode;
+            opcode = cursor->u.opcode;
             // might be the destination of a CgioZap
-            zap_ref.opcode = IC_NO_OP;
+            zap_ref.u.opcode = IC_NO_OP;
             switch( opcode ) {
             case IC_BLOCK_OPEN:
             case IC_BLOCK_DEAD:
                 getCGFileLocn( h, cursor, &zap_locn );
                 zap_reloc = ModuleIsZap2( &zap_locn );
                 if( zap_reloc != NULL ) {
-                    zap_ref.opcode = IC_ZAP2_REF;
+                    zap_ref.u.opcode = IC_ZAP2_REF;
                     zap_ref.value.pvalue = zap_reloc;
                 }
                 break;
             case IC_NO_OP:
                 getCGFileLocn( h, cursor, &zap_locn );
                 if( ModuleIsZap1( &zap_locn ) ) {
-                    zap_ref.opcode = IC_ZAP1_REF;
+                    zap_ref.u.opcode = IC_ZAP1_REF;
                     zap_ref.value.pvalue = 0;
                 }
                 break;
@@ -693,14 +693,14 @@ static void saveCGFILE( void *e, carve_walk_base *d )
                 PCHWriteUnaligned( cursor, sizeof( *cursor ) );
             }
             ++ics;
-            if( zap_ref.opcode != IC_NO_OP ) {
+            if( zap_ref.u.opcode != IC_NO_OP ) {
                 PCHWriteUnaligned( &zap_ref, sizeof( zap_ref ) );
                 ++ics;
                 ics = padOutICBlock( ics );
             }
             h = CgioBuffReadIC( h, &cursor );
         }
-        terminator.opcode = IC_PCH_STOP;
+        terminator.u.opcode = IC_PCH_STOP;
         PCHWriteUnaligned( &terminator, sizeof( terminator ) );
         ++ics;
     }
@@ -746,7 +746,7 @@ pch_status PCHReadCGFiles( void )
             // The following comment is a trigger for the ICMASK program to
             // start scanning for case IC_* patterns.
             // ICMASK BEGIN PCHREAD (do not remove)
-            switch( last.opcode ) {
+            switch( last.u.opcode ) {
             case IC_EOF:
                 // this writes the IC_EOF into the buffer
                 CgioCloseOutputFile( curr );
