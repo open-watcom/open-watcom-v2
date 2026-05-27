@@ -58,7 +58,7 @@
 #define SEEK_POSBACK(p) (-(long)(p))
 
 static int      files_count;
-static char     *dats[MAX_DATA_FILES];
+static char     *filenames[MAX_DATA_FILES];
 static bool     sflag = false;
 static bool     qflag = false;
 static char     _bf[] = "edbind.dat";
@@ -311,32 +311,28 @@ static void *MyAlloc( size_t size )
 
 int main( int argc, char *argv[] )
 {
-    char                *ptr;
-    int                 j, k;
-    size_t              len;
-    size_t              arg_len;
-    int                 fi;
-    FILE                *fp;
-    struct stat         fs;
-    pgroup2             pg;
-    char                path[_MAX_PATH];
-    char                outpath[_MAX_PATH];
-    char                tmppath[_MAX_PATH];
-    TYPE_BIND           lines;
-    TYPE_BIND           *file_data_offs;
-    TYPE_BIND           *file_lines;
+    char            *ptr;
+    int             i;
+    int             j;
+    size_t          len;
+    size_t          arg_len;
+    FILE            *fp;
+    struct stat     fs;
+    pgroup2         pg;
+    char            path[_MAX_PATH];
+    char            outpath[_MAX_PATH];
 
-    for( j = argc - 1; j > 0; --j ) {
-        if( argv[j][0] == '/' || argv[j][0] == '-' ) {
-            arg_len = strlen( argv[j] );
+    for( i = argc - 1; i > 0; --i ) {
+        if( argv[i][0] == '/' || argv[i][0] == '-' ) {
+            arg_len = strlen( argv[i] );
             for( len = 1; len < arg_len; len++ ) {
-                switch( argv[j][len] ) {
+                switch( argv[i][len] ) {
                 case 's': sflag = true;
                     break;
                 case 'q': qflag = true;
                     break;
                 case 'd':
-                    bindfile = &argv[j][len + 1];
+                    bindfile = &argv[i][len + 1];
                     len = arg_len;
                     break;
                 case '?':
@@ -347,8 +343,8 @@ int main( int argc, char *argv[] )
                     Usage( "Invalid option" );
                 }
             }
-            for( k = j; k < argc; k++ ) {
-                argv[k]= argv[k + 1];
+            for( j = i; j < argc; j++ ) {
+                argv[j]= argv[j + 1];
             }
             argc--;
         }
@@ -378,13 +374,17 @@ int main( int argc, char *argv[] )
     }
 
     if( !sflag ) {
-        char    *data_ptr;
-        char    *data_buff;
-        char    *file_buff;
-        char    *line_buff;
-        char    *p;
-        char    *files_data_len_ptr;
-        size_t  files_data_len;
+        char        *data_ptr;
+        char        *data_buff;
+        char        *file_buff;
+        char        *line_buff;
+        char        *p;
+        char        *files_data_len_ptr;
+        size_t      files_data_len;
+        TYPE_BIND   *files_data_offs;
+        TYPE_BIND   *files_data_lines;
+        TYPE_BIND   lines;
+        char        tmppath[_MAX_PATH];
         /*
          * read in all data files
          */
@@ -402,8 +402,8 @@ int main( int argc, char *argv[] )
             if( ptr[0] == '\0' || ptr[0] == '#' ) {
                 continue;
             }
-            dats[files_count] = MyAlloc( strlen( ptr ) + 1 );
-            strcpy( dats[files_count], ptr );
+            filenames[files_count] = MyAlloc( strlen( ptr ) + 1 );
+            strcpy( filenames[files_count], ptr );
             files_count++;
             if( files_count >= MAX_DATA_FILES ) {
                 Abort( "Too many files to bind!" );
@@ -418,8 +418,8 @@ int main( int argc, char *argv[] )
         files_data_len_ptr = data_ptr;
         data_ptr += SIZE_BIND;
         p = data_ptr;
-        for( fi = 0; fi < files_count; fi++ ) {
-            _splitpath2( dats[fi], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
+        for( i = 0; i < files_count; i++ ) {
+            _splitpath2( filenames[i], pg.buffer, NULL, NULL, &pg.fname, &pg.ext );
             _makepath( tmppath, NULL, NULL, pg.fname, pg.ext );
             len = strlen( tmppath ) + 1;
             memcpy( data_ptr, tmppath, len );
@@ -436,20 +436,20 @@ int main( int argc, char *argv[] )
             files_data_len++;
         }
         SET_SIZE( files_data_len_ptr, files_data_len ); /* size of token list */
-        file_data_offs = (TYPE_BIND *)data_ptr;
+        files_data_offs = (TYPE_BIND *)data_ptr;
         data_ptr += files_count * SIZE_BIND;
-        file_lines = (TYPE_BIND *)data_ptr;
+        files_data_lines = (TYPE_BIND *)data_ptr;
         data_ptr += files_count * SIZE_BIND;
 
         file_buff = MyAlloc( FILE_BUFF_SIZE );
-        for( fi = 0; fi < files_count; fi++ ) {
+        for( i = 0; i < files_count; i++ ) {
             MyPrintf( "Loading" );
-            fp = GetFromEnvAndOpen( dats[fi] );
+            fp = GetFromEnvAndOpen( filenames[i] );
             if( fp == NULL ) {
                 Abort( "\nLoad failed!" );
             }
             setvbuf( fp, file_buff, _IOFBF, FILE_BUFF_SIZE );
-            file_data_offs[fi] = data_ptr - data_buff;
+            files_data_offs[i] = data_ptr - data_buff;
             lines = 0;
             p = data_ptr;
             while( (ptr = myfgets( line_buff, MAX_LINE_LEN, fp )) != NULL ) {
@@ -466,12 +466,12 @@ int main( int argc, char *argv[] )
                 lines++;
             }
             fclose( fp );
-            file_lines[fi] = lines;
+            files_data_lines[i] = lines;
             MyPrintf( "Added %d lines (%d bytes)\n", (int)lines, (int)( data_ptr - p ) );
         }
         free( file_buff );
-        for( fi = 0; fi < files_count; fi++ ) {
-            free( dats[fi] );
+        for( i = 0; i < files_count; i++ ) {
+            free( filenames[i] );
         }
         free( line_buff );
 
