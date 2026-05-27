@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,11 +30,21 @@
 ****************************************************************************/
 
 
+/*
+ * MAGIC_COOKIE must be aligned to 2-bytes
+ * including hidden null termination character
+ */
 #define MAGIC_COOKIE        "CGEXXX\0"
 #define MAGIC_COOKIE_SIZE   sizeof( MAGIC_COOKIE )
-#define TRAILER_SIZE        (sizeof( MAGIC_COOKIE ) + sizeof( bind_size ))
 
 #define SEEK_POSBACK(p)     (-(long)(p))
 
-typedef unsigned short      bind_size;
+#define TYPE_BIND           unsigned short
+#define SIZE_BIND           sizeof( TYPE_BIND )
+#define TRAILER_SIZE        (MAGIC_COOKIE_SIZE + SIZE_BIND)
+
+#define GET_SIZE(p)         *((TYPE_BIND *)(p))
+#define SET_SIZE(p,v)       (*((TYPE_BIND *)(p))=(TYPE_BIND)(v))
+#define GET_MAGIC_SIZE(p)   GET_SIZE((char*)(p)+MAGIC_COOKIE_SIZE)
+#define SET_MAGIC_SIZE(p,v) SET_SIZE((char*)(p)+MAGIC_COOKIE_SIZE,(v))
 
