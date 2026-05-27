@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +49,10 @@ struct cgiobuff {                       // CGIOBUFF -- buffer in memory
     unsigned    written     : 1;        // - block has been written (not dirty)
     unsigned    writing     : 1;        // - being written to now
     unsigned    active      : 1;        // - block is active
-    char        data[TMPBLOCK_BSIZE];   // - buffer in memory
+    union {
+        char    data[TMPBLOCK_BSIZE];   // - buffer in memory
+        void    *dummy;                 // - for structure member alignment
+    } u;
 #ifdef DEVBUILD
     int         check;          // - consistency check
 #endif

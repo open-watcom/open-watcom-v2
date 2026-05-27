@@ -114,8 +114,8 @@ typedef struct {                // disk transfer code
     DISK_OFFSET offset;         // - disk offset
 } BUFF_XFER;
 
-#define pointXferOffset( ctl, off )     ( (void*)( (ctl)->data + (off)) )
-#define pointXfer( ctl )                ( (void*)( (ctl)->data + (ctl)->free_offset) )
+#define pointXferOffset( ctl, off )     ( (void*)( (ctl)->u.data + (off)) )
+#define pointXfer( ctl )                ( (void*)( (ctl)->u.data + (ctl)->free_offset) )
 
 static BUFFDICT *newDict( void )
 {
@@ -288,7 +288,7 @@ static CGIOBUFF *findRdBuffer(  // FIND A BUFFER FOR READING
     if( ctl == NULL ) {
         ctl = allocateBuffer( block );
         setDirectoryEntry( block, ctl );
-        IoSuppTempRead( block, TMPBLOCK_BSIZE, ctl->data );
+        IoSuppTempRead( block, TMPBLOCK_BSIZE, ctl->u.data );
         ctl->written = true;
         ctl->free_offset = TMPBLOCK_BSIZE;
     }
@@ -516,7 +516,7 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
         prefix = scan;
     }
     if( NULL != prefix ) {
-        unsigned offset = ((char*)curr) - ctl->data;
+        unsigned offset = ((char*)curr) - ctl->u.data;
         DumpCgFront( prefix, ctl->disk_addr, offset, curr );
     }
 }
@@ -528,7 +528,7 @@ static void dumpRead            // DBG: TRACE AN INSTRUCTION READ
     { \
         BUFF_XFER *xfer = (BUFF_XFER *) __curr; \
         CGIOBUFF *next = findRdBuffer( xfer->leap_ins.value.uvalue ); \
-        __curr = (CGINTER *)( next->data + xfer->offset ); \
+        __curr = (CGINTER *)( next->u.data + xfer->offset ); \
         finishRdBuffer( __ctl ); \
         __ctl = next; \
     }
@@ -651,7 +651,7 @@ CGIOBUFF *CgioBuffSeek(         // SEEK TO POSITION
         ctl = next;
     }
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
-    curr = (CGINTER *)( ctl->data + posn->offset );
+    curr = (CGINTER *)( ctl->u.data + posn->offset );
     *ins = curr;
     dumpRead( ctl, curr, "Seek", "Seek" );
     return( ctl );
@@ -666,7 +666,7 @@ CGFILE_INS CgioBuffLastRead(    // RETURN POSITION OF LAST READ
 
     // depends on CgioBuffReads leaving the cursor set to last read posn
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
-    posn.offset = (char*)(ins) - ctl->data;
+    posn.offset = (char*)(ins) - ctl->u.data;
     posn.block = ctl->disk_addr;
     return( posn );
 }
@@ -725,7 +725,7 @@ static void cgioBuffReleaseMemory(      // RELEASE MEMORY
     } RingIterEndSafe( curr )
     RingIterBegSafe( list, curr ) {
         if( !curr->written && !CompFlags.compile_failed ) {
-            IoSuppTempWrite( curr->disk_addr, TMPBLOCK_BSIZE, curr->data );
+            IoSuppTempWrite( curr->disk_addr, TMPBLOCK_BSIZE, curr->u.data );
         }
         DbgAssert( *findDirectoryEntry( curr->disk_addr ) == curr );
         setDirectoryEntry( curr->disk_addr, NULL );
@@ -749,7 +749,7 @@ static void cgioBuffReleaseMemory(      // RELEASE MEMORY
                 beingWritten = curr;
                 IoSuppTempWrite( curr->disk_addr
                                , TMPBLOCK_BSIZE
-                               , curr->data );
+                               , curr->u.data );
                 beingWritten = NULL;
             }
             DbgAssert( *findDirectoryEntry( curr->disk_addr ) == curr );
@@ -819,7 +819,7 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
     }
 #endif
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
-    dest = (CGINTER *)( ctl->data + zap.offset );
+    dest = (CGINTER *)( ctl->u.data  + zap.offset );
     dest->u.opcode = ins->u.opcode;
     dest->value = ins->value;
     ctl->written = false;

@@ -246,7 +246,7 @@ static CGFILE *initCGFILE(      // INITIALIZE A CG VIRTUAL FILE
     file_element->symbol = symbol;
     file_element->buffer = buff_element;
     file_element->offset = buff_element->free_offset;
-    file_element->cursor = (CGINTER*) (buff_element->data + buff_element->free_offset);
+    file_element->cursor = (CGINTER*) (buff_element->u.data + buff_element->free_offset);
     file_element->first = buff_element->disk_addr;
     file_element->u.s.delayed = false;
     file_element->u.s.refed = false;
@@ -345,7 +345,7 @@ void CgioOpenInput(             // OPEN VIRTUAL FILE FOR INPUT
     CGFILE *ctl )               // - control for file
 {
     ctl->buffer = CgioBuffRdOpen( ctl->first );
-    ctl->cursor = (CGINTER*) (( ctl->buffer->data + ctl->offset ) - sizeof( CGINTER ));
+    ctl->cursor = (CGINTER*) (( ctl->buffer->u.data + ctl->offset ) - sizeof( CGINTER ));
 }
 
 
@@ -579,7 +579,7 @@ CGFILE *CGFileMapIndex( CGFILE *e )
 static void getCGFileLocn( CGIOBUFF *h, void *cursor, CGFILE_INS *p )
 {
     p->block = h->disk_addr;
-    p->offset = ((char*)cursor) - h->data;
+    p->offset = ((char*)cursor) - h->u.data;
 }
 
 static unsigned padOutICBlock( unsigned ics )
@@ -622,7 +622,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     SymbolPCHWrite( file->opt_retn );
     PCHWriteUInt( file->u.flags );
     h = CgioBuffRdOpen( file->first );
-    cursor = (CGINTER *)( h->data + file->offset );
+    cursor = (CGINTER *)( h->u.data + file->offset );
     ics = 0;
     if( file->u.s.done ) {
         // CGFILE contains a finished function
@@ -646,7 +646,7 @@ static void saveCGFILE( void *e, carve_walk_base *d )
     } else {
         // CGFILE contains a function in progress
         stop_buffer = file->buffer;
-        stop_cursor = (CGINTER *) ( stop_buffer->data + stop_buffer->free_offset );
+        stop_cursor = (CGINTER *) ( stop_buffer->u.data + stop_buffer->free_offset );
         // Ivan's bug fix simplified:
         // if stop_cursor randomly contains an IC_NEXT opcode, the final
         // CgioBuffRead may leap off into never-never land;
