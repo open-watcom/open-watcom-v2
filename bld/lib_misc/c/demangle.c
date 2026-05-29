@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,10 +54,11 @@
 #define STRNCMP strncmp
 #endif
 
-#define IMPORT_PREFIX_STR_L     "__imp_"
-#define IMPORT_PREFIX_STR_U     "__IMP_"
-#define IMPORT_PREFIX_LEN       ( sizeof( IMPORT_PREFIX_STR_L ) - 1 )
-#define CHECK_IMPORT_PREFIX(s)  (s[0]=='_'&&(memcmp(s,IMPORT_PREFIX_STR_L,IMPORT_PREFIX_LEN)==0||memcmp(s,IMPORT_PREFIX_STR_U,IMPORT_PREFIX_LEN)==0))
+#define IMPORT_PREFIX1_STR_L     "__imp_"
+#define IMPORT_PREFIX1_STR_U     "__IMP_"
+#define IMPORT_PREFIX1_LEN       ( sizeof( IMPORT_PREFIX1_STR_L ) - 1 )
+#define IMPORT_PREFIX2_STR       ".PREFIX_DATA."
+#define IMPORT_PREFIX2_LEN       ( sizeof( IMPORT_PREFIX2_STR ) - 1 )
 
 #define RECURSE_CHECK           (100*sizeof(int))
 #define AUTO_BUFFER_SIZE        80
@@ -1553,11 +1554,19 @@ static void full_mangled_name( output_desc *data )
     data->status = 0;
 #endif
     advances = 1;
-    if( data->end == NULL || ( data->end - data->input ) >= IMPORT_PREFIX_LEN ) {
-        if( CHECK_IMPORT_PREFIX( data->input ) ) {
-            data->input += IMPORT_PREFIX_LEN;
-            data->dllimport = true;
-        }
+    if( ( data->end == NULL
+      || ( data->end - data->input ) >= IMPORT_PREFIX2_LEN )
+      && data->input[0] == '.'
+      && ( strncmp( data->input, IMPORT_PREFIX2_STR, IMPORT_PREFIX2_LEN ) == 0 ) ) {
+        data->input += IMPORT_PREFIX2_LEN;
+        data->dllimport = true;
+    } else if( ( data->end == NULL
+      || ( data->end - data->input ) >= IMPORT_PREFIX1_LEN )
+      && data->input[0] == '_'
+      && ( strncmp( data->input, IMPORT_PREFIX1_STR_L, IMPORT_PREFIX1_LEN ) == 0
+      || strncmp( data->input, IMPORT_PREFIX1_STR_U, IMPORT_PREFIX1_LEN ) == 0 ) ) {
+        data->input += IMPORT_PREFIX1_LEN;
+        data->dllimport = true;
     }
     switch( currChar( data ) ) {
     case TRUNCATED_PREFIX1:
@@ -1749,10 +1758,19 @@ size_t __is_mangled( char const *name, size_t len )
     if( len > 2 ) {
         len -= 2;
         offset = 2;
-        if( len > IMPORT_PREFIX_LEN && CHECK_IMPORT_PREFIX( name ) ) {
-            len -= IMPORT_PREFIX_LEN;
-            name += IMPORT_PREFIX_LEN;
-            offset += IMPORT_PREFIX_LEN;
+        if( len > IMPORT_PREFIX2_LEN
+          && name[0] == '.'
+          && strncmp( name, IMPORT_PREFIX2_STR, IMPORT_PREFIX2_LEN ) == 0 ) {
+            len -= IMPORT_PREFIX2_LEN;
+            name += IMPORT_PREFIX2_LEN;
+            offset += IMPORT_PREFIX2_LEN;
+        } else if( len > IMPORT_PREFIX1_LEN
+          && name[0] == '_'
+          && ( strncmp( name, IMPORT_PREFIX1_STR_L, IMPORT_PREFIX1_LEN ) == 0
+          || strncmp( name, IMPORT_PREFIX1_STR_U, IMPORT_PREFIX1_LEN ) == 0 ) ) {
+            len -= IMPORT_PREFIX1_LEN;
+            name += IMPORT_PREFIX1_LEN;
+            offset += IMPORT_PREFIX1_LEN;
         }
         if( name[0] == MANGLE_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
             return( offset );
