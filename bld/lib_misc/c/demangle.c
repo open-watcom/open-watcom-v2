@@ -339,8 +339,10 @@ static size_t terminateOutput( output_desc *data );
 
 static void zapSpace( output_desc *data )
 {
-    if( data->output == NULL ) {
-        /* count the characters mode */
+    /*
+     * if in test mode or no characters output then return (no action)
+     */
+    if( data->output == NULL || data->index == 0 ) {
         return;
     }
     if( data->index > data->size ) {
@@ -349,8 +351,11 @@ static void zapSpace( output_desc *data )
     if( data->output[data->index - 1] != ' ' ) {
         return;
     }
-    /* remove trailing space */
     data->count--;
+    data->index--;
+    /*
+     * remove single space on index position, shrink string if possible
+     */
     if( data->index != (data->count + 1) ) {
         size_t last = data->size;
         if( last > data->count )
@@ -359,7 +364,6 @@ static void zapSpace( output_desc *data )
             memmove( &data->output[data->index - 1], &data->output[data->index], ( last - data->index ) + 1 );
         }
     }
-    data->index--;
 }
 
 #define START_ADJUST    ( 1 << 8 )
@@ -373,28 +377,42 @@ static void emitChar( output_desc *data, char c )
     if( data->suppress_output > SUPPRESS_LIMIT ) {
         return;
     }
+    /*
+     * virtual length always increased
+     */
     data->count++;
+    /*
+     * if in test mode then return (no output)
+     */
     if( data->output == NULL ) {
-        /* count the characters mode */
         return;
     }
+    /*
+     * check if physical buffer needs to grow
+     */
     if( data->count == ( data->size - 1 ) ) {
-        if( user_realloc != NULL ) {
-            adjust_size = START_ADJUST;
-            for( ;; ) {
-                if( adjust_size == 0 ) {
-                    return;
-                }
-                test_size = data->size + adjust_size;
-                test_realloc = user_realloc( data->output, test_size );
-                if( test_realloc != NULL )
-                    break;
-                adjust_size >>= 1;
+        if( user_realloc == NULL )
+            return;
+        adjust_size = START_ADJUST;
+        for( ;; ) {
+            if( adjust_size == 0 ) {
+                return;
             }
-            data->output = test_realloc;
-            data->size = test_size;
+            test_size = data->size + adjust_size;
+            /*
+             * allocate +1 for null terminator
+             */
+            test_realloc = user_realloc( data->output, test_size );
+            if( test_realloc != NULL )
+                break;
+            adjust_size >>= 1;
         }
+        data->output = test_realloc;
+        data->size = test_size;
     }
+    /*
+     * cannot write beyond physical buffer
+     */
     if( data->index < data->size ) {
         if( data->index < (data->count - 1) ) {
             size_t last = data->size;
@@ -402,6 +420,9 @@ static void emitChar( output_desc *data, char c )
                 last = data->count;
             memmove( &data->output[data->index + 1], &data->output[data->index], ( last - data->index ) - 1 );
         }
+        /*
+         * write character to output
+         */
         data->output[data->index] = c;
         data->index++;
     }
@@ -1648,11 +1669,16 @@ static void init_descriptor( output_desc *data,
                              char const *input, size_t len,
                              char *buff, size_t buff_size )
 {
+#if 0 || defined( TEST )
+    data->status = 0;
+#endif
     data->outfun = ofn;
     data->cookie = cookie;
     data->end = NULL;
     if( len != 0 ) {
-        /* length of mangled name is known */
+        /*
+         * length of mangled name is known
+         */
         data->end = input + len;
     }
     data->input = input;
@@ -1677,17 +1703,25 @@ static size_t terminateOutput( output_desc *data )
     size_t outlen;
 
     outlen = data->count;
-    if( data->output != NULL && outlen > 0 && data->size > 0 ) {
-        /* name may have been truncated */
-        if( outlen > data->size - 1  ) {
-            outlen = data->size - 1;
+    if( data->output != NULL ) {
+        if( data->size > 0 ) {
+            if( outlen > data->size ) {
+                outlen = data->size;
+            }
+            /*
+             * remove all trailing spaces
+             */
+            while( outlen > 0 && data->output[outlen - 1] == ' ' ) {
+                outlen--;
+            }
+        } else {
+            outlen = 0;
         }
-        /* remove trailing space */
-        if( outlen > 0 && data->output[outlen - 1] == ' ' )
-            --outlen;
         data->output[outlen] = NULL_CHAR;
     }
-    /* size does not include '\0' */
+    /*
+     * size does not include '\0'
+     */
     return( outlen );
 }
 
@@ -1747,7 +1781,9 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
 #if 0 || defined( TEST )
     disp_demangle_status( &data );
 #endif
-    /* size does not include '\0' */
+    /*
+     * size does not include '\0'
+     */
     return( outlen );
 }
 
@@ -1889,7 +1925,9 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     new_state.right = false;
     type_encoding( &data, &new_state );
     outlen = terminateOutput( &data );
-    /* size does not include '\0' */
+    /*
+     * size does not include '\0'
+     */
     return( outlen );
 }
 
@@ -1925,7 +1963,9 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     if( buffp != NULL ) {
         *buffp = data.output;
     }
-    /* size does not include '\0' */
+    /*
+     * size does not include '\0'
+     */
     return( outlen );
 }
 
@@ -1987,7 +2027,9 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
 #if 0 || defined( TEST )
     disp_demangle_status( &data );
 #endif
-    /* size does not include '\0' */
+    /*
+     * size does not include '\0'
+     */
     return( outlen );
 }
 
