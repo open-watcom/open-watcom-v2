@@ -144,8 +144,8 @@ typedef struct output_desc {
     char const      *end;
     char const      *scope_ptr;
     char            *output;
-    size_t          size;
-    size_t          count;
+    size_t          size;       /* buffer length without null terminator */
+    size_t          count;      /* virtual length (may exceed size) */
     size_t          index;
     size_t          pending_loc;
     size_t          scope_len;
@@ -162,7 +162,7 @@ typedef struct output_desc {
 } output_desc;
 
 /*
- * the simple demangler uses these to output & count chars in the output buffer
+ * the simple demangler uses these to output and count chars in the output buffer
  * the parser callback uses these to extract the structure of the name
  */
 #define _output1( _a         ) (data->outfun)( &(data->cookie), _a,  0,  0 )
@@ -2187,10 +2187,10 @@ void dump( output_desc *data )
             data->scope_ptr,
             data->scope_len );
 }
-
 #endif
 
 #if 0 || defined( TEST )
+
 #define TRUNC_BUFFER    256
 #define GUARD_CHAR      '@'
 #define ALLOC_SIZE      2
@@ -2514,7 +2514,7 @@ static char *typeTestVector[] = {
 
 void main( int argc )
 {
-    static char buff[TRUNC_BUFFER+2]; /* allow for two guard chars */
+    static char buff[TRUNC_BUFFER + 2]; /* allow for two guard chars */
     size_t len;
     size_t trunc_len;
     int i;
@@ -2696,11 +2696,12 @@ void main( int argc, char **argv )
 {
     char    buffer[BUF_SIZE];
 
-    if( argc < 2) {
+    if( argc < 2 ) {
         printf( "Usage: demangle <mangled name>\n" );
         return;
     }
     __demangle_l( argv[1], strlen( argv[1] ), buffer, sizeof( buffer ) );
     puts( buffer );
 }
+
 #endif
