@@ -130,7 +130,9 @@ typedef struct replicate_desc {
     size_t          len;
 } replicate_desc;
 
-// static R/W data
+/*
+ * static R/W data
+ */
 static realloc_fn_t     user_realloc;
 static replicate_desc   replicate[MAX_REPLICATE];
 static int              next_replicate;
@@ -159,8 +161,10 @@ typedef struct output_desc {
 #endif
 } output_desc;
 
-// the simple demangler uses these to output & count chars in the output buffer
-// the parser callback uses these to extract the structure of the name
+/*
+ * the simple demangler uses these to output & count chars in the output buffer
+ * the parser callback uses these to extract the structure of the name
+ */
 #define _output1( _a         ) (data->outfun)( &(data->cookie), _a,  0,  0 )
 #define _output2( _a, _b     ) (data->outfun)( &(data->cookie), _a, _b,  0 )
 #define _output3( _a, _b, _c ) (data->outfun)( &(data->cookie), _a, _b, _c )
@@ -196,10 +200,12 @@ static char const _WCI86FAR basedStrSuffix[] = "\"";
 static char const _WCI86FAR basedSelf[] = "__self";
 static char const _WCI86FAR basedVoid[] = "void";
 
-// mangled character translations
+/*
+ * mangled character translations
+ */
 typedef struct table_t {
-    char const _WCI86FAR    *string;    // translated string
-    char                    grouping;   // flavour of character
+    char const _WCI86FAR    *string;    /* translated string */
+    char                    grouping;   /* flavour of character */
 } table_t;
 
 #define LOWER_TABLE_LIMIT   'A'
@@ -239,7 +245,7 @@ static table_t const _WCI86FAR translate_type_encoding[] = {
     /* '\' */   { NULL,         CHAR_UNUSED },
     /* ']' */   { NULL,         CHAR_UNUSED },
     /* '^' */   { NULL,         CHAR_UNUSED },
-    /* '_' */   { "",           CHAR_BASIC_TYPE } // for ctor/dtor return type
+    /* '_' */   { "",           CHAR_BASIC_TYPE } /* for ctor/dtor return type */
 };
 
 static char _WCI86FAR * const _WCI86FAR operatorFunction[] = {
@@ -342,7 +348,8 @@ static void zapSpace( output_desc *data )
     /*
      * if in test mode or no characters output then return (no action)
      */
-    if( data->output == NULL || data->index == 0 ) {
+    if( data->output == NULL
+      || data->index == 0 ) {
         return;
     }
     if( data->index > data->size ) {
@@ -400,7 +407,7 @@ static void emitChar( output_desc *data, char c )
             }
             test_size = data->size + adjust_size;
             /*
-             * allocate +1 for null terminator
+             * allocate + 1 byte for null terminator
              */
             test_realloc = user_realloc( data->output, test_size );
             if( test_realloc != NULL )
@@ -469,14 +476,14 @@ static void resetSuppression( output_desc *data )
 static void forceSuppression( output_desc *data )
 {
     if( data->suppress_output <= SUPPRESS_LIMIT ) {
-        data->suppress_output += SUPPRESS_LIMIT+1;
+        data->suppress_output += SUPPRESS_LIMIT + 1;
     }
 }
 
 static void unforceSuppression( output_desc *data )
 {
     if( data->suppress_output > SUPPRESS_LIMIT ) {
-        data->suppress_output -= SUPPRESS_LIMIT+1;
+        data->suppress_output -= SUPPRESS_LIMIT + 1;
     }
 }
 
@@ -507,7 +514,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
     case DM_SCOPE:
     case DM_MANGLED_NAME:
     case DM_TRUNCATED_NAME:
-        // ignore these for demangling
+        /* ignore these for demangling */
         break;
     case DM_TYPE_ENCODING:
         if( data->base_name ) {
@@ -528,7 +535,8 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         break;
     case DM_IDENTIFIER:
     case DM_COPY_STRING:
-        if( data->base_name && data->ctdt_pending ) {
+        if( data->base_name
+          && data->ctdt_pending ) {
             unforceSuppression( data );
         }
         if( idx == 0 ) {
@@ -538,7 +546,8 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
                 emitChar( data, *ptr++ );
             }
         }
-        if( data->base_name && data->ctdt_pending ) {
+        if( data->base_name
+          && data->ctdt_pending ) {
             forceSuppression( data );
         }
         break;
@@ -671,10 +680,11 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
     }
 }
 
-// ==========================================================================
-// everything before this point deals with output to the demangled name
-// ==========================================================================
-
+/*
+ * ==========================================================================
+ * everything before this point deals with output to the demangled name
+ * ==========================================================================
+ */
 static bool typeChar( char c, int grouping )
 {
     int i;
@@ -708,7 +718,8 @@ static char currChar( output_desc *data )
     char c;
 
     c = *data->input;
-    if( data->end == NULL || data->input < data->end ) {
+    if( data->end == NULL
+      || data->input < data->end ) {
         c = mytoupper( c );
     } else {
         c = NULL_CHAR;
@@ -718,14 +729,18 @@ static char currChar( output_desc *data )
 
 static void advanceChar( output_desc *data )
 {
-    if( ( data->end == NULL || data->input < data->end ) && *data->input != NULL_CHAR ) {
+    if( ( data->end == NULL
+      || data->input < data->end )
+      && *data->input != NULL_CHAR ) {
         data->input++;
     }
 }
 
 static bool is_identifier( char c )
 {
-    if( isalnum( c ) || c == UNDERSCORE || c == PERIOD ) {
+    if( isalnum( c )
+      || c == UNDERSCORE
+      || c == PERIOD ) {
         return( true );
     } else {
         return( false );
@@ -734,11 +749,14 @@ static bool is_identifier( char c )
 
 static unsigned char_to_digit( char c )
 {
-    if( c >= '0' && c <= '9' )
+    if( c >= '0'
+      && c <= '9' )
         return( c - '0' );
-    if( c >= 'A' && c <= 'Z' )
+    if( c >= 'A'
+      && c <= 'Z' )
         return( c - 'A' + 10 );
-    if( c >= 'a' && c <= 'z' )
+    if( c >= 'a'
+      && c <= 'z' )
         return( c - 'a' + 10 );
     return( (unsigned)-1 );
 }
@@ -807,8 +825,11 @@ static bool basic_type( output_desc *data, state_desc *state )
     _output1( DM_BASIC_TYPE );
     c = currChar( data );
     if( typeChar( c, CHAR_BASIC_TYPE ) ) {
-        // put a signed before signed char
-        if( c == 'C' && prevChar( data ) != 'U' ) {
+        /*
+         * put a signed before signed char
+         */
+        if( c == 'C'
+          && prevChar( data ) != 'U' ) {
             _output2( DM_SET_INDEX, state->prefix );
             _output1( DM_CHAR_ENCODING_SIGNED );
         }
@@ -955,7 +976,9 @@ static bool tq_function( output_desc *data, state_desc *state )
     tq_len = 0;
     c = currChar( data );
     while( typeChar( c, CHAR_MODIFIER ) ) {
-        // note: doesn't handle based modifiers
+        /*
+         * note: doesn't handle based modifiers
+         */
         tq_len++;
         advanceChar( data );
         c = currChar( data );
@@ -1072,8 +1095,11 @@ static bool modifier_list( output_desc *data, state_desc *state )
     c = currChar( data );
     while( typeChar( c, CHAR_MODIFIER ) ) {
         advanceChar( data );
-        if( c == 'U' && currChar( data ) == 'A' ) {
-            // don't emit unsigned before default char
+        if( c == 'U'
+          && currChar( data ) == 'A' ) {
+            /*
+             * don't emit unsigned before default char
+             */
         } else {
             _output2( DM_SET_INDEX, state->prefix );
             _output2( DM_CHAR_ENCODING, c - LOWER_TABLE_LIMIT );
@@ -1103,8 +1129,9 @@ static bool type_encoding( output_desc *data, state_desc *state )
     } else {
         ret = unmodified_type( data, state );
     }
-#if 0   // afs; this isn't the right place for this but we should output this
-    if( ret && data->dllimport ) {
+#if 0   /* afs; this isn't the right place for this but we should output this */
+    if( ret
+      && data->dllimport ) {
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_DECLSPEC_IMPORT );
         data->dllimport = false;
@@ -1209,7 +1236,9 @@ static bool watcom_object( output_desc *data, state_desc *state )
                 break;
             }
         }
-        // check to make sure we found something
+        /*
+         * check to make sure we found something
+         */
         if( i == MAX_WATCOM_OBJECT ) {
             _output2( DM_SET_INDEX, state->prefix );
             _output2( DM_WATCOM_OBJECT, 0 );
@@ -1429,8 +1458,11 @@ static bool name( output_desc *data, state_desc *state )
         int        i;
 
         i = c - '0';
-        // in case C++ compiler and demangler don't match; don't crash
-        if( i < 0 || i >= next_replicate ) {
+        /*
+         * in case C++ compiler and demangler don't match; don't crash
+         */
+        if( i < 0
+          || i >= next_replicate ) {
             id = "@";
             len = 1;
         } else {
@@ -1443,7 +1475,8 @@ static bool name( output_desc *data, state_desc *state )
             _output3( DM_IDENTIFIER, len, id );
             data->ctdt_pending = false;
         }
-        if( data->scope_name && data->scope_index == 0 ) {
+        if( data->scope_name
+          && data->scope_index == 0 ) {
             data->scope_name = false;
             data->scope_ptr = id;
             data->scope_len = len;
@@ -1461,7 +1494,8 @@ static bool name( output_desc *data, state_desc *state )
             advanceChar( data );
             c = currChar( data );
         }
-        if( data->scope_name && data->scope_index == 0 ) {
+        if( data->scope_name
+          && data->scope_index == 0 ) {
             data->scope_name = false;
             data->scope_ptr = ptr;
             data->scope_len = len;
@@ -1504,7 +1538,8 @@ static bool scope( output_desc *data, state_desc *state, size_t *symbol_length )
     char c;
 
     _output1( DM_SCOPE );
-    if( data->scope_name && data->scope_index > 0 ) {
+    if( data->scope_name
+      && data->scope_index > 0 ) {
         data->scope_index--;
     }
     c = currChar( data );
@@ -1759,11 +1794,11 @@ static bool recursive_mangled_name( output_desc *data, state_desc *state )
     return( true );
 }
 
-size_t __demangle_l(                            // DEMANGLE A C++ NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    char *buff,                                 // - output buffer for demangled C++ name
-    size_t buff_size )                          // - size of output buffer
+size_t __demangle_l(            /* DEMANGLE A C++ NAME */
+    char const *input,          /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    char *buff,                 /* - output buffer for demangled C++ name */
+    size_t buff_size )          /* - size of output buffer */
 {
     size_t          outlen;
     output_desc     data;
@@ -1808,9 +1843,12 @@ size_t __is_mangled( char const *name, size_t len )
             name += IMPORT_PREFIX1_LEN;
             offset += IMPORT_PREFIX1_LEN;
         }
-        if( name[0] == MANGLE_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+        if( name[0] == MANGLE_PREFIX1
+          && name[1] == MANGLE_PREFIX2 ) {
             return( offset );
-        } else if( len > TRUNCATED_HASH_LEN && name[0] == TRUNCATED_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+        } else if( len > TRUNCATED_HASH_LEN
+          && name[0] == TRUNCATED_PREFIX1
+          && name[1] == MANGLE_PREFIX2 ) {
             return( offset + TRUNCATED_HASH_LEN );
         }
     }
@@ -1826,13 +1864,18 @@ static mangled_type checkInternal( char const *p, size_t len )
     if( p[0] == INTERNAL_PREFIX ) {
         len--;
         type = __MANGLED_INTERNAL;
-    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == WAT_FUN_PREFIX ) {
+    } else if( p[0] == OPNAME_PREFIX
+      && mytoupper( p[1] ) == WAT_FUN_PREFIX ) {
         len -= 2;
         type = __MANGLED_INTERNAL;
-    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == CTOR_PREFIX1 && mytoupper( p[2] ) == CTOR_PREFIX2 ) {
+    } else if( p[0] == OPNAME_PREFIX
+      && mytoupper( p[1] ) == CTOR_PREFIX1
+      && mytoupper( p[2] ) == CTOR_PREFIX2 ) {
         len -= 3;
         type = __MANGLED_CTOR;
-    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == DTOR_PREFIX1 && mytoupper( p[2] ) == DTOR_PREFIX2 ) {
+    } else if( p[0] == OPNAME_PREFIX
+      && mytoupper( p[1] ) == DTOR_PREFIX1
+      && mytoupper( p[2] ) == DTOR_PREFIX2 ) {
         len -= 3;
         type = __MANGLED_DTOR;
     } else {
@@ -1850,9 +1893,12 @@ mangled_type __is_mangled_internal( char const *name, size_t len )
     if( len > 2 ) {
         len -= 2;
         offset = 2;
-        if( name[0] == MANGLE_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+        if( name[0] == MANGLE_PREFIX1
+          && name[1] == MANGLE_PREFIX2 ) {
             return( checkInternal( name + offset, len ) );
-        } else if( len > TRUNCATED_HASH_LEN && name[0] == TRUNCATED_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+        } else if( len > TRUNCATED_HASH_LEN
+          && name[0] == TRUNCATED_PREFIX1
+          && name[1] == MANGLE_PREFIX2 ) {
             len -= TRUNCATED_HASH_LEN;
             offset += TRUNCATED_HASH_LEN;
             return( checkInternal( name + offset, len ) );
@@ -1861,12 +1907,12 @@ mangled_type __is_mangled_internal( char const *name, size_t len )
     return( __NOT_MANGLED );
 }
 
-bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
-    char const *name,                           // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    char const **basep,                         // - location of C++ base name
-    size_t *base_sizep )                        // - size of C++ base name
-{                                               // return true if name mangled
+bool __unmangled_name(          /* FIND UNMANGLED BASE NAME */
+    char const *name,           /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    char const **basep,         /* - location of C++ base name */
+    size_t *base_sizep )        /* - size of C++ base name */
+{                               /* return true if name mangled */
     char const  *end;
     size_t      mangled_prefix_len;
     size_t      base_size;
@@ -1880,7 +1926,7 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
         return( false );
     }
     end = name + len;
-    name += mangled_prefix_len; // skip magic cookie
+    name += mangled_prefix_len; /* skip magic cookie */
     *basep = name;
     base_size = 0;
     if( *name == OPNAME_PREFIX ) {
@@ -1907,11 +1953,11 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
 #if defined( __WATCOMC__ )
 _WCRTLINK
 #endif
-size_t __demangle_t(                            // DEMANGLE A C++ TYPE
-    char const *input,                          // - mangled C++ type
-    size_t len,                                 // - length of mangled type
-    char *buff,                                 // - output buffer for demangled C++ type
-    size_t buff_size )                          // - size of output buffer
+size_t __demangle_t(            /* DEMANGLE A C++ TYPE */
+    char const *input,          /* - mangled C++ type */
+    size_t len,                 /* - length of mangled type */
+    char *buff,                 /* - output buffer for demangled C++ type */
+    size_t buff_size )          /* - size of output buffer */
 {
     size_t          outlen;
     output_desc     data;
@@ -1931,12 +1977,12 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     return( outlen );
 }
 
-size_t __demangle_r(                            // DEMANGLE A C++ NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    char **buffp,                               // - output buffer for demangled C++ name
-    size_t buff_size,                           // - size of output buffer
-    void * (*realloc)( void *, size_t ) )       // - size adjuster for output
+size_t __demangle_r(            /* DEMANGLE A C++ NAME */
+    char const *input,          /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    char **buffp,               /* - output buffer for demangled C++ name */
+    size_t buff_size,           /* - size of output buffer */
+    void * (*realloc)( void *, size_t ) ) /* - size adjuster for output */
 {
     char            *buff;
     size_t          outlen;
@@ -1969,15 +2015,15 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     return( outlen );
 }
 
-#endif // !INSIDE_DIP
+#endif /* !INSIDE_DIP */
 
-bool __scope_name(                              // EXTRACT A C++ SCOPE
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    unsigned index,                             // - scope wanted
-    char const **scopep,                        // - location of C++ scope name
-    size_t *scope_sizep )                       // - size of C++ scope name
-{                                               // returns true on success
+bool __scope_name(              /* EXTRACT A C++ SCOPE */
+    char const *input,          /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    unsigned index,             /* - scope wanted */
+    char const **scopep,        /* - location of C++ scope name */
+    size_t *scope_sizep )       /* - size of C++ scope name */
+{                               /* returns true on success */
     output_desc     data;
 
     init_globals( NULL );
@@ -2003,12 +2049,12 @@ bool __scope_name(                              // EXTRACT A C++ SCOPE
     return( false );
 }
 
-size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    char *buff,                                 // - output buffer for demangled C++ base name
-    size_t buff_size )                          // - size of output buffer
-{                                               // return len of output
+size_t __demangled_basename(    /* CREATE DEMANGLED BASE NAME */
+    char const *input,          /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    char *buff,                 /* - output buffer for demangled C++ base name */
+    size_t buff_size )          /* - size of output buffer */
+{                               /* return len of output */
     size_t          outlen;
     output_desc     data;
 
@@ -2033,11 +2079,11 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     return( outlen );
 }
 
-size_t __mangle_operator(                       // MANGLE OPERATOR NAME
-    char const *op,                             // - operator token
-    size_t len,                                 // - length of operator token
-    char *buff )                                // - output buffer for mangled operator name
-                                                // return len of mangled operator name
+size_t __mangle_operator(       /* MANGLE OPERATOR NAME */
+    char const *op,             /* - operator token */
+    size_t len,                 /* - length of operator token */
+    char *buff )                /* - output buffer for mangled operator name */
+                                /* return len of mangled operator name */
 {
     int i;
 
@@ -2078,17 +2124,17 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
     return( 0 );
 }
 
-#endif // !INSIDE_WLINK
+#endif /* !INSIDE_WLINK */
 
-#endif // !INSIDE_WLIB && !INSIDE_WDIS
+#endif /* !INSIDE_WLIB && !INSIDE_WDIS */
 
 #if defined( TEST )
 
-void __parse_mangled_name(                      // PARSE MANGLED NAME
-    char const *input,                          // - mangled C++ name
-    size_t len,                                 // - length of mangled name
-    void *cookie,                               // - data to carry around
-    outfunPtr ofn )                             // - function to invoke
+void __parse_mangled_name(      /* PARSE MANGLED NAME */
+    char const *input,          /* - mangled C++ name */
+    size_t len,                 /* - length of mangled name */
+    void *cookie,               /* - data to carry around */
+    outfunPtr ofn )             /* - function to invoke */
 {
     output_desc     data;
 
@@ -2107,7 +2153,7 @@ void __parse_mangled_name(                      // PARSE MANGLED NAME
 #endif
 }
 
-#endif // TEST
+#endif /* TEST */
 
 #if 0 || defined( TEST ) || defined( DUMP )
 void dump( output_desc *data )
@@ -2151,10 +2197,10 @@ void dump( output_desc *data )
 #define BUF_SIZE        256
 
 typedef struct test_stream {
-    char *mangle;               // mangled name
-    char *full_demangle;        // complete demangled name
-    char *unmangled;            // unmangled name
-    char *basename;             // demangled basename
+    char *mangle;               /* mangled name */
+    char *full_demangle;        /* complete demangled name */
+    char *unmangled;            /* unmangled name */
+    char *basename;             /* demangled basename */
 } test_stream;
 
 test_stream testVector[] = {
@@ -2468,7 +2514,7 @@ static char *typeTestVector[] = {
 
 void main( int argc )
 {
-    static char buff[TRUNC_BUFFER+2];   // allow for two guard chars
+    static char buff[TRUNC_BUFFER+2]; /* allow for two guard chars */
     size_t len;
     size_t trunc_len;
     int i;
@@ -2501,7 +2547,7 @@ void main( int argc )
                 printf( "ERROR: ran off start of output buffer\n" );
                 ++errors;
             }
-            if( buff[trunc_len+1] != GUARD_CHAR ) {
+            if( buff[trunc_len + 1] != GUARD_CHAR ) {
                 printf( "ERROR: ran off end of output buffer\n" );
                 ++errors;
             }
@@ -2512,8 +2558,8 @@ void main( int argc )
             if( argc > 1 ) {
                 printf( "%s -->%s<-- (%u)\n", typeTestVector[i], buff + 1, len );
             }
-            if( memcmp( buff+1, typeTestVector[i+1], len ) ) {
-                printf( "ERROR:\n%s\ndemangle should yield -->%s<--\n", typeTestVector[i], typeTestVector[i+1] );
+            if( memcmp( buff + 1, typeTestVector[i + 1], len ) ) {
+                printf( "ERROR:\n%s\ndemangle should yield -->%s<--\n", typeTestVector[i], typeTestVector[i + 1] );
                 printf(             "          but yielded -->%s<-- (%u)\n", buff + 1, len );
                 ++errors;
             }
@@ -2525,7 +2571,7 @@ void main( int argc )
                 printf( "ERROR: ran off start of output buffer\n" );
                 ++errors;
             }
-            if( buff[trunc_len+1] != GUARD_CHAR ) {
+            if( buff[trunc_len + 1] != GUARD_CHAR ) {
                 printf( "ERROR: ran off end of output buffer\n" );
                 ++errors;
             }
@@ -2606,7 +2652,7 @@ void main( int argc )
                 printf( "ERROR: ran off start of output buffer\n" );
                 ++errors;
             }
-            if( buff[trunc_len+1] != GUARD_CHAR ) {
+            if( buff[trunc_len + 1] != GUARD_CHAR ) {
                 printf( "ERROR: ran off end of output buffer\n" );
                 ++errors;
             }
@@ -2618,7 +2664,9 @@ void main( int argc )
     }
     if( argc > 1 ) {
         no_errors = 1;
-        // test truncated names
+        /*
+         * test truncated names
+         */
         for( i = 0; testVector[i].mangle != NULL; ++i ) {
             char *p1;
             int j, max;
