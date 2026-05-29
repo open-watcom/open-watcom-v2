@@ -1,7 +1,7 @@
 #include "fail.h"
 #include <stdbool.h>
 
-/* 
+/*
  * Test of conversion from / to _Bool bit-fields and other types. Note that
  * this test is written such that it will fail unless it's built with -za99.
  * This mostly tests bugs fixed after version 1.9.
@@ -27,7 +27,7 @@ struct bit3 {
     int     ibf : 1;
 } bitz = { true, true, false, -1 };
 
-int main( void ) 
+int main( void )
 {
     bool                bol;
     float               f;
@@ -103,7 +103,7 @@ int main( void )
     sli = (  signed long int)bitz.b2;
     uli = (unsigned long int)bitz.b2;
     if( sli != uli ) fail( __LINE__ );
-    sli = bitz.b2;    
+    sli = bitz.b2;
     uli = bitz.b2;
     if( sli != uli ) fail( __LINE__ );
     sli = bitz.b3;
@@ -118,7 +118,7 @@ int main( void )
     si = (  signed int)bitz.b2;
     ui = (unsigned int)bitz.b2;
     if( si != ui ) fail( __LINE__ );
-    si = bitz.b2;    
+    si = bitz.b2;
     ui = bitz.b2;
     if( si != ui ) fail( __LINE__ );
     ui = bitz.b3;
@@ -133,7 +133,7 @@ int main( void )
     sc = (  signed char)bitz.b2;
     uc = (unsigned char)bitz.b2;
     if( sc != uc ) fail( __LINE__ );
-    sc = bitz.b2;    
+    sc = bitz.b2;
     uc = bitz.b2;
     if( sc != uc ) fail( __LINE__ );
     uc = bitz.b3;
@@ -154,7 +154,7 @@ int main( void )
      c = (         char)bitz.b2;
     if( sc != c ) fail( __LINE__ );
     if( uc != c ) fail( __LINE__ );
-    sc = bitz.b2;    
+    sc = bitz.b2;
     uc = bitz.b2;
      c = bitz.b2;
     if( sc != c ) fail( __LINE__ );
@@ -220,6 +220,13 @@ int main( void )
     if( (int)p != 1 ) fail( __LINE__ );
     p = bol;
     if( p != 0 ) fail( __LINE__ );
+    switch( bol ) {
+    case true:
+    case false:
+        break;
+    default:
+        fail( __LINE__ );
+    }
 
     _PASS;
 }
