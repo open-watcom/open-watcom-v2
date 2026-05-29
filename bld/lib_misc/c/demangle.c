@@ -356,12 +356,12 @@ static void zapSpace( output_desc *data )
     /*
      * remove single space on index position, shrink string if possible
      */
-    if( data->index != (data->count + 1) ) {
+    if( data->index != data->count ) {
         size_t last = data->size;
         if( last > data->count )
             last = data->count;
-        if( last >= data->index ) {
-            memmove( &data->output[data->index - 1], &data->output[data->index], ( last - data->index ) + 1 );
+        if( last > data->index ) {
+            memmove( &data->output[data->index], &data->output[data->index + 1], last - data->index );
         }
     }
 }
