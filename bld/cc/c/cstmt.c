@@ -1010,6 +1010,7 @@ static void SwitchStmt( void )
     typ = TypeOf( tree );
     SKIP_ENUM( typ );
     switch( typ->decl_type ) {
+    case TYP_BOOL:
     case TYP_USHORT:
     case TYP_UINT:
     case TYP_CHAR:
