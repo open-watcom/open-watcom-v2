@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,9 +59,11 @@
 #define banner1w(p,v)       banner1t(p) " " banner1v(v)
 
 #define banner21            "Copyright (c) 2002-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
+#define banner21w(year)     "Copyright (c) " _DOSTR( year ) "-" _MACROSTR( _CYEAR ) " The Open Watcom Contributors."
 #define banner21a(year)     "Portions Copyright (c) " _DOSTR( year ) "-2002 Sybase, Inc."
 
 #define banner2             banner21 " All Rights Reserved."
+#define banner2w(year)      banner21w(year) " All Rights Reserved."
 #define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."

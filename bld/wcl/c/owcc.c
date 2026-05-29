@@ -327,7 +327,7 @@ static void print_banner( void )
             puts(
                 banner1t( _TARGET_ " Compilers Driver Program" ) "\n"
                 banner1v( _WCL_VERSION_ ) "\n"
-                banner2 "\n"
+                banner2w( 2004 ) "\n"
                 banner2a( 1988 ) "\n"
                 banner3 "\n"
                 banner3a
