@@ -54,11 +54,17 @@
 #define STRNCMP strncmp
 #endif
 
-#define IMPORT_PREFIX1_STR_L     "__imp_"
-#define IMPORT_PREFIX1_STR_U     "__IMP_"
-#define IMPORT_PREFIX1_LEN       ( sizeof( IMPORT_PREFIX1_STR_L ) - 1 )
-#define IMPORT_PREFIX2_STR       ".PREFIX_DATA."
-#define IMPORT_PREFIX2_LEN       ( sizeof( IMPORT_PREFIX2_STR ) - 1 )
+#define SYM_PREFIX_IMP_STR_L    "__imp_"
+#define SYM_PREFIX_IMP_STR_U    "__IMP_"
+#define SYM_PREFIX_IMP_LEN      ( sizeof( SYM_PREFIX_IMP_STR_L ) - 1 )
+#define SYM_PREFIX_DATA_STR     ".PREFIX_DATA."
+#define SYM_PREFIX_DATA_LEN     ( sizeof( SYM_PREFIX_DATA_STR ) - 1 )
+
+typedef enum {
+    SYM_PREFIX_NONE,
+    SYM_PREFIX_IMP,
+    SYM_PREFIX_DATA
+} sym_prefix_val;
 
 #define RECURSE_CHECK           (100*sizeof(int))
 #define AUTO_BUFFER_SIZE        80
@@ -137,6 +143,25 @@ static realloc_fn_t     user_realloc;
 static replicate_desc   replicate[MAX_REPLICATE];
 static int              next_replicate;
 
+/*
+ * Notes:
+ *  demangler works in two modes, first "test" calculates required
+ *      buffer size and second "write" demangle symbol to output buffer
+ *  "test" mode doesn't get exact buffer size, but it guaranties size to
+ *		output not overflow, the calculated size can be a few bytes higher
+ *		then exact size
+ *  demangler is in "test" mode if output buffer pointer is NULL
+ *  demangleg uses an "index" field that acts as a cursor in the output
+ *      buffer
+ *  demangler uses insert mode in the output buffer, not overwrite, first
+ *      making room in the output buffer (moving existing data) and then
+ *      inserting data at the current cursor position.
+ *
+ *  the "output" field hold pointer to output buffer
+ *  the "size" field hold length of output buffer (not used in "test" mode)
+ *  the "index" field hold current output position
+ *  the "count" field hold length of demangled string (virtual)
+ */
 typedef struct output_desc {
     outfunPtr       outfun;
     void            *cookie;
@@ -155,7 +180,7 @@ typedef struct output_desc {
     boolbit         cv_pending      : 1;
     boolbit         scope_name      : 1;
     boolbit         base_name       : 1;
-    boolbit         dllimport       : 1;
+    sym_prefix_val  sym_prefix;
 #if 0 || defined( TEST )
     int             status;
 #endif
@@ -397,7 +422,7 @@ static void emitChar( output_desc *data, char c )
     /*
      * check if physical buffer needs to grow
      */
-    if( data->count == ( data->size - 1 ) ) {
+    if( data->count > data->size ) {
         if( user_realloc == NULL )
             return;
         adjust_size = START_ADJUST;
@@ -409,23 +434,24 @@ static void emitChar( output_desc *data, char c )
             /*
              * allocate + 1 byte for null terminator
              */
-            test_realloc = user_realloc( data->output, test_size );
-            if( test_realloc != NULL )
+            test_realloc = user_realloc( data->output, test_size + 1 );
+            if( test_realloc != NULL ) {
+                data->output = test_realloc;
+                data->size = test_size;
                 break;
+            }
             adjust_size >>= 1;
         }
-        data->output = test_realloc;
-        data->size = test_size;
     }
     /*
      * cannot write beyond physical buffer
      */
     if( data->index < data->size ) {
-        if( data->index < (data->count - 1) ) {
-            size_t last = data->size;
-            if( last > data->count )
-                last = data->count;
-            memmove( &data->output[data->index + 1], &data->output[data->index], ( last - data->index ) - 1 );
+        size_t last = data->size;
+        if( last > data->count - 1 )
+            last = data->count - 1;
+        if( last > data->index ) {
+            memmove( &data->output[data->index + 1], &data->output[data->index], last - data->index );
         }
         /*
          * write character to output
@@ -451,12 +477,14 @@ static void resetEmitIndex( output_desc *data, size_t offset_from_end )
 {
     size_t index;
 
-    index = data->count - offset_from_end;
-    if( index < data->size ) {
-        data->index = index;
-    } else {
-        data->index = data->size - 1;
+    index = data->count;
+    if( index > offset_from_end ) {
+        index -= offset_from_end;
+        if( index > data->size ) {
+            index = data->size;
+        }
     }
+    data->index = index;
 }
 
 static void setSuppression( output_desc *data )
@@ -542,6 +570,12 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_uint value, char con
         if( idx == 0 ) {
             emitStr( data, ptr );
         } else {
+            if( data->output != NULL
+              && data->size > data->count ) {
+                if( idx > data->size - data->count ) {
+                    idx = data->size - data->count;
+                }
+            }
             while( idx-- > 0 ) {
                 emitChar( data, *ptr++ );
             }
@@ -1131,10 +1165,10 @@ static bool type_encoding( output_desc *data, state_desc *state )
     }
 #if 0   /* afs; this isn't the right place for this but we should output this */
     if( ret
-      && data->dllimport ) {
+      && data->sym_prefix == SYM_PREFIX_IMP ) {
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_DECLSPEC_IMPORT );
-        data->dllimport = false;
+        data->sym_prefix = SYM_PREFIX_NONE;
     }
 #endif
     return( ret );
@@ -1462,7 +1496,8 @@ static bool name( output_desc *data, state_desc *state )
          * in case C++ compiler and demangler don't match; don't crash
          */
         if( i < 0
-          || i >= next_replicate ) {
+          || i >= next_replicate
+          || i >= MAX_REPLICATE ) {
             id = "@";
             len = 1;
         } else {
@@ -1611,18 +1646,18 @@ static void full_mangled_name( output_desc *data )
 #endif
     advances = 1;
     if( ( data->end == NULL
-      || ( data->end - data->input ) >= IMPORT_PREFIX2_LEN )
+      || ( data->end - data->input ) >= SYM_PREFIX_DATA_LEN )
       && data->input[0] == '.'
-      && ( strncmp( data->input, IMPORT_PREFIX2_STR, IMPORT_PREFIX2_LEN ) == 0 ) ) {
-        data->input += IMPORT_PREFIX2_LEN;
-        data->dllimport = true;
+      && strncmp( data->input, SYM_PREFIX_DATA_STR, SYM_PREFIX_DATA_LEN ) == 0 ) {
+        data->input += SYM_PREFIX_DATA_LEN;
+        data->sym_prefix = SYM_PREFIX_DATA;
     } else if( ( data->end == NULL
-      || ( data->end - data->input ) >= IMPORT_PREFIX1_LEN )
+      || ( data->end - data->input ) >= SYM_PREFIX_IMP_LEN )
       && data->input[0] == '_'
-      && ( strncmp( data->input, IMPORT_PREFIX1_STR_L, IMPORT_PREFIX1_LEN ) == 0
-      || strncmp( data->input, IMPORT_PREFIX1_STR_U, IMPORT_PREFIX1_LEN ) == 0 ) ) {
-        data->input += IMPORT_PREFIX1_LEN;
-        data->dllimport = true;
+      && ( strncmp( data->input, SYM_PREFIX_IMP_STR_L, SYM_PREFIX_IMP_LEN ) == 0
+      || strncmp( data->input, SYM_PREFIX_IMP_STR_U, SYM_PREFIX_IMP_LEN ) == 0 ) ) {
+        data->input += SYM_PREFIX_IMP_LEN;
+        data->sym_prefix = SYM_PREFIX_IMP;
     }
     switch( currChar( data ) ) {
     case TRUNCATED_PREFIX1:
@@ -1678,14 +1713,23 @@ static void do_copy( output_desc *data )
     char const  *ptr;
     size_t      len;
     char        c;
+    size_t      max_len;
 
 #if 0 || defined( TEST )
     data->status = -1;
 #endif
+    /*
+     * limit copy to available physical space if buffer exists
+     */
+    max_len = ~((size_t)0);
+    if( data->output != NULL
+      && data->size > data->count ) {
+        max_len = data->size - data->count;
+    }
     ptr = data->input;
     len = 0;
     c = currChar( data );
-    while( c != NULL_CHAR ) {
+    while( c != NULL_CHAR && len < max_len ) {
         advanceChar( data );
         len++;
         c = currChar( data );
@@ -1718,7 +1762,12 @@ static void init_descriptor( output_desc *data,
     }
     data->input = input;
     data->output = buff;
-    data->size = buff_size;
+    data->size = 0;
+    if( buff != NULL
+      && buff_size > 0 ) {
+        data->size = buff_size - 1;
+        buff[0] = '\0';
+    }
     data->scope_ptr = NULL;
     data->count = 0;
     data->index = 0;
@@ -1730,7 +1779,7 @@ static void init_descriptor( output_desc *data,
     data->cv_pending = false;
     data->scope_name = false;
     data->base_name = false;
-    data->dllimport = false;
+    data->sym_prefix = SYM_PREFIX_NONE;
 }
 
 static size_t terminateOutput( output_desc *data )
@@ -1829,19 +1878,19 @@ size_t __is_mangled( char const *name, size_t len )
     if( len > 2 ) {
         len -= 2;
         offset = 2;
-        if( len > IMPORT_PREFIX2_LEN
+        if( len > SYM_PREFIX_DATA_LEN
           && name[0] == '.'
-          && strncmp( name, IMPORT_PREFIX2_STR, IMPORT_PREFIX2_LEN ) == 0 ) {
-            len -= IMPORT_PREFIX2_LEN;
-            name += IMPORT_PREFIX2_LEN;
-            offset += IMPORT_PREFIX2_LEN;
-        } else if( len > IMPORT_PREFIX1_LEN
+          && strncmp( name, SYM_PREFIX_DATA_STR, SYM_PREFIX_DATA_LEN ) == 0 ) {
+            len -= SYM_PREFIX_DATA_LEN;
+            name += SYM_PREFIX_DATA_LEN;
+            offset += SYM_PREFIX_DATA_LEN;
+        } else if( len > SYM_PREFIX_IMP_LEN
           && name[0] == '_'
-          && ( strncmp( name, IMPORT_PREFIX1_STR_L, IMPORT_PREFIX1_LEN ) == 0
-          || strncmp( name, IMPORT_PREFIX1_STR_U, IMPORT_PREFIX1_LEN ) == 0 ) ) {
-            len -= IMPORT_PREFIX1_LEN;
-            name += IMPORT_PREFIX1_LEN;
-            offset += IMPORT_PREFIX1_LEN;
+          && ( strncmp( name, SYM_PREFIX_IMP_STR_L, SYM_PREFIX_IMP_LEN ) == 0
+          || strncmp( name, SYM_PREFIX_IMP_STR_U, SYM_PREFIX_IMP_LEN ) == 0 ) ) {
+            len -= SYM_PREFIX_IMP_LEN;
+            name += SYM_PREFIX_IMP_LEN;
+            offset += SYM_PREFIX_IMP_LEN;
         }
         if( name[0] == MANGLE_PREFIX1
           && name[1] == MANGLE_PREFIX2 ) {
