@@ -2,7 +2,7 @@ proj_name = watcom
 
 watcom_autodepends = .AUTODEPEND
 
-watcom_noasan = 1
+#watcom_noasan = 1
 
 #
 # only host version is build
@@ -21,6 +21,12 @@ skip_build = 1
 .c: ../c
 
 inc_dirs = -I"../h"
+
+!ifdef __GCC_TOOLS__
+# suppress false possitive message about 2 parameter is NULL
+# with gcc compiler in clibext.c for readlink function call
+extra_c_flags = -Wno-nonnull
+!endif
 
 !ifndef __WATCOM_TOOLS__
 libs = clibext.lib clibexts.lib
@@ -41,15 +47,15 @@ clibexts.lib : clibexts.obj
 clibext.obj: clibext.c $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef bootstrap
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(cflags) $(c_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(cflags) $(c_flags) $(inc_path) $(extra_c_flags) $[@
 !else
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(cflags) $(c_flags) $(inc_path) $(extra_c_flags) $[@
 !endif
 
 clibexts.obj: clibext.c $(__MAKEFILES__) $($(proj_name)_autodepends)
     @%make echo_cc
 !ifdef bootstrap
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(bld_ppflags_sys) $(bld_cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $(extra_c_flags) $[@
 !else
-    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $[@
+    $(cc) $(ppflags_common) $(ppflags_autodep) $(ppflags_sys) $(cppflags) $(extra_cpp_dll_flags) $(cflags_dll) $(c_flags) $(inc_path) $(extra_c_flags) $[@
 !endif
