@@ -22,6 +22,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: 'cpp'
+        queries: security-extended
 
     - name: Set up Environment and Build Bootstrap
       run: |
