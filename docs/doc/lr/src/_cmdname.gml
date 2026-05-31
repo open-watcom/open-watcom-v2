@@ -11,6 +11,13 @@ function obtains a copy of the executing program's pathname
 and places it in
 .arg buffer
 .period
+.np
+The maximum size that might be required for
+.arg buffer
+is
+.kw PATH_MAX
+bytes.
+.np
 .desc end
 .return begin
 If the pathname of the executing program cannot be determined then
