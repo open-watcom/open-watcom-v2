@@ -28,13 +28,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y dosbox ltrace
         
-        . ./setvars.sh
+        #. ./setvars.sh
         
         echo "=== Compiler Info ==="
         gcc -v
         
-        cd bld
-        builder boot
+        echo "=== build.sh boot ==="
+        sh build.sh boot
+      env:
+        OWROOT:     ${{github.workspace}}
+        OWTOOLS:    GCC
+        OWDOSBOX:   dosbox
+        OWVERBOSE:  1
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
