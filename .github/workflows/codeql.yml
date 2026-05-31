@@ -16,10 +16,10 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: 'cpp'
 
@@ -28,13 +28,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y dosbox ltrace
         
-        #. ./setvars.sh
-        
         echo "=== Compiler Info ==="
         gcc -v
         
         echo "=== build.sh boot ==="
-        sh build.sh boot
+        . ci/codeql.sh
+
       env:
         OWROOT:     ${{github.workspace}}
         OWTOOLS:    GCC
@@ -42,6 +41,6 @@ jobs:
         OWVERBOSE:  1
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:cpp"
