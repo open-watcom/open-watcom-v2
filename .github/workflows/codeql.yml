@@ -1,0 +1,42 @@
+name: "CodeQL Advanced Static Analysis"
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # Automatické spuštení každý den v 01:00 UTC
+  workflow_dispatch:   # Umožnuje rucní spuštení z webu GitHubu kdykoliv
+
+jobs:
+  analyze:
+    name: CodeQL Static Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: 'cpp'
+
+    - name: Set up Environment and Build Bootstrap
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y dosbox ltrace
+        
+        . ./setvars.sh
+        
+        echo "=== Compiler Info ==="
+        gcc -v
+        
+        cd src
+        builder boot
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:cpp"
