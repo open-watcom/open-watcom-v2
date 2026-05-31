@@ -33,7 +33,7 @@ jobs:
         echo "=== Compiler Info ==="
         gcc -v
         
-        cd src
+        cd bld
         builder boot
 
     - name: Perform CodeQL Analysis
