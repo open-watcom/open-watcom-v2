@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -556,9 +556,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _MOVZX_EDX_AX \
         _USE32 _XOR_AX_AX \
         _USE32 _LSL_AX_DX \
-        _JNZ 3      \
+        "jnz short L1" \
         _USE32 _INC_AX \
-    /* label */     \
+    "L1: " \
         _MOV_DX_AX  \
         _SHR_EDX_16 \
     __parm      [__ax] \
@@ -570,8 +570,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _MOVZX_EDX_AX  \
         _XOR_AX_AX  \
         _LSL_AX_DX  \
-        _JNZ 2      \
+        "jnz short L1" \
         _INC_AX     \
+    "L1: " \
     __parm      [__ax] \
     __value     [__eax] \
     __modify __exact [__eax __edx]
@@ -1284,8 +1285,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
 #pragma aux _GetSelectorLimitB = \
         _PROTECTED \
         _LSL_AX_AX \
-        _JZ 2 \
+        "jz short L1" \
         _XOR_AX_AX  \
+    "L1: " \
     __parm      [__ax] \
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
@@ -1294,8 +1296,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _PROTECTED \
         _MOV_AX_DS \
         _LSL_AX_AX \
-        _JZ 2 \
+        "jz short L1" \
         _XOR_AX_AX  \
+    "L1: " \
     __parm      [] \
     __value     [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
@@ -1304,8 +1307,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _PROTECTED  \
         _XOR_DX_DX  \
         _LSL_DX_AX  \
-        _JNZ 2      \
+        "jnz short L1" \
         _INC_DX     \
+    "L1: " \
     __parm      [__ax] \
     __value     [_DPMI_DX] \
     __modify __exact [_DPMI_DX]
@@ -1315,8 +1319,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _XOR_DX_DX  \
         _MOV_AX_DS  \
         _LSL_DX_AX  \
-        _JNZ 2      \
+        "jnz short L1" \
         _INC_DX     \
+    "L1: " \
     __parm      [] \
     __value     [_DPMI_DX] \
     __modify __exact [_DPMI_DX]
@@ -1325,8 +1330,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _PROTECTED \
         _VERR_AX \
         _MOV_AL 0 \
-        _JNZ 2    \
+        "jnz short L1" \
         _MOV_AL 1 \
+    "L1: " \
     __parm      [__ax] \
     __value     [__al] \
     __modify    []
@@ -1335,8 +1341,9 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
         _PROTECTED \
         _VERW_AX \
         _MOV_AL 0 \
-        _JNZ 2    \
+        "jnz short L1" \
         _MOV_AL 1 \
+    "L1: " \
     __parm      [__ax] \
     __value     [__al] \
     __modify    []
