@@ -148,8 +148,8 @@ static int              next_replicate;
  *  demangler works in two modes, first "test" calculates required
  *      buffer size and second "write" demangle symbol to output buffer
  *  "test" mode doesn't get exact buffer size, but it guaranties size to
- *		output not overflow, the calculated size can be a few bytes higher
- *		then exact size
+ *      output not overflow, the calculated size can be a few bytes higher
+ *      then exact size
  *  demangler is in "test" mode if output buffer pointer is NULL
  *  demangleg uses an "index" field that acts as a cursor in the output
  *      buffer

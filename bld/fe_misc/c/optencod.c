@@ -249,7 +249,7 @@ typedef struct text {
 } TEXT;
 
 typedef struct text_list {
-    TEXT			*head;
+    TEXT            *head;
     TEXT            *tail;
 } TEXT_LIST;
 

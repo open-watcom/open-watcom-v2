@@ -95,7 +95,7 @@ static clock_t          ClockTicks;
 static bool             Absolute_Seg;
 static unsigned long    NumMapSyms;
 
-static char		*MapLineBuff;
+static char             *MapLineBuff;
 
 void ResetWriteMapIO( void )
 /**************************/
@@ -178,7 +178,7 @@ static void WriteMapPrintf( const char *format, ... )
 
 static void WriteMapBox( int msgid )
 /**********************************/
-{ 
+{
     char        box_buff[RESOURCE_MAX_SIZE];
     char        msg_buff[RESOURCE_MAX_SIZE];
     size_t      i;
