@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -214,7 +214,7 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
     ctxt.compunit = compunit;
     ctxt.start = compunit->start;
     ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
-    ctxt.start += sizeof( compuhdr_prologue );
+    ctxt.start += sizeof( comp_unit_prologue );
     ctxt.classhdl    = DRMEM_HDL_NULL;
     ctxt.functionhdl = DRMEM_HDL_NULL;
     ctxt.stack.size  = 0;

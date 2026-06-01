@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -187,16 +187,16 @@ static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
     compunit = &DR_CurrNode->compunit;
     start = DR_CurrNode->sections[DR_DEBUG_INFO].base;
     finish = start + DR_CurrNode->sections[DR_DEBUG_INFO].size;
-    addr_size = DR_VMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
+    addr_size = DR_VMReadByte( start + offsetof( comp_unit_prologue, addr_size ) );
     for( ;; ) {
         compunit->next = NULL;
         compunit->start = start;
         compunit->end = start + sizeof( unsigned_32 ) + DR_VMReadDWord( start );
-        version = DR_VMReadWord( start + offsetof( compuhdr_prologue, version ) );
+        version = DR_VMReadWord( start + offsetof( comp_unit_prologue, version ) );
         if( DWARF_VER_INVALID( version ) )
             DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
-        compunit->abbrev_start = DR_VMReadDWord( start + offsetof( compuhdr_prologue, abbrev_offset ) );
-        curr_addr_size = DR_VMReadByte( start + offsetof( compuhdr_prologue, addr_size ) );
+        compunit->abbrev_start = DR_VMReadDWord( start + offsetof( comp_unit_prologue, abbrev_offset ) );
+        curr_addr_size = DR_VMReadByte( start + offsetof( comp_unit_prologue, addr_size ) );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }

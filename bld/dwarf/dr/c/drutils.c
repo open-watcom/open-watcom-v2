@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +174,7 @@ long DR_InfoLength( drmem_hdl mod )
     drmem_hdl           finish;
 
     finish = mod + DR_VMReadDWord( mod );
-    mod += sizeof( compuhdr_prologue );
+    mod += sizeof( comp_unit_prologue );
     return( (long)( finish - mod ) );
 }
 
@@ -725,7 +725,7 @@ void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 
     ctxt.start = compunit->start;
     ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
-    ctxt.start += sizeof( compuhdr_prologue );
+    ctxt.start += sizeof( comp_unit_prologue );
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
     ctxt.stack.stack = NULL;
@@ -741,7 +741,7 @@ drmem_hdl DRENTRY DRGetCompileUnitTag( drmem_hdl comp_unit )
  * assume it starts after header
  */
 {
-    comp_unit += sizeof( compuhdr_prologue );
+    comp_unit += sizeof( comp_unit_prologue );
     return( comp_unit );
 }
 
@@ -794,7 +794,7 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
         ctxt.compunit = &DR_CurrNode->compunit;
         ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
         ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
-        ctxt.start += sizeof( compuhdr_prologue );
+        ctxt.start += sizeof( comp_unit_prologue );
         ctxt.classhdl = DRMEM_HDL_NULL;
         ctxt.functionhdl = DRMEM_HDL_NULL;
         ctxt.stack.size = 0;
@@ -817,7 +817,7 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
         if( ctxt.compunit ) {
             ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
             ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
-            ctxt.start += sizeof( compuhdr_prologue );
+            ctxt.start += sizeof( comp_unit_prologue );
         }
     } while( cont && ctxt.compunit != NULL );
 

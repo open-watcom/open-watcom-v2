@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,7 +138,7 @@ void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
     container->target = of;
     container->head = NULL;
     if( compunit != NULL ) {
-        DR_WalkContaining(  compunit->start + sizeof( compuhdr_prologue ), of, AContainer, container );
+        DR_WalkContaining(  compunit->start + sizeof( comp_unit_prologue ), of, AContainer, container );
     }
 }
 

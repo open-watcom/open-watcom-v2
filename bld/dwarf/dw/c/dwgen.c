@@ -120,7 +120,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_MACINFO );
     /* AT_base_types */
     if( cli->dbg_pch != NULL ) { // want start of ccu in pch
-        CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->dbg_pch, sizeof( compuhdr_prologue ) );
+        CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->dbg_pch, sizeof( comp_unit_prologue ) );
     } else {  // 0 no pch
         DW_Info32( cli, 0  );
     }

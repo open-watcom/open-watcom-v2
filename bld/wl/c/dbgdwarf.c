@@ -295,7 +295,7 @@ void DwarfP1ModuleFinished( mod_entry *mod )
     }
     /* add length of compile unit header, abrrev code, module name, producer, stmts offset and reserve one byte for end */
     mod->d.d->pubsym.u.vm_offs = SectionTable[SECT_DEBUG_INFO].size;
-    mod->d.d->pubsym.size += sizeof( compuhdr_prologue ) + sizeof( unsigned_8 ) + strlen( mod->name.u.ptr ) + 1 + sizeof( WLINK_PRODUCER ) + 1;
+    mod->d.d->pubsym.size += sizeof( comp_unit_prologue ) + sizeof( unsigned_8 ) + strlen( mod->name.u.ptr ) + 1 + sizeof( WLINK_PRODUCER ) + 1;
     if( mod->d.d->dasi.size > 0 )
         mod->d.d->pubsym.size += sizeof( unsigned_32 ); // DW_AT_STMT_LIST
     SectionTable[SECT_DEBUG_INFO].size += mod->d.d->pubsym.size;
@@ -330,7 +330,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
 {
     arange_prologue     arange_hdr;
     stmt_prologue       stmt_hdr;
-    compuhdr_prologue   compuhdr;
+    comp_unit_prologue  compuhdr;
     unsigned_8          abbrev_code;
     size_t              namelen;
     char *              buff;
@@ -359,8 +359,8 @@ void DwarfAddModule( mod_entry *mod, section *sect )
         compuhdr.version = 2;
         compuhdr.abbrev_offset = SectionTable[SECT_DEBUG_ABBREV].start;
         compuhdr.addr_size = sizeof( offset );
-        PutInfo( mod->d.d->pubsym.u.vm_ptr, (void *)&compuhdr, sizeof( compuhdr ) );
-        mod->d.d->pubsym.u.vm_ptr += sizeof( compuhdr );
+        PutInfo( mod->d.d->pubsym.u.vm_ptr, (void *)&compuhdr, sizeof( comp_unit_prologue ) );
+        mod->d.d->pubsym.u.vm_ptr += sizeof( comp_unit_prologue );
         /* output abbrev code */
         if( mod->d.d->dasi.size > 0 ) {
             abbrev_code = COMPUNIT_ABBREV_CODE;
