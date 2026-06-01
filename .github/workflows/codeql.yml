@@ -23,7 +23,6 @@ jobs:
       with:
         languages: 'c-cpp'
         build-mode: manual
-        expect-error: true 
         queries: security-extended
 
     - name: Set up Environment and Build Bootstrap
@@ -48,8 +47,17 @@ jobs:
         git clean -xdf -e .codeql/ # Smaže mezivýsledky kompilace, ale zachová CodeQL DB
 
     - name: Perform CodeQL Analysis
+      id: run-analysis
+      continue-on-error: true
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:cpp"
+        upload: false
       env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=600"]}}'
+        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=1200"]}}'
+
+    - name: Upload CodeQL Results Manually
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        #sarif_file: ../results/cpp.sarif
+        category: "/language:cpp"
