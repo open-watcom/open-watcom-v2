@@ -41,7 +41,13 @@ jobs:
         OWDOSBOX:   dosbox
         OWVERBOSE:  1
 
+    - name: Clean Workspace Before Analysis
+      run: |
+        git clean -xdf -e .codeql/ # Smaže mezivýsledky kompilace, ale zachová CodeQL DB
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:cpp"
+      env:
+        CODEQL_ACTION_EXTRA_OPTIONS: '{ "database": { "analyze": ["--timeout", "600"] } }'
