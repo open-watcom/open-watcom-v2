@@ -7,6 +7,10 @@ on:
     - cron:  '0 23 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 env:
   OWCOV_PROJECT:         'open-watcom/open-watcom-v2'
   OWCOV_TOOLS_GITPATH:   'coverity-scan-analysis'
