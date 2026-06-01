@@ -54,10 +54,14 @@ jobs:
         category: "/language:cpp"
         upload: false
       env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=1800"]}}'
+        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=500"]}}'
+
+    - name: Check sarif files
+      run: |
+        ls -l ../results/*.sarif
 
     - name: Upload CodeQL Results Manually
       uses: github/codeql-action/upload-sarif@v4
       with:
-        sarif_file: ../results/cpp.sarif
+        sarif_file: ../results/c-cpp.sarif
         category: "/language:cpp"
