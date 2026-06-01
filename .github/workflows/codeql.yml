@@ -2,8 +2,8 @@ name: "CodeQL Advanced Static Analysis"
 
 on:
   schedule:
-    - cron: '0 1 * * *' # AutomatickÈ spuötenÌ kaûd˝ den v 01:00 UTC
-  workflow_dispatch:   # Umoûnuje rucnÌ spuötenÌ z webu GitHubu kdykoliv
+    - cron: '0 1 * * *' # Automatick√© spu≈°ten√≠ ka≈æd√Ω den v 01:00 UTC
+  workflow_dispatch:   # Umo≈ænuje rucn√≠ spu≈°ten√≠ z webu GitHubu kdykoliv
 
 jobs:
   analyze:
@@ -22,6 +22,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: 'c-cpp'
+        build-mode: manual
         queries: security-extended
 
     - name: Set up Environment and Build Bootstrap
@@ -43,7 +44,7 @@ jobs:
 
     - name: Clean Workspace Before Analysis
       run: |
-        git clean -xdf -e .codeql/ # Smaûe meziv˝sledky kompilace, ale zachov· CodeQL DB
+        git clean -xdf -e .codeql/ # Sma≈æe meziv√Ωsledky kompilace, ale zachov√° CodeQL DB
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
