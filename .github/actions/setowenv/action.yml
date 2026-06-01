@@ -25,6 +25,7 @@ runs:
   steps:
   - if: inputs.ow_version != ''
     name: Open Watcom setup
+    # actionlint-disable-next-line unpinned-action
     uses: open-watcom/setup-watcom@v1
     with:
       version: ${{inputs.ow_version}}
