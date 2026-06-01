@@ -46,22 +46,23 @@ jobs:
       run: |
         git clean -xdf -e .codeql/ # SmaÅ¾e mezivÃ½sledky kompilace, ale zachovÃ¡ CodeQL DB
 
-    - name: Perform CodeQL Analysis
-      id: run-analysis
-      continue-on-error: true
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: "/language:cpp"
-        upload: false
-      env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
-
-    - name: Check sarif files
+    - name: Perform CodeQL Analysis via CLI
+      continue-on-error: true # Ignoruje kód 33 (vypršení nekterých dotazu)
       run: |
-        ls -l ../results/*
+        mkdir -p results
+        
+        $CODEQL_DIST/codeql database analyze \
+          /home/runner/work/_temp/codeql_databases/cpp \
+          cpp-security-extended.qls \
+          --format=sarif-latest \
+          --output=results/cpp.sarif \
+          --ram=14575 \
+          --threads=4 \
+          --timeout=400 \
+          -v
 
     - name: Upload CodeQL Results Manually
       uses: github/codeql-action/upload-sarif@v4
       with:
-        sarif_file: ../results/c-cpp.sarif
+        sarif_file: results/cpp.sarif
         category: "/language:cpp"
