@@ -50,4 +50,4 @@ jobs:
       with:
         category: "/language:cpp"
       env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{ "database": { "analyze": ["--timeout", "600"] } }'
+        CODEQL_ACTION_EXTRA_OPTIONS: '["--timeout=600"]'
