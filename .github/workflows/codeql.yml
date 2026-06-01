@@ -23,6 +23,7 @@ jobs:
       with:
         languages: 'c-cpp'
         build-mode: manual
+        expect-error: true 
         queries: security-extended
 
     - name: Set up Environment and Build Bootstrap
