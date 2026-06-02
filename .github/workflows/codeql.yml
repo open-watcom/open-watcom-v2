@@ -42,27 +42,14 @@ jobs:
         OWDOSBOX:   dosbox
         OWVERBOSE:  1
 
-    - name: Clean Workspace Before Analysis
-      run: |
-        git clean -xdf -e .codeql/ # Sma≈æe meziv√Ωsledky kompilace, ale zachov√° CodeQL DB
-
-    - name: Perform CodeQL Analysis via CLI
-      continue-on-error: true # Ignoruje kÛd 33 (vypröenÌ nekter˝ch dotazu)
-      run: |
-        mkdir -p results
-        
-        $CODEQL_DIST/codeql database analyze \
-          /home/runner/work/_temp/codeql_databases/cpp \
-          cpp-security-extended.qls \
-          --format=sarif-latest \
-          --output=results/cpp.sarif \
-          --ram=14575 \
-          --threads=4 \
-          --timeout=400 \
-          -v
-
-    - name: Upload CodeQL Results Manually
-      uses: github/codeql-action/upload-sarif@v4
+    - name: Perform CodeQL Analysis
+      continue-on-error: true
+      uses: github/codeql-action/analyze@v4
       with:
-        sarif_file: results/cpp.sarif
         category: "/language:cpp"
+        upload: true
+        # Zde definujeme ekvivalent parametr≈Ø z va≈°eho CLI skriptu
+        ram: 14575
+        threads: 4
+      env:
+        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
