@@ -51,4 +51,4 @@ jobs:
         ram: 14575
         threads: 4
       env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400", "--no-keep-going"]}}'
+        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400", "--keep-going"]}}'
