@@ -24,6 +24,7 @@ jobs:
         languages: 'c-cpp'
         build-mode: manual
         queries: security-extended
+        config-file: .github/codeql/config.yml
 
     - name: Set up Environment and Build Bootstrap
       run: |
