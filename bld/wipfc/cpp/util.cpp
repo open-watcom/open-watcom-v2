@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -111,16 +111,12 @@ bool killEOL( char *text, bool kill )
 //Allow for files with non-native end-of-lines
 {
     bool eol = false;
+    std::size_t end;
 
-    if( *text == '\n' || *text == '\r' ) {  //CR or LF
+    end = std::strcspn( text, "\r\n" );
+    if( text[end] != '\0' ) {  //CR or LF
         if( kill )
-            *text = '\0';
-        text--;
-        eol = true;
-    }
-    if( *text == '\n' || *text == '\r' ) {  //CRLF (or LFCR)
-        if( kill )
-            *text = '\0';
+            text[end] = '\0';
         eol = true;
     }
     return eol;
@@ -131,16 +127,12 @@ bool killEOL( wchar_t *text, bool kill )
 //Allow for files with non-native end-of-lines
 {
     bool eol = false;
+    std::size_t end;
 
-    if( *text == L'\n' || *text == L'\r' ) {    //CR or LF
+    end = std::wcscspn( text, L"\r\n" );
+    if( text[end] != L'\0' ) {  //CR or LF
         if( kill )
-            *text = L'\0';
-        text--;
-        eol = true;
-    }
-    if( *text == L'\n' || *text == L'\r' ) {    //CRLF (or LFCR)
-        if( kill )
-            *text = L'\0';
+            text[end] = L'\0';
         eol = true;
     }
     return eol;

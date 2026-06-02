@@ -46,7 +46,7 @@
     #define _WIPFC_VERSION_     _DOMACROSTR( _BLDVER )
     #define _OWURL              "https://github.com/open-watcom/open-watcom-v2#readme"
     #define banner1w(p,v)       "Open Watcom " p " " "Version " v
-    #define banner2             "Copyright (c) 2002-" _DOMACROSTR( _CYEAR ) " The Open Watcom Contributors. All Rights Reserved."
+    #define banner2w(year)      "Copyright (c) " _DOMACROSTR( year ) "-" _DOMACROSTR( _CYEAR ) " The Open Watcom Contributors. All Rights Reserved."
     #define banner3             "Source code is available under the Sybase Open Watcom Public License."
     #define banner3a            "See " _OWURL " for details."
 #endif
@@ -60,7 +60,7 @@ Env Environment;
 static void printBanner( void )
 {
     std::cout << banner1w( "OS/2 Help Compiler", _WIPFC_VERSION_ ) << std::endl;
-    std::cout << banner2 << std::endl;
+    std::cout << banner2w( 2009 ) << std::endl;
     std::cout << banner3 << std::endl;
     std::cout << banner3a << std::endl;
 }

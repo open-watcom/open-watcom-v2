@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -143,8 +143,7 @@ const std::wstring * IpfFile::gets( bool removeEOL )
     eol = false;
     // read MBCS/SBCS/UTF8 input line from file
     while( !eol && std::fgets( sbuffer, sizeof( sbuffer ), _stream ) != NULL ) {
-        std::size_t len = std::strlen( sbuffer );
-        eol = killEOL( sbuffer + len - 1, removeEOL );
+        eol = killEOL( sbuffer, removeEOL );
         buffer += sbuffer;
     }
     if( buffer.size() > 0 || eol ) {

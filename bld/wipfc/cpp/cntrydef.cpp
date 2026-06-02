@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -56,8 +56,7 @@ void CountryDef::nlsConfig( const char *loc )
     if( nlsconf == NULL )
         throw FatalError( ERR_NLSCONF );
     while( (fn1 = fn2 = fn3 = std::fgets( buffer, sizeof( buffer ), nlsconf )) != NULL ) {
-        std::size_t len = std::strlen( buffer );
-        killEOL( buffer + len - 1, true );
+        killEOL( buffer, true );
         char *p = skipWS( buffer );
         if( p[0] == '\0' )
             continue;                       // skip blank lines
