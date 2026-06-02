@@ -3,9 +3,9 @@ name: "Open Watcom CodeQL Custom Config"
 # Exclude queries which timeout (Exit code 33)
 query-filters:
   - exclude:
-      id:
-        - cpp/unbounded-write
-        - cpp/overrun-write-product-flow
-        - cpp/path-injection
-        - cpp/uncontrolled-format-string-audit
-        - cpp/tainted-allocation-size-audit
+      query path:
+        - "*/UnboundedWrite"
+        - "*/OverrunWriteProductFlow"
+        - "*/TaintedPath"
+        - "*/UncontrolledFormatString"
+        - "*/TaintedAllocationSize"
