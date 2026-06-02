@@ -2,12 +2,9 @@
 # Exclude queries which timeout (Exit code 33)
 query-filters:
   - exclude:
-    id: cpp/unbounded-write
-  - exclude:
-    id: cpp/overrun-write
-  - exclude:
-    id: cpp/path-injection
-  - exclude:
-    id: cpp/tainted-format-string
-  - exclude:
-    id: cpp/uncontrolled-allocation-size
+    id:
+      - cpp/unbounded-write
+      - cpp/overrun-write
+      - cpp/path-injection
+      - cpp/tainted-format-string
+      - cpp/uncontrolled-allocation-size
