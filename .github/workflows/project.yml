@@ -16,25 +16,37 @@ jobs:
           ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
           STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
         run: |
-          # 1. Safely extract the project number from your global variable URL
+          # 1. Extract the project number from your global variable URL
           PROJECT_NUMBER="${PROJECT_URL##*/}"
           echo "🔄 Linking item to Project board #$PROJECT_NUMBER..."
 
-          # 2. Add the item using the native GitHub CLI project system (using owner and URL flags)
+          # 2. Add the item using the native GitHub CLI project system
           ITEM_URL="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"
-          
           PRJ_ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "@me" --url "$ITEM_URL" --format json --jq '.id')
           echo "✅ Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
 
-          # 3. Handle the close event via raw GraphQL to guarantee flag compatibility
+          # 3. Handle the close event via refined ID extraction
           if [ "$STATE" = "closed" ]; then
             echo "🏁 Item is closed. Resolving structural field IDs..."
             
-            # Fetch the project structure to find the internal ID of the 'Status' column and 'Done' option
+            # Fetch full project field structure layout in JSON schema
             PROJECT_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
+            
+            # Refined jq parsing rules to grab the root project ID, field ID, and option ID properly
+            PRJ_ID=$(echo "$PROJECT_DATA" | jq -r '.id // .projectV2.id')
             STATUS_FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
             DONE_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
 
+            echo "DEBUG - Project ID: $PRJ_ID"
+            echo "DEBUG - Status Field ID: $STATUS_FIELD_ID"
+            echo "DEBUG - Done Option ID: $DONE_OPTION_ID"
+
+            # Check if any ID resolution failed to prevent sending a 'null' token to the mutation endpoint
+            if [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
+              echo "❌ Error: Could not automatically detect 'Status' column or 'Done' option in your project settings."
+              exit 1
+            fi
+
             echo "Moving item to Done column..."
-            gh project item-edit --id "$PRJ_ITEM_ID" --project-id $(echo "$PROJECT_DATA" | jq -r '.id') --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PRJ_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
           fi
