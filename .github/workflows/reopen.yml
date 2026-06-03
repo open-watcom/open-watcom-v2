@@ -1,0 +1,40 @@
+name: Issue Reopen Manager
+
+on:
+  issues:
+    types: [closed]
+  issue_comment:
+    types: [created]
+
+jobs:
+  manage-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      # TASK 1: Post the guide comment at the end of the thread when an issue is closed
+      - name: Post instructions on close
+        if: github.event_name == 'issues' && github.event.action == 'closed' && github.event.issue.active_lock_reason == null
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "?? **This issue is now closed.**\n\nIf the problem persists or you have new information, type `/reopen` in a new comment below, and our bot will automatically open this issue back up for you."
+            });
+
+      # TASK 2: Reopen the issue if a user comments "/reopen" on a closed issue
+      - name: Reopen on user command
+        if: github.event_name == 'issue_comment' && github.event.issue.state == 'closed' && contains(github.event.comment.body, '/reopen')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'open'
+            });
