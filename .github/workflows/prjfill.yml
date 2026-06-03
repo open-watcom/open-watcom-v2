@@ -16,13 +16,17 @@ jobs:
         run: |
           echo "📥 Fetching ALL items from project (bypassing 100 limit)..."
           
-          # ÚPRAVA: --limit 50000 zapne automatické stránkování na pozadí GitHub CLI
+          # Automatically handle pagination to fetch up to 50,000 items from the project board
           ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "@me" --format json --limit 50000)
           
           LENGTH=$(echo "$ITEMS" | jq '.items | length')
-          echo "Found a total of $LENGTH items to process."
+          echo "Found a total of $LENGTH items to check on the project board."
 
-          # Bezpečné procházení bez rizika přerušení roury
+          # Get the current repository context for targeted updates
+          CURRENT_REPO="${{ github.event.repository.name }}"
+          echo "🔍 Filtering backfill to process items ONLY from repository: $CURRENT_REPO"
+
+          # Loop through all project items securely without pipe/stdin interruption hazards
           for ((i=0; i<LENGTH; i++)); do
               ITEM=$(echo "$ITEMS" | jq -c ".items[$i]")
               ITEM_ID=$(echo "$ITEM" | jq -r '.id')
@@ -30,26 +34,35 @@ jobs:
               URL=$(echo "$ITEM" | jq -r '.content.url')
 
               if [ "$CONTENT_TYPE" = "Issue" ] || [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                  echo "[$((i+1))/$LENGTH] Processing [$CONTENT_TYPE]: $URL"
                   
-                  # Dynamické sestavení API cesty podle typu položky
-                  if [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|' | sed 's|/pull/|/pulls/|')
-                  else
-                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
+                  # Security Filter: Skip item if its URL does not belong to the current running repository
+                  if [[ "$URL" != *"/${{ github.repository }}/"* ]]; then
+                      echo "[$((i+1))/$LENGTH] Skipping: Item does not belong to ${{ github.repository }} ($URL)"
+                      continue
                   fi
 
-                  # Bezpečné zavolání API
+                  echo "[$((i+1))/$LENGTH] Processing MATCHED [$CONTENT_TYPE]: $URL"
+                  
+                  # Dynamically build the correct GitHub API endpoint path based on item type
+                  if [ "$CONTENT_TYPE" = "PullRequest" ]; then
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com|repos/|' | sed 's|/pull/|/pulls/|')
+                  else
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com|repos/|')
+                  fi
+
+                  # Fetch the true repository-level updated_at timestamp safely
                   RAW_TIME=$(gh api "$API_PATH" --jq '.updated_at' 2>/dev/null || echo "null")
                   
                   if [ -n "$RAW_TIME" ] && [ "$RAW_TIME" != "null" ]; then
+                      # Format time into a highly sortable, human-readable ISO 8601 text format (YYYY-MM-DD HH:MM)
                       ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
                       echo "   ↳ Setting time to: $ISO_STRING"
                       
+                      # Save the text timestamp string into your target project column
                       gh project item-edit --id "$ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING" > /dev/null
                   else
                       echo "   ⚠️ Could not fetch updated_at from API path: $API_PATH"
                   fi
               fi
           done
-          echo "✅ All items processed successfully!"
+          echo "✅ All matched items processed successfully!"
