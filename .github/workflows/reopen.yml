@@ -29,13 +29,7 @@ jobs:
       # TASK 2: Reopen the issue if a user comments "/reopen" on a closed issue
       - name: Reopen on user command
         if: github.event_name == 'issue_comment' && github.event.issue.state == 'closed' && contains(github.event.comment.body, '/reopen')
-        uses: actions/github-script@v9
-        with:
-          script: |
-            github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-              state: 'open',
-              state_reason: 'reopened' 
-            });
+        run: |
+          gh issue reopen ${{ github.event.issue.number }} --comment "Reopened via automation"
+        env:
+          GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
