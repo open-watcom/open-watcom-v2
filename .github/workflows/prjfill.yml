@@ -17,30 +17,39 @@ jobs:
           echo "📥 Fetching items from project..."
           ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "@me" --format json --limit 100)
           
-          # Načteme položky do čistého pole, abychom se vyhnuli problémům s rourou (pipe)
-          echo "$ITEMS" | jq -c '.items[]' | while read -r item; do
-              ITEM_ID=$(echo "$item" | jq -r '.id')
-              CONTENT_TYPE=$(echo "$item" | jq -r '.content.type')
-              
+          # Bezpečné uložení počtu prvků do pole, abychom nepoužívali nestabilní roury (pipe)
+          LENGTH=$(echo "$ITEMS" | jq '.items | length')
+          echo "Found $LENGTH items to process."
+
+          # Procházení položek pomocí klasického for-indexu (odolné proti pádu standardního vstupu)
+          for ((i=0; i<LENGTH; i++)); do
+              ITEM=$(echo "$ITEMS" | jq -c ".items[$i]")
+              ITEM_ID=$(echo "$ITEM" | jq -r '.id')
+              CONTENT_TYPE=$(echo "$ITEM" | jq -r '.content.type')
+              URL=$(echo "$ITEM" | jq -r '.content.url')
+
               if [ "$CONTENT_TYPE" = "Issue" ] || [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                  URL=$(echo "$item" | jq -r '.content.url')
+                  echo "Processing [$CONTENT_TYPE]: $URL"
                   
-                  # OPRAVA: Správné oříznutí domény na API cestu (repos/owner/repo/...)
-                  API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
-                  
-                  echo "Processing: $URL"
-                  
-                  # FIX: Přidáno < /dev/null aby gh api nekonzumovalo stdin cyklu
-                  RAW_TIME=$(gh api "$API_PATH" --jq '.updated_at' < /dev/null 2>/dev/null)
+                  # OPRAVA: Dynamické sestavení API cesty podle typu položky
+                  # PullRequest potřebuje koncovku /pulls/, Issue potřebuje /issues/
+                  if [ "$CONTENT_TYPE" = "PullRequest" ]; then
+                      # Převede .../pull/560 na repos/.../pulls/560
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|' | sed 's|/pull/|/pulls/|')
+                  else
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
+                  fi
+
+                  # Bezpečné zavolání API
+                  RAW_TIME=$(gh api "$API_PATH" --jq '.updated_at' 2>/dev/null || echo "null")
                   
                   if [ -n "$RAW_TIME" ] && [ "$RAW_TIME" != "null" ]; then
                       ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
                       echo "   ↳ Setting time to: $ISO_STRING"
                       
-                      # FIX: Přidáno < /dev/null také pro item-edit
-                      gh project item-edit --id "$ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING" < /dev/null > /dev/null
+                      gh project item-edit --id "$ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING" > /dev/null
                   else
-                      echo "   ⚠️ Could not fetch updated_at for $URL"
+                      echo "   ⚠️ Could not fetch updated_at from API path: $API_PATH"
                   fi
               fi
           done
