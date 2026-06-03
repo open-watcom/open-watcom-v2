@@ -27,9 +27,31 @@ jobs:
             });
 
       # TASK 2: Reopen the issue if a user comments "/reopen" on a closed issue
-      - name: Reopen on user command
+      - name: Reopen Issue and Move to Todo
         if: github.event_name == 'issue_comment' && github.event.issue.state == 'closed' && contains(github.event.comment.body, '/reopen')
         run: |
-          gh issue reopen ${{ github.event.issue.number }} --comment "Reopened via automation"
+          # 1. Znovu otevřeme issue v repozitáři
+          echo "🔄 Reopening issue via CLI..."
+          gh issue reopen ${{ github.event.issue.number }} --repo "${{ github.repository }}" --comment "Reopened via automation"
+
+          # 2. Zjistíme Project číslo a ID projektu
+          PROJECT_NUMBER="${PROJECT_URL##*/}"
+          PRJ_ID=$(gh project view "$PROJECT_NUMBER" --owner "@me" --format json --jq '.id')
+
+          # 3. Získáme Project Item ID pro toto konkrétní issue
+          ITEM_URL="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"
+          PRJ_ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "@me" --url "$ITEM_URL" --format json --jq '.id')
+
+          # 4. Načteme strukturu sloupců, najdeme sloupec "Status" a možnost "Todo"
+          FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
+          STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
+          
+          # Tady můžete změnit "Todo" na "In Progress" nebo jakkoliv se jmenuje váš výchozí sloupec 👇
+          TODO_OPTION_ID=$(echo "$FIELD_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Todo") | .id')
+
+          # 5. Přesuneme issue zpět do sloupce Todo
+          echo "Moving item back to Todo column..."
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PRJ_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$TODO_OPTION_ID"
         env:
           GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
+          PROJECT_URL: ${{ vars.GLOBAL_PROJECT_URL }}
