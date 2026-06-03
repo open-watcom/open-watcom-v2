@@ -14,14 +14,15 @@ jobs:
     steps:
       - name: Process All Project Items
         run: |
-          echo "📥 Fetching items from project..."
-          ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "@me" --format json --limit 100)
+          echo "📥 Fetching ALL items from project (bypassing 100 limit)..."
           
-          # Bezpečné uložení počtu prvků do pole, abychom nepoužívali nestabilní roury (pipe)
+          # ÚPRAVA: --limit 50000 zapne automatické stránkování na pozadí GitHub CLI
+          ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "@me" --format json --limit 50000)
+          
           LENGTH=$(echo "$ITEMS" | jq '.items | length')
-          echo "Found $LENGTH items to process."
+          echo "Found a total of $LENGTH items to process."
 
-          # Procházení položek pomocí klasického for-indexu (odolné proti pádu standardního vstupu)
+          # Bezpečné procházení bez rizika přerušení roury
           for ((i=0; i<LENGTH; i++)); do
               ITEM=$(echo "$ITEMS" | jq -c ".items[$i]")
               ITEM_ID=$(echo "$ITEM" | jq -r '.id')
@@ -29,12 +30,10 @@ jobs:
               URL=$(echo "$ITEM" | jq -r '.content.url')
 
               if [ "$CONTENT_TYPE" = "Issue" ] || [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                  echo "Processing [$CONTENT_TYPE]: $URL"
+                  echo "[$((i+1))/$LENGTH] Processing [$CONTENT_TYPE]: $URL"
                   
-                  # OPRAVA: Dynamické sestavení API cesty podle typu položky
-                  # PullRequest potřebuje koncovku /pulls/, Issue potřebuje /issues/
+                  # Dynamické sestavení API cesty podle typu položky
                   if [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                      # Převede .../pull/560 na repos/.../pulls/560
                       API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|' | sed 's|/pull/|/pulls/|')
                   else
                       API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
