@@ -17,10 +17,11 @@ jobs:
           STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
           REPO_NAME: ${{ github.event.repository.name }}
           GH_API_VERSION: "2026-03-10" 
+          PROJECT_ID: "PVT_kwHOAB7H7M4BZk7B"
           UPDATEAT_FIELD_ID: "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
           REPOMARK_FIELD_ID: "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
         run: |
-          # 1. Extract the project number from your global variable URL
+          # 1. Extract the project number from your global variable URL (needed only for item-add)
           PROJECT_NUMBER="${PROJECT_URL##*/}"
           echo "🔄 Linking item to Project board #$PROJECT_NUMBER..."
 
@@ -33,28 +34,24 @@ jobs:
           if [ "$STATE" = "closed" ]; then
             echo "🏁 Item is closed. Resolving structural field IDs..."
             
-            # FIX: Fetch the actual project root object to get the real non-null Global Project ID
-            PRJ_ID=$(gh project view "$PROJECT_NUMBER" --owner "@me" --format json --jq '.id')
-            
-            # Fetch the field layout data structure
+            # Fetch the field layout data structure using number for listing
             FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
             
             # Parse the status field and target option values
             STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
             DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
 
-            echo "DEBUG - Project ID: $PRJ_ID"
             echo "DEBUG - Status Field ID: $STATUS_FIELD_ID"
             echo "DEBUG - Done Option ID: $DONE_OPTION_ID"
 
             # Failsafe validation
-            if [ "$PRJ_ID" = "null" ] || [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
+            if [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
               echo "❌ Error: Could not resolve all required database metadata IDs."
               exit 1
             fi
 
             echo "Moving item to Done column..."
-            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PRJ_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
           fi
 
           # 4. Formátování reálného času aktualizace z kontextu GitHub eventu
@@ -64,7 +61,7 @@ jobs:
 
           # 5. Zápis času jako řetězce přes parametr --text do Vašeho pole
           echo "Writing timestamp to project..."
-          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_NUMBER" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING"
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING"
 
           # 6. Určení předdefinované hodnoty (Option ID) pro RepoMark podle názvu repozitáře
           echo "📦 Source repository name: $REPO_NAME"
@@ -74,4 +71,4 @@ jobs:
 
           # 7. Zápis vybrané hodnoty do pole RepoMark
           echo "Updating RepoMark field..."
-          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_NUMBER" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID"
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID"
