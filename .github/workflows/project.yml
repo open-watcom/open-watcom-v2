@@ -15,7 +15,10 @@ jobs:
           PROJECT_URL: ${{ vars.GLOBAL_PROJECT_URL }}
           ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
           STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
+          REPO_NAME: ${{ github.event.repository.name }}
           GH_API_VERSION: "2026-03-10" 
+          UPDATEAT_FIELD_ID: "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
+          REPOMARK_FIELD_ID: "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
         run: |
           # 1. Extract the project number from your global variable URL
           PROJECT_NUMBER="${PROJECT_URL##*/}"
@@ -53,3 +56,22 @@ jobs:
             echo "Moving item to Done column..."
             gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PRJ_ID" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
           fi
+
+          # 4. Formátování reálného času aktualizace z kontextu GitHub eventu
+          RAW_TIME="${{ github.event.issue.updated_at || github.event.pull_request.updated_at }}"
+          ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
+          echo "⏰ Formatted issue timestamp: $ISO_STRING"
+
+          # 5. Zápis času jako řetězce přes parametr --text do Vašeho pole
+          echo "Writing timestamp to project..."
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_NUMBER" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING"
+
+          # 6. Určení předdefinované hodnoty (Option ID) pro RepoMark podle názvu repozitáře
+          echo "📦 Source repository name: $REPO_NAME"
+          
+          # Podmínka pro přiřazení statického ID konkrétní volby na základě názvu repozitáře
+          REPOMARK_OPTION_ID="5f088986"
+
+          # 7. Zápis vybrané hodnoty do pole RepoMark
+          echo "Updating RepoMark field..."
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_NUMBER" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID"
