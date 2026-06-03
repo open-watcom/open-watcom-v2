@@ -16,7 +16,7 @@ jobs:
       # TASK 1: Post the guide comment at the end of the thread when an issue is closed
       - name: Post instructions on close
         if: github.event_name == 'issues' && github.event.action == 'closed' && github.event.issue.active_lock_reason == null
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             github.rest.issues.createComment({
@@ -29,7 +29,7 @@ jobs:
       # TASK 2: Reopen the issue if a user comments "/reopen" on a closed issue
       - name: Reopen on user command
         if: github.event_name == 'issue_comment' && github.event.issue.state == 'closed' && contains(github.event.comment.body, '/reopen')
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             github.rest.issues.update({
