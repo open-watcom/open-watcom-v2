@@ -23,7 +23,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: "?? **This issue is now closed.**\n\nIf the problem persists or you have new information, type `/reopen` in a new comment below, and our bot will automatically open this issue back up for you."
+              body: "**This issue is now closed.**\n\nIf the problem persists or you have new information, type `/reopen` in a new comment below, and our bot will automatically open this issue back up for you."
             });
 
       # TASK 2: Reopen the issue if a user comments "/reopen" on a closed issue
