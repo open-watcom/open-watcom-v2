@@ -1,0 +1,26 @@
+name: Live Project Sync
+on:
+  issues:
+    types: [opened, edited, reopened, closed]
+  pull_request:
+    types: [opened, edited, reopened, closed]
+
+jobs:
+  online_sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Propagate Item to Project Database
+        env:
+          GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
+          ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+          STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
+        run: |
+          echo "?? Linking item to Project board..."
+          PRJ_ITEM_ID=$(gh project item-add "${{vars.GLOBAL_PROJECT_URL}}" --owner "@me" --id "$ITEM_ID" --format json | jq -r '.id')
+          echo "? Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
+
+          # Handle the close event using GitHub default columns
+          if [ "$STATE" = "closed" ]; then
+            echo "?? Item is closed. Moving standard status to Done..."
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{vars.GLOBAL_PROJECT_URL}}" --field "Status" --value "Done"
+          fi
