@@ -32,7 +32,7 @@ jobs:
         run: |
           # 1. Znovu otevřeme issue v repozitáři
           echo "🔄 Reopening issue via CLI..."
-          gh issue reopen ${{ github.event.issue.number }} --repo "${{ github.repository }}" --comment "Reopened via automation"
+          gh issue reopen ${{ github.event.issue.number }} --repo "${{ github.repository }}" #--comment "Reopened via automation"
 
           # 2. Zjistíme Project číslo a ID projektu
           PROJECT_NUMBER="${PROJECT_URL##*/}"
