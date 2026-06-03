@@ -29,21 +29,23 @@ jobs:
           if [ "$STATE" = "closed" ]; then
             echo "🏁 Item is closed. Resolving structural field IDs..."
             
-            # Fetch full project field structure layout in JSON schema
-            PROJECT_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
+            # FIX: Fetch the actual project root object to get the real non-null Global Project ID
+            PRJ_ID=$(gh project view "$PROJECT_NUMBER" --owner "@me" --format json --jq '.id')
             
-            # Refined jq parsing rules to grab the root project ID, field ID, and option ID properly
-            PRJ_ID=$(echo "$PROJECT_DATA" | jq -r '.id // .projectV2.id')
-            STATUS_FIELD_ID=$(echo "$PROJECT_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
-            DONE_OPTION_ID=$(echo "$PROJECT_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
+            # Fetch the field layout data structure
+            FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
+            
+            # Parse the status field and target option values
+            STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
+            DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
 
             echo "DEBUG - Project ID: $PRJ_ID"
             echo "DEBUG - Status Field ID: $STATUS_FIELD_ID"
             echo "DEBUG - Done Option ID: $DONE_OPTION_ID"
 
-            # Check if any ID resolution failed to prevent sending a 'null' token to the mutation endpoint
-            if [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
-              echo "❌ Error: Could not automatically detect 'Status' column or 'Done' option in your project settings."
+            # Failsafe validation
+            if [ "$PRJ_ID" = "null" ] || [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
+              echo "❌ Error: Could not resolve all required database metadata IDs."
               exit 1
             fi
 
