@@ -21,7 +21,7 @@ jobs:
         repository: ${{github.repository}}
         retain_days: 0
         keep_minimum_runs: 10
-        delete_workflow_pattern: Delete Artifacts | Delete old
+        delete_workflow_pattern: Delete Artifacts | Delete old | Issue Reopen Manager
     - if: github.repository != vars.REPO
       name: OW Workflow runs (reg) - 45 days/45 runs
       uses: Mattraks/delete-workflow-runs@v2
