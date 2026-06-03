@@ -28,7 +28,6 @@ jobs:
           echo "🔍 Targeted isolation mode enabled. Processing items ONLY belonging to: $TARGET_REPOSITORY"
 
           # Define the static Single-Select Option ID for RepoMark for this repository
-          # Change this ID if you run this script inside a different repository
           REPOMARK_OPTION_ID="5f088986"
           echo "📦 RepoMark Option ID assigned for this run: $REPOMARK_OPTION_ID"
 
@@ -41,9 +40,9 @@ jobs:
 
               if [ "$CONTENT_TYPE" = "Issue" ] || [ "$CONTENT_TYPE" = "PullRequest" ]; then
                   
-                  # 1. Extract repository path from the card URL
-                  # Converts "https://github.com" -> "owner/repo-name"
-                  EXTRACTED_REPO=$(echo "$URL" | sed -E 's|https://github.com([^/]+/[^/]+)/.*|\1|')
+                  # 1. FIXED REPOSITORY PATH EXTRACTION
+                  # Strips 'https://github.com/' and cuts out the first two path segments (owner/repo)
+                  EXTRACTED_REPO=$(echo "$URL" | sed 's|https://github.com/||' | cut -d'/' -f1,2)
 
                   # 2. Strict validation filter
                   # Compares the card's origin repository with the current running repository context
@@ -60,9 +59,9 @@ jobs:
 
                   # 4. Dynamically build the correct GitHub API endpoint path based on item structural type
                   if [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                      API_PATH=$(echo "$URL" | sed 's|https://github.com|repos/|' | sed 's|/pull/|/pulls/|')
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|' | sed 's|/pull/|/pulls/|')
                   else
-                      API_PATH=$(echo "$URL" | sed 's|https://github.com|repos/|')
+                      API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
                   fi
 
                   # Fetch the true repository-level updated_at timestamp safely
