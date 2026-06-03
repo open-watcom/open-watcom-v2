@@ -15,6 +15,7 @@ jobs:
           PROJECT_URL: ${{ vars.GLOBAL_PROJECT_URL }}
           ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
           STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
+          GH_API_VERSION: "2026-03-10" 
         run: |
           # 1. Extract the project number from your global variable URL
           PROJECT_NUMBER="${PROJECT_URL##*/}"
