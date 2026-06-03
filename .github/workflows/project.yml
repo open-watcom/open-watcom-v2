@@ -54,21 +54,21 @@ jobs:
             gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
           fi
 
-          # 4. Formátování reálného času aktualizace z kontextu GitHub eventu
+          # 4. Format the real update timestamp from the GitHub event context
           RAW_TIME="${{ github.event.issue.updated_at || github.event.pull_request.updated_at }}"
           ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
           echo "⏰ Formatted issue timestamp: $ISO_STRING"
 
-          # 5. Zápis času jako řetězce přes parametr --text do Vašeho pole
+          # 5. Write the timestamp string to your custom field using the --text parameter
           echo "Writing timestamp to project..."
           gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING"
 
-          # 6. Určení předdefinované hodnoty (Option ID) pro RepoMark podle názvu repozitáře
+          # 6. Determine the predefined Option ID for RepoMark based on the repository name
           echo "📦 Source repository name: $REPO_NAME"
           
-          # Podmínka pro přiřazení statického ID konkrétní volby na základě názvu repozitáře
+          # Condition to assign a static option ID based on the repository name
           REPOMARK_OPTION_ID="5f088986"
 
-          # 7. Zápis vybrané hodnoty do pole RepoMark
+          # 7. Write the selected option value to the RepoMark field
           echo "Updating RepoMark field..."
           gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID"
