@@ -8,6 +8,7 @@ on:
 
 jobs:
   manage-issue:
+    name: Issue Reopen Manager
     runs-on: ubuntu-latest
     permissions:
       issues: write
