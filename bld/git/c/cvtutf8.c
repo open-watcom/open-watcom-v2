@@ -273,7 +273,6 @@ int main( int argc, char *argv[] )
     FILE        *fo;
     char        in_buff[MAX_MB];
     char        out_buff[MAX_MB];
-    size_t      in_len;
     direction   cvt_dir;
     encoding    enc;
 
@@ -335,11 +334,22 @@ int main( int argc, char *argv[] )
         }
     }
     while( fgets( in_buff, sizeof( in_buff ), fi ) != NULL ) {
+    	bool	dos_eof;
+        size_t  in_len;
+
+        dos_eof = false;
         in_len = strlen( in_buff );
         if( in_len ) {
-            if( in_buff[in_len - 1] == '\r' || in_buff[in_len - 1] == 0x1A ) {
-                in_buff[--in_len] = '\0';
-            }
+            --in_len;
+            switch( in_buff[in_len] ) {
+            case '\x1a':
+                dos_eof = true;
+                /* fall through */
+        	case '\r':
+        	case '\n':
+                in_buff[in_len] = '\0';
+                break;
+        	}
         }
         if( cvt_dir == FROM_UTF8 ) {
             utf8_to_enc( enc, in_buff, out_buff );
@@ -347,6 +357,9 @@ int main( int argc, char *argv[] )
             enc_to_utf8( enc, in_buff, out_buff );
         }
         fputs( out_buff, fo );
+        if( dos_eof ) {
+            break;
+        }
     }
     fclose( fi );
     fclose( fo );
