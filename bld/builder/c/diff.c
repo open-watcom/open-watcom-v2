@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -350,21 +350,9 @@ static void equiv( void )
 
 static char *my_fgets( char *s, int max_len, FILE *iop )
 {
-    char    *cs;
-    size_t  len1;
-
     if( fgets( s, max_len, iop ) == NULL )
         return( NULL );
-    len1 = strlen( s );
-    cs = s + len1 - 1;
-    if( *cs == '\n' ) {
-        *cs = '\0';
-    }
-    --cs;
-    if( len1 > 1
-      && *cs == '\r' ) {
-        *cs = '\0';
-    }
+    s[strcspn( s, "\r\n" )] = '\0';
     return( s );
 }
 

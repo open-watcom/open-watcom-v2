@@ -354,6 +354,7 @@ static bool GetALine( char *line, int max_len )
 {
     for( ;; ) {
         if( fgets( line, max_len, includeStk->fp ) != NULL ) {
+            line[strcspn( line, "\r\n" )] = '\0';   /* Allow crlf or lf EOL on any platform */
             includeStk->lineno++;
             break;
         }
@@ -444,9 +445,7 @@ static void SubstLine( const char *in, char *out )
         case '^':                       /* Escape next byte special meaning */
             ++in;
             switch( *in ) {
-            case '\n':
             case '\0':
-            case '\r':                  /* Allow DOS line in UNIX port */
             case DOS_EOF_CHAR:          /* Allow DOS EOF in UNIX port */
                 break;
             default:
@@ -467,9 +466,7 @@ static void SubstLine( const char *in, char *out )
             ++in;
             out = SubstOne( &in, out );
             break;
-        case '\n':
         case '\0':
-        case '\r':                      /* Allow DOS line in UNIX port */
         case DOS_EOF_CHAR:              /* Allow DOS EOF in UNIX port */
             *out = '\0';
             return;
