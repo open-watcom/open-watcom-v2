@@ -1,4 +1,4 @@
-name: Live Project Sync
+name: Project Live Sync
 on:
   issues:
     types: [opened, edited, reopened, closed]
