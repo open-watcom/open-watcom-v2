@@ -1943,26 +1943,13 @@ static void checkForGMLEscapeSequences( void )
     }
 }
 
-static char *my_fgets( char *buff, int buff_len, FILE *fp )
-{
-    char    *p;
-    size_t  len;
-
-    p = fgets( buff, buff_len, fp );
-    if( p != NULL ) {
-        for( len = strlen( p ); len > 0 && ( p[len - 1] == '\n' || p[len - 1] == '\r' ); len-- )
-            ;
-        p[len] = '\0';
-    }
-    return( p );
-}
-
 static void readInputFile( void )
 {
     const char  *eot;
     tag_id      tag;
 
-    for( ; my_fgets( ibuff, sizeof( ibuff ), gfp ) != NULL; ) {
+    while( fgets( ibuff, sizeof( ibuff ), gfp ) != NULL ) {
+        ibuff[strcspn( ibuff, "\r\n" )] = '\0';
         ++line;
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
