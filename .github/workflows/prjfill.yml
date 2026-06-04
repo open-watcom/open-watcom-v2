@@ -1,4 +1,4 @@
-name: Project Date Backfill
+name: Project Backfill
 on:
   workflow_dispatch:
 
