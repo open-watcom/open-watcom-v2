@@ -4,8 +4,6 @@ yacc_autodepends = .AUTODEPEND
 
 yacc_trmem = 1
 
-yacc_noasan = 1
-
 !ifdef bootstrap
 exetarg_name = b$(proj_name)
 !endif

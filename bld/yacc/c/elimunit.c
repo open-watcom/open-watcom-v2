@@ -194,6 +194,10 @@ static a_reduce_action *addReduceAction( a_pro *pro, a_word *follow, a_reduce_ac
     raction = MemReallocSafe( raction, ( i + 1 ) * sizeof( *raction ) );
     raction[i - 1].pro = pro;
     raction[i - 1].follow = new_follow;
+    /*
+     * follow was allocated above, we own it
+     */
+    raction[i - 1].owned_follow = true;
     memset( &raction[i], 0, sizeof( *raction ) );
     return( raction );
 }
@@ -206,6 +210,12 @@ static a_reduce_action *removeReduceAction( a_reduce_action *remove, a_reduce_ac
     copy_raction = NULL;
     for( r = raction; r->pro != NULL; ++r ) {
         if( r == remove ) {
+            /*
+             * only free if we allocated it
+             */
+            if( remove->owned_follow ) {
+                MemFreeSet( remove->follow );
+            }
             copy_raction = r;
         } else if( copy_raction != NULL ) {
             *copy_raction++ = *r;

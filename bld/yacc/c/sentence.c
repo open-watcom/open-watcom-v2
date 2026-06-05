@@ -358,10 +358,12 @@ void ShowSentence( a_state *state, a_sym *sym, a_pro *pro, a_state *to_state )
         printf( "  " );
         printAndFreeStack( list );
         if( parse_stack == NULL ) {
+            flushStack( &token_stack );  /* FIX: uvolnit token_stack při chybové větvi */
             printf( ". %s\n  Will never shift token '%s' in this context\n", sym->name, sym->name );
         } else {
             printf( ".\n" );
             runUntilShift( &parse_stack, eofsym, &token_stack );
+            flushStack( &parse_stack );  /* FIX: uvolnit parse_stack po posledním runUntilShift */
             token_stack = reverseStack( token_stack );
             printAndFreeStack( token_stack );
             putchar( '\n' );

@@ -44,6 +44,9 @@
 static a_look       **stk;
 static a_look       **top;
 
+static a_word       *lset_saved = NULL;
+static a_word       *rset_saved = NULL;
+
 static void Reads( a_look *x )
 {
     a_shift_action  *saction;
@@ -168,7 +171,7 @@ static void CalcIncludes( void )
     a_pro           *pro;
     an_item         *nullable;
     an_item         *item;
-    a_link          *free;
+    a_link          *include;
 
     for( state = statelist; state != NULL; state = state->next ) {
         for( p = state->look; p->trans != NULL; ++p ) {
@@ -196,10 +199,10 @@ static void CalcIncludes( void )
                             }
                         }
                         if( item >= nullable ) {
-                            free = MemCAllocSafe( 1, sizeof( *free ) );
-                            free->el = p;
-                            free->next = q->include;
-                            q->include = free;
+                            include = MemCAllocSafe( 1, sizeof( *include ) );
+                            include->el = p;
+                            include->next = q->include;
+                            q->include = include;
                         }
                         state1 = q->trans->state;
                     }
@@ -211,6 +214,18 @@ static void CalcIncludes( void )
         for( p = state->look; p->trans != NULL; ++p ) {
             if( p->depth == 0 ) {
                 Includes( p );
+            }
+        }
+    }
+    /*
+     * free a_link chains built previously
+     * they are no longer needed after Includes()
+     */
+    for( state = statelist; state != NULL; state = state->next ) {
+        for( p = state->look; p->trans != NULL; ++p ) {
+            while( (include = p->include) != NULL ) {
+                p->include = include->next;
+                MemFree( include );
             }
         }
     }
@@ -548,8 +563,21 @@ void lalr1( void )
     MemFree( look );
     Conflict();
     nbstate = nstate;
-//    MemFreeSet( rset );
-//    MemFreeSet( lset );
+    lset_saved = lset;
+    rset_saved = rset;
+}
+
+void FreeLalr1Sets( void )
+/***********************/
+{
+    if( rset_saved != NULL ) {
+        MemFreeSet( rset_saved );
+        rset_saved = NULL;
+    }
+    if( lset_saved != NULL ) {
+        MemFreeSet( lset_saved );
+        lset_saved = NULL;
+    }
 }
 
 void showstates( void )

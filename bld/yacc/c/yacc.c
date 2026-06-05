@@ -452,6 +452,19 @@ int main( int argc, char **argv )
     MemFree( headerfilename );
     MemFree( descfilename );
     MemFree( srcname_norm );
+    /*
+     * Release all major data structures in dependency order:
+     *   1. lset/rset follow-set blocks (raction->follow pointers into rset
+     *      are no longer needed after genobj)
+     *   2. ambiguity conflict nodes (a_SR_conflict_list freed via buildpro)
+     *   3. symbol/production graph (symlist, a_sym, a_pro, SR_conflict_list)
+     *   4. state graph (statelist, a_state, items, trans, redun, parents,
+     *      statetab; state->look points into the block freed in step 1)
+     */
+    FreeLalr1Sets();
+    FreeAmbigData();
+    FreeBuildproData();
+    FreeStateData();
     MemFini();
     return( 0 );
 }

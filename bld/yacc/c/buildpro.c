@@ -218,3 +218,38 @@ void show_unused( void )
         }
     }
 }
+
+void FreeBuildproData( void )
+/***************************/
+{
+    a_sym               *sym;
+    a_sym               *sym_next;
+    a_pro               *pro;
+    a_pro               *pro_next;
+    a_SR_conflict_list  *sr;
+    a_SR_conflict_list  *sr_next;
+
+    for( sym = symlist; sym != NULL; sym = sym_next ) {
+        sym_next = sym->next;
+        MemFree( sym->name );
+        if( sym->type != NULL ) {
+            MemFree( sym->type );
+            sym->type = NULL;
+        }
+        if( sym->min != NULL ) {
+            MemFree( sym->min );
+            sym->min = NULL;
+        }
+        for( pro = sym->pro; pro != NULL; pro = pro_next ) {
+            pro_next = pro->next;
+            for( sr = pro->SR_conflicts; sr != NULL; sr = sr_next ) {
+                sr_next = sr->next;
+                MemFree( sr );
+            }
+            MemFree( pro );
+        }
+        MemFree( sym );
+    }
+    symlist = NULL;
+    /* symtab and protab pointer arrays are freed by genobj()/genobj_fast() */
+}

@@ -242,6 +242,41 @@ void SetupStateTable( void )
     }
 }
 
+static void FreeState( a_state *state )
+/*************************************/
+{
+    a_parent        *par;
+    a_reduce_action *raction;
+
+    /*
+     * state->look points into the block freed by FreeLalr1Sets()
+     */
+    if( state->items != NULL ) {
+        MemFree( state->items );
+        state->items = NULL;
+    }
+    if( state->trans != NULL ) {
+        MemFree( state->trans );
+        state->trans = NULL;
+    }
+    if( state->redun != NULL ) {
+        /*
+         * deallocate only owned follow sets before array
+         */
+        for( raction = state->redun; raction->pro != NULL; ++raction ) {
+            if( raction->owned_follow ) {
+                MemFreeSet( raction->follow );
+            }
+        }
+        MemFree( state->redun );
+        state->redun = NULL;
+    }
+    while( (par = state->parents) != NULL ) {
+        state->parents = par->next;
+        MemFree( par );
+    }
+}
+
 void RemoveDeadStates( void )
 {
     action_n        old_sidx;
@@ -251,11 +286,27 @@ void RemoveDeadStates( void )
     new_sidx = 0;
     for( old_sidx = 0; old_sidx < nstate; old_sidx++ ) {
         state = statetab[old_sidx];
-        if( ! IsDead( state ) ) {
+        if( IsDead( state ) ) {
+            FreeState( state );
+        } else {
             state->sidx = new_sidx;
             statetab[new_sidx] = state;
             new_sidx++;
         }
     }
     nstate = new_sidx;
+}
+
+void FreeStateData( void )
+/*************************/
+{
+    a_state     *state;
+
+    while( (state = statelist) != NULL ) {
+        statelist = state->next;
+        FreeState( state );
+        MemFree( state );
+    }
+    MemFree( statetab );
+    statetab = NULL;
 }

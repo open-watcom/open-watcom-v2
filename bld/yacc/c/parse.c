@@ -995,6 +995,25 @@ void free_header_data( void )
     }
 }
 
+void FreeAmbigData( void )
+/*************************/
+{
+    a_SR_conflict   *ambig;
+    a_SR_conflict   *ambig_next;
+
+    /*
+     * a_SR_conflict_list nodes are freed as part of FreeBuildproData()
+     * (via pro->SR_conflicts chains). Here we only free the a_SR_conflict
+     * nodes themselves.
+     */
+    for( ambig = ambiguousstates; ambig != NULL; ambig = ambig_next ) {
+        ambig_next = ambig->next;
+        MemFree( ambig );
+    }
+    ambiguousstates = NULL;
+}
+
+
 void defs( FILE *fp, a_token *tok )
 {
     token_n         gentoken;

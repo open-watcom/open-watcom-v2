@@ -217,6 +217,7 @@ typedef struct a_look {
 typedef struct a_reduce_action {
     a_pro               *pro;
     a_word              *follow;
+    boolbit             owned_follow : 1;   /* true if follow was allocated by addReduceAction */
 } a_reduce_action;
 
 struct a_link {
@@ -272,12 +273,15 @@ extern a_pro    *addpro(a_sym *,a_sym **,unsigned );
 extern void     showpro(void);
 extern void     showitem(an_item *, const char * );
 extern void     show_unused(void);
+extern void     FreeBuildproData(void);
 
 extern void     lalr1(void );
+extern void     FreeLalr1Sets(void);
 extern void     showstates(void);
 extern void     showstate(a_state *);
 
 extern void     lr0(void );
+extern void     FreeStateData(void);
 extern void     SetupStateTable(void);
 extern void     RemoveDeadStates( void );
 extern void     MarkDefaultReductions( void );
@@ -300,6 +304,7 @@ extern void     tail( FILE *fp, a_token *tok );
 extern void     dump_header( FILE * );
 extern void     close_header( FILE * );
 extern void     free_header_data( void );
+extern void     FreeAmbigData( void );
 
 extern void     genobj( FILE * );
 extern void     genobj_fast( FILE * );
