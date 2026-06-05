@@ -1324,7 +1324,7 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
     "L1: " \
     __parm      [] \
     __value     [_DPMI_DX] \
-    __modify __exact [_DPMI_DX]
+    __modify __exact [_DPMI_AX _DPMI_DX]
 
 #pragma aux _IsReadSelector = \
         _PROTECTED \
