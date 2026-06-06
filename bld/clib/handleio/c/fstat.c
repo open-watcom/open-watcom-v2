@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +89,7 @@ _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
 extern long __getfilestamp_sfn( int handle );
 #ifdef _M_I86
   #pragma aux __getfilestamp_sfn = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _MOV_AX_word _GET_ DOS_FILE_DATE \
         __INT_21            \
         "jnc short L1"      \
         "call __set_errno_dos" \
@@ -102,7 +102,7 @@ extern long __getfilestamp_sfn( int handle );
     __modify __exact    [__ax __cx __dx]
 #else
   #pragma aux __getfilestamp_sfn = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _MOV_AX_word _GET_ DOS_FILE_DATE \
         __INT_21            \
         "jnc short L1"      \
         "and  eax,0ffffh"   \

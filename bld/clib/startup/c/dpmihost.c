@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 
 extern short _CheckDPMIVersion( void );
 #pragma aux _CheckDPMIVersion = \
-        _MOV_AX_W DPMI_0400 \
+        _MOV_AX_word DPMI_0400 \
         _INT_31         \
     __parm   [] \
     __value  [__ax] \

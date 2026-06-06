@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,7 +83,7 @@ extern int      __WDPMI_GetDescriptor( WORD, descriptor __far * );
 extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
 
 #pragma aux __WDPMI_AllocateLDTDescriptors = \
-        _MOV_AX_W DPMI_0000 \
+        _MOV_AX_word DPMI_0000 \
         _INT_31         \
         _SBB_CX_CX      \
     __parm __caller [__cx] \
@@ -122,7 +122,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
         _MOV_FS_AX      \
         _MOV_GS_AX      \
         /* call DPMI service */ \
-        _MOV_AX_W DPMI_0001 \
+        _MOV_AX_word DPMI_0001 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] \
@@ -130,7 +130,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax __es __fs __gs]
 
 #pragma aux __WDPMI_GetNextSelectorIncrementValue = \
-        _MOV_AX_W DPMI_0003 \
+        _MOV_AX_word DPMI_0003 \
         _INT_31         \
     __parm __caller [__bx] \
     __value         [__ax] \
@@ -140,7 +140,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
  * if failed then return (uint_32)-1
  */
 #pragma aux __WDPMI_GetSegmentBaseAddress = \
-        _MOV_AX_W DPMI_0006 \
+        _MOV_AX_word DPMI_0006 \
         _INT_31         \
         _SBB_AX_AX      \
         _OR_CX_AX       \
@@ -150,7 +150,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax __cx __dx]
 
 #pragma aux __WDPMI_SetSegmentBaseAddress = \
-        _MOV_AX_W DPMI_0007 \
+        _MOV_AX_word DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] [__cx] [__dx] \
@@ -158,7 +158,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax]
 
 #pragma aux __WDPMI_SetSegmentLimit = \
-        _MOV_AX_W DPMI_0008 \
+        _MOV_AX_word DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] [__cx] [__dx] \
@@ -166,7 +166,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax]
 
 #pragma aux __WDPMI_SetDescriptorAccessRights = \
-        _MOV_AX_W DPMI_0009 \
+        _MOV_AX_word DPMI_0009 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] [__cx] \
@@ -174,7 +174,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax]
 
 #pragma aux __WDPMI_GetDescriptor = \
-        _MOV_AX_W DPMI_000B \
+        _MOV_AX_word DPMI_000B \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__bx] [__es __di] \
@@ -182,7 +182,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax]
 
 #pragma aux __WDPMI_AllocateMemoryBlock =  \
-        _MOV_AX_W DPMI_0501 \
+        _MOV_AX_word DPMI_0501 \
         _INT_31         \
         _SBB_AX_AX      \
         _XCHG_BX_DX      \
@@ -195,7 +195,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
     __modify __exact [__ax __bx __cx __dx __di __si]
 
 #pragma aux __WDPMI_FreeMemoryBlock =  \
-        _MOV_AX_W DPMI_0502 \
+        _MOV_AX_word DPMI_0502 \
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__si] [__di] \

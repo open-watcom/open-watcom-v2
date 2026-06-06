@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -777,7 +777,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __cx __dx]
 #else
 #pragma aux _nTinyCreateEx = \
-        _MOV_AX_W 0 DOS_EXT_CREATE \
+        _MOV_AX_word 0 DOS_EXT_CREATE \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
@@ -1437,7 +1437,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinyGetDeviceInfo = \
-        _MOV_AX_W _GET_ DOS_IOCTL \
+        _MOV_AX_word _GET_ DOS_IOCTL \
         __INT_21        \
         _SBB_BX_BX      \
         "jnz short L1"  \
@@ -1448,7 +1448,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __bx __dx]
 #else
 #pragma aux _TinyGetDeviceInfo = \
-        _MOV_AX_W _GET_ DOS_IOCTL \
+        _MOV_AX_word _GET_ DOS_IOCTL \
         __INT_21        \
         _SBB_BX_BX      \
         "jnz short L1"  \
@@ -1463,7 +1463,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #ifdef _M_I86
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
-        _MOV_AX_W _SET_ DOS_IOCTL \
+        _MOV_AX_word _SET_ DOS_IOCTL \
         __INT_21        \
         _SBB_DX_DX      \
         _AND_AX_DX      \
@@ -1473,7 +1473,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #else
 #pragma aux _TinySetDeviceInfo = \
         _XOR_DH_DH      \
-        _MOV_AX_W _SET_ DOS_IOCTL \
+        _MOV_AX_word _SET_ DOS_IOCTL \
         __INT_21        \
         _SBB_DX_DX      \
         _USE16 _AND_DX_AX \
@@ -1484,14 +1484,14 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinyGetCtrlBreak = \
-        _MOV_AX_W _GET_ DOS_CTRL_BREAK \
+        _MOV_AX_word _GET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [] \
     __value         [__dl] \
     __modify __exact [__ax __dl]
 #else
 #pragma aux _TinyGetCtrlBreak = \
-        _MOV_AX_W _GET_ DOS_CTRL_BREAK \
+        _MOV_AX_word _GET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [] \
     __value         [__dl] \
@@ -1500,14 +1500,14 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinySetCtrlBreak = \
-        _MOV_AX_W _SET_ DOS_CTRL_BREAK \
+        _MOV_AX_word _SET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [__dl] \
     __value         \
     __modify __exact [__ax __dl]
 #else
 #pragma aux _TinySetCtrlBreak = \
-        _MOV_AX_W _SET_ DOS_CTRL_BREAK \
+        _MOV_AX_word _SET_ DOS_CTRL_BREAK \
         __INT_21        \
     __parm __caller [__dl] \
     __value         \
@@ -1744,7 +1744,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinyGetFileStamp = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _MOV_AX_word _GET_ DOS_FILE_DATE \
         __INT_21        \
         _SBB_BX_BX      \
         _OR_DX_BX       \
@@ -1754,7 +1754,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __bx __cx __dx]
 #else
 #pragma aux _TinyGetFileStamp = \
-        _MOV_AX_W _GET_ DOS_FILE_DATE \
+        _MOV_AX_word _GET_ DOS_FILE_DATE \
         __INT_21        \
         _USE16 _RCL_DX_1 \
         _USE16 _ROR_DX_1 \
@@ -1767,7 +1767,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinySetFileStamp = \
-        _MOV_AX_W _SET_ DOS_FILE_DATE \
+        _MOV_AX_word _SET_ DOS_FILE_DATE \
         __INT_21        \
         _SBB_DX_DX      \
     __parm __caller [__bx] [__cx] [__dx] \
@@ -1775,7 +1775,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 #else
 #pragma aux _TinySetFileStamp = \
-        _MOV_AX_W _SET_ DOS_FILE_DATE \
+        _MOV_AX_word _SET_ DOS_FILE_DATE \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
@@ -1833,7 +1833,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinyLock = \
-        _MOV_AX_W 0 DOS_RECORD_LOCK \
+        _MOV_AX_word 0 DOS_RECORD_LOCK \
         __INT_21        \
         _SBB_DX_DX      \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
@@ -1841,7 +1841,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 #else
 #pragma aux _TinyLock = \
-        _MOV_AX_W 0 DOS_RECORD_LOCK \
+        _MOV_AX_word 0 DOS_RECORD_LOCK \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
@@ -1852,7 +1852,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #ifdef _M_I86
 #pragma aux _TinyUnlock = \
-        _MOV_AX_W 1 DOS_RECORD_LOCK \
+        _MOV_AX_word 1 DOS_RECORD_LOCK \
         __INT_21        \
         _SBB_DX_DX      \
     __parm __caller [__bx] [__cx] [__dx] [__si] [__di] \
@@ -1860,7 +1860,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
     __modify __exact [__ax __dx]
 #else
 #pragma aux _TinyUnlock = \
-        _MOV_AX_W 1 DOS_RECORD_LOCK \
+        _MOV_AX_word 1 DOS_RECORD_LOCK \
         __INT_21        \
         _RCL_AX_1       \
         _ROR_AX_1       \
@@ -1872,7 +1872,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #ifdef _M_I86
 #pragma aux _nTinyGetFileAttr = \
         _SET_DS_DGROUP  \
-        _MOV_AX_W _GET_ DOS_CHMOD \
+        _MOV_AX_word _GET_ DOS_CHMOD \
         __INT_21        \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
@@ -1883,7 +1883,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #pragma aux _fTinyGetFileAttr = \
         _SET_DS_SREG    \
-        _MOV_AX_W _GET_ DOS_CHMOD \
+        _MOV_AX_word _GET_ DOS_CHMOD \
         __INT_21        \
         _MOV_AX_CX      \
         _SBB_DX_DX      \
@@ -1897,7 +1897,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #ifdef _M_I86
 #pragma aux _nTinySetFileAttr = \
         _SET_DS_DGROUP  \
-        _MOV_AX_W _SET_ DOS_CHMOD \
+        _MOV_AX_word _SET_ DOS_CHMOD \
         __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_DGROUP  \
@@ -1908,7 +1908,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #pragma aux _fTinySetFileAttr = \
         _SET_DS_SREG    \
-        _MOV_AX_W _SET_ DOS_CHMOD \
+        _MOV_AX_word _SET_ DOS_CHMOD \
         __INT_21        \
         _SBB_DX_DX      \
         _RST_DS_SREG    \
@@ -1961,14 +1961,14 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #endif
 
 #pragma aux _TinyGetSwitchChar = \
-        _MOV_AX_W _GET_ DOS_SWITCH_CHAR   \
+        _MOV_AX_word _GET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [] \
     __value         [__dl] \
     __modify __exact [__ax __dl]
 
 #pragma aux _TinySetSwitchChar = \
-        _MOV_AX_W _SET_ DOS_SWITCH_CHAR   \
+        _MOV_AX_word _SET_ DOS_SWITCH_CHAR   \
         __INT_21            \
     __parm __caller [__dl] \
     __value         \
@@ -1989,7 +1989,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #ifdef _M_I86
 #pragma aux _nTinyGetCountry = \
         _SET_DS_DGROUP  \
-        _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
+        _MOV_AX_word 0x00 DOS_COUNTRY_INFO \
         __INT_21        \
         _SBB_CX_CX      \
         _RST_DS_DGROUP  \
@@ -1999,7 +1999,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 
 #pragma aux _fTinyGetCountry = \
         _SET_DS_SREG    \
-        _MOV_AX_W 0x00 DOS_COUNTRY_INFO \
+        _MOV_AX_word 0x00 DOS_COUNTRY_INFO \
         __INT_21        \
         _SBB_CX_CX      \
         _RST_DS_SREG    \
@@ -2013,7 +2013,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinySetCountry = \
         _XOR_DX_DX      \
         _DEC_DX         \
-        _MOV_AX_W 0xff DOS_COUNTRY_INFO \
+        _MOV_AX_word 0xff DOS_COUNTRY_INFO \
         _TEST_BH_BH     \
         "jnz short L1"  \
         _MOV_AL_BL      \

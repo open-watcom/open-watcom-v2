@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -82,14 +82,15 @@
 #define _POP_DI         0x5f
 
 #define _MOV_AL         0xb0
-#define _MOV_AH         0xb4
-#define _MOV_AX         0xb8
 #define _MOV_BL         0xb3
+#define _MOV_AH         0xb4
 #define _MOV_BH         0xb7
-#define _MOV_BX         0xbb
 
-#define _MOV_AX_W       _USE16 _MOV_AX
-#define _MOV_BX_W       _USE16 _MOV_BX
+#define _MOV_AX_int     0xb8
+#define _MOV_BX_int     0xbb
+
+#define _MOV_AX_word    _USE16 _MOV_AX_int
+#define _MOV_BX_word    _USE16 _MOV_BX_int
 
 #define _MOV_ES_AX      0x8e 0xc0
 #define _MOV_ES_CX      0x8e 0xc1

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@
 extern unsigned __dos_setfileattr_sfn( const char *path, unsigned attrib );
 #pragma aux __dos_setfileattr_sfn = \
         _SET_DSDX               \
-        _MOV_AX_W _SET_ DOS_CHMOD \
+        _MOV_AX_word _SET_ DOS_CHMOD \
         __INT_21                \
         _RST_DS                 \
         "call __doserror_"      \

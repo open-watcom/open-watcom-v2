@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +61,7 @@
 
 extern BYTE WDPMI_Check386Version( void );
 #pragma aux WDPMI_Check386Version = \
-        _MOV_AX_W DPMI_0400 \
+        _MOV_AX_word DPMI_0400 \
         _INT_31         \
         _AND_BL 0x01    \
     __parm __caller []  \
