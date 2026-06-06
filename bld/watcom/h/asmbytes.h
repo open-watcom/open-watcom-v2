@@ -22,9 +22,12 @@
  * 16-bit operand prefix (for 386)
  */
 #if defined( _M_I86 )
+    #define _PROTECTED  ".286p"
+    #define _USE32_PROTECTED  ".386p"
     #define _USE16
     #define _USE32      0x66
 #else
+    #define _PROTECTED  ".386p"
     #define _USE16      0x66
     #define _USE32
 #endif
@@ -82,14 +85,22 @@
 #define _POP_DI         0x5f
 
 #define _MOV_AL         0xb0
+#define _MOV_CL         0xb1
+#define _MOV_DL         0xb2
 #define _MOV_BL         0xb3
 #define _MOV_AH         0xb4
+#define _MOV_CH         0xb5
+#define _MOV_DH         0xb6
 #define _MOV_BH         0xb7
 
 #define _MOV_AX_int     0xb8
+#define _MOV_CX_int     0xb9
+#define _MOV_DX_int     0xba
 #define _MOV_BX_int     0xbb
 
 #define _MOV_AX_word    _USE16 _MOV_AX_int
+#define _MOV_CX_word    _USE16 _MOV_CX_int
+#define _MOV_DX_word    _USE16 _MOV_DX_int
 #define _MOV_BX_word    _USE16 _MOV_BX_int
 
 #define _MOV_ES_AX      0x8e 0xc0
@@ -136,8 +147,10 @@
 #define _MOV_CH_AL      0x88 0xc5
 #define _MOV_AL_BL      0x88 0xd8
 
+#define _MOVZX_EAX_AX   _USE32 0x0f 0xb7 0xc0
 #define _MOVZX_EAX_DX   _USE32 0x0f 0xb7 0xc2
 #define _MOVZX_EDX_AX   _USE32 0x0f 0xb7 0xd0
+#define _MOVZX_EDX_DX   _USE32 0x0f 0xb7 0xd2
 
 #define _NOT_AX         0xf7 0xd0
 #define _NOT_CX         0xf7 0xd1
@@ -192,14 +205,31 @@
 
 #define _CMP_AX_CX      0x39 0xc8
 
-#define _SUB_CX_N       0x81 0xe9
+#define _CMP_AX_byte    0x83 0xf8
+#define _CMP_CX_byte    0x83 0xf9
+#define _CMP_DX_byte    0x83 0xfa
 
-#define _ADD_SP         0x83 0xc4
+#define _SUB_CX_int     0x81 0xe9
+#define _SUB_CX_byte    0x83 0xe9
+#define _SUB_CX_word    _USE16 _SUB_CX_int
 
-#define _AND_AX_B       0x83 0xe0
-#define _AND_CX_B       0x83 0xe1
-#define _AND_DX_B       0x83 0xe2
-#define _AND_BX_B       0x83 0xe3
+#define _ADD_AX_byte    0x83 0xc0
+#define _ADD_CX_byte    0x83 0xc1
+#define _ADD_DX_byte    0x83 0xc2
+
+#define _ADD_SP_byte    0x83 0xc4
+
+#define _ADC_AX_byte    0x83 0xd0
+#define _ADC_CX_byte    0x83 0xd1
+#define _ADC_DX_byte    0x83 0xd2
+
+#define _AND_AX_byte    0x83 0xe0
+#define _AND_CX_byte    0x83 0xe1
+#define _AND_DX_byte    0x83 0xe2
+#define _AND_BX_byte    0x83 0xe3
+
+#define _AND_AX_int     0x25
+#define _AND_AX_word    _USE16 _AND_AX_int
 
 #define _AND_AL         0x24
 #define _AND_CL         0x80 0xe1
@@ -219,13 +249,13 @@
 #define _OR_DH          0x80 0xce
 #define _OR_BH          0x80 0xcf
 
-#define _MUL_BX         0xf7 0xe3
 #define _MUL_CX         0xf7 0xe1
+#define _MUL_BX         0xf7 0xe3
 
-#define _RCL_DX_1       0xd1 0xd2
-#define _ROR_DX_1       0xd1 0xca
 #define _RCL_AX_1       0xd1 0xd0
+#define _RCL_DX_1       0xd1 0xd2
 #define _ROR_AX_1       0xd1 0xc8
+#define _ROR_DX_1       0xd1 0xca
 
 #define _TEST_CL        0xf6 0xc1
 #define _TEST_BL        0xf6 0xc3
@@ -265,18 +295,21 @@
 #define _SHL_EBX_16     0xc1 0xe3 16
 #define _SHL_ESI_16     0xc1 0xe6 16
 
+#define _SHR_AX_byte    0xc1 0xe8
+
 #define _LSL_AX_AX      0x0f 0x03 0xc0
 #define _LSL_AX_CX      0x0f 0x03 0xc1
 #define _LSL_AX_DX      0x0f 0x03 0xc2
 #define _LSL_DX_AX      0x0f 0x03 0xd0
+#define _LAR_AX_AX      0x0f 0x02 0xc0
+#define _LAR_AX_CX      0x0f 0x02 0xc1
+#define _LAR_AX_DX      0x0f 0x02 0xc2
 #define _VERR_AX        0x0f 0x00 0xe0
 #define _VERW_AX        0x0f 0x00 0xe8
 
-#if defined( _M_I86 )
-    #define _PROTECTED  ".286p"
-#else
-    #define _PROTECTED  ".386p"
-#endif
+#define _SMSW_AX        0x0f 0x01 0xe0
+#define _SMSW_CX        0x0f 0x01 0xe1
+#define _SMSW_DX        0x0f 0x01 0xe2
 
 #if defined( _M_I86 )
 

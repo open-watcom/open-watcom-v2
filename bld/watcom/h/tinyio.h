@@ -1532,7 +1532,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE    \
         __INT_21        \
-        _SUB_CX_N 0x6c 0x07 /* 1900 */ \
+        _SUB_CX_word 0x6c 0x07 /* 1900 */ \
         _MOV_CH_AL      \
     __parm __caller [] \
     __value         [__cx __dx] \
@@ -1541,7 +1541,7 @@ tiny_ret_t  _nTinyAbsRead( uint_8 __drive, uint __sector, uint __sectorcount, co
 #pragma aux _TinyGetDate = \
         _MOV_AH DOS_GET_DATE \
         __INT_21        \
-        _USE16 _SUB_CX_N 0x6c 0x07 /* 1900 */ \
+        _USE16 _SUB_CX_word 0x6c 0x07 /* 1900 */ \
         _MOV_CH_AL      \
         _SHL_ECX_16     \
         _USE16 _MOV_CX_DX \
