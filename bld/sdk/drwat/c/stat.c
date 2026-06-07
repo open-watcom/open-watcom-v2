@@ -327,7 +327,7 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
                 str[4] = '\0';
                 seg = atoi( str );
                 if( DoGlobalEntryModule( &ge, DTTaskEntry.hModule, seg ) ) {
-                    DispMem( Instance, hwnd, ge.hBlock, (ge.dwSize == 1) );
+                    DispMem( Instance, hwnd, ge.hBlock, (ge.dwSize == 1), 0, PMGetSelectorSize( ge.hBlock ) );
                 }
             }
             ret = true;
