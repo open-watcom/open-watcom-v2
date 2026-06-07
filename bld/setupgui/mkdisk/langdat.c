@@ -284,6 +284,7 @@ static bool GetALine( char *line, int max_len )
         }
         if( !feof( IncludeStk->fp ) ) {
             IncludeStk->lineno++;
+            line[strcspn( line, "\r\n" )] = '\0';
             break;
         }
         if( !PopInclude() ) {
@@ -365,9 +366,8 @@ static void SubstLine( const char *in, char *out )
         case '^':
             ++in;
             switch( *in ) {
-            case '\r':
-            case '\n':
             case '\0':
+            case '\x1A':
                 break;
             default:
                 *out++ = *in++;
@@ -387,9 +387,8 @@ static void SubstLine( const char *in, char *out )
             ++in;
             out = SubstOne( &in, out );
             break;
-        case '\r':
-        case '\n':
         case '\0':
+        case '\x1A':
             *out = '\0';
             return;
         default:
