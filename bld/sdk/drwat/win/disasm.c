@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,8 @@
 #include "watcom.h"
 #include "memwnd.h"
 #include "sdkasm.h"
+#include "dpmi.h"
+
 
 #define MAX_BUFF        256
 #define UNREADABLE      0
@@ -73,6 +75,11 @@ static int LongToHex( char *str, DWORD value, int len )
 
 } /* LongToHex */
 
+
+static bool IsSeg32( WORD seg )
+{
+    return( PMIs32bitSelector( seg ) );
+}
 
 /*
  * ConvertAddress - convert a address into a string
@@ -293,12 +300,6 @@ void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod )
 {
     processHandle = prochdl;
     curModule = mod;
-}
-
-static bool IsSeg32( WORD seg )
-{
-    seg = seg;
-    return( true );
 }
 
 static bool FindSymbol( ADDRESS *addr, syminfo *si )

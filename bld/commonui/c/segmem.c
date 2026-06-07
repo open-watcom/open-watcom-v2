@@ -102,18 +102,6 @@ void GetADescriptor( WORD seg, descriptor *desc )
 } /* GetADescriptor */
 
 /*
- * IsSeg32 - given a segment, check if it is a BIG one.
- */
-bool IsSeg32( WORD seg )
-{
-    descriptor  desc;
-
-    GetADescriptor( seg, &desc );
-    return( desc.u2.flags.use32 );
-
-} /* IsSeg32 */
-
-/*
  * ReadMem - read some memory, using toolhelp or wdebug.386
  */
 DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size )
