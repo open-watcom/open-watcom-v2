@@ -102,7 +102,7 @@ static void GetFrame( unsigned method, frame_spec *frame )
         }
         break;
     case FRAME_ABS:
-        _TargU16toHost( MGET_U16_UN( ObjBuff ), frame->u.abs );
+        frame->u.abs = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
         frame->type = FIX_FRAME_ABS;
         break;
@@ -141,7 +141,7 @@ static void GetTarget( unsigned method, target_spec *target )
         target->type = FIX_TARGET_EXT;
         break;
     case TARGET_ABS:
-        _TargU16toHost( MGET_U16_UN( ObjBuff ), target->u.abs );
+        target->u.abs = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
         target->type = FIX_TARGET_ABS;
         break;
@@ -239,10 +239,10 @@ void DoRelocs( void )
             addend = 0;
             if( (typ & FIXDAT_PBIT) == 0 ) {
                 if( ObjFormat & FMT_32BIT_REC ) {
-                    addend = MGET_U32_UN( ObjBuff );
+                    addend = MGET_LE_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
                 } else {
-                    addend = MGET_U16_UN( ObjBuff );
+                    addend = MGET_LE_U16_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
@@ -314,15 +314,15 @@ void DoBakPats( void )
         value = 0;
         while( bkptr->len > 0 ) {
             if( bkptr->is32bit ) {
-                _TargU32toHost( MGET_U32( data ), off );
+                off = MGET_LE_U32_UN( data );
                 data += sizeof( unsigned_32 );
-                _TargU32toHost( MGET_U32( data ), value );
+                value = MGET_LE_U32_UN( data );
                 data += sizeof( unsigned_32 );
                 bkptr->len -= 2 * sizeof( unsigned_32 );
             } else {
-                _TargU16toHost( MGET_U16( data ), off );
+                off = MGET_LE_U16_UN( data );
                 data += sizeof( unsigned_16 );
-                _TargU16toHost( MGET_U16( data ), value );
+                value = MGET_LE_U16_UN( data );
                 data += sizeof( unsigned_16 );
                 bkptr->len -= 2 * sizeof( unsigned_16 );
             }

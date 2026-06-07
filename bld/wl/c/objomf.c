@@ -194,7 +194,7 @@ static void ProcExportKeyword( void )
     ObjBuff += intname.len;
     ordinal = 0;
     if( flags & EXPDEF_ORDINAL ) {
-        ordinal = MGET_U16_UN( ObjBuff );
+        ordinal = MGET_LE_U16_UN( ObjBuff );
     }
     HandleExport( &expname, &intname, flags, ordinal );
 }
@@ -224,7 +224,7 @@ static void ProcImportKeyword( void )
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
     } else {
-        HandleImport(&intname, &modname, &extname, MGET_U16_UN( ObjBuff ) );
+        HandleImport(&intname, &modname, &extname, MGET_LE_U16_UN( ObjBuff ) );
     }
 }
 
@@ -325,9 +325,9 @@ static void ProcModuleEnd( void )
         }
         if( hasdisp ) {
             if( ObjFormat & FMT_32BIT_REC ) {
-                _TargU32toHost( MGET_U32_UN( ObjBuff ), StartInfo.off );
+                StartInfo.off = MGET_LE_U32_UN( ObjBuff );
             } else {
-                _TargU16toHost( MGET_U16_UN( ObjBuff ), StartInfo.off );
+                StartInfo.off = MGET_LE_U16_UN( ObjBuff );
             }
         }
     }
@@ -382,7 +382,7 @@ static void ProcSegDef( void )
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
         sdata->isabs = true;
-        _TargU16toHost( MGET_U16_UN( ObjBuff ), sdata->frame );
+        sdata->frame = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 ) + 1;
         break;
     case ALIGN_LTRELOC:
@@ -404,13 +404,13 @@ static void ProcSegDef( void )
             BadObject();            /* we can't handle 4 GB segments properly */
             return;
         }
-        _TargU32toHost( MGET_U32_UN( ObjBuff ), sdata->length );
+        sdata->length = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
         if( acbp & 2 ) {
             sdata->length = 65536;  /* 64k segment */
         } else {
-            _TargU16toHost( MGET_U16_UN( ObjBuff ), sdata->length );
+            sdata->length = MGET_LE_U16_UN( ObjBuff );
         }
         ObjBuff += sizeof( unsigned_16 );
     }
@@ -500,7 +500,7 @@ static void ProcPubdef( bool static_sym )
         frame = 0;
     } else {
         seg = NULL;
-        _TargU16toHost( MGET_U16_UN( ObjBuff ), frame );
+        frame = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     }
     DEBUG(( DBG_OLD, "segidx = %d", segidx ));
@@ -516,10 +516,10 @@ static void ProcPubdef( bool static_sym )
         sym_name = (char *)ObjBuff;
         ObjBuff += sym_len;
         if( ObjFormat & FMT_32BIT_REC ) {
-            _TargU32toHost( MGET_U32_UN( ObjBuff ), off );
+            off = MGET_LE_U32_UN( ObjBuff );
             ObjBuff += sizeof( unsigned_32 );
         } else {
-            _TargU16toHost( MGET_U16_UN( ObjBuff ), off );
+            off = MGET_LE_U16_UN( ObjBuff );
             ObjBuff += sizeof( unsigned_16 );
         }
         sym = SymOp( symop, sym_name, sym_len );
@@ -732,7 +732,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     if( iterate == 0 ) {  /* no iterations, so abort. */
         return( EOObjRec );
     }
-    _TargU16toHost( MGET_U16_UN( buffer ), count );
+    count = MGET_LE_U16_UN( buffer );
     buffer += sizeof( unsigned_16 );
     if( count == 0 ) {
         len = *buffer;
@@ -749,7 +749,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 buffer = anchor;
                 inner = count;
                 do {
-                    _TargU32toHost( MGET_U32_UN(buffer), rep );
+                    rep = MGET_LE_U32_UN( buffer );
                     buffer += sizeof( unsigned_32 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
@@ -759,7 +759,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
                 buffer = anchor;
                 inner = count;
                 do {
-                    _TargU16toHost( MGET_U16_UN(buffer), rep );
+                    rep = MGET_LE_U16_UN( buffer );
                     buffer += sizeof( unsigned_16 );
                     buffer = ProcIDBlock( dest, buffer, rep );
                 } while( --inner != 0 );
@@ -780,10 +780,10 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
     end_data = data + size;
     for( ; data < end_data; data = ProcIDBlock( &start, data, rep ) ) {
         if( ObjFormat & FMT_MS_386 ) {
-            _TargU32toHost( MGET_U32_UN( data ), rep );
+            rep = MGET_LE_U32_UN( data );
             data += sizeof( unsigned_32 );
         } else {
-            _TargU16toHost( MGET_U16_UN( data ), rep );
+            rep = MGET_LE_U16_UN( data );
             data += sizeof( unsigned_16 );
         }
     }
@@ -833,10 +833,10 @@ static void ProcLxdata( bool islidata )
     seg->entry->u.leader->info |= SEG_LXDATA_SEEN;
     seg->info |= SEG_LXDATA_SEEN;
     if( ObjFormat & FMT_32BIT_REC ) {
-        _TargU32toHost( MGET_U32_UN( ObjBuff ), obj_offset );
+        obj_offset = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
-        _TargU16toHost( MGET_U16_UN( ObjBuff ), obj_offset );
+        obj_offset = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     }
 #ifdef DEVBUILD
@@ -876,7 +876,7 @@ static void LinkDirective( void )
         break;
     case LDIR_PACKDATA:
         if( (LinkFlags & LF_PACKDATA_FLAG) == 0 ) {
-            PackDataLimit = MGET_U32_UN( ObjBuff );
+            PackDataLimit = MGET_LE_U32_UN( ObjBuff );
             LinkFlags |= LF_PACKDATA_FLAG;
         }
         break;
