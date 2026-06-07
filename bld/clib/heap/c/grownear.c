@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,7 +197,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     brk_value = BLK2CSTG( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
-        _curbrk = GetDataSelectorSize();
+        _curbrk = PMGetDataSelectorSize();
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
         return( frl_last->len );
@@ -428,7 +428,7 @@ int __ExpandDGROUP( unsigned amount )
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
         return( __CreateNewNHeap( amount ) );
     } else if( _IsPharLap() && !_IsFlashTek() ) {
-        _curbrk = GetDataSelectorSize();
+        _curbrk = PMGetDataSelectorSize();
 //    } else {
         // Rational non-zero based system should go through.
     }

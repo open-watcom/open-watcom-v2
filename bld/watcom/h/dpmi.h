@@ -75,8 +75,6 @@
 #define DPMIGetSegmentBaseAddress               _DPMIGetSegmentBaseAddress
 #define DPMISetSegmentBaseAddress(a,b)          _DPMISetSegmentBaseAddress( (a), (b) >> 16, (b) )
 #define DPMISetSegmentLimit(a,b)                _DPMISetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
-#define DPMIGetSegmentLimit                     _DPMIGetSegmentLimit
-#define DPMIGetSegmentSize                      _DPMIGetSegmentSize
 #define DPMISetDescriptorAccessRights           _DPMISetDescriptorAccessRights
 #define DPMISimulateRealModeInterrupt           _DPMISimulateRealModeInterrupt
 #define DPMICallRealModeProcedureWithFarReturnFrame _DPMICallRealModeProcedureWithFarReturnFrame
@@ -123,12 +121,13 @@
 #define DOS4GSetPMInterruptVector_passup        _DOS4GSetPMInterruptVector_passup
 #define DOS4GGetPMInterruptVector               _DOS4GGetPMInterruptVector
 
-#define GetSelectorLimitB                       _GetSelectorLimitB
-#define GetDataSelectorLimitB                   _GetDataSelectorLimitB
-#define GetSelectorSize                         _GetSelectorSize
-#define GetDataSelectorSize                     _GetDataSelectorSize
-#define IsReadSelector                          _IsReadSelector
-#define IsWriteSelector                         _IsWriteSelector
+#define PMGetSelectorLimit                      _PMGetSelectorLimit
+#define PMGetDataSelectorLimit                  _PMGetDataSelectorLimit
+#define PMGetSelectorSize                       _PMGetSelectorSize
+#define PMGetDataSelectorSize                   _PMGetDataSelectorSize
+#define PMIsReadSelector                        _PMIsReadSelector
+#define PMIsWriteSelector                       _PMIsWriteSelector
+#define PMIs32bitSelector                       _PMIs32bitSelector
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -289,8 +288,6 @@ extern uint_16  _DPMIGetNextSelectorIncrementValue( void );
 extern uint_32  _DPMIGetSegmentBaseAddress( uint_16 );
 extern int      _DPMISetSegmentBaseAddress( uint_16, uint_16 hiw, uint_16 low );
 extern int      _DPMISetSegmentLimit( uint_16, uint_16 hiw, uint_16 low );
-extern uint_32  _DPMIGetSegmentLimit( uint_16 );
-extern uint_32  _DPMIGetSegmentSize( uint_16 );
 extern int      _DPMISetDescriptorAccessRights( uint_16, uint_16 );
 extern int      _DPMIAllocateMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw, uint_16 low );
 extern int      _DPMIResizeMemoryBlock( dpmi_mem_block _WCI86FAR *, uint_16 hiw1, uint_16 low1, uint_16 hiw2, uint_16 low2 );
@@ -334,12 +331,13 @@ extern uint_32  _PharlapGetSegmentBaseAddress( uint_16 );
 extern void     _DOS4GSetPMInterruptVector_passup( uint_8 iv, intr_addr intr );
 extern intr_addr _DOS4GGetPMInterruptVector( uint_8 iv );
 
-extern unsigned _GetSelectorLimitB( unsigned short sel );
-extern unsigned _GetDataSelectorLimitB( void );
-extern unsigned _GetSelectorSize( unsigned short sel );
-extern unsigned _GetDataSelectorSize( void );
-extern uint_8   _IsReadSelector( unsigned short sel );
-extern uint_8   _IsWriteSelector( unsigned short sel );
+extern uint_32  _PMGetSelectorLimit( unsigned sel );
+extern uint_32  _PMGetDataSelectorLimit( void );
+extern uint_32  _PMGetSelectorSize( unsigned sel );
+extern uint_32  _PMGetDataSelectorSize( void );
+extern uint_8   _PMIsReadSelector( uint_16 sel );
+extern uint_8   _PMIsWriteSelector( uint_16 sel );
+extern uint_8   _PMIs32bitSelector( unsigned sel );
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -541,42 +539,6 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
     __parm __caller [__bx] [__cx] [__dx] \
     __value         [_DPMI_AX] \
     __modify __exact [_DPMI_AX]
-
-#pragma aux _DPMIGetSegmentLimit = \
-        _PROTECTED  \
-        _XOR_AX_AX  \
-        _LSL_AX_DX  \
-    __parm      [__dx] \
-    __value     [_DPMI_AX] \
-    __modify __exact [_DPMI_AX]
-
-#ifdef _M_I86
-#pragma aux _DPMIGetSegmentSize = \
-        _PROTECTED  \
-        _MOVZX_EDX_AX \
-        _USE32 _XOR_AX_AX \
-        _USE32 _LSL_AX_DX \
-        "jnz short L1" \
-        _USE32 _INC_AX \
-    "L1: " \
-        _MOV_DX_AX  \
-        _SHR_EDX_16 \
-    __parm      [__ax] \
-    __value     [__dx __ax] \
-    __modify __exact [__ax __dx]
-#else
-#pragma aux _DPMIGetSegmentSize = \
-        _PROTECTED  \
-        _MOVZX_EDX_AX  \
-        _XOR_AX_AX  \
-        _LSL_AX_DX  \
-        "jnz short L1" \
-        _INC_AX     \
-    "L1: " \
-    __parm      [__ax] \
-    __value     [__eax] \
-    __modify __exact [__eax __edx]
-#endif
 
 #pragma aux _DPMISetDescriptorAccessRights = \
         _MOV_AX_word DPMI_0009 \
@@ -1282,70 +1244,154 @@ extern uint_8   _IsWriteSelector( unsigned short sel );
 
 #endif
 
-#pragma aux _GetSelectorLimitB = \
-        _PROTECTED \
-        _LSL_AX_AX \
-        "jz short L1" \
-        _XOR_AX_AX  \
-    "L1: " \
-    __parm      [__ax] \
-    __value     [_DPMI_AX] \
-    __modify __exact [_DPMI_AX]
 
-#pragma aux _GetDataSelectorLimitB = \
-        _PROTECTED \
-        _MOV_AX_DS \
-        _LSL_AX_AX \
-        "jz short L1" \
-        _XOR_AX_AX  \
-    "L1: " \
-    __parm      [] \
-    __value     [_DPMI_AX] \
-    __modify __exact [_DPMI_AX]
+/*************************************
+ * General Protected Mode pragmas
+ *************************************/
 
-#pragma aux _GetSelectorSize = \
+#ifdef _M_I86
+#pragma aux _PMGetSelectorLimit = \
         _PROTECTED  \
-        _XOR_DX_DX  \
-        _LSL_DX_AX  \
-        "jnz short L1" \
-        _INC_DX     \
-    "L1: " \
-    __parm      [__ax] \
-    __value     [_DPMI_DX] \
-    __modify __exact [_DPMI_DX]
-
-#pragma aux _GetDataSelectorSize = \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+        _MOV_DX_word 0 0 \
+    __parm      [__dx] \
+    __value     [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _PMGetSelectorLimit = \
         _PROTECTED  \
-        _XOR_DX_DX  \
-        _MOV_AX_DS  \
-        _LSL_DX_AX  \
-        "jnz short L1" \
-        _INC_DX     \
-    "L1: " \
-    __parm      [] \
-    __value     [_DPMI_DX] \
-    __modify __exact [_DPMI_AX _DPMI_DX]
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+    __parm      [__edx] \
+    __value     [__eax] \
+    __modify __exact [__eax]
+#endif
 
-#pragma aux _IsReadSelector = \
+#ifdef _M_I86
+#pragma aux _PMGetDataSelectorLimit = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _MOV_DX_DS  \
+        _LSL_AX_DX  \
+        _MOV_DX_word 0 0 \
+    __parm      [] \
+    __value     [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _PMGetDataSelectorLimit = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _MOV_DX_DS  \
+        _LSL_AX_DX  \
+    __parm      [] \
+    __value     [__eax] \
+    __modify __exact [__eax __edx]
+#endif
+
+#ifdef _M_I86
+#pragma aux _PMGetSelectorSize = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+        _MOV_DX_word 0 0 \
+        "jnz short Lret" \
+        _ADD_AX_byte 1 \
+        _ADC_DX_byte 0 \
+    "Lret: " \
+    __parm      [__dx] \
+    __value     [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _PMGetSelectorSize = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _LSL_AX_DX  \
+        "jnz short Lret" \
+        _INC_AX     \
+    "Lret: " \
+    __parm      [__edx] \
+    __value     [__eax] \
+    __modify __exact [__eax]
+#endif
+
+#ifdef _M_I86
+#pragma aux _PMGetDataSelectorSize = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _MOV_DX_DS  \
+        _LSL_AX_DX  \
+        _MOV_DX_word 0 0 \
+        "jnz short Lret" \
+        _ADD_AX_byte 1 \
+        _ADC_DX_byte 0 \
+    "Lret: " \
+    __parm      [] \
+    __value     [__dx __ax] \
+    __modify __exact [__ax __dx]
+#else
+#pragma aux _PMGetDataSelectorSize = \
+        _PROTECTED  \
+        _XOR_AX_AX  \
+        _MOV_DX_DS  \
+        _LSL_AX_DX  \
+        "jnz short Lret" \
+        _INC_AX     \
+    "Lret: " \
+    __parm      [] \
+    __value     [__eax] \
+    __modify __exact [__eax __edx]
+#endif
+
+#pragma aux _PMIsReadSelector = \
         _PROTECTED \
         _VERR_AX \
         _MOV_AL 0 \
-        "jnz short L1" \
+        "jnz short Lret" \
         _MOV_AL 1 \
-    "L1: " \
+    "Lret: " \
     __parm      [__ax] \
     __value     [__al] \
     __modify    []
 
-#pragma aux _IsWriteSelector = \
+#pragma aux _PMIsWriteSelector = \
         _PROTECTED \
         _VERW_AX \
         _MOV_AL 0 \
-        "jnz short L1" \
+        "jnz short Lret" \
         _MOV_AL 1 \
-    "L1: " \
+    "Lret: " \
     __parm      [__ax] \
     __value     [__al] \
     __modify    []
+
+#if defined( _M_I86 )
+#pragma aux _PMIs32bitSelector = \
+        _PROTECTED \
+        _SMSW_AX  \
+        _AND_AX_byte 0xF0 \
+        _CMP_AX_byte 0xF0 \
+        "je short L286" \
+        /* 386 code */ \
+        _USE32_PROTECTED \
+        _MOVZX_EAX_DX \
+        _USE32 _LAR_AX_AX \
+        _USE32 _SHR_AX_byte 22 \
+    "L286: " \
+        _AND_AX_byte 1 \
+    __parm      [__dx] \
+    __value     [__al] \
+    __modify __exact [__ax]
+#else
+#pragma aux _PMIs32bitSelector = \
+        _PROTECTED \
+        _XOR_AX_AX  \
+        _LAR_AX_DX \
+        _SHR_AX_byte 22 \
+        _AND_AX_byte 1 \
+    __parm      [__edx] \
+    __value     [__al] \
+    __modify __exact [__eax]
+#endif
 
 #endif

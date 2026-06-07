@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,7 @@ _WCRTLINK void_nptr sbrk( int increment )
         return( (void_nptr)lib_set_EINVAL() );
     }
     if( _IsPharLap() ) {
-        _curbrk = GetDataSelectorSize();
+        _curbrk = PMGetDataSelectorSize();
     }
   #endif
     return( __brk( _curbrk + increment ) );
