@@ -49,11 +49,12 @@ static ADDRESS          firstAddr;
 static interrupt_struct oldIntData;
 
 #ifdef __NT__
-static HANDLE           processHdl;
+static HANDLE           statProcessHdl;
 static DWORD            processID;
 
-void SetProcessInfo( HANDLE hdl, DWORD procid ) {
-    processHdl = hdl;
+void SetProcessInfo( HANDLE hdl, DWORD procid )
+{
+    statProcessHdl = hdl;
     processID = procid;
 }
 #endif
@@ -383,7 +384,7 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam
                 HANDLE                  hdl;
                 DuplicateHandle(
                             GetCurrentProcess(),
-                            processHdl,
+                            statProcessHdl,
                             GetCurrentProcess(),
                             &hdl,
                             0,

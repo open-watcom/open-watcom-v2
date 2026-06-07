@@ -64,8 +64,9 @@ msglist ExceptionMsgs[] = {
 
 #ifdef __NT__
 
-static void setProcessHdl( HANDLE hdl ) {
-    ProcessHdl = hdl;
+static void setFaultProcess( HANDLE hdl )
+{
+    FaultProcessHdl = hdl;
 }
 #endif
 
@@ -247,7 +248,7 @@ BOOL CALLBACK ExceptionProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         } else {
             fillExceptionDlg( hwnd, info );
         }
-        setProcessHdl( info->procinfo->prochdl );
+        setFaultProcess( info->procinfo->prochdl );
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );

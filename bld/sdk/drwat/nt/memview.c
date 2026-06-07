@@ -57,7 +57,7 @@ static HWND                     curWalkHwnd;
 #define MEM_WALKER_CLASS        "Dr_WATCOM_NT_mem_Walker"
 
 
-static HANDLE   ProcessHdl;
+static HANDLE   memviewProcessHdl;
 
 /*
  * ReadMem
@@ -71,7 +71,7 @@ ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
     size++;
     while( bytesread != size && size != 0 ) {
         size--;
-        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_uint)off, buff, size, &bytesread );
+        ReadProcessMemory( memviewProcessHdl, (LPCSTR)(pointer_uint)off, buff, size, &bytesread );
     }
     return( bytesread );
 
@@ -370,7 +370,7 @@ static void viewMem( MemWalkerInfo *info ) {
                     (DWORD)mbi->BaseAddress + mbi->RegionSize - 1,
                     info->procid );
             }
-            ProcessHdl = info->prochdl;
+            memviewProcessHdl = info->prochdl;
             handle = DispMem( Instance, GetListBoxHwnd( info->lbox ), 0, false, 
                 (DWORD)mbi->BaseAddress, (DWORD)mbi->BaseAddress + mbi->RegionSize );
             SetWindowText( handle, buf );

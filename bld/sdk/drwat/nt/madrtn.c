@@ -154,7 +154,7 @@ size_t MADCLIENTRY( ReadMem )( address a, size_t size, void *buff )
 {
     DWORD bytesread;
 
-    ReadProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &bytesread );
+    ReadProcessMemory( FaultProcessHdl, (void *)a.mach.offset, buff, size, &bytesread );
     return( bytesread );
 }
 
@@ -162,7 +162,7 @@ size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
 {
     DWORD byteswritten;
 
-    WriteProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );
+    WriteProcessMemory( FaultProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );
     return( byteswritten );
 }
 

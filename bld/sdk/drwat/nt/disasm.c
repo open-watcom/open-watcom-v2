@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,11 +39,12 @@
 #define MAX_INSTR_BYTES (8)
 
 #ifdef __NT__
-static HANDLE           processHandle;
+static HANDLE           disasmProcessHdl;
 static ModuleNode       *curModule;
 
-void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod ) {
-    processHandle = prochdl;
+void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod )
+{
+    disasmProcessHdl = prochdl;
     curModule = mod;
 }
 #endif

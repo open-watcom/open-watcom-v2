@@ -172,7 +172,7 @@ extern ConfigInfo       ConfigData;
 extern bool             StatShowSymbols;
 extern HWND             StatHdl;
 extern system_config    SysConfig;
-//extern HANDLE           ProcessHdl;
+extern HANDLE           FaultProcessHdl;
 
 /* winproc.c */
 extern LONG         CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
