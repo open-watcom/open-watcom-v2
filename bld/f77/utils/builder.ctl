@@ -13,14 +13,11 @@ set PROJDIR=<CWD>
 #========================
     cdsay "<PROJDIR>"
     <CPCMD> <OWOBJDIR>/errsrc.exe  "<OWROOT>/build/<OWOBJDIR>/errsrc<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/errdoc.exe  "<OWROOT>/build/<OWOBJDIR>/errdoc<CMDEXT>"
 
 [ BLOCK <BINTOOL> clean ]
 #========================
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/errsrc<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/errsrc<CMDEXT>"
-    echo rm -f "<OWROOT>/build/<OWOBJDIR>/errdoc<CMDEXT>"
-    rm -f "<OWROOT>/build/<OWOBJDIR>/errdoc<CMDEXT>"
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================

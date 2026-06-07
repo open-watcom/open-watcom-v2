@@ -10,7 +10,7 @@ errsrc_autodepends = .AUTODEPEND
 
 .c: ../c
 
-all: errsrc.exe errdoc.exe .SYMBOLIC
+all: errsrc.exe .SYMBOLIC
 
 .c.exe :
     @%make echo_bldccl
