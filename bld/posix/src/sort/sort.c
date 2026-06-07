@@ -82,26 +82,6 @@ static int compareRevI( const void *p1, const void *p2 )
     return( stricmp( *cp2, *cp1 ) );
 }
 
-static char *my_fgets( char *buffer, int size, FILE *fp )
-{
-    size_t  len;
-
-    if( fgets( buffer, size, fp ) == NULL ) {
-        return( NULL );
-    }
-    len = strlen( buffer );
-    while( len-- > 0 ) {
-        if( buffer[len] == '\n' ) {
-            buffer[len] = '\0';
-        } else if( buffer[len] == '\r' ) {
-            buffer[len] = '\0';
-        } else {
-            break;
-        }
-    }
-    return( buffer );
-}
-
 // main is allways int on windows
 int main( int argc, char **argv )
 {
@@ -161,7 +141,8 @@ int main( int argc, char **argv )
     }
     MemFree( argv );
 
-    while( my_fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
+    while( fgets( buffer, sizeof( buffer ), infile ) != NULL ) {
+        buffer[strcspn( buffer, "\r\n" )] = '\0';
         lines[line_count] = MemAlloc( sizeof( char ) * strlen( buffer ) + 1 );
         strcpy( lines[line_count], buffer );
         line_count++;
