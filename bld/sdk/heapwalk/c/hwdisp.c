@@ -33,6 +33,7 @@
 #include "heapwalk.h"
 #include "wclbproc.h"
 #include "jdlg.h"
+#include "dpmi.h"
 
 
 /* Local Window callback functions prototypes */
