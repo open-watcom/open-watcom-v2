@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,6 @@
 
 #include "descript.h"
 
-DWORD       GetASelectorSize( WORD );
-bool        IsValidSelector( WORD );
 void        GetADescriptor( WORD seg, descriptor *desc );
 ULONG_PTR   ReadMem( WORD sel, ULONG_PTR off, LPVOID buff, ULONG_PTR size );
 ULONG_PTR   WriteMem( WORD sel, ULONG_PTR off, LPVOID buff, ULONG_PTR size );

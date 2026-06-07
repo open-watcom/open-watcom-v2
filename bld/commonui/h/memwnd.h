@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,10 +124,7 @@ extern void    SetDefMemConfig( void );
 extern void    SetMemWndConfig( MemWndConfig *cfg );
 extern void    GetMemWndConfig( MemWndConfig *cfg );
 extern void    GetMemWndDefault( MemWndConfig *cfg );
-extern HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi );
-#ifdef __NT__
-extern HWND    DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title );
-#endif
+extern HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi, uint_32 base, uint_32 limit );
 
 /************************************************************************
  * ALL FUNCTIONS PROTOTYPED BELOW THIS POINT ARE FOR INTERNAL USE ONLY

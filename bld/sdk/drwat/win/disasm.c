@@ -81,6 +81,16 @@ static bool IsSeg32( WORD seg )
     return( PMIs32bitSelector( seg ) );
 }
 
+bool IsValidSelector( WORD sel )
+{
+    return( PMIsReadSelector( sel ) );
+}
+
+DWORD GetASelectorSize( WORD sel )
+{
+    return( PMGetSelectorSize( sel ) );
+}
+
 /*
  * ConvertAddress - convert a address into a string
  */

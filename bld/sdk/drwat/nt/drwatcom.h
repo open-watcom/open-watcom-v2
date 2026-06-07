@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -172,7 +172,7 @@ extern ConfigInfo       ConfigData;
 extern bool             StatShowSymbols;
 extern HWND             StatHdl;
 extern system_config    SysConfig;
-extern HANDLE           ProcessHdl;
+//extern HANDLE           ProcessHdl;
 
 /* winproc.c */
 extern LONG         CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
@@ -226,6 +226,8 @@ extern void         SetProcessInfo( HANDLE hdl, DWORD procid );
 extern int          DoStatDialog( HWND hwnd );
 
 /* disasm.c */
+extern bool         IsValidSelector( WORD );
+extern DWORD        GetASelectorSize( WORD );
 extern void         SetDisasmInfo( HANDLE hdl, ModuleNode *mod );
 extern int          InstructionFoward(int cnt, address *addr);
 extern int          InstructionBackward( int cnt, address *addr);

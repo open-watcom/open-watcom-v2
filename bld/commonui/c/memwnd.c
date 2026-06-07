@@ -110,42 +110,7 @@ typedef enum {
     MT_READABLE
 } MemType;
 
-#ifdef __NT__
-
-static HANDLE   ProcessHdl;
-static DWORD    CurLimit;
-static DWORD    CurBase;
-
-
-/*
- * GetASelectorSize
- */
-DWORD GetASelectorSize( WORD sel )
-{
-    sel = sel;
-    return( CurLimit );
-
-} /* GetASelectorSize */
-
-/*
- * ReadMem
- */
-ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
-{
-    ULONG_PTR   bytesread;
-
-    sel = sel;
-    bytesread = 0;
-    size++;
-    while( bytesread != size && size != 0 ) {
-        size--;
-        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_uint)off, buff, size, &bytesread );
-    }
-    return( bytesread );
-
-} /* ReadMem */
-
-#else
+#ifndef __NT__
 
 /*
  * createAccessString
@@ -1293,7 +1258,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
 /*
  * DispMem
  */
-HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
+HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi, uint_32 base, uint_32 limit )
 {
     HWND                hdl;
     char                buf[50];
@@ -1329,7 +1294,8 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
         return( NULLHANDLE );
     }
     info->sel = seg;
-    info->limit = GetASelectorSize( seg );
+    info->base = base;
+    info->limit = limit;
     info->lastline = 0;
     info->bytesdisp = 1;
     info->ins_cnt = 0;
@@ -1338,7 +1304,9 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     info->dialog = NULLHANDLE;
     info->isdpmi = isdpmi;
     info->autopos = MemConfigInfo.autopos_info;
-#ifndef __NT__
+#ifdef __NT__
+    info->disp_type = MemConfigInfo.data_type;
+#else
     if( isdpmi ) {
         GetADescriptor( seg, &desc );
         if( desc.u1.flags.nonsystem && !desc.u1.flags.execute )  {
@@ -1356,10 +1324,6 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
             info->disp_type = MemConfigInfo.data_type;
         }
     }
-    info->base = 0;
-#else
-    info->disp_type = MemConfigInfo.data_type;
-    info->base = CurBase;
 #endif
     info->offset = info->base;
     info->asm_info = NULL;
@@ -1400,23 +1364,3 @@ HWND DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi )
     return( hdl );
 
 } /* DispMem */
-
-#ifdef __NT__
-
-/*
- * DispNTMem
- */
-HWND DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title )
-{
-    HWND        ret;
-
-    ProcessHdl = prochdl;
-    CurLimit = limit;
-    CurBase = offset;
-    ret = DispMem( instance, parent, 0, false );
-    SetWindowText( ret, title );
-    return( ret );
-
-} /* DispNTMem */
-
-#endif

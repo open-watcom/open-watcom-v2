@@ -34,6 +34,7 @@
 #include "drwatcom.h"
 #include "watcom.h"
 #include "memwnd.h"
+#include "segmem.h"
 
 
 /* Local Window callback functions prototypes */
@@ -54,6 +55,27 @@ static HWND                     curWalkHwnd;
 #define MEM_ALLOC_INCR          200
 #define MEM_LIMIT               0x80000000
 #define MEM_WALKER_CLASS        "Dr_WATCOM_NT_mem_Walker"
+
+
+static HANDLE   ProcessHdl;
+
+/*
+ * ReadMem
+ */
+ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
+{
+    ULONG_PTR   bytesread;
+
+    sel = sel;
+    bytesread = 0;
+    size++;
+    while( bytesread != size && size != 0 ) {
+        size--;
+        ReadProcessMemory( ProcessHdl, (LPCSTR)(pointer_uint)off, buff, size, &bytesread );
+    }
+    return( bytesread );
+
+} /* ReadMem */
 
 
 void FormatMemListEntry( char *buf, MemListItem *item ) {
@@ -326,6 +348,7 @@ static void viewMem( MemWalkerInfo *info ) {
     MEMORY_BASIC_INFORMATION    *mbi;
     char                        buf[100];
     BOOL                        ret;
+    HWND                        handle;
 
     index = (int)SendMessage( GetListBoxHwnd( info->lbox ), LB_GETCURSEL, 0, 0 );
     mbi = &info->listdata.data[index]->mbi;
@@ -347,9 +370,10 @@ static void viewMem( MemWalkerInfo *info ) {
                     (DWORD)mbi->BaseAddress + mbi->RegionSize - 1,
                     info->procid );
             }
-            DispNTMem( GetListBoxHwnd( info->lbox ), Instance,
-                info->prochdl, (DWORD)mbi->BaseAddress,
-                (DWORD)mbi->BaseAddress + mbi->RegionSize, buf );
+            ProcessHdl = info->prochdl;
+            handle = DispMem( Instance, GetListBoxHwnd( info->lbox ), 0, false, 
+                (DWORD)mbi->BaseAddress, (DWORD)mbi->BaseAddress + mbi->RegionSize );
+            SetWindowText( handle, buf );
         } else {
             RCsprintf( buf, STR_CANT_READ_MEM_AT_X, (DWORD)mbi->BaseAddress );
             MessageBox( GetListBoxHwnd( info->lbox ), buf, AppName,

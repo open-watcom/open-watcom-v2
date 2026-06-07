@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -150,6 +150,8 @@ WORD NumToAddr( HMODULE modhandle, WORD num );
 msg_id GetFaultString( int intno, char *buff );
 
 /* disasm.c */
+bool IsValidSelector( WORD );
+DWORD GetASelectorSize( WORD );
 unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes );
 void InstructionBackup( int cnt, ADDRESS *addr );
 void PreviousInstruction( ADDRESS *addr );
