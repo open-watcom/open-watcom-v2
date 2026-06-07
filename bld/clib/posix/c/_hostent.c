@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Header for internal network name resolution helpers
-*
-* Author: J. Armstrong
+* Description:  internal host entry definition
 *
 ****************************************************************************/
 
 
-#include <netinet/in.h>
+#include "variety.h"
 #include <netdb.h>
+#include "_hostent.h"
 
-/* Query types for DNS queries */
-#define DNSQ_TYPE_A     1   /* IPv4 Address */
-#define DNSQ_TYPE_NS    2   /* Nameserver */
-#define DNSQ_TYPE_CNAME 5   /* Canonical Name */
-#define DNSQ_TYPE_SOA   6   /* Start of Authority Zone */
-#define DNSQ_TYPE_PTR   12  /* Domain Name Pointer */
-#define DNSQ_TYPE_MX    15  /* Mail eXchange */
 
-/* Attempts to request server information from DNS.  Upon success,
- * routine will return 1.  Upon failure, routine should return the
- * negative error code.
- */
-extern int _dns_query( const char *__name, int __query_type, in_addr_t __dnsaddr );
+struct hostent      return_hostent;
+char                **return_host_aliases;
+

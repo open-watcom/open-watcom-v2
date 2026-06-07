@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -46,6 +46,7 @@
 #include <netdb.h>
 #include "_resolve.h"
 #include "thread.h"
+#include "_hostent.h"
 
 
 /* Our send/receive buffer size */
@@ -202,7 +203,7 @@ static char **_add_address_to_list( char **addr_list, struct in_addr *addr )
     return( _add_item_to_list( addr_list, allocated_address ) );
 }
 
-int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct hostent *res )
+int _dns_query( const char *name, int query_type, in_addr_t dnsaddr )
 {
     char            *buf, *query_name, *reader;
     int             query_socket;
@@ -223,8 +224,6 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
 
     ret = 0;
 
-    if( res == NULL )
-        return( -EINVAL );
     if( name == NULL )
         return( -EINVAL );
 
@@ -293,23 +292,23 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
      * structure appropriately
      */
     if( query_type == DNSQ_TYPE_A ) {
-        res->h_name = malloc( strlen( name ) + 1 );
-        if( res->h_name != NULL ) {
-            strcpy( res->h_name, name );
+        _RWD_hostent.h_name = malloc( strlen( name ) + 1 );
+        if( _RWD_hostent.h_name != NULL ) {
+            strcpy( _RWD_hostent.h_name, name );
         }
     }
 
-    res->h_addr_list = (char **)malloc( sizeof( char * ) );
-    if( res->h_addr_list != NULL )
-        res->h_addr_list[0] = NULL;
+    _RWD_hostent.h_addr_list = (char **)malloc( sizeof( char * ) );
+    if( _RWD_hostent.h_addr_list != NULL )
+        _RWD_hostent.h_addr_list[0] = NULL;
 
-    res->h_aliases = (char **)malloc( sizeof( char * ) );
-    if( res->h_aliases != NULL )
-        res->h_aliases[0] = NULL;
+    _RWD_hostent.h_aliases = (char **)malloc( sizeof( char * ) );
+    if( _RWD_hostent.h_aliases != NULL )
+        _RWD_hostent.h_aliases[0] = NULL;
 
     /* We only support IPv4 right now. */
-    res->h_addrtype = AF_INET;
-    res->h_length = sizeof(struct in_addr);
+    _RWD_hostent.h_addrtype = AF_INET;
+    _RWD_hostent.h_length = sizeof(struct in_addr);
 
     for( i = 0; i < n_answers; i++ ) {
         int     rdata_length;
@@ -336,7 +335,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
 
             lptr = (struct in_addr *)answers[i].rdata;
 
-            res->h_addr_list = _add_address_to_list( res->h_addr_list, lptr );
+            _RWD_hostent.h_addr_list = _add_address_to_list( _RWD_hostent.h_addr_list, lptr );
             answers[i].rdata = NULL;
             ret = 1;
         } else {
@@ -345,11 +344,11 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr, struct host
             if( answers[i].rdata != NULL ) {
                 name_length = _from_dns_name_format( answers[i].name, reader, buf );
                 if( query_type == ntohs( answers[i].resource->type ) ) {
-                    if( res->h_name == NULL ) {
-                        res->h_name = answers[i].name;
+                    if( _RWD_hostent.h_name == NULL ) {
+                        _RWD_hostent.h_name = answers[i].name;
                         answers[i].name = NULL;
                     } else {
-                        res->h_aliases = _add_item_to_list( res->h_aliases, answers[i].name );
+                        _RWD_hostent.h_aliases = _add_item_to_list( _RWD_hostent.h_aliases, answers[i].name );
                         answers[i].name = NULL;
                     }
                 }

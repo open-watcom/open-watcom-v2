@@ -22,6 +22,7 @@
 !inject gtsrvnam.obj                                                                l32 lpc lmp
 !inject gtsrvprt.obj                                                                l32 lpc lmp
 !inject _h_errno.obj                                                                l32 lpc lmp rdu
+!inject _hostent.obj                                                                l32 lpc lmp rdu
 !inject htonl.obj                                                                   l32 lpc lmp rdu
 !inject htons.obj                                                                   l32 lpc lmp rdu
 !inject inetaddr.obj                                                                l32 lpc lmp rdu

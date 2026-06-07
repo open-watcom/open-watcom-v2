@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -40,13 +40,15 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "rtinit.h"
 #include "_prscfg.h"
+#include "_hostent.h"
 
-#define MAX_HOST_ALIASES  16
 
 static const char   *__hostFname = "/etc/hosts";
 static FILE         *__hostFile;
 static int          __hostClose = 1;
+static char         *line_buf = NULL;
 
 /*
  * Return the next (non-commented) line from the host-file
@@ -55,12 +57,10 @@ static int          __hostClose = 1;
  */
 _WCRTLINK struct hostent *gethostent( void )
 {
-    static struct hostent   ret;
     char                    *ip, *alias;
 
     /* For loading a line from the hosts file */
-    static char             *buf = NULL;
-    static size_t           buflen = 0;
+    static size_t           line_buflen = 0;
 
     /* More static data */
     static in_addr_t        primary;
@@ -76,22 +76,22 @@ _WCRTLINK struct hostent *gethostent( void )
         return NULL;
 
     /* First pass */
-    if( buf == NULL ) {
-        buflen = 64;
-        buf = (char *)malloc( buflen );
-        if( buf ) {
-            *buf = '\0';
+    if( line_buf == NULL ) {
+        line_buflen = 64;
+        line_buf = (char *)malloc( line_buflen );
+        if( line_buf != NULL ) {
+            *line_buf = '\0';
         } else {
-            buflen = 0;
+            line_buflen = 0;
         }
     }
 
-    if( __getconfigline( &buf, &buflen, __hostFile ) < 0)
+    if( __getconfigline( &line_buf, &line_buflen, __hostFile ) < 0)
         return( NULL );
 
     /* Store the IP address (a bit complicated) */
     /* ... and we only support one IP address */
-    ip = strtok( buf, " \t" );
+    ip = strtok( line_buf, " \t" );
     primary = inet_addr( ip );
 
     /* If no address for this line, try again (could be an IPv6 value) */
@@ -103,46 +103,33 @@ _WCRTLINK struct hostent *gethostent( void )
 
     addr_list[0] = (char *)&primary;
     addr_list[1] = NULL;
-    ret.h_addr_list = addr_list;
-    ret.h_length = 4;
+    _RWD_hostent.h_addr_list = addr_list;
+    _RWD_hostent.h_length = 4;
 
     /* Everything here is assumed to be a Internet address */
-    ret.h_addrtype  = AF_INET;
+    _RWD_hostent.h_addrtype  = AF_INET;
 
     /* The host name */
-    ret.h_name = strtok( NULL, " \t\n" );
+    _RWD_hostent.h_name = strtok( NULL, " \t\n" );
 
     /* Load in any aliases */
-    if(ret.h_aliases == NULL)
-        ret.h_aliases = (char **)malloc( (1 + MAX_HOST_ALIASES)*sizeof( char * ) );
+    if(_RWD_hostent.h_aliases == NULL)
+        _RWD_hostent.h_aliases = (char **)malloc( (1 + MAX_HOST_ALIASES)*sizeof( char * ) );
 
-    /* Explcitly NULL the entries in a nice, readable manner */
-    for( i = 0; i < (1 + MAX_HOST_ALIASES) && ret.h_aliases != NULL; i++ )
-        ret.h_aliases[i] = NULL;
+    for( i = 0; i < MAX_HOST_ALIASES; ++i ) {
+        alias = strtok( NULL, " \t\n" );
+        if( alias == NULL
+          || *alias == '#'
+          || *alias == ';'
+          || *alias == '\0' ) {
+            break;
+        }
 
-    alias = strtok( NULL, " \t\n" );
-    if( alias && *alias != '#' && *alias != ';' && ret.h_aliases != NULL) {
-
-        i = -1;
-        do {
-            i++;
-            if( *alias == '#' || *alias == ';' )
-                break;
-
-            ret.h_aliases[i] = strtok( NULL, " \t\n" );
-
-            if( ret.h_aliases[i] == NULL ) {
-                break;
-            } else if( ret.h_aliases[i][0] == '\0' ) {
-                ret.h_aliases[i] = NULL;
-                break;
-            }
-
-        } while( i < MAX_HOST_ALIASES );
-
+        _RWD_hostent.h_aliases[i] = alias;
     }
+    _RWD_hostent.h_aliases[i] = NULL;
 
-    return( &ret );
+    return( &_RWD_hostent );
 }
 
 _WCRTLINK void sethostent( int stayopen )
@@ -164,3 +151,16 @@ _WCRTLINK void endhostent( void )
         __hostClose = 1;
     }
 }
+
+static void __hostent_fini( void )
+{
+    if( line_buf != NULL ) {
+    	free( line_buf );
+    }
+    if( _RWD_host_aliases != NULL ) {
+    	free( _RWD_host_aliases );
+    }
+}
+
+AYIN( __hostent_fini, INIT_PRIORITY_RUNTIME )
+
