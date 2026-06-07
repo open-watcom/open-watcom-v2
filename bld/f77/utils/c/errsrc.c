@@ -288,23 +288,21 @@ static  char    UseMessage( char cmp, char target, char used_at )
     return( 0 );
 }
 
-static  int     ReadInFile( char *buff, int max_len )
-//===================================================
+static char     *ReadInFile( char *buff, int max_len )
+//====================================================
 {
-    size_t      len;
+    char	*rec;
 
-    for( ;; ) {
-        if( fgets( buff, max_len, MsgFile ) == NULL ) {
-            return( 1 );
-        }
-        for( len = strlen( buff ); len > 0 && ( buff[len - 1] == '\r' || buff[len - 1] == '\n' ); len-- )
-            ;
-        buff[len] = NULLCHAR;
+    while( (rec = fgets( buff, max_len, MsgFile )) != NULL ) {
+        /*
+         * skip lines with wfc options description for documentation
+         */
         if( *buff != ' ' ) {
+            rec[strcspn( rec, "\r\n" )] = NULLCHAR;
             break;
         }
     }
-    return( 0 );
+    return( rec );
 }
 
 
@@ -804,19 +802,25 @@ static  void    BuildLists( void )
     msg_list    **p_null_msg;
     msg_word    *word;
     unsigned    caret;
-    char        rec[BUFF_LEN+1];
+    char        buf[BUFF_LEN+1];
     char        msg_used_at;
     char        msg_compiler;
     char        msg_target;
     char        delim;
+    char		*rec;
 
-    fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
     group = 0;
     curr_group = NULL;
-    ReadInFile( rec, sizeof( rec ) );
+    /*
+     * skip all lines starting by space
+     */
+    rec = ReadInFile( buf, sizeof( buf ) );
     prev_msg = NULL;
     last_non_null_msg = NULL;
-    for( ;; ) {
+    while( rec != NULL ) {
+        /*
+         * start Group processing
+         */
         if( HeadGroup == NULL ) {
             HeadGroup = malloc( sizeof( group_list ) );
             curr_group = HeadGroup;
@@ -830,16 +834,28 @@ static  void    BuildLists( void )
         curr_group->name[0] = rec[0];
         curr_group->name[1] = rec[1];
         curr_group->name[2] = NULLCHAR;
-        for( ;; ) {
-            if( ReadInFile( rec, sizeof( rec ) ) != 0 ) {
-                fprintf( RCFile, "\nEND\n" );
-                return;
-            }
+        while( (rec = ReadInFile( buf, sizeof( buf ) )) != NULL ) {
             ++RecNum;
             if( ( strlen( rec ) > 2 )
-              && ( rec[2] == ' ' ) )
-                // Group record
+              && ( rec[2] == ' ' ) ) {
+                /*
+                 * next Group record
+                 */
+                prev_msg = last_non_null_msg;
+                if( last_non_null_msg == NULL ) {
+                    p_null_msg = &HeadMsg;
+                } else {
+                    p_null_msg = &last_non_null_msg->link;
+                }
+                while( *p_null_msg != NULL ) {
+                    msg_ptr = (*p_null_msg)->link;
+                    free( *p_null_msg );
+                    curr_group->end_msg_num--;
+                    *p_null_msg = msg_ptr;
+                }
+                ++group;
                 break;
+            }
             index = 3;
             while( rec[index] != ' ' ) {
                 ++index;
@@ -887,19 +903,6 @@ static  void    BuildLists( void )
             }
             prev_msg = msg_ptr;
         }
-        prev_msg = last_non_null_msg;
-        if( last_non_null_msg == NULL ) {
-            p_null_msg = &HeadMsg;
-        } else {
-            p_null_msg = &last_non_null_msg->link;
-        }
-        while( *p_null_msg != NULL ) {
-            msg_ptr = (*p_null_msg)->link;
-            free( *p_null_msg );
-            curr_group->end_msg_num--;
-            *p_null_msg = msg_ptr;
-        }
-        ++group;
     }
 }
 
@@ -917,7 +920,9 @@ int     main( int argc, char **argv )
         return( 1 );
     }
     printf( "Building Lists...\n" );
+    fprintf( RCFile, "STRINGTABLE\nBEGIN\n\n" );
     BuildLists();
+    fprintf( RCFile, "\nEND\n" );
     printf( "Finding Phrases...\n" );
     FindPhrases();
     printf( "Sorting...\n" );
