@@ -556,7 +556,7 @@ void ShowHeapObject( HWND lbhandle )
     if( hl->is_dpmi ) {
         memhdl = DispMem( Instance, HeapWalkMainWindow, hl->info.mem.sel, TRUE, 0, PMGetSelectorSize( hl->info.mem.sel ) );
     } else if( hl->info.ge.hBlock != NULL ) {
-        memhdl = DispMem( Instance, HeapWalkMainWindow, hl->info.ge.hBlock, FALSE, 0, PMGetSelectorSize( hl->info.ge.hBlock ) );
+        memhdl = DispMem( Instance, HeapWalkMainWindow, (WORD)hl->info.ge.hBlock, FALSE, 0, PMGetSelectorSize( (WORD)hl->info.ge.hBlock ) );
     }
     if( memhdl == NULL )
         return;
