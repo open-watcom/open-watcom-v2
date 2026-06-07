@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,15 +39,15 @@
 #include <netdb.h>
 #include "rtdata.h"
 #include "thread.h"
+#include "_hostent.h"
 
 
-_WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int type)
+_WCRTLINK struct hostent *gethostbyaddr( const void *addr, socklen_t len, int type )
 {
-    struct hostent *ret;
     int i;
     bool cont;
 
-    if(addr == NULL) {
+    if( addr == NULL ) {
         lib_set_errno( EINVAL );
         return( NULL );
     }
@@ -55,10 +55,10 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
     sethostent( 1 );
 
     cont = true;
-    while( cont && (ret = gethostent()) != NULL) {
-        if( ret->h_addrtype == type && ret->h_length == (int)len && ret->h_addr_list != NULL ) {
-            for( i = 0; ret->h_addr_list[i] != NULL; i++ ) {
-                if( memcmp( ret->h_addr_list[i], addr, len ) == 0 ) {
+    while( cont && gethostent() != NULL ) {
+        if( _RWD_hostent.h_addrtype == type && _RWD_hostent.h_length == (int)len && _RWD_hostent.h_addr_list != NULL ) {
+            for( i = 0; _RWD_hostent.h_addr_list[i] != NULL; i++ ) {
+                if( memcmp( _RWD_hostent.h_addr_list[i], addr, len ) == 0 ) {
                     cont = false;
                     break;
                 }
@@ -68,5 +68,7 @@ _WCRTLINK struct hostent *gethostbyaddr(const void *addr, socklen_t len, int typ
 
     endhostent();
 
-    return( ret );
+    if( cont )
+        return( NULL );
+    return( &_RWD_hostent );
 }

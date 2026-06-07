@@ -113,8 +113,10 @@ _WCRTLINK struct hostent *gethostent( void )
     _RWD_hostent.h_name = strtok( NULL, " \t\n" );
 
     /* Load in any aliases */
-    if(_RWD_hostent.h_aliases == NULL)
-        _RWD_hostent.h_aliases = (char **)malloc( (1 + MAX_HOST_ALIASES)*sizeof( char * ) );
+    if(_RWD_hostent.h_aliases == NULL) {
+        _RWD_host_aliases = (char **)malloc( ( 1 + MAX_HOST_ALIASES ) * sizeof( char * ) );
+        _RWD_hostent.h_aliases = _RWD_host_aliases;
+    }
 
     for( i = 0; i < MAX_HOST_ALIASES; ++i ) {
         alias = strtok( NULL, " \t\n" );
@@ -163,4 +165,3 @@ static void __hostent_fini( void )
 }
 
 AYIN( __hostent_fini, INIT_PRIORITY_RUNTIME )
-

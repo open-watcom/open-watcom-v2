@@ -48,6 +48,7 @@
 #endif
 #include "_hostent.h"
 
+
 #ifdef __RDOS__
 
 #else
@@ -60,21 +61,27 @@ static int _WCNEAR __check_hostdb( const char *name )
     int             rc;
 
     rc = -1;
-    if( name != NULL ) {
-        sethostent( 1 );
-        while( rc == -1 && gethostent() != NULL ) {
-            if( _RWD_hostent.h_name != NULL && strcmp( _RWD_hostent.h_name, name ) == 0 )
+
+    if( name == NULL )
+        return( rc );
+
+    sethostent( 1 );
+
+    while( rc == -1 && gethostent() != NULL ) {
+        if( _RWD_hostent.h_name != NULL && strcmp( _RWD_hostent.h_name, name ) == 0 ) {
+            rc = 0;
+            break;
+        }
+        for( i = 0; _RWD_hostent.h_aliases[i] != NULL; i++ ) {
+            if( strcmp( _RWD_hostent.h_aliases[i], name ) == 0 ) {
                 rc = 0;
                 break;
-            for( i = 0; _RWD_hostent.h_aliases[i] != NULL; i++ ) {
-                if( strcmp( _RWD_hostent.h_aliases[i], name ) == 0 ) {
-                    rc = 0;
-                    break;
-                }
             }
         }
-        endhostent();
     }
+
+    endhostent();
+
     return( rc );
 }
 

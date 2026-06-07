@@ -213,6 +213,7 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr )
     size_t          query_size;
     int             ret;
     int             n_answers;
+    socklen_t       len;
 
     struct __dns_resource_record *answers; //the replies from the DNS server
     struct sockaddr_in      dest;
@@ -266,8 +267,8 @@ int _dns_query( const char *name, int query_type, in_addr_t dnsaddr )
         goto dns_cleanup;
     }
 
-    i = sizeof( dest );
-    result = recvfrom( query_socket, buf, DNS_BUFFER_SIZE, 0, (struct sockaddr *)&dest, (socklen_t *)&i );
+    len = sizeof( dest );
+    result = recvfrom( query_socket, buf, DNS_BUFFER_SIZE, 0, (struct sockaddr *)&dest, &len );
     if( result < 0 ) {
         ret = -ENOMSG;
         goto dns_cleanup;
