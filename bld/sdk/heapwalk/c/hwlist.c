@@ -35,12 +35,14 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <dos.h>
+#include "dpmi.h"
 
-typedef struct glb_state{
+
+typedef struct glb_state {
     heap_list           sel;
     heap_list           top;
     BOOL                sel_valid;
-}GlobStateStruct;
+} GlobStateStruct;
 
 static const char       *gbl_types[ 11 ];
 static const char       *res_types[ 15 ];
@@ -417,7 +419,7 @@ static BOOL AddAllSelectors( WORD sel )
     hl.is_dpmi = TRUE;
     hl.is_added = FALSE;
     while( 1 ) {
-        if( IsValidSelector( sel ) ) {
+        if( PMIsReadSelector( sel ) ) {
             hl.info.mem.sel = sel;
             GetADescriptor( sel, &hl.info.mem.desc );
             ret = AddToHeapList( &hl );
