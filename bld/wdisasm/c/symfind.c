@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -206,8 +207,7 @@ void  FindSrcLine( uint_32 addr )
     EmitNL();
     for( ;; ) {
         if( LastNum + 1 >= next ) return;
-        len = FGetTxtRec( Source, txt_line, MAX_LINE_LEN );
-        txt_line[ len ] = NULLCHAR;
+        FGetTxtRec( Source, txt_line, MAX_LINE_LEN + 1 );
         if( feof( Source ) ) break;
         if( Options & FORM_ASSEMBLER ) {
             if( DO_UNIX ) {

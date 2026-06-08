@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,16 +94,14 @@ void  FPutTxtRec( FILE *txt_file, char *buff, int len )
 }
 
 
-int  FGetTxtRec( FILE *txt_file, char *buff, int max_len )
+void FGetTxtRec( FILE *txt_file, char *buff, int max_len )
 /********************************************************/
 {
-    int                 read_len;
-
-    if( fgets( buff, max_len, txt_file ) != NULL ) {
-        read_len = strlen( buff ) - 1;
-    } else {
-        read_len = 0;
-    }
-    buff[ read_len ] = NULLCHAR;
-    return( read_len );
+    if( max_len )
+        --max_len;
+    buff[0] = NULLCHAR;
+    if( fgets( buff, max_len, txt_file ) == NULL )
+        return;
+    buff[max_len] = NULLCHAR;
+    buff[strcspn( buff, "\r\n" )] = NULLCHAR;
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +111,7 @@ extern FILE *OpenTxtRead( char * );
 extern FILE *OpenTxtWrite( char * );
 extern void CloseTxt( FILE * );
 extern void FPutTxtRec( FILE *, char *, int );
-extern int FGetTxtRec( FILE *, char *, int );
+extern void FGetTxtRec( FILE *, char *, int );
 extern void InitObj( void );
 extern void MarkBegData( void );
 extern void SkipPcoRec( void );
