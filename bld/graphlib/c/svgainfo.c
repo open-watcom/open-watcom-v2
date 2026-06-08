@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -168,7 +168,7 @@ short _SuperVGAType( void )
     p = _MK_FP( _RomSeg, _RomOff + 0x0037 );
     val = *(short __far *)p;
 #if defined( __QNX__ )
-    seg_len = GetSelectorLimitB( _RomSeg );
+    seg_len = PMGetSelectorLimit( _RomSeg );
     if( _RomOff + val <= seg_len - 3 ) {
 #endif
     p = _MK_FP( _RomSeg, _RomOff + val );
