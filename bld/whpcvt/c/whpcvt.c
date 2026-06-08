@@ -51,6 +51,8 @@
 
 #define BUF_GROW        150
 
+#define OPT_MAX_SIZE    200
+
 #define ARG_DEFS() \
     pick( ARG_I,    "i" ) \
     pick( ARG_S,    "s" ) \
@@ -863,7 +865,7 @@ static int valid_args( int argc, char *argv[] )
 {
     int                 start_arg;
     FILE                *opt_file;
-    char                line[200];
+    char                line[OPT_MAX_SIZE];
     int                 ret;
     int                 i;
 
@@ -914,28 +916,25 @@ static int valid_args( int argc, char *argv[] )
     for( ;; ) {
         if( Options_File != NULL ) {
             opt_file = fopen( Options_File, "r" );
+            MemFree( Options_File );
+            Options_File = NULL;
             if( opt_file == NULL ) {
                 return( -1 );
             }
             for( argc = 0 ;; argc++ ) {
-                if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
+                if( fgets( line, OPT_MAX_SIZE, opt_file ) == NULL ) {
                     break;
                 }
             }
-            fclose( opt_file );
-            opt_file = fopen( Options_File, "r" );
-
-            MemFree( Options_File );
-            Options_File = NULL;
-
+            rewind( opt_file );
             argv = MemAllocSafe( argc * sizeof( *argv ) );
-            for( argc = 0;; argc++ ) {
-                if( fgets( line, sizeof( line ), opt_file ) == NULL ) {
+            for( i = 0; i < argc; ++i ) {
+                if( fgets( line, OPT_MAX_SIZE, opt_file ) == NULL ) {
                     break;
                 }
-                line[sizeof( line ) - 1] = '\0';
+                line[strcspn( line, "\r\n" )] = '\0';
                 trim_blanks( line );
-                argv[argc] = MemStrdupSafe( line );
+                argv[i] = MemStrdupSafe( line );
             }
             fclose( opt_file );
             ret = process_args( argc, argv );
