@@ -94,8 +94,8 @@ msglist Actions[] = {
 /*
  * CheckLogSize
  */
-void CheckLogSize( void ) {
-
+void CheckLogSize( void )
+{
     struct stat         st;
     char                buf[100];
     int                 ret;
@@ -138,8 +138,8 @@ static void finishLogFile( void )
     fclose( logFileHdl );
 }
 
-static void logPrintf( msg_id id, ... ) {
-
+static void logPrintf( msg_id id, ... )
+{
     va_list     args;
 
     va_start( args, id );
@@ -147,8 +147,8 @@ static void logPrintf( msg_id id, ... ) {
     va_end( args );
 }
 
-static void logStrPrintf( char *str, ... ) {
-
+static void logStrPrintf( char *str, ... )
+{
     va_list     args;
 
     va_start( args, str );
@@ -164,7 +164,8 @@ static void logStrPrintf( char *str, ... ) {
 /*
  * NotePrint
  */
-static void NotePrint( char *str ) {
+static void NotePrint( char *str )
+{
     if( !notesAdded ) {
         logPrintf( STR_USER_NOTES );
         notesAdded = TRUE;
@@ -226,7 +227,8 @@ static void logSysInfo( bool wasfault )
 /*
  * logDisasm - log some disassembly
  */
-static void logDisasm( ExceptDlgInfo *info ) {
+static void logDisasm( ExceptDlgInfo *info )
+{
     int         i;
     address     addr;
     address     flagaddr;
@@ -255,7 +257,8 @@ static void logDisasm( ExceptDlgInfo *info ) {
  * logStack
  */
 
-static void logStack( ExceptDlgInfo *info ) {
+static void logStack( ExceptDlgInfo *info )
+{
     unsigned_16     *data;
     int             i;
     int             j;
@@ -301,7 +304,7 @@ static void logStack( ExceptDlgInfo *info ) {
 
 
 #define PAGE_WIDTH 75
-static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
+static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs )
 {
     mad_registers          *regs = _regs;
     int                     i;
@@ -342,14 +345,15 @@ static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
 /*
  * logRegisters
  */
-static void logRegisters( ExceptDlgInfo *info ) {
+static void logRegisters( ExceptDlgInfo *info )
+{
     logPrintf( STR_REGISTER_CONTENTS );
     MADRegSetWalk( MTK_ALL, logRegisterSet, info->regs );
 }
 
 
-static void logModules( DWORD pid, WORD indent ) {
-
+static void logModules( DWORD pid, WORD indent )
+{
     char        **modules;
     char        end[10];
     DWORD       cnt;
@@ -394,8 +398,8 @@ static void logModules( DWORD pid, WORD indent ) {
  * logProcessList
  */
 
-static void logProcessList( void ) {
-
+static void logProcessList( void )
+{
     ProcList    info;
     ProcPlace   place;
     BOOL        rc;
@@ -413,8 +417,8 @@ static void logProcessList( void ) {
 }
 
 #ifndef CHICAGO
-static void logMemManClass( MemByType *info ) {
-
+static void logMemManClass( MemByType *info )
+{
     logPrintf( STR_NO_ACCESS,           2 * INDENT, "", info->noaccess / 1024 );
     logPrintf( STR_READ_ONLY,           2 * INDENT, "", info->read / 1024 );
     logPrintf( STR_READ_WRITE,          2 * INDENT, "", info->write / 1024 );
@@ -430,8 +434,8 @@ static void logMemManClass( MemByType *info ) {
 /*
  * logMemManInfo
  */
-static void logMemManInfo( DWORD procid ) {
-
+static void logMemManInfo( DWORD procid )
+{
     MemByType   imageinfo;
     MemInfo     meminfo;
     SYSTEM_INFO sysinfo;
@@ -470,8 +474,8 @@ static void logMemManInfo( DWORD procid ) {
  * logMemLine
  * NB data must be at least width+1 bytes long
  */
-static void logMemLine( char *data, DWORD offset, DWORD width ) {
-
+static void logMemLine( char *data, DWORD offset, DWORD width )
+{
     DWORD       i;
 
     logStrPrintf( "%08lX  ", offset );
@@ -488,8 +492,8 @@ static void logMemLine( char *data, DWORD offset, DWORD width ) {
 /*
  * logDumpMemItem
  */
-static void logDumpMemItem( HANDLE prochdl, MEMORY_BASIC_INFORMATION *mbi ) {
-
+static void logDumpMemItem( HANDLE prochdl, MEMORY_BASIC_INFORMATION *mbi )
+{
     char        data[MEM_DMP_WIDTH + 1];
     DWORD       offset;
     DWORD       limit;
@@ -606,8 +610,8 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 /*
  * logMemDump
  */
-static void logMemDmp( ExceptDlgInfo *info ) {
-
+static void logMemDmp( ExceptDlgInfo *info )
+{
     SelMemDlgInfo       selinfo;
     DWORD               i;
     char                buf[150];
@@ -632,8 +636,8 @@ static void logMemDmp( ExceptDlgInfo *info ) {
 /*
  * logFaultInfo
  */
-static void logFaultInfo( ExceptDlgInfo *info ) {
-
+static void logFaultInfo( ExceptDlgInfo *info )
+{
     char        *str;
     char        buf[150];
     char        addr_buf[64];
@@ -729,8 +733,8 @@ void MakeLog( ExceptDlgInfo *faultinfo )
 /*
  * EraseLog
  */
-void EraseLog( void ) {
-
+void EraseLog( void )
+{
     char        buf[500];
     int         ret;
 
@@ -745,8 +749,8 @@ void EraseLog( void ) {
 /*
  * ViewLog
  */
-void ViewLog( void ) {
-
+void ViewLog( void )
+{
     char                        buf[ MAX_CMDLINE + _MAX_PATH ];
     STARTUPINFO                 startinfo;
     PROCESS_INFORMATION         procinfo;
@@ -799,8 +803,8 @@ void ViewLog( void ) {
 /*
  * fillLogOptions
  */
-static void fillLogOptions( HWND hwnd ) {
-
+static void fillLogOptions( HWND hwnd )
+{
     char        buf[50];
 
     if( LogData.log_process ) {
@@ -841,8 +845,8 @@ static void fillLogOptions( HWND hwnd ) {
 }
 
 #define NUM_HELP_SIZE   150
-static BOOL readLogOptions( HWND hwnd, char *buf ) {
-
+static BOOL readLogOptions( HWND hwnd, char *buf )
+{
     DWORD       asm_lines;
     DWORD       asm_bkup;
     DWORD       max_fsize;
@@ -885,7 +889,8 @@ static BOOL readLogOptions( HWND hwnd, char *buf ) {
 /*
  * getNewLogName
  */
-static BOOL getNewLogName( HWND parent, char *buf, char *title, BOOL outfile ) {
+static BOOL getNewLogName( HWND parent, char *buf, char *title, BOOL outfile )
+{
     OPENFILENAME        of;
     BOOL                ret;
     char                filter[100];
