@@ -253,7 +253,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
     dword       linear;
     word        otherseg;
 
-    sdtlim = GetSelectorLimitB( sdtseg );
+    sdtlim = PMGetSelectorLimit( sdtseg );
     linear = GET_LINEAR( seg, 0 );
     for( sdtoff = 0; sdtoff < sdtlim; sdtoff += 8 ) {
         if( sdtoff == ( seg & 0xfff8 ) )
@@ -263,7 +263,7 @@ static  word    LookUp( word sdtseg, word seg, bool global )
         } else {
             otherseg = sdtoff + 4;
         }
-        if( !IsWriteSelector( otherseg ) )
+        if( !PMIsWriteSelector( otherseg ) )
             continue;
         if( GET_LINEAR( otherseg, 0 ) != linear )
             continue;
@@ -315,10 +315,10 @@ static bool ReadMemory( addr48_ptr *addr, void *data, size_t len )
     addr_seg    segment;
 
     segment = addr->segment;
-    if( !IsReadSelector( segment ) ) {
+    if( !PMIsReadSelector( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
+    if( PMGetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
         DoReadBytes( segment, addr->offset, data, len );
         return( false );
     }
@@ -332,10 +332,10 @@ static bool WriteMemory( addr48_ptr *addr, void *data, size_t len )
     segment = addr->segment;
     if( segment == Regs.CS )
         segment = Regs.DS; // hack, ack
-    if( !IsWriteSelector( segment ) ) {
+    if( !PMIsWriteSelector( segment ) ) {
         segment = AltSegment( segment );
     }
-    if( GetSelectorLimitB( segment ) >= addr->offset + len - 1 ) {
+    if( PMGetSelectorLimit( segment ) >= addr->offset + len - 1 ) {
         DoWriteBytes( segment, addr->offset, data, len );
         return( false );
     }
