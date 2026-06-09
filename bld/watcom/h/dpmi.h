@@ -1309,6 +1309,9 @@ extern uint_8   _PMIs32bitSelector( unsigned sel );
         _LSL_AX_DX  \
         "jnz short Lret" \
         _INC_AX     \
+        /* prevent 32-bit overflow */ \
+        "jnz short Lret" \
+        _DEC_AX     \
     "Lret: " \
     __parm      [__edx] \
     __value     [__eax] \
@@ -1337,6 +1340,9 @@ extern uint_8   _PMIs32bitSelector( unsigned sel );
         _LSL_AX_DX  \
         "jnz short Lret" \
         _INC_AX     \
+        /* prevent 32-bit overflow */ \
+        "jnz short Lret" \
+        _DEC_AX     \
     "Lret: " \
     __parm      [] \
     __value     [__eax] \
