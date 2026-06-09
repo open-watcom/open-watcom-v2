@@ -1,2 +1,0 @@
-cstrtw10.obj : ../../../a/cstrtw10.asm ../../../../startup/a/cstrtw16.asm
-libent10.obj : ../../../a/libent10.asm ../../../../startup/a/libentry.asm

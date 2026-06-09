@@ -65,11 +65,6 @@ pStackBot       equ     000EH
         extrn   INITAPP             : far
         extrn   WAITEVENT           : far
 
-ifdef WINDOWS10
-else
-        extrn   __AHSHIFT           : word
-endif
-
         extrn   _edata              : byte          ; end of DATA (start of BSS)
         extrn   _end                : byte          ; end of BSS (start of STACK)
 
@@ -163,10 +158,7 @@ _osminor   db 0                 ; minor DOS version number
 ; GetVersion API function is supported for all 16-bit Windows versions that
 ;   it is used to get run-time version of 16-bit Windows
 ; GetWinFlags API function is supported from Windows 3.x therefore _HShift
-;   and _osmode are hardcoded for Windows 1.x and 2.x and are updated by
-;   GetWinFlags API function for Windows 3.x
-; we save KERNEL module handle for conditional quick load Windows 3.x or 2.x
-;   API functions which are not available on previous versions of Windows
+;   and _osmode are derive by Windows API independent way
 ;
 _winmajor  db 0                 ; major Windows version number
 _winminor  db 0                 ; minor Windows version number
@@ -181,7 +173,7 @@ __restore_ovl_stack dw 0,0      ; restore overlay stack pointer
 __FPE_handler dd 0              ; FPE handler
 _LpCmdLine dw 0,0               ; lpCmdLine (for _argc, _argv processing)
 _LpPgmName dw 0,0               ; lpPgmName (for _argc, _argv processing)
-filename        db MAX_FILE_NAME dup(0)
+filename   db MAX_FILE_NAME dup(0)
 
 _DATA   ends
 
@@ -294,16 +286,18 @@ endif
         mov     _winminor,ah            ; ...
         xchg    al,ah                   ; ...
         mov     _winver,ax              ; ...
-ifdef WINDOWS10
-else
-        mov     ax,offset __AHSHIFT     ; get huge shift value
+        push    sp                      ; test CPU 8086/8088 => real mode
+        pop     ax                      ; ...
+        cmp     ax,sp                   ; ...
+        jne short mode_end              ; if CPU is 8086/8088 real mode only
+        smsw    ax                      ; test protected mode on 80286 and above
+        test    ax, 1                   ; test bit 0 (PE - Protection Enable)
+        jz short mode_end               ; if bit is 0 (Zero Flag=1) => real mode
+        mov     al,1                    ; set protected mode flag
+        mov     _osmode,al              ; ...
+        mov     al,3                    ; set protected mode huge shift
         mov     _HShift,al              ; ...
-        cmp     al,12                   ; real mode?
-        je      notprot                 ; yes, so leave osmode alone
-        mov     al,1
-        mov     _osmode,al              ; protected mode!
-notprot:
-endif
+mode_end:
         ; hinst is already on the stack
         push    ds
         mov     di, offset filename

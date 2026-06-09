@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -97,10 +97,6 @@ assume ss:nothing
 assume ds:DGROUP
 assume cs:_TEXT
 
-ifdef WINDOWS10
-else
-        extrn   __AHSHIFT                   : word
-endif
         extrn   "C",__win_alloc_flags       : dword
         extrn   "C",__win_realloc_flags     : dword
 
@@ -128,17 +124,17 @@ _curbrk    dw 0                 ; top of usable memory
 _psp       dw 0                 ; segment addr of program segment prefix
 _osmajor   db 0                 ; major DOS version number
 _osminor   db 0                 ; minor DOS version number
-ifdef WINDOWS10
-_winmajor  db 1                 ; major Windows version number
-_winminor  db 0                 ; minor Windows version number
-_winver    dw 100h              ; Windows version number
-else
+;
+; GetVersion API function is supported for all 16-bit Windows versions that
+;   it is used to get run-time version of 16-bit Windows
+; GetWinFlags API function is supported from Windows 3.x therefore _HShift
+;   and _osmode are derive by Windows API independent way
+;
 _winmajor  db 0                 ; major Windows version number
 _winminor  db 0                 ; minor Windows version number
 _winver    dw 0                 ; Windows version number
-endif
-_osmode    db 0                 ; 0 => DOS real mode
-_HShift    db 0                 ; Huge Shift value
+_osmode    db 0                 ; 0 => DOS real mode, 1 => protcted mode
+_HShift    db 12                ; Huge Shift value 12 => DOS realmode, 3 => protected mode
 _cbyte     dw 0                 ; used by getch, getche
 __child    dw 0                 ; non-zero => a spawned process is running
 __no87     db 0                 ; always try to use the 8087
@@ -155,10 +151,7 @@ _DATA ends
 ;*
 _TEXT segment word public 'CODE'
 
-ifdef WINDOWS10
-else
         extrn   GETVERSION  : far
-endif
         extrn   LIBMAIN     : far       ; startup code
         extrn   LOCALINIT   : far       ; Windows heap init routine
 
@@ -207,25 +200,23 @@ __DLLstart_ proc far
 
 callc:  or      word ptr __win_alloc_flags, GMEM_SHARE
         or      word ptr __win_realloc_flags, GMEM_SHARE
-ifdef WINDOWS10
-        mov     ax,12                   ; get huge shift value
-else
-        mov     ax,offset __AHSHIFT     ; get huge shift value
-endif
-        mov     _HShift,al              ; ...
-        cmp     al,12                   ; real mode?
-        je      notprot                 ; yes, so leave osmode alone
-        mov     al,1
-        mov     _osmode,al              ; protected mode!
-notprot:
-ifdef WINDOWS10
-else
         call    GETVERSION              ; get Windows version number
         mov     _winmajor,al            ; ...
         mov     _winminor,ah            ; ...
         xchg    al,ah                   ; ...
         mov     _winver,ax              ; ...
-endif
+        push    sp                      ; test CPU 8086/8088 => real mode
+        pop     ax                      ; ...
+        cmp     ax,sp                   ; ...
+        jne short mode_end              ; if CPU is 8086/8088 real mode only
+        smsw    ax                      ; test protected mode on 80286 and above
+        test    ax,1                    ; test bit 0 (PE - Protection Enable)
+        jz short mode_end               ; if bit is 0 (Zero Flag=1) => real mode
+        mov     al,1                    ; set protected mode flag
+        mov     _osmode,al              ; ...
+        mov     al,3                    ; set protected mode huge shift
+        mov     _HShift,al              ; ...
+mode_end:
         mov     ax,offset __null_FPE_rtn; initialize floating-point exception
         mov     word ptr __FPE_handler,ax       ; ... handler address
         mov     word ptr __FPE_handler+2,cs     ; ...
