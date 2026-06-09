@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -121,11 +121,39 @@ void DIGCLIENTRY( Free )( void *ptr )
     DEBUGOUT( "free END" );
 }
 
+/*
+ * Windows NT must use OS loader handle for I/O file function for DLL/multi-thread support
+ * For DIG client functions appropriate Windows HANDLE oriented I/O functions must be used
+ * !!! ISO or POSIX functions must not be used !!!
+ */
+
 FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
 /************************************************************
  * DIGCliOpen
  */
 {
+#ifdef __NT__
+    HFILE               ret;
+    int                 flags;
+    OFSTRUCT            tmp;
+
+    flags = 0;
+    if( mode & DIG_OPEN_READ )
+        flags |= OF_READ;
+    if( mode & DIG_OPEN_WRITE )
+        flags |= OF_WRITE;
+    if( mode & DIG_OPEN_TRUNC )
+        flags |= OF_CREATE;
+    if( mode & DIG_OPEN_CREATE )
+        flags |= OF_CREATE;
+    /*
+     * NYI: should check for DIG_OPEN_SEARCH
+     */
+    ret = OpenFile( path, &tmp, flags );
+    if( ret == HFILE_ERROR )
+        return( NULL );
+    return( WH2FP( (HANDLE)ret ) );
+#else
     const char  *access;
 
     if( mode & DIG_OPEN_APPEND ) {
@@ -136,6 +164,7 @@ FILE * DIGCLIENTRY( Open )( const char *path, dig_open mode )
         access = "rb";
     }
     return( fopen( path, access ) );
+#endif
 }
 
 int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
@@ -147,18 +176,32 @@ int DIGCLIENTRY( Seek )( FILE *fp, unsigned long offset, dig_seek where )
     int         ret;
 
     DEBUGOUT( "seek BEGIN" );
+#ifdef __WINDOWS__
+        #define FILE_BEGIN   SEEK_SET
+        #define FILE_CURRENT SEEK_CUR
+        #define FILE_END     SEEK_END
+#endif
     switch( where ) {
     case DIG_SEEK_ORG:
-        mode = SEEK_SET;
+        mode = FILE_BEGIN;
         break;
     case DIG_SEEK_CUR:
-        mode = SEEK_CUR;
+        mode = FILE_CURRENT;
         break;
     case DIG_SEEK_END:
-        mode = SEEK_END;
+        mode = FILE_END;
         break;
     }
+#ifdef __NT__
+    ret = 0;
+    if( SetFilePointer( FP2WH( fp ), offset, 0, mode ) == INVALID_SET_FILE_POINTER ) {
+        if( GetLastError() != NO_ERROR ) {
+            ret = 1;
+        }
+    }
+#else
     ret = fseek( fp, offset, mode );
+#endif
     DEBUGOUT( "seek END" );
     return( ret );
 }
@@ -171,7 +214,11 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
     unsigned long   ret;
 
     DEBUGOUT( "tell BEGIN" );
-    ret = ftell( fp );
+#ifdef __NT__
+    ret = SetFilePointer( FP2WH( fp ), 0, 0, FILE_CURRENT );
+#else
+	ret = ftell( fp );
+#endif
     DEBUGOUT( "tell END" );
     return( ret );
 }
@@ -181,8 +228,17 @@ size_t DIGCLIENTRY( Read )( FILE *fp, void *buf, size_t size )
  * DIGCliRead
  */
 {
+#ifdef __NT__
+    DWORD       bytesread;
+
+    DEBUGOUT( "reading" );
+    if( ReadFile( FP2WH( fp ), buf, size, &bytesread, NULL ) == 0 )
+        return( (size_t)-1 );
+    return( bytesread );
+#else
     DEBUGOUT( "reading" );
     return( fread( buf, 1, size, fp ) );
+#endif
 }
 
 size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
@@ -190,7 +246,15 @@ size_t DIGCLIENTRY( Write )( FILE *fp, const void *buf, size_t size )
  * DIGCliWrite
  */
 {
+#ifdef __NT__
+    DWORD       byteswritten;
+
+    if( WriteFile( FP2WH( fp ), buf, size, &byteswritten, NULL ) == 0 )
+        return( (size_t)-1 );
+    return( byteswritten );
+#else
     return( fwrite( buf, 1, size, fp ) );
+#endif
 }
 
 void DIGCLIENTRY( Close )( FILE *fp )
@@ -198,7 +262,11 @@ void DIGCLIENTRY( Close )( FILE *fp )
  * DIGCliClose
  */
 {
+#ifdef __NT__
+    CloseHandle( FP2WH( fp ) );
+#else
     fclose( fp );
+#endif
 }
 
 void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
@@ -208,7 +276,11 @@ void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {
     /* unused parameters */ (void)mode;
 
+#ifdef __NT__
+    DeleteFile( path );
+#else
     remove( path );
+#endif
 }
 
 size_t DIGLoader( Find )( dig_filetype ftype, const char *base_name, size_t base_name_len,
