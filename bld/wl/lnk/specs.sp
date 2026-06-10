@@ -228,7 +228,7 @@ system begin windows1_dll
     libfile win1stub.obj
     option nocaseexact
     option stack=8k, heapsize=1k
-    libfile libent10.obj
+    libfile libentry.obj
     format windows dll ^
 :endsegment
 end
