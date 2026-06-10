@@ -37,6 +37,7 @@
 ;               wasm libentry.asm -bt=WINDOWS -ml -0r
 ;
 
+.286
         name    libentry
 
 include langenv.inc

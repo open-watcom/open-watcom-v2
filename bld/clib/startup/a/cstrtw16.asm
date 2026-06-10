@@ -55,6 +55,7 @@ pStackTop       equ     000AH
 pStackMin       equ     000CH
 pStackBot       equ     000EH
 
+.286
         name    wstart
 
         assume  nothing
