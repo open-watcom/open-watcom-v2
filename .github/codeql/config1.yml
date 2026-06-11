@@ -1,0 +1,7 @@
+#name: "Open Watcom CodeQL Custom Config"
+# run only single query
+query-filters:
+  - exclude: {} # exclude all
+  - include:
+      id: 
+        - cpp/unbounded-write
