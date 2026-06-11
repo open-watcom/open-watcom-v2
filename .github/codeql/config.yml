@@ -3,8 +3,8 @@
 query-filters:
   - exclude:
       id:
-        #- cpp/unbounded-write
-        #- cpp/overrun-write
-        #- cpp/path-injection
+        - cpp/unbounded-write
+        - cpp/overrun-write
+        - cpp/path-injection
         - cpp/tainted-format-string
-        #- cpp/uncontrolled-allocation-size
+        - cpp/uncontrolled-allocation-size

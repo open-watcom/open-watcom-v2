@@ -6,25 +6,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  analyze:
-    name: CodeQL Static Analysis
+  build-database:
+    name: Build DB
     runs-on: ubuntu-latest
     permissions:
+      security-events: write
       actions: read
       contents: read
-      security-events: write
+    outputs:
+      db-path: ${{ steps.variables.outputs.db-path }}
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v6
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
-        languages: 'c-cpp'
+        languages: 'cpp'
         build-mode: manual
-        queries: security-extended
-        config-file: .github/codeql/config.yml
+        #queries: security-extended
+        #config-file: .github/codeql/config.yml
 
     - name: Set up Environment and Build Bootstrap
       run: |
@@ -43,13 +45,90 @@ jobs:
         OWDOSBOX:   dosbox
         OWVERBOSE:  1
 
+    # find out where exactly the CodeQL database is located (it is always in the 'codeql_databases' subdirectory)
+    - name: DB location
+      id: variables
+      run: |
+        DB_DIR=$(find $RUNNER_TEMP/codeql_databases -mindepth 1 -maxdepth 1 -type d | head -n 1)
+        echo "db-path=$DB_DIR" >> $GITHUB_OUTPUT
+        # We will create a zip archive for safe transfer between jobs
+        zip -r codeql-db.zip "$DB_DIR"
+
+    # save the finished database as a GitHub Actions artifact
+    - name: Upload databáze
+      uses: actions/upload-artifact@v4
+      with:
+        name: codeql-database-artifact
+        path: codeql-db.zip
+        retention-days: 1
+
+  analyze:
+    name: CodeQL Static Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - chunk_name: all-queries
+            query_path: security-extended
+            category: "/language:cpp"
+            config_file: .github/codeql/config.yml
+            skip_queries: false
+          - chunk_name: "dotaz-1"
+            query_path: "cesta/dotaz1.ql"
+            category: "/query:dotaz-1"
+            skip_queries: true
+          - chunk_name: "dotaz-2"
+            query_path: "cesta/dotaz2.ql"
+            category: "/query:dotaz-1"
+            skip_queries: true
+          - chunk_name: "dotaz-3"
+            query_path: "cesta/dotaz3.ql"
+            category: "/query:dotaz-1"
+            skip_queries: true
+          - chunk_name: "dotaz-4"
+            query_path: "cesta/dotaz4.ql"
+            category: "/query:dotaz-1"
+            skip_queries: true
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    # Stáhneme hotovou databázi z prvního jobu
+    - name: Download databáze
+      uses: actions/download-artifact@v4
+      with:
+        name: codeql-database-artifact
+
+    # Inicializace CodeQL (pouze pro nastavení binárek, nekompiluje se)
+    - name: Initialize CodeQL CLI
+      uses: github/codeql-action/init@v4
+      with:
+        languages: 'cpp'
+        queries: ${{ matrix.query_path }}
+        build-mode: manual
+        config-file: ${{ matrix.config_file }}
+
+    # unpack the downloaded database exactly where the CodeQL action expects it
+    - name: Unpack DB
+      run: |
+        unzip codeql-db.zip -d /
+
+    # run the analysis itself on the finished database
     - name: Perform CodeQL Analysis
       continue-on-error: true
       uses: github/codeql-action/analyze@v4
       with:
-        category: "/language:cpp"
-        upload: true
-        ram: 14575
-        threads: 4
+        category: ${{ matrix.category }}
+        skip-queries: ${{ skip_queries }}
+        # upload: true
+        # ram: 14575
+        # threads: 4
       env:
         CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=14400"]}}'
