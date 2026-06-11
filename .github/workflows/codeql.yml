@@ -48,7 +48,7 @@ jobs:
 
     # save the finished database as a GitHub Actions artifact
     - name: Upload databáze
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: codeql-database-artifact
         path: ${{runner.temp}}/mycodeql
@@ -108,7 +108,7 @@ jobs:
 
     # Stáhneme hotovou databázi z prvního jobu
     - name: Download databáze
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: codeql-database-artifact
         path: ${{runner.temp}}/mycodeql
