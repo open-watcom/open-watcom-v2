@@ -63,6 +63,7 @@ jobs:
         retention-days: 1
 
   analyze:
+    needs: build-database
     name: CodeQL Static Analysis
     runs-on: ubuntu-latest
     permissions:
