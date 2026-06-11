@@ -68,32 +68,26 @@ jobs:
       matrix:
         include:
           - chunk_name: all-queries
-            query_path: security-extended
             category: "/language:cpp"
             config_file: .github/codeql/config.yml
             #skip_queries: false
           - chunk_name: "qry-1"
-            query_path: "cpp/unbounded-write"
             category: "/query:qry-1"
             config_file: .github/codeql/config1.yml
             #skip_queries: true
           - chunk_name: "qry-2"
-            query_path: "cpp/overrun-write"
             category: "/query:qry-2"
             config_file: .github/codeql/config2.yml
             #skip_queries: true
           - chunk_name: "qry-3"
-            query_path: "cpp/path-injection"
             category: "/query:qry-3"
             config_file: .github/codeql/config3.yml
             #skip_queries: true
           - chunk_name: "qry-4"
-            query_path: "cpp/tainted-format-string"
             category: "/query:qry-4"
             config_file: .github/codeql/config4.yml
             #skip_queries: true
           - chunk_name: "qry-5"
-            query_path: "cpp/uncontrolled-allocation-size"
             category: "/query:qry-5"
             config_file: .github/codeql/config5.yml
             #skip_queries: true
@@ -108,7 +102,7 @@ jobs:
       with:
         languages: 'cpp'
         db-location: ${{runner.temp}}/mycodeql
-        queries: ${{ matrix.query_path }}
+        queries: security-extended
         build-mode: manual
         config-file: ${{ matrix.config_file }}
 
