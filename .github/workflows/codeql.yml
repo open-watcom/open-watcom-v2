@@ -24,6 +24,7 @@ jobs:
       uses: github/codeql-action/init@v4
       with:
         languages: 'cpp'
+        db-location: ${{runner.temp}}/mycodeql
         build-mode: manual
         #queries: security-extended
         #config-file: .github/codeql/config.yml
@@ -49,10 +50,8 @@ jobs:
     - name: DB location
       id: variables
       run: |
-        DB_DIR=$(find $RUNNER_TEMP/codeql_databases -mindepth 1 -maxdepth 1 -type d | head -n 1)
-        echo "db-path=$DB_DIR" >> $GITHUB_OUTPUT
         # We will create a zip archive for safe transfer between jobs
-        zip -r codeql-db.zip "$DB_DIR"
+        zip -r codeql-db.zip ${{runner.temp}}/mycodeql
 
     # save the finished database as a GitHub Actions artifact
     - name: Upload databáze
@@ -80,21 +79,25 @@ jobs:
             category: "/language:cpp"
             config_file: .github/codeql/config.yml
             skip_queries: false
-          - chunk_name: "dotaz-1"
-            query_path: "cesta/dotaz1.ql"
-            category: "/query:dotaz-1"
+          - chunk_name: "qry-1"
+            query_path: "cpp/unbounded-write"
+            category: "/query:qry-1"
             skip_queries: true
-          - chunk_name: "dotaz-2"
-            query_path: "cesta/dotaz2.ql"
-            category: "/query:dotaz-1"
+          - chunk_name: "qry-2"
+            query_path: "cpp/overrun-write"
+            category: "/query:qry-2"
             skip_queries: true
-          - chunk_name: "dotaz-3"
-            query_path: "cesta/dotaz3.ql"
-            category: "/query:dotaz-1"
+          - chunk_name: "qry-3"
+            query_path: "cpp/path-injection"
+            category: "/query:qry-3"
             skip_queries: true
-          - chunk_name: "dotaz-4"
-            query_path: "cesta/dotaz4.ql"
-            category: "/query:dotaz-1"
+          - chunk_name: "qry-4"
+            query_path: "cpp/tainted-format-string"
+            category: "/query:qry-4"
+            skip_queries: true
+          - chunk_name: "qry-5"
+            query_path: "cpp/uncontrolled-allocation-size"
+            category: "/query:qry-5"
             skip_queries: true
 
     steps:
@@ -119,7 +122,7 @@ jobs:
     # unpack the downloaded database exactly where the CodeQL action expects it
     - name: Unpack DB
       run: |
-        unzip codeql-db.zip -d /
+        unzip codeql-db.zip -d ${{runner.temp}}/mycodeql
 
     # run the analysis itself on the finished database
     - name: Perform CodeQL Analysis
