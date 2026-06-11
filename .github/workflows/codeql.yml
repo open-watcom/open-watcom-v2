@@ -97,13 +97,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    # Stáhneme hotovou databázi z prvního jobu
-    - name: Download databáze
-      uses: actions/download-artifact@v4
-      with:
-        name: codeql-database-artifact
-        path: ${{runner.temp}}/mycodeql
-
     # Inicializace CodeQL (pouze pro nastavení binárek, nekompiluje se)
     - name: Initialize CodeQL CLI
       uses: github/codeql-action/init@v4
@@ -114,10 +107,12 @@ jobs:
         build-mode: manual
         config-file: ${{ matrix.config_file }}
 
-    # unpack the downloaded database exactly where the CodeQL action expects it
-    - name: Unpack DB
-      run: |
-        unzip codeql-db.zip -d ${{runner.temp}}/mycodeql
+    # Stáhneme hotovou databázi z prvního jobu
+    - name: Download databáze
+      uses: actions/download-artifact@v4
+      with:
+        name: codeql-database-artifact
+        path: ${{runner.temp}}/mycodeql
 
     # run the analysis itself on the finished database
     - name: Perform CodeQL Analysis
