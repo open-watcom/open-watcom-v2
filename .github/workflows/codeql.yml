@@ -46,19 +46,12 @@ jobs:
         OWDOSBOX:   dosbox
         OWVERBOSE:  1
 
-    # find out where exactly the CodeQL database is located (it is always in the 'codeql_databases' subdirectory)
-    - name: DB location
-      id: variables
-      run: |
-        # We will create a zip archive for safe transfer between jobs
-        zip -r codeql-db.zip ${{runner.temp}}/mycodeql
-
     # save the finished database as a GitHub Actions artifact
     - name: Upload databáze
       uses: actions/upload-artifact@v4
       with:
         name: codeql-database-artifact
-        path: codeql-db.zip
+        path: ${{runner.temp}}/mycodeql
         retention-days: 1
 
   analyze:
@@ -109,12 +102,14 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: codeql-database-artifact
+        path: ${{runner.temp}}/mycodeql
 
     # Inicializace CodeQL (pouze pro nastavení binárek, nekompiluje se)
     - name: Initialize CodeQL CLI
       uses: github/codeql-action/init@v4
       with:
         languages: 'cpp'
+        db-location: ${{runner.temp}}/mycodeql
         queries: ${{ matrix.query_path }}
         build-mode: manual
         config-file: ${{ matrix.config_file }}
