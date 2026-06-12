@@ -21,9 +21,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    - name: Setup CodeQL CLI
-      uses: github/codeql-action/setup-codeql@v4
-
     - name: Set up OW Build Environment
       run: |
         sudo apt-get update
@@ -31,6 +28,9 @@ jobs:
         
         echo "=== Compiler Info ==="
         gcc -v
+
+    - name: Setup CodeQL CLI
+      uses: github/codeql-action/setup-codeql@v4
 
     - name: Create CodeQL Database
       run: |
