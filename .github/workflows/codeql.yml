@@ -67,7 +67,7 @@ jobs:
       matrix:
         include:
           - category: 'all-cpp'
-            query_selection: '.github/codeql/queryf1.ql'
+            query_selection: '.github/codeql/queryf1.qls'
           - category: 'qry-1-cpp'
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
           - category: "qry-2-cpp"
