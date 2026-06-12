@@ -1,4 +1,4 @@
-name: "CodeQL Advanced Static Analysis"
+name: 'CodeQL Advanced Static Analysis'
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DB_PATH: mycodeql
+  DB_PATH: 'mycodeql'
 
 jobs:
   build-database:
@@ -65,9 +65,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - category: "all-cpp"
+          - category: 'all-cpp'
             query_selection: '.github/codeql/filtered-security.qls'
-          - category: "qry-1-cpp"
+          - category: 'qry-1-cpp'
             query_selection: '--query-filters="include:id cpp/unbounded-write" codeql/cpp-queries'
           - category: "qry-2-cpp"
             query_selection: '--query-filters="include:id cpp/overrun-write" codeql/cpp-queries'
