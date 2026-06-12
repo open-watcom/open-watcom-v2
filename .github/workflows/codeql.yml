@@ -104,9 +104,8 @@ jobs:
           --output=results-${{ matrix.category }}.sarif \
           --verbosity=progress \
           --threads=0 \
-          --ram=14000
-      env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
+          --ram=14000 \
+          --timeout=300
 
     - name: Upload Results to GitHub
       uses: github/codeql-action/upload-sarif@v4
