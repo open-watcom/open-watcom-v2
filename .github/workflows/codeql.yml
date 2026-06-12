@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  DB_PATH: "${{runner.temp}}/mycodeql"
+  DB_PATH: mycodeql
 
 jobs:
   build-database:
@@ -34,7 +34,7 @@ jobs:
 
    - name: Create CodeQL Database
      run: |
-       codeql database create "${{ env.DB_PATH }}" \
+       codeql database create "${{ runner.temp }}/${{ env.DB_PATH }}" \
          --language=cpp \
          --no-run-unnecessary-builds \
          --command="./ci/codeql.sh"
@@ -49,7 +49,7 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         name: codeql-database-artifact
-        path: ${{ env.DB_PATH }}
+        path: ${{ runner.temp }}/${{ env.DB_PATH }}
         retention-days: 1
 
   analyze-database:
@@ -93,11 +93,11 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         name: codeql-database-artifact
-        path: ${{ env.DB_PATH }}
+        path: ${{ runner.temp }}/${{ env.DB_PATH }}
 
     - name: Run Matrix Security Analysis
       run: |
-        codeql database analyze "${{ env.DB_PATH }}" \
+        codeql database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
           --output=results-${{ matrix.category }}.sarif
