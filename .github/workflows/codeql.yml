@@ -69,16 +69,15 @@ jobs:
           - category: 'all-cpp'
             query_selection: '.github/codeql/filtered-security.qls'
           - category: 'qry-1-cpp'
-            query_selection: '--query-filters="include:id cpp/unbounded-write" codeql/cpp-queries'
+            query_selection: 'codeql/cpp-queries:cpp/unbounded-write'
           - category: "qry-2-cpp"
-            query_selection: '--query-filters="include:id cpp/overrun-write" codeql/cpp-queries'
+            query_selection: 'codeql/cpp-queries:cpp/overrun-write'
           - category: "qry-3-cpp"
-            query_selection: '--query-filters="include:id cpp/path-injection" codeql/cpp-queries'
+            query_selection: 'codeql/cpp-queries:cpp/path-injection'
           - category: "qry-4-cpp"
-            query_selection: '--query-filters="include:id cpp/tainted-format-string" codeql/cpp-queries'
+            query_selection: 'codeql/cpp-queries:cpp/tainted-format-string'
           - category: "qry-5-cpp"
-            query_selection: '--query-filters="include:id cpp/uncontrolled-allocation-size" codeql/cpp-queries'
-
+            query_selection: 'codeql/cpp-queries:cpp/uncontrolled-allocation-size'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
