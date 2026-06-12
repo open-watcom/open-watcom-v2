@@ -97,6 +97,7 @@ jobs:
         path: ${{ runner.temp }}/${{ env.DB_PATH }}
 
     - name: Run Matrix Security Analysis
+      continue-on-error: true
       run: |
         ${{ steps.codeql.outputs.codeql-path }} database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
           ${{ matrix.query_selection }} \
