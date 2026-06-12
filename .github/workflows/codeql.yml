@@ -67,17 +67,17 @@ jobs:
       matrix:
         include:
           - category: 'all-cpp'
-            query_selection: '.github/codeql/queryf1.qls'
+            query_selection: '.github/codeql/queryf1.ql'
           - category: 'qry-1-cpp'
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
           - category: "qry-2-cpp"
-            query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWrite.ql'
+            query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
           - category: "qry-3-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-022/TaintedPath.ql'
           - category: "qry-4-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-134/UncontrolledFormatString.ql'
           - category: "qry-5-cpp"
-            query_selection: 'codeql/cpp-queries:Security/CWE/CWE-789/UncontrolledAllocationSize.ql'
+            query_selection: 'codeql/cpp-queries:Security/CWE/CWE-190/TaintedAllocationSize.ql'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
