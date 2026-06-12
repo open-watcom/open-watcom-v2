@@ -101,7 +101,9 @@ jobs:
         ${{ steps.codeql.outputs.codeql-path }} database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
-          --output=results-${{ matrix.category }}.sarif
+          --output=results-${{ matrix.category }}.sarif \
+          --threads=0 \
+          --ram=14000
       env:
         CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
 
