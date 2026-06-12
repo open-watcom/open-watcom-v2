@@ -109,12 +109,7 @@ jobs:
         CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
 
     - name: Upload Results to GitHub
-      run: |
-        ${{ steps.codeql.outputs.codeql-path }} github upload-results \
-          --repository="${{ github.repository }}" \
-          --ref="${{ github.ref }}" \
-          --commit="${{ github.sha }}" \
-          --sarif=results-${{ matrix.category }}.sarif \
-          --sarif-id="${{ matrix.category }}"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: results-${{ matrix.category }}.sarif
+        category: ${{ matrix.category }}
