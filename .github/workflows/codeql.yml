@@ -102,6 +102,7 @@ jobs:
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
           --output=results-${{ matrix.category }}.sarif \
+          --verbosity=progress \
           --threads=0 \
           --ram=14000
       env:
@@ -114,6 +115,6 @@ jobs:
           --ref="${{ github.ref }}" \
           --commit="${{ github.sha }}" \
           --sarif=results-${{ matrix.category }}.sarif \
-          --category="${{ matrix.category }}"
+          --sarif-id="${{ matrix.category }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
