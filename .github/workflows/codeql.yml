@@ -35,7 +35,7 @@ jobs:
 
     - name: Create CodeQL Database
       run: |
-        ${{ steps.codeql.outputs.codeql-path }}/codeql database create "${{ runner.temp }}/${{ env.DB_PATH }}" \
+        ${{ steps.codeql.outputs.codeql-path }} database create "${{ runner.temp }}/${{ env.DB_PATH }}" \
           --language=cpp \
           --no-run-unnecessary-builds \
           --command="./ci/codeql.sh"
@@ -89,7 +89,7 @@ jobs:
 
     - name: Download CodeQL Query Packs
       run: |
-        ${{ steps.codeql.outputs.codeql-path }}/codeql pack download codeql/cpp-queries
+        ${{ steps.codeql.outputs.codeql-path }} pack download codeql/cpp-queries
 
     - name: Download Database Artifact
       uses: actions/download-artifact@v8
@@ -99,7 +99,7 @@ jobs:
 
     - name: Run Matrix Security Analysis
       run: |
-        ${{ steps.codeql.outputs.codeql-path }}/codeql database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
+        ${{ steps.codeql.outputs.codeql-path }} database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
           --output=results-${{ matrix.category }}.sarif
@@ -108,7 +108,7 @@ jobs:
 
     - name: Upload Results to GitHub
       run: |
-        ${{ steps.codeql.outputs.codeql-path }}/codeql github upload-results \
+        ${{ steps.codeql.outputs.codeql-path }} github upload-results \
           --repository="${{ github.repository }}" \
           --ref="${{ github.ref }}" \
           --commit="${{ github.sha }}" \
