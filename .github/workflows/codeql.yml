@@ -5,6 +5,9 @@ on:
     - cron: '0 1 * * *'
   workflow_dispatch:
 
+env:
+  DB_PATH: "${{runner.temp}}/mycodeql"
+
 jobs:
   build-database:
     name: Build DB
@@ -13,33 +16,28 @@ jobs:
       security-events: write
       actions: read
       contents: read
-    outputs:
-      db-path: ${{ steps.variables.outputs.db-path }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: 'cpp'
-        db-location: ${{runner.temp}}/mycodeql
-        build-mode: manual
-        queries: security-extended
-        #config-file: .github/codeql/config.yml
+    - name: Setup CodeQL CLI
+      uses: github/codeql-action/setup-codeql@v4
 
-    - name: Set up Environment and Build Bootstrap
+    - name: Set up OW Build Environment
       run: |
         sudo apt-get update
         sudo apt-get install -y dosbox ltrace
         
         echo "=== Compiler Info ==="
         gcc -v
-        
-        echo "=== build.sh boot ==="
-        . ci/codeql.sh
 
+   - name: Create CodeQL Database
+     run: |
+       codeql database create "${{ env.DB_PATH }}" \
+         --language=cpp \
+         --no-run-unnecessary-builds \
+         --command="./ci/codeql.sh"
       env:
         OWROOT:     ${{github.workspace}}
         OWTOOLS:    GCC
@@ -47,16 +45,16 @@ jobs:
         OWVERBOSE:  1
 
     # save the finished database as a GitHub Actions artifact
-    - name: Upload databáze
+    - name: Upload database
       uses: actions/upload-artifact@v6
       with:
         name: codeql-database-artifact
-        path: ${{runner.temp}}/mycodeql
+        path: ${{ env.DB_PATH }}
         retention-days: 1
 
-  analyze:
+  analyze-database:
     needs: build-database
-    name: CodeQL Static Analysis
+    name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -67,61 +65,52 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - chunk_name: all-queries
-            category: "/language:cpp"
-            config_file: .github/codeql/config.yml
-            #skip_queries: false
-          - chunk_name: "qry-1"
-            category: "/query:qry-1"
-            config_file: .github/codeql/config1.yml
-            #skip_queries: true
-          - chunk_name: "qry-2"
-            category: "/query:qry-2"
-            config_file: .github/codeql/config2.yml
-            #skip_queries: true
-          - chunk_name: "qry-3"
-            category: "/query:qry-3"
-            config_file: .github/codeql/config3.yml
-            #skip_queries: true
-          - chunk_name: "qry-4"
-            category: "/query:qry-4"
-            config_file: .github/codeql/config4.yml
-            #skip_queries: true
-          - chunk_name: "qry-5"
-            category: "/query:qry-5"
-            config_file: .github/codeql/config5.yml
-            #skip_queries: true
+          - category: "all-cpp"
+            query_selection: '.github/codeql/filtered-security.qls'
+          - category: "qry-1-cpp"
+            query_selection: '--query-filters="include:id cpp/unbounded-write" codeql/cpp-queries'
+          - category: "qry-2-cpp"
+            query_selection: '--query-filters="include:id cpp/overrun-write" codeql/cpp-queries'
+          - category: "qry-3-cpp"
+            query_selection: '--query-filters="include:id cpp/path-injection" codeql/cpp-queries'
+          - category: "qry-4-cpp"
+            query_selection: '--query-filters="include:id cpp/tainted-format-string" codeql/cpp-queries'
+          - category: "qry-5-cpp"
+            query_selection: '--query-filters="include:id cpp/uncontrolled-allocation-size" codeql/cpp-queries'
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
 
-    # Inicializace CodeQL (pouze pro nastavení binárek, nekompiluje se)
-    - name: Initialize CodeQL CLI
-      uses: github/codeql-action/init@v4
-      with:
-        languages: 'cpp'
-        db-location: ${{runner.temp}}/mycodeql
-        queries: security-extended
-        build-mode: manual
-        config-file: ${{ matrix.config_file }}
+    - name: Setup CodeQL CLI
+      uses: github/codeql-action/setup-codeql@v4
 
-    # Stáhneme hotovou databázi z prvního jobu
-    - name: Download databáze
+    - name: Download CodeQL Query Packs
+      run: |
+        codeql pack download codeql/cpp-queries
+
+    - name: Download Database Artifact
       uses: actions/download-artifact@v8
       with:
         name: codeql-database-artifact
-        path: ${{runner.temp}}/mycodeql
+        path: ${{ env.DB_PATH }}
 
-    # run the analysis itself on the finished database
-    - name: Perform CodeQL Analysis
-      continue-on-error: true
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: ${{ matrix.category }}
-        #skip-queries: ${{ matrix.skip_queries }}
-        # upload: true
-        # ram: 14575
-        # threads: 4
+    - name: Run Matrix Security Analysis
+      run: |
+        codeql database analyze "${{ env.DB_PATH }}" \
+          ${{ matrix.query_selection }} \
+          --format=sarif-latest \
+          --output=results-${{ matrix.category }}.sarif
       env:
-        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=14400"]}}'
+        CODEQL_ACTION_EXTRA_OPTIONS: '{"database": {"run-queries": ["--timeout=400"]}}'
+
+    - name: Upload Results to GitHub
+      run: |
+        codeql github upload-results \
+          --repository="${{ github.repository }}" \
+          --ref="${{ github.ref }}" \
+          --commit="${{ github.sha }}" \
+          --sarif=results-${{ matrix.category }}.sarif \
+          --category="${{ matrix.category }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
