@@ -32,12 +32,12 @@ jobs:
         echo "=== Compiler Info ==="
         gcc -v
 
-   - name: Create CodeQL Database
-     run: |
-       codeql database create "${{ runner.temp }}/${{ env.DB_PATH }}" \
-         --language=cpp \
-         --no-run-unnecessary-builds \
-         --command="./ci/codeql.sh"
+    - name: Create CodeQL Database
+      run: |
+        codeql database create "${{ runner.temp }}/${{ env.DB_PATH }}" \
+          --language=cpp \
+          --no-run-unnecessary-builds \
+          --command="./ci/codeql.sh"
       env:
         OWROOT:     ${{github.workspace}}
         OWTOOLS:    GCC
