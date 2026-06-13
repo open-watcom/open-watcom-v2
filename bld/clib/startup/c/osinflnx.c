@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,41 +38,20 @@
 #include "rtdata.h"
 
 
-#define  _OLD_UTSNAME_LENGTH    9
-
-#pragma pack( __push, 4 )
-typedef struct old_utsname {
-    char sysname[_OLD_UTSNAME_LENGTH];      /* name of operating system */
-    char nodename[_OLD_UTSNAME_LENGTH];     /* name of node on network */
-    char release[_OLD_UTSNAME_LENGTH];      /* release level of OS */
-    char version[_OLD_UTSNAME_LENGTH];      /* version level of OS */
-    char machine[_OLD_UTSNAME_LENGTH];      /* machine hardware type */
-} old_utsname;
-#pragma pack( __pop )
-
 _WCRTDATA unsigned char     _osmajor = 0;   /* major number of the Linux kernel version */
 _WCRTDATA unsigned char     _osminor = 0;   /* minor number of the Linux kernel version */
           unsigned char     _osrev = 0;     /* revision number of the Linux kernel version */
 
-static void _WCNEAR __get_osversion( void )
+static void _WCNEAR __get_osinfo( void )
 {
-    union {
-        struct utsname  new;
-        old_utsname     old;
-    } uts;
+    struct utsname  uts;
     char            *p;
     char            c;
 
-    p = uts.new.version;
-    if( sys_call1( SYS_uname, (u_long)&uts.new ) ) {
-        if( sys_call1( SYS_olduname, (u_long)&uts.new ) ) {
-            if( sys_call1( SYS_oldolduname, (u_long)&uts.old ) ) {
-                return;
-            }
-            p = uts.old.version;
-        }
-    }
+    if( uname( &uts ) != - 1 )
+        return;
     // read kernel version
+    p = uts.version;
     while( (c = *p++) != '\0' ) {
         if( c < '0' || c > '9' )
             break;
@@ -94,4 +73,4 @@ static void _WCNEAR __get_osversion( void )
     }
 }
 
-AXIN( __get_osversion, INIT_PRIORITY_THREAD )
+AXIN( __get_osinfo, INIT_PRIORITY_THREAD )
