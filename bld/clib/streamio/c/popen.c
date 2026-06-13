@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,10 +144,10 @@ static int _WCNEAR spawn_it( FILE *fp, const CHAR_TYPE *command )
 #if defined( __OS2__ )
     words[0] = STRING( "cmd.exe" );
 #else
-    if( WIN32_IS_WIN95 ) {
-        words[0] = STRING( "command.com" ); /* 95 */
-    } else {
+    if( WIN32_IS_NT ) {
         words[0] = STRING( "cmd.exe" );     /* NT */
+    } else {
+        words[0] = STRING( "command.com" ); /* 9x */
     }
 #endif
     words[1] = STRING( "/c" );

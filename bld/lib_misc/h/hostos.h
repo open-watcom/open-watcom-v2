@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,13 @@
  * Values returned by _host_os_id().
  */
 enum {
-    HOST_OS_WINNT,
-    HOST_OS_WIN95,
-    HOST_OS_WIN32S,
+    HOST_OS_WIN_UNKNOWN,
+    HOST_OS_WIN1X,
+    HOST_OS_WIN2X,
     HOST_OS_WIN3X,
-    HOST_OS_WIN_UNKNOWN
+    HOST_OS_WIN32S,
+    HOST_OS_WIN9X,
+    HOST_OS_WINNT,
 };
 
 

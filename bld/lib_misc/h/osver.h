@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,10 @@
 
 
 #ifdef __NT__
-    #define WIN32_IS_WIN32S     ( _osbuild >= 0x8000 && _osmajor < 4 )
-    #define WIN32_IS_WIN95      ( _osbuild >= 0x8000 && _osmajor >= 4 )
-    #define WIN32_IS_NT         ( _osbuild < 0x8000 )
-    #define WIN32_IS_NT4        ( _osbuild < 0x8000 && _osmajor >= 4 )
+    #define WIN32_IS_WIN32S     ( (_osbuild & 0x8000) && _osmajor < 4 )
+    #define WIN32_IS_WIN9X      ( (_osbuild & 0x8000) && _osmajor >= 4 )
+    #define WIN32_IS_NT         ( (_osbuild & 0x8000) == 0 )
+    #define WIN32_IS_NT4        ( (_osbuild & 0x8000) == 0 && _osmajor >= 4 )
 #endif
 
 

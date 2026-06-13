@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,11 +53,11 @@ static int _WCNEAR win_nt( void )
 }
 
 
-static int _WCNEAR win_95( void )
+static int _WCNEAR win_9x( void )
 /*******************************/
 {
   #ifdef __NT__                             /* Win32 app */
-    return( WIN32_IS_WIN95 );
+    return( WIN32_IS_WIN9X );
   #else                                     /* Win16 app */
     DWORD           ver;
 
@@ -82,7 +82,7 @@ static int _WCNEAR win_3x( void )
 /*******************************/
 {
   #if defined( __WINDOWS__ )
-    return( win_nt() == 0 && win_95() == 0 );
+    return( win_nt() == 0 && win_9x() == 0 );
   #else
     return( 0 );
   #endif
@@ -99,8 +99,8 @@ _WCRTLINK int _host_os_id( void )
 #if defined(__WINDOWS__) || defined(__NT__)
     if( win_nt() ) {
         id = HOST_OS_WINNT;
-    } else if( win_95() ) {
-        id = HOST_OS_WIN95;
+    } else if( win_9x() ) {
+        id = HOST_OS_WIN9X;
     } else if( win_32s() ) {
         id = HOST_OS_WIN32S;
     } else if( win_3x() ) {
@@ -125,8 +125,8 @@ _WCRTLINK const char *_host_os_name( void )
 #if defined(__WINDOWS__) || defined(__NT__)
     if( id == HOST_OS_WINNT ) {
         osname = "Windows NT";
-    } else if( id == HOST_OS_WIN95 ) {
-        osname = "Windows 95";
+    } else if( id == HOST_OS_WIN9X ) {
+        osname = "Windows 9x";
     } else if( id == HOST_OS_WIN32S ) {
         osname = "Win32s under Windows 3.x";
     } else if( id == HOST_OS_WIN3X ) {
