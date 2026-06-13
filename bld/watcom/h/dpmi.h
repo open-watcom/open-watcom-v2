@@ -128,6 +128,7 @@
 #define PMIsReadSelector                        _PMIsReadSelector
 #define PMIsWriteSelector                       _PMIsWriteSelector
 #define PMIs32bitSelector                       _PMIs32bitSelector
+#define PMIs32bitCPU                            _PMIs32bitCPU
 
 /*
  * DPMI registers structure definition for DPMI SimulateRealInt
@@ -338,6 +339,8 @@ extern uint_32  _PMGetDataSelectorSize( void );
 extern uint_8   _PMIsReadSelector( uint_16 sel );
 extern uint_8   _PMIsWriteSelector( uint_16 sel );
 extern uint_8   _PMIs32bitSelector( unsigned sel );
+extern uint_8   _PMIs32bitCPU( void );
+
 
 #define MULTIPLEX_1680  0x80 0x16
 #define MULTIPLEX_1686  0x86 0x16
@@ -1398,6 +1401,28 @@ extern uint_8   _PMIs32bitSelector( unsigned sel );
     __parm      [__edx] \
     __value     [__al] \
     __modify __exact [__eax]
+#endif
+
+#if defined( _M_I86 )
+#pragma aux _PMIs32bitCPU = \
+        _PROTECTED \
+        _SMSW_AX  \
+        _AND_AX_byte 0xF0 \
+        _CMP_AX_byte 0xF0 \
+        "je short L286" \
+        /* 386 CPU */ \
+        _MOV_AL 1  \
+    "L286: " \
+        _AND_AX_byte 1 \
+    __parm      [] \
+    __value     [__al] \
+    __modify __exact [__ax]
+#else
+#pragma aux _PMIs32bitCPU = \
+        _MOV_AL 1  \
+    __parm      [] \
+    __value     [__al] \
+    __modify __exact [__al]
 #endif
 
 #endif
