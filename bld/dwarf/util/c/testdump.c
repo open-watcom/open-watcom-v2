@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #include "roundmac.h"
 #include "testcli.h"
 
-extern bool byte_swap;
+extern bool big_endian;
 
 typedef struct {
     uint_32     value;
@@ -240,21 +240,21 @@ static char *sectionNames[] = {
 };
 
 
-static uint_32  getU32( uint_32 *src )
+static uint_32  getU32( uint_8 *src )
 {
-    if( byte_swap ) {
-        return( SWAP_32( *src ) );
+    if( big_endian ) {
+        return( MGET_BE_U32_UN( (char *)src ) );
     } else {
-        return( *src );
+        return( MGET_LE_U32_UN( (char *)src ) );
     }
 }
 
-static uint_16  getU16( uint_16 *src )
+static uint_16  getU16( uint_8 *src )
 {
-    if( byte_swap ) {
-        return( SWAP_16( *src ) );
+    if( big_endian ) {
+        return( MGET_BE_U16_UN( (char *)src ) );
     } else {
-        return( *src );
+        return( MGET_LE_U16_UN( (char *)src ) );
     }
 }
 
@@ -482,12 +482,12 @@ static void dumpInfo( const uint_8 *input, uint length ) {
 
     p = input;
     while( p - input < length ) {
-        unit_length = getU32( (uint_32 *)p );
+        unit_length = getU32( p );
         unit_base = p + sizeof( uint_32 );
         address_size = *(p + 10);
-        abbrev_offset = getU32( (uint_32 *)(p + 6) );
+        abbrev_offset = getU32( p + 6 );
         printf( "Length: %08lx\nVersion: %04x\nAbbrev: %08lx\nAddress Size %02x\n",
-            unit_length, getU16( (uint_16 *)(p + 4) ), abbrev_offset, address_size );
+            unit_length, getU16( p + 4 ), abbrev_offset, address_size );
         p += 11;
         while( p - unit_base < unit_length ) {
             printf( "offset %08x: ", p - input );
@@ -516,12 +516,12 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                 case DW_FORM_addr:
                     switch( address_size ) {
                     case 4:
-                        tmp = getU32( (uint_32 *)p );
+                        tmp = getU32( p );
                         p += sizeof( uint_32 );
                         printf( "\t%08lx\n", tmp );
                         break;
                     case 2:
-                        tmp = getU16( (uint_16 *)p );
+                        tmp = getU16( p );
                         p += sizeof( uint_16 );
                         printf( "\t%04lx\n", tmp );
                         break;
@@ -544,14 +544,14 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     p += len;
                     break;
                 case DW_FORM_block2:
-                    len = getU16( (uint_16 *)p );
+                    len = getU16( p );
                     p += sizeof( uint_16 );
                     printf( "\n" );
                     dumpHex( p, len, 0 );
                     p += len;
                     break;
                 case DW_FORM_block4:
-                    len = getU32( (uint_32 *)p );
+                    len = getU32( p );
                     p += sizeof( uint_32 );
                     printf( "\n" );
                     dumpHex( p, len, 0 );
@@ -563,12 +563,12 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     break;
                 case DW_FORM_data2:
                 case DW_FORM_ref2:
-                    printf( "\t%04x\n", getU16( (uint_16 *)p ) );
+                    printf( "\t%04x\n", getU16( p ) );
                     p += sizeof( uint_16 );
                     break;
                 case DW_FORM_data4:
                 case DW_FORM_ref4:
-                    printf( "\t%08lx\n", getU32( (uint_32 *)p ) );
+                    printf( "\t%08lx\n", getU32( p ) );
                     p += sizeof( uint_32 );
                     break;
                 case DW_FORM_flag:
@@ -587,7 +587,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     p += strlen( (const char *)p ) + 1;
                     break;
                 case DW_FORM_strp:  /* 4 byte index into .debug_str */
-                    printf_debug_str( getU32( (uint_32 *)p ) );
+                    printf_debug_str( getU32( p ) );
                     p += 4;
                     break;
                 case DW_FORM_udata:
@@ -596,7 +596,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
                     printf( "\t%08lx\n", tmp );
                     break;
                 case DW_FORM_ref_addr:  //KLUDGE should really check offset_size
-                    printf( "\t%08lx\n", getU32( (uint_32 *)p ) );
+                    printf( "\t%08lx\n", getU32( p ) );
                     p += sizeof(uint_32);
                     break;
                 default:
@@ -728,7 +728,7 @@ static void dumpLines( const uint_8 *input, uint length )
 
     p = input;
     while( p - input < length ) {
-        unit_length = getU32( (uint_32 *)p );
+        unit_length = getU32( p );
         p += sizeof( uint_32 );
         unit_base = p;
 
@@ -738,10 +738,10 @@ static void dumpLines( const uint_8 *input, uint length )
         dumpHex( unit_base - sizeof( uint_32 ), unit_length + sizeof (uint_32 ), 1 );
         printf( "=== unit dump end ===\n" );
 
-        printf( "version: 0x%04x\n", getU16( (uint_16 *)p ) );
+        printf( "version: 0x%04x\n", getU16( p ) );
         p += sizeof( uint_16 );
 
-        printf( "prologue_length: 0x%08lx (%u)\n", getU32( (uint_32 *)p ), getU32( (uint_32 *)p ) );
+        printf( "prologue_length: 0x%08lx (%u)\n", getU32( p ), getU32( p ) );
         p += sizeof( uint_32 );
 
         min_instr = *p;
@@ -828,14 +828,14 @@ static void dumpLines( const uint_8 *input, uint length )
                     break;
                 case DW_LNE_set_address:
                     if( op_len == 3 ) {
-                        tmp = getU16( (uint_16 *)p );
+                        tmp = getU16( p );
                         p += sizeof( uint_16 );
                     } else {
-                        tmp = getU32( (uint_32 *)p );
+                        tmp = getU32( p );
                         p += sizeof( uint_32 );
                     }
 #if 0   /* Why did they choose 6 byte here?  */
-                    tmp_seg = getU16( (uint_16 *)p );
+                    tmp_seg = getU16( p );
                     p += sizeof( uint_16 );
                     printf( "SET_ADDRESS %04x:%08lx\n", tmp_seg, tmp );
 #else
@@ -845,7 +845,7 @@ static void dumpLines( const uint_8 *input, uint length )
                     break;
                 case DW_LNE_WATCOM_set_segment_OLD:
                 case DW_LNE_WATCOM_set_segment:
-                    tmp_seg = getU16( (uint_16 *)p );
+                    tmp_seg = getU16( p );
                     p += sizeof( uint_16 );
                     printf( "SET_ADDRESS_SEG %04x\n", tmp_seg );
                     break;
@@ -910,7 +910,7 @@ static void dumpLines( const uint_8 *input, uint length )
                     state.address += ( ( 255 - opcode_base ) / line_range ) * min_instr;
                     break;
                 case DW_LNS_fixed_advance_pc:
-                    tmp = getU16( (uint_16 *)p );
+                    tmp = getU16( p );
                     p += sizeof( uint_16 );
                     printf( " %04x\n", tmp );
                     state.address += tmp;
@@ -966,10 +966,10 @@ static void dumpRef( const uint_8 *input, uint length )
     p = input;
 
     while( p - input < length ) {
-        unit_length = getU32( (uint_32 *)p );
+        unit_length = getU32( p );
         p += sizeof( uint_32 );
         unit_base = p;
-        printf( "total_length: %08lx\n", getU32( (uint_32 *)p ) );
+        printf( "total_length: %08lx\n", getU32( p ) );
 
         while( p - unit_base < unit_length ) {
             op_code = *p++;
@@ -977,7 +977,7 @@ static void dumpRef( const uint_8 *input, uint length )
                 printf( "%s", getReferenceOp( op_code ) );
                 switch( op_code ) {
                 case REF_BEGIN_SCOPE:
-                    printf( " %08lx\n", getU32( (uint_32 *)p ) );
+                    printf( " %08lx\n", getU32( p ) );
                     p += sizeof( uint_32 );
                     break;
                 case REF_END_SCOPE:
@@ -1000,7 +1000,7 @@ static void dumpRef( const uint_8 *input, uint length )
                 op_code -= REF_CODE_BASE;
                 printf( "REF line += %d, column += %d, %08lx\n",
                     op_code / REF_COLUMN_RANGE, op_code % REF_COLUMN_RANGE,
-                    getU32( (uint_32 *)p )
+                    getU32( p )
                 );
                 p += sizeof( uint_32 );
             }
@@ -1019,11 +1019,11 @@ static const uint_8 *dumpSegAddr( const uint_8 *input, uint_8 addrsize, uint_8 s
 
     switch( addrsize ) {
     case 4:
-        addr = getU32( (uint_32 *)p );
+        addr = getU32( p );
         p += sizeof( uint_32 );
         break;
     case 2:
-        addr = getU16( (uint_16 *)p );
+        addr = getU16( p );
         p += sizeof( uint_16 );
         break;
     default:
@@ -1034,12 +1034,12 @@ static const uint_8 *dumpSegAddr( const uint_8 *input, uint_8 addrsize, uint_8 s
     }
     switch( segsize ) {
     case 4:
-        seg = getU32( (uint_32 *)p );
+        seg = getU32( p );
         p += sizeof( uint_32 );
         printf( "%08lx:", seg );
         break;
     case 2:
-        seg = getU16( (uint_16 *)p );
+        seg = getU16( p );
         p += sizeof( uint_16 );
         printf( "%04lx:", seg );
         break;
@@ -1093,11 +1093,11 @@ static void dumpARanges( const uint_8 *input, uint length )
         printf( "Compilation Unit %d\n", cu );
 
         cu_ar_end = p
-        arange_len = getU32( (uint_32 *)p );
+        arange_len = getU32( p );
         p += sizeof( uint_32 );
-        arange_version = getU16( (uint_16 *)p );
+        arange_version = getU16( p );
         p += sizeof( uint_16 );
-        arange_debug_offset = getU32( (uint_32 *)p );
+        arange_debug_offset = getU32( p );
         p += sizeof( uint_32 );
         arange_offset_size = *p;
         p += sizeof( uint_8 );
@@ -1137,12 +1137,12 @@ static void dumpARanges( const uint_8 *input, uint length )
             printf( "\t" );
             switch( arange_offset_size ) {
             case 4:
-                tmp = getU32( (uint_32 *)p );
+                tmp = getU32( p );
                 p += sizeof( uint_32 );
                 printf( "%08lx\n", tmp );
                 break;
             case 2:
-                tmp = getU16( (uint_16 *)p );
+                tmp = getU16( p );
                 p += sizeof( uint_16 );
                 printf( "%04lx\n", tmp );
                 break;

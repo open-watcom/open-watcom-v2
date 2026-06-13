@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,6 +105,9 @@ extern drmem_hdl    DR_Context( dr_context_stack *stack, int up );
 extern void         DR_FreeContextStack( dr_context_stack * );
 
 extern dr_formcl    DR_FormClass( dw_formnum form );
+
+extern unsigned_16  DR_ReadWord( const char *p );
+extern unsigned_32  DR_ReadDWord( const char *p );
 
 /* data declarations */
 extern const dw_tagnum * const SearchTypes[];

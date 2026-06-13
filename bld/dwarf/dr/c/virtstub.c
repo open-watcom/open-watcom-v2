@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "drpriv.h"
+#include "drutils.h"
 #include "leb128rd.h"
 
 
@@ -189,21 +190,11 @@ size_t DR_VMGetStrBuff( drmem_hdl str, char *buf, size_t max )
 unsigned_16 DR_VMReadWord( drmem_hdl hdl )
 /****************************************/
 {
-    unsigned_16     word = *((unsigned_16 _WCUNALIGNED *)(hdl));
-
-    if( DR_CurrNode->byte_swap ) {
-        SWAP_16( word );
-    }
-    return( word );
+    return( DR_ReadWord( hdl ) );
 }
 
 unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
 /*****************************************/
 {
-    unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
-
-    if( DR_CurrNode->byte_swap ) {
-        SWAP_32( dword );
-    }
-    return( dword );
+    return( DR_ReadDWord( hdl ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,7 @@ struct orl_io_struct {
 static dw_out_offset   sectsizes[DR_DEBUG_NUM_SECTS];
 unsigned_8      *sections[DR_DEBUG_NUM_SECTS];
 
-bool            byte_swap = false;
+bool            big_endian = false;
 
 static const char *secNames[] = {
     ".debug_info",
@@ -301,15 +301,12 @@ int main( int argc, char *argv[] )
 
     o_flags = ORLFileGetFlags( o_fhnd );
 
-#ifdef __BIG_ENDIAN__
     if( o_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
-        byte_swap = true;
+        big_endian = false;
     }
-#else
     if( o_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-        byte_swap = true;
+        big_endian = true;
     }
-#endif
 
     if( num_secs ) {
         for( c = 0; c < num_secs; c++ ) {

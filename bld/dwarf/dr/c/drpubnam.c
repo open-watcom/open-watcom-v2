@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +37,12 @@
 
 #define DEBUG_PUBNAMES_VERSION   2
 
-#include "pushpck1.h"
 typedef struct pubname_header {
     uint_32     len;
     uint_16     version;
     uint_32     dbg_pos;
     uint_32     dbg_length;
-} _WCUNALIGNED pubname_header;
-#include "poppck.h"
+} pubname_header;
 
 void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )
 /*********************************************************/
@@ -66,17 +64,21 @@ void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )
     dbg_base = DR_CurrNode->sections[DR_DEBUG_INFO].base;
     finish = pos + DR_CurrNode->sections[DR_DEBUG_PUBNAMES].size;
     while( pos < finish ) {
-        DR_VMRead( pos, &header, sizeof( header ) );
-        if( DR_CurrNode->byte_swap ) {
-            SWAP_32( header.len );
-            SWAP_16( header.version );
-            SWAP_32( header.dbg_pos );
-            SWAP_32( header.dbg_length );
-        }
+        /*
+         * read pubname header (unaligned + endianness)
+         */
+        header.len = DR_VMReadDWord( pos );
+        pos += sizeof( uint_32 );
+        header.version = DR_VMReadWord( pos );
+        pos += sizeof( uint_16 );
+        header.dbg_pos = DR_VMReadDWord( pos );
+        pos += sizeof( uint_32 );
+        header.dbg_length = DR_VMReadDWord( pos );
+        pos += sizeof( uint_32 );
         if( header.version != DEBUG_PUBNAMES_VERSION )
             DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
         unit_end = pos + sizeof( uint_32 ) + header.len;
-        pos += sizeof( header );
+        pos += 3 * sizeof( unsigned_32 ) + sizeof( unsigned_16 ); //sizeof( header )
         pubname.dbg_cu = dbg_base + header.dbg_pos;
         pubname.is_start = true;
         for( ;; ) {

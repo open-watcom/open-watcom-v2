@@ -170,7 +170,7 @@ struct imp_image_handle {
     scope_ctl           scope;
     addrmod             last;
     bool                has_pubnames;
-    bool                is_byteswapped;
+    bool                big_endian;
 };
 
 #ifdef DEBUG

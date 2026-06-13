@@ -1150,3 +1150,23 @@ void DR_FreeContextStack( dr_context_stack *stack )
     stack->free = 0;
     stack->size = 0;
 }
+
+unsigned_16      DR_ReadWord( const char *p )
+/*******************************************/
+{
+    if( DR_CurrNode->big_endian ) {
+        return( MGET_BE_U16_UN( p ) );
+    } else {
+        return( MGET_LE_U16_UN( p ) );
+    }
+}
+
+unsigned_32      DR_ReadDWord( const char *p )
+/********************************************/
+{
+    if( DR_CurrNode->big_endian ) {
+        return( MGET_BE_U32_UN( p ) );
+    } else {
+        return( MGET_LE_U32_UN( p ) );
+    }
+}

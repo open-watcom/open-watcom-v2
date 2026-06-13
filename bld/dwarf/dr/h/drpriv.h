@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,7 @@ typedef struct dr_dbg_info {
     dr_cu_handle        last_ccu;
     df_ver              wat_producer_ver;
     unsigned_8          addr_size;
-    bool                byte_swap;
+    bool                big_endian;
 } dr_dbg_info;
 
 extern dr_dbg_handle    DR_CurrNode;

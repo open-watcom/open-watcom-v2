@@ -107,8 +107,8 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
     *compunit->abbrev_refs = 1;
 }
 
-static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byteswap )
-/************************************************************************************/
+static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool big_endian )
+/**************************************************************************************/
 {
     dr_dbg_handle       dbg;
     int                 i;
@@ -122,7 +122,7 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool byte
     dbg->file = file;
     dbg->addr_size = 0;
     dbg->wat_producer_ver = VER_NONE;
-    dbg->byte_swap = byteswap;
+    dbg->big_endian = big_endian;
     dbg->last_ccu = &dbg->compunit;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         size = sizes[i];
@@ -218,24 +218,24 @@ static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
     DR_CurrNode->addr_size = addr_size;
 }
 
-dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool byteswap )
-/*************************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool big_endian )
+/***************************************************************************************/
 {
     dr_dbg_handle       dbg;
 
-    dbg = InitDbgHandle( file, sizes, byteswap );
+    dbg = InitDbgHandle( file, sizes, big_endian );
     if( dbg != NULL ) {
         ReadCompUnits( dbg, false );
     }
     return( dbg );
 }
 
-dr_dbg_handle DRENTRY DRDbgInit( void * file, unsigned long * sizes, bool byteswap )
-/**********************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInit( void * file, unsigned long * sizes, bool big_endian )
+/************************************************************************************/
 {
     dr_dbg_handle       dbg;
 
-    dbg = InitDbgHandle( file, sizes, byteswap );
+    dbg = InitDbgHandle( file, sizes, big_endian );
     if( dbg != NULL ) {
         ReadCompUnits( dbg, true );
     }

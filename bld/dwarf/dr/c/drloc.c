@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,15 +112,9 @@ static void DoLocExpr( unsigned_8       *p,
             break;
         case DW_LOP_ADDR:
             if( addr_size == 4 ) {
-                op1 = *(uint_32 _WCUNALIGNED *)p;
-                if( DR_CurrNode->byte_swap ) {
-                    SWAP_32( op1 );
-                }
+                op1 = DR_ReadDWord( (char *)p );
             } else if( addr_size == 2 ) {
-                op1 = *(uint_16 _WCUNALIGNED *)p;
-                if( DR_CurrNode->byte_swap ) {
-                    SWAP_16( op1 );
-                }
+                op1 = DR_ReadWord( (char *)p );
             } else if( addr_size == 1 ) {
                 op1 = *(uint_8 _WCUNALIGNED *)p;
             } else {
@@ -137,19 +131,19 @@ static void DoLocExpr( unsigned_8       *p,
             p += sizeof(int_8 );
             break;
         case DW_LOP_OPU2:
-            op1 = *(uint_16 _WCUNALIGNED *)p;
+            op1 = DR_ReadWord( (char *)p );
             p += sizeof(uint_16 );
             break;
         case DW_LOP_OPS2:
-            op1 = (int_32)*(int_16 _WCUNALIGNED *)p;
+            op1 = (int_32)(int_16)DR_ReadWord( (char *)p );
             p += sizeof(int_16);
             break;
         case DW_LOP_OPS4:
-            op1 = *(int_32 _WCUNALIGNED *)p;
+            op1 = (int_32)DR_ReadDWord( (char *)p );
             p += sizeof(int_32);
             break;
         case DW_LOP_OPU4:
-            op1 = *(uint_32 _WCUNALIGNED *)p;
+            op1 = (int_32)DR_ReadDWord( (char *)p );
             p += sizeof(uint_32);
             break;
         case DW_LOP_U128:

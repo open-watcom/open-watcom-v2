@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,15 +37,13 @@
 
 #define DEBUG_ARANGES_VERSION   2
 
-#include "pushpck1.h"
 typedef struct arange_header {
     uint_32     len;
     uint_16     version;
     uint_32     dbg_pos;
     uint_8      addr_size;
     uint_8      seg_size;
-} _WCUNALIGNED arange_header;
-#include "poppck.h"
+} arange_header;
 
 
 void DRENTRY DRWalkARange( DRARNGWLK callback, void *data )
@@ -66,13 +64,19 @@ void DRENTRY DRWalkARange( DRARNGWLK callback, void *data )
     pos = DR_CurrNode->sections[DR_DEBUG_ARANGES].base;
     finish = pos + DR_CurrNode->sections[DR_DEBUG_ARANGES].size;
     while( pos < finish ) {
-        DR_VMRead( pos, &header, sizeof( header ) );
-        pos += sizeof( header );
-        if( DR_CurrNode->byte_swap ) {
-            SWAP_32( header.len );
-            SWAP_16( header.version );
-            SWAP_32( header.dbg_pos );
-        }
+        /*
+         * read arange header (unaligned + endianness)
+         */
+        header.len = DR_VMReadDWord( pos );
+        pos += sizeof( uint_32 );
+        header.version = DR_VMReadWord( pos );
+        pos += sizeof( uint_16 );
+        header.dbg_pos = DR_VMReadDWord( pos );
+        pos += sizeof( uint_32 );
+        header.addr_size = DR_VMReadByte( pos );
+        pos += 1;
+        header.seg_size = DR_VMReadByte( pos );
+        pos += 1;
         if( header.version != DEBUG_ARANGES_VERSION )
             DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
         arange.dbg = base + header.dbg_pos;

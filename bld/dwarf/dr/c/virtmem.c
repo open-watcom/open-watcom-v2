@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 #include <stdlib.h>
 #include "drpriv.h"
+#include "drutils.h"
 #include "leb128rd.h"
 
 
@@ -470,6 +471,8 @@ unsigned_16 DR_VMReadWord( drmem_hdl hdl )
     page_entry  *node;
     unsigned_16 off;
     virt_struct vm;
+    char buff[sizeof( unsigned_16 )];
+    char *p;
 
     vm.l = hdl;
     ACCESSPAGE( node, vm );
@@ -477,17 +480,15 @@ unsigned_16 DR_VMReadWord( drmem_hdl hdl )
     if( off <= MAX_NODE_SIZE - 2 ) {
         // we can read both bytes now.
         // must not swap bytes in source buffer!
-        off = *(unsigned_16 *)( node->mem + off );
+        p = node->mem + off;
     } else {
-        off = *(unsigned_8 *)( node->mem + off );
+        buff[0] = *(unsigned_8 *)( node->mem + off );
         vm.l++;
         ACCESSPAGE( node, vm );
-        off |= ((unsigned_16)*node->mem) << 8;
+        buff[1] = *(unsigned_8 *)( node->mem );
+        p = buff;
     }
-    if( DR_CurrNode->byte_swap ) {
-        SWAP_16( off );
-    }
-    return( off );
+    return( DR_ReadWord( p ) );
 }
 
 unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
@@ -496,8 +497,9 @@ unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
     page_entry  *node;
     unsigned    len;
     unsigned    off;
-    unsigned_32 result;
     virt_struct vm;
+    char buff[sizeof( unsigned_32 )];
+    char *p;
 
     vm.l = hdl;
     ACCESSPAGE( node, vm );
@@ -506,17 +508,15 @@ unsigned_32 DR_VMReadDWord( drmem_hdl hdl )
     if( len >= sizeof( unsigned_32 ) ) {
         // we can read all bytes now.
         // must not swap bytes in source buffer!
-        result = *(unsigned_32 *)( node->mem + off );
+        p = node->mem + off;
     } else {
-        memcpy( &result, node->mem + off, len );
+        memcpy( buff, node->mem + off, len );
         vm.l += sizeof( unsigned_32 );
         ACCESSPAGE( node, vm );
-        memcpy( (char *)&result + len, node->mem, sizeof( unsigned_32 ) - len );
+        memcpy( buff + len, node->mem, sizeof( unsigned_32 ) - len );
+        p = buff;
     }
-    if( DR_CurrNode->byte_swap ) {
-        SWAP_32( result );
-    }
-    return( result );
+    return( DR_ReadDWord( p ) );
 }
 
 size_t DR_VMStrLen( drmem_hdl hdl )

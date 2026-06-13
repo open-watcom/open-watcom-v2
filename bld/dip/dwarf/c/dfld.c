@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -287,9 +287,9 @@ static dip_status InitDwarf( imp_image_handle *iih )
     dwarf = DCAlloc( sizeof( *dwarf ) );
     if( dwarf != NULL ) {
         iih->dwarf = dwarf;
-        ds = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->is_byteswapped );
+        ds = GetSectInfo( iih->sym_fp, sect_sizes, dwarf->sect_offsets, &iih->big_endian );
         if( ds == DS_OK ) {
-            dwarf->handle = DRDbgInitNFT( iih, sect_sizes, iih->is_byteswapped );
+            dwarf->handle = DRDbgInitNFT( iih, sect_sizes, iih->big_endian );
             if( dwarf->handle != NULL ) {
                 iih->has_pubnames = ( sect_sizes[DR_DEBUG_PUBNAMES] > 0 );
                 return( ds );
