@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,8 +209,8 @@ void DW_InitDebugLine( dw_client cli, const char *source_filename, const char *i
         }
     };
 
-    WriteU16( &prol.version, DWARF_IMPL_VERSION );
-    WriteU32( &prol.prologue_length,
+    BufWriteU16( cli, &prol.version, DWARF_IMPL_VERSION );
+    BufWriteU32( cli, &prol.prologue_length,
         sizeof( stmt_prologue ) - offsetof( stmt_prologue, minimum_instruction_length ) + inc_list_len + 2 ); // +2 for 2 list terminators
     cli->debug_line.files = NULL;
     cli->debug_line.addr = 0;

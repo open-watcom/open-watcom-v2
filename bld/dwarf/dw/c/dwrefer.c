@@ -61,7 +61,7 @@ static void emitDelayed( dw_client cli )
     /* delayed_refs are stacked up; we want to emit them in FIFO order */
     for( cur = DW_ReverseChain( cli->references.delayed ); cur != NULL; cur = DW_CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
-        WriteU32( buf + 1, cur->offset );
+        BufWriteU32( cli, buf + 1, cur->offset );
         CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( uint_32 ) );
     }
     cli->references.delayed = 0;

@@ -271,13 +271,15 @@ void DWENTRY DWLocConstU( dw_client cli, dw_loc_id loc, dw_uconst value )
         ADD_ADDR( cli, loc, 1 );
     } else if( value < 16384UL ) {
         op = nextOp( cli, loc, DW_OP_const2u, sizeof( uint_16 ) );
-        WriteU16( op->data, (uint_16)value );
+        BufWriteU16( cli, op->data, (uint_16)value );
         ADD_ADDR( cli, loc, sizeof( uint_16 ) );
     } else if( value < ( 1UL << 21 ) ) {
         /* will only take 3 bytes to encode in ULEB128 form */
         end = WriteULEB128( buf, value );
 #ifdef DEVBUILD
         _Assert( end - buf == 3 );
+#else
+        (void)end;
 #endif
         op = nextOp( cli, loc, DW_OP_constu, 3 );
         op->data[0] = buf[0];
@@ -286,7 +288,7 @@ void DWENTRY DWLocConstU( dw_client cli, dw_loc_id loc, dw_uconst value )
         ADD_ADDR( cli, loc, 3 );
     } else {
         op = nextOp( cli, loc, DW_OP_const4u, sizeof( uint_32 ) );
-        WriteU32( op->data, value );
+        BufWriteU32( cli, op->data, value );
         ADD_ADDR( cli, loc, 4 );
     }
 }
@@ -309,14 +311,14 @@ void DWENTRY DWLocConstS( dw_client cli, dw_loc_id loc, dw_sconst value )
         ADD_ADDR( cli, loc, 1 );
     } else if( -16384L <= value && value < 16384L ) {
         op = nextOp( cli, loc, DW_OP_const2s, sizeof( int_16 ) );
-        WriteS16( op->data, (int_16)value );
+        BufWriteU16( cli, op->data, (int_16)value );
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
     } else {
         /* test length of LEB128 form before using DW_OP_const4s */
         len = (dw_loc_offs)( WriteSLEB128( buf, value ) - buf );
         if( len > 3 ) {
             op = nextOp( cli, loc, DW_OP_const4s, sizeof( int_32 ) );
-            WriteS32( op->data, value );
+            BufWriteU32( cli, op->data, value );
             ADD_ADDR( cli, loc, sizeof( int_32 ) );
         } else {
             op = nextOp( cli, loc, DW_OP_consts, len );
@@ -448,11 +450,11 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
             if( jump_offset < -32768 || jump_offset > 32767 ) {
                 _Abort( ABORT_LOC_JUMP_OUT_OF_RANGE );
             }
-            WriteS16( p, (int_16)jump_offset );
+            BufWriteU16( cli, p, (int_16)jump_offset );
             p += sizeof( int_16 );
             break;
         case DW_OP_addr:
-            WriteU16( base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
+            BufWriteU16( cli, base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
             read_sym_reloc( cur_op->data, &reloc_info );
             if( reloc_info.kind == DW_W_SEGMENT || reloc_info.kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
                 /* it was a DWLocSegment() */
@@ -489,7 +491,7 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
             break;
         }
     }
-    WriteU16( base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
+    BufWriteU16( cli, base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
 
     DW_CarveFreeChain( cli->debug_loc.label_carver, loc->labels );
     CLIFree( cli, loc );

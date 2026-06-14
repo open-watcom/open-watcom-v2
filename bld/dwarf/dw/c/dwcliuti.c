@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,11 +74,29 @@ void CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data )
     CLIWrite( cli, sect, &data, sizeof( data ) );
 }
 
+void BufWriteU16( dw_client cli, void *buf, uint_16 data )
+{
+    if( cli->big_endian ) {
+        MPUT_BE_16( buf, data );
+    } else {
+        MPUT_LE_16( buf, data );
+    }
+}
+
+void BufWriteU32( dw_client cli, void *buf, uint_32 data )
+{
+    if( cli->big_endian ) {
+        MPUT_BE_32( buf, data );
+    } else {
+        MPUT_LE_32( buf, data );
+    }
+}
+
 void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
 {
     char            buf[sizeof( uint_16 )];
 
-    WriteU16( buf, data );
+    BufWriteU16( cli, buf, data );
     CLIWrite( cli, sect, buf, sizeof( buf ) );
 }
 
@@ -86,7 +104,7 @@ void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
 {
     char            buf[sizeof( uint_32 )];
 
-    WriteU32( buf, data );
+    BufWriteU32( cli, buf, data );
     CLIWrite( cli, sect, buf, sizeof( buf ) );
 }
 

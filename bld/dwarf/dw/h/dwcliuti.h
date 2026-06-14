@@ -33,15 +33,6 @@
 #ifndef DWCLIUTI_H_INCLUDED
 #define DWCLIUTI_H_INCLUDED
 
-#ifndef __BIG_ENDIAN__
-#define WriteU16( __p, __v )    MPUT_16_UN((__p), (__v))
-#define WriteU32( __p, __v )    MPUT_32_UN((__p), (__v))
-#define WriteS16( __p, __v )    MPUT_16_UN((__p), (__v))
-#define WriteS32( __p, __v )    MPUT_32_UN((__p), (__v))
-#else
-#error "must define WriteU16/32 and WriteS16/32 functions"
-#endif
-
 #define CLISectionOffset(c,s)       (CLITell( c, s ) - (c)->section_base[s])
 #define CLISectionAbs(c,s)          CLITell( c, s )
 #define CLISectionSkip(c,s,l)       CLISeek( c, s, l, DW_SEEK_CUR )
@@ -59,6 +50,9 @@ extern void     CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data );
 extern void     CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data );
 extern void     CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data );
 extern void     CLIWriteString( dw_client cli, dw_sectnum sect, const char *str );
+
+extern void     BufWriteU16( dw_client cli, void *buf, uint_16 data );
+extern void     BufWriteU32( dw_client cli, void *buf, uint_32 data );
 
 extern void     CLISectionSetSize( dw_client cli, dw_sectnum sect );
 extern void     CLISectionWriteZeros( dw_client cli, dw_sectnum sect, size_t len );
