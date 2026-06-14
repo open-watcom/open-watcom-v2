@@ -153,6 +153,7 @@ int  main( void )
     dw_cu_info          cu;
     DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
+    info.big_endian = false;
     info.language = DW_LANG_C89;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = "testcli";

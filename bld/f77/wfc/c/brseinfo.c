@@ -128,6 +128,7 @@ void    BIInit( void ) {
     BrInitialized = true;
     if( !_GenerateBrInfo() )
         return;
+    init_dwl.big_endian = false;
     init_dwl.language = DW_LANG_Fortran77;
     init_dwl.compiler_options = DW_CM_BROWSER | DW_CM_UPPER;
     init_dwl.producer_name = DWARF_PRODUCER_ID " V1";

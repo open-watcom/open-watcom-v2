@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -569,6 +569,7 @@ void    DFObjInitDbgInfo( void )
       && _IsntModel( CGSW_GEN_DBG_TYPES ) ) {
         return;
     }
+    info.big_endian = _IsModel( CGSW_GEN_OBJ_ENDIAN_BIG );
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
     info.producer_name = SetDwarfProducer();
@@ -633,6 +634,7 @@ void    DFObjLineInitDbgInfo( void )
     dw_init_info    info;
     dw_cu_info      cu;
 
+    info.big_endian = _IsModel( CGSW_GEN_OBJ_ENDIAN_BIG );
     info.compiler_options = DW_CM_DEBUGGER;
     info.abbrev_sym = 0;
     info.producer_name = SetDwarfProducer();

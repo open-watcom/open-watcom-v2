@@ -74,10 +74,14 @@ static uint Lookup_section_name( const char *name )
 }
 
 
-static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
-/************************************************************/
+static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool big_endian )
+/**************************************************************/
 {
-    if( byteswap ) {
+#ifdef __BIG_ENDIAN__
+    if( !big_endian ) {
+#else
+    if( big_endian ) {
+#endif
         SWAP_32( elf_sec->sh_name );
         SWAP_32( elf_sec->sh_type );
         SWAP_32( elf_sec->sh_flags );
@@ -88,6 +92,31 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
         SWAP_32( elf_sec->sh_info );
         SWAP_32( elf_sec->sh_addralign );
         SWAP_32( elf_sec->sh_entsize );
+    }
+}
+
+
+static void ByteSwapEhdr( Elf32_Ehdr *elf_head, bool big_endian )
+/***************************************************************/
+{
+#ifdef __BIG_ENDIAN__
+    if( !big_endian ) {
+#else
+    if( big_endian ) {
+#endif
+        SWAP_16( elf_head->e_type );
+        SWAP_16( elf_head->e_machine );
+        SWAP_32( elf_head->e_version );
+        SWAP_32( elf_head->e_entry );
+        SWAP_32( elf_head->e_phoff );
+        SWAP_32( elf_head->e_shoff );
+        SWAP_32( elf_head->e_flags );
+        SWAP_16( elf_head->e_ehsize );
+        SWAP_16( elf_head->e_phentsize );
+        SWAP_16( elf_head->e_phnum );
+        SWAP_16( elf_head->e_shentsize );
+        SWAP_16( elf_head->e_shnum );
+        SWAP_16( elf_head->e_shstrndx );
     }
 }
 
@@ -131,8 +160,8 @@ static bool find_TIS_trailer( FILE *fp )
     return( false );
 }
 
-static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *bases, bool *byteswap )
-/****************************************************************************************************
+static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *bases, bool *pbig_endian )
+/*******************************************************************************************************
  * Fill in the starting offset & length of the dwarf sections
  */
 {
@@ -143,6 +172,7 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     int                 i;
     uint                sect;
     unsigned long       start;
+    bool                big_endian;
 
     // Find TIS header and seek to elf header
     if( find_TIS_trailer( fp ) )
@@ -157,28 +187,12 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         // no support yet
         return( DS_FAIL );
     }
-
-    *byteswap = false;
-#ifdef __BIG_ENDIAN__
-    if( elf_head.e_ident[EI_DATA] == ELFDATA2LSB ) {
-#else
+    *pbig_endian = big_endian = false;
     if( elf_head.e_ident[EI_DATA] == ELFDATA2MSB ) {
-#endif
-        *byteswap = true;
-        SWAP_16( elf_head.e_type );
-        SWAP_16( elf_head.e_machine );
-        SWAP_32( elf_head.e_version );
-        SWAP_32( elf_head.e_entry );
-        SWAP_32( elf_head.e_phoff );
-        SWAP_32( elf_head.e_shoff );
-        SWAP_32( elf_head.e_flags );
-        SWAP_16( elf_head.e_ehsize );
-        SWAP_16( elf_head.e_phentsize );
-        SWAP_16( elf_head.e_phnum );
-        SWAP_16( elf_head.e_shentsize );
-        SWAP_16( elf_head.e_shnum );
-        SWAP_16( elf_head.e_shstrndx );
+        *pbig_endian = big_endian = true;
     }
+
+    ByteSwapEhdr( &elf_head, big_endian );
 
     // grab the string table, if it exists
     if( !elf_head.e_shstrndx ) {
@@ -192,14 +206,14 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     offset = elf_head.e_shoff + elf_head.e_shstrndx * elf_head.e_shentsize + start;
     DCSeek( fp, offset, DIG_SEEK_ORG );
     DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
-    ByteSwapShdr( &elf_sec, *byteswap );
+    ByteSwapShdr( &elf_sec, big_endian );
     string_table = DCAlloc( elf_sec.sh_size );
     DCSeek( fp, elf_sec.sh_offset + start, DIG_SEEK_ORG );
     DCRead( fp, string_table, elf_sec.sh_size );
     for( i = 0; i < elf_head.e_shnum; i++ ) {
         DCSeek( fp, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_SEEK_ORG );
         DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
-        ByteSwapShdr( &elf_sec, *byteswap );
+        ByteSwapShdr( &elf_sec, big_endian );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
         if( sect < DR_DEBUG_NUM_SECTS ) {
             bases[sect] = elf_sec.sh_offset + start;

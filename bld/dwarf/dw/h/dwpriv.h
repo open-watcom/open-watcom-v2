@@ -136,6 +136,7 @@ struct dw_client {
     dw_handle                   defset;
     dw_sym_handle               abbrev_sym;
     dw_sym_handle               dbg_pch;
+    bool                        big_endian;
 };
 
 #endif

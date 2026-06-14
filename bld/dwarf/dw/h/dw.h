@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #define DW_H_INCLUDED
 
 #include <setjmp.h>
+#include "bool.h"
 #include "watcom.h"
 #include "dwarf.h"
 
@@ -318,10 +319,11 @@ typedef struct {
 typedef struct {
     dw_langnum          language;
     dw_cm               compiler_options;
-    char  const         *producer_name;
+    char const          *producer_name;
     jmp_buf             exception_handler;
     dw_funcs            funcs;
     dw_sym_handle       abbrev_sym;
+    bool                big_endian;
 } dw_init_info;
 
 /* compilation units */

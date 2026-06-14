@@ -169,6 +169,7 @@ dw_client DWENTRY DWInit( const dw_init_info *info )
     cli = CLIAlloc( info, sizeof( struct dw_client ) );
 
     /* copy some parms */
+    cli->big_endian = info->big_endian;
     cli->funcs = info->funcs;
     memcpy( &cli->exception_handler, &info->exception_handler, sizeof( info->exception_handler ) );
     cli->producer_name = DW_Strdup( cli, info->producer_name );
