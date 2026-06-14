@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,15 +31,18 @@
 ****************************************************************************/
 
 
-// definitions for using TIS standard file trailers.
-
+/*
+ * definitions for using TIS standard file trailers.
+ *
+ * all data should be in little-endian
+ */
 typedef struct {
-    unsigned_32 signature;
+    char        signature[4];
     unsigned_32 vendor;
     unsigned_32 type;
     unsigned_32 size;
 } TISTrailer;
 
-#define TIS_TRAILER_SIGNATURE           0x534954UL /* == 'TIS\0' */
+#define TIS_TRAILER_SIGNATURE           "TIS"	/* 0x534954UL == 'TIS\0' */
 #define TIS_TRAILER_VENDOR_TIS          0
 #define TIS_TRAILER_TYPE_TIS_DWARF      0

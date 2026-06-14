@@ -92,49 +92,67 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
 }
 
 
+static bool find_TIS_trailer( FILE *fp )
+{
+    TISTrailer          dbg_head;
+    unsigned long       start;
+    char                tmp32[4];
+
+    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_SEEK_END ) )
+        return( true );
+    start = DCTell( fp );
+    for( ;; ) {
+        if( DCRead( fp, dbg_head.signature, sizeof( dbg_head.signature ) ) != sizeof( dbg_head.signature ) )
+            return( true );
+        if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+            return( true );
+        dbg_head.vendor = MGET_LE_U32( tmp32 );
+        if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+            return( true );
+        dbg_head.type = MGET_LE_U32( tmp32 );
+        if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+            return( true );
+        dbg_head.size = MGET_LE_U32( tmp32 );
+        if( memcmp( dbg_head.signature, TIS_TRAILER_SIGNATURE, sizeof( TIS_TRAILER_SIGNATURE ) ) != 0 ) {
+            /*
+             * Seek to start of file and hope it's in ELF format
+             */
+            start = 0;
+            DCSeek( fp, start, DIG_SEEK_ORG );
+            break;
+        }
+        start -= dbg_head.size - sizeof( dbg_head );
+        DCSeek( fp, start, DIG_SEEK_ORG );
+        if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS
+          && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
+            break;
+        }
+    }
+    return( false );
+}
+
 static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *bases, bool *byteswap )
 /****************************************************************************************************
  * Fill in the starting offset & length of the dwarf sections
  */
 {
-    TISTrailer          dbg_head;
     Elf32_Ehdr          elf_head;
     Elf32_Shdr          elf_sec;
     unsigned long       offset;
-    unsigned long       start;
     char                *string_table;
     int                 i;
     uint                sect;
+    unsigned long       start;
 
-    // Find TIS header seek to elf header
-    if( DCSeek( fp, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_SEEK_END ) )
+    // Find TIS header and seek to elf header
+    if( find_TIS_trailer( fp ) )
         return( DS_FAIL );
     start = DCTell( fp );
-    for( ;; ) {
-        if( DCRead( fp, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
-            return( DS_FAIL );
-        }
-        if( dbg_head.signature != TIS_TRAILER_SIGNATURE ) {
-            /*
-             * Seek to start of file and hope it's in ELF format
-             */
-            start = 0;
-            DCSeek( fp, 0, DIG_SEEK_ORG );
-            break;
-        }
-        start -= dbg_head.size - sizeof( dbg_head );
-        DCSeek( fp, start, DIG_SEEK_ORG );
-        if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
-            break;
-        }
-    }
     // read elf header find dwarf info
-    if( DCRead( fp, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) ) {
+    if( DCRead( fp, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) )
         return( DS_FAIL );
-    }
-    if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) != 0 ) {
+    if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) != 0 )
         return( DS_FAIL );
-    }
     if( elf_head.e_ident[EI_CLASS] == ELFCLASS64 ) {
         // no support yet
         return( DS_FAIL );

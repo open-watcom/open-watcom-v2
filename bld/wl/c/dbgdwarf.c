@@ -836,15 +836,16 @@ int DwarfCountDebugSections( void )
 }
 
 offset DwarfWriteTrailer( offset curr_off )
-/************************************************/
+/******************************************
+ * write little-endian data
+ */
 {
     TISTrailer  trailer;
 
-    trailer.size = curr_off;
-    trailer.size += sizeof( TISTrailer );
-    trailer.signature = TIS_TRAILER_SIGNATURE;
-    trailer.vendor = 0;
-    trailer.type = 0;
+    strcpy( trailer.signature, TIS_TRAILER_SIGNATURE );
+    MPUT_LE_32( &trailer.vendor, TIS_TRAILER_VENDOR_TIS );
+    MPUT_LE_32( &trailer.type, TIS_TRAILER_TYPE_TIS_DWARF );
+    MPUT_LE_32( &trailer.size, curr_off + sizeof( TISTrailer ) );
     WriteLoad( &trailer, sizeof( TISTrailer ) );
     return( sizeof( TISTrailer ) );
 }

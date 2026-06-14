@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -183,19 +183,28 @@ static bool TryTIS( FILE *fp, info_info *info )
 {
     TISTrailer      head;
     long            end;
+    char            tmp32[4];
 
     if( fseek( fp, SEEK_POSBACK( sizeof( head ) ), SEEK_END ) )
         return( false );
     end = ftell( fp );
     for( ;; ) {
-        if( fread( &head, 1, sizeof( head ), fp ) != sizeof( head ) ) {
+        if( fread( head.signature, 1, sizeof( head.signature ), fp ) != sizeof( head.signature ) )
             return( false );
-        }
-        if( head.signature != TIS_TRAILER_SIGNATURE ) {
+        if( memcmp( head.signature, TIS_TRAILER_SIGNATURE, sizeof( TIS_TRAILER_SIGNATURE ) ) != 0 )
             return( false );
-        }
+        if( fread( tmp32, 1, sizeof( tmp32 ), fp ) != sizeof( tmp32 ) )
+            return( false );
+        head.vendor = MGET_LE_U32( tmp32 );
+        if( fread( tmp32, 1, sizeof( tmp32 ), fp ) != sizeof( tmp32 ) )
+            return( false );
+        head.type = MGET_LE_U32( tmp32 );
+        if( fread( tmp32, 1, sizeof( tmp32 ), fp ) != sizeof( tmp32 ) )
+            return( false );
+        head.size = MGET_LE_U32( tmp32 );
         end -= head.size - sizeof( head );
-        if( head.vendor == TIS_TRAILER_VENDOR_TIS && head.type == TIS_TRAILER_TYPE_TIS_DWARF )
+        if( head.vendor == TIS_TRAILER_VENDOR_TIS
+          && head.type == TIS_TRAILER_TYPE_TIS_DWARF )
             break;
         fseek( fp, end, SEEK_SET );
     }

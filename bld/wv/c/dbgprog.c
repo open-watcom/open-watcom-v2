@@ -1161,15 +1161,25 @@ static unsigned long SizeMinusDebugInfo( file_handle fh, bool strip )
 {
     TISTrailer          trailer;
     unsigned long       copylen;
+    char                tmp32[4];
 
     copylen = SeekStream( fh, 0, DIO_SEEK_END );
     if( !strip )
         return( copylen );
     SeekStream( fh, -sizeof( trailer ), DIO_SEEK_END );
-    if( ReadStream( fh, &trailer, sizeof( trailer ) ) != sizeof( trailer ) )
+    if( ReadStream( fh, &trailer.signature, sizeof( trailer.signature ) ) != sizeof( trailer.signature ) )
         return( copylen );
-    if( trailer.signature != TIS_TRAILER_SIGNATURE )
+    if( memcmp( trailer.signature, TIS_TRAILER_SIGNATURE, sizeof( TIS_TRAILER_SIGNATURE ) ) != 0 )
         return( copylen );
+    if( ReadStream( fh, &tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( copylen );
+    trailer.vendor = MGET_LE_U32( tmp32 );
+    if( ReadStream( fh, &tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( copylen );
+    trailer.type = MGET_LE_U32( tmp32 );
+    if( ReadStream( fh, &tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( copylen );
+    trailer.size = MGET_LE_U32( tmp32 );
     return( copylen - trailer.size );
 }
 
