@@ -87,8 +87,8 @@ typedef struct dr_dbg_info {
     struct dr_dbg_info *next;
     void *              file;   // task's file information.
     sect_info           sections[DR_DEBUG_NUM_SECTS];
-    dr_cu_info          compunit;
-    dr_cu_handle        last_ccu;
+    dr_cu_info          cui;
+    dr_cu_handle        last_cui;
     df_ver              wat_producer_ver;
     unsigned_8          addr_size;
     bool                big_endian;

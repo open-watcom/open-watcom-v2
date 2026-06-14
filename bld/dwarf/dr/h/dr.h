@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -341,7 +341,7 @@ typedef struct dr_context_stack {
 } dr_context_stack;
 
 typedef struct dr_search_context {
-    dr_cu_handle        compunit;       /* current compile unit */
+    dr_cu_handle        cui;            /* current compile unit */
     drmem_hdl           start;          /* die to start from */
     drmem_hdl           end;            /* end of compile unit */
     drmem_hdl           functionhdl;    /* containing function */

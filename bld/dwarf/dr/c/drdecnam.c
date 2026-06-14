@@ -270,7 +270,7 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
 {
     Loc_T           loc;
     dr_language     lang;
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
     const char      *label;
     drmem_hdl       tmp_abbrev;
     drmem_hdl       tmp_entry;
@@ -278,8 +278,8 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
     label = NULL;
     FillLoc( &loc, die );
 
-    compunit = DR_FindCompileInfo( die );
-    lang = DRGetLanguageAT( compunit->start + sizeof( comp_unit_prologue ) );
+    cui = DR_FindCompileInfo( die );
+    lang = DRGetLanguageAT( cui->start + sizeof( comp_unit_prologue ) );
 
     switch( loc.tag ) {
     case DW_TAG_subprogram:
@@ -385,14 +385,14 @@ static BrokenName_T BuildList( drmem_hdl die, drmem_hdl parent )
 {
     Loc_T           loc;
     BrokenName_T    decstruct = Empty_Broken_Name;
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
     dr_language     lang;
 
     FillLoc( &loc, die );
     loc.parent = parent;
 
-    compunit = DR_FindCompileInfo( die );
-    lang = DRGetLanguageAT( compunit->start + sizeof( comp_unit_prologue ) );
+    cui = DR_FindCompileInfo( die );
+    lang = DRGetLanguageAT( cui->start + sizeof( comp_unit_prologue ) );
 
     switch( lang ) {
     case DR_LANG_CPLUSPLUS:
@@ -2310,15 +2310,15 @@ static void FillLoc( Loc_T *loc, drmem_hdl die )
 /**********************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cu;
+    dr_cu_handle    cui;
 
     loc->entry_start = die;
     loc->entry_current = die;
     abbrev_idx = DR_VMReadULEB128( &loc->entry_current );
 
     if( abbrev_idx != 0 ) {
-        cu = DR_FindCompileInfo( loc->entry_current );
-        loc->abbrev_start = cu->abbrevs[abbrev_idx];
+        cui = DR_FindCompileInfo( loc->entry_current );
+        loc->abbrev_start = cui->abbrevs[abbrev_idx];
         loc->abbrev_current = loc->abbrev_start;
         loc->tag = DR_VMReadULEB128( &loc->abbrev_current );
         loc->child = DR_VMReadByte( loc->abbrev_current );

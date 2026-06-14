@@ -221,7 +221,7 @@ bool DR_ScanCompileUnit( dr_search_context *ctxt,
                 DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
             }
         } else {
-            abbrev = ctxt->compunit->abbrevs[abbrev_idx];
+            abbrev = ctxt->cui->abbrevs[abbrev_idx];
             info.tag = DR_VMReadULEB128( &abbrev );
             haschild = DR_VMReadByte( abbrev );
             abbrev++;
@@ -614,16 +614,16 @@ dw_tagnum DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 {
     dw_tagnum       tag;
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cu;
+    dr_cu_handle    cui;
 
     abbrev_idx = DR_VMReadULEB128( entry );
-    cu = DR_FindCompileInfo( *entry );
-    if( abbrev_idx >= cu->numabbrevs ) {
+    cui = DR_FindCompileInfo( *entry );
+    if( abbrev_idx >= cui->numabbrevs ) {
         DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         *abbrev = DRMEM_HDL_NULL;
         tag = 0;
     } else {
-        *abbrev = cu->abbrevs[abbrev_idx];
+        *abbrev = cui->abbrevs[abbrev_idx];
         tag = DR_VMReadULEB128( abbrev );
     }
     return( tag );
@@ -650,7 +650,7 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cu;
+    dr_cu_handle    cui;
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
@@ -658,11 +658,11 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
     tag = 0;
     abbrev_idx = DR_VMReadULEB128( entry );
     if( abbrev_idx != 0 ) {
-        cu = DR_FindCompileInfo( *entry );
-        if( abbrev_idx >= cu->numabbrevs ) {
+        cui = DR_FindCompileInfo( *entry );
+        if( abbrev_idx >= cui->numabbrevs ) {
             DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
         } else {
-            abbrev = cu->abbrevs[abbrev_idx];
+            abbrev = cui->abbrevs[abbrev_idx];
             tag = DR_VMReadULEB128( &abbrev );
         }
     }
@@ -718,13 +718,13 @@ void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
-    dr_cu_handle        compunit;
+    dr_cu_handle        cui;
 
-    compunit = DR_FindCompileInfo( mod );
-    ctxt.compunit = compunit;
+    cui = DR_FindCompileInfo( mod );
+    ctxt.cui = cui;
 
-    ctxt.start = compunit->start;
-    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
+    ctxt.start = cui->start;
+    ctxt.end = cui->start + DR_VMReadDWord( cui->start );
     ctxt.start += sizeof( comp_unit_prologue );
     ctxt.stack.size = 0;
     ctxt.stack.free = 0;
@@ -771,15 +771,15 @@ char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
 void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 /*******************************************************************/
 {
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
 
-    compunit = &DR_CurrNode->compunit;
+    cui = &DR_CurrNode->cui;
     do {
-        if( !callback( data, compunit->start ) ) {
+        if( !callback( data, cui->start ) ) {
             break;    // false == quit
         }
-        compunit = compunit->next;
-    } while( compunit != NULL );
+        cui = cui->next;
+    } while( cui != NULL );
 }
 
 bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
@@ -791,8 +791,8 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
     int                 i;
 
     if( startingCtxt == NULL ) {
-        ctxt.compunit = &DR_CurrNode->compunit;
-        ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
+        ctxt.cui = &DR_CurrNode->cui;
+        ctxt.start = ctxt.cui->start;
         ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
         ctxt.start += sizeof( comp_unit_prologue );
         ctxt.classhdl = DRMEM_HDL_NULL;
@@ -813,13 +813,13 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
     do {
         cont = DR_ScanCompileUnit( &ctxt, fn, tagarray, depth, data );
 
-        ctxt.compunit = ((dr_cu_handle)ctxt.compunit)->next;
-        if( ctxt.compunit ) {
-            ctxt.start = ((dr_cu_handle)ctxt.compunit)->start;
+        ctxt.cui = ctxt.cui->next;
+        if( ctxt.cui ) {
+            ctxt.start = ctxt.cui->start;
             ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
             ctxt.start += sizeof( comp_unit_prologue );
         }
-    } while( cont && ctxt.compunit != NULL );
+    } while( cont && ctxt.cui != NULL );
 
     DR_FreeContextStack( &ctxt.stack );
 
@@ -832,12 +832,12 @@ bool DR_WalkCompileUnit( drmem_hdl mod, DR_CUWLK fn,
 {
     bool                cont;
     dr_search_context   ctxt;
-    dr_cu_handle        compunit;
+    dr_cu_handle        cui;
 
-    compunit = DR_FindCompileInfo( mod );
-    ctxt.compunit = compunit;
+    cui = DR_FindCompileInfo( mod );
+    ctxt.cui = cui;
     ctxt.start = mod;
-    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
+    ctxt.end = cui->start + DR_VMReadDWord( cui->start );
     ctxt.classhdl = DRMEM_HDL_NULL;
     ctxt.functionhdl = DRMEM_HDL_NULL;
     ctxt.stack.size = 0;
@@ -864,14 +864,14 @@ bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     dw_children     haschild;
     int             index;
     DRWLKBLK        wlk;
-    dr_cu_handle    cu;
+    dr_cu_handle    cui;
 
-    cu = DR_FindCompileInfo( mod );
+    cui = DR_FindCompileInfo( mod );
     abbrev_idx = DR_VMReadULEB128( &mod );
     if( abbrev_idx == 0 ) {
         DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    abbrev = cu->abbrevs[abbrev_idx];
+    abbrev = cui->abbrevs[abbrev_idx];
     tag = DR_VMReadULEB128( &abbrev );
     haschild = DR_VMReadByte( abbrev );
 
@@ -884,7 +884,7 @@ bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
             abbrev_idx = DR_VMReadULEB128( &curr );
             if( abbrev_idx == 0 )
                 break;
-            abbrev = cu->abbrevs[abbrev_idx];
+            abbrev = cui->abbrevs[abbrev_idx];
             tag = DR_VMReadULEB128( &abbrev );
             haschild = DR_VMReadByte( abbrev );
             abbrev += sizeof( unsigned_8 );
@@ -1059,45 +1059,45 @@ bool DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-static dr_cu_handle FindCompileInfo( dr_cu_handle compunit, drmem_hdl addr )
-/**************************************************************************/
+static dr_cu_handle FindCompileInfo( dr_cu_handle cui, drmem_hdl addr )
+/*********************************************************************/
 {
     for( ;; ) {
-        if( (addr >= compunit->start) && (addr <= compunit->end) )
+        if( (addr >= cui->start) && (addr <= cui->end) )
             break;
-        compunit = compunit->next;
-        if( compunit == NULL ) {
+        cui = cui->next;
+        if( cui == NULL ) {
             break;
         }
     }
-    if( compunit == NULL ) {
+    if( cui == NULL ) {
         DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
-    return( compunit );
+    return( cui );
 }
 
 dr_cu_handle DR_FindCompileInfo( drmem_hdl addr )
 /***********************************************/
 /* gets the drmem_hdl of the module that addr is in */
 {
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
 
-    compunit = DR_CurrNode->last_ccu;
-    if( addr < compunit->start ) {  // start at begining
-        compunit = &DR_CurrNode->compunit;
+    cui = DR_CurrNode->last_cui;
+    if( addr < cui->start ) {  // start at begining
+        cui = &DR_CurrNode->cui;
     }
-    compunit = FindCompileInfo( compunit, addr );
-    DR_CurrNode->last_ccu = compunit;
-    return( compunit );
+    cui = FindCompileInfo( cui, addr );
+    DR_CurrNode->last_cui = cui;
+    return( cui );
 }
 
 drmem_hdl DR_FindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
 
-    compunit = DR_FindCompileInfo( addr );
-    return( compunit->start );
+    cui = DR_FindCompileInfo( addr );
+    return( cui->start );
 }
 
 #define CONTEXT_GUESS 0x10

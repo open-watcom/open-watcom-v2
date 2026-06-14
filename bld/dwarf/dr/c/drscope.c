@@ -131,14 +131,14 @@ void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
 // Walk in to of starting at ccu
 //************************************************************
 {
-    dr_cu_handle    compunit;
+    dr_cu_handle    cui;
 
-    compunit = DR_FindCompileInfo( of );
+    cui = DR_FindCompileInfo( of );
     ScopeCtlInit( &container->ctl );
     container->target = of;
     container->head = NULL;
-    if( compunit != NULL ) {
-        DR_WalkContaining(  compunit->start + sizeof( comp_unit_prologue ), of, AContainer, container );
+    if( cui != NULL ) {
+        DR_WalkContaining( cui->start + sizeof( comp_unit_prologue ), of, AContainer, container );
     }
 }
 

@@ -199,7 +199,7 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
  */
 {
     BaseInfo            info;
-    dr_cu_handle        compunit;
+    dr_cu_handle        cui;
     const dw_tagnum     inh_lst[] = {
         DW_TAG_inheritance,
         0
@@ -210,10 +210,10 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
     info.data = data;
     info.parent = handle;
 
-    compunit = DR_FindCompileInfo( handle );
-    ctxt.compunit = compunit;
-    ctxt.start = compunit->start;
-    ctxt.end = compunit->start + DR_VMReadDWord( compunit->start );
+    cui = DR_FindCompileInfo( handle );
+    ctxt.cui = cui;
+    ctxt.start = cui->start;
+    ctxt.end = cui->start + DR_VMReadDWord( cui->start );
     ctxt.start += sizeof( comp_unit_prologue );
     ctxt.classhdl    = DRMEM_HDL_NULL;
     ctxt.functionhdl = DRMEM_HDL_NULL;

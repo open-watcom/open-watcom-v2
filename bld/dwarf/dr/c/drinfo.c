@@ -298,35 +298,35 @@ char * DRENTRY DRGetFileName( drmem_hdl entry )
 void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 /**************************************************************/
 {
-    dr_cu_handle        compunit;
+    dr_cu_handle        cui;
     dr_fileidx          fileidx;
     filetab_idx         ftidx;
     char                *name;
 
-    compunit = &DR_CurrNode->compunit;
+    cui = &DR_CurrNode->cui;
     do {
-        fileidx = compunit->filetab.len;
+        fileidx = cui->filetab.len;
         while( fileidx > 0 ) {
             fileidx--;
-            ftidx = DR_IndexFile( fileidx, &compunit->filetab );
+            ftidx = DR_IndexFile( fileidx, &cui->filetab );
             name = DR_IndexFileName( ftidx, &DR_FileNameTable.fnametab );
             if( !callback( name, data ) ) {
                 return;
             }
         }
-        compunit = compunit->next;
-    } while( compunit != NULL );
+        cui = cui->next;
+    } while( cui != NULL );
 }
 
 char * DRENTRY DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
 /******************************************************************/
 {
-    dr_cu_handle        compunit;
+    dr_cu_handle        cui;
     char                *name;
     filetab_idx         ftidx;
 
-    compunit = DR_FindCompileInfo( mod );
-    ftidx = DR_IndexFile( fileidx - 1, &compunit->filetab );
+    cui = DR_FindCompileInfo( mod );
+    ftidx = DR_IndexFile( fileidx - 1, &cui->filetab );
     name = DR_IndexFileName( ftidx, &DR_FileNameTable.fnametab );
     return( name );
 }

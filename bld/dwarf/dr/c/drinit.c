@@ -39,8 +39,8 @@ dr_dbg_handle   DR_CurrNode = NULL;
 
 /* function prototypes */
 
-static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
-/***********************************************************************/
+static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle cui )
+/******************************************************************/
 /* this reads in the abbrev. table for a compilation unit, and fills in an
  * array of pointers to it.
  */
@@ -53,15 +53,15 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
     drmem_hdl       finish;
     drmem_hdl       *abbrevs;
     dr_abbrev_idx   code;
-    dr_cu_handle    cu;
+    dr_cu_handle    ccui;
 
     // if a previous compilation unit shares the same table, reuse it
-    for( cu = &(dbg->compunit); cu != compunit; cu = cu->next ) {
-        if( cu->abbrev_start == compunit->abbrev_start ) {
-            compunit->numabbrevs  = cu->numabbrevs;
-            compunit->abbrevs     = cu->abbrevs;
-            compunit->abbrev_refs = cu->abbrev_refs;
-            ++(*compunit->abbrev_refs); // increase abbrevs reference count
+    for( ccui = &(dbg->cui); ccui != cui; ccui = ccui->next ) {
+        if( cui->abbrev_start == ccui->abbrev_start ) {
+            cui->numabbrevs  = ccui->numabbrevs;
+            cui->abbrevs     = ccui->abbrevs;
+            cui->abbrev_refs = ccui->abbrev_refs;
+            ++(*cui->abbrev_refs); // increase abbrevs reference count
             return;
         }
     }
@@ -71,7 +71,7 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
         abbrevs[i] = DRMEM_HDL_NULL;
     }
     maxnum = 0;
-    start = dbg->sections[DR_DEBUG_ABBREV].base + compunit->abbrev_start;
+    start = dbg->sections[DR_DEBUG_ABBREV].base + cui->abbrev_start;
     finish = dbg->sections[DR_DEBUG_ABBREV].base + dbg->sections[DR_DEBUG_ABBREV].size;
     while( start < finish ) {
         code = DR_VMReadULEB128( &start );
@@ -101,10 +101,10 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle compunit )
         /* abbrev[0] not used but we want abbrev[code] = start to work */
         abbrevs = DR_REALLOC( abbrevs, ( maxnum + 1 ) * sizeof( drmem_hdl ) );
     }
-    compunit->numabbrevs = maxnum + 1;
-    compunit->abbrevs = abbrevs;
-    compunit->abbrev_refs = DR_ALLOC( sizeof( unsigned ) );
-    *compunit->abbrev_refs = 1;
+    cui->numabbrevs = maxnum + 1;
+    cui->abbrevs = abbrevs;
+    cui->abbrev_refs = DR_ALLOC( sizeof( unsigned ) );
+    *cui->abbrev_refs = 1;
 }
 
 static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool big_endian )
@@ -123,7 +123,7 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool big_
     dbg->addr_size = 0;
     dbg->wat_producer_ver = VER_NONE;
     dbg->big_endian = big_endian;
-    dbg->last_ccu = &dbg->compunit;
+    dbg->last_cui = &dbg->cui;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         size = sizes[i];
         dbg->sections[i].size = size;
@@ -176,44 +176,44 @@ void DRENTRY DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
 static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
 /***********************************************************/
 {
-    dr_cu_handle        compunit;
-    dr_cu_handle        next;
+    dr_cu_handle        cui;
+    dr_cu_handle        ncui;
     drmem_hdl           start;
     drmem_hdl           finish;
     unsigned_16         version;
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
 
-    compunit = &DR_CurrNode->compunit;
+    cui = &DR_CurrNode->cui;
     start = DR_CurrNode->sections[DR_DEBUG_INFO].base;
     finish = start + DR_CurrNode->sections[DR_DEBUG_INFO].size;
     addr_size = DR_VMReadByte( start + offsetof( comp_unit_prologue, addr_size ) );
     for( ;; ) {
-        compunit->next = NULL;
-        compunit->start = start;
-        compunit->end = start + sizeof( unsigned_32 ) + DR_VMReadDWord( start );
+        cui->next = NULL;
+        cui->start = start;
+        cui->end = start + sizeof( unsigned_32 ) + DR_VMReadDWord( start );
         version = DR_VMReadWord( start + offsetof( comp_unit_prologue, version ) );
         if( DWARF_VER_INVALID( version ) )
             DR_EXCEPT( DREXCEP_BAD_DBG_VERSION );
-        compunit->abbrev_start = DR_VMReadDWord( start + offsetof( comp_unit_prologue, abbrev_offset ) );
+        cui->abbrev_start = DR_VMReadDWord( start + offsetof( comp_unit_prologue, abbrev_offset ) );
         curr_addr_size = DR_VMReadByte( start + offsetof( comp_unit_prologue, addr_size ) );
         if( curr_addr_size != addr_size ) {
             addr_size = 0;
         }
-        ReadCUAbbrevTable( dbg, compunit );
+        ReadCUAbbrevTable( dbg, cui );
         if( read_ftab ) {
-            DR_InitFileTable( &compunit->filetab );
-            DR_ScanFileTable( start, &DR_FileNameTable, &compunit->filetab );
+            DR_InitFileTable( &cui->filetab );
+            DR_ScanFileTable( start, &DR_FileNameTable, &cui->filetab );
         } else {
-            compunit->filetab.len = 0;
-            compunit->filetab.tab = NULL;
+            cui->filetab.len = 0;
+            cui->filetab.tab = NULL;
         }
-        if( compunit->end >= finish )
+        if( cui->end >= finish )
             break;
-        start = compunit->end;
-        next = DR_ALLOC( sizeof( *next ) );
-        compunit->next = next;
-        compunit = next;
+        start = cui->end;
+        ncui = DR_ALLOC( sizeof( *ncui ) );
+        cui->next = ncui;
+        cui = ncui;
     }
     DR_CurrNode->addr_size = addr_size;
 }
@@ -248,26 +248,26 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
  * pages that are allocated to this module will eventually be swapped out
  */
 {
-    dr_cu_handle        compunit;
-    dr_cu_handle        next;
+    dr_cu_handle        cui;
+    dr_cu_handle        ncui;
 
-    compunit = dbg->compunit.next;
-    while( compunit != NULL ) {
-        next = compunit->next;
-        DR_FiniFileTable( &compunit->filetab, false );
-        if( compunit->abbrevs != NULL ) {
-            --(*compunit->abbrev_refs);
-            if( *compunit->abbrev_refs == 0 ) {
-                DR_FREE( compunit->abbrevs );
-                DR_FREE( compunit->abbrev_refs );
+    cui = dbg->cui.next;
+    while( cui != NULL ) {
+        ncui = cui->next;
+        DR_FiniFileTable( &cui->filetab, false );
+        if( cui->abbrevs != NULL ) {
+            --(*cui->abbrev_refs);
+            if( *cui->abbrev_refs == 0 ) {
+                DR_FREE( cui->abbrevs );
+                DR_FREE( cui->abbrev_refs );
             }
-            compunit->abbrevs = NULL;
-            compunit->abbrev_refs = NULL;
+            cui->abbrevs = NULL;
+            cui->abbrev_refs = NULL;
         }
-        DR_FREE( compunit );
-        compunit = next;
+        DR_FREE( cui );
+        cui = ncui;
     }
-    DR_FiniFileTable( &dbg->compunit.filetab, false );
+    DR_FiniFileTable( &dbg->cui.filetab, false );
     DR_FREE( dbg );
 }
 
@@ -275,6 +275,7 @@ dr_dbg_handle DRENTRY DRSetDebug( dr_dbg_handle dbg )
 /***************************************************/
 {
     dr_dbg_handle  old;
+
     old = DR_CurrNode;
     DR_CurrNode = dbg;
     return( old );
