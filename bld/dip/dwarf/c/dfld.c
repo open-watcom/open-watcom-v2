@@ -73,53 +73,112 @@ static uint Lookup_section_name( const char *name )
     return( sect );
 }
 
-
-static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool big_endian )
-/**************************************************************/
+static uint_16 BufReadU16( void *u16, bool big_endian )
 {
-#ifdef __BIG_ENDIAN__
-    if( !big_endian ) {
-#else
     if( big_endian ) {
-#endif
-        SWAP_32( elf_sec->sh_name );
-        SWAP_32( elf_sec->sh_type );
-        SWAP_32( elf_sec->sh_flags );
-        SWAP_32( elf_sec->sh_addr );
-        SWAP_32( elf_sec->sh_offset );
-        SWAP_32( elf_sec->sh_size );
-        SWAP_32( elf_sec->sh_link );
-        SWAP_32( elf_sec->sh_info );
-        SWAP_32( elf_sec->sh_addralign );
-        SWAP_32( elf_sec->sh_entsize );
+        return( MGET_BE_U32( u16 ) );
+    } else {
+        return( MGET_LE_U32( u16 ) );
     }
 }
 
-
-static void ByteSwapEhdr( Elf32_Ehdr *elf_head, bool big_endian )
-/***************************************************************/
+static uint_32 BufReadU32( void *u32, bool big_endian )
 {
-#ifdef __BIG_ENDIAN__
-    if( !big_endian ) {
-#else
     if( big_endian ) {
-#endif
-        SWAP_16( elf_head->e_type );
-        SWAP_16( elf_head->e_machine );
-        SWAP_32( elf_head->e_version );
-        SWAP_32( elf_head->e_entry );
-        SWAP_32( elf_head->e_phoff );
-        SWAP_32( elf_head->e_shoff );
-        SWAP_32( elf_head->e_flags );
-        SWAP_16( elf_head->e_ehsize );
-        SWAP_16( elf_head->e_phentsize );
-        SWAP_16( elf_head->e_phnum );
-        SWAP_16( elf_head->e_shentsize );
-        SWAP_16( elf_head->e_shnum );
-        SWAP_16( elf_head->e_shstrndx );
+        return( MGET_BE_U32( u32 ) );
+    } else {
+        return( MGET_LE_U32( u32 ) );
     }
 }
 
+static bool read_Shdr( FILE *fp, Elf32_Shdr *elf_sec, bool big_endian )
+/*********************************************************************/
+{
+    char    tmp32[4];
+
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_name = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_name = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_type = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_flags = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_addr = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_offset = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_size = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_link = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_info = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_addralign = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_sec->sh_entsize = BufReadU32( tmp32, big_endian );
+    return( false );
+}
+
+static bool read_Ehdr( FILE *fp, Elf32_Ehdr *elf_head, bool big_endian )
+/**********************************************************************/
+{
+    char    tmp16[2];
+    char    tmp32[4];
+
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_type = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_machine = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_head->e_version = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_head->e_entry = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_head->e_phoff = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_head->e_shoff = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp32, sizeof( tmp32 ) ) != sizeof( tmp32 ) )
+        return( true );
+    elf_head->e_flags = BufReadU32( tmp32, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_ehsize = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_phentsize = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_phnum = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_shentsize = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_shnum = BufReadU16( tmp16, big_endian );
+    if( DCRead( fp, tmp16, sizeof( tmp16 ) ) != sizeof( tmp16 ) )
+        return( true );
+    elf_head->e_shstrndx = BufReadU16( tmp16, big_endian );
+    return( false );
+}
 
 static bool find_TIS_trailer( FILE *fp )
 {
@@ -179,7 +238,7 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         return( DS_FAIL );
     start = DCTell( fp );
     // read elf header find dwarf info
-    if( DCRead( fp, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) )
+    if( DCRead( fp, &elf_head.e_ident, EI_NIDENT ) != EI_NIDENT )
         return( DS_FAIL );
     if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) != 0 )
         return( DS_FAIL );
@@ -187,12 +246,10 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
         // no support yet
         return( DS_FAIL );
     }
-    *pbig_endian = big_endian = false;
-    if( elf_head.e_ident[EI_DATA] == ELFDATA2MSB ) {
-        *pbig_endian = big_endian = true;
-    }
+    *pbig_endian = big_endian = ( elf_head.e_ident[EI_DATA] == ELFDATA2MSB );
 
-    ByteSwapEhdr( &elf_head, big_endian );
+    if( read_Ehdr( fp, &elf_head, big_endian ) )
+        return( DS_FAIL );
 
     // grab the string table, if it exists
     if( !elf_head.e_shstrndx ) {
@@ -205,15 +262,15 @@ static dip_status GetSectInfo( FILE *fp, unsigned long *sizes, unsigned long *ba
     memset( sizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
     offset = elf_head.e_shoff + elf_head.e_shstrndx * elf_head.e_shentsize + start;
     DCSeek( fp, offset, DIG_SEEK_ORG );
-    DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
-    ByteSwapShdr( &elf_sec, big_endian );
+    if( read_Shdr( fp, &elf_sec, big_endian ) )
+        return( DS_FAIL );
     string_table = DCAlloc( elf_sec.sh_size );
     DCSeek( fp, elf_sec.sh_offset + start, DIG_SEEK_ORG );
     DCRead( fp, string_table, elf_sec.sh_size );
     for( i = 0; i < elf_head.e_shnum; i++ ) {
         DCSeek( fp, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_SEEK_ORG );
-        DCRead( fp, &elf_sec, sizeof( Elf32_Shdr ) );
-        ByteSwapShdr( &elf_sec, big_endian );
+        if( read_Shdr( fp, &elf_sec, big_endian ) )
+            return( DS_FAIL );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
         if( sect < DR_DEBUG_NUM_SECTS ) {
             bases[sect] = elf_sec.sh_offset + start;
