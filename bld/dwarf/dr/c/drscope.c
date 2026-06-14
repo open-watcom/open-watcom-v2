@@ -131,7 +131,7 @@ void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
 // Walk in to of starting at ccu
 //************************************************************
 {
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     cui = DR_FindCompileInfo( of );
     ScopeCtlInit( &container->ctl );

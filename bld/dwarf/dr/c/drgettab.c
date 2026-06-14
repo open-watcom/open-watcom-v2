@@ -249,7 +249,7 @@ void DR_ScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
 char * DR_FindFileName( dr_fileidx fileidx, drmem_hdl entry )
 /***********************************************************/
 {
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
     filetab_idx     ftidx;
 
     if( fileidx != 0 ) {

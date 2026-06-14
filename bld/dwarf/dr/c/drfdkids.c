@@ -199,7 +199,7 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
  */
 {
     BaseInfo            info;
-    dr_cu_handle        cui;
+    dr_cui_handle       cui;
     const dw_tagnum     inh_lst[] = {
         DW_TAG_inheritance,
         0

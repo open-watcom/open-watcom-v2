@@ -614,7 +614,7 @@ dw_tagnum DR_ReadTag( drmem_hdl *entry, drmem_hdl *abbrev )
 {
     dw_tagnum       tag;
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     abbrev_idx = DR_VMReadULEB128( entry );
     cui = DR_FindCompileInfo( *entry );
@@ -650,7 +650,7 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
 /***************************************************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
     drmem_hdl       abbrev;
     dw_tagnum       tag;
 
@@ -718,7 +718,7 @@ void DR_GetCompileUnitHdr( drmem_hdl mod, DR_CUWLK fn, void *data )
 /*****************************************************************/
 {
     dr_search_context   ctxt;
-    dr_cu_handle        cui;
+    dr_cui_handle       cui;
 
     cui = DR_FindCompileInfo( mod );
     ctxt.cui = cui;
@@ -771,7 +771,7 @@ char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
 void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 /*******************************************************************/
 {
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     cui = &DR_CurrNode->cui;
     do {
@@ -832,7 +832,7 @@ bool DR_WalkCompileUnit( drmem_hdl mod, DR_CUWLK fn,
 {
     bool                cont;
     dr_search_context   ctxt;
-    dr_cu_handle        cui;
+    dr_cui_handle       cui;
 
     cui = DR_FindCompileInfo( mod );
     ctxt.cui = cui;
@@ -864,7 +864,7 @@ bool DR_WalkChildren( drmem_hdl mod, const dw_tagnum *tags, const DRWLKBLK *wlks
     dw_children     haschild;
     int             index;
     DRWLKBLK        wlk;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     cui = DR_FindCompileInfo( mod );
     abbrev_idx = DR_VMReadULEB128( &mod );
@@ -1059,8 +1059,8 @@ bool DR_WalkScope( drmem_hdl mod, const dw_tagnum *tags, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-static dr_cu_handle FindCompileInfo( dr_cu_handle cui, drmem_hdl addr )
-/*********************************************************************/
+static dr_cui_handle FindCompileInfo( dr_cui_handle cui, drmem_hdl addr )
+/***********************************************************************/
 {
     for( ;; ) {
         if( (addr >= cui->start) && (addr <= cui->end) )
@@ -1076,11 +1076,12 @@ static dr_cu_handle FindCompileInfo( dr_cu_handle cui, drmem_hdl addr )
     return( cui );
 }
 
-dr_cu_handle DR_FindCompileInfo( drmem_hdl addr )
-/***********************************************/
-/* gets the drmem_hdl of the module that addr is in */
+dr_cui_handle DR_FindCompileInfo( drmem_hdl addr )
+/*************************************************
+ * gets the drmem_hdl of the module that addr is in
+ */
 {
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     cui = DR_CurrNode->last_cui;
     if( addr < cui->start ) {  // start at begining
@@ -1094,7 +1095,7 @@ dr_cu_handle DR_FindCompileInfo( drmem_hdl addr )
 drmem_hdl DR_FindCompileUnit( drmem_hdl addr )
 /********************************************/
 {
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     cui = DR_FindCompileInfo( addr );
     return( cui->start );

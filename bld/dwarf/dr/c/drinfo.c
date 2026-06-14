@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -298,7 +298,7 @@ char * DRENTRY DRGetFileName( drmem_hdl entry )
 void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 /**************************************************************/
 {
-    dr_cu_handle        cui;
+    dr_cui_handle       cui;
     dr_fileidx          fileidx;
     filetab_idx         ftidx;
     char                *name;
@@ -321,7 +321,7 @@ void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
 char * DRENTRY DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
 /******************************************************************/
 {
-    dr_cu_handle        cui;
+    dr_cui_handle       cui;
     char                *name;
     filetab_idx         ftidx;
 

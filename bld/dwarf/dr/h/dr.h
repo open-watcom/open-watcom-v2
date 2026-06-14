@@ -282,7 +282,7 @@ typedef struct {
     bool        is_start;
 } dr_pubname_data;
 
-typedef struct dr_cu_info   *dr_cu_handle;
+typedef struct dr_cu_info   *dr_cui_handle;
 
 typedef struct {
     uint_32     addr;
@@ -341,7 +341,7 @@ typedef struct dr_context_stack {
 } dr_context_stack;
 
 typedef struct dr_search_context {
-    dr_cu_handle        cui;            /* current compile unit */
+    dr_cui_handle       cui;            /* current compile unit */
     drmem_hdl           start;          /* die to start from */
     drmem_hdl           end;            /* end of compile unit */
     drmem_hdl           functionhdl;    /* containing function */

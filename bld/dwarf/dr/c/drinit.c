@@ -39,9 +39,9 @@ dr_dbg_handle   DR_CurrNode = NULL;
 
 /* function prototypes */
 
-static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle cui )
-/******************************************************************/
-/* this reads in the abbrev. table for a compilation unit, and fills in an
+static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cui_handle cui )
+/********************************************************************
+ * this reads in the abbrev. table for a compilation unit, and fills in an
  * array of pointers to it.
  */
 {
@@ -53,7 +53,7 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cu_handle cui )
     drmem_hdl       finish;
     drmem_hdl       *abbrevs;
     dr_abbrev_idx   code;
-    dr_cu_handle    ccui;
+    dr_cui_handle   ccui;
 
     // if a previous compilation unit shares the same table, reuse it
     for( ccui = &(dbg->cui); ccui != cui; ccui = ccui->next ) {
@@ -176,8 +176,8 @@ void DRENTRY DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
 static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
 /***********************************************************/
 {
-    dr_cu_handle        cui;
-    dr_cu_handle        ncui;
+    dr_cui_handle       cui;
+    dr_cui_handle       ncui;
     drmem_hdl           start;
     drmem_hdl           finish;
     unsigned_16         version;
@@ -248,8 +248,8 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
  * pages that are allocated to this module will eventually be swapped out
  */
 {
-    dr_cu_handle        cui;
-    dr_cu_handle        ncui;
+    dr_cui_handle       cui;
+    dr_cui_handle       ncui;
 
     cui = dbg->cui.next;
     while( cui != NULL ) {

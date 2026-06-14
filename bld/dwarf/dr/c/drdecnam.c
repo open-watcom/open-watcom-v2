@@ -270,7 +270,7 @@ void DRDecorateLabel( drmem_hdl die, char *buf )
 {
     Loc_T           loc;
     dr_language     lang;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
     const char      *label;
     drmem_hdl       tmp_abbrev;
     drmem_hdl       tmp_entry;
@@ -385,7 +385,7 @@ static BrokenName_T BuildList( drmem_hdl die, drmem_hdl parent )
 {
     Loc_T           loc;
     BrokenName_T    decstruct = Empty_Broken_Name;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
     dr_language     lang;
 
     FillLoc( &loc, die );
@@ -2310,7 +2310,7 @@ static void FillLoc( Loc_T *loc, drmem_hdl die )
 /**********************************************/
 {
     dr_abbrev_idx   abbrev_idx;
-    dr_cu_handle    cui;
+    dr_cui_handle   cui;
 
     loc->entry_start = die;
     loc->entry_current = die;
