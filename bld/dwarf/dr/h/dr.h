@@ -235,31 +235,31 @@ typedef unsigned        dr_fileidx;
 typedef struct dr_dbg_info  *dr_dbg_handle;
 
 typedef struct {
-    dr_typek kind;
     uint_32  size;
-    dr_store acc;
-    dr_mod   mclass;
     union {
         dr_ptr   ptr;
         bool     sign;
         uint_32  beg_scope;
     } modifier;
+    dr_typek kind;
+    dr_store acc;
+    dr_mod   mclass;
 } dr_typeinfo;
 
 typedef struct {
+    drmem_hdl  child;
     uint_32    byte_size;
     uint_32    stride_size;
     uint_32    count;
     dw_ord     ordering;
-    drmem_hdl  child;
 } dr_array_info;
 
 typedef struct {
-    dr_val_class val_class;
     union{
         drmem_hdl ref;
         uint_32   s;
     } val;
+    dr_val_class val_class;
 } dr_val32;
 
 typedef struct {
@@ -307,14 +307,14 @@ typedef struct { /* current state of stmt prog */
 } dr_line_data;
 
 typedef struct {
-    uint_16     index;
     char        *name;
+    uint_16     index;
 } dr_line_dir;
 
 /* walk directory and  file names */
 typedef struct {
-    uint_16             index;
     char                *name;
+    uint_16             index;
     uint_16             dir;
     uint_32             time;
     uint_32             len;
@@ -350,10 +350,10 @@ typedef struct dr_search_context {
 } dr_search_context;
 
 typedef struct dr_sym_context {
-    drmem_hdl           handle;         /* symbol's handle */
-    dr_sym_type         type;           /* symbol's type */
     char                *name;          /* symbol's name */
     dr_search_context   *context;       /* context to resume search */
+    drmem_hdl           handle;         /* symbol's handle */
+    dr_sym_type         type;           /* symbol's type */
 } dr_sym_context;
 
 typedef struct {

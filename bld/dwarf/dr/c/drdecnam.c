@@ -56,10 +56,10 @@ typedef struct {
 
 typedef struct Node_S {
     struct Node_S   *next;
-    bool            user_def;   /* true if defined by user */
+    String          buf;        /* may contain several (non usr-def) words */
     drmem_hdl       entry;      /* if this is user-def'd, the entry */
     dr_sym_type     sym_type;   /* if u_def'd, the type of symbol */
-    String          buf;        /* may contain several (non usr-def) words */
+    bool            user_def;   /* true if defined by user */
 } *Node_T;                      /* note - a pointer to Node_S */
 
 /*

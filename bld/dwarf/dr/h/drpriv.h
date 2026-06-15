@@ -56,8 +56,8 @@ typedef struct {
 } filetab_entry;
 
 typedef struct {
-    filetab_idx         len;
     filetab_entry       *tab;
+    filetab_idx         len;
 } file_table;
 
 typedef struct {

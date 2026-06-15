@@ -89,11 +89,6 @@ typedef struct list_entry {
 
 struct dw_loc_handle {
     struct dw_loc_handle        *next;
-    enum {
-        LOC_EXPR,
-        LOC_LIST,
-        LOC_LIST_REF,
-    } is_expr;
     union {
         struct loc_handle_expr {
             dw_loc_offs         size;
@@ -104,6 +99,11 @@ struct dw_loc_handle {
         list_entry              *list;
 
     } u;  // possible variable size so nothing can follow this
+    enum {
+        LOC_EXPR,
+        LOC_LIST,
+        LOC_LIST_REF,
+    } is_expr;
 };
 #define BASE_HANDLE_SIZE        offsetof( struct dw_loc_handle, u )
 

@@ -39,9 +39,9 @@
 
 typedef struct pubname_header {
     uint_32     len;
-    uint_16     version;
     uint_32     dbg_pos;
     uint_32     dbg_length;
+    uint_16     version;
 } pubname_header;
 
 void DRENTRY DRWalkPubName( DRPUBWLK callback, void *data )

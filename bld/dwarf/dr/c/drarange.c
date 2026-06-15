@@ -39,8 +39,8 @@
 
 typedef struct arange_header {
     uint_32     len;
-    uint_16     version;
     uint_32     dbg_pos;
+    uint_16     version;
     uint_8      addr_size;
     uint_8      seg_size;
 } arange_header;

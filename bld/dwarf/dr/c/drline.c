@@ -41,15 +41,15 @@ typedef struct { /* stmt program read info */
     drmem_hdl   start;
     drmem_hdl   curr;
     drmem_hdl   finish;
+    unsigned_8  *op_lens; /* NULL if no new opcodes */
+    dr_fileidx  file_idx;
+    dr_fileidx  dir_idx;
     unsigned_16 seg;
     signed_8    line_base;
     unsigned_8  line_range;
     unsigned_8  min_ins_len;
     unsigned_8  def_is_stmt;
     unsigned_8  opcode_base;
-    unsigned_8  *op_lens; /* NULL if no new opcodes */
-    dr_fileidx  file_idx;
-    dr_fileidx  dir_idx;
 } prog_rdr;
 
 typedef struct line_info {

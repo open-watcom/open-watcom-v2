@@ -317,12 +317,12 @@ typedef struct {
 } dw_funcs;
 
 typedef struct {
-    dw_langnum          language;
-    dw_cm               compiler_options;
     char const          *producer_name;
-    jmp_buf             exception_handler;
     dw_funcs            funcs;
     dw_sym_handle       abbrev_sym;
+    jmp_buf             exception_handler;
+    dw_langnum          language;
+    dw_cm               compiler_options;
     bool                big_endian;
 } dw_init_info;
 
@@ -336,13 +336,13 @@ enum {
 typedef struct {
     char const      *source_filename;
     char const      *directory;
+    char const      *inc_list;
+    size_t          inc_list_len;
+    dw_sym_handle   dbg_pch;
     unsigned        flags;
     unsigned        offset_size;
     unsigned        segment_size;
     dw_mem_model    model;
-    char const      *inc_list;
-    size_t          inc_list_len;
-    dw_sym_handle   dbg_pch;
 } dw_cu_info;
 
 /* array types */

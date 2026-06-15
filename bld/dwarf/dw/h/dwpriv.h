@@ -120,22 +120,22 @@ struct dw_client {
     jmp_buf                     exception_handler;
     dw_funcs                    funcs;
     char                        *producer_name;
-    uint_8                      compiler_options;
-    dw_langnum                  language;
     dw_out_offset               section_base[DW_DEBUG_MAX];
     struct handles_private      handles;
     struct debug_line_private   debug_line;
     struct debug_abbrev_private debug_abbrev;
+    dw_langnum                  language;
     struct types_private        types;
     struct die_private          die;
     struct debug_loc_private    debug_loc;
     struct decl_private         decl;
     struct references_private   references;
-    uint_8                      offset_size;
-    uint_8                      segment_size;
     dw_handle                   defset;
     dw_sym_handle               abbrev_sym;
     dw_sym_handle               dbg_pch;
+    uint_8                      compiler_options;
+    uint_8                      offset_size;
+    uint_8                      segment_size;
     bool                        big_endian;
 };
 
