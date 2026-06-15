@@ -26,6 +26,7 @@ EXPORTS
     UNLOCKSEGMENT                  @24
     GLOBALCOMPACT                  @25
     GLOBALFREEALL                  @26
+    SETSWAPHOOK                    @27      # 1.x and 2.x only
     GLOBALMASTERHANDLE             @28
     YIELD                          @29
     WAITEVENT                      @30
@@ -37,8 +38,12 @@ EXPORTS
     GETCURRENTTASK                 @36
     GETCURRENTPDB                  @37
     SETTASKSIGNALPROC              @38
+    SETTASKSWITCHPROC              @39      # 1.x and 2.x only
+    SETTASKINTERCHANGE             @40      # 1.x and 2.x only
     ENABLEDOS                      @41
     DISABLEDOS                     @42
+    ISSCREENGRAB                   @43      # 1.x and 2.x only
+    BUILDPDB                       @44      # 1.x and 2.x only
     LOADMODULE                     @45
     FREEMODULE                     @46
     GETMODULEHANDLE                @47
