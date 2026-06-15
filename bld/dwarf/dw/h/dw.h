@@ -366,7 +366,7 @@ typedef struct {
 /* initialization/finalization */
 extern dw_client    DWENTRY DWInit( const dw_init_info *__info );
 extern void         DWENTRY DWFini( dw_client );
-extern dw_handle    DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu );
+extern dw_handle    DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cui );
 extern void         DWENTRY DWEndCompileUnit( dw_client );
 
 /* macro definitions */
@@ -380,7 +380,7 @@ extern void         DWENTRY DWMacUnDef( dw_client, dw_linenum __line, char const
 extern void         DWENTRY DWMacUse( dw_client, dw_linenum __line, char const *__macro_name );
 
 /* file/line number management */
-extern void         DWENTRY DWInitDebugLine( dw_client cli, dw_cu_info *cu );
+extern void         DWENTRY DWInitDebugLine( dw_client cli, dw_cu_info *cui );
 extern void         DWENTRY DWFiniDebugLine( dw_client cli );
 extern void         DWENTRY DWSetFile( dw_client, char const *__fname );
 extern void         DWENTRY DWLineNum( dw_client, uint __info, dw_linenum __line_num,

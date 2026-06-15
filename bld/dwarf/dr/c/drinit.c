@@ -56,7 +56,7 @@ static void ReadCUAbbrevTable( dr_dbg_handle dbg, dr_cui_handle cui )
     dr_cui_handle   ccui;
 
     // if a previous compilation unit shares the same table, reuse it
-    for( ccui = &(dbg->cui); ccui != cui; ccui = ccui->next ) {
+    for( ccui = &dbg->cu_info; ccui != cui; ccui = ccui->next ) {
         if( cui->abbrev_start == ccui->abbrev_start ) {
             cui->numabbrevs  = ccui->numabbrevs;
             cui->abbrevs     = ccui->abbrevs;
@@ -123,7 +123,7 @@ static dr_dbg_handle  InitDbgHandle( void *file, unsigned long *sizes, bool big_
     dbg->addr_size = 0;
     dbg->wat_producer_ver = VER_NONE;
     dbg->big_endian = big_endian;
-    dbg->last_cui = &dbg->cui;
+    dbg->last_cui = &dbg->cu_info;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         size = sizes[i];
         dbg->sections[i].size = size;
@@ -184,7 +184,7 @@ static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
     unsigned_8          addr_size;
     unsigned_8          curr_addr_size;
 
-    cui = &DR_CurrNode->cui;
+    cui = &DR_CurrNode->cu_info;
     start = DR_CurrNode->sections[DR_DEBUG_INFO].base;
     finish = start + DR_CurrNode->sections[DR_DEBUG_INFO].size;
     addr_size = DR_VMReadByte( start + offsetof( comp_unit_prologue, addr_size ) );
@@ -251,7 +251,7 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
     dr_cui_handle       cui;
     dr_cui_handle       ncui;
 
-    cui = dbg->cui.next;
+    cui = dbg->cu_info.next;
     while( cui != NULL ) {
         ncui = cui->next;
         DR_FiniFileTable( &cui->filetab, false );
@@ -267,7 +267,7 @@ void DRENTRY DRDbgFini( dr_dbg_handle dbg )
         DR_FREE( cui );
         cui = ncui;
     }
-    DR_FiniFileTable( &dbg->cui.filetab, false );
+    DR_FiniFileTable( &dbg->cu_info.filetab, false );
     DR_FREE( dbg );
 }
 

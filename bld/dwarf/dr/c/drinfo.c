@@ -303,7 +303,7 @@ void DRENTRY DRGetFileNameList( DRFNAMECB callback, void *data )
     filetab_idx         ftidx;
     char                *name;
 
-    cui = &DR_CurrNode->cui;
+    cui = &DR_CurrNode->cu_info;
     do {
         fileidx = cui->filetab.len;
         while( fileidx > 0 ) {

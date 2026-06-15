@@ -47,7 +47,7 @@
 #include "dwname.h"
 
 
-dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
+dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cui )
 {
     dw_handle       new;
     uint            tmp;
@@ -64,9 +64,9 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
             cli->section_base[sect] = CLISectionAbs( cli, sect );
         }
     }
-    cli->offset_size = cu->offset_size;
-    cli->segment_size = cu->segment_size;
-    cli->dbg_pch = cu->dbg_pch;
+    cli->offset_size = cui->offset_size;
+    cli->segment_size = cui->segment_size;
+    cli->dbg_pch = cui->dbg_pch;
     cli->defset = 0;
     DW_InitDebugPubnames( cli );
     DW_InitDebugAranges( cli );
@@ -84,7 +84,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
 
     /* emit the TAG_compile_unit */
     abbrev = AB_COMPILE_UNIT | AB_SIBLING;
-    if( cu->flags & DW_CU_FLAG_CONTIGUOUS ) {
+    if( cui->flags & DW_CU_FLAG_CONTIGUOUS ) {
         abbrev |= AB_LOWHIGH_PC;
     }
     DW_StartDIE( cli, abbrev );
@@ -95,13 +95,13 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
         DW_InfoReloc( cli, DW_W_HIGH_PC );
     }
     /* AT_name */
-    DW_InfoString( cli, cu->source_filename );
+    DW_InfoString( cli, cui->source_filename );
     /* AT_stmt_list */
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_LINE );
     /* AT_language */
     DW_InfoULEB128( cli, cli->language );
     /* AT_comp_dir */
-    DW_InfoString( cli, cu->directory );
+    DW_InfoString( cli, cui->directory );
     /* AT_producer */
     tmp = sizeof( DWARF_WATCOM_PRODUCER ) - 1;
     if( cli->producer_name[0] != '\0' )
@@ -125,7 +125,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
         DW_Info32( cli, 0  );
     }
     /* AT_WATCOM_memory_model */
-    DW_Info8( cli, cu->model );
+    DW_Info8( cli, cui->model );
     /* AT_WATCOM_references_start */
     CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_REF );
     DW_EndDIE( cli );
@@ -134,7 +134,7 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cu )
      * these are done now so that the references to their starting point
      * actually point to the start, rather than midway through
      */
-    DW_InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
+    DW_InitDebugLine( cli, cui->source_filename, cui->inc_list, cui->inc_list_len );
     DW_InitDebugMacInfo( cli );
     return( new );
 }
@@ -196,14 +196,14 @@ void DWENTRY DWFini( dw_client cli )
     CLIFree( cli, cli );
 }
 
-void DWENTRY DWInitDebugLine( dw_client cli, dw_cu_info *cu )
+void DWENTRY DWInitDebugLine( dw_client cli, dw_cu_info *cui )
 {
-    cli->offset_size = cu->offset_size;
-    cli->segment_size = cu->segment_size;
-    cli->dbg_pch = cu->dbg_pch;
+    cli->offset_size = cui->offset_size;
+    cli->segment_size = cui->segment_size;
+    cli->dbg_pch = cui->dbg_pch;
     cli->defset = 0;
     cli->section_base[DW_DEBUG_LINE] = CLISectionAbs( cli, DW_DEBUG_LINE );
-    DW_InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
+    DW_InitDebugLine( cli, cui->source_filename, cui->inc_list, cui->inc_list_len );
 }
 
 void DWENTRY DWFiniDebugLine( dw_client cli )

@@ -773,7 +773,7 @@ void DRENTRY DRIterateCompileUnits( void *data, DRITERCUCB callback )
 {
     dr_cui_handle   cui;
 
-    cui = &DR_CurrNode->cui;
+    cui = &DR_CurrNode->cu_info;
     do {
         if( !callback( data, cui->start ) ) {
             break;    // false == quit
@@ -791,7 +791,7 @@ bool DR_ScanAllCompileUnits( dr_search_context *startingCtxt, DR_CUWLK fn,
     int                 i;
 
     if( startingCtxt == NULL ) {
-        ctxt.cui = &DR_CurrNode->cui;
+        ctxt.cui = &DR_CurrNode->cu_info;
         ctxt.start = ctxt.cui->start;
         ctxt.end = ctxt.start + DR_VMReadDWord( ctxt.start );
         ctxt.start += sizeof( comp_unit_prologue );
@@ -1085,7 +1085,7 @@ dr_cui_handle DR_FindCompileInfo( drmem_hdl addr )
 
     cui = DR_CurrNode->last_cui;
     if( addr < cui->start ) {  // start at begining
-        cui = &DR_CurrNode->cui;
+        cui = &DR_CurrNode->cu_info;
     }
     cui = FindCompileInfo( cui, addr );
     DR_CurrNode->last_cui = cui;

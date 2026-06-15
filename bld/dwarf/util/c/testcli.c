@@ -150,7 +150,7 @@ int  main( void )
 {
     dw_init_info        info;
     dw_loc_handle       seg;
-    dw_cu_info          cu;
+    dw_cu_info          cu_info;
     DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
     info.big_endian = false;
@@ -169,16 +169,16 @@ int  main( void )
             return( 1 );
         }
         seg = DWLocFini( Client, DWLocInit( Client ) );
-        memset( &cu, 0, sizeof( cu ));
-        cu.source_filename = "foo.bar";
-        cu.directory = "somewhere\\over\\the\\rainbow";
+        memset( &cu_info, 0, sizeof( cu_info ));
+        cu_info.source_filename = "foo.bar";
+        cu_info.directory = "somewhere\\over\\the\\rainbow";
 
-        DWBeginCompileUnit( Client, &cu );
+        DWBeginCompileUnit( Client, &cu_info );
         Test();
         DWEndCompileUnit( Client );
-        cu.source_filename = "empty.unit";
-        cu.directory = "in\\a\\land\\far\\far\\away";
-        DWBeginCompileUnit( Client, &cu );
+        cu_info.source_filename = "empty.unit";
+        cu_info.directory = "in\\a\\land\\far\\far\\away";
+        DWBeginCompileUnit( Client, &cu_info );
         DWEndCompileUnit( Client );
         DWLocTrash( Client, seg );
         DWFini( Client );
