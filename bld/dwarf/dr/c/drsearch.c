@@ -50,33 +50,33 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *minfo, v
 {
     int                 index;
     sym_search_data     *sinfo;
-    dr_sym_context      symctxt;
+    dr_sym_context      context;
 
     sinfo = (sym_search_data *)data;
 
-    symctxt.handle = minfo->handle;
-    symctxt.context = minfo->context;
+    context.handle = minfo->handle;
+    context.context = minfo->context;
 
-    symctxt.name = NULL;
+    context.name = NULL;
     if( sinfo->name != NULL ) {
-        symctxt.name = DR_GetName( abbrev, mod );
-        if( symctxt.name == NULL )
+        context.name = DR_GetName( abbrev, mod );
+        if( context.name == NULL )
             return( true );
-        if( !RegExec( sinfo->name, symctxt.name, true ) ) {
-            DR_FREE( symctxt.name );
+        if( !RegExec( sinfo->name, context.name, true ) ) {
+            DR_FREE( context.name );
             return( true );
         }
     }
 
-    symctxt.type = DR_SYM_MACRO;
+    context.type = DR_SYM_MACRO;
     for( index = 0; index < DR_SYM_NOT_SYM; index++ ) {
         if( DR_SearchArray( SearchTags[index], minfo->tag ) ) {
-            symctxt.type = index;
+            context.type = index;
             break;
         }
     }
 
-    return( sinfo->callback( &symctxt, sinfo->data ) );
+    return( sinfo->callback( &context, sinfo->data ) );
 }
 
 bool DRENTRY DRSymSearch( dr_search search, dr_depth depth, void *_name,
@@ -106,10 +106,10 @@ bool DRENTRY DRSymSearch( dr_search search, dr_depth depth, void *_name,
     return( done );
 }
 
-bool DRENTRY DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
+bool DRENTRY DRResumeSymSearch( dr_search_context *context, dr_search search,
             dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
 /***********************************************************************/
-// resume a search from context information in ctxt
+// resume a search from context information in context
 {
     sym_search_data info;
     bool            done = false;
@@ -124,7 +124,7 @@ bool DRENTRY DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
         info.name = name;
         info.data = data;
         info.searchtype = search;
-        done |= DR_ScanAllCompileUnits( ctxt, CheckEntry, SearchTypes[search], depth, &info );
+        done |= DR_ScanAllCompileUnits( context, CheckEntry, SearchTypes[search], depth, &info );
     }
 
     return( done );
@@ -140,29 +140,29 @@ static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
     return( false );        // more info, in case anyone checks
 }
 
-dr_search_context *DRDuplicateSearchContext( dr_search_context *cxt )
-/*******************************************************************/
+dr_search_context *DRDuplicateSearchContext( dr_search_context *context )
+/***********************************************************************/
 {
     int                     i;
-    dr_search_context       *newCtxt;
+    dr_search_context       *ncontext;
 
-    newCtxt = DR_ALLOC( sizeof( dr_search_context ) );
-    *newCtxt = *cxt; /* structure copy */
+    ncontext = DR_ALLOC( sizeof( dr_search_context ) );
+    *ncontext = *context; /* structure copy */
 
 
     /* but allocate and copy own stack */
-    newCtxt->stack.stack = DR_ALLOC( newCtxt->stack.size * sizeof( uint_32 ) );
+    ncontext->stack.stack = DR_ALLOC( ncontext->stack.size * sizeof( uint_32 ) );
 
-    for( i = 0; i < cxt->stack.free; i += 1 ) {
-        newCtxt->stack.stack[i] = cxt->stack.stack[i];
+    for( i = 0; i < context->stack.free; i += 1 ) {
+        ncontext->stack.stack[i] = context->stack.stack[i];
     }
 
-    return( newCtxt );
+    return( ncontext );
 }
 
-void DRFreeSearchContext( dr_search_context *ctxt )
-/*************************************************/
+void DRFreeSearchContext( dr_search_context *context )
+/****************************************************/
 {
-    DR_FREE( ctxt->stack.stack );
-    DR_FREE( ctxt );
+    DR_FREE( context->stack.stack );
+    DR_FREE( context );
 }

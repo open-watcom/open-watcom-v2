@@ -313,31 +313,31 @@ typedef struct {
 
 /* walk directory and  file names */
 typedef struct {
-    uint_16     index;
-    char        *name;
-    uint_16     dir;
-    uint_32     time;
-    uint_32     len;
+    uint_16             index;
+    char                *name;
+    uint_16             dir;
+    uint_32             time;
+    uint_32             len;
 } dr_line_file;
 
 typedef struct {
-    int         size;   /* available room */
-    int         free;   /* next free entry */
-    drmem_hdl   *stack; /* values */
+    int                 size;   /* available room */
+    int                 free;   /* next free entry */
+    drmem_hdl           *stack; /* values */
 } dr_scope_stack;
 
 typedef struct {
-    dr_scope_stack  scope;
-    drmem_hdl       dependent;
-    char            *file;
-    unsigned_32     line;
-    unsigned_16     column;
+    dr_scope_stack      scope;
+    drmem_hdl           dependent;
+    char                *file;
+    unsigned_32         line;
+    unsigned_16         column;
 } dr_ref_info;
 
 typedef struct dr_context_stack {
-    int         size;   /* available room */
-    int         free;   /* next free entry */
-    drmem_hdl   *stack; /* values */
+    int                 size;   /* available room */
+    int                 free;   /* next free entry */
+    drmem_hdl           *stack; /* values */
 } dr_context_stack;
 
 typedef struct dr_search_context {
@@ -350,10 +350,10 @@ typedef struct dr_search_context {
 } dr_search_context;
 
 typedef struct dr_sym_context {
-    drmem_hdl               handle;         /* symbol's handle */
-    dr_sym_type             type;           /* symbol's type */
-    char                    *name;          /* symbol's name */
-    dr_search_context       *context;       /* context to resume search */
+    drmem_hdl           handle;         /* symbol's handle */
+    dr_sym_type         type;           /* symbol's type */
+    char                *name;          /* symbol's name */
+    dr_search_context   *context;       /* context to resume search */
 } dr_sym_context;
 
 typedef struct {

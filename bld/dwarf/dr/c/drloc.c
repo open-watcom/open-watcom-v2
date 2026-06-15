@@ -395,9 +395,9 @@ static void DoLocExpr( unsigned_8       *p,
     return;
 }
 
-static drmem_hdl SearchLocList( uint_32 start, uint_32 context, uint addr_size )
+static drmem_hdl SearchLocList( uint_32 start, uint_32 item, uint addr_size )
 /******************************************************************************/
-// Search loc list for context return start of loc_expr block or NULL
+// Search loc list for item return start of loc_expr block or NULL
 {
     uint_32     low;
     uint_32     high;
@@ -419,7 +419,7 @@ static drmem_hdl SearchLocList( uint_32 start, uint_32 context, uint addr_size )
             p = DRMEM_HDL_NULL;
             break;
         }
-        if( low <= context && context < high )
+        if( low <= item && item < high )
             break;
         len = DR_VMReadWord( p );
         p += sizeof( uint_16 );
@@ -438,7 +438,7 @@ static bool DR_LocExpr( drmem_hdl var, drmem_hdl abbrev, drmem_hdl info,
     uint_8      *expr;
     bool        ret;
     uint_32     loclist;
-    uint_32     context;
+    uint_32     item;
     int         addr_size;
 
     addr_size = DR_GetAddrSize( DR_FindCompileUnit( info ) );
@@ -466,12 +466,12 @@ static bool DR_LocExpr( drmem_hdl var, drmem_hdl abbrev, drmem_hdl info,
             break;
         case DW_FORM_ref_addr:
         case DW_FORM_data4:
-            if( !callbck->live( d, &context ) ) {
+            if( !callbck->live( d, &item ) ) {
                 ret = false;
                 goto exit;
             }
             loclist = DR_VMReadDWord( info );
-            info = SearchLocList( loclist, context, addr_size );
+            info = SearchLocList( loclist, item, addr_size );
             if( info == DRMEM_HDL_NULL ) {
                 ret = false;
                 goto exit;

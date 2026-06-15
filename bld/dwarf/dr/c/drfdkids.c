@@ -204,25 +204,25 @@ void DRENTRY DRDerivedSearch( drmem_hdl handle, void *data, DRCLSSRCH callback )
         DW_TAG_inheritance,
         0
     };
-    dr_search_context   ctxt;
+    dr_search_context   context;
 
     info.callback = callback;
     info.data = data;
     info.parent = handle;
 
     cui = DR_FindCompileInfo( handle );
-    ctxt.cui = cui;
-    ctxt.start = cui->start;
-    ctxt.end = cui->start + DR_VMReadDWord( cui->start );
-    ctxt.start += sizeof( comp_unit_prologue );
-    ctxt.classhdl    = DRMEM_HDL_NULL;
-    ctxt.functionhdl = DRMEM_HDL_NULL;
-    ctxt.stack.size  = 0;
-    ctxt.stack.free  = 0;
-    ctxt.stack.stack = NULL;
+    context.cui = cui;
+    context.start = cui->start;
+    context.end = cui->start + DR_VMReadDWord( cui->start );
+    context.start += sizeof( comp_unit_prologue );
+    context.classhdl    = DRMEM_HDL_NULL;
+    context.functionhdl = DRMEM_HDL_NULL;
+    context.stack.size  = 0;
+    context.stack.free  = 0;
+    context.stack.stack = NULL;
 
-    DR_ScanCompileUnit( &ctxt, CheckEntry, inh_lst, DR_DEPTH_CLASSES, &info );
-    DR_FreeContextStack( &ctxt.stack );
+    DR_ScanCompileUnit( &context, CheckEntry, inh_lst, DR_DEPTH_CLASSES, &info );
+    DR_FreeContextStack( &context.stack );
 }
 
 static bool friendHook( dr_sym_type st, drmem_hdl handle, char *name,
