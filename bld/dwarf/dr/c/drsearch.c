@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,7 +91,8 @@ bool DRENTRY DRSymSearch( dr_search search, dr_depth depth, void *_name,
     bool            done = false;
     regexp          *name = _name;
 
-    if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
+    if( search == DR_SEARCH_MACROS
+      || search == DR_SEARCH_ALL ) {
         done |= DRSearchMacro( name, data, callback );
     }
 
@@ -115,7 +116,8 @@ bool DRENTRY DRResumeSymSearch( dr_search_context *context, dr_search search,
     bool            done = false;
     regexp          *name = _name;
 
-    if( search == DR_SEARCH_MACROS || search == DR_SEARCH_ALL ) {
+    if( search == DR_SEARCH_MACROS
+      || search == DR_SEARCH_ALL ) {
         done |= DRSearchMacro( name, data, callback );
     }
 
@@ -130,8 +132,8 @@ bool DRENTRY DRResumeSymSearch( dr_search_context *context, dr_search search,
     return( done );
 }
 
-static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
-/************************************************************************/
+static bool DRSearchMacro( regexp *name, void *data, DRSYMSRCH callback )
+/***********************************************************************/
 {
     /* unused parameters */ (void)name; (void)data; (void)callback;
 

@@ -94,7 +94,8 @@ void DRENTRY DRKidsSearch( drmem_hdl clhandle, dr_search search, void *data, DRC
 
         /* NYI - DW_TAG_lexical_block only one? */
 
-        if( has_kids && tag != DW_TAG_lexical_block ) {
+        if( has_kids
+          && tag != DW_TAG_lexical_block ) {
             DR_SkipChildren( &abbrev, &tmp_entry );
         } else {
             DR_SkipAttribs( abbrev, &tmp_entry );

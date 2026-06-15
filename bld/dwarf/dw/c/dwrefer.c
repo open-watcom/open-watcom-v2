@@ -93,7 +93,7 @@ void DW_StartRef( dw_client cli )
 
 void DW_EndRef( dw_client cli )
 {
-    struct delayed_ref *        this;
+    struct delayed_ref  *this;
 
     /*
         We have to check if we actually emitted a REF_START_REF
@@ -101,7 +101,8 @@ void DW_EndRef( dw_client cli )
     */
     --cli->references.scope;
     this = cli->references.delayed;
-    if( this != NULL && this->scope == cli->references.scope ) {
+    if( this != NULL
+      && this->scope == cli->references.scope ) {
         cli->references.delayed = DW_CarveFreeLink( cli->references.delay_carver, this );
     } else {
         CLIWriteU8( cli, DW_DEBUG_REF, REF_END_SCOPE );
@@ -126,7 +127,8 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     line_delta = line - cli->references.line;
     cli->references.line = line;
     end = buf;
-    if( line_delta < 0 || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
+    if( line_delta < 0
+      || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
         *end++ = REF_ADD_LINE;
         end = WriteSLEB128( end, line_delta );
         cli->references.column = 0;
@@ -136,7 +138,8 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     }
     column_delta = column - cli->references.column;
     cli->references.column = column;
-    if( column_delta < 0 || column_delta >= REF_COLUMN_RANGE ) {
+    if( column_delta < 0
+      || column_delta >= REF_COLUMN_RANGE ) {
         *end++ = REF_ADD_COLUMN;
         end = WriteSLEB128( end, column_delta );
         column_delta = 0;

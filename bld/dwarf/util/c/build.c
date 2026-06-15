@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +46,7 @@
 #include <assert.h>
 #include <process.h>
 
-void CFatal( char * msg )
+void CFatal( char *msg )
 {
     fprintf( stderr, msg );
     exit( 1 );
@@ -164,9 +164,9 @@ int createBrowseFile( FILE *browseFile )
 }
 //---------------------------------------------------------------------------
 
-int main( int argc, char * argv[] )
+int main( int argc, char *argv[] )
 {
-    FILE * in;
+    FILE *in;
 
     if( argc != 2 ) {
         fprintf( stderr, "Usage: %s <filename>", argv[0] );

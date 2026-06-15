@@ -140,8 +140,8 @@ filetab_idx DR_IndexFile( dr_fileidx fileidx, file_table *tab )
     return( tab->tab[fileidx].u.idx.fnameidx );
 }
 
-char * DR_IndexFileName( filetab_idx ftidx, file_table *tab )
-/***********************************************************/
+char *DR_IndexFileName( filetab_idx ftidx, file_table *tab )
+/**********************************************************/
 {
     return( tab->tab[ftidx].u.name );
 }
@@ -246,8 +246,8 @@ void DR_ScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
     DR_FiniFileTable( &curridxmap, false );
 }
 
-char * DR_FindFileName( dr_fileidx fileidx, drmem_hdl entry )
-/***********************************************************/
+char *DR_FindFileName( dr_fileidx fileidx, drmem_hdl entry )
+/**********************************************************/
 {
     dr_cui_handle   cui;
     filetab_idx     ftidx;

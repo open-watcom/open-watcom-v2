@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,10 +55,10 @@ struct carve_t {
 
 
 static void newBlk(
-    dw_client                   cli,
-    carve_t                     cv )
+    dw_client cli,
+    carve_t cv )
 {
-    blk_t *                     newblk;
+    blk_t           *newblk;
 
     newblk = CLIAlloc( cli, sizeof( blk_t ) - 1 + cv->blk_top );
     newblk->next = cv->blk_list;
@@ -96,10 +96,10 @@ void DW_CarveDestroy(
 
 
 void *DW_CarveAlloc(
-    dw_client                   cli,
-    carve_t                     cv )
+    dw_client cli,
+    carve_t cv )
 {
-    void * *                    new;
+    void            **new;
 
     if( cv->free_list != NULL ) {
         new = cv->free_list;
@@ -115,19 +115,19 @@ void *DW_CarveAlloc(
 
 
 void DW_CarveFree(
-    carve_t                     cv,
-    void *                      elm )
+    carve_t cv,
+    void *elm )
 {
-    *(void**)elm = cv->free_list;
+    *(void **)elm = cv->free_list;
     cv->free_list = (void **)elm;
 }
 
 
 void *DW_CarveFreeLink(
-    carve_t                     cv,
-    void *                      elm )
+    carve_t cv,
+    void *elm )
 {
-    void *                      next;
+    void            *next;
 
     next = *(void **)elm;
     *(void**)elm = cv->free_list;
@@ -137,10 +137,10 @@ void *DW_CarveFreeLink(
 
 
 void DW_CarveFreeChain(
-    carve_t                     cv,
-    void *                      list )
+    carve_t cv,
+    void *list )
 {
-    void *                      cur;
+    void            *cur;
 
     while( list != NULL ) {
         cur = list;

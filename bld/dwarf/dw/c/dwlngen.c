@@ -40,7 +40,8 @@ uint_8 * DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr,
     uint                opcode;
     dw_addr_delta       addr;
 
-    if( line_incr < DWLINE_BASE || line_incr > DWLINE_BASE + DWLINE_RANGE - 1 ) {
+    if( line_incr < DWLINE_BASE
+      || line_incr > DWLINE_BASE + DWLINE_RANGE - 1 ) {
         /* line_incr is out of bounds... emit standard opcode */
         *end++ = DW_LNS_advance_line;
         end = WriteSLEB128( end, line_incr );
@@ -54,7 +55,8 @@ uint_8 * DWENTRY DWLineGen( dw_linenum_delta line_incr, dw_addr_delta addr_incr,
     } else {
         addr_incr /= DW_MIN_INSTR_LENGTH;
     }
-    if( addr_incr == 0 && line_incr == 0 ) {
+    if( addr_incr == 0
+      && line_incr == 0 ) {
         *end++ = DW_LNS_copy;
         return( end );
     }

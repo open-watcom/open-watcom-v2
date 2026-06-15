@@ -197,7 +197,9 @@ static void DoLocExpr( unsigned_8       *p,
             /* get contents of reg op1 */
             Push( top );
             top[0] = op1;
-            if( (p != end) && ((*p == DW_OP_xderef) || (*p == DW_OP_xderef_size)) ) {
+            if( (p != end)
+              && ((*p == DW_OP_xderef)
+              || (*p == DW_OP_xderef_size)) ) {
                 isfar = true;
             } else {
                 isfar = false;
@@ -415,11 +417,13 @@ static drmem_hdl SearchLocList( uint_32 start, uint_32 item, uint addr_size )
         p += addr_size;
         high = DR_ReadInt( p, addr_size );
         p += addr_size;
-        if( low == high && low == 0 ) {
+        if( low == high
+          && low == 0 ) {
             p = DRMEM_HDL_NULL;
             break;
         }
-        if( low <= item && item < high )
+        if( low <= item
+          && item < high )
             break;
         len = DR_VMReadWord( p );
         p += sizeof( uint_16 );

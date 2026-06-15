@@ -58,7 +58,8 @@ dw_handle DWENTRY DWBeginCompileUnit( dw_client cli, dw_cu_info *cui )
      * remember where all the sections start
      */
     for( sect = 0; sect < DW_DEBUG_MAX; ++sect ) {
-        if( (cli->compiler_options & DW_CM_ABBREV_PRE) && sect == DW_DEBUG_ABBREV ) {
+        if( (cli->compiler_options & DW_CM_ABBREV_PRE)
+          && sect == DW_DEBUG_ABBREV ) {
             cli->section_base[sect] = 0;
         } else {
             cli->section_base[sect] = CLISectionAbs( cli, sect );

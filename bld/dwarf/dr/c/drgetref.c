@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -103,8 +103,8 @@ static drmem_hdl ScopeLastNameable( dr_scope_stack *scope, char **name )
     return( 0 );
 }
 
-static bool ToHook( dr_ref_info * reg, void *data )
-/*************************************************/
+static bool ToHook( dr_ref_info *reg, void *data )
+/************************************************/
 {
     ToData  *info = (ToData *)data;
 
@@ -112,8 +112,8 @@ static bool ToHook( dr_ref_info * reg, void *data )
             && reg->scope.stack[reg->scope.free - 1] == info->entry );
 }
 
-static bool ByHook( dr_ref_info * registers, void * data )
-/********************************************************/
+static bool ByHook( dr_ref_info *registers, void *data )
+/******************************************************/
 {
     return( registers->dependent == ((ByData*)data)->entry );
 }
@@ -146,7 +146,8 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             owning_node = DR_VMReadDWord( loc ) + infoOffset;
             loc += sizeof( unsigned_32 );
             ScopePush( &registers.scope, owning_node );
-            if( (which & REFERSTO) != 0 && owning_node == entry ) {
+            if( (which & REFERSTO) != 0
+              && owning_node == entry ) {
                 inScope = true;
             }
             break;
@@ -196,7 +197,8 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
             }
 
             quit = false; /* don't terminate */
-            if( do_callback( &registers, data1 ) || inScope ) {
+            if( do_callback( &registers, data1 )
+              || inScope ) {
                 char    *name = NULL;
 
                 owning_node = ScopeLastNameable( &registers.scope, &name );
@@ -221,24 +223,24 @@ void DRENTRY DRRefersTo( drmem_hdl entry, void *data, DRSYMREF callback )
     References( REFERSTO, entry, &info, ToHook, data, callback );
 }
 
-void DRENTRY DRReferredToBy( drmem_hdl entry, void * data, DRSYMREF callback )
-/****************************************************************************/
+void DRENTRY DRReferredToBy( drmem_hdl entry, void *data, DRSYMREF callback )
+/***************************************************************************/
 {
     ByData info;
     info.entry = entry;
     References( REFERREDBY, entry, &info, ByHook, data, callback );
 }
 
-static bool RefHook( dr_ref_info * reg, void * data )
-/***************************************************/
+static bool RefHook( dr_ref_info *reg, void *data )
+/*************************************************/
 {
-    RefData * info = (RefData *) data;
+    RefData *info = (RefData *)data;
 
     return( DRGetSymType( reg->dependent ) == info->search );
 }
 
-void DRENTRY DRReferencedSymbols( dr_sym_type search, void * data, DRSYMREF callback )
-/************************************************************************************/
+void DRENTRY DRReferencedSymbols( dr_sym_type search, void *data, DRSYMREF callback )
+/***********************************************************************************/
 {
     RefData info;
     info.search = search;

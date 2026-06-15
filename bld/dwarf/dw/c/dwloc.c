@@ -232,7 +232,8 @@ void DWENTRY DWLocSym( dw_client cli, dw_loc_id loc, dw_sym_handle sym, dw_reloc
     op = nextOp( cli, loc, DW_OP_addr, sizeof( dw_sym_reloc ) );
     ++loc->num_syms;
     write_sym_reloc( op->data, sym, kind );
-    if( kind == DW_W_SEGMENT || kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
+    if( kind == DW_W_SEGMENT
+      || kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
         ADD_ADDR( cli, loc, GET_SEGMENT_SIZE( cli ) );
     } else {
         ADD_ADDR( cli, loc, cli->offset_size );
@@ -303,13 +304,16 @@ void DWENTRY DWLocConstS( dw_client cli, dw_loc_id loc, dw_sconst value )
     _Validate( loc != NULL );
 
     /* determine how we'll store this thing */
-    if( 0 <= value && value < 32L ) {
+    if( 0 <= value
+      && value < 32L ) {
         nextOp( cli, loc, DW_OP_lit( value ), 0 );
-    } else if( -128L <= value && value < 128L ) {
+    } else if( -128L <= value
+      && value < 128L ) {
         op = nextOp( cli, loc, DW_OP_const1s, 1 );
         op->data[0] = (int_8)value;
         ADD_ADDR( cli, loc, 1 );
-    } else if( -16384L <= value && value < 16384L ) {
+    } else if( -16384L <= value
+      && value < 16384L ) {
         op = nextOp( cli, loc, DW_OP_const2s, sizeof( int_16 ) );
         BufWriteU16( cli, op->data, (int_16)value );
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
@@ -447,7 +451,8 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
             memcpy( &label, cur_op->data, sizeof( dw_loc_label ) );
             addr += sizeof( int_16 );
             jump_offset = (int_32)label->addr - (int_32)addr;
-            if( jump_offset < -32768 || jump_offset > 32767 ) {
+            if( jump_offset < -32768
+              || jump_offset > 32767 ) {
                 _Abort( ABORT_LOC_JUMP_OUT_OF_RANGE );
             }
             BufWriteU16( cli, p, (int_16)jump_offset );
@@ -456,7 +461,8 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
         case DW_OP_addr:
             BufWriteU16( cli, base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
             read_sym_reloc( cur_op->data, &reloc_info );
-            if( reloc_info.kind == DW_W_SEGMENT || reloc_info.kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
+            if( reloc_info.kind == DW_W_SEGMENT
+              || reloc_info.kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
                 /* it was a DWLocSegment() */
                 int segment_size;
 
@@ -546,7 +552,8 @@ uint_32 DW_EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_hand
         if( syms_left ) {
             p = read_sym_reloc( p, &reloc_info );
             CLIReloc3( cli, sect, reloc_info.kind, reloc_info.sym );
-            if( reloc_info.kind == DW_W_SEGMENT || reloc_info.kind == DW_W_LABEL_SEG ) { //TODO :better linkage
+            if( reloc_info.kind == DW_W_SEGMENT
+              || reloc_info.kind == DW_W_LABEL_SEG ) { //TODO :better linkage
                 bytes_left -= GET_SEGMENT_SIZE( cli );
             } else {
                 bytes_left -= cli->offset_size;

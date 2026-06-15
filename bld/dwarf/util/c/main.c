@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -90,7 +90,7 @@ void SetSects( int handle )
 
 bool TestIntegrity( int handle ) {
 /*******************************/
-    char *      mbrHeaderString = "WBROWSE";
+    char        *mbrHeaderString = "WBROWSE";
     int         mbrHeaderStringLen = 7;
 
     unsigned    mbrHeaderSignature = 0xcbcb;
@@ -116,7 +116,7 @@ bool TestIntegrity( int handle ) {
     return( true );
 }
 
-int main( int argc, char * argv[] ) {
+int main( int argc, char *argv[] ) {
     int handle;
 
     if( argc != 2 ) {

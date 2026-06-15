@@ -283,7 +283,7 @@ char * DRENTRY DRGetFileName( drmem_hdl entry )
 /*********************************************/
 {
     drmem_hdl           abbrev;
-    char *              name;
+    char                *name;
     dr_fileidx          fileidx;
 
     name = NULL;

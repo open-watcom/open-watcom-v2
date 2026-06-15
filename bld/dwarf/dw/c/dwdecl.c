@@ -54,7 +54,8 @@ void DWENTRY DWDeclPos( dw_client cli, dw_linenum line, dw_column column )
 
 abbrev_code DW_CheckDecl( dw_client cli, abbrev_code abbrev )
 {
-    if( cli->decl.changed && (abbrev & AB_DECL) )
+    if( cli->decl.changed
+      && (abbrev & AB_DECL) )
         return( AB_DECL );
     cli->decl.changed = 0;
     return( 0 );

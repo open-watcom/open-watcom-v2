@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,32 +55,32 @@
 typedef struct {                            // PROVIDE A RESIZABLE STACK
     uint        size;                       // -- allocated space
     uint        free;                       // -- next free entry
-    uint_32 *   stack;                      // -- reallocatable array
+    uint_32     *stack;                     // -- reallocatable array
 } dr_stack;
 
 extern void DR_StackCreate(                 // INITIALIZE A STACK
-    dr_stack * stk,                         // -- stack to initialize
+    dr_stack *stk,                          // -- stack to initialize
     uint start_size );                      // -- initial size guess
 
 extern void DR_StackCopy(                   // COPY A STACK FROM ANOTHER
-    dr_stack * dest,                        // -- destination of copy
-    const dr_stack * src );                 // -- source of copy
+    dr_stack *dest,                         // -- destination of copy
+    const dr_stack *src );                  // -- source of copy
 
 extern void DR_StackFree(                   // DESTRUCT A STACK
-    dr_stack * stk );                       // -- stack to trash
+    dr_stack *stk );                        // -- stack to trash
 
 extern void DR_StackPush(                   // PUSH ITEM ON THE STACK
-    dr_stack * stk,                         // -- stack to push on
+    dr_stack *stk,                          // -- stack to push on
     uint_32 val );                          // -- value to push
 
 extern uint_32 DR_StackPop(                 // POP ITEM OFF THE STACK
-    dr_stack * stk );                       // -- stack to pop off of
+    dr_stack *stk );                        // -- stack to pop off of
 
 extern uint_32 DR_StackTop(                 // RETURN TOP ELEMENT OF STACK
-    dr_stack * stk );                       // -- stack to use
+    dr_stack *stk );                        // -- stack to use
 
 extern bool DR_StackEmpty(                  // IS A STACK EMPTY?
-    dr_stack * stk );                       // -- stack to check
+    dr_stack *stk );                        // -- stack to check
 
 
 #if 0

@@ -131,7 +131,8 @@ static void *CLIAlloc( size_t size ) {
     void        *p;
 
     p = malloc( size );
-    if( p == NULL && size != 0 ) {
+    if( p == NULL
+      && size != 0 ) {
         fputs( "out of memory!\n", stderr );
         exit( 1 );
     }

@@ -84,8 +84,8 @@ typedef struct dr_cu_info {
 } dr_cu_info;
 
 typedef struct dr_dbg_info {
-    struct dr_dbg_info *next;
-    void *              file;   // task's file information.
+    struct dr_dbg_info  *next;
+    void                *file;   // task's file information.
     sect_info           sections[DR_DEBUG_NUM_SECTS];
     dr_cu_info          cu_info;
     dr_cui_handle       last_cui;

@@ -59,7 +59,7 @@
  * running under a 32-bit operating system with effective paging, the
  * vm read routines can be replaced with a simple pointer dereference,
  * and the vm alloc can be replaced with a call to DR_ALLOC
-*/
+ */
 
 /* the following structures are for virtual memory allocation */
 
@@ -260,7 +260,8 @@ bool DRENTRY DRSwap( void )
                 return( true );
             }
         }
-        if( SwapLeaf == startleaf && SwapBranch == startbranch ) {
+        if( SwapLeaf == startleaf
+          && SwapBranch == startbranch ) {
             if( passtwo )           // nothing to swap;
                 break;
             passtwo = true;
@@ -295,8 +296,8 @@ void DR_VMDestroy( void )
     DR_FREE( PageTab );
 }
 
-static void ReadPage( page_entry * node, virt_struct vm )
-/*******************************************************/
+static void ReadPage( page_entry *node, virt_struct vm )
+/******************************************************/
 /* read a page in from the dwarf file */
 {
     unsigned long size;

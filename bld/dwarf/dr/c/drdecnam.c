@@ -151,7 +151,7 @@ static BrokenName_T *DecoratePtrToMember( BrokenName_T *, Loc_T * );
 
 static void ReadBlock( unsigned_8 **buf, drmem_hdl entry, size_t len );
 static void FORDecVariable( BrokenName_T *, Loc_T * );
-static void FORAddConstVal( BrokenName_T * decname, Loc_T * loc, Loc_T * type_loc );
+static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc );
 static void FORDecParam( BrokenName_T *, Loc_T * );
 static void FORDecMember( BrokenName_T *, Loc_T * );
 static void FORDecSubprogram( BrokenName_T *, Loc_T * );
@@ -911,8 +911,9 @@ static List_T DecorateParameter( Loc_T *loc )
     tmp_entry = loc->entry_current;
     tmp_abbrev = loc->abbrev_current;
 
-    while( loc->tag != DW_TAG_unspecified_parameters &&
-             loc->tag != DW_TAG_formal_parameter && loc->abbrev_start != DRMEM_HDL_NULL ) {
+    while( loc->tag != DW_TAG_unspecified_parameters
+     && loc->tag != DW_TAG_formal_parameter
+     && loc->abbrev_start != DRMEM_HDL_NULL ) {
 
         if( loc->child == DW_CHILDREN_yes ) {
             DR_SkipChildren( &tmp_abbrev, &tmp_entry );
@@ -989,7 +990,8 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         } else {
             ListConcat( &( decname->type_bas ), typename );
         }
-        if( prev_tag == DW_TAG_const_type || prev_tag == DW_TAG_volatile_type ) {
+        if( prev_tag == DW_TAG_const_type
+          || prev_tag == DW_TAG_volatile_type ) {
             SwapModifier( decname );
         }
         DR_FREE( typename.s );
@@ -998,14 +1000,16 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
         break;
 
     case DW_TAG_const_type:
-        if( prev_tag != DW_TAG_const_type && prev_tag != DW_TAG_volatile_type ) {
+        if( prev_tag != DW_TAG_const_type
+          && prev_tag != DW_TAG_volatile_type ) {
             EndNode( &( decname->type_elg ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
         }
         AddTypeString( decname, ConstKwd, TYPE_ELG );
         break;
 
     case DW_TAG_volatile_type:
-        if( prev_tag != DW_TAG_const_type && prev_tag != DW_TAG_volatile_type ) {
+        if( prev_tag != DW_TAG_const_type
+          && prev_tag != DW_TAG_volatile_type ) {
             EndNode( &( decname->type_elg ), false, DRMEM_HDL_NULL, DR_SYM_NOT_SYM );
         }
         AddTypeString( decname, VolatileKwd, TYPE_ELG );
@@ -1096,7 +1100,8 @@ static void SwapModifier( BrokenName_T *decname )
         DR_EXCEPT( DREXCEP_DWARF_LIB_FAIL );
     }
 
-    if( decname->type_plg.head == NULL || decname->type_plg.tail == NULL ) {
+    if( decname->type_plg.head == NULL
+      || decname->type_plg.tail == NULL ) {
         decname->type_plg.head = target;
         decname->type_plg.tail = target;
     } else {
@@ -2406,14 +2411,15 @@ static void ReallocStr( String *str )
 static void ListConcat( List_T *list, String str )
 /************************************************/
 {
-    String * strptr;
+    String *strptr;
     Node_T newnode;
 
     if( str.s == NULL ) {
         return;
     }
 
-    if( list->head == NULL || list->tail == NULL ) {
+    if( list->head == NULL
+      || list->tail == NULL ) {
 
         newnode = DR_ALLOC( sizeof( *newnode ) );
         if( newnode == NULL ) {
@@ -2482,7 +2488,7 @@ static void ListAdd( List_T *list, Node_T node )
  * Finish the current node and allocate a new one.  u_def is true if the
  * new node is user defined.
  */
-static void EndNode( List_T * list, bool u_def,
+static void EndNode( List_T *list, bool u_def,
                      drmem_hdl entry, dr_sym_type st )
 /****************************************************/
 {
@@ -2491,11 +2497,15 @@ static void EndNode( List_T * list, bool u_def,
     /* try to prevent unecessary allocations if this node is unused
      */
 
-    if( list->end == LIST_HEAD && list->head != NULL && list->head->buf.s == NULL ) {
+    if( list->end == LIST_HEAD
+      && list->head != NULL
+      && list->head->buf.s == NULL ) {
         list->head->user_def = u_def;
         list->head->entry = entry;
         list->head->sym_type = st;
-    } else if( list->end == LIST_TAIL && list->tail != NULL && list->tail->buf.s == NULL ) {
+    } else if( list->end == LIST_TAIL
+      && list->tail != NULL
+      && list->tail->buf.s == NULL ) {
         list->tail->user_def = u_def;
         list->tail->entry = entry;
         list->tail->sym_type = st;

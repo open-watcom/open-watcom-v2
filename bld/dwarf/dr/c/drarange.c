@@ -99,9 +99,11 @@ void DRENTRY DRWalkARange( DRARNGWLK callback, void *data )
             /* try reading the padding; if it's nonzero, assume it's not there */
             if( DR_ReadInt( pos, header.addr_size ) != 0 )
                 zero_padding = false;
-            if( header.seg_size && DR_ReadInt( pos + header.addr_size, header.seg_size ) != 0 )
+            if( header.seg_size
+              && DR_ReadInt( pos + header.addr_size, header.seg_size ) != 0 )
                 zero_padding = false;
-            if( !wat_producer && zero_padding ) {
+            if( !wat_producer
+              && zero_padding ) {
                 pos = (drmem_hdl)aligned_addr;
             }
         }
@@ -116,7 +118,9 @@ void DRENTRY DRWalkARange( DRARNGWLK callback, void *data )
             }
             arange.len = DR_ReadInt( pos, header.addr_size );
             pos += header.addr_size;
-            if( arange.addr == 0 && arange.seg == 0 && arange.len == 0 )
+            if( arange.addr == 0
+              && arange.seg == 0
+              && arange.len == 0 )
                 break;
             if( !callback( data, &arange ) )
                 break;

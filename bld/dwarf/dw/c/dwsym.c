@@ -441,11 +441,11 @@ dw_handle DWENTRY DWFormalParameter(
     uint            default_value_type,
     ... )
 {
-    dw_handle                   new;
-    abbrev_code                 abbrev;
-    va_list                     args;
-    const void *                value;
-    size_t                      len;
+    dw_handle       new;
+    abbrev_code     abbrev;
+    va_list         args;
+    const void      *value;
+    size_t          len;
 
     new = DW_LabelNewHandle( cli );
     _ValidateHandle( parm_type );

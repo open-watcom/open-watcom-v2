@@ -374,8 +374,8 @@ typedef struct {                                                /* defaults */
     void   (*cli_read)( void *, dr_section, void *, size_t );   // read
     void   (*cli_seek)( void *, dr_section, long );             // lseek
 /* memory routines */
-    void * (*cli_alloc)( size_t );                              // malloc
-    void * (*cli_realloc)( void *, size_t );                    // realloc
+    void   *(*cli_alloc)( size_t );                             // malloc
+    void   *(*cli_realloc)( void *, size_t );                   // realloc
     void   (*cli_free)( void * );                               // free
     void   (*cli_except)( dr_except );                          // fatal error handler
 } DRRoutines;

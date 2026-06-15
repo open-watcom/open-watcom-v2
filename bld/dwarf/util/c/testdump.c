@@ -413,7 +413,8 @@ static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value ) {
             break;
         }
     }
-    if( ( shift < 32 ) && ( byte & 0x40 ) ) {
+    if( ( shift < 32 )
+      && ( byte & 0x40 ) ) {
         result |= - ( 1 << shift );
     }
     *value = result;
@@ -469,7 +470,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
     const uint_8 *p;
     uint_32     abbrev_code;
     uint_32     abbrev_offset;
-    uint_8 *    abbrev;
+    uint_8      *abbrev;
     uint_32     tag;
     uint_32     attr;
     uint_32     form;
@@ -615,7 +616,8 @@ static void dumpAbbrevs( const unsigned_8 *input, uint length ) {
     uint_32     tmp;
     uint_32     attr;
 
-    if( (NULL == input) || (0 == length) )
+    if( (NULL == input)
+      || (0 == length) )
         return;
 
     p = input;
@@ -653,8 +655,8 @@ static void dumpAbbrevs( const unsigned_8 *input, uint length ) {
 
 static char *getStandardOp( uint_8 value ) {
 
-    static char                 buf[30];
-    char *                      result;
+    static char     buf[30];
+    char            *result;
 
     result = getName( value, readableStandardOps, NUM_STANDARD_OPS );
     if( result == NULL ) {
@@ -1078,7 +1080,8 @@ static void dumpARanges( const uint_8 *input, uint length )
 
     p = input;
 
-    if( (input == NULL) || (length == 0) )
+    if( (input == NULL)
+      || (length == 0) )
         return;
 
     if( length < sizeof( arange_prolog ) ) {

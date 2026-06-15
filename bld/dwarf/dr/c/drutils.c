@@ -601,7 +601,8 @@ int DR_ReadFlag( drmem_hdl abbrev, drmem_hdl info )
     dw_formnum  form;
 
     form = DR_VMReadULEB128( &abbrev );
-    if( form == DW_FORM_data1 || form == DW_FORM_flag ) {
+    if( form == DW_FORM_data1
+      || form == DW_FORM_flag ) {
         return( DR_VMReadByte( info ) );
     } else {
         DR_EXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -673,8 +674,8 @@ bool DR_ReadTagEnd( drmem_hdl *entry, drmem_hdl *pabbrev, dw_tagnum *ptag )
     return( abbrev_idx == 0 );
 }
 
-char * DR_CopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
-/***************************************************************/
+char *DR_CopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
+/**************************************************************/
 {
     drmem_hdl   dbgsec_str;
     char        *str;
@@ -747,8 +748,8 @@ drmem_hdl DRENTRY DRGetCompileUnitTag( drmem_hdl comp_unit )
 
 #define DEMANGLE_BUF_SIZE 256
 
-char * DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
-/****************************************************/
+char *DR_GetName( drmem_hdl abbrev, drmem_hdl entry )
+/***************************************************/
 {
     char    *name;
     char    buffer[DEMANGLE_BUF_SIZE];
@@ -1063,7 +1064,8 @@ static dr_cui_handle FindCompileInfo( dr_cui_handle cui, drmem_hdl addr )
 /***********************************************************************/
 {
     for( ;; ) {
-        if( (addr >= cui->start) && (addr <= cui->end) )
+        if( (addr >= cui->start)
+          && (addr <= cui->end) )
             break;
         cui = cui->next;
         if( cui == NULL ) {

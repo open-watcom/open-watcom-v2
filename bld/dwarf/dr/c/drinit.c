@@ -218,8 +218,8 @@ static void ReadCompUnits( dr_dbg_handle dbg, int read_ftab )
     DR_CurrNode->addr_size = addr_size;
 }
 
-dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool big_endian )
-/***************************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInitNFT( void *file, unsigned long *sizes, bool big_endian )
+/*************************************************************************************/
 {
     dr_dbg_handle       dbg;
 
@@ -230,8 +230,8 @@ dr_dbg_handle DRENTRY DRDbgInitNFT( void * file, unsigned long * sizes, bool big
     return( dbg );
 }
 
-dr_dbg_handle DRENTRY DRDbgInit( void * file, unsigned long * sizes, bool big_endian )
-/************************************************************************************/
+dr_dbg_handle DRENTRY DRDbgInit( void *file, unsigned long *sizes, bool big_endian )
+/**********************************************************************************/
 {
     dr_dbg_handle       dbg;
 

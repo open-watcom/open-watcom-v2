@@ -35,10 +35,10 @@
 #include "dwmem.h"
 
 char *DW_Strdup(
-    dw_client                   cli,
-    const char *                str )
+    dw_client cli,
+    const char *str )
 {
-    size_t                      len;
+    size_t          len;
 
     _Validate( cli != NULL && str != NULL );
 
@@ -48,10 +48,10 @@ char *DW_Strdup(
 
 
 void *DW_FreeLink(
-    dw_client                   cli,
-    void *                      node )
+    dw_client cli,
+    void *node )
 {
-    void *                      p;
+    void            *p;
 
     p = *(void **)node;
     CLIFree( cli, node );
@@ -60,10 +60,10 @@ void *DW_FreeLink(
 
 
 void DW_FreeChain(
-    dw_client                   cli,
-    void *                      list )
+    dw_client cli,
+    void *list )
 {
-    void *                      cur;
+    void            *cur;
 
     while( list != NULL ) {
         cur = list;
@@ -74,11 +74,11 @@ void DW_FreeChain(
 
 
 void *DW_ReverseChain(
-    void *                      head )
+    void *head )
 /* reverse a singly linked list (link is first field in structure) */
 {
-    void *                      current;
-    void *                      next;
+    void            *current;
+    void            *next;
 
     current = head;
     head = NULL;

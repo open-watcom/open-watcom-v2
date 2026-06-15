@@ -312,7 +312,7 @@ typedef struct {
     void                (*cli_write)( dw_sectnum, const void *, size_t );
     void                (*cli_seek)( dw_sectnum, dw_out_offset, int );
     dw_out_offset       (*cli_tell)( dw_sectnum );
-    void *              (*cli_alloc)( size_t );
+    void                *(*cli_alloc)( size_t );
     void                (*cli_free)( void * );
 } dw_funcs;
 
@@ -422,7 +422,7 @@ extern dw_handle    DWENTRY DWHandle( dw_client cli, dw_struct_type kind );
 extern void         DWENTRY DWHandleSet( dw_client cli, dw_handle set_hdl );
 
 /* typing information */
-extern dw_handle    DWENTRY DWFundamental( dw_client, char const * __name, dw_ftype __fund_idx, unsigned __size );
+extern dw_handle    DWENTRY DWFundamental( dw_client, char const *__name, dw_ftype __fund_idx, unsigned __size );
 extern dw_handle    DWENTRY DWModifier( dw_client, dw_handle __base_type, uint __modifiers );
 extern dw_handle    DWENTRY DWTypedef( dw_client, dw_handle __base_type, char const *__name,
                                 dw_addr_offset __scope, dw_flags __flags );
@@ -493,7 +493,7 @@ extern dw_handle    DWENTRY DWBeginSubroutine( dw_client, uint call_type,
                                 dw_handle __return_type, dw_loc_handle __return_addr_loc,
                                 dw_loc_handle __frame_base_loc, dw_loc_handle __structure_loc,
                                 dw_handle __member_hdl, dw_loc_handle __aseg,
-                                char const * __name, dw_addr_offset __start_scope,
+                                char const *__name, dw_addr_offset __start_scope,
                                 dw_flags __flags );
 extern dw_handle    DWENTRY DWBeginEntryPoint( dw_client cli, dw_handle return_type,
                                 dw_loc_handle return_addr_loc, dw_loc_handle segment,
@@ -516,7 +516,7 @@ extern dw_handle    DWENTRY DWVariable( dw_client, dw_handle __type, dw_loc_hand
                                 dw_flags __flags );
 extern dw_handle    DWENTRY DWConstant( dw_client, dw_handle __type,
                                 const void *__constant_value, size_t __len,
-                                dw_handle __member_of, char const * __name,
+                                dw_handle __member_of, char const *__name,
                                 dw_addr_offset __start_scope, dw_flags __flags );
 
 /* name list      */

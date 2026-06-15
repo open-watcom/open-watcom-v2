@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
             value_lne = DR_VMReadByte( curr );
             curr++;
             --length;
-            if( DR_CurrNode->wat_producer_ver == VER_V1 || DR_CurrNode->wat_producer_ver == VER_V2 ) {
+            if( DR_CurrNode->wat_producer_ver == VER_V1
+              || DR_CurrNode->wat_producer_ver == VER_V2 ) {
                 if( value_lne == DW_LNE_WATCOM_set_segment_OLD ) {
                     value_lne = DW_LNE_WATCOM_set_segment;
                 }

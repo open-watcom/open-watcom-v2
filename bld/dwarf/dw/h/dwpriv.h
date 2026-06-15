@@ -63,9 +63,9 @@
 struct handles_private {
     uint_32             num_handles;
     uint_32             forward;  // number of forward refs out
-    struct handle_blk * block_head[MAX_HANDLE_HEIGHT];
-    struct handle_blk **block_tail[MAX_HANDLE_HEIGHT];
-    union handle_extra *extra_list;
+    struct handle_blk   *block_head[MAX_HANDLE_HEIGHT];
+    struct handle_blk   **block_tail[MAX_HANDLE_HEIGHT];
+    union handle_extra  *extra_list;
     carve_t             extra_carver;
     carve_t             chain_carver;
     uint_8              max_height;
@@ -74,8 +74,8 @@ struct handles_private {
 
 struct debug_line_private {
     dw_addr_offset      addr;
-    dw_include_stack *  include_stack;
-    dw_include *        files;
+    dw_include_stack    *include_stack;
+    dw_include          *files;
     dw_linenum          line;
     dw_column           column;
     uint_8              is_stmt : 1;
@@ -92,7 +92,7 @@ struct types_private {
 };
 
 struct die_private {
-    die_tree *          tree;
+    die_tree            *tree;
 };
 
 struct debug_loc_private {
