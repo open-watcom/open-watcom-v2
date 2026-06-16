@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,6 @@ typedef struct {
         unsigned short e;
 } TB_LD;
 
-TB_LD * strtotb( char *bufptr, TB_LD *pld, bool negative );
+TB_LD * strtotb( const char *bufptr, TB_LD *pld, bool negative );
 
 #endif

@@ -294,8 +294,8 @@ static const char *get_sim_access( sim_seg seg )
     }
 }
 
-static bool AddPredefinedConstant( char *name, const_info *info )
-/***************************************************************/
+static bool AddPredefinedConstant( const char *name, const_info *constinfo )
+/**************************************************************************/
 {
     dir_node_handle dir;
 
@@ -313,7 +313,7 @@ static bool AddPredefinedConstant( char *name, const_info *info )
     }
     if( !dir->e.constinfo->predef ) {
         dir_fini( dir );
-        dir->e.constinfo = info;
+        dir->e.constinfo = constinfo;
     }
     return( RC_OK );
 }
@@ -423,8 +423,8 @@ static bool get_watcom_argument_string( char *buffer, int size, paramsinfo *para
 }
 
 #ifdef DEBUG_OUT
-void heap( char *func )
-/**********************
+void heap( const char *func )
+/****************************
  * for debugging only
  */
 {
@@ -757,7 +757,7 @@ void dir_change( dir_node_handle dir, int tab )
 }
 
 dir_node_handle dir_insert( const char *name, int tab )
-/************************************************
+/******************************************************
  * Insert a node into the table specified by tab
  */
 {
@@ -1830,8 +1830,8 @@ bool IncludeLib( token_buffer *tokbuf, token_idx i )
     return( RC_OK );
 }
 
-static char *input_dgroup( char *name, sim_seg seg, char *buffer )
-/*****************************************************************
+static char *input_dgroup( const char *name, sim_seg seg, char *buffer )
+/***********************************************************************
  * emit any GROUP instruction
  */
 {
@@ -1936,8 +1936,8 @@ bool Startup( token_buffer *tokbuf, token_idx i )
     return( RC_OK );
 }
 
-static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg, bool ignore )
-/************************************************************************************/
+static char *get_sim_segment_beg( char *buffer, const char *name, sim_seg seg, bool ignore )
+/******************************************************************************************/
 {
     const char  *cons;
     const char  *ign;
@@ -1955,8 +1955,8 @@ static char *get_sim_segment_beg( char *buffer, char *name, sim_seg seg, bool ig
     return( buffer );
 }
 
-static char *get_sim_segment_end( char *buffer, char *name, sim_seg seg )
-/***********************************************************************/
+static char *get_sim_segment_end( char *buffer, const char *name, sim_seg seg )
+/*****************************************************************************/
 {
     const char  *fmt;
 
@@ -1965,8 +1965,8 @@ static char *get_sim_segment_end( char *buffer, char *name, sim_seg seg )
     return( buffer );
 }
 
-static char *get_sim_assume_code_reg( char *buffer, char *name, sim_seg seg )
-/***************************************************************************/
+static char *get_sim_assume_code_reg( char *buffer, const char *name, sim_seg seg )
+/*********************************************************************************/
 {
     if( seg == SIM_CODE ) {
         if( ModuleInfo.model == MOD_TINY ) {
@@ -3233,9 +3233,11 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
  * var: name [= number]
  */
 {
-    char            *name, string[MAX_LINE_LEN];
+    char            *name;
+    char            string[MAX_LINE_LEN];
     token_idx       n;
-    int             enums, in_braces;
+    int             enums;
+    int             in_braces;
     long            count;
     asm_sym_handle  sym;
     dir_node_handle dir;

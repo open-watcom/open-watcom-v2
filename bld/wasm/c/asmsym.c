@@ -659,14 +659,14 @@ static void log_symbol( asm_sym_handle sym )
 {
     if( sym->state == SYM_CONST ) {
         dir_node_handle dir = (dir_node_handle)sym;
-        const_info      *cst = dir->e.constinfo;
+        const_info      *constinfo = dir->e.constinfo;
 
         LstMsg( "%s %s        ", sym->name, dots + strlen( sym->name ) + 1 );
-        if( cst->count
-          && cst->tokens[0].class != TC_NUM ) {
-            LstMsg( "Text     %s\n", cst->tokens[0].string_ptr );
+        if( constinfo->count
+          && constinfo->tokens[0].class != TC_NUM ) {
+            LstMsg( "Text     %s\n", constinfo->tokens[0].string_ptr );
         } else {
-            LstMsg( "Number   %04Xh\n", ( cst->count ) ? cst->tokens[0].u.value : 0 );
+            LstMsg( "Number   %04Xh\n", ( constinfo->count ) ? constinfo->tokens[0].u.value : 0 );
         }
     } else if( sym->state == SYM_INTERNAL
       && !IS_SYM_COUNTER( sym->name ) ) {

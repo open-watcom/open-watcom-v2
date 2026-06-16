@@ -206,6 +206,6 @@ extern void     CloseAsmFile( int type );
 
 #endif
 
-extern const asm_ins    ASMI86FAR *get_instruction( char *string );
+extern const asm_ins    ASMI86FAR *get_instruction( const char *string );
 
 #endif

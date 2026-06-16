@@ -148,8 +148,8 @@ int GetInsString( asm_token token, char *string )
 }
 #endif
 
-const asm_ins ASMI86FAR *get_instruction( char *string )
-/******************************************************/
+const asm_ins ASMI86FAR *get_instruction( const char *string )
+/************************************************************/
 {
     asm_token   token;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -367,11 +367,11 @@ static int TB_create(u96 *value, long exponent, TB_LD *ld)
     return 0;
 }
 
-TB_LD * strtotb(char *p, TB_LD * ld, bool negative)
-/**************************************************
-    convert string into tbyte/long double
-    set result sign
-*/
+TB_LD * strtotb( const char *p, TB_LD * ld, bool negative )
+/**********************************************************
+ * convert string into tbyte/long double
+ * set result sign
+ */
 {
     int              sign = +1;
     int              exp_sign = +1;
