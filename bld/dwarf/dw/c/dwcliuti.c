@@ -77,18 +77,18 @@ void CLIWriteU8( dw_client cli, dw_sectnum sect, uint_8 data )
 void BufWriteU16( dw_client cli, void *buf, uint_16 data )
 {
     if( cli->big_endian ) {
-        MPUT_BE_16( buf, data );
+        MPUT_BE_16_UN( buf, data );
     } else {
-        MPUT_LE_16( buf, data );
+        MPUT_LE_16_UN( buf, data );
     }
 }
 
 void BufWriteU32( dw_client cli, void *buf, uint_32 data )
 {
     if( cli->big_endian ) {
-        MPUT_BE_32( buf, data );
+        MPUT_BE_32_UN( buf, data );
     } else {
-        MPUT_LE_32( buf, data );
+        MPUT_LE_32_UN( buf, data );
     }
 }
 
@@ -96,7 +96,11 @@ void CLIWriteU16( dw_client cli, dw_sectnum sect, uint_16 data )
 {
     char            buf[sizeof( uint_16 )];
 
-    BufWriteU16( cli, buf, data );
+    if( cli->big_endian ) {
+        MPUT_BE_16( buf, data );
+    } else {
+        MPUT_LE_16( buf, data );
+    }
     CLIWrite( cli, sect, buf, sizeof( buf ) );
 }
 
@@ -104,7 +108,11 @@ void CLIWriteU32( dw_client cli, dw_sectnum sect, uint_32 data )
 {
     char            buf[sizeof( uint_32 )];
 
-    BufWriteU32( cli, buf, data );
+    if( cli->big_endian ) {
+        MPUT_BE_32( buf, data );
+    } else {
+        MPUT_LE_32( buf, data );
+    }
     CLIWrite( cli, sect, buf, sizeof( buf ) );
 }
 

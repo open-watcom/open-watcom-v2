@@ -51,11 +51,11 @@ void *DW_FreeLink(
     dw_client cli,
     void *node )
 {
-    void            *p;
+    void            *next;
 
-    p = *(void **)node;
+    next = *(void **)node;
     CLIFree( cli, node );
-    return( p );
+    return( next );
 }
 
 
@@ -65,8 +65,7 @@ void DW_FreeChain(
 {
     void            *cur;
 
-    while( list != NULL ) {
-        cur = list;
+    while( (cur = list) != NULL ) {
         list = *(void **)list;
         CLIFree( cli, cur );
     }
