@@ -146,6 +146,7 @@ jobs:
       image:        ${{matrix.image}}
       docbuild:     ${{matrix.docbuild}}
       run_tests:    ${{matrix.run_tests}}
+      asan:         1
 
   snapshot-both:
     needs:
