@@ -293,7 +293,14 @@ void genobj( FILE *fp )
         size[sidx] = min_len;
         parent[sidx] = nstate;
         for( sidx2 = nstate; --sidx2 > sidx; ) {
-            if( abs( size[sidx2] - size[sidx] ) < min_len ) {
+            unsigned    size_diff;
+
+            if( size[sidx2] >= size[sidx] ) {
+                size_diff = size[sidx2] - size[sidx];
+            } else {
+                size_diff = size[sidx] - size[sidx2];
+            }
+            if( size_diff < min_len ) {
                 state = statetab[sidx2];
                 p = test;
                 q = test + ntoken;
