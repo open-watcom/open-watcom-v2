@@ -544,7 +544,7 @@ uint_32 DW_EmitLocExpr( dw_client cli, dw_sectnum sect, size_t size, dw_loc_hand
     bytes_left = expr_size;
     p = loc->u.expr.expr;
     while( bytes_left ) {
-        size_of_block = MGET_U16( p );
+        size_of_block = MGET_U16_UN( p );
         p += sizeof( uint_16 );
         CLIWrite( cli, sect, p, size_of_block );
         bytes_left -= size_of_block;
