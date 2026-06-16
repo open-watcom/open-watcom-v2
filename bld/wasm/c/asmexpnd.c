@@ -130,7 +130,6 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
     char                buffer[MAX_LINE_LEN];
     label_list          *label = NULL;
     proc_info           *info = CurrProc->e.procinfo;
-    size_t              len;
     char                *p;
 
     *expanded = false;
@@ -248,11 +247,8 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
                 /* don't save the % */
                 i++;
             }
-
             /* copy the string in ... 1 word at a time */
-            len = strlen( tokbuf->tokens[index].string_ptr ) + 1;
-            string = AsmTmpAlloc( len );
-            memcpy( string, tokbuf->tokens[index].string_ptr, len );
+            string = MemStrdupSafe( tokbuf->tokens[index].string_ptr );
             wipe_space( string );
             word = strtok( string, " \t" );
             for( cnt = 1; cnt < count; cnt++ ) {
@@ -263,6 +259,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
             for( word = strtok( NULL, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
                 p += sprintf( p, " %s", word );
             }
+            MemFree( string );
         }
         *p++ = ' ';
     }

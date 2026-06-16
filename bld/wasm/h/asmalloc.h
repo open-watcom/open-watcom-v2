@@ -36,10 +36,6 @@
 
 #if defined( _STANDALONE_ )
 
-#include "walloca.h"
-
-#define AsmTmpAlloc( amount )   alloca( amount )
-
 extern void     MemInit( void );
 extern void     MemFini( void );
 

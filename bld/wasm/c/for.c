@@ -50,6 +50,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     size_t      len;
     size_t      lenx;
     token_idx   j;
+    bool        rc;
 
     /*
      * location of "directive name .. after any labels"
@@ -111,8 +112,7 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
             AsmError( PARM_REQUIRED );
             return( RC_ERROR );
         }
-        parmstring = AsmTmpAlloc( strlen( tokbuf->tokens[j].string_ptr ) + 1 );
-        strcpy( parmstring, tokbuf->tokens[j].string_ptr );
+        parmstring = MemStrdupSafe( tokbuf->tokens[j].string_ptr );
         /*
          * copy parameter name token to correct location (one token up)
          */
@@ -140,47 +140,51 @@ bool ForDirective( token_buffer *tokbuf, token_idx i, irp_type type )
     /*
      * process macro definition
      */
-    if( MacroDef( tokbuf, i, true ) )
-        return( RC_ERROR );
-
-    PushLineQueue();
-    if( type == IRP_REPEAT ) {
-        /*
-         * now call the macro <number> times
-         */
-        while( len-- > 0 ) {
-            InputQueueLine( buffer );
-        }
+    if( MacroDef( tokbuf, i, true ) ) {
+        rc = RC_ERROR;
     } else {
-        /*
-         * now call the macro for each of the given parms
-         */
-        ptr = parmstring;
-        while( *ptr != NULLC ) {
-            len = lenx;
-            buffer[len++] = ' ';
-            if( type == IRP_CHAR ) {
-                buffer[len++] = *ptr++;
-            } else {    // IRP_WORD
-                size_t len1;
-
-                len1 = strcspn( ptr, "," );
-                strncpy( buffer + len, ptr, len1 );
-                len += len1;
-                ptr += len1;
-                if( *ptr == ',' ) {
-                    ++ptr;
-                }
+        PushLineQueue();
+        if( type == IRP_REPEAT ) {
+            /*
+             * now call the macro <number> times
+             */
+            while( len-- > 0 ) {
+                InputQueueLine( buffer );
             }
-            buffer[len] = NULLC;
-            InputQueueLine( buffer );
+        } else {
+            /*
+             * now call the macro for each of the given parms
+             */
+            ptr = parmstring;
+            while( *ptr != NULLC ) {
+                len = lenx;
+                buffer[len++] = ' ';
+                if( type == IRP_CHAR ) {
+                    buffer[len++] = *ptr++;
+                } else {    // IRP_WORD
+                    size_t len1;
+
+                    len1 = strcspn( ptr, "," );
+                    strncpy( buffer + len, ptr, len1 );
+                    len += len1;
+                    ptr += len1;
+                    if( *ptr == ',' ) {
+                        ++ptr;
+                    }
+                }
+                buffer[len] = NULLC;
+                InputQueueLine( buffer );
+            }
+            /*
+             * reset buffer to macro name only
+             */
+            buffer[lenx] = '\0';
         }
-        /*
-         * reset buffer to macro name only
-         */
-        buffer[lenx] = '\0';
+        Globals.for_counter++;
+        PushMacro( buffer, true );
+        rc = RC_OK;
     }
-    Globals.for_counter++;
-    PushMacro( buffer, true );
-    return( RC_OK );
+    if( parmstring != NULL )
+        MemFree( parmstring );
+    return( rc );
 }
