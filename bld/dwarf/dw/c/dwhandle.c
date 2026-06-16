@@ -48,8 +48,8 @@ typedef struct handle_blk   handle_blk;
 
 struct handle_blk {
     handle_common       data[BLOCK_SIZE];
-    dw_index_t          index;  /* data[0] is the (index * BLOCK_SIZE)th elt */
-    uint_16             height; /* height of this node */
+    int                 index;  /* data[0] is the (index * BLOCK_SIZE)th elt */
+    int                 height; /* height of this node */
     handle_blk          *next[1];
 };
 
@@ -122,17 +122,17 @@ void DW_FiniHandles( dw_client cli )
 static handle_blk *newBlock( dw_client cli )
 {
     handle_blk      *new_hdl;
-    uint            height;
-    uint            i;
+    int             height;
+    int             i;
 
     /*
-        FIXME: we use the power of two distribution... should we use a
-        different distribution?
-    */
+     * FIXME: we use the power of two distribution... should we use a
+     * different distribution?
+     */
     height = 1; /* calculate the height of this node */
-    while( rand() > (RAND_MAX / 2) && height < MAX_HANDLE_HEIGHT )
+    while( rand() > ( RAND_MAX / 2 ) && height < MAX_HANDLE_HEIGHT )
         ++height;
-    if( height > cli->handles.max_height )
+    if( cli->handles.max_height < height )
         cli->handles.max_height = height;
 
     /* allocate the new node */
@@ -171,7 +171,7 @@ dw_handle DW_NewHandle( dw_client cli )
 }
 
 
-static handle_blk *getIndex( dw_client cli, dw_index_t index )
+static handle_blk *getIndex( dw_client cli, uint index )
 {
     int             i;
     handle_blk      *blk;
