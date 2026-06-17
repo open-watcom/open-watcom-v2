@@ -349,6 +349,7 @@ typedef enum {
 /* handy constants section */
 
 #define DWLINE_OPCODE_BASE      10
+#define DWLINE_OPCODE_BASE_V5   14
 
 /*
  * these next three constants do not have to be defined this way, but it
