@@ -15,11 +15,6 @@ inputs:
     required: false
     default: ''
     type: string
-  asan:
-    description: 'use run-time sanitizers'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -32,7 +27,6 @@ runs:
       OWTOOLS:       ${{inputs.owtools}}
       OWROOT:        ${{github.workspace}}
       OWVERBOSE:     1
-      OWASAN:        ${{inputs.asan}}
     shell: bash
   - if: runner.os == 'Windows'
     name: Bootstrap

@@ -26,10 +26,6 @@ on:
         required: false
         default: ''
         type: string
-      asan:
-        required: false
-        default: ''
-        type: string
 
 env:
   OWDEBUG:          "${{vars.DEBUG}}"
@@ -56,7 +52,6 @@ jobs:
         args:       ${{inputs.args}}
         suffix:     ${{inputs.suffix}}
         owtools:    ${{inputs.owtools}}
-        asan:       ${{inputs.asan}}
 
   build-x:
     name: Build
@@ -81,7 +76,6 @@ jobs:
         gitpath:    ${{inputs.gitpath}}
         suffix:     ${{inputs.suffix}}
         owtools:    ${{inputs.owtools}}
-        asan:       ${{inputs.asan}}
 
   docsbuild-x:
     if: inputs.docbuild == '1'

@@ -19,11 +19,6 @@ inputs:
     required: false
     default: ''
     type: string
-  asan:
-    description: 'use run-time sanitizers'
-    required: false
-    default: ''
-    type: string
 runs:
   using: composite
   steps:
@@ -47,7 +42,6 @@ runs:
       OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox'
       OWVERBOSE:     1
-      OWASAN:        ${{inputs.asan}}
     shell: bash
   - if: runner.os == 'Windows'
     name: Build
@@ -75,7 +69,6 @@ runs:
       OWROOT:        ${{github.workspace}}
       OWDOSBOX:      'dosbox-x'
       OWVERBOSE:     1
-      OWASAN:        ${{inputs.asan}}
     shell: bash
   - uses: ./.github/actions/artfsave
     with:
