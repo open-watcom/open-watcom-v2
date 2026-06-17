@@ -384,7 +384,7 @@ void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op user_op, ... )
     case DW_LOC_skip:
     case DW_LOC_bra:
         op = nextOp( cli, loc, op_code, sizeof( label ) );
-        label = va_arg( args, label );
+        label = va_arg( args, dw_loc_label );
         memcpy( op->data, &label, sizeof( label ) );
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
         break;
@@ -684,7 +684,7 @@ uint_32 DW_EmitLocNull( dw_client cli, dw_sectnum sect )
 void DW_InitDebugLoc( dw_client cli )
 {
     cli->debug_loc.handles = 0;
-    cli->debug_loc.label_carver = DW_CarveCreate( cli, sizeof( *dw_loc_label ), 16 );
+    cli->debug_loc.label_carver = DW_CarveCreate( cli, sizeof( struct _dw_loc_label ), 16 );
 }
 
 
