@@ -289,7 +289,7 @@ typedef struct dw_macro         *dw_macro;
 typedef struct dw_loc_id        *dw_loc_id;
 
 /* a label within a location expression */
-typedef struct dw_loc_label     *dw_loc_label;
+typedef struct _dw_loc_label    *dw_loc_label;
 
 /* a temporary value used to build location lists */
 typedef struct dw_list_id       *dw_list_id;

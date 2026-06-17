@@ -70,7 +70,7 @@ struct dw_loc_id {
 };
 
 
-struct dw_loc_label {
+struct _dw_loc_label {
     dw_loc_label                next;
     dw_loc_offs                 addr;
 };
@@ -89,6 +89,11 @@ typedef struct list_entry {
 
 struct dw_loc_handle {
     struct dw_loc_handle        *next;
+    enum {
+        LOC_EXPR,
+        LOC_LIST,
+        LOC_LIST_REF,
+    } is_expr;
     union {
         struct loc_handle_expr {
             dw_loc_offs         size;
@@ -99,11 +104,6 @@ struct dw_loc_handle {
         list_entry              *list;
 
     } u;  // possible variable size so nothing can follow this
-    enum {
-        LOC_EXPR,
-        LOC_LIST,
-        LOC_LIST_REF,
-    } is_expr;
 };
 #define BASE_HANDLE_SIZE        offsetof( struct dw_loc_handle, u )
 
@@ -383,9 +383,9 @@ void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, dw_loc_op user_op, ... )
         break;
     case DW_LOC_skip:
     case DW_LOC_bra:
-        op = nextOp( cli, loc, op_code, sizeof( dw_loc_label ) );
-        label = va_arg( args, dw_loc_label );
-        memcpy( op->data, &label, sizeof( dw_loc_label ) );
+        op = nextOp( cli, loc, op_code, sizeof( label ) );
+        label = va_arg( args, label );
+        memcpy( op->data, &label, sizeof( label ) );
         ADD_ADDR( cli, loc, sizeof( int_16 ) );
         break;
     case DW_LOC_fbreg:
@@ -448,7 +448,7 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
         switch( cur_op->op_code ) {
         case DW_OP_skip:
         case DW_OP_bra:
-            memcpy( &label, cur_op->data, sizeof( dw_loc_label ) );
+            memcpy( &label, cur_op->data, sizeof( label ) );
             addr += sizeof( int_16 );
             jump_offset = (int_32)label->addr - (int_32)addr;
             if( jump_offset < -32768
@@ -684,7 +684,7 @@ uint_32 DW_EmitLocNull( dw_client cli, dw_sectnum sect )
 void DW_InitDebugLoc( dw_client cli )
 {
     cli->debug_loc.handles = 0;
-    cli->debug_loc.label_carver = DW_CarveCreate( cli, sizeof( struct dw_loc_label ), 16 );
+    cli->debug_loc.label_carver = DW_CarveCreate( cli, sizeof( *dw_loc_label ), 16 );
 }
 
 
