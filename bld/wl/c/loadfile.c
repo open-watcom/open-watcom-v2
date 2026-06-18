@@ -1215,11 +1215,11 @@ void FreeOutFiles( void )
     }
 }
 
-static void *SetToFillChar( void *dest, const void *dummy, size_t size )
-/**********************************************************************/
+static void *SetToFillChar( void *dest, const void *data, size_t size )
+/*********************************************************************/
 {
     memset( dest, FmtData.FillChar, size );
-    return( (void *)dummy );
+    return( (void *)data );
 }
 
 #define BUFF_BLOCK_SIZE _16K
@@ -1236,7 +1236,8 @@ static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, wri
         adjust = BUFF_BLOCK_SIZE - modpos;
         rtn( outfile->buffer + modpos, data, adjust );
         QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
-        data += adjust;
+        if( data != NULL )
+            data += adjust;
         len -= adjust;
         modpos = 0;
     }
