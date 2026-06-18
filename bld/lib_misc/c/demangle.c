@@ -319,7 +319,7 @@ static char const _WCI86FAR * const _WCI86FAR assignmentFunction[] = {
     /* J */ "|=",
     /* K */ "^="
 };
-#define num_elements( __a ) (sizeof(__a) / sizeof(__a[0]))
+#define num_elements( __a ) (int)(sizeof(__a) / sizeof(__a[0]))
 
 #define check_element(i,a)  (i >= 0 && i < num_elements( a ))
 
