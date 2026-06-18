@@ -177,6 +177,8 @@ typedef enum overlay_info {
     OVL_VEC_MASK        = (OVL_NO_VECTOR | OVL_FORCE)
 } overlay_info;
 
+typedef unsigned_16     overlay_ref;
+
 typedef struct {
     union {
         char        *ptr;
@@ -186,7 +188,7 @@ typedef struct {
 
 typedef struct {
     unsigned_16     modnum;         // DOS: idx of module which defines this sym
-    unsigned_16     ovlref;         // DOS: overlay vector #
+    overlay_ref     ovlref;         // DOS: overlay vector #
     overlay_info    ovlstate;       // DOS: overlay vector state
 } dos_sym_data;
 

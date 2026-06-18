@@ -219,8 +219,6 @@ typedef enum {
 } segflag_type;
 
 
-typedef unsigned_16             overlay_ref;
-
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
