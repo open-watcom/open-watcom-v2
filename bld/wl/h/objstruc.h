@@ -56,19 +56,18 @@ typedef enum {
  * sure there isn't a conflict there!
 */
 
+#define FMT_IDX_SHIFT           5
+
 typedef enum {
     /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
     /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
-    FILE_FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
-    FILE_FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
-    FILE_FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
-    FILE_FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
-    FILE_FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
+    #define pick(en,num,skip,pass1) en = num,
+    #include "objfmts.h"
+    #undef pick
     /* bits 8..max available */
 } file_format;
 
 #define FMT_OBJ_FMT_MASK        (FILE_FMT_PE_XFER | FILE_FMT_OMF | FILE_FMT_COFF | FILE_FMT_ELF | FILE_FMT_INCREMENTAL)
-#define FMT_IDX_SHIFT           5
 #define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
 #define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FILE_FMT_COFF)
 #define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FILE_FMT_OMF)

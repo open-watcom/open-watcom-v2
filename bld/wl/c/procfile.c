@@ -72,15 +72,12 @@ static struct {
     void (*SkipObj)( const file_list *, unsigned long * );
     unsigned long (*Pass1)( void );
 } Process[] = {
-    /* SkipObj       Pass1                                                                  */
-    { BadSkip,      BadObjFormat },     /* FMT_PE_XFER      .obj is PE xfer code segment    */
-    { OMFSkipObj,   OMFPass1 },         /* FMT_OMF          .obj is an OMF object file      */
-    { ORLSkipObj,   ORLPass1 },         /* FMT_COFF         .obj is a COFF object file      */
-    { ORLSkipObj,   ORLPass1 },         /* FMT_ELF          .obj is an ELF object file      */
-    { BadSkip,      IncPass1 },         /* FMT_INCREMENTAL  .obj is saved inc. linking info */
-    { BadSkip,      BadObjFormat },     /* unused                                           */
-    { BadSkip,      BadObjFormat },     /* unused                                           */
-    { BadSkip,      BadObjFormat }      /* unused                                           */
+    #define pick(en,num,skip,pass1) { skip, pass1 },
+    #include "objfmts.h"
+    #undef pick
+    { BadSkip,      BadObjFormat },     /* unused */
+    { BadSkip,      BadObjFormat },     /* unused */
+    { BadSkip,      BadObjFormat }      /* unused */
 };
 
 void SetupFakeModule( void )
