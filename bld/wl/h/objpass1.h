@@ -88,5 +88,5 @@ extern bool             CheckVFList( symbol * );
 extern void             SetCurrSeg( segdata *, offset, unsigned_8 * );
 extern void             ResetObjPass1( void );
 
-extern fmt_flags        ObjFileFormat;
+extern file_format      ObjFileFormat;
 extern obj_format       ObjFormat;

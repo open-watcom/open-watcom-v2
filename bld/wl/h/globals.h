@@ -77,7 +77,7 @@ GLOB offset         PackDataLimit;  /* Maximum size of a packed data seg        
 GLOB symbol         *HeadSym;       /* head of symbol table list                */
 GLOB dbi_flags      DBIFlag;
 GLOB struct fmt_data FmtData;       /* format specific data                     */
-GLOB fmt_flags      ObjFileFormat;
+GLOB file_format    ObjFileFormat;
 GLOB obj_format     ObjFormat;
 GLOB mod_entry      *FakeModule;    /* Module containing all the extra sections */
 GLOB unsigned_32    NumImports;

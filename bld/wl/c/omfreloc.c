@@ -159,9 +159,9 @@ void DoRelocs( void )
     frame_spec  fthread;
     target_spec tthread;
 
-    if( ObjFormat & FMT_IGNORE_FIXUPP )
+    if( ObjFormat & OBJ_FMT_IGNORE_FIXUPP )
         return;
-    if( ObjFormat & FMT_IS_LIDATA ) {
+    if( ObjFormat & OBJ_FMT_IS_LIDATA ) {
         LnkMsg( WRN+LOC_REC+MSG_REL_IN_LIDATA, NULL );
         return;
     }
@@ -189,14 +189,14 @@ void DoRelocs( void )
                 fixtype = FIX_HIGH_OFFSET_8;
                 break;
             case LOC_OFFSET_LOADER:
-                if( ObjFormat & FMT_EASY_OMF ) {
+                if( ObjFormat & OBJ_FMT_EASY_OMF ) {
                     fixtype = FIX_OFFSET_32;                    /* Pharlap only */
                 } else {
                     fixtype = FIX_OFFSET_16 | FIX_LOADER_RES;   /* OMF standard */
                 }
                 break;
             case LOC_PHARLAP_BASE_OFFSET_32:
-                if( ObjFormat & FMT_EASY_OMF ) {
+                if( ObjFormat & OBJ_FMT_EASY_OMF ) {
                     fixtype = FIX_BASE_OFFSET_32;               /* Pharlap only */
                 }
                 break;
@@ -238,7 +238,7 @@ void DoRelocs( void )
              */
             addend = 0;
             if( (typ & FIXDAT_PBIT) == 0 ) {
-                if( ObjFormat & FMT_32BIT_REC ) {
+                if( ObjFormat & OBJ_FMT_32BIT_REC ) {
                     addend = MGET_LE_U32_UN( ObjBuff );
                     ObjBuff += sizeof( unsigned_32 );
                 } else {
@@ -274,7 +274,7 @@ static void StoreBakPat( segdata *sdata, byte loctype )
     bkptr->len = len;
     bkptr->loctype = loctype;
     bkptr->sdata = sdata;   /* We don't know the data offset yet. */
-    bkptr->is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
+    bkptr->is32bit = (ObjFormat & OBJ_FMT_32BIT_REC) != 0;
     memcpy( bkptr->data, ObjBuff, len );
     LinkList( &BakPats, bkptr );
 }

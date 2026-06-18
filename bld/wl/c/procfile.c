@@ -88,7 +88,7 @@ void SetupFakeModule( void )
 {
     if( FmtData.type & MK_PE ) {
         FakeModule = NewModEntry();
-        FakeModule->modinfo = DBI_ALL | MOD_LAST_SEG | MOD_NEED_PASS_2 | FMT_PE_XFER;
+        FakeModule->modinfo = DBI_ALL | MOD_LAST_SEG | MOD_NEED_PASS_2 | FILE_FMT_PE_XFER;
         FakeModule->name.u.ptr = AddStringStringTable( &PermStrings, LinkerModule );
         DBIInitModule( FakeModule );
     }
@@ -333,9 +333,9 @@ static void AddToModList( mod_entry *mod )
 static void SavedPass1( mod_entry *mod )
 /**************************************/
 {
-    ObjFileFormat = FMT_INCREMENTAL;
+    ObjFileFormat = FILE_FMT_INCREMENTAL;
     mod->modinfo &= ~FMT_OBJ_FMT_MASK;
-    mod->modinfo |= FMT_INCREMENTAL;
+    mod->modinfo |= FILE_FMT_INCREMENTAL;
     AddToModList( mod );
     ObjPass1();
 }
@@ -608,13 +608,13 @@ char *IdentifyObject( const file_list *file, unsigned long *loc, unsigned long *
     }
     switch( FileTypeORL( file, *loc ) ) {
     case ORL_ELF:
-        ObjFileFormat |= FMT_ELF;
+        ObjFileFormat |= FILE_FMT_ELF;
         break;
     case ORL_COFF:
-        ObjFileFormat |= FMT_COFF;
+        ObjFileFormat |= FILE_FMT_COFF;
         break;
     case ORL_OMF:
-        ObjFileFormat |= FMT_OMF;
+        ObjFileFormat |= FILE_FMT_OMF;
         if( (file->flags & STAT_IS_LIB) == STAT_OMF_LIB ) {
             name = GetOMFName( file, loc );
         }

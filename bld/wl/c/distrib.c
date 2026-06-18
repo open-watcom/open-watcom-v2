@@ -212,7 +212,7 @@ void DistribSetSegments( void )
     if( (LinkFlags & LF_STRIP_CODE) == 0 )
         return;
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
-    ObjFormat |= FMT_DEBUG_COMENT;
+    ObjFormat |= OBJ_FMT_DEBUG_COMENT;
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         MemFree( ArcList );
         ArcList = NULL;

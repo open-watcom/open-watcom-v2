@@ -298,7 +298,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
     /* unused parameters */ (void)dummy;
 
     if( !StartInfo.user_specd ) {
-        if( (ObjFileFormat & FMT_COFF)
+        if( (ObjFileFormat & FILE_FMT_COFF)
           && (LinkState & LS_HAVE_X86_CODE) ) {
             /*
              * simple hack for 32-bit MS COFF module to get real startup symbol name

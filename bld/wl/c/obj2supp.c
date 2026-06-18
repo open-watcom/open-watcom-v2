@@ -169,7 +169,7 @@ static void TraceFixup( fix_type type, target_spec *target )
     overlay = ( (FmtData.type & MK_OVERLAYS) && !FmtData.u.dos.noindirect );
     if( (LinkFlags & LF_STRIP_CODE) || overlay ) {
         isovldata = ( (CurrRec.seg->u.leader->info & SEG_OVERLAYED) == 0 );
-        if( ObjFormat & FMT_UNSAFE_FIXUPP ) {
+        if( ObjFormat & OBJ_FMT_UNSAFE_FIXUPP ) {
             isovldata = true;
         }
 #else
@@ -600,7 +600,7 @@ void StoreFixup( offset off, fix_type type, frame_spec *frame, target_spec *targ
     fixtype = type | FIX_SET_TARGET( target->type ) | FIX_SET_FRAME( frame->type );
     save.u.fixup.off = off + CurrRec.obj_offset;
     save.u.fixup.target = target->u.ptr;
-    if( ObjFormat & FMT_UNSAFE_FIXUPP ) {
+    if( ObjFormat & OBJ_FMT_UNSAFE_FIXUPP ) {
         fixtype |= FIX_UNSAFE;
     }
     if( FRAME_HAS_DATA( frame->type ) ) {

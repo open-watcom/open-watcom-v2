@@ -186,7 +186,7 @@ static byte COMDEF_bits( void )
             return( seg->bits );
         }
     }
-    return( (ObjFormat & FMT_32BIT_REC) ? BITS_32 : BITS_16 );
+    return( (ObjFormat & OBJ_FMT_32BIT_REC) ? BITS_32 : BITS_16 );
 }
 
 void ProcComdef( bool isstatic )
@@ -244,7 +244,7 @@ void ProcLinsym( void )
     }
     if( !IS_SYM_COMDAT( sym ) )
         return;
-    is32bit = ( (ObjFormat & FMT_32BIT_REC) != 0 );
+    is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
     if( sym->mod == CurrMod && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
     }
@@ -347,7 +347,7 @@ static offset CountIDBlock( unsigned_8 **buffptr )
     unsigned_16 count;
 
     buff = *buffptr;
-    if( ObjFormat & FMT_MS_386 ) {
+    if( ObjFormat & OBJ_FMT_MS_386 ) {
         repeat = MGET_LE_U32_UN( buff );
         buff += sizeof( unsigned_32 );
     } else {
@@ -434,7 +434,7 @@ void ProcComdat( void )
         usealign = false;
         align = OMFAlignTab[align];
     }
-    if( ObjFormat & FMT_32BIT_REC ) {
+    if( ObjFormat & OBJ_FMT_32BIT_REC ) {
         dataoff = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
@@ -492,7 +492,7 @@ void ProcComdat( void )
         sdata->align = align;
         sdata->u.leader = seg->entry->u.leader;
         sdata->iscode = ( (seg->info & SEG_CODE) != 0 );
-        sdata->bits = ( ObjFormat & FMT_32BIT_REC ) ? BITS_32 : BITS_16;
+        sdata->bits = ( ObjFormat & OBJ_FMT_32BIT_REC ) ? BITS_32 : BITS_16;
         info = AllocCDatInfo();
         info->sdata = sdata;
         info->sym = sym;
@@ -527,9 +527,9 @@ void ProcComdat( void )
         }
     }
     if( (info->flags & SYM_DEAD) && (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        ObjFormat |= FMT_IGNORE_FIXUPP;
+        ObjFormat |= OBJ_FMT_IGNORE_FIXUPP;
     } else {
-        ObjFormat &= ~(FMT_IGNORE_FIXUPP | FMT_IS_LIDATA);
+        ObjFormat &= ~(OBJ_FMT_IGNORE_FIXUPP | OBJ_FMT_IS_LIDATA);
     }
     SetCurrSeg( info->sdata, dataoff, piece->data );
 }

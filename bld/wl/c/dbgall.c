@@ -114,7 +114,7 @@ void DBIP1Source( const byte *buff, const byte *endbuff )
         BadObject();
         return;
     }
-    ObjFormat |= FMT_DEBUG_COMENT;
+    ObjFormat |= OBJ_FMT_DEBUG_COMENT;
     if( LinkFlags & LF_OLD_DBI_FLAG ) {
         ODBIP1Source( major, minor, (const char *)buff, endbuff - buff );
     }
@@ -182,11 +182,11 @@ static bool MSSkip( void )
     bool        iscv;
     bool        seencmt;
 
-    if( (ObjFileFormat & FMT_OMF) == 0 ) {
+    if( (ObjFileFormat & FILE_FMT_OMF) == 0 ) {
         return( LinkFlags & LF_DWARF_DBI_FLAG );
     } else {
         iscv = ( (LinkFlags & LF_CV_DBI_FLAG) != 0 );
-        seencmt = ( (ObjFormat & FMT_DEBUG_COMENT) != 0 );
+        seencmt = ( (ObjFormat & OBJ_FMT_DEBUG_COMENT) != 0 );
         return( (iscv ^ seencmt) == 0 || (LinkFlags & LF_DWARF_DBI_FLAG) );
     }
 }

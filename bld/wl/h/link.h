@@ -115,18 +115,18 @@ typedef enum {
 /*  Object file formats & flags */
 typedef enum {
     /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
-    FMT_EASY_OMF            = 0x0001,
-    FMT_MS_386              = 0x0002,
-    FMT_IS_LIDATA           = 0x0004,   // true if last data was lidata
-    FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
-    FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
+    OBJ_FMT_EASY_OMF            = 0x0001,
+    OBJ_FMT_MS_386              = 0x0002,
+    OBJ_FMT_IS_LIDATA           = 0x0004,   // true if last data was lidata
+    OBJ_FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
+    OBJ_FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
     /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
     /* bits 8..max available */
-    FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
-    FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
+    OBJ_FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
+    OBJ_FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
 } obj_format;
 
-#define FMT_32BIT_REC           (FMT_EASY_OMF | FMT_MS_386)
+#define OBJ_FMT_32BIT_REC       (OBJ_FMT_EASY_OMF | OBJ_FMT_MS_386)
 
 /* Default File Extension Enumeration, see ldefext.h */
 
