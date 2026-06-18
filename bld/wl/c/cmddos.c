@@ -77,7 +77,7 @@ static void PrintAreas( OVL_AREA *ovlarea );
 static void PrintSect( section *sect )
 /************************************/
 {
-    file_list   *list;
+    file_list   *file;
 
     OvlLevel++;
     for( ; sect != NULL; sect = sect->next_sect ) {
@@ -87,8 +87,8 @@ static void PrintSect( section *sect )
         if( sect->files == NULL ) {
             DEBUG(( DBG_OLD, "\"Non-section\"" ));
         }
-        for( list = sect->files; list != NULL; list = list->next_file ) {
-            DEBUG(( DBG_OLD, "%s", list->infile->name ));
+        for( file = sect->files; file != NULL; file = file->next_file ) {
+            DEBUG(( DBG_OLD, "%s", file->infile->name ));
         }
         PrintAreas( sect->areas );
     }

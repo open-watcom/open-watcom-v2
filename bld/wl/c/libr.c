@@ -72,17 +72,17 @@ typedef union dict_entry {
     ar_dict_entry       a;
 } dict_entry;
 
-static void BadLibrary( file_list *list )
+static void BadLibrary( file_list *file )
 /***************************************/
 {
-    list->infile->status |= INSTAT_IOERR;
-    MemFree( list->u.dict );
-    list->u.dict = NULL;
-    Locator( list->infile->name.u.ptr, NULL, 0 );
+    file->infile->status |= INSTAT_IOERR;
+    MemFree( file->u.dict );
+    file->u.dict = NULL;
+    Locator( file->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_LIB_FILE_ATTR, NULL );
 }
 
-static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
+static int ReadOMFDict( file_list *file, unsigned_8 *header, bool makedict )
 /***************************************************************************/
 {
     omf_dict_entry  *omf_dict;
@@ -91,18 +91,18 @@ static int ReadOMFDict( file_list *list, unsigned_8 *header, bool makedict )
     header += sizeof( unsigned_8 );
     reclength = MGET_LE_U16_UN( header ) + 3;
     if( makedict ) {
-        if( list->u.dict == NULL ) {
-            list->u.dict = MemAllocSafe( sizeof( dict_entry ) );
+        if( file->u.dict == NULL ) {
+            file->u.dict = MemAllocSafe( sizeof( dict_entry ) );
         }
-        omf_dict = &list->u.dict->o;
+        omf_dict = &file->u.dict->o;
         omf_dict->cache = NULL;
         header += sizeof( unsigned_16 );
         omf_dict->start = MGET_LE_U32_UN( header );
         header += sizeof( unsigned_32 );
         omf_dict->pages = MGET_LE_U16_UN( header );
         header += sizeof( unsigned_16 );
-        if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > list->infile->len ) {
-            BadLibrary( list );
+        if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > file->infile->len ) {
+            BadLibrary( file );
             return( -1 );
         }
         omf_dict->rec_length = reclength;
@@ -196,7 +196,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
     MemFree( index_tab );
 }
 
-static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, int numdicts )
+static void ReadARDictData( file_list *file, unsigned long *loc, unsigned size, int numdicts )
 /********************************************************************************************/
 {
     ar_dict_entry   *dict;
@@ -231,8 +231,8 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
     it will be sorted later.
     */
 
-    dict = &list->u.dict->a;
-    data = CachePermRead( list, *loc, size );
+    dict = &file->u.dict->a;
+    data = CachePermRead( file, *loc, size );
     if( numdicts == 1 ) {
         num = MGET_BE_U32_UN( data ); /* number of symbols */
         data += sizeof( unsigned_32 );
@@ -273,15 +273,15 @@ static void ReadARDictData( file_list *list, unsigned long *loc, unsigned size, 
     }
 }
 
-static void ReadARStringTable( file_list *list, unsigned long *loc, unsigned size )
+static void ReadARStringTable( file_list *file, unsigned long *loc, unsigned size )
 /*********************************************************************************/
 {
     char            *data;
     unsigned        i;
 
-    if( list->strtab == NULL && size > 0 ) {
-        list->strtab = CachePermRead( list, *loc, size );
-        data = list->strtab;
+    if( file->strtab == NULL && size > 0 ) {
+        file->strtab = CachePermRead( file, *loc, size );
+        data = file->strtab;
         for( i = 0; i < size; ++i ) {
             if( *data == '\n' || *data == '/' && *(data + 1) == '\n' )
                 *data = '\0';
@@ -290,7 +290,7 @@ static void ReadARStringTable( file_list *list, unsigned long *loc, unsigned siz
     }
 }
 
-static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
+static bool ReadARDict( file_list *file, unsigned long *loc, bool makedict )
 /**************************************************************************/
 {
     const ar_header *ar_hdr;
@@ -299,22 +299,22 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
 
     numdicts = 0;
     if( makedict ) {
-        if( list->u.dict == NULL ) {
-            list->u.dict = MemAllocSafe( sizeof( dict_entry ) );
+        if( file->u.dict == NULL ) {
+            file->u.dict = MemAllocSafe( sizeof( dict_entry ) );
         }
     }
     for( ;; ) {
-        ar_hdr = CacheRead( list, *loc, sizeof( ar_header ) );
+        ar_hdr = CacheRead( file, *loc, sizeof( ar_header ) );
         size = GetARValue( ar_hdr->size, AR_SIZE_LEN );
         if( ar_hdr->name[0] == '/' && ar_hdr->name[1] == ' ' ) {
             ++numdicts;
             *loc += sizeof( ar_header );
             if( makedict )
-                ReadARDictData( list, loc, size, numdicts );
+                ReadARDictData( file, loc, size, numdicts );
             *loc += __ROUND_UP_SIZE_EVEN( size );
         } else if( ar_hdr->name[0] == '/' && ar_hdr->name[1] == '/' ) {
             *loc += sizeof( ar_header );
-            ReadARStringTable( list, loc, size );
+            ReadARStringTable( file, loc, size );
             *loc += __ROUND_UP_SIZE_EVEN( size );
         } else {
             break;         // found an actual object file
@@ -322,41 +322,41 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
     }
     if( makedict ) {
         if( numdicts == 0 ) {
-            Locator( list->infile->name.u.ptr, NULL, 0 );
+            Locator( file->infile->name.u.ptr, NULL, 0 );
             LnkMsg( ERR+MSG_NO_DICT_FOUND, NULL );
-            MemFree( list->u.dict );
-            list->u.dict = NULL;
+            MemFree( file->u.dict );
+            file->u.dict = NULL;
             return( false );
         }
         if( (LinkFlags & LF_CASE_FLAG) == 0 || numdicts == 1 ) {
-            SortARDict( &list->u.dict->a );
+            SortARDict( &file->u.dict->a );
         }
     }
     return( true );
 }
 
-int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
+int CheckLibraryType( file_list *file, unsigned long *loc, bool makedict )
 /************************************************************************/
 {
     unsigned_8          *header;
     int                 reclength;
 
     reclength = 0;
-    header = CacheRead( list, *loc, sizeof( omf_lib_header ) );
+    header = CacheRead( file, *loc, sizeof( omf_lib_header ) );
     if( header[0] == 0xf0 && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
-        list->flags |= STAT_OMF_LIB;
-        reclength = ReadOMFDict( list, header, makedict );
+        file->flags |= STAT_OMF_LIB;
+        reclength = ReadOMFDict( file, header, makedict );
         if( reclength < 0 ) {
             return( -1 );
         }
         *loc += __ROUND_UP_SIZE( sizeof( omf_lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
-        list->flags |= STAT_AR_LIB;
+        file->flags |= STAT_AR_LIB;
         reclength = 2;
         *loc += AR_IDENT_LEN;
-        if( !ReadARDict( list, loc, makedict ) ) {
+        if( !ReadARDict( file, loc, makedict ) ) {
             return( -1 );
         }
     }
@@ -402,8 +402,8 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
     return( cache );
 }
 
-static void SetDict( file_list *lib, unsigned dict_page )
-/*******************************************************/
+static void SetDict( file_list *file, unsigned dict_page )
+/********************************************************/
 /* set lib->buffer to the dict_page th page in lib 's dictionary */
 {
     unsigned        pages;
@@ -414,28 +414,28 @@ static void SetDict( file_list *lib, unsigned dict_page )
     long            dictoff;
     omf_dict_entry  *dict;
 
-    dict = &lib->u.dict->o;
+    dict = &file->u.dict->o;
     if( dict->cache == NULL ) {
         pages = dict->pages;
         num_buckets = pages / PAGES_IN_CACHE;
         residue = pages - num_buckets * PAGES_IN_CACHE;
         dict->cache = AllocDict( num_buckets, residue );
         if( dict->cache != NULL ) {
-            QSeek( lib->infile->handle, dict->start, lib->infile->name.u.ptr );
+            QSeek( file->infile->handle, dict->start, file->infile->name.u.ptr );
             for( bucket = 0; bucket < num_buckets; ++bucket ) {
-                QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE, lib->infile->name.u.ptr );
+                QRead( file->infile->handle, dict->cache[bucket], DIC_REC_SIZE * PAGES_IN_CACHE, file->infile->name.u.ptr );
             }
-            QRead( lib->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, lib->infile->name.u.ptr );
-            lib->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
+            QRead( file->infile->handle, dict->cache[bucket], DIC_REC_SIZE * residue, file->infile->name.u.ptr );
+            file->infile->currpos = dict->start + DIC_REC_SIZE * ( residue + PAGES_IN_CACHE * num_buckets );
         }
     }
     if( dict->cache == NULL ) {
         off = dict_page * DIC_REC_SIZE;
         dictoff = dict->start + off;
         dict->buffer = (unsigned_8 *)TokBuff;
-        QSeek( lib->infile->handle, dictoff, lib->infile->name.u.ptr );
-        QRead( lib->infile->handle, dict->buffer, DIC_REC_SIZE, lib->infile->name.u.ptr );
-        lib->infile->currpos = dictoff + DIC_REC_SIZE;
+        QSeek( file->infile->handle, dictoff, file->infile->name.u.ptr );
+        QRead( file->infile->handle, dict->buffer, DIC_REC_SIZE, file->infile->name.u.ptr );
+        file->infile->currpos = dictoff + DIC_REC_SIZE;
     } else {
         bucket = dict_page / PAGES_IN_CACHE;
         residue = dict_page - bucket * PAGES_IN_CACHE;
@@ -468,8 +468,8 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
     return( returnval );
 }
 
-static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *off )
-/*********************************************************************************/
+static bool OMFSearchExtLib( file_list *file, const char *name, unsigned long *off )
+/**********************************************************************************/
 /* Search library for specified member. */
 {
     unsigned        num_blocks;
@@ -479,13 +479,13 @@ static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *of
     hash_entry      h;
     omf_dict_entry  *dict;
 
-    dict = &lib->u.dict->o;
+    dict = &file->u.dict->o;
     num_blocks = dict->pages;
 
     omflib_hash( name, strlen( name ), &h, num_blocks );
 
     for( i = 0; i < num_blocks; ++i ) {
-        SetDict( lib, h.block );
+        SetDict( file, h.block );
         for( j = 0; j < NUM_BUCKETS; ++j ) {
             if( dict->buffer[h.bucket] == LIB_NOT_FOUND ) {
                 if( dict->buffer[NUM_BUCKETS] != LIB_FULL_PAGE )
@@ -515,17 +515,17 @@ bool DiscardDicts( void )
 /* called when dictionaries forced out of dict memory */
 {
     omf_dict_entry      *ptr;
-    file_list           *curr;
+    file_list           *file;
 
     ptr = NULL;
-    for( curr = ObjLibFiles; curr != NULL; curr = curr->next_file ) {
-        if( curr->u.dict == NULL )
+    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+        if( file->u.dict == NULL )
             continue;
-        if( curr->flags & STAT_AR_LIB )
+        if( file->flags & STAT_AR_LIB )
             continue;
-        if( curr->u.dict->o.cache == NULL )
+        if( file->u.dict->o.cache == NULL )
             continue;
-        ptr = &curr->u.dict->o;
+        ptr = &file->u.dict->o;
     }
     if( ptr == NULL )
         return( false ); /* no dicts in memory */
@@ -539,19 +539,19 @@ void BurnLibs( void )
 /**************************/
 /* let dict memory know it's no longer needed */
 {
-    file_list   *temp;
+    file_list   *file;
     dict_entry  *dict;
 
-    for( temp = ObjLibFiles; temp != NULL; temp = temp->next_file ) {
-        if( temp->flags & STAT_AR_LIB ) {
-            CacheFree( temp, temp->strtab );
-            temp->strtab = NULL;
+    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+        if( file->flags & STAT_AR_LIB ) {
+            CacheFree( file, file->strtab );
+            file->strtab = NULL;
         }
-        dict = temp->u.dict;
+        dict = file->u.dict;
         if( dict == NULL )
             continue;
-        if( temp->flags & STAT_AR_LIB ) {
-            CacheFree( temp, dict->a.filepostab - 1 );
+        if( file->flags & STAT_AR_LIB ) {
+            CacheFree( file, dict->a.filepostab - 1 );
             MemFree( dict->a.symbtab );
         } else {
             if( dict->o.cache != NULL ) {
@@ -559,8 +559,8 @@ void BurnLibs( void )
             }
         }
         MemFree( dict );
-        temp->u.dict = NULL;
-        FreeObjCache( temp );
+        file->u.dict = NULL;
+        FreeObjCache( file );
     }
 }
 
@@ -582,15 +582,15 @@ static int ARCompIName( const void *key, const void *vbase )
     return( stricmp( key, *base ) );
 }
 
-static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off )
-/********************************************************************************/
+static bool ARSearchExtLib( file_list *file, const char *name, unsigned long *off )
+/*********************************************************************************/
 /* Search AR format library for specified member. */
 {
     char                **result;
     ar_dict_entry       *dict;
     unsigned            tabidx;
 
-    dict = &lib->u.dict->a;
+    dict = &file->u.dict->a;
     if( LinkFlags & LF_CASE_FLAG ) {
         result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
     } else {
@@ -608,8 +608,8 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
     return( false );
 }
 
-mod_entry *SearchLib( file_list *lib, const char *name )
-/*******************************************************
+mod_entry *SearchLib( file_list *file, const char *name )
+/********************************************************
  * Search the specified library file for the specified name & make a module
  */
 {
@@ -620,18 +620,18 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     char                *objname;
 
     pos = 0;
-    if( lib->u.dict == NULL ) {
-        if( CheckLibraryType( lib, &pos, true ) == -1 )
+    if( file->u.dict == NULL ) {
+        if( CheckLibraryType( file, &pos, true ) == -1 )
             return( NULL );
-        if( (lib->flags & STAT_IS_LIB) == 0 ) {
-            BadLibrary( lib );
+        if( (file->flags & STAT_IS_LIB) == 0 ) {
+            BadLibrary( file );
             return( NULL );
         }
     }
-    if( lib->flags & STAT_OMF_LIB ) {
-        retval = OMFSearchExtLib( lib, name, &pos );
+    if( file->flags & STAT_OMF_LIB ) {
+        retval = OMFSearchExtLib( file, name, &pos );
     } else {
-        retval = ARSearchExtLib( lib, name, &pos );
+        retval = ARSearchExtLib( file, name, &pos );
     }
     if( !retval )
         return( NULL );
@@ -643,7 +643,7 @@ mod_entry *SearchLib( file_list *lib, const char *name )
     /*
      * correct module start position for modules in archive library
      */
-    objname = IdentifyObject( lib, &pos, &dummy );
+    objname = IdentifyObject( file, &pos, &dummy );
     if( objname != NULL ) {
         obj->name.u.ptr = AddStringStringTable( &PermStrings, objname );
         MemFree( objname );
@@ -651,13 +651,13 @@ mod_entry *SearchLib( file_list *lib, const char *name )
         obj->name.u.ptr = NULL;
     }
     obj->location = pos;
-    obj->f.source = lib;
-    obj->modtime = lib->infile->modtime;
-    obj->modinfo = (lib->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    obj->f.source = file;
+    obj->modtime = file->infile->modtime;
+    obj->modinfo = (file->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 
-char *GetARName( const ar_header *header, const file_list *list, unsigned long *loc )
+char *GetARName( const ar_header *header, const file_list *file, unsigned long *loc )
 /***********************************************************************************/
 {
     const char      *buf;
@@ -668,11 +668,11 @@ char *GetARName( const ar_header *header, const file_list *list, unsigned long *
     name = NULL;
     if( header->name[0] == '/' ) {
         val = GetARValue( &header->name[1], AR_NAME_LEN - 1 );
-        buf = list->strtab + val;
+        buf = file->strtab + val;
         len = strlen( buf );
     } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
         len = GetARValue( &header->name[3], AR_NAME_LEN - 3 );
-        buf = CacheRead( list, *loc, len );
+        buf = CacheRead( file, *loc, len );
         *loc += len;
     } else {
         len = AR_NAME_LEN;

@@ -124,7 +124,7 @@ void FiniORLObj( void )
     ORLFini( ORLHandle );
 }
 
-static long ORLFileSeek( const file_list *list, long pos, int where )
+static long ORLFileSeek( const file_list *file, long pos, int where )
 /*******************************************************************/
 {
     if( where == SEEK_SET ) {
@@ -133,7 +133,7 @@ static long ORLFileSeek( const file_list *list, long pos, int where )
     } else if( where == SEEK_CUR ) {
         ORLFilePos += pos;
     } else {
-        ORLFilePos = list->infile->len - pos;
+        ORLFilePos = file->infile->len - pos;
     }
     return( ORLFilePos + ORLPos );
 }
@@ -156,43 +156,43 @@ static orl_file_handle InitFile( void )
     return( ORLFileInit( ORLHandle, (struct orl_io_struct *)CurrMod->f.source, type ) );
 }
 
-static void ClearCachedData( const file_list *list )
+static void ClearCachedData( const file_list *file )
 /**************************************************/
 {
     readcache   *cache;
 
     while( (cache = ReadCacheList) != NULL ) {
         ReadCacheList = cache->next;
-        CacheFree( list, cache->data );
+        CacheFree( file, cache->data );
         MemFree( cache );
     }
 }
 
-orl_file_format FileTypeORL( const file_list *list, unsigned long loc )
+orl_file_format FileTypeORL( const file_list *file, unsigned long loc )
 /**********************************************************************
  * return true if this is can be handled by ORL
  */
 {
     orl_file_format     type;
 
-    ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, (struct orl_io_struct *)list );
-    ClearCachedData( list );
+    ORLFileSeek( file, loc, SEEK_SET );
+    type = ORLFileIdentify( ORLHandle, (struct orl_io_struct *)file );
+    ClearCachedData( file );
     return( type );
 }
 
-static void FiniFile( orl_file_handle filehdl, const file_list *list )
+static void FiniFile( orl_file_handle filehdl, const file_list *file )
 /********************************************************************/
 {
     ORLFileFini( filehdl );
-    ClearCachedData( list );
+    ClearCachedData( file );
     if( ImpModName != NULL ) {
         MemFree( ImpModName );
         ImpModName = NULL;
     }
 }
 
-void ORLSkipObj( const file_list *list, unsigned long *loc )
+void ORLSkipObj( const file_list *file, unsigned long *loc )
 /***********************************************************
  * skip the object file.
  * NYI: add an entry point in ORL for a more efficient way of doing this.
@@ -200,10 +200,10 @@ void ORLSkipObj( const file_list *list, unsigned long *loc )
 {
     orl_file_handle     filehdl;
 
-    ORLFileSeek( list, *loc, SEEK_SET );
+    ORLFileSeek( file, *loc, SEEK_SET );
     filehdl = InitFile();               /* assumes that entire file is read! */
-    *loc = ORLFileSeek( list, 0, SEEK_CUR );
-    FiniFile( filehdl, list );
+    *loc = ORLFileSeek( file, 0, SEEK_CUR );
+    FiniFile( filehdl, file );
 }
 
 static bool CheckFlags( orl_file_handle filehdl )

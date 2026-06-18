@@ -62,16 +62,16 @@ static unsigned NumCacheBlocks( unsigned long len )
     return( numblocks );
 }
 
-bool CacheOpen( const file_list *list )
+bool CacheOpen( const file_list *file )
 /*************************************/
 {
     infilelist  *infile;
     unsigned    numblocks;
     char        **cache;
 
-    if( list == NULL )
+    if( file == NULL )
         return( true );
-    infile = list->infile;
+    infile = file->infile;
     if( infile->status & INSTAT_IOERR )
         return( false );
     if( DoObjOpen( infile ) ) {
@@ -151,15 +151,15 @@ static bool DumpFileCache( infilelist *infile, bool nuke )
     return( blockfreed );
 }
 
-void CacheClose( const file_list *list, unsigned pass )
+void CacheClose( const file_list *file, unsigned pass )
 /*****************************************************/
 {
     infilelist  *infile;
     bool        nukecache;
 
-    if( list == NULL )
+    if( file == NULL )
         return;
-    infile = list->infile;
+    infile = file->infile;
 //    if( infile->handle == NIL_FHANDLE )
 //        return;
     infile->status &= ~INSTAT_IN_USE;
@@ -168,14 +168,14 @@ void CacheClose( const file_list *list, unsigned pass )
         nukecache = ( (infile->status & INSTAT_LIBRARY) == 0 );
         if( infile->status & INSTAT_FULL_CACHE ) {
             if( nukecache ) {
-                FreeObjCache( list );
+                FreeObjCache( file );
             }
         } else {
             DumpFileCache( infile, nukecache );   // don't cache .obj's
         }
         break;
     case 3: /* freeing structure */
-        FreeObjCache( list );
+        FreeObjCache( file );
         if( infile->handle != NIL_FHANDLE ) {
             QClose( infile->handle, infile->name.u.ptr );
             infile->handle = NIL_FHANDLE;
@@ -184,14 +184,14 @@ void CacheClose( const file_list *list, unsigned pass )
     }
 }
 
-void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
+void *CachePermRead( const file_list *file, unsigned long pos, size_t len )
 /*************************************************************************/
 {
     char        *buf;
     char        *result;
 
-    buf = CacheRead( list, pos, len );
-    if( list->infile->status & INSTAT_FULL_CACHE )
+    buf = CacheRead( file, pos, len );
+    if( file->infile->status & INSTAT_FULL_CACHE )
         return( buf );
     if( Multipage ) {
         result = MemReallocSafe( buf, len );
@@ -204,7 +204,7 @@ void *CachePermRead( const file_list *list, unsigned long pos, size_t len )
     return( result );
 }
 
-void *CacheRead( const file_list *list, unsigned long pos, size_t len )
+void *CacheRead( const file_list *file, unsigned long pos, size_t len )
 /**********************************************************************
  * read len bytes out of the cache.
  */
@@ -218,13 +218,13 @@ void *CacheRead( const file_list *list, unsigned long pos, size_t len )
     unsigned long   newpos;
     infilelist      *infile;
 
-    if( list->infile->status & INSTAT_FULL_CACHE ) {
-        if( pos + len > list->infile->len )
+    if( file->infile->status & INSTAT_FULL_CACHE ) {
+        if( pos + len > file->infile->len )
             return( NULL );
-        return( (char *)list->infile->cache + pos );
+        return( (char *)file->infile->cache + pos );
     }
     Multipage = false;
-    infile = list->infile;
+    infile = file->infile;
     offset = pos % CACHE_PAGE_SIZE;
     amtread = CACHE_PAGE_SIZE - offset;
     startnum = pos / CACHE_PAGE_SIZE;
@@ -279,10 +279,10 @@ bool CacheIsPerm( void )
     return( !Multipage );
 }
 
-bool CacheIsEnd( const file_list *list, unsigned long pos )
+bool CacheIsEnd( const file_list *file, unsigned long pos )
 /*********************************************************/
 {
-    return( pos >= list->infile->len );
+    return( pos >= file->infile->len );
 }
 
 void CacheFini( void )
@@ -290,27 +290,27 @@ void CacheFini( void )
 {
 }
 
-void CacheFree( const file_list *list, void *mem )
+void CacheFree( const file_list *file, void *mem )
 /*************************************************
  * used for disposing things allocated by CachePermRead
  */
 {
-    if( list->infile->status & INSTAT_PAGE_CACHE ) {
+    if( file->infile->status & INSTAT_PAGE_CACHE ) {
         MemFree( mem );
     }
 }
 
-void FreeObjCache( const file_list *list )
+void FreeObjCache( const file_list *file )
 /****************************************/
 {
-    if( list == NULL )
+    if( file == NULL )
         return;
-    if( list->infile->status & INSTAT_FULL_CACHE ) {
-        MemFree( list->infile->cache );
+    if( file->infile->status & INSTAT_FULL_CACHE ) {
+        MemFree( file->infile->cache );
     } else {
-        DumpFileCache( list->infile, true );
+        DumpFileCache( file->infile, true );
     }
-    list->infile->cache = NULL;
+    file->infile->cache = NULL;
 }
 
 bool DumpObjCache( void )

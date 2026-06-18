@@ -122,28 +122,28 @@ static void CheckUninit( void *_seg, void *dummy )
     }
 }
 
-bool IsOMF( const file_list *list, unsigned long loc )
+bool IsOMF( const file_list *file, unsigned long loc )
 /****************************************************/
 {
     byte        *rec;
 
-    rec = CacheRead( list, loc, sizeof( unsigned_8 ) );
+    rec = CacheRead( file, loc, sizeof( unsigned_8 ) );
     return( rec != NULL && ( *rec == CMD_THEADR || *rec == CMD_LHEADR ) );
 }
 
-char *GetOMFName( const file_list *list, unsigned long *loc )
+char *GetOMFName( const file_list *file, unsigned long *loc )
 /***********************************************************/
 {
     omf_record  *rec;
     char        *name;
     unsigned    len;
 
-    rec = CacheRead( list, *loc, sizeof( omf_record ) );
+    rec = CacheRead( file, *loc, sizeof( omf_record ) );
     if( rec == NULL )
         return( NULL );
     *loc += sizeof( omf_record );
     len = rec->length;
-    name = CacheRead( list, *loc, rec->length );
+    name = CacheRead( file, *loc, rec->length );
     *loc += len;
     if( name == NULL )
         return( NULL );
@@ -151,10 +151,10 @@ char *GetOMFName( const file_list *list, unsigned long *loc )
     return( MemToStringSafe( name + 1, len ) );
 }
 
-void OMFSkipObj( const file_list *list, unsigned long *loc )
+void OMFSkipObj( const file_list *file, unsigned long *loc )
 /**********************************************************/
 {
-    *loc = ProcObj( list, *loc, NULL );
+    *loc = ProcObj( file, *loc, NULL );
 }
 
 static void ProcTHEADR( void )

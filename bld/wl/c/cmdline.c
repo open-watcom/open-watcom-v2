@@ -557,14 +557,14 @@ void AddCommentLib( const char *comment, size_t len, lib_priority priority )
  * Add a library from a comment record.
  */
 {
-    file_list   *result;
+    file_list   *file;
     char        *ptr;
 
     if( CmdFlags & CF_NO_DEF_LIBS )
         return;
     ptr = FileName( comment, len, E_LIBRARY, false );
-    result = AddObjLib( ptr, priority );
-    CheckLibTrace( result );
+    file = AddObjLib( ptr, priority );
+    CheckLibTrace( file );
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     MemFree( ptr );
 }
@@ -573,7 +573,7 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
 /**********************************************************************/
 {
     path_entry      *newpath;
-    file_list const *libfiles;
+    const file_list *file;
     char            *p;
     const char      *end;
 
@@ -593,12 +593,12 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
         LinkList( &UsrLibPath, newpath );
     }
     if( UsrLibPath == newpath ) {
-        for( libfiles = ObjLibFiles; libfiles != NULL; libfiles = libfiles->next_file ) {
-            libfiles->infile->path_list = UsrLibPath;
+        for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+            file->infile->path_list = UsrLibPath;
         }
-        for( libfiles = Root->files; libfiles != NULL; libfiles = libfiles->next_file ) {
-            if( libfiles->infile->status & INSTAT_USE_LIBPATH ) {
-                libfiles->infile->path_list = UsrLibPath;
+        for( file = Root->files; file != NULL; file = file->next_file ) {
+            if( file->infile->status & INSTAT_USE_LIBPATH ) {
+                file->infile->path_list = UsrLibPath;
             }
         }
     }

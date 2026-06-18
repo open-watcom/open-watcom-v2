@@ -276,41 +276,40 @@ static bool ProcSymFile( void )
     return( true );
 }
 
-static void *AddObjFile( const char *name, char *member, file_list **filelist )
-/*****************************************************************************/
+static void *AddObjFile( const char *name, const char *membname, file_list **filelist )
+/*************************************************************************************/
 {
-    file_list       *new_entry;
-    member_list     *new_member;
+    file_list       *file;
+    member_list     *member;
 
-    new_member = NULL;
-    if( member != NULL ) {
-        new_member = MemAllocSafe( offsetof( member_list, name ) + strlen( member ) + 1 );
-        new_member->flags = DBIFlag;
-        strcpy( new_member->name, member );
-        new_member->next = NULL;
-        MemFree( member );
-        for( new_entry = CurrSect->files; new_entry != NULL; new_entry = new_entry->next_file ) {
-            if( FNAMECMPSTR( new_entry->infile->name.u.ptr, name ) == 0 ) {
+    member = NULL;
+    if( membname != NULL ) {
+        member = MemAllocSafe( sizeof( *member ) - 1 + strlen( membname ) + 1 );
+        member->flags = DBIFlag;
+        strcpy( member->name, membname );
+        member->next = NULL;
+        for( file = CurrSect->files; file != NULL; file = file->next_file ) {
+            if( FNAMECMPSTR( file->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
-                if( new_entry->u.member != NULL ) {
-                    LinkList( &new_entry->u.member, new_member );
-                    return( new_member );
+                if( file->u.member != NULL ) {
+                    LinkList( &file->u.member, member );
+                    return( member );
                 } else {
-                    MemFree( new_member );      // user did a stupid thing.
-                    return( new_entry->u.member );
+                    MemFree( member );      // user did a stupid thing.
+                    return( file->u.member );
                 }
             }
         }
     }
-    new_entry = AllocNewFile( new_member );
-    if( new_member != NULL ) {
-        new_entry->infile = AllocUniqueFileEntry( name, UsrLibPath );
-        new_entry->infile->status |= INSTAT_LIBRARY;
+    file = AllocNewFile( member );
+    if( member != NULL ) {
+        file->infile = AllocUniqueFileEntry( name, UsrLibPath );
+        file->infile->status |= INSTAT_LIBRARY;
     } else {
-        new_entry->infile = AllocFileEntry( name, ObjPath );
+        file->infile = AllocFileEntry( name, ObjPath );
     }
-    *filelist = new_entry;
-    return( new_entry );
+    *filelist = file;
+    return( file );
 }
 
 static bool AddLibFile( void )
@@ -318,7 +317,7 @@ static bool AddLibFile( void )
 {
     char        *ptr;
     char        *membname;
-    file_list   *entry;
+    file_list   *file;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
     ptr = GetFileName( &membname );
@@ -328,15 +327,15 @@ static bool AddLibFile( void )
         MemFree( ptr );
         return( true );
     }
-    entry = AllocNewFile( NULL );
-    entry->infile = AllocFileEntry( ptr, UsrLibPath );
-    entry->next_file = *LastLibFile;
-    *LastLibFile = entry;
-    LastLibFile = &entry->next_file;
+    file = AllocNewFile( NULL );
+    file->infile = AllocFileEntry( ptr, UsrLibPath );
+    file->next_file = *LastLibFile;
+    *LastLibFile = file;
+    LastLibFile = &file->next_file;
     if( *LastLibFile == NULL ) {    // no file directives found yet
         CurrFList = LastLibFile;
     }
-    entry->infile->status |= INSTAT_USE_LIBPATH;
+    file->infile->status |= INSTAT_USE_LIBPATH;
     MemFree( ptr );
     return( true );
 }
@@ -375,7 +374,7 @@ static bool AddFile( void )
 {
     char        *ptr;
     char        *membname;
-    file_list   **temp;
+    file_list   **file;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
 #ifdef _EXE
@@ -391,17 +390,18 @@ static bool AddFile( void )
     if( membname == NULL && Name == NULL ) {
         Name = getstring();
     }
-    temp = CurrFList;
+    file = CurrFList;
     if( *CurrFList != NULL ) {
         CurrFList = &(*CurrFList)->next_file;
     }
     LastFile.u.file = AddObjFile( ptr, membname, CurrFList );
     if( CmdFlags & CF_MEMBER_ADDED ) {
-        CurrFList = temp;               // go back to previous entry.
+        CurrFList = file;               // go back to previous entry.
     } else if( membname != NULL ) {     // 1st member added
         LastFile.u.module = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
     }
+    MemFree( membname );
     MemFree( ptr );
     return( true );
 }
@@ -428,19 +428,19 @@ static bool AddLib( void )
 /************************/
 {
     char        *ptr;
-    file_list   *result;
+    file_list   *file;
 
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
-    result = AddObjLib( ptr, LIB_PRIORITY_MAX );
-    result->flags |= STAT_USER_SPECD;
+    file = AddObjLib( ptr, LIB_PRIORITY_MAX );
+    file->flags |= STAT_USER_SPECD;
 #ifdef _EXE
     if( CmdFlags & CF_SET_SECTION ) {
-        result->flags |= STAT_LIB_FIXED;
-        result->ovlref = GetOvlRef();
+        file->flags |= STAT_LIB_FIXED;
+        file->ovlref = GetOvlRef();
     }
 #endif
     if( CmdFlags & CF_DOING_OPTLIB ) {
-        result->infile->status |= INSTAT_NO_WARNING;
+        file->infile->status |= INSTAT_NO_WARNING;
     }
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     MemFree( ptr );
@@ -1088,6 +1088,10 @@ static bool AddModTrace( void )
     char            *fname;
 
     fname = GetFileName( &membname );
+    /*
+     * AddTraceListMod consume membname
+     * dont free it
+     */
     AddTraceListMod( fname, membname );
     return( true );
 }

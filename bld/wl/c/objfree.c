@@ -92,18 +92,18 @@ static void FreeMods( mod_entry *head )
     }
 }
 
-static void FreeFiles( file_list *list )
+static void FreeFiles( file_list *file )
 /**************************************/
 {
     void        *next;
 
-    for( ; list != NULL; list = next ) {
-        next = list->next_file;
-        CacheClose( list, 3 );
-        if( (list->flags & STAT_HAS_MEMBER) && list->u.member != NULL ) {
-            FreeList( list->u.member );
+    for( ; file != NULL; file = next ) {
+        next = file->next_file;
+        CacheClose( file, 3 );
+        if( (file->flags & STAT_HAS_MEMBER) && file->u.member != NULL ) {
+            FreeList( file->u.member );
         }
-        _PermFree( list );
+        _PermFree( file );
     }
 }
 

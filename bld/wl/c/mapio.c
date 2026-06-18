@@ -979,14 +979,14 @@ static void WriteMapSize( int msgid, unsigned_32 size )
 void WriteMapLibsUsed( void )
 /***************************/
 {
-    file_list   *lib;
+    file_list   *file;
     char        new_name[PATH_MAX];
 
     if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteMapBox( MSG_MAP_BOX_LIB_USED );
-        for( lib = ObjLibFiles; lib != NULL; lib = lib->next_file ) {
-            if( lib->flags & STAT_LIB_USED ) {
-                MakeFileName( lib->infile, new_name );
+        for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+            if( file->flags & STAT_LIB_USED ) {
+                MakeFileName( file->infile, new_name );
                 WriteMapPrintf( "%s", new_name );
             }
         }

@@ -626,17 +626,17 @@ offset FindLinearAddr2( targ_addr *addr )
 file_list *AllocNewFile( member_list *member )
 /********************************************/
 {
-    file_list       *new_entry;
+    file_list       *file;
 
-    new_entry = _PermAlloc( sizeof( file_list ) );
-    new_entry->next_file = NULL;
-    new_entry->flags = DBIFlag;
-    new_entry->strtab = NULL;
-    new_entry->u.member = member;
+    file = _PermAlloc( sizeof( file_list ) );
+    file->next_file = NULL;
+    file->flags = DBIFlag;
+    file->strtab = NULL;
+    file->u.member = member;
     if( member != NULL ) {
-        new_entry->flags |= STAT_HAS_MEMBER;
+        file->flags |= STAT_HAS_MEMBER;
     }
-    return( new_entry );
+    return( file );
 }
 
 char *FileName( const char *buff, size_t len, file_defext etype, bool force )
