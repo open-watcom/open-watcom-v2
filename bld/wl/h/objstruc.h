@@ -34,73 +34,6 @@
 #include "hash.h"
 
 
-typedef unsigned_16             overlay_ref;
-
-typedef struct file_list        FILE_LIST;
-typedef struct path_entry       PATH_ENTRY;
-typedef struct mod_entry        MOD_ENTRY;
-typedef struct ovl_area         OVL_AREA;
-typedef struct section          SECTION;
-typedef struct group_entry      GROUP_ENTRY;
-typedef struct class_entry      CLASS_ENTRY;
-typedef struct segnode          SEGNODE;
-typedef struct seg_leader       SEG_LEADER;
-typedef struct node             NODE;
-typedef struct extnode          EXTNODE;
-typedef struct grpnode          GRPNODE;
-typedef struct list_of_names    LIST_OF_NAMES;
-typedef struct lobject_data     LOBJECT_DATA;
-typedef struct outfilelist      OUTFILELIST;
-typedef struct infilelist       INFILELIST;
-typedef struct member_list      MEMBER_LIST;
-typedef struct segdata          SEGDATA;
-typedef struct pubdeflist       PUBDEFLIST;
-typedef struct ovl_area {
-    OVL_AREA    *next_area;
-    SECTION     *sections;
-} ovl_area;
-typedef struct order_class      ORDER_CLASS;
-typedef struct order_segment    ORDER_SEGMENT;
-
-typedef struct section {
-    SECTION             *next_sect;
-    FILE_LIST           *files;
-    pHTable             modFilesHashed;
-    MOD_ENTRY           *mods;
-    CLASS_ENTRY         *classlist;
-    ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
-    targ_addr           sect_addr;
-    overlay_ref         ovlref;
-    OVL_AREA            *areas;
-    SECTION             *parent;
-    unsigned_32         relocs;
-    unsigned_32         size;
-    void                *reloclist;
-    union {
-        unsigned_32     file_loc;
-        MOD_ENTRY       *dist_mods;
-    } u;
-    void                *dbg_info;
-    OUTFILELIST         *outfile;
-} section;
-
-typedef struct path_entry {
-    PATH_ENTRY          *next;
-    char                name[1];
-} path_entry;
-
-typedef struct outfilelist {
-    OUTFILELIST         *next;
-    char                *fname;     // name of the file to be written to.
-    f_handle            handle;
-    unsigned long       file_loc;
-    char                *buffer;
-    unsigned long       bufpos;
-    unsigned            ovlfnoff;   // offset of filename from _OVLTAB
-    bool                is_exe;     // executable flag (for file permissions)
-    unsigned long       origin;
-} outfilelist;
-
 typedef enum {
     INSTAT_USE_LIBPATH  = 0x0001,   // use libpath for this file.
     INSTAT_LIBRARY      = 0x0002,   // file is a library
@@ -115,19 +48,6 @@ typedef enum {
 
 #define INSTAT_SET_CACHE (INSTAT_FULL_CACHE | INSTAT_PAGE_CACHE)
 #define INSTAT_LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
-
-typedef struct infilelist {
-    INFILELIST          *next;
-    const PATH_ENTRY    *path_list;
-    const char          *prefix;
-    void                *cache;  // used when object file cached in mem
-    unsigned long       len;     // length of the file.
-    unsigned long       currpos; // current position of the file.
-    f_handle            handle;
-    time_t              modtime;
-    name_strtab         name;
-    infile_status       status;
-} infilelist;
 
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols */
@@ -159,33 +79,6 @@ typedef enum {
 
 #define STAT_IS_LIB     (STAT_AR_LIB | STAT_OMF_LIB)
 
-/*
- * overlay manager library priority         0
- * default library priority                 1-8 (OMF)
- * default library priority                 8   (coff/elf)
- * compiler user specified library priority 9
- * WLINK user specified library priority    10
- */
-typedef enum {
-    LIB_PRIORITY_MIN    = 0,
-    LIB_PRIORITY_MID    = 5,
-    LIB_PRIORITY_MAX    = 10
-} lib_priority;
-
-typedef struct file_list {
-    FILE_LIST           *next_file;
-    infilelist          *infile;
-    union {
-        union dict_entry    *dict;
-        MEMBER_LIST         *member;
-    } u;
-    char                *strtab;    /* for AR format */
-    file_flags          flags;
-    lib_priority        priority;   /* for libraries */
-    overlay_ref         ovlref;     /* for fixed libraries */
-    unsigned                     : 0;
-} file_list;
-
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
     /* bits 5..7 reserved for FMT_xxxx symbols are also stored here */
@@ -205,48 +98,18 @@ typedef enum {
 #define MOD_CLEAR_ON_INC    /* flags to clear when incremental linking. */ \
     (MOD_DONE_PASS_1)
 
-typedef struct member_list {
-    MEMBER_LIST         *next;
-    module_flags        flags;      //dbi & newseg flags to be xferred to mod entry
-    char                name[1];
-} member_list;
-
-#define NO_ARCS_YET     ((overlay_ref)-1)
-
 /*
-   NOTE: this is an entry for the kludge of the year award, 1993.
-   Since I need to keep symbol *'s and modules in the same pointer,
-   I tell the difference by checking test to see if it is less than 8K
-   (the max. # of distributed modules).
-*/
-
-typedef union {
-    symbol              *sym;
-    unsigned_16         mod;
-    unsigned_32         test;
-} dist_arc;
-
-// fields used only in distributing libs are marked dist:
-// remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
-
-typedef struct {
-    overlay_ref         ovlref;     // dist: # of the module
-    unsigned_16         numarcs;    // dist: of arcs in the list
-    dist_arc            arcs[1];    // dist: the actual arcs.
-} arcdata;
-
-#define DIST_ONLY_SIZE (2 * sizeof( unsigned_16 ) + sizeof( dist_arc ))
-
-typedef struct obj_name_list {
-    struct obj_name_list    *next;
-    size_t                  len;
-    unsigned_32             num;
-    name_strtab             name;          // NYI: make this vbl length again.
-} obj_name_list;
-
-typedef struct odbimodinfo      ODBIMODINFO;    // defd in dbg information hdrs
-typedef struct dwarfmodinfo     DWARFMODINFO;
-typedef struct cvmodinfo        CVMODINFO;
+ * overlay manager library priority         0
+ * default library priority                 1-8 (OMF)
+ * default library priority                 8   (coff/elf)
+ * compiler user specified library priority 9
+ * WLINK user specified library priority    10
+ */
+typedef enum {
+    LIB_PRIORITY_MIN    = 0,
+    LIB_PRIORITY_MID    = 5,
+    LIB_PRIORITY_MAX    = 10
+} lib_priority;
 
 // OMF debug information formats
 typedef enum {
@@ -254,36 +117,6 @@ typedef enum {
     OMF_DBG_CODEVIEW,
     OMF_DBG_HLL
 } omf_dbg_type;
-
-typedef struct mod_entry {
-    union {
-        MOD_ENTRY       *next_mod;  // regular next pointer
-        section         *sect;      // when distributing - section of current mod.
-    } n;
-    union {
-        FILE_LIST       *source;
-        name_strtab     fname;
-    } f;
-    name_strtab         name;
-    unsigned_32         location;
-    symbol              *publist;
-    SEGDATA             *segs;
-    time_t              modtime;
-    size_t              relocs;
-    size_t              sizerelocs;
-    module_flags        modinfo;
-    void                *lines;
-    omf_dbg_type        omfdbg;
-    union {
-        arcdata         *arclist;   // segment definition data.
-        MOD_ENTRY       *next;      // for keeping track of modules when distrib
-    } x;
-    union {
-        ODBIMODINFO     *o;
-        DWARFMODINFO    *d;
-        CVMODINFO       *cv;
-    } d;                        // union used for debugging information
-} mod_entry;
 
 typedef enum {
     CLASS_TRANSFER      = 0x0001,   /* used for PE import transfer code */
@@ -303,76 +136,6 @@ typedef enum {
 #define CLASS_DEBUG_INFO    (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF)
 
 #define EMIT_CLASS(c)       (((c)->flags & CLASS_NOEMIT) == 0)
-
-typedef struct class_entry {
-    CLASS_ENTRY         *next_class;
-    SEG_LEADER          *segs;
-    name_strtab         name;
-    class_status        flags;
-    byte                bits;           // segment bitnese
-    section             *section;
-    targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
-    CLASS_ENTRY         *DupClass;      // Class to get data from for output
-} class_entry;
-
-typedef struct group_entry {
-    GROUP_ENTRY         *next_group;
-    SEG_LEADER          *leaders;
-    symbol              *sym;
-    section             *section;
-    targ_addr           grp_addr;
-    unsigned_16         segflags;
-    offset              size;
-    offset              totalsize;
-    offset              linear;         // preferred base address
-    union {
-        void            *grp_relocs;    // OS2/ELF only.
-        class_entry     *class;         // CV (during addr calc )
-    } g;
-    union {
-        unsigned        qnxflags;       // QNX
-        unsigned        os2flags;       // OS/2
-        segment         dos_segment;    // DOS/16M: DOS segment value
-    } u;
-    boolbit             isfree      : 1;
-    boolbit             isautogrp   : 1;
-    boolbit             isdup       : 1;
-    unsigned            num;
-} group_entry;
-
-// this is a bit in the segflags field. This is also defined in exeos2.h
-
-#define SEG_DATA        1
-#define SEG_READ_ONLY   0x80
-
-// the default value to initialize group flags to. This is the same as
-// SEG_LEVEL_3 in exeos2.h.
-
-#define DEFAULT_GRP_FLAGS (0xC00 | SEG_READ_ONLY)
-
-// flags used under OS/2 to indicate special information about a segment
-
-#define SEG_16_ALIAS    1
-
-typedef struct seg_leader {
-    SEG_LEADER          *next_seg;
-    SEG_LEADER          *grp_next;
-    name_strtab         segname;
-    SEGDATA             *pieces;
-    group_entry         *group;
-    class_entry         *class;
-    int                 ord;                // definition order
-    offset              size;               // total size of segment
-    offset              vsize;              // total virtual size of segment
-    SEG_LEADER          *DupSeg;            // Segment to get data from for output
-    unsigned_16         info;
-    unsigned_16         align   : 5;        // alignment of seg (power of 2)
-    unsigned_16         dbgtype : 3;        // debugging type of seg
-    unsigned_16         combine : 2;        // combine val. of seg
-    unsigned_32         num;                // # of addrinfos to output (video)
-    targ_addr           seg_addr;           // address of segment.
-    unsigned_16         segflags;           // format specific segment flags
-} seg_leader;
 
 /***********************************************************************
  *
@@ -448,6 +211,251 @@ enum {
     BITS_64     = 0x02
 };
 
+typedef enum {
+    SEGFLAG_SEGMENT,
+    SEGFLAG_CLASS,
+    SEGFLAG_CODE,
+    SEGFLAG_DATA
+} segflag_type;
+
+
+typedef unsigned_16             overlay_ref;
+
+typedef struct file_list        FILE_LIST;
+typedef struct path_entry       PATH_ENTRY;
+typedef struct mod_entry        MOD_ENTRY;
+typedef struct ovl_area         OVL_AREA;
+typedef struct section          SECTION;
+typedef struct group_entry      GROUP_ENTRY;
+typedef struct class_entry      CLASS_ENTRY;
+typedef struct segnode          SEGNODE;
+typedef struct seg_leader       SEG_LEADER;
+typedef struct node             NODE;
+typedef struct extnode          EXTNODE;
+typedef struct grpnode          GRPNODE;
+typedef struct list_of_names    LIST_OF_NAMES;
+typedef struct lobject_data     LOBJECT_DATA;
+typedef struct outfilelist      OUTFILELIST;
+typedef struct infilelist       INFILELIST;
+typedef struct member_list      MEMBER_LIST;
+typedef struct segdata          SEGDATA;
+typedef struct pubdeflist       PUBDEFLIST;
+typedef struct ovl_area {
+    OVL_AREA    *next_area;
+    SECTION     *sections;
+} ovl_area;
+typedef struct order_class      ORDER_CLASS;
+typedef struct order_segment    ORDER_SEGMENT;
+
+typedef struct section {
+    SECTION             *next_sect;
+    FILE_LIST           *files;
+    pHTable             modFilesHashed;
+    MOD_ENTRY           *mods;
+    CLASS_ENTRY         *classlist;
+    ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
+    targ_addr           sect_addr;
+    overlay_ref         ovlref;
+    OVL_AREA            *areas;
+    SECTION             *parent;
+    unsigned_32         relocs;
+    unsigned_32         size;
+    void                *reloclist;
+    union {
+        unsigned_32     file_loc;
+        MOD_ENTRY       *dist_mods;
+    } u;
+    void                *dbg_info;
+    OUTFILELIST         *outfile;
+} section;
+
+typedef struct path_entry {
+    PATH_ENTRY          *next;
+    char                name[1];
+} path_entry;
+
+typedef struct outfilelist {
+    OUTFILELIST         *next;
+    char                *fname;     // name of the file to be written to.
+    f_handle            handle;
+    unsigned long       file_loc;
+    char                *buffer;
+    unsigned long       bufpos;
+    unsigned            ovlfnoff;   // offset of filename from _OVLTAB
+    bool                is_exe;     // executable flag (for file permissions)
+    unsigned long       origin;
+} outfilelist;
+
+typedef struct infilelist {
+    INFILELIST          *next;
+    const PATH_ENTRY    *path_list;
+    const char          *prefix;
+    void                *cache;  // used when object file cached in mem
+    unsigned long       len;     // length of the file.
+    unsigned long       currpos; // current position of the file.
+    f_handle            handle;
+    time_t              modtime;
+    name_strtab         name;
+    infile_status       status;
+} infilelist;
+
+typedef struct file_list {
+    FILE_LIST           *next_file;
+    infilelist          *infile;
+    union {
+        union dict_entry    *dict;
+        MEMBER_LIST         *member;
+    } u;
+    char                *strtab;    /* for AR format */
+    file_flags          flags;
+    lib_priority        priority;   /* for libraries */
+    overlay_ref         ovlref;     /* for fixed libraries */
+    unsigned                     : 0;
+} file_list;
+
+typedef struct member_list {
+    MEMBER_LIST         *next;
+    module_flags        flags;      //dbi & newseg flags to be xferred to mod entry
+    char                name[1];
+} member_list;
+
+#define NO_ARCS_YET     ((overlay_ref)-1)
+
+/*
+   NOTE: this is an entry for the kludge of the year award, 1993.
+   Since I need to keep symbol *'s and modules in the same pointer,
+   I tell the difference by checking test to see if it is less than 8K
+   (the max. # of distributed modules).
+*/
+
+typedef union {
+    symbol              *sym;
+    unsigned_16         mod;
+    unsigned_32         test;
+} dist_arc;
+
+// fields used only in distributing libs are marked dist:
+// remember to change DIST_ONLY_SIZE if you remove or add a "dist" field!
+
+typedef struct {
+    overlay_ref         ovlref;     // dist: # of the module
+    unsigned_16         numarcs;    // dist: of arcs in the list
+    dist_arc            arcs[1];    // dist: the actual arcs.
+} arcdata;
+
+#define DIST_ONLY_SIZE (2 * sizeof( unsigned_16 ) + sizeof( dist_arc ))
+
+typedef struct obj_name_list {
+    struct obj_name_list    *next;
+    size_t                  len;
+    unsigned_32             num;
+    name_strtab             name;          // NYI: make this vbl length again.
+} obj_name_list;
+
+typedef struct odbimodinfo      ODBIMODINFO;    // defd in dbg information hdrs
+typedef struct dwarfmodinfo     DWARFMODINFO;
+typedef struct cvmodinfo        CVMODINFO;
+
+typedef struct mod_entry {
+    union {
+        MOD_ENTRY       *next_mod;  // regular next pointer
+        section         *sect;      // when distributing - section of current mod.
+    } n;
+    union {
+        FILE_LIST       *source;
+        name_strtab     fname;
+    } f;
+    name_strtab         name;
+    unsigned_32         location;
+    symbol              *publist;
+    SEGDATA             *segs;
+    time_t              modtime;
+    size_t              relocs;
+    size_t              sizerelocs;
+    module_flags        modinfo;
+    void                *lines;
+    omf_dbg_type        omfdbg;
+    union {
+        arcdata         *arclist;   // segment definition data.
+        MOD_ENTRY       *next;      // for keeping track of modules when distrib
+    } x;
+    union {
+        ODBIMODINFO     *o;
+        DWARFMODINFO    *d;
+        CVMODINFO       *cv;
+    } d;                        // union used for debugging information
+} mod_entry;
+
+typedef struct class_entry {
+    CLASS_ENTRY         *next_class;
+    SEG_LEADER          *segs;
+    name_strtab         name;
+    class_status        flags;
+    byte                bits;           // segment bitnese
+    section             *section;
+    targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
+    CLASS_ENTRY         *DupClass;      // Class to get data from for output
+} class_entry;
+
+typedef struct group_entry {
+    GROUP_ENTRY         *next_group;
+    SEG_LEADER          *leaders;
+    symbol              *sym;
+    section             *section;
+    targ_addr           grp_addr;
+    unsigned_16         segflags;
+    offset              size;
+    offset              totalsize;
+    offset              linear;         // preferred base address
+    union {
+        void            *grp_relocs;    // OS2/ELF only.
+        class_entry     *class;         // CV (during addr calc )
+    } g;
+    union {
+        unsigned        qnxflags;       // QNX
+        unsigned        os2flags;       // OS/2
+        segment         dos_segment;    // DOS/16M: DOS segment value
+    } u;
+    boolbit             isfree      : 1;
+    boolbit             isautogrp   : 1;
+    boolbit             isdup       : 1;
+    unsigned            num;
+} group_entry;
+
+// this is a bit in the segflags field. This is also defined in exeos2.h
+
+#define SEG_DATA        1
+#define SEG_READ_ONLY   0x80
+
+// the default value to initialize group flags to. This is the same as
+// SEG_LEVEL_3 in exeos2.h.
+
+#define DEFAULT_GRP_FLAGS (0xC00 | SEG_READ_ONLY)
+
+// flags used under OS/2 to indicate special information about a segment
+
+#define SEG_16_ALIAS    1
+
+typedef struct seg_leader {
+    SEG_LEADER          *next_seg;
+    SEG_LEADER          *grp_next;
+    name_strtab         segname;
+    SEGDATA             *pieces;
+    group_entry         *group;
+    class_entry         *class;
+    int                 ord;                // definition order
+    offset              size;               // total size of segment
+    offset              vsize;              // total virtual size of segment
+    SEG_LEADER          *DupSeg;            // Segment to get data from for output
+    unsigned_16         info;
+    unsigned_16         align   : 5;        // alignment of seg (power of 2)
+    unsigned_16         dbgtype : 3;        // debugging type of seg
+    unsigned_16         combine : 2;        // combine val. of seg
+    unsigned_32         num;                // # of addrinfos to output (video)
+    targ_addr           seg_addr;           // address of segment.
+    unsigned_16         segflags;           // format specific segment flags
+} seg_leader;
+
 /*
  * these are used to keep track of each individual contribution to a segment.
  * Any field that is solely used for dead code elimination is marked "dce"
@@ -521,13 +529,6 @@ typedef struct {
     boolbit             isfree      : 1;
     symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
-
-typedef enum {
-    SEGFLAG_SEGMENT,
-    SEGFLAG_CLASS,
-    SEGFLAG_CODE,
-    SEGFLAG_DATA
-} segflag_type;
 
 // this structure used for processing segment flags for various executable types
 // structures qnx_seg_flags and os2_seg_flags depend on this declaration
