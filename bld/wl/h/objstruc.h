@@ -49,6 +49,33 @@ typedef enum {
 #define INSTAT_SET_CACHE (INSTAT_FULL_CACHE | INSTAT_PAGE_CACHE)
 #define INSTAT_LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
 
+/*  Object file formats & flags */
+
+/* NOTE:  these are also stored into the
+ * mod_entry->modinfo field, so if new object file formats are added, make
+ * sure there isn't a conflict there!
+*/
+
+typedef enum {
+    /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
+    /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
+    FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
+    FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
+    FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
+    FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
+    FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
+    /* bits 8..max available */
+} fmt_flags;
+
+#define FMT_OBJ_FMT_MASK        (FMT_PE_XFER | FMT_OMF | FMT_COFF | FMT_ELF | FMT_INCREMENTAL)
+#define FMT_IDX_SHIFT           5
+#define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
+#define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FMT_COFF)
+#define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_OMF)
+#define IS_FMT_ELF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_ELF)
+#define IS_FMT_COFF(x)          (((x) & FMT_OBJ_FMT_MASK) == FMT_COFF)
+#define IS_FMT_INCREMENTAL(x)   (((x) & FMT_OBJ_FMT_MASK) == FMT_INCREMENTAL)
+
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols */
     DBI_LINE            = 0x0001,

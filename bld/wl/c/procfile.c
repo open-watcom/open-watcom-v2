@@ -333,7 +333,7 @@ static void AddToModList( mod_entry *mod )
 static void SavedPass1( mod_entry *mod )
 /**************************************/
 {
-    ObjFormat = FMT_INCREMENTAL;
+    ObjFileFormat = FMT_INCREMENTAL;
     mod->modinfo &= ~FMT_OBJ_FMT_MASK;
     mod->modinfo |= FMT_INCREMENTAL;
     AddToModList( mod );
@@ -415,7 +415,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 if( size != 0 ) {
                     loc += size;
                 } else {
-                    Process[GET_FMT_IDX( ObjFormat )].SkipObj( file, &loc );
+                    Process[GET_FMT_IDX( ObjFileFormat )].SkipObj( file, &loc );
                 }
             } else {
                 if( next == NULL ) {
@@ -424,7 +424,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 next->n.next_mod = NULL;
                 next->f.source = file;
                 next->modtime = next->f.source->infile->modtime;
-                next->modinfo |= ObjFormat & FMT_OBJ_FMT_MASK;
+                next->modinfo |= ObjFileFormat & FMT_OBJ_FMT_MASK;
                 if( member != NULL ) {
                     next->modinfo |= member->flags;
                     MemFree( member );
@@ -449,6 +449,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 }
                 next = NULL;
             }
+            ObjFileFormat = 0;
             ObjFormat = 0;
             if( file->flags & STAT_IS_LIB ) {      // skip library padding.
                 unsigned_16 modulus;
@@ -607,13 +608,13 @@ char *IdentifyObject( const file_list *file, unsigned long *loc, unsigned long *
     }
     switch( FileTypeORL( file, *loc ) ) {
     case ORL_ELF:
-        ObjFormat |= FMT_ELF;
+        ObjFileFormat |= FMT_ELF;
         break;
     case ORL_COFF:
-        ObjFormat |= FMT_COFF;
+        ObjFileFormat |= FMT_COFF;
         break;
     case ORL_OMF:
-        ObjFormat |= FMT_OMF;
+        ObjFileFormat |= FMT_OMF;
         if( (file->flags & STAT_IS_LIB) == STAT_OMF_LIB ) {
             name = GetOMFName( file, loc );
         }
@@ -636,13 +637,14 @@ unsigned long ObjPass1( void )
     DBIInitModule( CurrMod );
     RelocStartMod();
     P1Start();
-    loc = Process[GET_FMT_IDX( ObjFormat )].Pass1();
+    loc = Process[GET_FMT_IDX( ObjFileFormat )].Pass1();
     CollapseLazyExtdefs();
     SymModEnd();
     DBIP1ModuleScanned();
     ReleaseNames();
     PermEndMod( CurrMod );
     FreeObjInfo();
+    ObjFileFormat = 0;
     ObjFormat = 0;       //clear flags for processing obj file
     return( loc );
 }

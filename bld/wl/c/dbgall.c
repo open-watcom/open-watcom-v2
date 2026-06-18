@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -182,7 +182,7 @@ static bool MSSkip( void )
     bool        iscv;
     bool        seencmt;
 
-    if( (ObjFormat & FMT_OMF) == 0 ) {
+    if( (ObjFileFormat & FMT_OMF) == 0 ) {
         return( LinkFlags & LF_DWARF_DBI_FLAG );
     } else {
         iscv = ( (LinkFlags & LF_CV_DBI_FLAG) != 0 );

@@ -653,7 +653,7 @@ mod_entry *SearchLib( file_list *file, const char *name )
     obj->location = pos;
     obj->f.source = file;
     obj->modtime = file->infile->modtime;
-    obj->modinfo = (file->flags & DBI_MASK) | (ObjFormat & FMT_OBJ_FMT_MASK);
+    obj->modinfo = (file->flags & DBI_MASK) | (ObjFileFormat & FMT_OBJ_FMT_MASK);
     return( obj );
 }
 

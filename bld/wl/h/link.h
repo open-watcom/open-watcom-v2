@@ -121,32 +121,12 @@ typedef enum {
     FMT_TOLD_BITNESS        = 0x0008,   // already said object was 16/32/64-bit
     FMT_DEBUG_COMENT        = 0x0010,   // saw an object debug coment.
     /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
-    FMT_PE_XFER             = 0x0000,   // .obj is PE xfer code segment(see note)
-    FMT_OMF                 = 0x0020,   // .obj is an OMF object file (see note)
-    FMT_COFF                = 0x0040,   // .obj is a COFF object file (see note)
-    FMT_ELF                 = 0x0060,   // .obj is an ELF object file (see note)
-    FMT_INCREMENTAL         = 0x0080,   // .obj is saved inc. linking info
     /* bits 8..max available */
     FMT_IGNORE_FIXUPP       = 0x0100,   // don't process a fixup record
     FMT_UNSAFE_FIXUPP       = 0x0200,   // don't optimize calls in current fixupp
 } obj_format;
 
-/* NOTE:  these are also stored into the
- * mod_entry->modinfo field, so if new object file formats are added, make
- * sure there isn't a conflict there!
-*/
-
 #define FMT_32BIT_REC           (FMT_EASY_OMF | FMT_MS_386)
-
-#define FMT_OBJ_FMT_MASK        (FMT_PE_XFER | FMT_OMF | FMT_COFF | FMT_ELF | FMT_INCREMENTAL)
-#define FMT_IDX_SHIFT           5
-#define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
-#define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FMT_COFF)
-#define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_OMF)
-#define IS_FMT_ELF(x)           (((x) & FMT_OBJ_FMT_MASK) == FMT_ELF)
-#define IS_FMT_COFF(x)          (((x) & FMT_OBJ_FMT_MASK) == FMT_COFF)
-#define IS_FMT_INCREMENTAL(x)   (((x) & FMT_OBJ_FMT_MASK) == FMT_INCREMENTAL)
-#define SET_FMT_TYPE(x,type)    (((x) = (x) & ~FMT_OBJ_FMT_MASK) | (type))
 
 /* Default File Extension Enumeration, see ldefext.h */
 

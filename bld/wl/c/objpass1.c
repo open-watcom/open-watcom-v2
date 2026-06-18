@@ -65,6 +65,7 @@ static int              segment_ord = 0;
 void ResetObjPass1( void )
 /************************/
 {
+    ObjFileFormat = 0;
     ObjFormat = 0;
 }
 
