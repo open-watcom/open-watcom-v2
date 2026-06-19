@@ -67,7 +67,7 @@
 static struct {
     union {
         file_list   *file;
-        member_list *module;
+        member_list *member;
     } u;
 } LastFile;
 
@@ -398,7 +398,7 @@ static bool AddFile( void )
     if( CmdFlags & CF_MEMBER_ADDED ) {
         CurrFList = file;               // go back to previous entry.
     } else if( membname != NULL ) {     // 1st member added
-        LastFile.u.module = LastFile.u.file->u.member;
+        LastFile.u.member = LastFile.u.file->u.member;
         CmdFlags |= CF_MEMBER_ADDED;
     }
     MemFree( membname );
@@ -871,7 +871,7 @@ static bool ProcNewSegment( void )
         LnkMsg( WRN+LOC+LINE+MSG_NEWSEG_BEFORE_OBJ, NULL );
     } else {
         if( CmdFlags & CF_MEMBER_ADDED ) {
-            LastFile.u.module->flags |= MOD_LAST_SEG;
+            LastFile.u.member->flags |= MOD_LAST_SEG;
         } else {
             LastFile.u.file->flags |= STAT_LAST_SEG;
         }
