@@ -149,7 +149,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
             // apply all relocs fitting in the buffer as a whole
             for( ; cur_reloc < reltab->num && reltab->reloc[cur_reloc] < tot_read + BUF_SIZE - 1; ++cur_reloc ) {
                 bptr  = buffer + reltab->reloc[cur_reloc] - tot_read;
-                MPUT_LE_16( bptr, MGET_LE_U16( bptr ) + reltab->lseg );
+                MPUT_LE_16_UN( bptr, MGET_LE_U16_UN( bptr ) + reltab->lseg );
             }
 
             // is there a "lo"-part of a reloc to apply?

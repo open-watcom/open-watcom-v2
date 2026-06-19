@@ -553,24 +553,24 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
                 }
             }
         } else {
-            val += MGET_U16( code );
+            val += MGET_U16_UN( code );
         }
-        MPUT_16( code, val );
+        MPUT_16_UN( code, val );
         break;
     case FIX_OFFSET_21:
-        oldval = MGET_U32( code );
+        oldval = MGET_U32_UN( code );
         val += oldval;
         oldval &= 0xFFE00000;
         val &= 0x001FFFFF;
-        MPUT_32( code, oldval | val );
+        MPUT_32_UN( code, oldval | val );
         break;
     case FIX_OFFSET_26:     // Processing is the same, except FIX_OFFSET_26
     case FIX_OFFSET_24:     // uses FIX_SHIFT (it's really a 28-bit offset)
-        oldval = MGET_U32( code );
+        oldval = MGET_U32_UN( code );
         val += oldval;
         oldval &= 0xFC000000;
         val &= 0x03FFFFFF;
-        MPUT_32( code, oldval | val );
+        MPUT_32_UN( code, oldval | val );
         break;
     case FIX_OFFSET_32:
         oldval = MGET_U32_UN( code );
@@ -790,7 +790,7 @@ static void CheckPartialRange( fix_relo_data *fix, offset off,
     unsigned_32 utemp;
     signed_32   temp;
 
-    utemp = MGET_U32( fix->data ) & mask;
+    utemp = MGET_U32_UN( fix->data ) & mask;
     if( utemp & topbit ) {      // it is negative
         utemp |= ~mask; // do a bogus sign extension
     }
@@ -867,14 +867,14 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         }
         DbgVerify( ( pos % 4 ) == 0, "symbol not in toc" );
         if( fix->type & FIX_OFFSET_16 ) {
-            MPUT_16( fix->data, pos );
+            MPUT_16_UN( fix->data, pos );
         } else {
-            MPUT_32( fix->data, pos );
+            MPUT_32_UN( fix->data, pos );
         }
         return( true );
     } else if( special == FIX_IFGLUE ) {
         if( ( target->type == FIX_TARGET_EXT ) && IS_SYM_IMPORTED( target->u.sym ) ) {
-            MPUT_32( fix->data, TOC_RESTORE_INSTRUCTION );
+            MPUT_32_UN( fix->data, TOC_RESTORE_INSTRUCTION );
         }
         return( true );
     }
@@ -1048,7 +1048,7 @@ static void PatchData( fix_relo_data *fix )
         fix->value += MGET_U8( data );
         break;
     case FIX_OFFSET_16:
-        fix->value += MGET_U16( data );
+        fix->value += MGET_U16_UN( data );
         break;
     case FIX_OFFSET_32:
         fix->value += MGET_U32_UN( data );
@@ -1094,11 +1094,11 @@ static void PatchData( fix_relo_data *fix )
             data += OffsetSizes[FIX_GET_OFFSET( fix->type )];
         }
         if( FmtData.type & MK_PROT_MODE ) {
-            MPUT_16( data, 0 );
+            MPUT_16_UN( data, 0 );
         }
 #if defined( _DOS16M ) || defined( _PHARLAP )
         if( FmtData.type & (MK_DOS16M | MK_PHAR_MULTISEG) ) {
-            MPUT_16( data, fix->tgt_addr.seg );
+            MPUT_16_UN( data, fix->tgt_addr.seg );
             return;
         }
 #endif
@@ -1115,7 +1115,7 @@ static void PatchData( fix_relo_data *fix )
             if( segval == 0 ) {
                 LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
             }
-            MPUT_16( data, segval );
+            MPUT_16_UN( data, segval );
             return;
         }
 #endif
@@ -1126,9 +1126,9 @@ static void PatchData( fix_relo_data *fix )
                 /* MASM 5.1 stuffs abs seg length in displacement; ignore it like LINK. */
                 segval = fix->tgt_addr.seg;
             } else {
-                segval = MGET_U16( data ) + fix->tgt_addr.seg;
+                segval = MGET_U16_UN( data ) + fix->tgt_addr.seg;
             }
-            MPUT_16( data, segval );
+            MPUT_16_UN( data, segval );
         }
     }
 }
@@ -1193,9 +1193,9 @@ static bool FarCallOpt( fix_relo_data *fix )
     if( ( instruction == FAR_CALL_ID ) || ( instruction == FAR_JMP_ID ) ) {
         fix->done = true;
         if( is32bit ) {
-            temp32 = MGET_U32( code + 1 );
+            temp32 = MGET_U32_UN( code + 1 );
         } else {
-            temp16 = MGET_U16( code + 1 );
+            temp16 = MGET_U16_UN( code + 1 );
         }
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_WIN_VXD) ) {
             if( is32bit ) {
@@ -1208,12 +1208,12 @@ static bool FarCallOpt( fix_relo_data *fix )
             MPUT_8( code, NEAR_JMP_ID );
             if( is32bit ) {
                 temp32 -= fix->loc_addr.off + 4;   //fix the offset
-                MPUT_32( code + 1, temp32 );
-                MPUT_16( code + 5, MOV_AXAX_ID );
+                MPUT_32_UN( code + 1, temp32 );
+                MPUT_16_UN( code + 5, MOV_AXAX_ID );
             } else {
                 temp16 -= fix->loc_addr.off + 2;   //fix the offset
-                MPUT_16( code + 1, temp16 );
-                MPUT_16( code + 3, MOV_AXAX_ID );
+                MPUT_16_UN( code + 1, temp16 );
+                MPUT_16_UN( code + 3, MOV_AXAX_ID );
             }
         } else {
             MPUT_8( code, PUSHCS_ID );
@@ -1381,7 +1381,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         if( fix->additive ) {
             os2item->reloc_type |= ADDITIVE;
         } else {
-            MPUT_16( fixptr, 0xffff );          // end of chain indicator
+            MPUT_16_UN( fixptr, 0xffff );          // end of chain indicator
         }
         return( true );
     } else if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) )  {
@@ -1451,7 +1451,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             // and not directly. There is a special fixup type just for this.
             flags = OSF_TARGET_INT_VIA_ENTRY;
             if( int_ordinal > 0xFF ) {
-                MPUT_16( fixptr, int_ordinal );
+                MPUT_16_UN( fixptr, int_ordinal );
                 fixptr += 2;
             } else {
                 flags |= OSF_TFLAG_ORDINAL_8BIT;
@@ -1465,7 +1465,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             flags = OSF_TARGET_INTERNAL;
             if( target.seg > 0xFF ) {
                 flags |= OSF_TFLAG_OBJ_MOD_16BIT;
-                MPUT_16( fixptr, target.seg );
+                MPUT_16_UN( fixptr, target.seg );
                 fixptr += 2;
             } else {
                 MPUT_8( fixptr, target.seg );
@@ -1497,7 +1497,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 fixptr += 1;
             } else if( dll->m.modnum->num > 0xFF ) {
                 flags |= OSF_TFLAG_OBJ_MOD_16BIT;
-                MPUT_16( fixptr, dll->m.modnum->num );
+                MPUT_16_UN( fixptr, dll->m.modnum->num );
                 fixptr += 2;
             } else {
                 MPUT_8( fixptr, dll->m.modnum->num );
@@ -1506,7 +1506,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             if( !dll->isordinal ) {
                 if( dll->u.entry->num > 0xFFFF ) {
                     flags |= OSF_TFLAG_OFF_32BIT;
-                    MPUT_32( fixptr, dll->u.entry->num );
+                    MPUT_32_UN( fixptr, dll->u.entry->num );
                     fixptr += 4;
                 } else {
                     MPUT_16_UN( fixptr, dll->u.entry->num );
@@ -1527,7 +1527,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     MPUT_8( fix->data, 0 );
                     break;
                 case FIX_OFFSET_16:
-                    MPUT_16( fix->data, 0 );
+                    MPUT_16_UN( fix->data, 0 );
                     break;
                 case FIX_OFFSET_32:
                     MPUT_32_UN( fix->data, 0 );
@@ -1535,7 +1535,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 }
                 if( fix->value > 0x7fff ) {
                     flags |= OSF_TFLAG_ADD_32BIT;
-                    MPUT_32( fixptr, fix->value );
+                    MPUT_32_UN( fixptr, fix->value );
                     fixptr += 4;
                 } else {
                     MPUT_16_UN( fixptr, fix->value );
