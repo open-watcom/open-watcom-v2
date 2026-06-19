@@ -15,7 +15,7 @@ runs:
         fi
       done
     shell: bash
-  - if: runner.os == 'macOS'
+  - if: runner.os == 'macOS-1'
     name: Install DOSBOX-X
     run: |
       # this install version defined by ci/dosbox-x.rb
@@ -26,4 +26,20 @@ runs:
     env:
       #HOMEBREW_NO_INSTALL_FROM_API: 1
       HOMEBREW_NO_AUTO_UPDATE:      1
+    shell: bash
+  - if: runner.os == 'macOS'
+    name: Install DOSBox-X (v2025.12.01)
+    run: |
+      # 1. Vytvoríme si cistý, prázdný lokální tap (splnuje podmínky Homebrew)
+      brew tap-new local/custom --no-git
+    
+      # 2. Stáhneme správný .rb soubor prímo z historie Homebrew do tohoto tapu
+      # Používáme správnou doménu raw.githubusercontent.com
+      curl -fsSL "https://raw.githubusercontent.com/Homebrew/homebrew-core/0a33190df03ef4e70889ec1b3e8c0fa642a8b948/Formula/d/dosbox-x.rb" \
+        -o "$(brew --repository local/custom)/Formula/dosbox-x.rb"
+    
+      # 3. Nainstalujeme balícek bezpecne skrze lokální tap
+      brew install local/custom/dosbox-x
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
     shell: bash
