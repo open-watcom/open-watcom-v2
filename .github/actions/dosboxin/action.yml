@@ -15,18 +15,6 @@ runs:
         fi
       done
     shell: bash
-  - if: runner.os == 'macOS-1'
-    name: Install DOSBOX-X
-    run: |
-      # this install version defined by ci/dosbox-x.rb
-      #brew tap --force homebrew/core
-      #sudo cp -v ci/dosbox-x.rb $(brew --repository homebrew/core)/Formula/d/dosbox-x.rb
-      #brew install dosbox-x
-      brew install ci/dosbox-x.rb
-    env:
-      #HOMEBREW_NO_INSTALL_FROM_API: 1
-      HOMEBREW_NO_AUTO_UPDATE:      1
-    shell: bash
   - if: runner.os == 'macOS'
     name: Install DOSBox-X (v2025.12.01)
     run: |
