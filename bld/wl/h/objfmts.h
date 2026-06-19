@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
-/*    en                    num                 skip        pass1         */
-pick( FILE_FMT_PE_XFER,     0 << FMT_IDX_SHIFT, BadSkip,    BadObjFormat )    /* .obj is PE xfer code segment    */
-pick( FILE_FMT_OMF,         1 << FMT_IDX_SHIFT, OMFSkipObj, OMFPass1 )        /* .obj is an OMF object file      */
-pick( FILE_FMT_COFF,        2 << FMT_IDX_SHIFT, ORLSkipObj, ORLPass1 )        /* .obj is a COFF object file      */
-pick( FILE_FMT_ELF,         3 << FMT_IDX_SHIFT, ORLSkipObj, ORLPass1 )        /* .obj is an ELF object file      */
-pick( FILE_FMT_INCREMENTAL, 4 << FMT_IDX_SHIFT, BadSkip,    IncPass1 )        /* .obj is saved inc. linking info */
+/*    en                    skip        pass1         */
+pick( FILE_FMT_PE_XFER,     BadSkip,    BadObjFormat )    /* .obj is PE xfer code segment    */
+pick( FILE_FMT_OMF,         OMFSkipObj, OMFPass1 )        /* .obj is an OMF object file      */
+pick( FILE_FMT_COFF,        ORLSkipObj, ORLPass1 )        /* .obj is a COFF object file      */
+pick( FILE_FMT_ELF,         ORLSkipObj, ORLPass1 )        /* .obj is an ELF object file      */
+pick( FILE_FMT_INCREMENTAL, BadSkip,    IncPass1 )        /* .obj is saved inc. linking info */

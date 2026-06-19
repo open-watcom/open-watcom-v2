@@ -148,7 +148,7 @@ static orl_file_handle InitFile( void )
     ImpOrdinal = 0;
     FirstCodeSymName = NULL;
     FirstDataSymName = NULL;
-    if( IS_FMT_ELF( ObjFileFormat ) ) {
+    if( ObjFileFormat == FILE_FMT_ELF ) {
         type = ORL_ELF;
     } else {
         type = ORL_COFF;
@@ -298,7 +298,7 @@ static orl_return EntryCallback( const char *name, void *dummy )
     /* unused parameters */ (void)dummy;
 
     if( !StartInfo.user_specd ) {
-        if( (ObjFileFormat & FILE_FMT_COFF)
+        if( ObjFileFormat == FILE_FMT_COFF
           && (LinkState & LS_HAVE_X86_CODE) ) {
             /*
              * simple hack for 32-bit MS COFF module to get real startup symbol name

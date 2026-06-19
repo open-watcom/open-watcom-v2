@@ -262,7 +262,7 @@ static void UpdateFramePtr( frame_spec *frame )
 {
     switch( frame->type ) {
     case FIX_FRAME_GRP:
-        if( IS_FMT_INCREMENTAL( CurrMod->modinfo ) ) {
+        if( CurrMod->flags_fmt == FILE_FMT_INCREMENTAL ) {
             DbgAssert( frame->u.val != 0 );
             frame->u.group = IncGroups[frame->u.val - 1];
         }
@@ -280,7 +280,7 @@ static void UpdateTargetPtr( target_spec *target )
 {
     switch( target->type ) {
     case FIX_TARGET_GRP:
-        if( IS_FMT_INCREMENTAL( CurrMod->modinfo ) ) {
+        if( CurrMod->flags_fmt == FILE_FMT_INCREMENTAL ) {
             DbgAssert( target->u.val != 0 );
             target->u.group = IncGroups[target->u.val - 1];
         }

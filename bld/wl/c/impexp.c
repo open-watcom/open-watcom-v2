@@ -126,7 +126,7 @@ void AddToExportList( entry_export *exp )
     for( owner = &FmtData.u.os2fam.exports; (curr = *owner) != NULL; owner = &curr->next ) {
         currlen = strlen( curr->name.u.ptr );
         if( currlen == len && CmpRtn( curr->name.u.ptr, exp->name.u.ptr, len ) == 0 ) {
-            if( !IS_FMT_INCREMENTAL( ObjFileFormat ) ) {
+            if( ObjFileFormat != FILE_FMT_INCREMENTAL ) {
                 if( !IS_SYM_COMDAT( exp->sym ) ) {
                     LnkMsg( WRN+LOC+MSG_DUP_EXP_NAME, "s", curr->name.u.ptr );
                 }

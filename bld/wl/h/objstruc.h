@@ -56,24 +56,11 @@ typedef enum {
  * sure there isn't a conflict there!
 */
 
-#define FMT_IDX_SHIFT           5
-
 typedef enum {
-    /* bits 0..4 available (bits 0..4 reserved for DBI_xxxx symbols, not used here) */
-    /* bits 5..7 reserved for FMT_xxxx symbols (for deciding .obj format) */
-    #define pick(en,num,skip,pass1) en = num,
+    #define pick(en,skip,pass1) en,
     #include "objfmts.h"
     #undef pick
-    /* bits 8..max available */
 } file_format;
-
-#define FMT_OBJ_FMT_MASK        (FILE_FMT_PE_XFER | FILE_FMT_OMF | FILE_FMT_COFF | FILE_FMT_ELF | FILE_FMT_INCREMENTAL)
-#define GET_FMT_IDX(x)          (((x) & FMT_OBJ_FMT_MASK) >> FMT_IDX_SHIFT)
-#define IS_FMT_ORL(x)           (((x) & FMT_OBJ_FMT_MASK) >= FILE_FMT_COFF)
-#define IS_FMT_OMF(x)           (((x) & FMT_OBJ_FMT_MASK) == FILE_FMT_OMF)
-#define IS_FMT_ELF(x)           (((x) & FMT_OBJ_FMT_MASK) == FILE_FMT_ELF)
-#define IS_FMT_COFF(x)          (((x) & FMT_OBJ_FMT_MASK) == FILE_FMT_COFF)
-#define IS_FMT_INCREMENTAL(x)   (((x) & FMT_OBJ_FMT_MASK) == FILE_FMT_INCREMENTAL)
 
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols */
@@ -397,6 +384,7 @@ typedef struct mod_entry {
     size_t              relocs;
     size_t              sizerelocs;
     module_flags        modinfo;
+    file_format         flags_fmt;
     void                *lines;
     omf_dbg_type        omfdbg;
     union {

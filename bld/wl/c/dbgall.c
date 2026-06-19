@@ -182,7 +182,7 @@ static bool MSSkip( void )
     bool        iscv;
     bool        seencmt;
 
-    if( (ObjFileFormat & FILE_FMT_OMF) == 0 ) {
+    if( ObjFileFormat != FILE_FMT_OMF ) {
         return( LinkFlags & LF_DWARF_DBI_FLAG );
     } else {
         iscv = ( (LinkFlags & LF_CV_DBI_FLAG) != 0 );

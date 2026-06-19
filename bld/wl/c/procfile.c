@@ -72,7 +72,7 @@ static struct {
     void (*SkipObj)( const file_list *, unsigned long * );
     unsigned long (*Pass1)( void );
 } Process[] = {
-    #define pick(en,num,skip,pass1) { skip, pass1 },
+    #define pick(en,skip,pass1) { skip, pass1 },
     #include "objfmts.h"
     #undef pick
     { BadSkip,      BadObjFormat },     /* unused */
@@ -85,7 +85,8 @@ void SetupFakeModule( void )
 {
     if( FmtData.type & MK_PE ) {
         FakeModule = NewModEntry();
-        FakeModule->modinfo = DBI_ALL | MOD_LAST_SEG | MOD_NEED_PASS_2 | FILE_FMT_PE_XFER;
+        FakeModule->modinfo = DBI_ALL | MOD_LAST_SEG | MOD_NEED_PASS_2;
+        FakeModule->flags_fmt = FILE_FMT_PE_XFER;
         FakeModule->name.u.ptr = AddStringStringTable( &PermStrings, LinkerModule );
         DBIInitModule( FakeModule );
     }
@@ -331,8 +332,7 @@ static void SavedPass1( mod_entry *mod )
 /**************************************/
 {
     ObjFileFormat = FILE_FMT_INCREMENTAL;
-    mod->modinfo &= ~FMT_OBJ_FMT_MASK;
-    mod->modinfo |= FILE_FMT_INCREMENTAL;
+    mod->flags_fmt = FILE_FMT_INCREMENTAL;
     AddToModList( mod );
     ObjPass1();
 }
@@ -412,7 +412,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 if( size != 0 ) {
                     loc += size;
                 } else {
-                    Process[GET_FMT_IDX( ObjFileFormat )].SkipObj( file, &loc );
+                    Process[ObjFileFormat].SkipObj( file, &loc );
                 }
             } else {
                 if( next == NULL ) {
@@ -421,7 +421,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 next->n.next_mod = NULL;
                 next->f.source = file;
                 next->modtime = next->f.source->infile->modtime;
-                next->modinfo |= ObjFileFormat & FMT_OBJ_FMT_MASK;
+                next->flags_fmt = ObjFileFormat;
                 if( member != NULL ) {
                     next->modinfo |= member->flags;
                     MemFree( member );
@@ -455,7 +455,7 @@ static void DoPass1( mod_entry *next, file_list *file )
                 if( modulus != 0 ) {
                     loc += reclength - modulus;     // go to library boundary.
                 }
-            } else if( !IS_FMT_OMF( CurrMod->modinfo ) ) {
+            } else if( CurrMod->flags_fmt != FILE_FMT_OMF ) {
                 break;          // can only concat omf.
             }
             if( lastmod || CacheIsEnd( file, loc ) ) {
@@ -605,13 +605,13 @@ char *IdentifyObject( const file_list *file, unsigned long *loc, unsigned long *
     }
     switch( FileTypeORL( file, *loc ) ) {
     case ORL_ELF:
-        ObjFileFormat |= FILE_FMT_ELF;
+        ObjFileFormat = FILE_FMT_ELF;
         break;
     case ORL_COFF:
-        ObjFileFormat |= FILE_FMT_COFF;
+        ObjFileFormat = FILE_FMT_COFF;
         break;
     case ORL_OMF:
-        ObjFileFormat |= FILE_FMT_OMF;
+        ObjFileFormat = FILE_FMT_OMF;
         if( (file->flags & STAT_IS_LIB) == STAT_OMF_LIB ) {
             name = GetOMFName( file, loc );
         }
@@ -634,7 +634,7 @@ unsigned long ObjPass1( void )
     DBIInitModule( CurrMod );
     RelocStartMod();
     P1Start();
-    loc = Process[GET_FMT_IDX( ObjFileFormat )].Pass1();
+    loc = Process[ObjFileFormat].Pass1();
     CollapseLazyExtdefs();
     SymModEnd();
     DBIP1ModuleScanned();
