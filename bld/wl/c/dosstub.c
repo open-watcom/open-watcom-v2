@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,12 +50,12 @@ static unsigned_8       DOSDefStub[] = {
     0x21, 0xB8, 0x01, 0x4C, 0xCD, 0x21
 };
 
-static size_t doExeTypeString( void )
-/***********************************/
+static unsigned_32 doExeTypeString( void )
+/****************************************/
 /* make up the "program is %f" string, and put it in tokbuff.*/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
-    size_t      msgsize;
+    unsigned_32 msgsize;
 
     Msg_Get( MSG_IS_A_EXE, rc_buff );
     msgsize = FmtStr( TokBuff, TokSize, rc_buff );
@@ -65,8 +65,8 @@ static size_t doExeTypeString( void )
     return( msgsize + 1 );
 }
 
-size_t GetDOSDefStubSize( void )
-/******************************/
+unsigned_32 GetDOSDefStubSize( void )
+/***********************************/
 {
     return( sizeof( DOSDefStub ) + doExeTypeString() );
 }
@@ -75,7 +75,7 @@ unsigned_32 WriteDOSDefStub( unsigned_32 stub_align )
 /***************************************************/
 /* write the default stub to the executable file */
 {
-    size_t              msgsize;
+    unsigned_32         msgsize;
     unsigned_32         fullsize;
     unsigned_32         *stubend;
 
