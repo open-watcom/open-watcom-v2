@@ -568,7 +568,9 @@ void WritePermData( void )
     DumpBlockStruct( CarveSymbol, MarkSymbol, &hdr.symbols, &info );
     FiniStringBlock( &info.strtab, &strsize, &info, WriteStringBlock );
     hdr.strtabsize = strsize;
-    QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
+    if( SizeRelocs ) {
+        QWrite( info.incfhdl, ReadRelocs, SizeRelocs, IncFileName );
+    }
     memcpy( hdr.signature, INC_FILE_SIG, INC_FILE_SIG_SIZE );
     hdr.rootmodidx = (carve_index)(pointer_uint)CarveGetIndex( CarveModEntry, Root->mods );
     hdr.headsymidx = (carve_index)(pointer_uint)CarveGetIndex( CarveSymbol, HeadSym );
@@ -888,8 +890,11 @@ void ReadPermData( void )
     CarveWalkBlocks( CarveSymbol, ReadBlockInfo, &info );
     IncStrTab = MemAllocSafe( hdr->strtabsize );
     QRead( info.incfhdl, IncStrTab, hdr->strtabsize, IncFileName );
-    ReadRelocs = MemAllocSafe( hdr->relocsize );
-    QRead( info.incfhdl, ReadRelocs, hdr->relocsize, IncFileName );
+    ReadRelocs = NULL;
+    if( hdr->relocsize ) {
+        ReadRelocs = MemAllocSafe( hdr->relocsize );
+        QRead( info.incfhdl, ReadRelocs, hdr->relocsize, IncFileName );
+    }
     QClose( info.incfhdl, IncFileName );
     ReadBinary( &OldExe, hdr->exename, hdr->exemodtime );
     if( OldExe == NULL ) {
@@ -933,11 +938,13 @@ void IterateModRelocs( size_t offset, size_t sizeleft, size_t (*fn)(void *) )
     char        *fixoff;
     size_t      size;
 
-    fixoff = ReadRelocs + offset;
-    while( sizeleft > 0 ) {
-        size = fn( fixoff );
-        fixoff += size;
-        sizeleft -= size;
+    if( ReadRelocs != NULL ) {
+        fixoff = ReadRelocs + offset;
+        while( sizeleft > 0 ) {
+            size = fn( fixoff );
+            fixoff += size;
+            sizeleft -= size;
+        }
     }
 }
 
