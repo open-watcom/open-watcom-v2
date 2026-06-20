@@ -192,7 +192,8 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
 static void DoAddLocal( dbi_section *dbi, offset length )
 /*******************************************************/
 {
-    if( ( dbi->size == 0 ) || ( dbi->size + length > DEMAND_INFO_SPLIT ) ) {
+    if( ( dbi->size == 0 )
+      || ( dbi->size + length > DEMAND_INFO_SPLIT ) ) {
         dbi->curr.u.vm_offs += sizeof( unsigned_32 );
         dbi->size = 0;
     }
@@ -236,7 +237,8 @@ static void DoGenLocal( dbi_section *dsect, dbi_section *dlink, demanddata *dmod
 {
     unsigned_32 spot;
 
-    if( ( dmod->size == 0 ) || ( dmod->size + length > DEMAND_INFO_SPLIT ) ) {
+    if( ( dmod->size == 0 )
+      || ( dmod->size + length > DEMAND_INFO_SPLIT ) ) {
         spot = dsect->start + ( dsect->curr.u.vm_offs - dsect->init.u.vm_offs );
         PutInfo( dlink->curr.u.vm_ptr, &spot, sizeof( unsigned_32 ) );
         dmod->num++;
@@ -295,7 +297,8 @@ void ODBIP1ModuleFinished( mod_entry *obj )
     debug_info          *dinfo;
 
     dinfo = CurrSect->dbg_info;
-    if( ( dinfo == NULL ) || (obj->modinfo & DBI_ALL) == 0 )
+    if( ( dinfo == NULL )
+      || (obj->modinfo & DBI_ALL) == 0 )
         return;
     if( MOD_NOT_DEBUGGABLE( obj ) )
         return;
@@ -382,7 +385,9 @@ void ODBIAddrSectStart( section *sect )
     dptr = sect->dbg_info;
     if( dptr == NULL )
         return;
-    if( ( dptr->local.curr.u.vm_offs > 0 ) || ( dptr->type.curr.u.vm_offs > 0 ) || ( dptr->line.curr.u.vm_offs > 0 ) ) {
+    if( ( dptr->local.curr.u.vm_offs > 0 )
+      || ( dptr->type.curr.u.vm_offs > 0 )
+      || ( dptr->line.curr.u.vm_offs > 0 ) ) {
         dptr->linelinks.curr.u.vm_offs += sizeof( unsigned_32 );
     }
     dptr->locallinks.start = sizeof( section_dbg_header );
@@ -483,7 +488,8 @@ void ODBIAddModule( mod_entry *obj, section *sect )
     debug_info          *dptr;
 
     dptr = sect->dbg_info;
-    if( ( dptr == NULL ) || (obj->modinfo & DBI_ALL) == 0 )
+    if( ( dptr == NULL )
+      || (obj->modinfo & DBI_ALL) == 0 )
         return;
     dptr->modnum++;
     obj->u3.o->modnum = dptr->modnum;
@@ -540,7 +546,8 @@ static void ODBIGenAddrInfo( seg_leader *seg )
     } else {
         dptr = CurrSect->dbg_info;
     }
-    if( ( dptr == NULL ) || ( seg->num == 0 ) )
+    if( ( dptr == NULL )
+      || ( seg->num == 0 ) )
         return;
     DBIAddrInfoScan( seg, ODBIGenAddrInit, ODBIGenAddrAdd, dptr );
 }
@@ -635,7 +642,8 @@ void ODBIGenLines( lineinfo *info )
     seg = info->seg;
 
     dinfo = CurrSect->dbg_info;
-    if( ( dinfo == NULL ) || (CurrMod->modinfo & DBI_LINE) == 0 )
+    if( ( dinfo == NULL )
+      || (CurrMod->modinfo & DBI_LINE) == 0 )
         return;
     lineqty = DBICalcLineQty( info );
     DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->u3.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
@@ -747,7 +755,9 @@ void ODBIFini( section *sect )
         dptr = sect->dbg_info;
     }
     if( dptr != NULL ) {
-        if( ( dptr->local.size > 0 ) || ( dptr->type.size > 0 ) || ( dptr->line.size > 0 ) ) {
+        if( ( dptr->local.size > 0 )
+          || ( dptr->type.size > 0 )
+          || ( dptr->line.size > 0 ) ) {
             spot = dptr->line.start + ( dptr->line.curr.u.vm_ptr - dptr->line.init.u.vm_ptr );
             PutInfo( dptr->linelinks.curr.u.vm_ptr, &spot, sizeof( unsigned_32 ) );
         }
@@ -763,7 +773,8 @@ void ODBIGenModule( void )
     debug_info          *dptr;
 
     dptr = CurrSect->dbg_info;
-    if( ( dptr == NULL ) || (CurrMod->modinfo & DBI_ALL) == 0 )
+    if( ( dptr == NULL )
+      || (CurrMod->modinfo & DBI_ALL) == 0 )
         return;
     rec = CurrMod->u3.o;
     len = strlen( CurrMod->name.u.ptr );

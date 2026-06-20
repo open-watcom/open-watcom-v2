@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,8 @@ void NormalizeAddr( void )
 
     DbgAssert( (FmtData.type & MK_PROT_MODE) == 0 );
 
-    if( CurrSect == NonSect || !FmtData.u.dos.ovl_short ) {
+    if( CurrSect == NonSect
+      || !FmtData.u.dos.ovl_short ) {
         new_seg = ( CurrLoc.off >> FmtData.SegShift ) + CurrLoc.seg;
         if( new_seg > 0xFFFF ) {
             LnkMsg( ERR+MSG_APP_TOO_BIG_FOR_DOS, NULL );
@@ -72,7 +73,10 @@ static offset BumpUp( offset ptr, offset size )
 /*********************************************/
 {
     ptr += size;
-    if( CurrentSeg != NULL && (CurrentSeg->info & USE_32) == 0 && (FmtData.type & MK_RAW) == 0 && ptr > 0x10000 ) {
+    if( CurrentSeg != NULL
+      && (CurrentSeg->info & USE_32) == 0
+      && (FmtData.type & MK_RAW) == 0
+      && ptr > 0x10000 ) {
         LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname, (unsigned long)( ptr - 0x10000 ) );
     }
     return( ptr );
@@ -178,7 +182,8 @@ void NewSegment( seg_leader *seg )
         ChkLocated( &seg->seg_addr, ( (seg->segflags & SEG_FIXED) != 0 ) );
         AddSize( seg->size );
     } else if( FmtData.type & MK_REAL_MODE ) {
-        if( group->isautogrp && Ring2First( group->leaders ) != seg ) {
+        if( group->isautogrp
+          && Ring2First( group->leaders ) != seg ) {
             auto_group = true; /* auto-group segment, but not first one */
         } else {
             auto_group = false;
@@ -220,7 +225,8 @@ void NewSegment( seg_leader *seg )
         }
         Align( seg->align );
         seg->seg_addr.off = CurrLoc.off;
-        if( seg->size != 0 || !group->isautogrp ) {
+        if( seg->size != 0
+          || !group->isautogrp ) {
             AddSize( seg->size );
             group->totalsize = CurrLoc.off;
         }

@@ -138,7 +138,9 @@ void InitArcList( mod_entry *mod )
  * set up the mod_entry arcdata field for dead code elimination
  */
 {
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute
+      && (LinkState & LS_SEARCHING_LIBRARIES) ) {
     } else {
         mod->u2.arclist = _PermAlloc( offsetof( arcdata, arcs ) );
     }
@@ -160,7 +162,7 @@ static void MarkDead( void *_seg )
         if( FmtData.type & MK_PE ) {
             char *segname = seg->u.leader->segname.u.ptr;
             if( ( strcmp( segname, CoffPDataSegName ) == 0 )
-                || ( strcmp( segname, CoffReldataSegName ) == 0 ) ) {
+              || ( strcmp( segname, CoffReldataSegName ) == 0 ) ) {
                 seg->isdead = true;
             }
         }
@@ -174,7 +176,10 @@ static void KillUnrefedSyms( void *_sym )
     segdata     *seg;
 
     seg = sym->p.seg;
-    if( ( seg != NULL ) && !IS_SYM_IMPORTED( sym ) && !IS_SYM_ALIAS( sym ) && seg->isdead ) {
+    if( ( seg != NULL )
+      && !IS_SYM_IMPORTED( sym )
+       && !IS_SYM_ALIAS( sym )
+       && seg->isdead ) {
         if( seg->u.leader->combine == COMBINE_COMMON ) {
             seg = RingFirst( seg->u.leader->pieces );
             if( !seg->isdead ) {
@@ -213,7 +218,8 @@ void DistribSetSegments( void )
         return;
     LinkState &= ~LS_CAN_REMOVE_SEGMENTS;
     ObjFormat |= OBJ_FMT_DEBUG_COMENT;
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         MemFree( ArcList );
         ArcList = NULL;
     }
@@ -227,7 +233,8 @@ void DistribSetSegments( void )
     mod_entry       **currmod;
     unsigned        num_segdefs;
 
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         for( index = 1; index <= CurrModHandle; index++ ) {
             mod = ModTable[index];
             CurrMod = mod;
@@ -248,12 +255,14 @@ void DistribSetSegments( void )
     }
     FixGroupProblems();
     FindRedefs();
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         MemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
 #endif
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         MemFree( SectOvlTab );
         SectOvlTab = NULL;
     }
@@ -320,7 +329,8 @@ static bool NewRefVector( symbol *sym, overlay_ref ovlref, overlay_ref sym_ovlre
  * this case.
  */
 {
-    if( ( sym->p.seg == NULL ) || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
+    if( ( sym->p.seg == NULL )
+      || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
     /*
@@ -422,7 +432,8 @@ void RefDistribSym( symbol *sym )
                 }
             } else {
                 arc.test = sym->u.d.modnum;
-                if( NotAnArc( arc ) && ( sym->u.d.modnum != CurrModHandle ) ) {
+                if( NotAnArc( arc )
+                  && ( sym->u.d.modnum != CurrModHandle ) ) {
                     AddArc( arc );
                 }
             }
@@ -449,7 +460,9 @@ static void DoRefGraph( overlay_ref ovlref, mod_entry *mod )
     /*
      * this next line is necessary to break cycles in the graph.
      */
-    if( (mod->modinfo & MOD_VISITED) && ( ovlref == arclist->ovlref ) || (mod->modinfo & MOD_FIXED) )
+    if( (mod->modinfo & MOD_VISITED)
+      && ( ovlref == arclist->ovlref )
+      || (mod->modinfo & MOD_FIXED) )
         return;
     if( arclist->ovlref == NO_ARCS_YET ) {
         arclist->ovlref = 0;

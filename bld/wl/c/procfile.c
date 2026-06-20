@@ -108,8 +108,10 @@ static void CheckNewFile( mod_entry *mod, file_list *file,
 {
     time_t      modtime;
 
-    if( (LinkFlags & LF_GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
-        if( QModTime( file->infile->name.u.ptr, &modtime ) || modtime > mod->modtime ) {
+    if( (LinkFlags & LF_GOT_CHGD_FILES) == 0
+      || AlwaysCheckUsingDate ) {
+        if( QModTime( file->infile->name.u.ptr, &modtime )
+          || modtime > mod->modtime ) {
             file->flags |= STAT_HAS_CHANGED;
         }
     } else {
@@ -124,12 +126,14 @@ static void SetStartAddr( void )
 {
     mod_entry   *mod;
 
-    if( StartInfo.user_specd || !StartInfo.from_inc )
+    if( StartInfo.user_specd
+      || !StartInfo.from_inc )
         return;
     mod = StartInfo.mod;
     if( mod == NULL )
         return;
-    if( (mod->modinfo & MOD_KILL) || (mod->u1.source->flags & STAT_HAS_CHANGED) ) {
+    if( (mod->modinfo & MOD_KILL)
+      || (mod->u1.source->flags & STAT_HAS_CHANGED) ) {
         ClearStartAddr();
     }
 }
@@ -258,7 +262,8 @@ static void MarkDefaultSyms( void )
     symbol *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->next ) {
-        if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_WAS_LAZY) ) {
+        if( IS_SYM_ALIAS( sym )
+          && (sym->info & SYM_WAS_LAZY) ) {
             sym->e.def->info |= SYM_RELOC_REFD;
         }
     }
@@ -292,7 +297,9 @@ static void SetAltDefData( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( (sym->info & SYM_IS_ALTDEF) && IS_SYM_COMDAT( sym ) && (sym->info & SYM_HAS_DATA) == 0 ) {
+    if( (sym->info & SYM_IS_ALTDEF)
+      && IS_SYM_COMDAT( sym )
+      && (sym->info & SYM_HAS_DATA) == 0 ) {
         sym->p.seg->u1.vm_ptr = sym->e.mainsym->p.seg->u1.vm_ptr;
     }
 }
@@ -398,7 +405,8 @@ static void DoPass1( mod_entry *next, file_list *file )
                 break;
             membname = IdentifyObject( file, &loc, &size );
             if( file->flags & STAT_IS_LIB ) {
-                if( (file->flags & STAT_HAS_MEMBER) && file->u.member != NULL ) {
+                if( (file->flags & STAT_HAS_MEMBER)
+                  && file->u.member != NULL ) {
                     member = FindMember( file, membname );
                     if( member == NULL ) {
                         ignoreobj = true;
@@ -458,7 +466,8 @@ static void DoPass1( mod_entry *next, file_list *file )
             } else if( CurrMod->flags_fmt != FILE_FMT_OMF ) {
                 break;          // can only concat omf.
             }
-            if( lastmod || CacheIsEnd( file, loc ) ) {
+            if( lastmod
+              || CacheIsEnd( file, loc ) ) {
                 break;
             }
         }
@@ -511,7 +520,8 @@ static void ProcessMods( void )
     for( mod = LibModules; mod != NULL; mod = next ) {
         next = mod->u.next;
         if( (mod->modinfo & MOD_KILL)
-                || mod->u1.source != NULL && (mod->u1.source->flags & STAT_HAS_CHANGED) ) {
+          || mod->u1.source != NULL
+          && (mod->u1.source->flags & STAT_HAS_CHANGED) ) {
             FreeModEntry( mod );
         } else {
             SavedPass1( mod );
@@ -547,7 +557,8 @@ void ProcObjFiles( void )
 {
     CurrMod = NULL;
     if( LinkFlags & LF_INC_LINK_FLAG ) {
-        if( (LinkFlags & LF_DWARF_DBI_FLAG) == 0 && (LinkFlags & LF_ANY_DBI_FLAG) ) {
+        if( (LinkFlags & LF_DWARF_DBI_FLAG) == 0
+          && (LinkFlags & LF_ANY_DBI_FLAG) ) {
             LnkMsg( FTL+MSG_INC_ONLY_SUPPORTS_DWARF, NULL );
         }
         if( LinkFlags & LF_STRIP_CODE ) {
@@ -672,7 +683,8 @@ void ResolveUndefined( void )
 
     LnkMsg( INF+MSG_SEARCHING_LIBS, NULL );
 #ifdef _EXE
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         LinkState |= LS_CAN_REMOVE_SEGMENTS;
         DistribInitMods();
     }
@@ -689,9 +701,11 @@ void ResolveUndefined( void )
             }
         }
         for( sym = HeadSym; sym != NULL; sym = sym->next ) {
-            if( ( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym )
-                || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
-                  && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
+            if( ( (sym->info & SYM_DEFINED) == 0
+              && !IS_SYM_WEAK_REF( sym )
+              || (FmtData.type & MK_NOVELL)
+              && IS_SYM_IMPORTED( sym )
+              && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
               && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 LibFind( sym->name.u.ptr, (sym->info & SYM_CHECKED) != 0 );
             }
@@ -712,7 +726,9 @@ void ProcLocalImports( void )
 
     if( FmtData.type & MK_PE ) {
         for( sym = HeadSym; sym != NULL; sym = sym->next ) {
-            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym ) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
+            if( (sym->info & SYM_DEFINED) == 0
+              && !IS_SYM_WEAK_REF( sym )
+              && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 ImportPELocalSym( sym );
             }
         }

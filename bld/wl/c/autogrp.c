@@ -132,9 +132,11 @@ static bool CanPack( seg_leader *one, seg_leader *two )
     }
     if( (one->info & (USE_32 | SEG_CODE)) != (two->info & (USE_32 | SEG_CODE)) )
         return( false );
-    if( one->segflags != two->segflags || (two->segflags & SEG_FIXED) )
+    if( one->segflags != two->segflags
+      || (two->segflags & SEG_FIXED) )
         return( false );
-    if( one->class != two->class && (two->class->flags & CLASS_FIXED) )
+    if( one->class != two->class
+      && (two->class->flags & CLASS_FIXED) )
         return( false );
     if( one->group != two->group )
         return( false );
@@ -174,7 +176,8 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
     }
     group->section = seg->class->section;
     while( num_segs != 0 ) {
-        if( seg->group == NULL || seg->group == group ) {
+        if( seg->group == NULL
+          || seg->group == group ) {
             if( (seg->info & SEG_CODE) == 0 ) {
                 group->segflags |= SEG_DATA;
             }
@@ -221,9 +224,9 @@ static void AutoGroupSect( section *sect )
             align_size = CAlign( size, seg->align );
             new_size = align_size + seg->size;
             if( ( new_size >= limit )      // group overflow 16/32-bit
-                || ( new_size < size )     // group overflow 32-bit
-                || lastseg
-                || !CanPack( packstart, seg ) ) {
+              || ( new_size < size )     // group overflow 32-bit
+              || lastseg
+              || !CanPack( packstart, seg ) ) {
                 PackSegs( packstart, num_segs );
                 packstart = seg;
                 num_segs = 1;

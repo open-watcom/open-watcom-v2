@@ -171,8 +171,9 @@ void CmdOvlFini( void )
         Ignite();
         LnkMsg( FTL+LOC+LINE+MSG_EXPECTING_END, NULL );
     }
-    if( FmtData.u.dos.dynamic &&
-        ( ( Root->areas == NULL ) || ( Root->areas->next != NULL ) ) ) {
+    if( FmtData.u.dos.dynamic
+      && ( ( Root->areas == NULL )
+      || ( Root->areas->next != NULL ) ) ) {
         Ignite();
         LnkMsg( FTL+LOC+LINE+MSG_INCORRECT_NUM_AREAS, NULL );
     }
@@ -381,8 +382,8 @@ static bool ProcAutoSection( void )
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO );      // check for INTO
         CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( DoParseDirective() ) {
-        }
+        while( DoParseDirective() )
+            /* nothing */;
         CmdFlags &= ~CF_AUTOSECTION;
     }
     return( true );
@@ -419,7 +420,8 @@ bool ProcBegin( void )
     section         *sect;
 
     LinkState |= LS_FMT_SPECIFIED;      // she must want DOS mode.
-    if( ( OvlLevel > 0 ) && FmtData.u.dos.dynamic ) {
+    if( ( OvlLevel > 0 )
+      && FmtData.u.dos.dynamic ) {
         oldsect = NULL;
         oldflist = NULL;
         CmdFlags &= ~CF_AUTOSECTION;    // merge old area with this.
@@ -436,10 +438,10 @@ bool ProcBegin( void )
         CurrFList = &sect->files;
     }
     OvlLevel++;
-    while( ProcOne( Sections, SEP_NO ) ) {
-        // NULL LOOP
-    }
-    if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
+    while( ProcOne( Sections, SEP_NO ) )
+        /* nothing */;
+    if( ( OvlLevel == 0 )
+      || !FmtData.u.dos.dynamic ) {
         CurrFList = oldflist;
         CurrSect = oldsect;
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +101,8 @@ void _Debug( unsigned int mask, const char *str, ... )
     char        buff[128];
     size_t      len;
 
-    if( (Debug & mask) || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
+    if( (Debug & mask)
+      || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
         va_start( args, str );
         len = DoFmtStr( buff, 128, str, args );
         va_end( args );

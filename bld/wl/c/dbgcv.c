@@ -171,7 +171,8 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
     unsigned_16     index;
     group_entry     *group;
 
-    if( ( seg == NULL ) || ( seg->group == NULL ) ) {
+    if( ( seg == NULL )
+      || ( seg->group == NULL ) ) {
         return( 0 );
     }
     if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
@@ -417,7 +418,9 @@ void CVAddGlobal( symbol *sym )
     size_t  size;
 
     if( (sym->info & SYM_STATIC) == 0 ) {
-        if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || ( sym->p.seg->bits == BITS_32 ) ) {
+        if( ( sym->p.seg == NULL )
+          || IS_SYM_IMPORTED( sym )
+          || ( sym->p.seg->bits == BITS_32 ) ) {
             size = sizeof( s_pub32 );
         } else {
             size = sizeof( s_pub16 );
@@ -447,7 +450,9 @@ void CVGenGlobal( symbol *sym, section *sect )
     namelen = strlen( sym->name.u.ptr );
     size = namelen + 1;
 
-    if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || ( sym->p.seg->bits == BITS_32 ) ) {
+    if( ( sym->p.seg == NULL )
+      || IS_SYM_IMPORTED( sym )
+      || ( sym->p.seg->bits == BITS_32 ) ) {
         size += sizeof( s_pub32 );
         pub32.common.length = __ROUND_UP_SIZE_DWORD( size );
         pad = pub32.common.length - size;
@@ -625,7 +630,8 @@ static void DefLocal( void *_sdata )
     sst         sect;
 
     leader = sdata->u.leader;
-    if( !sdata->isdead && IS_DBG_INFO( leader ) ) {
+    if( !sdata->isdead
+      && IS_DBG_INFO( leader ) ) {
         if( leader->dbgtype == MS_TYPE ) {
             sect = sstTypes;
         } else {

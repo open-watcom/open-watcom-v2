@@ -140,7 +140,8 @@ static void *doAlloc( size_t size )
 #else
         ptr = malloc( size );
 #endif
-        if( ptr != NULL || !FreeUpMemory( false ) ) {
+        if( ptr != NULL
+          || !FreeUpMemory( false ) ) {
             break;
         }
     }
@@ -192,7 +193,8 @@ static char *doStrdup( const char *str )
 #else
         ptr = strdup( str );
 #endif
-        if( ptr != NULL || !FreeUpMemory( false ) ) {
+        if( ptr != NULL
+          || !FreeUpMemory( false ) ) {
             break;
         }
     }
@@ -230,7 +232,8 @@ static void *doRealloc( void *src, size_t size )
 #else
         ptr = realloc( src, size );
 #endif
-        if( ptr != NULL || !FreeUpMemory( true ) ) {
+        if( ptr != NULL
+          || !FreeUpMemory( true ) ) {
             break;
         }
     }

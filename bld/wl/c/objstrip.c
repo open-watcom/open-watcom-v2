@@ -124,7 +124,8 @@ void RefSeg( segdata * seg )
     edgelist *  edge;
     edgelist *  next;
 
-    if( seg->isrefd || seg->visited )
+    if( seg->isrefd
+      || seg->visited )
         return;
 //    if( !seg->iscode )
 //        return;
@@ -144,7 +145,8 @@ void DataRef( symbol * sym )
 /*********************************/
 /* symbol referenced from data, so make sure it is included */
 {
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE)
+      && (FmtData.type & MK_PE) ) {
         size_t      len = strlen( sym->name.u.ptr ) + 3;
         char        *s = alloca( len );
 
@@ -152,7 +154,8 @@ void DataRef( symbol * sym )
         strcpy( s + 2, sym->name.u.ptr );
         sym = SymOp( ST_FIND, s, len - 1 );
     }
-    if( (sym->info & SYM_DEFINED) && !IS_SYM_IMPORTED( sym ) ) {
+    if( (sym->info & SYM_DEFINED)
+      && !IS_SYM_IMPORTED( sym ) ) {
         RefSeg( sym->p.seg );
     }
     sym->info |= SYM_1_DCE_REF;
@@ -165,8 +168,11 @@ void AddEdge( segdata * seg, symbol * sym )
     edgelist *  edge;
 
     if( sym->info & SYM_DEFINED ) {
-        if( !IS_SYM_IMPORTED( sym ) && seg != sym->p.seg && sym->p.seg != NULL ) {
-            if( seg->isrefd || !seg->iscode ) {
+        if( !IS_SYM_IMPORTED( sym )
+          && seg != sym->p.seg
+          && sym->p.seg != NULL ) {
+            if( seg->isrefd
+              || !seg->iscode ) {
                 RefSeg( sym->p.seg );
             } else if( !sym->p.seg->isrefd ) {
                 edge = AllocEdge();
@@ -177,7 +183,8 @@ void AddEdge( segdata * seg, symbol * sym )
             }
         }
     } else {    /* symbol is undefined */
-        if( seg->isrefd || !seg->iscode ) {
+        if( seg->isrefd
+          || !seg->iscode ) {
             sym->info |= SYM_1_DCE_REF;
             PruneNonSymEdges( sym );
         } else {

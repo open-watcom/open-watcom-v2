@@ -368,7 +368,8 @@ static void AllocSeg( void *_snode, void *dummy )
         return;
     sname = sdata->u.name.u.ptr;
     if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
-        if( sdata->isidata || sdata->iscode ) {
+        if( sdata->isidata
+          || sdata->iscode ) {
             if( sdata->iscode ) {
                 snode->info |= SEG_CODE;
             }

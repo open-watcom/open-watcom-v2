@@ -154,7 +154,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
 
             // is there a "lo"-part of a reloc to apply?
             if( cur_reloc < reltab->num
-                && reltab->reloc[cur_reloc] == tot_read + BUF_SIZE - 1 ) {
+              && reltab->reloc[cur_reloc] == tot_read + BUF_SIZE - 1 ) {
                 bptr  = buffer + BUF_SIZE - 1;
                 addr  = *bptr;
                 addr += (reltab->lseg & 0x00FF);
@@ -401,7 +401,8 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    if( (header = get_header( arg.ifile )) == NULL || ( header->signature != EXESIGN_DOS ) ) {
+    if( (header = get_header( arg.ifile )) == NULL
+      || ( header->signature != EXESIGN_DOS ) ) {
         printf( "Error. %s has no valid exe-header.\n", arg.iname );
         return( EXIT_FAILURE );
     }
@@ -423,7 +424,8 @@ int main( int argc, char *argv[] )
         disp_reltab( reltab );
     }
 
-    if( reltab->num && !arg.opt.have_l ) {
+    if( reltab->num
+      && !arg.opt.have_l ) {
         printf( "Error. Option \"-l=<seg>\" mandatory (there are "
                 "relocations).\n" );
         free( header );
@@ -442,15 +444,19 @@ int main( int argc, char *argv[] )
             printf( "Error: Binary part exceeds 64 KBytes.\n" );
             result = ERR_RESTRIC;
         }
-        if( header->SS_offset || header->SP ) {
+        if( header->SS_offset
+          || header->SP ) {
             printf( "Error: Stack segment defined.\n" );
             result = ERR_RESTRIC;
         }
-        if( header->CS_offset || (header->IP != 0x0000 && header->IP != 0x0100) ) {
+        if( header->CS_offset
+          || (header->IP != 0x0000
+          && header->IP != 0x0100) ) {
             printf( "Error: CS:IP neither 0x0000:0x0000 nor 0x0000:0x0100.\n" );
             result = ERR_RESTRIC;
         }
-        if( header->IP == 0x0100 && reltab->num != 0 ) {
+        if( header->IP == 0x0100
+          && reltab->num != 0 ) {
             printf( "Error: com-file must not have relocations.\n" );
             result = ERR_RESTRIC;
         }

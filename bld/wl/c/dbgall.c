@@ -123,7 +123,8 @@ void DBIP1Source( const byte *buff, const byte *endbuff )
 section *DBIGetSect( const char *clname )
 /***************************************/
 {
-    if( ( stricmp( clname, _MSTypeClass ) == 0 ) || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
+    if( ( stricmp( clname, _MSTypeClass ) == 0 )
+      || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
         return( CurrSect );
     } else if( stricmp( clname, _DwarfClass ) == 0 ) {
         return( Root );
@@ -266,7 +267,8 @@ void DBIAddrInfoScan( seg_leader *seg,
 
     if( IS_DBG_INFO( seg ) )
         return;
-    if( FmtData.dll || (FmtData.type & MK_PE) ) {
+    if( FmtData.dll
+      || (FmtData.type & MK_PE) ) {
         if( seg->class->flags & (CLASS_STACK | CLASS_IDATA) )
             return;
         if( seg->combine == COMBINE_STACK ) {
@@ -388,11 +390,12 @@ void DBIModGlobal( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( !IS_SYM_ALIAS( sym ) && (sym->info & SYM_DEAD) == 0 ) {
+    if( !IS_SYM_ALIAS( sym )
+      && (sym->info & SYM_DEAD) == 0 ) {
         if( IS_SYM_IMPORTED( sym )
-            || ( sym->p.seg != NULL )
-                && !IS_DBG_INFO( sym->p.seg->u.leader )
-                && !sym->p.seg->isabs ) {
+          || ( sym->p.seg != NULL )
+          && !IS_DBG_INFO( sym->p.seg->u.leader )
+          && !sym->p.seg->isabs ) {
             DBIAddGlobal( sym );
         }
     }
@@ -424,7 +427,8 @@ void DBIGenGlobal( symbol *sym, section *sect )
         CVGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
-    if( ( (sym->info & SYM_STATIC) == 0 ) && (LinkFlags & LF_NOVELL_DBI_FLAG) ) {
+    if( ( (sym->info & SYM_STATIC) == 0 )
+      && (LinkFlags & LF_NOVELL_DBI_FLAG) ) {
         NovDBIGenGlobal( sym );
     }
 #endif

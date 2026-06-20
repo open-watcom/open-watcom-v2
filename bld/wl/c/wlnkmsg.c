@@ -104,7 +104,8 @@ bool InitMsg( void )
 bool Msg_Get( int msgid, char *buffer )
 {
 #ifdef USE_WRESLIB
-    if( hInstance.status == 0 || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0
+      || WResLoadString( &hInstance, msgid + msgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

@@ -199,7 +199,9 @@ static bool CheckAltSym( void *_sym, void *_info )
     comdat_info *info = _info;
     symbol      *sym = _sym;
 
-    if( sym != info->sym && IS_SYM_COMDAT( sym ) && (sym->info & SYM_HAS_DATA) ) {
+    if( sym != info->sym
+      && IS_SYM_COMDAT( sym )
+      && (sym->info & SYM_HAS_DATA) ) {
         return( CheckSameData( sym, info ) );
     }
     return( false );
@@ -412,7 +414,8 @@ static void DoAllocateSegment( segdata *sdata, const char *clname )
     if( sect == NULL ) {
         sect = CurrSect;
 #ifdef _EXE
-        if( (FmtData.type & MK_OVERLAYS) && !isovlclass ) {
+        if( (FmtData.type & MK_OVERLAYS)
+          && !isovlclass ) {
             sect = NonSect;
         }
 #endif
@@ -424,7 +427,9 @@ static void DoAllocateSegment( segdata *sdata, const char *clname )
         sdata->u.leader->info |= SEG_OVERLAYED;
     }
 #endif
-    if( !sdata->isdead && !sdata->isuninit && !sdata->iscdat ) {
+    if( !sdata->isdead
+      && !sdata->isuninit
+      && !sdata->iscdat ) {
         sdata->u1.vm_ptr = AllocStg( sdata->length );
     }
 }
@@ -457,7 +462,9 @@ unsigned long IncPass1( void )
         dataoff = seg->u1.vm_offs;
         DoAllocateSegment( seg, seg->o.clname.u.ptr );
         seg->o.mod = CurrMod;
-        if( !seg->isuninit && !seg->isdead && !seg->iscdat ) {
+        if( !seg->isuninit
+          && !seg->isdead
+          && !seg->iscdat ) {
             PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
             seg->u.leader->info |= SEG_LXDATA_SEEN;
         }
@@ -475,7 +482,9 @@ unsigned long IncPass1( void )
 static void CheckQNXSegMismatch( stateflag mask )
 /***********************************************/
 {
-    if( (FmtData.type & MK_QNX) && (LinkState & mask) && !FmtData.u.qnx.seen_mismatch ) {
+    if( (FmtData.type & MK_QNX)
+      && (LinkState & mask)
+      && !FmtData.u.qnx.seen_mismatch ) {
         LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
         FmtData.u.qnx.seen_mismatch = true;
     }
@@ -503,7 +512,8 @@ class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode 
 
     lastclass = sect->classes;
     for( class = sect->classes; class != NULL; class = class->next ) {
-        if( stricmp( class->name.u.ptr, name ) == 0 && ( class->bits == bits ) ) {
+        if( stricmp( class->name.u.ptr, name ) == 0
+          && ( class->bits == bits ) ) {
             return( class );
         }
         lastclass = class;
@@ -538,7 +548,8 @@ static void CheckForLast( seg_leader *seg, class_entry *class )
 /*************************************************************/
 // check to see if this segment should be the last one in an autogroup.
 {
-    if( (CurrMod->modinfo & MOD_LAST_SEG) && (class->flags & CLASS_CODE) ) {
+    if( (CurrMod->modinfo & MOD_LAST_SEG)
+      && (class->flags & CLASS_CODE) ) {
         if( LastCodeSeg != NULL ) {             // more than one code seg
             LastCodeSeg->info &= ~LAST_SEGMENT; // so don't end at previous
         }
@@ -658,15 +669,17 @@ void AddSegment( segdata *sd, class_entry *class )
         info |= SEG_ABSOLUTE;
         sd->isdefd = true;
     }
-    if( sd->isabs || sd->combine == COMBINE_INVALID ) {
+    if( sd->isabs
+      || sd->combine == COMBINE_INVALID ) {
         leader = MakeNewLeader( sd, class, info );
     } else {
         const char  *seg_name = sd->u.name.u.ptr;
 
         leader = FindALeader( sd, class, info );
-        if( ( (leader->info & USE_32) != (info & USE_32) ) &&
-            !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD)) && FmtData.u.os2fam.mixed1632 ) &&
-            (FmtData.type & MK_RAW) == 0 ) {
+        if( ( (leader->info & USE_32) != (info & USE_32) )
+          && !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD))
+          && FmtData.u.os2fam.mixed1632 )
+          && (FmtData.type & MK_RAW) == 0 ) {
             const char  *segname_16;
             const char  *segname_32;
 
@@ -723,15 +736,17 @@ void AddToGroup( group_entry *group, seg_leader *seg )
 {
     if( Ring2Lookup( group->leaders, CmpLeaderPtr, seg ) )
         return;
-    if( seg->group != NULL && seg->group != group ) {
+    if( seg->group != NULL
+      && seg->group != group ) {
         LnkMsg( ERR+LOC+MSG_SEG_IN_TWO_GROUPS, "123", seg->segname.u.ptr,
                                    seg->group->sym->name.u.ptr, group->sym->name.u.ptr );
         return;
     }
-    if( ( group->leaders != NULL ) &&
-        ( (group->leaders->info & USE_32) != (seg->info & USE_32) ) &&
-        !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD)) && FmtData.u.os2fam.mixed1632 ) &&
-        (FmtData.type & MK_RAW) == 0 ) {
+    if( ( group->leaders != NULL )
+      && ( (group->leaders->info & USE_32) != (seg->info & USE_32) )
+      && !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD))
+      && FmtData.u.os2fam.mixed1632 )
+      && (FmtData.type & MK_RAW) == 0 ) {
 
         const char  *segname_16;
         const char  *segname_32;
@@ -770,8 +785,10 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         frame = 0;
     }
     name_len = strlen( sym->name.u.ptr );
-    if( !IS_ADDR_UNDEFINED( sym->addr ) && !IS_SYM_COMMUNAL( sym ) ) {
-        if( seg != NULL && sym->p.seg != NULL ) {
+    if( !IS_ADDR_UNDEFINED( sym->addr )
+      && !IS_SYM_COMMUNAL( sym ) ) {
+        if( seg != NULL
+          && sym->p.seg != NULL ) {
             frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
             if( sym->p.seg->u.leader->combine != COMBINE_COMMON ) {
                 frame_ok = false;
@@ -783,7 +800,8 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         } else {
             frame_ok = true;
         }
-        if( !(frame_ok && off == sym->addr.off) ) {
+        if( !(frame_ok
+          && off == sym->addr.off) ) {
             ReportMultiple( sym, sym->name.u.ptr, name_len );
         }
     } else {
@@ -814,7 +832,8 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             }
             if( seg->info & SEG_CODE ) {
 #ifdef _EXE
-                if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+                if( (FmtData.type & MK_OVERLAYS)
+                  && FmtData.u.dos.distribute ) {
                     if( LinkState & LS_SEARCHING_LIBRARIES ) {
                         sym->info |= SYM_1_DISTRIB;
                     }
@@ -930,7 +949,8 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar, byte bits )
     } else {
         symtype = SYM_COMMUNAL_32;
     }
-    if( (sym->info & SYM_DEFINED) == 0 || IS_SYM_IMPORTED( sym ) ) {
+    if( (sym->info & SYM_DEFINED) == 0
+      || IS_SYM_IMPORTED( sym ) ) {
         if( IS_SYM_IMPORTED( sym ) ) {
             sym = HashReplace( sym );
         }
@@ -967,7 +987,8 @@ void CheckComdatSym( symbol *sym, sym_info flags )
     sym_info    symflags;
 
     symflags = sym->info & SYM_CDAT_SEL_MASK;
-    if( flags == SYM_CDAT_SEL_NODUP || symflags == SYM_CDAT_SEL_NODUP ) {
+    if( flags == SYM_CDAT_SEL_NODUP
+      || symflags == SYM_CDAT_SEL_NODUP ) {
         symflags = SYM_CDAT_SEL_NODUP;
     } else {
         if( symflags < flags ) {
@@ -999,17 +1020,20 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
                           sym_info select, unsigned_8 *data )
 /***********************************************************/
 {
-    if( IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED) ) {
+    if( IS_SYM_REGULAR( sym )
+      && (sym->info & SYM_DEFINED) ) {
         AddCDatAltDef( sdata, sym, data, select );
         sdata->isdead = true;
         return;
     }
-    if( sym->mod != NULL && sym->mod != CurrMod ) {
+    if( sym->mod != NULL
+      && sym->mod != CurrMod ) {
         CheckComdatSym( sym, select );
         AddCDatAltDef( sdata, sym, data, select );
         sdata->isdead = true;
     } else {
-        if( (sym->info & SYM_DEFINED) && !IS_SYM_COMDAT( sym ) ) {
+        if( (sym->info & SYM_DEFINED)
+          && !IS_SYM_COMDAT( sym ) ) {
             sym = HashReplace( sym );
         }
         ClearSymUnion( sym );
@@ -1032,9 +1056,11 @@ void DefineLazyExtdef( symbol *sym, symbol *defsym, bool isweak )
 {
     symbol      *defaultsym;
 
-    if( (sym->info & (SYM_DEFINED | SYM_EXPORTED)) == 0 && !IS_SYM_IMPORTED( sym )
-                                                  && !IS_SYM_COMMUNAL( sym ) ) {
-        if( IS_SYM_A_REF( sym ) && !IS_SYM_LINK_WEAK( sym ) ) {
+    if( (sym->info & (SYM_DEFINED | SYM_EXPORTED)) == 0
+      && !IS_SYM_IMPORTED( sym )
+      && !IS_SYM_COMMUNAL( sym ) ) {
+        if( IS_SYM_A_REF( sym )
+          && !IS_SYM_LINK_WEAK( sym ) ) {
             if( IS_SYM_VF_REF( sym ) ) {
                 defaultsym = *sym->e.vfdata;
             } else {
@@ -1043,7 +1069,8 @@ void DefineLazyExtdef( symbol *sym, symbol *defsym, bool isweak )
             if( defsym != defaultsym ) {
                 LnkMsg( WRN+LOC_REC+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
             }
-        } else if( (sym->info & SYM_OLDHAT) == 0 || IS_SYM_LINK_WEAK( sym ) ) {
+        } else if( (sym->info & SYM_OLDHAT) == 0
+          || IS_SYM_LINK_WEAK( sym ) ) {
             if( isweak ) {
                 SET_SYM_TYPE( sym, SYM_WEAK_REF );
             } else {
@@ -1078,13 +1105,15 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
         condsym = FindISymbol( name );
         if( condsym == NULL ) {
             condsym = MakeWeakExtdef( name, defsym );
-        } else if( (condsym->info & SYM_DEFINED) && !IS_SYM_COMMUNAL( condsym ) ) {
+        } else if( (condsym->info & SYM_DEFINED)
+          && !IS_SYM_COMMUNAL( condsym ) ) {
             generate = false;
             if( mainsym == NULL ) {
                 break;
             }
         }
-        if( (LinkFlags & LF_STRIP_CODE) && mainsym != NULL ) {
+        if( (LinkFlags & LF_STRIP_CODE)
+          && mainsym != NULL ) {
             AddSymEdge( condsym, mainsym );
         }
         count++;
@@ -1122,7 +1151,8 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
             SET_SYM_TYPE( sym, SYM_VF_REF );
         }
     } else {                    // might still need this if eliminated
-        if( (LinkFlags & LF_STRIP_CODE) && (sym->info & SYM_EXPORTED) == 0 ) {
+        if( (LinkFlags & LF_STRIP_CODE)
+          && (sym->info & SYM_EXPORTED) == 0 ) {
             sym->e.def = defsym;
         }
     }
@@ -1144,13 +1174,14 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
         /* if defined, still may have to keep track of conditional symbols
          * for dead code elimination */
         if( (LinkFlags & LF_STRIP_CODE)
-                        && (sym->info & (SYM_1_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
+          && (sym->info & (SYM_1_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
             GetVFList( defsym, sym, false, rtns );
             sym->e.def = defsym;
             sym->info |= SYM_1_VF_REFS_DONE;
             DataRef( defsym );
         }
-    } else if( !IS_SYM_IMPORTED( sym ) && !IS_SYM_COMMUNAL( sym ) ) {
+    } else if( !IS_SYM_IMPORTED( sym )
+      && !IS_SYM_COMMUNAL( sym ) ) {
         if( IS_SYM_VF_REF( sym ) ) {
             if( IS_SYM_PURE_REF( sym ) ^ ispure ) {
                 LnkMsg( WRN+LOC_REC+MSG_VF_PURE_MISMATCH, "S", sym );
@@ -1175,7 +1206,8 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
                 }
                 MemFree( startlist );
             }
-        } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
+        } else if( IS_SYM_A_REF( sym )
+          || (sym->info & SYM_OLDHAT) == 0 ) {
             DefineVirtualFunction( sym, defsym, ispure, rtns );
         }
     }
@@ -1205,7 +1237,9 @@ void DefineReference( symbol *sym )
   #endif
   #ifdef _NOVELL
     if( (FmtData.type & MK_NOVELL) ) {
-        if( (LinkState & LS_SEARCHING_LIBRARIES) && IS_SYM_IMPORTED( sym ) && (sym->info & SYM_CHECKED) ) {
+        if( (LinkState & LS_SEARCHING_LIBRARIES)
+          && IS_SYM_IMPORTED( sym )
+          && (sym->info & SYM_CHECKED) ) {
             sym->info &= ~SYM_CHECKED;
             LinkState |= LS_LIBRARIES_ADDED;   // force another pass thru libs
         }

@@ -70,7 +70,8 @@ void FreeQNXFmt( void )
 void CmdQNXFini( void )
 /*********************/
 {
-    if( !FmtData.u.qnx.gen_linear_relocs && !FmtData.u.qnx.gen_seg_relocs ) {
+    if( !FmtData.u.qnx.gen_linear_relocs
+      && !FmtData.u.qnx.gen_seg_relocs ) {
         LinkState &= ~LS_MAKE_RELOCS;
     }
 }
@@ -96,7 +97,8 @@ static bool ProcPrivilege( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatoi( &value );
-    if( ret != ST_IS_ORDINAL || value > 3 ) {
+    if( ret != ST_IS_ORDINAL
+      || value > 3 ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "PRIVILEGE" );
     } else {
         FmtData.u.qnx.priv_level = value;
@@ -140,7 +142,8 @@ bool ProcQNXHeapSize( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
+    if( ret != ST_IS_ORDINAL
+      || value == 0 ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.qnx.heapsize = value;

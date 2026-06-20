@@ -231,7 +231,8 @@ static bool ProcMiniBuf( void )
     ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
-        if( value > 64 || value < 1 ) {
+        if( value > 64
+          || value < 1 ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "MINIBUF" );
         } else {
             FmtData.u.phar.minibuf = value;
@@ -249,7 +250,8 @@ static bool ProcMaxiBuf( void )
     ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
-        if( value > 64 || value < 1 ) {
+        if( value > 64
+          || value < 1 ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "MAXIBUF" );
         } else {
             FmtData.u.phar.maxibuf = value;
@@ -266,7 +268,8 @@ static bool ProcNIStack( void )
 
     ret = GetLong( &value );
     if( ret ) {
-        if( value < 4 || value > 0xFFFF ) {
+        if( value < 4
+          || value > 0xFFFF ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "NISTACK" );
         } else {
             FmtData.u.phar.nistack = value;
@@ -284,7 +287,8 @@ static bool ProcIStkSize( void )
     ret = GetLong( &value );
     if( ret ) {
         value >>= 10;       // value specified in kilobytes
-        if( value > 64 || value < 1 ) {
+        if( value > 64
+          || value < 1 ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "ISTKSIZE" );
         } else {
             FmtData.u.phar.istksize = value;

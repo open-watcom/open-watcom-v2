@@ -66,7 +66,8 @@ static bool WriteBinSegGroup( group_entry *group )
     outfilelist         *finfo;
 
     repos = false;
-    if( group->size != 0 || (group->leaders->class->flags & CLASS_COPY) ) {
+    if( group->size != 0
+      || (group->leaders->class->flags & CLASS_COPY) ) {
         sect = group->section;
         CurrSect = sect;
         finfo = sect->outfile;
@@ -179,7 +180,8 @@ static void WriteHexLine( void )
     unsigned_16      seg_shift = FmtData.output_hshift ? FmtData.HexSegShift : FmtData.SegShift;
     unsigned_16      curr_offs;
 
-    if( ( next_addr.off + buf_offset >= ( 0x10000L << seg_shift ) ) && !linear ) {
+    if( ( next_addr.off + buf_offset >= ( 0x10000L << seg_shift ) )
+      && !linear ) {
         next_addr.seg = 0;
         linear = true;
     }
@@ -223,7 +225,9 @@ static bool WriteHexData( void *_sdata, void *_offs )
     offset           src_offs;
     offset           piece;
 
-    if( !sdata->isuninit && !sdata->isdead && len > 0 ) {
+    if( !sdata->isuninit
+      && !sdata->isdead
+      && len > 0 ) {
         if( offs != next_addr.off + buf_offset ) {  // Must start new record if address not contiguous
             if( offs < next_addr.off + buf_offset ) {
                 targ_addr   addr;
@@ -260,7 +264,8 @@ static bool DoHexLeader( void *_seg, void *_grp_offs )
 {
     seg_leader      *seg = _seg;
 
-    if( EMIT_CLASS( seg->class ) && EMIT_SEG( seg ) ) {
+    if( EMIT_CLASS( seg->class )
+      && EMIT_SEG( seg ) ) {
         hex_offset   offs = *(hex_offset *)_grp_offs + SEG_GROUP_DELTA( seg );
         RingLookup( seg->pieces, WriteHexData, &offs );
     }

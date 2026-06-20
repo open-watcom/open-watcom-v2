@@ -387,7 +387,8 @@ static bool AddFile( void )
     }
 #endif
     ptr = GetFileName( &membname );
-    if( membname == NULL && Name == NULL ) {
+    if( membname == NULL
+      && Name == NULL ) {
         Name = getstring();
     }
     file = CurrFList;
@@ -453,7 +454,7 @@ bool ProcLibrary( void )
  */
 {
     if( (LinkFlags & (LF_DWARF_DBI_FLAG | LF_OLD_DBI_FLAG | LF_NOVELL_DBI_FLAG)) == 0
-        && !IsSystemBlock() ) {
+      && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     return( ProcArgList( AddLib, TOK_IS_FILENAME ) );
@@ -886,7 +887,8 @@ sysblock *FindSysBlock( const char *name )
     sysblock    *sys;
 
     for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-        if( sys->name != NULL && stricmp( sys->name, name ) == 0 ) {
+        if( sys->name != NULL
+          && stricmp( sys->name, name ) == 0 ) {
             return( sys );
         }
     }
@@ -904,7 +906,8 @@ static sysblock *FindSystemBlock( const char *name )
     if( tmpblk == NULL ) {
         len = strlen( name );
         for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
-            if( sys->name != NULL && strnicmp( sys->name, name, len ) == 0 ) {
+            if( sys->name != NULL
+              && strnicmp( sys->name, name, len ) == 0 ) {
                 if( tmpblk == NULL ) {
                     tmpblk = sys;
                 } else {
@@ -1151,7 +1154,9 @@ static bool ProcOutputOffset( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= ( 0xFFFFUL << FmtData.SegShift ) || HintFormat( ~MK_SEGMENTED )) ) {
+    if( retval == ST_IS_ORDINAL
+      && (value <= ( 0xFFFFUL << FmtData.SegShift )
+      || HintFormat( ~MK_SEGMENTED )) ) {
         FmtData.output_offset = value;
         return( true );
     } else {
@@ -1170,7 +1175,8 @@ static bool ProcOutputHshift( void )
         return( false );
     }
     ret = getatoi( &value );
-    if( ret == ST_IS_ORDINAL && value < 16) {
+    if( ret == ST_IS_ORDINAL
+      && value < 16) {
         FmtData.HexSegShift = 16 - value;
         FmtData.output_hshift = true;
         return( true );
@@ -1191,7 +1197,8 @@ static bool ProcHshift( void )
         return( false );
     }
     ret = getatoi( &value );
-    if( ret == ST_IS_ORDINAL && value < 16) {
+    if( ret == ST_IS_ORDINAL
+      && value < 16) {
         FmtData.Hshift = value;
         SetSegMask();
         return( true );
@@ -1211,7 +1218,8 @@ static bool ProcFillchar( void )
         return( false );
     }
     ret = getatoi( &value );
-    if( ret == ST_IS_ORDINAL && value < 256) {
+    if( ret == ST_IS_ORDINAL
+      && value < 256) {
         FmtData.FillChar = value;
         return( true );
     } else {
@@ -1251,7 +1259,9 @@ static bool ProcOrdOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~MK_SEGMENTED )) ) {
+    if( retval == ST_IS_ORDINAL
+      && (value <= 0xFFFFL
+      || HintFormat( ~MK_SEGMENTED )) ) {
         CurrOClass->Base.off = value;
         CurrOClass->FixedAddr = true;
         return( true );
@@ -1311,7 +1321,9 @@ static bool ProcOrdSegOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~MK_SEGMENTED )) ) {
+    if( retval == ST_IS_ORDINAL
+      && (value <= 0xFFFFL
+      || HintFormat( ~MK_SEGMENTED )) ) {
         CurrOSeg->Base.off = value;
         CurrOSeg->FixedAddr = true;
         return( true );
@@ -1340,10 +1352,13 @@ static bool ProcObjAlign( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
+    if( ret != ST_IS_ORDINAL
+      || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > _256M || (value & (value - 1)) ) {
+    if( value < 16
+      || value > _256M
+      || (value & (value - 1)) ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "OBJALIGN" );
         value = _64K;
     }
@@ -1370,10 +1385,12 @@ void ChkBase( offset align )
  * Note: align must be a power of 2
  */
 {
-    if( FmtData.objalign != NO_BASE_SPEC && FmtData.objalign > align ) {
+    if( FmtData.objalign != NO_BASE_SPEC
+      && FmtData.objalign > align ) {
         align = FmtData.objalign;
     }
-    if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
+    if( FmtData.base != NO_BASE_SPEC
+      && (FmtData.base & (align - 1)) != 0 ) {
         LnkMsg( WRN+LOC+LINE+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
         FmtData.base = __ROUND_UP_SIZE( FmtData.base, align );
     }
@@ -1621,7 +1638,7 @@ static bool ProcOrdSeg( void )
     CurrOSeg->FixedAddr = false;
     CurrOSeg->NoEmit = false;
     while( ProcOne( OrderSegOpts, SEP_NO ) )
-        {};
+        /* nothing */;
     return( true );
 }
 
@@ -1659,7 +1676,7 @@ static bool ProcOrdClass( void )
     CurrOClass->Copy = false;
     CurrOClass->NoEmit = false;
     while( ProcOne( OrderClassOpts, SEP_NO ) )
-        {};
+        /* nothing */;
     return( true );
 }
 
@@ -1910,7 +1927,7 @@ static bool ProcDebug( void )
     DBIFlag &= ~DBI_MASK;
     if( ProcOne( PosDbgMods, SEP_NO ) ) {
         while( ProcOne( PosDbgMods, SEP_COMMA ) ) {
-            ; /*null loop*/
+            /* nothing */;
         }
     } else {
         DBIFlag |= DBI_ALL; //DBI_MASK;

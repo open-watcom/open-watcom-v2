@@ -285,7 +285,8 @@ obj_name_list *AddNameTable( const char *name, size_t len, bool is_mod, obj_name
     index = 1;
     off = 1;
     for( imp = *owner; imp != NULL; imp = imp->next ) {
-        if( len == imp->len && memcmp( imp->name.u.ptr, name, len ) == 0 )
+        if( len == imp->len
+          && memcmp( imp->name.u.ptr, name, len ) == 0 )
             break;
         off += imp->len + 1;
         ++index;
@@ -426,7 +427,8 @@ void VMemQSort( virt_mem base, size_t n, size_t width,
                     p1 += width;
                 }
                 /* special check to see if all values compared are equal */
-                if( ( count == n - 1 ) && ( last_non_equal_count == 0 ) )
+                if( ( count == n - 1 )
+                  && ( last_non_equal_count == 0 ) )
                     break;
                 if( count != 0 ) {  /* store pivot in right spot */
                     swapfn( base, p2 );
@@ -512,7 +514,8 @@ void InitEnvVars( void )
 #else
         path_list = GetEnvString( "PATH" );
 #endif
-        if( path_list != NULL && *path_list != '\0' ) {
+        if( path_list != NULL
+          && *path_list != '\0' ) {
             len = strlen( path_list );
             ExePath = MemAllocSafe( len + 1 );
             p = ExePath;
@@ -529,7 +532,8 @@ void InitEnvVars( void )
     }
     if( LibPath == NULL ) {
         path_list = GetEnvString( "LIB" );
-        if( path_list != NULL && *path_list != '\0' ) {
+        if( path_list != NULL
+          && *path_list != '\0' ) {
             len = strlen( path_list );
             LibPath = MemAllocSafe( len + 1 );
             p = LibPath;
@@ -569,7 +573,8 @@ f_handle FindPath( const char *name, char *fullname )
 
     strcpy( fullpath, name );
     file = QObjOpen( fullpath );
-    if( file == NIL_FHANDLE && ExePath != NULL ) {
+    if( file == NIL_FHANDLE
+      && ExePath != NULL ) {
         for( path_list = ExePath; *path_list != '\0'; ) {
             strcpy( MakePath( fullpath, &path_list ), name );
             file = QObjOpen( fullpath );
@@ -578,7 +583,8 @@ f_handle FindPath( const char *name, char *fullname )
             }
         }
     }
-    if( file != NIL_FHANDLE && fullname != NULL ) {
+    if( file != NIL_FHANDLE
+      && fullname != NULL ) {
         strcpy( fullname, fullpath );
     }
     return( file );
@@ -665,13 +671,16 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     while( --cnt > 0 && *namptr != '.' ) {
         namptr--;
     }
-    if( !force && ( etype == E_NONE || *namptr == '.' ) ) {
+    if( !force
+      && ( etype == E_NONE
+      || *namptr == '.' ) ) {
         /*
          * duplicate name if no extension change is necessary
          */
         ptr = MemToStringSafe( buff, len );
     } else {
-        if( force && etype == E_MAP ) {         // op map goes in current dir.
+        if( force
+          && etype == E_MAP ) {         // op map goes in current dir.
             buff = namstart;
             len = namelen;
         }

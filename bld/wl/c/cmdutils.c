@@ -81,7 +81,8 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
                 break;     // don't wildcard a quoted string.
             if( *p == ' ' )
                 break;
-            if( *p == '?' || *p == '*' ) {
+            if( *p == '?'
+              || *p == '*' ) {
                 wildcrd = true;
                 break;
             }
@@ -154,12 +155,14 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl, cmdfilelist *resetpoin
             }
         }
     } else {
-        if( resetpoint != NULL && bfilereset )
+        if( resetpoint != NULL
+          && bfilereset )
             return( true );
         if( !GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset ) )
             return( false );
         do {
-            if( resetpoint != NULL && bfilereset )
+            if( resetpoint != NULL
+              && bfilereset )
                 return( true );
             if( !WildCard( rtn, ctrl ) ) {
                 return( false );
@@ -190,14 +193,16 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
         return( false );
     ret = true;
     for( ; entry->keyword != NULL; ++entry ) {
-        if( subset && (entry->flags & CF_SUBSET) == 0 ) {
+        if( subset
+          && (entry->flags & CF_SUBSET) == 0 ) {
             continue;
         }
         key = entry->keyword;
         ptr = Token.this;
         len = Token.len;
         for( ;; ) {
-            if( len == 0 && !isupper( *key ) ) {
+            if( len == 0
+              && !isupper( *key ) ) {
                 if( HintFormat( entry->format ) ) {
                     ret = (*entry->rtn)();
                     CmdFlags |= entry->flags & ~CF_SUBSET;
@@ -208,7 +213,8 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
                 }
                 return( ret );
             }
-            if( *key == '\0' || tolower( *ptr ) != tolower( *key ) )
+            if( *key == '\0'
+              || tolower( *ptr ) != tolower( *key ) )
                 break;
             ptr++;
             key++;
@@ -259,10 +265,12 @@ bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match
         ptr = match;
         len = match_len;
         for( ;; ) {
-            if( len == 0 && !isupper( *key ) ) {
+            if( len == 0
+              && !isupper( *key ) ) {
                 return( true );
             }
-            if( *key == '\0' || tolower( *ptr ) != tolower( *key ) )
+            if( *key == '\0'
+              || tolower( *ptr ) != tolower( *key ) )
                 break;
             ptr++;
             key++;
@@ -310,7 +318,8 @@ ord_state getatol( unsigned_32 *pnt )
     gotdigit = false;
     value = 0;
     radix = 10;
-    if( len >= 2 && *p == '0' ) {
+    if( len >= 2
+      && *p == '0' ) {
         --len;
         ++p;
         if( tolower( *(unsigned char *)p ) == 'x' ) {
@@ -322,13 +331,15 @@ ord_state getatol( unsigned_32 *pnt )
     for( ; len != 0; --len ) {
         ch = tolower( *(unsigned char *)p++ );
         if( ch == 'k' ) {               // constant of the form 64k
-            if( len > 1 || !gotdigit ) {
+            if( len > 1
+              || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
             } else {
                 value <<= 10;           // value = value * 1024;
             }
         } else if( ch == 'm' ) {        // constant of the form 64M
-            if( len > 1 || !gotdigit ) {
+            if( len > 1
+              || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
             } else {
                 value <<= 20;
@@ -491,7 +502,10 @@ static unsigned MapDoubleByteChar( int c )
 {
     switch( CmdFlags & CF_LANGUAGE_MASK ) {
     case CF_LANGUAGE_JAPANESE:
-        if( (c >= 0x81 && c <= 0x9F) || (c >= 0xE0 && c <=0xFC) ) {
+        if( (c >= 0x81
+          && c <= 0x9F)
+          || (c >= 0xE0
+          && c <=0xFC) ) {
             Token.next++;
             return( 1 );
         }
@@ -530,7 +544,9 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
         len--;                  /* length token for parsing wlib files, so */
         Token.next--;           /* artificially back up one here. */
     }
-    if( *Token.next == '\\' && separator == SEP_QUOTE && (ctrl & TOK_IS_FILENAME) == 0 ) {
+    if( *Token.next == '\\'
+      && separator == SEP_QUOTE
+      && (ctrl & TOK_IS_FILENAME) == 0 ) {
         MapEscapeChar();        /* get escape chars starting in 1st pos. */
     }
     hmm = *(unsigned char *)Token.next;
@@ -611,7 +627,8 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
         }
     }
     Token.len = len;
-    if( forcematch && !hitmatch ) {
+    if( forcematch
+      && !hitmatch ) {
         return( false );     // end quote/paren not found before token end.
     }
     return( true );
@@ -639,7 +656,8 @@ static void ExpandEnvVariable( tokcontrol ctrl, sep_type req )
         MakeToken( ctrl, req );
         envlen = strlen( env );
         toklen = Token.len;
-        if( req == SEP_QUOTE && Token.this[toklen] == '\'' )
+        if( req == SEP_QUOTE
+          && Token.this[toklen] == '\'' )
             toklen++;
         buff = MemAllocSafe( envlen + toklen + 1);
         memcpy( buff, env, envlen );
@@ -772,7 +790,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
         //  prefix token(s) may also appear anywhere in the file.
         */
 
-        if( Token.skipToNext && (req == SEP_COMMA) ) {
+        if( Token.skipToNext
+          && (req == SEP_COMMA) ) {
             Token.skipToNext = false;
             need_sep = false;
         }
@@ -784,16 +803,16 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             switch( hmm ) {
             case '\0':
                 if( Token.how == BUFFERED
-                 || Token.how == ENVIRONMENT
-                 || Token.how == SYSTEM ) {
+                  || Token.how == ENVIRONMENT
+                  || Token.how == SYSTEM ) {
                     Token.where = ENDOFFILE;
                     break;
                 }
                 /* fall through */
             case '\n':
                 if( Token.how == BUFFERED
-                 || Token.how == ENVIRONMENT
-                 || Token.how == SYSTEM ) {
+                  || Token.how == ENVIRONMENT
+                  || Token.how == SYSTEM ) {
                     Token.next++;               // just skip this.
                 } else if( Token.how == COMMANDLINE ) {
                     Token.where = ENDOFCMD;
@@ -838,7 +857,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                     Token.quoted = false;
                     switch( req ) {
                     case SEP_NO:
-                        if( hmm == ',' || hmm == '=' )
+                        if( hmm == ','
+                          || hmm == '=' )
                             return( false );
                         break;
                     case SEP_COMMA:
@@ -884,7 +904,9 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                     need_sep = false;
                     EatWhite();
                 } else {                /*  must have good separator here */
-                    if( hmm == '\'' && req != SEP_PAREN && req != SEP_SPACE ) {
+                    if( hmm == '\''
+                      && req != SEP_PAREN
+                      && req != SEP_SPACE ) {
                         req = SEP_QUOTE;   /* token has been quoted */
                         Token.next++;      /* don't include the quote */
                         Token.quoted = true;
@@ -914,7 +936,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                 Token.next = Token.this;        /* re-process last token */
             }
             Token.quoted = false;
-            if( resetpoint != NULL && (CmdFile == resetpoint) ) {
+            if( resetpoint != NULL
+              && (CmdFile == resetpoint) ) {
                 if( *Token.next == ',' )
                     break;
                 if( pbreset != NULL )
@@ -1051,7 +1074,8 @@ static void deleteCmdFile( cmdfilelist *cmdfile )
     f_handle    file;
 
     file = cmdfile->file;
-    if( file != NIL_FHANDLE && file != STDIN_FILENO ) {
+    if( file != NIL_FHANDLE
+      && file != STDIN_FILENO ) {
         QClose( file, cmdfile->name );
     }
     if( cmdfile->symprefix != NULL ) {
@@ -1201,7 +1225,8 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
      */
     state = GENVER_MAJOR;
     if( enq & GENVER_MAJOR ) {
-        if( ( major_limit ) && ( value > major_limit ) ) {
+        if( ( major_limit )
+          && ( value > major_limit ) ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
@@ -1222,7 +1247,8 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
     }
     state |= GENVER_MINOR;
     if( enq & GENVER_MINOR ) {
-        if( ( minor_limit ) && ( value > minor_limit ) ) {
+        if( ( minor_limit )
+          && ( value > minor_limit ) ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );
         }
@@ -1241,7 +1267,8 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
         /*
          * Netware supports a revision field 0-26 (null or a-z(A-Z))
          */
-        if( retval == ST_NOT_ORDINAL && Token.len == 1 ) {
+        if( retval == ST_NOT_ORDINAL
+          && Token.len == 1 ) {
             value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
         } else if( retval == ST_NOT_ORDINAL ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
@@ -1254,7 +1281,8 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
         }
     }
     state |= GENVER_REVISION;
-    if( ( revision_limit ) && ( value > revision_limit ) ) {
+    if( ( revision_limit )
+      && ( value > revision_limit ) ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
         return( state );
     }

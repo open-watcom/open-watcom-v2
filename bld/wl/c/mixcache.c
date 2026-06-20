@@ -140,7 +140,8 @@ static bool DumpFileCache( infilelist *infile, bool nuke )
         num = NumCacheBlocks( infile->len );
         blocklist = infile->cache;
         for( index = 0; index < num; index++ ) {
-            if( index != savenum && *blocklist != NULL ) {
+            if( index != savenum
+              && *blocklist != NULL ) {
                 MemFree( *blocklist );
                 *blocklist = NULL;
                 blockfreed = true;
@@ -321,8 +322,9 @@ bool DumpObjCache( void )
 
     for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
         if( infile->status & INSTAT_PAGE_CACHE ) {
-            if( CurrMod == NULL || CurrMod->u1.source == NULL
-                                || CurrMod->u1.source->infile != infile ) {
+            if( CurrMod == NULL
+              || CurrMod->u1.source == NULL
+              || CurrMod->u1.source->infile != infile ) {
                 if( DumpFileCache( infile, true ) ) {
                     return( true );
                 }

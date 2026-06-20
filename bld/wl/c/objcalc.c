@@ -197,7 +197,9 @@ static bool SetGroupInitSize( void *_sdata, void *_delta )
     segdata     *sdata = _sdata;
     offset      *delta = _delta;
 
-    if( !sdata->isuninit && ( sdata->length > 0 ) && !sdata->isdead ) {
+    if( !sdata->isuninit
+      && ( sdata->length > 0 )
+      && !sdata->isdead ) {
         sdata->u.leader->group->size = *delta + sdata->a.delta + sdata->length;
     }
     return( false );
@@ -485,8 +487,9 @@ static void CalcGrpAddr( group_entry *group )
             }
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
-            if( (FmtData.type & MK_REAL_MODE) && (seg->info & USE_32) == 0
-                && (info.end_addr - info.grp_addr > _64K) ) {
+            if( (FmtData.type & MK_REAL_MODE)
+              && (seg->info & USE_32) == 0
+              && (info.end_addr - info.grp_addr > _64K) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", group->sym->name,
                         info.end_addr - info.grp_addr - _64K );
             }
@@ -540,7 +543,8 @@ void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
 
     if( FmtData.type & MK_REAL_MODE ) {
         off = MK_REAL_ADDR( (int)( addr->seg - frame ), addr->off );
-        if( check_16bit && ( off >= 0x10000 )) {
+        if( check_16bit
+          && ( off >= 0x10000 )) {
             LnkMsg( ERR+LOC+MSG_FRAME_INVALID, "Ax", addr, frame );
         }
         addr->off = off;
@@ -860,7 +864,8 @@ void CalcAddresses( void )
                group->grp_addr.off = 0;
             }
             group->linear = flat;
-            if(( group == DataGroup ) && ( FmtData.dgroupsplitseg != NULL )) {
+            if(( group == DataGroup )
+              && ( FmtData.dgroupsplitseg != NULL )) {
                 if( StackSegPtr != NULL ) {
                     size -= StackSize;
                 }
@@ -1192,7 +1197,8 @@ static void SortClasses( section *sect )
     *owner = NULL;
     // This has to happen after the class list is rebuilt, so it can be searched
     for( MatchClass = sect->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
-         if( MatchClass->Copy && MatchClass->Ring != NULL ) {   // If this is a duplicate destination, find the source
+         if( MatchClass->Copy
+           && MatchClass->Ring != NULL ) {   // If this is a duplicate destination, find the source
              for( class = sect->classes; class != NULL; class = class->next ) {
                 if( stricmp( MatchClass->SrcName, class->name.u.ptr ) == 0 ) {
                     MatchClass->Ring->DupClass = class;
@@ -1240,7 +1246,7 @@ static void SortSegments( void )
                 for( comp = NULL; (comp = RingStep( newlist, comp )) != NULL; ) {
                     complen = strcspn( comp->segname.u.ptr, "$" );
                     if( ( complen == currlen )
-                        && ( memcmp( comp->segname.u.ptr, curr->segname.u.ptr, complen ) == 0 ) ) {
+                      && ( memcmp( comp->segname.u.ptr, curr->segname.u.ptr, complen ) == 0 ) ) {
                         foundmatch = true;
                         if( strcmp( comp->segname.u.ptr + complen,
                                     curr->segname.u.ptr + currlen ) > 0 ) {

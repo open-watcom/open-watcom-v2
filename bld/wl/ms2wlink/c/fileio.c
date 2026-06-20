@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -130,7 +130,8 @@ bool QReadStr( FILE *fp, char *dest, size_t size, const char *name )
     eof = false;
     while( --size > 0 ) {
         len = QRead( fp, &ch, 1, name );
-        if( len == 0 || size == IOERROR ) {
+        if( len == 0
+          || size == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {

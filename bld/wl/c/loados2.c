@@ -147,7 +147,8 @@ static void ReadOldLib( void )
     fname = FmtData.u.os2fam.old_lib_name;
     the_file = QOpenR( fname );
     QRead( the_file, &head, sizeof( dos_exe_header ), fname );
-    if( head.dos.signature != EXESIGN_DOS || !NE_HEADER_FOLLOWS( head.dos.reloc_offset ) ) {
+    if( head.dos.signature != EXESIGN_DOS
+      || !NE_HEADER_FOLLOWS( head.dos.reloc_offset ) ) {
         LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
     } else {
         QSeek( the_file, NE_HEADER_OFFSET, fname );
@@ -161,7 +162,8 @@ static void ReadOldLib( void )
             ReadNameTable( the_file );
             QSeek( the_file, head.os2.nonres_off, fname );
             ReadNameTable( the_file );
-        } else if( signature == EXESIGN_LE || signature == EXESIGN_LX ) {
+        } else if( signature == EXESIGN_LE
+          || signature == EXESIGN_LX ) {
             QRead( the_file, &head.os2f, sizeof( head.os2f ), fname );
             if( head.os2f.resname_off != 0 ) {
                 QSeek( the_file, ne_header_off + head.os2f.resname_off, fname );
@@ -228,7 +230,8 @@ static void AssignOrdinals( void )
                 if( place != NULL ) {
                     isspace = ( ( place->ordinal - prev->ordinal ) > 1 );
                 }
-                if( place == NULL || isspace ) {
+                if( place == NULL
+                  || isspace ) {
                     if( FmtData.u.os2fam.exports != prev ) {
                         FmtData.u.os2fam.exports = exp->next;
                         prev->next = exp;
@@ -403,16 +406,18 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 
     for( exe_type = restab->Dir.Head; exe_type != NULL;
                 exe_type = exe_type->Next ) {
-        if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
+        if( type->TypeName.IsName
+          && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
                             ( exe_type->Info.type - restab->Dir.TableSize ));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
-                && strnicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
+              && strnicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
                             exe_type_name->NumChars ) == 0 ) {
                 break;
             }
-        } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
+        } else if( !(type->TypeName.IsName)
+          && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
                 break;
@@ -630,7 +635,8 @@ unsigned long ResNonResNameTable( bool dores )
         }
         len = strlen( name );
     }
-    if( dores || len > 0 ) {
+    if( dores
+      || len > 0 ) {
         size += WriteLoadU8Name( name, len, false );
         WriteLoadU16( 0 );
         size += 2;
@@ -651,7 +657,10 @@ unsigned long ResNonResNameTable( bool dores )
             continue;
         if( exp->isanonymous )
             continue;
-        if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
+        if( (dores
+          && exp->isresident)
+          || (!dores
+          && !exp->isresident) ) {
             char    ext_name[255 + 1];
 
             len = create_exp_extname( exp, ext_name, (LinkFlags & LF_CASE_FLAG) == 0 );
@@ -845,7 +854,8 @@ void ChkOS2Exports( void )
         sym = exp->sym;
         if( IS_SYM_ALIAS( sym ) ) {
             sym = UnaliasSym( ST_FIND, sym );
-            if( sym == NULL || (sym->info & SYM_DEFINED) == 0 ) {
+            if( sym == NULL
+              || (sym->info & SYM_DEFINED) == 0 ) {
                 LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name.u.ptr );
                 continue;               // <----- DANGER weird control flow!
             } else if( exp->sym->info & SYM_WAS_LAZY ) {
@@ -863,7 +873,8 @@ void ChkOS2Exports( void )
             LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", sym->name );
         } else {
             exp->addr = sym->addr;
-            if( sym->p.seg == NULL || IS_SYM_IMPORTED( sym ) ) {
+            if( sym->p.seg == NULL
+              || IS_SYM_IMPORTED( sym ) ) {
                 if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
                     // MN: Create a forwarder - add a special flag?
                     // Currently WriteFlatEntryTable() in loadflat.c will
@@ -892,7 +903,8 @@ void ChkOS2Exports( void )
         }
     }   // NOTE: there is a continue in this loop!
     AssignOrdinals();    /* make sure all exports have ordinals */
-    if( (FmtData.type & MK_WIN_VXD) && ( num_entries != 1 ) ) {
+    if( (FmtData.type & MK_WIN_VXD)
+      && ( num_entries != 1 ) ) {
         LnkMsg( FTL+MSG_VXD_INCORRECT_EXPORT, NULL );
     }
 }

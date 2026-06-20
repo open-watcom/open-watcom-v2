@@ -371,7 +371,8 @@ static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsi
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         name = group->sym->name.u.ptr;
-        if( name == NULL || name[0] == 0 ) {
+        if( name == NULL
+          || name[0] == 0 ) {
             leader = Ring2First( group->leaders );
             name = leader->segname.u.ptr;
             if( name == NULL ) {
@@ -380,7 +381,8 @@ static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsi
         }
         strncpy( object->name, name, PE_OBJ_NAME_LEN );
         size_ph = CalcGroupSize( group );
-        if( group == DataGroup && FmtData.dgroupsplitseg != NULL ) {
+        if( group == DataGroup
+          && FmtData.dgroupsplitseg != NULL ) {
             size_v = group->totalsize;
             if( StackSegPtr != NULL ) {
                 size_v -= StackSize;
@@ -966,7 +968,8 @@ static void SetMiscTableEntries( pe_exe_header *pehdr )
     }
     leader = SetLeaderTable( CoffPDataSegName, &PE_DIRECTORY( *pehdr, PE_TBL_EXCEPTION ) );
     /* The .pdata section may end up being empty if the symbols got optimized out */
-    if( leader != NULL && leader->size ) {
+    if( leader != NULL
+      && leader->size ) {
         numpdatas = leader->size / sizeof( procedure_descriptor );
         sortarray = MemAllocSafe( numpdatas * sizeof( virt_mem * ) );
         temp = sortarray;
@@ -990,7 +993,8 @@ static unsigned FindNumObjects( void )
         ++num_objects;
     if( FmtData.description != NULL )
         ++num_objects;
-    if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL )
+    if( FmtData.resource != NULL
+      || FmtData.u.pe.resources != NULL )
         ++num_objects;
     return( num_objects );
 }
@@ -1216,7 +1220,8 @@ void FiniPELoadFile( void )
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL
+          || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &pehdr, tbl_obj, file_align );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
@@ -1232,7 +1237,8 @@ void FiniPELoadFile( void )
         PE64( pehdr ).image_size = image_size;
         PE64( pehdr ).headers_size = objects[0].physical_offset;
     } else {
-        if( FmtData.u.pe.tnt || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
+        if( FmtData.u.pe.tnt
+          || FmtData.u.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
             pehdr.signature = EXESIGN_PL;
         } else {
             pehdr.signature = EXESIGN_PE;
@@ -1389,7 +1395,8 @@ void FiniPELoadFile( void )
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL
+          || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &pehdr, tbl_obj, file_align );
             image_size += __ROUND_UP_SIZE( size, FmtData.objalign );
@@ -1485,7 +1492,8 @@ static unsigned_32 getStubSize( void )
         return( 0 );
     }
     stub_len = GetDOSDefStubSize();
-    if( FmtData.u.os2fam.stub_file_name != NULL && stricmp( FmtData.u.os2fam.stub_file_name, Root->outfile->fname ) != 0 ) {
+    if( FmtData.u.os2fam.stub_file_name != NULL
+      && stricmp( FmtData.u.os2fam.stub_file_name, Root->outfile->fname ) != 0 ) {
         the_file = FindPath( FmtData.u.os2fam.stub_file_name, fullname );
         if( the_file == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2fam.stub_file_name );
@@ -1666,7 +1674,8 @@ static void RegisterImport( dll_sym_info *sym )
                 cmp = memcmp( chk->imp->name.u.ptr, os2_imp->name.u.ptr, len );
                 if( cmp > 0 )
                     break;
-                if( cmp == 0 && len > chk->imp->len ) {
+                if( cmp == 0
+                  && len > chk->imp->len ) {
                     break;
                 }
             }

@@ -104,7 +104,8 @@ void InitToc( void )
 {
     Toc = CreateHTable( 1024, TocEntryHashFunc, TocEntryCmp, MemAllocSafe, MemFree );
     TocSize = 0;
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE)
+      && (FmtData.type & MK_PE) ) {
         TocName = TocSymName;
         TocShift = 0x8000;
     } else {
@@ -117,7 +118,8 @@ void InitToc( void )
 void CheckIfTocSym( symbol *sym )
 /**************************************/
 {
-    if( TocName != NULL && TocSym == NULL ) {
+    if( TocName != NULL
+      && TocSym == NULL ) {
         if( strcmp( sym->name.u.ptr, TocName ) == 0 ) {
             TocSym = sym;
         }
@@ -178,7 +180,8 @@ static void ConvertTocEntryId( TocEntryId *e )
         symbol *sym = e->u.sym;
         segdata *seg = sym->p.seg;
 
-        if( IS_SYM_IMPORTED( sym ) || seg == NULL ) {
+        if( IS_SYM_IMPORTED( sym )
+          || seg == NULL ) {
             // do not convert; keep symbol around
         } else {
             e->sdata = seg;
@@ -217,7 +220,8 @@ void PrepareToc( void )
     WalkHTable( Toc, ConvertTocEntry );
     RehashHTable( Toc );
 #if 0
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE)
+      && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
         // Development temporarly on hold
         offset middle = ( TocSize / 2 ) & ~0x3;
         WalkHTableCookie( Toc, AdjustGotEntry, &middle );
@@ -237,7 +241,8 @@ void PrepareToc( void )
 void SetTocAddr( offset off, group_entry *group )
 /******************************************************/
 {
-    if( Toc != NULL && TocSym != NULL ) {
+    if( Toc != NULL
+      && TocSym != NULL ) {
         SET_SYM_ADDR( TocSym, off + TocShift, group->grp_addr.seg );
     }
 }
@@ -319,7 +324,8 @@ void WriteToc( virt_mem buf )
         return;
     WalkHTableCookie( Toc, WriteOutTokElem, &buf );
 #if 0
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE)
+      && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
         // Development temporarly on hold
         offset res[GOT_RESERVED_SIZE / sizeof( offset )] = { 0 };
         enum { zero = GOT_RESERVED_NEG_SIZE / sizeof( offset ) };

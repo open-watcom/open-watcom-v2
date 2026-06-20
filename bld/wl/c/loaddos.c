@@ -147,7 +147,8 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
         CurrSect = sect;
         fnode = sect->outfile;
         repos = WriteGroup( group );
-        if( ( next == NULL ) || ( sect != next->section ) ) {
+        if( ( next == NULL )
+          || ( sect != next->section ) ) {
             if( sect == Root ) {
                 root_size = fnode->file_loc;
             } else {
@@ -176,7 +177,8 @@ static bool WriteSegData( void *_sdata, void *_start )
     soffset         newpos;
     size_t          pad;
 
-    if( !sdata->isuninit && !sdata->isdead ) {
+    if( !sdata->isuninit
+      && !sdata->isdead ) {
         newpos = *start + sdata->a.delta;
         if( newpos + (soffset)sdata->length > 0 ) {
             if( newpos > COMAmountWritten ) {
@@ -254,7 +256,8 @@ static void WriteCOMFile( void )
         LnkMsg( ERR+MSG_INV_COM_START_ADDR, NULL );
         return;
     }
-    if( ( StackAddr.seg != 0 ) || ( StackAddr.off != 0 ) ) {
+    if( ( StackAddr.seg != 0 )
+      || ( StackAddr.off != 0 ) ) {
         LnkMsg( WRN+MSG_STACK_SEG_IGNORED, NULL );
     }
     OrderGroups( CompareDosSegments );

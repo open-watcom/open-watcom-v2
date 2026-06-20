@@ -182,7 +182,9 @@ static byte COMDEF_bits( void )
             break;
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
-        if( seg->isuninit || seg->iscdat || seg->iscode ) {
+        if( seg->isuninit
+          || seg->iscdat
+          || seg->iscode ) {
             return( seg->bits );
         }
     }
@@ -245,7 +247,8 @@ void ProcLinsym( void )
     if( !IS_SYM_COMDAT( sym ) )
         return;
     is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
-    if( sym->mod == CurrMod && (sym->info & SYM_DEAD) == 0 ) {
+    if( sym->mod == CurrMod
+      && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
     }
 }
@@ -314,7 +317,8 @@ static void AddToLinkerComdat( symbol *sym )
         sym->addr.off = 0;
         sect = Root;
 #ifdef _EXE
-        if( (FmtData.type & MK_OVERLAYS) && (alloc & 1) != 0 ) {
+        if( (FmtData.type & MK_OVERLAYS)
+          && (alloc & 1) != 0 ) {
             sect = NonSect;             /* data in an overlaid app */
         }
 #endif
@@ -322,7 +326,8 @@ static void AddToLinkerComdat( symbol *sym )
     } else {
         class = leader->class;
         seglen = CAlign( leader->size, align ) + sdata->length;
-        if( seglen > 0xFFFF && align <= 1 ) {
+        if( seglen > 0xFFFF
+          && align <= 1 ) {
             sdata->u.name = GetNewName();
             sym->addr.off = 0;
         } else {
@@ -505,7 +510,8 @@ void ProcComdat( void )
         RingAppend( &CDatList, info );
         if( IS_SYM_COMDAT( sym ) ) {
             CheckComdatSym( sym, info->flags & ~SYM_DEAD );
-        } else if( !(IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED)) ) {
+        } else if( !(IS_SYM_REGULAR( sym )
+          && (sym->info & SYM_DEFINED)) ) {
             if( sym->info & SYM_DEFINED ) {
                 sym = HashReplace( sym );
             }
@@ -526,7 +532,8 @@ void ProcComdat( void )
             info->flags &= ~SYM_DEAD;
         }
     }
-    if( (info->flags & SYM_DEAD) && (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
+    if( (info->flags & SYM_DEAD)
+      && (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         ObjFormat |= OBJ_FMT_IGNORE_FIXUPP;
     } else {
         ObjFormat &= ~(OBJ_FMT_IGNORE_FIXUPP | OBJ_FMT_IS_LIDATA);

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -227,7 +227,8 @@ void QClose( f_handle file, const char *name )
     CheckBreak();
     h = TinyClose( file );
     OpenFiles--;
-    if( TINY_OK( h ) || name == NULL )
+    if( TINY_OK( h )
+      || name == NULL )
         return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
 }
@@ -308,7 +309,8 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
     eof = false;
     while( --size > 0 ) {
         len = QRead( file, &ch, 1, name );
-        if( len == 0 || len == IOERROR ) {
+        if( len == 0
+          || len == IOERROR ) {
             eof = true;
             break;
         } else if( ch != '\r' ) {

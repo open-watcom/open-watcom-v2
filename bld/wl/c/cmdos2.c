@@ -109,7 +109,8 @@ static entry_export *ProcWlibDLLImportEntry( void )
                 DUPSTR_STACK( symname.name, Token.this, Token.len );
                 symname.len = Token.len;
             }
-            if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
+            if( GetToken( SEP_DOT_EXT, TOK_NORMAL )
+              && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
                 if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
                     getatoi( &ordinal );
                 }
@@ -150,7 +151,8 @@ static bool GetWlibImports( void )
     while( GetToken( SEP_SPACE, TOK_NORMAL ) ) {
         if( Token.len <= 2 )
             continue;
-        if( (Token.this[0] == '+') && (Token.this[1] == '+') ) {
+        if( (Token.this[0] == '+')
+          && (Token.this[1] == '+') ) {
             Token.this += 2;
             Token.len -= 2;
             if( Token.this[0] == '\'' ) {
@@ -419,7 +421,8 @@ bool ProcOS2Alignment( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
+    if( ret != ST_IS_ORDINAL
+      || value == 0 ) {
         return( false );
     }
     FmtData.u.os2fam.segment_shift = log2_32( value - 1 ) + 1;     //round up.
@@ -435,7 +438,8 @@ bool ProcOS2HeapSize( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
+    if( ret != ST_IS_ORDINAL
+      || value == 0 ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "HEAPSIZE" );
     } else {
         FmtData.u.os2fam.heapsize = value;
@@ -574,12 +578,12 @@ static bool getexport( void )
     }
     exp->next = FmtData.u.os2fam.exports;   // put in the front of the list for
     FmtData.u.os2fam.exports = exp;         // now so ProcResidant can get to it.
-    while( ProcOne( Exp_Keywords, SEP_NO ) ) {
-        // handle misc options
-    }
+    while( ProcOne( Exp_Keywords, SEP_NO ) )
+        /* nothing */;
     FmtData.u.os2fam.exports = exp->next;   // take it off the list
     exp->iopl_words = 0;
-    if( (FmtData.type & (MK_WIN_NE | MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+    if( (FmtData.type & (MK_WIN_NE | MK_PE)) == 0
+      && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
@@ -950,7 +954,8 @@ static bool getsegflags( void )
     entry->next = FmtData.u.os2fam.seg_flags;
     FmtData.u.os2fam.seg_flags = entry;
     ProcOne( SegDesc, SEP_NO );             // look for an optional segdesc
-    if( entry->type != SEGFLAG_CODE && entry->type != SEGFLAG_DATA ) {
+    if( entry->type != SEGFLAG_CODE
+      && entry->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
             FmtData.u.os2fam.seg_flags = entry->next;
             MemFree( entry );
@@ -958,8 +963,8 @@ static bool getsegflags( void )
         }
         entry->name = getstring();
     }
-    while( ProcOne( SegModel, SEP_NO ) ) {
-    }
+    while( ProcOne( SegModel, SEP_NO ) )
+        /* nothing */;
     return( true );
 }
 
@@ -1379,7 +1384,7 @@ bool ProcWindowsFormat( void )
     ProcOne( WindowsSubFormats, SEP_NO );
     if( FmtData.type & MK_WIN_NE ) {
         while( ProcOne( WindowsFormatOptions, SEP_NO ) ) {
-            // loop all options
+            /* nothing */;
         }
     }
     return( true );

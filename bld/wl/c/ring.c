@@ -128,7 +128,8 @@ void* RINGNAME(Promote) (       // PROMOTE ELEMENT TO START OF RING
     prev = prv;
     element = elt;
     last = *rhdr;
-    if( prev == NULL || last == prev ) {
+    if( prev == NULL
+      || last == prev ) {
         /* already at front */
         return( element );
     }
@@ -162,7 +163,8 @@ void RINGNAME(Insert) (         // INSERT ELEMENT INTO RING
     verifyNotInRing( *rhdr, relement );
     ielement = insert;
     lelement = *rhdr;
-    if( ( lelement == NULL ) || ( lelement == ielement ) ) {
+    if( ( lelement == NULL )
+      || ( lelement == ielement ) ) {
         RINGNAME(Append)( hdr, element );
     } else if( ielement == NULL ) {  // insert at start of ring
         relement->next = lelement->next;

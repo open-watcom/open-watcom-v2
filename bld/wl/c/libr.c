@@ -101,7 +101,9 @@ static int ReadOMFDict( file_list *file, unsigned_8 *header, bool makedict )
         header += sizeof( unsigned_32 );
         omf_dict->pages = MGET_LE_U16_UN( header );
         header += sizeof( unsigned_16 );
-        if( omf_dict->start == 0 || omf_dict->pages == 0 || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > file->infile->len ) {
+        if( omf_dict->start == 0
+          || omf_dict->pages == 0
+          || ( omf_dict->start + omf_dict->pages * DIC_REC_SIZE ) > file->infile->len ) {
             BadLibrary( file );
             return( -1 );
         }
@@ -263,7 +265,8 @@ static void ReadARDictData( file_list *file, unsigned long *loc, unsigned size, 
             data += sizeof( unsigned_16 );
         }
         dict->num_entries = num;
-        if( num > 0 && dict->symbtab == NULL ) {
+        if( num > 0
+          && dict->symbtab == NULL ) {
             dict->symbtab = MemAllocSafe( sizeof( char * ) * num );
         }
     }
@@ -279,11 +282,14 @@ static void ReadARStringTable( file_list *file, unsigned long *loc, unsigned siz
     char            *data;
     unsigned        i;
 
-    if( file->strtab == NULL && size > 0 ) {
+    if( file->strtab == NULL
+      && size > 0 ) {
         file->strtab = CachePermRead( file, *loc, size );
         data = file->strtab;
         for( i = 0; i < size; ++i ) {
-            if( *data == '\n' || *data == '/' && *(data + 1) == '\n' )
+            if( *data == '\n'
+              || *data == '/'
+              && *(data + 1) == '\n' )
                 *data = '\0';
             ++data;
         }
@@ -306,13 +312,15 @@ static bool ReadARDict( file_list *file, unsigned long *loc, bool makedict )
     for( ;; ) {
         ar_hdr = CacheRead( file, *loc, sizeof( ar_header ) );
         size = GetARValue( ar_hdr->size, AR_SIZE_LEN );
-        if( ar_hdr->name[0] == '/' && ar_hdr->name[1] == ' ' ) {
+        if( ar_hdr->name[0] == '/'
+          && ar_hdr->name[1] == ' ' ) {
             ++numdicts;
             *loc += sizeof( ar_header );
             if( makedict )
                 ReadARDictData( file, loc, size, numdicts );
             *loc += __ROUND_UP_SIZE_EVEN( size );
-        } else if( ar_hdr->name[0] == '/' && ar_hdr->name[1] == '/' ) {
+        } else if( ar_hdr->name[0] == '/'
+          && ar_hdr->name[1] == '/' ) {
             *loc += sizeof( ar_header );
             ReadARStringTable( file, loc, size );
             *loc += __ROUND_UP_SIZE_EVEN( size );
@@ -328,7 +336,8 @@ static bool ReadARDict( file_list *file, unsigned long *loc, bool makedict )
             file->u.dict = NULL;
             return( false );
         }
-        if( (LinkFlags & LF_CASE_FLAG) == 0 || numdicts == 1 ) {
+        if( (LinkFlags & LF_CASE_FLAG) == 0
+          || numdicts == 1 ) {
             SortARDict( &file->u.dict->a );
         }
     }
@@ -343,7 +352,8 @@ int CheckLibraryType( file_list *file, unsigned long *loc, bool makedict )
 
     reclength = 0;
     header = CacheRead( file, *loc, sizeof( omf_lib_header ) );
-    if( header[0] == 0xf0 && header[1] == 0x01 ) {
+    if( header[0] == 0xf0
+      && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
         file->flags |= STAT_OMF_LIB;
@@ -462,7 +472,8 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
     } else {
         result = strnicmp( buff, name, len );
     }
-    if( result == 0 && name[len] == '\0' ) {
+    if( result == 0
+      && name[len] == '\0' ) {
         returnval = MGET_LE_U16_UN( buff + len );
     }
     return( returnval );
@@ -671,7 +682,9 @@ char *GetARName( const ar_header *header, const file_list *file, unsigned long *
         val = GetARValue( &header->name[1], AR_NAME_LEN - 1 );
         buf = file->strtab + val;
         len = strlen( buf );
-    } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
+    } else if( header->name[0] == '#'
+      && header->name[1] == '1'
+      && header->name[2] == '/') {
         len = GetARValue( &header->name[3], AR_NAME_LEN - 3 );
         buf = CacheRead( file, *loc, len );
         *loc += len;

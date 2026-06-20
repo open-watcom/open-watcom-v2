@@ -319,7 +319,8 @@ static void ReplaceExt( char *name, const char *new_ext, bool force )
     pgroup2     pg;
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    if( force || pg.ext[0] == '\0' ) {
+    if( force
+      || pg.ext[0] == '\0' ) {
         _makepath( name, pg.drive, pg.dir, pg.fname, new_ext );
     }
 }
@@ -388,7 +389,8 @@ static void ProcFile( const char *fname )
     for( ;; ) {
         CleanRecStuff();
         ftype = ReadRec();
-        if( ftype == ENDLIBRARY || ftype == ENDFILE ) {
+        if( ftype == ENDLIBRARY
+          || ftype == ENDFILE ) {
             break;
         } else if( ftype == LIBRARY ) {
             Warning( "exclude option does not apply to libraries" );
@@ -444,7 +446,8 @@ static void ProcessFiles( const char **argv )
 
     while( *argv != NULL ) {
         item = *argv;
-        if( *item == '-' || *item == '/' ) {
+        if( *item == '-'
+          || *item == '/' ) {
             ProcessOption( &argv );
         } else {
             printf( "Processing file '%s'\n", item );
@@ -568,7 +571,8 @@ int main(int argc, char **argv )
     ClassList->next = NULL;
     ClassList->lnameidx = 0;
     memcpy( ClassList->name, DEF_CLASS, sizeof( DEF_CLASS ) - 1 );
-    if( ( argc < 2 ) || ( argv[1][0] == '?' ) ) {
+    if( ( argc < 2 )
+      || ( argv[1][0] == '?' ) ) {
         printf( "%s", HelpMsg );
     } else {
         argv++;     // skip the program name

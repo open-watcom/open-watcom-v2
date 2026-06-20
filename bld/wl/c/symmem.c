@@ -131,7 +131,8 @@ static void GetNewBlock( block_data *block_set, size_t size )
         if( block != NULL )
             break;
         try /= 2;
-        if( try < size || try < SYM_BLOCK_MIN ) {
+        if( try < size
+          || try < SYM_BLOCK_MIN ) {
             LnkMsg( FTL + MSG_NO_DYN_MEM, NULL );
         }
     }

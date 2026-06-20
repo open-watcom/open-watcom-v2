@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -66,7 +66,8 @@ static bool GetSectionData( ovl_address __far *data )
     ovltab_entry_ptr    ovl;
 
     number = __OVLTABEND__ - __OVLTAB__.entries;
-    if( ( data->sect_id > number ) || ( data->sect_id == 0 ) )
+    if( ( data->sect_id > number )
+      || ( data->sect_id == 0 ) )
         return( false );
     ovl = __OVLTAB__.entries + data->sect_id - 1;
     data->sect_id = ovl->num_paras;
@@ -144,7 +145,8 @@ static bool RestoreOvlState( unsigned char __far *data )
         }
         ovl = __OVLTAB__.entries + ovlnum - 1;
         if( (ovl->flags_anc & FLAG_INMEM) == 0 ) {
-            if( (__OVLFLAGS__ & DBGAREA_VALID) && ( __OVLDBGINFO__.section != ovlnum ) ) {
+            if( (__OVLFLAGS__ & DBGAREA_VALID)
+              && ( __OVLDBGINFO__.section != ovlnum ) ) {
                 __OVLTAB__.entries[__OVLDBGINFO__.section - 1].flags_anc |= FLAG_CHANGED;
             }
             __OVLDBGINFO__.section = ovlnum;
@@ -165,7 +167,8 @@ static bool RestoreOvlState( unsigned char __far *data )
     mask = 1;
     WALK_ALL_OVL( ovl ) {
 #ifndef OVL_WHOOSH
-        if( (ovl->flags_anc & FLAG_INMEM) == 0 && (*data & mask) ) {
+        if( (ovl->flags_anc & FLAG_INMEM) == 0
+          && (*data & mask) ) {
             NAME( LoadOverlay )( OVLNUM( ovl ) );
         }
 #else
@@ -222,7 +225,8 @@ static bool CheckVecAddr( ovl_address __far *data )
     } else {
         data->sect_id = vect->u.v.sec_num;
         ovl = __OVLTAB__.entries + vect->u.v.sec_num - 1;
-        if( ( __OVLFLAGS__ & DBGAREA_VALID ) && ( data->sect_id == __OVLDBGINFO__.section ) ) {
+        if( ( __OVLFLAGS__ & DBGAREA_VALID )
+          && ( data->sect_id == __OVLDBGINFO__.section ) ) {
             data->mach.segment = __OVLDBGINFO__.location;
         } else if( ovl->flags_anc & FLAG_DBG_SECT_LOAD ) {
             data->mach.segment = __OVLDBGINFO__.location;
@@ -256,7 +260,8 @@ static bool GetChangedSections( ovl_address __far *data )
     ovltab_entry_ptr    ovl;
     unsigned            ovl_num;
 
-     if( ( __OVLFLAGS__ & DBGAREA_LOADED ) && ( __OVLFLAGS__ & DBGAREA_VALID ) ) {
+     if( ( __OVLFLAGS__ & DBGAREA_LOADED )
+       && ( __OVLFLAGS__ & DBGAREA_VALID ) ) {
         ovl_num = __OVLDBGINFO__.section;
         if( ovl_num == data->sect_id ) {
             __OVLFLAGS__ &= ~DBGAREA_LOADED;

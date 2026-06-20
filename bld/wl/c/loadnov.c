@@ -159,7 +159,8 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     count = wrote = 0;
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
         sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
-        if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
+        if( ( sym == NULL )
+          || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name.u.ptr );
         } else if( !IS_SYM_IMPORTED( sym ) ) {
             char    ext_name[255 + 1];
@@ -204,12 +205,12 @@ void NovDBIAddGlobal( void *_sym )
     symbol *sym = _sym;
 
     if( !IS_SYM_A_REF( sym )
-            && !IS_SYM_ALIAS( sym )
-            && ( sym->p.seg != NULL )
-            && (sym->info & SYM_DEAD) == 0
-            && !sym->p.seg->isabs
-            && (sym->info & SYM_STATIC) == 0
-            && (FmtData.u.nov.flags & DO_NOV_EXPORTS) == 0 ) {
+      && !IS_SYM_ALIAS( sym )
+      && ( sym->p.seg != NULL )
+      && (sym->info & SYM_DEAD) == 0
+      && !sym->p.seg->isabs
+      && (sym->info & SYM_STATIC) == 0
+      && (FmtData.u.nov.flags & DO_NOV_EXPORTS) == 0 ) {
         DbgInfoLen += sizeof( nov_dbg_info ) + strlen( sym->name.u.ptr );
     }
 }
@@ -229,7 +230,9 @@ void NovDBIGenGlobal( symbol *sym )
     nov_dbg_info    info;
     size_t          len;
 
-    if( ( DbgInfoLen != 0 ) && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0 || (sym->info & SYM_REFERENCED) ) ) {
+    if( ( DbgInfoLen != 0 )
+      && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0
+      || (sym->info & SYM_REFERENCED) ) ) {
         DbgInfoCount++;
         if( sym->addr.seg == DATA_SEGMENT ) {
             info.type = DBG_DATA;
@@ -265,7 +268,8 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
         count = wrote = 0;
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
-            if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
+            if( ( sym != NULL )
+              && !IS_SYM_IMPORTED( sym ) ) {
                 if( sym->addr.seg == DATA_SEGMENT ) {
                     info.type = DBG_DATA;
                 } else {
@@ -373,7 +377,8 @@ static void GetProcOffsets( fixed_header *header )
         name = DEFAULT_PRELUDE_FN_CLIB;
     }
     sym = FindISymbol( name );
-    if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
+    if( ( sym == NULL )
+      || (sym->info & SYM_DEFINED) == 0 ) {
         LnkMsg( ERR + MSG_START_PROC_NOT_FOUND, NULL );
     } else {
         header->codeStartOffset = sym->addr.off;
@@ -551,7 +556,8 @@ void FiniNovellLoadFile( void )
         file_size += len;
     }
     if( FmtData.ver_specified ) {
-        if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
+        if( ( FmtData.major != 0 )
+          || ( FmtData.minor != 0 ) ) {
             file_size += sizeof( fixed_hdr_2 );
         }
     }
@@ -618,7 +624,8 @@ void FiniNovellLoadFile( void )
         NovNameWrite( module_name );      // use module name as a default
     }
     if( FmtData.ver_specified ) {
-        if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
+        if( ( FmtData.major != 0 )
+          || ( FmtData.minor != 0 ) ) {
             memcpy( second_header.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH );
             second_header.majorVersion = FmtData.major;
             second_header.minorVersion = FmtData.minor;
@@ -704,10 +711,12 @@ void FindExportedSyms( void )
     debug_info      *dinfo;
 
     dinfo = CurrSect->dbg_info;
-    if( (FmtData.u.nov.flags & DO_WATCOM_EXPORTS) && ( dinfo != NULL ) ) {
+    if( (FmtData.u.nov.flags & DO_WATCOM_EXPORTS)
+      && ( dinfo != NULL ) ) {
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name.u.ptr, export->len );
-            if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
+            if( ( sym != NULL )
+              && !IS_SYM_IMPORTED( sym ) ) {
                 dinfo->global.curr.u.vm_offs += sizeof( v3_gbl_info ) + strlen( sym->name.u.ptr );
             }
         }

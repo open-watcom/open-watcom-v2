@@ -109,7 +109,8 @@ bool CleanCachedHandles( void )
     infilelist *infile;
 
     for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
-        if( (infile->status & INSTAT_IN_USE) == 0 && infile->handle != NIL_FHANDLE ) {
+        if( (infile->status & INSTAT_IN_USE) == 0
+          && infile->handle != NIL_FHANDLE ) {
             break;
         }
     }
@@ -127,7 +128,8 @@ char *MakePath( char *fullname, const char **path_list )
     char        c;
 
     p = fullname;
-    if( *path_list != NULL && (c = **path_list) != '\0' ) {
+    if( *path_list != NULL
+      && (c = **path_list) != '\0' ) {
         do {
             ++(*path_list);
             if( IS_PATH_LIST_SEP( c ) ) {
@@ -155,7 +157,8 @@ char *MakeFileName( infilelist *infile, char *fullname )
 bool MakeFileNameFromList( const char **path_list, char *name, char *fullname )
 /*****************************************************************************/
 {
-    if( *path_list != NULL && **path_list != '\0' ) {
+    if( *path_list != NULL
+      && **path_list != '\0' ) {
         strcpy( MakePath( fullname, path_list ), name );
         return( true );
     }
@@ -203,7 +206,8 @@ bool DoObjOpen( infilelist *infile )
         fp = QObjOpen( new_name );
     } else {                                // new, no searched path
         fp = NIL_FHANDLE;
-        if( (infile->status & INSTAT_LIB_SEARCH) || infile->path_list == NULL ) {
+        if( (infile->status & INSTAT_LIB_SEARCH)
+          || infile->path_list == NULL ) {
             /* try in current directory */
             fp = QObjOpen( name );
         }
@@ -214,7 +218,8 @@ bool DoObjOpen( infilelist *infile )
                     break;
                 }
             }
-            if( fp == NIL_FHANDLE && (infile->status & INSTAT_USE_LIBPATH) ) {
+            if( fp == NIL_FHANDLE
+              && (infile->status & INSTAT_USE_LIBPATH) ) {
                 if( LibPath != NULL ) {
                     fp = PathObjOpen( LibPath, name, new_name, infile );
                 }

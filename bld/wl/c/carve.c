@@ -288,7 +288,8 @@ static void CarveDebugFree( carve_t carver, void *elm )
         compare = start + carver->blk_top;
 #if ! ( defined(__COMPACT__) || defined(__LARGE__) )
         /* quick check */
-        if( (char *)elm < start || (char *)elm > compare ) {
+        if( (char *)elm < start
+          || (char *)elm > compare ) {
             continue;
         }
 #endif

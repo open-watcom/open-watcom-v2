@@ -84,7 +84,9 @@ void CmdNovFini( void )
 static bool IsNetWarePrefix( const char *token, size_t tokenlen )
 /***************************************************************/
 {
-    if( ( token != NULL ) && ( token[0] == '(' ) && ( token[tokenlen - 1] == ')' ) )
+    if( ( token != NULL )
+      && ( token[0] == '(' )
+      && ( token[tokenlen - 1] == ')' ) )
         return( true );
     return( false );
 }
@@ -95,7 +97,12 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
     const char  *findAt = token;
     size_t      len;
 
-    if( (NULL == token) || (0 == tokenlen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
+    if( (NULL == token)
+      || (0 == tokenlen)
+      || (NULL == name)
+      || (NULL == namelen)
+      || (NULL == prefix)
+      || (NULL == prefixlen) )
         return( false );
 
     *name = *prefix = NULL;
@@ -153,7 +160,8 @@ static bool SetCurrentPrefix( const char *str, size_t len )
         CmdFile->symprefix = NULL;
     }
 
-    if( ( NULL == str ) || ( len == 0 ) ) {
+    if( ( NULL == str )
+      || ( len == 0 ) ) {
         return( true );
     }
     /* it suppose string format as "(.....)" */
@@ -197,7 +205,8 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
 {
     const char  *parse;
 
-    if( ( Token.next == NULL ) || ( *Token.next == '\0' ) )
+    if( ( Token.next == NULL )
+      || ( *Token.next == '\0' ) )
         return( false );
 
     for( parse = Token.next; *parse != '\0'; parse++ ) {
@@ -215,16 +224,19 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
     /*
     //  skip cr-lf
     */
-    if( ( *parse == '\n' ) || ( *parse == '\r' ) )
+    if( ( *parse == '\n' )
+      || ( *parse == '\r' ) )
         parse++;
-    if( ( *parse == '\n' ) || ( *parse == '\r' ) )
+    if( ( *parse == '\n' )
+      || ( *parse == '\r' ) )
         parse++;
 
     /*
     //  always skip to the next token if the next available token is not a comma
     //  this will allow individual tokens without commas which isn't a big deal
     */
-    if( ( *parse != '\0' ) && ( *parse != ',' ) ) {
+    if( ( *parse != '\0' )
+      && ( *parse != ',' ) ) {
         /*
         //  If the next token is __not__ a comma then we need to check that it is not a directive
         //  before allowing the skip!
@@ -287,13 +299,16 @@ static bool GetNovSymbolImportExport( bool import )
         return( false );
     }
 
-    if( ( prefix == NULL || ( 0 == prefixlen ) ) && ( NULL != CmdFile->symprefix ) ) {
+    if( ( prefix == NULL
+      || ( 0 == prefixlen ) )
+      && ( NULL != CmdFile->symprefix ) ) {
         prefix = CmdFile->symprefix;
         prefixlen = strlen( prefix );
     }
     if( import ) {
         sym = SymOpNWPfx( ST_CREATE_DEFINE_NOALIAS, name, namelen, prefix, prefixlen );
-        if( sym == NULL || sym->p.import != NULL ) {
+        if( sym == NULL
+          || sym->p.import != NULL ) {
             return( true );
         }
 #ifdef DEVBUILD
@@ -477,7 +492,8 @@ static bool ProcCopyright( void )
     unsigned        year;
     char            *copy_year;
 
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) && !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT )
+      && !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( FmtData.u.nov.copyright != NULL ) {
             MemFree( FmtData.u.nov.copyright );  // assume second is correct.
         }
@@ -630,7 +646,7 @@ bool ProcNovDBI( void )
     LinkFlags |= LF_NOVELL_DBI_FLAG;
     if( ProcOne( NovDBIOptions, SEP_NO ) ) {
         while( ProcOne( NovDBIOptions, SEP_COMMA ) ) {
-            ; /*null loop*/
+            /* nothing */;
         }
     }
     return( true );

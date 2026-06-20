@@ -511,7 +511,8 @@ void DwarfGenGlobal( symbol *sym, section *sect )
     /* unused parameters */ (void)sect;
 
     if( (CurrMod->modinfo & MOD_DBI_SEEN) == 0 ) {
-        if( ( sym->p.seg == NULL ) || ( sym->p.seg->iscode ) ) {
+        if( ( sym->p.seg == NULL )
+          || ( sym->p.seg->iscode ) ) {
             die.abbrev_code = LABEL_ABBREV_CODE;
         } else {
             die.abbrev_code = VARIABLE_ABBREV_CODE;
@@ -627,7 +628,8 @@ static void DwarfAddAddrAdd( segdata *sdata, offset delta, offset size,
 {
     /* unused parameters */ (void)delta; (void)size; (void)cookie;
 
-    if( isnewmod && (sdata->o.mod->modinfo & MOD_DBI_SEEN) == 0 ) {
+    if( isnewmod
+      && (sdata->o.mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             sdata->o.mod->u3.d->arange.size += sizeof( segmented_arange_tuple );
         } else {
@@ -724,7 +726,8 @@ void DwarfAddrSectStart( section *sect )
 {
     int index;
 
-    if( ( sect == Root ) && ( SectionTable[SECT_DEBUG_ABBREV].size > 0 ) ) {
+    if( ( sect == Root )
+      && ( SectionTable[SECT_DEBUG_ABBREV].size > 0 ) ) {
         for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
             if( index != SECT_DEBUG_ABBREV ) {
                 SectionTable[index].vm_ptr = DBIAlloc( SectionTable[index].size );
@@ -792,7 +795,8 @@ static unsigned_32 WriteELFSections( unsigned_32 file_off, unsigned_32 curr_off,
         }
     }
     for( addidx = 0; addidx < SECT_NUM_SECTIONS; addidx++ ) {
-        if( ( SectionTable[addidx].size != 0 ) && ( SectionTable[addidx].start == 0 ) ) {
+        if( ( SectionTable[addidx].size != 0 )
+          && ( SectionTable[addidx].start == 0 ) ) {
             FillHeader( hdr, SectionTable[addidx].name, strtab, curr_off );
             hdr->sh_size = SectionTable[addidx].size;
             WriteDwarfSect( addidx, hdr->sh_size );
@@ -823,7 +827,8 @@ int DwarfCountDebugSections( void )
         RingLookup( DBIClass->segs, CheckDBISeg, &num );
     }
     for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
-        if( ( SectionTable[index].size != 0 ) && ( SectionTable[index].start == 0 ) ) {
+        if( ( SectionTable[index].size != 0 )
+          && ( SectionTable[index].start == 0 ) ) {
             num++;
         }
     }

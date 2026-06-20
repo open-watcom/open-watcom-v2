@@ -72,7 +72,8 @@ void CmdD16MFini( void )
     const char          *base_name;
     size_t              base_name_len;
 
-    if( FmtData.u.d16m.exp_name == NULL && Name != NULL ) {
+    if( FmtData.u.d16m.exp_name == NULL
+      && Name != NULL ) {
         base_name = GetBaseName( Name, strlen( Name ), &base_name_len );
         FmtData.u.d16m.exp_name = FileName( base_name, base_name_len, E_PROTECT, true );
     }
@@ -90,7 +91,8 @@ static bool ProcBuffer( void )
 
     if( !GetLong( &value ) )
         return( false );
-    if( value < _1K || value > _32K ) {
+    if( value < _1K
+      || value > _32K ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "BUFFER" );
     } else {
         FmtData.u.d16m.buffer = value;
@@ -138,7 +140,8 @@ static bool ProcSelStart( void )
         LnkMsg( WRN+LOC+LINE+MSG_NOT_MULTIPLE_OF_8, "s", "SELSTART" );
         value &= -8;
     }
-    if( value >= 0x10000 || value < D16M_USER_SEL ) {
+    if( value >= 0x10000
+      || value < D16M_USER_SEL ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "SELSTART" );
     } else {
         FmtData.u.d16m.selstart = value;

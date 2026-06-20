@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -143,11 +143,11 @@ static char __far *getpathenv( void )
     char __far  *ptr;
 
     for( ptr = _MK_FP( *(unsigned __far *)_MK_FP( __OVLPSP__, 0x2c ), 0 ); *ptr; ++ptr ) {
-        if(    ptr[0] == 'P'
-            && ptr[1] == 'A'
-            && ptr[2] == 'T'
-            && ptr[3] == 'H'
-            && ptr[4] == '=' )
+        if( ptr[0] == 'P'
+          && ptr[1] == 'A'
+          && ptr[2] == 'T'
+          && ptr[3] == 'H'
+          && ptr[4] == '=' )
             return( ptr + 5 );
         for( ; *ptr != '\0'; ) {
             ++ptr;
@@ -208,7 +208,9 @@ tiny_ret_t __near __OpenOvl__( unsigned offset )
             lastslash = NULL;
             while( *cmd != '\0' ) {
                 chr = *fnstart++ = *cmd++;
-                if( chr == '\\' || chr == '/' || chr == ':' ) {
+                if( chr == '\\'
+                  || chr == '/'
+                  || chr == ':' ) {
                     lastslash = fnstart;  // NOTE: this points to the char after.
                 }
             }
@@ -240,7 +242,10 @@ tiny_ret_t __near __OpenOvl__( unsigned offset )
             }
             if( *path == ';' )
                 ++path;
-            if( cmd > buf && cmd[-1] != ':' && cmd[-1] != '\\' && cmd[-1] != '/' )
+            if( cmd > buf
+              && cmd[-1] != ':'
+              && cmd[-1] != '\\'
+              && cmd[-1] != '/' )
                 *cmd++ = '\\';
             fnstart = fname;
             for( ; *fnstart != '\0'; ) {

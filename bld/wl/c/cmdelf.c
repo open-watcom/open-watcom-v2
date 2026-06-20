@@ -97,7 +97,8 @@ bool ProcELFAlignment( void )
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
     ret = getatol( &value );
-    if( ret != ST_IS_ORDINAL || value == 0 ) {
+    if( ret != ST_IS_ORDINAL
+      || value == 0 ) {
         return( false );
     }
     for( ;; ) {
@@ -234,7 +235,8 @@ static void ParseABIVersion( const char *message )
         return;
     FmtData.u.elf.abiversion = 0;
     retval = getatoi( &version );
-    if( retval != ST_IS_ORDINAL || version > 255 ) {
+    if( retval != ST_IS_ORDINAL
+      || version > 255 ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", message );
     } else {
         FmtData.u.elf.abiversion = version;

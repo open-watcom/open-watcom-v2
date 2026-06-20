@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,7 +87,9 @@ static void doWriteHelp( int first_msg, int last_msg )
 static void WriteHelp( int first_msg, int last_msg, bool genhelp )
 /****************************************************************/
 {
-    if( genhelp || ( first_msg == MSG_GENERAL_HELP_0 && last_msg == MSG_GENERAL_HELP_51 ) ) {
+    if( genhelp
+      || ( first_msg == MSG_GENERAL_HELP_0
+      && last_msg == MSG_GENERAL_HELP_51 ) ) {
         WLPrtBanner();
         if( genhelp ) {
             doWriteHelp( _GENERAL_HELP );

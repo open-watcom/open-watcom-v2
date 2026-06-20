@@ -63,7 +63,8 @@ void ObjPass2( void )
     if( FmtData.type & MK_OVERLAYS ) {
         OvlPass2();
     }
-    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS)
+      && FmtData.u.dos.distribute ) {
         DistribProcMods();
     } else {
 #endif
@@ -116,7 +117,8 @@ bool LoadObj( segdata *seg )
     seg_leader *leader;
 
     leader = seg->u.leader;
-    if( ( leader == NULL ) || DBISkip( leader ) )
+    if( ( leader == NULL )
+      || DBISkip( leader ) )
         return( false );
     CurrRec.seg = seg;
     if( leader->group == NULL ) {
