@@ -704,7 +704,7 @@ static unsigned FindGroupIdx( segment seg )
     unsigned    index;
 
     index = 1;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->grp_addr.seg == seg ) {
             return( index );
         }
@@ -1269,7 +1269,7 @@ static void MakeBase( fix_relo_data *fix )
 }
 
 #ifdef _OS2
-static ordinal_t ChkOS2IntEntry( group_entry *grp, segdata *seg,
+static ordinal_t ChkOS2IntEntry( group_entry *group, segdata *seg,
                                 target_spec *tthread, fix_relo_data *fix )
 /***********************************************************************/
 {
@@ -1279,8 +1279,8 @@ static ordinal_t ChkOS2IntEntry( group_entry *grp, segdata *seg,
     // handling in LX/LE executables. However, conforming IOPL
     // segments do not need that and references between IOPL
     // segments don't either.
-    if( (grp->segflags & SEG_LEVEL_MASK) != (seg->u.leader->group->segflags & SEG_LEVEL_MASK) ) {
-        if( (grp->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 && !(grp->segflags & SEG_CONFORMING) ) {
+    if( (group->segflags & SEG_LEVEL_MASK) != (seg->u.leader->group->segflags & SEG_LEVEL_MASK) ) {
+        if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 && !(group->segflags & SEG_CONFORMING) ) {
 
             // The target has to be in the entry table, otherwise we can't
             // produce the required call gate fixup.
@@ -1311,7 +1311,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 /*******************************************************************************************************/
 {
     targ_addr           target;
-    group_entry         *grp;
+    group_entry         *group;
     fix_type            ftype;
 
     /* unused parameters */ (void)tthread;
@@ -1354,14 +1354,14 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         if( !fix->imported ) {
             os2item->reloc_type = INTERNAL_REFERENCE;
             os2item->put.internal.rsrvd = 0;
-            for( grp = Groups; grp != NULL; grp = grp->next_group ) {
-                if( grp->grp_addr.seg == target.seg ) {
+            for( group = Groups; group != NULL; group = group->next ) {
+                if( group->grp_addr.seg == target.seg ) {
                     break;
                 }
             }
-            if( ( grp != NULL ) && (grp->segflags & SEG_MOVABLE) ) {
+            if( ( group != NULL ) && (group->segflags & SEG_MOVABLE) ) {
                 os2item->put.internal.grp_num = MOVABLE_ENTRY_PNT;
-                os2item->put.internal.off = FindEntryOrdinal( target, grp );
+                os2item->put.internal.off = FindEntryOrdinal( target, group );
             } else {
                 os2item->put.internal.grp_num = target.seg;
                 os2item->put.internal.off = target.off;
@@ -1425,14 +1425,14 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 fixtype |= OSF_SFLAG_FIXUP_TO_ALIAS;  // YET more fall through
                 /* fall through */
             case OSF_SOURCE_OFF_16:     // 16-bit offset
-                for( grp = Groups; grp != NULL; grp = grp->next_group ) {
-                    if( grp->grp_addr.seg == target.seg ) {
+                for( group = Groups; group != NULL; group = group->next ) {
+                    if( group->grp_addr.seg == target.seg ) {
                         break;
                     }
                 }
-                if( grp != NULL ) {
-                    grp->u.os2flags |= SEG_16_ALIAS;
-                    int_ordinal = ChkOS2IntEntry( grp, seg, tthread, fix );
+                if( group != NULL ) {
+                    group->u.os2flags |= SEG_16_ALIAS;
+                    int_ordinal = ChkOS2IntEntry( group, seg, tthread, fix );
                 }
                 break;
             }
@@ -1444,8 +1444,8 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
         flags = 0;
         breloc->item.os2f.nr_stype = fixtype;
         breloc->item.os2f.nr_flags = flags;
-        grp = seg->u.leader->group;
-        breloc->item.os2f.r32_soff = ( fix->loc_addr.off - grp->grp_addr.off ) & OSF_PAGE_MASK;
+        group = seg->u.leader->group;
+        breloc->item.os2f.r32_soff = ( fix->loc_addr.off - group->grp_addr.off ) & OSF_PAGE_MASK;
         if( int_ordinal ) {
             // Fixups to an IOPL segment must be done through a call gate
             // and not directly. There is a special fixup type just for this.
@@ -1471,8 +1471,8 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                 MPUT_8( fixptr, target.seg );
                 fixptr += 1;
             }
-            grp = FindGroup( target.seg );
-            target.off -= grp->grp_addr.off;
+            group = FindGroup( target.seg );
+            target.off -= group->grp_addr.off;
             if( ftype != FIX_BASE ) {
                 if( target.off > 0xFFFF ) {
                     flags |= OSF_TFLAG_OFF_32BIT;
@@ -1667,9 +1667,9 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             if( seg == NULL ) {
                 save = false;
             } else {
-                grp = seg->u.leader->group;
-                sym = grp->sym;
-                breloc->item.elf.addend = target.off - grp->grp_addr.off;
+                group = seg->u.leader->group;
+                sym = group->sym;
+                breloc->item.elf.addend = target.off - group->grp_addr.off;
             }
         }
         if( save ) {
@@ -1693,8 +1693,8 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
     if( FmtData.type & MK_PHAR_MULTISEG ) {
         MakeBase( fix );
         breloc->item.pms.offset = fix->loc_addr.off;
-        grp = seg->u.leader->group;
-        breloc->item.pms.segment = grp->grp_addr.seg;
+        group = seg->u.leader->group;
+        breloc->item.pms.segment = group->grp_addr.seg;
         return( true );
     }
 #endif
@@ -1706,10 +1706,10 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
 #endif
     MakeBase( fix );
     breloc->item.dos.addr.off = fix->loc_addr.off;
-    grp = seg->u.leader->group;
-    breloc->item.dos.addr.seg = grp->grp_addr.seg;
-    if( grp->section != Root ) {
-        breloc->item.dos.addr.seg -= grp->section->sect_addr.seg;
+    group = seg->u.leader->group;
+    breloc->item.dos.addr.seg = group->grp_addr.seg;
+    if( group->section != Root ) {
+        breloc->item.dos.addr.seg -= group->section->sect_addr.seg;
     }
     return( true );
 }

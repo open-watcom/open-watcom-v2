@@ -142,7 +142,7 @@ void ClearBit( byte *array, unsigned num )
 static void WalkModsList( mod_entry *list, mods_walk_fn *cbfn )
 /*************************************************************/
 {
-    for( ; list != NULL; list = list->n.next_mod ) {
+    for( ; list != NULL; list = list->u.next ) {
         cbfn( list );
     }
 }
@@ -256,11 +256,9 @@ void LinkList( void *in_head, void *newnode )
 {
     node    **owner;
 
-    owner = in_head;
+    for( owner = (node **)in_head; *owner != NULL; owner = (node **)&(*owner)->next )
+        /* nothing */;
     ((node *)newnode)->next = NULL;
-    while( *owner != NULL ) {
-        owner = (node **)&(*owner)->next;
-    }
     *owner = newnode;
 }
 
@@ -591,7 +589,7 @@ group_entry *FindGroup( segment seg )
 {
     group_entry *group;
 
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->grp_addr.seg == seg ) {
             break;
         }

@@ -139,8 +139,8 @@ void ODBIInitModule( mod_entry *mod )
 {
     if( CurrSect->dbg_info == NULL )
         return;
-    mod->d.o = _PermAlloc( sizeof( odbimodinfo ) );
-    memset( mod->d.o, 0, sizeof( odbimodinfo ) );
+    mod->u3.o = _PermAlloc( sizeof( odbimodinfo ) );
+    memset( mod->u3.o, 0, sizeof( odbimodinfo ) );
 }
 
 static void DumpInfo( debug_info *dinfo, const void *data, size_t len )
@@ -182,7 +182,7 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
     if( minor > Master.obj_minor_ver ) {
         Master.obj_minor_ver = minor;
     }
-    if( !FindMatch( len, name, &CurrMod->d.o->dbisourceoffset ) ) {
+    if( !FindMatch( len, name, &CurrMod->u3.o->dbisourceoffset ) ) {
         node = LangAlloc( len, name );
         node->next = DBISourceLang->next;
         DBISourceLang->next = node;        // keep "C" the first entry.
@@ -265,7 +265,7 @@ void ODBIGenLocal( segdata *sdata )
         return;
     if( sdata->isdead )
         return;
-    minfo = CurrMod->d.o;
+    minfo = CurrMod->u3.o;
     if( sdata->u.leader->dbgtype == MS_TYPE ) {
         DEBUG(( DBG_DBGINFO, "genning type info %h", sdata->length ));
         DoGenLocal( &dinfo->type, &dinfo->typelinks, &minfo->types, sdata->length );
@@ -486,7 +486,7 @@ void ODBIAddModule( mod_entry *obj, section *sect )
     if( ( dptr == NULL ) || (obj->modinfo & DBI_ALL) == 0 )
         return;
     dptr->modnum++;
-    obj->d.o->modnum = dptr->modnum;
+    obj->u3.o->modnum = dptr->modnum;
 }
 
 static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
@@ -521,7 +521,7 @@ static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size, void *_di
 
     if( isnewmod ) {
         addr.size = size;
-        addr.mod = sdata->o.mod->d.o->modnum;
+        addr.mod = sdata->o.mod->u3.o->modnum;
         DumpInfo( dptr, &addr, sizeof( addr_dbg_info ) );
         sdata->addrinfo = dptr->addr.curr.u.vm_ptr - dptr->addr.init.u.vm_ptr;
         dptr->addr.curr.u.vm_ptr += sizeof( addr_dbg_info );
@@ -638,7 +638,7 @@ void ODBIGenLines( lineinfo *info )
     if( ( dinfo == NULL ) || (CurrMod->modinfo & DBI_LINE) == 0 )
         return;
     lineqty = DBICalcLineQty( info );
-    DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->d.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
+    DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->u3.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
     lseg.segment = seg->addrinfo;
     lseg.num = lineqty;
     DumpInfo( dinfo, &lseg, sizeof( lineseg ) );
@@ -765,7 +765,7 @@ void ODBIGenModule( void )
     dptr = CurrSect->dbg_info;
     if( ( dptr == NULL ) || (CurrMod->modinfo & DBI_ALL) == 0 )
         return;
-    rec = CurrMod->d.o;
+    rec = CurrMod->u3.o;
     len = strlen( CurrMod->name.u.ptr );
     if( len > 255 )
         len = 255;
@@ -815,7 +815,7 @@ static unsigned_16 WriteSegValues( void )
 // write out all possible group segment values
 {
     unsigned_16     segarray[2];
-    group_entry     *currgrp;
+    group_entry     *group;
     unsigned_16     *buffer;
     unsigned_16     buflen;
 
@@ -831,8 +831,8 @@ static unsigned_16 WriteSegValues( void )
     } else {
         buffer = (unsigned_16 *)TokBuff;
         buflen = 0;
-        for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-            *buffer++ = currgrp->grp_addr.seg;
+        for( group = Groups; group != NULL; group = group->next ) {
+            *buffer++ = group->grp_addr.seg;
             buflen += sizeof( unsigned_16 );
         }
         DBIWriteLocal( TokBuff, buflen );

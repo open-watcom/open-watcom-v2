@@ -466,9 +466,8 @@ void LinkList( void **in_head, void *newnode )
 {
     node                **owner;
 
-    for( owner = (node **)in_head; *owner != NULL; ) {
-        owner = &(*owner)->next;
-    }
+    for( owner = (node **)in_head; *owner != NULL; owner = &(*owner)->next )
+        /* nothing */;
     *owner = newnode;
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,7 +110,7 @@ void BinOutput( void )
         fnode->file_loc = 0;
         Root->u.file_loc = Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             if( group->leaders->class->flags & CLASS_COPY ) {
                 size = CalcGroupSize( group->leaders->class->DupClass->segs->group );
             } else {
@@ -135,7 +135,7 @@ void BinOutput( void )
         fnode->file_loc = 0;
         Root->u.file_loc = ( Root->sect_addr.seg << FmtData.SegShift ) + Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             repos = WriteBinSegGroup( group );
             if( repos ) {
                 SeekLoad( fnode->file_loc );
@@ -345,7 +345,7 @@ void HexOutput( void )
         fnode->file_loc = 0;
         Root->u.file_loc = Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             class = group->leaders->class;
             if( class->flags & CLASS_COPY ) {
                 wrkgrp = class->DupClass->segs->group;
@@ -378,7 +378,7 @@ void HexOutput( void )
         fnode->file_loc = 0;
         Root->u.file_loc = (Root->sect_addr.seg << FmtData.SegShift) + Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             class = group->leaders->class;
             if( class->flags & CLASS_COPY ) {
                 sect = group->section;
@@ -460,7 +460,7 @@ void FiniRawLoadFile( void )
         linear        = true;   // Linear mode
         buf_offset    = 0;
     }
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->size ) {
             sect = group->section;
             CurrSect = sect;

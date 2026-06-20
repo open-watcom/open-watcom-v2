@@ -176,8 +176,8 @@ void BasicInitSym( symbol *sym )
 /*************************************/
 {
     sym->hash = NULL;
-    sym->link = NULL;
-    sym->publink = NULL;
+    sym->next = NULL;
+    sym->next_by_publist = NULL;
     SET_ADDR_UNDEFINED( sym->addr );
     sym->mod = NULL;
     sym->p.seg = NULL;
@@ -196,7 +196,7 @@ symbol * AddSym( void )
     sym = CarveAlloc( CarveSymbol );
     BasicInitSym( sym );
     if( LastSym != NULL )
-        LastSym->link = sym;
+        LastSym->next = sym;
     LastSym = sym;
     if( HeadSym == NULL )
         HeadSym = sym;

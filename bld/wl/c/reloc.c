@@ -362,7 +362,7 @@ void FreeRelocInfo( void )
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             FreeGroupRelocs( group );
         }
     } else if( Root != NULL ) {
@@ -561,13 +561,13 @@ bool SwapOutRelocs( void )
     if( (LinkState & LS_FMT_DECIDED) == 0 )
         return( false );
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             if( TraverseOS2RelocList( group, SpillRelocList ) ) {
                 return( true );
             }
         }
     } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             if( SpillRelocList( group->g.grp_relocs ) ) {
                 return( true );
             }

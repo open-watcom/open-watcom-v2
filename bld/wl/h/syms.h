@@ -194,8 +194,8 @@ typedef struct {
 
 typedef struct symbol {
     struct symbol       *hash;
-    struct symbol       *publink;
-    struct symbol       *link;
+    struct symbol       *next_by_publist; /* Ring2... */
+    struct symbol       *next;
     targ_addr           addr;
     unsigned_16         namelen_cmp;
     sym_info            info;       // flags & floating point patch type.

@@ -77,23 +77,23 @@ static void WriteGDT( unsigned_32 reloc_size )
 // write out the GDTs
 {
     gdt_info        gdt;
-    group_entry     *currgrp;
+    group_entry     *group;
 
 // write program gdt's.
     gdt.gdtaddr_hi = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        if( currgrp->size > 0 ) {
-            gdt.gdtlen = __ROUND_UP_SIZE_PARA( currgrp->size ) - 1; // para align.
+    for( group = Groups; group != NULL; group = group->next ) {
+        if( group->size > 0 ) {
+            gdt.gdtlen = __ROUND_UP_SIZE_PARA( group->size ) - 1; // para align.
         } else {
             gdt.gdtlen = 0;
         }
-        gdt.gdtaddr = 0; // currgrp->u.dos_segment;
-        gdt.gdtreserved = __ROUND_UP_SIZE_TO_PARA( (unsigned_32)currgrp->totalsize );   // mem size in paras
-        if( gdt.gdtreserved == 0 && currgrp->size == 0 )
+        gdt.gdtaddr = 0; // group->u.dos_segment;
+        gdt.gdtreserved = __ROUND_UP_SIZE_TO_PARA( (unsigned_32)group->totalsize );   // mem size in paras
+        if( gdt.gdtreserved == 0 && group->size == 0 )
             gdt.gdtreserved |= 0x2000;
-        if( currgrp->segflags & SEG_DATA ) {
+        if( group->segflags & SEG_DATA ) {
             gdt.gdtaccess = D16M_ACC_DATA;
-            if( currgrp == DataGroup ) {
+            if( group == DataGroup ) {
                 gdt.gdtreserved = FmtData.u.d16m.datasize;
                 if( FmtData.u.d16m.flags & TRANS_STACK ) {
                     gdt.gdtreserved |= TRANSPARENT;
@@ -135,7 +135,7 @@ static unsigned_32 Write16MData( unsigned hdr_size )
     DEBUG(( DBG_BASE, "Writing DOS/16M data" ));
 
     SeekLoad( hdr_size );
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         WriteGroupLoad( group, false );
         NullAlign( 0x10 );          // paragraph alignment.
     }
@@ -381,13 +381,13 @@ segment Find16MSeg( segment selector )
 /************************************/
 // this finds the dos_segment value which corresponds to the given selector.
 {
-    group_entry     *currgrp;
+    group_entry     *group;
     segment         result;
 
     result = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        if( currgrp->grp_addr.seg == selector ) {
-            result = currgrp->u.dos_segment;
+    for( group = Groups; group != NULL; group = group->next ) {
+        if( group->grp_addr.seg == selector ) {
+            result = group->u.dos_segment;
             break;
         }
     }
@@ -399,14 +399,14 @@ void CalcGrpSegs( void )
 // go through group list & calculate what the segment would be if we were
 // running under DOS.
 {
-    group_entry     *currgrp;
+    group_entry     *group;
     offset          addr;
 
     addr = 0;
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         addr = __ROUND_UP_SIZE_PARA( addr );       // addr is paragraph aligned.
-        currgrp->u.dos_segment = addr >> 4;
-        addr += currgrp->totalsize;
+        group->u.dos_segment = addr >> 4;
+        addr += group->totalsize;
     }
 }
 

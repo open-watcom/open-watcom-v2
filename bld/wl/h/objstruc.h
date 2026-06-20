@@ -369,13 +369,13 @@ typedef struct cvmodinfo        CVMODINFO;
 
 typedef struct mod_entry {
     union {
-        MOD_ENTRY       *next_mod;  // regular next pointer
+        MOD_ENTRY       *next;      // regular next pointer
         section         *sect;      // when distributing - section of current mod.
-    } n;
+    } u;
     union {
         FILE_LIST       *source;
         name_strtab     fname;
-    } f;
+    } u1;
     name_strtab         name;
     unsigned_32         location;
     symbol              *publist;
@@ -390,12 +390,12 @@ typedef struct mod_entry {
     union {
         arcdata         *arclist;   // segment definition data.
         MOD_ENTRY       *next;      // for keeping track of modules when distrib
-    } x;
+    } u2;
     union {
         ODBIMODINFO     *o;
         DWARFMODINFO    *d;
         CVMODINFO       *cv;
-    } d;                        // union used for debugging information
+    } u3;                           // union used for debugging information
 } mod_entry;
 
 typedef struct class_entry {
@@ -410,7 +410,7 @@ typedef struct class_entry {
 } class_entry;
 
 typedef struct group_entry {
-    GROUP_ENTRY         *next_group;
+    GROUP_ENTRY         *next;
     SEG_LEADER          *leaders;
     symbol              *sym;
     section             *section;
@@ -449,8 +449,8 @@ typedef struct group_entry {
 #define SEG_16_ALIAS    1
 
 typedef struct seg_leader {
-    SEG_LEADER          *next_seg;
-    SEG_LEADER          *grp_next;
+    SEG_LEADER          *next;
+    SEG_LEADER          *next_by_group; /* Ring2... */
     name_strtab         segname;
     SEGDATA             *pieces;
     group_entry         *group;
@@ -476,7 +476,7 @@ typedef struct seg_leader {
 
 typedef struct segdata {
     SEGDATA             *next;
-    SEGDATA             *mod_next;      // next segdata in module list.
+    SEGDATA             *next_by_mod;   // Ring2... next segdata in module list.
     offset              length;         // length of segment in current module.
     virt_mem_ptr        u1;             // virtual memory pointer to data for this segment
     virt_mem            vm_data;        // virtual memory pointer to data for class copy data
@@ -571,7 +571,7 @@ typedef struct {
 } segnode;
 
 typedef struct list_of_names {
-    LIST_OF_NAMES       *next_name;
+    LIST_OF_NAMES       *next;
     char                name[1];
 } list_of_names;
 

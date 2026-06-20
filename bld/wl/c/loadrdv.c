@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,7 +78,7 @@ static void WriteBinData( void )
     Root->sect_addr = Groups->grp_addr;
 
     /* write groups and relocations */
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         CurrSect = group->section;  // needed for WriteInfo.
         if( group->totalsize ) {
             WriteGroup( group );
@@ -107,7 +107,7 @@ static void WriteRDOSCode( void )
 
     /* write groups and relocations */
     iscode = false;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( leader != group->leaders ) {
             iscode = false;
             leader = group->leaders;
@@ -148,7 +148,7 @@ static void WriteRDOSData( void )
     /* write groups and relocations */
     leader = NULL;
     isdata = false;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( leader != group->leaders ) {
             isdata = false;
             leader = group->leaders;
@@ -191,7 +191,7 @@ void GetRdosSegs( void )
     SEGDATA             *piece;
 
     leader = NULL;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( leader != group->leaders ) {
             leader = group->leaders;
             if( leader != NULL && leader->size ) {

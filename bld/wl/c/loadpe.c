@@ -119,7 +119,7 @@ static struct {
 } IData;
 
 #define WALK_IMPORT_SYMBOLS(sym) \
-    for( (sym) = HeadSym; (sym) != NULL; (sym) = (sym)->link ) \
+    for( (sym) = HeadSym; (sym) != NULL; (sym) = (sym)->next ) \
         if( IS_SYM_IMPORTED(sym) && (sym)->p.import != NULL \
             /*&& ((sym)->info & SYM_DEAD) == 0 */)
 
@@ -367,7 +367,7 @@ static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsi
     code_size = 0;
     code_base = 0xFFFFFFFFUL;
     data_base = 0xFFFFFFFFUL;
-    for( group = Groups; group != NULL; group = group->next_group) {
+    for( group = Groups; group != NULL; group = group->next) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         name = group->sym->name.u.ptr;
@@ -716,7 +716,7 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
     /* When using non-default object alignment, groups and pages need
      * not be in sync at all.
      */
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         reloclist = group->g.grp_relocs;
         if( reloclist != NULL ) {
             pagerva = group->linear;
@@ -791,7 +791,7 @@ void DoAddResource( char *name )
     len = strlen( name );
     info = _PermAlloc( sizeof( list_of_names ) + len );
     memcpy( info->name, name, len + 1 );
-    info->next_name = FmtData.u.pe.resources;
+    info->next = FmtData.u.pe.resources;
     FmtData.u.pe.resources = info;
 }
 
@@ -881,7 +881,7 @@ static void CheckNumRelocs( void )
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->g.grp_relocs != NULL ) {
             return;
         }

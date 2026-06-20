@@ -255,14 +255,14 @@ void FreeTokBuffs( void )
 void BadObject( void )
 /***************************/
 {
-    CurrMod->f.source->infile->status |= INSTAT_IOERR;
+    CurrMod->u1.source->infile->status |= INSTAT_IOERR;
     LnkMsg( ERR+LOC+MSG_OBJ_FILE_ATTR, NULL );
 }
 
 void EarlyEOF( void )
 /**************************/
 {
-    CurrMod->f.source->infile->status |= INSTAT_IOERR;
-    Locator( CurrMod->f.source->infile->name.u.ptr, NULL, 0 );
+    CurrMod->u1.source->infile->status |= INSTAT_IOERR;
+    Locator( CurrMod->u1.source->infile->name.u.ptr, NULL, 0 );
     LnkMsg( ERR+MSG_EARLY_EOF, NULL );
 }

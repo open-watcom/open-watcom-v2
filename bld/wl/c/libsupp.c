@@ -72,9 +72,8 @@ static bool SearchAndProcLibFile( file_list *file, const char *name )
         DistribAddMod( lp, file->ovlref );
     } else {
 #endif
-        for( prev = &LibModules; *prev != NULL; ) { /*  find end of list */
-            prev = &(*prev)->n.next_mod;
-        }
+        for( prev = &LibModules; *prev != NULL; prev = &(*prev)->u.next ) /*  find end of list */
+            /* nothing */;
         *prev = lp;
 #ifdef _EXE
     }

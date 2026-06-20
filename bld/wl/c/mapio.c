@@ -224,18 +224,18 @@ static void WriteMapColPrintf( size_t col, const char *str, ... )
 static void WriteMapGroups( void )
 /********************************/
 {
-    group_entry     *currgrp;
+    group_entry     *group;
 
     if( Groups != NULL ) {
         WriteMapBox( MSG_MAP_BOX_GROUP );
         WriteMapMsg( MSG_MAP_TITLE_GROUP_0 );
         WriteMapMsg( MSG_MAP_TITLE_GROUP_1 );
         WriteMapNL();
-        for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-            if( !currgrp->isautogrp ) { /* if not an autogroup */
-                WriteMapColPrintf( 0, "%s", currgrp->sym->name );
-                WriteMapColPrintf( 32, "%a", &currgrp->grp_addr );
-                WriteMapColPrintf( 53, "%h", currgrp->totalsize );
+        for( group = Groups; group != NULL; group = group->next ) {
+            if( !group->isautogrp ) { /* if not an autogroup */
+                WriteMapColPrintf( 0, "%s", group->sym->name );
+                WriteMapColPrintf( 32, "%a", &group->grp_addr );
+                WriteMapColPrintf( 53, "%h", group->totalsize );
                 WriteMapNL();
             }
         }
@@ -375,10 +375,10 @@ static void WriteMapPubModHead( void )
 {
     char        full_name[PATH_MAX];
 
-    if( CurrMod->f.source == NULL ) {
+    if( CurrMod->u1.source == NULL ) {
         strcpy( full_name, CurrMod->name.u.ptr );
     } else {
-        MakeFileName( CurrMod->f.source->infile, full_name );
+        MakeFileName( CurrMod->u1.source->infile, full_name );
     }
     WriteMapMsgPrintf( MSG_MAP_DEFINING_MODULE, full_name, CurrMod->name.u.ptr );
 }
@@ -491,7 +491,7 @@ static void WriteMapImports( void )
 {
     symbol *    sym;
 
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( IS_SYM_IMPORTED( sym )
           && sym->p.import != NULL ) {
             if( (FmtData.type & MK_NOVELL) == 0
@@ -915,10 +915,10 @@ static void PrintUndefinedSym( void *_info )
     mod_entry   *mod;
 
     mod = info->mod;
-    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->f.source->infile->name, mod->name, info->sym );
+    LnkMsg( YELL+MSG_UNDEF_SYM, "12S", mod->u1.source->infile->name, mod->name, info->sym );
     if( MapFile != NULL ) {
         WriteMapColPrintf( 0, "%S", info->sym );
-        WriteMapColPrintf( 32, "%s(%s)", mod->f.source->infile->name, mod->name );
+        WriteMapColPrintf( 32, "%s(%s)", mod->u1.source->infile->name, mod->name );
         WriteMapNL();
     }
 }
@@ -1228,7 +1228,7 @@ void WriteMapPubEnd( void )
         }
         currsym = symarray;
         ok = ( symarray != NULL );
-        for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+        for( sym = HeadSym; sym != NULL; sym = sym->next ) {
             if( sym->info & SYM_MAP_GLOBAL ) {
                 sym->info &= ~SYM_MAP_GLOBAL;
                 if( ok ) {

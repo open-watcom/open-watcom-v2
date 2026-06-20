@@ -157,7 +157,7 @@ bool FindLibTrace( mod_entry *mod )
 
     prev = &TraceList;
     for( info = TraceList; info != NULL; info = info->next ) {
-        if( info->found && info->u.file == mod->f.source ) {
+        if( info->found && info->u.file == mod->u1.source ) {
             if( ModNameCompare( mod->name.u.ptr, info->membname ) ) {
                 *prev = info->next;
                 MemFree( info->membname );

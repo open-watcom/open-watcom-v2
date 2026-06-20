@@ -281,7 +281,7 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
     DEBUG(( DBG_BASE, "Writing data" ));
 
     group_num = 0;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         segrec.info = group->segflags;
@@ -814,7 +814,7 @@ void SetOS2GroupFlags( void )
 {
     group_entry     *group;
 
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         group->segflags |= DEF_SEG_ON;
@@ -1028,7 +1028,7 @@ void FiniOS2LoadFile( void )
         }
         dgroup_size = DataGroup->totalsize;
     }
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         imageguess += group->size;

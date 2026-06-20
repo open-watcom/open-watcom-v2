@@ -153,7 +153,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, (struct orl_io_struct *)CurrMod->f.source, type ) );
+    return( ORLFileInit( ORLHandle, (struct orl_io_struct *)CurrMod->u1.source, type ) );
 }
 
 static void ClearCachedData( const file_list *file )
@@ -242,7 +242,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     test = (typemask | LinkState) & LS_HAVE_MACHTYPE_MASK;
     test &= test - 1;           /* turn off one bit */
     if( test != 0 ) {           /* multiple bits were turned on. */
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name.u.ptr );
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->u1.source->infile->name.u.ptr );
     } else {
         LinkState |= typemask;
     }
@@ -965,8 +965,8 @@ unsigned long ORLPass1( void )
     PermStartMod( CurrMod );
     filehdl = InitFile();
     if( filehdl == NULL ) {
-        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name.u.ptr );
-        CurrMod->f.source->infile->status |= INSTAT_IOERR;
+        LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->u1.source->infile->name.u.ptr );
+        CurrMod->u1.source->infile->status |= INSTAT_IOERR;
         return( (unsigned long)-1 );
     }
     if( CheckFlags( filehdl ) ) {
@@ -986,6 +986,6 @@ unsigned long ORLPass1( void )
         ORLFileScan( filehdl, NULL, ProcP1Specific );
         IterateNodelist( SegNodes, DefNosymComdats, NULL );
     }
-    FiniFile( filehdl, CurrMod->f.source );
-    return( ORLFileSeek( CurrMod->f.source, 0, SEEK_CUR ) );
+    FiniFile( filehdl, CurrMod->u1.source );
+    return( ORLFileSeek( CurrMod->u1.source, 0, SEEK_CUR ) );
 }

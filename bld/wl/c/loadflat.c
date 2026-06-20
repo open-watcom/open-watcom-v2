@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,7 +116,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     } else {
         header->autodata_obj = 0;
     }
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         if( group->grp_addr.seg == StackAddr.seg ) {
@@ -183,7 +183,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     loc += size;
     header->objmap_off = loc;
     start = 0;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         for( sizeleft = group->size; sizeleft > PAGEMAP_BUF_SIZE; sizeleft -= PAGEMAP_BUF_SIZE ) {
@@ -357,7 +357,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     header->fixpage_off = loc;
     numentries = 0;
     size = 0;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         reloclist = group->g.grp_relocs;
         numpages = PAGE_COUNT( group->size );
         numentries += numpages;
@@ -377,7 +377,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     /* now that the page table is written out, do the fixups. */
     header->fixrec_off = loc + numentries * sizeof( unsigned_32 );
     size += numentries * sizeof( unsigned_32 );
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         TraverseOS2RelocList( group, DumpRelocList );
     }
     return( size );
@@ -392,7 +392,7 @@ static unsigned WriteDataPages( unsigned long loc )
     size_t      size;
 
     last_page = 0;
-    for( group = Groups; group != NULL; group = group->next_group) {
+    for( group = Groups; group != NULL; group = group->next) {
         if( group->size != 0 ) {
             if( last_page != 0 ) {
                 if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {

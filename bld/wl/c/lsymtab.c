@@ -439,7 +439,7 @@ void CleanSym( void )
 #endif
     if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
         for( sym = HeadSym; sym != NULL; sym = next ) {
-            next = sym->link;
+            next = sym->next;
             FreeSymbol( sym );
         }
     }
@@ -528,10 +528,10 @@ void SymModEnd( void )
     } else {
         sym = SymList;
         if( sym != NULL ) {     // symlist points to previous one
-            sym = sym->link;
+            sym = sym->next;
         }
     }
-    for( ; sym != NULL; sym = sym->link ) {
+    for( ; sym != NULL; sym = sym->next ) {
         sym->info &= ~SYM_IN_CURRENT;
         sym->info |= SYM_OLDHAT;
         if( (sym->info & SYM_REFERENCED)
@@ -858,7 +858,7 @@ void ReportUndefined( void )
     symbol *    sym;
     unsigned    level;
 
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         sym->info &= ~SYM_CLEAR_ON_P2;  // reset also floatin-point patch flags
         if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
             if( LinkFlags & LF_UNDEFS_ARE_OK ) {
@@ -1032,18 +1032,17 @@ static void WalkHashTables( void (*fn)(symbol **) )
 void PurgeSymbols( void )
 /******************************/
 {
-    symbol **   list;
-    symbol *    sym;
+    symbol      **owner;
+    symbol      *sym;
 
     WalkHashTables( PurgeHashTable );
     WalkHashTables( CleanupOldAltdefs );
-    for( list = &HeadSym; *list != NULL; ) {
-        sym = *list;
+    for( owner = &HeadSym; (sym = *owner) != NULL; ) {
         if( sym->info & SYM_KILL ) {
-            *list = sym->link;
+            *owner = sym->next;
             FreeSymbol( sym );
         } else if( sym->info & SYM_IS_ALTDEF ) {
-            *list = sym->link;          // gonna get rid of these later
+            *owner = sym->next;          // gonna get rid of these later
         } else {
             if( IS_SYM_ALIAS( sym )
               && (sym->info & SYM_WAS_LAZY) ) {
@@ -1051,7 +1050,7 @@ void PurgeSymbols( void )
                 sym->info = SYM_WEAK_REF | SYM_REFERENCED;
             }
             LastSym = sym;
-            list = &(*list)->link;
+            owner = &(*owner)->next;
         }
     }
 }
@@ -1072,7 +1071,7 @@ void ConvertLazyRefs( void )
     symbol *    defsym;
     symbol *    sym;
 
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( IS_SYM_A_REF( sym ) ) {
             if( IS_SYM_VF_REF( sym ) ) {
                 defsym = *(sym->e.vfdata);
@@ -1160,7 +1159,7 @@ group_entry *SymbolGroup( symbol *sym )
     if( IS_SYM_ALIAS( sym ) ) {
         group = NULL;
     } else if( IS_SYM_GROUP( sym ) ) {
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             if( sym == group->sym ) {
                 break;
             }

@@ -302,7 +302,7 @@ static void ProcModuleEnd( void )
         switch( target ) {
         case TARGET_SEG:
             if( StartInfo.type != START_UNDEFED ) {
-                LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
+                LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->u1.source->infile->name, StartInfo.mod->name );
                 return;                 /* <-------- NOTE: premature return */
             }
             seg = (segnode *)FindNode( SegNodes, targetidx );
@@ -1106,7 +1106,7 @@ static void Pass1Cmd( byte cmd )
         LnkMsg( WRN+LOC_REC+MSG_REC_NOT_DONE, "x", cmd );
         break;
     default:
-        CurrMod->f.source->infile->status |= INSTAT_IOERR;
+        CurrMod->u1.source->infile->status |= INSTAT_IOERR;
         LnkMsg( ERR+LOC_REC+MSG_BAD_REC_TYPE, "x", cmd );
         break;
     }
@@ -1121,12 +1121,12 @@ unsigned long OMFPass1( void )
 
     PermStartMod( CurrMod );
     if( LinkState & (LS_HAVE_MACHTYPE_MASK & ~LS_HAVE_X86_CODE) ) {
-        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->f.source->infile->name);
+        LnkMsg( WRN+MSG_MACHTYPE_DIFFERENT, "s", CurrMod->u1.source->infile->name);
     } else {
         LinkState |= LS_HAVE_X86_CODE;
     }
     CurrMod->omfdbg = OMF_DBG_CODEVIEW; /* Assume MS style LINNUM records */
-    retval = ProcObj( CurrMod->f.source, CurrMod->location, &Pass1Cmd );
+    retval = ProcObj( CurrMod->u1.source, CurrMod->location, &Pass1Cmd );
     IterateNodelist( SegNodes, CheckUninit, NULL );
     ResolveComdats();
     return( retval );

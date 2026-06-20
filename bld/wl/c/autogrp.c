@@ -274,7 +274,7 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
     sym->name.u.ptr = AddBufferStringTable( &PermStrings, name, sym->namelen_cmp + 1 );
     SET_SYM_TYPE( sym, SYM_GROUP );
     sym->info |= SYM_STATIC;
-    group->next_group = NULL;
+    group->next = NULL;
     InitGroup( group );
     group->sym = sym;
     LinkList( grp_list, group );
@@ -295,16 +295,16 @@ static void SortGroup( seg_leader *seg )
     if( seg->info & SEG_ABSOLUTE )
         return;
     Ring2Append( &seg->group->leaders, seg );
-    if( seg->group->next_group == NULL ) { // not in the list yet
+    if( seg->group->next == NULL ) { // not in the list yet
         if( CurrGroup == NULL ) {
             Groups = CurrGroup = seg->group;
         } else {
-            CurrGroup->next_group = seg->group;
-            CurrGroup = CurrGroup->next_group;
+            CurrGroup->next = seg->group;
+            CurrGroup = CurrGroup->next;
         }
         // Make the list circular so we have an easy way of telling if a node
         // is in the list.
-        CurrGroup->next_group = Groups;
+        CurrGroup->next = Groups;
         NumGroups--;
         DbgAssert( NumGroups >= 0 );
     }
@@ -323,15 +323,15 @@ static void SortGroupList( void )
 
     // first, set all of the links in the group list to NULL
     while( (group = Groups) != NULL ) {
-        Groups = Groups->next_group;  // Take group out of original ring
-        group->next_group = NULL;
+        Groups = Groups->next;  // Take group out of original ring
+        group->next = NULL;
         group->leaders = NULL;
         NumGroups++;
     }
     number = NumGroups;
     CurrGroup = NULL;
     WalkLeaders( SortGroup );
-    CurrGroup->next_group = NULL;  // break the circular list.
+    CurrGroup->next = NULL;  // break the circular list.
     NumGroups = number;            // save # of groups.
 }
 
@@ -351,7 +351,7 @@ static void FindSplitGroups( void )
     group_entry     *group;
 
     if( FmtData.type & MK_OVERLAYS ) {
-        for( group = Groups; group != NULL; group = group->next_group ) {
+        for( group = Groups; group != NULL; group = group->next ) {
             if( Ring2Lookup( group->leaders, CheckGroupSplit, group->section ) ) {
                 LnkMsg( ERR+MSG_OVL_GROUP_SPLIT, "s", group->sym->name );
             }
@@ -367,7 +367,7 @@ static void NumberNonAutos( void )
     unsigned            num;
 
     num = 0;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->isautogrp ) {
             group->num = 0;
         } else {

@@ -359,8 +359,8 @@ void CheckExport( const char *name, ordinal_t ordinal, bool cmpcase )
     }
 }
 
-ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
-/************************************************************/
+ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *group )
+/**************************************************************/
 {
     ordinal_t       max_ord;
     entry_export    **owner;
@@ -379,7 +379,7 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     exp->sym = NULL;
     exp->isexported = false;
     exp->ordinal = max_ord + 1;
-    if( grp->segflags & SEG_MOVABLE )
+    if( group->segflags & SEG_MOVABLE )
         exp->ismovable = true;
     exp->next = NULL;
     exp->addr = addr;

@@ -604,7 +604,7 @@ void SetStartSym( const char *name )
                 LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
             }
         } else {
-            LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->f.source->infile->name, StartInfo.mod->name );
+            LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->u1.source->infile->name, StartInfo.mod->name );
         }
     } else {
         StartInfo.targ.sym = RefISymbol( name );
@@ -735,8 +735,8 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     while( firstgroup != NULL ) {
         low_addr = &firstgroup->grp_addr;
         low_group = NULL;
-        for( group = firstgroup; group->next_group != NULL; group = group->next_group ) {
-            grp_addr =  &group->next_group->grp_addr;
+        for( group = firstgroup; group->next != NULL; group = group->next ) {
+            grp_addr =  &group->next->grp_addr;
             if( lessthan( grp_addr, low_addr ) ) {
                 low_addr = grp_addr;
                 low_group = group;
@@ -744,12 +744,12 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
         }
         if( low_group == NULL ) {
             *lastgroup = firstgroup;
-            lastgroup = &(firstgroup->next_group);
+            lastgroup = &(firstgroup->next);
             firstgroup = *lastgroup;
         } else {
-            *lastgroup = low_group->next_group;
-            lastgroup = &(low_group->next_group->next_group);
-            low_group->next_group = *lastgroup;
+            *lastgroup = low_group->next;
+            lastgroup = &(low_group->next->next);
+            low_group->next = *lastgroup;
         }
     }
 }

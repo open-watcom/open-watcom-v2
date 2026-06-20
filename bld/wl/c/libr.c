@@ -651,7 +651,7 @@ mod_entry *SearchLib( file_list *file, const char *name )
         obj->name.u.ptr = NULL;
     }
     obj->location = pos;
-    obj->f.source = file;
+    obj->u1.source = file;
     obj->modtime = file->infile->modtime;
     obj->modinfo = file->flags & DBI_MASK;
     obj->flags_fmt = ObjFileFormat;

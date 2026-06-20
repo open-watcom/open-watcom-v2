@@ -205,7 +205,7 @@ static unsigned WriteGroupsList( perm_write_info *info )
     unsigned    num;
 
     num = 0;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( !group->isautogrp && group->leaders != NULL ) {
             num++;
             U32WritePermFile( info, (unsigned_32)Ring2Count( group->leaders ) );
@@ -275,13 +275,13 @@ static void PrepModEntry( void *_mod, void *info )
         return;
     }
     Ring2Walk( mod->publist, FixSymAddr );
-    mod->n.next_mod = CarveGetIndex( CarveModEntry, mod->n.next_mod );
+    mod->u.next = CarveGetIndex( CarveModEntry, mod->u.next );
     mod->name.u.offs = GetString( info, mod->name.u.ptr );
     mod->publist = CarveGetIndex( CarveSymbol, mod->publist );
     mod->segs = CarveGetIndex( CarveSegData, mod->segs );
     mod->modinfo &= ~MOD_CLEAR_ON_INC;
-    if( mod->f.source != NULL ) {
-        mod->f.fname = mod->f.source->infile->name;
+    if( mod->u1.source != NULL ) {
+        mod->u1.fname = mod->u1.source->infile->name;
     }
 }
 
@@ -297,7 +297,7 @@ static void PrepSegData( void *_sdata, void *info )
         return;
     }
     sdata->next = CarveGetIndex( CarveSegData, sdata->next );  // not used
-    sdata->mod_next = CarveGetIndex( CarveSegData, sdata->mod_next );
+    sdata->next_by_mod = CarveGetIndex( CarveSegData, sdata->next_by_mod );
     sdata->o.clname.u.ptr = sdata->u.leader->class->name.u.ptr;
     sdata->u.name.u.ptr = sdata->u.leader->segname.u.ptr;
     sdata->vm_data = 0;
@@ -315,8 +315,8 @@ static void PrepSymbol( void *_sym, void *info )
         return;
     }
     sym->hash = CarveGetIndex( CarveSymbol, sym->hash );
-    sym->link = CarveGetIndex( CarveSymbol, sym->link );
-    sym->publink = CarveGetIndex( CarveSymbol, sym->publink );
+    sym->next = CarveGetIndex( CarveSymbol, sym->next );
+    sym->next_by_publist = CarveGetIndex( CarveSymbol, sym->next_by_publist );
     if( sym->info & SYM_IS_ALTDEF ) {
         mainsym = sym->e.mainsym;
         if( (mainsym->info & SYM_NAME_XLATED) == 0 ) {
@@ -494,7 +494,7 @@ static void WriteAltData( perm_write_info *info )
     size_t      savepos;
 
     info->currpos = 0;
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_HAS_DATA) ) {
             savepos = info->currpos;
             VMemWritePermFile( info, sym->p.seg->u1.vm_ptr, sym->p.seg->length );
@@ -690,11 +690,11 @@ static void RebuildModEntry( void *_mod, void *info )
         CarveInsertFree( CarveModEntry, mod );
         return;
     }
-    mod->n.next_mod = CarveMapIndex( CarveModEntry, mod->n.next_mod );
+    mod->u.next = CarveMapIndex( CarveModEntry, mod->u.next );
     mod->name.u.ptr = MapString( mod->name.u.offs );
     mod->publist = CarveMapIndex( CarveSymbol, mod->publist );
     mod->segs = CarveMapIndex( CarveSegData, mod->segs );
-    mod->f.fname.u.ptr = MapString( mod->f.fname.u.offs );
+    mod->u1.fname.u.ptr = MapString( mod->u1.fname.u.offs );
 }
 
 static void RebuildSegData( void *_sdata, void *info )
@@ -709,7 +709,7 @@ static void RebuildSegData( void *_sdata, void *info )
         return;
     }
     sdata->next = CarveMapIndex( CarveSegData, sdata->next );  // dont use this?
-    sdata->mod_next = CarveMapIndex( CarveSegData, sdata->mod_next );
+    sdata->next_by_mod = CarveMapIndex( CarveSegData, sdata->next_by_mod );
     sdata->u.name.u.ptr = MapString( sdata->u.name.u.offs );
     sdata->o.clname.u.ptr = MapString( sdata->o.clname.u.offs );
 }
@@ -726,8 +726,8 @@ static void RebuildSymbol( void *_sym, void *info )
         return;
     }
     sym->hash = CarveMapIndex( CarveSymbol, sym->hash );
-    sym->link = CarveMapIndex( CarveSymbol, sym->link );
-    sym->publink = CarveMapIndex( CarveSymbol, sym->publink );
+    sym->next = CarveMapIndex( CarveSymbol, sym->next );
+    sym->next_by_publist = CarveMapIndex( CarveSymbol, sym->next_by_publist );
     sym->name.u.ptr = MapString( sym->name.u.offs );
     sym->info &= ~SYM_CLEAR_ON_INC;
     sym->mod = CarveMapIndex( CarveModEntry, sym->mod );

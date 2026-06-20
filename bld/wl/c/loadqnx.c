@@ -189,22 +189,22 @@ static void DoGroupLeader( void *_seg )
     RingLookup( seg->pieces, WriteSegData, &start );
 }
 
-static void WriteQNXGroup( group_entry *grp, unsigned_32 *segments )
-/******************************************************************/
+static void WriteQNXGroup( group_entry *group, unsigned_32 *segments )
+/********************************************************************/
 {
     segment     seg;
 
-    seg = QNX_SEL_NUM( grp->grp_addr.seg );
-    segments[seg] = grp->totalsize | ((unsigned_32)grp->u.qnxflags << 28);
-    if( StackSegPtr != NULL && grp == StackSegPtr->group ) {
+    seg = QNX_SEL_NUM( group->grp_addr.seg );
+    segments[seg] = group->totalsize | ((unsigned_32)group->u.qnxflags << 28);
+    if( StackSegPtr != NULL && group == StackSegPtr->group ) {
         segments[seg] -= StackSize;      // stack size gets
     }                                    // added on by QNX loader.
-    if( grp->size == 0 )
+    if( group->size == 0 )
         return;
     AmountWritten = 0;
-    CurrGroup = grp;
+    CurrGroup = group;
     WriteLoadRec();
-    Ring2Walk( grp->leaders, DoGroupLeader );
+    Ring2Walk( group->leaders, DoGroupLeader );
 }
 
 static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg )
@@ -241,7 +241,7 @@ static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg
 static void WriteQNXData( unsigned_32 * segments )
 /************************************************/
 {
-    group_entry *   grp;
+    group_entry *   group;
     lmf_record      record;
     bool            first;
 
@@ -249,15 +249,15 @@ static void WriteQNXData( unsigned_32 * segments )
     InVerifySegment = false;
     /* write all read/write segment data */
     RWEndRec.signature = 0;
-    for( grp = Groups; grp != NULL; grp = grp->next_group ){
-        if( grp->u.qnxflags == QNX_READ_WRITE && grp->totalsize != 0 ) {
-            if( first && grp->size >= VERIFY_END ) {
+    for( group = Groups; group != NULL; group = group->next ){
+        if( group->u.qnxflags == QNX_READ_WRITE && group->totalsize != 0 ) {
+            if( first && group->size >= VERIFY_END ) {
                 InVerifySegment = true;
                 first = false;
             }
-            WriteQNXGroup( grp, segments );
+            WriteQNXGroup( group, segments );
         }
-        RWEndRec.signature += grp->totalsize;
+        RWEndRec.signature += group->totalsize;
         RWEndRec.signature <<= 3;
         RWEndRec.signature ^= 0x32476235;
     }
@@ -268,21 +268,21 @@ static void WriteQNXData( unsigned_32 * segments )
     RWEndRec.verify ^= (unsigned_16) ~0;
     WriteLoad( &RWEndRec, sizeof( RWEndRec ) );
     /* write all read only segment data */
-    for( grp = Groups; grp != NULL; grp = grp->next_group ){
-        if( grp->u.qnxflags != QNX_READ_WRITE && grp->totalsize != 0 ) {
-            WriteQNXGroup( grp, segments );
+    for( group = Groups; group != NULL; group = group->next ){
+        if( group->u.qnxflags != QNX_READ_WRITE && group->totalsize != 0 ) {
+            WriteQNXGroup( group, segments );
         }
-        WriteQNXRelocs( grp->g.grp_relocs, LMF_LINEAR_FIXUP_REC,
-                        QNX_SEL_NUM(grp->grp_addr.seg) );
+        WriteQNXRelocs( group->g.grp_relocs, LMF_LINEAR_FIXUP_REC,
+                        QNX_SEL_NUM( group->grp_addr.seg ) );
     }
 }
 
 
-static bool checkGroupFlags( void *_seg, void *_grp )
-/***************************************************/
+static bool checkGroupFlags( void *_seg, void *_group )
+/*****************************************************/
 {
     seg_leader     *seg = _seg;
-    group_entry    *grp = _grp;
+    group_entry    *group = _group;
     unsigned_16     sflags;
 
     sflags = seg->segflags;
@@ -294,14 +294,14 @@ static bool checkGroupFlags( void *_seg, void *_grp )
 
     if( sflags < 0x10 ) {
         if( (sflags & 1) == 0 ) {       // if can read/write or exec/read
-            grp->u.qnxflags &= ~1;      // can for all segments.
+            group->u.qnxflags &= ~1;      // can for all segments.
             return( true );                // no need to check others
         }
     } else {
         // make segments read/write or exec/read unless every segment is specifically
         // set otherwise.
 
-        grp->u.qnxflags &= ~1;
+        group->u.qnxflags &= ~1;
         return( true );
     }
     return( false );
@@ -314,7 +314,7 @@ void SetQNXGroupFlags( void )
 {
     group_entry *   group;
 
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->segflags & SEG_DATA ) {
             group->u.qnxflags = QNX_READ_ONLY;      // 1
         } else {

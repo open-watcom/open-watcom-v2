@@ -321,8 +321,8 @@ bool DumpObjCache( void )
 
     for( infile = CachedFiles; infile != NULL; infile = infile->next ) {
         if( infile->status & INSTAT_PAGE_CACHE ) {
-            if( CurrMod == NULL || CurrMod->f.source == NULL
-                                || CurrMod->f.source->infile != infile ) {
+            if( CurrMod == NULL || CurrMod->u1.source == NULL
+                                || CurrMod->u1.source->infile != infile ) {
                 if( DumpFileCache( infile, true ) ) {
                     return( true );
                 }

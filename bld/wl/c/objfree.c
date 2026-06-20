@@ -77,7 +77,7 @@ static void FreeClasses( class_entry *class )
 void FreeAMod( mod_entry *mod )
 /************************************/
 {
-    FreeObjCache( mod->f.source );
+    FreeObjCache( mod->u1.source );
     FreeModEntry( mod );
 }
 
@@ -87,7 +87,7 @@ static void FreeMods( mod_entry *head )
     void        *next;
 
     for( ; head != NULL; head = next ) {
-        next = head->n.next_mod;
+        next = head->u.next;
         FreeAMod( head );
     }
 }
@@ -230,13 +230,13 @@ static void FreeAGroup( group_entry *group )
     CarveFree( CarveGroup, group );
 }
 
-void FreeGroups( group_entry *head )
-/*****************************************/
+void FreeGroups( group_entry *group )
+/***********************************/
 {
     group_entry *next;
 
-    for( ; head != NULL; head = next ) {
-        next = head->next_group;
-        FreeAGroup( head );
+    for( ; group != NULL; group = next ) {
+        next = group->next;
+        FreeAGroup( group );
     }
 }

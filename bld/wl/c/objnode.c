@@ -317,7 +317,7 @@ list_of_names *MakeListName( char *name, size_t len )
     list_of_names   *new;
 
     new = MemAllocSafe( sizeof( list_of_names ) + len );
-    new->next_name = NULL;
+    new->next = NULL;
     memcpy( new->name, name, len );
     new->name[len] = '\0';
     return( new );
@@ -326,7 +326,7 @@ list_of_names *MakeListName( char *name, size_t len )
 unsigned long BadObjFormat( void )
 /***************************************/
 {
-    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->infile->name );
+    LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->u1.source->infile->name );
     return( 0 );
 }
 

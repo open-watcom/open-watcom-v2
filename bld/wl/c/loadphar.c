@@ -71,7 +71,7 @@ static unsigned_32 WritePharData( unsigned file_pos )
     fnode->file_loc = file_pos;
     Root->u.file_loc = file_pos;
     Root->sect_addr = Groups->grp_addr;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         repos = WriteGroup( group );
         if( repos ) {
             SeekLoad( fnode->file_loc );
@@ -215,7 +215,7 @@ static unsigned_32 WritePharSegData( void )
     WriteDescriptor( 0, 0, 0 );                             // NULL IDT entry;
     WriteDescriptor( 0, 0, 0 );                             // NULL LDT entry;
     pos += size;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         flags = DR_BASE | DR_IS_APP | DR_IS_USER;
         if( (group->segflags & SEG_DATA) == 0 ) {
             flags |= DR_IS_CODE;
@@ -223,7 +223,7 @@ static unsigned_32 WritePharSegData( void )
         WriteDescriptor( pos, group->totalsize, flags );
         pos += group->totalsize;
     }
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         WriteGroupLoad( group, false );
         if( group->totalsize > group->size ) {  // phar lap is stupid
             PadLoad( group->totalsize - group->size );
@@ -278,7 +278,7 @@ static unsigned_32 WriteSIT( void )
     sit.base = 0;
     sit.extra = 0;
     sit.base = FmtData.base;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         sit.selector = group->grp_addr.seg;
         sit.extra = group->totalsize - group->size;
         WriteLoad( &sit, sizeof( seg_info_table ) );

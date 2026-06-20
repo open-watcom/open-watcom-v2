@@ -124,7 +124,7 @@ void DistribAddMod( mod_entry *lp, overlay_ref ovlref )
         ModTableMaxLen *= 2;
     }
     ModTable[CurrModHandle] = lp;
-    lp->x.arclist = ArcList;
+    lp->u2.arclist = ArcList;
     ArcList->numarcs = 0;
     if( lp->modinfo & MOD_FIXED ) {
         ArcList->ovlref = ovlref;
@@ -140,7 +140,7 @@ void InitArcList( mod_entry *mod )
 {
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & LS_SEARCHING_LIBRARIES) ) {
     } else {
-        mod->x.arclist = _PermAlloc( offsetof( arcdata, arcs ) );
+        mod->u2.arclist = _PermAlloc( offsetof( arcdata, arcs ) );
     }
 }
 
@@ -231,7 +231,7 @@ void DistribSetSegments( void )
         for( index = 1; index <= CurrModHandle; index++ ) {
             mod = ModTable[index];
             CurrMod = mod;
-            ovlref = mod->x.arclist->ovlref;
+            ovlref = mod->u2.arclist->ovlref;
             if( ovlref == NO_ARCS_YET ) {       // only data referenced
                 CurrSect = Root;
             } else {
@@ -282,7 +282,7 @@ void DistribProcMods( void )
 
     for( index = 1; index <= CurrModHandle; index++ ) {
         mod = ModTable[index];
-        CurrSect = mod->n.sect;
+        CurrSect = mod->u.sect;
         PModule( mod );
     }
 }
@@ -345,7 +345,7 @@ void DefDistribSym( symbol *sym )
     segdata     *seg;
 
     if( sym->info & SYM_REFERENCED ) {
-        arclist = CurrMod->x.arclist;
+        arclist = CurrMod->u2.arclist;
         if( CurrMod->modinfo & MOD_FIXED ) {
             seg = sym->p.seg;
             if( seg->iscode ) {      // if code..
@@ -372,12 +372,12 @@ static void AddArc( dist_arc arc )
 {
     arcdata     *arclist;
 
-    arclist = CurrMod->x.arclist;
+    arclist = CurrMod->u2.arclist;
     if( arclist->numarcs >= ArcListMaxLen ) {
         arclist = MemAllocSafe( offsetof( arcdata, arcs ) + 2 * ArcListMaxLen * sizeof( dist_arc ) );
         memcpy( arclist, ArcList, offsetof( arcdata, arcs ) + ArcListMaxLen * sizeof( dist_arc ) );
         MemFree( ArcList );
-        CurrMod->x.arclist = arclist;
+        CurrMod->u2.arclist = arclist;
         ArcList = arclist;
         ArcListMaxLen *= 2;
     }
@@ -393,7 +393,7 @@ static bool NotAnArc( dist_arc arc )
     unsigned    index;
     arcdata     *arclist;
 
-    arclist = CurrMod->x.arclist;
+    arclist = CurrMod->u2.arclist;
     for( index = arclist->numarcs; index-- > 0; ) {
         if( arclist->arcs[index].test == arc.test ) {
             return( false );
@@ -445,7 +445,7 @@ static void DoRefGraph( overlay_ref ovlref, mod_entry *mod )
     arcdata     *arclist;
     overlay_ref anc_ovlref;
 
-    arclist = mod->x.arclist;
+    arclist = mod->u2.arclist;
     /*
      * this next line is necessary to break cycles in the graph.
      */
@@ -492,7 +492,7 @@ static void ScanArcs( mod_entry *mod )
     dist_arc    currarc;
 
     mod->modinfo |= MOD_VISITED;
-    arclist = mod->x.arclist;
+    arclist = mod->u2.arclist;
     ovlref = arclist->ovlref;
     if( ovlref != NO_ARCS_YET ) {
         for( index = arclist->numarcs; index-- > 0; ) {
@@ -506,7 +506,7 @@ static void ScanArcs( mod_entry *mod )
                         currarc.test = sym->u.d.modnum;
                         refmod = ModTable[currarc.mod];
                         if( refmod->modinfo & MOD_FIXED ) {
-                            if( NewRefVector( sym, ovlref, refmod->x.arclist->ovlref ) ) {
+                            if( NewRefVector( sym, ovlref, refmod->u2.arclist->ovlref ) ) {
                                 DeleteArc( arclist, index );
                             }
                         } else {
@@ -548,12 +548,12 @@ void DistribFinishMod( mod_entry *mod )
 
     ScanArcs( mod );
     if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module more than once
-        mod->x.arclist->numarcs = 0;
+        mod->u2.arclist->numarcs = 0;
     }
-    allocsize = offsetof( arcdata, arcs ) + mod->x.arclist->numarcs * sizeof( dist_arc );
+    allocsize = offsetof( arcdata, arcs ) + mod->u2.arclist->numarcs * sizeof( dist_arc );
     arclist = Pass1Alloc( allocsize );
-    memcpy( arclist, mod->x.arclist, allocsize );
-    mod->x.arclist = arclist;
+    memcpy( arclist, mod->u2.arclist, allocsize );
+    mod->u2.arclist = arclist;
 }
 
 void DistribIndirectCall( symbol *sym )
@@ -564,7 +564,7 @@ void DistribIndirectCall( symbol *sym )
     arcdata         *arclist;
     overlay_ref     save_ovlref;
 
-    arclist = CurrMod->x.arclist;
+    arclist = CurrMod->u2.arclist;
     save_ovlref = arclist->ovlref;
     arclist->ovlref = 0;                // make sure current module isn't
     CurrMod->modinfo |= MOD_VISITED;    // visited

@@ -109,7 +109,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
     unsigned_32     size;
 
     wrote = count = 0;
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( !IS_SYM_IMPORTED( sym ) )
             continue;
         /* so SymFini doesn't try to free it */
@@ -402,7 +402,7 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
 
     /* write groups.*/
     fnode = Root->outfile;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->grp_addr.seg == CODE_SEGMENT ) {
             iscode = true;
         } else {

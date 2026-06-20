@@ -109,7 +109,7 @@ static void InitSections( ElfHdr *hdr )
     }
     num += hdr->i.grpnum;
     hdr->i.relbase = num;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->g.grp_relocs != NULL ) {
             hdr->i.relnum++;
         }
@@ -294,7 +294,7 @@ static void WriteELFGroups( ElfHdr *hdr )
     sh = hdr->sh + hdr->i.grpbase;
     ph = hdr->ph + NumPhdr;
     off = hdr->curr_off;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
         SetGroupHeaders( group, off, ph, sh );
@@ -345,7 +345,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         relocs = group->g.grp_relocs;
         if( relocs != NULL ) {
             sh->sh_offset = hdr->curr_off;
@@ -418,7 +418,7 @@ void ChkElfData( void )
     symbol *    sym;
 
     NumExports = NumImports = 0;
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( IsSymElfImported( sym ) ) {
             NumImports++;
         } else if( IsSymElfExported( sym ) ) {
@@ -431,19 +431,19 @@ void ChkElfData( void )
     InitStringTable( &SymStrTab, false );
     AddCharStringTable( &SymStrTab, '\0' );
     ElfSymTab = CreateElfSymTable( NumImports + NumExports + NumGroups, &SymStrTab );
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize != 0 ) {
             AddSymElfSymTable( ElfSymTab, group->sym );
         }
     }
     /* process local symbols */
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) ) {
             AddSymElfSymTable( ElfSymTab, sym );
         }
     }
     /* process global symbols */
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         if( IsSymElfImpExp( sym ) && (sym->info & SYM_STATIC) == 0 ) {
             AddSymElfSymTable( ElfSymTab, sym );
         }

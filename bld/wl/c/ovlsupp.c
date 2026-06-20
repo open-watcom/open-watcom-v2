@@ -135,7 +135,7 @@ static void DoSecPubs( section *sect )
 void OvlProcPubsSect( section *sect )
 /***********************************/
 {
-    for( CurrMod = sect->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->x.next ) {
+    for( CurrMod = sect->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->u2.next ) {
         DoPubsSect( sect );
     }
 }
@@ -473,7 +473,7 @@ bool OvlCheckOvlClass( const char *clname, bool *isovlclass )
                 *isovlclass = true;
                 return( retval );
             }
-            cnamelist = cnamelist->next_name;
+            cnamelist = cnamelist->next;
         } while( cnamelist != NULL );
     }
     *isovlclass = false;

@@ -359,7 +359,7 @@ void Set64BitMode( void )
         if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= OBJ_FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->infile->name.u.ptr, 64 );
+                        CurrMod->u1.source->infile->name.u.ptr, 64 );
         }
     }
 }
@@ -373,7 +373,7 @@ void Set32BitMode( void )
         if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= OBJ_FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                        CurrMod->f.source->infile->name.u.ptr, 32 );
+                        CurrMod->u1.source->infile->name.u.ptr, 32 );
         }
     }
 }
@@ -385,7 +385,7 @@ void Set16BitMode( void )
         if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
             ObjFormat |= OBJ_FMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
-                    CurrMod->f.source->infile->name.u.ptr, 16 );
+                    CurrMod->u1.source->infile->name.u.ptr, 16 );
         }
     }
 }
@@ -620,8 +620,8 @@ seg_leader *InitLeader( const char *segname )
     seg_leader  *seg;
 
     seg = CarveAlloc( CarveLeader );
-    seg->next_seg = NULL;
-    seg->grp_next = NULL;
+    seg->next = NULL;
+    seg->next_by_group = NULL;
     seg->pieces = NULL;
     seg->class = NULL;
     seg->ord = segment_ord++;
@@ -1234,12 +1234,12 @@ group_entry *SearchGroups( const char *name )
 /*******************************************/
 /* Find group of specified name. */
 {
-    group_entry     *currgrp;
+    group_entry     *group;
 
-    for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ) {
-        if( stricmp( currgrp->sym->name.u.ptr, name ) == 0 ) {
-            DEBUG(( DBG_OLD, "- group %s found at %x", name, currgrp ));
-            return( currgrp );
+    for( group = Groups; group != NULL; group = group->next ) {
+        if( stricmp( group->sym->name.u.ptr, name ) == 0 ) {
+            DEBUG(( DBG_OLD, "- group %s found at %x", name, group ));
+            return( group );
         }
     }
     return( NULL );

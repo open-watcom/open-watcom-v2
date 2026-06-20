@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -113,7 +113,7 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
  */
 {
     group_entry         *group;
-    group_entry         *next_group;
+    group_entry         *next;
     SECTION             *sect;
     unsigned long       header_size;
     outfilelist         *fnode;
@@ -141,13 +141,13 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
 
     /* write groups and relocations */
     root_size = 0;
-    for( group = Groups; group != NULL; group = next_group ) {
-        next_group = group->next_group;
+    for( group = Groups; group != NULL; group = next ) {
+        next = group->next;
         sect = group->section;
         CurrSect = sect;
         fnode = sect->outfile;
         repos = WriteGroup( group );
-        if( ( next_group == NULL ) || ( sect != next_group->section ) ) {
+        if( ( next == NULL ) || ( sect != next->section ) ) {
             if( sect == Root ) {
                 root_size = fnode->file_loc;
             } else {
@@ -264,7 +264,7 @@ static void WriteCOMFile( void )
     Root->sect_addr = Groups->grp_addr;
 
     /* write groups */
-    for( group = Groups; group != NULL; group = group->next_group ) {
+    for( group = Groups; group != NULL; group = group->next ) {
         chop = SUB_REAL_ADDR( group->grp_addr, StartInfo.addr );
         if( chop > 0 ) {
             chop = 0;
