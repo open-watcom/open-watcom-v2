@@ -199,7 +199,7 @@ void SectWalkClass( section *sect, class_walk_fn *cbfn )
     class_entry         *class;
 
     CurrSect = sect;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    for( class = sect->classes; class != NULL; class = class->next ) {
         WalkClass( class, cbfn );
     }
 }
@@ -210,7 +210,7 @@ static void _SectWalkClass( section *sect, void *class_walk_cb )
     class_entry     *class;
 
     CurrSect = sect;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    for( class = sect->classes; class != NULL; class = class->next ) {
         WalkClass( class, ((class_walk_data *)class_walk_cb)->cbfn );
     }
 }
@@ -237,10 +237,10 @@ seg_leader *FindSegment( section *sect, const char *name )
     static class_entry  *class = NULL;
 
     if( sect != NULL ) {
-        class = sect->classlist;
+        class = sect->classes;
         seg = NULL;
     }
-    for( ; class != NULL; class = class->next_class ) {
+    for( ; class != NULL; class = class->next ) {
         while( (seg = RingStep( class->segs, seg )) != NULL ) {
             if( stricmp( seg->segname.u.ptr, name ) == 0 ) {
                 return( seg );
@@ -716,7 +716,7 @@ section *NewSection( void )
 
     sect = MemAllocSafe( sizeof( section ) );
     sect->next_sect = NULL;
-    sect->classlist = NULL;
+    sect->classes = NULL;
     sect->orderlist = NULL;
     sect->areas = NULL;
     sect->files = NULL;

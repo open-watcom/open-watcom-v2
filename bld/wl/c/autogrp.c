@@ -76,8 +76,8 @@ static offset GetSegGroupPackLimit( seg_leader *seg )
     return( limit );
 }
 
-static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
-/************************************************************/
+static seg_leader *GetNextSeg( section *sect, seg_leader *seg )
+/*************************************************************/
 /*
  * if seg == NULL then get first segment in section
  * if seg != NULL then get next segment after seg
@@ -94,7 +94,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     class_entry *class;
 
     if( seg == NULL ) {
-        for( class = sec->classlist; class != NULL; class = class->next_class ) {
+        for( class = sect->classes; class != NULL; class = class->next ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 break;
             }
@@ -106,7 +106,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
         class = seg->class;
     }
     while( (seg = RingStep( class->segs, seg )) == NULL ) {
-        for( class = class->next_class; class != NULL; class = class->next_class ) {
+        for( class = class->next; class != NULL; class = class->next ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 break;
             }
@@ -194,8 +194,8 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
     }
 }
 
-static void AutoGroupSect( section *sec )
-/***************************************/
+static void AutoGroupSect( section *sect )
+/****************************************/
 {
     seg_leader      *seg;
     seg_leader      *packstart;
@@ -210,7 +210,7 @@ static void AutoGroupSect( section *sec )
     size = 0;
     num_segs = 0;
     packstart = NULL;
-    for( seg = NULL; (seg = GetNextSeg( sec, seg )) != NULL; ) {
+    for( seg = NULL; (seg = GetNextSeg( sect, seg )) != NULL; ) {
         if( seg->info & SEG_ABSOLUTE ) {
             PackSegs( seg, 1 );
         } else {

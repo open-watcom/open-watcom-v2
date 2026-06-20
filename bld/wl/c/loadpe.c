@@ -1716,7 +1716,7 @@ void ChkPEData( void )
     class_entry *class;
 
     /* find the last code class in the program */
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( class->flags & CLASS_CODE ) {
             break;
         }
@@ -1750,7 +1750,7 @@ void AllocPETransferTable( void )
     if( XFerSegData == NULL ) {
         return;
     }
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( class->flags & CLASS_TRANSFER ) {
             break;
         }

@@ -308,20 +308,20 @@ static void WriteMapSectSegs( section *sect )
     seg_leader      *seg;
     seg_info        *segs;
 
-    if( sect->classlist != NULL ) {
+    if( sect->classes != NULL ) {
         WriteMapBox( MSG_MAP_BOX_SEGMENTS );
         WriteMapMsg( MSG_MAP_TITLE_SEGMENTS_0 );
         WriteMapMsg( MSG_MAP_TITLE_SEGMENTS_1 );
         WriteMapNL();
         count = 0;
-        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        for( class = sect->classes; class != NULL; class = class->next ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 count += RingCount( class->segs );
             }
         }
         segs = MemAllocSafe( count * sizeof( seg_info ) );
         count = 0;
-        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        for( class = sect->classes; class != NULL; class = class->next ) {
             if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                 for( seg = NULL; (seg = RingStep( class->segs, seg )) != NULL; ) {
                     segs[count].idx = count;
@@ -460,14 +460,14 @@ void WriteMapOvlVectHead( vect_state *VectState )
 }
 
 
-void WriteMapOvlPubHead( section *sec )
-/*************************************/
+void WriteMapOvlPubHead( section *sect )
+/**************************************/
 {
     WriteMapNL();
     WriteMapNL();
-    WriteMapPrintf( "Overlay section %d address %a", sec->ovlref, &sec->sect_addr );
+    WriteMapPrintf( "Overlay section %d address %a", sect->ovlref, &sect->sect_addr );
     WriteMapPrintf( "====================================" );
-    WriteMapSectSegs( sec );
+    WriteMapSectSegs( sect );
     WriteMapMemoryMapHead();
 }
 

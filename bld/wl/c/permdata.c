@@ -388,7 +388,7 @@ static void PrepClasses( perm_write_info *info )
 {
     class_entry *class;
 
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         class->name.u.offs = GetString( info, class->name.u.ptr );
         RingLookup( class->segs, PrepLeaders, info );
     }

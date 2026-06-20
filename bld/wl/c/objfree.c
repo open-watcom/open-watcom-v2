@@ -62,15 +62,15 @@ void FiniLinkStruct( void )
     FiniORLObj();
 }
 
-static void FreeClasses( class_entry * list )
+static void FreeClasses( class_entry *class )
 /*******************************************/
 {
-    class_entry *       next;
+    class_entry     *next_class;
 
-    for( ; list != NULL; list = next ) {
-        next = list->next_class;
-        RingWalk( list->segs, FreeLeader );
-        CarveFree( CarveClass, list );
+    for( ; class != NULL; class = next_class ) {
+        next_class = class->next;
+        RingWalk( class->segs, FreeLeader );
+        CarveFree( CarveClass, class );
     }
 }
 
@@ -109,26 +109,27 @@ static void FreeFiles( file_list *file )
 
 static void FreeAreas( OVL_AREA *area );
 
-static void FreeSections( section *sec )
-/**************************************/
-/* Free sections & classes. */
+static void FreeSections( section *sect )
+/****************************************
+ * Free sections & classes.
+ */
 {
     section             *next;
     ORDER_CLASS         *Class, *NextClass;
     ORDER_SEGMENT       *Seg, *NextSeg;
 
-    for( ; sec != NULL; sec = next ) {
-        next = sec->next_sect;
-        FreeFiles( sec->files );
+    for( ; sect != NULL; sect = next ) {
+        next = sect->next_sect;
+        FreeFiles( sect->files );
         if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-            FreeMods( sec->mods );
-            FreeClasses( sec->classlist );
+            FreeMods( sect->mods );
+            FreeClasses( sect->classes );
         }
-        DBISectCleanup( sec );
-        FreeAreas( sec->areas );
-        ZapHTable( sec->modFilesHashed, MemFree );
+        DBISectCleanup( sect );
+        FreeAreas( sect->areas );
+        ZapHTable( sect->modFilesHashed, MemFree );
         // Free up any Order Class entries
-        for( Class = sec->orderlist; Class != NULL; Class = NextClass ) {
+        for( Class = sect->orderlist; Class != NULL; Class = NextClass ) {
             NextClass = Class->NextClass;
             if( Class->Name != NULL ) {   // Including members and sucessors
                 MemFree ( Class->Name );
@@ -146,7 +147,7 @@ static void FreeSections( section *sec )
             }
             MemFree ( Class );
         }
-        MemFree( sec );
+        MemFree( sect );
     }
 }
 

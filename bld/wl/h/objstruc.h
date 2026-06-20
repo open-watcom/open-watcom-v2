@@ -263,7 +263,7 @@ typedef struct section {
     FILE_LIST           *files;
     pHTable             modFilesHashed;
     MOD_ENTRY           *mods;
-    CLASS_ENTRY         *classlist;
+    CLASS_ENTRY         *classes;
     ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
     targ_addr           sect_addr;
     overlay_ref         ovlref;
@@ -399,7 +399,7 @@ typedef struct mod_entry {
 } mod_entry;
 
 typedef struct class_entry {
-    CLASS_ENTRY         *next_class;
+    CLASS_ENTRY         *next;
     SEG_LEADER          *segs;
     name_strtab         name;
     class_status        flags;

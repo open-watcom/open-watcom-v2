@@ -118,25 +118,25 @@ void WalkAreas( OVL_AREA *ovl, void (*rtn)( section * ) )
     }
 }
 
-static void DoSecPubs( section *sec )
-/***********************************/
+static void DoSecPubs( section *sect )
+/************************************/
 {
     if( MapFile != NULL ) {
-        WriteMapOvlPubHead( sec );
+        WriteMapOvlPubHead( sect );
         WriteMapPubStart();
     }
-    ProcPubsSect( sec->mods, sec );
-    OvlProcPubsSect( sec );
+    ProcPubsSect( sect->mods, sect );
+    OvlProcPubsSect( sect );
     if( MapFile != NULL ) {
         WriteMapPubEnd();
     }
 }
 
-void OvlProcPubsSect( section *sec )
-/**********************************/
+void OvlProcPubsSect( section *sect )
+/***********************************/
 {
-    for( CurrMod = sec->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->x.next ) {
-        DoPubsSect( sec );
+    for( CurrMod = sect->u.dist_mods; CurrMod != NULL; CurrMod = CurrMod->x.next ) {
+        DoPubsSect( sect );
     }
 }
 

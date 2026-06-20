@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,14 +68,14 @@ void OvlSetSegments( void )
     DistribSetSegments();
 }
 
-static void FillOutPtr( section *sec )
-/************************************/
+static void FillOutPtr( section *sect )
+/*************************************/
 {
-    if( sec->outfile == NULL ) {
-        if( sec->parent != NULL ) {
-            sec->outfile = sec->parent->outfile;  //same file as ancestor.
+    if( sect->outfile == NULL ) {
+        if( sect->parent != NULL ) {
+            sect->outfile = sect->parent->outfile;  //same file as ancestor.
         } else {
-            sec->outfile = Root->outfile;
+            sect->outfile = Root->outfile;
         }
     }
 }
@@ -105,11 +105,11 @@ void OvlTryUseVector( symbol *sym, extnode *newnode )
     }
 }
 
-static void PSection( section *sec )
-/**********************************/
+static void PSection( section *sect )
+/***********************************/
 {
-    CurrSect = sec;
-    PModList( sec->mods );
+    CurrSect = sect;
+    PModList( sect->mods );
 }
 
 void OvlPass2( void )

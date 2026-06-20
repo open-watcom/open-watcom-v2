@@ -365,7 +365,7 @@ static void AllocDBIClasses( class_entry *class )
 {
     group_entry *group;
 
-    for( ; class != NULL; class = class->next_class ) {
+    for( ; class != NULL; class = class->next ) {
         if( class->flags & CLASS_DEBUG_INFO ) {
             group = AllocGroup( AutoGrpName, &DBIGroups );
             group->grp_addr.seg = 0;
@@ -430,7 +430,7 @@ void ODBIAddrSectStart( section *sect )
     dptr->dump_addr = dptr->global.curr.u.vm_ptr;
     dptr->modnum = -1;
 
-    AllocDBIClasses( sect->classlist );
+    AllocDBIClasses( sect->classes );
 }
 
 static void DoName( const char *cname, char *intelname, size_t len )
@@ -840,20 +840,20 @@ static unsigned_16 WriteSegValues( void )
     }
 }
 
-static void WriteDBISecs( section *sec )
-/**************************************/
+static void WriteDBISecs( section *sect )
+/***************************************/
 {
     debug_info          *dptr;
     section_dbg_header  header;
     unsigned long       pos;
 
-    dptr = sec->dbg_info;
+    dptr = sect->dbg_info;
     if( dptr != NULL ) {
         header.section_size = dptr->addr.start + dptr->addr.size;
         header.mod_offset = dptr->mod.start;
         header.gbl_offset = dptr->global.start;
         header.addr_offset = dptr->addr.start;
-        header.section_id = sec->ovlref;
+        header.section_id = sect->ovlref;
         DBIWriteLocal( &header, sizeof( section_dbg_header ) );
         DBIWriteInfo( dptr->locallinks.init.u.vm_ptr, dptr->locallinks.size );
         DBIWriteInfo( dptr->typelinks.init.u.vm_ptr, dptr->typelinks.size );

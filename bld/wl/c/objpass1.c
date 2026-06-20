@@ -294,7 +294,7 @@ static class_entry *FindNamedClass( const char *name )
 {
     class_entry   *class;
 
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( stricmp( class->name.u.ptr, name ) == 0 ) {
             return( class );
         }
@@ -490,7 +490,7 @@ class_entry *DuplicateClass( class_entry *class )
     newclass = CarveAlloc( CarveClass );
     memcpy( newclass, class, sizeof( class_entry ) );
     newclass->name.u.ptr = AddBufferStringTable( &PermStrings, class->name.u.ptr, strlen( class->name.u.ptr ) + 1 );
-    class->next_class = newclass;
+    class->next = newclass;
     return( newclass );
 }
 
@@ -501,8 +501,8 @@ class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode 
     class_entry     *lastclass;
     size_t          namelen;
 
-    lastclass = sect->classlist;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    lastclass = sect->classes;
+    for( class = sect->classes; class != NULL; class = class->next ) {
         if( stricmp( class->name.u.ptr, name ) == 0 && ( class->bits == bits ) ) {
             return( class );
         }
@@ -514,7 +514,7 @@ class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode 
     class->name.u.ptr = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     class->segs = NULL;
     class->section = sect;
-    class->next_class = NULL;
+    class->next = NULL;
     class->flags = 0;
     if( iscode ) {
         class->flags |= CLASS_CODE;
@@ -527,9 +527,9 @@ class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode 
     }
     DBIColClass( class );
     if( lastclass == NULL ) {
-        sect->classlist = class;
+        sect->classes = class;
     } else {
-        lastclass->next_class = class;
+        lastclass->next = class;
     }
     return( class );
 }

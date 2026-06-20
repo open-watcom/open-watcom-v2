@@ -312,7 +312,7 @@ static void ReallocFileSegs( void )
             NumGroups--;
         }
     }
-    for( class = Root->classlist; class != NULL; class = class->next_class ){
+    for( class = Root->classes; class != NULL; class = class->next ){
         if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             RingWalk( class->segs, SetLeaderSeg );
         }
@@ -332,7 +332,7 @@ static void FindUninitDataStart( void )
     FmtData.bsspad = 0;
     if( (LinkState & LS_DOSSEG_FLAG) == 0 )
         return;
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             if( class->flags & CLASS_LXDATA_SEEN ) {
                 setnext = true;
@@ -472,7 +472,7 @@ static void CalcGrpAddr( group_entry *currgrp )
                    currgrp->grp_addr.off + currgrp->totalsize;
             CurrLoc.seg = addr >> FmtData.SegShift;
             CurrLoc.off = addr & FmtData.SegMask;
-            while( (class = class->next_class) != NULL ) {
+            while( (class = class->next) != NULL ) {
                 if( class->flags & CLASS_FIXED ) {
                     save = class->BaseAddr;     // If class is fixed, can stop
                     ChkLocated( &save, true );  //   after making sure address
@@ -502,7 +502,7 @@ void AllocClasses( section *sect )
     unsigned_32     size;
     class_entry     *class;
 
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    for( class = sect->classes; class != NULL; class = class->next ) {
         DEBUG(( DBG_OLD, "Allocating class %s", class->name.u.ptr ));
         if( class->flags & CLASS_DEBUG_INFO ) {
             /* don't *really* allocate room for these guys */
@@ -887,7 +887,7 @@ static void FillClassFlags( char *name, unsigned_16 flags )
 {
     class_entry     *class;
 
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( stricmp( class->name.u.ptr, name ) == 0 ) {
             RingLookup( class->segs, SetClassFlag, &flags );
             return;
@@ -907,7 +907,7 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
     if( type == SEGFLAG_CODE ) {
         class_flags = CLASS_CODE;
     }
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( class_flags == (class->flags & CLASS_CODE) ) {
             RingLookup( class->segs, SetClassFlag, &flags );
         }
@@ -923,7 +923,7 @@ void SetSegFlags( xxx_seg_flags *flag_list )
     xxx_seg_flags   *start;
     class_entry     *class;
 
-    for( class = Root->classlist; class != NULL; class = class->next_class ) {
+    for( class = Root->classes; class != NULL; class = class->next ) {
         RingWalk( class->segs, SetReadOnly );
     }
     start = flag_list;
@@ -956,8 +956,8 @@ void SetSegFlags( xxx_seg_flags *flag_list )
     }
 }
 
-static void SplitDGroupClasses( section *sec )
-/********************************************/
+static void SplitDGroupClasses( section *sect )
+/*********************************************/
 // split classes in DGROUP
 {
     class_entry         *class;
@@ -966,7 +966,7 @@ static void SplitDGroupClasses( section *sec )
     seg_leader          *newlist;
     seg_leader          *oldlist;
 
-    for( class = sec->classlist; class != NULL; class = class->next_class ){
+    for( class = sect->classes; class != NULL; class = class->next ){
         newlist = NULL;
         oldlist = NULL;
         while( (curr = RingPop( &class->segs )) != NULL ) {
@@ -981,7 +981,7 @@ static void SplitDGroupClasses( section *sec )
             if( newlist != NULL ) {
                 newclass = DuplicateClass( class );
                 newclass->segs = newlist;
-                class->next_class = newclass;
+                class->next = newclass;
                 class = newclass;
                 for( curr = NULL; (curr = RingStep( newlist, curr )) != NULL; ) {
                     curr->class = newclass;
@@ -993,11 +993,12 @@ static void SplitDGroupClasses( section *sec )
     }
 }
 
-static void ReOrderClasses( section *sec )
-/****************************************/
-// rebuild the class list using the Microsoft DOS segment ordering.
-// This builds various classes into separate rings, and then joins them
-// together.
+static void ReOrderClasses( section *sect )
+/******************************************
+ * rebuild the class list using the Microsoft DOS segment ordering.
+ * This builds various classes into separate rings, and then joins them
+ * together.
+ */
 {
     class_entry         *rings[ORD_LAST + 1];
     class_entry         *nextclass;
@@ -1012,10 +1013,10 @@ static void ReOrderClasses( section *sec )
     for( i = ORD_FIRST; i <= ORD_LAST; ++i ) {
         rings[i] = NULL;
     }
-    SplitDGroupClasses( sec );
-    for( class = sec->classlist; class != NULL; class = nextclass ) {
-        nextclass = class->next_class;  // Take class out of original ring
-        class->next_class = NULL;
+    SplitDGroupClasses( sect );
+    for( class = sect->classes; class != NULL; class = nextclass ) {
+        nextclass = class->next;  // Take class out of original ring
+        class->next = NULL;
         CheckClassUninitialized( class );
         if( (FmtData.type & (MK_NOVELL | MK_PHAR_LAP | MK_OS2_LX))
           && ( class->bits == BITS_16 ) ) {
@@ -1053,10 +1054,10 @@ static void ReOrderClasses( section *sec )
         /* add the class to the appropriate ring */
         /* 'rings[ord]' points to the _last_ element of the ring */
         if( rings[ord] == NULL ) {
-            class->next_class = class;
+            class->next = class;
         } else {
-            class->next_class = rings[ord]->next_class;
-            rings[ord]->next_class = class;
+            class->next = rings[ord]->next;
+            rings[ord]->next = class;
         }
         rings[ord] = class;
     }
@@ -1079,28 +1080,29 @@ static void ReOrderClasses( section *sec )
                 prevseg = currseg;
                 currseg = currseg->next_seg;
             }
-            class = class->next_class;
+            class = class->next;
         } while( class != rings[ORD_CODE] );
     }
 
     /* now construct list out of the collected parts. */
-    owner = &sec->classlist;
+    owner = &sect->classes;
     for( i = ORD_FIRST; i <= ORD_LAST; ++i ) {
         if( rings[i] != NULL ) {
-            *owner = rings[i]->next_class;
-            owner = &rings[i]->next_class;
+            *owner = rings[i]->next;
+            owner = &rings[i]->next;
         }
     }
     *owner = NULL;
 }
 
-static void SortClasses( section *sec )
-/****************************************/
-// rebuild the class list in the order specified by the ORDER directive
-// This builds various classes into separate rings, and then joins them
-// together.  Pass class and segment address and output information
-// to the class and segment structures.  Sort segments in a class if
-// information is provided.
+static void SortClasses( section *sect )
+/***************************************
+ * rebuild the class list in the order specified by the ORDER directive
+ * This builds various classes into separate rings, and then joins them
+ * together.  Pass class and segment address and output information
+ * to the class and segment structures.  Sort segments in a class if
+ * information is provided.
+ */
 {
     class_entry         *DefaultRing;   // Where to put classes that don't match anything
     class_entry         *nextclass;
@@ -1114,12 +1116,12 @@ static void SortClasses( section *sec )
 
     DefaultRing = NULL;
 
-    for( class = sec->classlist; class != NULL; class = nextclass ) {
-        nextclass = class->next_class;  // Take class out of original ring
-        class->next_class = NULL;
+    for( class = sect->classes; class != NULL; class = nextclass ) {
+        nextclass = class->next;  // Take class out of original ring
+        class->next = NULL;
         CheckClassUninitialized( class );
         NewRing = &DefaultRing;  // In case no special class is found
-        for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
+        for( MatchClass = sect->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
             if( stricmp( class->name.u.ptr, MatchClass->Name ) == 0 ) { // search order list for name match
                 NewRing = &(MatchClass->Ring);   // if found save ptr to instance
                 if( MatchClass->FixedAddr ) {    // and copy any flags or address from it
@@ -1135,15 +1137,15 @@ static void SortClasses( section *sec )
         }
         // add the class to front of ring attached to order class, or to default ring
         if( *NewRing == NULL ) {
-            class->next_class = class;
+            class->next = class;
         } else {
-            class->next_class = (*NewRing)->next_class;
-            (*NewRing)->next_class = class;
+            class->next = (*NewRing)->next;
+            (*NewRing)->next = class;
         }
         *NewRing = class;
     }
     // Now re-arrange segments in any order classes for which we have segments specified
-    for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
+    for( MatchClass = sect->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
         for( MatchSeg = MatchClass->SegList; MatchSeg != NULL; MatchSeg = MatchSeg->NextSeg ) {
             class = MatchClass->Ring;
             do {
@@ -1170,27 +1172,27 @@ static void SortClasses( section *sec )
                     prevseg = currseg;
                     currseg = currseg->next_seg;
                 }
-                class = class->next_class;
+                class = class->next;
             } while( class != MatchClass->Ring );
         }
     }
     /* now construct list out of the collected parts. */
-    owner = &sec->classlist;
-    for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
+    owner = &sect->classes;
+    for( MatchClass = sect->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
         if( MatchClass->Ring != NULL ) {
-            *owner = MatchClass->Ring->next_class;
-            owner = &(MatchClass->Ring->next_class);
+            *owner = MatchClass->Ring->next;
+            owner = &(MatchClass->Ring->next);
         }
     }
     if( DefaultRing != NULL ) { // Finish with unmatched ones
-        *owner = DefaultRing->next_class;
-        owner = &(DefaultRing->next_class);
+        *owner = DefaultRing->next;
+        owner = &(DefaultRing->next);
     }
     *owner = NULL;
     // This has to happen after the class list is rebuilt, so it can be searched
-    for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
+    for( MatchClass = sect->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
          if( MatchClass->Copy && MatchClass->Ring != NULL ) {   // If this is a duplicate destination, find the source
-             for( class = sec->classlist; class != NULL; class = class->next_class ) {
+             for( class = sect->classes; class != NULL; class = class->next ) {
                 if( stricmp( MatchClass->SrcName, class->name.u.ptr ) == 0 ) {
                     MatchClass->Ring->DupClass = class;
                     MatchClass->Ring->flags |= CLASS_COPY;
@@ -1219,7 +1221,7 @@ static void SortSegments( void )
     bool                added;
 
 
-    for( class = Root->classlist; class != NULL; class = class->next_class ){
+    for( class = Root->classes; class != NULL; class = class->next ) {
         foundgroup = false;
         newlist = NULL;
         for( curr = RingPop( &class->segs ); curr != NULL; curr = RingPop( &class->segs ) ) {

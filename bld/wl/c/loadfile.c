@@ -353,14 +353,14 @@ static seg_leader *FindStack( section *sect )
     class_entry *class;
     seg_leader  *seg;
 
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    for( class = sect->classes; class != NULL; class = class->next ) {
         if( class->flags & CLASS_STACK ) {
             return( RingFirst( class->segs ) );
         }
     }
     if( (LinkState & LS_DOSSEG_FLAG) == 0 ) {
         seg = NULL;
-        for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        for( class = sect->classes; class != NULL; class = class->next ) {
             while( (seg = RingStep( class->segs, seg )) != NULL ) {
                 if( seg->combine == COMBINE_STACK ) {
                     return( seg );
@@ -423,7 +423,7 @@ static class_entry *LocateBSSClass( void )
     section     *sect;
 
     sect = (Root->areas == NULL) ? Root : NonSect;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+    for( class = sect->classes; class != NULL; class = class->next ) {
         if( stricmp( class->name.u.ptr, BSSClassName ) == 0 ) {
             return( class );
         }
