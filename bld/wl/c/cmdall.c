@@ -288,7 +288,7 @@ static void *AddObjFile( const char *name, const char *membname, file_list **fil
         member->flags = DBIFlag;
         strcpy( member->name, membname );
         member->next = NULL;
-        for( file = CurrSect->files; file != NULL; file = file->next_file ) {
+        for( file = CurrSect->files; file != NULL; file = file->next ) {
             if( FNAMECMPSTR( file->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
                 if( file->u.member != NULL ) {
@@ -329,9 +329,9 @@ static bool AddLibFile( void )
     }
     file = AllocNewFile( NULL );
     file->infile = AllocFileEntry( ptr, UsrLibPath );
-    file->next_file = *LastLibFile;
+    file->next = *LastLibFile;
     *LastLibFile = file;
-    LastLibFile = &file->next_file;
+    LastLibFile = &file->next;
     if( *LastLibFile == NULL ) {    // no file directives found yet
         CurrFList = LastLibFile;
     }
@@ -392,7 +392,7 @@ static bool AddFile( void )
     }
     file = CurrFList;
     if( *CurrFList != NULL ) {
-        CurrFList = &(*CurrFList)->next_file;
+        CurrFList = &(*CurrFList)->next;
     }
     LastFile.u.file = AddObjFile( ptr, membname, CurrFList );
     if( CmdFlags & CF_MEMBER_ADDED ) {

@@ -216,7 +216,7 @@ static void PrepareModList( void )
     libnamelist *blacklist;
 
     mod = Root->mods;
-    for( file = Root->files; file != NULL && mod != NULL; file = file->next_file ) {
+    for( file = Root->files; file != NULL && mod != NULL; file = file->next ) {
         if( strcmp( file->infile->name.u.ptr, mod->f.fname.u.ptr ) == 0 ) {
             SetupModule( &mod, file );
         } else if( mod->n.next_mod != NULL ) {
@@ -480,7 +480,7 @@ static void ProcessMods( void )
 
     mod = Root->mods;
     Root->mods = NULL;
-    for( file = Root->files; file != NULL && mod != NULL; file = file->next_file ) {
+    for( file = Root->files; file != NULL && mod != NULL; file = file->next ) {
         for( ; mod != NULL; mod = next ) {
             next = mod->n.next_mod;
             if( mod->modinfo & MOD_KILL ) {
@@ -502,7 +502,7 @@ static void ProcessMods( void )
         next = mod->n.next_mod;
         FreeModEntry( mod );
     }
-    for( ; file != NULL; file = file->next_file ) {
+    for( ; file != NULL; file = file->next ) {
         DoPass1( NULL, file );
     }
     savemod = Root->mods;       // pass1 routines will add new mods to this
@@ -580,7 +580,7 @@ void LoadObjFiles( section *sect )
 
     CurrSect = sect;
     CurrMod = NULL;
-    for( file = sect->files; file != NULL; file = file->next_file ) {
+    for( file = sect->files; file != NULL; file = file->next ) {
         DoPass1( NULL, file );
     }
 }
@@ -681,7 +681,7 @@ void ResolveUndefined( void )
     ResolveVFExtdefs();
     do {
         LinkState &= ~LS_LIBRARIES_ADDED;
-        for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+        for( file = ObjLibFiles; file != NULL; file = file->next ) {
             if( file->flags & STAT_SEEN_LIB ) {
                 file->flags |= STAT_OLD_LIB;
             } else {

@@ -629,7 +629,7 @@ file_list *AllocNewFile( member_list *member )
     file_list       *file;
 
     file = _PermAlloc( sizeof( file_list ) );
-    file->next_file = NULL;
+    file->next = NULL;
     file->flags = DBIFlag;
     file->strtab = NULL;
     file->u.member = member;

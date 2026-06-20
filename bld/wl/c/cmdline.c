@@ -593,10 +593,10 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
         LinkList( &UsrLibPath, newpath );
     }
     if( UsrLibPath == newpath ) {
-        for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+        for( file = ObjLibFiles; file != NULL; file = file->next ) {
             file->infile->path_list = UsrLibPath;
         }
-        for( file = Root->files; file != NULL; file = file->next_file ) {
+        for( file = Root->files; file != NULL; file = file->next ) {
             if( file->infile->status & INSTAT_USE_LIBPATH ) {
                 file->infile->path_list = UsrLibPath;
             }

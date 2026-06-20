@@ -311,7 +311,7 @@ typedef struct infilelist {
 } infilelist;
 
 typedef struct file_list {
-    FILE_LIST           *next_file;
+    FILE_LIST           *next;
     infilelist          *infile;
     union {
         union dict_entry    *dict;

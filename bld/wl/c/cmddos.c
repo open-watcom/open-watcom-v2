@@ -87,7 +87,7 @@ static void PrintSect( section *sect )
         if( sect->files == NULL ) {
             DEBUG(( DBG_OLD, "\"Non-section\"" ));
         }
-        for( file = sect->files; file != NULL; file = file->next_file ) {
+        for( file = sect->files; file != NULL; file = file->next ) {
             DEBUG(( DBG_OLD, "%s", file->infile->name ));
         }
         PrintAreas( sect->areas );

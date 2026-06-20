@@ -511,7 +511,7 @@ static unsigned_32 WriteLibList( perm_write_info *info, bool douser )
     file_list   *file;
 
     numlibs = 0;
-    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+    for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( (((file->flags & STAT_USER_SPECD) != 0) ^ douser) == 0 ) {
             U32WritePermFile( info, GetString( info, file->infile->name.u.ptr ) );
             BufWritePermFile( info, &file->priority, sizeof( file->priority ) );

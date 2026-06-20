@@ -70,7 +70,7 @@ static void CheckFileTrace( section *sect, void *_info )
 
     if( info->found )
         return;
-    for( file = sect->files; file != NULL; file = file->next_file ) {
+    for( file = sect->files; file != NULL; file = file->next ) {
         if( FNAMECMPSTR( file->infile->name.u.ptr, info->u.name ) == 0 ) {
             info->found = true;
             MemFree( info->u.name );
@@ -117,7 +117,7 @@ void CheckTraces( void )
             }
             MemFree( info );
         } else {
-            for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+            for( file = ObjLibFiles; file != NULL; file = file->next ) {
                 if( FNAMECMPSTR( file->infile->name.u.ptr, info->u.name ) == 0 ) {
                     info->found = true;
                     MemFree( info->u.name );

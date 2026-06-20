@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,7 +104,7 @@ bool LibFind( const char *name, bool old_sym )
 
     DEBUG(( DBG_OLD, "LibFind( %s )", name ));
     isimpsym = (FmtData.type & MK_PE) && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0;
-    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+    for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->infile->status & INSTAT_IOERR )
             continue;
         if( old_sym && (file->flags & STAT_OLD_LIB) )
@@ -147,7 +147,7 @@ file_list *AddObjLib( const char *name, lib_priority priority )
 
     DEBUG(( DBG_OLD, "Adding Object library name %s", name ));
     /* search for new library position in linked list */
-    for( owner = &ObjLibFiles; (file = *owner) != NULL; owner = &file->next_file ) {
+    for( owner = &ObjLibFiles; (file = *owner) != NULL; owner = &file->next ) {
         if( file->priority < priority )
             break;
         /* end search if library already exists with same or a higher priority */
@@ -157,10 +157,10 @@ file_list *AddObjLib( const char *name, lib_priority priority )
     }
     new_owner = owner;
     /* search for library definition with a lower priority */
-    for( ; (file = *owner) != NULL; owner = &file->next_file ) {
+    for( ; (file = *owner) != NULL; owner = &file->next ) {
         if( FNAMECMPSTR( file->infile->name.u.ptr, name ) == 0 ) {
             /* remove library entry from linked list */
-            *owner = file->next_file;
+            *owner = file->next;
             break;
         }
     }
@@ -172,7 +172,7 @@ file_list *AddObjLib( const char *name, lib_priority priority )
         LinkState |= LS_LIBRARIES_ADDED;
     }
     /* put it to new position and setup priority */
-    file->next_file = *new_owner;
+    file->next = *new_owner;
     *new_owner = file;
     file->priority = priority;
 

@@ -984,7 +984,7 @@ void WriteMapLibsUsed( void )
 
     if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteMapBox( MSG_MAP_BOX_LIB_USED );
-        for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+        for( file = ObjLibFiles; file != NULL; file = file->next ) {
             if( file->flags & STAT_LIB_USED ) {
                 MakeFileName( file->infile, new_name );
                 WriteMapPrintf( "%s", new_name );

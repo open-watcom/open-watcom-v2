@@ -518,7 +518,7 @@ bool DiscardDicts( void )
     file_list           *file;
 
     ptr = NULL;
-    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+    for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->u.dict == NULL )
             continue;
         if( file->flags & STAT_AR_LIB )
@@ -542,7 +542,7 @@ void BurnLibs( void )
     file_list   *file;
     dict_entry  *dict;
 
-    for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
+    for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->flags & STAT_AR_LIB ) {
             CacheFree( file, file->strtab );
             file->strtab = NULL;
