@@ -60,7 +60,7 @@ seg_leader          *OvlSeg;            /* pointer to seg_leader for overlaytab 
 unsigned_16         OvlAreaSize;
 list_of_names       *OvlClasses;        /* list of classes to be overlayed      */
 
-static void         AllocAreas( OVL_AREA *area );
+static void         AllocAreas( AREASECT *area );
 
 static vect_state   VectState;          /* structure with overlay state members */
 static segdata      *OvlSegData;
@@ -93,11 +93,11 @@ static void ParmWalkSections( section *sect, void (*rtn)( section *, void * ), v
     }
 }
 
-void ParmWalkAreas( OVL_AREA *ovl, void (*rtn)( section *, void * ), void *parm )
-/*******************************************************************************/
+void ParmWalkAreas( AREASECT *area, void (*rtn)( section *, void * ), void *parm )
+/********************************************************************************/
 {
-    for( ; ovl != NULL; ovl = ovl->next_area ) {
-        ParmWalkSections( ovl->sections, rtn, parm );
+    for( ; area != NULL; area = area->next ) {
+        ParmWalkSections( area->sections, rtn, parm );
     }
 }
 
@@ -110,11 +110,11 @@ static void WalkSections( section *sect, void (*rtn)( section * ) )
     }
 }
 
-void WalkAreas( OVL_AREA *ovl, void (*rtn)( section * ) )
-/*******************************************************/
+void WalkAreas( AREASECT *area, void (*rtn)( section * ) )
+/********************************************************/
 {
-    for( ; ovl != NULL; ovl = ovl->next_area ) {
-        WalkSections( ovl->sections, rtn );
+    for( ; area != NULL; area = area->next ) {
+        WalkSections( area->sections, rtn );
     }
 }
 
@@ -217,12 +217,12 @@ static void AllocSections( section *first_sect )
     CurrLoc = max;
 }
 
-static void AllocAreas( OVL_AREA *area )
+static void AllocAreas( AREASECT *area )
 /**************************************/
 {
     /* now CurrLoc is beginning of overlay area */
     DEBUG(( DBG_OLD, "Overlay area start %a", &CurrLoc ));
-    for( ; area != NULL; area = area->next_area ) {
+    for( ; area != NULL; area = area->next ) {
         AllocSections( area->sections );
     }
 }

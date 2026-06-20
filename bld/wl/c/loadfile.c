@@ -800,13 +800,13 @@ unsigned_32 MemorySize( void )
     unsigned_32         end;
     unsigned_32         curr;
     section             *sect;
-    ovl_area            *ovl;
+    areasect            *area;
 
     if( FmtData.type & MK_REAL_MODE ) {
         start = MK_REAL_ADDR( Root->sect_addr.seg, Root->sect_addr.off );
         end = start + Root->size;
-        for( ovl = Root->areas; ovl != NULL; ovl = ovl->next_area ) {
-            for( sect = ovl->sections; sect != NULL; sect = sect->next_sect ) {
+        for( area = Root->areas; area != NULL; area = area->next ) {
+            for( sect = area->sections; sect != NULL; sect = sect->next_sect ) {
                 curr = MK_REAL_ADDR( sect->sect_addr.seg, sect->sect_addr.off ) + sect->size;
                 if( curr > end ) {
                     end = curr;

@@ -235,7 +235,7 @@ typedef enum {
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
-typedef struct ovl_area         OVL_AREA;
+typedef struct areasect         AREASECT;
 typedef struct section          SECTION;
 typedef struct group_entry      GROUP_ENTRY;
 typedef struct class_entry      CLASS_ENTRY;
@@ -251,10 +251,10 @@ typedef struct infilelist       INFILELIST;
 typedef struct member_list      MEMBER_LIST;
 typedef struct segdata          SEGDATA;
 typedef struct pubdeflist       PUBDEFLIST;
-typedef struct ovl_area {
-    OVL_AREA    *next_area;
+typedef struct areasect {
+    AREASECT    *next;
     SECTION     *sections;
-} ovl_area;
+} areasect;
 typedef struct order_class      ORDER_CLASS;
 typedef struct order_segment    ORDER_SEGMENT;
 
@@ -267,7 +267,7 @@ typedef struct section {
     ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
     targ_addr           sect_addr;
     overlay_ref         ovlref;
-    OVL_AREA            *areas;
+    areasect            *areas;
     SECTION             *parent;
     unsigned_32         relocs;
     unsigned_32         size;

@@ -63,7 +63,7 @@ unsigned        FmtRelocSize;
 reloc_info      *FloatFixups;
 #endif
 
-static bool     SpillAreas( OVL_AREA *ovl, bool (*rtn)( section * ) );
+static bool     SpillAreas( AREASECT *area, bool (*rtn)( section * ) );
 
 void ResetReloc( void )
 /*********************/
@@ -542,11 +542,11 @@ static bool SpillSections( section *sect, bool (*rtn)( section * ) )
     return( false );
 }
 
-static bool SpillAreas( OVL_AREA *ovl, bool (*rtn)( section * ) )
-/***************************************************************/
+static bool SpillAreas( AREASECT *area, bool (*rtn)( section * ) )
+/****************************************************************/
 {
-    for( ; ovl != NULL; ovl = ovl->next_area ) {
-        if( SpillSections( ovl->sections, rtn ) ) {
+    for( ; area != NULL; area = area->next ) {
+        if( SpillSections( area->sections, rtn ) ) {
             return( true );
         }
     }

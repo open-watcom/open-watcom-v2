@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,8 @@ extern list_of_names    *OvlClasses;
 
 /* in ovlsupp.c */
 
-extern void             WalkAreas( OVL_AREA *, walksecs_fn * );
-extern void             ParmWalkAreas( OVL_AREA *, parmwalksecs_fn *, void * );
+extern void             WalkAreas( AREASECT *area, walksecs_fn * );
+extern void             ParmWalkAreas( AREASECT *area, parmwalksecs_fn *, void * );
 extern void             OvlProcPubsSect( section * );
 extern void             OvlProcPubs( void );
 extern void             OvlCalc( void );

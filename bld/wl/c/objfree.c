@@ -107,7 +107,7 @@ static void FreeFiles( file_list *file )
     }
 }
 
-static void FreeAreas( OVL_AREA *area );
+static void FreeAreas( AREASECT *area );
 
 static void FreeSections( section *sect )
 /****************************************
@@ -151,13 +151,13 @@ static void FreeSections( section *sect )
     }
 }
 
-static void FreeAreas( OVL_AREA *area )
+static void FreeAreas( AREASECT *area )
 /*************************************/
 {
-    OVL_AREA    *next;
+    AREASECT    *next_area;
 
-    for( ; area != NULL; area = next ) {
-        next = area->next_area;
+    for( ; area != NULL; area = next_area ) {
+        next_area = area->next;
         FreeSections( area->sections );
     }
 }

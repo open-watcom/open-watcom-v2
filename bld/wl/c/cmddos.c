@@ -72,7 +72,7 @@ overlay_ref GetOvlRef( void )
 }
 
 #ifdef DEVBUILD
-static void PrintAreas( OVL_AREA *ovlarea );
+static void PrintAreas( AREASECT *area );
 
 static void PrintSect( section *sect )
 /************************************/
@@ -95,14 +95,14 @@ static void PrintSect( section *sect )
     OvlLevel--;
 }
 
-static void PrintAreas( OVL_AREA *ovlarea )
-/*****************************************/
+static void PrintAreas( AREASECT *area )
+/**************************************/
 {
-    for( ; ovlarea != NULL; ovlarea = ovlarea->next_area ) {
+    for( ; area != NULL; area = area->next ) {
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "Begin OverLay Area" ));
-        PrintSect( ovlarea->sections );
+        PrintSect( area->sections );
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "End OverLay Area" ));
     }
@@ -143,17 +143,17 @@ static void NewArea( section *sect )
  * allocate a new area including this section
  */
 {
-    ovl_area            *ovl;
-    ovl_area            **owner;
+    areasect            *area;
+    areasect            **owner;
 
-    ovl = _PermAlloc( sizeof( ovl_area ) );
-    ovl->next_area = NULL;
-    ovl->sections = sect;
+    area = _PermAlloc( sizeof( *area ) );
+    area->next = NULL;
+    area->sections = sect;
     sect->parent = CurrSect;
     for( owner = &CurrSect->areas; *owner != NULL; ) {
-        owner = &(*owner)->next_area;
+        owner = &(*owner)->next;
     }
-    *owner = ovl;
+    *owner = area;
 }
 
 static void MakeNonArea( void )
@@ -173,7 +173,7 @@ void CmdOvlFini( void )
         LnkMsg( FTL+LOC+LINE+MSG_EXPECTING_END, NULL );
     }
     if( FmtData.u.dos.dynamic &&
-        ( ( Root->areas == NULL ) || ( Root->areas->next_area != NULL ) ) ) {
+        ( ( Root->areas == NULL ) || ( Root->areas->next != NULL ) ) ) {
         Ignite();
         LnkMsg( FTL+LOC+LINE+MSG_INCORRECT_NUM_AREAS, NULL );
     }
