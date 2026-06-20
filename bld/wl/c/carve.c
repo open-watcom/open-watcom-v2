@@ -46,14 +46,14 @@
 #define _REMOVE_FROM_FREE( pcv, p ) \
     { \
         free_t *head = pcv->free_list; \
-        pcv->free_list = head->next_free; \
+        pcv->free_list = head->next; \
         p = head; \
     }
 
 #define _ADD_TO_FREE( fl, p ) \
     { \
         free_t *node = (free_t *) (p); \
-        node->next_free = (fl); \
+        node->next = (fl); \
         (fl) = node; \
     }
 
@@ -64,7 +64,7 @@ typedef struct blk_t {
 } blk_t;
 
 typedef struct free_t {
-    struct free_t   *next_free;
+    struct free_t   *next;
 } free_t;
 
 typedef struct cv_t {
@@ -164,7 +164,7 @@ void CarveVerifyAllGone( carve_t carver, const char *node_name )
         do {
             compare -= carver->elm_size;
             /* verify every block has been freed */
-            for( check = carver->free_list; check != NULL; check = check->next_free ) {
+            for( check = carver->free_list; check != NULL; check = check->next ) {
                 if( compare == (char *)check ) {
                     break;
                 }
@@ -277,7 +277,7 @@ static void CarveDebugFree( carve_t carver, void *elm )
     unsigned        esize;
 
     /* make sure object hasn't been freed before */
-    for( check = carver->free_list; check != NULL; check = check->next_free ) {
+    for( check = carver->free_list; check != NULL; check = check->next ) {
         if( elm == (void *)check ) {
             LnkFatal( "carve: freed object was previously freed" );
         }
@@ -404,11 +404,11 @@ void CarveWalkAllFree( carve_t carver, void (*rtn)( void * ) )
 {
     free_t          *check;
 
-    for( check = carver->free_list; check != NULL; check = check->next_free ) {
+    for( check = carver->free_list; check != NULL; check = check->next ) {
 #ifdef DEVBUILD
-        free_t *check_next = check->next_free;
+        free_t *check_next = check->next;
         (*rtn)( check );
-        if( check->next_free != check_next ) {
+        if( check->next != check_next ) {
             LnkFatal( "carve walk free routine destroyed links" );
         }
 #else
@@ -478,11 +478,11 @@ void CarveInsertFree( carve_t carver, void *data )
 
     freeblk = data;
     if( carver->insert == NULL ) {
-        freeblk->next_free = carver->free_list;
+        freeblk->next = carver->free_list;
         carver->free_list = freeblk;
     } else {
-        freeblk->next_free = carver->insert->next_free;
-        carver->insert->next_free = freeblk;
+        freeblk->next = carver->insert->next;
+        carver->insert->next = freeblk;
     }
     carver->insert = freeblk;
 }

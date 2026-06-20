@@ -80,7 +80,7 @@ static void PrintSect( section *sect )
     file_list   *file;
 
     OvlLevel++;
-    for( ; sect != NULL; sect = sect->next_sect ) {
+    for( ; sect != NULL; sect = sect->next ) {
         DEBUG(( DBG_OLD, "" ));
         DEBUG(( DBG_OLD, "OverLay #%d   Level %d", sect->ovlref, OvlLevel ));
         DEBUG(( DBG_OLD, "Files:" ));
@@ -198,7 +198,7 @@ void MakeNewSection( void )
             sect->outfile = CurrSect->outfile;
         }
         sect->parent = CurrSect->parent;
-        CurrSect->next_sect = sect;
+        CurrSect->next = sect;
         CurrSect = sect;
         CurrFList = &sect->files;
     } else {

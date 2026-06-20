@@ -298,17 +298,17 @@ overlay_ref LowestAncestor( overlay_ref ovlref, section *sect )
 
     for( list = sect; list != NULL; list = list->parent ) {
         // set visited flag
-        list->next_sect = (void *)((pointer_int)list->next_sect | 1);
+        list->next = (void *)((pointer_int)list->next | 1);
     }
     for( list = SectOvlTab[ovlref]; list != NULL; list = list->parent ) {
         // check visited flag
-        if( (pointer_int)list->next_sect & 1 ) {
+        if( (pointer_int)list->next & 1 ) {
             break;
         }
     }
     for( ; sect != NULL; sect = sect->parent ) {
         // reset visited flag
-        sect->next_sect = (void *)((pointer_int)sect->next_sect & ~1);
+        sect->next = (void *)((pointer_int)sect->next & ~1);
     }
     return( list->ovlref );
 }

@@ -259,7 +259,7 @@ typedef struct order_class      ORDER_CLASS;
 typedef struct order_segment    ORDER_SEGMENT;
 
 typedef struct section {
-    SECTION             *next_sect;
+    SECTION             *next;
     FILE_LIST           *files;
     pHTable             modFilesHashed;
     MOD_ENTRY           *mods;

@@ -119,7 +119,7 @@ static void FreeSections( section *sect )
     ORDER_SEGMENT       *Seg, *NextSeg;
 
     for( ; sect != NULL; sect = next ) {
-        next = sect->next_sect;
+        next = sect->next;
         FreeFiles( sect->files );
         if( (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
             FreeMods( sect->mods );

@@ -532,7 +532,7 @@ static bool SpillSectRelocList( section *sect )
 static bool SpillSections( section *sect, bool (*rtn)( section * ) )
 /******************************************************************/
 {
-    for( ; sect != NULL; sect = sect->next_sect ) {
+    for( ; sect != NULL; sect = sect->next ) {
         if( rtn( sect ) )
             return( true );
         if( SpillAreas( sect->areas, rtn ) ) {

@@ -87,7 +87,7 @@ void ResetOverlaySupp( void )
 static void ParmWalkSections( section *sect, void (*rtn)( section *, void * ), void *parm )
 /*****************************************************************************************/
 {
-    for( ; sect != NULL; sect = sect->next_sect ) {
+    for( ; sect != NULL; sect = sect->next ) {
         rtn( sect, parm );
         ParmWalkAreas( sect->areas, rtn, parm );
     }
@@ -104,7 +104,7 @@ void ParmWalkAreas( AREASECT *area, void (*rtn)( section *, void * ), void *parm
 static void WalkSections( section *sect, void (*rtn)( section * ) )
 /*****************************************************************/
 {
-    for( ; sect != NULL; sect = sect->next_sect ) {
+    for( ; sect != NULL; sect = sect->next ) {
         rtn( sect );
         WalkAreas( sect->areas, rtn );
     }
@@ -197,7 +197,7 @@ static void AllocSections( section *first_sect )
     save = CurrLoc;
     max.off = 0;
     max.seg = 0;
-    for( sect = first_sect; sect != NULL; sect = sect->next_sect ) {
+    for( sect = first_sect; sect != NULL; sect = sect->next ) {
         CurrSect = sect;
         sect->sect_addr = save;
         AllocClasses( sect );

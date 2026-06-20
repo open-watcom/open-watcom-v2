@@ -806,7 +806,7 @@ unsigned_32 MemorySize( void )
         start = MK_REAL_ADDR( Root->sect_addr.seg, Root->sect_addr.off );
         end = start + Root->size;
         for( area = Root->areas; area != NULL; area = area->next ) {
-            for( sect = area->sections; sect != NULL; sect = sect->next_sect ) {
+            for( sect = area->sections; sect != NULL; sect = sect->next ) {
                 curr = MK_REAL_ADDR( sect->sect_addr.seg, sect->sect_addr.off ) + sect->size;
                 if( curr > end ) {
                     end = curr;

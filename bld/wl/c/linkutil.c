@@ -715,7 +715,7 @@ section *NewSection( void )
     section             *sect;
 
     sect = MemAllocSafe( sizeof( section ) );
-    sect->next_sect = NULL;
+    sect->next = NULL;
     sect->classes = NULL;
     sect->orderlist = NULL;
     sect->areas = NULL;
