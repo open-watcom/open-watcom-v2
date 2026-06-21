@@ -292,7 +292,7 @@ unsigned_16 GetUInt( void )
 {
     unsigned_16 word;
 
-    word = MGET_LE_U16( RecPtr );
+    word = MGET_LE_U16_UN( RecPtr );
     RecPtr += 2;
     return( word );
 }
@@ -302,7 +302,7 @@ unsigned_32 GetLInt( void )
 {
     unsigned_32 dword;
 
-    dword = MGET_LE_U32( RecPtr );
+    dword = MGET_LE_U32_UN( RecPtr );
     RecPtr += 4;
     return( dword );
 }
