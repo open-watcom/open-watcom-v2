@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +36,10 @@
 #include "score.h"
 
 #if 0
-static  void    RegDelete( score *scoreboard, int index )
-/*******************************************************/
+static  void    RegDelete( score_hdl scoreboard, int index )
+/**********************************************************/
 {
-    score       *scoreitem;
+    score_hdl   scoreitem;
     int         half;
     list_head   **free_heads;
 
@@ -66,12 +66,12 @@ static  void    RegDelete( score *scoreboard, int index )
 }
 #endif
 
-void    RegInsert( score *scoreboard, int dst_idx, int src_idx )
-/**************************************************************/
+void    RegInsert( score_hdl scoreboard, int dst_idx, int src_idx )
+/*****************************************************************/
 {
-    score       *dst;
-    score       *src;
-    score       *next;
+    score_hdl   dst;
+    score_hdl   src;
+    score_hdl   next;
     byte        gen_num;
     list_head   **free_heads;
 
@@ -101,15 +101,15 @@ void    RegInsert( score *scoreboard, int dst_idx, int src_idx )
 }
 
 
-bool    RegsEqual( score *scoreboard, int i1, int i2 )
-/****************************************************/
+bool    RegsEqual( score_hdl scoreboard, int i1, int i2 )
+/*******************************************************/
 {
     return( scoreboard[i1].list == scoreboard[i2].list );
 }
 
 
-static void     MergeDown( score *scoreboard, int dst_idx, int src_idx )
-/**********************************************************************/
+static void     MergeDown( score_hdl scoreboard, int dst_idx, int src_idx )
+/*************************************************************************/
 {
     int dst_hi;
     int src_hi;
@@ -135,8 +135,8 @@ static void     MergeDown( score *scoreboard, int dst_idx, int src_idx )
 }
 
 
-static  void    MergeUp( score *scoreboard, int dst_idx, int src_idx )
-/********************************************************************/
+static  void    MergeUp( score_hdl scoreboard, int dst_idx, int src_idx )
+/***********************************************************************/
 {
     int dst_hi;
     int src_hi;
@@ -169,8 +169,8 @@ static  void    MergeUp( score *scoreboard, int dst_idx, int src_idx )
 }
 
 
-void    RegKill( score *scoreboard, hw_reg_set regs )
-/***************************************************/
+void    RegKill( score_hdl scoreboard, hw_reg_set regs )
+/******************************************************/
 {
     score_reg   *entry;
     score_list  *curr_list;
@@ -215,8 +215,8 @@ void    RegKill( score *scoreboard, hw_reg_set regs )
 }
 
 
-void    RegAdd( score *scoreboard, int dst_idx, int src_idx )
-/***********************************************************/
+void    RegAdd( score_hdl scoreboard, int dst_idx, int src_idx )
+/**************************************************************/
 /* NB: it is important that dst_idx has just become equal to src_idx*/
 /*     NOT vice-versa. Ie: we just did a  MOV R(src_idx) ==> R(dst_idx)*/
 /*     or equivalent*/

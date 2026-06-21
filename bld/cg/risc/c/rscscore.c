@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,8 +48,8 @@ bool    MultiIns( instruction *ins )
 }
 #endif
 
-void    ScInitRegs( score *scoreboard )
-/*************************************/
+void    ScInitRegs( score_hdl scoreboard )
+/****************************************/
 {
     /* unused parameters */ (void)scoreboard;
 }
@@ -60,8 +61,8 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *scoreboard )
-/****************************************/
+void    ScoreSegments( score_hdl scoreboard )
+/*******************************************/
 {
     /* unused parameters */ (void)scoreboard;
 }

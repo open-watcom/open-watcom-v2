@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,8 +61,8 @@ void    FreeJunk( block *blk )
     }
 }
 
-static bool StupidMove( score *scoreboard, instruction *ins )
-/***********************************************************/
+static bool StupidMove( score_hdl scoreboard, instruction *ins )
+/**************************************************************/
 {
     score_info  info;
     int         dst_index;
@@ -136,7 +136,7 @@ bool    DoScore( block *blk )
  */
 {
     instruction *next;
-    score       *scoreboard;
+    score_hdl   scoreboard;
     name        *dst;
     bool        change;
     bool        had_condition;
@@ -246,8 +246,8 @@ bool    DoScore( block *blk )
 }
 
 
-byte    HasZero( score *scoreboard, name *n )
-/********************************************
+byte    HasZero( score_hdl scoreboard, name *n )
+/***********************************************
  * given a scoreboard "sc", determine if name "n" is equal to
  * zero or has any portions which are equal to zero. This is recursive
  * since a regisiter like EAX on the 386 has pieces AX, AH, and AL.

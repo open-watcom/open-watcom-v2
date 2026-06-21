@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,15 +152,15 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
 }
 
 
-static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
-/*****************************************************************************
+static  bool    TryOldIndex( score_hdl scoreboard, instruction *ins, name **opp )
+/********************************************************************************
  * Try to find an 'older' index register to replace the index of
  * "*opp", in instruction "ins", given register scoreboard "sc".
  */
 {
     name        *op;
-    score       *this_reg;
-    score       *curr_reg;
+    score_hdl   this_reg;
+    score_hdl   curr_reg;
     name        *index;
     name        *reg_name;
 
@@ -196,8 +196,8 @@ static  bool    TryOldIndex( score *scoreboard, instruction *ins, name **opp )
     return( false );
 }
 
-static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
-/**************************************************************************
+static  bool    TryRegOp( score_hdl scoreboard, instruction *ins, name **opp )
+/*****************************************************************************
  * See if we can find an equivalent register operand for the operand
  * "*opp" in instruction "ins", given that the current state of
  * registers is reflected by scoreboard "sc".
@@ -206,8 +206,8 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
     name        *op;
     int         i;
     hw_reg_set  live;
-    score       *this_reg;
-    score       *curr_reg;
+    score_hdl   this_reg;
+    score_hdl   curr_reg;
     score_info  info;
 
     if( !CanReplace( ins ) )
@@ -263,8 +263,8 @@ static  bool    TryRegOp( score *scoreboard, instruction *ins, name **opp )
 }
 
 
-bool    FindRegOpnd( score *scoreboard, instruction *ins )
-/*********************************************************
+bool    FindRegOpnd( score_hdl scoreboard, instruction *ins )
+/************************************************************
  * See if we can find an operand of "ins" that could be replaces by a
  * register or an 'older' register (one that was defined first).
  */
@@ -288,8 +288,8 @@ bool    FindRegOpnd( score *scoreboard, instruction *ins )
     return( change );
 }
 
-void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
-/**************************************************************
+void    ScoreMakeEqual( score_hdl scoreboard, name *op1, name *op2 )
+/*****************************************************************
  * Make 'op1' and 'op2' equivalent in scoreboarder information
  *     - one of them must be a register
  */
@@ -320,8 +320,8 @@ void    ScoreMakeEqual( score *scoreboard, name *op1, name *op2 )
     }
 }
 
-bool    ScoreMove( score *scoreboard, instruction *ins )
-/*******************************************************
+bool    ScoreMove( score_hdl scoreboard, instruction *ins )
+/**********************************************************
  * Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
  * the registers and memory locations.
  */
@@ -386,8 +386,8 @@ bool    ScoreMove( score *scoreboard, instruction *ins )
 }
 
 
-bool    ScoreLA( score *scoreboard, instruction *ins )
-/*****************************************************
+bool    ScoreLA( score_hdl scoreboard, instruction *ins )
+/********************************************************
  * Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
  * the registers and memory locations.
  */
@@ -418,8 +418,8 @@ bool    ScoreLA( score *scoreboard, instruction *ins )
 }
 
 
-void    ScZeroCheck( score *scoreboard, instruction *ins )
-/*********************************************************
+void    ScZeroCheck( score_hdl scoreboard, instruction *ins )
+/************************************************************
  * Check if instruction "ins" ends up with the result being Zero.  For
  * example SUB R1,R1 => R1, results in R1 becoming 0.
  */

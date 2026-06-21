@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -138,8 +138,8 @@ void    ScoreCalcList( void )
 }
 
 
-void    ScoreClear( score *scoreboard )
-/*************************************/
+void    ScoreClear( score_hdl scoreboard )
+/****************************************/
 {
     int         i;
     list_head   *list_heads;
@@ -166,8 +166,8 @@ void    FreeScListEntry( score_list *list )
 }
 
 
-void    ScoreFreeList( score *scoreitem )
-/***************************************/
+void    ScoreFreeList( score_hdl scoreitem )
+/******************************************/
 {
     score_list  *curr;
     score_list  *next;
@@ -182,8 +182,8 @@ void    ScoreFreeList( score *scoreitem )
 }
 
 
-void    FreeScoreBoard( score *scoreboard )
-/*****************************************/
+void    FreeScoreBoard( score_hdl scoreboard )
+/********************************************/
 {
     int         i;
     list_head   *list_heads;
@@ -205,8 +205,8 @@ void    FreeScoreBoard( score *scoreboard )
 }
 
 
-void    MemChanged( score *scoreboard, bool statics_too )
-/*******************************************************/
+void    MemChanged( score_hdl scoreboard, bool statics_too )
+/**********************************************************/
 {
     int         i;
     score_list  **owner;

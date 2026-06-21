@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -137,8 +137,8 @@ static  bool    ScoreStomp( score_info *x, score_info *y )
     return( false );
 }
 
-bool    ScoreLookup( score *scoreitem, score_info *info )
-/*******************************************************/
+bool    ScoreLookup( score_hdl scoreitem, score_info *info )
+/**********************************************************/
 {
     score_list  *curr;
 
@@ -153,8 +153,8 @@ bool    ScoreLookup( score *scoreitem, score_info *info )
 }
 
 
-bool    ScoreEqual( score *scoreboard, int index, score_info *info )
-/******************************************************************/
+bool    ScoreEqual( score_hdl scoreboard, int index, score_info *info )
+/*********************************************************************/
 {
     if( ScoreLookup( &scoreboard[index], info ) )
         return( true );
@@ -184,8 +184,8 @@ bool    ScoreEqual( score *scoreboard, int index, score_info *info )
 }
 
 
-static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
-/***************************************************************************/
+static void     ScoreInsert( score_hdl scoreboard, int i, score_info *info )
+/**************************************************************************/
 {
     score_list  *new_sc;
     int         j;
@@ -207,12 +207,12 @@ static  void    ScoreInsert(  score *scoreboard,  int i,  score_info  *info )
 }
 
 
-static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
-/********************************************************************/
+static  void    ScoreAdd( score_hdl scoreboard, int i, score_info *info )
+/***********************************************************************/
 {
     if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
-        score       *first;
-        score       *curr;
+        score_hdl   first;
+        score_hdl   curr;
 
         if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
             first = &scoreboard[info->index_reg];
@@ -240,8 +240,8 @@ static  void    ScoreAdd( score *scoreboard, int i, score_info *info )
 }
 
 
-void    ScoreAssign( score *scoreboard, int index, score_info *info )
-/*******************************************************************/
+void    ScoreAssign( score_hdl scoreboard, int index, score_info *info )
+/**********************************************************************/
 {
     ScoreAdd( scoreboard, index, info );
     if( _IsModel( CGSW_GEN_SUPER_OPTIMAL ) ) {
@@ -361,8 +361,8 @@ bool    ScoreLAInfo( score_info *info, name *op )
 }
 
 
-void    ScoreKillInfo( score *scoreboard, name *op, score_info *info, hw_reg_set except )
-/***************************************************************************************/
+void    ScoreKillInfo( score_hdl scoreboard, name *op, score_info *info, hw_reg_set except )
+/******************************************************************************************/
 {
     score_list  *curr;
     score_list  **owner;

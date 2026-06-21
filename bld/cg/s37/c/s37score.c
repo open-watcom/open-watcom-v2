@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ extern  bool    MultiIns( instruction *ins ) {
 }
 
 
-extern  void    ScInitRegs( score *sc ) {
+extern  void    ScInitRegs( score_hdl sc ) {
 /****************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
@@ -73,7 +74,7 @@ extern  void    AddRegs() {
 }
 
 
-extern  void    ScoreSegments( score *sc ) {
+extern  void    ScoreSegments( score_hdl sc ) {
 /*******************************************
     Do special scoreboarding on segment registers.
 */

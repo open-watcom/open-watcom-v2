@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,8 +57,8 @@ static  name    *ES;
 
 
 
-void    ScInitRegs( score *scoreboard )
-/**************************************
+void    ScInitRegs( score_hdl scoreboard )
+/*****************************************
  * Add some register equality "truths" to the scoreboard "sc"
  */
 {
@@ -133,14 +133,14 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *scoreboard )
-/*****************************************
+void    ScoreSegments( score_hdl scoreboard )
+/********************************************
  * Do special scoreboarding on segment registers.  Given that BX = DI,
  * for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
  */
 {
-    score       *ds;
-    score       *xs;
+    score_hdl   ds;
+    score_hdl   xs;
     int         i;
     name        *dst;
     name        *src;

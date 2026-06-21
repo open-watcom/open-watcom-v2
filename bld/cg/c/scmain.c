@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -91,13 +91,13 @@ static  void    ScoreSeed( block *blk, block *son, byte index )
 }
 
 
-static  void    CopyList( score *frm, score *to,
+static  void    CopyList( score_hdl frm, score_hdl to,
                           list_head **sc_heads, int i )
 /*****************************************************/
 {
     score_list  *first;
     score_list  *new_sc;
-    score       *next;
+    score_hdl   next;
 
     if( to[i].list == NULL ) {
         to[i].list = *sc_heads;
@@ -119,8 +119,8 @@ static  void    CopyList( score *frm, score *to,
 }
 
 
-static  void    ScoreCopy( score *other_scoreboard, score *scoreboard )
-/*********************************************************************/
+static  void    ScoreCopy( score_hdl other_scoreboard, score_hdl scoreboard )
+/***************************************************************************/
 {
     list_head   **sc_heads;
     int         i;

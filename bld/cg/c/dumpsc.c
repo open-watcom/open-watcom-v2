@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,12 +97,12 @@ static  void    DumpScList( score_list *curr )
 }
 
 
-void    DumpSc( score *scoreboard )
-/*********************************/
+void    DumpSc( score_hdl scoreboard )
+/************************************/
 {
     score_reg   *entry;
     score_list  *curr;
-    score       *reg;
+    score_hdl   reg;
     int         i;
 
     for( i = 0; i < ScoreCount; ++i ) {
