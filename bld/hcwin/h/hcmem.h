@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,9 @@
 #ifndef HCMEM_H
 #define HCMEM_H
 
+#ifndef __WATCOMC__
+    #include <new>
+#endif
 #include "hcerrors.h"
 
 
@@ -59,8 +62,13 @@ extern void mem_statistic();
 //  New global allocators/deallocators to hook into the memory tracker.
 //
 
+#ifdef __WATCOMC__
 extern void *operator new( size_t size );
 extern void operator delete( void *p );
+#else
+extern void *operator new( size_t size ) throw(std::bad_alloc);
+extern void operator delete( void *p ) throw();
+#endif
 extern void *renew( void *p, size_t size );
 
 

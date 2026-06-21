@@ -123,7 +123,11 @@ void mem_statistic()
 //  new -- global allocator with hooks into the memory tracker.
 //
 
+#ifdef __WATCOMC__
 void *operator new( size_t size )
+#else
+void *operator new( size_t size ) throw(std::bad_alloc)
+#endif
 {
     void *p;
 
@@ -155,7 +159,11 @@ void *renew( void *p, size_t size )
 //  delete  -- global deallocator with hooks into the memory tracker.
 //
 
+#ifdef __WATCOMC__
 void operator delete( void *p )
+#else
+void operator delete( void *p ) throw()
+#endif
 {
     if( p == NULL )
         return;
