@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -154,27 +154,34 @@ void prep_line_for_conditional_assembly( char *line )
     return;
 }
 
-static bool check_defd( char *string )
-/************************************/
+static bool check_defd( const char *string )
+/******************************************/
 {
-    char                *ptr;
-    char                *end;
+    char            name[MAX_LINE_LEN];
+    char            *p;
+    char            c;
 
     /* isolate 1st word */
-    ptr = string + strspn( string, " \t" );
-    end = ptr + strcspn( ptr, " \t" );
-    *end = '\0';
-    return( AsmGetSymbol( ptr ) != NULL );
+    p = name;
+    while( (c = *string++) != '\0' ) {
+        if( c == ' ' || c == '\t' )
+            break;
+        *p++ = c;
+    }
+    *p = '\0';
+    if( p == name )
+        return( false );
+    return( AsmGetSymbol( name ) != NULL );
 }
 
-static bool check_blank( char *string )
-/*************************************/
+static bool check_blank( const char *string )
+/*******************************************/
 {
-    return( strlen( string ) == 0 );
+    return( string[0] == '\0' );
 }
 
-static bool check_dif( bool sensitive, char *string, char *string2 )
-/******************************************************************/
+static bool check_dif( bool sensitive, const char *string, const char *string2 )
+/******************************************************************************/
 {
     if( sensitive ) {
         return( strcmp( string, string2 ) != 0 );
