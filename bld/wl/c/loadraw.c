@@ -177,10 +177,15 @@ static void WriteHexLine( void )
     char             str_buf[2 * HEXLEN + 15];
     unsigned_16      checksum;
     unsigned_16      i;
-    unsigned_16      seg_shift = FmtData.output_hshift ? FmtData.HexSegShift : FmtData.SegShift;
+    unsigned_16      seg_shift;
     unsigned_16      curr_offs;
 
-    if( ( next_addr.off + buf_offset >= ( 0x10000L << seg_shift ) )
+    if( FmtData.output_hshift ) {
+        seg_shift = FmtData.HexSegShift;
+    } else {
+        seg_shift = FmtData.SegShift;
+    }
+    if( ( next_addr.off + buf_offset >= ( 0x10000UL << seg_shift ) )
       && !linear ) {
         next_addr.seg = 0;
         linear = true;
