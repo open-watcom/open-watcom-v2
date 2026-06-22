@@ -65,10 +65,10 @@ void FiniLinkStruct( void )
 static void FreeClasses( class_entry *class )
 /*******************************************/
 {
-    class_entry     *next_class;
+    class_entry     *next;
 
-    for( ; class != NULL; class = next_class ) {
-        next_class = class->next;
+    for( ; class != NULL; class = next ) {
+        next = class->next;
         RingWalk( class->segs, FreeLeader );
         CarveFree( CarveClass, class );
     }
@@ -154,10 +154,10 @@ static void FreeSections( section *sect )
 static void FreeAreas( AREASECT *area )
 /*************************************/
 {
-    AREASECT    *next_area;
+    AREASECT    *next;
 
-    for( ; area != NULL; area = next_area ) {
-        next_area = area->next;
+    for( ; area != NULL; area = next ) {
+        next = area->next;
         FreeSections( area->sections );
     }
 }

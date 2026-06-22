@@ -1533,8 +1533,8 @@ unsigned long GetPEHeaderSize( void )
 
 static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
                          unsigned_32 ordstart, unsigned numords,
-                         ordinal_t ord_base, f_handle file, char *fname )
-/***********************************************************************/
+                         ordinal_t ord_base, f_handle file, const char *fname )
+/*****************************************************************************/
 {
     unsigned_16         *ordbuf;
     unsigned_16         *ordptr;
@@ -1563,7 +1563,7 @@ void ReadPEExportTable( f_handle file, pe_dir_entry *export_dir )
  */
 {
     pe_export_directory table;
-    char                *fname;
+    const char          *fname;
     unsigned_32         *nameptrs;
     unsigned            nameptrsize;
     unsigned            numentries;

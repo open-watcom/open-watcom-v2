@@ -925,7 +925,7 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 void SetSegFlags( xxx_seg_flags *flag_list )
 /******************************************/
 {
-    xxx_seg_flags   *next_one;
+    xxx_seg_flags   *next;
     seg_leader      *leader;
     xxx_seg_flags   *start;
     class_entry     *class;
@@ -948,8 +948,8 @@ void SetSegFlags( xxx_seg_flags *flag_list )
         }
     }
     // now process individual segments
-    for( flag_list = start; flag_list != NULL; flag_list = next_one ) {
-        next_one = flag_list->next;
+    for( flag_list = start; flag_list != NULL; flag_list = next ) {
+        next = flag_list->next;
         if( flag_list->type == SEGFLAG_SEGMENT ) {
             leader = FindSegment( Root, flag_list->name );
             if( leader == NULL ) {

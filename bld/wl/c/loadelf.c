@@ -272,8 +272,8 @@ static void InitBSSSect( Elf32_Shdr *sh, offset off, offset size, offset start )
     sh->sh_entsize = 0;
 }
 
-static char * GroupSecName( group_entry *group )
-/**********************************************/
+static const char *GroupSecName( group_entry *group )
+/***************************************************/
 {
     if( group->segflags & SEG_DATA ) {
         return( ".data" );
