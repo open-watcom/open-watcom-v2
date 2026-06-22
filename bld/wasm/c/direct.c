@@ -1459,8 +1459,8 @@ static seg_type ClassNameType( const char *name )
     return( SEGTYPE_UNDEF );
 }
 
-static seg_type SegmentNameType( char *name )
-/*******************************************/
+static seg_type SegmentNameType( const char *name )
+/*************************************************/
 {
     size_t  slen;
     char    uname[257];

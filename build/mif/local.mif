@@ -555,37 +555,37 @@ cl_extra_libs = $(cl_extra_libs_gen)
 ############################
 ! ifdef __CLANG_TOOLS__
 !  ifdef %OWCLANG
-bld_cc  = $(%OWCLANG) -pipe -c
+bld_cc  = $(noecho)$(%OWCLANG) -pipe -c
 bld_ccl = $(noecho)$(%OWCLANG) -pipe
 bld_cl_ = $(noecho)$(%OWCLANG) -pipe
 !  else
-bld_cc  = clang -pipe -c
+bld_cc  = $(noecho)clang -pipe -c
 bld_ccl = $(noecho)clang -pipe
 bld_cl_ = $(noecho)clang -pipe
 !  endif
 !  ifdef %OWCLANGXX
-bld_cxx = $(%OWCLANGXX) -pipe -c
-bld_cl_cxx = $(%OWCLANGXX) -pipe
+bld_cxx = $(noecho)$(%OWCLANGXX) -pipe -c
+bld_cl_cxx = $(noecho)$(%OWCLANGXX) -pipe
 !  else
-bld_cxx = clang++ -pipe -c
-bld_cl_cxx = clang++ -pipe
+bld_cxx = $(noecho)clang++ -pipe -c
+bld_cl_cxx = $(noecho)clang++ -pipe
 !  endif
 ! else
 !  ifdef %OWGCC
-bld_cc  = $(%OWGCC) -pipe -c
+bld_cc  = $(noecho)$(%OWGCC) -pipe -c
 bld_ccl = $(noecho)$(%OWGCC) -pipe
 bld_cl_ = $(noecho)$(%OWGCC) -pipe
 !  else
-bld_cc  = gcc -pipe -c
+bld_cc  = $(noecho)gcc -pipe -c
 bld_ccl = $(noecho)gcc -pipe
 bld_cl_  = $(noecho)gcc -pipe
 !  endif
 !  ifdef %OWGCCXX
-bld_cxx = $(%OWGCCXX) -pipe -c
-bld_cl_cxx = $(%OWGCCXX) -pipe
+bld_cxx = $(noecho)$(%OWGCCXX) -pipe -c
+bld_cl_cxx = $(noecho)$(%OWGCCXX) -pipe
 !  else
-bld_cxx = g++ -pipe -c
-bld_cl_cxx = g++ -pipe
+bld_cxx = $(noecho)g++ -pipe -c
+bld_cl_cxx = $(noecho)g++ -pipe
 !  endif
 ! endif
 bld_cl = $(bld_cl_$(proj_type))
@@ -634,25 +634,6 @@ bld_clflags  = $(bld_cl_sys) -o $@ $(bld_ldflags1)
 
 # options for single source compile and link
 bld_cclflags = $(bld_cflags) $(bld_clflags)
-
-! ifdef __OSX__
-#bld_ldflags_cxx = -lc++
-#bld_ldflags_dll_cxx = -lc++
-! else ifdef __CLANG_TOOLS__
-#bld_ldflags_cxx = -lstdc++
-#bld_ldflags_dll_cxx = -lstdc++
-! else ifdef __GCC_TOOLS__
-!  if $(__GCC_TOOLS__) < 7
-#bld_ldflags_cxx = -lsupc++ -lstdc++
-#bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-!  else
-#bld_ldflags_cxx = -lstdc++
-#bld_ldflags_dll_cxx = -lstdc++
-!  endif
-! else
-#bld_ldflags_cxx = -lsupc++ -lstdc++
-#bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-! endif
 
 # options for linking
 bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
