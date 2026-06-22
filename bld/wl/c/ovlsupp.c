@@ -359,7 +359,7 @@ void OvlVectorize( symbol *sym )
     sym->u.d.ovlstate |= OVL_FORCE;
     vectnode = _PermAlloc( sizeof( vecnode ) );
     vectnode->sym = sym;
-    LinkList( &VectState.OvlVectors, vectnode );
+    AppendList( (void **)&VectState.OvlVectors, vectnode );
     DEBUG(( DBG_OLD, "Vectorize %d %S", VecNum, sym ));
 }
 

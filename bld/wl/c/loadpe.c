@@ -1803,7 +1803,7 @@ void AddPEImportLocalSym( symbol *locsym, symbol *iatsym )
     local_import    *imp;
 
     imp = MemAllocSafe( sizeof( local_import ) );
-    LinkList( &PELocalImpList, imp );
+    AppendList( (void **)&PELocalImpList, imp );
     imp->iatsym = iatsym;
     imp->locsym = locsym;
     ++NumLocalImports;

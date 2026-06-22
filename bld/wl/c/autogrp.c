@@ -263,8 +263,8 @@ static void InitGroup( group_entry *group )
     group->g.grp_relocs = NULL;
 }
 
-group_entry *AllocGroup( const char *name, group_entry ** grp_list )
-/******************************************************************/
+group_entry *AllocGroup( const char *name, group_entry **grp_list )
+/*****************************************************************/
 {
     group_entry *group;
     symbol      *sym;
@@ -280,7 +280,7 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
     group->next = NULL;
     InitGroup( group );
     group->sym = sym;
-    LinkList( grp_list, group );
+    AppendList( (void **)grp_list, group );
     if( stricmp( name, DataGrpName ) == 0 ) {
         DataGroup = group;
     } else if( name == AutoGrpName ) {

@@ -276,7 +276,7 @@ static void StoreBakPat( segdata *sdata, byte loctype )
     bkptr->sdata = sdata;   /* We don't know the data offset yet. */
     bkptr->is32bit = (ObjFormat & OBJ_FMT_32BIT_REC) != 0;
     memcpy( bkptr->data, ObjBuff, len );
-    LinkList( &BakPats, bkptr );
+    AppendList( (void **)&BakPats, bkptr );
 }
 
 void ProcBakpat( void )

@@ -84,7 +84,7 @@ extern name_list    *SegList;
 extern exclude_list *ExcludeList;
 
 // fcenable.c
-extern void         LinkList( void **, void * );
+extern void         AppendList( void **list, void *item );
 extern void         FreeList( void * );
 extern void         Warning( const char * );
 extern void         Error( const char * );

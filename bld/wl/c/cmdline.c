@@ -590,7 +590,7 @@ void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
         newpath->next = UsrLibPath;
         UsrLibPath = newpath;
     } else {
-        LinkList( &UsrLibPath, newpath );
+        AppendList( (void **)&UsrLibPath, newpath );
     }
     if( UsrLibPath == newpath ) {
         for( file = ObjLibFiles; file != NULL; file = file->next ) {
@@ -624,7 +624,7 @@ void AddLibPathsToEndList( const char *path_list )
         len = strlen( path_list );
         newpath = MemAllocSafe( sizeof( path_entry ) + len );
         strcpy( newpath->name, path_list );
-        LinkList( &UsrLibPath, newpath );
+        AppendList( (void **)&UsrLibPath, newpath );
     }
 }
 

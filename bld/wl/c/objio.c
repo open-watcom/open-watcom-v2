@@ -96,9 +96,9 @@ infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
     infile = AllocEntry( name, path );   // didn't find one, so allocate a new 1
     if( CachedLibFiles == NULL ) {      // add libraries to the end of the
         CachedLibFiles = infile;         // regular cached files list.
-        LinkList( &CachedFiles, infile );
+        AppendList( (void **)&CachedFiles, infile );
     } else {
-        LinkList( &CachedLibFiles, infile );
+        AppendList( (void **)&CachedLibFiles, infile );
     }
     return( infile );
 }

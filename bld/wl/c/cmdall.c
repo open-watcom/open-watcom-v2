@@ -292,7 +292,7 @@ static void *AddObjFile( const char *name, const char *membname, file_list **fil
             if( FNAMECMPSTR( file->infile->name.u.ptr, name ) == 0 ) {
                 CmdFlags |= CF_MEMBER_ADDED;
                 if( file->u.member != NULL ) {
-                    LinkList( &file->u.member, member );
+                    AppendList( (void **)&file->u.member, member );
                     return( member );
                 } else {
                     MemFree( member );      // user did a stupid thing.
@@ -959,7 +959,7 @@ static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endt
     } else {
         sys->name = NULL;
     }
-    LinkList( hdr, sys );
+    AppendList( (void **)hdr, sys );
 }
 
 static bool ProcSysEnd( void )

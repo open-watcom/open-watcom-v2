@@ -250,9 +250,10 @@ seg_leader *FindSegment( section *sect, const char *name )
     return( seg );
 }
 
-void LinkList( void *in_head, void *newnode )
-/*******************************************/
-/* Link a new node into a linked list (new node goes at the end of the list) */
+void AppendList( void **in_head, void *newnode )
+/**********************************************
+ * Link a new node into a linked list (new node goes at the end of the list)
+ */
 {
     node    **owner;
 

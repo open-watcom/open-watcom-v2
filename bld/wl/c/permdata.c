@@ -658,7 +658,7 @@ static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *inf
         list = MemAllocSafe( sizeof( libnamelist ) );
         list->name = MapString( BufReadU32( info ) );
         BufRead( info, &list->priority, sizeof( lib_priority ) );
-        LinkList( head, list );
+        AppendList( (void **)head, list );
     }
 }
 

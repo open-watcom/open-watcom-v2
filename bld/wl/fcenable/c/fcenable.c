@@ -194,7 +194,7 @@ static void MakeListItem( name_list **list, const char *item, size_t len )
     entry->lnameidx = 0;
     memcpy( entry->name, item, len );
     *(entry->name + len) = '\0';
-    LinkList( (void **)list, entry );
+    AppendList( (void **)list, entry );
 }
 
 static bool ProcClass( const char *item, size_t len )
@@ -262,7 +262,7 @@ static bool ProcExclude( const char *item, size_t len )
             if( ExcludeState == EX_GOT_COLON ) {
                 ExEntry->end_off += ExEntry->start_off;
             }
-            LinkList( (void **)&ExcludeList, ExEntry );
+            AppendList( (void **)&ExcludeList, ExEntry );
             ExcludeState = EX_NONE;
             return( true );     // want a list separator after this.
         }
@@ -463,13 +463,14 @@ typedef struct _node {      // structure used for list traversal routines.
     struct _node    *next;
 } node;
 
-void LinkList( void **in_head, void *newnode )
-/********************************************/
-/* Link a new node into a linked list (new node goes at the end of the list) */
+void AppendList( void **in_head, void *newnode )
+/***********************************************
+ * Link a new node into a linked list (new node goes at the end of the list)
+ */
 {
     node                **owner;
 
-    for( owner = (node **)in_head; *owner != NULL; owner = &(*owner)->next )
+    for( owner = (node **)in_head; *owner != NULL; owner = (node **)&(*owner)->next )
         /* nothing */;
     *owner = newnode;
 }

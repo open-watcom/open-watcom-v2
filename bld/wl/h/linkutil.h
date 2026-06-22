@@ -49,7 +49,7 @@ extern offset           FindLinearAddr2( targ_addr * );
 extern void             WalkLeaders( class_walk_fn *rtn );
 extern void             SectWalkClass( section *sect, class_walk_fn * );
 extern void             WalkMods( mods_walk_fn *rtn );
-extern void             LinkList( void *, void * );
+extern void             AppendList( void **list, void *item );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );

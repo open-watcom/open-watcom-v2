@@ -332,7 +332,7 @@ static void AllocVMNode( seg_table *node )
     } else {
         node->loc.u.addr = mem;
         node->loc.spilled = false;
-        LinkList( &NextSwap, node );
+        AppendList( (void **)&NextSwap, node );
     }
 }
 
@@ -359,7 +359,7 @@ static void AllocHugeVMNode( huge_table *node )
         nomem = false;
         node->flags |= VIRT_INMEM;
         page[index].u.addr = mem;
-        LinkList( &NextSwap, node );
+        AppendList( (void **)&NextSwap, node );
     }
     page[index].spilled = nomem;
     /*
