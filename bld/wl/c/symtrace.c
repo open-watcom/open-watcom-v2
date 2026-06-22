@@ -74,7 +74,7 @@ static void CheckFileTrace( section *sect, void *_info )
         if( FNAMECMPSTR( file->infile->name.u.ptr, info->u.name ) == 0 ) {
             info->found = true;
             MemFree( info->u.name );
-            file->flags |= STAT_TRACE_SYMS;
+            file->flags_file |= STAT_TRACE_SYMS;
             return;
         }
     }

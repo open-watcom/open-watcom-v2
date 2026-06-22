@@ -284,7 +284,7 @@ void DwarfP1ModuleFinished( mod_entry *mod )
     if( MOD_NOT_DEBUGGABLE( mod ) )
         return;
     CurrMod = mod;
-    if( mod->modinfo & MOD_DBI_SEEN )
+    if( mod->flags_mod & MOD_DBI_SEEN )
         return;
     DBILineWalk( mod->lines, DwarfAddLines );
     Ring2Walk( mod->publist, DBIModGlobal );
@@ -310,7 +310,7 @@ void DwarfP1ModuleFinished( mod_entry *mod )
 void DwarfStoreAddrInfo( mod_entry *mod )
 /**********************************************/
 {
-    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
+    if( (mod->flags_mod & MOD_DBI_SEEN) == 0 ) {
         if( mod->u3.d->arange.size > 0 ) {
             mod->u3.d->arange.u.vm_offs = SectionTable[SECT_DEBUG_ARANGE].size;
             mod->u3.d->arange.size += sizeof( arange_prologue );
@@ -338,7 +338,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
 
     /* unused parameters */ (void)sect;
 
-    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
+    if( (mod->flags_mod & MOD_DBI_SEEN) == 0 ) {
         if( mod->u3.d->arange.size > 0 ) {
             mod->u3.d->arange.u.vm_ptr = SectionTable[SECT_DEBUG_ARANGE].vm_ptr + mod->u3.d->arange.u.vm_offs;
             arange_hdr.length = mod->u3.d->arange.size - sizeof( unsigned_32 );
@@ -423,7 +423,7 @@ void DwarfGenModule( void )
 {
     unsigned            size;
 
-    if( CurrMod->modinfo & MOD_DBI_SEEN )
+    if( CurrMod->flags_mod & MOD_DBI_SEEN )
         return;
     if( CurrMod->u3.d->arange.size > 0 ) {
         // write out terminator arange
@@ -510,7 +510,7 @@ void DwarfGenGlobal( symbol *sym, section *sect )
 
     /* unused parameters */ (void)sect;
 
-    if( (CurrMod->modinfo & MOD_DBI_SEEN) == 0 ) {
+    if( (CurrMod->flags_mod & MOD_DBI_SEEN) == 0 ) {
         if( ( sym->p.seg == NULL )
           || ( sym->p.seg->iscode ) ) {
             die.abbrev_code = LABEL_ABBREV_CODE;
@@ -553,7 +553,7 @@ void DwarfGenLines( lineinfo *info )
     segdata             *seg;
     unsigned            item_size;
 
-    if( CurrMod->modinfo & MOD_DBI_SEEN )
+    if( CurrMod->flags_mod & MOD_DBI_SEEN )
         return;
 
     seg = info->seg;
@@ -629,7 +629,7 @@ static void DwarfAddAddrAdd( segdata *sdata, offset delta, offset size,
     /* unused parameters */ (void)delta; (void)size; (void)cookie;
 
     if( isnewmod
-      && (sdata->o.mod->modinfo & MOD_DBI_SEEN) == 0 ) {
+      && (sdata->o.mod->flags_mod & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             sdata->o.mod->u3.d->arange.size += sizeof( segmented_arange_tuple );
         } else {
@@ -680,7 +680,7 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
     if( !isnewmod )
         return;
     mod = sdata->o.mod;
-    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
+    if( (mod->flags_mod & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             tuple->s.v2.length = size;
             tup_size = sizeof( segmented_arange_tuple );

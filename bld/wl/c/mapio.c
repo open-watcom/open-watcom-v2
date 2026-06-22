@@ -563,7 +563,7 @@ static void WriteMapSegment( void *_seg )
 static void WriteMapModuleSegments( mod_entry *mod )
 /**************************************************/
 {
-    if( (mod->modinfo & MOD_NEED_PASS_2) && mod->segs != NULL ) {
+    if( (mod->flags_mod & MOD_NEED_PASS_2) && mod->segs != NULL ) {
         WriteMapColPrintf( 0, "%s", mod->name.u.ptr );
         if( strlen( mod->name.u.ptr ) > 15 )
             WriteMapNL();
@@ -985,7 +985,7 @@ void WriteMapLibsUsed( void )
     if( LinkState & LS_GENERATE_LIB_LIST ) {
         WriteMapBox( MSG_MAP_BOX_LIB_USED );
         for( file = ObjLibFiles; file != NULL; file = file->next ) {
-            if( file->flags & STAT_LIB_USED ) {
+            if( file->flags_file & STAT_LIB_USED ) {
                 MakeFileName( file->infile, new_name );
                 WriteMapPrintf( "%s", new_name );
             }

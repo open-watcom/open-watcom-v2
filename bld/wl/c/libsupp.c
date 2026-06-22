@@ -63,11 +63,11 @@ static bool SearchAndProcLibFile( file_list *file, const char *name )
         CacheClose( file, 1 );
         return( false );
     }
-    file->flags |= STAT_LIB_USED;
+    file->flags_file |= STAT_LIB_USED;
 #ifdef _EXE
     if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
-        if( file->flags & STAT_LIB_FIXED ) {
-            lp->modinfo |= MOD_FIXED;
+        if( file->flags_file & STAT_LIB_FIXED ) {
+            lp->flags_mod |= MOD_FIXED;
         }
         DistribAddMod( lp, file->ovlref );
     } else {
@@ -106,7 +106,7 @@ bool LibFind( const char *name, bool old_sym )
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->infile->status & INSTAT_IOERR )
             continue;
-        if( old_sym && (file->flags & STAT_OLD_LIB) )
+        if( old_sym && (file->flags_file & STAT_OLD_LIB) )
             continue;
         if( SearchAndProcLibFile( file, name ) )
             return( true );

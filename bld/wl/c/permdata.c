@@ -120,7 +120,7 @@ static void MarkExportInfo( void *exp )
 static void MarkModEntry( void *mod )
 /***********************************/
 {
-    ((mod_entry *)mod)->modinfo |= MOD_IS_FREE;
+    ((mod_entry *)mod)->flags_mod |= MOD_IS_FREE;
 }
 
 static void MarkSegData( void *sdata )
@@ -274,7 +274,7 @@ static void PrepModEntry( void *_mod, void *info )
 {
     mod_entry *mod = _mod;
 
-    if( mod->modinfo & MOD_IS_FREE ) {
+    if( mod->flags_mod & MOD_IS_FREE ) {
         *((unsigned_32 *)mod) = CARVE_INVALID_INDEX;
         return;
     }
@@ -283,7 +283,7 @@ static void PrepModEntry( void *_mod, void *info )
     mod->name.u.offs = GetString( info, mod->name.u.ptr );
     mod->publist = CarveGetIndex( CarveSymbol, mod->publist );
     mod->segs = CarveGetIndex( CarveSegData, mod->segs );
-    mod->modinfo &= ~MOD_CLEAR_ON_INC;
+    mod->flags_mod &= ~MOD_CLEAR_ON_INC;
     if( mod->u1.source != NULL ) {
         mod->u1.fname = mod->u1.source->infile->name;
     }
@@ -519,7 +519,7 @@ static unsigned_32 WriteLibList( perm_write_info *info, bool douser )
 
     numlibs = 0;
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
-        if( (((file->flags & STAT_USER_SPECD) != 0) ^ douser) == 0 ) {
+        if( (((file->flags_file & STAT_USER_SPECD) != 0) ^ douser) == 0 ) {
             U32WritePermFile( info, GetString( info, file->infile->name.u.ptr ) );
             BufWritePermFile( info, &file->priority, sizeof( file->priority ) );
             numlibs++;

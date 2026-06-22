@@ -356,14 +356,14 @@ int CheckLibraryType( file_list *file, unsigned long *loc, bool makedict )
       && header[1] == 0x01 ) {
         // COFF object for PPC
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
-        file->flags |= STAT_OMF_LIB;
+        file->flags_file |= STAT_OMF_LIB;
         reclength = ReadOMFDict( file, header, makedict );
         if( reclength < 0 ) {
             return( -1 );
         }
         *loc += __ROUND_UP_SIZE( sizeof( omf_lib_header ), reclength );
     } else if( memcmp( header, AR_IDENT, AR_IDENT_LEN ) == 0 ) {
-        file->flags |= STAT_AR_LIB;
+        file->flags_file |= STAT_AR_LIB;
         reclength = 2;
         *loc += AR_IDENT_LEN;
         if( !ReadARDict( file, loc, makedict ) ) {
@@ -532,7 +532,7 @@ bool DiscardDicts( void )
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->u.dict == NULL )
             continue;
-        if( file->flags & STAT_AR_LIB )
+        if( file->flags_file & STAT_AR_LIB )
             continue;
         if( file->u.dict->o.cache == NULL )
             continue;
@@ -554,14 +554,14 @@ void BurnLibs( void )
     dict_entry  *dict;
 
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
-        if( file->flags & STAT_AR_LIB ) {
+        if( file->flags_file & STAT_AR_LIB ) {
             CacheFree( file, file->strtab );
             file->strtab = NULL;
         }
         dict = file->u.dict;
         if( dict == NULL )
             continue;
-        if( file->flags & STAT_AR_LIB ) {
+        if( file->flags_file & STAT_AR_LIB ) {
             CacheFree( file, dict->a.filepostab - 1 );
             MemFree( dict->a.symbtab );
         } else {
@@ -634,12 +634,12 @@ mod_entry *SearchLib( file_list *file, const char *name )
     if( file->u.dict == NULL ) {
         if( CheckLibraryType( file, &pos, true ) == -1 )
             return( NULL );
-        if( (file->flags & STAT_IS_LIB) == 0 ) {
+        if( (file->flags_file & STAT_IS_LIB) == 0 ) {
             BadLibrary( file );
             return( NULL );
         }
     }
-    if( file->flags & STAT_OMF_LIB ) {
+    if( file->flags_file & STAT_OMF_LIB ) {
         retval = OMFSearchExtLib( file, name, &pos );
     } else {
         retval = ARSearchExtLib( file, name, &pos );
@@ -664,7 +664,8 @@ mod_entry *SearchLib( file_list *file, const char *name )
     obj->location = pos;
     obj->u1.source = file;
     obj->modtime = file->infile->modtime;
-    obj->modinfo = file->flags & DBI_MASK;
+    obj->flags_dbi = file->flags_dbi;
+    obj->flags_mod = 0;
     obj->flags_fmt = ObjFileFormat;
     return( obj );
 }

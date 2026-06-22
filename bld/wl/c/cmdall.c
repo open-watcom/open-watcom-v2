@@ -285,7 +285,8 @@ static void *AddObjFile( const char *name, const char *membname, file_list **fil
     member = NULL;
     if( membname != NULL ) {
         member = MemAllocSafe( sizeof( *member ) - 1 + strlen( membname ) + 1 );
-        member->flags = DBIFlag;
+        member->flags_dbi = DBIFlag;
+        member->flags_mod = 0;
         strcpy( member->name, membname );
         member->next = NULL;
         for( file = CurrSect->files; file != NULL; file = file->next ) {
@@ -433,10 +434,10 @@ static bool AddLib( void )
 
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
     file = AddObjLib( ptr, LIB_PRIORITY_MAX );
-    file->flags |= STAT_USER_SPECD;
+    file->flags_file |= STAT_USER_SPECD;
 #ifdef _EXE
     if( CmdFlags & CF_SET_SECTION ) {
-        file->flags |= STAT_LIB_FIXED;
+        file->flags_file |= STAT_LIB_FIXED;
         file->ovlref = GetOvlRef();
     }
 #endif
@@ -872,9 +873,9 @@ static bool ProcNewSegment( void )
         LnkMsg( WRN+LOC+LINE+MSG_NEWSEG_BEFORE_OBJ, NULL );
     } else {
         if( CmdFlags & CF_MEMBER_ADDED ) {
-            LastFile.u.member->flags |= MOD_LAST_SEG;
+            LastFile.u.member->flags_mod |= MOD_LAST_SEG;
         } else {
-            LastFile.u.file->flags |= STAT_LAST_SEG;
+            LastFile.u.file->flags_file |= STAT_LAST_SEG;
         }
     }
     return( true );
@@ -1924,13 +1925,13 @@ static bool ProcDebug( void )
         LnkMsg( WRN+LOC+LINE+MSG_DEBUG_AFTER_FILES, NULL );
     }
     gotmod = ProcOne( DbgMods, SEP_NO );
-    DBIFlag &= ~DBI_MASK;
+    DBIFlag = 0;
     if( ProcOne( PosDbgMods, SEP_NO ) ) {
         while( ProcOne( PosDbgMods, SEP_COMMA ) ) {
             /* nothing */;
         }
     } else {
-        DBIFlag |= DBI_ALL; //DBI_MASK;
+        DBIFlag |= DBI_ALL;
         if( !gotmod ) {
             return( false );
         }

@@ -367,7 +367,7 @@ static void AllocSeg( void *_snode, void *dummy )
     if( sdata == NULL )
         return;
     sname = sdata->u.name.u.ptr;
-    if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
+    if( CurrMod->flags_mod & MOD_IMPORT_LIB ) {
         if( sdata->isidata
           || sdata->iscode ) {
             if( sdata->iscode ) {
@@ -381,7 +381,7 @@ static void AllocSeg( void *_snode, void *dummy )
     }
     isdbi = false;
     if( strnicmp( CoffDebugPrefix, sdata->u.name.u.ptr, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
-        if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
+        if( CurrMod->flags_mod & MOD_IMPORT_LIB ) {
             snode->info |= SEG_DEAD;
             snode->entry = NULL;
             FreeSegData( sdata );
@@ -483,7 +483,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     len = sizeof( CoffIDataSegName ) - 1;
     if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
         SeenDLLRecord();
-        CurrMod->modinfo |= MOD_IMPORT_LIB;
+        CurrMod->flags_mod |= MOD_IMPORT_LIB;
         if( name[len] == '$'
           && name[len + 1] == '6' ) {
             /*
@@ -636,7 +636,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         if( namelen == 0 ) {
             BadObject();
         }
-        if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
+        if( CurrMod->flags_mod & MOD_IMPORT_LIB ) {
             ImpProcSymbol( snode, type, name, namelen );
             return( ORL_OKAY );
         }
@@ -883,7 +883,7 @@ static void HandleImportSymbol( const char *name )
 static void ScanImported( void )
 /******************************/
 {
-    if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
+    if( CurrMod->flags_mod & MOD_IMPORT_LIB ) {
         if( FirstCodeSymName != NULL ) {
             HandleImportSymbol( FirstCodeSymName );
         } else if( FirstDataSymName != NULL ) {
@@ -977,9 +977,9 @@ unsigned long ORLPass1( void )
             FmtData.toc_initialized = true;
         }
         if( LinkFlags & LF_DWARF_DBI_FLAG ) {
-            CurrMod->modinfo |= MOD_FLATTEN_DBI;
+            CurrMod->flags_mod |= MOD_FLATTEN_DBI;
         }
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ORLFileScan( filehdl, NULL, ProcSegments );
         IterateNodelist( SegNodes, AllocSeg, NULL );
         ORLFileScan( filehdl, NULL, ProcSymbols );

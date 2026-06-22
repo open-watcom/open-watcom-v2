@@ -126,7 +126,7 @@ void DistribAddMod( mod_entry *lp, overlay_ref ovlref )
     ModTable[CurrModHandle] = lp;
     lp->u2.arclist = ArcList;
     ArcList->numarcs = 0;
-    if( lp->modinfo & MOD_FIXED ) {
+    if( lp->flags_mod & MOD_FIXED ) {
         ArcList->ovlref = ovlref;
     } else {
         ArcList->ovlref = NO_ARCS_YET;
@@ -356,7 +356,7 @@ void DefDistribSym( symbol *sym )
 
     if( sym->info & SYM_REFERENCED ) {
         arclist = CurrMod->u2.arclist;
-        if( CurrMod->modinfo & MOD_FIXED ) {
+        if( CurrMod->flags_mod & MOD_FIXED ) {
             seg = sym->p.seg;
             if( seg->iscode ) {      // if code..
                 NewRefVector( sym, sym->u.d.ovlref, arclist->ovlref );
@@ -425,7 +425,7 @@ void RefDistribSym( symbol *sym )
     if( sym->info & SYM_DEFINED ) {
         if( sym->info & SYM_1_DISTRIB ) {
             mod = ModTable[sym->u.d.modnum];
-            if( mod->modinfo & MOD_FIXED ) {        // add reference, as long
+            if( mod->flags_mod & MOD_FIXED ) {        // add reference, as long
                 seg = sym->p.seg;                   // as it is a code ref.
                 if( seg->iscode ) {
                     AddArc( arc );
@@ -460,9 +460,9 @@ static void DoRefGraph( overlay_ref ovlref, mod_entry *mod )
     /*
      * this next line is necessary to break cycles in the graph.
      */
-    if( (mod->modinfo & MOD_VISITED)
+    if( (mod->flags_mod & MOD_VISITED)
       && ( ovlref == arclist->ovlref )
-      || (mod->modinfo & MOD_FIXED) )
+      || (mod->flags_mod & MOD_FIXED) )
         return;
     if( arclist->ovlref == NO_ARCS_YET ) {
         arclist->ovlref = 0;
@@ -504,7 +504,7 @@ static void ScanArcs( mod_entry *mod )
     overlay_ref ovlref;
     dist_arc    currarc;
 
-    mod->modinfo |= MOD_VISITED;
+    mod->flags_mod |= MOD_VISITED;
     arclist = mod->u2.arclist;
     ovlref = arclist->ovlref;
     if( ovlref != NO_ARCS_YET ) {
@@ -518,7 +518,7 @@ static void ScanArcs( mod_entry *mod )
                     if( sym->info & SYM_1_DISTRIB ) {
                         currarc.test = sym->u.d.modnum;
                         refmod = ModTable[currarc.mod];
-                        if( refmod->modinfo & MOD_FIXED ) {
+                        if( refmod->flags_mod & MOD_FIXED ) {
                             if( NewRefVector( sym, ovlref, refmod->u2.arclist->ovlref ) ) {
                                 DeleteArc( arclist, index );
                             }
@@ -547,7 +547,7 @@ static void ScanArcs( mod_entry *mod )
             } /* if( a module ) */
         } /* for( arcs left ) */
     } /* if( an ovlnum defined ) */
-    mod->modinfo &= ~MOD_VISITED;
+    mod->flags_mod &= ~MOD_VISITED;
 }
 
 void DistribFinishMod( mod_entry *mod )
@@ -560,7 +560,7 @@ void DistribFinishMod( mod_entry *mod )
     unsigned    allocsize;
 
     ScanArcs( mod );
-    if( mod->modinfo & MOD_FIXED ) {    // no need to scan a fixed module more than once
+    if( mod->flags_mod & MOD_FIXED ) {    // no need to scan a fixed module more than once
         mod->u2.arclist->numarcs = 0;
     }
     allocsize = offsetof( arcdata, arcs ) + mod->u2.arclist->numarcs * sizeof( dist_arc );
@@ -580,9 +580,9 @@ void DistribIndirectCall( symbol *sym )
     arclist = CurrMod->u2.arclist;
     save_ovlref = arclist->ovlref;
     arclist->ovlref = 0;                // make sure current module isn't
-    CurrMod->modinfo |= MOD_VISITED;    // visited
+    CurrMod->flags_mod |= MOD_VISITED;    // visited
     DoRefGraph( 0, ModTable[sym->u.d.modnum] );
-    CurrMod->modinfo &= ~MOD_VISITED;
+    CurrMod->flags_mod &= ~MOD_VISITED;
     arclist->ovlref = save_ovlref;
     sym->u.d.ovlstate |= OVL_REF;
     sym->u.d.ovlref = 0;                // make sure current symbol put in root.

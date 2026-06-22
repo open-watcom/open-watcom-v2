@@ -179,7 +179,7 @@ static bool CheckSameData( symbol *sym, comdat_info *info )
     char            *data;
     comdat_piece    *piece;
 
-    if( sym->mod->modinfo & MOD_DONE_PASS_1 ) {
+    if( sym->mod->flags_mod & MOD_DONE_PASS_1 ) {
         vmem = sym->p.seg->u1.vm_ptr;
         piece = RingLookup( info->pieces, CheckVMemPieceDiff, &vmem );
     } else {
@@ -548,7 +548,7 @@ static void CheckForLast( seg_leader *seg, class_entry *class )
 /*************************************************************/
 // check to see if this segment should be the last one in an autogroup.
 {
-    if( (CurrMod->modinfo & MOD_LAST_SEG)
+    if( (CurrMod->flags_mod & MOD_LAST_SEG)
       && (class->flags & CLASS_CODE) ) {
         if( LastCodeSeg != NULL ) {             // more than one code seg
             LastCodeSeg->info &= ~LAST_SEGMENT; // so don't end at previous

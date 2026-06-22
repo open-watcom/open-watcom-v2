@@ -635,11 +635,12 @@ file_list *AllocNewFile( member_list *member )
 
     file = _PermAlloc( sizeof( file_list ) );
     file->next = NULL;
-    file->flags = DBIFlag;
+    file->flags_dbi = DBIFlag;
+    file->flags_file = 0;
     file->strtab = NULL;
     file->u.member = member;
     if( member != NULL ) {
-        file->flags |= STAT_HAS_MEMBER;
+        file->flags_file |= STAT_HAS_MEMBER;
     }
     return( file );
 }

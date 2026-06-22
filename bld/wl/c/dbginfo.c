@@ -177,7 +177,7 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
         Master.obj_major_ver = major;
     if( major != Master.obj_major_ver ) {
         LnkMsg( WRN+LOC+MSG_CANT_USE_LOCALS, NULL );
-        CurrMod->modinfo &= ~( DBI_TYPE | DBI_LOCAL );
+        CurrMod->flags_dbi &= ~( DBI_TYPE | DBI_LOCAL );
     }
     if( minor > Master.obj_minor_ver ) {
         Master.obj_minor_ver = minor;
@@ -298,12 +298,12 @@ void ODBIP1ModuleFinished( mod_entry *obj )
 
     dinfo = CurrSect->dbg_info;
     if( ( dinfo == NULL )
-      || (obj->modinfo & DBI_ALL) == 0 )
+      || (obj->flags_dbi & DBI_ALL) == 0 )
         return;
     if( MOD_NOT_DEBUGGABLE( obj ) )
         return;
     CurrMod = obj;
-    if( CurrMod->modinfo & DBI_LINE ) {
+    if( CurrMod->flags_dbi & DBI_LINE ) {
         DBILineWalk( obj->lines, ODBIAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
@@ -333,7 +333,7 @@ void ODBIDefClass( class_entry *class, unsigned_32 size )
 static int ODBISymIsForGlobalDebugging( symbol *sym, mod_entry *currMod )
 /***********************************************************************/
 {
-    return( (currMod->modinfo & DBI_ONLY_EXPORTS) == 0 && ( (currMod->modinfo & DBI_STATICS) || (sym->info & SYM_STATIC) == 0 ) );
+    return( (currMod->flags_dbi & DBI_ONLY_EXPORTS) == 0 && ( (currMod->flags_dbi & DBI_STATICS) || (sym->info & SYM_STATIC) == 0 ) );
 }
 
 void ODBIAddGlobal( symbol *sym )
@@ -489,7 +489,7 @@ void ODBIAddModule( mod_entry *obj, section *sect )
 
     dptr = sect->dbg_info;
     if( ( dptr == NULL )
-      || (obj->modinfo & DBI_ALL) == 0 )
+      || (obj->flags_dbi & DBI_ALL) == 0 )
         return;
     dptr->modnum++;
     obj->u3.o->modnum = dptr->modnum;
@@ -643,7 +643,7 @@ void ODBIGenLines( lineinfo *info )
 
     dinfo = CurrSect->dbg_info;
     if( ( dinfo == NULL )
-      || (CurrMod->modinfo & DBI_LINE) == 0 )
+      || (CurrMod->flags_dbi & DBI_LINE) == 0 )
         return;
     lineqty = DBICalcLineQty( info );
     DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->u3.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
@@ -774,7 +774,7 @@ void ODBIGenModule( void )
 
     dptr = CurrSect->dbg_info;
     if( ( dptr == NULL )
-      || (CurrMod->modinfo & DBI_ALL) == 0 )
+      || (CurrMod->flags_dbi & DBI_ALL) == 0 )
         return;
     rec = CurrMod->u3.o;
     len = strlen( CurrMod->name.u.ptr );

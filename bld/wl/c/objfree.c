@@ -100,7 +100,7 @@ static void FreeFiles( file_list *file )
     for( ; file != NULL; file = next ) {
         next = file->next;
         CacheClose( file, 3 );
-        if( (file->flags & STAT_HAS_MEMBER) && file->u.member != NULL ) {
+        if( (file->flags_file & STAT_HAS_MEMBER) && file->u.member != NULL ) {
             FreeList( file->u.member );
         }
         _PermFree( file );

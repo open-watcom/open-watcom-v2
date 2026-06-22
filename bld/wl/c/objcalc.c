@@ -666,8 +666,7 @@ void DoPubsSect( section *sect )
 {
     pubdefinfo  info;
 
-    if( (CurrMod->modinfo & MOD_NEED_PASS_2)
-      && (CurrMod->modinfo & MOD_IMPORT_LIB) == 0 ) {
+    if( !MOD_NOT_DEBUGGABLE( CurrMod ) ) {
         DBIAddModule( CurrMod, sect );
     }
     info.num = 0;

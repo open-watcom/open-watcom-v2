@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,8 +71,5 @@ extern void     DBIAddrInfoScan( seg_leader *,
                       void * );
 extern void     DBILineWalk( lineinfo *, line_walk_fn * );
 extern unsigned DBICalcLineQty( lineinfo * );
-
-#define MOD_NOT_DEBUGGABLE(mod) ( ((mod)->modinfo & MOD_NEED_PASS_2) == 0 || \
-                                    ((mod)->modinfo & MOD_IMPORT_LIB) )
 
 extern group_entry *    DBIGroups;

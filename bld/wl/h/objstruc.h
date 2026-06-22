@@ -72,7 +72,6 @@ typedef enum {
 } dbi_flags;
 
 #define DBI_ALL         (DBI_LINE | DBI_TYPE | DBI_LOCAL | DBI_STATICS)
-#define DBI_MASK        (DBI_ALL | DBI_ONLY_EXPORTS)
 
 typedef enum {
     /* bits 0..4 reserved for DBI_xxxx symbols are also stored here */
@@ -110,6 +109,9 @@ typedef enum {
 
 #define MOD_CLEAR_ON_INC    /* flags to clear when incremental linking. */ \
     (MOD_DONE_PASS_1)
+
+#define MOD_NOT_DEBUGGABLE(mod) ( ((mod)->flags_mod & MOD_NEED_PASS_2) == 0 || \
+                                    ((mod)->flags_mod & MOD_IMPORT_LIB) )
 
 /*
  * overlay manager library priority         0
@@ -318,7 +320,8 @@ typedef struct file_list {
         MEMBER_LIST         *member;
     } u;
     char                *strtab;    /* for AR format */
-    file_flags          flags;
+    dbi_flags           flags_dbi;
+    file_flags          flags_file;
     lib_priority        priority;   /* for libraries */
     overlay_ref         ovlref;     /* for fixed libraries */
     unsigned                     : 0;
@@ -326,7 +329,8 @@ typedef struct file_list {
 
 typedef struct member_list {
     MEMBER_LIST         *next;
-    module_flags        flags;      //dbi & newseg flags to be xferred to mod entry
+    dbi_flags           flags_dbi;
+    module_flags        flags_mod;
     char                name[1];
 } member_list;
 
@@ -383,7 +387,8 @@ typedef struct mod_entry {
     time_t              modtime;
     size_t              relocs;
     size_t              sizerelocs;
-    module_flags        modinfo;
+    dbi_flags           flags_dbi;
+    module_flags        flags_mod;
     file_format         flags_fmt;
     void                *lines;
     omf_dbg_type        omfdbg;

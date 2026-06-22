@@ -886,7 +886,7 @@ static void LinkDirective( void )
         seg->entry->iscode = true;
         break;
     case LDIR_FLAT_ADDRS:
-        CurrMod->modinfo |= MOD_FLATTEN_DBI;
+        CurrMod->flags_mod |= MOD_FLATTEN_DBI;
         break;
     case LDIR_OPT_UNSAFE:
         ObjFormat |= OBJ_FMT_UNSAFE_FIXUPP;
@@ -992,7 +992,7 @@ static void Pass1Cmd( byte cmd )
     case CMD_SEGD32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_SEGDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcSegDef();
         break;
     case CMD_STATIC_PUBD32:
@@ -1009,11 +1009,11 @@ static void Pass1Cmd( byte cmd )
     case CMD_STATIC_EXTD32:
         isstatic = true;
     case CMD_EXTDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         UseSymbols( isstatic, false );
         break;
     case CMD_CEXTDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         UseSymbols( false, true );
         break;
     case CMD_GRPDEF:
@@ -1033,13 +1033,13 @@ static void Pass1Cmd( byte cmd )
     case CMD_STATIC_COMDEF:
         isstatic = true;
     case CMD_COMDEF:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcComdef( isstatic );
         break;
     case CMD_COMD32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_COMDAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcComdat();
         break;
     case CMD_LEDA32:
@@ -1055,7 +1055,7 @@ static void Pass1Cmd( byte cmd )
     case CMD_FIXU32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_FIXUPP:        /* count the fixups for each seg_leader */
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         DoRelocs();
         ObjFormat &= ~OBJ_FMT_UNSAFE_FIXUPP;
         break;
@@ -1070,13 +1070,13 @@ static void Pass1Cmd( byte cmd )
     case CMD_BAKP32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_BAKPAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcBakpat();
         break;
     case CMD_NBKP32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_NBKPAT:
-        CurrMod->modinfo |= MOD_NEED_PASS_2;
+        CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcNbkpat();
         break;
     case CMD_VERNUM:

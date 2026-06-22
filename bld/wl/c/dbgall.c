@@ -149,8 +149,8 @@ unsigned_16 DBIColSeg( class_entry *class )
 {
     switch( class->flags & CLASS_DEBUG_INFO ) {
     case CLASS_DWARF:
-        if( CurrMod->modinfo & DBI_TYPE ) {
-            CurrMod->modinfo |= MOD_DBI_SEEN;
+        if( CurrMod->flags_dbi & DBI_TYPE ) {
+            CurrMod->flags_mod |= MOD_DBI_SEEN;
         }
         return( DWARF_DEBUG_OTHER );       // assume other until later.
     case CLASS_MS_TYPE:
@@ -199,13 +199,13 @@ bool DBISkip( seg_leader *seg )
 {
     switch( seg->dbgtype ) {
     case MS_TYPE:
-        return( (CurrMod->modinfo & DBI_TYPE) == 0 || MSSkip() );
+        return( (CurrMod->flags_dbi & DBI_TYPE) == 0 || MSSkip() );
     case MS_LOCAL:
-        return( (CurrMod->modinfo & DBI_LOCAL) == 0 || MSSkip() );
+        return( (CurrMod->flags_dbi & DBI_LOCAL) == 0 || MSSkip() );
     case NOT_DEBUGGING_INFO:
         return( false );
     default:
-        return( (CurrMod->modinfo & DBI_TYPE) == 0 || (LinkFlags & LF_DWARF_DBI_FLAG) == 0 );
+        return( (CurrMod->flags_dbi & DBI_TYPE) == 0 || (LinkFlags & LF_DWARF_DBI_FLAG) == 0 );
     }
 }
 

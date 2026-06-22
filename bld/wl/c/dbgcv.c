@@ -251,7 +251,7 @@ void CVP1ModuleFinished( mod_entry *obj )
     TempIndex++;
     CurrMod = obj;
     obj->u3.cv->modidx = TempIndex;
-    if( CurrMod->modinfo & DBI_LINE ) {
+    if( CurrMod->flags_dbi & DBI_LINE ) {
         DBILineWalk( obj->lines, CVAddLines );
     }
     Ring2Walk( obj->publist, DBIModGlobal );
@@ -496,7 +496,7 @@ void CVGenLines( lineinfo *info )
 
     seg = info->seg;
 
-    if( (CurrMod->modinfo & DBI_LINE) == 0 )
+    if( (CurrMod->flags_dbi & DBI_LINE) == 0 )
         return;
     adjust = seg->a.delta + seg->u.leader->seg_addr.off;
     if( LineInfo.offbase == 0 ) { // this is our first time through.

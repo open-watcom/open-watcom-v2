@@ -1005,7 +1005,7 @@ static offset FindRealAddr( fix_relo_data *fix )
     dbiflat = DBINoReloc( CurrRec.seg->u.leader );
     if( (fix->type & FIX_ABS)
       || dbiflat
-      && (CurrMod->modinfo & MOD_FLATTEN_DBI) == 0 ) {
+      && (CurrMod->flags_mod & MOD_FLATTEN_DBI) == 0 ) {
         return( off );
     }
     if( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_LINEARIZE | MK_QNX_FLAT))
