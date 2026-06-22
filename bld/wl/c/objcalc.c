@@ -54,6 +54,8 @@
 #include "clibext.h"
 
 
+#define _ARRAY_SIZE( a ) ( sizeof(a) / sizeof( (a)[0] ) )
+
 typedef enum {
     ORD_REALMODE,
     ORD_BEGCODE,
@@ -559,13 +561,13 @@ static void FindFloatSyms( void )
 /*******************************/
 // this finds the floating point patch symbols and marks them.
 {
-    int         index;
+    unsigned    index;
     symbol      *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->next ) {
         SET_SYM_2_FPP( sym, FPP_NONE );
     }
-    for( index = 0; index < ( sizeof( FloatPatches ) / sizeof( FloatPatches[0] ) ); index++ ) {
+    for( index = 0; index < _ARRAY_SIZE( FloatPatches ); index++ ) {
         if( FloatPatches[index].name != NULL ) {
             sym = FindISymbol( FloatPatches[index].name );
             if( sym != NULL ) {

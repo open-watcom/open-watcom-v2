@@ -50,17 +50,19 @@ void DW_InitDebugAranges( dw_client cli )
 {
     uint_8      buf[2];
 
-    CLISectionReserveSize( cli, DW_DEBUG_ARANGES );
+    CLIWriteU32( cli, DW_DEBUG_ARANGES, 0 );    /* section size */
     CLIWriteU16( cli, DW_DEBUG_ARANGES, 2 );    /* section version */
-    CLIReloc3( cli, DW_DEBUG_ARANGES, DW_W_SECTION_POS, DW_DEBUG_INFO );
-    buf[0] = cli->offset_size;
-    buf[1] = cli->segment_size;
+    CLIReloc3( cli, DW_DEBUG_ARANGES,           /* link to CU info */
+        DW_W_SECTION_POS, DW_DEBUG_INFO );
+    buf[0] = cli->offset_size;				    /* offs size */
+    buf[1] = cli->segment_size;				    /* segm size */
     CLIWrite( cli, DW_DEBUG_ARANGES, buf, 2 );
 }
 
 
 void DW_FiniDebugAranges( dw_client cli )
 {
+    /* write null address entry */
     CLISectionWriteZeros( cli, DW_DEBUG_ARANGES, cli->segment_size + 2 * cli->offset_size );
     /* backpatch the section length */
     CLISectionSetSize( cli, DW_DEBUG_ARANGES );

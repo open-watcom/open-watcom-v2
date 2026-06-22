@@ -64,10 +64,10 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
                 switch( RelocSize( r_entry ) ) {
                 case 6:
                 case 4:
-                    addend = *((signed_32 *)&(contents[ r_entry->offset ]));
+                    addend = MGET_S32_UN( contents + r_entry->offset );
                     break;
                 case 2:
-                    addend = *((short *)&(contents[ r_entry->offset ]));
+                    addend = MGET_S16_UN( contents + r_entry->offset );
                     break;
                 case 1:
                     addend = *((signed char *)&(contents[ r_entry->offset ]));

@@ -112,8 +112,8 @@ void DW_InfoHandleReference( dw_client cli, dw_handle hdl )
 void DW_InitDebugInfo( dw_client cli )
 {
     /* leave room for the length field */
-    CLISectionReserveSize( cli, DW_DEBUG_INFO );
-    DW_Info16( cli, 2 );   /* section version */
+    CLIWriteU32( cli, DW_DEBUG_INFO, 0 );   /* section size */
+    CLIWriteU16( cli, DW_DEBUG_INFO, 2 );   /* section version */
     /* abbrev start */
     if( cli->compiler_options & DW_CM_ABBREV_PRE ) {
         CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
@@ -122,7 +122,7 @@ void DW_InitDebugInfo( dw_client cli )
         CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_ABBREV );
         CLISectionSeekEnd( cli, DW_DEBUG_ABBREV );
     }
-    DW_Info8( cli, cli->offset_size );
+    CLIWriteU8( cli, DW_DEBUG_INFO, cli->offset_size );
 }
 
 

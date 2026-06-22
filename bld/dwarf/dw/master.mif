@@ -21,6 +21,10 @@ additional_clean = *.gh
 
 inc_dirs = -I. $(cli_dwarfw_inc_dirs)
 
+!ifdef __CLANG_TOOLS__
+#extra_cpp_flags = -Wpadded -Wcast-align -Wno-error=padded #-Xclang -fdump-record-layouts -Wpacked-not-aligned
+!endif
+
 # explicit rules
 #################
 

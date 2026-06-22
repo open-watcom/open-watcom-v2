@@ -75,9 +75,6 @@ static struct {
     #define pick(en,skip,pass1) { skip, pass1 },
     #include "objfmts.h"
     #undef pick
-    { BadSkip,      BadObjFormat },     /* unused */
-    { BadSkip,      BadObjFormat },     /* unused */
-    { BadSkip,      BadObjFormat }      /* unused */
 };
 
 void SetupFakeModule( void )
@@ -432,12 +429,12 @@ static void DoPass1( mod_entry *next, file_list *file )
                 next->modtime = next->u1.source->infile->modtime;
                 next->flags_fmt = ObjFileFormat;
                 if( member != NULL ) {
-                    next->flags_dbi |= member->flags_dbi;
-                    next->flags_mod |= member->flags_mod;
+                    next->flags_dbi = member->flags_dbi;
+                    next->flags_mod = member->flags_mod;
                     MemFree( member );
                 }
                 if( (file->flags_file & STAT_HAS_MEMBER) == 0 ) {
-                    next->flags_dbi |= file->flags_dbi;
+                    next->flags_dbi = file->flags_dbi;
                     if( file->flags_file & STAT_LAST_SEG ) {
                         next->flags_mod |= MOD_LAST_SEG;
                     }

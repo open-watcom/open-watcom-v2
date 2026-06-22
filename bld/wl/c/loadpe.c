@@ -80,7 +80,7 @@
 #define MINIMUM_SEG_SHIFT       2           /* Corresponds to 2^2 == 4 bytes */
 #define DEFAULT_SEG_SHIFT       9           /* Corresponds to 2^9 == 512 bytes */
 
-#define STUB_ALIGN              8           /* for PE format */
+#define STUB_ALIGN              8U          /* for PE format */
 
 #define PE32_OPT_SIZE           sizeof(pe32_opt_header)
 #define PE64_OPT_SIZE           sizeof(pe64_opt_header)

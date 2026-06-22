@@ -48,7 +48,7 @@
 
 #ifdef _OS2
 
-#define STUB_ALIGN 16
+#define STUB_ALIGN 16U
 
 #define PAGE_COUNT( size )  (((size)+(OSF_DEF_PAGE_SIZE-1))>>OSF_PAGE_SHIFT)
 #define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof( map_entry ) * (unsigned long)OSF_DEF_PAGE_SIZE)

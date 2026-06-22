@@ -169,7 +169,7 @@ void DW_InitReferences( dw_client cli )
     cli->references.scope = 0;
     cli->references.delayed_file = 0;
 
-    CLISectionReserveSize( cli, DW_DEBUG_REF );
+    CLIWriteU32( cli, DW_DEBUG_REF, 0 );
 }
 
 

@@ -70,7 +70,7 @@
 
 #ifdef _OS2
 
-#define STUB_ALIGN 16
+#define STUB_ALIGN 16U
 
 typedef struct FullResourceRecord {
     struct FullResourceRecord   *Next;

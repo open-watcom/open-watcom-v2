@@ -306,7 +306,7 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
     dis_sec_addend  sign_extension;
 
     #define SBIT(x)     ( 1L << ( x - 1 ) )
-    #define SEXT(x)     ( -1L << ( x - 1 ) )
+    #define SEXT(x)     ( ( -1UL ) << ( x - 1 ) )
 
     r_addend = r_entry->addend;
     switch( r_entry->type ) {
@@ -474,10 +474,10 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     switch( rv ) {
     case 6:
     case 4:
-        Set64ValU32( value, *(unsigned_32 *)data );
+        Set64ValU32( value, MGET_U32_UN( data ) );
         break;
     case 2:
-        Set64ValU32( value, *(unsigned_16 *)data );
+        Set64ValU32( value, MGET_U16_UN( data ) );
         break;
     case 1:
         Set64ValU32( value, *(unsigned_8 *)data );
@@ -497,8 +497,8 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     BufferConcat( buff );
     switch( rv ) {
     case 8:
-        U64Low( value ) = *(unsigned_32 *)data;
-        U64High( value ) = *((unsigned_32 *)data + 1);
+        U64Low( value ) = MGET_U32_UN( data );
+        U64High( value ) = MGET_U32_UN( (char *)data + sizeof( unsigned_32 ) );
         if( U64isntZero( value ) ) {
             BufferConcat( "+0x" );
             if( U64High( value ) != 0 ) {

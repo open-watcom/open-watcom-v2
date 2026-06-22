@@ -51,7 +51,7 @@ void DWENTRY DWPubname( dw_client cli, dw_handle hdl, const char *name )
 void DW_InitDebugPubnames( dw_client cli )
 {
     /* write the set header */
-    CLISectionReserveSize( cli, DW_DEBUG_PUBNAMES );
+    CLIWriteU32( cli, DW_DEBUG_PUBNAMES, 0 );   /* section size */
     CLIWriteU16( cli, DW_DEBUG_PUBNAMES, 2 );   /* section version */
     CLIReloc3( cli, DW_DEBUG_PUBNAMES, DW_W_SECTION_POS, DW_DEBUG_INFO );
     CLIReloc2( cli, DW_DEBUG_PUBNAMES, DW_W_UNIT_SIZE );

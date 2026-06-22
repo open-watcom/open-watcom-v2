@@ -170,13 +170,13 @@ int main( void )
                     /* fall through */
                 case 2:
                     if( hex <= 0xffff ) {
-                        *(unsigned_16 *)datap = hex;
+                        MPUT_16_UN( datap, hex );
                         datap += sizeof( unsigned_16 );
                         break;
                     }
                     /* fall through */
                 case 4:
-                    *(unsigned_32 *)datap = hex;
+                    MPUT_32_UN( datap, hex );
                     datap += sizeof( unsigned_32 );
                     break;
                 }

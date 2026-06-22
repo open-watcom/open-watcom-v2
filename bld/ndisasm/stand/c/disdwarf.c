@@ -197,14 +197,14 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
     p = input;
     while( p - input < length ) {
 
-        unit_length = *(uint_32 *)p;
+        unit_length = MGET_U32_UN( p );
         p += sizeof( uint_32 );
         unit_base = p;
 
         p += sizeof( uint_16 );
 
         stmt_start = p;
-        stmt_start += *(uint_32 *)p;
+        stmt_start += MGET_U32_UN( p );
         p += sizeof( uint_32 );
         stmt_start += sizeof( uint_32 );
         min_instr = *p;
@@ -279,9 +279,9 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
                     break;
                 case DW_LNE_set_address:
                     if( op_len == 4 ) {
-                        tmp = *(uint_32 *)p;
+                        tmp = MGET_U32_UN( p );
                     } else if( op_len == 2 ) {
-                        tmp = *(uint_16 *)p;
+                        tmp = MGET_U16_UN( p );
                     } else {
                         tmp = 0xffffffff;
                     }
@@ -291,9 +291,9 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
                 case DW_LNE_WATCOM_set_segment_OLD:
                 case DW_LNE_WATCOM_set_segment:
                     if( op_len == 4 ) {
-                        tmp = *(uint_32 *)p;
+                        tmp = MGET_U32_UN( p );
                     } else if( op_len == 2 ) {
-                        tmp = *(uint_16 *)p;
+                        tmp = MGET_U16_UN( p );
                     } else {
                         tmp = 0xffffffff;
                     }
@@ -348,7 +348,7 @@ static void ConvertLines( const uint_8 *input, uint length, uint limit, state_li
                     state.address += ( ( 255 - opcode_base ) / line_range ) * min_instr;
                     break;
                 case DW_LNS_fixed_advance_pc:
-                    tmp = *(uint_16 *)p;
+                    tmp = MGET_U16_UN( p );
                     p += sizeof( uint_16 );
                     state.address += tmp;
                     break;

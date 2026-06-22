@@ -72,8 +72,9 @@ unsigned_32 GetDOSDefStubSize( void )
 }
 
 unsigned_32 WriteDOSDefStub( unsigned_32 stub_align )
-/***************************************************/
-/* write the default stub to the executable file */
+/****************************************************
+ * write the default stub to the executable file
+ */
 {
     unsigned_32         msgsize;
     unsigned_32         fullsize;

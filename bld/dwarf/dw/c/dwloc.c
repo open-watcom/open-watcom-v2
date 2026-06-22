@@ -455,11 +455,11 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
               || jump_offset > 32767 ) {
                 _Abort( ABORT_LOC_JUMP_OUT_OF_RANGE );
             }
-            BufWriteU16( cli, p, (int_16)jump_offset );
+            MPUT_16_UN( p, (int_16)jump_offset );
             p += sizeof( int_16 );
             break;
         case DW_OP_addr:
-            BufWriteU16( cli, base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
+            MPUT_16_UN( base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
             read_sym_reloc( cur_op->data, &reloc_info );
             if( reloc_info.kind == DW_W_SEGMENT
               || reloc_info.kind == DW_W_LABEL_SEG ) { ///TODO :better linkage
@@ -497,7 +497,7 @@ dw_loc_handle DWENTRY DWLocFini( dw_client cli, dw_loc_id loc )
             break;
         }
     }
-    BufWriteU16( cli, base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
+    MPUT_16_UN( base_of_block, ( p - base_of_block ) - sizeof( uint_16 ) );
 
     DW_CarveFreeChain( cli->debug_loc.label_carver, loc->labels );
     CLIFree( cli, loc );
