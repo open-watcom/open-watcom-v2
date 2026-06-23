@@ -6,6 +6,10 @@
 
 bld = $(bld_os)$(bld_cpu)
 
+!ifndef proj_type
+proj_type = cc
+!endif
+
 # bootstrap overrides
 ######################
 
@@ -180,13 +184,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 bld_cc  = icl -nologo -c
 bld_cxx = icl -nologo -c
 bld_ccl = $(noecho)icl -nologo
-bld_cl_    = $(noecho)icl -nologo
+bld_cl_cc  = $(noecho)icl -nologo
 bld_cl_cxx = $(noecho)icl -nologo
 ! else
 bld_cc  = cl -nologo -c
 bld_cxx = cl -nologo -c
 bld_ccl = $(noecho)cl -nologo
-bld_cl_    = $(noecho)cl -nologo
+bld_cl_cc  = $(noecho)cl -nologo
 bld_cl_cxx = $(noecho)cl -nologo
 ! endif
 bld_cl = $(bld_cl_$(proj_type))
@@ -253,12 +257,12 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
 !  ifdef __INTEL_TOOLS__
 cc  = $(noecho)icl -nologo -c
 cxx = $(noecho)icl -nologo -c
-cl_    = $(noecho)icl -nologo
+cl_cc  = $(noecho)icl -nologo
 cl_cxx = $(noecho)icl -nologo
 !  else
 cc  = $(noecho)cl -nologo -c
 cxx = $(noecho)cl -nologo -c
-cl_    = $(noecho)cl -nologo
+cl_cc  = $(noecho)cl -nologo
 cl_cxx = $(noecho)cl -nologo
 !  endif
 cl = $(cl_$(proj_type))
@@ -555,13 +559,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 ############################
 ! ifdef __CLANG_TOOLS__
 !  ifdef %OWCLANG
-bld_cc  = $(noecho)$(%OWCLANG) -pipe -c
-bld_ccl = $(noecho)$(%OWCLANG) -pipe
-bld_cl_ = $(noecho)$(%OWCLANG) -pipe
+bld_cc    = $(noecho)$(%OWCLANG) -pipe -c
+bld_ccl   = $(noecho)$(%OWCLANG) -pipe
+bld_cl_cc = $(noecho)$(%OWCLANG) -pipe
 !  else
-bld_cc  = $(noecho)clang -pipe -c
-bld_ccl = $(noecho)clang -pipe
-bld_cl_ = $(noecho)clang -pipe
+bld_cc    = $(noecho)clang -pipe -c
+bld_ccl   = $(noecho)clang -pipe
+bld_cl_cc = $(noecho)clang -pipe
 !  endif
 !  ifdef %OWCLANGXX
 bld_cxx = $(noecho)$(%OWCLANGXX) -pipe -c
@@ -572,13 +576,13 @@ bld_cl_cxx = $(noecho)clang++ -pipe
 !  endif
 ! else
 !  ifdef %OWGCC
-bld_cc  = $(noecho)$(%OWGCC) -pipe -c
-bld_ccl = $(noecho)$(%OWGCC) -pipe
-bld_cl_ = $(noecho)$(%OWGCC) -pipe
+bld_cc    = $(noecho)$(%OWGCC) -pipe -c
+bld_ccl   = $(noecho)$(%OWGCC) -pipe
+bld_cl_cc = $(noecho)$(%OWGCC) -pipe
 !  else
-bld_cc  = $(noecho)gcc -pipe -c
-bld_ccl = $(noecho)gcc -pipe
-bld_cl_  = $(noecho)gcc -pipe
+bld_cc    = $(noecho)gcc -pipe -c
+bld_ccl   = $(noecho)gcc -pipe
+bld_cl_cc = $(noecho)gcc -pipe
 !  endif
 !  ifdef %OWGCCXX
 bld_cxx = $(noecho)$(%OWGCCXX) -pipe -c
@@ -650,11 +654,11 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags)
 ############################
 !  ifdef __CLANG_TOOLS__
 !   ifdef %OWCLANG
-cc  = $(noecho)$(%OWCLANG) -pipe -c
-cl_ = $(noecho)$(%OWCLANG) -pipe
+cc    = $(noecho)$(%OWCLANG) -pipe -c
+cl_cc = $(noecho)$(%OWCLANG) -pipe
 !   else
-cc  = $(noecho)clang -pipe -c
-cl_ = $(noecho)clang -pipe
+cc    = $(noecho)clang -pipe -c
+cl_cc = $(noecho)clang -pipe
 !   endif
 !   ifdef %OWCLANGXX
 cxx  = $(noecho)$(%OWCLANGXX) -pipe -c
@@ -666,7 +670,7 @@ cl_cxx = $(noecho)clang++ -pipe
 !  else
 cc  = $(noecho)gcc -pipe -c
 cxx = $(noecho)g++ -pipe -c
-cl_    = $(noecho)gcc -pipe
+cl_cc  = $(noecho)gcc -pipe
 cl_cxx = $(noecho)g++ -pipe
 !  endif
 cl = $(cl_$(proj_type))
