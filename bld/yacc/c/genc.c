@@ -197,7 +197,7 @@ static void reduce( FILE *fp, action_n production, action_n error )
     } else {
         pidx = production - nstate;     // Convert to 0 base
         pro = protab[pidx];
-        for( item = pro->items, plen = 0; item->p.sym != NULL; ++item ) {
+        for( item = pro->items, plen = 0; item->u.sym != NULL; ++item ) {
             ++plen;
         }
         if( plen != 0 ) {

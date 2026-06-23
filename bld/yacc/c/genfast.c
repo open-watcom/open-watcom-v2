@@ -585,7 +585,7 @@ void genobj_fast( FILE *fp )
     putcomment( fp, "index by rule to get length of rule" );
     begtab( fp, "YYPLENTYPE", "yyplentab" );
     for( pidx = 0; pidx < npro; ++pidx ) {
-        for( item = protab[pidx]->items; item->p.sym != NULL; ) {
+        for( item = protab[pidx]->items; item->u.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[pidx]->items ) );

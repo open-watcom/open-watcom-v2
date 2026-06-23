@@ -218,7 +218,7 @@ void genobj( FILE *fp )
     for( pidx = 0; pidx < npro; ++pidx ) {
         pro = protab[pidx];
         if( pro != startpro ) {
-            for( item = pro->items; item->p.sym != NULL; ) {
+            for( item = pro->items; item->u.sym != NULL; ) {
                 ++item;
             }
             emitins( LBL, PROENTRY( pro->pidx ) );

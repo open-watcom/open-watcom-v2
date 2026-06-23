@@ -90,7 +90,7 @@ static void performReduce( traceback **h, a_pro *pro )
 {
     an_item         *p;
 
-    for( p = pro->items; p->p.sym != NULL; ++p ) {
+    for( p = pro->items; p->u.sym != NULL; ++p ) {
         popTrace( h );
     }
     performShift( h, pro->sym );
@@ -104,12 +104,12 @@ static a_sym *terminalInKernel( an_item *p )
     an_item         *q;
     a_pro           *pro;
 
-    for( q = p; q->p.sym != NULL; ) {
+    for( q = p; q->u.sym != NULL; ) {
         ++q;
     }
-    pro = q[1].p.pro;
+    pro = q[1].u.pro;
     sym_after_dot = NULL;
-    for( q = pro->items; (post_sym = q->p.sym) != NULL; ++q ) {
+    for( q = pro->items; (post_sym = q->u.sym) != NULL; ++q ) {
         if( q == p ) {
             if( post_sym->pro == NULL ) {
                 sym_after_dot = post_sym;
@@ -393,20 +393,20 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
 
     /* unused parameters */ (void)sym;
 
-    for( p = pro->items; p->p.sym != NULL; ++p ) {
-        if( p->p.sym == disallow_error ) {
+    for( p = pro->items; p->u.sym != NULL; ++p ) {
+        if( p->u.sym == disallow_error ) {
             /*
              * derivations using the error sym are not desirable
              */
             return( 0 );
         }
-        if( p->p.sym->min == NULL ) {
+        if( p->u.sym->min == NULL ) {
             return( 0 );
         }
     }
     len = 0;
-    for( p = pro->items; p->p.sym != NULL; ++p ) {
-        len += strlen( p->p.sym->min ) + 1;
+    for( p = pro->items; p->u.sym != NULL; ++p ) {
+        len += strlen( p->u.sym->min ) + 1;
     }
     ++len;
     return( len );
@@ -426,9 +426,9 @@ static a_sym *symHasMin( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     min = MemAllocSafe( len );
     min[0] = '\0';
     cat = min;
-    for( p = pro->items; p->p.sym != NULL; ++p ) {
-        if( p->p.sym->min[0] != '\0' ) {
-            cat = my_stpcpy( cat, p->p.sym->min );
+    for( p = pro->items; p->u.sym != NULL; ++p ) {
+        if( p->u.sym->min[0] != '\0' ) {
+            cat = my_stpcpy( cat, p->u.sym->min );
         }
     }
     if( cat != min && cat[-1] != ' ' ) {

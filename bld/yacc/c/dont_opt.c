@@ -67,7 +67,7 @@ static void dontOptimizeUnitGOTOStates( a_state *ambig_state, a_pro *pro )
     a_state         *shift_state;
     a_shift_action  *saction;
 
-    unit_rhs = pro->items[0].p.sym;
+    unit_rhs = pro->items[0].u.sym;
     for( parent = ambig_state->parents; parent != NULL; parent = parent->next ) {
         parent_state = parent->state;
         for( saction = parent_state->trans; saction->sym != NULL; ++saction ) {

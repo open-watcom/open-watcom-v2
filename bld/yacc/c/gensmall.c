@@ -218,7 +218,7 @@ void genobj( FILE *fp )
     end_table( fp );
     begin_table( fp, "YYPLENTYPE", "yyplentab" );
     for( pidx = 0; pidx < npro; ++pidx ) {
-        for( item = protab[pidx]->items; item->p.sym != NULL; ) {
+        for( item = protab[pidx]->items; item->u.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[pidx]->items ) );
@@ -233,7 +233,7 @@ void genobj( FILE *fp )
     rule_base = 0;
     begin_table( fp, "unsigned short", "yyrulebase" );
     for( pidx = 0; pidx < npro; ++pidx ) {
-        for( item = protab[pidx]->items; item->p.sym != NULL; ) {
+        for( item = protab[pidx]->items; item->u.sym != NULL; ) {
             ++item;
         }
         puttab( fp, FITS_A_WORD, rule_base );
@@ -242,8 +242,8 @@ void genobj( FILE *fp )
     end_table( fp );
     begin_table( fp, "YYCHKTYPE", "yyrhstoks" );
     for( pidx = 0; pidx < npro; ++pidx ) {
-        for( item = protab[pidx]->items; item->p.sym != NULL; ++item ) {
-            puttab( fp, FITS_A_BYTE, item->p.sym->token );
+        for( item = protab[pidx]->items; item->u.sym != NULL; ++item ) {
+            puttab( fp, FITS_A_BYTE, item->u.sym->token );
         }
     }
     end_table( fp );

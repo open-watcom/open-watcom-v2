@@ -139,10 +139,10 @@ static bool itemlt( void *_a, void *_b )
     an_item         *a = _a;
     an_item         *b = _b;
 
-    if( a->p.sym != NULL ) {
-        return( b->p.sym != NULL && a[0].p.sym->idx > b[0].p.sym->idx );
+    if( a->u.sym != NULL ) {
+        return( b->u.sym != NULL && a[0].u.sym->idx > b[0].u.sym->idx );
     } else {
-        return( b->p.sym != NULL || a[1].p.pro->pidx > b[1].p.pro->pidx );
+        return( b->u.sym != NULL || a[1].u.pro->pidx > b[1].u.pro->pidx );
     }
 }
 
@@ -161,8 +161,8 @@ static void Complete( a_state *state, an_item **s )
         *q++ = *p;
     }
     for( p = s; p < q; ++p ) {
-        if( (*p)->p.sym != NULL ) {
-            for( pro = (*p)->p.sym->pro; pro != NULL; pro = pro->next ) {
+        if( (*p)->u.sym != NULL ) {
+            for( pro = (*p)->u.sym->pro; pro != NULL; pro = pro->next ) {
                 if( !IsMarked( pro->items ) ) {
                     Mark( pro->items );
                     *q++ = pro->items;
@@ -174,15 +174,15 @@ static void Complete( a_state *state, an_item **s )
         Unmark( *p );
     }
     Sort( (void **)s, (unsigned)( q - s ), itemlt );
-    for( p = s; p < q && (*p)->p.sym == NULL; ) {
+    for( p = s; p < q && (*p)->u.sym == NULL; ) {
         ++p;
     }
     n = (index_n)( p - s );
     nredun += n;
     raction = MemCAllocSafe( n + 1, sizeof( *raction ) );
     state->redun = raction;
-    for( p = s; p < q && (*p)->p.sym == NULL; ++p ) {
-        raction->pro = (*p)[1].p.pro;
+    for( p = s; p < q && (*p)->u.sym == NULL; ++p ) {
+        raction->pro = (*p)[1].u.pro;
         ++raction;
     }
     if( p == q ) {
@@ -191,18 +191,18 @@ static void Complete( a_state *state, an_item **s )
         n = 1;
         s = p;
         while( ++p < q ) {
-            if( p[-1]->p.sym != p[0]->p.sym ) {
+            if( p[-1]->u.sym != p[0]->u.sym ) {
                 ++n;
             }
         }
         saction = MemCAllocSafe( n + 1, sizeof( *saction ) );
         state->trans = saction;
         do {
-            saction->sym = (*s)->p.sym;
+            saction->sym = (*s)->u.sym;
             if( saction->sym->pro != NULL ) {
                 ++nvtrans;
             }
-            for( p = s; p < q && (*p)->p.sym == saction->sym; ++p ) {
+            for( p = s; p < q && (*p)->u.sym == saction->sym; ++p ) {
                 ++*p;
             }
             saction->state = addState( &saction->sym->state, s, p, state );

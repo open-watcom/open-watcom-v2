@@ -81,7 +81,7 @@ void buildpro( void )
             nvble++;
             for( pro = sym->pro; pro != NULL; pro = pro->next ) {
                 ++nitem;
-                for( item = pro->items; item->p.sym != NULL; ++item ) {
+                for( item = pro->items; item->u.sym != NULL; ++item ) {
                     ++nitem;
                 }
             }
@@ -148,10 +148,10 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, unsigned n )
     pro = MemCAllocSafe( 1, amt );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {
-        pro->items[i].p.sym = rhs[i];
+        pro->items[i].u.sym = rhs[i];
     }
-    pro->items[n + 0].p.sym = NULL;
-    pro->items[n + 1].p.pro = pro;
+    pro->items[n + 0].u.sym = NULL;
+    pro->items[n + 1].u.pro = pro;
     pro->sym = sym;
     pro->next = sym->pro;
     pro->SR_conflicts = NULL;
@@ -175,18 +175,18 @@ void showitem( an_item *p, const char *dot )
     an_item         *q;
     a_pro           *pro;
 
-    for( q = p; q->p.sym != NULL; ) {
+    for( q = p; q->u.sym != NULL; ) {
         ++q;
     }
-    pro = q[1].p.pro;
+    pro = q[1].u.pro;
     printf( "%3d (%03x): %s <-", pro->pidx, pro->pidx, pro->sym->name );
     for( q = pro->items; ; ++q ) {
         if( q == p ) {
             printf( "%s", dot );
         }
-        if( q->p.sym == NULL )
+        if( q->u.sym == NULL )
             break;
-        printf( " %s", q->p.sym->name );
+        printf( " %s", q->u.sym->name );
     }
     if( pro->unit ) {
         printf( " (unit production)" );

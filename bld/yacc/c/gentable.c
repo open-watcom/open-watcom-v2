@@ -459,7 +459,7 @@ void genobj( FILE *fp )
         begtab( fp, "YYPRODTYPE", "yyprodtab" );
         for( pidx = 0; pidx < npro; ++pidx ) {
             i = 0;
-            for( item = protab[pidx]->items; item->p.sym != NULL; ++item ) {
+            for( item = protab[pidx]->items; item->u.sym != NULL; ++item ) {
                 ++i;
             }
             puttab( fp, FITS_A_WORD, (i << shift) + protab[pidx]->sym->token );
@@ -483,7 +483,7 @@ void genobj( FILE *fp )
         endtab( fp );
         begtab( fp, "YYPLENTYPE", "yyplentab" );
         for( pidx = 0; pidx < npro; ++pidx ) {
-            for( item = protab[pidx]->items; item->p.sym != NULL; ) {
+            for( item = protab[pidx]->items; item->u.sym != NULL; ) {
                 ++item;
             }
             puttab( fp, FITS_A_BYTE, (unsigned)( item - protab[pidx]->items ) );

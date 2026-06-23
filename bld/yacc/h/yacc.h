@@ -136,7 +136,7 @@ typedef union {
 
 typedef struct a_token {
     a_token_id      id;
-    tok_value       value;
+    tok_value       u;
 } a_token;
 
 typedef struct a_state  a_state;
@@ -155,7 +155,7 @@ typedef struct an_item {
     union {
         a_sym           *sym;
         a_pro           *pro;
-    }                   p;
+    }                   u;
     flags               flag;
 } an_item;
 

@@ -200,7 +200,7 @@ static void xlat_token( a_token *tok )
         special = xlat_char( special, ch );
     }
     addbuf( '\0' );
-    tok->value.id = 0;
+    tok->u.id = 0;
     tok->id = T_IDENTIFIER;
 }
 
@@ -379,14 +379,14 @@ static a_token_id scan( unsigned used, a_token *tok )
         } else {
             tok->id = T_IDENTIFIER;
         }
-        tok->value.id = 0;
+        tok->u.id = 0;
     } else if( isdigit( ch ) || ch == '-' ) {
         do {
             addbuf( ch );
         } while( isdigit( nextc() ) );
         addbuf( '\0' );
         tok->id = T_NUMBER;
-        tok->value.number = atoi( buf );
+        tok->u.number = atoi( buf );
     } else {
         switch( ch ) {
         case '\'':
@@ -412,7 +412,7 @@ static a_token_id scan( unsigned used, a_token *tok )
                     }
                 }
                 addbuf( '\'' );
-                tok->value.id = (unsigned char)ch;
+                tok->u.id = (unsigned char)ch;
                 tok->id = T_IDENTIFIER;
                 need( "'" );
             } else {
@@ -451,12 +451,12 @@ static a_token_id scan( unsigned used, a_token *tok )
             case 'l':
                 need( "eft" );
                 tok->id = T_LEFT;
-                tok->value.assoc = L_ASSOC;
+                tok->u.assoc = L_ASSOC;
                 break;
             case 'n':
                 need( "onassoc" );
                 tok->id = T_NONASSOC;
-                tok->value.assoc = NON_ASSOC;
+                tok->u.assoc = NON_ASSOC;
                 break;
             case 'p':
                 need( "rec" );
@@ -465,7 +465,7 @@ static a_token_id scan( unsigned used, a_token *tok )
             case 'r':
                 need( "ight" );
                 tok->id = T_RIGHT;
-                tok->value.assoc = R_ASSOC;
+                tok->u.assoc = R_ASSOC;
                 break;
             case 's':
                 need( "tart" );
@@ -514,7 +514,7 @@ static a_token_id scan_typename( unsigned used, a_token *tok )
         tok->id = T_TYPENAME;
     }
     addbuf( '\0' );
-    tok->value.id = 0;
+    tok->u.id = 0;
     return( tok->id );
 }
 
@@ -626,11 +626,11 @@ static bool scanambig( unsigned used, a_SR_conflict_list **list, a_token *tok )
          * syntax is "%ambig <number> <token>"
          * token has already been scanned by scanprec()
          */
-        if( scan( used, tok ) != T_NUMBER || tok->value.number < 0 ) {
+        if( scan( used, tok ) != T_NUMBER || tok->u.number < 0 ) {
             srcinfo_msg( "Expecting a non-negative number after %ambig.\n" );
             /* never return */
         }
-        id = tok->value.number;
+        id = tok->u.number;
         if( scan( used, tok ) != T_IDENTIFIER ) {
             srcinfo_msg( "Expecting a token name after %ambig <number>.\n" );
             /* never return */
@@ -783,8 +783,8 @@ static void copyUniqueActions( FILE *fp )
             fprintf( fp, "case %d:\n", r->pidx );
             pro = findPro( r->lhs, r->pidx );
             fprintf( fp, "/* %s <-", pro->sym->name );
-            for( item = pro->items; item->p.sym != NULL; ++item ) {
-                fprintf( fp, " %s", item->p.sym->name );
+            for( item = pro->items; item->u.sym != NULL; ++item ) {
+                fprintf( fp, " %s", item->u.sym->name );
             }
             fprintf( fp, " */\n" );
             MemFree( r );
@@ -1076,7 +1076,7 @@ void defs( FILE *fp, a_token *tok )
                     srcinfo_msg( "Token must be assigned number before %keyword_id\n" );
                     /* never return */
                 }
-                tok->value.id = sym->token;
+                tok->u.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
@@ -1084,7 +1084,7 @@ void defs( FILE *fp, a_token *tok )
                 srcinfo_msg( "Expecting identifier or number.\n" );
                 /* never return */
             }
-            keyword_id_low = tok->value.id;
+            keyword_id_low = tok->u.id;
             switch( scan( 0, tok ) ) {
             case T_IDENTIFIER:
                 sym = addsym( buf );
@@ -1092,7 +1092,7 @@ void defs( FILE *fp, a_token *tok )
                     srcinfo_msg( "Token must be assigned number before %keyword_id\n" );
                     /* never return */
                 }
-                tok->value.id = sym->token;
+                tok->u.id = sym->token;
                 break;
             case T_NUMBER:
                 break;
@@ -1100,14 +1100,14 @@ void defs( FILE *fp, a_token *tok )
                 srcinfo_msg( "Expecting identifier or number.\n" );
                 /* never return */
             }
-            keyword_id_high = tok->value.id;
+            keyword_id_high = tok->u.id;
             scan( 0, tok );
             break;
         case T_LEFT:
         case T_RIGHT:
         case T_NONASSOC:
             ++prec.prec;
-            prec.assoc = tok->value.assoc;
+            prec.assoc = tok->u.assoc;
             /* fall through */
         case T_TOKEN:
         case T_TYPE:
@@ -1146,7 +1146,7 @@ void defs( FILE *fp, a_token *tok )
                     scan( 0, tok );
                 } else {
                     if( sym->token == 0 ) {
-                        sym->token = tok->value.id;
+                        sym->token = tok->u.id;
                     }
                     if( ctype != T_TOKEN ) {
                         sym->prec = prec;
@@ -1157,7 +1157,7 @@ void defs( FILE *fp, a_token *tok )
                                 tlist_remove( sym->name );
                             }
                         }
-                        sym->token = (token_n)tok->value.number;
+                        sym->token = (token_n)tok->u.number;
                         scan( 0, tok );
                     }
                     if( sym->token == 0 ) {
@@ -1238,8 +1238,8 @@ void rules( FILE *fp, a_token *tok )
                     memcpy( buf, &buf[i], bufused );
                 } else {
                     sym = addsym( buf );
-                    if( tok->value.id != 0 ) {
-                        sym->token = tok->value.id;
+                    if( tok->u.id != 0 ) {
+                        sym->token = tok->u.id;
                     }
                     if( sym->token != 0 )
                         precsym = sym;

@@ -113,12 +113,12 @@ static void Nullable( void )
         for( sym = symlist; sym != NULL; sym = sym->next ) {
             if( !sym->nullable ) {
                 for( pro = sym->pro; pro != NULL; pro = pro->next ) {
-                    for( p = pro->items; p->p.sym != NULL; ++p ) {
-                        if( !p->p.sym->nullable ) {
+                    for( p = pro->items; p->u.sym != NULL; ++p ) {
+                        if( !p->u.sym->nullable ) {
                             break;
                         }
                     }
-                    if( p->p.sym == NULL ) {
+                    if( p->u.sym == NULL ) {
                         /*
                          * all of the RHS symbols are nullable
                          * (the vacuous case means the LHS is nullable)
@@ -178,13 +178,13 @@ static void CalcIncludes( void )
             p->depth = 0;
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
                 nullable = pro->items;
-                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
+                for( item = pro->items; (sym = item->u.sym) != NULL; ++item ) {
                     if( !sym->nullable ) {
                         nullable = item;
                     }
                 }
                 state1 = state;
-                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
+                for( item = pro->items; (sym = item->u.sym) != NULL; ++item ) {
                     if( sym->pro == NULL ) {
                         for( saction = state1->trans; saction->sym != NULL; ++saction ) {
                             if( saction->sym == sym ) {
@@ -246,7 +246,7 @@ static void Lookback( void )
         for( p = state->look; p->trans != NULL; ++p ) {
             for( pro = p->trans->sym->pro; pro != NULL; pro = pro->next ) {
                 state1 = state;
-                for( item = pro->items; (sym = item->p.sym) != NULL; ++item ) {
+                for( item = pro->items; (sym = item->u.sym) != NULL; ++item ) {
                     for( saction = state1->trans; saction->sym != NULL; ++saction ) {
                         if( saction->sym == sym ) {
                             break;
@@ -269,10 +269,10 @@ static a_pro *extract_pro( an_item *p )
 {
     an_item     *q;
 
-    for( q = p; q->p.sym != NULL; ) {
+    for( q = p; q->u.sym != NULL; ) {
         ++q;
     }
-    return( q[1].p.pro );
+    return( q[1].u.pro );
 }
 
 static void check_for_user_hooks( a_state *state, a_shift_action *saction, index_n rule )
