@@ -238,7 +238,7 @@ bld_ldflags  =  $(bld_cl_extra_libs_gen) -link -nologo -debug -MAPINFO:EXPORTS &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib &
     -DEFAULTLIB:advapi32.lib -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib &
-    $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
+    $(bld_extra_ldflags)
 
 !endif
 
@@ -288,9 +288,9 @@ ldflags_gen_all  = -link -nologo -debug -MAPINFO:EXPORTS &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib &
     -NODEFAULTLIB:libucrt.lib -DEFAULTLIB:ucrt.lib
 
-ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ldflags_$(proj_type))
-ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
-ldflags_wind = $(cl_extra_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags)
+ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll)
+ldflags_wind = $(cl_extra_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags)
 
 !  ifdef sys_dll
 ldflags = $(ldflags_dll)
@@ -636,7 +636,7 @@ bld_clflags  = $(bld_cl_sys) -o $@ $(bld_ldflags1)
 bld_cclflags = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
+bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags)
 
 !endif
 
@@ -700,8 +700,8 @@ ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 !  endif
 
-ldflags_gen  = $(cl_extra_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
-ldflags_dll  = $(cl_extra_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
+ldflags_gen  = $(cl_extra_libs_gen) $(extra_ldflags)
+ldflags_dll  = $(cl_extra_libs_dll) $(extra_ldflags_dll)
 ldflags_wind = $(ldflags_gen)
 
 !  ifdef sys_dll
@@ -816,7 +816,7 @@ bld_clflags     = $(bld_cl_sys) -fe=$@
 bld_cclflags    = $(bld_cflags) $(bld_clflags)
 
 # options for linking
-bld_ldflags     =
+bld_ldflags     = $(bld_extra_ldflags)
 
 #
 # target definition for WATCOM toolchain is in cproj.mif

@@ -13,9 +13,7 @@ srv = tcp
 which = TRAP
 remote_link = 1
 
-bld_ldflags_ = -SUBSYSTEM:CONSOLE -DEFAULTLIB:wsock32.lib
-bld_ldflags_ += -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
-bld_ldflags_dll_ = -SUBSYSTEM:CONSOLE -DEFAULTLIB:wsock32.lib
-bld_ldflags_dll_ += -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
+extra_ldflags = -SUBSYSTEM:CONSOLE -DEFAULTLIB:wsock32.lib -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
+extra_ldflags_dll = -SUBSYSTEM:CONSOLE -DEFAULTLIB:wsock32.lib -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
 
 !include $(trap_dir)/master.mif

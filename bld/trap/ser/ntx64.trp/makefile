@@ -15,9 +15,7 @@ remote_link = 1
 
 extra_objs = sernt.obj busywait.obj
 
-bld_ldflags_ = -SUBSYSTEM:CONSOLE
-bld_ldflags_ += -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
-bld_ldflags_dll_ = -SUBSYSTEM:CONSOLE
-bld_ldflags_dll_ += -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
+extra_ldflags = -SUBSYSTEM:CONSOLE -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
+extra_ldflags_dll = -SUBSYSTEM:CONSOLE -EXPORT:TrapInit,@1 -EXPORT:TrapFini,@2 -EXPORT:TrapRequest,@3
 
 !include $(trap_dir)/master.mif
