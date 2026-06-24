@@ -105,4 +105,4 @@ const TokenStruct xtokens[] = {
     { "class",  T_Class },
 };
 
-const int   xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );
+const idx_type xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );

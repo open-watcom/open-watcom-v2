@@ -51,8 +51,8 @@ static void my_clear( std::vector<char*> *vec )
     vec->clear();
 }
 
-Scanner::Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, int tokcnt )
-//-----------------------------------------------------------------------------------------------------------------------------
+Scanner::Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, idx_type tokcnt )
+//----------------------------------------------------------------------------------------------------------------------------------
 {
     _file = new CheckedBufferedFile( fileName );
     _strings = new std::vector<char *>;
@@ -78,14 +78,14 @@ Scanner::~Scanner()
     delete _file;
 }
 
-const char * Scanner::getString( int idx )
-//----------------------------------------
+const char * Scanner::getString( idx_type idx )
+//---------------------------------------------
 {
     return (*_strings)[idx];
 }
 
-const char * Scanner::getIdent( int idx )
-//---------------------------------------
+const char * Scanner::getIdent( idx_type idx )
+//--------------------------------------------
 {
     return (*_identifiers)[idx];
 }

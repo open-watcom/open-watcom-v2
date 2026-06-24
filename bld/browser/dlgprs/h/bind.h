@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,8 +65,8 @@ public:
                                         Binding( const char * name );
                                         ~Binding();
 
-            size_t                      addAbsRelRect( const Rect & r );
-            void                        addControl( const char * text, const char * id, int absrelrect );
+            idx_type                    addAbsRelRect( const Rect & r );
+            void                        addControl( const char * text, const char * id, idx_type idx_rect );
 
             void                        bind( Dialog * dlg, const char * header, const char * cpp );
             void                        writeTimeStamp( CheckedBufferedFile & );

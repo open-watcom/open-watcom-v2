@@ -26,7 +26,7 @@
 #define YYERROR         goto yyerrlab
 
 extern const TokenStruct  xtokens[];
-extern const int          xtokcnt;
+extern const idx_type     xtokcnt;
 
 YYPARSER::YYPARSER( const char * fileName )
 //-----------------------------------------

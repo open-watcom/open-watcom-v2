@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,17 +59,17 @@ Binding::~Binding()
     delete _controls;
 }
 
-size_t Binding::addAbsRelRect( const Rect & r )
-//---------------------------------------------
+idx_type Binding::addAbsRelRect( const Rect & r )
+//-----------------------------------------------
 {
     _rectangles->push_back( r );
     return( _rectangles->size() - 1 );
 }
 
-void Binding::addControl( const char * text, const char * id, int absrelrect )
+void Binding::addControl( const char * text, const char * id, idx_type idx_rect )
 //----------------------------------------------------------------------------
 {
-    _controls->push_back( Control( text, id, (*_rectangles)[ absrelrect ] ) );
+    _controls->push_back( Control( text, id, (*_rectangles)[idx_rect] ) );
 }
 
 static int cprintf( CheckedBufferedFile & file, const char * fmt, ... )

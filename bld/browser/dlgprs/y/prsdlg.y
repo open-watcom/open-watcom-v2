@@ -253,4 +253,4 @@ const TokenStruct xtokens[] = {
     { "STYLE",          T_Style },
 };
 
-const int   xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );
+const idx_type xtokcnt = sizeof( xtokens ) / sizeof( xtokens[0] );

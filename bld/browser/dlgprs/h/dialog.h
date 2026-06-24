@@ -59,11 +59,11 @@ public:
                                         Dialog( const char *name, Rect rect );
                                         ~Dialog();
 
-            size_t                      addRect( const Rect & r );
+            idx_type                    addRect( const Rect & r );
             void                        setCaption( const char *text );
             void                        setFont( int ptsize, const char *text );
             void                        setStyle( unsigned long style );
-            void                        addControl( const char *text, const char *id, const char *cls, unsigned long style, int rect );
+            void                        addControl( const char *text, const char *id, const char *cls, unsigned long style, idx_type idx_rect );
             Control *                   findControl( Control & ctrl );
             Rect &                      getRect() { return( _rect ); };
             const char *                getCaption() { return( _caption ); };

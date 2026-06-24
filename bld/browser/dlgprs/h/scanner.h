@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,16 +47,16 @@ class CheckedBufferedFile;
 
 class Scanner {
 public:
-                                        Scanner( const char * fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, int tokcnt );
+                                        Scanner( const char *fileName, short t_string, short t_number, short t_ident, const TokenStruct *tokens, idx_type tokcnt );
                                         ~Scanner();
 
-            bool                        error( char const * errStr );
+            bool                        error( char const *errStr );
             short                       getToken( YYSTYPE & lval );
 
             short                       tokenValue( const char *, YYSTYPE & lval );
 
-            const char *                getString( int idx );
-            const char *                getIdent( int idx );
+            const char *                getString( idx_type idx );
+            const char *                getIdent( idx_type idx );
 
 private:
             int                         get();
@@ -81,7 +81,7 @@ private:
 
             int                         _current;       // this character
             const TokenStruct           *_tokens;
-            int                         _tokcnt;
+            idx_type                    _tokcnt;
             short                       _T_String;
             short                       _T_Number;
             short                       _T_Ident;
