@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 
 
 #ifndef __RECT_H__
+#define __RECT_H__
 
 class Rect {
 public:
@@ -95,5 +97,4 @@ inline Rect & Rect::operator = ( const Rect & o )
 }
 
 
-#define __RECT_H__
 #endif

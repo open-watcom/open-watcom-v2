@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdio.h>  // error reporting via printf
-#include <stdlib.h>
+#include <cassert>
+#include <cstring>
+#include <cctype>
+#include <cstdio>  // error reporting via printf
+#include <cstdlib>
 
 #include "chbffile.h"
 #include "scanner.h"

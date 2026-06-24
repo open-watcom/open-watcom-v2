@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,7 @@
 
 
 #ifndef __CHBFFILE_H__
+#define __CHBFFILE_H__
 
 #ifdef __WATCOMC__
 // disable "integral value may be truncated" warning
@@ -71,5 +72,4 @@ protected:
     static  MemoryPool  _bufferPool;
 };
 
-#define __CHBFFILE_H__
 #endif

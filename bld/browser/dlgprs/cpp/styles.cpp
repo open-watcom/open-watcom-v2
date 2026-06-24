@@ -31,9 +31,9 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstring>
+#include <cstdlib>
 
 #if defined( __WINDOWS__ ) || defined( __NT__ )
 #include <windows.h>

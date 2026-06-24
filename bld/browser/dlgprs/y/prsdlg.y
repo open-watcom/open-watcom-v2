@@ -1,6 +1,6 @@
 %{  /* include files */
-    #include <stdio.h>  // printf debugging
-    #include <assert.h>
+    #include <cstdio>  // printf debugging
+    #include <cassert>
 
     #include "dialog.h"
     #include "styles.h"

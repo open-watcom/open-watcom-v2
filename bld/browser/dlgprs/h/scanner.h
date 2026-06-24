@@ -39,8 +39,8 @@
 #include "scancm.h"
 
 typedef struct TokenStruct {
-    const char * name;
-    short        token; // token value associated with this
+    const char  *name;
+    short       token; // token value associated with this
 } TokenStruct;
 
 class CheckedBufferedFile;

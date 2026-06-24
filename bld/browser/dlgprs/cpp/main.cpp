@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "chfile.h"
 #include "dialog.h"

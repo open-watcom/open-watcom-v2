@@ -32,6 +32,7 @@
 
 
 #ifndef __BIND_H__
+#define __BIND_H__
 
 #ifdef __WATCOMC__
 // ignore "temporary object used to initialize non-constant reference" warning
@@ -79,6 +80,5 @@ private:
             std::vector<Control>        *_controls;
 };
 
-#define __BIND_H__
 #endif
 

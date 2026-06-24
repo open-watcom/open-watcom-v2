@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>      // printf debugging
+#include <cstdio>      // printf debugging
 #include <algorithm>
 
 #include "dialog.h"

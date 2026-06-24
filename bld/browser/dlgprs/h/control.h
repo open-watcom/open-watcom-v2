@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +32,9 @@
 
 
 #ifndef __CONTROL_H__
+#define __CONTROL_H__
 
-#include <string.h>
+#include <cstring>
 
 class Control {
 public:
@@ -74,6 +76,5 @@ private:
     Rect                        _rect;
 };
 
-#define __CONTROL_H__
 #endif
 

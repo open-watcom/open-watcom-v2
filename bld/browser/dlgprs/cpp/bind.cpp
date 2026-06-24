@@ -31,10 +31,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>      // printf debugging
-#include <stdlib.h>
-#include <stdarg.h>
-#include <time.h>
+#include <cstdio>      // printf debugging
+#include <cstdlib>
+#include <cstdarg>
+#include <ctime>
 #include <algorithm>
 
 #include "chbffile.h"
