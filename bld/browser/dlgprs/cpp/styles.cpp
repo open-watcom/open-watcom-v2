@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@
 #include "styles.h"
 
 struct WinStyleStruct {
-    const char *    name;
-    uint_32         flag;
+    const char      *name;
+    unsigned long   flag;
 } WindowsStyles [] = {
     { "BS_3STATE",              BS_3STATE },
     { "BS_AUTO3STATE",          BS_AUTO3STATE },
@@ -162,15 +163,15 @@ struct WinStyleStruct {
 static int CompareWinStyles( const void * lhs, const void * rhs )
 //------------------------------------------------------------
 {
-    return strcmp( (const char *) lhs, ((const WinStyleStruct *)rhs)->name );
+    return strcmp( (const char *)lhs, ((const WinStyleStruct *)rhs)->name );
 }
 
-extern uint_32 getWindowsStyle( const char * stl )
-//------------------------------------------------
+extern unsigned long getWindowsStyle( const char * stl )
+//------------------------------------------------------
 {
     WinStyleStruct * res;
 
-    res = (WinStyleStruct *) bsearch( stl, WindowsStyles, sizeof( WindowsStyles ) / sizeof( WinStyleStruct ),
+    res = (WinStyleStruct *)bsearch( stl, WindowsStyles, sizeof( WindowsStyles ) / sizeof( WinStyleStruct ),
                                         sizeof( WinStyleStruct ), &CompareWinStyles );
 
     assert( res != NULL );

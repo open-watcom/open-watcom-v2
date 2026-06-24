@@ -56,14 +56,14 @@
 class Dialog {
 
 public:
-                                        Dialog( const char * name, Rect rect );
+                                        Dialog( const char *name, Rect rect );
                                         ~Dialog();
 
             size_t                      addRect( const Rect & r );
-            void                        setCaption( const char * text );
-            void                        setFont( int ptsize, const char * text );
-            void                        setStyle( long style );
-            void                        addControl( const char * text, const char * id, const char * cls, long style, int rect );
+            void                        setCaption( const char *text );
+            void                        setFont( int ptsize, const char *text );
+            void                        setStyle( unsigned long style );
+            void                        addControl( const char *text, const char *id, const char *cls, unsigned long style, int rect );
             Control *                   findControl( Control & ctrl );
             Rect &                      getRect() { return( _rect ); };
             const char *                getCaption() { return( _caption ); };
@@ -76,7 +76,7 @@ private:
             int                         _fontSize;
             const char *                _fontName;
 
-            uint_32                     _style;
+            unsigned long               _style;
 
             std::vector<Rect>           *_rectangles;
             std::vector<Control>        *_controls;

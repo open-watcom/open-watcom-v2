@@ -58,6 +58,15 @@
 %token '}'
 %token '|'
 
+%type <idx>   T_Ident
+%type <idx>   T_String
+%type <coord> T_Number
+
+%type <flags> style
+%type <flags> style_list
+%type <idx>   rectangle
+%type <idx>   string_list
+
 %%
 
 goal
@@ -155,7 +164,7 @@ style
         : T_Ident
           { $$ = getWindowsStyle( _scanner->getIdent( $1 ) ); } 
         | T_Number
-          { $$ = $1; }
+          { $$ = $<flags>1; }
         ;
 
 caption_line
@@ -208,7 +217,7 @@ block_end
 rectangle
         : T_Number ',' T_Number ',' T_Number ',' T_Number
           { 
-            $$ = (YYSTYPE)CurrDialog->addRect( Rect( $1, $3, $5, $7 ) );
+            $$ = CurrDialog->addRect( Rect( $1, $3, $5, $7 ) );
           }
         ;
 

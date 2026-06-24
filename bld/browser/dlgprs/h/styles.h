@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +36,6 @@
 
 #include "watcom.h"
 
-extern uint_32 getWindowsStyle( const char * stl );
+extern unsigned long getWindowsStyle( const char *stl );
 
 #endif

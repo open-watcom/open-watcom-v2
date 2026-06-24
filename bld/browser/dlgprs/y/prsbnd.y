@@ -31,6 +31,13 @@
 %token ')'
 %token '@'
 
+%type <idx>   T_Ident
+%type <idx>   T_String
+%type <coord> T_Number
+
+%type <coord> absrel
+%type <idx>   absrel_rect
+
 %%
 
 goal
@@ -81,7 +88,7 @@ binding
 absrel_rect
         : '(' absrel ',' absrel ',' absrel ',' absrel ')'
           {
-            $$ = (YYSTYPE)CurrBinding->addAbsRelRect( Rect( $2, $4, $6, $8 ) );
+            $$ = CurrBinding->addAbsRelRect( Rect( $2, $4, $6, $8 ) );
           }
         ;
 

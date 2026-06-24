@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,14 +77,14 @@ void Dialog::setFont( int ptsize, const char * text )
     _fontName = text;
 }
 
-void Dialog::setStyle( long style )
-//---------------------------------
+void Dialog::setStyle( unsigned long style )
+//------------------------------------------
 {
     _style = style;
 }
 
-void Dialog::addControl( const char * text, const char * id, const char *cls, long style, int rect )
-//--------------------------------------------------------------------------------------------------
+void Dialog::addControl( const char *text, const char *id, const char *cls, unsigned long style, int rect )
+//---------------------------------------------------------------------------------------------------------
 {
     Rect &       r( (*_rectangles)[ rect ] );
 

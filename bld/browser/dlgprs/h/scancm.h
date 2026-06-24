@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +33,17 @@
 
 
 #ifndef __SCANCM_H__
-
-#define YYSTYPE         int_32
-#define YYFAR
-
 #define __SCANCM_H__
+
+#define YYFAR
+#define YYSTYPE __yystype
+
+typedef unsigned    idx_type;
+
+typedef union __yystype {
+    unsigned long   flags;
+    idx_type        idx;
+    int             coord;     
+} __yystype;
+
 #endif

@@ -186,7 +186,7 @@ void Scanner::readDecimal( YYSTYPE & lval )
     assert( bufPos < MaxBufLen );
 
     buffer[bufPos] = '\0';
-    lval = (YYSTYPE) atoi( buffer );
+    lval.flags = strtol( buffer, NULL, 10 );
 }
 
 void Scanner::readHex( YYSTYPE & lval )
@@ -207,7 +207,7 @@ void Scanner::readHex( YYSTYPE & lval )
     assert( bufPos < MaxBufLen );
 
     buffer[bufPos] = '\0';
-    lval = (YYSTYPE) strtol( buffer, NULL, 16 );
+    lval.flags = strtol( buffer, NULL, 16 );
 }
 
 void Scanner::readQuotedString( YYSTYPE & lval )
@@ -237,7 +237,7 @@ void Scanner::readQuotedString( YYSTYPE & lval )
     dupStr = new char[strlen( buffer ) + 1];
     strcpy( dupStr, buffer );
 
-    lval = (YYSTYPE)_strings->size();
+    lval.idx = _strings->size();
     _strings->push_back( dupStr );
 }
 
@@ -259,7 +259,7 @@ short Scanner::getToken( YYSTYPE & lval )
     }
 
     if( isSpecial() ) {
-        special = (char) _current;
+        special = (char)_current;
         get();                      // set up for next call
         return special;   // <-------- early return
     }
@@ -277,7 +277,7 @@ short Scanner::getToken( YYSTYPE & lval )
             if( isDigit() ) {
                 readDecimal( lval );
             } else {
-                lval = 0;
+                lval.flags = 0;
             }
         }
         return _T_Number;   // <-------- early return
@@ -324,7 +324,7 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
         dupStr = new char[strlen( tok ) + 1];
         strcpy( dupStr, tok );
 
-        lval = (YYSTYPE)_identifiers->size();
+        lval.idx = _identifiers->size();
         _identifiers->push_back( dupStr );
 
         return _T_Ident;
