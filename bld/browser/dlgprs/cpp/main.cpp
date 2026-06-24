@@ -45,7 +45,7 @@ int main( int argc, char * argv[] )
     try {
 
         if( argc != 5 ) {
-            printf( "Usage: prsdlg <dlg file> <bnd file> <output header> <output source>\n" );
+            std::printf( "Usage: prsdlg <dlg file> <bnd file> <output header> <output source>\n" );
             return 0;
         }
 
@@ -59,11 +59,11 @@ int main( int argc, char * argv[] )
                 CurrBinding->bind( CurrDialog, argv[3], argv[4] );
             }
         }
-    
+
     } catch( FileExcept oops ) {
         static const char * act[] = { "open", "close", "read", "write", "seek", "tell", "stat" };
 
-        printf( "Error %sing %s: %d -- %s\n", act[ oops._action ], oops._fileName, oops._error, oops._message );
+        std::printf( "Error %sing %s: %d -- %s\n", act[ oops._action ], oops._fileName, oops._error, oops._message );
     }
     return 0;
 }

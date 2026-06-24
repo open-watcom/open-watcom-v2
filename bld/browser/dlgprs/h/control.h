@@ -53,10 +53,10 @@ public:
                                 ~Control(){}
 
     bool                        operator <( const Control & o ) const {
-                                    return( strcmp( _id, o._id ) < 0 );
+                                    return( std::strcmp( _id, o._id ) < 0 );
                                 }
     bool                        operator ==( const Control & o ) const {
-                                    return( strcmp( _id, o._id ) == 0 );
+                                    return( std::strcmp( _id, o._id ) == 0 );
                                 }
 
     Control &                   operator =( const Control & o ) {

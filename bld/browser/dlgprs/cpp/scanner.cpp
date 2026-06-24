@@ -101,8 +101,8 @@ bool Scanner::error( char const * errStr )
 
     buffer[nRead - 1] = '\0';
 
-    fprintf( stderr, "%s: %s\n", _file->getFileName(), errStr );
-    fprintf( stderr, "near <%s>\n", buffer );
+    std::fprintf( stderr, "%s: %s\n", _file->getFileName(), errStr );
+    std::fprintf( stderr, "near <%s>\n", buffer );
 
     return false;       // don't continue
 }
@@ -129,7 +129,7 @@ void Scanner::gobble()
 // eat whitespaces. When done,
 // _current contains a non-white space
 {
-    while( isspace( _current ) ) {
+    while( std::isspace( _current ) ) {
         get();
     }
 }
@@ -137,13 +137,13 @@ void Scanner::gobble()
 bool Scanner::isSpecial()
 //-----------------------
 {
-    return( strchr( _SpecialCharacters, _current ) != NULL );
+    return( std::strchr( _SpecialCharacters, _current ) != NULL );
 }
 
 bool Scanner::isSpace()
 //---------------------
 {
-    return( isspace( _current ) != 0 );
+    return( std::isspace( _current ) != 0 );
 }
 
 bool Scanner::isQuote()
@@ -161,13 +161,13 @@ bool Scanner::isEOF()
 bool Scanner::isDigit()
 //---------------------
 {
-    return( isdigit( _current ) != 0 );
+    return( std::isdigit( _current ) != 0 );
 }
 
 bool Scanner::isHexDigit()
 //------------------------
 {
-    return( isxdigit( _current ) != 0 );
+    return( std::isxdigit( _current ) != 0 );
 }
 
 void Scanner::readDecimal( YYSTYPE & lval )
@@ -186,7 +186,7 @@ void Scanner::readDecimal( YYSTYPE & lval )
     assert( bufPos < MaxBufLen );
 
     buffer[bufPos] = '\0';
-    lval.flags = strtol( buffer, NULL, 10 );
+    lval.flags = std::strtol( buffer, NULL, 10 );
 }
 
 void Scanner::readHex( YYSTYPE & lval )
@@ -207,7 +207,7 @@ void Scanner::readHex( YYSTYPE & lval )
     assert( bufPos < MaxBufLen );
 
     buffer[bufPos] = '\0';
-    lval.flags = strtol( buffer, NULL, 16 );
+    lval.flags = std::strtol( buffer, NULL, 16 );
 }
 
 void Scanner::readQuotedString( YYSTYPE & lval )
@@ -234,8 +234,8 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 
     buffer[bufPos] = '\0';
 
-    dupStr = new char[strlen( buffer ) + 1];
-    strcpy( dupStr, buffer );
+    dupStr = new char[std::strlen( buffer ) + 1];
+    std::strcpy( dupStr, buffer );
 
     lval.idx = _strings->size();
     _strings->push_back( dupStr );
@@ -271,7 +271,7 @@ short Scanner::getToken( YYSTYPE & lval )
 
     if( _current == '0' ) {
         get();
-        if( toupper( _current ) == 'X' ) {
+        if( std::toupper( _current ) == 'X' ) {
             readHex( lval );
         } else {
             if( isDigit() ) {
@@ -307,7 +307,7 @@ short Scanner::getToken( YYSTYPE & lval )
 static int CompareTokens( const void * lhs, const void * rhs )
 //------------------------------------------------------------
 {
-    return strcmp( (const char *) lhs, ((const TokenStruct *)rhs)->name );
+    return std::strcmp( (const char *) lhs, ((const TokenStruct *)rhs)->name );
 }
 
 short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
@@ -316,13 +316,13 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
     TokenStruct * res;
     char *  dupStr;
 
-    res = (TokenStruct *)bsearch( tok, _tokens, _tokcnt, sizeof( TokenStruct ), &CompareTokens );
+    res = (TokenStruct *)std::bsearch( tok, _tokens, _tokcnt, sizeof( TokenStruct ), &CompareTokens );
 
     if( res ) {
         return res->token;
     } else {
-        dupStr = new char[strlen( tok ) + 1];
-        strcpy( dupStr, tok );
+        dupStr = new char[std::strlen( tok ) + 1];
+        std::strcpy( dupStr, tok );
 
         lval.idx = _identifiers->size();
         _identifiers->push_back( dupStr );

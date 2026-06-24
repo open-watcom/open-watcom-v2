@@ -163,7 +163,7 @@ struct WinStyleStruct {
 static int CompareWinStyles( const void * lhs, const void * rhs )
 //------------------------------------------------------------
 {
-    return strcmp( (const char *)lhs, ((const WinStyleStruct *)rhs)->name );
+    return std::strcmp( (const char *)lhs, ((const WinStyleStruct *)rhs)->name );
 }
 
 extern unsigned long getWindowsStyle( const char * stl )
@@ -171,7 +171,7 @@ extern unsigned long getWindowsStyle( const char * stl )
 {
     WinStyleStruct * res;
 
-    res = (WinStyleStruct *)bsearch( stl, WindowsStyles, sizeof( WindowsStyles ) / sizeof( WinStyleStruct ),
+    res = (WinStyleStruct *)std::bsearch( stl, WindowsStyles, sizeof( WindowsStyles ) / sizeof( WinStyleStruct ),
                                         sizeof( WinStyleStruct ), &CompareWinStyles );
 
     assert( res != NULL );

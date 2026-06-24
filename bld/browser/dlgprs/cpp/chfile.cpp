@@ -52,15 +52,15 @@ FileExcept::FileExcept( Action act, int error, const char * fn,
 // during stack unwinding
 {
     size_t len;
-    const char * storeMsg = (msg) ? msg : strerror( error );
+    const char * storeMsg = (msg) ? msg : std::strerror( error );
 
-    len = strlen( fn );
+    len = std::strlen( fn );
     _fileName = new char [len + 1];
-    memcpy( _fileName, fn, len + 1 );
+    std::memcpy( _fileName, fn, len + 1 );
 
-    len = strlen( storeMsg );
+    len = std::strlen( storeMsg );
     _message = new char [len + 1];
-    memcpy( _message, storeMsg, len + 1 );
+    std::memcpy( _message, storeMsg, len + 1 );
 }
 
 FileExcept::~FileExcept()
@@ -89,10 +89,10 @@ CheckedFile::CheckedFile( const char * fileName )
 {
     size_t len;
 
-    len = strlen( fileName ) + 1;
+    len = std::strlen( fileName ) + 1;
     _fileName = new char [len];
 
-    memcpy( _fileName, fileName, len );
+    std::memcpy( _fileName, fileName, len );
 }
 
 
@@ -115,10 +115,10 @@ void CheckedFile::setFileName( const char * fileName )
 
     delete[] _fileName;
 
-    len = strlen( fileName ) + 1;
+    len = std::strlen( fileName ) + 1;
     _fileName = new char [len];
 
-    memcpy( _fileName, fileName, len );
+    std::memcpy( _fileName, fileName, len );
 }
 
 void CheckedFile::removeOpenFile( CheckedFile *ent )
@@ -286,16 +286,16 @@ int CheckedFile::readNString( std::string & str )
 {
     const int   BufLen = 255;
     char        buffer[ BufLen + 1 ];
-    uint_16     strLen;
+    uint_16     len;
     uint_16     amtRead = 0;
     int         maxRead;
 
     str = "";       // clear string
 
-    read( &strLen, sizeof( uint_16 ) );
+    read( &len, sizeof( uint_16 ) );
 
-    while( amtRead < strLen ) {
-        maxRead = strLen - amtRead;
+    while( amtRead < len ) {
+        maxRead = len - amtRead;
         if( BufLen < maxRead ) {
             maxRead = BufLen;
         }
@@ -305,20 +305,20 @@ int CheckedFile::readNString( std::string & str )
         amtRead += (uint_16)maxRead;
     }
 
-    return strLen;
+    return len;
 }
 
 int CheckedFile::writeNString( std::string & str )
 //-------------------------------------------
 // write out a string in the form <uint_16>{<byte>}*
 {
-    uint_16 strLen;
+    uint_16 len;
 
-    strLen = (uint_16) str.length();
-    write( &strLen, sizeof( uint_16 ) );
-    write( str.c_str(), strLen );
+    len = (uint_16) str.length();
+    write( &len, sizeof( uint_16 ) );
+    write( str.c_str(), len );
 
-    return strLen;
+    return len;
 }
 
 void CheckedFile::puts( const char * str )
@@ -327,7 +327,7 @@ void CheckedFile::puts( const char * str )
     int len;
 
     if( str != NULL ) {
-        len = (int)strlen( str );
+        len = (int)std::strlen( str );
         if( len > 0 ){
             write( str, len );
         }
