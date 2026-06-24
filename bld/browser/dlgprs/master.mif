@@ -13,6 +13,8 @@ dlg_yacc_prefix = dlgy
 bnd_yacc_file = $(bnd_yacc_prefix)tab
 dlg_yacc_file = $(dlg_yacc_prefix)tab
 
+additional_clean = $(bnd_yacc_file).cpp $(dlg_yacc_file).cpp $(bnd_yacc_file).h $(dlg_yacc_file).h
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
