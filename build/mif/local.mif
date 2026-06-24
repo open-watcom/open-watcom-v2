@@ -633,12 +633,12 @@ bld_ldflags  = $(bld_cl_extra_libs_gen) $(bld_extra_ldflags)
 ############################
 !  ifdef __CLANG_TOOLS__
 cc     = $(noecho)$(__clang) -pipe -c
-ccl    = $(noecho)$(__clang) -pipe
+cxx    = $(noecho)$(__clangxx) -pipe
 cl_cc  = $(noecho)$(__clang) -pipe
 cl_cxx = $(noecho)$(__clangxx) -pipe
 !  else ifdef __GCC_TOOLS__
 cc     = $(noecho)$(__gcc) -pipe -c
-ccl    = $(noecho)$(__gcc) -pipe
+cxx    = $(noecho)$(__gccxx) -pipe
 cl_cc  = $(noecho)$(__gcc) -pipe
 cl_cxx = $(noecho)$(__gccxx) -pipe
 !  endif
