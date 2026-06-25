@@ -65,7 +65,7 @@ static void output_float( token_buffer *tokbuf, token_idx index, unsigned no_of_
 {
     double              double_value;
     float               float_value;
-    char                *char_ptr = NULL;
+    const char          *char_ptr = NULL;
     unsigned            count;
     TB_LD               tbyte;
 
@@ -237,7 +237,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
         case TC_NUM:
         case TC_FLOAT:
           {
-            char    *char_ptr;
+            const char  *char_ptr;
 
             if( tokbuf->tokens[cur_pos+1].class == TC_RES_ID
               && tokbuf->tokens[cur_pos+1].u.token == T_DUP ) {
@@ -318,8 +318,9 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
         case TC_STRING_ANGLE:
         case TC_STRING_BRACE:
           {
-            char        *char_ptr;
+            const char  *char_ptr;
             unsigned    i;
+            int         direction;
 
 #if defined( _STANDALONE_ )
             if( struct_sym != NULL ) {
@@ -333,7 +334,11 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
                     return( INVALID_IDX );
                 }
             }
-
+            /*
+             * anything bigger than a byte must be stored in little-endian
+             * format -- LSB first
+             */
+            direction = ( no_of_bytes > 1 ) ? -1 : 1;
 #if defined( _STANDALONE_ )
             if( no_of_bytes == 1
               && struct_field ) {
@@ -345,18 +350,22 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
             if( !struct_field ) {
 #endif
-                /*
-                 * anything bigger than a byte must be stored in little-endian
-                 * format -- LSB first
-                 */
                 count = tokbuf->tokens[cur_pos].u.value;
-                char_ptr = tokbuf->tokens[cur_pos].string_ptr + count - 1;
-                for( i = 0; i < no_of_bytes; ++i ) {
-                    if( i < count ) {
-                        AsmDataByte( *char_ptr-- );
-                    } else {
-                        AsmDataByte( 0 );
-                    }
+                char_ptr = tokbuf->tokens[cur_pos].string_ptr;
+                if( direction == -1 )
+                    char_ptr +=  + count - 1;
+                for( i = 0; i < count; ++i ) {
+                    AsmDataByte( *char_ptr );
+                    char_ptr += direction;
+                }
+                /*
+                 * no_of_bytes is size of array element
+                 * if the number of initialization bytes is less
+                 * than this number, then it is extended by zeros
+                 * up to no_of_bytes
+                 */
+                for( ; i < no_of_bytes; ++i ) {
+                    AsmDataByte( 0 );
                 }
 #if defined( _STANDALONE_ )
             } else {
