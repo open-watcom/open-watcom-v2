@@ -353,7 +353,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
                 count = tokbuf->tokens[cur_pos].u.value;
                 char_ptr = tokbuf->tokens[cur_pos].string_ptr;
                 if( direction == -1 )
-                    char_ptr +=  + count - 1;
+                    char_ptr += strlen( char_ptr ) - 1;
                 for( i = 0; i < count; ++i ) {
                     AsmDataByte( *char_ptr );
                     char_ptr += direction;
