@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -400,7 +400,7 @@ typedef struct {
  */
 typedef struct {
     unsigned_16         hint;
-    unsigned_8          name[2];            /* variable size, padded to even boundry */
+    unsigned_8          name[1];            /* variable length array, must be padded to even boundary */
 } pe_hint_name_entry;
 
 /*

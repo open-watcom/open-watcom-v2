@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -278,8 +278,9 @@ static TREEPTR ConstLeaf( void )
     case TYP_FIMAGINARY:
     case TYP_DIMAGINARY:
     case TYP_LDIMAGINARY:
-        flt = CMemAlloc( sizeof( FLOATVAL ) + TokenLen );
-        sprintf( flt->string, "+%s", Buffer );
+        flt = CMemAlloc( sizeof( FLOATVAL ) - 1 + 1 + TokenLen + 1 );
+        flt->string[0] = '+';
+        strcpy( flt->string + 1, Buffer );
         flt->len = (unsigned char)( 1 + TokenLen );
         flt->type = ConstType;
         flt->next = NULL;
@@ -1696,7 +1697,7 @@ static TREEPTR ExprOpnd( void )
 #define FLOAT_PLUS_ONE "+1.0"
                 tree = LeafNode( OPR_PUSHFLOAT );
                 tree->op.u1.const_type = TYP_DIMAGINARY;
-                flt = CMemAlloc( sizeof( FLOATVAL ) + LENLIT( FLOAT_PLUS_ONE ) );
+                flt = CMemAlloc( sizeof( FLOATVAL ) - 1 + LENLIT( FLOAT_PLUS_ONE ) + 1 );
                 strcpy( flt->string, FLOAT_PLUS_ONE );
                 flt->len = LENLIT( FLOAT_PLUS_ONE );
                 flt->type = TYP_DIMAGINARY;

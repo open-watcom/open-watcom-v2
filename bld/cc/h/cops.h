@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ typedef struct floatval {
     long_double         ld;
     unsigned char       len;
     unsigned char       type;
-    char                string[2];
+    char                string[1];  /* variable length array */
 } FLOATVAL;
 
 typedef short           tryindex_t;
