@@ -58,7 +58,7 @@ asm_sym_handle FindStructureMember( asm_sym_handle symbol, const char *name )
 bool StructDef( token_buffer *tokbuf, token_idx i )
 /*************************************************/
 {
-    char            *name;
+    const char      *name;
     dir_node_handle dir;
     token_idx       n;
 

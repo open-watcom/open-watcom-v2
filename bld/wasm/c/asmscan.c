@@ -547,9 +547,9 @@ static bool get_comment( asm_tok *tok, const char **input, char **output )
     size_t  len;
     /* save the whole line .. we need to check
      * if the delim. char shows up 2 times */
-    tok->string_ptr = *output;
     len = strlen( *input );
-    memcpy( tok->string_ptr, *input, len );
+    tok->string_ptr = *output;
+    memcpy( *output, *input, len );
     (*output) += len;
     *(*output)++ = '\0';
     *input += len;

@@ -48,7 +48,7 @@
 
 #define    MAX_EQU_NESTING      20
 
-static label_list *label_cmp( char *name, label_list *head )
+static label_list *label_cmp( const char *name, label_list *head )
 {
     label_list  *curr;
 
@@ -125,7 +125,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
     token_idx           left_bracket = 0;
     token_idx           right_bracket = 0;
     const char          *word;
-    char                *replace = NULL;
+    const char          *replace = NULL;
     char                buffer[MAX_LINE_LEN];
     label_list          *label = NULL;
     proc_info           *info = CurrProc->e.procinfo;
@@ -486,7 +486,7 @@ bool DefineConstant( token_buffer *tokbuf, token_idx i, bool redefine, bool expa
  * if expand_early is true, expand before doing any parsing
  */
 {
-    char                *name;
+    const char          *name;
 
     if( i != 0 ) {
         AsmError( SYNTAX_ERROR );

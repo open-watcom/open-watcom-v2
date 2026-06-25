@@ -93,11 +93,9 @@ static void output_float( token_buffer *tokbuf, token_idx index, unsigned no_of_
             break;
         }
     }
-
     for( count = 0; count < no_of_bytes; ++count ) {
         AsmDataByte( *char_ptr++ );
     }
-    return;
 }
 
 #if defined( _STANDALONE_ )
@@ -382,7 +380,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             token_idx           i;
             fixup_types         fixup_type = 0;
             asm_sym_handle      init_sym;
-            char                *ptr;
+            const char          *ptr;
             long                data = 0;
             asmfixup            *fixup;
 #if defined( _STANDALONE_ )
@@ -503,7 +501,9 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
             if( !struct_field ) {
 #endif
-                /* only output up to 4 bytes of offset (segment is on fixup) */
+                /*
+                 * only output up to 4 bytes of offset (segment is on fixup)
+                 */
                 for( i = 0; i < no_of_bytes; i++ ) {
                     if( i < 4 ) {
                         /* copy offset */
@@ -529,7 +529,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             fixup_types         fixup_type = 0;
             token_idx           seg_off_operator_loc = 0;
             asm_sym_handle      init_sym;
-            char                *ptr;
+            const char          *ptr;
             long                data = 0;
             asmfixup            *fixup;
 

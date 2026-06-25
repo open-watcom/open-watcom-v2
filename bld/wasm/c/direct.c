@@ -1354,7 +1354,7 @@ bool SetUse32Def( bool use32 )
 bool SetCurrSeg( token_buffer *tokbuf, token_idx i )
 /**************************************************/
 {
-    char            *name;
+    const char      *name;
     dir_node_handle seg;
 
     switch( tokbuf->tokens[i].u.token ) {
@@ -1478,7 +1478,7 @@ bool SegDef( token_buffer *tokbuf, token_idx i )
     int             type;       // type of option
     uint            initstate;  // to show if a field is initialized
     dir_node_handle seg;
-    char            *name;
+    const char      *name;
     token_idx       n;
 
     if( Options.mode & MODE_IDEAL ) {
@@ -1784,7 +1784,7 @@ bool Include( token_buffer *tokbuf, token_idx i )
 bool IncludeLib( token_buffer *tokbuf, token_idx i )
 /**************************************************/
 {
-    char            *name;
+    const char      *name;
     asm_sym_handle  sym;
     dir_node_handle dir;
 
@@ -1963,7 +1963,7 @@ bool SimSeg( token_buffer *tokbuf, token_idx i )
  */
 {
     char        buffer[ MAX_LINE_LEN ];
-    char        *name;
+    const char  *name;
     asm_token   type;
     sim_seg     seg;
 
@@ -2371,7 +2371,7 @@ bool SetAssume( token_buffer *tokbuf, token_idx i )
  */
 {
     const char      *token;
-    char            *segloc;
+    const char      *segloc;
     int             reg;
     assume_info     *info;
     asm_sym_handle  sym;
@@ -2820,7 +2820,7 @@ bool LocalDef( token_buffer *tokbuf, token_idx i )
     proc_info       *info;
     asm_sym_handle  sym;
     asm_sym_handle  tmp;
-    char            *name;
+    const char      *name;
     int             factor;
     int             size;
 
@@ -3209,7 +3209,7 @@ bool EnumDef( token_buffer *tokbuf, token_idx i )
  * var: name [= number]
  */
 {
-    char            *name;
+    const char      *name;
     char            string[MAX_LINE_LEN];
     token_idx       n;
     int             enums;
@@ -3478,7 +3478,7 @@ bool ProcDef( token_buffer *tokbuf, token_idx i, bool proc_def )
 /**************************************************************/
 {
     dir_node_handle dir;
-    char            *name;
+    const char      *name;
     token_idx       n;
 
     /* unused parameters */ (void)proc_def;

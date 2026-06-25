@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,7 +75,7 @@ bool MakeLabel( token_buffer *tokbuf, token_idx i, memtype mem_type )
 /*******************************************************************/
 {
     asm_sym_handle  sym;
-    char            *symbol_name;
+    const char      *symbol_name;
 #if defined( _STANDALONE_ )
     uint_32         addr = 0;
     char            buffer[20];

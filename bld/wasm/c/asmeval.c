@@ -222,7 +222,7 @@ static int get_precedence( token_buffer *tokbuf, token_idx i )
 static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start, token_idx end, bool (*is_expr)(token_buffer *, token_idx) )
 /******************************************************************************************************************************************/
 {
-    char            *tmp;
+    const char      *ptr;
     token_idx       i = *start;
     unsigned char   c;
     unsigned_32     value;
@@ -253,7 +253,7 @@ static bool get_operand( expr_list *new, token_buffer *tokbuf, token_idx *start,
         new->type = EXPR_CONST;
         new->string = tokbuf->tokens[i].string_ptr;
         value = 0;
-        for( tmp = new->string; (c = *(unsigned char *)tmp) != '\0'; tmp++ ) {
+        for( ptr = new->string; (c = *(unsigned char *)ptr) != '\0'; ptr++ ) {
             value = ( value << 8 ) | c;
         }
         new->value = value;
