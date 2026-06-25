@@ -344,7 +344,7 @@ STATIC void symbChangeSeg( symb_handle cur ) {
     case FIX_POINTER:
         /* not so great, this is a pointer fixup and we can only do seg
            fixups */
-        codeOffset = (uint_32)MGET_LE_U16( seg->data );
+        codeOffset = MGET_LE_U16( seg->data );
         offsetFixup = FixDup( newfix );
         offsetFixup->loc_method = FIX_OFFSET;
         newfix->loc_method = FIX_BASE;

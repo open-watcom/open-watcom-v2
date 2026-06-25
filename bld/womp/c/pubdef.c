@@ -108,13 +108,13 @@ STATIC void doAnAddr( addr_info *addr, symb_handle symb ) {
         return;     /* can't handle any of these */
     case FIX_OFFSET:
     case FIX_POINTER:
-        offset += (int_32)(int_16)MGET_LE_U16( addr->data );
+        offset += MGET_LE_S16( addr->data );
         break;
     case FIX_BASE:
         break;
     case FIX_OFFSET386:
     case FIX_POINTER386:
-        offset += (int_32)MGET_LE_U32( addr->data );
+        offset += MGET_LE_S32( addr->data );
         break;
     default:
 /**/    never_reach();
@@ -194,7 +194,7 @@ void TypePubdefs( void ) {
                 code_offset = 0UL;
                 break;
             case FIX_POINTER:
-                code_offset = (uint_32)MGET_LE_U16( seg->data );
+                code_offset = MGET_LE_U16( seg->data );
                 break;
             case FIX_POINTER386:
                 code_offset = MGET_LE_U32( seg->data );
