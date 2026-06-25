@@ -94,6 +94,22 @@ static void Abort( const char *str, ... )
 } /* Abort */
 
 /*
+ * MyAlloc - allocate memory, failing if cannot
+ */
+static void *MyAlloc( size_t size )
+{
+    void        *tmp;
+
+    tmp = malloc( size );
+    if( tmp == NULL ) {
+        Abort( "Out of Memory!" );
+    }
+    return( tmp );
+
+} /* MyAlloc */
+
+
+/*
  * MyPrintf - do a printf
  */
 static void MyPrintf( const char *str, ... )
@@ -115,29 +131,24 @@ static int copy_file( FILE *src, FILE *dst, unsigned long tocopy )
     int             rc;
 
     rc = 0;
-    copy = malloc( COPY_SIZE );
-    if( copy == NULL ) {
-        printf( "Out of Memory\n" );
-        rc = 1;
-    } else {
-        size = COPY_SIZE;
-        while( tocopy > 0 ) {
-            if( size > tocopy )
-                size = (size_t)tocopy;
-            if( fread( copy, 1, size, src ) != size ) {
-                printf( "Read error" );
-                rc = 1;
-                break;
-            }
-            if( fwrite( copy, 1, size, dst ) != size ) {
-                printf( "Write error" );
-                rc = 1;
-                break;
-            }
-            tocopy -= size;
+    copy = MyAlloc( COPY_SIZE );
+    size = COPY_SIZE;
+    while( tocopy > 0 ) {
+        if( size > tocopy )
+            size = (size_t)tocopy;
+        if( fread( copy, 1, size, src ) != size ) {
+            printf( "Read error" );
+            rc = 1;
+            break;
         }
-        free( copy );
+        if( fwrite( copy, 1, size, dst ) != size ) {
+            printf( "Write error" );
+            rc = 1;
+            break;
+        }
+        tocopy -= size;
     }
+    free( copy );
     return( rc );
 }
 
@@ -292,22 +303,6 @@ static void Usage( const char *msg )
     exit( 1 );
 
 } /* Usage */
-
-/*
- * MyAlloc - allocate memory, failing if cannot
- */
-static void *MyAlloc( size_t size )
-{
-    void        *tmp;
-
-    tmp = malloc( size );
-    if( tmp == NULL ) {
-        Abort( "Out of Memory!" );
-    }
-    return( tmp );
-
-} /* MyAlloc */
-
 
 int main( int argc, char *argv[] )
 {
