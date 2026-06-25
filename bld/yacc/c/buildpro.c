@@ -144,7 +144,7 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, unsigned n )
     size_t          amt;
     unsigned        i;
 
-    amt = sizeof( a_pro ) + n * sizeof( an_item );
+    amt = sizeof( a_pro ) + ( n - 1 + 2 ) * sizeof( an_item );
     pro = MemCAllocSafe( 1, amt );
     pro->pidx = npro++;
     for( i = 0; i < n; ++i ) {

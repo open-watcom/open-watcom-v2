@@ -184,7 +184,7 @@ struct a_pro {                          /* production: LHS -> RHS1 RHS2 ... */
     a_SR_conflict_list  *SR_conflicts;  /* list of S/R conflicts */
     boolbit             used    : 1;    /* has rule been reduced */
     boolbit             unit    : 1;    /* LHS -> RHS and no action specified */
-    an_item             items[2];       /* must be the last field */
+    an_item             items[1];       /* must be the last field */
 };
 
 struct a_sym {                          /* symbol: terminal or non-terminal */
