@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,16 +59,6 @@ static bool             More_Array_Element = false;
 static unsigned         Last_Element_Size;
 
 /* data initialization stuff */
-
-static void little_endian( char *string, unsigned no_of_bytes )
-/*************************************************************/
-/* convert a string into little endian format - ( LSB 1st, LSW 1st ... etc ) */
-{
-    if( no_of_bytes > 1 ) {
-        strrev( string );
-    }
-    return;
-}
 
 static void output_float( token_buffer *tokbuf, token_idx index, unsigned no_of_bytes, bool negative )
 /****************************************************************************************************/
@@ -170,7 +160,6 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
 {
     token_idx           cur_pos = start_pos;
     unsigned            count;
-    char                *char_ptr = NULL;
     bool                negative = false;
 
 #if defined( _STANDALONE_ )
@@ -247,6 +236,9 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             break; // go around again
         case TC_NUM:
         case TC_FLOAT:
+          {
+            char    *char_ptr;
+
             if( tokbuf->tokens[cur_pos+1].class == TC_RES_ID
               && tokbuf->tokens[cur_pos+1].u.token == T_DUP ) {
                 cur_pos = dup_array( sym, struct_sym, tokbuf, cur_pos, no_of_bytes );
@@ -276,7 +268,6 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
                 negative = false;
                 break;
             }
-            char_ptr = (char *)tokbuf->tokens[cur_pos].u.bytes;
 #if defined( _STANDALONE_ )
             if( sym != NULL
               && Parse_Pass == PASS_1 ) {
@@ -284,6 +275,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
             if( !struct_field ) {
 #endif
+                char_ptr = (char *)tokbuf->tokens[cur_pos].u.bytes;
                 for( count = 0; count < no_of_bytes; ++count ) {
                     AsmDataByte( *char_ptr++ );
                 }
@@ -296,6 +288,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
 #endif
             break;
+          }
         case TC_COMMA:
 #if defined( _STANDALONE_ )
             first_init = false;
@@ -324,6 +317,10 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
         case TC_STRING_DQUOTE:
         case TC_STRING_ANGLE:
         case TC_STRING_BRACE:
+          {
+            char        *char_ptr;
+            unsigned    i;
+
 #if defined( _STANDALONE_ )
             if( struct_sym != NULL ) {
                 InitializeStructure( sym, struct_sym, tokbuf, cur_pos );
@@ -336,11 +333,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
                     return( INVALID_IDX );
                 }
             }
-            char_ptr = tokbuf->tokens[cur_pos].string_ptr;
 
-            /* anything bigger than a byte must be stored in little-endian
-            * format -- LSB first */
-            little_endian( char_ptr, no_of_bytes );
 #if defined( _STANDALONE_ )
             if( no_of_bytes == 1
               && struct_field ) {
@@ -352,12 +345,18 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
             if( !struct_field ) {
 #endif
-                for( count = tokbuf->tokens[cur_pos].u.value; count > 0 ; --count ) {
-                    AsmDataByte( *char_ptr++ );
-                }
-                for( count = tokbuf->tokens[cur_pos].u.value; count < no_of_bytes; ++count ) {
-                    AsmDataByte( 0 );
-                    char_ptr++;
+                /*
+                 * anything bigger than a byte must be stored in little-endian
+                 * format -- LSB first
+                 */
+                count = tokbuf->tokens[cur_pos].u.value;
+                char_ptr = tokbuf->tokens[cur_pos].string_ptr + count - 1;
+                for( i = 0; i < no_of_bytes; ++i ) {
+                    if( i < count ) {
+                        AsmDataByte( *char_ptr-- );
+                    } else {
+                        AsmDataByte( 0 );
+                    }
                 }
 #if defined( _STANDALONE_ )
             } else {
@@ -368,6 +367,7 @@ static token_idx array_element( asm_sym_handle sym, asm_sym_handle struct_sym, t
             }
 #endif
             break;
+          }
         case TC_ID:
           {
             token_idx           i;
