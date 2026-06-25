@@ -396,7 +396,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
 {
     macro_info      *info;
     char            *line;
-    char            *name;
+    const char      *name;
     char            buffer[ MAX_LINE_LEN ];
     char            def_buffer[ MAX_LINE_LEN ];
     dir_node_handle dir;
@@ -602,8 +602,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
     }
 }
 
-static size_t my_sprintf( char *dest, char *format, int argc, char *argv[], char delims[] )
-/******************************************************************************************
+static size_t my_sprintf( char *dest, const char *format, int argc, char *argv[], char delims[] )
+/************************************************************************************************
  * just like sprintf, except take argv & argc for params
  * so far it only handles string params
  *
@@ -615,14 +615,14 @@ static size_t my_sprintf( char *dest, char *format, int argc, char *argv[], char
  *   operator that should drop the arg's outer quotes.
  */
 {
-    char    buffer[3];
-    char    *start;
-    char    *end;
-    char    *q;
-    char    *src;
-    char    delim;
-    char    kind;
-    int     paramno;
+    char        buffer[3];
+    const char  *start;
+    const char  *end;
+    char        *q;
+    char        *src;
+    char        delim;
+    char        kind;
+    int         paramno;
 
     /* unused parameters */ (void)argc;
 
@@ -919,7 +919,7 @@ bool ExpandMacro( token_buffer *tokbuf )
                                 p += sprintf( p, "%s", tokbuf->tokens[i].string_ptr );
                             }
                         } else if( IS_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
-                            char        *src;
+                            const char  *src;
 
                             if( arg_token_count == 0
                               && IS_QUOTED_STRING_TOKEN( tokbuf->tokens[i].class ) ) {
@@ -1007,7 +1007,7 @@ bool ExpandMacro( token_buffer *tokbuf )
 bool MacroDef( token_buffer *tokbuf, token_idx i, bool hidden )
 /*************************************************************/
 {
-    char            *name;
+    const char      *name;
     token_idx       n;
     dir_node_handle currproc;
 
