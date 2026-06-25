@@ -530,6 +530,7 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
      */
     for( ;; ) {
         char        *ptr;
+        char        *p;
         asmline     *lineinfo;
         bool        quote;
 
@@ -550,9 +551,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                 /*
                  * strip the & prefix: shift the string left by one character
                  */
-                char *p = ptr;
-                while( *p != '\0' ) {
-                    *p = *++p;
+                for( p = ptr; *p != '\0'; ++p ) {
+                    *p = *(p + 1);
                 }
             }
         }
@@ -575,9 +575,8 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
                 /*
                  * strip the & prefix: shift the string left by one character
                  */
-                char *p = ptr;
-                while( *p != '\0' ) {
-                    *p = *++p;
+                for( p = ptr; *p != '\0'; ++p ) {
+                    *p = *(p + 1);
                 }
             }
         }
