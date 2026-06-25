@@ -279,67 +279,33 @@ static char *find_replacement_items( char **pline, bool *pquote )
     return( NULL );
 }
 
-static bool lineis( char *str, char *substr )
-/*******************************************/
+static bool lineis( const char *str, const char *substr )
+/*******************************************************/
 {
     size_t  len;
 
     len = strlen( substr );
-    wipe_space( str );
     if( strnicmp( str, substr, len ) ) {
         return( false );
     }
-    if( str[len] != '\0'
-      && !isspace( str[len] ) ) {
-        return( false );
-    }
-    return( true );
+    return( str[len] == '\0' || isspace( str[len] ) );
 }
 
-static bool lineis_escaped_at( char *str, char *substr )
-/******************************************************
- * Check if string at position starts with &keyword (e.g. &endm, &macro).
- * If found, strip the & prefix and return true.
- */
+static bool lineis_repeat_block( const char *ptr )
+/************************************************/
 {
-    size_t  len;
-
-    len = strlen( substr );
-    if( str[0] != '&' ) {
-        return( false );
+    switch( strcspn( ptr, " \t" ) ) {
+    case 3:
+        return( strnicmp( ptr, "for", 3 ) == 0
+            || strnicmp( ptr, "irp", 3 ) == 0 );
+    case 4:
+        return( strnicmp( ptr, "forc", 4 ) == 0
+            || strnicmp( ptr, "irpc", 4 ) == 0
+            || strnicmp( ptr, "rept", 4 ) == 0 );
+    case 6:
+        return( strnicmp( ptr, "repeat", 6 ) == 0 );
     }
-    if( strnicmp( str + 1, substr, len ) ) {
-        return( false );
-    }
-    if( str[1 + len] != '\0'
-      && !isspace( str[1 + len] ) ) {
-        return( false );
-    }
-    /*
-     * strip the & prefix: shift the string left by one character
-     */
-    memmove( str, str + 1, strlen( str ) );
-    return( true );
-}
-
-static bool lineis_escaped( char *str, char *substr )
-/***************************************************
- * Check if line starts with &keyword, stripping leading spaces first.
- */
-{
-    wipe_space( str );
-    return( lineis_escaped_at( str, substr ) );
-}
-
-static bool is_repeat_block( char *ptr )
-/**************************************/
-{
-    return( lineis( ptr, "for" )
-          || lineis( ptr, "forc" )
-          || lineis( ptr, "irp" )
-          || lineis( ptr, "irpc" )
-          || lineis( ptr, "rept" )
-          || lineis( ptr, "repeat" ) );
+    return( false );
 }
 
 static bool macro_local( token_buffer *tokbuf, macro_info *info )
@@ -567,7 +533,10 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
         asmline     *lineinfo;
         bool        quote;
 
-        if( lineis( line, "endm" ) ) {
+        ptr = line;
+        while( isspace( *ptr ) )
+            ptr++;
+        if( lineis( ptr, "endm" ) ) {
             if( nesting_depth == 0 ) {
                 return( RC_OK );
             }
@@ -577,19 +546,24 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              * &endm is an escaped keyword: strip the & prefix
              * but don't affect nesting depth
              */
-            lineis_escaped( line, "endm" );
+            if( *ptr == '&' && lineis( ptr + 1, "endm" ) ) {
+                /*
+                 * strip the & prefix: shift the string left by one character
+                 */
+                char *p = ptr;
+                while( *p != '\0' ) {
+                    *p = *++p;
+                }
+            }
         }
-        ptr = line;
-        while( isspace( *ptr ) )
-            ptr++;
-        if( is_repeat_block( ptr ) ) {
+        if( lineis_repeat_block( ptr ) ) {
             nesting_depth++;
         }
         while( *ptr != '\0' && !isspace( *ptr ) )
             ptr++; // skip 1st token
         while( isspace( *ptr ) )
             ptr++;
-        if( is_repeat_block( ptr )
+        if( lineis_repeat_block( ptr )
           || lineis( ptr, "macro" ) ) {
             nesting_depth++;
         } else {
@@ -597,7 +571,15 @@ static bool macro_exam( token_buffer *tokbuf, token_idx i )
              * &macro is an escaped keyword: strip the & prefix
              * but don't affect nesting depth
              */
-            lineis_escaped_at( ptr, "macro" );
+            if( *ptr == '&' && lineis( ptr + 1, "macro" ) ) {
+                /*
+                 * strip the & prefix: shift the string left by one character
+                 */
+                char *p = ptr;
+                while( *p != '\0' ) {
+                    *p = *++p;
+                }
+            }
         }
 
         if( store_data ) {
