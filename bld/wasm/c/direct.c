@@ -960,30 +960,6 @@ static asm_sym_handle InsertClassLname( const char *name )
     return( &dir->sym );
 }
 
-void wipe_space( char *token )
-/*****************************
- * wipe out the spaces at the beginning of a token
- */
-{
-    char        *start;
-
-    if( token == NULL )
-        return;
-    if( strlen( token ) == 0 )
-        return;
-
-    for( start = token;; start++ ){
-        if( *start != ' '
-          && *start != '\t' ) {
-            break;
-        }
-    }
-    if( start == token )
-        return;
-
-    memmove( token, start, strlen( start ) + 1 );
-}
-
 uint_32 GetCurrAddr( void )
 /*************************/
 {

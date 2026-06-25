@@ -124,24 +124,33 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
     int                 offset;
     token_idx           left_bracket = 0;
     token_idx           right_bracket = 0;
-    char                *string;
-    char                *word;
+    const char          *word;
     char                *replace = NULL;
     char                buffer[MAX_LINE_LEN];
     label_list          *label = NULL;
     proc_info           *info = CurrProc->e.procinfo;
     char                *p;
+    size_t              len;
 
+    *buffer = '\0';
     *expanded = false;
-    strcpy( buffer, tokbuf->tokens[index].string_ptr );
-    wipe_space( buffer );
-    for( word = strtok( buffer, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
+    word = tokbuf->tokens[index].string_ptr;
+    while( *word != '\0' ) {
+        word += strspn( word, " \t" );
+        len = strcspn( word, " \t" );
+        if( len == 0 ) {
+            *buffer = '\0';
+            break;
+        }
         count++;
+        memcpy( buffer, word, len );
+        buffer[len] = '\0';
+        word += len;
 
         /**/myassert( CurrProc != NULL );
-        label = label_cmp( word, info->params.head );
+        label = label_cmp( buffer, info->params.head );
         if( label == NULL ) {
-            label = label_cmp( word, info->locals.head );
+            label = label_cmp( buffer, info->locals.head );
         }
         if( label != NULL ) {
             if( label->replace != NULL ) {
@@ -223,7 +232,7 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
     if( replace == NULL )
         return( RC_OK );
 
-    DebugMsg(( "ExpandString: %s -> %s \n", word, replace ));
+    DebugMsg(( "ExpandString: %s -> %s \n", buffer, replace ));
 
     /* now we need to build the new line string to pass through the scanner */
     p = buffer;
@@ -248,18 +257,25 @@ bool ExpandProcString( token_buffer *tokbuf, token_idx index, bool *expanded )
                 i++;
             }
             /* copy the string in ... 1 word at a time */
-            string = MemStrdupSafe( tokbuf->tokens[index].string_ptr );
-            wipe_space( string );
-            word = strtok( string, " \t" );
-            for( cnt = 1; cnt < count; cnt++ ) {
-                p += sprintf( p, "%s ", word );
-                word = strtok( NULL, " \t" );
+            cnt = 1;
+            word = tokbuf->tokens[index].string_ptr;
+            while( *word != '\0' ) {
+                word += strspn( word, " \t" );
+                len = strcspn( word, " \t" );
+                if( len == 0 )
+                    break;
+                if( cnt != 1 )
+                    *p++ = ' ';
+                if( cnt == count ) {
+                    strcpy( p, replace );
+                    p += strlen( p );
+                } else {
+                    memcpy( p, word, len );
+                    p += len;
+                }
+                word += len;
+                cnt++;
             }
-            p += sprintf( p, "%s", replace );
-            for( word = strtok( NULL, " \t" ); word != NULL; word = strtok( NULL, " \t" ) ) {
-                p += sprintf( p, " %s", word );
-            }
-            MemFree( string );
         }
         *p++ = ' ';
     }

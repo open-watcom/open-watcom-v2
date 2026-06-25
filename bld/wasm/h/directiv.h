@@ -457,7 +457,6 @@ extern bool             AddAlias( token_buffer *tokbuf, token_idx );
 extern void             push( void *stack, void *elt );
 extern void             *pop( void *stack );
 extern uint_32          GetCurrSegAlign( void );
-extern void             wipe_space( char *token );
 extern bool             SetUse32Def( bool );
 
 #if defined( DEBUG_OUT )
