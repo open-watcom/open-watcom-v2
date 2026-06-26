@@ -112,31 +112,30 @@ static size_t InitStringList( WResDir dir, void **list, size_t len )
     return( element - list );
 } /* InitStringList */
 
-static void *MemUprCpy( void *dst, const void *src, size_t length )
-/*****************************************************************/
+static char *StrUprCpy( char *dst, const char *src, unsigned length )
+/*******************************************************************/
 {
-    char        *c_dst;
-    const char  *c_src;
+    char        *p = dst;
 
-    for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( *(unsigned char *)c_src );
+    for( ; length > 0; length-- ) {
+        *p++ = toupper( *(unsigned char *)src++ );
     }
 
     return( dst );
-} /* MemUprCpy */
+} /* StrUprCpy */
 
-static void *MemUprCpyUni( void *dst, const void *src, size_t length )
-/********************************************************************/
+static char *StrUprCpyUni( char *dst, const char *src, unsigned length )
+/**********************************************************************/
 {
-    uint_16     *c_dst;
-    const char  *c_src;
+    char        *p = dst;
 
-    for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( *(unsigned char *)c_src );
+    for( ; length > 0; length-- ) {
+        *p++ = toupper( *(unsigned char *)src++ );
+        *p++ = '\0';
     }
 
     return( dst );
-} /* MemUprCpy */
+} /* StrUprCpy */
 
 static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
 /****************************************************************************/
@@ -151,12 +150,12 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
     if( use_unicode ) {
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
-        MemUprCpyUni( &name32->Name, &currname->Name, currname->NumChars );
+        StrUprCpyUni( &name32->Name, &currname->Name, currname->NumChars );
         *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + sizeof( StringItem32 ) - 1;
     } else {
         name16 = *nextstr;
         name16->NumChars = currname->NumChars;
-        MemUprCpy( &name16->Name, &currname->Name, currname->NumChars );
+        StrUprCpy( &name16->Name, &currname->Name, currname->NumChars );
         *nextstr = (uint_8 *)(*nextstr) + currname->NumChars + sizeof( StringItem16 ) - 1;
     }
 } /* CopyString */
