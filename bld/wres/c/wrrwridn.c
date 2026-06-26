@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,11 +41,13 @@ WResIDName *WResReadWResIDName( FILE *fp )
     WResIDName      newname;
     WResIDName      *newptr;
     size_t          numread;
+    uint_8          tmp8;
 
     /* read the size of the name in */
-    if( ResReadUint8( &(newname.NumChars), fp ) )
+    if( ResReadUint8( &tmp8, fp ) )
         return( NULL );
 
+    newname.NumChars = tmp8;
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
     newptr = WRESALLOC( sizeof( WResIDName ) + newname.NumChars - 1 );
