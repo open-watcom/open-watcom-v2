@@ -117,19 +117,19 @@ static char *StrUprCpy( char *dst, const char *src, unsigned length )
 {
     char        *p = dst;
 
-    for( ; length > 0; length-- ) {
+    while( length-- > 0 ) {
         *p++ = toupper( *(unsigned char *)src++ );
     }
 
     return( dst );
 } /* StrUprCpy */
 
-static char *StrUprCpyUni( char *dst, const char *src, unsigned length )
-/**********************************************************************/
+static char *StrUprCpyToUni( char *dst, const char *src, unsigned length )
+/************************************************************************/
 {
     char        *p = dst;
 
-    for( ; length > 0; length-- ) {
+    while( length-- > 0 ) {
         *p++ = toupper( *(unsigned char *)src++ );
         *p++ = '\0';
     }
@@ -150,7 +150,7 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
     if( use_unicode ) {
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
-        StrUprCpyUni( name32->Name, currname->Name, currname->NumChars );
+        StrUprCpyToUni( name32->Name, currname->Name, currname->NumChars );
         *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + sizeof( StringItem32 ) - 1;
     } else {
         name16 = *nextstr;
