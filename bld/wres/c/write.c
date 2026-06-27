@@ -348,50 +348,50 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     return( headersize + padding );
 }
 
-bool MResWriteResourceHeader( MResResourceHeader *currhead, FILE *fp, bool iswin32 )
-/**********************************************************************************/
+bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 )
+/********************************************************************************/
 {
     bool        error;
 
     if( !iswin32 ) {
-        error = ResWriteNameOrOrdinal( currhead->Type, false, fp );
+        error = ResWriteNameOrOrdinal( header->Type, false, fp );
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Name, false, fp );
+            error = ResWriteNameOrOrdinal( header->Name, false, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->MemoryFlags, fp );
+            error = ResWriteUint16( header->MemoryFlags, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Size, fp );
+            error = ResWriteUint32( header->Size, fp );
         }
     } else {
-        error = ResWriteUint32( currhead->Size, fp );
+        error = ResWriteUint32( header->Size, fp );
         if( !error ) {
-            error = ResWriteUint32( MResFindHeaderSize( currhead, true ), fp  );
+            error = ResWriteUint32( MResFindHeaderSize( header, true ), fp  );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Type, true, fp );
+            error = ResWriteNameOrOrdinal( header->Type, true, fp );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Name, true, fp );
+            error = ResWriteNameOrOrdinal( header->Name, true, fp );
         }
         if( !error ) {
             error = ResWritePadDWord( fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->DataVersion, fp );
+            error = ResWriteUint32( header->DataVersion, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->MemoryFlags, fp );
+            error = ResWriteUint16( header->MemoryFlags, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->LanguageId, fp );
+            error = ResWriteUint16( header->LanguageId, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Version, fp );
+            error = ResWriteUint32( header->Version, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Characteristics, fp );
+            error = ResWriteUint32( header->Characteristics, fp );
         }
     }
 

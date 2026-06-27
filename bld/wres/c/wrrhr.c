@@ -50,12 +50,12 @@ bool WResReadHeader( WResHeader *header, FILE *fp )
     return( false );
 }
 
-bool WResReadExtHeader( WResExtHeader *head, FILE *fp )
-/*****************************************************/
+bool WResReadExtHeader( WResExtHeader *extheader, FILE *fp )
+/**********************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fp, head, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
+    if( (numread = WRESREAD( fp, extheader, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
         return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }

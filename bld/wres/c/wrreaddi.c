@@ -193,30 +193,30 @@ static bool readTypeList( FILE *fp, WResDirHead *currdir,uint_16 ver, void *file
 
 static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
 {
-    WResHeader      head;
+    WResHeader      header;
     WResExtHeader   extheader;
     bool            error;
 
     WResSetTargetOS( &extheader, WRES_OS_WIN16 );
     /* read the header and check that it is valid */
-    error = WResReadHeader( &head, fp );
+    error = WResReadHeader( &header, fp );
     if( !error ) {
-        if( head.Magic[0] != WRESMAGIC0
-          || head.Magic[1] != WRESMAGIC1 ) {
+        if( header.Magic[0] != WRESMAGIC0
+          || header.Magic[1] != WRESMAGIC1 ) {
             error = WRES_ERROR( WRS_BAD_SIG );
         }
     }
     if( !error ) {
-        if( head.WResVer > WRESVERSION ) {
+        if( header.WResVer > WRESVERSION ) {
             error = WRES_ERROR( WRS_BAD_VERSION );
         }
     }
     if( !error ) {
-        if( head.WResVer >= 1 ) {
+        if( header.WResVer >= 1 ) {
             /*
              * seek to the extended header and read it
              */
-            if( WRESSEEK( fp, sizeof( head ), SEEK_CUR ) ) {
+            if( WRESSEEK( fp, sizeof( header ), SEEK_CUR ) ) {
                 error = WRES_ERROR( WRS_SEEK_FAILED );
             } else {
                 error = WResReadExtHeader( &extheader, fp );
@@ -226,16 +226,16 @@ static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
 
     /* set up the initial info for the directory and seek to it's start */
     if( !error ) {
-        currdir->NumResources = head.NumResources;
-        currdir->NumTypes = head.NumTypes;
+        currdir->NumResources = header.NumResources;
+        currdir->NumTypes = header.NumTypes;
         WResSetTargetOS( currdir, WResGetTargetOS( &extheader ) );
-        if( WRESSEEK( fp, head.DirOffset, SEEK_SET ) ) {
+        if( WRESSEEK( fp, header.DirOffset, SEEK_SET ) ) {
             error = WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
     /* read in the list of types (and the resources) */
     if( !error ) {
-        error = readTypeList( fp, currdir, head.WResVer, fileinfo );
+        error = readTypeList( fp, currdir, header.WResVer, fileinfo );
     }
 
     return( error );
@@ -246,8 +246,8 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
                         bool iswin32, void *fileinfo )
 /**********************************************************************/
 {
-    MResResourceHeader      *head = NULL;
-    M32ResResourceHeader    *head32 = NULL;
+    MResResourceHeader      *header = NULL;
+    M32ResResourceHeader    *header32 = NULL;
     WResDirWindow           dup;
     bool                    error;
     WResID                  *name;
@@ -256,24 +256,24 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
     error = false;
     if( iswin32 ) {
         /* Read NULL header */
-        head32 = M32ResReadResourceHeader( fp );
-        if( head32 != NULL ) {
-            MResFreeResourceHeader( head32->head16 );
-            WRESFREE( head32 );
+        header32 = M32ResReadResourceHeader( fp );
+        if( header32 != NULL ) {
+            MResFreeResourceHeader( header32->head16 );
+            WRESFREE( header32 );
         } else {
             error = true;
         }
         if( !error ) {
-            head32 = M32ResReadResourceHeader( fp );
-            if( head32 != NULL ) {
-                head = head32->head16;
+            header32 = M32ResReadResourceHeader( fp );
+            if( header32 != NULL ) {
+                header = header32->head16;
             } else {
                 error = true;
             }
         }
     } else {
-        head = MResReadResourceHeader( fp );
-        if( head == NULL ) {
+        header = MResReadResourceHeader( fp );
+        if( header == NULL ) {
             error = true;
         }
     }
@@ -285,11 +285,11 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
     } else {
         WResSetTargetOS( currdir, WRES_OS_WIN16 );
     }
-    /* assume that a NULL head is the EOF which is the only way of detecting */
+    /* assume that a NULL header is the EOF which is the only way of detecting */
     /* the end of a MS .RES file */
-    while( head != NULL && !( iswin32 && head32 == NULL ) && !error ) {
-        name = WResIDFromNameOrOrdinal( head->Name );
-        type = WResIDFromNameOrOrdinal( head->Type );
+    while( header != NULL && !( iswin32 && header32 == NULL ) && !error ) {
+        name = WResIDFromNameOrOrdinal( header->Name );
+        type = WResIDFromNameOrOrdinal( header->Type );
         error = (name == NULL || type == NULL);
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/
@@ -298,8 +298,8 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
               && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = false;
             } else {
-                error = WResAddResource2( type, name, head->MemoryFlags,
-                            WRESTELL( fp ), head->Size, currdir, NULL,
+                error = WResAddResource2( type, name, header->MemoryFlags,
+                            WRESTELL( fp ), header->Size, currdir, NULL,
                             &dup, fileinfo );
                 if( error
                   && !WResIsEmptyWindow( dup ) ) {
@@ -312,7 +312,7 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
         }
 
         if( !error ) {
-            if( WRESSEEK( fp, head->Size, SEEK_CUR ) ) {
+            if( WRESSEEK( fp, header->Size, SEEK_CUR ) ) {
                 error = WRES_ERROR( WRS_SEEK_FAILED );
             }
         }
@@ -325,19 +325,19 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
             WRESFREE( type );
             type = NULL;
         }
-        MResFreeResourceHeader( head );
+        MResFreeResourceHeader( header );
         if( iswin32 ) {
-            WRESFREE( head32 );
+            WRESFREE( header32 );
         }
 
         if( !error ) {
             if( iswin32 ) {
-                head32 = M32ResReadResourceHeader( fp );
-                if( head32 != NULL ) {
-                    head = head32->head16;
+                header32 = M32ResReadResourceHeader( fp );
+                if( header32 != NULL ) {
+                    header = header32->head16;
                 }
             } else {
-                head = MResReadResourceHeader( fp );
+                header = MResReadResourceHeader( fp );
             }
         }
     }
@@ -354,7 +354,7 @@ bool WResReadDir( FILE *fp, WResDir currdir, bool *dup_discarded )
 bool WResReadDir2( FILE *fp, WResDir currdir, bool *dup_discarded, void *fileinfo )
 {
     bool            error;
-    WResResType     restype;
+    WResResType     res_type;
 
     /* var representing whether or not a duplicate dir entry was
      * discarded is set to false.
@@ -373,10 +373,10 @@ bool WResReadDir2( FILE *fp, WResDir currdir, bool *dup_discarded, void *fileinf
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
 
-    restype = WResReadResType( fp );
-    if( restype == RT_WATCOM ) {
+    res_type = WResReadResType( fp );
+    if( res_type == RT_WATCOM ) {
         error = readWResDir( fp, currdir, fileinfo );
-    } else if( restype == RT_WIN16 ) {
+    } else if( res_type == RT_WIN16 ) {
         error = readMResDir( fp, currdir, dup_discarded, false, fileinfo );
     } else {
         error = readMResDir( fp, currdir, dup_discarded, true, fileinfo );

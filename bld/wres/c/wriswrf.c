@@ -40,7 +40,7 @@
 WResResType WResReadResType( FILE *fp )
 /*************************************/
 {
-    WResResType     type;
+    WResResType     res_type;
     uint_32         magic[2];
     bool            error;
 
@@ -56,15 +56,15 @@ WResResType WResReadResType( FILE *fp )
         }
     }
 
-    type = RT_WIN16; /* what to return if( error) ? */
+    res_type = RT_WIN16; /* what to return if( error) ? */
     if( !error ) {
         if( magic[0] == WRESMAGIC0
           && magic[1] == WRESMAGIC1 ) {
-            type = RT_WATCOM;
+            res_type = RT_WATCOM;
         } else if( magic[0] == 0L ) {
-            type = RT_WIN32;
+            res_type = RT_WIN32;
         }
     }
-    return( type );
+    return( res_type );
 }
 
