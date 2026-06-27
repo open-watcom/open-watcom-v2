@@ -194,10 +194,10 @@ static bool readTypeList( FILE *fp, WResDirHead *currdir,uint_16 ver, void *file
 static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
 {
     WResHeader      head;
-    WResExtHeader   ext_head;
+    WResExtHeader   extheader;
     bool            error;
 
-    WResSetTargetOS( &ext_head, WRES_OS_WIN16 );
+    WResSetTargetOS( &extheader, WRES_OS_WIN16 );
     /* read the header and check that it is valid */
     error = WResReadHeader( &head, fp );
     if( !error ) {
@@ -219,7 +219,7 @@ static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
             if( WRESSEEK( fp, sizeof( head ), SEEK_CUR ) ) {
                 error = WRES_ERROR( WRS_SEEK_FAILED );
             } else {
-                error = WResReadExtHeader( &ext_head, fp );
+                error = WResReadExtHeader( &extheader, fp );
             }
         }
     }
@@ -228,7 +228,7 @@ static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
     if( !error ) {
         currdir->NumResources = head.NumResources;
         currdir->NumTypes = head.NumTypes;
-        WResSetTargetOS( currdir, WResGetTargetOS( &ext_head ) );
+        WResSetTargetOS( currdir, WResGetTargetOS( &extheader ) );
         if( WRESSEEK( fp, head.DirOffset, SEEK_SET ) ) {
             error = WRES_ERROR( WRS_SEEK_FAILED );
         }

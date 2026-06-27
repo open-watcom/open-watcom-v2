@@ -82,8 +82,8 @@ static bool writeTypeList( FILE *fp, WResTypeNode *currtype )
 bool WResWriteDir( FILE *fp, WResDir currdir )
 /********************************************/
 {
-    WResHeader      head;
-    WResExtHeader   ext_head;
+    WResHeader      header;
+    WResExtHeader   extheader;
     bool            error;
     long            diroffset;
 
@@ -96,18 +96,18 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
     }
     /* write out the file header */
     if( !error ) {
-        head.Magic[0] = WRESMAGIC0;
-        head.Magic[1] = WRESMAGIC1;
-        head.DirOffset = diroffset;
-        head.NumResources = currdir->NumResources;
-        head.NumTypes = currdir->NumTypes;
-        head.WResVer = WRESVERSION;
-        error = WResWriteHeader( &head, fp );
+        header.Magic[0] = WRESMAGIC0;
+        header.Magic[1] = WRESMAGIC1;
+        header.DirOffset = diroffset;
+        header.NumResources = currdir->NumResources;
+        header.NumTypes = currdir->NumTypes;
+        header.WResVer = WRESVERSION;
+        error = WResWriteHeader( &header, fp );
     }
     if( !error ) {
-        memset( &ext_head, 0, sizeof( WResExtHeader ) );
-        WResSetTargetOS( &ext_head, WResGetTargetOS( currdir ) );
-        error = WResWriteExtHeader( &ext_head, fp );
+        memset( &extheader, 0, sizeof( WResExtHeader ) );
+        WResSetTargetOS( &extheader, WResGetTargetOS( currdir ) );
+        error = WResWriteExtHeader( &extheader, fp );
     }
 
     /* leave the handle at the start of the file */

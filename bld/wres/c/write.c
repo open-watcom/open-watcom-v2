@@ -240,10 +240,10 @@ bool WResWriteHeader( const WResHeader *header, FILE *fp )
     return( false );
 } /* WResWriteHeader */
 
-bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp )
+bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /****************************************************************/
 {
-    if( WRESWRITE( fp, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
+    if( WRESWRITE( fp, extheader, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
