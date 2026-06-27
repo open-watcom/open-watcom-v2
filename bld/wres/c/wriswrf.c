@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,11 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResTypeInfo WResFindResType( FILE *fp )
+
+WResResType WResReadResType( FILE *fp )
 /*************************************/
 {
-    ResTypeInfo     type;
+    WResResType     type;
     uint_32         magic[2];
     bool            error;
 
@@ -56,7 +58,8 @@ ResTypeInfo WResFindResType( FILE *fp )
 
     type = RT_WIN16; /* what to return if( error) ? */
     if( !error ) {
-        if( magic[0] == WRESMAGIC0 && magic[1] == WRESMAGIC1 ) {
+        if( magic[0] == WRESMAGIC0
+          && magic[1] == WRESMAGIC1 ) {
             type = RT_WATCOM;
         } else if( magic[0] == 0L ) {
             type = RT_WIN32;
@@ -65,10 +68,3 @@ ResTypeInfo WResFindResType( FILE *fp )
     return( type );
 }
 
-bool WResIsWResFile( FILE *fp )
-/*****************************/
-/* Checks the start of the file identified by fp for the Magic number then */
-/* resets the postion in the file. Returns true is this is a WRes file */
-{
-   return( WResFindResType( fp ) == RT_WATCOM );
-} /* WResIsWResFile */

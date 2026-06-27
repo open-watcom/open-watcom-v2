@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -131,7 +132,7 @@ int ConvertFiles( void )
         return( 1 );
     }
 
-    if( WResIsWResFile( in_fp ) ) {
+    if( WResReadResType( in_fp ) == RT_WATCOM ) {
         /* the input file is in Open Watcom format so convert to MS format */
         error = ConvertFileWResToMRes( in_fp );
     } else {

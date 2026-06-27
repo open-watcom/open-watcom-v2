@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,11 +54,13 @@ char *WResGetAutoDep( const char *fname )
     ret = NULL;
     fp = ResOpenFileRO( fname );
     if( fp != NULL ) {
-        if( WResIsWResFile( fp ) && (dir = WResInitDir()) != NULL ) {
+        if( WResReadResType( fp ) == RT_WATCOM
+          && (dir = WResInitDir()) != NULL ) {
             if( !WResReadDir( fp, dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );
                 type = WResIDFromNum( DEP_LIST_TYPE );
-                if( name != NULL && type != NULL ) {
+                if( name != NULL
+                  && type != NULL ) {
                     window = WResFindResource( type, name, dir, NULL );
                     if( WResIsEmptyWindow( window ) ) {
                         WRES_ERROR( WRS_RES_NOT_FOUND );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include "read.h"
 #include "opcl.h"
 
+
 bool WResCheckWResFile( const char *filename )
 /********************************************/
 {
@@ -46,7 +48,7 @@ bool WResCheckWResFile( const char *filename )
         return( false );        /* assume it's not a WRES file */
     }
 
-    iswresfile = WResIsWResFile( fp );
+    iswresfile = ( WResReadResType( fp ) == RT_WATCOM );
 
     ResCloseFile( fp );
 

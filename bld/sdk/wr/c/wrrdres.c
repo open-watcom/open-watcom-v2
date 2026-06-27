@@ -54,7 +54,7 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
     ok = ((fp = ResOpenFileRO( filename )) != NULL);
 
     if( ok ) {
-        *is_wres = WResIsWResFile( fp );
+        *is_wres = ( WResReadResType( fp ) == RT_WATCOM );
     }
 
     if( ok ) {
@@ -63,7 +63,8 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
 
     if( ok ) {
         ok = !WResReadDir( fp, info->dir, &dup_discarded );
-        if( ok && dup_discarded ) {
+        if( ok
+          && dup_discarded ) {
             WRDisplayErrorMsg( WR_DUPRESDISCARD );
         }
     }

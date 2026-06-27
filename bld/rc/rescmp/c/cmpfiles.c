@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,6 @@ static int OpenFiles( FILE **fp1, FILE **fp2 )
 /* opens the files named in CmdLineParms and puts their file ids in */
 /* fileid1 and fileid2 */
 {
-    int         error;
-
     *fp1 = ResOpenFileRO( CmdLineParms.FileName1 );
     if( *fp1 == NULL ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName1 );
@@ -59,19 +58,18 @@ static int OpenFiles( FILE **fp1, FILE **fp2 )
         return( true );
     }
 
-    error = (!WResIsWResFile( *fp1 ));
-    if( error ) {
+    if( WResReadResType( *fp1 ) != RT_WATCOM ) {
         printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName1 );
-    } else {
-        error = (!WResIsWResFile( *fp2 ));
-        if( error ) {
-            printf( "File %s is not a Open Watcom .RES file\n",
+        return( true );
+    }
+    if( WResReadResType( *fp2 ) != RT_WATCOM ) {
+        printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName2 );
-        }
+        return( true );
     }
 
-    return( error );
+    return( false );
 }
 
 static void CloseFiles( FILE *fp1, FILE *fp2 )

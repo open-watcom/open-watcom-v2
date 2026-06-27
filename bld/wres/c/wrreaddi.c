@@ -201,7 +201,8 @@ static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
     /* read the header and check that it is valid */
     error = WResReadHeader( &head, fp );
     if( !error ) {
-        if( head.Magic[0] != WRESMAGIC0 || head.Magic[1] != WRESMAGIC1 ) {
+        if( head.Magic[0] != WRESMAGIC0
+          || head.Magic[1] != WRESMAGIC1 ) {
             error = WRES_ERROR( WRS_BAD_SIG );
         }
     }
@@ -272,7 +273,9 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
         }
     } else {
         head = MResReadResourceHeader( fp );
-        if( head == NULL ) error = true;
+        if( head == NULL ) {
+            error = true;
+        }
     }
     if( dup_discarded != NULL  ) {
         *dup_discarded = false;
@@ -291,13 +294,15 @@ static bool readMResDir( FILE *fp, WResDir currdir, bool *dup_discarded,
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/
         if( !error ) {
-            if( type->IsName == 0 && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
+            if( type->IsName == 0
+              && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = false;
             } else {
                 error = WResAddResource2( type, name, head->MemoryFlags,
                             WRESTELL( fp ), head->Size, currdir, NULL,
                             &dup, fileinfo );
-                if( error && !WResIsEmptyWindow( dup ) ) {
+                if( error
+                  && !WResIsEmptyWindow( dup ) ) {
                     error = false;
                     if( dup_discarded != NULL  ) {
                         *dup_discarded = true;
@@ -349,7 +354,7 @@ bool WResReadDir( FILE *fp, WResDir currdir, bool *dup_discarded )
 bool WResReadDir2( FILE *fp, WResDir currdir, bool *dup_discarded, void *fileinfo )
 {
     bool            error;
-    ResTypeInfo     restype;
+    WResResType     restype;
 
     /* var representing whether or not a duplicate dir entry was
      * discarded is set to false.
@@ -368,7 +373,7 @@ bool WResReadDir2( FILE *fp, WResDir currdir, bool *dup_discarded, void *fileinf
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
 
-    restype = WResFindResType( fp );
+    restype = WResReadResType( fp );
     if( restype == RT_WATCOM ) {
         error = readWResDir( fp, currdir, fileinfo );
     } else if( restype == RT_WIN16 ) {
