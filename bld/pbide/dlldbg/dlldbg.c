@@ -77,7 +77,7 @@ WINEXPORT LRESULT FAR WINAPI MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LP
 
     switch( msg ) {
     case WM_QUERYOPEN:
-        sprintf( fmtBuffer,
+        snprintf( fmtBuffer, sizeof( fmtBuffer ),
                 "You are currently debugging\n%s.\nDo you want to quit?",
                 dllName );
         rc = MessageBox( hwnd, fmtBuffer, APPNAME, MB_YESNO | MB_ICONQUESTION );
