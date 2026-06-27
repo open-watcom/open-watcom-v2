@@ -138,7 +138,7 @@ static char *StrUprCpyUni( char *dst, const char *src, unsigned length )
 } /* StrUprCpy */
 
 static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
-/****************************************************************************/
+/***************************************************************************/
 {
     WResIDName          *currname;
     StringItem16        *name16;
@@ -150,12 +150,12 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
     if( use_unicode ) {
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
-        StrUprCpyUni( &name32->Name, &currname->Name, currname->NumChars );
+        StrUprCpyUni( name32->Name, currname->Name, currname->NumChars );
         *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + sizeof( StringItem32 ) - 1;
     } else {
         name16 = *nextstr;
         name16->NumChars = currname->NumChars;
-        StrUprCpy( &name16->Name, &currname->Name, currname->NumChars );
+        StrUprCpy( name16->Name, currname->Name, currname->NumChars );
         *nextstr = (uint_8 *)(*nextstr) + currname->NumChars + sizeof( StringItem16 ) - 1;
     }
 } /* CopyString */
