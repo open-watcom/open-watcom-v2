@@ -199,7 +199,7 @@ static bool readWResDir( FILE *fp, WResDir currdir, void *fileinfo )
 
     WResSetTargetOS( &ext_head, WRES_OS_WIN16 );
     /* read the header and check that it is valid */
-    error = WResReadHeaderRecord( &head, fp );
+    error = WResReadHeader( &head, fp );
     if( !error ) {
         if( head.Magic[0] != WRESMAGIC0 || head.Magic[1] != WRESMAGIC1 ) {
             error = WRES_ERROR( WRS_BAD_SIG );

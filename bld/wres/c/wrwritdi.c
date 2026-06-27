@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -101,7 +102,7 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
         head.NumResources = currdir->NumResources;
         head.NumTypes = currdir->NumTypes;
         head.WResVer = WRESVERSION;
-        error = WResWriteHeaderRecord( &head, fp );
+        error = WResWriteHeader( &head, fp );
     }
     if( !error ) {
         memset( &ext_head, 0, sizeof( WResExtHeader ) );

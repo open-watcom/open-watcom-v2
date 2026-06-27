@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +58,7 @@ extern WResID               *WResReadWResID( FILE *fp );
 extern bool                 WResReadFixedWResID( WResID *name, FILE *fp );
 extern bool                 WResReadExtraWResID( WResID *name, FILE *fp );
 extern WResIDName           *WResReadWResIDName( FILE *fp );
-extern bool                 WResReadHeaderRecord( WResHeader *header, FILE *fp );
+extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *head, FILE *fp );
 extern bool                 WResIsWResFile( FILE *fp );
 extern ResTypeInfo          WResFindResType( FILE *fp );

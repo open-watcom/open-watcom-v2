@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,11 @@ static int CompareHeaders( FILE *fp1, FILE *fp2 )
     WResHeader      header1;
     WResHeader      header2;
 
-    error = WResReadHeaderRecord( &header1, fp1 );
+    error = WResReadHeader( &header1, fp1 );
     if( error ) {
         return( -1 );
     }
-    error = WResReadHeaderRecord( &header2, fp2 );
+    error = WResReadHeader( &header2, fp2 );
     if( error ) {
         return( -1 );
     }

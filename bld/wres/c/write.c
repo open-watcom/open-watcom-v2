@@ -230,15 +230,15 @@ bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
     return( false );
 }
 
-bool WResWriteHeaderRecord( const WResHeader *header, FILE *fp )
-/**************************************************************/
+bool WResWriteHeader( const WResHeader *header, FILE *fp )
+/********************************************************/
 {
     if( WRESSEEK( fp, 0L, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     if( WRESWRITE( fp, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
-} /* WResWriteHeaderRecord */
+} /* WResWriteHeader */
 
 bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp )
 /****************************************************************/
