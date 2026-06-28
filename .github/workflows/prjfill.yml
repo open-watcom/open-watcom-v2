@@ -17,8 +17,12 @@ jobs:
         run: |
           echo "📥 Fetching ALL items from project (bypassing 100 limit)..."
           
+          # Dynamically resolve the true project owner from the provided PAT token
+          PROJECT_OWNER=$(gh api user --jq '.login')
+          echo "👤 Project Owner resolved dynamically: $PROJECT_OWNER"
+
           # Automatically handle pagination to fetch up to 50,000 items from the project board
-          ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "@me" --format json --limit 50000)
+          ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "$PROJECT_OWNER" --format json --limit 50000)
           
           LENGTH=$(echo "$ITEMS" | jq '.items | length')
           echo "Found a total of $LENGTH items to check on the project board."
