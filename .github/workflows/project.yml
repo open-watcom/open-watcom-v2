@@ -6,74 +6,111 @@ on:
   pull_request_target:
     types: [opened, edited, reopened, closed]
 
+env:
+  GH_API_VERSION:     "2026-03-10" 
+  PROJECT_ID:         "PVT_kwHOAB7H7M4BZk7B"
+  UPDATEAT_FIELD_ID:  "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
+  REPOMARK_FIELD_ID:  "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
+  REPOMARK_OPTION_ID: "5f088986"
+
 jobs:
   online_sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Propagate Item to Project Database
+      # =========================================================================
+      # EXTRA TASK: Fetch global metadata for both event types
+      # =========================================================================
+      - name: Get common parameters
+        id:   conf
         env:
           GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
           PROJECT_URL: ${{ vars.GLOBAL_PROJECT_URL }}
-          ITEM_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
-          STATE: ${{ github.event.issue.state || github.event.pull_request.state }}
-          REPO_NAME: ${{ github.event.repository.name }}
-          GH_API_VERSION: "2026-03-10" 
-          PROJECT_ID: "PVT_kwHOAB7H7M4BZk7B"
-          UPDATEAT_FIELD_ID: "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
-          REPOMARK_FIELD_ID: "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
         run: |
-          # Dynamically resolve the true project owner from the provided PAT token
-          PROJECT_OWNER=$(gh api user --jq '.login')
-          echo "👤 Project Owner resolved dynamically: $PROJECT_OWNER"
+          # Resolve the true project owner from the provided PAT token
+          owner=$(gh api user --jq '.login')
+          echo "owner=$owner" >> "$GITHUB_OUTPUT"
+          echo "Project Owner resolved: $owner"
 
-          # 1. Extract the project number from your global variable URL (needed only for item-add)
-          PROJECT_NUMBER="${PROJECT_URL##*/}"
-          echo "🔄 Linking item to Project board #$PROJECT_NUMBER..."
+          # Extract the project number from your global variable URL
+          projnum="${PROJECT_URL##*/}"
+          echo "projnum=$projnum" >> "$GITHUB_OUTPUT"
+          echo "Project Number resolved: $projnum"
 
-          # 2. Add the item using the native GitHub CLI project system
-          ITEM_URL="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"
-          PRJ_ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$ITEM_URL" --format json --jq '.id')
-          echo "✅ Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
+          # Extract the project fields related data
+          field_data=$(gh project field-list "$projnum" --owner "$owner" --format json)
+          echo "DEBUG - Fields info: $field_data"
 
-          # 3. Handle the close event via refined ID extraction
-          if [ "$STATE" = "closed" ]; then
-            echo "🏁 Item is closed. Resolving structural field IDs..."
-            
-            # Fetch the field layout data structure using number for listing
-            FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json)
-            
-            # Parse the status field and target option values
-            STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
-            DONE_OPTION_ID=$(echo "$FIELD_DATA" | jq -r --arg f_id "$STATUS_FIELD_ID" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
+          status_id=$(echo "$field_data" | jq -r '.fields[] | select(.name == "Status") | .id')
+          echo "status_id=$status_id" >> "$GITHUB_OUTPUT"
+          echo "DEBUG - Status Field ID: $status_id"
 
-            echo "DEBUG - Status Field ID: $STATUS_FIELD_ID"
-            echo "DEBUG - Done Option ID: $DONE_OPTION_ID"
+          done_id=$(echo "$field_data" | jq -r --arg f_id "$status_id" '.fields[] | select(.id == $f_id) | .options[] | select(.name == "Done") | .id')
+          echo "done_id=$done_id" >> "$GITHUB_OUTPUT"
+          echo "DEBUG - Done Option ID: $done_id"
 
-            # Failsafe validation
-            if [ "$STATUS_FIELD_ID" = "null" ] || [ "$DONE_OPTION_ID" = "null" ]; then
-              echo "❌ Error: Could not resolve all required database metadata IDs."
-              exit 1
-            fi
-
-            echo "Moving item to Done column..."
-            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "$STATUS_FIELD_ID" --single-select-option-id "$DONE_OPTION_ID"
+          if [ "$status_id" = "null" ] || [ "$done_id" = "null" ]; then
+            echo "Error: Could not resolve all required database metadata IDs."
+            exit 1
           fi
 
-          # 4. Format the real update timestamp from the GitHub event context
-          RAW_TIME="${{ github.event.issue.updated_at || github.event.pull_request.updated_at }}"
-          ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
-          echo "⏰ Formatted issue timestamp: $ISO_STRING"
-
-          # 5. Write the timestamp string to your custom field using the --text parameter
-          echo "Writing timestamp to project..."
-          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING"
-
-          # 6. Determine the predefined Option ID for RepoMark based on the repository name
-          echo "📦 Source repository name: $REPO_NAME"
+      # =========================================================================
+      # TASK 1: Handle Issue Changes exclusively
+      # =========================================================================
+      - name: Propagate Issue to Project Database
+        if: github.event_name == 'issues'
+        env:
+          GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
+        run: |
+          echo "Project issue processing..."
           
-          # Condition to assign a static option ID based on the repository name
-          REPOMARK_OPTION_ID="5f088986"
+          PRJ_ITEM_ID=$(gh project item-add "${{ steps.conf.outputs.projnum }}" --owner "${{ steps.conf.outputs.owner }}" --url "${{ github.event.issue.html_url }}" --format json --jq '.id')
+          echo "Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
 
-          # 7. Write the selected option value to the RepoMark field
+          if [ "${{ github.event.issue.state }}" = "closed" ]; then
+            echo "Item is closed. Moving item to Done column..."
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.done_id }}"
+          fi
+
+          RAW_TIME="${{ github.event.issue.updated_at }}"
+          ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
+
+          echo "Formatted issue timestamp: $ISO_STRING"
+          echo "Writing timestamp to project..."
+
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "$UPDATEAT_FIELD_ID" --text "$ISO_STRING"
+
+          echo "📦 Source repository name: ${{ github.event.repository.name }}"
           echo "Updating RepoMark field..."
-          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID"
+
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "$REPOMARK_FIELD_ID" --single-select-option-id "$REPOMARK_OPTION_ID"
+
+      # =========================================================================
+      # TASK 2: Handle PR Changes exclusively
+      # =========================================================================
+      - name: Propagate PR to Project Database
+        if: github.event_name == 'pull_request_target'
+        env:
+          GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
+        run: |
+          echo "Project PR processing..."
+          
+          PRJ_ITEM_ID=$(gh project item-add "${{ steps.conf.outputs.projnum }}" --owner "${{ steps.conf.outputs.owner }}" --url "${{ github.event.pull_request.html_url }}" --format json --jq '.id')
+          echo "Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
+
+          if [ "${{ github.event.pull_request.state }}" = "closed" ]; then
+            echo "Item is closed. Moving item to Done column..."
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.done_id }}"
+          fi
+
+          RAW_TIME="${{ github.event.pull_request.updated_at }}"
+          ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M")
+
+          echo "Formatted PR timestamp: $ISO_STRING"
+          echo "Writing timestamp to project..."
+
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "$UPDATEAT_FIELD_ID" --text "$ISO_STRING"
+
+          echo "📦 Source repository name: ${{ github.event.repository.name }}"
+          echo "Updating RepoMark field..."
+
+          gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "$REPOMARK_FIELD_ID" --single-select-option-id "$REPOMARK_OPTION_ID"
