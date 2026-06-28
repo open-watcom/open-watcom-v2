@@ -33,11 +33,12 @@ jobs:
 
           # Extract the project number from your global variable URL
           projnum="${PROJECT_URL##*/}"
-          echo "number=$projnum" >> "$GITHUB_OUTPUT"
+          echo "projnum=$projnum" >> "$GITHUB_OUTPUT"
           echo "Project Number resolved: $projnum"
 
           # Extract the project fields related data
           field_data=$(gh project field-list "$projnum" --owner "$owner" --format json)
+          echo "DEBUG - Fields info: $field_data"
 
           status_id=$(echo "$field_data" | jq -r '.fields[] | select(.name == "Status") | .id')
           echo "status_id=$status_id" >> "$GITHUB_OUTPUT"
