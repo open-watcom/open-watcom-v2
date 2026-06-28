@@ -59,7 +59,7 @@ extern bool                 WResReadFixedWResID( WResID *name, FILE *fp );
 extern bool                 WResReadExtraWResID( WResID *name, FILE *fp );
 extern WResIDName           *WResReadWResIDName( FILE *fp );
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
-extern bool                 WResReadExtHeader( WResExtHeader *head, FILE *fp );
+extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );
 extern MResResourceHeader   *MResReadResourceHeader( FILE *fp );
 extern ResNameOrOrdinal     *ResReadNameOrOrdinal( FILE *fp );

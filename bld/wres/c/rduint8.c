@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,7 @@ bool ResReadUint8( uint_8 *newint, FILE *fp )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fp, newint, sizeof( uint_8 ) )) != sizeof( uint_8 ) )
+    if( (numread = WRESREAD( fp, newint, sizeof( *newint ) )) != sizeof( *newint ) )
         return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
