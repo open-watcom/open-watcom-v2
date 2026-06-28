@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,8 +82,8 @@ static bool writeTypeList( FILE *fp, WResTypeNode *currtype )
 bool WResWriteDir( FILE *fp, WResDir currdir )
 /********************************************/
 {
-    WResHeader      head;
-    WResExtHeader   ext_head;
+    WResHeader      header;
+    WResExtHeader   extheader;
     bool            error;
     long            diroffset;
 
@@ -93,20 +94,25 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
     } else {
         error = writeTypeList( fp, currdir->Head );
     }
+    if( !error ) {
+        if( WRESSEEK( fp, 0L, SEEK_SET ) ) {
+            error = WRES_ERROR( WRS_SEEK_FAILED );
+        }
+    }
     /* write out the file header */
     if( !error ) {
-        head.Magic[0] = WRESMAGIC0;
-        head.Magic[1] = WRESMAGIC1;
-        head.DirOffset = diroffset;
-        head.NumResources = currdir->NumResources;
-        head.NumTypes = currdir->NumTypes;
-        head.WResVer = WRESVERSION;
-        error = WResWriteHeaderRecord( &head, fp );
+        header.Magic[0] = WRESMAGIC0;
+        header.Magic[1] = WRESMAGIC1;
+        header.DirOffset = diroffset;
+        header.NumResources = currdir->NumResources;
+        header.NumTypes = currdir->NumTypes;
+        header.WResVer = WRESVERSION;
+        error = WResWriteHeader( &header, fp );
     }
     if( !error ) {
-        memset( &ext_head, 0, sizeof( WResExtHeader ) );
-        WResSetTargetOS( &ext_head, WResGetTargetOS( currdir ) );
-        error = WResWriteExtHeader( &ext_head, fp );
+        memset( &extheader, 0, sizeof( WResExtHeader ) );
+        WResSetTargetOS( &extheader, WResGetTargetOS( currdir ) );
+        error = WResWriteExtHeader( &extheader, fp );
     }
 
     /* leave the handle at the start of the file */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,11 @@
 
 #define UNI2ASCII(x)    ((char)((x) & 0xFF))
 
-typedef enum ResTypeInfo {
+typedef enum WResResType {
     RT_WATCOM,
     RT_WIN16,
     RT_WIN32
-} ResTypeInfo;
+} WResResType;
 
 extern bool WResReadFixedResRecord( WResResInfo *newres, FILE *fp );
 extern bool WResReadFixedResRecord1( WResResInfo1 *newres, FILE *fp );
@@ -57,10 +58,9 @@ extern WResID               *WResReadWResID( FILE *fp );
 extern bool                 WResReadFixedWResID( WResID *name, FILE *fp );
 extern bool                 WResReadExtraWResID( WResID *name, FILE *fp );
 extern WResIDName           *WResReadWResIDName( FILE *fp );
-extern bool                 WResReadHeaderRecord( WResHeader *header, FILE *fp );
+extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *head, FILE *fp );
-extern bool                 WResIsWResFile( FILE *fp );
-extern ResTypeInfo          WResFindResType( FILE *fp );
+extern WResResType          WResReadResType( FILE *fp );
 extern MResResourceHeader   *MResReadResourceHeader( FILE *fp );
 extern ResNameOrOrdinal     *ResReadNameOrOrdinal( FILE *fp );
 extern ResNameOrOrdinal     *ResRead32NameOrOrdinal( FILE *fp );

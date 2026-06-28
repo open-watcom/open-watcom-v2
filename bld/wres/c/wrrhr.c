@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResReadHeaderRecord( WResHeader *header, FILE *fp )
-/*******************************************************/
+bool WResReadHeader( WResHeader *header, FILE *fp )
+/*************************************************/
 {
     size_t          numread;
 
@@ -49,12 +50,12 @@ bool WResReadHeaderRecord( WResHeader *header, FILE *fp )
     return( false );
 }
 
-bool WResReadExtHeader( WResExtHeader *head, FILE *fp )
-/*****************************************************/
+bool WResReadExtHeader( WResExtHeader *extheader, FILE *fp )
+/**********************************************************/
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fp, head, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
+    if( (numread = WRESREAD( fp, extheader, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
         return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }

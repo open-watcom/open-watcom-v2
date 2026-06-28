@@ -230,20 +230,18 @@ bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
     return( false );
 }
 
-bool WResWriteHeaderRecord( const WResHeader *header, FILE *fp )
-/**************************************************************/
+bool WResWriteHeader( const WResHeader *header, FILE *fp )
+/********************************************************/
 {
-    if( WRESSEEK( fp, 0L, SEEK_SET ) )
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
     if( WRESWRITE( fp, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
-} /* WResWriteHeaderRecord */
+} /* WResWriteHeader */
 
-bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp )
+bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /****************************************************************/
 {
-    if( WRESWRITE( fp, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
+    if( WRESWRITE( fp, extheader, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
@@ -348,50 +346,50 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     return( headersize + padding );
 }
 
-bool MResWriteResourceHeader( MResResourceHeader *currhead, FILE *fp, bool iswin32 )
-/**********************************************************************************/
+bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 )
+/********************************************************************************/
 {
     bool        error;
 
     if( !iswin32 ) {
-        error = ResWriteNameOrOrdinal( currhead->Type, false, fp );
+        error = ResWriteNameOrOrdinal( header->Type, false, fp );
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Name, false, fp );
+            error = ResWriteNameOrOrdinal( header->Name, false, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->MemoryFlags, fp );
+            error = ResWriteUint16( header->MemoryFlags, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Size, fp );
+            error = ResWriteUint32( header->Size, fp );
         }
     } else {
-        error = ResWriteUint32( currhead->Size, fp );
+        error = ResWriteUint32( header->Size, fp );
         if( !error ) {
-            error = ResWriteUint32( MResFindHeaderSize( currhead, true ), fp  );
+            error = ResWriteUint32( MResFindHeaderSize( header, true ), fp  );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Type, true, fp );
+            error = ResWriteNameOrOrdinal( header->Type, true, fp );
         }
         if( !error ) {
-            error = ResWriteNameOrOrdinal( currhead->Name, true, fp );
+            error = ResWriteNameOrOrdinal( header->Name, true, fp );
         }
         if( !error ) {
             error = ResWritePadDWord( fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->DataVersion, fp );
+            error = ResWriteUint32( header->DataVersion, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->MemoryFlags, fp );
+            error = ResWriteUint16( header->MemoryFlags, fp );
         }
         if( !error ) {
-            error = ResWriteUint16( currhead->LanguageId, fp );
+            error = ResWriteUint16( header->LanguageId, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Version, fp );
+            error = ResWriteUint32( header->Version, fp );
         }
         if( !error ) {
-            error = ResWriteUint32( currhead->Characteristics, fp );
+            error = ResWriteUint32( header->Characteristics, fp );
         }
     }
 

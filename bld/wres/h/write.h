@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,13 +51,13 @@ extern bool WResWriteResRecord( const WResResInfo *res, FILE *fp );
 extern bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp );
 extern bool WResWriteWResID( const WResID *name, FILE *fp );
 extern bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp );
-extern bool WResWriteHeaderRecord( const WResHeader *header, FILE *fp );
-extern bool WResWriteExtHeader( const WResExtHeader *ext_head, FILE *fp );
+extern bool WResWriteHeader( const WResHeader *header, FILE *fp );
+extern bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp );
 extern void MResFreeResourceHeader( MResResourceHeader *oldheader );
 extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp );
 extern bool ResWriteString( const char *string, bool use_unicode, FILE *fp );
 extern bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t len );
 extern void WriteInitStatics( void );
-extern bool MResWriteResourceHeader( MResResourceHeader *currhead, FILE *fp, bool iswin32 );
+extern bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 );
 
 #endif
