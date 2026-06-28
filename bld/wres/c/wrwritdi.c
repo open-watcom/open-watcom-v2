@@ -94,6 +94,11 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
     } else {
         error = writeTypeList( fp, currdir->Head );
     }
+    if( !error ) {
+        if( WRESSEEK( fp, 0L, SEEK_SET ) ) {
+            error = WRES_ERROR( WRS_SEEK_FAILED );
+        }
+    }
     /* write out the file header */
     if( !error ) {
         header.Magic[0] = WRESMAGIC0;
