@@ -88,6 +88,7 @@ jobs:
       # =========================================================================
       - name: Propagate PR to Project Database
         if: github.event_name == 'pull_request_target'
+        env:
           GH_TOKEN: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
         run: |
           echo "Project PR processing..."
