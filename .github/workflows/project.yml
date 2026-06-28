@@ -4,7 +4,7 @@ on:
     types: [opened, edited, reopened, closed]
   #pull_request:
   pull_request_target:
-    types: [opened, edited, reopened, closed]
+  #  types: [opened, edited, synchronize, reopened, closed]
 
 env:
   GH_API_VERSION:     "2026-03-10" 
