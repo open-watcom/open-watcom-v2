@@ -68,7 +68,7 @@ jobs:
 
           if [ "${{ github.event.issue.state }}" = "closed" ]; then
             echo "Item is closed. Moving item to Done column..."
-            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.status_id }}"
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.done_id }}"
           fi
 
           RAW_TIME="${{ github.event.issue.updated_at }}"
@@ -99,7 +99,7 @@ jobs:
 
           if [ "${{ github.event.pull_request.state }}" = "closed" ]; then
             echo "Item is closed. Moving item to Done column..."
-            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.status_id }}"
+            gh project item-edit --id "$PRJ_ITEM_ID" --project-id "$PROJECT_ID" --field-id "${{ steps.conf.outputs.status_id }}" --single-select-option-id "${{ steps.conf.outputs.done_id }}"
           fi
 
           RAW_TIME="${{ github.event.pull_request.updated_at }}"
