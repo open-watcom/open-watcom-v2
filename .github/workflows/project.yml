@@ -21,13 +21,17 @@ jobs:
           UPDATEAT_FIELD_ID: "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
           REPOMARK_FIELD_ID: "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
         run: |
+          # Dynamically resolve the true project owner from the provided PAT token
+          PROJECT_OWNER=$(gh api user --jq '.login')
+          echo "👤 Project Owner resolved dynamically: $PROJECT_OWNER"
+
           # 1. Extract the project number from your global variable URL (needed only for item-add)
           PROJECT_NUMBER="${PROJECT_URL##*/}"
           echo "🔄 Linking item to Project board #$PROJECT_NUMBER..."
 
           # 2. Add the item using the native GitHub CLI project system
           ITEM_URL="${{ github.event.issue.html_url || github.event.pull_request.html_url }}"
-          PRJ_ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "@me" --url "$ITEM_URL" --format json --jq '.id')
+          PRJ_ITEM_ID=$(gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --url "$ITEM_URL" --format json --jq '.id')
           echo "✅ Item linked successfully. Project Item ID: $PRJ_ITEM_ID"
 
           # 3. Handle the close event via refined ID extraction
@@ -35,7 +39,7 @@ jobs:
             echo "🏁 Item is closed. Resolving structural field IDs..."
             
             # Fetch the field layout data structure using number for listing
-            FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "@me" --format json)
+            FIELD_DATA=$(gh project field-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json)
             
             # Parse the status field and target option values
             STATUS_FIELD_ID=$(echo "$FIELD_DATA" | jq -r '.fields[] | select(.name == "Status") | .id')
