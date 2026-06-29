@@ -40,17 +40,14 @@
 static int CompareHeaders( FILE *fp1, FILE *fp2 )
 /***********************************************/
 {
-    int             error;
-    int             retcode;
+    int             retcode;    /* -1: error  0: same  1: different */
     WResHeader      header1;
     WResHeader      header2;
 
-    error = WResReadHeader( &header1, fp1 );
-    if( error ) {
+    if( WResReadHeader( &header1, fp1 ) ) {
         return( -1 );
     }
-    error = WResReadHeader( &header2, fp2 );
-    if( error ) {
+    if( WResReadHeader( &header2, fp2 ) ) {
         return( -1 );
     }
 
@@ -79,7 +76,6 @@ int CompareContents( FILE *fp1, FILE *fp2 )
     int             retcode;        /* -1: error  0: same  1: different */
     int             oldretcode;
     bool            dup_discarded;
-    int             error;
     WResDir         dir1;
     WResDir         dir2;
 
@@ -90,7 +86,7 @@ int CompareContents( FILE *fp1, FILE *fp2 )
 
     oldretcode = retcode;
 
-    if( WResReadDir( fp1, &dir1, &dup_discarded )  )
+    if( WResReadDir( fp1, &dir1, &dup_discarded ) )
         return( -1 );
     if( dup_discarded ) {
         WResFreeDir( dir1 );
