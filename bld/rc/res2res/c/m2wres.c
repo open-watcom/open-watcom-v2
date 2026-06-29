@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +108,7 @@ bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp )
     bool                    error;
 
     outdir = WResInitDir();
-    if( WResDirInitError( outdir ) ) {
+    if( outdir == NULL ) {
         return( true );
     }
 
