@@ -128,7 +128,7 @@ bool ConvertWResToMRes( FILE *in_fp, FILE *out_fp )
         return( true );
     }
 
-    error = WResReadDir( in_fp, indir, NULL );
+    error = WResReadDir( in_fp, &indir, NULL );
 
     if( !error ) {
         error = ConvertWResources( in_fp, indir, out_fp );

@@ -255,7 +255,7 @@ extern int DumpFile( void )
         FatalError( "Out of memory" );
     }
 
-    error = WResReadDir( fp, dir, NULL );
+    error = WResReadDir( fp, &dir, NULL );
     if (error) {
         puts( "Unable to read directory" );
         retcode = 2;

@@ -82,7 +82,7 @@ static bool copyResourcesFromRes( const char *full_filename )
         error = true;
     } else {
         dir = WResInitDir();
-        error = WResReadDir( fp, dir, &dup_discarded );
+        error = WResReadDir( fp, &dir, &dup_discarded );
         if( error ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:

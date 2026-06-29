@@ -62,7 +62,7 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
     }
 
     if( ok ) {
-        ok = !WResReadDir( fp, info->dir, &dup_discarded );
+        ok = !WResReadDir( fp, &info->dir, &dup_discarded );
         if( ok
           && dup_discarded ) {
             WRDisplayErrorMsg( WR_DUPRESDISCARD );

@@ -100,13 +100,13 @@ int CompareContents( FILE *fp1, FILE *fp2 )
         return( -1 );
     }
 
-    error = WResReadDir( fp1, dir1, &dup_discarded );
+    error = WResReadDir( fp1, &dir1, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
-    error = WResReadDir( fp2, dir2, &dup_discarded );
+    error = WResReadDir( fp2, &dir2, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );

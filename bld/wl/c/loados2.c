@@ -932,7 +932,7 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
         if( res_fp != NULL ) {
             dir = WResInitDir();
             if( dir != NULL ) {
-                error = WResReadDir( res_fp, dir, &dup_discarded );
+                error = WResReadDir( res_fp, &dir, &dup_discarded );
                 if( error ) {
                     LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
                     WResFreeDir( dir );

@@ -95,7 +95,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
             goto HANDLE_ERROR;
         }
         resfile->Dir = WResInitDir();
-        error = WResReadDir2( resfile->fp, resfile->Dir, &dup_discarded, resfile );
+        error = WResReadDir2( resfile->fp, &resfile->Dir, &dup_discarded, resfile );
         if( error ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:

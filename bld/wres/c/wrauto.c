@@ -56,7 +56,7 @@ char *WResGetAutoDep( const char *fname )
     if( fp != NULL ) {
         if( WResReadResType( fp ) == RT_WATCOM
           && (dir = WResInitDir()) != NULL ) {
-            if( !WResReadDir( fp, dir, &dup_discarded ) ) {
+            if( !WResReadDir( fp, &dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );
                 type = WResIDFromNum( DEP_LIST_TYPE );
                 if( name != NULL
