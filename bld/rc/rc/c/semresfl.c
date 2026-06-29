@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,12 +76,12 @@ static bool copyResourcesFromRes( const char *full_filename )
     char                *buffer;
     bool                error;
 
-    dir = WResInitDir();
     fp = RcIoOpenInputBin( full_filename );
     if( fp == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         error = true;
     } else {
+        dir = WResInitDir();
         error = WResReadDir( fp, dir, &dup_discarded );
         if( error ) {
             switch( LastWresStatus() ) {
@@ -107,9 +107,9 @@ static bool copyResourcesFromRes( const char *full_filename )
                 MemFree( buffer );
             }
         }
+        WResFreeDir( dir );
         RcIoCloseInputBin( fp );
     }
-    WResFreeDir( dir );
     if( error ) {
         ErrorHasOccured = true;
     }

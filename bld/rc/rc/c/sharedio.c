@@ -88,13 +88,13 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
         resfile = MemAllocSafe( sizeof( ResFileInfo ) );
         resfile->next = *presfiles;
         *presfiles = resfile;
-        resfile->Dir = WResInitDir();
         resfile->name = resnames->name;
         resfile->fp = ResOpenFileRO( resfile->name );
         if( resfile->fp == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             goto HANDLE_ERROR;
         }
+        resfile->Dir = WResInitDir();
         error = WResReadDir2( resfile->fp, resfile->Dir, &dup_discarded, resfile );
         if( error ) {
             switch( LastWresStatus() ) {
