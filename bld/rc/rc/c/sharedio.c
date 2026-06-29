@@ -77,7 +77,6 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
     ResFileInfo     *resfile;
     WResID          *res_name;
     WResID          *res_type;
-    bool            error;
     bool            dup_discarded;
     WResTargetOS    res_os;
 
@@ -95,8 +94,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             goto HANDLE_ERROR;
         }
-        error = WResReadDir2( resfile->fp, &resfile->Dir, &dup_discarded, resfile );
-        if( error ) {
+        if( WResReadDir2( resfile->fp, &resfile->Dir, &dup_discarded, resfile ) ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:
                 RcError( ERR_INVALID_RES, resfile->name );
