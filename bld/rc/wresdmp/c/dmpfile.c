@@ -234,7 +234,6 @@ static int DumpDir( WResDir dir, FILE *fp )
 extern int DumpFile( void )
 /*************************/
 {
-    int             error;
     int             retcode;
     FILE            *fp;
     WResDir         dir;
@@ -250,13 +249,7 @@ extern int DumpFile( void )
         puts( "MS format .RES file" );
     }
 
-    dir = WResInitDir();
-    if( dir == NULL ) {
-        FatalError( "Out of memory" );
-    }
-
-    error = WResReadDir( fp, &dir, NULL );
-    if (error) {
+    if( WResReadDir( fp, &dir, NULL ) ) {
         puts( "Unable to read directory" );
         retcode = 2;
     } else {
@@ -268,9 +261,9 @@ extern int DumpFile( void )
         puts( "Type                  Name             Language     Flags" );
         puts( "====                  ====             ========     =====" );
         retcode = DumpDir( dir, fp );
+        WResFreeDir( dir );
     }
 
-    WResFreeDir( dir );
 
     ResCloseFile( fp );
 

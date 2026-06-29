@@ -365,24 +365,29 @@ bool WResReadDir2( FILE *fp, WResDir *pdir, bool *dup_discarded, void *fileinfo 
         *dup_discarded = false;
     }
 
-    /* get rid of any directory info that is already in memory */
-    dir = *pdir;
-    if( dir->Head != NULL ) {
-        __FreeTypeList( dir );
-    }
-
-    /* seek to the start of the file */
-    if( WRESSEEK( fp, 0, SEEK_SET ) ) {
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    }
-    res_type = WResReadResType( fp );
-    if( res_type == RT_WATCOM ) {
-        error = readWResDir( fp, dir, fileinfo );
-    } else if( res_type == RT_WIN16 ) {
-        error = readMResDir( fp, dir, dup_discarded, false, fileinfo );
+    dir = WResInitDir();
+    if( dir == NULL ) {
+        error = true;
     } else {
-        error = readMResDir( fp, dir, dup_discarded, true, fileinfo );
+        /* seek to the start of the file */
+        if( WRESSEEK( fp, 0, SEEK_SET ) ) {
+            error = WRES_ERROR( WRS_SEEK_FAILED );
+        } else {
+            res_type = WResReadResType( fp );
+            if( res_type == RT_WATCOM ) {
+                error = readWResDir( fp, dir, fileinfo );
+            } else if( res_type == RT_WIN16 ) {
+                error = readMResDir( fp, dir, dup_discarded, false, fileinfo );
+            } else {
+                error = readMResDir( fp, dir, dup_discarded, true, fileinfo );
+            }
+        }
+        if( error ) {
+            WRESFREE( dir );
+            dir = NULL;
+        }
     }
+    *pdir = dir;
     return( error );
 
 } /* WResReadDir */

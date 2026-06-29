@@ -149,9 +149,6 @@ bool InitResources2( WResDir *dir, PHANDLE_INFO hinfo )
 /*****************************************************/
 /* return true if error */
 {
-    *dir = WResInitDir();
-    if( *dir == NULL )
-        return( true );
     return( WResReadDir( hinfo->fp, dir, NULL ) );
 }
 

@@ -81,7 +81,6 @@ static bool copyResourcesFromRes( const char *full_filename )
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         error = true;
     } else {
-        dir = WResInitDir();
         error = WResReadDir( fp, &dir, &dup_discarded );
         if( error ) {
             switch( LastWresStatus() ) {
@@ -106,8 +105,8 @@ static bool copyResourcesFromRes( const char *full_filename )
                 }
                 MemFree( buffer );
             }
+            WResFreeDir( dir );
         }
-        WResFreeDir( dir );
         RcIoCloseInputBin( fp );
     }
     if( error ) {

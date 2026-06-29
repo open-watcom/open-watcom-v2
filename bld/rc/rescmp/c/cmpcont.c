@@ -90,24 +90,17 @@ int CompareContents( FILE *fp1, FILE *fp2 )
 
     oldretcode = retcode;
 
-    dir1 = WResInitDir();
-    if( dir1 == NULL ) {
+    if( WResReadDir( fp1, &dir1, &dup_discarded )  )
         return( -1 );
-    }
-    dir2 = WResInitDir();
-    if( dir2 == NULL ) {
+    if( dup_discarded ) {
         WResFreeDir( dir1 );
         return( -1 );
     }
-
-    error = WResReadDir( fp1, &dir1, &dup_discarded );
-    if( error || dup_discarded ) {
+    if( WResReadDir( fp2, &dir2, &dup_discarded ) ) {
         WResFreeDir( dir1 );
-        WResFreeDir( dir2 );
         return( -1 );
     }
-    error = WResReadDir( fp2, &dir2, &dup_discarded );
-    if( error || dup_discarded ) {
+    if( dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );

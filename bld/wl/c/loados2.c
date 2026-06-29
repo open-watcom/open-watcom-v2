@@ -923,31 +923,24 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
     WResDir     dir;
     FILE        *res_fp;
     bool        dup_discarded;
-    bool        error;
 
     dir = NULL;
     res_fp = NULL;
     if( FmtData.resource != NULL ) {
         res_fp = POSIX2FP( QOpenR( FmtData.resource ) );
         if( res_fp != NULL ) {
-            dir = WResInitDir();
-            if( dir != NULL ) {
-                error = WResReadDir( res_fp, &dir, &dup_discarded );
-                if( error ) {
-                    LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
-                    WResFreeDir( dir );
-                    dir = NULL;
-                } else {
-                    outRes->Dir.NumTypes = dir->NumTypes;
-                    outRes->Dir.NumResources = dir->NumResources;
-                    outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
+            if( WResReadDir( res_fp, &dir, &dup_discarded ) ) {
+                LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
+            } else {
+                outRes->Dir.NumTypes = dir->NumTypes;
+                outRes->Dir.NumResources = dir->NumResources;
+                outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
                                         outRes->Dir.NumResources * sizeof( resource_record ) +
                                         2 * sizeof( unsigned_16 );
-                    /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
-                    outRes->Dir.Head = NULL;
-                    outRes->Dir.Tail = NULL;
-                    StringBlockBuild( &outRes->Str, dir, false );
-                }
+                /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
+                outRes->Dir.Head = NULL;
+                outRes->Dir.Tail = NULL;
+                StringBlockBuild( &outRes->Str, dir, false );
             }
         }
     }
