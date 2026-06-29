@@ -36,15 +36,30 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 bool WResReadHeader( WResHeader *header, FILE *fp )
 /*************************************************/
 {
-    size_t          numread;
+    char        tmp[sizeof( WResHeader_X )];
+    char        *p;
+    size_t      numread;
 
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    if( (numread = WRESREAD( fp, header, sizeof( WResHeader ) )) != sizeof( WResHeader ) )
+    if( (numread = WRESREAD( fp, tmp, sizeof( tmp ) )) != sizeof( tmp ) )
         return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    p = tmp;
+    header->Magic[0] = MGET_LE_U32( p );
+    p += sizeof( uint_32 );
+    header->Magic[1] = MGET_LE_U32( p );
+    p += sizeof( uint_32 );
+    header->DirOffset = MGET_LE_U32( p );
+    p += sizeof( uint_32 );
+    header->NumResources = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    header->NumTypes = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    header->WResVer = MGET_LE_U16( p );
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
@@ -53,9 +68,23 @@ bool WResReadHeader( WResHeader *header, FILE *fp )
 bool WResReadExtHeader( WResExtHeader *extheader, FILE *fp )
 /**********************************************************/
 {
+    char        tmp[sizeof( WResExtHeader )];
+    char        *p;
     size_t      numread;
 
-    if( (numread = WRESREAD( fp, extheader, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
+    if( (numread = WRESREAD( fp, tmp, sizeof( tmp ) )) != sizeof( tmp ) )
         return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    p = tmp;
+    extheader->TargetOS = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    extheader->reserved[0] = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    extheader->reserved[1] = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    extheader->reserved[2] = MGET_LE_U16( p );
+    p += sizeof( uint_16 );
+    extheader->reserved[3] = MGET_LE_U16( p );
+    if( WRESSEEK( fp, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 }

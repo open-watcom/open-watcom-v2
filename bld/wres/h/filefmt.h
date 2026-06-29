@@ -43,6 +43,15 @@ typedef enum {
 } WResTargetOS;
 
 #include "pushpck1.h"
+typedef struct WResHeader_X {
+    uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
+    uint_32         DirOffset;      /* offset to the start of the directory */
+    uint_16         NumResources;   /* number of resourses in the file */
+    uint_16         NumTypes;       /* number of different types of resources in file */
+    uint_16         WResVer;        /* WRESVERSION */
+} _WCUNALIGNED WResHeader_X;
+#include "poppck.h"
+
 typedef struct WResHeader {
     uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
     uint_32         DirOffset;      /* offset to the start of the directory */
@@ -56,6 +65,7 @@ typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
     uint_16         reserved[4];    /* reserved for future use */
 } WResExtHeader;
 
+#include "pushpck1.h"
 typedef struct WResIDName {         /* this is a "Pascal style" string */
     uint_16         NumChars;       /* length */
     char            Name[1];        /* followed by that many characters */

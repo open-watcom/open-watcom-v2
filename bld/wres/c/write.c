@@ -233,7 +233,22 @@ bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 bool WResWriteHeader( const WResHeader *header, FILE *fp )
 /********************************************************/
 {
-    if( WRESWRITE( fp, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) )
+    char    tmp[sizeof( WResHeader_X )];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_32( p, header->Magic[0] );
+    p += sizeof( uint_32 );
+    MPUT_LE_32( p, header->Magic[1] );
+    p += sizeof( uint_32 );
+    MPUT_LE_32( p, header->DirOffset );
+    p += sizeof( uint_32 );
+    MPUT_LE_16( p, header->NumResources );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, header->NumTypes );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, header->WResVer );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 } /* WResWriteHeader */
@@ -241,7 +256,20 @@ bool WResWriteHeader( const WResHeader *header, FILE *fp )
 bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /****************************************************************/
 {
-    if( WRESWRITE( fp, extheader, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
+    char    tmp[sizeof( WResExtHeader )];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_16( p, extheader->TargetOS );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[0] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[1] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[2] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[3] );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
