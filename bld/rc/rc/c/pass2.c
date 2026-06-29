@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,7 @@ static int computeShiftCount( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *r
 
     num_segs = src->u.NEInfo.WinHead.segments;
     if( ! CmdLineParms.NoResFile ) {
-        num_segs += WResGetNumResources( res->Dir );
+        num_segs += res->Dir->NumResources;
     }
 
     shift_count = FindShiftCount( filelen, num_segs );

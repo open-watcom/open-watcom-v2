@@ -111,7 +111,7 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
     }
     if( !error ) {
         memset( &extheader, 0, sizeof( WResExtHeader ) );
-        WResSetTargetOS( &extheader, WResGetTargetOS( currdir ) );
+        extheader.TargetOS = currdir->TargetOS;
         error = WResWriteExtHeader( &extheader, fp );
     }
 

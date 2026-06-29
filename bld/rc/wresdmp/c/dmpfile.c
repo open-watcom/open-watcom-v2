@@ -213,7 +213,7 @@ static int DumpDir( WResDir dir, FILE *fp )
     if( WResIsEmpty( dir ) ) {
         printf( "Directory in file %s is empty\n", CmdLineParms.FileName );
     } else {
-        res_os = WResGetTargetOS( dir );
+        res_os = dir->TargetOS;
         wind = WResFirstResource( dir );
         while( !WResIsLastResource( wind, dir ) ) {
             error = DumpResource( wind, fp, res_os );
@@ -260,7 +260,7 @@ extern int DumpFile( void )
         puts( "Unable to read directory" );
         retcode = 2;
     } else {
-        if( WResGetTargetOS( dir ) == WRES_OS_WIN16 ) {
+        if( dir->TargetOS == WRES_OS_WIN16 ) {
             puts( "Target OS: Win16" );
         } else {
             puts( "Target OS: Win32" );

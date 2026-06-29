@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +125,7 @@ WRFileType WRIdentifyRESFile( const char *file )
     ok = WRLoadResDirFromRES( &info, &is_wres );
 
     if( ok ) {
-        switch( WResGetTargetOS( info.dir ) ) {
+        switch( info.dir->TargetOS ) {
         case WRES_OS_WIN16:
             if( is_wres ) {
                 ftype = WR_WIN16W_RES;

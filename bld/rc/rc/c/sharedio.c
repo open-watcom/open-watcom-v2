@@ -123,7 +123,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
         WResIDFree( res_name );
         WResIDFree( res_type );
 
-        res_os = WResGetTargetOS( resfile->Dir );
+        res_os = resfile->Dir->TargetOS;
         switch( type ) {
         case EXE_TYPE_NE_WIN:
             if( res_os != WRES_OS_WIN16 ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -306,7 +306,7 @@ static bool PEResDirBuild( PEResDir *res, WResDir dir )
     } else {
         StringBlockBuild( &res->String, dir, true );
         res->DirSize = sizeof( resource_dir_header );
-        PEResDirEntryInit( &res->Root, WResGetNumTypes( dir ) );
+        PEResDirEntryInit( &res->Root, dir->NumTypes );
         for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
             if( WResIsFirstResOfType( wind ) ) {
                 if( AddType( res, WResGetTypeInfo( wind ) ) ) {

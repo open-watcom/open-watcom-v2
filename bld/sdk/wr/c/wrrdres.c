@@ -91,7 +91,7 @@ bool WRLoadResourceFromRES( WRInfo *info )
     ok = WRLoadResDirFromRES( info, &is_wres );
 
     if( ok ) {
-        target_os = WResGetTargetOS( info->dir );
+        target_os = info->dir->TargetOS;
         target = WR_INVALID_FILE;
         switch( target_os ) {
         case WRES_OS_WIN16:
@@ -156,7 +156,7 @@ bool WRLoadResourceFrom_RC( WRInfo *info )
     }
 
     if( ok ) {
-        target_os = WResGetTargetOS( info->dir );
+        target_os = info->dir->TargetOS;
         target = WR_INVALID_FILE;
         switch( target_os ) {
         case WRES_OS_WIN16:

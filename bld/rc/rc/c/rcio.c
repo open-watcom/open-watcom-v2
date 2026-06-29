@@ -503,11 +503,11 @@ static bool Pass1InitRes( void )
     }
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-        WResSetTargetOS( CurrResFile.dir, WRES_OS_WIN16 );
+        CurrResFile.dir->TargetOS = WRES_OS_WIN16;
     } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        WResSetTargetOS( CurrResFile.dir, WRES_OS_WIN32 );
+        CurrResFile.dir->TargetOS = WRES_OS_WIN32;
     } else {
-        WResSetTargetOS( CurrResFile.dir, WRES_OS_OS2 );
+        CurrResFile.dir->TargetOS = WRES_OS_OS2;
     }
 
     if( CmdLineParms.MSResFormat ) {

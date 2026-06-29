@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -69,8 +69,8 @@ void InitWINResTable( ExeFileInfo *dst, ResFileInfo *res )
         str->StringList = NULL;
 
     } else {
-        resdir->NumTypes = WResGetNumTypes( dir );
-        resdir->NumResources = WResGetNumResources( dir );
+        resdir->NumTypes = dir->NumTypes;
+        resdir->NumResources = dir->NumResources;
         /*
          * the 2 uint_16 are the resource shift count and the type 0 record
          */

@@ -938,8 +938,8 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
                     WResFreeDir( dir );
                     dir = NULL;
                 } else {
-                    outRes->Dir.NumTypes = WResGetNumTypes( dir );
-                    outRes->Dir.NumResources = WResGetNumResources( dir );
+                    outRes->Dir.NumTypes = dir->NumTypes;
+                    outRes->Dir.NumResources = dir->NumResources;
                     outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
                                         outRes->Dir.NumResources * sizeof( resource_record ) +
                                         2 * sizeof( unsigned_16 );

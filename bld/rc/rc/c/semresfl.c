@@ -96,7 +96,7 @@ static bool copyResourcesFromRes( const char *full_filename )
                 break;
             }
         } else {
-            if( WResGetTargetOS( dir ) != WResGetTargetOS( CurrResFile.dir ) ) {
+            if( dir->TargetOS != CurrResFile.dir->TargetOS ) {
                 RcError( ERR_RES_OS_MISMATCH, full_filename );
                 error = true;
             } else {

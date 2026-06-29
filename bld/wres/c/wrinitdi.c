@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,7 +47,7 @@ WResDir WResInitDir( void )
     } else {
         newdir->NumResources = 0;
         newdir->NumTypes = 0;
-        WResSetTargetOS( newdir, WRES_OS_WIN16 );
+        newdir->TargetOS = WRES_OS_WIN16;
         newdir->Head = NULL;
         newdir->Tail = NULL;
     }

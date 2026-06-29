@@ -237,7 +237,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
         /*
          * set the initial list_len to be the max possible
          */
-        list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
+        list_len = dir->NumTypes + dir->NumResources;
         str->UseUnicode = use_unicode;
         str->StringList = MemAllocSafe( list_len * sizeof( void * ) );
 
