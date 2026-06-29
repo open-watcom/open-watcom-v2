@@ -70,16 +70,6 @@
 
 #define ARRAYSIZE(a)    (sizeof( a ) / sizeof( a[0] ))
 
-#include "pushpck1.h"
-typedef struct WResHeader {
-    uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
-    uint_32     DirOffset;      /* offset to the start of the directory */
-    uint_16     NumResources;   /* number of resourses in the file */
-    uint_16     NumTypes;       /* number of different types of resources in file */
-    uint_16     WResVer;        /* WRESVERSION */
-} WResHeader;
-#include "poppck.h"
-
 typedef enum {
     WRAP_NONE,
     WRAP_WATCOM,
@@ -274,14 +264,14 @@ static bool IsSymResFile( FILE *fp, bool resfile )
 
 static bool IsResMagic( FILE *fp, bool resfile )
 {
-    WResHeader          wheader;
+    uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
 
     if( resfile ) {
         fseek( fp, 0, SEEK_SET );
-        if( fread( &wheader, 1, sizeof( wheader ), fp ) != sizeof( wheader ) )
+        if( fread( Magic, 1, sizeof( Magic ), fp ) != sizeof( Magic ) )
             return( false );
-        if( (wheader.Magic[0] == WRESMAGIC0) || (wheader.Magic[0] == WRESMICRO0) ) {
-            if( (wheader.Magic[1] == WRESMAGIC1) || (wheader.Magic[1] >> 16 == WRESMICRO1) ) {
+        if( (Magic[0] == WRESMAGIC0) || (Magic[0] == WRESMICRO0) ) {
+            if( (Magic[1] == WRESMAGIC1) || (Magic[1] >> 16 == WRESMICRO1) ) {
                 return( true );
             }
         }
