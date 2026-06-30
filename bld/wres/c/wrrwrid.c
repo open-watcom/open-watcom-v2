@@ -32,6 +32,7 @@
 
 
 #include <string.h>
+#include <stddef.h>
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
@@ -43,6 +44,7 @@ void *ResReadWResID( unsigned offs, FILE *fp )
 {
     WResID          *idptr;
     uint_8          isname;
+    char            *ptr;
 
     if( ResReadUint8( &isname, fp ) )
         return( NULL );
@@ -54,7 +56,7 @@ void *ResReadWResID( unsigned offs, FILE *fp )
     if( ptr == NULL ) {
         return( NULL );
     }
-    idptr = ptr + offs;
+    idptr = (WResID *)( ptr + offs );
     if( isname == 0 ) {
         if( ResReadUint16( &idptr->ID.Num, fp ) ) {
             WRESFREE( ptr );
