@@ -69,7 +69,7 @@ void RcMemInit( void )
 /********************/
 {
 #ifdef TRMEM
-    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( malloc, free, realloc, strdup,
                         NULL, RcPrintMemLine, _TRMEM_DEF );
 #else
     RCMemLayer1Init();
@@ -105,7 +105,7 @@ void *MemAlloc( size_t size )
 /*****************************/
 {
 #ifdef TRMEM
-    return( _trmem_alloc( size, g 1 ), TrHdl ) );
+    return( _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl ) );
 #else
     return( RCMemLayer1Malloc( size ) );
 #endif
