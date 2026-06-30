@@ -50,7 +50,6 @@ typedef struct WResHeader_X {
     uint_16         NumTypes;       /* number of different types of resources in file */
     uint_16         WResVer;        /* WRESVERSION */
 } _WCUNALIGNED WResHeader_X;
-#include "poppck.h"
 
 typedef struct WResHeader {
     uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -59,6 +58,7 @@ typedef struct WResHeader {
     uint_16         NumTypes;       /* number of different types of resources in file */
     uint_16         WResVer;        /* WRESVERSION */
 } WResHeader;
+#include "poppck.h"
 
 typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
     uint_16         TargetOS;
