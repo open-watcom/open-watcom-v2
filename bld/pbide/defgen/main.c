@@ -77,10 +77,10 @@ static bool FillParms( void )
     }
     if( Config.nu_name == NULL && Config.nuo_file != NULL ) {
         _splitpath2( Config.dll_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        sprintf( nuoName, "uo_%s", pg.fname );
+        snprintf( nuoName, sizeof( nuoName ), "uo_%s", pg.fname );
         Config.nu_name = nuoName;
     } else if( Config.nuo_file == NULL && Config.nu_name != NULL ) {
-        strcpy( pg.buffer, Config.nu_name );
+        snprintf( pg.buffer, sizeof( pg.buffer ), "%s", Config.nu_name );
         SetExtension( nuoName, pg.buffer, SRU_EXT );
         Config.nuo_file = nuoName;
     }
