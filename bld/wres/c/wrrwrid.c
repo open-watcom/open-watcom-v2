@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,37 +37,37 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
+void *ResReadWResID( unsigned offs, FILE *fp )
+/********************************************/
+{
+    WResID          *idptr;
+    uint_8          isname;
+
+    if( ResReadUint8( &isname, fp ) )
+        return( NULL );
+    if( isname ) {
+        ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp );
+    } else {
+        ptr = WRESALLOC( offs + sizeof( WResID ) - 1 );
+    }
+    if( ptr == NULL ) {
+        return( NULL );
+    }
+    idptr = ptr + offs;
+    if( isname == 0 ) {
+        if( ResReadUint16( &idptr->ID.Num, fp ) ) {
+            WRESFREE( ptr );
+            return( NULL );
+        }
+    }
+    idptr->IsName = isname;
+    return( ptr );
+}
+
 WResID *WResReadWResID( FILE *fp )
 /********************************/
 {
-    WResID          newid;
-    WResID          *newidptr;
-    size_t          numread;
-    unsigned        extrabytes;     /* chars to be read beyond the fixed size */
+    return( ResReadWResID( 0, fp ) );
+}
 
-    /* read in the fixed part of the record */
-    if( WResReadFixedWResID( &newid, fp ) )
-        return( NULL );
-
-    if( newid.IsName ) {
-        extrabytes = newid.ID.Name.NumChars - 1;
-    } else {
-        extrabytes = 0;
-    }
-
-    newidptr = WRESALLOC( sizeof( WResID ) + extrabytes );
-    if( newidptr == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        memcpy( newidptr, &newid, sizeof( WResID ) );
-        if( extrabytes != 0 ) {
-            if( (numread = WRESREAD( fp, newidptr->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
-                WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-                WRESFREE( newidptr );
-                newidptr = NULL;
-            }
-        }
-    }
-
-    return( newidptr );
-} /* WResReadWResID */

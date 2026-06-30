@@ -35,33 +35,40 @@
 #include "read.h"
 #include "reserr.h"
 
-WResIDName *WResReadWResIDName( FILE *fp )
-/****************************************/
+
+void *ResReadWResIDName( unsigned offs, FILE *fp )
+/************************************************/
 {
-    WResIDName      newname;
     WResIDName      *newptr;
     size_t          numread;
-    uint_8          tmp8;
+    uint_8          numchars;
 
     /* read the size of the name in */
-    if( ResReadUint8( &tmp8, fp ) )
+    if( ResReadUint8( &numchars, fp ) )
         return( NULL );
 
-    newname.NumChars = tmp8;
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
-    newptr = WRESALLOC( sizeof( WResIDName ) + newname.NumChars - 1 );
-    if( newptr == NULL ) {
+    ptr = WRESALLOC( offs + sizeof( WResIDName ) - 1 + numchars );
+    if( ptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
+        newptr = ptr + offs;
         /* read in the characters */
-        newptr->NumChars = newname.NumChars;
-        if( (numread = WRESREAD( fp, newptr->Name, newptr->NumChars )) != newptr->NumChars ) {
+        newptr->NumChars = numchars;
+        if( (numread = WRESREAD( fp, newptr->Name, numchars )) != numchars ) {
             WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-            WRESFREE( newptr );
-            newptr = NULL;
+            WRESFREE( ptr );
+            ptr = NULL;
         }
     }
 
-    return( newptr );
-} /* WResReadWResIDName */
+    return( ptr );
+}
+
+WResIDName *WResReadWResIDName( FILE *fp )
+/****************************************/
+{
+    return( ResReadWResIDName( 0, fp ) );
+}
+
