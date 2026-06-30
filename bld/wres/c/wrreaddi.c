@@ -32,6 +32,7 @@
 
 
 #include <string.h>
+#include <stddef.h>
 #include "wresall.h"
 #include "reserr.h"
 #include "wresdefn.h"
@@ -62,54 +63,37 @@ static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )
 static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
 {
     WResResNode     *newnode = NULL;
-    WResResInfo     tmpresinfo;
-    WResResInfo1    tmpresinfo1;
     WResLangNode    *langnode;
     bool            error;
     int             resnum;
-    int             extrabytes;
+    uint_32         v1_Length;
+    uint_32         v1_Offset;
+    uint_16         v1_MemoryFlags;
+    uint_16         numres;
 
-    extrabytes = 0;
+    v1_Length = 0;
+    v1_Offset = 0;
+    v1_MemoryFlags = 0;
     error = false;
     /* loop through the list of resources of this type */
     for( resnum = 0; resnum < currtype->Info.NumResources && !error; resnum++ ) {
 
         /* read a resource record from disk */
         if( ver < 2 ) {
-            error = WResReadFixedResRecord1( &tmpresinfo1, fp );
-            tmpresinfo.NumResources = 1;
-            tmpresinfo.ResName.IsName = tmpresinfo1.ResName.IsName;
-            if( tmpresinfo.ResName.IsName ) {
-                tmpresinfo.ResName.ID.Name.Name[0] = tmpresinfo1.ResName.ID.Name.Name[0];
-                tmpresinfo.ResName.ID.Name.NumChars = tmpresinfo1.ResName.ID.Name.NumChars;
-            } else {
-                tmpresinfo.ResName.ID.Num = tmpresinfo1.ResName.ID.Num;
-            }
-        } else if( ver == 2 ) {
-            error = WResReadFixedResRecord2( &tmpresinfo, fp );
+            error = ResReadUint16( &v1_MemoryFlags, fp );
+            error = ResReadUint32( &v1_Length, fp );
+            error = ResReadUint32( &v1_Offset, fp );
+            numres = 1;
         } else {
-            error = WResReadFixedResRecord( &tmpresinfo, fp );
+            error = ResReadUint16( &numres, fp );
         }
-
         if( !error ) {
-            /* allocate a new node */
-            extrabytes = WResIDExtraBytes( &tmpresinfo.ResName );
-            newnode = WRESALLOC( sizeof( WResResNode ) + extrabytes );
-            if( newnode == NULL ) {
-                error = WRES_ERROR( WRS_MALLOC_FAILED );
-            }
+            newnode = ResReadWResID( offsetof( WResResNode, Info.ResName ), fp, ver );
+            newnode->Info.NumResources = numres;
         }
         if( !error ) {
             newnode->Head = NULL;
             newnode->Tail = NULL;
-            /* copy the new resource info into the new node */
-            memcpy( &(newnode->Info), &tmpresinfo, sizeof( WResResInfo ) );
-
-            /* read the extra bytes (if any) */
-            if( extrabytes > 0 ) {
-                error = WResReadExtraWResID( &(newnode->Info.ResName), fp );
-            }
-
             if( ver < 2 ) {
                 langnode = WRESALLOC( sizeof( WResLangNode ) );
                 if( langnode == NULL )
@@ -117,15 +101,13 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
                 if( !error ) {
                     langnode->data = NULL;
                     langnode->fileInfo = fileinfo;
-                    langnode->Info.MemoryFlags = tmpresinfo1.MemoryFlags;
-                    langnode->Info.Offset = tmpresinfo1.Offset;
-                    langnode->Info.Length = tmpresinfo1.Length;
+                    langnode->Info.MemoryFlags = v1_MemoryFlags;
+                    langnode->Info.Offset = v1_Offset;
+                    langnode->Info.Length = v1_Length;
                     langnode->Info.lang.lang = DEF_LANG;
                     langnode->Info.lang.sublang = DEF_SUBLANG;
                     ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail), langnode );
                 }
-            } else if( ver == 2 ) {
-                error = readLangInfoList( fp, newnode, fileinfo );
             } else {
                 error = readLangInfoList( fp, newnode, fileinfo );
             }
@@ -143,41 +125,24 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
 static bool readTypeList( FILE *fp, WResDirHead *dir, uint_16 ver, void *fileinfo )
 {
     WResTypeNode    *newnode;
-    WResTypeInfo    newtype;
     bool            error;
     int             typenum;
-    int             extrabytes;
+    uint_16         numres;
 
     newnode = NULL;
-    extrabytes = 0;
     error = false;
     /* loop through the list of types */
     for( typenum = 0; typenum < dir->NumTypes && !error; typenum++ ) {
         /* read a type record from disk */
-        if( ver < 3 ) {
-            error = WResReadFixedTypeRecord1or2( &newtype, fp );
-        } else {
-            error = WResReadFixedTypeRecord( &newtype, fp );
-        }
+        error = ResReadUint16( &numres, fp );
         if( !error ) {
-            /* allocate a new node */
-            extrabytes = WResIDExtraBytes( &(newtype.TypeName) );
-            newnode = WRESALLOC( sizeof( WResTypeNode ) + extrabytes );
-            if( newnode == NULL ) {
-                error = WRES_ERROR( WRS_MALLOC_FAILED );
-            }
+            newnode = ResReadWResID( offsetof( WResTypeNode, Info.TypeName ), fp, ver );
+            newnode->Info.NumResources = numres;
         }
         if( !error ) {
             /* initialize the linked list of resources */
             newnode->Head = NULL;
             newnode->Tail = NULL;
-            /* copy the new type info into the new node */
-            memcpy( &(newnode->Info), &newtype, sizeof( WResTypeInfo ) );
-
-            /* read the extra bytes (if any) */
-            if( extrabytes > 0 ) {
-                error = WResReadExtraWResID( &(newnode->Info.TypeName), fp );
-            }
         }
         if( !error ) {
             /* add the type node to the linked list */

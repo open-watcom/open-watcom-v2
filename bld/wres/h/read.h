@@ -45,21 +45,12 @@ typedef enum WResResType {
     RT_WIN32
 } WResResType;
 
-extern bool WResReadFixedResRecord( WResResInfo *newres, FILE *fp );
-extern bool WResReadFixedResRecord1( WResResInfo1 *newres, FILE *fp );
-extern bool WResReadFixedResRecord2( WResResInfo *newres, FILE *fp );
-
-extern bool WResReadFixedTypeRecord( WResTypeInfo *newtype, FILE *fp );
-extern bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, FILE *fp );
-
 extern WResResInfo          *WResReadResRecord( FILE *fp );
 extern WResTypeInfo         *WResReadTypeRecord( FILE *fp );
 extern WResID               *WResReadWResID( FILE *fp );
-extern void                 *ResReadWResID( unsigned offs, FILE *fp );
-extern bool                 WResReadFixedWResID( WResID *name, FILE *fp );
-extern bool                 WResReadExtraWResID( WResID *name, FILE *fp );
+extern void                 *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver );
 extern WResIDName           *WResReadWResIDName( FILE *fp );
-extern void                 *ResReadWResIDName( unsigned offs, FILE *fp );
+extern void                 *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver );
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );

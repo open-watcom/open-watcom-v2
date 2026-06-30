@@ -39,8 +39,8 @@
 #include "wresrtns.h"
 
 
-void *ResReadWResID( unsigned offs, FILE *fp )
-/********************************************/
+void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
+/*********************************************************/
 {
     WResID          *idptr;
     uint_8          isname;
@@ -49,7 +49,7 @@ void *ResReadWResID( unsigned offs, FILE *fp )
     if( ResReadUint8( &isname, fp ) )
         return( NULL );
     if( isname ) {
-        ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp );
+        ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp, ver );
     } else {
         ptr = WRESALLOC( offs + sizeof( WResID ) - 1 );
     }
@@ -70,6 +70,6 @@ void *ResReadWResID( unsigned offs, FILE *fp )
 WResID *WResReadWResID( FILE *fp )
 /********************************/
 {
-    return( ResReadWResID( 0, fp ) );
+    return( ResReadWResID( 0, fp, WRESVERSION ) );
 }
 

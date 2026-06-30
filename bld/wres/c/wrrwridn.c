@@ -34,18 +34,30 @@
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
+#include "wresrtns.h"
 
 
-void *ResReadWResIDName( unsigned offs, FILE *fp )
-/************************************************/
+void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
+/*************************************************************/
 {
     WResIDName      *newptr;
     size_t          numread;
-    uint_8          numchars;
+    uint_16         numchars;
+    char            *ptr;
 
     /* read the size of the name in */
-    if( ResReadUint8( &numchars, fp ) )
-        return( NULL );
+    if( ver < 3 ) {
+        uint_8  tmp;
+
+        if( ResReadUint8( &tmp, fp ) ) {
+            return( NULL );
+        }
+        numchars = tmp;
+    } else {
+        if( ResReadUint16( &numchars, fp ) ) {
+            return( NULL );
+        }
+    }
 
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
@@ -53,7 +65,7 @@ void *ResReadWResIDName( unsigned offs, FILE *fp )
     if( ptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newptr = ptr + offs;
+        newptr = (WResIDName *)( ptr + offs );
         /* read in the characters */
         newptr->NumChars = numchars;
         if( (numread = WRESREAD( fp, newptr->Name, numchars )) != numchars ) {
@@ -69,6 +81,6 @@ void *ResReadWResIDName( unsigned offs, FILE *fp )
 WResIDName *WResReadWResIDName( FILE *fp )
 /****************************************/
 {
-    return( ResReadWResIDName( 0, fp ) );
+    return( ResReadWResIDName( 0, fp, WRESVERSION ) );
 }
 

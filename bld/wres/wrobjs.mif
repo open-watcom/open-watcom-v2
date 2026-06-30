@@ -40,9 +40,6 @@ wres_core_objs = &
     wrinitdi.obj &
     wriswrf.obj &
     wrreaddi.obj &
-    wrrewrid.obj &
-    wrrfrr.obj &
-    wrrftr.obj &
     wrrhr.obj &
 
 # Additional objects for the full wres library
@@ -96,6 +93,6 @@ wres_more_objs = &
     write.obj &
     wrmergdi.obj &
     wrnextrs.obj &
-    wrrfwrid.obj &
     wrrwrid.obj &
+    wrrwridn.obj &
     wrwritdi.obj
