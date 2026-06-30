@@ -62,7 +62,7 @@ static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )
 
 static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
 {
-    WResResNode     *newnode = NULL;
+    WResResNode     *newnode;
     WResLangNode    *langnode;
     bool            error;
     int             resnum;
@@ -77,21 +77,22 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
     error = false;
     /* loop through the list of resources of this type */
     for( resnum = 0; resnum < currtype->Info.NumResources && !error; resnum++ ) {
-
         /* read a resource record from disk */
         if( ver < 2 ) {
             error = ResReadUint16( &v1_MemoryFlags, fp );
-            error = ResReadUint32( &v1_Length, fp );
             error = ResReadUint32( &v1_Offset, fp );
+            error = ResReadUint32( &v1_Length, fp );
             numres = 1;
         } else {
             error = ResReadUint16( &numres, fp );
         }
+        newnode = NULL;
         if( !error ) {
             newnode = ResReadWResID( offsetof( WResResNode, Info.ResName ), fp, ver );
-            newnode->Info.NumResources = numres;
+            error = ( newnode == NULL );
         }
         if( !error ) {
+            newnode->Info.NumResources = numres;
             newnode->Head = NULL;
             newnode->Tail = NULL;
             if( ver < 2 ) {
@@ -129,7 +130,6 @@ static bool readTypeList( FILE *fp, WResDirHead *dir, uint_16 ver, void *fileinf
     int             typenum;
     uint_16         numres;
 
-    newnode = NULL;
     error = false;
     /* loop through the list of types */
     for( typenum = 0; typenum < dir->NumTypes && !error; typenum++ ) {
@@ -137,14 +137,13 @@ static bool readTypeList( FILE *fp, WResDirHead *dir, uint_16 ver, void *fileinf
         error = ResReadUint16( &numres, fp );
         if( !error ) {
             newnode = ResReadWResID( offsetof( WResTypeNode, Info.TypeName ), fp, ver );
-            newnode->Info.NumResources = numres;
+            error = ( newnode == NULL );
         }
         if( !error ) {
             /* initialize the linked list of resources */
+            newnode->Info.NumResources = numres;
             newnode->Head = NULL;
             newnode->Tail = NULL;
-        }
-        if( !error ) {
             /* add the type node to the linked list */
             ResAddLLItemAtEnd( (void **)&(dir->Head), (void **)&(dir->Tail), newnode );
             /* read in the list of resources of this type */

@@ -45,13 +45,19 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
     WResID          *idptr;
     uint_8          isname;
     char            *ptr;
+    size_t          numread;
 
-    if( ResReadUint8( &isname, fp ) )
+    if( (numread = WRESREAD( fp, &isname, sizeof( isname ) )) != sizeof( isname ) ) {
+        WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( NULL );
+    }
     if( isname ) {
         ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp, ver );
     } else {
         ptr = WRESALLOC( offs + sizeof( WResID ) - 1 );
+        if( ptr == NULL ) {
+            WRES_ERROR( WRS_MALLOC_FAILED );
+        }
     }
     if( ptr == NULL ) {
         return( NULL );

@@ -49,12 +49,14 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     if( ver < 3 ) {
         uint_8  tmp;
 
-        if( ResReadUint8( &tmp, fp ) ) {
+        if( (numread = WRESREAD( fp, &tmp, sizeof( tmp ) )) != sizeof( tmp ) ) {
+            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             return( NULL );
         }
         numchars = tmp;
     } else {
-        if( ResReadUint16( &numchars, fp ) ) {
+        if( (numread = WRESREAD( fp, &numchars, sizeof( numchars ) )) != sizeof( numchars ) ) {
+            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             return( NULL );
         }
     }

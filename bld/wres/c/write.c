@@ -187,43 +187,29 @@ bool WResWriteWResID( const WResID *name, FILE *fp )
 bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp )
 /************************************************************/
 {
-    size_t      size;
-
-    if( type->TypeName.IsName ) {
-        /* -1 because one of the chars in the name is declared in the struct */
-        size = sizeof( WResTypeInfo ) + type->TypeName.ID.Name.NumChars - 1;
-    } else {
-        size = sizeof( WResTypeInfo );
-    }
-    if( WRESWRITE( fp, type, size ) != size )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
-    return( false );
-} /* WResWriteTypeRecord */
+    if( ResWriteUint16( type->NumResources, fp ) )
+        return( true );
+    return( WResWriteWResID( &type->TypeName, fp ) );
+}
 
 /*
  * WResWriteResRecord - write the resource record to the current position
  *                      in the file identified by  fp
  */
 bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
+/*********************************************************/
 {
-    size_t      size;
-
-    if( res->ResName.IsName ) {
-        /* -1 because one of the chars in the name is declared in the struct */
-        size = sizeof( WResResInfo ) + res->ResName.ID.Name.NumChars - 1;
-    } else {
-        size = sizeof( WResResInfo );
-    }
-    if( WRESWRITE( fp, (uint_8 *)res, size ) != size )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
-    return( false );
-} /* WResWriteResRecord */
+    if( ResWriteUint16( res->NumResources, fp ) )
+        return( true );
+    return( WResWriteWResID( &res->ResName, fp ) );
+}
 
 /*
  * WResWriteLangRecord - write out a language record at the current file
  *                       position
  */
 bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
+/************************************************************/
 {
     if( WRESWRITE( fp, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );

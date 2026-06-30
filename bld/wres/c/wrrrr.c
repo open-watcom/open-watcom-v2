@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,32 +41,12 @@ WResResInfo *WResReadResRecord( FILE *fp )
 /* reads in the fields of a res info record from the current position in */
 /* the file identified by fp */
 {
-    WResResInfo     newres;
-    WResResInfo     *newptr;
-    size_t          numread;
-    unsigned        numcharsleft;
+    uint_16     numres;
+    WResResInfo *ptr;
 
-    if( WResReadFixedResRecord( &newres, fp ) )
+    if( ResReadUint16( &numres, fp ) )
         return( NULL );
-
-    if( newres.ResName.IsName ) {
-        numcharsleft = newres.ResName.ID.Name.NumChars - 1;
-    } else {
-        numcharsleft = 0;
-    }
-    newptr = WRESALLOC( sizeof( WResResInfo ) + numcharsleft );
-    if( newptr == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        memcpy( newptr, &newres, sizeof( WResResInfo ) );
-        if( numcharsleft != 0 ) {
-            if( (numread = WRESREAD( fp, newptr->ResName.ID.Name.Name + 1, numcharsleft )) != numcharsleft ) {
-                WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-                WRESFREE( newptr );
-                newptr = NULL;
-            }
-        }
-    }
-
-    return( newptr );
-} /* WResReadResRecord */
+    ptr = ResReadWResID( offsetof( WResResInfo, ResName ), fp, WRESVERSION );
+    ptr->NumResources = numres;
+    return( ptr );
+}
