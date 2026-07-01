@@ -39,20 +39,50 @@
 #include "wresrtns.h"
 
 
+static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
+{
+    uint_8      tmp8;
+    uint_16     tmp16;
+
+    if( ResReadUint16( &tmp16, fp ) )
+        return( true );
+    lang->lang = tmp16;
+    if( ResReadUint8( &tmp8, fp ) )
+        return( true );
+    lang->sublang = tmp8;
+    return( false );
+}
+
+static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )
+{
+    uint_16     tmp16;
+    uint_32     tmp32;
+
+    if( ResReadUint16( &tmp16, fp ) )
+        return( true );
+    linfo->MemoryFlags = tmp16;
+    if( ResReadUint32( &tmp32, fp ) )
+        return( true );
+    linfo->Offset = tmp32;
+    if( ResReadUint32( &tmp32, fp ) )
+        return( true );
+    linfo->Length = tmp32;
+    return( false );
+}
+
 static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )
 {
     unsigned            i;
     WResLangNode        *langnode;
-    size_t              numread;
 
     for( i = 0; i < res->Info.NumResources; i++ ) {
         langnode = WRESALLOC( sizeof( WResLangNode ) );
         if( langnode == NULL )
             return( WRES_ERROR( WRS_MALLOC_FAILED ) );
-        if( (numread = WRESREAD( fp, &(langnode->Info), sizeof( WResLangInfo ) )) != sizeof( WResLangInfo ) ) {
-            WRESFREE( langnode );
-            return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
-        }
+        if( ResReadLangInfoLang( &(langnode->Info.lang), fp ) )
+            return( true );
+        if( ResReadLangInfo( &(langnode->Info), fp ) )
+            return( true );
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
         ResAddLLItemAtEnd( (void **)&(res->Head), (void **)&(res->Tail), langnode );
@@ -66,23 +96,16 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
     WResLangNode    *langnode;
     bool            error;
     int             resnum;
-    uint_32         v1_Length;
-    uint_32         v1_Offset;
-    uint_16         v1_MemoryFlags;
+    WResLangInfo    v1_linfo = { 0 };
     uint_16         numres;
 
-    v1_Length = 0;
-    v1_Offset = 0;
-    v1_MemoryFlags = 0;
     error = false;
     /* loop through the list of resources of this type */
     for( resnum = 0; resnum < currtype->Info.NumResources && !error; resnum++ ) {
         /* read a resource record from disk */
         if( ver < 2 ) {
-            error = ResReadUint16( &v1_MemoryFlags, fp );
-            error = ResReadUint32( &v1_Offset, fp );
-            error = ResReadUint32( &v1_Length, fp );
             numres = 1;
+            error = ResReadLangInfo( &v1_linfo, fp );
         } else {
             error = ResReadUint16( &numres, fp );
         }
@@ -102,9 +125,9 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
                 if( !error ) {
                     langnode->data = NULL;
                     langnode->fileInfo = fileinfo;
-                    langnode->Info.MemoryFlags = v1_MemoryFlags;
-                    langnode->Info.Offset = v1_Offset;
-                    langnode->Info.Length = v1_Length;
+                    langnode->Info.MemoryFlags = v1_linfo.MemoryFlags;
+                    langnode->Info.Offset = v1_linfo.Offset;
+                    langnode->Info.Length = v1_linfo.Length;
                     langnode->Info.lang.lang = DEF_LANG;
                     langnode->Info.lang.sublang = DEF_SUBLANG;
                     ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail), langnode );
