@@ -211,7 +211,20 @@ bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
 bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 /************************************************************/
 {
-    if( WRESWRITE( fp, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) )
+    char    tmp[sizeof( WResLangInfo_X )];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_16( p, info->lang.lang );
+    p += sizeof( uint_16 );
+    MPUT_8( p, info->lang.sublang );
+    p += sizeof( uint_8 );
+    MPUT_LE_16( p, info->MemoryFlags );
+    p += sizeof( uint_16 );
+    MPUT_LE_32( p, info->Offset );
+    p += sizeof( uint_32 );
+    MPUT_LE_32( p, info->Length );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
