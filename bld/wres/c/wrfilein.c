@@ -57,7 +57,7 @@ bool WResFileInit( FILE *fp )
     if( WResWriteHeader( &header, fp ) )
         return( true );
     /* leave room for the extended header */
-    if( WRESSEEK( fp, sizeof( WResExtHeader ), SEEK_CUR ) )
+    if( WRESSEEK( fp, WResExtHeader_FILESIZE, SEEK_CUR ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 } /* WResFileInit */

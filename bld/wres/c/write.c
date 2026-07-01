@@ -255,7 +255,7 @@ bool WResWriteHeader( const WResHeader *header, FILE *fp )
 bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /****************************************************************/
 {
-    char    tmp[sizeof( WResExtHeader )];
+    char    tmp[WResExtHeader_FILESIZE];
     char    *p;
 
     p = tmp;

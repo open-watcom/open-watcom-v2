@@ -169,12 +169,14 @@ typedef struct WResHeader {
     uint_16         WResVer;        /* WRESVERSION */
 } WResHeader;
 
-#define WResHeader_FILESIZE		18
+#define WResHeader_FILESIZE         18
 
 typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
     uint_16         TargetOS;
     uint_16         reserved[4];    /* reserved for future use */
 } WResExtHeader;
+
+#define WResExtHeader_FILESIZE      10
 
 typedef struct WResIDName {         /* this is a "Pascal style" string */
     uint_16         NumChars;       /* length */
@@ -219,6 +221,6 @@ typedef struct WResLangInfo {
     WResLangType    lang;
 } WResLangInfo;
 
-#define WResLangInfo_FILESIZE	13
+#define WResLangInfo_FILESIZE       13
 
 #endif
