@@ -40,7 +40,7 @@
 bool WResReadHeader( WResHeader *header, FILE *fp )
 /*************************************************/
 {
-    char        tmp[sizeof( WResHeader_X )];
+    char        tmp[WResHeader_FILESIZE];
     char        *p;
     size_t      numread;
 

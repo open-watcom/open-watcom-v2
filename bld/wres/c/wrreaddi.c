@@ -180,7 +180,7 @@ static bool readWResDir( FILE *fp, WResDir dir, void *fileinfo )
             /*
              * seek to the extended header and read it
              */
-            if( WRESSEEK( fp, sizeof( WResHeader_X ), SEEK_CUR ) ) {
+            if( WRESSEEK( fp, WResHeader_FILESIZE, SEEK_CUR ) ) {
                 error = WRES_ERROR( WRS_SEEK_FAILED );
             } else {
                 error = WResReadExtHeader( &extheader, fp );

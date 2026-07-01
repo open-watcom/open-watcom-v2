@@ -37,10 +37,23 @@
 #include "wresrtns.h"
 
 
+void *AllocWResIDName( unsigned offs, unsigned numchars )
+/*******************************************************/
+{
+    char            *ptr;
+
+    ptr = WRESALLOC( offs + sizeof( WResIDName ) - 1 + numchars );
+    if( ptr == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
+        ((WResIDName *)( ptr + offs ))->NumChars = numchars;
+    }
+    return( ptr );
+}
+
 void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
 /*************************************************************/
 {
-    WResIDName      *newptr;
     size_t          numread;
     uint_16         numchars;
     char            *ptr;
@@ -63,14 +76,10 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
 
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
-    ptr = WRESALLOC( offs + sizeof( WResIDName ) - 1 + numchars );
-    if( ptr == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        newptr = (WResIDName *)( ptr + offs );
+    ptr = AllocWResIDName( offs, numchars );
+    if( ptr != NULL ) {
         /* read in the characters */
-        newptr->NumChars = numchars;
-        if( (numread = WRESREAD( fp, newptr->Name, numchars )) != numchars ) {
+        if( (numread = WRESREAD( fp, ((WResIDName *)( ptr + offs ))->Name, numchars )) != numchars ) {
             WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( ptr );
             ptr = NULL;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +32,13 @@
 
 
 #include <string.h>
+#include <stddef.h>
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"
 #include "wresrtns.h"
+#include "read.h"
+
 
 WResHelpID * WResHelpIDFromStr( const char * newstr )
 /***************************************************/
@@ -52,12 +56,9 @@ WResHelpID * WResHelpIDFromStr( const char * newstr )
     /* allocate the new Help ID */
     // if strsize is non-zero then the memory allocated is larger
     // than required by 1 byte
-    newid = WRESALLOC( sizeof( WResHelpID ) + strsize );
-    if( newid == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
+    newid = AllocWResIDName( offsetof( WResHelpID, ID ), strsize );
+    if( newid != NULL ) {
         newid->IsName = true;
-        newid->ID.Name.NumChars = strsize;
         memcpy( newid->ID.Name.Name, newstr, strsize );
     }
     return( newid );

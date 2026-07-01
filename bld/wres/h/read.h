@@ -45,6 +45,8 @@ typedef enum WResResType {
     RT_WIN32
 } WResResType;
 
+extern void                 *AllocWResIDName( unsigned offs, unsigned numchars );
+
 extern WResResInfo          *WResReadResRecord( FILE *fp );
 extern WResTypeInfo         *WResReadTypeRecord( FILE *fp );
 extern WResID               *WResReadWResID( FILE *fp );

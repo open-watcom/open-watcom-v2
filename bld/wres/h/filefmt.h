@@ -43,30 +43,29 @@ typedef enum {
     WRES_OS_OS2
 } WResTargetOS;
 
-#include "pushpck1.h"
-typedef struct WResHeader_X {
-    uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
-    uint_32         DirOffset;      /* offset to the start of the directory */
-    uint_16         NumResources;   /* number of resourses in the file */
-    uint_16         NumTypes;       /* number of different types of resources in file */
-    uint_16         WResVer;        /* WRESVERSION */
-} _WCUNALIGNED WResHeader_X;
-#include "poppck.h"
+#if 0
 
+/************************************************************************
+ *
+ * resource file structures format declaration (unaligned and packed)
+ *    also old resource formats structures (version 1 and 2)
+ *
+ ************************************************************************/
+
+#include "pushpck1.h"
 typedef struct WResHeader {
     uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
     uint_32         DirOffset;      /* offset to the start of the directory */
     uint_16         NumResources;   /* number of resourses in the file */
     uint_16         NumTypes;       /* number of different types of resources in file */
     uint_16         WResVer;        /* WRESVERSION */
-} WResHeader;
+} _WCUNALIGNED WResHeader;
 
 typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
     uint_16         TargetOS;
     uint_16         reserved[4];    /* reserved for future use */
 } WResExtHeader;
 
-#include "pushpck1.h"
 typedef struct WResIDName {         /* this is a "Pascal style" string */
     uint_16         NumChars;       /* length */
     char            Name[1];        /* followed by that many characters */
@@ -151,5 +150,73 @@ typedef struct WResLangInfo {
     uint_32         Length;         /* length in bytes of resource body */
 } _WCUNALIGNED WResLangInfo;
 #include "poppck.h"
+
+/************************************************************************/
+
+#endif
+
+/************************************************************************
+ *
+ * internal aligned resource file structures declaration
+ *
+ ************************************************************************/
+
+typedef struct WResHeader {
+    uint_32         Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
+    uint_32         DirOffset;      /* offset to the start of the directory */
+    uint_16         NumResources;   /* number of resourses in the file */
+    uint_16         NumTypes;       /* number of different types of resources in file */
+    uint_16         WResVer;        /* WRESVERSION */
+} WResHeader;
+
+#define WResHeader_FILESIZE		18
+
+typedef struct WResExtHeader {      /* Only present if WResVer >= 1 */
+    uint_16         TargetOS;
+    uint_16         reserved[4];    /* reserved for future use */
+} WResExtHeader;
+
+typedef struct WResIDName {         /* this is a "Pascal style" string */
+    uint_16         NumChars;       /* length */
+    char            Name[1];        /* followed by that many characters */
+} WResIDName;                       /* NOTE: there is no trailing '\0' */
+
+typedef struct WResID {
+    uint_16         IsName;         /* if true then ID is a Name otherwise Num */
+    union {
+        uint_16     Num;            /* number of the ID */
+        WResIDName  Name;           /* name of the ID */
+    } ID;
+} WResID;
+
+typedef struct WResHelpID {
+    uint_32         IsName;         /* if true then ID is a Name otherwise Num */
+    union {
+        uint_32     Num;            /* number of the Help ID */
+        WResIDName  Name;           /* name of the Help ID */
+    } ID;
+} WResHelpID;
+
+typedef struct WResTypeInfo {
+    uint_16         NumResources;   /* number of resources of this type */
+    WResID          TypeName;
+} WResTypeInfo;
+
+typedef struct WResResInfo {
+    uint_16         NumResources;   /* # of resources of this type and name */
+    WResID          ResName;
+} WResResInfo;
+
+typedef struct WResLangType {
+    uint_16         lang;
+    uint_16         sublang;
+} WResLangType;
+
+typedef struct WResLangInfo {
+    uint_32         Offset;         /* offset of resource body in file */
+    uint_32         Length;         /* length in bytes of resource body */
+    uint_16         MemoryFlags;
+    WResLangType    lang;
+} WResLangInfo;
 
 #endif

@@ -219,7 +219,7 @@ bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 bool WResWriteHeader( const WResHeader *header, FILE *fp )
 /********************************************************/
 {
-    char    tmp[sizeof( WResHeader_X )];
+    char    tmp[WResHeader_FILESIZE];
     char    *p;
 
     p = tmp;
