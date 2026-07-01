@@ -1162,7 +1162,7 @@ resource-info-stmt
 
 language-stmt
     : Y_LANGUAGE constant-expression Y_COMMA constant-expression
-        { $$.lang = (uint_16)$2.Value; $$.sublang = (uint_8)$4.Value; }
+        { $$.lang = (uint_16)$2.Value; $$.sublang = $4.Value; }
     ;
 
 characteristics-stmt
