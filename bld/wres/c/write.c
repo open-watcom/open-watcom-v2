@@ -211,7 +211,7 @@ bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
 bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 /************************************************************/
 {
-    char    tmp[sizeof( WResLangInfo_X )];
+    char    tmp[WResLangInfo_FILESIZE];
     char    *p;
 
     p = tmp;

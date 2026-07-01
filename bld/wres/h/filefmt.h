@@ -219,4 +219,6 @@ typedef struct WResLangInfo {
     WResLangType    lang;
 } WResLangInfo;
 
+#define WResLangInfo_FILESIZE	13
+
 #endif
