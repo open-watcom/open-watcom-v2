@@ -133,9 +133,8 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
 {
     bool            error;
     unsigned        numchars;
-    unsigned        len;
-    char            *buf;
     unsigned        size;
+    char            *buf;
 
     error = false;
     if( name == NULL ) {
