@@ -79,6 +79,7 @@ bool ResWriteUint8( uint_8 newint, FILE *fp )
 bool ResWriteUint16( uint_16 newint, FILE *fp )
 /*********************************************/
 {
+    CONV_LE_16( newint );
     if( WRESWRITE( fp, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
@@ -87,6 +88,7 @@ bool ResWriteUint16( uint_16 newint, FILE *fp )
 bool ResWriteUint32( uint_32 newint, FILE *fp )
 /*********************************************/
 {
+    CONV_LE_32( newint );
     if( WRESWRITE( fp, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
@@ -116,6 +118,7 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
 {
     bool            error;
     unsigned        numchars;
+    unsigned        len;
     char            *ptr;
     bool            freebuf;
 
@@ -128,32 +131,34 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
     }
     freebuf = false;
     ptr = NULL;
+    len = 0;
     if( numchars > 0 ) {
         /*
          * for short strings use a static buffer in improve performance
          */
-        if( numchars <= CONV_BUF_SIZE / 2 ) {
+        len = 2 * numchars;	/* 16-bit Unicode or double-byte */
+        if( len <= CONV_BUF_SIZE ) {
             ptr = ConvBuffer;
         } else {
             freebuf = true;
-            ptr = WRESALLOC( 2 * numchars );
+            ptr = WRESALLOC( len );
         }
         if( use_unicode ) {
-            numchars = ConvToUnicode( numchars, name->Name, ptr );
+            len = ConvToUnicode( numchars, name->Name, ptr );
         } else {
-            numchars = ConvToMultiByte( numchars, name->Name, ptr );
+            len = ConvToMultiByte( numchars, name->Name, ptr );
         }
     }
     if( use_unicode ) {
-        error = ResWriteUint16( numchars / 2, fp );
+        error = ResWriteUint16( numchars, fp );
     } else {
         /* in 16-bit resources the string can be no more than 255 characters */
         if( numchars > 255 )
             numchars = 255;
         error = ResWriteUint8( numchars, fp );
     }
-    if( !error && numchars > 0 ) {
-        if( WRESWRITE( fp, ptr, numchars ) != numchars ) {
+    if( !error && len > 0 ) {
+        if( WRESWRITE( fp, ptr, len ) != len ) {
             error = WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
