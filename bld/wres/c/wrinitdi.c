@@ -36,21 +36,22 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 WResDir WResInitDir( void )
 /*************************/
 {
-    WResDirHead     *newdir;
+    WResDir         dir;
 
-    newdir = WRESALLOC( sizeof( WResDirHead ) );
-    if( newdir == NULL ) {
+    dir = WRESALLOC( sizeof( *dir ) );
+    if( dir == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newdir->NumResources = 0;
-        newdir->NumTypes = 0;
-        newdir->TargetOS = WRES_OS_WIN16;
-        newdir->Head = NULL;
-        newdir->Tail = NULL;
+        dir->NumResources = 0;
+        dir->NumTypes = 0;
+        dir->TargetOS = WRES_OS_WIN16;
+        dir->Head = NULL;
+        dir->Tail = NULL;
     }
 
-    return( newdir );
+    return( dir );
 }

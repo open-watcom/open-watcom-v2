@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,26 +63,26 @@ void __FreeResList( WResTypeNode *currtype )
     currtype->Tail = NULL;
 }
 
-void __FreeTypeList( WResDirHead *currdir )
+void __FreeTypeList( WResDir dir )
 {
     WResTypeNode        *currtype;
     WResTypeNode        *nexttype;
 
-    for( currtype = currdir->Head; currtype != NULL; currtype = nexttype ) {
+    for( currtype = dir->Head; currtype != NULL; currtype = nexttype ) {
         nexttype = currtype->Next;
         __FreeResList( currtype );
         WRESFREE( currtype );
     }
 
-    currdir->Head = NULL;
-    currdir->Tail = NULL;
+    dir->Head = NULL;
+    dir->Tail = NULL;
 }
 
-void WResFreeDir( WResDir currdir )
-/*********************************/
+void WResFreeDir( WResDir dir )
+/*****************************/
 {
-    if( currdir != NULL ) {
-        __FreeTypeList( currdir );
-        WRESFREE( currdir );
+    if( dir != NULL ) {
+        __FreeTypeList( dir );
+        WRESFREE( dir );
     }
 }

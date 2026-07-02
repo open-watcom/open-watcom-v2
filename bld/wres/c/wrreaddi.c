@@ -146,7 +146,7 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
 
 } /* readResList */
 
-static bool readTypeList( FILE *fp, WResDirHead *dir, uint_16 ver, void *fileinfo )
+static bool readTypeList( FILE *fp, WResDir dir, uint_16 ver, void *fileinfo )
 {
     WResTypeNode    *newnode;
     bool            error;

@@ -72,7 +72,7 @@ typedef struct WResDirHead {        /* head of the directory */
     WResTypeNode            *Head;
     WResTypeNode            *Tail;
     uint_16                 TargetOS;
-} WResDirHead;
+} WResDirHead, *WResDir;
 
 /***** Exported types *****/
 typedef struct WResDirWindow {
@@ -80,8 +80,6 @@ typedef struct WResDirWindow {
     struct WResTypeNode     *CurrType;
     struct WResLangNode     *CurrLang;
 } WResDirWindow;
-
-typedef struct WResDirHead  *WResDir;
 
 /* macros to test condition for a WRes directory */
 
