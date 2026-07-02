@@ -45,27 +45,42 @@
 
 static char     ConvBuffer[CONV_BUF_SIZE];
 
-static size_t DefaultUNIConversion( size_t len, const char *str, char *buf )
-/**************************************************************************/
+static size_t DefaultUNIConversion( const char *str, size_t len, char *buf, size_t size )
+/***************************************************************************************/
 {
     size_t  i;
+    size_t  ret;
 
     if( buf != NULL ) {
+        ret = 0;
         for( i = 0; i < len; i++ ) {
-            *buf++ = *str++;
-            *buf++ = 0;
+            if( ret + 1 < size ) {
+                *buf++ = *str++;
+                *buf++ = 0;
+                ret += 2;
+            }
+        }
+    } else {
+        ret = 2 * len;
+        if( ret > size ) {
+            ret = size;
         }
     }
-    return( len * 2 );
+    return( ret );
 }
 
-static size_t DefaultMBConversion( size_t len, const char *str, char *buf )
-/*************************************************************************/
+static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_t size )
+/**************************************************************************************/
 {
+    size_t  ret;
+
+    ret = len;
     if( buf != NULL ) {
-        memcpy( buf, str, len );
+        if( ret > size )
+            ret = size;
+        memcpy( buf, str, ret );
     }
-    return( len );
+    return( ret );
 }
 
 bool ResWriteUint8( uint_8 newint, FILE *fp )
@@ -119,8 +134,8 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
     bool            error;
     unsigned        numchars;
     unsigned        len;
-    char            *ptr;
-    bool            freebuf;
+    char            *buf;
+    unsigned        size;
 
     error = false;
     if( name == NULL ) {
@@ -129,41 +144,44 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
     } else {
         numchars = name->NumChars;
     }
-    freebuf = false;
-    ptr = NULL;
-    len = 0;
+    buf = ConvBuffer;
+    size = 2 * numchars;	/* 16-bit Unicode or double-byte */
     if( numchars > 0 ) {
         /*
          * for short strings use a static buffer in improve performance
          */
-        len = 2 * numchars;	/* 16-bit Unicode or double-byte */
-        if( len <= CONV_BUF_SIZE ) {
-            ptr = ConvBuffer;
+        if( size > CONV_BUF_SIZE ) {
+            buf = WRESALLOC( size );
         } else {
-            freebuf = true;
-            ptr = WRESALLOC( len );
+            size = CONV_BUF_SIZE;
         }
         if( use_unicode ) {
-            len = ConvToUnicode( numchars, name->Name, ptr );
+            size = ConvToUnicode( name->Name, numchars, buf, size );
         } else {
-            len = ConvToMultiByte( numchars, name->Name, ptr );
+            size = ConvToMultiByte( name->Name, numchars, buf, size );
         }
     }
     if( use_unicode ) {
         error = ResWriteUint16( numchars, fp );
     } else {
-        /* in 16-bit resources the string can be no more than 255 characters */
+        /*
+         * in 16-bit resources the string can be no more than 255 characters
+         * it means length of converted string, which can be double-byte or
+         * UTF-8 encoded and this length can be longer then original string
+         * character count
+         */
+        numchars = size;
         if( numchars > 255 )
             numchars = 255;
         error = ResWriteUint8( numchars, fp );
     }
-    if( !error && len > 0 ) {
-        if( WRESWRITE( fp, ptr, len ) != len ) {
+    if( !error && size > 0 ) {
+        if( WRESWRITE( fp, buf, size ) != size ) {
             error = WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
-    if( freebuf ) {
-        WRESFREE( ptr );
+    if( buf != ConvBuffer ) {
+        WRESFREE( buf );
     }
     return( error );
 } /* WResWriteWResIDName */
@@ -278,24 +296,27 @@ bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
     return( false );
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t len )
-/**********************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t numchars )
+/***************************************************************************************/
 {
-    char            *buf = NULL;
+    char            *buf;
     bool            error;
+    size_t          size;
 
-    if( len * 2 > CONV_BUF_SIZE ) {
-        buf = WRESALLOC( 2 * len );
+    buf = ConvBuffer;
+    size = 2 * numchars;
+    if( size > CONV_BUF_SIZE ) {
+        buf = WRESALLOC( size );
     } else {
-        buf = ConvBuffer;
+        size = CONV_BUF_SIZE;
     }
     if( use_unicode ) {
-        len = ConvToUnicode( len, string, buf );
+        size = ConvToUnicode( string, numchars, buf, size );
     } else {
-        len = ConvToMultiByte( len, string, buf );
+        size = ConvToMultiByte( string, numchars, buf, size );
     }
     error = false;
-    if( WRESWRITE( fp, buf, len ) != len )
+    if( WRESWRITE( fp, buf, size ) != size )
         error = WRES_ERROR( WRS_WRITE_FAILED );
     if( buf != ConvBuffer ) {
         WRESFREE( buf );

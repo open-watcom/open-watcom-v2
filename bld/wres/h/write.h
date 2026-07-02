@@ -36,8 +36,8 @@
 
 #include "mresfmt.h"
 
-typedef size_t ConvToUnicode_fn( size_t, const char *, char * );
-typedef size_t ConvToMultiByte_fn( size_t, const char *, char * );
+typedef size_t ConvToUnicode_fn( const char *, size_t, char *, size_t );
+typedef size_t ConvToMultiByte_fn( const char *, size_t, char *, size_t );
 
 extern ConvToUnicode_fn     *ConvToUnicode;
 extern ConvToMultiByte_fn   *ConvToMultiByte;
