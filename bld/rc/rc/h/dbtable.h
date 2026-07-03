@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,7 +81,7 @@ typedef struct {
 } DBIndexEntry;
 #include "poppck.h"
 
-extern size_t       DBStringToUnicode( size_t len, const char *str, char *buf );
+extern size_t       DBStringToUnicode( const char *str, size_t len, char *buf, size_t size );
 extern RcStatus     LoadCharTable( const char *fname, char *path );
 extern void         DbtableInitStatics( void );
 extern const char   *GetLeadBytes( void );

@@ -159,17 +159,16 @@ const char *GetLeadBytes( void )
     return( charInfo.begchars );
 }
 
-size_t DBStringToUnicode( size_t len, const char *str, char *buf )
-/****************************************************************/
+size_t DBStringToUnicode( const char *str, size_t len, char *buf, size_t size )
+/*****************************************************************************/
 {
     const uint_8    *ptr;
     const uint_8    *end;
-    uint_16         *ubuf;
+    uint_16         uchar;
     uint_16         dbchar;
     size_t          ret;
 
     ret = 0;
-    ubuf = (uint_16 *)buf;
     end = (uint_8 *)str + len;
     for( ptr = (uint_8 *)str; ptr < end; ptr++ ) {
         if( charInfo.begchars[*ptr] == DB_BEG_CHAR ) {
@@ -180,10 +179,14 @@ size_t DBStringToUnicode( size_t len, const char *str, char *buf )
             dbchar = *ptr;
         }
         if( ubuf != NULL ) {
-            *ubuf = lookUpDBChar( dbchar );
-            ubuf++;
+            if( ret + 1 < size ) {
+                uchar = lookUpDBChar( dbchar );
+                ubuf[ret++] = uchar & 0xff;
+                ubuf[ret++] = ( uchar >> 8 ) & 0xff;
+            }
+        } else {
+            ret += 2;
         }
-        ret += sizeof( *ubuf );
     }
     return( ret );
 }

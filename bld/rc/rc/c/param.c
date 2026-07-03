@@ -215,8 +215,8 @@ static void SetNativeLeadBytes( void )
     }
 }
 
-static size_t NativeDBStringToUnicode( size_t len, const char *str, char *buf )
-/*****************************************************************************/
+static size_t NativeDBStringToUnicode( const char *str, size_t len, char *buf, size_t size )
+/******************************************************************************************/
 {
     size_t      ret;
     size_t      outlen;
@@ -225,13 +225,14 @@ static size_t NativeDBStringToUnicode( size_t len, const char *str, char *buf )
         if( buf == NULL ) {
             outlen = 0;
         } else {
-            outlen = len * 2;
+            outlen = size / 2;
         }
         ret = (unsigned)MultiByteToWideChar( CP_ACP, 0, str, (int)len, (LPWSTR)buf, (int)outlen );
+        ret *= 2;
     } else {
         ret = 0;
     }
-    return( ret * 2 );
+    return( ret );
 }
 
 #endif
