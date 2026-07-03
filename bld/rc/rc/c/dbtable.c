@@ -178,11 +178,11 @@ size_t DBStringToUnicode( const char *str, size_t len, char *buf, size_t size )
         } else {
             dbchar = *ptr;
         }
-        if( ubuf != NULL ) {
+        if( buf != NULL ) {
             if( ret + 1 < size ) {
                 uchar = lookUpDBChar( dbchar );
-                ubuf[ret++] = uchar & 0xff;
-                ubuf[ret++] = ( uchar >> 8 ) & 0xff;
+                buf[ret++] = uchar & 0xff;
+                buf[ret++] = ( uchar >> 8 ) & 0xff;
             }
         } else {
             ret += 2;
