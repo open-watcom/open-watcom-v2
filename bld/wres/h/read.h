@@ -63,7 +63,7 @@ extern char                 *ResReadString( FILE *fp, size_t *strlen );
 extern char                 *ResRead32String( FILE *fp, size_t *strlen );
 extern bool                 ResReadUint32( uint_32 *newint, FILE *fp );
 extern bool                 ResReadUint16( uint_16 *newint, FILE *fp );
-extern bool                 ResReadUint8( uint_8 *newint, FILE *fp );
+extern uint_8               ResReadUint8( bool *error, FILE *fp );
 extern long                 ResTell( FILE *fp );
 extern bool                 ResSeek( FILE *fp, long offset, int origin );
 extern bool                 ResReadPadDWord( FILE *fp );

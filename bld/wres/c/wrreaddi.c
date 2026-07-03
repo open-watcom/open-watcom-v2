@@ -41,16 +41,15 @@
 
 static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
 {
-    uint_8      tmp8;
+    bool        error;
     uint_16     tmp16;
 
+    error = false;
     if( ResReadUint16( &tmp16, fp ) )
         return( true );
     lang->lang = tmp16;
-    if( ResReadUint8( &tmp8, fp ) )
-        return( true );
-    lang->sublang = tmp8;
-    return( false );
+    lang->sublang = ResReadUint8( &error, fp );
+    return( error );
 }
 
 static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )

@@ -46,10 +46,11 @@ char *ResReadString( FILE *fp, size_t *strlen )
     char                *retstring;
 
     newstring = VarStringStart();
-    error = ResReadUint8( &nextchar, fp );
+    error = false;
+    nextchar = ResReadUint8( &error, fp );
     while( !error && nextchar != '\0' ) {
         VarStringAddChar( newstring, nextchar );
-        error = ResReadUint8( &nextchar, fp );
+        nextchar = ResReadUint8( &error, fp );
     }
 
     retstring = VarStringEnd( newstring, strlen );

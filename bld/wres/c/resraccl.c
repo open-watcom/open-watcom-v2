@@ -43,11 +43,10 @@ bool ResReadAccelEntry( AccelTableEntry *currentry, FILE *fp )
 /************************************************************/
 {
     bool            error;
-    uint_8          val8;
     uint_16         val16;
 
-    error = ResReadUint8( &val8, fp );
-    currentry->Flags = val8;
+    error = false;
+    currentry->Flags = ResReadUint8( &error, fp );
     if( !error ) {
         error = ResReadUint16( &val16, fp );
         currentry->Ascii = val16;

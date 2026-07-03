@@ -47,7 +47,9 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
     size_t              stringlen;
     char                *restofstr;
 
-    if( ResReadUint8( &flags, fp ) )
+    error = false;
+    flags = ResReadUint8( &error, fp );
+    if( error )
         return( NULL );
 
     /* read the rest of the Name or Ordinal */

@@ -158,7 +158,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                  */
                 ErrorHasOccured = false;
                 for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
-                    error = ResReadUint8( &cur_byte, tmpResFile );
+                    cur_byte = ResReadUint8( &error, tmpResFile );
                     if( error ) {
                         RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
                         ErrorHasOccured = true;
