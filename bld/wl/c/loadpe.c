@@ -769,7 +769,10 @@ void CheckDebugOffset( ExeFileInfo *info )
 }
 
 RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, unsigned_32 length )
-/*******************************************************************/
+/********************************************************************
+ * CopyExeData function is used by resource compiler to write data to executable
+ * there are two implementation one in resource compiler and second in linker
+ */
 {
     /* unused parameters */ (void)out_fp;
 
