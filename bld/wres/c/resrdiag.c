@@ -66,10 +66,9 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
 /************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
-    error = ResReadUint32( &tmp32, fp );
-    head->Style = tmp32;
+    error = false;
+    head->Style = ResReadUint32( &error, fp );
     if( !error ) {
         head->NumOfItems = ResReadUint8( &error, fp );
     }
@@ -143,13 +142,11 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 /****************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
-    error = ResReadUint32( &tmp32, fp );
-    head->Style = tmp32;
+    error = false;
+    head->Style = ResReadUint32( &error, fp );
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        head->ExtendedStyle = tmp32;
+        head->ExtendedStyle = ResReadUint32( &error, fp );
     }
     if( !error ) {
         head->NumOfItems = ResReadUint16( &error, fp );
@@ -183,21 +180,17 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
 /****************************************************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
     /* Read in the miscellaneous two WORDs 0x0001, 0xFFFF */
     error = !ResIsDialogBoxEx( fp );
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        exhead->HelpId = tmp32;
+        exhead->HelpId = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        head->ExtendedStyle = tmp32;
+        head->ExtendedStyle = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        head->Style = tmp32;
+        head->Style = ResReadUint32( &error, fp );
     }
     if( !error ) {
         head->NumOfItems = ResReadUint16( &error, fp );
@@ -348,15 +341,13 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
 /*****************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
     error = ResReadDialogSizeInfo( &(control->SizeInfo), fp );
     if( !error ) {
         control->ID = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        control->Style = tmp32;
+        control->Style = ResReadUint32( &error, fp );
     }
     if( !error ) {
         control->ClassID = ReadControlClass( fp );
@@ -392,13 +383,11 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
 /*********************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
-    error = ResReadUint32( &tmp32, fp );
-    control->Style = tmp32;
+    error = false;
+    control->Style = ResReadUint32( &error, fp );
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        control->ExtendedStyle = tmp32;
+        control->ExtendedStyle = ResReadUint32( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogSizeInfo( &(control->SizeInfo), fp );
@@ -421,24 +410,20 @@ bool ResReadDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
 /*************************************************************************/
 {
     bool            error;
-    uint_32         tmp32;
 
-    error = ResReadUint32( &tmp32, fp );
-    control->HelpId = tmp32;
+    error = false;
+    control->HelpId = ResReadUint32( &error, fp );
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        control->ExtendedStyle = tmp32;
+        control->ExtendedStyle = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        control->Style = tmp32;
+        control->Style = ResReadUint32( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogSizeInfo( &(control->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        control->ID = tmp32;
+        control->ID = ResReadUint32( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), fp );

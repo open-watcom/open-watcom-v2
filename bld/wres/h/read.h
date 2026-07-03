@@ -61,7 +61,7 @@ extern ResNameOrOrdinal     *ResReadNameOrOrdinal( FILE *fp );
 extern ResNameOrOrdinal     *ResRead32NameOrOrdinal( FILE *fp );
 extern char                 *ResReadString( FILE *fp, size_t *strlen );
 extern char                 *ResRead32String( FILE *fp, size_t *strlen );
-extern bool                 ResReadUint32( uint_32 *newint, FILE *fp );
+extern uint_32              ResReadUint32( bool *error, FILE *fp );
 extern uint_16              ResReadUint16( bool *error, FILE *fp );
 extern uint_8               ResReadUint8( bool *error, FILE *fp );
 extern long                 ResTell( FILE *fp );

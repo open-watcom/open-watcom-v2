@@ -47,9 +47,10 @@ WResResType WResReadResType( FILE *fp )
     if( WRESSEEK( fp, 0, SEEK_SET ) ) {
         error = WRES_ERROR( WRS_SEEK_FAILED );
     } else {
-        error = ResReadUint32( magic, fp );
+        error = false;
+        magic[0] = ResReadUint32( &error, fp );
         if( !error ) {
-            error = ResReadUint32( magic + 1, fp );
+            magic[1] = ResReadUint32( &error, fp );
         }
         if( WRESSEEK( fp, 0, SEEK_SET ) ) {
             WRES_ERROR( WRS_SEEK_FAILED );

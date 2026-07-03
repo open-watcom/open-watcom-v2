@@ -53,20 +53,17 @@ static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
 
 static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )
 {
-    uint_32     tmp32;
     bool        error;
 
     error = false;
     linfo->MemoryFlags = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    if( ResReadUint32( &tmp32, fp ) )
+    linfo->Offset = ResReadUint32( &error, fp );
+    if( error )
         return( true );
-    linfo->Offset = tmp32;
-    if( ResReadUint32( &tmp32, fp ) )
-        return( true );
-    linfo->Length = tmp32;
-    return( false );
+    linfo->Length = ResReadUint32( &error, fp );
+    return( error );
 }
 
 static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )

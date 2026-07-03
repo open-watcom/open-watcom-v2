@@ -98,7 +98,9 @@ bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
 /******************************************************/
 {
     bool               error;
-    uint_32            type, state, id, helpId;
+    uint_32            type;
+    uint_32            state;
+    uint_32            id;
     uint_16            resInfo;
 
     state = 0;
@@ -109,12 +111,13 @@ bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
     // we know whether or not the item is a MenuExItemNormal or a
     // MenuExItemPopup
 
-    error = ResReadUint32( &type, fp );
+    error = false;
+    type = ResReadUint32( &error, fp );
     if( !error ) {
-        error = ResReadUint32( &state, fp );
+        state = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &id, fp );
+        id = ResReadUint32( &error, fp );
     }
     if( !error ) {
         resInfo = ResReadUint16( &error, fp );
@@ -132,8 +135,7 @@ bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
 
         // Careful! The string is DWORD aligned.
         ResReadPadDWord( fp );
-        error = ResReadUint32( &helpId, fp );
-        curritem->Item.ExPopup.ExData.HelpId = helpId;
+        curritem->Item.ExPopup.ExData.HelpId = ResReadUint32( &error, fp );
     } else {
         curritem->IsPopup = false;
         curritem->Item.ExNormal.Normal.ItemFlags = resInfo;

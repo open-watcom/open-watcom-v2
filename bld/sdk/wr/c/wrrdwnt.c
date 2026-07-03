@@ -121,9 +121,16 @@ bool WRReadWinNTExeHeader( FILE *fp, pe_exe_header *pehdr )
 
     /* check header offset */
     if( ok ) {
-        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET )
-            && !ResReadUint32( &ne_header_off, fp )
-            && ( ne_header_off != 0 );
+        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET );
+        if( ok ) {
+            error = false;
+            ne_header_off = ResReadUint32( &error, fp );
+            if( error ) {
+                ok = false;
+            } else {
+                ok = ( ne_header_off != 0 );
+            }
+        }
     }
 
     if( ok ) {

@@ -41,7 +41,6 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
 {
     M32ResResourceHeader    *newhead;
     bool                    error;
-    uint_32                 tmp32;
 
     error = false;
     newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
@@ -58,12 +57,10 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
         error = ResReadPadDWord( fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->head16->Size = tmp32;
+        newhead->head16->Size = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->Size = tmp32;
+        newhead->Size = ResReadUint32( &error, fp );
     }
     if( !error ) {
         newhead->head16->Type = ResRead32NameOrOrdinal( fp );
@@ -77,8 +74,7 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
         error = ResReadPadDWord( fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->head16->DataVersion = tmp32;
+        newhead->head16->DataVersion = ResReadUint32( &error, fp );
     }
     if( !error ) {
         newhead->head16->MemoryFlags = ResReadUint16( &error, fp );
@@ -87,12 +83,10 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
         newhead->head16->LanguageId = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->head16->Version = tmp32;
+        newhead->head16->Version = ResReadUint32( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->head16->Characteristics = tmp32;
+        newhead->head16->Characteristics = ResReadUint32( &error, fp );
     }
     if( error && newhead != NULL ) {
         if( newhead->head16 != NULL ) {
@@ -110,7 +104,6 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
 {
     MResResourceHeader     *newhead;
     bool                    error;
-    uint_32                 tmp32;
 
     newhead = WRESALLOC( sizeof( MResResourceHeader ) );
     if( newhead == NULL ) {
@@ -131,8 +124,7 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
         newhead->MemoryFlags = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint32( &tmp32, fp );
-        newhead->Size = tmp32;
+        newhead->Size = ResReadUint32( &error, fp );
     }
 
     if( error && newhead != NULL ) {
