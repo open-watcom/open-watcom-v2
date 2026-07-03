@@ -348,14 +348,16 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
     uint_8      name_len;
     char        *name;
     bool        end_of_names;
+    bool        error;
 
     end_of_names = false;
 
-    ResReadUint8( &name_len, fp );
+    error = false;
+    name_len = ResReadUint8( &error, fp );
 
     while( !end_of_names ) {
         if( name_len == 0 ) {
-            ResReadUint8( &name_len, fp );
+            name_len = ResReadUint8( &error, fp );
             if( name_len == 0 ) {
                 end_of_names = true;
             } else {
@@ -370,7 +372,7 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
             WRSetResName( dir, name_offset, name );
             MemFree( name );
             name_offset = name_offset + name_len + 1;
-            ResReadUint8( &name_len, fp );
+            name_len = ResReadUint8( &error, fp );
         }
     }
 
