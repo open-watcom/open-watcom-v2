@@ -101,14 +101,22 @@ bool WRReadWinNTExeHeader( FILE *fp, pe_exe_header *pehdr )
     uint_16     data;
     uint_32     ne_header_off;
     bool        ok;
+    bool        error;
 
     ok = ( fp != NULL && pehdr != NULL );
 
     /* check the reloc offset */
     if( ok ) {
-        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET )
-            && !ResReadUint16( &data, fp )
-            && NE_HEADER_FOLLOWS( data );
+        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET );
+        if( ok ) {
+            error = false;
+            data = ResReadUint16( &error, fp );
+            if( error ) {
+                ok = false;
+            } else (
+                ok = ( NE_HEADER_FOLLOWS( data ) != 0 );
+            }
+        }
     }
 
     /* check header offset */
@@ -473,6 +481,7 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
     char    *unistr;
     WResID  *id;
     int     i;
+    bool    error;
 
     offset = WR_MAP_RES_RVA( rva );
 
@@ -483,10 +492,15 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
 
     /* read the Unicode string */
     if( ok ) {
-        ResReadUint16( &len, fp );
-        len *= 2;
-        unistr = MemAlloc( len + 2 );
-        ok = ( unistr != NULL );
+        error = false;
+        len = ResReadUint16( &error, fp );
+        if( error ) {
+            ok = false;
+        } else {
+            len *= 2;
+            unistr = MemAlloc( len + 2 );
+            ok = ( unistr != NULL );
+        }
     }
 
     if( ok ) {

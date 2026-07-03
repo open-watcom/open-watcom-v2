@@ -43,8 +43,11 @@ WResTypeInfo *WResReadTypeRecord( FILE *fp )
 {
     uint_16         numres;
     WResTypeInfo    *ptr;
+    bool            error;
 
-    if( ResReadUint16( &numres, fp ) )
+    error = false;
+    numres = ResReadUint16( &error, fp );
+    if( error )
         return( NULL );
     ptr = ResReadWResID( offsetof( WResTypeInfo, TypeName ), fp, WRESVERSION );
     ptr->NumResources = numres;

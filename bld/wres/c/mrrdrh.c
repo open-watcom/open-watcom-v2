@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +41,6 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
 {
     M32ResResourceHeader    *newhead;
     bool                    error;
-    uint_16                 tmp16;
     uint_32                 tmp32;
 
     error = false;
@@ -81,12 +81,10 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
         newhead->head16->DataVersion = tmp32;
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        newhead->head16->MemoryFlags = tmp16;
+        newhead->head16->MemoryFlags = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        newhead->head16->LanguageId = tmp16;
+        newhead->head16->LanguageId = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fp );
@@ -112,7 +110,6 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
 {
     MResResourceHeader     *newhead;
     bool                    error;
-    uint_16                 tmp16;
     uint_32                 tmp32;
 
     newhead = WRESALLOC( sizeof( MResResourceHeader ) );
@@ -131,8 +128,7 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
         error = (newhead->Name == NULL);
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        newhead->MemoryFlags = tmp16;
+        newhead->MemoryFlags = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fp );

@@ -42,24 +42,24 @@
 static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
 {
     bool        error;
-    uint_16     tmp16;
 
     error = false;
-    if( ResReadUint16( &tmp16, fp ) )
+    lang->lang = ResReadUint16( &error, fp );
+    if( error )
         return( true );
-    lang->lang = tmp16;
     lang->sublang = ResReadUint8( &error, fp );
     return( error );
 }
 
 static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )
 {
-    uint_16     tmp16;
     uint_32     tmp32;
+    bool        error;
 
-    if( ResReadUint16( &tmp16, fp ) )
+    error = false;
+    linfo->MemoryFlags = ResReadUint16( &error, fp );
+    if( error )
         return( true );
-    linfo->MemoryFlags = tmp16;
     if( ResReadUint32( &tmp32, fp ) )
         return( true );
     linfo->Offset = tmp32;
@@ -106,7 +106,7 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
             numres = 1;
             error = ResReadLangInfo( &v1_linfo, fp );
         } else {
-            error = ResReadUint16( &numres, fp );
+            numres = ResReadUint16( &error, fp );
         }
         newnode = NULL;
         if( !error ) {
@@ -156,7 +156,7 @@ static bool readTypeList( FILE *fp, WResDir dir, uint_16 ver, void *fileinfo )
     /* loop through the list of types */
     for( typenum = 0; typenum < dir->NumTypes && !error; typenum++ ) {
         /* read a type record from disk */
-        error = ResReadUint16( &numres, fp );
+        numres = ResReadUint16( &error, fp );
         if( !error ) {
             newnode = ResReadWResID( offsetof( WResTypeNode, Info.TypeName ), fp, ver );
             error = ( newnode == NULL );

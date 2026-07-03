@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,21 +47,17 @@ static bool ResReadDialogSizeInfo( DialogSizeInfo *sizeinfo, FILE *fp )
 /*********************************************************************/
 {
     bool        error;
-    uint_16     tmp16;
 
-    error = ResReadUint16( &tmp16, fp );
-    sizeinfo->x = tmp16;
+    error = false;
+    sizeinfo->x = ResReadUint16( &error, fp );
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        sizeinfo->y = tmp16;
+        sizeinfo->y = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        sizeinfo->width = tmp16;
+        sizeinfo->width = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        sizeinfo->height = tmp16;
+        sizeinfo->height = ResReadUint16( &error, fp );
     }
     return( error );
 }
@@ -71,7 +67,6 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
     error = ResReadUint32( &tmp32, fp );
     head->Style = tmp32;
@@ -96,8 +91,7 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
 
     /* if the font was set input the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResReadUint16( &tmp16, fp );
-        head->PointSize = tmp16;
+        head->PointSize = ResReadUint16( &error, fp );
         if( !error ) {
             head->FontName = ResReadString( fp, NULL );
             error = (head->FontName == NULL);
@@ -114,10 +108,14 @@ bool ResIsDialogBoxEx( FILE *fp )
 {
     uint_16         sign0;
     uint_16         sign1;
+    bool            error;
 
     /* read in the signature part of the header and check it */
-    if( !ResReadUint16( &sign0, fp ) ) {
-        if( !ResReadUint16( &sign1, fp ) ) {
+    error = false;
+    sign0 = ResReadUint16( &error, fp );
+    if( !error ) {
+        sign1 = ResReadUint16( &error, fp );
+        if( !error ) {
             return( sign0 == 0x0001 && sign1 == 0xFFFF );
         }
     }
@@ -146,7 +144,6 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
     error = ResReadUint32( &tmp32, fp );
     head->Style = tmp32;
@@ -155,8 +152,7 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
         head->ExtendedStyle = tmp32;
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        head->NumOfItems = tmp16;
+        head->NumOfItems = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogSizeInfo( &(head->SizeInfo), fp );
@@ -167,8 +163,7 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 
     /* if the font was set input the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResReadUint16( &tmp16, fp );
-        head->PointSize = tmp16;
+        head->PointSize = ResReadUint16( &error, fp );
         if( !error ) {
             head->FontName = ResRead32String( fp, NULL );
             error = (head->FontName == NULL);
@@ -188,7 +183,6 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
 /****************************************************************************************************/
 {
     bool            error;
-    uint_16         tmp16;
     uint_32         tmp32;
 
     /* Read in the miscellaneous two WORDs 0x0001, 0xFFFF */
@@ -206,8 +200,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         head->Style = tmp32;
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        head->NumOfItems = tmp16;
+        head->NumOfItems = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogSizeInfo( &(head->SizeInfo), fp );
@@ -218,10 +211,9 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
 
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResReadUint16( &tmp16, fp );
-        head->PointSize = tmp16;
+        head->PointSize = ResReadUint16( &error, fp );
         if( !error ) {
-            error = ResReadUint16( &(exhead->FontWeight), fp );
+            exhead->FontWeight = ResReadUint16( &error, fp );
         }
         if( !error ) {
             exhead->FontItalic = ResReadUint8( &error, fp );
@@ -306,14 +298,16 @@ static ControlClass *Read32ControlClass( FILE *fp )
     char            *restofstring;
 
     /* read in the first word */
-    if( ResReadUint16( &flags, fp ) )
+    error = false;
+    flags = ResReadUint16( &error, fp );
+    if( error )
         return( NULL );
 
     class = 0;
     restofstring = NULL;
     stringlen = 0;
     if( flags == 0xffff ) {
-        error = ResReadUint16( &class, fp );
+        class = ResReadUint16( &error, fp );
     } else if( flags == 0 ) {
         error = false;
     } else {
@@ -355,12 +349,10 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
     error = ResReadDialogSizeInfo( &(control->SizeInfo), fp );
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        control->ID = tmp16;
+        control->ID = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fp );
@@ -383,7 +375,6 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
 static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdinal **text, uint_16 *extra_bytes, FILE *fp )
 {
     bool            error;
-    uint_16         tmp16;
 
     *class_id = Read32ControlClass( fp );
     error = ( *class_id == NULL );
@@ -391,8 +382,7 @@ static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdi
         *text = ResRead32NameOrOrdinal( fp );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        *extra_bytes = tmp16;
+        *extra_bytes = ResReadUint16( &error, fp );
     }
 
     return( error );
@@ -403,7 +393,6 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
     error = ResReadUint32( &tmp32, fp );
     control->Style = tmp32;
@@ -415,8 +404,7 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
         error = ResReadDialogSizeInfo( &(control->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, fp );
-        control->ID = tmp16;
+        control->ID = ResReadUint16( &error, fp );
     }
     if( !error ) {
         error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), fp );

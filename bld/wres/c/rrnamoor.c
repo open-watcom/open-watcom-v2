@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
     restofstr = NULL;
     stringlen = 0;
     if( flags == 0xff ) {
-        error = ResReadUint16( &ord, fp );
+        ord = ResReadUint16( &error, fp );
     } else if( flags == 0 ) {
         error = false;
     } else {
@@ -105,7 +105,9 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
     size_t              stringlen;
     char                *restofstr;
 
-    if( ResReadUint16( &flags, fp ) )
+    error = false;
+    flags = ResReadUint16( &error, fp );
+    if( error )
         return( NULL );
 
     /* read the rest of the Name or Ordinal */
@@ -113,7 +115,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
     restofstr = NULL;
     stringlen = 0;
     if( flags == 0xffff ) {
-        error = ResReadUint16( &ord, fp );
+        ord = ResReadUint16( &error, fp );
     } else if( flags == 0 ) {
         error = false;
     } else {

@@ -46,6 +46,7 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
     uint_8          isname;
     char            *ptr;
     size_t          numread;
+    bool            error;
 
     if( (numread = WRESREAD( fp, &isname, sizeof( isname ) )) != sizeof( isname ) ) {
         WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
@@ -64,7 +65,9 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
     }
     idptr = (WResID *)( ptr + offs );
     if( isname == 0 ) {
-        if( ResReadUint16( &idptr->ID.Num, fp ) ) {
+        error = false;
+        idptr->ID.Num = ResReadUint16( &error, fp );
+        if( error ) {
             WRESFREE( ptr );
             return( NULL );
         }

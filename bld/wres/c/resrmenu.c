@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +44,11 @@ bool ResReadMenuHeader( MenuHeader *currhead, FILE *fp )
 /******************************************************/
 {
     bool            error;
-    uint_16         val16;
 
-    error = ResReadUint16( &val16, fp );
-    currhead->Version = val16;
+    error = false;
+    currhead->Version = ResReadUint16( &error, fp );
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currhead->Size = val16;
+        currhead->Size = ResReadUint16( &error, fp );
     }
     return( error );
 }
@@ -119,7 +117,7 @@ bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
         error = ResReadUint32( &id, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &resInfo, fp );
+        resInfo = ResReadUint16( &error, fp );
     }
 
     // Determine if this is a normal menu item or a popup menu item
@@ -155,10 +153,9 @@ bool ResReadMenuItem( MenuItem *curritem, FILE *fp )
 /**************************************************/
 {
     bool    error;
-    uint_16 tmp16;
 
-    error = ResReadUint16( &tmp16, fp );
-    curritem->Item.Popup.ItemFlags = tmp16;
+    error = false;
+    curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
     if( !error ) {
         if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
             curritem->IsPopup = true;
@@ -166,8 +163,7 @@ bool ResReadMenuItem( MenuItem *curritem, FILE *fp )
             error = (curritem->Item.Popup.ItemText == NULL);
         } else {
             curritem->IsPopup = false;
-            error = ResReadUint16( &tmp16, fp );
-            curritem->Item.Normal.ItemID = tmp16;
+            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
             if( !error ) {
                 curritem->Item.Normal.ItemText = ResReadString( fp, NULL );
                 error = (curritem->Item.Normal.ItemText == NULL);
@@ -182,10 +178,9 @@ bool ResReadMenuItem32( MenuItem *curritem, FILE *fp )
 /****************************************************/
 {
     bool    error;
-    uint_16 tmp16;
 
-    error = ResReadUint16( &tmp16, fp );
-    curritem->Item.Popup.ItemFlags = tmp16;
+    error = false;
+    curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
     if( !error ) {
         if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
             curritem->IsPopup = true;
@@ -193,8 +188,7 @@ bool ResReadMenuItem32( MenuItem *curritem, FILE *fp )
             error = (curritem->Item.Popup.ItemText == NULL);
         } else {
             curritem->IsPopup = false;
-            error = ResReadUint16( &tmp16, fp );
-            curritem->Item.Normal.ItemID = tmp16;
+            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
             if( !error ) {
                 curritem->Item.Normal.ItemText = ResRead32String( fp, NULL );
                 error = (curritem->Item.Normal.ItemText == NULL);

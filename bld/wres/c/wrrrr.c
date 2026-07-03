@@ -41,10 +41,13 @@ WResResInfo *WResReadResRecord( FILE *fp )
 /* reads in the fields of a res info record from the current position in */
 /* the file identified by fp */
 {
-    uint_16     numres;
-    WResResInfo *ptr;
+    uint_16         numres;
+    WResResInfo     *ptr;
+    bool            error;
 
-    if( ResReadUint16( &numres, fp ) )
+    error = false;
+    numres = ResReadUint16( &error, fp );
+    if( error )
         return( NULL );
     ptr = ResReadWResID( offsetof( WResResInfo, ResName ), fp, WRESVERSION );
     ptr->NumResources = numres;

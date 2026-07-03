@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,17 +43,14 @@ bool ResReadAccelEntry( AccelTableEntry *currentry, FILE *fp )
 /************************************************************/
 {
     bool            error;
-    uint_16         val16;
 
     error = false;
     currentry->Flags = ResReadUint8( &error, fp );
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currentry->Ascii = val16;
+        currentry->Ascii = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currentry->Id = val16;
+        currentry->Id = ResReadUint16( &error, fp );
     }
     return( error );
 }
@@ -62,21 +59,17 @@ bool ResReadAccelEntry32( AccelTableEntry32 *currentry, FILE *fp )
 /****************************************************************/
 {
     bool            error;
-    uint_16         val16;
 
-    error = ResReadUint16( &val16, fp );
-    currentry->Flags = val16;
+    error = false;
+    currentry->Flags = ResReadUint16( &error, fp );
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currentry->Ascii = val16;
+        currentry->Ascii = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currentry->Id = val16;
+        currentry->Id = ResReadUint16( &error, fp );
     }
     if( !error ) {
-        error = ResReadUint16( &val16, fp );
-        currentry->Unknown = val16;
+        currentry->Unknown = ResReadUint16( &error, fp );
     }
     return( error );
 }

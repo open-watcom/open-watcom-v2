@@ -110,15 +110,23 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
     uint_16     data;
     uint_32     ne_header_off;
     bool        ok;
+    bool        error;
 
     ok = ( fp != NULL && nehdr != NULL );
     /*
      * check the reloc offset
      */
     if( ok ) {
-        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET )
-            && !ResReadUint16( &data, fp )
-            && NE_HEADER_FOLLOWS( data );
+        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET );
+        if( ok ) {
+            error = false;
+            data = ResReadUint16( &error, fp );
+            if( error ) {
+                ok = false;
+            } else {
+                ok = ( NE_HEADER_FOLLOWS( data ) != 0 );
+            }
+        }
     }
     /*
      * check header offset
@@ -179,6 +187,7 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
     uint_32         name_table_len;
     uint_32         num_leftover;
     bool            ok;
+    bool            error;
 
     ok = ( fp != NULL );
 
@@ -208,10 +217,15 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
     }
 
     if( ok ) {
-        ResReadUint16( &align_shift, fp );
-        ok = ( align_shift <= 16 );
-        if( !ok ) {
-            WRDisplayErrorMsg( WR_BADEXE );
+        error = false;
+        align_shift = ResReadUint16( &error, fp );
+        if( error ) {
+            ok = false;
+        } else {
+            ok = ( align_shift <= 16 );
+            if( !ok ) {
+                WRDisplayErrorMsg( WR_BADEXE );
+            }
         }
     }
 
@@ -261,9 +275,11 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
     uint_32         reserved;
     WResTypeNode    *type_node;
     WResResNode     *res_node;
+    bool            error;
 
-    ResReadUint16( &type_id, fp );
-    if( type_id == 0 ) {
+    error = false;
+    type_id = ResReadUint16( &error, fp );
+    if( error || type_id == 0 ) {
         return( NULL );
     }
 
@@ -272,7 +288,7 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
         return( NULL );
     }
 
-    ResReadUint16( &resource_count, fp );
+    resource_count = ResReadUint16( &error, fp );
     ResReadUint32( &reserved, fp );
 
     type_node->Next = NULL;

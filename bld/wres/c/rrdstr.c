@@ -72,10 +72,11 @@ char *ResRead32String( FILE *fp, size_t *strlen )
     char                *retstring;
 
     newstring = VarStringStart();
-    error = ResReadUint16( &nextchar, fp );
+    error = false;
+    nextchar = ResReadUint16( &error, fp );
     while( !error && nextchar != 0x0000 ) {
         VarStringAddChar( newstring, UNI2ASCII( nextchar ) );
-        error = ResReadUint16( &nextchar, fp );
+        nextchar = ResReadUint16( &error, fp );
     }
 
     retstring = VarStringEnd( newstring, strlen );
