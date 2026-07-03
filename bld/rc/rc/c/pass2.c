@@ -50,18 +50,6 @@
 
 bool    StopInvoked = false;
 
-static RcStatus copyStubFile( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
-/********************************************************************************
- * copy from the begining of the file to the start of the win exe header
- */
-{
-    RcStatus    ret;
-
-    ret = CopyExeData( src->fp, dst->fp, src->WinHeadOffset );
-    *err_code = errno;
-    return( ret );
-} /* copyStubFile */
-
 static RcStatus seekPastResTable( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
 {
     long            winheadoffset;
@@ -88,10 +76,9 @@ static RcStatus seekPastResTable( ExeFileInfo *src, ExeFileInfo *dst, int *err_c
 
 } /* seekPastResTable */
 
-static RcStatus copyOtherTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_code )
+static RcStatus copyOtherTables( ExeFileInfo *src, ExeFileInfo *dst )
 {
     uint_32         tablelen;
-    RcStatus        ret;
 
     /*
      * the other tables start at the resident names table and end at the end
@@ -100,13 +87,10 @@ static RcStatus copyOtherTables( ExeFileInfo *src, ExeFileInfo *dst, int *err_co
     tablelen = (src->u.NEInfo.WinHead.nonres_off + src->u.NEInfo.WinHead.nonres_size) - ( src->WinHeadOffset + src->u.NEInfo.WinHead.resident_off );
 
     if( RESSEEK( src->fp, src->WinHeadOffset + src->u.NEInfo.WinHead.resident_off, SEEK_SET ) ) {
-        *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    ret = CopyExeData( src->fp, dst->fp, tablelen );
-    *err_code = errno;
-    return( ret );
+    return( CopyExeData( src->fp, dst->fp, tablelen ) );
 } /* copyOtherTables */
 
 static int computeShiftCount( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
@@ -563,7 +547,9 @@ bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     bool            error;
     int             err_code;
 
-    ret = copyStubFile( src, dst, &err_code );
+    /* copy data from the src file to dst file */
+    ret = CopyExeData( src->fp, dst->fp, src->WinHeadOffset );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {
@@ -597,7 +583,8 @@ bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         /* never return */
     }
 
-    ret = copyOtherTables( src, dst, &err_code );
+    ret = copyOtherTables( src, dst );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {
@@ -663,7 +650,9 @@ bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     bool            error;
     int             err_code;
 
-    ret = copyStubFile( src, dst, &err_code );
+    /* copy data from the src file to dst file */
+    ret = CopyExeData( src->fp, dst->fp, src->WinHeadOffset );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {
@@ -695,7 +684,8 @@ bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         /* never return */
     }
 
-    ret = copyOtherTables( src, dst, &err_code );
+    ret = copyOtherTables( src, dst );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {
@@ -817,7 +807,9 @@ bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     bool        error;
     int         err_code;
 
-    ret = copyStubFile( src, dst, &err_code );
+    /* copy data from the src file to dst file */
+    ret = CopyExeData( src->fp, dst->fp, src->WinHeadOffset );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {
@@ -1005,7 +997,9 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     bool        error;
     int         err_code;
 
-    ret = copyStubFile( src, dst, &err_code );
+    /* copy data from the src file to dst file */
+    ret = CopyExeData( src->fp, dst->fp, src->WinHeadOffset );
+    err_code = errno;
     if( ret != RS_OK )
         goto REPORT_ERROR;
     if( StopInvoked ) {

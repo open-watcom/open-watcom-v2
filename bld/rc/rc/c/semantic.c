@@ -37,6 +37,7 @@
 #include "semantic.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "cpyfdata.h"
 #include "wres.h"
 
 
@@ -113,9 +114,8 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
 /*************************************************************************/
 {
     MResResourceHeader  ms_head;
-    unsigned long       cur_byte_num;
-    uint_8              cur_byte;
     bool                error;
+    char				buffer[512];
 
     /*
      * fill in and output a MS format resource header
@@ -152,25 +152,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
             if( ResSeek( tmpResFile, loc.start, SEEK_SET ) ) {
                 RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
             } else {
-                /*
-                 * this is very inefficient but hopefully the buffering in layer0.c
-                 * will make it tolerable
-                 */
-                ErrorHasOccured = false;
-                for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
-                    cur_byte = ResReadUint8( &error, tmpResFile );
-                    if( error ) {
-                        RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
-                        ErrorHasOccured = true;
-                        break;
-                    }
-                    error = ResWriteUint8( cur_byte, CurrResFile.fp );
-                    if( error ) {
-                        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                        ErrorHasOccured = true;
-                        break;
-                    }
-                }
+                ErrorHasOccured = CheckCopyRet( CopyFilesData( tmpResFile, CurrResFile.fp, loc.len, buffer, sizeof( buffer ) ), tmpResFileName, CurrResFile.filename );
             }
         }
     }

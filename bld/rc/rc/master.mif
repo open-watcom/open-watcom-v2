@@ -142,6 +142,7 @@ common_objs = &
     $(_subdir_)rcspawn.obj &
     $(_subdir_)cmdlnprs.obj &
     $(_subdir_)cmdscan.obj &
+    $(_subdir_)cpyfdata.obj &
     $(cli_cpp_objs)
 
 misc_objs = &

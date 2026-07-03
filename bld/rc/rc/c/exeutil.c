@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,34 +35,22 @@
 #include "rccore_2.h"
 #include "exedos.h"
 #include "exeutil.h"
+#include "rcerrors.h"
+#include "cpyfdata.h"
 
 #include "clibext.h"
 
 
 RcStatus CopyExeData( FILE *src_fp, FILE *dst_fp, uint_32 length )
 /*****************************************************************
+ * CopyExeData function is used by resource compiler to write data to executable
+ * there are two implementation one in resource compiler and second in linker
+ *
  * NB When an error occurs the function MUST return without altering errno
  */
 {
-    size_t          numread;
-    size_t          bufflen;
-
-    if( length == 0 ) {
-        return( RS_PARAM_ERROR );
-    }
-    for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
-        if( bufflen > length )
-            bufflen = length;
-        numread = RESREAD( src_fp, Pass2Info.IoBuffer, bufflen );
-        if( numread != bufflen ) {
-            return( RESIOERR( src_fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
-        }
-        if( RESWRITE( dst_fp, Pass2Info.IoBuffer, numread ) != numread ) {
-            return( RS_WRITE_ERROR );
-        }
-    }
-    return( RS_OK );
-} /* CopyExeData */
+    return( CopyFilesData( src_fp, dst_fp, length, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) );
+}
 
 RcStatus CopyExeDataTilEOF( FILE *src_fp, FILE *dst_fp )
 /*******************************************************

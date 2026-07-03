@@ -788,7 +788,10 @@ static void reportDuplicateResources( WResMergeError *errs )
 bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
                                 pe_object *res_obj, unsigned_32 rva,
                                 unsigned_32 offset, bool writebyfile )
-/********************************************************************/
+/*********************************************************************
+ * here is linker entry point for building resources in executable
+ * image
+ */
 {
     PEResDir            *dir;
     RcStatus            ret;
@@ -896,6 +899,6 @@ bool RcBuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles )
     }
     return( error );
 }
-#endif
+#endif  /* !defined( INSIDE_WLINK ) */
 
-#endif
+#endif  /* !defined( INSIDE_WLINK ) || defined( _OS2 ) */
