@@ -70,7 +70,9 @@
 
 #ifdef _OS2
 
-#define STUB_ALIGN 16U
+#define NE_ORDID    0x8000
+
+#define STUB_ALIGN  16U
 
 typedef struct FullResourceRecord {
     struct FullResourceRecord   *Next;
@@ -353,7 +355,7 @@ static unsigned_16 findResOrTypeName( ResTable *restab, WResID *name )
             name_id = str_offset + restab->Dir.TableSize;
         }
     } else {
-        name_id = name->ID.Num | 0x8000;
+        name_id = name->ID.Num | NE_ORDID;
     }
 
     return( name_id );
@@ -407,7 +409,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     for( exe_type = restab->Dir.Head; exe_type != NULL;
                 exe_type = exe_type->Next ) {
         if( type->TypeName.IsName
-          && (exe_type->Info.type & 0x8000) == 0 ) {
+          && (exe_type->Info.type & NE_ORDID) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
                             ( exe_type->Info.type - restab->Dir.TableSize ));
@@ -417,9 +419,9 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
                 break;
             }
         } else if( !(type->TypeName.IsName)
-          && (exe_type->Info.type & 0x8000) ) {
+          && (exe_type->Info.type & NE_ORDID) ) {
             /* if they are both numbers */
-            if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
+            if( type->TypeName.ID.Num == (exe_type->Info.type & ~NE_ORDID) ) {
                 break;
             }
         }
