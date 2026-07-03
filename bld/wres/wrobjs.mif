@@ -30,7 +30,6 @@ wres_core_objs = &
     wrfreedi.obj &
     wrgetli.obj &
     wridcmp.obj &
-    wridexby.obj &
     wridfnoo.obj &
     wridfrnu.obj &
     wridfrst.obj &

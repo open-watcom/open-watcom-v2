@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,25 +32,39 @@
 
 
 #include <string.h>
+#include <stddef.h>
 #include "wresall.h"
 #include "reserr.h"
 #include "wresrtns.h"
 
 
+static int WResIDSize( const WResID * name )
+/******************************************/
+{
+    int     size;
+
+    if( name->IsName ) {
+        size = offsetof( WResID, ID.Name.Name ) + name->ID.Name.NumChars;
+    } else {
+        size = offsetof( WResID, ID.Num ) + sizeof( name->ID.Num );
+    }
+    return( size );
+}
+
 static WResTypeNode *newTypeNode( const WResID *type )
 {
     WResTypeNode        *newnode;
-    int                 extrabytes;
+    int                 id_size;
 
-    extrabytes = WResIDExtraBytes( type );
-    newnode = WRESALLOC( sizeof( WResTypeNode ) + extrabytes );
+    id_size = WResIDSize( type );
+    newnode = WRESALLOC( offsetof( WResTypeNode, Info.TypeName ) + id_size );
     if( newnode != NULL ) {
         newnode->Next = NULL;
         newnode->Prev = NULL;
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.TypeName), type, sizeof( WResID ) + extrabytes );
+        memcpy( &(newnode->Info.TypeName), type, id_size );
     } else {
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
@@ -86,10 +101,10 @@ static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
 static WResResNode *newResNode( const WResID *name )
 {
     WResResNode         *newnode;
-    int                 extrabytes;
+    int                 id_size;
 
-    extrabytes = WResIDExtraBytes( name );
-    newnode = WRESALLOC( sizeof( WResResNode ) + extrabytes );
+    id_size = WResIDSize( name );
+    newnode = WRESALLOC( offsetof( WResResNode, Info.ResName ) + id_size );
     if( newnode == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
@@ -98,7 +113,7 @@ static WResResNode *newResNode( const WResID *name )
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.ResName), name, sizeof( WResID ) + extrabytes );
+        memcpy( &(newnode->Info.ResName), name, id_size );
     }
 
     return( newnode );

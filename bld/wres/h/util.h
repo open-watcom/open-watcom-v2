@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,6 @@ extern WResID              *WResIDFromStr( const char * );
 extern char                *WResIDToStr( const WResID * );
 extern long                WResIDToNum( const WResID * );
 extern void                WResIDFree( WResID * );
-extern int                 WResIDExtraBytes( const WResID * );
 extern int                 WResIDNameCmp( const WResIDName *, const WResIDName * );
 extern int                 WResIDCmp( const WResID *, const WResID * );
 extern ResNameOrOrdinal    *WResIDToNameOrOrdinal( WResID * id );
@@ -56,7 +55,6 @@ extern WResHelpID          *WResHelpIDFromStr( const char * );
 extern char                *WResHelpIDToStr( const WResHelpID * );
 extern long                WResHelpIDToNum( const WResHelpID * );
 extern void                WResHelpIDFree( WResHelpID * );
-extern int                 WResHelpIDExtraBytes( const WResHelpID * );
 extern int                 WResHelpIDCmp( const WResHelpID *, const WResHelpID * );
 extern ResNameOrOrdinal    *WResHelpIDToNameOrOrdinal( WResHelpID * id );
 extern WResHelpID          *WResHelpIDFromNameOrOrdinal( ResNameOrOrdinal * name );
