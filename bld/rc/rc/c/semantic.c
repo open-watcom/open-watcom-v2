@@ -32,6 +32,7 @@
 
 
 #include <stdio.h>      /* remove call for MS format stuff */
+#include <errno.h>
 #include "global.h"
 #include "rcerrors.h"
 #include "semantic.h"
