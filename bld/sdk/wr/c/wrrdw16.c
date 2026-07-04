@@ -124,7 +124,7 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
             if( error ) {
                 ok = false;
             } else {
-                ok = ( NE_HEADER_FOLLOWS( data ) != 0 );
+                ok = NE_HEADER_FOLLOWS( data );
             }
         }
     }
