@@ -156,7 +156,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                 RcStatus    ret;
 
                 ret = CopyFilesData( tmpResFile, CurrResFile.fp, loc.len, buffer, sizeof( buffer ) );
-                ErrorHasOccured = ReportIOError( ret, tmpResFileName, CurrResFile.filename, errno );
+                ErrorHasOccured = RcIOError( ret, tmpResFileName, CurrResFile.filename, errno );
             }
         }
     }

@@ -32,7 +32,9 @@
 
 
 #include <stdarg.h>
+#include "bool.h"
 #include "wnoret.h"
+#include "rctypes.h"
 #ifdef INSIDE_WLINK
     #include "wlnkmsg.rh"
 #elif defined( INSIDE_WR )
@@ -62,3 +64,4 @@ enum {
 extern void RcWarning( unsigned errornum, ... );
 extern void RcError( unsigned int ,... );
 NO_RETURN( extern void RcFatalError( unsigned int errornum, ... ) );
+extern bool RcIOError( RcStatus ret, const char *srcname, const char *dstname, int err );

@@ -188,6 +188,28 @@ void RcError( unsigned errornum, ... )
     va_end( args );
 }
 
+bool RcIOError( RcStatus ret, const char *srcname, const char *dstname, int err )
+{
+    switch( ret ) {
+    case RS_OK:
+    case RS_PARAM_ERROR:
+        return( false );
+    case RS_READ_ERROR:
+        RcError( ERR_READING_EXE, srcname, strerror( err ) );
+        break;
+    case RS_READ_INCMPLT:
+        RcError( ERR_UNEXPECTED_EOF, srcname );
+        break;
+    case RS_WRITE_ERROR:
+        RcError( ERR_WRITTING_FILE, dstname, strerror( err ) );
+        break;
+    default:
+        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        break;
+    }
+    return( true );
+}
+
 void RcFatalError( unsigned int errornum, ... )
 /*********************************************/
 {

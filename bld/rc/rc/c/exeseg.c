@@ -38,7 +38,6 @@
 #include "exeutil.h"
 #include "exeseg.h"
 #include "exeres.h"
-#include "cpyfdata.h"
 
 #include "clibext.h"
 
@@ -246,7 +245,7 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                 seg_len = src_seg->size;
             }
             ret = CopyExeData( src->fp, dst->fp, seg_len );
-            error = ReportIOError( ret, src->name, dst->name, errno );
+            error = RcIOError( ret, src->name, dst->name, errno );
         }
 
         if( (src_seg->info & SEG_RELOC)
@@ -275,7 +274,7 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                 RcStatus    ret;
 
                 ret = CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE );
-                error = ReportIOError( ret, src->name, dst->name, errno );
+                error = RcIOError( ret, src->name, dst->name, errno );
             }
             if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
                 ret = CPSEG_SEG_TOO_BIG;

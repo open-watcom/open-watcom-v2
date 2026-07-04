@@ -32,4 +32,3 @@
 
 
 extern RcStatus     CopyFilesData( FILE *src_fp, FILE *dst_fp, uint_32 length, void *buffer, size_t blen );
-extern bool         ReportIOError( RcStatus ret, const char *srcname, const char *dstname, int err );
