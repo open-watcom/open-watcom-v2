@@ -113,7 +113,7 @@ bool WRReadWinNTExeHeader( FILE *fp, pe_exe_header *pehdr )
             data = ResReadUint16( &error, fp );
             if( error ) {
                 ok = false;
-            } else (
+            } else {
                 ok = NE_HEADER_FOLLOWS( data );
             }
         }
