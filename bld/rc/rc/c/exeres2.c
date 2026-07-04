@@ -304,20 +304,10 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         }
     }
     CheckDebugOffset( dst );
-
-    switch( ret ) {
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, dst->name, strerror( err_code ) );
-        break;
-    case RS_READ_ERROR:
-        RcError( ERR_READING_RES, CmdLineParms.OutResFileName, strerror( err_code ) );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, CmdLineParms.OutResFileName );
-        break;
-    default:
-        break;
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_RES;
     }
+    RcIOError( ret, CmdLineParms.OutResFileName, dst->name, errno );
     return( ret );
 } /* CopyOS2Resources */
 

@@ -830,23 +830,10 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
      *          incorrect if the -fr switch is in use
      */
     if( ret != RS_OK  ) {
-        switch( ret ) {
-        case RS_WRITE_ERROR:
-            RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
-            break;
-        case RS_READ_ERROR:
-            RcError( ERR_READING_RES, errres->name, strerror( errno )  );
-            break;
-        case RS_OPEN_ERROR:
-            RcError( ERR_CANT_OPEN_FILE, errres->name, strerror( errno ) );
-            break;
-        case RS_READ_INCMPLT:
-            RcError( ERR_UNEXPECTED_EOF, errres->name );
-            break;
-        default:
-            RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
-            break;
+        if( ret == RS_READ_ERROR ) {
+            ret = RS_READ_ERROR_RES;
         }
+        RcIOError( ret, errres->name, dst->name, errno );
         return( true );
     }
     dst->u.PEInfo.Res.ResSize = curr_rva - rva;

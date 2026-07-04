@@ -621,19 +621,12 @@ bool MergeResExeWINNE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     return( true );
 
 REPORT_ERROR:
-    switch( ret ) {
-    case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, src->name, strerror( err_code ) );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, src->name );
-        break;
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_EXE;
+    } else if( ret == RS_WRITE_ERROR ) {
+        ret = RS_WRITE_ERROR_TMP;
     }
+    RcIOError( ret, src->name, dst->name, err_code );
     /* fall through */
 HANDLE_ERROR:
     return( false );
@@ -720,19 +713,12 @@ bool MergeResExeOS2NE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     return( true );
 
 REPORT_ERROR:
-    switch( ret ) {
-    case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, src->name, strerror( err_code ) );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, src->name );
-        break;
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_EXE;
+    } else if( ret == RS_WRITE_ERROR ) {
+        ret = RS_WRITE_ERROR_TMP;
     }
+    RcIOError( ret, src->name, dst->name, err_code );
     /* fall through */
 HANDLE_ERROR:
     return( false );
@@ -862,22 +848,12 @@ bool MergeResExePE( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     return( true );
 
 REPORT_ERROR:
-    switch( ret ) {
-    case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, src->name, strerror( err_code )  );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, src->name );
-        break;
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
-        break;
-    case RS_BAD_FILE_FMT:
-        RcError( ERR_NOT_VALID_EXE, src->name );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_EXE;
+    } else if( ret == RS_WRITE_ERROR ) {
+        ret = RS_WRITE_ERROR_TMP;
     }
+    RcIOError( ret, src->name, dst->name, err_code );
     /* fall through */
 HANDLE_ERROR:
     return( false );
@@ -1056,22 +1032,12 @@ bool MergeResExeLX( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *resfiles )
     return( true );
 
 REPORT_ERROR:
-    switch( ret ) {
-    case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, src->name, strerror( err_code )  );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, src->name );
-        break;
-    case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
-        break;
-    case RS_BAD_FILE_FMT:
-        RcError( ERR_NOT_VALID_EXE, src->name );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_EXE;
+    } else if( ret == RS_WRITE_ERROR ) {
+        ret = RS_WRITE_ERROR_TMP;
     }
+    RcIOError( ret, src->name, dst->name, err_code );
     /* fall through */
 HANDLE_ERROR:
     return( false );

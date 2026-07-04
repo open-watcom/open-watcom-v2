@@ -56,19 +56,10 @@ static bool readObjectAndPageTable( ExeFileInfo *src )
         ret = SeekRead( src->fp, src->WinHeadOffset + src->u.LXInfo.OS2Head.objmap_off,
                     src->u.LXInfo.Pages, table_size );
     }
-    switch( ret ) {
-    case RS_OK:
-        break;
-    case RS_READ_ERROR:
-        RcError( ERR_READING_EXE, src->name, strerror( errno ) );
-        break;
-    case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, src->name );
-        break;
-    default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
-        break;
+    if( ret == RS_READ_ERROR ) {
+        ret = RS_READ_ERROR_EXE;
     }
+    RcIOError( ret, src->name, "", errno );
     CheckDebugOffset( src );
     return( ret != RS_OK );
 }
@@ -401,19 +392,10 @@ bool CopyLXExeObjects( ExeFileInfo *src, ExeFileInfo *dst )
     dst_obj = dst->u.LXInfo.Objects;
     for( ; num_objs > 0; num_objs--, src_obj++, dst_obj++ ) {
         ret = copyOneObject( src, src_obj, dst, dst_obj );
-        switch( ret ) {
-        case RS_WRITE_ERROR:
-            RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
-            return( true );
-        case RS_READ_ERROR:
-            RcError( ERR_READING_EXE, src->name, strerror( errno ) );
-            return( true );
-        case RS_READ_INCMPLT:
-            RcError( ERR_UNEXPECTED_EOF, src->name );
-            return( true );
-        default:
-            break;
+        if( ret == RS_READ_ERROR ) {
+            ret = RS_READ_ERROR_EXE;
         }
+        RcIOError( ret, src->name, dst->name, errno );
     }
     CheckDebugOffset( src );
     CheckDebugOffset( dst );

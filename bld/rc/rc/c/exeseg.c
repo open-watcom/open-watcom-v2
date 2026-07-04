@@ -245,6 +245,11 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                 seg_len = src_seg->size;
             }
             ret = CopyExeData( src->fp, dst->fp, seg_len );
+            if( ret == RS_READ_ERROR ) {
+                ret = RS_READ_ERROR_EXE;
+//            } else if( ret == RS_WRITE_ERROR ) {
+//                ret = RS_WRITE_ERROR_RES;
+            }
             error = RcIOError( ret, src->name, dst->name, errno );
         }
 
@@ -274,6 +279,11 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                 RcStatus    ret;
 
                 ret = CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE );
+                if( ret == RS_READ_ERROR ) {
+                    ret = RS_READ_ERROR_EXE;
+//                } else if( ret == RS_WRITE_ERROR ) {
+//                    ret = RS_WRITE_ERROR_RES;
+                }
                 error = RcIOError( ret, src->name, dst->name, errno );
             }
             if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
