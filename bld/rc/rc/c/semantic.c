@@ -115,7 +115,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
 {
     MResResourceHeader  ms_head;
     bool                error;
-    char				buffer[512];
+    char                buffer[512];
 
     /*
      * fill in and output a MS format resource header
@@ -152,7 +152,10 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
             if( ResSeek( tmpResFile, loc.start, SEEK_SET ) ) {
                 RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
             } else {
-                ErrorHasOccured = CheckCopyRet( CopyFilesData( tmpResFile, CurrResFile.fp, loc.len, buffer, sizeof( buffer ) ), tmpResFileName, CurrResFile.filename );
+                RcStatus    ret;
+
+                ret = CopyFilesData( tmpResFile, CurrResFile.fp, loc.len, buffer, sizeof( buffer ) );
+                ErrorHasOccured = CheckCopyRet( ret, tmpResFileName, CurrResFile.filename, errno );
             }
         }
     }

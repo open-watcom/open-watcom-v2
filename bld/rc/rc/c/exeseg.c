@@ -238,12 +238,15 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
         }
 
         if( !error ) {
+            RcStatus    ret;
+
             if( src_seg->size == 0 ) {
                 seg_len = 0x10000L;
             } else {
                 seg_len = src_seg->size;
             }
-            error = CheckCopyRet( CopyExeData( src->fp, dst->fp, seg_len ), src->name, dst->name );
+            ret = CopyExeData( src->fp, dst->fp, seg_len );
+            error = CheckCopyRet( ret, src->name, dst->name, errno );
         }
 
         if( (src_seg->info & SEG_RELOC)
@@ -269,7 +272,10 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
              * copy the relocation information
              */
             if( !error ) {
-                error = CheckCopyRet( CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE ), src->name, dst->name );
+                RcStatus    ret;
+
+                ret = CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE );
+                error = CheckCopyRet( ret, src->name, dst->name, errno );
             }
             if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
                 ret = CPSEG_SEG_TOO_BIG;

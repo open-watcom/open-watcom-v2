@@ -32,4 +32,4 @@
 
 
 extern RcStatus     CopyFilesData( FILE *src_fp, FILE *dst_fp, uint_32 length, void *buffer, size_t blen );
-extern bool         CheckCopyRet( RcStatus ret, const char *srcname, const char *dstname );
+extern bool         CheckCopyRet( RcStatus ret, const char *srcname, const char *dstname, int err );
