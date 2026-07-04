@@ -283,7 +283,7 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
                 error = ResWritePadDWord( CurrResFile.fp );
             }
             if( error ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 ErrorHasOccured = true;
                 semFreeStringTable( currtable );
                 return;

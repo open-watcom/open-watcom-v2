@@ -438,7 +438,7 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     return;
 
 OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+    RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     MemFree( info );
     FreeVerBlockNest( nest );

@@ -313,7 +313,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
                                                  CurrResFile.fp,
                                                  currblock->codePage );
             if( error ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 ErrorHasOccured = true;
                 SemOS2FreeStringTable( currtable );
                 return;

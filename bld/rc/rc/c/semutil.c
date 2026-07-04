@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +50,7 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
         RcError( ERR_UNEXPECTED_EOF, filename );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+        RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );

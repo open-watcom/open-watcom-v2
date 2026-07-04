@@ -280,7 +280,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
         error = SemOS2WriteSubMenu( menu, &err_code, codepage );
         if( error ) {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );

@@ -64,7 +64,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_UNEXPECTED_EOF:
     case ERR_READING_FILE:
     case ERR_WRITTING_FILE:
-    case ERR_WRITTING_RES_FILE:
+    case ERR_WRITTING_RES:
         fname = va_arg( args1, char * );
 #if defined( INSIDE_WR )
         if( strcmp( fname, TMPFILE2 ) == 0 ) {
@@ -103,7 +103,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     case ERR_UNEXPECTED_EOF:
     case ERR_WRITTING_FILE:
     case ERR_READING_FILE:
-    case ERR_WRITTING_RES_FILE:
+    case ERR_WRITTING_RES:
     case ERR_CANT_FIND_FILE:
     case ERR_FILENAME_NEEDED:
     case ERR_NO_OPT_SPECIFIED:

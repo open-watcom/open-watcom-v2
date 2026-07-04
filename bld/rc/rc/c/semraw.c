@@ -71,7 +71,7 @@ void SemWriteRawDataItem( RawDataItem item )
         }
     }
     if( error ) {
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+        RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
         ErrorHasOccured = true;
     }
 }

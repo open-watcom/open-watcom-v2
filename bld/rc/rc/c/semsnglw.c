@@ -672,7 +672,7 @@ READ_DIR_ERROR:
     return;
 
 WRITE_DIR_ERROR:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+    RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );
@@ -1070,7 +1070,7 @@ READ_DIR_ERROR:
     return;
 
 WRITE_DIR_ERROR:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+    RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );
@@ -1502,7 +1502,7 @@ void SemWINWriteFontDir( void )
             error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         }
         if( error ) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+            RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );

@@ -415,7 +415,7 @@ void SemOS2WriteFontDir( void )
 
 
 OUTPUT_WRITE_ERROR:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+    RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
     ErrorHasOccured = true;
     FreeFontDir( CurrResFile.FontDir );
     CurrResFile.FontDir = NULL;

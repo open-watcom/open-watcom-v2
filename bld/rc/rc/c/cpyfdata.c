@@ -40,7 +40,7 @@
 #include "cpyfdata.h"
 
 
-bool CheckCopyRet( RcStatus ret, const char *srcname, const char *dstname, int err )
+bool ReportIOError( RcStatus ret, const char *srcname, const char *dstname, int err )
 {
     switch( ret ) {
     case RS_OK:

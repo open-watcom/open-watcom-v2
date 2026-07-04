@@ -90,7 +90,7 @@ pick(   ERR_INVALID_RES,
 pick(   ERR_INTERNAL,
         "Internal compiler error %d.",
         "コンパイラ内部エラ－ %d." )
-pick(   ERR_WRITTING_RES_FILE,
+pick(   ERR_WRITTING_RES,
         "Error writing resources to temporary file \"%s\": %s.",
         "テンポラリ ファイル \"%s\"へのリソ－スの書き込みエラ－です: %s." )
 pick(   ERR_CLOSING_FILE,

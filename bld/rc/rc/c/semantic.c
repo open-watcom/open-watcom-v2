@@ -141,7 +141,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
     MemFree( ms_head.Name );
     ErrorHasOccured = true;
     if( error ) {
-        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+        RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
     } else {
         if( tmpResFile == NULL ) {
             RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
@@ -155,7 +155,7 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                 RcStatus    ret;
 
                 ret = CopyFilesData( tmpResFile, CurrResFile.fp, loc.len, buffer, sizeof( buffer ) );
-                ErrorHasOccured = CheckCopyRet( ret, tmpResFileName, CurrResFile.filename, errno );
+                ErrorHasOccured = ReportIOError( ret, tmpResFileName, CurrResFile.filename, errno );
             }
         }
     }

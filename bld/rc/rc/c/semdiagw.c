@@ -777,7 +777,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             RcError( ERR_WIN16_TOO_MANY_CONTROLS, ctrls->numctrls );
         } else {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
         }
         ErrorHasOccured = true;
     }

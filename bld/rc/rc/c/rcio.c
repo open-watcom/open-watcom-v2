@@ -658,7 +658,7 @@ static void Pass1ResFileShutdown( void )
             if( CurrResFile.IsWatcomRes ) {
                 error = WResWriteDir( CurrResFile.fp, CurrResFile.dir );
                 if( error ) {
-                    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+                    RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 }
             }
             if( !error ) {

@@ -376,7 +376,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             error = ResWritePadDWord( CurrResFile.fp );
         }
         if( error ) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
