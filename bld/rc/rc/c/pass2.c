@@ -631,8 +631,6 @@ REPORT_ERROR:
     case RS_WRITE_ERROR:
         RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
         break;
-    case RS_NO_MEM:
-        break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
     }
@@ -731,8 +729,6 @@ REPORT_ERROR:
         break;
     case RS_WRITE_ERROR:
         RcError( ERR_WRITTING_TMP, dst->name, strerror( err_code ) );
-        break;
-    case RS_NO_MEM:
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
@@ -878,8 +874,6 @@ REPORT_ERROR:
         break;
     case RS_BAD_FILE_FMT:
         RcError( ERR_NOT_VALID_EXE, src->name );
-        break;
-    case RS_NO_MEM:
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
@@ -1074,8 +1068,6 @@ REPORT_ERROR:
         break;
     case RS_BAD_FILE_FMT:
         RcError( ERR_NOT_VALID_EXE, src->name );
-        break;
-    case RS_NO_MEM:
         break;
     default:
         RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );

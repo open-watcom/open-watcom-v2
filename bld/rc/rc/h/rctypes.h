@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +42,13 @@ typedef enum {
     RS_PARAM_ERROR,
     RS_INVALID_RESOURCE,
     RS_READ_ERROR,
+    RS_READ_ERROR_EXE,
+    RS_READ_ERROR_RES,
+    RS_READ_ERROR_TMP,
     RS_READ_INCMPLT,
     RS_WRITE_ERROR,
-    RS_NO_MEM,
+    RS_WRITE_ERROR_RES,
+    RS_WRITE_ERROR_TMP,
     RS_BAD_FILE_FMT,
     RS_WRONG_VER,
     RS_OPEN_ERROR,
