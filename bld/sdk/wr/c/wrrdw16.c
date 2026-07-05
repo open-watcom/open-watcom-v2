@@ -109,77 +109,54 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
 {
     uint_16     data;
     uint_32     ne_header_off;
-    bool        ok;
     bool        error;
 
-    ok = ( fp != NULL && nehdr != NULL );
+    if( fp == NULL
+      || nehdr == NULL )
+    	return( 0 );
     /*
      * check the reloc offset
      */
-    if( ok ) {
-        ok = !RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET );
-        if( ok ) {
-            error = false;
-            data = ResReadUint16( &error, fp );
-            if( error ) {
-                ok = false;
-            } else {
-                ok = NE_HEADER_FOLLOWS( data );
-            }
-        }
+    if( RESSEEK( fp, DOS_RELOC_OFFSET, SEEK_SET ) )
+        return( 0 );
+    error = false;
+    data = ResReadUint16( &error, fp );
+    if( error
+      || !NE_HEADER_FOLLOWS( data ) ) {
+        return( 0 );
     }
     /*
      * check header offset
      */
-    if( ok ) {
-        ok = !RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET );
-        if( ok ) {
-            error = false;
-            ne_header_off = ResReadUint32( &error, fp );
-            if( error ) {
-                ok = false;
-            } else {
-                ok = ( ne_header_off != 0 );
-            }
-        }
+    if( RESSEEK( fp, NE_HEADER_OFFSET, SEEK_SET ) )
+        return( 0 );
+    ne_header_off = ResReadUint32( &error, fp );
+    if( error
+      || ne_header_off == 0 ) {
+        return( 0 );
     }
+    if( RESSEEK( fp, ne_header_off, SEEK_SET ) )
+        return( 0 );
 
-    if( ok ) {
-        ok = !RESSEEK( fp, ne_header_off, SEEK_SET );
-    }
-
-    if( ok ) {
-        ok = ( RESREAD( fp, nehdr, sizeof( *nehdr ) ) == sizeof( *nehdr ) );
-    }
+    if( RESREAD( fp, nehdr, sizeof( *nehdr ) ) != sizeof( *nehdr ) )
+        return( 0 );
     /*
      * check for valid Win16 EXE
      */
-    if( ok ) {
-        ok = WRIsHeaderValidWIN16( nehdr );
-    }
+    if( !WRIsHeaderValidWIN16( nehdr ) )
+        return( 0 );
 
-    if( ok ) {
-        return( ne_header_off );
-    }
-    return( 0 );
+    return( ne_header_off );
 }
 
 bool WRIsHeaderValidWIN16( os2_exe_header *nehdr )
 {
-    if( nehdr->signature == EXESIGN_NE && nehdr->expver >= 0x300 ) {
-        return( true );
-    }
-
-    return( false );
+    return( nehdr->signature == EXESIGN_NE && nehdr->expver >= 0x300 );
 }
 
 bool WRWin16HeaderHasResourceTable( os2_exe_header *nehdr )
 {
-    if( nehdr->resource_off != nehdr->resident_off ) {
-        return( true );
-    }
-
-    return( false );
+    return( nehdr->resource_off != nehdr->resident_off );
 }
 
 bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
@@ -226,13 +203,10 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
     if( ok ) {
         error = false;
         align_shift = ResReadUint16( &error, fp );
-        if( error ) {
-            ok = false;
-        } else {
-            ok = ( align_shift <= 16 );
-            if( !ok ) {
-                WRDisplayErrorMsg( WR_BADEXE );
-            }
+        if( error
+          || align_shift > 16 ) {
+            WRDisplayErrorMsg( WR_BADEXE );
+            return( false );
         }
     }
 
@@ -255,7 +229,8 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
         ok = WRReadResourceNames( *dir, fp, name_offset );
     }
 
-    if( ok && nehdr.expver <= 0x300 ) {
+    if( ok
+      && nehdr.expver <= 0x300 ) {
         num_leftover = 0;
         leftover = NULL;
         name_table_len = WRReadNameTable( *dir, fp, &name_table, num_leftover, leftover );
@@ -286,17 +261,20 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 
     error = false;
     type_id = ResReadUint16( &error, fp );
-    if( error || type_id == 0 ) {
+    if( error
+      || type_id == 0 ) {
         return( NULL );
     }
-
     type_node = MemAlloc( sizeof( WResTypeNode ) );
-    if( type_node == NULL ) {
+    if( type_node == NULL )
         return( NULL );
-    }
 
     resource_count = ResReadUint16( &error, fp );
+    if( error )
+        return( NULL );
     reserved = ResReadUint32( &error, fp );
+    if( error )
+        return( NULL );
 
     type_node->Next = NULL;
     type_node->Prev = NULL;
@@ -377,10 +355,14 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
 
     error = false;
     name_len = ResReadUint8( &error, fp );
+    if( error )
+        return( false );
 
     while( !end_of_names ) {
         if( name_len == 0 ) {
             name_len = ResReadUint8( &error, fp );
+            if( error )
+                return( false );
             if( name_len == 0 ) {
                 end_of_names = true;
             } else {
@@ -396,6 +378,9 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
             MemFree( name );
             name_offset = name_offset + name_len + 1;
             name_len = ResReadUint8( &error, fp );
+            if( error ) {
+                return( false );
+            }
         }
     }
 

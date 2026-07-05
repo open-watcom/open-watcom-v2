@@ -484,7 +484,6 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
     bool    old_pos;
     uint_32 offset;
     uint_16 len;
-    bool    ok;
     char    *unistr;
     WResID  *id;
     int     i;
@@ -495,49 +494,34 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
     unistr = NULL;
 
     /* seek to the location of the Unicode string */
-    ok = old_pos = !RESSEEK( fp, offset, SEEK_SET );
+    if( RESSEEK( fp, offset, SEEK_SET ) )
+        return( NULL );
 
     /* read the Unicode string */
-    if( ok ) {
-        error = false;
-        len = ResReadUint16( &error, fp );
-        if( error ) {
-            ok = false;
-        } else {
-            len *= 2;
-            unistr = MemAlloc( len + 2 );
-            ok = ( unistr != NULL );
-        }
-    }
-
-    if( ok ) {
+    error = false;
+    len = ResReadUint16( &error, fp );
+    if( error )
+        return( NULL );
+    id = NULL;
+    len *= 2;
+    unistr = MemAlloc( len + 2 );
+    if( unistr != NULL ) {
         unistr[len] = 0;
         unistr[len + 1] = 0;
-        ok = ( RESREAD( fp, unistr, len ) == len );
-    }
-
-    if( ok ) {
-        for( i = 0; i < len + 2; i += 2 ) {
-            unistr[i / 2] = unistr[i];
-        }
-        ok = ( (id = WResIDFromStr( unistr )) != NULL );
-    }
-
+        if( RESREAD( fp, unistr, len ) == len ) {
+            for( i = 0; i < len + 2; i += 2 ) {
+                unistr[i / 2] = unistr[i];
+            }
+            id = WResIDFromStr( unistr );
 #if 0
-    if( old_pos ) {
-        ok = ( !RESSEEK( fp, offset, SEEK_SET ) && ok );
-    }
+            if( RESSEEK( fp, offset, SEEK_SET ) ) {
+                id = NULL;
+            }
 #endif
-
-    if( unistr != NULL ) {
+        }
         MemFree( unistr );
     }
-
-    if( ok ) {
-        return( id );
-    } else {
-        return( NULL );
-    }
+    return( id );
 }
 
 bool WRReadResourceEntry( FILE *fp, uint_32 offset, resource_entry *res_entry )
