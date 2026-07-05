@@ -95,6 +95,7 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
     WResLangInfo    v1_linfo = { 0 };
     uint_16         numres;
 
+    newnode = NULL;
     error = false;
     /* loop through the list of resources of this type */
     for( resnum = 0; resnum < currtype->Info.NumResources && !error; resnum++ ) {
@@ -105,7 +106,6 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
         } else {
             numres = ResReadUint16( &error, fp );
         }
-        newnode = NULL;
         if( !error ) {
             newnode = ResReadWResID( offsetof( WResResNode, Info.ResName ), fp, ver );
             error = ( newnode == NULL );
@@ -149,6 +149,7 @@ static bool readTypeList( FILE *fp, WResDir dir, uint_16 ver, void *fileinfo )
     int             typenum;
     uint_16         numres;
 
+    newnode = NULL;
     error = false;
     /* loop through the list of types */
     for( typenum = 0; typenum < dir->NumTypes && !error; typenum++ ) {

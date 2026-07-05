@@ -47,9 +47,9 @@ bool ResReadMenuHeader( MenuHeader *currhead, FILE *fp )
 
     error = false;
     currhead->Version = ResReadUint16( &error, fp );
-    if( !error ) {
-        currhead->Size = ResReadUint16( &error, fp );
-    }
+    if( error )
+        return( true );
+    currhead->Size = ResReadUint16( &error, fp );;
     return( error );
 }
 
@@ -158,18 +158,22 @@ bool ResReadMenuItem( MenuItem *curritem, FILE *fp )
 
     error = false;
     curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
-    if( !error ) {
-        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
-            curritem->IsPopup = true;
-            curritem->Item.Popup.ItemText = ResReadString( fp, NULL );
-            error = (curritem->Item.Popup.ItemText == NULL);
-        } else {
-            curritem->IsPopup = false;
-            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
-            if( !error ) {
-                curritem->Item.Normal.ItemText = ResReadString( fp, NULL );
-                error = (curritem->Item.Normal.ItemText == NULL);
-            }
+    if( error )
+        return( true );
+    if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
+        curritem->IsPopup = true;
+        curritem->Item.Popup.ItemText = ResReadString( fp, NULL );
+        if( curritem->Item.Popup.ItemText == NULL ) {
+            return( true );
+        }
+    } else {
+        curritem->IsPopup = false;
+        curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
+        if( error )
+            return( true );
+        curritem->Item.Normal.ItemText = ResReadString( fp, NULL );
+        if( curritem->Item.Normal.ItemText == NULL ) {
+            return( true );
         }
     }
 
@@ -183,18 +187,22 @@ bool ResReadMenuItem32( MenuItem *curritem, FILE *fp )
 
     error = false;
     curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
-    if( !error ) {
-        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
-            curritem->IsPopup = true;
-            curritem->Item.Popup.ItemText = ResRead32String( fp, NULL );
-            error = (curritem->Item.Popup.ItemText == NULL);
-        } else {
-            curritem->IsPopup = false;
-            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
-            if( !error ) {
-                curritem->Item.Normal.ItemText = ResRead32String( fp, NULL );
-                error = (curritem->Item.Normal.ItemText == NULL);
-            }
+    if( error )
+        return( true );
+    if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
+        curritem->IsPopup = true;
+        curritem->Item.Popup.ItemText = ResRead32String( fp, NULL );
+        if( curritem->Item.Popup.ItemText == NULL ) {
+            return( true );
+        }
+    } else {
+        curritem->IsPopup = false;
+        curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
+        if( error )
+            return( true );
+        curritem->Item.Normal.ItemText = ResRead32String( fp, NULL );
+        if( curritem->Item.Normal.ItemText == NULL ) {
+            return( true );
         }
     }
 
