@@ -36,6 +36,7 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 uint_8 ResReadUint8( bool *error, FILE *fp )
 /******************************************/
 {

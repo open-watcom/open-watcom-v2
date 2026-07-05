@@ -36,8 +36,9 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 uint_16 ResReadUint16( bool *error, FILE *fp )
-/*********************************************/
+/********************************************/
 {
     size_t      numread;
     char        tmp[2];
