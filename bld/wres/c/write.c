@@ -41,7 +41,6 @@
 #include "read.h"
 #include "wresrtns.h"
 
-
 #define CONV_BUF_SIZE           512
 
 static char     ConvBuffer[CONV_BUF_SIZE];
@@ -175,11 +174,9 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
             numchars = 255;
         error = ResWriteUint8( numchars, fp );
     }
-    if( !error ) {
-        if( size > 0 ) {
-            if( WRESWRITE( fp, buf, size ) != size ) {
-                error = WRES_ERROR( WRS_WRITE_FAILED );
-            }
+    if( !error && size > 0 ) {
+        if( WRESWRITE( fp, buf, size ) != size ) {
+            error = WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
     if( buf != ConvBuffer ) {
@@ -191,14 +188,19 @@ bool WResWriteWResIDName( const WResIDName *name, bool use_unicode, FILE *fp )
 bool WResWriteWResID( const WResID *name, FILE *fp )
 /**************************************************/
 {
-    if( ResWriteUint8( name->IsName, fp ) )
-        return( true );
-    if( name->IsName ) {
-        return( WResWriteWResIDName( &(name->ID.Name), false, fp ) );
-    } else {
-        return( ResWriteUint16( name->ID.Num, fp ) );
+    bool        error;
+
+    error = ResWriteUint8( name->IsName, fp );
+    if( !error ) {
+        if( name->IsName ) {
+            error = WResWriteWResIDName( &(name->ID.Name), false, fp );
+        } else {
+            error = ResWriteUint16( name->ID.Num, fp );
+        }
     }
-}
+
+    return( error );
+} /* WResWriteWResID */
 
 /*
  * WResWriteTypeRecord - write the type record to the current postion
@@ -231,45 +233,66 @@ bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
 bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 /************************************************************/
 {
-    if( ResWriteUint16( info->lang.lang, fp ) )
-        return( true );
-    if( ResWriteUint8( info->lang.sublang, fp ) )
-        return( true );
-    if( ResWriteUint16( info->MemoryFlags, fp ) )
-        return( true );
-    if( ResWriteUint32( info->Offset, fp ) )
-        return( true );
-    return( ResWriteUint32( info->Length, fp ) );
+    char    tmp[WResLangInfo_FILESIZE];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_16( p, info->lang.lang );
+    p += sizeof( uint_16 );
+    MPUT_8( p, info->lang.sublang );
+    p += sizeof( uint_8 );
+    MPUT_LE_16_UN( p, info->MemoryFlags );
+    p += sizeof( uint_16 );
+    MPUT_LE_32_UN( p, info->Offset );
+    p += sizeof( uint_32 );
+    MPUT_LE_32_UN( p, info->Length );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool WResWriteHeader( const WResHeader *header, FILE *fp )
 /********************************************************/
 {
-    if( ResWriteUint32( header->Magic[0], fp ) )
-        return( true );
-    if( ResWriteUint32( header->Magic[1], fp ) )
-        return( true );
-    if( ResWriteUint32( header->DirOffset, fp ) )
-        return( true );
-    if( ResWriteUint16( header->NumResources, fp ) )
-        return( true );
-    if( ResWriteUint16( header->NumTypes, fp ) )
-        return( true );
-    return( ResWriteUint16( header->WResVer, fp ) );
-}
+    char    tmp[WResHeader_FILESIZE];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_32( p, header->Magic[0] );
+    p += sizeof( uint_32 );
+    MPUT_LE_32( p, header->Magic[1] );
+    p += sizeof( uint_32 );
+    MPUT_LE_32( p, header->DirOffset );
+    p += sizeof( uint_32 );
+    MPUT_LE_16( p, header->NumResources );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, header->NumTypes );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, header->WResVer );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
+} /* WResWriteHeader */
 
 bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /****************************************************************/
 {
-    if( ResWriteUint16( extheader->TargetOS, fp ) )
-        return( true );
-    if( ResWriteUint16( extheader->reserved[0], fp ) )
-        return( true );
-    if( ResWriteUint16( extheader->reserved[1], fp ) )
-        return( true );
-    if( ResWriteUint16( extheader->reserved[2], fp ) )
-        return( true );
-    return( ResWriteUint16( extheader->reserved[3], fp ) );
+    char    tmp[WResExtHeader_FILESIZE];
+    char    *p;
+
+    p = tmp;
+    MPUT_LE_16( p, extheader->TargetOS );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[0] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[1] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[2] );
+    p += sizeof( uint_16 );
+    MPUT_LE_16( p, extheader->reserved[3] );
+    if( WRESWRITE( fp, tmp, sizeof( tmp ) ) != sizeof( tmp ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t numchars )
@@ -354,6 +377,7 @@ static size_t MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
             size = strlen( data->name ) + 1;
         }
     }
+
     return( size );
 }
 
@@ -377,36 +401,52 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
 bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 )
 /********************************************************************************/
 {
+    bool        error;
+
     if( !iswin32 ) {
-        if( ResWriteNameOrOrdinal( header->Type, false, fp ) )
-            return( true );
-        if( ResWriteNameOrOrdinal( header->Name, false, fp ) )
-            return( true );
-        if( ResWriteUint16( header->MemoryFlags, fp ) )
-            return( true );
-        return( ResWriteUint32( header->Size, fp ) );
+        error = ResWriteNameOrOrdinal( header->Type, false, fp );
+        if( !error ) {
+            error = ResWriteNameOrOrdinal( header->Name, false, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint16( header->MemoryFlags, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint32( header->Size, fp );
+        }
     } else {
-        if( ResWriteUint32( header->Size, fp ) )
-            return( true );
-        if( ResWriteUint32( MResFindHeaderSize( header, true ), fp ) )
-            return( true );
-        if( ResWriteNameOrOrdinal( header->Type, true, fp ) )
-            return( true );
-        if( ResWriteNameOrOrdinal( header->Name, true, fp ) )
-            return( true );
-        if( ResWritePadDWord( fp ) )
-            return( true );
-        if( ResWriteUint32( header->DataVersion, fp ) )
-            return( true );
-        if( ResWriteUint16( header->MemoryFlags, fp ) )
-            return( true );
-        if( ResWriteUint16( header->LanguageId, fp ) )
-            return( true );
-        if( ResWriteUint32( header->Version, fp ) )
-            return( true );
-        return( ResWriteUint32( header->Characteristics, fp ) );
+        error = ResWriteUint32( header->Size, fp );
+        if( !error ) {
+            error = ResWriteUint32( MResFindHeaderSize( header, true ), fp  );
+        }
+        if( !error ) {
+            error = ResWriteNameOrOrdinal( header->Type, true, fp );
+        }
+        if( !error ) {
+            error = ResWriteNameOrOrdinal( header->Name, true, fp );
+        }
+        if( !error ) {
+            error = ResWritePadDWord( fp );
+        }
+        if( !error ) {
+            error = ResWriteUint32( header->DataVersion, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint16( header->MemoryFlags, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint16( header->LanguageId, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint32( header->Version, fp );
+        }
+        if( !error ) {
+            error = ResWriteUint32( header->Characteristics, fp );
+        }
     }
-}
+
+    return( error );
+} /* MResWriteResourceHeader */
 
 void WriteInitStatics( void )
 /***************************/

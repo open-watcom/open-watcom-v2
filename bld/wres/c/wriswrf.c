@@ -41,7 +41,7 @@ WResResType WResReadResType( FILE *fp )
 /*************************************/
 {
     WResResType     res_type;
-    uint_32         magic[2] = { 0 };
+    uint_32         magic[2];
     bool            error;
 
     if( WRESSEEK( fp, 0, SEEK_SET ) ) {

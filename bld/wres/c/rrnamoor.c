@@ -59,12 +59,11 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
     if( flags == 0xff ) {
         ord = ResReadUint16( &error, fp );
     } else if( flags == 0 ) {
+        error = false;
     } else {
         restofstr = ResReadString( fp, &stringlen );
         stringlen += 1; /* for the '\0' */
-        if( restofstr == NULL ) {
-            return( NULL );
-        }
+        error = ( restofstr == NULL );
     }
 
     /* allocate space for the new Name or Ordinal */
@@ -118,12 +117,11 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
     if( flags == 0xffff ) {
         ord = ResReadUint16( &error, fp );
     } else if( flags == 0 ) {
+        error = false;
     } else {
         restofstr = ResRead32String( fp, &stringlen );
         stringlen += 1; /* for the '\0' */
-        if( restofstr == NULL ) {
-            return( NULL );
-        }
+        error = ( restofstr == NULL );
     }
 
     /* allocate space for the new Name or Ordinal */
