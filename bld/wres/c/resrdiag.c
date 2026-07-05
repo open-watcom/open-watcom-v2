@@ -89,14 +89,13 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
     }
 
     /* if the font was set input the font name and point size */
+    head->FontName = NULL;
     if( !error && (head->Style & DS_SETFONT) ) {
         head->PointSize = ResReadUint16( &error, fp );
         if( !error ) {
             head->FontName = ResReadString( fp, NULL );
             error = (head->FontName == NULL);
         }
-    } else {
-        head->FontName = NULL;
     }
 
     return( error );
@@ -159,14 +158,13 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
     }
 
     /* if the font was set input the font name and point size */
+    head->FontName = NULL;
     if( !error && (head->Style & DS_SETFONT) ) {
         head->PointSize = ResReadUint16( &error, fp );
         if( !error ) {
             head->FontName = ResRead32String( fp, NULL );
             error = (head->FontName == NULL);
         }
-    } else {
-        head->FontName = NULL;
     }
 
     if( !error ) {
