@@ -97,7 +97,6 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
             return( true );
         }
     }
-
     return( false );
 }
 
@@ -162,7 +161,6 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
             return( true );
         }
     }
-
     /* seek to dword boundary if necessary */
     return( ResReadPadDWord( fp ) );
 }
@@ -194,6 +192,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         return( true );
 
     /* If the font was set, write the font information */
+    head->FontName = NULL;
     if( head->Style & DS_SETFONT ) {
         head->PointSize = ResReadUint16( &error, fp );
         if( error )
@@ -212,7 +211,6 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
             return( true );
         }
     }
-
     /* seek to dword boundary if necessary */
     return( ResReadPadDWord( fp ) );
 }
@@ -234,13 +232,14 @@ static ControlClass *ReadControlClass( FILE *fp )
 
     restofstring = NULL;
     stringlen = 0;
-    if( (class & 0x80) != 0 || class == 0 ) {
+    if( class & 0x80 ) {
+    } else if( class == 0 ) {
     } else {
         restofstring = ResReadString( fp, &stringlen );
-        stringlen++;    /* for the '\0' */
         if( restofstring == NULL ) {
             return( NULL );
         }
+        stringlen++;    /* for the '\0' */
     }
 
     /* allocate memory for the new class */
@@ -249,7 +248,7 @@ static ControlClass *ReadControlClass( FILE *fp )
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         /* copy the class or string into the correct place */
-        if( (class & 0x80) != 0 ) {
+        if( class & 0x80 ) {
             newclass->Class = class;
         } else if( class == 0 ) {
             newclass->ClassName[0] = '\0';
@@ -262,7 +261,6 @@ static ControlClass *ReadControlClass( FILE *fp )
     if( restofstring != NULL ) {
         WRESFREE( restofstring );
     }
-
     return( newclass );
 }
 
@@ -293,10 +291,10 @@ static ControlClass *Read32ControlClass( FILE *fp )
     } else if( flags == 0 ) {
     } else {
         restofstring = ResRead32String( fp, &stringlen );
-        stringlen++;                /* for the '\0' */
         if( restofstring == NULL ) {
             return( NULL );
         }
+        stringlen++;                /* for the '\0' */
     }
 
     /* allocate memory for the new class */
@@ -318,7 +316,6 @@ static ControlClass *Read32ControlClass( FILE *fp )
     if( restofstring != NULL ) {
         WRESFREE( restofstring );
     }
-
     return( newclass );
 }
 
