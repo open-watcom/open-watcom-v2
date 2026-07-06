@@ -61,11 +61,7 @@ bool WResReadHeader( WResHeader *header, FILE *fp )
     if( error )
         return( true );
     header->WResVer = ResReadUint16( &error, fp );
-    if( error )
-        return( true );
-    if( WRESSEEK( fp, 0, SEEK_SET ) )
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    return( false );
+    return( error );
 }
 
 bool WResReadExtHeader( WResExtHeader *extheader, FILE *fp )
