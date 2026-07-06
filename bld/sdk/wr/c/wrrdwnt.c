@@ -481,7 +481,6 @@ bool WRReadResourceHeader( FILE *fp, uint_32 offset,
 
 WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
 {
-    bool    old_pos;
     uint_32 offset;
     uint_16 len;
     char    *unistr;
@@ -490,8 +489,6 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
     bool    error;
 
     offset = WR_MAP_RES_RVA( rva );
-
-    unistr = NULL;
 
     /* seek to the location of the Unicode string */
     if( RESSEEK( fp, offset, SEEK_SET ) )
@@ -513,11 +510,6 @@ WResID *WRGetUniCodeWResID( FILE *fp, uint_32 rva )
                 unistr[i / 2] = unistr[i];
             }
             id = WResIDFromStr( unistr );
-#if 0
-            if( RESSEEK( fp, offset, SEEK_SET ) ) {
-                id = NULL;
-            }
-#endif
         }
         MemFree( unistr );
     }

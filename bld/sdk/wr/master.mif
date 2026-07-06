@@ -68,7 +68,8 @@ dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.grh wrmsg.grh
 dlltarg_objs_rc = &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio_2.obj &
-    global_2.obj rcerrors.obj sharedio.obj mergedir.obj rcspawn.obj
+    global_2.obj rcerrors.obj sharedio.obj mergedir.obj rcspawn.obj &
+    cpyfdata.obj
 dlltarg_objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
     wrsvexe.obj wrsvres.obj wrdde.obj &
