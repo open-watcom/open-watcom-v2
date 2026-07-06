@@ -252,10 +252,8 @@ static ControlClass *ReadControlClass( FILE *fp )
     newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
     if( newclass == NULL ) {
         error = WRES_ERROR( WRS_MALLOC_FAILED );
-    }
-
-    /* copy the class or string into the correct place */
-    if( !error ) {
+    } else {
+        /* copy the class or string into the correct place */
         if( (class & 0x80) != 0 ) {
             newclass->Class = class;
         } else if( class == 0 ) {
@@ -310,10 +308,8 @@ static ControlClass *Read32ControlClass( FILE *fp )
     newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
     if( newclass == NULL ) {
         error = WRES_ERROR( WRS_MALLOC_FAILED );
-    }
-
-    /* copy the class or string into the correct place */
-    if( !error ) {
+    } else {
+        /* copy the class or string into the correct place */
         if( flags == 0xffff ) {
             newclass->Class = (uint_8)class;
         } else if( flags == 0 ) {
@@ -349,7 +345,7 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
     if( control->ClassID == NULL )
         return( true );
     control->Text = ResReadNameOrOrdinal( fp );
-    if( error )
+    if( control->Text == NULL )
         return( true );
     control->ExtraBytes = ResReadUint8( &error, fp );
     return( error );
@@ -363,6 +359,8 @@ static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdi
     if( *class_id == NULL )
         return( true );
     *text = ResRead32NameOrOrdinal( fp );
+    if( *text == NULL )
+        return( true );
     *extra_bytes = ResReadUint16( &error, fp );
     return( error );
 }

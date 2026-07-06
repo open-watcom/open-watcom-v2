@@ -45,17 +45,16 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
     error = false;
     newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
     if( newhead == NULL ) {
-        error = WRES_ERROR( WRS_MALLOC_FAILED );
+        WRES_ERROR( WRS_MALLOC_FAILED );
+        return( NULL );
     }
-    if( !error ) {
-        newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
-        if( newhead->head16 == NULL ) {
-            error = WRES_ERROR( WRS_MALLOC_FAILED );
-        }
+    newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
+    if( newhead->head16 == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+        WRESFREE( newhead );
+        return( NULL );
     }
-    if( !error ) {
-        error = ResReadPadDWord( fp );
-    }
+    error = ResReadPadDWord( fp );
     if( !error ) {
         newhead->head16->Size = ResReadUint32( &error, fp );
     }
@@ -88,10 +87,8 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
     if( !error ) {
         newhead->head16->Characteristics = ResReadUint32( &error, fp );
     }
-    if( error && newhead != NULL ) {
-        if( newhead->head16 != NULL ) {
-            WRESFREE( newhead->head16 );
-        }
+    if( error ) {
+        WRESFREE( newhead->head16 );
         WRESFREE( newhead );
         newhead = NULL;
     }
@@ -107,15 +104,11 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
 
     newhead = WRESALLOC( sizeof( MResResourceHeader ) );
     if( newhead == NULL ) {
-        error = WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        error = false;
+        WRES_ERROR( WRS_MALLOC_FAILED );
+        return( NULL );
     }
-
-    if( !error ) {
-        newhead->Type = ResReadNameOrOrdinal( fp );
-        error = (newhead->Type == NULL);
-    }
+    newhead->Type = ResReadNameOrOrdinal( fp );
+    error = ( newhead->Type == NULL );
     if( !error ) {
         newhead->Name = ResReadNameOrOrdinal( fp );
         error = (newhead->Name == NULL);
@@ -127,7 +120,7 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
         newhead->Size = ResReadUint32( &error, fp );
     }
 
-    if( error && newhead != NULL ) {
+    if( error ) {
         WRESFREE( newhead );
         newhead = NULL;
     }
