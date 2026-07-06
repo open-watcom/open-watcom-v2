@@ -40,7 +40,6 @@
 bool WResReadHeader( WResHeader *header, FILE *fp )
 /*************************************************/
 {
-    size_t      numread;
     bool        error;
 
     if( WRESSEEK( fp, 0, SEEK_SET ) )
@@ -62,12 +61,19 @@ bool WResReadHeader( WResHeader *header, FILE *fp )
     if( error )
         return( true );
     header->WResVer = ResReadUint16( &error, fp );
-    return( error );
+    if( error )
+        return( true );
+    if( WRESSEEK( fp, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    return( false );
 }
 
 bool WResReadExtHeader( WResExtHeader *extheader, FILE *fp )
 /**********************************************************/
 {
+    bool        error;
+
+    error = false;
     extheader->TargetOS = ResReadUint16( &error, fp );
     if( error )
         return( true );
