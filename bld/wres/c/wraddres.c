@@ -38,10 +38,10 @@
 #include "wresrtns.h"
 
 
-static int WResIDSize( const WResID * name )
-/******************************************/
+static size_t WResIDSize( const WResID *name )
+/********************************************/
 {
-    int     size;
+    size_t  size;
 
     if( name->IsName ) {
         size = offsetof( WResID, ID.Name.Name ) + name->ID.Name.NumChars;
@@ -54,7 +54,7 @@ static int WResIDSize( const WResID * name )
 static WResTypeNode *newTypeNode( const WResID *type )
 {
     WResTypeNode        *newnode;
-    int                 id_size;
+    size_t              id_size;
 
     id_size = WResIDSize( type );
     newnode = WRESALLOC( offsetof( WResTypeNode, Info.TypeName ) + id_size );
@@ -101,7 +101,7 @@ static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
 static WResResNode *newResNode( const WResID *name )
 {
     WResResNode         *newnode;
-    int                 id_size;
+    size_t              id_size;
 
     id_size = WResIDSize( name );
     newnode = WRESALLOC( offsetof( WResResNode, Info.ResName ) + id_size );
