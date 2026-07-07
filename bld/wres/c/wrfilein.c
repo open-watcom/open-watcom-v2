@@ -32,17 +32,20 @@
 
 
 #include "layer0.h"
+#include <string.h>
 #include "wres.h"
 #include "write.h"
 #include "reserr.h"
 #include "wresrtns.h"
+
 
 bool WResFileInit( FILE *fp )
 /***************************/
 /* Writes the initial file header out to the file. Later, when WResWriteDir */
 /* is called the real header will be written out */
 {
-    WResHeader  header;
+    WResHeader      header;
+    WResExtHeader   extheader;
 
     header.Magic[0] = WRESMAGIC0;
     header.Magic[1] = WRESMAGIC1;
@@ -56,8 +59,7 @@ bool WResFileInit( FILE *fp )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     if( WResWriteHeader( &header, fp ) )
         return( true );
-    /* leave room for the extended header */
-    if( WRESSEEK( fp, WResExtHeader_FILESIZE, SEEK_CUR ) )
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    return( false );
+    /* write the empty extended header */
+    memset( &extheader, 0, sizeof( extheader ) );
+    return( WResWriteExtHeader( &extheader, fp ) );
 } /* WResFileInit */
