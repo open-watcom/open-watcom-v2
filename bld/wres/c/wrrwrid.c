@@ -42,7 +42,7 @@
 void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
 /*********************************************************/
 {
-    WResID          *idptr;
+    WResID          *id;
     uint_8          isname;
     char            *ptr;
     size_t          numread;
@@ -53,26 +53,28 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
         return( NULL );
     }
     if( isname ) {
+        isname = true;  /* normalize value to boolean type */
         ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp, ver );
+        if( ptr == NULL ) {
+            return( NULL );
+        }
     } else {
         ptr = WRESALLOC( offs + sizeof( WResID ) - 1 );
         if( ptr == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
+            return( NULL );
         }
     }
-    if( ptr == NULL ) {
-        return( NULL );
-    }
-    idptr = (WResID *)( ptr + offs );
-    if( isname == 0 ) {
+    id = (WResID *)( ptr + offs );
+    if( !isname ) {
         error = false;
-        idptr->ID.Num = ResReadUint16( &error, fp );
+        id->ID.Num = ResReadUint16( &error, fp );
         if( error ) {
             WRESFREE( ptr );
             return( NULL );
         }
     }
-    idptr->IsName = isname;
+    id->IsName = isname;
     return( ptr );
 }
 

@@ -32,6 +32,7 @@
 
 
 #include "layer0.h"
+#include <stddef.h>
 #include "read.h"
 #include "reserr.h"
 #include "wresrtns.h"
@@ -42,12 +43,9 @@ void *AllocWResIDName( unsigned offs, unsigned numchars )
 {
     char            *ptr;
 
-    ptr = WRESALLOC( offs + sizeof( WResIDName ) - 1 + numchars );
-    if( ptr == NULL ) {
+    ptr = WRESALLOC( offs + offsetof( WResIDName, Name ) + numchars );
+    if( ptr == NULL )
         WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        ((WResIDName *)( ptr + offs ))->NumChars = numchars;
-    }
     return( ptr );
 }
 
@@ -57,29 +55,27 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     size_t          numread;
     uint_16         numchars;
     char            *ptr;
+    WResIDName      *idname;
+    bool            error;
 
+    error = false;
     /* read the size of the name in */
     if( ver < 3 ) {
-        uint_8  tmp;
-
-        if( (numread = WRESREAD( fp, &tmp, sizeof( tmp ) )) != sizeof( tmp ) ) {
-            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-            return( NULL );
-        }
-        numchars = tmp;
+        numchars = ResReadUint8( &error, fp );
     } else {
-        if( (numread = WRESREAD( fp, &numchars, sizeof( numchars ) )) != sizeof( numchars ) ) {
-            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-            return( NULL );
-        }
+        numchars = ResReadUint16( &error, fp );
     }
+    if( error )
+        return( NULL );
 
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
     ptr = AllocWResIDName( offs, numchars );
     if( ptr != NULL ) {
+        idname = (WResIDName *)( ptr + offs );
+        idname->NumChars = numchars;
         /* read in the characters */
-        if( (numread = WRESREAD( fp, ((WResIDName *)( ptr + offs ))->Name, numchars )) != numchars ) {
+        if( (numread = WRESREAD( fp, idname->Name, numchars )) != numchars ) {
             WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( ptr );
             ptr = NULL;

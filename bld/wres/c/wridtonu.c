@@ -34,26 +34,28 @@
 #include "layer0.h"
 #include "util.h"
 
-long WResIDToNum( const WResID * num )
-/************************************/
-/* return the value in a string if it is a number, -1 otherwise */
-{
-    if( num != NULL && num->IsName == 0 ) {
-        return( num->ID.Num );
-    } else {
-        return( -1 );
-    }
-} /* WResIDToNum */
 
-
-long WResHelpIDToNum( const WResHelpID * num )
-/*********************************************
+long WResIDToNum( const WResID *id )
+/***********************************
  * return the value in a string if it is a number, -1 otherwise
  */
 {
-    if( num != NULL && num->IsName == 0 ) {
-        return( num->ID.Num );
+    if( id != NULL && !id->IsName ) {
+        return( id->ID.Num );
     } else {
         return( -1 );
     }
-} /* WResHelpIDToNum */
+}
+
+
+long WResHelpIDToNum( const WResHelpID *helpid )
+/***********************************************
+ * return the value in a string if it is a number, -1 otherwise
+ */
+{
+    if( helpid != NULL && !helpid->IsName ) {
+        return( helpid->ID.Num );
+    } else {
+        return( -1 );
+    }
+}

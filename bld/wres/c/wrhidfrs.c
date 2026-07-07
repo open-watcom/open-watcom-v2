@@ -44,22 +44,21 @@ WResHelpID * WResHelpIDFromStr( const char * newstr )
 /***************************************************/
 /* allocate a Help ID and fill it in */
 {
-    WResHelpID *newid;
-    size_t     strsize;
+    WResHelpID *helpid;
+    size_t     len;
 
-    strsize = strlen( newstr );
+    len = strlen( newstr );
     /* check the size of the string:  can it fit in one byte? */
-    if( strsize > 0xff ) {
+    if( len > 255 ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
     /* allocate the new Help ID */
-    // if strsize is non-zero then the memory allocated is larger
-    // than required by 1 byte
-    newid = AllocWResIDName( offsetof( WResHelpID, ID ), strsize );
-    if( newid != NULL ) {
-        newid->IsName = true;
-        memcpy( newid->ID.Name.Name, newstr, strsize );
+    helpid = AllocWResIDName( offsetof( WResHelpID, ID ), len );
+    if( helpid != NULL ) {
+        helpid->IsName = true;
+        helpid->ID.Name.NumChars = len;
+        memcpy( helpid->ID.Name.Name, newstr, len );
     }
-    return( newid );
+    return( helpid );
 } /* WResHelpIDFromStr */

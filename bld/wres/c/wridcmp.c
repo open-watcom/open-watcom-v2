@@ -42,7 +42,7 @@ int WResIDCmp( const WResID * name1, const WResID * name2 )
     if( name1->IsName && name2->IsName ) {
         /* they are both names */
         same = ( WResIDNameCmp( &(name1->ID.Name), &(name2->ID.Name) ) == 0 );
-    } else if( name1->IsName == 0 && name2->IsName == 0 ) {
+    } else if( !name1->IsName && !name2->IsName ) {
         same = ( name1->ID.Num == name2->ID.Num );
     } else {
         /* one is a name, the other is a number:  they are not the same */

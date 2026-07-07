@@ -43,21 +43,22 @@
 WResIDName *WResIDNameFromStr( const char *string )
 /*************************************************/
 {
-    WResIDName  *newstring;
-    size_t      stringlen;
+    WResIDName  *idname;
+    size_t      len;
 
-    stringlen = strlen( string );
+    len = strlen( string );
 #if !defined( _M_I86 )
-    if( stringlen > USHRT_MAX ) {
+    if( len > USHRT_MAX ) {
         /* truncate the string if it is more that USHRT_MAX in length */
-        stringlen = USHRT_MAX;
+        len = USHRT_MAX;
     }
 #endif
-    newstring = AllocWResIDName( 0, stringlen );
-    if( newstring != NULL ) {
+    idname = AllocWResIDName( 0, len );
+    if( idname != NULL ) {
+        idname->NumChars = len;
         /* don't copy the '\0' */
-        memcpy( newstring->Name, string, stringlen );
+        memcpy( idname->Name, string, len );
     }
 
-    return( newstring );
+    return( idname );
 }
