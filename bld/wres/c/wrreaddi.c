@@ -173,43 +173,6 @@ static bool readTypeList( FILE *fp, WResDir dir, uint_16 ver, void *fileinfo )
 
 } /* readTypeList */
 
-static bool readWResDir( FILE *fp, WResDir dir, void *fileinfo )
-{
-    WResHeader      header;
-    WResExtHeader   extheader;
-
-    extheader.TargetOS = WRES_OS_WIN16;
-    /* read the header and check that it is valid */
-    if( WResReadHeader( &header, fp ) )
-        return( true );
-    if( header.Magic[0] != WRESMAGIC0
-      || header.Magic[1] != WRESMAGIC1 ) {
-        return( WRES_ERROR( WRS_BAD_SIG ) );
-    }
-    if( header.WResVer > WRESVERSION ) {
-        return( WRES_ERROR( WRS_BAD_VERSION ) );
-    }
-    if( header.WResVer >= 1 ) {
-        /*
-         * read the extended header
-         */
-        if( WResReadExtHeader( &extheader, fp ) ) {
-            return( true );
-        }
-    }
-
-    /* set up the initial info for the directory and seek to it's start */
-    dir->NumResources = header.NumResources;
-    dir->NumTypes = header.NumTypes;
-    dir->TargetOS = extheader.TargetOS;
-    if( WRESSEEK( fp, header.DirOffset, SEEK_SET ) ) {
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    }
-    /* read in the list of types (and the resources) */
-    return( readTypeList( fp, dir, header.WResVer, fileinfo ) );
-
-} /* readWResDir */
-
 static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
                         bool iswin32, void *fileinfo )
 /**********************************************************************/
@@ -313,6 +276,43 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     return( error );
 
 } /* readMResDir */
+
+static bool readWResDir( FILE *fp, WResDir dir, void *fileinfo )
+{
+    WResHeader      header;
+    WResExtHeader   extheader;
+
+    extheader.TargetOS = WRES_OS_WIN16;
+    /* read the header and check that it is valid */
+    if( WResReadHeader( &header, fp ) )
+        return( true );
+    if( header.Magic[0] != WRESMAGIC0
+      || header.Magic[1] != WRESMAGIC1 ) {
+        return( WRES_ERROR( WRS_BAD_SIG ) );
+    }
+    if( header.WResVer > WRESVERSION ) {
+        return( WRES_ERROR( WRS_BAD_VERSION ) );
+    }
+    if( header.WResVer >= 1 ) {
+        /*
+         * read the extended header
+         */
+        if( WResReadExtHeader( &extheader, fp ) ) {
+            return( true );
+        }
+    }
+
+    /* set up the initial info for the directory and seek to it's start */
+    dir->NumResources = header.NumResources;
+    dir->NumTypes = header.NumTypes;
+    dir->TargetOS = extheader.TargetOS;
+    if( WRESSEEK( fp, header.DirOffset, SEEK_SET ) ) {
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    }
+    /* read in the list of types (and the resources) */
+    return( readTypeList( fp, dir, header.WResVer, fileinfo ) );
+
+} /* readWResDir */
 
 bool WResReadDir( FILE *fp, WResDir *dir, bool *dup_discarded )
 {
