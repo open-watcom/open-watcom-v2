@@ -307,7 +307,7 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
     if( ret == RS_READ_ERROR ) {
         ret = RS_READ_ERROR_RES;
     }
-    RcIOError( ret, CmdLineParms.OutResFileName, dst->name, errno );
+    RcIOError( ret, CmdLineParms.OutResFileName, dst->name, err_code );
     return( ret );
 } /* CopyOS2Resources */
 
