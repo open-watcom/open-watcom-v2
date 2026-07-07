@@ -184,6 +184,8 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     WResID                  *name;
     WResID                  *type;
 
+    if( WRESSEEK( fp, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
     error = false;
     if( iswin32 ) {
         /* Read NULL header */
@@ -277,42 +279,50 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
 
 } /* readMResDir */
 
-static bool readWResDir( FILE *fp, WResDir dir, void *fileinfo )
+static bool readResDir( FILE *fp, WResDir dir, void *fileinfo, bool *dup_discarded )
 {
     WResHeader      header;
     WResExtHeader   extheader;
+    bool            error;
 
-    extheader.TargetOS = WRES_OS_WIN16;
-    /* read the header and check that it is valid */
+    error = false;
+    if( WRESSEEK( fp, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    /*
+     * OW header is shorter then Microsoft headers
+     */
     if( WResReadHeader( &header, fp ) )
         return( true );
-    if( header.Magic[0] != WRESMAGIC0
-      || header.Magic[1] != WRESMAGIC1 ) {
-        return( WRES_ERROR( WRS_BAD_SIG ) );
-    }
-    if( header.WResVer > WRESVERSION ) {
-        return( WRES_ERROR( WRS_BAD_VERSION ) );
-    }
-    if( header.WResVer >= 1 ) {
-        /*
-         * read the extended header
-         */
-        if( WResReadExtHeader( &extheader, fp ) ) {
-            return( true );
+    if( header.Magic[0] == WRESMAGIC0
+      && header.Magic[1] == WRESMAGIC1 ) {
+        /* RT_WATCOM */
+        if( header.WResVer > WRESVERSION ) {
+            return( WRES_ERROR( WRS_BAD_VERSION ) );
         }
+        extheader.TargetOS = WRES_OS_WIN16;
+        if( header.WResVer >= 1 ) {
+            /*
+             * read the extended header
+             */
+            if( WResReadExtHeader( &extheader, fp ) ) {
+                return( true );
+            }
+        }
+        /* set up the initial info for the directory and seek to it's start */
+        dir->NumResources = header.NumResources;
+        dir->NumTypes = header.NumTypes;
+        dir->TargetOS = extheader.TargetOS;
+        if( WRESSEEK( fp, header.DirOffset, SEEK_SET ) ) {
+            return( WRES_ERROR( WRS_SEEK_FAILED ) );
+        }
+        /* read in the list of types (and the resources) */
+        return( readTypeList( fp, dir, header.WResVer, fileinfo ) );
+    } else {
+        /* RT_WIN16 or RT_WIN32 */
+        return( readMResDir( fp, dir, dup_discarded, ( header.Magic[0] == 0 ), fileinfo ) );
     }
 
-    /* set up the initial info for the directory and seek to it's start */
-    dir->NumResources = header.NumResources;
-    dir->NumTypes = header.NumTypes;
-    dir->TargetOS = extheader.TargetOS;
-    if( WRESSEEK( fp, header.DirOffset, SEEK_SET ) ) {
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
-    }
-    /* read in the list of types (and the resources) */
-    return( readTypeList( fp, dir, header.WResVer, fileinfo ) );
-
-} /* readWResDir */
+} /* readResDir */
 
 bool WResReadDir( FILE *fp, WResDir *dir, bool *dup_discarded )
 {
@@ -322,7 +332,6 @@ bool WResReadDir( FILE *fp, WResDir *dir, bool *dup_discarded )
 bool WResReadDir2( FILE *fp, WResDir *pdir, bool *dup_discarded, void *fileinfo )
 {
     bool            error;
-    WResResType     res_type;
     WResDir         dir;
 
     /*
@@ -338,19 +347,7 @@ bool WResReadDir2( FILE *fp, WResDir *pdir, bool *dup_discarded, void *fileinfo 
     if( dir == NULL ) {
         error = true;
     } else {
-        /* seek to the start of the file */
-        if( WRESSEEK( fp, 0, SEEK_SET ) ) {
-            error = WRES_ERROR( WRS_SEEK_FAILED );
-        } else {
-            res_type = WResReadResType( fp );
-            if( res_type == RT_WATCOM ) {
-                error = readWResDir( fp, dir, fileinfo );
-            } else if( res_type == RT_WIN16 ) {
-                error = readMResDir( fp, dir, dup_discarded, false, fileinfo );
-            } else {
-                error = readMResDir( fp, dir, dup_discarded, true, fileinfo );
-            }
-        }
+        error = readResDir( fp, dir, fileinfo, dup_discarded );
         if( error ) {
             WRESFREE( dir );
             dir = NULL;
