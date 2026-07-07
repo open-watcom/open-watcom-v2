@@ -31,6 +31,7 @@
 
 
 #include <stdlib.h>
+#include <stddef.h>
 #include <ctype.h>
 #include "wresall.h"
 #include "rcstrblk.h"
@@ -151,12 +152,12 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
         StrUprCpyToUni( name32->Name, currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + sizeof( StringItem32 ) - 1;
+        *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + offsetof( StringItem32, Name );
     } else {
         name16 = *nextstr;
         name16->NumChars = currname->NumChars;
         StrUprCpy( name16->Name, currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars + sizeof( StringItem16 ) - 1;
+        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars + offsetof( StringItem16, Name );
     }
 } /* CopyString */
 
@@ -178,9 +179,9 @@ static void ConstructStringBlock( StringsBlock *str )
 #if 0
     for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 ) - 1 + 2 * (**currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (**currname).NumChars;
         } else {
-            str->StringBlockSize += sizeof( StringItem16 ) - 1 + (**currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem16, Name ) + (**currname).NumChars;
         }
     }
 #else
@@ -188,9 +189,9 @@ static void ConstructStringBlock( StringsBlock *str )
     for( i=0; i < cnt; i++ ) {
         currname = str->StringList[i];
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 ) - 1 + 2 * (*currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (*currname).NumChars;
         } else {
-            str->StringBlockSize += sizeof( StringItem16 ) - 1 + (*currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem16, Name ) + (*currname).NumChars;
         }
     }
 #endif
