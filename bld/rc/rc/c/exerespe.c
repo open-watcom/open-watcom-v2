@@ -833,7 +833,7 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
         if( ret == RS_READ_ERROR ) {
             ret = RS_READ_ERROR_RES;
         }
-        RcIOError( ret, errres->name, dst->name, errres );
+        RcIOError( ret, errres->name, dst->name, errno );
         return( true );
     }
     dst->u.PEInfo.Res.ResSize = curr_rva - rva;
