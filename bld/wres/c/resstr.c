@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,7 +65,7 @@ bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, FI
     int     stringid;
 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
-        if( WResWriteWResIDName( currblock->String[stringid], use_unicode, fp ) ) {
+        if( WResWriteWResIDNameString( currblock->String[stringid], use_unicode, fp ) ) {
             return( true );
         }
     }
