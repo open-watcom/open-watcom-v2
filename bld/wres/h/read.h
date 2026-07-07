@@ -42,10 +42,9 @@
 typedef enum WResResType {
     RT_WATCOM,
     RT_WIN16,
-    RT_WIN32
+    RT_WIN32,
+    RT_UNKNOWN
 } WResResType;
-
-extern void                 *AllocWResIDName( unsigned offs, unsigned numchars );
 
 extern WResResInfo          *WResReadResRecord( FILE *fp );
 extern WResTypeInfo         *WResReadTypeRecord( FILE *fp );
@@ -56,6 +55,7 @@ extern void                 *ResReadWResIDName( unsigned offs, FILE *fp, uint_16
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );
+#define WResIsWResFile(f)   (WResReadResType((f)) == RT_WATCOM)
 extern MResResourceHeader   *MResReadResourceHeader( FILE *fp );
 extern ResNameOrOrdinal     *ResReadNameOrOrdinal( FILE *fp );
 extern ResNameOrOrdinal     *ResRead32NameOrOrdinal( FILE *fp );
