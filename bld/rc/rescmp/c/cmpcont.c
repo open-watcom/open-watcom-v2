@@ -37,30 +37,21 @@
 #include "cmpres.h"
 #include "cmpcont.h"
 
-static int CompareHeaders( FILE *fp1, FILE *fp2 )
-/***********************************************/
-{
-    int             retcode;    /* -1: error  0: same  1: different */
-    WResHeader      header1;
-    WResHeader      header2;
 
-    if( WResReadHeader( &header1, fp1 ) ) {
-        return( -1 );
-    }
-    if( WResReadHeader( &header2, fp2 ) ) {
-        return( -1 );
-    }
+static int CompareHeaders( WResHeader *header1, WResHeader *header2 )
+/*******************************************************************/
+{
+    int             retcode;    /* 0: same  1: different */
 
     retcode = 0;
-
-    if( header1.NumResources != header2.NumResources ) {
+    if( header1->NumResources != header2->NumResources ) {
         if( !(CmdLineParms.Quiet || CmdLineParms.NoCounts) ) {
             puts( "The number of resources differ." );
         }
         retcode = 1;
     }
 
-    if( header1.NumTypes != header2.NumTypes) {
+    if( header1->NumTypes != header2->NumTypes) {
         if( !(CmdLineParms.Quiet || CmdLineParms.NoCounts) ) {
             puts( "The number of types differ." );
         }
@@ -76,11 +67,18 @@ int CompareContents( FILE *fp1, FILE *fp2 )
     int             retcode;        /* -1: error  0: same  1: different */
     int             oldretcode;
     bool            dup_discarded;
+    WResHeader      header1;
+    WResHeader      header2;
     WResDir         dir1;
     WResDir         dir2;
 
-    retcode = CompareHeaders( fp1, fp2 );
-    if( (retcode == -1) || (retcode == 1 && !CmdLineParms.CheckAll) ) {
+    if( WResReadHeader( &header1, fp1 ) ) {
+        return( -1 );
+    } else if( WResReadHeader( &header2, fp2 ) ) {
+        return( -1 );
+    }
+    retcode = CompareHeaders( &header1, &header2 );
+    if( (retcode == 1 && !CmdLineParms.CheckAll) ) {
         return( retcode );
     }
 
@@ -115,4 +113,3 @@ int CompareContents( FILE *fp1, FILE *fp2 )
         return( 0 );
     }
 }
-

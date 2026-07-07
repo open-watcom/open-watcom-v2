@@ -54,7 +54,7 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
     ok = ((fp = ResOpenFileRO( filename )) != NULL);
 
     if( ok ) {
-        *is_wres = ( WResReadResType( fp ) == RT_WATCOM );
+        *is_wres = WResIsWResFile( fp );
     }
 
     if( ok ) {

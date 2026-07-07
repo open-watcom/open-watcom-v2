@@ -243,7 +243,7 @@ extern int DumpFile( void )
         return( 2 );
     }
 
-    if( WResReadResType( fp ) == RT_WATCOM ) {
+    if( WResIsWResFile( fp ) ) {
         puts( "WATCOM format .RES file" );
     } else {
         puts( "MS format .RES file" );

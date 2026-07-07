@@ -48,7 +48,7 @@ bool WResCheckWResFile( const char *filename )
         return( false );        /* assume it's not a WRES file */
     }
 
-    iswresfile = ( WResReadResType( fp ) == RT_WATCOM );
+    iswresfile = WResIsWResFile( fp );
 
     ResCloseFile( fp );
 

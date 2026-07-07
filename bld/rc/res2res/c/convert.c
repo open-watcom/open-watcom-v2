@@ -132,7 +132,7 @@ int ConvertFiles( void )
         return( 1 );
     }
 
-    if( WResReadResType( in_fp ) == RT_WATCOM ) {
+    if( WResIsWResFile( in_fp ) ) {
         /* the input file is in Open Watcom format so convert to MS format */
         error = ConvertFileWResToMRes( in_fp );
     } else {

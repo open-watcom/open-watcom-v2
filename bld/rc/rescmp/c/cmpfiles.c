@@ -58,12 +58,12 @@ static int OpenFiles( FILE **fp1, FILE **fp2 )
         return( true );
     }
 
-    if( WResReadResType( *fp1 ) != RT_WATCOM ) {
+    if( WResIsWResFile( *fp1 ) ) {
         printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName1 );
         return( true );
     }
-    if( WResReadResType( *fp2 ) != RT_WATCOM ) {
+    if( WResIsWResFile( *fp2 ) ) {
         printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName2 );
         return( true );
