@@ -67,7 +67,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
         if( restofstr == NULL ) {
             return( NULL );
         }
-        stringlen += 1; /* for the '\0' */
+        stringlen++; /* for the '\0' */
     }
 
     /* allocate space for the new Name or Ordinal */
@@ -124,7 +124,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
         if( restofstr == NULL ) {
             return( NULL );
         }
-        stringlen += 1; /* for the '\0' */
+        stringlen++; /* for the '\0' */
     }
 
     /* allocate space for the new Name or Ordinal */

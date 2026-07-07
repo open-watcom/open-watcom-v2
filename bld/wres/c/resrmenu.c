@@ -47,9 +47,8 @@ bool ResReadMenuHeader( MenuHeader *currhead, FILE *fp )
 
     error = false;
     currhead->Version = ResReadUint16( &error, fp );
-    if( !error ) {
+    if( !error )
         currhead->Size = ResReadUint16( &error, fp );
-    }
     return( error );
 }
 

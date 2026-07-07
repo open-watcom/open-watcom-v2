@@ -99,7 +99,7 @@ M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
 MResResourceHeader *MResReadResourceHeader( FILE *fp )
 /****************************************************/
 {
-    MResResourceHeader     *newhead;
+    MResResourceHeader      *newhead;
     bool                    error;
 
     newhead = WRESALLOC( sizeof( MResResourceHeader ) );
@@ -108,22 +108,19 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp )
         return( NULL );
     }
     newhead->Type = ResReadNameOrOrdinal( fp );
-    error = ( newhead->Type == NULL );
-    if( !error ) {
+    if( newhead->Type != NULL ) {
         newhead->Name = ResReadNameOrOrdinal( fp );
-        error = (newhead->Name == NULL);
+        if( newhead->Name != NULL ) {
+            error = false;
+            newhead->MemoryFlags = ResReadUint16( &error, fp );
+            if( !error ) {
+                newhead->Size = ResReadUint32( &error, fp );
+                if( !error ) {
+                    return( newhead );
+                }
+            }
+        }
     }
-    if( !error ) {
-        newhead->MemoryFlags = ResReadUint16( &error, fp );
-    }
-    if( !error ) {
-        newhead->Size = ResReadUint32( &error, fp );
-    }
-
-    if( error ) {
-        WRESFREE( newhead );
-        newhead = NULL;
-    }
-
-    return( newhead );
+    WRESFREE( newhead );
+    return( NULL );
 } /* MResReadResourceHeader */
