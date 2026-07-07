@@ -92,9 +92,10 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
     WResLangNode    *langnode;
     bool            error;
     int             resnum;
-    WResLangInfo    v1_linfo = { 0 };
+    WResLangInfo    v1_linfo;
     uint_16         numres;
 
+    memset( &v1_linfo, 0, sizeof( v1_linfo ) );
     /* loop through the list of resources of this type */
     for( resnum = 0; resnum < currtype->Info.NumResources; resnum++ ) {
         /* read a resource record from disk */
@@ -120,16 +121,14 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
             langnode = WRESALLOC( sizeof( WResLangNode ) );
             if( langnode == NULL )
                 return( WRES_ERROR( WRS_MALLOC_FAILED ) );
-            if( !error ) {
-                langnode->data = NULL;
-                langnode->fileInfo = fileinfo;
-                langnode->Info.MemoryFlags = v1_linfo.MemoryFlags;
-                langnode->Info.Offset = v1_linfo.Offset;
-                langnode->Info.Length = v1_linfo.Length;
-                langnode->Info.lang.lang = DEF_LANG;
-                langnode->Info.lang.sublang = DEF_SUBLANG;
-                ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail), langnode );
-            }
+            langnode->data = NULL;
+            langnode->fileInfo = fileinfo;
+            langnode->Info.MemoryFlags = v1_linfo.MemoryFlags;
+            langnode->Info.Offset = v1_linfo.Offset;
+            langnode->Info.Length = v1_linfo.Length;
+            langnode->Info.lang.lang = DEF_LANG;
+            langnode->Info.lang.sublang = DEF_SUBLANG;
+            ResAddLLItemAtEnd( (void **)&(newnode->Head), (void **)&(newnode->Tail), langnode );
         } else {
             if( readLangInfoList( fp, newnode, fileinfo ) ) {
                 return( true );
