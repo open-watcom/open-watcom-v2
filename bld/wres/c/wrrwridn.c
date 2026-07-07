@@ -58,8 +58,8 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     WResIDName      *idname;
     bool            error;
 
-    error = false;
     /* read the size of the name in */
+    error = false;
     if( ver < 3 ) {
         numchars = ResReadUint8( &error, fp );
     } else {
@@ -81,7 +81,6 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
             ptr = NULL;
         }
     }
-
     return( ptr );
 }
 
