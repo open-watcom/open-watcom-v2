@@ -227,10 +227,8 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/
         if( !error ) {
-            if( !type->IsName
-              && type->ID.Num == (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
-                error = false;
-            } else {
+            if( type->IsName
+              || type->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = WResAddResource2( type, name, header->MemoryFlags,
                             WRESTELL( fp ), header->Size, dir, NULL,
                             &dup, fileinfo );
