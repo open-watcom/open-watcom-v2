@@ -192,10 +192,8 @@ static bool readWResDir( FILE *fp, WResDir dir, void *fileinfo )
     }
     if( header.WResVer >= 1 ) {
         /*
-         * seek to the extended header and read it
+         * read the extended header
          */
-        if( WRESSEEK( fp, WResHeader_FILESIZE, SEEK_CUR ) )
-            return( WRES_ERROR( WRS_SEEK_FAILED ) );
         if( WResReadExtHeader( &extheader, fp ) ) {
             return( true );
         }
