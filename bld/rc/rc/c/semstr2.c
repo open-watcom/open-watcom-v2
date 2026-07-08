@@ -137,7 +137,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Next = NULL;
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
-    newblock->UseUnicode = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
+    newblock->iswin32 = false;
     newblock->Flags = 0;
     newblock->codePage = 850;
     ResInitStringTableBlock( &(newblock->Block) );

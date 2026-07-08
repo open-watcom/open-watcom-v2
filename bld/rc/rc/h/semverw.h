@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +64,7 @@ typedef struct FullVerBlockNest {
 typedef struct FullVerBlock {
     struct FullVerBlock     *Next;
     struct FullVerBlock     *Prev;
-    bool                    UseUnicode;
+    bool                    iswin32;
     VerBlockHeader          Head;
     FullVerValueList        *Value;
     FullVerBlockNest        *Nest;

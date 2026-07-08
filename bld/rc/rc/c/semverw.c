@@ -51,7 +51,7 @@ static void FreeVerBlockNest( FullVerBlockNest *nest );
 FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem item )
 /**********************************************************************************/
 {
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
     }                                   // instead of using the full string.
                                         // This is what Microsoft does.
@@ -118,7 +118,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
+    block->iswin32 = CmdLineParms.iswin32;
     block->Value = list;
     block->Nest = NULL;
 
@@ -134,7 +134,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
-    block->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
+    block->iswin32 = CmdLineParms.iswin32;
     block->Value = NULL;
     block->Nest = nest;
 
@@ -150,12 +150,12 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     uint_16         nest_size;
     WResTargetOS    res_os;
 
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         res_os = WRES_OS_WIN32;
     } else {
         res_os = WRES_OS_WIN16;
     }
-    head_size = ResSizeVerBlockHeader( &block->Head, block->UseUnicode, res_os );
+    head_size = ResSizeVerBlockHeader( &block->Head, block->iswin32, res_os );
     val_size = 0;
     if( block->Value == NULL ) {
         padding = 0;
@@ -163,7 +163,7 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
         unsigned    i;
 
         for( i = 0; i < block->Value->NumItems; i++ ) {
-            val_size += ResSizeVerValueItem( block->Value->Item + i, block->UseUnicode );
+            val_size += ResSizeVerValueItem( block->Value->Item + i, block->iswin32 );
         }
         padding = RES_PADDING_DWORD( val_size );
     }
@@ -177,7 +177,7 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     if( stricmp( block->Head.Key, "Translation" ) == 0 ) {
         block->Head.Type = 0;
     } else {
-        if( block->UseUnicode )
+        if( block->iswin32 )
             block->Head.ValSize /= 2;
         block->Head.Type = 1;
     }
@@ -192,16 +192,16 @@ static bool SemWriteVerBlock( FullVerBlock *block, FILE *fp, int *err_code )
     bool            error;
     WResTargetOS    res_os;
 
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         res_os = WRES_OS_WIN32;
     } else {
         res_os = WRES_OS_WIN16;
     }
-    error = ResWriteVerBlockHeader( &block->Head, block->UseUnicode, res_os, fp );
+    error = ResWriteVerBlockHeader( &block->Head, block->iswin32, res_os, fp );
     *err_code = LastWresErr();
     if( !error
       && block->Value != NULL ) {
-        error = semWriteVerValueList( block->Value, block->UseUnicode, fp, err_code );
+        error = semWriteVerValueList( block->Value, block->iswin32, fp, err_code );
         if( !error ) {
             error = ResWritePadDWord( fp );
             *err_code = LastWresErr();
@@ -366,7 +366,7 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     WResTargetOS    res_os;
     int             err_code;
 
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         use_unicode = true;
         res_os = WRES_OS_WIN32;
     } else {

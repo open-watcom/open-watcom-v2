@@ -515,7 +515,7 @@ static bool Pass1InitRes( void )
         /*
          * write null header here if it is win32
          */
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.iswin32 ) {
             null_loc.start = SemStartResource();
             null_loc.len = SemEndResource( null_loc.start );
             null_id.IsName = false;

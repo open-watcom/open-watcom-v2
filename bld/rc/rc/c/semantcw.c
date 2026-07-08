@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@ void SemSetDefLang( void )
 void SemWINSetGlobalLanguage( const WResLangType *newlang )
 /*********************************************************/
 {
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         curLang = *newlang;
     } else {
         RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( Y_LANGUAGE ) );
@@ -63,7 +63,7 @@ void SemWINSetGlobalLanguage( const WResLangType *newlang )
 void SemWINSetResourceLanguage( const WResLangType *newlang, bool from_parser )
 /*****************************************************************************/
 {
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         resourceHasLang = true;
         resourceLang = *newlang;
     } else if( from_parser ) {

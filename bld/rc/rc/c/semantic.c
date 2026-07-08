@@ -111,15 +111,13 @@ void SemAddResourceAndFree( WResID *name, WResID *type, ResMemFlags flags, ResLo
 }
 
 static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
-                ResLocation loc, const WResLangType *lang )
+                ResLocation loc, const WResLangType *lang, bool iswin32 )
 /*************************************************************************/
 {
     MResResourceHeader  msheader;
     bool                error;
     char                buffer[512];
-    bool                iswin32;
 
-    iswin32 = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     /*
      * fill in and output a MS format resource header
      */
@@ -184,7 +182,7 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
     // Windows 95 is currently unable to load an exe that contains a resource
     // with numeric type or numeric identifier greater than 0x7FFF
     // so we warn the user
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         if( !type->IsName
           && type->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( type );
@@ -219,7 +217,7 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
 
     if( !CurrResFile.IsWatcomRes ) {
         if( !duplicate ) {
-            copyMSFormatRes( name, type, flags, loc, lang );
+            copyMSFormatRes( name, type, flags, loc, lang, CmdLineParms.iswin32 );
         }
         /*
          * erase the temporary RES file

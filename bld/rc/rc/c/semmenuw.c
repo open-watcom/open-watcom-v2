@@ -204,16 +204,16 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
-                            item->UseUnicode, CurrResFile.fp );
+                            item->iswin32, CurrResFile.fp );
                 break;
             default:
                 error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
-                            item->UseUnicode, CurrResFile.fp );
+                            item->iswin32, CurrResFile.fp );
                 break;
             }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
-                      &(item->item.popup.item.menuExData), item->UseUnicode,
+                      &(item->item.popup.item.menuExData), item->iswin32,
                       CurrResFile.fp );
         }
     } else {
@@ -226,16 +226,16 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
-                            item->UseUnicode, CurrResFile.fp );
+                            item->iswin32, CurrResFile.fp );
                 break;
             default:
                 error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
-                            item->UseUnicode, CurrResFile.fp );
+                            item->iswin32, CurrResFile.fp );
                 break;
             }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
-                         &(item->item.normal.menuExData), item->UseUnicode,
+                         &(item->item.normal.menuExData), item->iswin32,
                          CurrResFile.fp );
         }
     }
@@ -372,7 +372,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         }
         if( !error
           && CmdLineParms.MSResFormat
-          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+          && CmdLineParms.iswin32 ) {
             error = ResWritePadDWord( CurrResFile.fp );
         }
         if( error ) {

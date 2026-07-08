@@ -94,7 +94,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Next = NULL;
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
-    newblock->UseUnicode = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
+    newblock->iswin32 = CmdLineParms.iswin32;
     newblock->Flags = 0;
     ResInitStringTableBlock( &(newblock->Block) );
 
@@ -276,10 +276,10 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
         for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
             loc.start = SemStartResource();
 
-            error = ResWriteStringTableBlock( &(currblock->Block), currblock->UseUnicode, CurrResFile.fp );
+            error = ResWriteStringTableBlock( &(currblock->Block), currblock->iswin32, CurrResFile.fp );
             if( !error
               && CmdLineParms.MSResFormat
-              && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+              && CmdLineParms.iswin32 ) {
                 error = ResWritePadDWord( CurrResFile.fp );
             }
             if( error ) {

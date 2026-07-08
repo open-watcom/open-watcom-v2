@@ -304,23 +304,23 @@ static void initMBCodePage( void )
     switch( CmdLineParms.MBCharSupport ) {
     case DB_TRADITIONAL_CHINESE:
         SetMBRange( 0x81, 0xfe, 1 );
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+        if( CmdLineParms.iswin32 )
             LoadCodePageFile( "950.uni" );
         break;
     case DB_WANSUNG_KOREAN:
         SetMBRange( 0x81, 0xfe, 1 );
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+        if( CmdLineParms.iswin32 )
             LoadCodePageFile( "949.uni" );
         break;
     case DB_SIMPLIFIED_CHINESE:
         SetMBRange( 0xA1, 0xfe, 1 );
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+        if( CmdLineParms.iswin32 )
             LoadCodePageFile( "936.uni" );
         break;
     case DB_KANJI:
         SetMBRange( 0x81, 0x9f, 1 );
         SetMBRange( 0xe0, 0xfc, 1 );
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 )
+        if( CmdLineParms.iswin32 )
             LoadCodePageFile( "kanji.uni" );
         break;
     case MB_UTF8:
@@ -1142,6 +1142,10 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
         break;
     }
 
+    /*
+     * define WIN32 target flag
+     */
+    CmdLineParms.iswin32 = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     /*
      * define target macros
      */

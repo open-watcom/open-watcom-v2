@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -87,8 +87,8 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 
     newheader = MemAllocSafe( sizeof( FullDialogBoxHeader ) );
 
+    newheader->iswin32 = CmdLineParms.iswin32;
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-        newheader->Win32 = false;
         newheader->u.Head.Style = 0L;
         newheader->u.Head.NumOfItems = 0;
         newheader->u.Head.SizeInfo.x = 0;
@@ -101,7 +101,6 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head.PointSize = 0;
         newheader->u.Head.FontName = NULL;
     } else {
-        newheader->Win32 = true;
         newheader->u.Head32.Head.Style = 0L;
         newheader->u.Head32.Head.ExtendedStyle = 0L;
         newheader->u.Head32.Head.NumOfItems = 0;
@@ -239,7 +238,7 @@ static void AddDiagOption32( DlgHeader32 *head, FullDialogOptions *opt )
 FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head, FullDialogOptions *opt )
 /*****************************************************************************************/
 {
-    if( head->Win32 ) {
+    if( head->iswin32 ) {
         AddDiagOption32( &head->u.Head32, opt );
     } else {
         AddDiagOption( &head->u.Head, opt );
@@ -292,7 +291,7 @@ static FullDialogBoxControl *semInitDiagCtrl( void )
     newctrl = MemAllocSafe( sizeof( FullDialogBoxControl ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
-    newctrl->Win32 = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
+    newctrl->iswin32 = CmdLineParms.iswin32;
 
     return( newctrl );
 } /* semInitDiagCtrl */
@@ -425,7 +424,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         defstyle_lo = DEF_SCROLLBAR_LO;
         break;
     case Y_AUTO3STATE:
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.iswin32 ) {
             class = CLASS_BUTTON;
             defstyle_hi = DEF_AUTO3STATE_HI;
             defstyle_lo = DEF_AUTO3STATE_LO;
@@ -435,7 +434,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         }
         break;
     case Y_AUTOCHECKBOX:
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.iswin32 ) {
             class = CLASS_BUTTON;
             defstyle_hi = DEF_AUTOCHECKBOX_HI;
             defstyle_lo = DEF_AUTOCHECKBOX_LO;
@@ -445,7 +444,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         }
         break;
     case Y_AUTORADIOBUTTON:
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.iswin32 ) {
             class = CLASS_BUTTON;
             defstyle_hi = DEF_AUTORADIOBUTTON_HI;
             defstyle_lo = DEF_AUTORADIOBUTTON_LO;
@@ -460,7 +459,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
 //      defstyle_lo = DEF_PUSHBOX_LO;
 //      break;
     case Y_STATE3:
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.iswin32 ) {
             class = CLASS_BUTTON;
             defstyle_hi = DEF_STATE3_HI;
             defstyle_lo = DEF_STATE3_LO;
@@ -495,7 +494,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
      */
     style_hi = (style_mask & style_value) | (~style_mask & defstyle_hi);
 
-    if( newctrl->Win32 ) {
+    if( newctrl->iswin32 ) {
         newctrl->u.ctrl32.ID = opts.ID;
         newctrl->u.ctrl32.SizeInfo = opts.SizeInfo;
         newctrl->u.ctrl32.Text = opts.Text;
@@ -537,7 +536,7 @@ static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
         /*
          * free the contents of pointers within the structure
          */
-        if( ctrl->Win32 ) {
+        if( ctrl->iswin32 ) {
             if( ctrl->u.ctrl32.ClassID != NULL ) {
                 MemFree( ctrl->u.ctrl32.ClassID );
             }
@@ -561,7 +560,7 @@ static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
 static void SemFreeDialogHeader( FullDialogBoxHeader *head )
 /**********************************************************/
 {
-    if( head->Win32 ) {
+    if( head->iswin32 ) {
         if( head->u.Head32.Head.MenuName != NULL ) {
             MemFree( head->u.Head32.Head.MenuName );
         }
@@ -602,7 +601,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
 
     error = false;
     for( ctrl = list->head; ctrl != NULL && !error; ctrl = ctrl->next ) {
-        if( ctrl->Win32 ) {
+        if( ctrl->iswin32 ) {
             if( tokentype == Y_DIALOG ) {
                 control.Style = ctrl->u.ctrl32.Style;
                 control.ExtendedStyle = ctrl->u.ctrl32.ExtendedStyle;
@@ -660,7 +659,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
 {
     FullDialogBoxControl    *travptr;
 
-    if( head->Win32 ) {
+    if( head->iswin32 ) {
         if( tokentype == Y_DIALOG
           && dlghelp.HelpIdDefined ) {
             RcError( ERR_DIALOG_HELPID );
@@ -707,7 +706,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         head = NewDialogBoxHeader();
     }
     SemCheckDialogBox( head, tokentype, dlghelp, ctrls );
-    if( head->Win32 ) {
+    if( head->iswin32 ) {
         if( tokentype != Y_DIALOG ) {
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
                 if( travptr->dataListHead != NULL ) {
@@ -746,7 +745,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
     if( !error
       && !ErrorHasOccured ) {
         loc.start = SemStartResource();
-        if( head->Win32 ) {
+        if( head->iswin32 ) {
             if( tokentype == Y_DIALOG ) {
                 if( ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.fp ) ) {
                     error = 1;
@@ -802,7 +801,7 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     style = (mask & value) | (~mask & (WS_CHILD|WS_VISIBLE));
 
     control = semInitDiagCtrl();
-    if( control->Win32 ) {
+    if( control->iswin32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.SizeInfo = sizeinfo;
         control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext );

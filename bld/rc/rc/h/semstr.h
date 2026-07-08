@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@ typedef struct FullStringTableBlock {
     struct FullStringTableBlock     *Next;
     struct FullStringTableBlock     *Prev;
     uint_16                         BlockNum;
-    bool                            UseUnicode;
+    bool                            iswin32;
     ResMemFlags                     Flags;
     uint_32                         codePage;   // for OS/2
     StringTableBlock                Block;

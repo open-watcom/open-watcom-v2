@@ -938,7 +938,7 @@ menu-item
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.UseUnicode = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
+            $$.iswin32 = CmdLineParms.iswin32;
             $$.IsPopup = false;
             $$.item.normal = $1;
         }
@@ -946,7 +946,7 @@ menu-item
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.UseUnicode = (CmdLineParms.TargetOS == RC_TARGET_OS_WIN32);
+            $$.iswin32 = CmdLineParms.iswin32;
             $$.IsPopup = true;
             $$.item.popup = $1;
         }

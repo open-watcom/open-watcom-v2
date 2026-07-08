@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@ typedef struct DlgHeader32 {
 } DlgHeader32;
 
 typedef struct FullDialogBoxHeader {
-    bool                Win32;
+    bool                iswin32;
     union {
         DialogBoxHeader     Head;
         DlgHeader32         Head32;
@@ -61,7 +62,7 @@ typedef struct DlgControl32 {
 typedef struct FullDialogBoxControl {
     struct FullDialogBoxControl     *next;
     struct FullDialogBoxControl     *prev;
-    bool                            Win32;
+    bool                            iswin32;
     union {
         DialogBoxControl            ctrl;
         DlgControl32                ctrl32;

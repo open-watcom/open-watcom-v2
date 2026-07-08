@@ -64,7 +64,7 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename )
 {
     ResLocation         start;
 
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+    if( CmdLineParms.iswin32 ) {
         start = SemCopyRawFile( filename->string );
         SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ),
                             MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
