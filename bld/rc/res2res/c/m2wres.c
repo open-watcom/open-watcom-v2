@@ -61,8 +61,10 @@ static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
     bool                lastheader; /* true if lastheader has been read */
     uint_32             offset;
     bool                duplicate;
+    bool                iswin32;
 
-    msheader = MResReadResourceHeader( in_fp );
+    iswin32 = false;
+    msheader = MResReadResourceHeader( in_fp, iswin32 );
     /* assume that any error reading here means end of file */
     lastheader = ( msheader == NULL );
     error = false;
@@ -92,7 +94,7 @@ static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
         WResIDFree( type );
         MResFreeResourceHeader( msheader );
 
-        msheader = MResReadResourceHeader( in_fp );
+        msheader = MResReadResourceHeader( in_fp, iswin32 );
         /* assume that any error reading here means end of file */
         lastheader = ( msheader == NULL );
     }
