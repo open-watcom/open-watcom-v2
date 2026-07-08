@@ -148,14 +148,8 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     uint_16         padding;
     uint_16         head_size;
     uint_16         nest_size;
-    WResTargetOS    res_os;
 
-    if( CmdLineParms.iswin32 ) {
-        res_os = WRES_OS_WIN32;
-    } else {
-        res_os = WRES_OS_WIN16;
-    }
-    head_size = ResSizeVerBlockHeader( &block->Head, block->iswin32, res_os );
+    head_size = ResSizeVerBlockHeader( &block->Head, block->iswin32 );
     val_size = 0;
     if( block->Value == NULL ) {
         padding = 0;
@@ -190,14 +184,8 @@ static bool SemWriteVerBlock( FullVerBlock *block, FILE *fp, int *err_code )
 /**************************************************************************/
 {
     bool            error;
-    WResTargetOS    res_os;
 
-    if( CmdLineParms.iswin32 ) {
-        res_os = WRES_OS_WIN32;
-    } else {
-        res_os = WRES_OS_WIN16;
-    }
-    error = ResWriteVerBlockHeader( &block->Head, block->iswin32, res_os, fp );
+    error = ResWriteVerBlockHeader( &block->Head, block->iswin32, fp );
     *err_code = LastWresErr();
     if( !error
       && block->Value != NULL ) {
@@ -362,22 +350,13 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     ResLocation     loc;
     int             padding;
     bool            error;
-    bool            use_unicode;
-    WResTargetOS    res_os;
     int             err_code;
 
-    if( CmdLineParms.iswin32 ) {
-        use_unicode = true;
-        res_os = WRES_OS_WIN32;
-    } else {
-        use_unicode = false;
-        res_os = WRES_OS_WIN16;
-    }
     root.Key = "VS_VERSION_INFO";
     root.ValSize = sizeof( VerFixedInfo );
     root.Type = 0;
     padding = RES_PADDING_DWORD( root.ValSize );
-    root.Size = ResSizeVerBlockHeader( &root, use_unicode, res_os )
+    root.Size = ResSizeVerBlockHeader( &root, CmdLineParms.iswin32 )
                     + root.ValSize + padding + CalcNestSize( nest );
     /*
      * pad the start of the resource so that padding within the resource
@@ -392,7 +371,7 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
-        error = ResWriteVerBlockHeader( &root, use_unicode, res_os, CurrResFile.fp );
+        error = ResWriteVerBlockHeader( &root, CmdLineParms.iswin32, CurrResFile.fp );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;

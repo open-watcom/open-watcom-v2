@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -73,10 +74,10 @@ typedef struct VerFixedInfo {
 #define VER_FIXED_SIGNATURE     0xfeef04bd
 #define VER_FIXED_STRUCT_VER    0x00010000
 
-extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, WResTargetOS res_os, FILE *fp );
+extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool iswin32, FILE *fp );
 extern bool     ResWriteVerValueItem( VerValueItem * item, bool use_unicode, FILE *fp );
 extern bool     ResWriteVerFixedInfo( VerFixedInfo *, FILE *fp );
-extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool use_unicode, WResTargetOS res_os );
+extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool iswin32 );
 extern size_t   ResSizeVerValueItem( VerValueItem * item, bool use_unicode );
 
 #endif

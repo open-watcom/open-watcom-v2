@@ -41,9 +41,10 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, WResTargetOS res_os, FILE *fp )
-/***************************************************************************************************/
-/* Writes the header, correcting it for 32 bit alligning */
+bool ResWriteVerBlockHeader( VerBlockHeader * head, bool iswin32, FILE *fp )
+/***************************************************************************
+ * Writes the header, correcting it for 32 bit alligning
+ */
 {
     bool        error;
 
@@ -51,11 +52,11 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, WResTarget
     if( !error ) {
         error = ResWriteUint16( head->ValSize, fp );
     }
-    if( !error && res_os == WRES_OS_WIN32 ) {
+    if( !error && iswin32 ) {
         error = ResWriteUint16( head->Type, fp );
     }
     if( !error ) {
-        error = ResWriteString( head->Key, use_unicode, fp );
+        error = ResWriteString( head->Key, iswin32, fp );
     }
     if( !error ) {
         error = ResWritePadDWord( fp );
@@ -64,18 +65,17 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, WResTarget
     return( error );
 }
 
-size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, WResTargetOS res_os )
-/*****************************************************************************************/
+size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool iswin32 )
+/****************************************************************/
 {
     size_t      key_size;
     size_t      padding;
     size_t      fixed_size;
 
     key_size = strlen( head->Key ) + 1;
-    if( use_unicode )
-        key_size *= 2;
-    if( res_os == WRES_OS_WIN32 ) {
+    if( iswin32 ) {
         /* the NT key field begins 2 bytes from a 32 bit boundary */
+        key_size *= 2;
         padding = RES_PADDING_DWORD( key_size + 2 );
         fixed_size = 3 * sizeof( uint_16 );
     } else {
