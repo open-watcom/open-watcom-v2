@@ -36,6 +36,7 @@
 #include "read.h"
 #include "reserr.h"
 
+
 WResResInfo *WResReadResRecord( FILE *fp )
 /****************************************/
 /* reads in the fields of a res info record from the current position in */

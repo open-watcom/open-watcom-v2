@@ -32,7 +32,6 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"

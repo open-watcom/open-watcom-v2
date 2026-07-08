@@ -34,27 +34,30 @@
 #ifndef WRESUTIL_INCLUDED
 #define WRESUTIL_INCLUDED
 
+#include <stddef.h>
 #include "filefmt.h"
 #include "resnamor.h"
 
 
-extern void                 *AllocWResIDName( unsigned offs, unsigned numchars );
+#define AllocWResIDName(o,n)    WRESALLOC((o) + offsetof( WResIDName, Name ) + (n))
+#define AllocWResIDNum(o)       WRESALLOC((o) + sizeof( ((WResID *)0)->ID.Num ))
+#define AllocWResHelpIDNum(o)   WRESALLOC((o) + sizeof( ((WResHelpID *)0)->ID.Num ))
 
 extern WResIDName           *WResIDNameFromStr( const char *str );
+extern WResID               *WResIDFromStr( const char *str );
 extern WResID               *WResIDFromNum( long num );
 extern void                 WResInitIDFromNum( long num, WResID *id );
-extern WResID               *WResIDFromStr( const char *str );
 extern char                 *WResIDToStr( const WResID *id );
 extern long                 WResIDToNum( const WResID *id );
 extern void                 WResIDFree( WResID *id );
-extern int                  WResIDNameCmp( const WResIDName *, const WResIDName * );
+extern int                  WResIDNameCmp( const WResIDName *nameid1, const WResIDName *nameid2 );
 extern int                  WResIDCmp( const WResID *id1, const WResID *id2 );
 extern ResNameOrOrdinal     *WResIDToNameOrOrdinal( WResID *id );
 extern WResID               *WResIDFromNameOrOrdinal( ResNameOrOrdinal *name );
 
+extern WResHelpID           *WResHelpIDFromStr( const char *str );
 extern WResHelpID           *WResHelpIDFromNum( long num );
 extern void                 WResInitHelpIDFromNum( long num, WResHelpID *helpid );
-extern WResHelpID           *WResHelpIDFromStr( const char *str );
 extern char                 *WResHelpIDToStr( const WResHelpID *helpid );
 extern long                 WResHelpIDToNum( const WResHelpID *helpid );
 extern void                 WResHelpIDFree( WResHelpID *helpid );

@@ -32,22 +32,11 @@
 
 
 #include "layer0.h"
-#include <stddef.h>
 #include "read.h"
 #include "reserr.h"
+#include "util.h"
 #include "wresrtns.h"
 
-
-void *AllocWResIDName( unsigned offs, unsigned numchars )
-/*******************************************************/
-{
-    char            *ptr;
-
-    ptr = WRESALLOC( offs + offsetof( WResIDName, Name ) + numchars );
-    if( ptr == NULL )
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    return( ptr );
-}
 
 void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
 /*************************************************************/

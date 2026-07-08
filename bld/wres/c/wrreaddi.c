@@ -32,7 +32,6 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include "wresall.h"
 #include "reserr.h"
 #include "wresdefn.h"

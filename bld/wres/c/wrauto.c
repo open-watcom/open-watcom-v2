@@ -31,7 +31,6 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include <string.h>
 #include "wresall.h"
 #include "wresauto.h"
