@@ -156,18 +156,20 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
                                   FILE *src_fp, FILE *dst_fp )
 {
     WResLangNode        *lnode;
-    MResResourceHeader  mheader;
+    MResResourceHeader  msheader;
     bool                ok;
+    bool                iswin32;
 
+    iswin32 = false;
     ok = true;
     for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->Next ) {
-        mheader.Size = lnode->Info.Length;
-        mheader.MemoryFlags = lnode->Info.MemoryFlags;
-        mheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
-        mheader.Name = WRCreateMRESResName( rnode, lnode );
-        ok = (mheader.Type != NULL && mheader.Name != NULL);
+        msheader.Size = lnode->Info.Length;
+        msheader.MemoryFlags = lnode->Info.MemoryFlags;
+        msheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
+        msheader.Name = WRCreateMRESResName( rnode, lnode );
+        ok = (msheader.Type != NULL && msheader.Name != NULL);
         if( ok ) {
-            ok = !MResWriteResourceHeader( &mheader, dst_fp, false );
+            ok = !MResWriteResourceHeader( &msheader, dst_fp, iswin32 );
         }
         if( ok ) {
             if( lnode->data != NULL ) {
@@ -176,11 +178,11 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
                 ok = WRCopyResFromFileToFile( src_fp, lnode->Info.Offset, lnode->Info.Length, dst_fp );
             }
         }
-        if( mheader.Type != NULL ) {
-            MemFree( mheader.Type );
+        if( msheader.Type != NULL ) {
+            MemFree( msheader.Type );
         }
-        if( mheader.Name != NULL ) {
-            MemFree( mheader.Name );
+        if( msheader.Name != NULL ) {
+            MemFree( msheader.Name );
         }
         if( lnode == rnode->Tail ) {
             break;

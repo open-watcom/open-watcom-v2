@@ -36,91 +36,72 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-M32ResResourceHeader *M32ResReadResourceHeader( FILE *fp )
-/********************************************************/
+
+MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
+/******************************************************************/
 {
-    M32ResResourceHeader    *newhead;
+    MResResourceHeader      *msheader;
     bool                    error;
 
     error = false;
-    newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
-    if( newhead == NULL ) {
+    msheader = WRESALLOC( sizeof( MResResourceHeader ) );
+    if( msheader == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
         return( NULL );
     }
-    newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
-    if( newhead->head16 == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-        WRESFREE( newhead );
-        return( NULL );
-    }
-    error = ResReadPadDWord( fp );
-    if( !error ) {
-        newhead->head16->Size = ResReadUint32( &error, fp );
-    }
-    if( !error ) {
-        newhead->Size = ResReadUint32( &error, fp );
-    }
-    if( !error ) {
-        newhead->head16->Type = ResRead32NameOrOrdinal( fp );
-        error = (newhead->head16->Type == NULL );
-    }
-    if( !error ) {
-        newhead->head16->Name = ResRead32NameOrOrdinal( fp );
-        error = (newhead->head16->Name == NULL );
-    }
-    if( !error ) {
+    if( iswin32 ) {
         error = ResReadPadDWord( fp );
-    }
-    if( !error ) {
-        newhead->head16->DataVersion = ResReadUint32( &error, fp );
-    }
-    if( !error ) {
-        newhead->head16->MemoryFlags = ResReadUint16( &error, fp );
-    }
-    if( !error ) {
-        newhead->head16->LanguageId = ResReadUint16( &error, fp );
-    }
-    if( !error ) {
-        newhead->head16->Version = ResReadUint32( &error, fp );
-    }
-    if( !error ) {
-        newhead->head16->Characteristics = ResReadUint32( &error, fp );
-    }
-    if( error ) {
-        WRESFREE( newhead->head16 );
-        WRESFREE( newhead );
-        newhead = NULL;
-    }
-
-    return( newhead );
-}
-
-MResResourceHeader *MResReadResourceHeader( FILE *fp )
-/****************************************************/
-{
-    MResResourceHeader      *newhead;
-    bool                    error;
-
-    newhead = WRESALLOC( sizeof( MResResourceHeader ) );
-    if( newhead == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-        return( NULL );
-    }
-    newhead->Type = ResReadNameOrOrdinal( fp );
-    if( newhead->Type != NULL ) {
-        newhead->Name = ResReadNameOrOrdinal( fp );
-        if( newhead->Name != NULL ) {
-            error = false;
-            newhead->MemoryFlags = ResReadUint16( &error, fp );
-            if( !error ) {
-                newhead->Size = ResReadUint32( &error, fp );
-                if( !error ) {
-                    return( newhead );
-                }
-            }
+        if( !error ) {
+            msheader->Size = ResReadUint32( &error, fp );
+        }
+        if( !error ) {
+            msheader->HdrSize = ResReadUint32( &error, fp );
+        }
+        if( !error ) {
+            msheader->Type = ResRead32NameOrOrdinal( fp );
+            error = ( msheader->Type == NULL );
+        }
+        if( !error ) {
+            msheader->Name = ResRead32NameOrOrdinal( fp );
+            error = ( msheader->Name == NULL );
+        }
+        if( !error ) {
+            error = ResReadPadDWord( fp );
+        }
+        if( !error ) {
+            msheader->DataVersion = ResReadUint32( &error, fp );
+        }
+        if( !error ) {
+            msheader->MemoryFlags = ResReadUint16( &error, fp );
+        }
+        if( !error ) {
+            msheader->LanguageId = ResReadUint16( &error, fp );
+        }
+        if( !error ) {
+            msheader->Version = ResReadUint32( &error, fp );
+        }
+        if( !error ) {
+            msheader->Characteristics = ResReadUint32( &error, fp );
+        }
+    } else {
+        if( !error ) {
+            msheader->Type = ResRead32NameOrOrdinal( fp );
+            error = ( msheader->Type == NULL );
+        }
+        if( !error ) {
+            msheader->Name = ResRead32NameOrOrdinal( fp );
+            error = ( msheader->Name == NULL );
+        }
+        if( !error ) {
+            msheader->MemoryFlags = ResReadUint16( &error, fp );
+        }
+        if( !error ) {
+            msheader->Size = ResReadUint32( &error, fp );
         }
     }
-    WRESFREE( newhead );
-    return( NULL );
-} /* MResReadResourceHeader */
+    if( error ) {
+        WRESFREE( msheader );
+        msheader = NULL;
+    }
+    return( msheader );
+}

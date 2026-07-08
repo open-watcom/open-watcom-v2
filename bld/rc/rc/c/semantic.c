@@ -114,32 +114,29 @@ static void copyMSFormatRes( WResID *name, WResID *type, ResMemFlags flags,
                 ResLocation loc, const WResLangType *lang )
 /*************************************************************************/
 {
-    MResResourceHeader  ms_head;
+    MResResourceHeader  msheader;
     bool                error;
     char                buffer[512];
+    bool                iswin32;
 
+    iswin32 = ( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 );
     /*
      * fill in and output a MS format resource header
      */
-    ms_head.Type = WResIDToNameOrOrdinal( type );
-    ms_head.Name = WResIDToNameOrOrdinal( name );
-    ms_head.MemoryFlags = flags;
-    ms_head.Size = loc.len;
-    ms_head.LanguageId = MAKELANGID( lang->lang, lang->sublang );
-    ms_head.Version = 0L; /* Currently Unsupported */
-    ms_head.DataVersion = 0L;
-    ms_head.Characteristics = 0L; /* Currently Unsupported */
+    msheader.Type = WResIDToNameOrOrdinal( type );
+    msheader.Name = WResIDToNameOrOrdinal( name );
+    msheader.MemoryFlags = flags;
+    msheader.Size = loc.len;
+    msheader.LanguageId = MAKELANGID( lang->lang, lang->sublang );
+    msheader.Version = 0L; /* Currently Unsupported */
+    msheader.DataVersion = 0L;
+    msheader.Characteristics = 0L; /* Currently Unsupported */
     /*
      * OS/2 resource header happens to be identical to Win16
      */
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16
-      || CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, false );
-    } else {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.fp, true );
-    }
-    MemFree( ms_head.Type );
-    MemFree( ms_head.Name );
+    error = MResWriteResourceHeader( &msheader, CurrResFile.fp, iswin32 );
+    MemFree( msheader.Type );
+    MemFree( msheader.Name );
     ErrorHasOccured = true;
     if( error ) {
         RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );

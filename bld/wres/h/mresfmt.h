@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,11 +45,7 @@ typedef struct MResResourceHeader {
     uint_32                 Version;
     uint_32                 DataVersion;
     uint_32                 Characteristics;
+    uint_32                 HdrSize;
 } MResResourceHeader;
-
-typedef struct M32ResResourceHeader {
-    MResResourceHeader      *head16;
-    uint_32                 Size;
-} M32ResResourceHeader;
 
 #endif

@@ -54,48 +54,47 @@ static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
 static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
 /************************************************************************/
 {
-    MResResourceHeader *    mheader;
-    WResID *                name;
-    WResID *                type;
-    bool                    error;
-    bool                    lastheader; /* true if lastheader has been read */
-    uint_32                 offset;
-    bool                    duplicate;
+    MResResourceHeader  *msheader;
+    WResID              *name;
+    WResID              *type;
+    bool                error;
+    bool                lastheader; /* true if lastheader has been read */
+    uint_32             offset;
+    bool                duplicate;
 
-    mheader = MResReadResourceHeader( in_fp );
+    msheader = MResReadResourceHeader( in_fp );
     /* assume that any error reading here means end of file */
-    lastheader = ( mheader == NULL );
+    lastheader = ( msheader == NULL );
     error = false;
-
-    while( !lastheader && !error ) {
-        name = ConvertNameOrOrdToID( mheader->Name );
-        type = ConvertNameOrOrdToID( mheader->Type );
+    while( !error && !lastheader ) {
+        name = ConvertNameOrOrdToID( msheader->Name );
+        type = ConvertNameOrOrdToID( msheader->Type );
         offset = RESTELL( out_fp );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
         if( type->IsName || type->ID.Num != RESOURCE2INT( RT_NAMETABLE ) ||
                         CmdLineParms.KeepNameTable ) {
-            error = WResAddResource( type, name, mheader->MemoryFlags, offset,
-                        mheader->Size, outdir, NULL, &duplicate );
+            error = WResAddResource( type, name, msheader->MemoryFlags, offset,
+                        msheader->Size, outdir, NULL, &duplicate );
             if( duplicate ) {
                 /* print message and continue */
                 puts( "Error: duplicate entry" );
                 error = false;
             } else {
-                error = BinaryCopy( in_fp, out_fp, mheader->Size );
+                error = BinaryCopy( in_fp, out_fp, msheader->Size );
             }
         } else {
-            RESSEEK( in_fp, mheader->Size, SEEK_CUR );
+            RESSEEK( in_fp, msheader->Size, SEEK_CUR );
         }
 
         WResIDFree( name );
         WResIDFree( type );
-        MResFreeResourceHeader( mheader );
+        MResFreeResourceHeader( msheader );
 
-        mheader = MResReadResourceHeader( in_fp );
+        msheader = MResReadResourceHeader( in_fp );
         /* assume that any error reading here means end of file */
-        lastheader = ( mheader == NULL );
+        lastheader = ( msheader == NULL );
     }
 
     return( error );

@@ -145,7 +145,7 @@ bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *
         numchars = name->NumChars;
     }
     buf = ConvBuffer;
-    size = 2 * numchars;	/* 16-bit Unicode or double-byte */
+    size = 2 * numchars;        /* 16-bit Unicode or double-byte */
     if( numchars > 0 ) {
         /*
          * for short strings use a static buffer in improve performance
@@ -265,7 +265,7 @@ bool WResWriteHeader( const WResHeader *header, FILE *fp )
 }
 
 bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
-/****************************************************************/
+/*****************************************************************/
 {
     if( ResWriteUint16( extheader->TargetOS, fp ) )
         return( true );
@@ -363,8 +363,8 @@ static size_t MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
     return( size );
 }
 
-static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
-/******************************************************************************/
+static size_t MResFindHeaderSize( MResResourceHeader *msheader, bool iswin32 )
+/****************************************************************************/
 {
     size_t  headersize;
     size_t  namesize;
@@ -372,45 +372,45 @@ static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
     size_t  padding;
 
     headersize = 2 * sizeof( uint_16 ) + 5 * sizeof( uint_32 );
-    namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
-    typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
+    namesize = MResFindNameOrOrdSize( msheader->Name, iswin32 );
+    typesize = MResFindNameOrOrdSize( msheader->Type, iswin32 );
     headersize += ( namesize + typesize );
     padding = RES_PADDING_DWORD( typesize + namesize );
 
     return( headersize + padding );
 }
 
-bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 )
-/********************************************************************************/
+bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin32 )
+/**********************************************************************************/
 {
-    if( !iswin32 ) {
-        if( ResWriteNameOrOrdinal( header->Type, false, fp ) )
+    if( iswin32 ) {
+        if( ResWriteUint32( msheader->Size, fp ) )
             return( true );
-        if( ResWriteNameOrOrdinal( header->Name, false, fp ) )
+        if( ResWriteUint32( MResFindHeaderSize( msheader, iswin32 ), fp ) )
             return( true );
-        if( ResWriteUint16( header->MemoryFlags, fp ) )
+        if( ResWriteNameOrOrdinal( msheader->Type, true, fp ) )
             return( true );
-        return( ResWriteUint32( header->Size, fp ) );
-    } else {
-        if( ResWriteUint32( header->Size, fp ) )
-            return( true );
-        if( ResWriteUint32( MResFindHeaderSize( header, true ), fp ) )
-            return( true );
-        if( ResWriteNameOrOrdinal( header->Type, true, fp ) )
-            return( true );
-        if( ResWriteNameOrOrdinal( header->Name, true, fp ) )
+        if( ResWriteNameOrOrdinal( msheader->Name, true, fp ) )
             return( true );
         if( ResWritePadDWord( fp ) )
             return( true );
-        if( ResWriteUint32( header->DataVersion, fp ) )
+        if( ResWriteUint32( msheader->DataVersion, fp ) )
             return( true );
-        if( ResWriteUint16( header->MemoryFlags, fp ) )
+        if( ResWriteUint16( msheader->MemoryFlags, fp ) )
             return( true );
-        if( ResWriteUint16( header->LanguageId, fp ) )
+        if( ResWriteUint16( msheader->LanguageId, fp ) )
             return( true );
-        if( ResWriteUint32( header->Version, fp ) )
+        if( ResWriteUint32( msheader->Version, fp ) )
             return( true );
-        return( ResWriteUint32( header->Characteristics, fp ) );
+        return( ResWriteUint32( msheader->Characteristics, fp ) );
+    } else {
+        if( ResWriteNameOrOrdinal( msheader->Type, false, fp ) )
+            return( true );
+        if( ResWriteNameOrOrdinal( msheader->Name, false, fp ) )
+            return( true );
+        if( ResWriteUint16( msheader->MemoryFlags, fp ) )
+            return( true );
+        return( ResWriteUint32( msheader->Size, fp ) );
     }
 }
 

@@ -68,26 +68,28 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     WResTypeInfo        *typeinfo;
     WResResInfo         *resinfo;
     WResLangInfo        *langinfo;
-    MResResourceHeader  outhead;
+    MResResourceHeader  msheader;
     bool                error;
+    bool                iswin32;
 
+    iswin32 = false;
     typeinfo = WResGetTypeInfo( wind );
     resinfo = WResGetResInfo( wind );
     langinfo = WResGetLangInfo( wind );
-    outhead.Type = ConvertIDToNameOrOrdinal( &(typeinfo->TypeName) );
-    outhead.Name = ConvertIDToNameOrOrdinal( &(resinfo->ResName) );
-    outhead.MemoryFlags = langinfo->MemoryFlags;
-    outhead.Size = langinfo->Length;
+    msheader.Type = ConvertIDToNameOrOrdinal( &(typeinfo->TypeName) );
+    msheader.Name = ConvertIDToNameOrOrdinal( &(resinfo->ResName) );
+    msheader.MemoryFlags = langinfo->MemoryFlags;
+    msheader.Size = langinfo->Length;
 
     //FIXME! The last argument should be true for Win32 resources
-    error = MResWriteResourceHeader( &outhead, out_fp, false );
+    error = MResWriteResourceHeader( &msheader, out_fp, iswin32 );
     if( !error ) {
         RESSEEK( in_fp, langinfo->Offset, SEEK_SET );
-        error = BinaryCopy( in_fp, out_fp, outhead.Size );
+        error = BinaryCopy( in_fp, out_fp, msheader.Size );
     }
 
-    TRMemFree( outhead.Type );
-    TRMemFree( outhead.Name );
+    TRMemFree( msheader.Type );
+    TRMemFree( msheader.Name );
 
     return( error );
 } /* ConvertOneWResource */

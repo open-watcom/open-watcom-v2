@@ -54,11 +54,11 @@ extern bool WResWriteWResIDName( const WResIDName *name, FILE *fp );
 extern bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *fp );
 extern bool WResWriteHeader( const WResHeader *header, FILE *fp );
 extern bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp );
-extern void MResFreeResourceHeader( MResResourceHeader *oldheader );
 extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp );
 extern bool ResWriteString( const char *string, bool use_unicode, FILE *fp );
 extern bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t len );
 extern void WriteInitStatics( void );
-extern bool MResWriteResourceHeader( MResResourceHeader *header, FILE *fp, bool iswin32 );
+extern void MResFreeResourceHeader( MResResourceHeader *msheader );
+extern bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin32 );
 
 #endif

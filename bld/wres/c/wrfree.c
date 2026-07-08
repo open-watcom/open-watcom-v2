@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,14 +42,14 @@
 #include "wresrtns.h"
 
 
-void MResFreeResourceHeader( MResResourceHeader * oldheader )
-/***********************************************************/
+void MResFreeResourceHeader( MResResourceHeader *msheader )
+/*********************************************************/
 {
-    if( oldheader->Type != NULL ) {
-        WRESFREE( oldheader->Type );
+    if( msheader->Type != NULL ) {
+        WRESFREE( msheader->Type );
     }
-    if( oldheader->Name != NULL ) {
-        WRESFREE( oldheader->Name );
+    if( msheader->Name != NULL ) {
+        WRESFREE( msheader->Name );
     }
-    WRESFREE( oldheader );
+    WRESFREE( msheader );
 } /* MResFreeResourceHeader */
