@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,9 +39,10 @@
 #include "seekres.h"
 
 
-WResID *WResIDFromStrF( lpcstr newstr )
-/*************************************/
-/* allocate an ID and fill it in */
+WResID *WResIDFromFarStr( lpcstr newstr )
+/****************************************
+ * allocate an ID and fill it in
+ */
 {
     WResID  *newid;
     size_t  strsize;
@@ -73,4 +74,4 @@ WResID *WResIDFromStrF( lpcstr newstr )
 #endif
     }
     return( newid );
-} /* WResIDFromStrF */
+} /* WResIDFromFarStr */

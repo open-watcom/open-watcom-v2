@@ -41,31 +41,35 @@ WResResType WResReadResType( FILE *fp )
 /*************************************/
 {
     WResResType     res_type;
-    uint_32         magic[2];
+    uint_32         magic0;
+    uint_32         magic1;
     bool            error;
 
+    magic0 = 0;
+    magic1 = 0;
     if( WRESSEEK( fp, 0, SEEK_SET ) ) {
         error = WRES_ERROR( WRS_SEEK_FAILED );
     } else {
         error = false;
-        magic[0] = ResReadUint32( &error, fp );
+        magic0 = ResReadUint32( &error, fp );
         if( !error ) {
-            magic[1] = ResReadUint32( &error, fp );
+            magic1 = ResReadUint32( &error, fp );
         }
         if( WRESSEEK( fp, 0, SEEK_SET ) ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
 
-    res_type = RT_WIN16; /* what to return if( error) ? */
+    res_type = RT_UNKNOWN;
     if( !error ) {
-        if( magic[0] == WRESMAGIC0
-          && magic[1] == WRESMAGIC1 ) {
+        if( magic0 == WRESMAGIC0
+          && magic1 == WRESMAGIC1 ) {
             res_type = RT_WATCOM;
-        } else if( magic[0] == 0L ) {
+        } else if( magic0 == 0L ) {
             res_type = RT_WIN32;
+        } else {
+            res_type = RT_WIN16;
         }
     }
     return( res_type );
 }
-

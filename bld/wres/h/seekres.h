@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern WResID   *WResIDFromStrF( lpcstr );
+extern WResID   *WResIDFromFarStr( lpcstr );
 extern bool     WResSeekResource( PHANDLE_INFO hinfo, unsigned int idType, unsigned int idResource );
 extern bool     WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource );

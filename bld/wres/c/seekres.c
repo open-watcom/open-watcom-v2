@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -88,12 +88,12 @@ bool WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource )
     if( IS_INTRESOURCE( idResource ) ) {
         resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
     } else {
-        resource_id = WResIDFromStrF( idResource );
+        resource_id = WResIDFromFarStr( idResource );
     }
     if( IS_INTRESOURCE( idType ) ) {
         resource_type = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
     } else {
-        resource_type = WResIDFromStrF( idType );
+        resource_type = WResIDFromFarStr( idType );
     }
     rc = WResSeekResource2( MainDir, hinfo, resource_type, resource_id );
     if( resource_type != NULL )

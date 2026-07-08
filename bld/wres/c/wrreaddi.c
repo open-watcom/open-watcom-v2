@@ -281,9 +281,7 @@ static bool readResDir( FILE *fp, WResDir dir, void *fileinfo, bool *dup_discard
 {
     WResHeader      header;
     WResExtHeader   extheader;
-    bool            error;
 
-    error = false;
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     /*
