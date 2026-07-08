@@ -39,39 +39,37 @@
 #include "seekres.h"
 
 
-WResID *WResIDFromFarStr( lpcstr newstr )
-/****************************************
+WResID *WResIDFromFarStr( lpcstr str )
+/*************************************
  * allocate an ID and fill it in
  */
 {
-    WResID  *newid;
-    size_t  strsize;
+    WResID          *id;
+    size_t          len;
 
 #if defined( _M_I86 )
-    strsize = _fstrlen( newstr );
+    len = _fstrlen( str );
 #else
-    strsize = strlen( newstr );
+    len = strlen( str );
     /* check the size of the string:  can it fit in two bytes? */
-    if( strsize > 0xffff ) {
+    if( len > 0xffff ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
 #endif
 
     /* allocate the new ID */
-    // if strsize is non-zero then the memory allocated is larger
-    // than required by 1 byte
-    newid = WRESALLOC( sizeof( WResID ) + strsize );
-    if( newid == NULL ) {
+    id = AllocWResIDName( offsetof( WResID, ID.Name ), len );
+    if( id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newid->IsName = true;
-        newid->ID.Name.NumChars = strsize;
+        id->IsName = true;
+        id->ID.Name.NumChars = len;
 #if defined( _M_I86 )
-        _fmemcpy( newid->ID.Name.Name, newstr, strsize );
+        _fmemcpy( id->ID.Name.Name, str, len );
 #else
-        memcpy( newid->ID.Name.Name, newstr, strsize );
+        memcpy( id->ID.Name.Name, str, len );
 #endif
     }
-    return( newid );
+    return( id );
 } /* WResIDFromFarStr */

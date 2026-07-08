@@ -36,28 +36,30 @@
 #include "util.h"
 #include "reserr.h"
 #include "wresrtns.h"
-#include "read.h"
 
 
-WResHelpID * WResHelpIDFromStr( const char * newstr )
-/***************************************************/
-/* allocate a Help ID and fill it in */
+WResHelpID *WResHelpIDFromStr( const char *str )
+/***********************************************
+ * allocate a Help ID and fill it in
+ */
 {
-    WResHelpID *helpid;
-    size_t     len;
+    WResHelpID      *helpid;
+    size_t          len;
 
-    len = strlen( newstr );
+    len = strlen( str );
     /* check the size of the string:  can it fit in one byte? */
     if( len > 255 ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
     /* allocate the new Help ID */
-    helpid = AllocWResIDName( offsetof( WResHelpID, ID ), len );
-    if( helpid != NULL ) {
+    helpid = AllocWResIDName( offsetof( WResHelpID, ID.Name ), len );
+    if( helpid == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
         helpid->IsName = true;
         helpid->ID.Name.NumChars = len;
-        memcpy( helpid->ID.Name.Name, newstr, len );
+        memcpy( helpid->ID.Name.Name, str, len );
     }
     return( helpid );
 } /* WResHelpIDFromStr */

@@ -36,22 +36,24 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResHelpID * WResHelpIDFromNum( long newnum )
-/***********************************/
-/* allocate an ID and fill it in */
-{
-    WResHelpID *        newid;
 
-    if( newnum < 0 || newnum > SHRT_MAX  ) {
-        newid = NULL;
+WResHelpID *WResHelpIDFromNum( long num )
+/****************************************
+ * allocate an ID and fill it in
+ */
+{
+    WResHelpID      *helpid;
+
+    if( num < 0 || num > SHRT_MAX  ) {
+        helpid = NULL;
         WRES_ERROR( WRS_BAD_PARAMETER );
     } else {
-        newid = WRESALLOC( sizeof( WResHelpID ) );
-        if( newid == NULL ) {
+        helpid = AllocWResHelpIDNum( offsetof( WResHelpID, ID.Num ) );
+        if( helpid == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            WResInitHelpIDFromNum( newnum, newid );
+            WResInitHelpIDFromNum( num, helpid );
         }
     }
-    return( newid );
+    return( helpid );
 } /* WResHelpIDFromNum */

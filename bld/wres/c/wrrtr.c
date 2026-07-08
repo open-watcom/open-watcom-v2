@@ -36,10 +36,12 @@
 #include "read.h"
 #include "reserr.h"
 
+
 WResTypeInfo *WResReadTypeRecord( FILE *fp )
-/******************************************/
-/* reads in the fields of a type info record from the current position in */
-/* the file identified by fp */
+/*******************************************
+ * reads in the fields of a type info record from the current position in
+ * the file identified by fp
+ */
 {
     uint_16         numres;
     WResTypeInfo    *ptr;

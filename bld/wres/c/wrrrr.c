@@ -38,9 +38,10 @@
 
 
 WResResInfo *WResReadResRecord( FILE *fp )
-/****************************************/
-/* reads in the fields of a res info record from the current position in */
-/* the file identified by fp */
+/*****************************************
+ * reads in the fields of a res info record from the current position in
+ * the file identified by fp
+ */
 {
     uint_16         numres;
     WResResInfo     *ptr;

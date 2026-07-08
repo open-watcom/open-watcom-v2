@@ -37,7 +37,9 @@
 #include "mresfmt.h"
 
 
-#define UNI2ASCII(x)    ((char)((x) & 0xFF))
+#define UNI2ASCII(x)        ((char)((x) & 0xFF))
+
+#define WResIsWResFile(f)   (WResReadResType((f)) == RT_WATCOM)
 
 typedef enum WResResType {
     RT_WATCOM,
@@ -55,7 +57,6 @@ extern void                 *ResReadWResIDName( unsigned offs, FILE *fp, uint_16
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );
-#define WResIsWResFile(f)   (WResReadResType((f)) == RT_WATCOM)
 extern MResResourceHeader   *MResReadResourceHeader( FILE *fp );
 extern ResNameOrOrdinal     *ResReadNameOrOrdinal( FILE *fp );
 extern ResNameOrOrdinal     *ResRead32NameOrOrdinal( FILE *fp );

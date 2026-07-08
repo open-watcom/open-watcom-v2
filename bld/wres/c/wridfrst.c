@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,31 +37,31 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResID *WResIDFromStr( const char *newstr )
-/*****************************************/
-/* allocate an ID and fill it in */
-{
-    WResID  *newid;
-    size_t  strsize;
 
-    strsize = strlen( newstr );
+WResID *WResIDFromStr( const char *str )
+/***************************************
+ * allocate an ID and fill it in
+ */
+{
+    WResID  *id;
+    size_t  len;
+
+    len = strlen( str );
     /* check the size of the string:  can it fit in two bytes? */
 #if !defined( _M_I86 )
-    if( strsize > 0xffff ) {
+    if( len > 0xffff ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
 #endif
     /* allocate the new ID */
-    // if strsize is non-zero then the memory allocated is larger
-    // than required by 1 byte
-    newid = WRESALLOC( sizeof( WResID ) + strsize );
-    if( newid == NULL ) {
+    id = AllocWResIDName( offsetof( WResID, ID.Name ), len );
+    if( id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newid->IsName = true;
-        newid->ID.Name.NumChars = strsize;
-        memcpy( newid->ID.Name.Name, newstr, strsize );
+        id->IsName = true;
+        id->ID.Name.NumChars = len;
+        memcpy( id->ID.Name.Name, str, len );
     }
-    return( newid );
+    return( id );
 } /* WResIDFromStr */

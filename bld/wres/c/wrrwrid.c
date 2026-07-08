@@ -32,12 +32,32 @@
 
 
 #include <string.h>
-#include <stddef.h>
 #include "layer0.h"
 #include "read.h"
 #include "reserr.h"
+#include "util.h"
 #include "wresrtns.h"
 
+
+void *ResReadWResIDNum( unsigned offs, FILE *fp )
+/***********************************************/
+{
+    char            *ptr;
+    bool            error;
+
+    ptr = AllocWResIDNum( offs );
+    if( ptr == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
+        error = false;
+        *(uint_16 *)( ptr + offs ) = ResReadUint16( &error, fp );
+        if( error ) {
+            WRESFREE( ptr );
+            return( NULL );
+        }
+    }
+    return( ptr );
+}
 
 void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
 /*********************************************************/
@@ -45,35 +65,22 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
     WResID          *id;
     uint_8          isname;
     char            *ptr;
-    size_t          numread;
     bool            error;
 
-    if( (numread = WRESREAD( fp, &isname, sizeof( isname ) )) != sizeof( isname ) ) {
-        WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+    error = false;
+    isname = ResReadUint8( &error, fp );
+    if( error )
         return( NULL );
-    }
     if( isname ) {
         isname = true;  /* normalize value to boolean type */
         ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp, ver );
-        if( ptr == NULL ) {
-            return( NULL );
-        }
     } else {
-        ptr = WRESALLOC( offs + sizeof( WResID ) - 1 );
-        if( ptr == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-            return( NULL );
-        }
+        ptr = ResReadWResIDNum( offs + offsetof( WResID, ID ), fp );
+    }
+    if( ptr == NULL ) {
+        return( NULL );
     }
     id = (WResID *)( ptr + offs );
-    if( !isname ) {
-        error = false;
-        id->ID.Num = ResReadUint16( &error, fp );
-        if( error ) {
-            WRESFREE( ptr );
-            return( NULL );
-        }
-    }
     id->IsName = isname;
     return( ptr );
 }

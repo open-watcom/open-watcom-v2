@@ -36,29 +36,30 @@
 #include "layer0.h"
 #include "util.h"
 #include "reserr.h"
-#include "read.h"
 #include "wresrtns.h"
 
 
-WResIDName *WResIDNameFromStr( const char *string )
-/*************************************************/
+WResIDName *WResIDNameFromStr( const char *str )
+/**********************************************/
 {
-    WResIDName  *idname;
-    size_t      len;
+    WResIDName      *nameid;
+    size_t          len;
 
-    len = strlen( string );
+    len = strlen( str );
 #if !defined( _M_I86 )
     if( len > USHRT_MAX ) {
-        /* truncate the string if it is more that USHRT_MAX in length */
+        /* truncate the str if it is more that USHRT_MAX in length */
         len = USHRT_MAX;
     }
 #endif
-    idname = AllocWResIDName( 0, len );
-    if( idname != NULL ) {
-        idname->NumChars = len;
+    nameid = AllocWResIDName( 0, len );
+    if( nameid == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
+        nameid->NumChars = len;
         /* don't copy the '\0' */
-        memcpy( idname->Name, string, len );
+        memcpy( nameid->Name, str, len );
     }
 
-    return( idname );
+    return( nameid );
 }
