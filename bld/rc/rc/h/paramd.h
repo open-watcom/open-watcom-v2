@@ -83,7 +83,7 @@ typedef struct RCParams {
     boolbit     NoProtectCC     : 1;    /* if set, don't invoke prot. mode comp */
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
-    boolbit     iswin32         : 1;    /* WIN32 target */
+    boolbit     iswin32         : 1;    /* target is WIN32 */
 #ifndef NO_REPLACE
     boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
     boolbit     Prepend         : 1;

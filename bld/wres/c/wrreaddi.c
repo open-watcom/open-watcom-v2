@@ -209,7 +209,7 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
         type = WResIDFromNameOrOrdinal( msheader->Type );
         error = (name == NULL || type == NULL);
 
-        /* MResReadResourceHeader leaves the file at the start of the resource*/
+        /* MResReadResourceHeader leaves the file at the start of the resource */
         if( !error ) {
             if( type->IsName
               || type->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {

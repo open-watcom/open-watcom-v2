@@ -37,15 +37,15 @@
 #include "resfmt.h"
 
 typedef struct MResResourceHeader {
-    ResNameOrOrdinal       *Type;
-    ResNameOrOrdinal       *Name;
-    uint_16                 MemoryFlags;
-    uint_32                 Size;
-    uint_16                 LanguageId;
-    uint_32                 Version;
-    uint_32                 DataVersion;
-    uint_32                 Characteristics;
-    uint_32                 HdrSize;
+    ResNameOrOrdinal    *Type;
+    ResNameOrOrdinal    *Name;
+    uint_32             Size;
+    uint_16             MemoryFlags;
+    uint_16             LanguageId;
+    uint_32             Version;
+    uint_32             DataVersion;
+    uint_32             Characteristics;
+    uint_32             HdrSize;
 } MResResourceHeader;
 
 #endif

@@ -60,7 +60,9 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     /* alloc the space for the new record */
     /* -1 because one of the chars in the name is declared in the struct */
     ptr = AllocWResIDName( offs, numchars );
-    if( ptr != NULL ) {
+    if( ptr == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
         idname = (WResIDName *)( ptr + offs );
         idname->NumChars = numchars;
         /* read in the characters */

@@ -92,15 +92,15 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
     if( event.strevent
       || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            entry.u.entry.Ascii = event.event;
-            entry.u.entry.Flags = flags.flags;
-            entry.u.entry.Id = idval;
-        } else {
+        if( CmdLineParms.iswin32 ) {
             entry.u.entry32.Ascii = event.event;
             entry.u.entry32.Flags = flags.flags;
             entry.u.entry32.Id = idval;
             entry.u.entry32.Unknown = 0;
+        } else {
+            entry.u.entry.Ascii = event.event;
+            entry.u.entry.Flags = flags.flags;
+            entry.u.entry.Id = idval;
         }
     } else {
         RcError( ERR_ACCEL_NO_TYPE, idval );

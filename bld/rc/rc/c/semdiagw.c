@@ -88,19 +88,7 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
     newheader = MemAllocSafe( sizeof( FullDialogBoxHeader ) );
 
     newheader->iswin32 = CmdLineParms.iswin32;
-    if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-        newheader->u.Head.Style = 0L;
-        newheader->u.Head.NumOfItems = 0;
-        newheader->u.Head.SizeInfo.x = 0;
-        newheader->u.Head.SizeInfo.y = 0;
-        newheader->u.Head.SizeInfo.width = 0;
-        newheader->u.Head.SizeInfo.height = 0;
-        newheader->u.Head.MenuName = NULL;
-        newheader->u.Head.ClassName = NULL;
-        newheader->u.Head.Caption = NULL;
-        newheader->u.Head.PointSize = 0;
-        newheader->u.Head.FontName = NULL;
-    } else {
+    if( CmdLineParms.iswin32 ) {
         newheader->u.Head32.Head.Style = 0L;
         newheader->u.Head32.Head.ExtendedStyle = 0L;
         newheader->u.Head32.Head.NumOfItems = 0;
@@ -121,6 +109,18 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head32.ExHead.FontWeightDefined = false;
         newheader->u.Head32.ExHead.FontItalicDefined = false;
         newheader->u.Head32.ExHead.FontCharsetDefined = false;
+    } else {
+        newheader->u.Head.Style = 0L;
+        newheader->u.Head.NumOfItems = 0;
+        newheader->u.Head.SizeInfo.x = 0;
+        newheader->u.Head.SizeInfo.y = 0;
+        newheader->u.Head.SizeInfo.width = 0;
+        newheader->u.Head.SizeInfo.height = 0;
+        newheader->u.Head.MenuName = NULL;
+        newheader->u.Head.ClassName = NULL;
+        newheader->u.Head.Caption = NULL;
+        newheader->u.Head.PointSize = 0;
+        newheader->u.Head.FontName = NULL;
     }
 
     newheader->StyleGiven = false;
