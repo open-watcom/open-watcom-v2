@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,8 +59,8 @@ extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader *head, FullD
 extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList * );
 extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList *list, FullDialogBoxControl *ctrl, DataElemList * );
 extern FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions opts );
-extern void                 SemWINWriteDialogBox( WResID *name, ResMemFlags, DialogSizeInfo, FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId, YYTOKENTYPE );
+extern void                 SemWINWriteDialogBox( WResID *res_id, ResMemFlags, DialogSizeInfo, FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId, YYTOKENTYPE );
 extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
-extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
+extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *res_id, ResNameOrOrdinal *, uint_32, DlgHelpId * );
 
 #endif

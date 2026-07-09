@@ -75,8 +75,8 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
 {
     unsigned        rescnt;
     ResFileInfo     *resfile;
-    WResID          *res_name;
-    WResID          *res_type;
+    WResID          *res_id;
+    WResID          *type_id;
     bool            dup_discarded;
     WResTargetOS    res_os;
 
@@ -115,11 +115,11 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
         /*
          * remove the autodepend resource
          */
-        res_name = WResIDFromStr( DEP_LIST_NAME );
-        res_type = WResIDFromNum( DEP_LIST_TYPE );
-        WResDelResource( resfile->Dir, res_type, res_name );
-        WResIDFree( res_name );
-        WResIDFree( res_type );
+        res_id = WResIDFromStr( DEP_LIST_NAME );
+        type_id = WResIDFromNum( DEP_LIST_TYPE );
+        WResDelResource( resfile->Dir, type_id, res_id );
+        WResIDFree( res_id );
+        WResIDFree( type_id );
 
         res_os = resfile->Dir->TargetOS;
         switch( type ) {
@@ -230,7 +230,7 @@ void SharedIOInitStatics( void )
     memset( &errFromWres, 0, sizeof( ErrFrame ) );
 }
 
-void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
+void ReportDupResource( WResID *res_id, WResID *type_id, const char *file1,
                            const char *file2, bool warn )
 /*******************************************************************/
 {
@@ -240,10 +240,10 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
     char        typebuf[20];
     unsigned    strbase;
 
-    if( typeid->IsName ) {
-        type = WResIDToStr( typeid );
+    if( type_id->IsName ) {
+        type = WResIDToStr( type_id );
     } else {
-        switch( typeid->ID.Num ) {
+        switch( type_id->ID.Num ) {
         case RESOURCE2INT( RT_CURSOR ):
         case RESOURCE2INT( RT_GROUP_CURSOR ):
             type = "cursor";
@@ -284,20 +284,20 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
             break;
         default:
             type = typebuf;
-            sprintf( type, "%u", (unsigned)typeid->ID.Num );
+            sprintf( type, "%u", (unsigned)type_id->ID.Num );
             break;
         }
     }
 
-    if( nameid->IsName ) {
-        name = WResIDToStr( nameid );
+    if( res_id->IsName ) {
+        name = WResIDToStr( res_id );
     } else {
         name = namebuf;
-        sprintf( name, "%u", (unsigned)nameid->ID.Num );
+        sprintf( name, "%u", (unsigned)res_id->ID.Num );
     }
-    if( !typeid->IsName
-      && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
-        strbase = ( nameid->ID.Num - 1 ) * 16;
+    if( !type_id->IsName
+      && type_id->ID.Num == RESOURCE2INT( RT_STRING ) ) {
+        strbase = ( res_id->ID.Num - 1 ) * 16;
         if( file1 != NULL
           && file2 != NULL ) {
             if( warn ) {
@@ -328,10 +328,10 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
             RcError( ERR_DUPLICATE_RES, type, name );
         }
     }
-    if( nameid->IsName ) {
+    if( res_id->IsName ) {
         MemFree( name );
     }
-    if( typeid->IsName ) {
+    if( type_id->IsName ) {
         MemFree( type );
     }
 }

@@ -44,7 +44,7 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     size_t          numread;
     uint_16         numchars;
     char            *ptr;
-    WResIDName      *idname;
+    WResIDName      *name_id;
     bool            error;
 
     /* read the size of the name in */
@@ -63,10 +63,10 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
     if( ptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        idname = (WResIDName *)( ptr + offs );
-        idname->NumChars = numchars;
+        name_id = (WResIDName *)( ptr + offs );
+        name_id->NumChars = numchars;
         /* read in the characters */
-        if( (numread = WRESREAD( fp, idname->Name, numchars )) != numchars ) {
+        if( (numread = WRESREAD( fp, name_id->Name, numchars )) != numchars ) {
             WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( ptr );
             ptr = NULL;

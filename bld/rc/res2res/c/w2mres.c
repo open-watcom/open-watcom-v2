@@ -38,28 +38,28 @@
 #include "trmemcvr.h"
 
 
-static ResNameOrOrdinal *ConvertIDToNameOrOrdinal( WResID * inid )
-/****************************************************************/
+static ResNameOrOrdinal *ConvertIDToNameOrOrdinal( WResID *id )
+/*************************************************************/
 {
-    ResNameOrOrdinal *  newname;
+    ResNameOrOrdinal    *name;
 
-    if (inid->IsName) {
+    if (id->IsName) {
         /* inculdes space for the '\0' since WResID's don't have one */
-        newname = TRMemAlloc( sizeof(ResNameOrOrdinal) +
-                    inid->ID.Name.NumChars );
-        if (newname != NULL) {
-            memcpy( newname->name, inid->ID.Name.Name, inid->ID.Name.NumChars );
-            newname->name[ inid->ID.Name.NumChars ] = '\0';
+        name = TRMemAlloc( sizeof(ResNameOrOrdinal) +
+                    id->ID.Name.NumChars );
+        if (name != NULL) {
+            memcpy( name->name, id->ID.Name.Name, id->ID.Name.NumChars );
+            name->name[id->ID.Name.NumChars] = '\0';
         }
     } else {
-        newname = TRMemAlloc( sizeof(ResNameOrOrdinal) );
-        if (newname != NULL) {
-            newname->ord.fFlag = 0xff;
-            newname->ord.wOrdinalID = inid->ID.Num;
+        name = TRMemAlloc( sizeof(ResNameOrOrdinal) );
+        if (name != NULL) {
+            name->ord.fFlag = 0xff;
+            name->ord.wOrdinalID = id->ID.Num;
         }
     }
 
-    return( newname );
+    return( name );
 }
 
 static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )

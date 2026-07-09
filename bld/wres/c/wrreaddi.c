@@ -179,8 +179,8 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     MResResourceHeader      *msheader;
     WResDirWindow           dup;
     bool                    error;
-    WResID                  *name;
-    WResID                  *type;
+    WResID                  *res_id;
+    WResID                  *type_id;
 
     if( WRESSEEK( fp, 0, SEEK_SET ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
@@ -205,15 +205,15 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     /* the end of a MS .RES file */
     error = false;
     while( !error && (msheader = MResReadResourceHeader( fp, iswin32 )) != NULL ) {
-        name = WResIDFromNameOrOrdinal( msheader->Name );
-        type = WResIDFromNameOrOrdinal( msheader->Type );
-        error = (name == NULL || type == NULL);
+        res_id = WResIDFromNameOrOrdinal( msheader->Name );
+        type_id = WResIDFromNameOrOrdinal( msheader->Type );
+        error = (res_id == NULL || type_id == NULL);
 
         /* MResReadResourceHeader leaves the file at the start of the resource */
         if( !error ) {
-            if( type->IsName
-              || type->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
-                error = WResAddResource2( type, name, msheader->MemoryFlags,
+            if( type_id->IsName
+              || type_id->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
+                error = WResAddResource2( type_id, res_id, msheader->MemoryFlags,
                             WRESTELL( fp ), msheader->Size, dir, NULL,
                             &dup, fileinfo );
                 if( error
@@ -231,11 +231,11 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
             }
         }
 
-        if( name != NULL ) {
-            WRESFREE( name );
+        if( res_id != NULL ) {
+            WRESFREE( res_id );
         }
-        if( type != NULL ) {
-            WRESFREE( type );
+        if( type_id != NULL ) {
+            WRESFREE( type_id );
         }
         MResFreeResourceHeader( msheader );
     }

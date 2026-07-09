@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -65,19 +65,19 @@ ResNameOrOrdinal *WResIDToNameOrOrdinal( WResID *id )
 }
 
 
-ResNameOrOrdinal *WResHelpIDToNameOrOrdinal( WResHelpID *id )
-/***********************************************************/
+ResNameOrOrdinal *WResHelpIDToNameOrOrdinal( WResHelpID *help_id )
+/****************************************************************/
 {
     ResNameOrOrdinal *  newname;
 
-    if( id->IsName ) {
+    if( help_id->IsName ) {
         /* the one char in the ResNameOrOrdinal gives room for the '\0' */
-        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + id->ID.Name.NumChars );
+        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + help_id->ID.Name.NumChars );
         if( newname == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            memcpy( newname->name, id->ID.Name.Name, id->ID.Name.NumChars );
-            newname->name[id->ID.Name.NumChars] = '\0';
+            memcpy( newname->name, help_id->ID.Name.Name, help_id->ID.Name.NumChars );
+            newname->name[help_id->ID.Name.NumChars] = '\0';
         }
     } else {
         newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
@@ -85,7 +85,7 @@ ResNameOrOrdinal *WResHelpIDToNameOrOrdinal( WResHelpID *id )
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             newname->ord.fFlag = 0xff;
-            newname->ord.wOrdinalID = id->ID.Num;
+            newname->ord.wOrdinalID = help_id->ID.Num;
         }
     }
 

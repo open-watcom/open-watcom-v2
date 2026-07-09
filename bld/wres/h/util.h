@@ -50,19 +50,19 @@ extern void                 WResInitIDFromNum( long num, WResID *id );
 extern char                 *WResIDToStr( const WResID *id );
 extern long                 WResIDToNum( const WResID *id );
 extern void                 WResIDFree( WResID *id );
-extern int                  WResIDNameCmp( const WResIDName *nameid1, const WResIDName *nameid2 );
+extern int                  WResIDNameCmp( const WResIDName *name_id1, const WResIDName *name_id2 );
 extern int                  WResIDCmp( const WResID *id1, const WResID *id2 );
 extern ResNameOrOrdinal     *WResIDToNameOrOrdinal( WResID *id );
 extern WResID               *WResIDFromNameOrOrdinal( ResNameOrOrdinal *name );
 
 extern WResHelpID           *WResHelpIDFromStr( const char *str );
 extern WResHelpID           *WResHelpIDFromNum( long num );
-extern void                 WResInitHelpIDFromNum( long num, WResHelpID *helpid );
-extern char                 *WResHelpIDToStr( const WResHelpID *helpid );
-extern long                 WResHelpIDToNum( const WResHelpID *helpid );
-extern void                 WResHelpIDFree( WResHelpID *helpid );
-extern int                  WResHelpIDCmp( const WResHelpID *helpid1, const WResHelpID *helpid2 );
-extern ResNameOrOrdinal     *WResHelpIDToNameOrOrdinal( WResHelpID *helpid );
+extern void                 WResInitHelpIDFromNum( long num, WResHelpID *help_id );
+extern char                 *WResHelpIDToStr( const WResHelpID *help_id );
+extern long                 WResHelpIDToNum( const WResHelpID *help_id );
+extern void                 WResHelpIDFree( WResHelpID *help_id );
+extern int                  WResHelpIDCmp( const WResHelpID *help_id1, const WResHelpID *help_id2 );
+extern ResNameOrOrdinal     *WResHelpIDToNameOrOrdinal( WResHelpID *help_id );
 extern WResHelpID           *WResHelpIDFromNameOrOrdinal( ResNameOrOrdinal *name );
 
 #endif

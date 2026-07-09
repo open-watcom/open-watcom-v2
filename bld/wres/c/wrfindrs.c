@@ -35,12 +35,12 @@
 #include "layer1.h"
 #include "util.h"
 
-WResTypeNode *__FindType( const WResID *type, WResDir currdir )
+WResTypeNode *__FindType( const WResID *type_id, WResDir currdir )
 {
     WResTypeNode        *currtype;
 
     for( currtype = currdir->Head; currtype != NULL; currtype = currtype->Next ) {
-        if( WResIDCmp( type, &(currtype->Info.TypeName) ) ) {
+        if( WResIDCmp( type_id, &(currtype->Info.TypeName) ) ) {
             break;
         }
     }
@@ -48,12 +48,12 @@ WResTypeNode *__FindType( const WResID *type, WResDir currdir )
     return( currtype );
 }
 
-WResResNode *__FindRes( const WResID *name, WResTypeNode *currtype )
+WResResNode *__FindRes( const WResID *res_id, WResTypeNode *currtype )
 {
     WResResNode         *currres;
 
     for( currres = currtype->Head; currres != NULL; currres = currres->Next ) {
-        if( WResIDCmp( name, &( currres->Info.ResName ) ) ) {
+        if( WResIDCmp( res_id, &( currres->Info.ResName ) ) ) {
             break;
         }
     }
@@ -86,14 +86,14 @@ WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres ) {
  *                    is NULL the first resource with the given name and
  *                    type is returned
  */
-WResDirWindow WResFindResource( const WResID *type, const WResID *name,
+WResDirWindow WResFindResource( const WResID *type_id, const WResID *res_id,
                         WResDir currdir, const WResLangType *lang )
 {
     WResDirWindow   newwind;
 
-    newwind.CurrType = __FindType( type, currdir );
+    newwind.CurrType = __FindType( type_id, currdir );
     if( newwind.CurrType != NULL ) {
-        newwind.CurrRes = __FindRes( name, newwind.CurrType );
+        newwind.CurrRes = __FindRes( res_id, newwind.CurrType );
         if( newwind.CurrRes != NULL ) {
             if( lang == NULL ) {
                 newwind.CurrLang = newwind.CurrRes->Head;

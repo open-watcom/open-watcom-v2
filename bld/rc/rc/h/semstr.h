@@ -56,14 +56,14 @@ typedef struct StringItem {
     char            *String;
 } StringItem;
 
-extern void             SemWINWriteStringTable( FullStringTable *, WResID *type );
+extern void             SemWINWriteStringTable( FullStringTable *, WResID *type_id );
 extern void             SemWINAddStrToStringTable( FullStringTable *currtable,
                             uint_16 stringid, char *string );
 extern void             SemWINMergeStrTable( FullStringTable *, ResMemFlags newflags );
 extern void             SemWINMergeErrTable( FullStringTable *, ResMemFlags newflags );
 extern FullStringTable  *SemWINNewStringTable( void );
 
-extern void             SemOS2WriteStringTable( FullStringTable *, WResID *type );
+extern void             SemOS2WriteStringTable( FullStringTable *, WResID *type_id );
 extern void             SemOS2AddStrToStringTable( FullStringTable *currtable,
                             uint_16 stringid, char *string );
 extern void             SemOS2MergeStrTable( FullStringTable *, ResMemFlags newflags,

@@ -41,8 +41,8 @@ struct WResDmpParams {
     boolbit     DumpContents    : 1;
     boolbit     PrintHelp       : 1;
     char        FileName[ _MAX_PATH ];
-    WResID *    Name;       /* name and type to print */
-    WResID *    Type;
+    WResID      *Name;       /* name and type to print */
+    WResID      *Type;
 };
 
 extern bool ScanParams( int argc, const char * argv[] );

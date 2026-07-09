@@ -138,7 +138,7 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, FILE *fp )
     return( error );
 }
 
-void SemOS2WriteHelpTable( WResID *name, ResMemFlags flags,
+void SemOS2WriteHelpTable( WResID *res_id, ResMemFlags flags,
                                FullHelpTableOS2 *helptable )
 /**********************************************************/
 {
@@ -155,10 +155,10 @@ void SemOS2WriteHelpTable( WResID *name, ResMemFlags flags,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_HELPTABLE ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_HELPTABLE ), flags, loc );
         }
     } else {
-        MemFree( name );
+        MemFree( res_id );
     }
     SemOS2FreeHelpTable( helptable );
 }
@@ -254,7 +254,7 @@ static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, FILE
     return( error );
 }
 
-void SemOS2WriteHelpSubTable( WResID *name, unsigned numWords,
+void SemOS2WriteHelpSubTable( WResID *res_id, unsigned numWords,
                                      ResMemFlags flags,
                                      FullHelpSubTableOS2 *helptable )
 /*******************************************************************/
@@ -275,10 +275,10 @@ void SemOS2WriteHelpSubTable( WResID *name, unsigned numWords,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_HELPSUBTABLE ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_HELPSUBTABLE ), flags, loc );
         }
     } else {
-        MemFree( name );
+        MemFree( res_id );
     }
     SemOS2FreeHelpSubTable( helptable );
 }

@@ -151,7 +151,7 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
     entry->Children = MemAllocSafe( num_entries * sizeof( PEResEntry ) );
 }
 
-static void PEResDirAdd( PEResDirEntry *entry, WResID *name,
+static void PEResDirAdd( PEResDirEntry *entry, WResID *res_id,
                     StringsBlock *strings )
 /**********************************************************/
 {
@@ -162,8 +162,8 @@ static void PEResDirAdd( PEResDirEntry *entry, WResID *name,
 
     entry_num = entry->Head.num_name_entries + entry->Head.num_id_entries;
     curr = entry->Children + entry_num;
-    if( name->IsName ) {
-        name_off = StringBlockFind( strings, &name->ID.Name );
+    if( res_id->IsName ) {
+        name_off = StringBlockFind( strings, &res_id->ID.Name );
         if( name_off == -1 ) {
             /*
              * this case should not happen
@@ -180,7 +180,7 @@ static void PEResDirAdd( PEResDirEntry *entry, WResID *name,
         }
         entry->Head.num_name_entries++;
     } else {
-        curr->Entry.id_name = name->ID.Num;
+        curr->Entry.id_name = res_id->ID.Num;
         curr->Name = NULL;
         entry->Head.num_id_entries++;
     }
@@ -188,7 +188,7 @@ static void PEResDirAdd( PEResDirEntry *entry, WResID *name,
 }
 
 
-static bool PEResDirAddDir( PEResDirEntry *entry, WResID *name,
+static bool PEResDirAddDir( PEResDirEntry *entry, WResID *res_id,
                     int num_sub_entries, StringsBlock *strings )
 /**************************************************************/
 {
@@ -198,7 +198,7 @@ static bool PEResDirAddDir( PEResDirEntry *entry, WResID *name,
     if( entry->NumUnused <= 0 )
         return( true );
 
-    PEResDirAdd( entry, name, strings );
+    PEResDirAdd( entry, res_id, strings );
 
     entry_num = entry->Head.num_name_entries + entry->Head.num_id_entries - 1;
     curr = entry->Children + entry_num;
@@ -208,7 +208,7 @@ static bool PEResDirAddDir( PEResDirEntry *entry, WResID *name,
     return( false );
 }
 
-static bool PEResDirAddData( PEResDirEntry *entry, WResID *name,
+static bool PEResDirAddData( PEResDirEntry *entry, WResID *res_id,
                     WResDirWindow wind, StringsBlock *strings )
 /***************************************************************/
 {
@@ -218,7 +218,7 @@ static bool PEResDirAddData( PEResDirEntry *entry, WResID *name,
     if( entry->NumUnused <= 0 )
         return( true );
 
-    PEResDirAdd( entry, name, strings );
+    PEResDirAdd( entry, res_id, strings );
 
     entry_num = entry->Head.num_name_entries + entry->Head.num_id_entries - 1;
     curr = entry->Children + entry_num;

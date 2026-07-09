@@ -101,23 +101,23 @@ uint_32 ComputeWINResourceSize( WResDir dir )
 } /* ComputeWINResourceSize */
 
 
-static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
-/****************************************************************/
+static uint_16 findResOrTypeName( ResTable *restab, WResID *id )
+/**************************************************************/
 {
-    uint_16     name_id;
+    uint_16     nameid;
     int_32      str_offset;
 
-    name_id = 0;
-    if( name->IsName ) {
-        str_offset = StringBlockFind( &restab->Str, &name->ID.Name );
+    nameid = 0;
+    if( id->IsName ) {
+        str_offset = StringBlockFind( &restab->Str, &id->ID.Name );
         if( str_offset != -1 ) {
-            name_id = str_offset + restab->Dir.TableSize;
+            nameid = str_offset + restab->Dir.TableSize;
         }
     } else {
-        name_id = name->ID.Num | 0x8000;
+        nameid = id->ID.Num | 0x8000;
     }
 
-    return( name_id );
+    return( nameid );
 } /* findResOrTypeName */
 
 static FullTypeRecord *addExeTypeRecord( ResTable *restab,
@@ -184,7 +184,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 } /* findExeTypeRecord */
 
 static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
-                            WResID *name, uint_16 mem_flags,
+                            WResID *res_id, uint_16 mem_flags,
                             uint_16 exe_offset, uint_16 exe_length )
 /******************************************************************/
 {
@@ -196,7 +196,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res->Info.length = exe_length;
     exe_res->Info.flags = mem_flags;
     exe_res->Info.reserved = 0;
-    exe_res->Info.name = findResOrTypeName( restab, name );
+    exe_res->Info.name = findResOrTypeName( restab, res_id );
     exe_res->Next = NULL;
     exe_res->Prev = NULL;
     /*

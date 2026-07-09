@@ -259,15 +259,15 @@ void SemWINMergeErrTable( FullStringTable *currtable, ResMemFlags flags )
     }
 }
 
-void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
-/**********************************************************************
+void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
+/*************************************************************************
  * write the table identified by currtable as a table of type type and then
  * free the memory that it occupied
  */
 {
     FullStringTableBlock    *currblock;
     FullStringTable         *nexttable;
-    WResID                  *name;
+    WResID                  *res_id;
     bool                    error;
     ResLocation             loc;
 
@@ -294,13 +294,13 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type )
              * +1 because WResID's can't be 0
              * ( see Microsoft Internal Res Docs )
              */
-            name = WResIDFromNum( currblock->BlockNum + 1 );
+            res_id = WResIDFromNum( currblock->BlockNum + 1 );
             SemWINSetResourceLanguage( &currtable->lang, false );
-            SemAddResource( name, type, currblock->Flags, loc );
-            MemFree( name );
+            SemAddResource( res_id, type_id, currblock->Flags, loc );
+            MemFree( res_id );
         }
         semFreeStringTable( currtable );
     }
-    MemFree( type );
+    MemFree( type_id );
     return;
 }

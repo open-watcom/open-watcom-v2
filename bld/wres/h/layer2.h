@@ -33,6 +33,6 @@
 
 extern bool InitResources2( WResDir *dir, PHANDLE_INFO hinfo );
 extern int  WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, unsigned int idResource, lpstr lpszBuffer, int nBufferMax );
-extern int  WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *idType, WResID *idResource, lpstr *lpszBuffer, size_t *bufferSize );
+extern int  WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *type_id, WResID *res_id, lpstr *lpszBuffer, size_t *bufferSize );
 extern bool FiniResources2( WResDir dir, PHANDLE_INFO hinfo );
-extern bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, WResID *resource_id );
+extern bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *type_id, WResID *res_id );

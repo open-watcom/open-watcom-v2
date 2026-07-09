@@ -37,25 +37,25 @@
 #include "wresrtns.h"
 
 
-static size_t WResIDSize( const WResID *name )
-/********************************************/
+static size_t WResIDSize( const WResID *id )
+/******************************************/
 {
     size_t  size;
 
-    if( name->IsName ) {
-        size = offsetof( WResID, ID.Name.Name ) + name->ID.Name.NumChars;
+    if( id->IsName ) {
+        size = offsetof( WResID, ID.Name.Name ) + id->ID.Name.NumChars;
     } else {
-        size = offsetof( WResID, ID.Num ) + sizeof( name->ID.Num );
+        size = offsetof( WResID, ID.Num ) + sizeof( id->ID.Num );
     }
     return( size );
 }
 
-static WResTypeNode *newTypeNode( const WResID *type )
+static WResTypeNode *newTypeNode( const WResID *type_id )
 {
     WResTypeNode        *newnode;
     size_t              id_size;
 
-    id_size = WResIDSize( type );
+    id_size = WResIDSize( type_id );
     newnode = WRESALLOC( offsetof( WResTypeNode, Info.TypeName ) + id_size );
     if( newnode != NULL ) {
         newnode->Next = NULL;
@@ -63,7 +63,7 @@ static WResTypeNode *newTypeNode( const WResID *type )
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.TypeName), type, id_size );
+        memcpy( &(newnode->Info.TypeName), type_id, id_size );
     } else {
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
@@ -97,12 +97,12 @@ static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
     return( newnode );
 }
 
-static WResResNode *newResNode( const WResID *name )
+static WResResNode *newResNode( const WResID *res_id )
 {
     WResResNode         *newnode;
     size_t              id_size;
 
-    id_size = WResIDSize( name );
+    id_size = WResIDSize( res_id );
     newnode = WRESALLOC( offsetof( WResResNode, Info.ResName ) + id_size );
     if( newnode == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
@@ -112,7 +112,7 @@ static WResResNode *newResNode( const WResID *name )
         newnode->Head = NULL;
         newnode->Tail = NULL;
         newnode->Info.NumResources = 0;
-        memcpy( &(newnode->Info.ResName), name, id_size );
+        memcpy( &(newnode->Info.ResName), res_id, id_size );
     }
 
     return( newnode );
@@ -125,7 +125,7 @@ static WResResNode *newResNode( const WResID *name )
  *                   and return an error. Return is true if any error has
  *                   occured (including duplicate entry)
  */
-bool WResAddResource( const WResID *type, const WResID *name,
+bool WResAddResource( const WResID *type_id, const WResID *res_id,
                     uint_16 memflags, long offset, uint_32 length,
                     WResDir currdir, const WResLangType *lang,
                     bool *duplicate )
@@ -134,7 +134,7 @@ bool WResAddResource( const WResID *type, const WResID *name,
     bool                rc;
     WResDirWindow       dup;
 
-    rc = WResAddResource2( type, name, memflags, offset, length, currdir,
+    rc = WResAddResource2( type_id, res_id, memflags, offset, length, currdir,
                              lang, &dup, NULL );
     if( duplicate != NULL ) {
         *duplicate = !WResIsEmptyWindow( dup );
@@ -142,7 +142,7 @@ bool WResAddResource( const WResID *type, const WResID *name,
     return( rc );
 }
 
-bool WResAddResource2( const WResID *type, const WResID *name,
+bool WResAddResource2( const WResID *type_id, const WResID *res_id,
                     uint_16 memflags, long offset, uint_32 length,
                     WResDir currdir, const WResLangType *lang,
                     WResDirWindow *duplicate, void *fileinfo )
@@ -159,10 +159,10 @@ bool WResAddResource2( const WResID *type, const WResID *name,
     }
     currres = NULL;
 
-    currtype = __FindType( type, currdir );
+    currtype = __FindType( type_id, currdir );
     if( currtype != NULL ) {
         /* if the type is in there already check for a duplicate resource */
-        currres = __FindRes( name, currtype );
+        currres = __FindRes( res_id, currtype );
         if( currres != NULL ) {
             currlang = __FindLang( lang, currres );
             if( currlang != NULL ) {
@@ -174,7 +174,7 @@ bool WResAddResource2( const WResID *type, const WResID *name,
     }
     if( currtype == NULL ) {
         /* otherwise add the type to the list */
-        currtype = newTypeNode( type );
+        currtype = newTypeNode( type_id );
         if( currtype == NULL ) {
             return( true );
         }
@@ -185,7 +185,7 @@ bool WResAddResource2( const WResID *type, const WResID *name,
 
     if( currres  == NULL ) {
         /* add the resource to the current type */
-        currres = newResNode( name );
+        currres = newResNode( res_id );
         if( currres == NULL ) {
             return( true );
         }

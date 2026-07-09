@@ -79,8 +79,8 @@ extern PresParamListOS2         *SemOS2NewPresParamList( PresParamsOS2 presparam
 extern PresParamListOS2         *SemOS2AppendPresParam( PresParamListOS2 *list,
                                     PresParamsOS2 presparam );
 
-extern void                     SemOS2WriteDialogTemplate( WResID *name, ResMemFlags,
+extern void                     SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags,
                                     uint_32, FullDiagCtrlListOS2 * );
-extern void                     SemOS2AddDlgincResource( WResID *name, char *filename );
+extern void                     SemOS2AddDlgincResource( WResID *res_id, char *filename );
 
 #endif

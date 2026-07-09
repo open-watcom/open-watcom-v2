@@ -48,13 +48,13 @@ long WResIDToNum( const WResID *id )
 }
 
 
-long WResHelpIDToNum( const WResHelpID *helpid )
-/***********************************************
+long WResHelpIDToNum( const WResHelpID *help_id )
+/************************************************
  * return the value in a string if it is a number, -1 otherwise
  */
 {
-    if( helpid != NULL && !helpid->IsName ) {
-        return( helpid->ID.Num );
+    if( help_id != NULL && !help_id->IsName ) {
+        return( help_id->ID.Num );
     } else {
         return( -1 );
     }

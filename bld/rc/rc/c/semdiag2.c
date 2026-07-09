@@ -684,7 +684,7 @@ static char *SemOS2DumpTemplateItemsData( char *base, char *ptr,
  * resource (the size must be < 64K) and then dump the entire resource
  * into the file - which certainly shouldn't hurt performance either.
  */
-void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
+void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags flags,
                                        uint_32 codepage,
                                        FullDiagCtrlListOS2 *ctrls )
 /*********************************************************************/
@@ -724,7 +724,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
     }
     MemFree( tmpl );
     SemOS2FreeDiagCtrlList( ctrls );
@@ -822,8 +822,8 @@ FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
     return( control );
 }
 
-void SemOS2AddDlgincResource( WResID *name, char *filename )
-/**********************************************************/
+void SemOS2AddDlgincResource( WResID *res_id, char *filename )
+/************************************************************/
 {
     ResLocation loc;
     bool        error;
@@ -837,7 +837,7 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
+        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DLGINCLUDE ),
                         MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE | MEMFLAG_PURE, loc );
     }
     MemFree( filename );

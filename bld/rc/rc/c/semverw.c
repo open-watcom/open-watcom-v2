@@ -340,8 +340,8 @@ VerFixedInfo *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption option )
     return( info );
 }
 
-void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest )
-/****************************************************************************************************/
+void SemWINWriteVerInfo( WResID *res_id, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest )
+/******************************************************************************************************/
 {
 #if 0
     WResLangType    lang;
@@ -406,9 +406,9 @@ void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, Fu
         lang.sublang = DEF_SUBLANG;
         SemWINSetResourceLanguage( &lang, false );
 #endif
-        SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
-        MemFree( name );
+        MemFree( res_id );
     }
 
     MemFree( info );

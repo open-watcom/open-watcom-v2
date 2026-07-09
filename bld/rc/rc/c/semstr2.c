@@ -44,7 +44,7 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
 {
     int         stringid;
     bool        error;
-    WResIDName  *name;
+    WResIDName  *name_id;
 
     /*
      * Write string table codepage
@@ -55,8 +55,8 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
 
     error = false;
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
-        name = currblock->String[stringid];
-        if( name == NULL ) {
+        name_id = currblock->String[stringid];
+        if( name_id == NULL ) {
             /*
              * Write an empty string
              */
@@ -66,12 +66,12 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
             /*
              * The string can't be longer than 255 chars
              */
-            len = name->NumChars + 1;
+            len = name_id->NumChars + 1;
             if( len > 255 )
                 len = 255;
             error = ResWriteUint8( len, fp );
             if( !error )
-                error = ResWriteStringLen( name->Name, false, fp, len - 1 );
+                error = ResWriteStringLen( name_id->Name, false, fp, len - 1 );
             /*
              * The terminating NULL is not stored in the table, need to add it now
              */
@@ -292,15 +292,15 @@ void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
     }
 }
 
-void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
-/**********************************************************************
+void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type_id )
+/*************************************************************************
  * write the table identified by currtable as a table of type type and then
  * free the memory that it occupied
  */
 {
     FullStringTableBlock    *currblock;
     FullStringTable         *nexttable;
-    WResID                  *name;
+    WResID                  *res_id;
     bool                    error;
     ResLocation             loc;
 
@@ -323,12 +323,12 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
             /*
              * +1 because WResID's can't be 0
              */
-            name = WResIDFromNum( currblock->BlockNum + 1 );
-            SemAddResource( name, type, currblock->Flags, loc );
-            MemFree( name );
+            res_id = WResIDFromNum( currblock->BlockNum + 1 );
+            SemAddResource( res_id, type_id, currblock->Flags, loc );
+            MemFree( res_id );
         }
         SemOS2FreeStringTable( currtable );
     }
-    MemFree( type );
+    MemFree( type_id );
     return;
 }

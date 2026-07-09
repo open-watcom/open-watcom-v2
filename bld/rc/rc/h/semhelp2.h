@@ -63,8 +63,8 @@ typedef struct FullHelpSubTableOS2 {
 extern FullHelpTableOS2     *SemOS2NewHelpTable( FullHelpEntryOS2 );
 extern FullHelpTableOS2     *SemOS2AddHelpItem( FullHelpEntryOS2, FullHelpTableOS2 * );
 extern FullHelpEntryOS2     SemOS2MakeHelpItem( unsigned long id1, unsigned long id2, unsigned long id3 );
-extern void                 SemOS2WriteHelpTable( WResID *name, ResMemFlags flags, FullHelpTableOS2 *helptable );
+extern void                 SemOS2WriteHelpTable( WResID *res_id, ResMemFlags flags, FullHelpTableOS2 *helptable );
 extern FullHelpSubTableOS2  *SemOS2NewHelpSubTable( DataElemList * );
 extern FullHelpSubTableOS2  *SemOS2AddHelpSubItem( DataElemList *, FullHelpSubTableOS2 * );
-extern void                 SemOS2WriteHelpSubTable( WResID *name, unsigned numWords, ResMemFlags flags, FullHelpSubTableOS2 *helptable );
+extern void                 SemOS2WriteHelpSubTable( WResID *res_id, unsigned numWords, ResMemFlags flags, FullHelpSubTableOS2 *helptable );
 #endif

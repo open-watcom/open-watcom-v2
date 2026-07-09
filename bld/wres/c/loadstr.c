@@ -113,7 +113,7 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, unsigned int idResource,
 {
     int                 retcode;
     unsigned            block_num;
-    WResID              string_type;
+    WResID              string_type_id;
     WResID              block_id;
     WResDirWindow       wind;
     WResLangInfo        *res;
@@ -123,12 +123,12 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, unsigned int idResource,
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     WResInitIDFromNum( block_num, &block_id );
-    WResInitIDFromNum( RESOURCE2INT( RT_STRING ), &string_type );
+    WResInitIDFromNum( RESOURCE2INT( RT_STRING ), &string_type_id );
 
     if( dir == NULL ) {
         InitResources2( &dir, hinfo );
     }
-    wind = WResFindResource( &string_type, &block_id, dir, &lang );
+    wind = WResFindResource( &string_type_id, &block_id, dir, &lang );
 
     if( WResIsEmptyWindow( wind ) ) {
         retcode = -1;

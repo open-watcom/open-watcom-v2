@@ -42,18 +42,18 @@ WResHelpID *WResHelpIDFromNum( long num )
  * allocate an ID and fill it in
  */
 {
-    WResHelpID      *helpid;
+    WResHelpID      *help_id;
 
     if( num < 0 || num > SHRT_MAX  ) {
-        helpid = NULL;
+        help_id = NULL;
         WRES_ERROR( WRS_BAD_PARAMETER );
     } else {
-        helpid = AllocWResHelpIDNum( offsetof( WResHelpID, ID.Num ) );
-        if( helpid == NULL ) {
+        help_id = AllocWResHelpIDNum( offsetof( WResHelpID, ID.Num ) );
+        if( help_id == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            WResInitHelpIDFromNum( num, helpid );
+            WResInitHelpIDFromNum( num, help_id );
         }
     }
-    return( helpid );
+    return( help_id );
 } /* WResHelpIDFromNum */

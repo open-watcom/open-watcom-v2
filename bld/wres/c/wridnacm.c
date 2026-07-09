@@ -36,21 +36,22 @@
 #include "wstrcmp.h"
 
 
-int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
-/*******************************************************************/
-/* Note: don't use stricmp since the names in WResID's are not NULL terminated */
+int WResIDNameCmp( const WResIDName *name_id1, const WResIDName *name_id2 )
+/**************************************************************************
+ * Note: don't use stricmp since the names in WResID's are not NULL terminated
+ */
 {
     int         cmp_rc;
     unsigned    len;
 
-    len = name1->NumChars;
-    if( len > name2->NumChars )
-        len = name2->NumChars;
-    cmp_rc = WresStrnicmp( name1->Name, name2->Name, len );
+    len = name_id1->NumChars;
+    if( len > name_id2->NumChars )
+        len = name_id2->NumChars;
+    cmp_rc = WresStrnicmp( name_id1->Name, name_id2->Name, len );
     if( cmp_rc == 0 ) {
-        if( name1->NumChars == name2->NumChars ) {
+        if( name_id1->NumChars == name_id2->NumChars ) {
             return( 0 );
-        } else if( name1->NumChars > name2->NumChars ) {
+        } else if( name_id1->NumChars > name_id2->NumChars ) {
             /* longer name with the same prefix are greater */
             return( 1 );
         } else {

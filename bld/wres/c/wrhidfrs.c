@@ -43,7 +43,7 @@ WResHelpID *WResHelpIDFromStr( const char *str )
  * allocate a Help ID and fill it in
  */
 {
-    WResHelpID      *helpid;
+    WResHelpID      *help_id;
     size_t          len;
 
     len = strlen( str );
@@ -53,13 +53,13 @@ WResHelpID *WResHelpIDFromStr( const char *str )
         return( NULL );
     }
     /* allocate the new Help ID */
-    helpid = AllocWResIDName( offsetof( WResHelpID, ID.Name ), len );
-    if( helpid == NULL ) {
+    help_id = AllocWResIDName( offsetof( WResHelpID, ID.Name ), len );
+    if( help_id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        helpid->IsName = true;
-        helpid->ID.Name.NumChars = len;
-        memcpy( helpid->ID.Name.Name, str, len );
+        help_id->IsName = true;
+        help_id->ID.Name.NumChars = len;
+        memcpy( help_id->ID.Name.Name, str, len );
     }
-    return( helpid );
+    return( help_id );
 } /* WResHelpIDFromStr */

@@ -138,26 +138,26 @@ static char *StrUprCpyToUni( char *dst, const char *src, unsigned length )
     return( dst );
 } /* StrUprCpy */
 
-static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
-/***************************************************************************/
+static void CopyString( void **nextstr, WResIDName **name_ids, bool use_unicode )
+/*******************************************************************************/
 {
-    WResIDName          *currname;
+    WResIDName          *name_id;
     StringItem16        *name16;
     StringItem32        *name32;
 
-    currname = *name;
-    *name = *nextstr;
+    name_id = *name_ids;
+    *name_ids = *nextstr;
 
     if( use_unicode ) {
         name32 = *nextstr;
-        name32->NumChars = currname->NumChars;
-        StrUprCpyToUni( name32->Name, currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + 2 * currname->NumChars + offsetof( StringItem32, Name );
+        name32->NumChars = name_id->NumChars;
+        StrUprCpyToUni( name32->Name, name_id->Name, name_id->NumChars );
+        *nextstr = (uint_8 *)(*nextstr) + 2 * name_id->NumChars + offsetof( StringItem32, Name );
     } else {
         name16 = *nextstr;
-        name16->NumChars = currname->NumChars;
-        StrUprCpy( name16->Name, currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars + offsetof( StringItem16, Name );
+        name16->NumChars = name_id->NumChars;
+        StrUprCpy( name16->Name, name_id->Name, name_id->NumChars );
+        *nextstr = (uint_8 *)(*nextstr) + name_id->NumChars + offsetof( StringItem16, Name );
     }
 } /* CopyString */
 
@@ -168,7 +168,7 @@ static void ConstructStringBlock( StringsBlock *str )
 {
     char            *nextstring;    /* make this a char * so we can add by */
                                     /* by bytes */
-    WResIDName      *currname;
+    WResIDName      *name_id;
     unsigned        i;
     unsigned        cnt;
 
@@ -177,21 +177,21 @@ static void ConstructStringBlock( StringsBlock *str )
      */
     str->StringBlockSize = 0;
 #if 0
-    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
+    for( name_id = str->StringList; name_id < str->StringList + str->StringListLen; name_id++ ) {
         if( str->UseUnicode ) {
-            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (**currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (**name_id).NumChars;
         } else {
-            str->StringBlockSize += offsetof( StringItem16, Name ) + (**currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem16, Name ) + (**name_id).NumChars;
         }
     }
 #else
     cnt = str->StringListLen;
     for( i=0; i < cnt; i++ ) {
-        currname = str->StringList[i];
+        name_id = str->StringList[i];
         if( str->UseUnicode ) {
-            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (*currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem32, Name ) + 2 * (*name_id).NumChars;
         } else {
-            str->StringBlockSize += offsetof( StringItem16, Name ) + (*currname).NumChars;
+            str->StringBlockSize += offsetof( StringItem16, Name ) + (*name_id).NumChars;
         }
     }
 #endif
@@ -204,15 +204,15 @@ static void ConstructStringBlock( StringsBlock *str )
      */
     nextstring = str->StringBlock;
 #if 0
-    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
-        CopyString( &nextstring, currname, str->UseUnicode );
+    for( name_id = str->StringList; name_id < str->StringList + str->StringListLen; name_id++ ) {
+        CopyString( &nextstring, name_id, str->UseUnicode );
     }
 #else
     cnt = str->StringListLen;
     for( i = 0; i < cnt; i++ ) {
-        currname = str->StringList[i];
+        name_id = str->StringList[i];
         str->StringList[i] = nextstring;
-        CopyString( (void **)&nextstring, &currname, str->UseUnicode );
+        CopyString( (void **)&nextstring, &name_id, str->UseUnicode );
     }
 #endif
 } /* ConstructStringBlock */
@@ -376,8 +376,8 @@ int CompareStringItems32( const StringItem32 *item1,
     }
 }
 
-int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
-/************************************************************
+int_32 StringBlockFind( StringsBlock *str, WResIDName *name_id )
+/***************************************************************
  * if the return code is -1 the name was not found, otherwise it is the
  * number of bytes into the StringBlock at which to find the name.
  */
@@ -385,11 +385,11 @@ int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
     uint_8          **location;
 
     if( str->UseUnicode ) {
-        location = bsearch( name, str->StringList, str->StringListLen,
+        location = bsearch( name_id, str->StringList, str->StringListLen,
                     sizeof( void * ),
                     ( int (*)(const void *, const void *) )compareStrings32 );
     } else {
-        location = bsearch( name, str->StringList, str->StringListLen,
+        location = bsearch( name_id, str->StringList, str->StringListLen,
                     sizeof( void * ),
                     ( int (*)(const void *, const void *) )compareStrings16 );
     }

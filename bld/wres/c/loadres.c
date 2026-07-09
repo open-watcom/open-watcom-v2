@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,8 +51,8 @@ static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer 
     return( 0 );
 }
 
-int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
-                       WResID *resource_id, lpstr *lpszBuffer, size_t *bufferSize )
+int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *type_id,
+                       WResID *res_id, lpstr *lpszBuffer, size_t *bufferSize )
 /*********************************************************************************/
 {
     int                 retcode;
@@ -60,14 +61,14 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
     WResLangType        lang;
     char                *res_buffer;
 
-    if( ( resource_type == NULL ) || ( resource_id == NULL ) || ( lpszBuffer == NULL ) || ( bufferSize == NULL ) ) {
+    if( ( type_id == NULL ) || ( res_id == NULL ) || ( lpszBuffer == NULL ) || ( bufferSize == NULL ) ) {
         return( -1 );
     }
 
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    wind = WResFindResource( resource_type, resource_id, dir, &lang );
+    wind = WResFindResource( type_id, res_id, dir, &lang );
 
     if( WResIsEmptyWindow( wind ) ) {
         retcode = -1;
@@ -95,11 +96,11 @@ int WResLoadResource( PHANDLE_INFO hinfo, unsigned int idType,
                 unsigned int idResource, lpstr *lpszBuffer, size_t *bufferSize )
 /******************************************************************************/
 {
-    WResID              resource_type;
-    WResID              resource_id;
+    WResID              type_id;
+    WResID              res_id;
 
-    WResInitIDFromNum( idResource, &resource_id );
-    WResInitIDFromNum( idType, &resource_type );
+    WResInitIDFromNum( idResource, &res_id );
+    WResInitIDFromNum( idType, &type_id );
 
-    return( WResLoadResource2( MainDir, hinfo, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
+    return( WResLoadResource2( MainDir, hinfo, &type_id, &res_id, lpszBuffer, bufferSize ) );
 }

@@ -91,14 +91,14 @@ static void doDelResource( WResDir currdir, WResResNode *res,
     }
 }
 
-void WResDelResource( WResDir currdir, const WResID *type,
-                      const WResID *name ) {
+void WResDelResource( WResDir currdir, const WResID *type_id,
+                      const WResID *res_id ) {
     WResTypeNode        *cur_type;
     WResResNode         *cur_res;
 
-    cur_type = __FindType( type, currdir );
+    cur_type = __FindType( type_id, currdir );
     if( cur_type == NULL ) return;
-    cur_res = __FindRes( name, cur_type );
+    cur_res = __FindRes( res_id, cur_type );
     if( cur_res == NULL ) return;
     __FreeLangList( cur_res );
     doDelResource( currdir, cur_res, cur_type );
@@ -132,15 +132,15 @@ static void delALang( WResResNode *res, const WResLangType *lang )
     WRESFREE( cur_lang );
 }
 
-void WResDelLang( WResDir currdir, const WResID *type,
-                        const WResID *name, const WResLangType *lang ) {
+void WResDelLang( WResDir currdir, const WResID *type_id,
+                        const WResID *res_id, const WResLangType *lang ) {
 
     WResTypeNode        *cur_type;
     WResResNode         *cur_res;
 
-    cur_type = __FindType( type, currdir );
+    cur_type = __FindType( type_id, currdir );
     if( cur_type == NULL ) return;
-    cur_res = __FindRes( name, cur_type )
+    cur_res = __FindRes( res_id, cur_type )
     if( cur_res != NULL ) return;
     delALang( cur_res, lang )
     if( cur_res->Info.NumResources == 0 ) {

@@ -690,7 +690,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
     }
 }
 
-void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
+void SemWINWriteDialogBox( WResID *res_id, ResMemFlags flags,
                     DialogSizeInfo sizeinfo, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
                     YYTOKENTYPE tokentype )
@@ -766,10 +766,10 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         }
         if( !error ) {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
         }
     } else {
-        MemFree( name );
+        MemFree( res_id );
     }
     if( error ) {
         if( error == 2 ) {
@@ -787,7 +787,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 
 
 FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
-         uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext,
+         uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext_id,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
 /*************************************************************************/
 {
@@ -804,8 +804,8 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     if( control->iswin32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.SizeInfo = sizeinfo;
-        control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext );
-        MemFree( cntltext );
+        control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext_id );
+        MemFree( cntltext_id );
         control->u.ctrl32.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl32.Style = style;
         /*
@@ -826,8 +826,8 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     } else {
         control->u.ctrl.ID = cntlid;
         control->u.ctrl.SizeInfo = sizeinfo;
-        control->u.ctrl.Text = WResIDToNameOrOrdinal( cntltext );
-        MemFree( cntltext );
+        control->u.ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
+        MemFree( cntltext_id );
         control->u.ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
         control->u.ctrl.Style = style;
         /*

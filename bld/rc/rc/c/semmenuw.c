@@ -322,7 +322,7 @@ static void SemFreeSubMenu( FullMenu *submenu )
     MemFree( submenu );
 }
 
-void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
+void SemWINWriteMenu( WResID *res_id, ResMemFlags flags, FullMenu *menu,
                    YYTOKENTYPE tokentype )
 /********************************************************************/
 {
@@ -380,10 +380,10 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
         }
     } else {
-        MemFree( name );
+        MemFree( res_id );
     }
     SemFreeSubMenu( menu );
 }

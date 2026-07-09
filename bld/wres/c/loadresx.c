@@ -48,24 +48,24 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource,
                                     lpstr *lpszBuffer, size_t *bufferSize )
 /*************************************************************************/
 {
-    WResID              *resource_type;
-    WResID              *resource_id;
+    WResID              *type_id;
+    WResID              *res_id;
     int                 rc;
 
     if( IS_INTRESOURCE( idResource ) ) {
-        resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
+        res_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
     } else {
-        resource_id = WResIDFromFarStr( idResource );
+        res_id = WResIDFromFarStr( idResource );
     }
     if( IS_INTRESOURCE( idType ) ) {
-        resource_type = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
+        type_id = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
     } else {
-        resource_type = WResIDFromFarStr( idType );
+        type_id = WResIDFromFarStr( idType );
     }
-    rc = WResLoadResource2( MainDir, hinfo, resource_type, resource_id, lpszBuffer, bufferSize );
-    if( resource_type != NULL )
-        WResIDFree( resource_type );
-    if( resource_id != NULL )
-        WResIDFree( resource_id );
+    rc = WResLoadResource2( MainDir, hinfo, type_id, res_id, lpszBuffer, bufferSize );
+    if( type_id != NULL )
+        WResIDFree( type_id );
+    if( res_id != NULL )
+        WResIDFree( res_id );
     return( rc );
 }

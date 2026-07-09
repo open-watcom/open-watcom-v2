@@ -33,10 +33,11 @@
 #include "layer0.h"
 #include "util.h"
 
-void WResInitHelpIDFromNum( long newnum, WResHelpID *newid )
-/**********************************************************/
-/* fill in a WResHelpID */
+void WResInitHelpIDFromNum( long num, WResHelpID *help_id )
+/**********************************************************
+ * fill in a WResHelpID
+ */
 {
-    newid->IsName = false;
-    newid->ID.Num = newnum;
+    help_id->IsName = false;
+    help_id->ID.Num = num;
 }

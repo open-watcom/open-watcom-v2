@@ -33,6 +33,6 @@
 #ifndef SEMSNGL2_H_INCLUDED
 #define SEMSNGL2_H_INCLUDED
 
-extern void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type, FullOptFlagsOS2 *fullflags, char *filename );
+extern void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullOptFlagsOS2 *fullflags, char *filename );
 
 #endif

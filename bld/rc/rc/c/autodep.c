@@ -144,8 +144,8 @@ bool WriteDependencyRes( void )
 {
     DepNode             *cur;
     ResLocation         loc;
-    WResID              *nameid;
-    WResID              *typeid;
+    WResID              *res_id;
+    WResID              *type_id;
     struct stat         file_info;
 
     if( CmdLineParms.GenAutoDep ) {
@@ -160,9 +160,9 @@ bool WriteDependencyRes( void )
         }
         writeDepListEOF();
         loc.len = SemEndResource( loc.start );
-        nameid = WResIDFromStr( DEP_LIST_NAME );
-        typeid = WResIDFromNum( DEP_LIST_TYPE );
-        SemAddResourceAndFree( nameid, typeid, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, loc );
+        res_id = WResIDFromStr( DEP_LIST_NAME );
+        type_id = WResIDFromNum( DEP_LIST_TYPE );
+        SemAddResourceAndFree( res_id, type_id, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, loc );
     }
     freeDepList();
     return( false );

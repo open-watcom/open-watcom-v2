@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,12 @@
 #include "wresrtns.h"
 
 
-void WResHelpIDFree( WResHelpID * oldid )
-/*******************************/
-/* release the space occupied by a Help ID */
+void WResHelpIDFree( WResHelpID *help_id )
+/*****************************************
+ * release the space occupied by a Help ID
+ */
 {
-    if( oldid != NULL ) {
-        WRESFREE( oldid );
+    if( help_id != NULL ) {
+        WRESFREE( help_id );
     }
 } /* WResHelpIDFree */

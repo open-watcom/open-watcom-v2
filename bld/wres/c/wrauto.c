@@ -43,8 +43,8 @@ char *WResGetAutoDep( const char *fname )
     FILE            *fp;
     WResDir         dir;
     bool            dup_discarded;
-    WResID          *name;
-    WResID          *type;
+    WResID          *res_id;
+    WResID          *type_id;
     WResDirWindow   window;
     WResLangInfo    *info;
     char            *ret;
@@ -55,11 +55,11 @@ char *WResGetAutoDep( const char *fname )
     if( fp != NULL ) {
         if( WResIsWResFile( fp ) ) {
             if( !WResReadDir( fp, &dir, &dup_discarded ) ) {
-                name = WResIDFromStr( DEP_LIST_NAME );
-                type = WResIDFromNum( DEP_LIST_TYPE );
-                if( name != NULL
-                  && type != NULL ) {
-                    window = WResFindResource( type, name, dir, NULL );
+                res_id = WResIDFromStr( DEP_LIST_NAME );
+                type_id = WResIDFromNum( DEP_LIST_TYPE );
+                if( res_id != NULL
+                  && type_id != NULL ) {
+                    window = WResFindResource( type_id, res_id, dir, NULL );
                     if( WResIsEmptyWindow( window ) ) {
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
@@ -79,11 +79,11 @@ char *WResGetAutoDep( const char *fname )
                         }
                     }
                 }
-                if( name != NULL ) {
-                    WResIDFree( name );
+                if( res_id != NULL ) {
+                    WResIDFree( res_id );
                 }
-                if( type != NULL ) {
-                    WResIDFree( type );
+                if( type_id != NULL ) {
+                    WResIDFree( type_id );
                 }
                 WResFreeDir( dir );
             }

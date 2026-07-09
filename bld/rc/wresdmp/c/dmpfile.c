@@ -44,8 +44,8 @@
 #include "dmpfile.h"
 #include "wresdefn.h"
 
-static void ConvertIDToStr( WResID * id, char * str, int maxlen )
-/***************************************************************/
+static void ConvertIDToStr( WResID *id, char * str, int maxlen )
+/**************************************************************/
 {
     int     numchars;
 
@@ -60,13 +60,13 @@ static void ConvertIDToStr( WResID * id, char * str, int maxlen )
     }
 }
 
-static void ConvertTypeIDToStr( WResID * id, char * str, int maxlen )
-/*******************************************************************/
+static void ConvertTypeIDToStr( WResID *type_id, char *str, int maxlen )
+/**********************************************************************/
 {
-    if (id->IsName) {
-        ConvertIDToStr( id, str, maxlen );
+    if (type_id->IsName) {
+        ConvertIDToStr( type_id, str, maxlen );
     } else {
-        switch (id->ID.Num) {
+        switch (type_id->ID.Num) {
         case RESOURCE2INT( RT_CURSOR ):
             strncpy( str, "cursor", maxlen );
             break;
@@ -113,7 +113,7 @@ static void ConvertTypeIDToStr( WResID * id, char * str, int maxlen )
             strncpy( str, "versioninfo", maxlen );
             break;
         default:
-            ConvertIDToStr( id, str, maxlen );
+            ConvertIDToStr( type_id, str, maxlen );
             break;
         }
     }

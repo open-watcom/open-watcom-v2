@@ -129,8 +129,8 @@ bool ResWritePadDWord( FILE *fp )
     return( false );
 }
 
-bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *fp )
-/**********************************************************************************/
+bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FILE *fp )
+/*************************************************************************************/
 {
     bool            error;
     unsigned        numchars;
@@ -138,11 +138,11 @@ bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *
     char            *buf;
 
     error = false;
-    if( name == NULL ) {
+    if( name_id == NULL ) {
         /* a NULL name means write 0 length name */
         numchars = 0;
     } else {
-        numchars = name->NumChars;
+        numchars = name_id->NumChars;
     }
     buf = ConvBuffer;
     size = 2 * numchars;        /* 16-bit Unicode or double-byte */
@@ -156,9 +156,9 @@ bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *
             size = CONV_BUF_SIZE;
         }
         if( use_unicode ) {
-            size = ConvToUnicode( name->Name, numchars, buf, size );
+            size = ConvToUnicode( name_id->Name, numchars, buf, size );
         } else {
-            size = ConvToMultiByte( name->Name, numchars, buf, size );
+            size = ConvToMultiByte( name_id->Name, numchars, buf, size );
         }
     }
     if( use_unicode ) {
@@ -188,21 +188,21 @@ bool WResWriteWResIDNameString( const WResIDName *name, bool use_unicode, FILE *
     return( error );
 } /* WResWriteWResIDNameString */
 
-bool WResWriteWResIDName( const WResIDName *name, FILE *fp )
-/**********************************************************/
+bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
+/*************************************************************/
 {
-    return( WResWriteWResIDNameString( name, false, fp ) );
+    return( WResWriteWResIDNameString( name_id, false, fp ) );
 }
 
-bool WResWriteWResID( const WResID *name, FILE *fp )
-/**************************************************/
+bool WResWriteWResID( const WResID *id, FILE *fp )
+/************************************************/
 {
-    if( ResWriteUint8( name->IsName, fp ) )
+    if( ResWriteUint8( id->IsName, fp ) )
         return( true );
-    if( name->IsName ) {
-        return( WResWriteWResIDName( &(name->ID.Name), fp ) );
+    if( id->IsName ) {
+        return( WResWriteWResIDName( &(id->ID.Name), fp ) );
     } else {
-        return( ResWriteUint16( name->ID.Num, fp ) );
+        return( ResWriteUint16( id->ID.Num, fp ) );
     }
 }
 

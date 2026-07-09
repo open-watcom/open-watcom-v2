@@ -35,16 +35,16 @@
 #include "util.h"
 
 
-int WResHelpIDCmp( const WResHelpID * name1, const WResHelpID * name2 )
-/*********************************************************************/
+int WResHelpIDCmp( const WResHelpID *help_id1, const WResHelpID *help_id2 )
+/*************************************************************************/
 {
     bool    same;
 
-    if( name1->IsName && name2->IsName ) {
+    if( help_id1->IsName && help_id2->IsName ) {
         /* they are both names */
-        same = ( WResIDNameCmp( &(name1->ID.Name), &(name2->ID.Name) ) == 0 );
-    } else if( !name1->IsName && !name2->IsName ) {
-        same = (name1->ID.Num == name2->ID.Num);
+        same = ( WResIDNameCmp( &(help_id1->ID.Name), &(help_id2->ID.Name) ) == 0 );
+    } else if( !help_id1->IsName && !help_id2->IsName ) {
+        same = (help_id1->ID.Num == help_id2->ID.Num);
     } else {
         /* one is a name, the other is a number:  they are not the same */
         same = false;

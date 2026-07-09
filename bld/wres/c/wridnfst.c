@@ -42,7 +42,7 @@
 WResIDName *WResIDNameFromStr( const char *str )
 /**********************************************/
 {
-    WResIDName      *nameid;
+    WResIDName      *name_id;
     size_t          len;
 
     len = strlen( str );
@@ -52,14 +52,14 @@ WResIDName *WResIDNameFromStr( const char *str )
         len = USHRT_MAX;
     }
 #endif
-    nameid = AllocWResIDName( 0, len );
-    if( nameid == NULL ) {
+    name_id = AllocWResIDName( 0, len );
+    if( name_id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        nameid->NumChars = len;
+        name_id->NumChars = len;
         /* don't copy the '\0' */
-        memcpy( nameid->Name, str, len );
+        memcpy( name_id->Name, str, len );
     }
 
-    return( nameid );
+    return( name_id );
 }

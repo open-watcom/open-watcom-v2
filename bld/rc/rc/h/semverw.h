@@ -79,6 +79,6 @@ extern FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *, FullVerBlock * 
 extern FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNest *nest2 );
 extern VerFixedInfo     *SemWINNewVerFixedInfo( VerFixedOption option );
 extern VerFixedInfo     *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption );
-extern void             SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest );
+extern void             SemWINWriteVerInfo( WResID *res_id, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest );
 
 #endif
