@@ -85,11 +85,11 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
         }
     } else {
         if( !error ) {
-            msheader->Type = ResRead32NameOrOrdinal( fp );
+            msheader->Type = ResReadNameOrOrdinal( fp );
             error = ( msheader->Type == NULL );
         }
         if( !error ) {
-            msheader->Name = ResRead32NameOrOrdinal( fp );
+            msheader->Name = ResReadNameOrOrdinal( fp );
             error = ( msheader->Name == NULL );
         }
         if( !error ) {
