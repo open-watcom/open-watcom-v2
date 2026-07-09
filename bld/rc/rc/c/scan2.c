@@ -621,9 +621,8 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             }
 #endif
             value->string.lstring = longString;
-            if( longString
-              && CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-                RcWarning( ERR_LSTRING_IGNORED_FOR_WINDOWS );
+            if( longString ) {
+                RcWarning( ERR_LSTRING_IGNORED );
                 value->string.lstring = false;
             }
             DEBUGPUTS( value->string.string );

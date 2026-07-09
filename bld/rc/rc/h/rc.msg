@@ -215,9 +215,9 @@ pick(   ERR_WRONG_CHAR_FILE_VER,
 pick(   ERR_OPT_NOT_VALID_FOR_NT,
         "Option '%s' not valid for a Win32 .res file.",
         "'%s' オプションは Win32用リソ－スファイルには無意味です." )
-pick(   ERR_LSTRING_IGNORED_FOR_WINDOWS,
-        "L\"...\" construct is not valid for Windows.",
-        "L\"...\" 構成はWindowsでは無意味です." )
+pick(   ERR_LSTRING_IGNORED,
+        "L\"...\" construct is not valid for Windows or OS/2.",
+        "L\"...\" 構文はWindowsまたはOS/2では無効です." )
 pick(   ERR_OPT_NOT_VALID_TOGETHER,
         "Options '%s' and '%s' may not be specified together.",
         "'%s' と '%s' オプションを同時に指定すべきではありません." )
