@@ -50,24 +50,17 @@ static size_t DefaultUNIConversion( const char *str, size_t len, char *buf, size
 /***************************************************************************************/
 {
     size_t  i;
-    size_t  ret;
 
     if( buf != NULL ) {
-        ret = 0;
+        size /= 2;
+        if( len > size )
+            len = size;
         for( i = 0; i < len; i++ ) {
-            if( ret + 1 < size ) {
-                *buf++ = *str++;
-                *buf++ = 0;
-                ret += 2;
-            }
-        }
-    } else {
-        ret = 2 * len;
-        if( ret > size ) {
-            ret = size;
+            *buf++ = *str++;
+            *buf++ = 0;
         }
     }
-    return( ret );
+    return( 2 * len );
 }
 
 static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_t size )
@@ -75,13 +68,12 @@ static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_
 {
     size_t  ret;
 
-    ret = len;
     if( buf != NULL ) {
-        if( ret > size )
-            ret = size;
-        memcpy( buf, str, ret );
+        if( len > size )
+            len = size;
+        memcpy( buf, str, len );
     }
-    return( ret );
+    return( len );
 }
 
 bool ResWriteUint8( uint_8 newint, FILE *fp )
