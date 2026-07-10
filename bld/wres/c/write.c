@@ -163,6 +163,7 @@ bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FIL
         numchars = size;
         if( numchars > 255 )
             numchars = 255;
+        size = numchars;
         error = ResWriteUint8( numchars, fp );
     }
     if( !error ) {
