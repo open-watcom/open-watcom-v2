@@ -80,7 +80,7 @@ void InitWINResTable( ExeFileInfo *dst, ResFileInfo *res )
         resdir->Head = NULL;
         resdir->Tail = NULL;
 
-        StringBlockBuild( str, dir, false );
+        StringIDNamesBlockBuild( str, dir, false );
     }
 } /* InitWINResTable */
 
@@ -156,7 +156,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
             /*
              * if they are both names
              */
-            exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock
+            exe_type_name = (StringItem16 *)(restab->Str.StringBlock
                                + (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == typeinfo->TypeName.ID.Name.NumChars
               && strnicmp( exe_type_name->Name, typeinfo->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {

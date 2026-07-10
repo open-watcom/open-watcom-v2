@@ -942,7 +942,7 @@ static FILE *InitNEResources( WResDir *inRes, ResTable *outRes )
                 /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
                 outRes->Dir.Head = NULL;
                 outRes->Dir.Tail = NULL;
-                StringBlockBuild( &outRes->Str, dir, false );
+                StringIDNamesBlockBuild( &outRes->Str, dir, false );
             }
         }
     }

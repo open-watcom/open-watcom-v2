@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +31,6 @@
 ****************************************************************************/
 
 
-extern void     StringBlockBuild( StringsBlock *, WResDir, bool use_unicode );
+extern void     StringIDNamesBlockBuild( StringsBlock *, WResDir, bool use_unicode );
 extern int_32   StringBlockFind( StringsBlock *, WResIDName *name_id );
 extern int      CompareStringItems32( const StringItem32 *item1, const StringItem32 *item2 );

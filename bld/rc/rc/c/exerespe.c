@@ -176,7 +176,7 @@ static void PEResDirAdd( PEResDirEntry *entry, WResID *res_id,
              * the resource directory
              */
             curr->Entry.id_name = PE_RESOURCE_MASK_ON | name_off;
-            curr->Name = (char *)strings->StringBlock + name_off;
+            curr->Name = strings->StringBlock + name_off;
         }
         entry->Head.num_name_entries++;
     } else {
@@ -304,7 +304,7 @@ static bool PEResDirBuild( PEResDir *res, WResDir dir )
         res->ResOffset = 0;
         res->ResSize = 0;
     } else {
-        StringBlockBuild( &res->String, dir, true );
+        StringIDNamesBlockBuild( &res->String, dir, true );
         res->DirSize = sizeof( resource_dir_header );
         PEResDirEntryInit( &res->Root, dir->NumTypes );
         for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
@@ -645,7 +645,7 @@ static RcStatus writeDirectory( PEResDir *dir, FILE *fp )
     if( ret != RS_OK )
         return( ret );
 
-    if( dir->String.StringBlock != 0 ) {
+    if( dir->String.StringBlock != NULL ) {
         if( RESWRITE( fp, dir->String.StringBlock, dir->String.StringBlockSize ) != dir->String.StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
