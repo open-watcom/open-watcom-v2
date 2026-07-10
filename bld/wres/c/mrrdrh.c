@@ -43,7 +43,6 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
     MResResourceHeader      *msheader;
     bool                    error;
 
-    error = false;
     msheader = WRESALLOC( sizeof( MResResourceHeader ) );
     if( msheader == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
@@ -84,10 +83,8 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
             msheader->Characteristics = ResReadUint32( &error, fp );
         }
     } else {
-        if( !error ) {
-            msheader->Type = ResReadNameOrOrdinal( fp );
-            error = ( msheader->Type == NULL );
-        }
+        msheader->Type = ResReadNameOrOrdinal( fp );
+        error = ( msheader->Type == NULL );
         if( !error ) {
             msheader->Name = ResReadNameOrOrdinal( fp );
             error = ( msheader->Name == NULL );
