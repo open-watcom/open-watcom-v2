@@ -66,8 +66,6 @@ static size_t DefaultUNIConversion( const char *str, size_t len, char *buf, size
 static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_t size )
 /**************************************************************************************/
 {
-    size_t  ret;
-
     if( buf != NULL ) {
         if( len > size )
             len = size;
