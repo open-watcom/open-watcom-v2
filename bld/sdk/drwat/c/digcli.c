@@ -217,7 +217,7 @@ unsigned long DIGCLIENTRY( Tell )( FILE *fp )
 #ifdef __NT__
     ret = SetFilePointer( FP2WH( fp ), 0, 0, FILE_CURRENT );
 #else
-	ret = ftell( fp );
+    ret = ftell( fp );
 #endif
     DEBUGOUT( "tell END" );
     return( ret );

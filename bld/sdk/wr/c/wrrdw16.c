@@ -113,7 +113,7 @@ long WRReadWin16ExeHeader( FILE *fp, os2_exe_header *nehdr )
 
     if( fp == NULL
       || nehdr == NULL )
-    	return( 0 );
+        return( 0 );
     /*
      * check the reloc offset
      */
