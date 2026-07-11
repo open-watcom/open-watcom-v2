@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,27 +34,28 @@
 #include "layer0.h"
 #include "wres.h"
 
-WResDirWindow WResNextResource( WResDirWindow currwind, WResDir currdir )
-/***********************************************************************/
-{
-    /* unused parameters */ (void)currdir;
 
-    if( !WResIsEmptyWindow( currwind ) ) {
-        if( currwind.CurrLang->Next != NULL ) {
-            currwind.CurrLang = currwind.CurrLang->Next;
-        } else if( currwind.CurrRes->Next != NULL ) {
-            currwind.CurrRes = currwind.CurrRes->Next;
-            currwind.CurrLang = currwind.CurrRes->Head;
+WResDirWindow WResNextResource( WResDirWindow wind, WResDir dir )
+/***************************************************************/
+{
+    /* unused parameters */ (void)dir;
+
+    if( !WResIsEmptyWindow( wind ) ) {
+        if( wind.CurrLang->Next != NULL ) {
+            wind.CurrLang = wind.CurrLang->Next;
+        } else if( wind.CurrRes->Next != NULL ) {
+            wind.CurrRes = wind.CurrRes->Next;
+            wind.CurrLang = wind.CurrRes->Head;
         } else {
-            currwind.CurrType = currwind.CurrType->Next;
-            if( currwind.CurrType == NULL ) {
-                currwind.CurrLang = NULL;
-                currwind.CurrRes = NULL;
+            wind.CurrType = wind.CurrType->Next;
+            if( wind.CurrType == NULL ) {
+                wind.CurrLang = NULL;
+                wind.CurrRes = NULL;
             } else {
-                currwind.CurrRes = currwind.CurrType->Head;
-                currwind.CurrLang = currwind.CurrRes->Head;
+                wind.CurrRes = wind.CurrType->Head;
+                wind.CurrLang = wind.CurrRes->Head;
             }
         }
     }
-    return( currwind );
+    return( wind );
 } /* WResNextResource */

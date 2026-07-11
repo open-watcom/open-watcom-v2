@@ -65,12 +65,12 @@ static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )
     return( error );
 }
 
-static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )
+static bool readLangInfoList( FILE *fp, WResResNode *resnode, void *fileinfo )
 {
     unsigned            i;
     WResLangNode        *langnode;
 
-    for( i = 0; i < res->Info.NumResources; i++ ) {
+    for( i = 0; i < resnode->Info.NumResources; i++ ) {
         langnode = WRESALLOC( sizeof( WResLangNode ) );
         if( langnode == NULL )
             return( WRES_ERROR( WRS_MALLOC_FAILED ) );
@@ -80,12 +80,12 @@ static bool readLangInfoList( FILE *fp, WResResNode *res, void *fileinfo )
             return( true );
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
-        ResAddLLItemAtEnd( (void **)&(res->Head), (void **)&(res->Tail), langnode );
+        ResAddLLItemAtEnd( (void **)&(resnode->Head), (void **)&(resnode->Tail), langnode );
     }
     return( false );
 }
 
-static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fileinfo )
+static bool readResList( FILE *fp, WResTypeNode *typenode, uint_16 ver, void *fileinfo )
 {
     WResResNode     *resnode;
     WResLangNode    *langnode;
@@ -96,7 +96,7 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
 
     memset( &v1_linfo, 0, sizeof( v1_linfo ) );
     /* loop through the list of resources of this type */
-    for( resnum = 0; resnum < currtype->Info.NumResources; resnum++ ) {
+    for( resnum = 0; resnum < typenode->Info.NumResources; resnum++ ) {
         /* read a resource record from disk */
         if( ver < 2 ) {
             numres = 1;
@@ -134,7 +134,7 @@ static bool readResList( FILE *fp, WResTypeNode *currtype, uint_16 ver, void *fi
             }
         }
         /* add the resource node to the linked list */
-        ResAddLLItemAtEnd( (void **)&(currtype->Head), (void **)&(currtype->Tail), resnode );
+        ResAddLLItemAtEnd( (void **)&(typenode->Head), (void **)&(typenode->Tail), resnode );
     }
     return( false );
 

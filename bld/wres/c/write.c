@@ -74,28 +74,28 @@ static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_
     return( len );
 }
 
-bool ResWriteUint8( uint_8 newint, FILE *fp )
+bool ResWriteUint8( uint_8 value, FILE *fp )
 /*******************************************/
 {
-    if( WRESWRITE( fp, &newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) )
+    if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResWriteUint16( uint_16 newint, FILE *fp )
+bool ResWriteUint16( uint_16 value, FILE *fp )
 /*********************************************/
 {
-    CONV_LE_16( newint );
-    if( WRESWRITE( fp, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) )
+    CONV_LE_16( value );
+    if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResWriteUint32( uint_32 newint, FILE *fp )
+bool ResWriteUint32( uint_32 value, FILE *fp )
 /*********************************************/
 {
-    CONV_LE_32( newint );
-    if( WRESWRITE( fp, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) )
+    CONV_LE_32( value );
+    if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,12 +62,12 @@ typedef uint_8  AccelFlags;
 
 /* reswaccl.c */
 
-extern bool ResWriteAccelEntry( AccelTableEntry * currentry, FILE *fp );
+extern bool ResWriteAccelEntry( AccelTableEntry *entry, FILE *fp );
 extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
 
 /* resraccl.c */
 
-extern bool ResReadAccelEntry( AccelTableEntry * currentry, FILE *fp );
+extern bool ResReadAccelEntry( AccelTableEntry *entry, FILE *fp );
 extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
 
 /* rmwaccl.c */

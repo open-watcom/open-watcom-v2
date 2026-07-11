@@ -39,37 +39,37 @@
 #include "wresrtns.h"
 
 
-bool ResReadAccelEntry( AccelTableEntry *currentry, FILE *fp )
+bool ResReadAccelEntry( AccelTableEntry *entry, FILE *fp )
+/********************************************************/
+{
+    bool            error;
+
+    error = false;
+    entry->Flags = ResReadUint8( &error, fp );
+    if( error )
+        return( true );
+    entry->Ascii = ResReadUint16( &error, fp );
+    if( error )
+        return( true );
+    entry->Id = ResReadUint16( &error, fp );
+    return( error );
+}
+
+bool ResReadAccelEntry32( AccelTableEntry32 *entry, FILE *fp )
 /************************************************************/
 {
     bool            error;
 
     error = false;
-    currentry->Flags = ResReadUint8( &error, fp );
+    entry->Flags = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    currentry->Ascii = ResReadUint16( &error, fp );
+    entry->Ascii = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    currentry->Id = ResReadUint16( &error, fp );
-    return( error );
-}
-
-bool ResReadAccelEntry32( AccelTableEntry32 *currentry, FILE *fp )
-/****************************************************************/
-{
-    bool            error;
-
-    error = false;
-    currentry->Flags = ResReadUint16( &error, fp );
+    entry->Id = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    currentry->Ascii = ResReadUint16( &error, fp );
-    if( error )
-        return( true );
-    currentry->Id = ResReadUint16( &error, fp );
-    if( error )
-        return( true );
-    currentry->Unknown = ResReadUint16( &error, fp );
+    entry->Unknown = ResReadUint16( &error, fp );
     return( error );
 }

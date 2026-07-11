@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,8 +34,8 @@
 #include "layer0.h"
 #include "wres.h"
 
-bool WResIsEmpty( WResDir currdir )
-/********************************/
+bool WResIsEmpty( WResDir dir )
+/*****************************/
 {
-    return( currdir->Head == NULL && currdir->Tail == NULL );
+    return( dir->Head == NULL && dir->Tail == NULL );
 }

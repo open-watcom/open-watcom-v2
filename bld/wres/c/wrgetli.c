@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,22 +33,23 @@
 #include "layer0.h"
 #include "wres.h"
 
-WResLangInfo * WResGetLangInfo( WResDirWindow currwind )
-/****************************************************/
+
+WResLangInfo *WResGetLangInfo( WResDirWindow wind )
+/*************************************************/
 {
-    if( currwind.CurrLang == NULL ) {
+    if( wind.CurrLang == NULL ) {
         return( NULL );
     } else {
-        return( &(currwind.CurrLang->Info) );
+        return( &(wind.CurrLang->Info) );
     }
 }
 
-void *WResGetFileInfo( WResDirWindow currwind )
-/**********************************************/
+void *WResGetFileInfo( WResDirWindow wind )
+/*****************************************/
 {
-    if( currwind.CurrLang == NULL ) {
+    if( wind.CurrLang == NULL ) {
         return( NULL );
     } else {
-        return( currwind.CurrLang->fileInfo );
+        return( wind.CurrLang->fileInfo );
     }
 }

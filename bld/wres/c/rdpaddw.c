@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,13 +42,13 @@ bool ResReadPadDWord( FILE *fp )
 /******************************/
 /* advances in the file to the next DWORD boundry */
 {
-    long    curr_pos;
+    long    currpos;
     long    padding;
 
-    curr_pos = WRESTELL( fp );
-    if( curr_pos == -1L )
+    currpos = WRESTELL( fp );
+    if( currpos == -1L )
         return( WRES_ERROR( WRS_TELL_FAILED ) );
-    padding = RES_PADDING_DWORD( curr_pos );
+    padding = RES_PADDING_DWORD( currpos );
     if( WRESSEEK( fp, padding, SEEK_CUR ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,22 +34,22 @@
 #include "layer0.h"
 #include "wres.h"
 
+
 /*
  * WResIsLastResource
  */
-bool WResIsLastResource( WResDirWindow currwind, WResDir currdir )
+bool WResIsLastResource( WResDirWindow wind, WResDir dir )
 {
-    return( currwind.CurrType == currdir->Tail &&
-                currwind.CurrRes == currdir->Tail->Tail );
+    return( wind.CurrType == dir->Tail && wind.CurrRes == dir->Tail->Tail );
 } /* WResIsLastResource */
 
 /*
  * WResIsLastLangRes
  */
-bool WResIsLastLangRes( WResDirWindow currwind, WResDir currdir ) {
+bool WResIsLastLangRes( WResDirWindow wind, WResDir dir ) {
 
-    if( WResIsLastResource( currwind, currdir ) ) {
-        return( currwind.CurrLang == currwind.CurrRes->Tail );
+    if( WResIsLastResource( wind, dir ) ) {
+        return( wind.CurrLang == wind.CurrRes->Tail );
     } else {
         return( false );
     }

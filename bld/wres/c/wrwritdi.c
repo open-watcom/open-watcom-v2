@@ -38,49 +38,49 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-static bool writeLangList( FILE *fp, WResLangNode *curlang )
+static bool writeLangList( FILE *fp, WResLangNode *langnode )
 {
     bool        error;
 
     error = false;
-    for( ; curlang != NULL && !error; curlang = curlang->Next ) {
-        error = WResWriteLangRecord( &(curlang->Info), fp );
+    for( ; langnode != NULL && !error; langnode = langnode->Next ) {
+        error = WResWriteLangRecord( &(langnode->Info), fp );
     }
     return( error );
 }
 
-static bool writeResList( FILE *fp, WResResNode *currres )
+static bool writeResList( FILE *fp, WResResNode *resnode )
 {
     bool        error;
 
     error = false;
-    for( ; currres != NULL && !error; currres = currres->Next ) {
-        error = WResWriteResRecord( &(currres->Info), fp );
+    for( ; resnode != NULL && !error; resnode = resnode->Next ) {
+        error = WResWriteResRecord( &(resnode->Info), fp );
         if( !error ) {
-            error = writeLangList( fp, currres->Head );
+            error = writeLangList( fp, resnode->Head );
         }
     }
 
     return( error );
 }
 
-static bool writeTypeList( FILE *fp, WResTypeNode *currtype )
+static bool writeTypeList( FILE *fp, WResTypeNode *typenode )
 {
     bool        error;
 
     error = false;
-    for( ; currtype != NULL && !error; currtype = currtype->Next ) {
-        error = WResWriteTypeRecord( &(currtype->Info), fp );
+    for( ; typenode != NULL && !error; typenode = typenode->Next ) {
+        error = WResWriteTypeRecord( &(typenode->Info), fp );
         if( !error ) {
-            error = writeResList( fp, currtype->Head );
+            error = writeResList( fp, typenode->Head );
         }
     }
 
     return( error );
 }
 
-bool WResWriteDir( FILE *fp, WResDir currdir )
-/********************************************/
+bool WResWriteDir( FILE *fp, WResDir dir )
+/****************************************/
 {
     WResHeader      header;
     WResExtHeader   extheader;
@@ -92,7 +92,7 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
     if( diroffset == -1L ) {
         error = WRES_ERROR( WRS_TELL_FAILED );
     } else {
-        error = writeTypeList( fp, currdir->Head );
+        error = writeTypeList( fp, dir->Head );
     }
     if( !error ) {
         if( WRESSEEK( fp, 0L, SEEK_SET ) ) {
@@ -104,14 +104,14 @@ bool WResWriteDir( FILE *fp, WResDir currdir )
         header.Magic[0] = WRESMAGIC0;
         header.Magic[1] = WRESMAGIC1;
         header.DirOffset = diroffset;
-        header.NumResources = currdir->NumResources;
-        header.NumTypes = currdir->NumTypes;
+        header.NumResources = dir->NumResources;
+        header.NumTypes = dir->NumTypes;
         header.WResVer = WRESVERSION;
         error = WResWriteHeader( &header, fp );
     }
     if( !error ) {
         memset( &extheader, 0, sizeof( WResExtHeader ) );
-        extheader.TargetOS = currdir->TargetOS;
+        extheader.TargetOS = dir->TargetOS;
         error = WResWriteExtHeader( &extheader, fp );
     }
 

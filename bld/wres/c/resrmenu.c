@@ -40,15 +40,15 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResReadMenuHeader( MenuHeader *currhead, FILE *fp )
+bool ResReadMenuHeader( MenuHeader *head, FILE *fp )
 /******************************************************/
 {
     bool            error;
 
     error = false;
-    currhead->Version = ResReadUint16( &error, fp );
+    head->Version = ResReadUint16( &error, fp );
     if( !error )
-        currhead->Size = ResReadUint16( &error, fp );
+        head->Size = ResReadUint16( &error, fp );
     return( error );
 }
 
@@ -93,8 +93,8 @@ bool ResIsHeaderMenuEx( MenuHeader *hdr )
     return( hdr->Version == MENUEX_VERSION_SIG );
 }
 
-bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
-/******************************************************/
+bool ResReadMenuExItem( MenuExItem *item, FILE *fp )
+/**************************************************/
 {
     bool               error;
     uint_32            type;
@@ -125,49 +125,49 @@ bool ResReadMenuExItem( MenuExItem *curritem, FILE *fp )
     // Determine if this is a normal menu item or a popup menu item
 
     if( resInfo & MENUEX_POPUP ) {
-        curritem->IsPopup = true;
-        curritem->Item.ExPopup.Popup.ItemFlags = resInfo;
-        curritem->Item.ExPopup.ExData.ItemId = id;
-        curritem->Item.ExPopup.ExData.ItemType = type;
-        curritem->Item.ExPopup.ExData.ItemState = state;
-        curritem->Item.ExPopup.Popup.ItemText = ResRead32String( fp, NULL );
+        item->IsPopup = true;
+        item->Item.ExPopup.Popup.ItemFlags = resInfo;
+        item->Item.ExPopup.ExData.ItemId = id;
+        item->Item.ExPopup.ExData.ItemType = type;
+        item->Item.ExPopup.ExData.ItemState = state;
+        item->Item.ExPopup.Popup.ItemText = ResRead32String( fp, NULL );
 
         // Careful! The string is DWORD aligned.
         ResReadPadDWord( fp );
-        curritem->Item.ExPopup.ExData.HelpId = ResReadUint32( &error, fp );
+        item->Item.ExPopup.ExData.HelpId = ResReadUint32( &error, fp );
     } else {
-        curritem->IsPopup = false;
-        curritem->Item.ExNormal.Normal.ItemFlags = resInfo;
-        curritem->Item.ExNormal.Normal.ItemID = id;
-        curritem->Item.ExNormal.Normal.ItemText = ResRead32String( fp, NULL );
+        item->IsPopup = false;
+        item->Item.ExNormal.Normal.ItemFlags = resInfo;
+        item->Item.ExNormal.Normal.ItemID = id;
+        item->Item.ExNormal.Normal.ItemText = ResRead32String( fp, NULL );
 
         // Careful! The string is DWORD aligned.
         ResReadPadDWord( fp );
-        curritem->Item.ExNormal.ExData.ItemType = type;
-        curritem->Item.ExNormal.ExData.ItemState = state;
+        item->Item.ExNormal.ExData.ItemType = type;
+        item->Item.ExNormal.ExData.ItemState = state;
     }
 
     return( error );
 }
 
-bool ResReadMenuItem( MenuItem *curritem, FILE *fp )
-/**************************************************/
+bool ResReadMenuItem( MenuItem *item, FILE *fp )
+/**********************************************/
 {
     bool    error;
 
     error = false;
-    curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
+    item->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
     if( !error ) {
-        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
-            curritem->IsPopup = true;
-            curritem->Item.Popup.ItemText = ResReadString( fp, NULL );
-            error = (curritem->Item.Popup.ItemText == NULL);
+        if( item->Item.Popup.ItemFlags & MENU_POPUP ) {
+            item->IsPopup = true;
+            item->Item.Popup.ItemText = ResReadString( fp, NULL );
+            error = (item->Item.Popup.ItemText == NULL);
         } else {
-            curritem->IsPopup = false;
-            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
+            item->IsPopup = false;
+            item->Item.Normal.ItemID = ResReadUint16( &error, fp );
             if( !error ) {
-                curritem->Item.Normal.ItemText = ResReadString( fp, NULL );
-                error = (curritem->Item.Normal.ItemText == NULL);
+                item->Item.Normal.ItemText = ResReadString( fp, NULL );
+                error = (item->Item.Normal.ItemText == NULL);
             }
         }
     }
@@ -175,24 +175,24 @@ bool ResReadMenuItem( MenuItem *curritem, FILE *fp )
     return( error );
 }
 
-bool ResReadMenuItem32( MenuItem *curritem, FILE *fp )
-/****************************************************/
+bool ResReadMenuItem32( MenuItem *item, FILE *fp )
+/************************************************/
 {
     bool    error;
 
     error = false;
-    curritem->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
+    item->Item.Popup.ItemFlags = ResReadUint16( &error, fp );
     if( !error ) {
-        if( curritem->Item.Popup.ItemFlags & MENU_POPUP ) {
-            curritem->IsPopup = true;
-            curritem->Item.Popup.ItemText = ResRead32String( fp, NULL );
-            error = (curritem->Item.Popup.ItemText == NULL);
+        if( item->Item.Popup.ItemFlags & MENU_POPUP ) {
+            item->IsPopup = true;
+            item->Item.Popup.ItemText = ResRead32String( fp, NULL );
+            error = (item->Item.Popup.ItemText == NULL);
         } else {
-            curritem->IsPopup = false;
-            curritem->Item.Normal.ItemID = ResReadUint16( &error, fp );
+            item->IsPopup = false;
+            item->Item.Normal.ItemID = ResReadUint16( &error, fp );
             if( !error ) {
-                curritem->Item.Normal.ItemText = ResRead32String( fp, NULL );
-                error = (curritem->Item.Normal.ItemText == NULL);
+                item->Item.Normal.ItemText = ResRead32String( fp, NULL );
+                error = (item->Item.Normal.ItemText == NULL);
             }
         }
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,36 +36,36 @@
 #include "layer1.h"
 #include "util.h"
 
-WResTypeNode *__FindType( const WResID *type_id, WResDir currdir )
+WResTypeNode *__FindType( const WResID *type_id, WResDir dir )
 {
-    WResTypeNode        *currtype;
+    WResTypeNode        *typenode;
 
-    for( currtype = currdir->Head; currtype != NULL; currtype = currtype->Next ) {
-        if( WResIDCmp( type_id, &(currtype->Info.TypeName) ) ) {
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->Next ) {
+        if( WResIDCmp( type_id, &(typenode->Info.TypeName) ) ) {
             break;
         }
     }
 
-    return( currtype );
+    return( typenode );
 }
 
-WResResNode *__FindRes( const WResID *res_id, WResTypeNode *currtype )
+WResResNode *__FindRes( const WResID *res_id, WResTypeNode *typenode )
 {
-    WResResNode         *currres;
+    WResResNode         *resnode;
 
-    for( currres = currtype->Head; currres != NULL; currres = currres->Next ) {
-        if( WResIDCmp( res_id, &( currres->Info.ResName ) ) ) {
+    for( resnode = typenode->Head; resnode != NULL; resnode = resnode->Next ) {
+        if( WResIDCmp( res_id, &( resnode->Info.ResName ) ) ) {
             break;
         }
     }
 
-    return( currres );
+    return( resnode );
 }
 
-WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres ) {
-/***********************************************************************/
-
-    WResLangNode        *curlang;
+WResLangNode *__FindLang( const WResLangType *lang, WResResNode *resnode )
+/************************************************************************/
+{
+    WResLangNode        *langnode;
     WResLangType        deflang;
 
     if( lang == NULL ) {
@@ -72,13 +73,13 @@ WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres ) {
         deflang.sublang = DEF_SUBLANG;
         lang = &deflang;
     }
-    curlang = curres->Head;
-    while( curlang != NULL ) {
-        if( curlang->Info.lang.lang == lang->lang
-            && curlang->Info.lang.sublang == lang->sublang ) break;
-        curlang = curlang->Next;
+    langnode = resnode->Head;
+    while( langnode != NULL ) {
+        if( langnode->Info.lang.lang == lang->lang
+            && langnode->Info.lang.sublang == lang->sublang ) break;
+        langnode = langnode->Next;
     }
-    return( curlang );
+    return( langnode );
 }
 
 /*
@@ -87,11 +88,11 @@ WResLangNode *__FindLang( const WResLangType *lang, WResResNode *curres ) {
  *                    type is returned
  */
 WResDirWindow WResFindResource( const WResID *type_id, const WResID *res_id,
-                        WResDir currdir, const WResLangType *lang )
+                        WResDir dir, const WResLangType *lang )
 {
     WResDirWindow   newwind;
 
-    newwind.CurrType = __FindType( type_id, currdir );
+    newwind.CurrType = __FindType( type_id, dir );
     if( newwind.CurrType != NULL ) {
         newwind.CurrRes = __FindRes( res_id, newwind.CurrType );
         if( newwind.CurrRes != NULL ) {

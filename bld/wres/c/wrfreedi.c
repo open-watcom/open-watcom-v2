@@ -35,43 +35,46 @@
 #include "wres.h"
 #include "wresrtns.h"
 
-void __FreeLangList( WResResNode *curres )
+void __FreeLangList( WResResNode *resnode )
+/*****************************************/
 {
-    WResLangNode        *currnode;
-    WResLangNode        *nextnode;
+    WResLangNode        *langnode;
+    WResLangNode        *nextlangnode;
 
-    for( currnode = curres->Head; currnode != NULL; currnode = nextnode ) {
-        nextnode = currnode->Next;
-        WRESFREE( currnode );
+    for( langnode = resnode->Head; langnode != NULL; langnode = nextlangnode ) {
+        nextlangnode = langnode->Next;
+        WRESFREE( langnode );
     }
-    curres->Head = NULL;
-    curres->Tail = NULL;
+    resnode->Head = NULL;
+    resnode->Tail = NULL;
 }
 
-void __FreeResList( WResTypeNode *currtype )
+void __FreeResList( WResTypeNode *typenode )
+/******************************************/
 {
-    WResResNode         *currnode;
-    WResResNode         *nextnode;
+    WResResNode         *resnode;
+    WResResNode         *nextresnode;
 
-    for( currnode = currtype->Head; currnode != NULL; currnode = nextnode ) {
-        nextnode = currnode->Next;
-        __FreeLangList( currnode );
-        WRESFREE( currnode );
+    for( resnode = typenode->Head; resnode != NULL; resnode = nextresnode ) {
+        nextresnode = resnode->Next;
+        __FreeLangList( resnode );
+        WRESFREE( resnode );
     }
 
-    currtype->Head = NULL;
-    currtype->Tail = NULL;
+    typenode->Head = NULL;
+    typenode->Tail = NULL;
 }
 
 void __FreeTypeList( WResDir dir )
+/********************************/
 {
-    WResTypeNode        *currtype;
-    WResTypeNode        *nexttype;
+    WResTypeNode        *typenode;
+    WResTypeNode        *nexttypenode;
 
-    for( currtype = dir->Head; currtype != NULL; currtype = nexttype ) {
-        nexttype = currtype->Next;
-        __FreeResList( currtype );
-        WRESFREE( currtype );
+    for( typenode = dir->Head; typenode != NULL; typenode = nexttypenode ) {
+        nexttypenode = typenode->Next;
+        __FreeResList( typenode );
+        WRESFREE( typenode );
     }
 
     dir->Head = NULL;

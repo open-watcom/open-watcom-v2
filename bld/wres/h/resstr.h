@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@ typedef struct StringTableBlock {
 } StringTableBlock;
 #include "poppck.h"
 
-extern void ResInitStringTableBlock( StringTableBlock * );
-extern void ResFreeStringTableBlock( StringTableBlock * );
-extern bool ResWriteStringTableBlock( StringTableBlock * currblock, bool use_unicode, FILE *fp );
+extern void ResInitStringTableBlock( StringTableBlock *block );
+extern void ResFreeStringTableBlock( StringTableBlock *block );
+extern bool ResWriteStringTableBlock( StringTableBlock *block, bool use_unicode, FILE *fp );
 
 #endif

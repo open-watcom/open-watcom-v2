@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +34,13 @@
 #include "layer0.h"
 #include "wres.h"
 
-WResDirWindow WResFirstResource( WResDir currdir )
-/************************************************/
+
+WResDirWindow WResFirstResource( WResDir dir )
+/********************************************/
 {
     WResDirWindow   wind;
 
-    wind.CurrType = currdir->Head;
+    wind.CurrType = dir->Head;
     if( wind.CurrType != NULL ) {
         wind.CurrRes = wind.CurrType->Head;
         wind.CurrLang = wind.CurrRes->Head;
@@ -61,12 +62,13 @@ void WResSetEmptyWindow( WResDirWindow *wind )
     }
 }
 
-void WResMakeWindow( WResDirWindow *wind, WResTypeNode *type,
-                        WResResNode *res, WResLangNode *lang ) {
-/*****************************************************************/
+void WResMakeWindow( WResDirWindow *wind, WResTypeNode *typenode,
+                    WResResNode *resnode, WResLangNode *langnode )
+/****************************************************************/
+{
     if( wind != NULL ) {
-        wind->CurrType = type;
-        wind->CurrRes = res;
-        wind->CurrLang = lang;
+        wind->CurrType = typenode;
+        wind->CurrRes = resnode;
+        wind->CurrLang = langnode;
     }
 }

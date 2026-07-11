@@ -105,27 +105,27 @@ extern bool             WResAddResource2( const WResID *type_id, const WResID *r
                                 uint_32 length, WResDir dir, const WResLangType *lang, WResDirWindow *duplicate,
                                 void *fileinfo );
 extern WResDirWindow    WResFindResource( const WResID *type_id, const WResID *res_id, WResDir, const WResLangType *lang );
-extern void             WResRemoveResource( WResDir currdir, const WResID *type_id, const WResID *res_id, const WResLangType *lang );
+extern void             WResRemoveResource( WResDir dir, const WResID *type_id, const WResID *res_id, const WResLangType *lang );
 extern WResDirWindow    WResFirstResource( WResDir );
 extern void             WResSetEmptyWindow( WResDirWindow *wind );
-extern void             WResMakeWindow( WResDirWindow *wind, WResTypeNode *type_id, WResResNode *res, WResLangNode *lang );
+extern void             WResMakeWindow( WResDirWindow *wind, WResTypeNode *typenode, WResResNode *resnode, WResLangNode *langnode );
 extern WResDirWindow    WResNextResource( WResDirWindow, WResDir );
 extern bool             WResIsLastResource( WResDirWindow, WResDir );
-extern bool             WResIsLastLangRes( WResDirWindow currwind, WResDir currdir );
+extern bool             WResIsLastLangRes( WResDirWindow wind, WResDir dir );
 extern WResResInfo      *WResGetResInfo( WResDirWindow );
 extern WResTypeInfo     *WResGetTypeInfo( WResDirWindow );
 extern WResLangInfo     *WResGetLangInfo( WResDirWindow );
-extern void             *WResGetFileInfo( WResDirWindow currwind );
-extern void             WResDelResource( WResDir currdir, const WResID *type_id, const WResID *res_id );
+extern void             *WResGetFileInfo( WResDirWindow wind );
+extern void             WResDelResource( WResDir dir, const WResID *type_id, const WResID *res_id );
 
 /* hidden but exported routines */
 
 extern WResTypeNode     *__FindType( const WResID *__type_id, WResDir __dir );
-extern WResResNode      *__FindRes( const WResID *__res_id, WResTypeNode *__type );
+extern WResResNode      *__FindRes( const WResID *__res_id, WResTypeNode *__typenode );
 extern void             __FreeTypeList( WResDir __dir );
-extern void             __FreeResList( WResTypeNode *currtype );
-extern void             __FreeLangList( WResResNode *curres );
-extern WResLangNode     *__FindLang( const WResLangType *lang, WResResNode *curres );
+extern void             __FreeResList( WResTypeNode *typenode );
+extern void             __FreeLangList( WResResNode *resnode );
+extern WResLangNode     *__FindLang( const WResLangType *lang, WResResNode *resnode );
 
 /* function prototypes for WRes file initialization */
 

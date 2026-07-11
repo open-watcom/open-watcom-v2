@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,13 @@
 #include "layer0.h"
 #include "wres.h"
 
-WResResInfo * WResGetResInfo( WResDirWindow currwind )
-/****************************************************/
+
+WResResInfo *WResGetResInfo( WResDirWindow wind )
+/***********************************************/
 {
-    if( currwind.CurrRes == NULL ) {
+    if( wind.CurrRes == NULL ) {
         return( NULL );
     } else {
-        return( &(currwind.CurrRes->Info) );
+        return( &(wind.CurrRes->Info) );
     }
 }

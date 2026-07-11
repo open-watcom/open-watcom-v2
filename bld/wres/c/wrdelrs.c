@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,42 +40,42 @@
  *                This routine assumes that all language nodes for this
  *                resource have already been deleted.
  */
-static void delAResource( WResDir currdir, WResTypeNode *type,
-                           WResResNode *cur_res )
+static void delAResource( WResDir dir, WResTypeNode *typenode,
+                           WResResNode *resnode )
 {
-    if( cur_res->Next != NULL ) {
-        cur_res->Next->Prev = cur_res->Prev;
+    if( resnode->Next != NULL ) {
+        resnode->Next->Prev = resnode->Prev;
     } else {
-        type->Tail = cur_res->Prev;
+        typenode->Tail = resnode->Prev;
     }
-    if( cur_res->Prev != NULL ) {
-        cur_res->Prev->Next = cur_res->Next;
+    if( resnode->Prev != NULL ) {
+        resnode->Prev->Next = resnode->Next;
     } else {
-        type->Head = cur_res->Next;
+        typenode->Head = resnode->Next;
     }
-    type->Info.NumResources --;
-    currdir->NumResources --;
-    WRESFREE( cur_res );
+    typenode->Info.NumResources --;
+    dir->NumResources --;
+    WRESFREE( resnode );
 }
 
 /*
  * delAType - delete a type node.  This routine assumes that all
  *            resource nodes for the type have already been deleted
  */
-static void delAType( WResDir currdir, WResTypeNode *type ) {
+static void delAType( WResDir dir, WResTypeNode *typenode ) {
 
-    if( type->Next != NULL ) {
-        type->Next->Prev = type->Prev;
+    if( typenode->Next != NULL ) {
+        typenode->Next->Prev = typenode->Prev;
     } else {
-        currdir->Tail = type->Prev;
+        dir->Tail = typenode->Prev;
     }
-    if( type->Prev != NULL ) {
-        type->Prev->Next = type->Next;
+    if( typenode->Prev != NULL ) {
+        typenode->Prev->Next = typenode->Next;
     } else {
-        currdir->Head = type->Next;
+        dir->Head = typenode->Next;
     }
-    currdir->NumTypes --;
-    WRESFREE( type );
+    dir->NumTypes --;
+    WRESFREE( typenode );
 }
 
 /*
@@ -83,25 +84,25 @@ static void delAType( WResDir currdir, WResTypeNode *type ) {
  *                 all language nodes for the resource have already been
  *                 deleted
  */
-static void doDelResource( WResDir currdir, WResResNode *res,
-                           WResTypeNode *type ) {
-    delAResource( currdir, type, res );
-    if( type->Info.NumResources == 0 ) {
-        delAType( currdir, type );
+static void doDelResource( WResDir dir, WResResNode *resnode,
+                           WResTypeNode *typenode ) {
+    delAResource( dir, typenode, resnode );
+    if( typenode->Info.NumResources == 0 ) {
+        delAType( dir, typenode );
     }
 }
 
-void WResDelResource( WResDir currdir, const WResID *type_id,
+void WResDelResource( WResDir dir, const WResID *type_id,
                       const WResID *res_id ) {
-    WResTypeNode        *cur_type;
-    WResResNode         *cur_res;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
 
-    cur_type = __FindType( type_id, currdir );
-    if( cur_type == NULL ) return;
-    cur_res = __FindRes( res_id, cur_type );
-    if( cur_res == NULL ) return;
-    __FreeLangList( cur_res );
-    doDelResource( currdir, cur_res, cur_type );
+    typenode = __FindType( type_id, dir );
+    if( typenode == NULL ) return;
+    resnode = __FindRes( res_id, typenode );
+    if( resnode == NULL ) return;
+    __FreeLangList( resnode );
+    doDelResource( dir, resnode, typenode );
 }
 
 #if( 0 )
@@ -112,39 +113,39 @@ void WResDelResource( WResDir currdir, const WResID *type_id,
 /*
  * delALang - delete one language node and update pointers and counters
  */
-static void delALang( WResResNode *res, const WResLangType *lang )
+static void delALang( WResResNode *resnode, const WResLangType *lang )
 {
-    WResLangNode        *cur_lang;
+    WResLangNode        *langnode;
 
-    cur_lang = __FindLang( lang, cur_res );
-    if( cur_lang == NULL ) return;
-    if( cur_lang->Next != NULL ) {
-        cur_lang->Next->Prev = cur_lang->Prev;
+    langnode = __FindLang( lang, resnode );
+    if( langnode == NULL ) return;
+    if( langnode->Next != NULL ) {
+        langnode->Next->Prev = langnode->Prev;
     } else {
-        res->Tail = cur_lang->Prev;
+        res->Tail = langnode->Prev;
     }
-    if( cur_lang->Prev != NULL ) {
-        cur_lang->Prev->Next = cur_lang->Next;
+    if( langnode->Prev != NULL ) {
+        langnode->Prev->Next = langnode->Next;
     } else {
-        res->Head = cur_lang->Head;
+        res->Head = langnode->Head;
     }
     res->Info.NumResources --;
-    WRESFREE( cur_lang );
+    WRESFREE( langnode );
 }
 
-void WResDelLang( WResDir currdir, const WResID *type_id,
+void WResDelLang( WResDir dir, const WResID *type_id,
                         const WResID *res_id, const WResLangType *lang ) {
 
-    WResTypeNode        *cur_type;
-    WResResNode         *cur_res;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
 
-    cur_type = __FindType( type_id, currdir );
-    if( cur_type == NULL ) return;
-    cur_res = __FindRes( res_id, cur_type )
-    if( cur_res != NULL ) return;
-    delALang( cur_res, lang )
-    if( cur_res->Info.NumResources == 0 ) {
-        doDelResource( currdir, cur_type, cur_res );
+    typenode = __FindType( type_id, dir );
+    if( typenode == NULL ) return;
+    resnode = __FindRes( res_id, typenode )
+    if( resnode != NULL ) return;
+    delALang( resnode, lang )
+    if( resnode->Info.NumResources == 0 ) {
+        doDelResource( dir, typenode, resnode );
     }
 }
 #endif

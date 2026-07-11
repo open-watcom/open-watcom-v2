@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,23 +108,23 @@ typedef struct MenuExItem {
 
 /* reswmenu.c */
 
-extern bool     ResWriteMenuHeader( MenuHeader *currhead, FILE *fp );
-extern bool     ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemNormalOldWin( const MenuItemNormal *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemPopupOldWin( const MenuItemPopup *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItem( const MenuItem *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemOldWin( const MenuItem *curritem, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuExHeader( MenuHeader *currhead, FILE *fp, uint_8 *data );
-extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuHeader( MenuHeader *head, FILE *fp );
+extern bool     ResWriteMenuItemNormal( const MenuItemNormal *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemNormalOldWin( const MenuItemNormal *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemPopup( const MenuItemPopup *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemPopupOldWin( const MenuItemPopup *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemOldWin( const MenuItem *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuExHeader( MenuHeader *head, FILE *fp, uint_8 *data );
+extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *item, const MenuExItemPopup *exdata, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, FILE *fp );
 
 /* resrmenu.c */
 
-extern bool     ResReadMenuHeader( MenuHeader *currhead, FILE *fp );
-extern bool     ResReadMenuItem( MenuItem *curritem, FILE *fp );
-extern bool     ResReadMenuItem32( MenuItem *curritem, FILE *fp );
-extern bool     ResReadMenuExItem( MenuExItem *curritem, FILE *fp );
+extern bool     ResReadMenuHeader( MenuHeader *head, FILE *fp );
+extern bool     ResReadMenuItem( MenuItem *item, FILE *fp );
+extern bool     ResReadMenuItem32( MenuItem *item, FILE *fp );
+extern bool     ResReadMenuExItem( MenuExItem *item, FILE *fp );
 extern bool     ResReadMenuExtraBytes( MenuHeader *header, FILE *fp, char *buf );
 extern bool     ResIsMenuEx( FILE *fp );
 extern bool     ResIsHeaderMenuEx( MenuHeader *hdr );
