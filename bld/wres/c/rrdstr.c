@@ -37,54 +37,54 @@
 #include "wresrtns.h"
 
 
-char *ResReadString( FILE *fp, size_t *strlen )
-/*********************************************/
+char *ResReadString( FILE *fp, size_t *len )
+/******************************************/
 {
-    VarString           *newstring;
+    VarString           *varstr;
     bool                error;
     uint_8              nextchar;
-    char                *retstring;
+    char                *str;
 
-    newstring = VarStringStart();
+    varstr = VarStringStart();
     error = false;
     nextchar = ResReadUint8( &error, fp );
     while( !error && nextchar != '\0' ) {
-        VarStringAddChar( newstring, nextchar );
+        VarStringAddChar( varstr, nextchar );
         nextchar = ResReadUint8( &error, fp );
     }
 
-    retstring = VarStringEnd( newstring, strlen );
+    str = VarStringEnd( varstr, len );
 
-    if( error && retstring != NULL ) {
-        WRESFREE(retstring);
-        retstring = NULL;
+    if( error && str != NULL ) {
+        WRESFREE( str );
+        str = NULL;
     }
 
-    return( retstring );
+    return( str );
 } /* ResReadString */
 
-char *ResRead32String( FILE *fp, size_t *strlen )
-/***********************************************/
+char *ResRead32String( FILE *fp, size_t *len )
+/********************************************/
 {
-    VarString           *newstring;
+    VarString           *varstr;
     bool                error;
     uint_16             nextchar;
-    char                *retstring;
+    char                *str;
 
-    newstring = VarStringStart();
+    varstr = VarStringStart();
     error = false;
     nextchar = ResReadUint16( &error, fp );
     while( !error && nextchar != 0x0000 ) {
-        VarStringAddChar( newstring, UNI2ASCII( nextchar ) );
+        VarStringAddChar( varstr, UNI2ASCII( nextchar ) );
         nextchar = ResReadUint16( &error, fp );
     }
 
-    retstring = VarStringEnd( newstring, strlen );
+    str = VarStringEnd( varstr, len );
 
-    if( error && retstring != NULL ) {
-        WRESFREE(retstring);
-        retstring = NULL;
+    if( error && str != NULL ) {
+        WRESFREE( str );
+        str = NULL;
     }
 
-    return( retstring );
+    return( str );
 } /* ResRead32String */

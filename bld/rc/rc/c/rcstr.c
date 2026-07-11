@@ -113,8 +113,8 @@ static size_t InitStringIDNamesList( WResDir dir, name_ptr *list, size_t len )
     return( element - list );
 } /* InitStringIDNamesList */
 
-static char *StringUprCopy( char *dst, const char *src, unsigned length )
-/********************************************************************/
+static char *StrUprCpy( char *dst, const char *src, unsigned length )
+/*******************************************************************/
 {
     /* output length */
     *dst++ = length;
@@ -126,8 +126,8 @@ static char *StringUprCopy( char *dst, const char *src, unsigned length )
     return( dst );
 }
 
-static char *StringUprCpyToUni( char *dst, const char *src, unsigned length )
-/***************************************************************************/
+static char *StrUprCpyToUni( char *dst, const char *src, unsigned length )
+/************************************************************************/
 {
     /* output length */
     MPUT_16( dst, (uint_16)length );
@@ -178,9 +178,9 @@ static void ConstructStringIDNamesBlock( StringsBlock *str )
         name_id = str->StringList[i].u.name_id;
         str->StringList[i].u.str = nextstring;
         if( str->UseUnicode ) {
-            nextstring = StringUprCpyToUni( nextstring, name_id->Name, name_id->NumChars );
+            nextstring = StrUprCpyToUni( nextstring, name_id->Name, name_id->NumChars );
         } else {
-            nextstring = StringUprCpy( nextstring, name_id->Name, name_id->NumChars );
+            nextstring = StrUprCpy( nextstring, name_id->Name, name_id->NumChars );
         }
     }
 } /* ConstructStringIDNamesBlock */

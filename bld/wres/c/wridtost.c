@@ -54,28 +54,28 @@ char *WResIDToStr( const WResID *id )
  * return the value in an ID if it is a string, NULL otherwise
  */
 {
-    char *      string;
+    char            *str;
 
     if( id->IsName ) {
         /* alloc space for the string and a \0 char at the end */
-        string = WRESALLOC( id->ID.Name.NumChars + 1 );
-        if( string == NULL ) {
+        str = WRESALLOC( id->ID.Name.NumChars + 1 );
+        if( str == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             /* copy the string */
-            memcpy( string, id->ID.Name.Name, id->ID.Name.NumChars );
-            string[id->ID.Name.NumChars] = '\0';
+            memcpy( str, id->ID.Name.Name, id->ID.Name.NumChars );
+            str[id->ID.Name.NumChars] = '\0';
         }
     } else {
-        string = WRESALLOC( UINT16_MAXDIGITS + 1 );
-        if( string == NULL ) {
+        str = WRESALLOC( UINT16_MAXDIGITS + 1 );
+        if( str == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            *u32tostr( string, id->ID.Num ) = '\0';
+            *u32tostr( str, id->ID.Num ) = '\0';
         }
     }
 
-    return( string );
+    return( str );
 } /* WResIDToStr */
 
 
@@ -84,26 +84,25 @@ char *WResHelpIDToStr( const WResHelpID *help_id )
  * return the value in a Help ID if it is a string, NULL otherwise
  */
 {
-    char *string;
+    char            *str;
 
     if( help_id->IsName ) {
         /* alloc space for the string and a \0 char at the end */
-        string = WRESALLOC( help_id->ID.Name.NumChars + 1 );
-        if( string == NULL ) {
+        str = WRESALLOC( help_id->ID.Name.NumChars + 1 );
+        if( str == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
             /* copy the string */
-            memcpy( string, help_id->ID.Name.Name, help_id->ID.Name.NumChars );
-            string[help_id->ID.Name.NumChars] = '\0';
+            memcpy( str, help_id->ID.Name.Name, help_id->ID.Name.NumChars );
+            str[help_id->ID.Name.NumChars] = '\0';
         }
     } else {
-        string = WRESALLOC( UINT32_MAXDIGITS + 1 );
-        if( string == NULL ) {
+        str = WRESALLOC( UINT32_MAXDIGITS + 1 );
+        if( str == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            *u32tostr( string, help_id->ID.Num ) = '\0';
+            *u32tostr( str, help_id->ID.Num ) = '\0';
         }
     }
-
-    return( string );
+    return( str );
 } /* WResHelpIDToStr */

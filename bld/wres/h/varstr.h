@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ typedef struct VarString {
 } VarString;
 
 extern VarString    *VarStringStart( void );
-extern void         VarStringAddChar( VarString *list, char newchar );
-extern char         *VarStringEnd( VarString *list, size_t *retlength );
+extern void         VarStringAddChar( VarString *varstr, char chr );
+extern char         *VarStringEnd( VarString *varstr, size_t *plen );
 
 #endif

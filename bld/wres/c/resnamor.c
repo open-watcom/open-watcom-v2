@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,42 +37,43 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResNameOrOrdinal *ResStrToNameOrOrdinal( const char *string )
-/***********************************************************/
-{
-    ResNameOrOrdinal    *newname;
-    size_t              stringlen;
 
-    if( string == NULL || *(unsigned char *)string == 0xff ) {
+ResNameOrOrdinal *ResStrToNameOrOrdinal( const char *str )
+/********************************************************/
+{
+    ResNameOrOrdinal    *name;
+    size_t              len;
+
+    if( str == NULL || *(unsigned char *)str == 0xff ) {
         /* the first character of a ResNameOrOrdinal can't be 0xff */
         /* since this indicated that it is an ordinal, not a name */
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
 
-    stringlen = strlen( string );
+    len = strlen( str );
 
-    newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
-    if( newname != NULL ) {
+    name = WRESALLOC( sizeof( ResNameOrOrdinal ) + len );
+    if( name != NULL ) {
         /* +1 so we get the '\0' as well */
-        memcpy( newname->name, string, stringlen + 1 );
+        memcpy( name->name, str, len + 1 );
     } else {
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
 
-    return( newname );
+    return( name );
 }
 
 ResNameOrOrdinal *ResNumToNameOrOrdinal( uint_16 num )
 /****************************************************/
 {
-    ResNameOrOrdinal    *newname;
+    ResNameOrOrdinal    *name;
 
-    newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
-    if( newname != NULL ) {
-        newname->ord.fFlag = 0xff;
-        newname->ord.wOrdinalID = num;
+    name = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+    if( name != NULL ) {
+        name->ord.fFlag = 0xff;
+        name->ord.wOrdinalID = num;
     }
 
-    return( newname );
+    return( name );
 }

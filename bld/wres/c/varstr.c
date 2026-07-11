@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,90 +40,90 @@
 VarString *VarStringStart( void )
 /*******************************/
 {
-    VarString *    newlist;
+    VarString       *varstr;
 
-    newlist = WRESALLOC( sizeof( VarString ) );
-    if( newlist == NULL ) {
+    varstr = WRESALLOC( sizeof( VarString ) );
+    if( varstr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newlist->len = 0;
-        newlist->next = NULL;
+        varstr->len = 0;
+        varstr->next = NULL;
     }
 
-    return(newlist);
+    return( varstr );
 } /* VarStringStart */
 
-void VarStringAddChar( VarString *list, char newchar )
+void VarStringAddChar( VarString *varstr, char chr )
 /****************************************************/
 {
-    if( list != NULL ) {
+    if( varstr != NULL ) {
         /* skip the parts that are already full */
-        while( list->next != NULL ) {
-            list = list->next;
+        while( varstr->next != NULL ) {
+            varstr = varstr->next;
         }
         /* if the current part is full */
-        if( list->len == VAR_STR_PART_SIZE ) {
-            list->next = VarStringStart();
-            if( list->next == NULL ) {
+        if( varstr->len == VAR_STR_PART_SIZE ) {
+            varstr->next = VarStringStart();
+            if( varstr->next == NULL ) {
                 return;
             }
-            list = list->next;
+            varstr = varstr->next;
         }
         /* add the new char to the next spot */
-        list->partString[list->len] = newchar;
-        list->len += 1;
+        varstr->partString[varstr->len] = chr;
+        varstr->len += 1;
     }
 } /* VarStringAddChar */
 
-static size_t ComputeVarStringLen( VarString * string )
+static size_t ComputeVarStringLen( VarString *varstr )
 {
-    size_t  length;
+    size_t  len;
 
-    length = 0;
-    while( string != NULL ) {
-        length += string->len;
-        string = string->next;
+    len = 0;
+    while( varstr != NULL ) {
+        len += varstr->len;
+        varstr = varstr->next;
     }
 
-    return( length );
+    return( len );
 } /* ComputeVarStringLen */
 
-char *VarStringEnd( VarString *list, size_t *retlength )
+char *VarStringEnd( VarString *varstr, size_t *plen )
 /******************************************************/
 /* allocated a continous string for list, copies the string, and free's list */
 /* if retlength is not NULL the lenght of the string (excluding the '\0') is */
 /* returned there */
 {
-    VarString       *oldpart;
-    char            *newstring;
-    char            *stringpart;
-    size_t          length;
+    VarString       *tmp;
+    char            *str;
+    char            *part;
+    size_t          len;
 
-    length = ComputeVarStringLen( list );
+    len = ComputeVarStringLen( varstr );
     /* +1 is for the '\0' */
-    newstring = WRESALLOC( length + 1 );
-    if( newstring == NULL ) {
+    str = WRESALLOC( len + 1 );
+    if( str == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        stringpart = newstring;
-        while( list != NULL ) {
+        part = str;
+        while( varstr != NULL ) {
             /* copy the current string part */
-            memcpy( stringpart, list->partString, list->len );
-            stringpart += list->len;
+            memcpy( part, varstr->partString, varstr->len );
+            part += varstr->len;
 
             /* free the current string part */
-            oldpart = list;
-            list = list->next;
-            WRESFREE( oldpart );
+            tmp = varstr;
+            varstr = varstr->next;
+            WRESFREE( tmp );
         }
 
         /* write the '\0' character */
-        newstring[length] = '\0';
+        str[len] = '\0';
 
-        if( retlength != NULL ) {
-            *retlength = length;
+        if( plen != NULL ) {
+            *plen = len;
         }
     }
 
-    return( newstring );
+    return( str );
 } /* EndStringList */

@@ -269,8 +269,8 @@ bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
     return( ResWriteUint16( extheader->reserved[3], fp ) );
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t numchars )
-/***************************************************************************************/
+bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numchars )
+/************************************************************************************/
 {
     char            *buf;
     bool            error;
@@ -284,9 +284,9 @@ bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t n
         size = CONV_BUF_SIZE;
     }
     if( use_unicode ) {
-        size = ConvToUnicode( string, numchars, buf, size );
+        size = ConvToUnicode( str, numchars, buf, size );
     } else {
-        size = ConvToMultiByte( string, numchars, buf, size );
+        size = ConvToMultiByte( str, numchars, buf, size );
     }
     error = false;
     if( WRESWRITE( fp, buf, size ) != size )
@@ -297,19 +297,19 @@ bool ResWriteStringLen( const char *string, bool use_unicode, FILE *fp, size_t n
     return( error );
 }
 
-bool ResWriteString( const char *string, bool use_unicode, FILE *fp )
-/*******************************************************************/
+bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
+/****************************************************************/
 {
-    size_t  stringlen;
+    size_t  len;
 
     /* if string is NULL output the null string */
-    if( string == NULL ) {
-        string = "";
+    if( str == NULL ) {
+        str = "";
     }
 
     /* the +1 is so we will output the '\0' as well */
-    stringlen = strlen( string ) + 1;
-    return( ResWriteStringLen( string, use_unicode, fp, stringlen ) );
+    len = strlen( str ) + 1;
+    return( ResWriteStringLen( str, use_unicode, fp, len ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )

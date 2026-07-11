@@ -202,7 +202,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
 /********************************************/
 {
     long                newint;     /* these are used to accumulate parts of */
-    VarString           *newstring; /* a new value */
+    VarString           *varstr;    /* a new value */
     YYTOKENTYPE         token;
 #ifdef SCANDEBUG
     char                debugstring[21];
@@ -219,8 +219,8 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_START );
         } else if( isdigit( LookAhead ) ) {
             newint = LookAhead - '0';
-            newstring = VarStringStart();
-            VarStringAddChar( newstring, LookAhead );
+            varstr = VarStringStart();
+            VarStringAddChar( varstr, LookAhead );
             if( LookAhead == '0' ) {
                 do_transition( S_HEXSTART );
             } else {
@@ -228,8 +228,8 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             }
         } else if( isalpha( LookAhead )
           || LookAhead == '_' ) {
-            newstring = VarStringStart();
-            VarStringAddChar( newstring, LookAhead );
+            varstr = VarStringStart();
+            VarStringAddChar( varstr, LookAhead );
             if( LookAhead == 'l'
               || LookAhead == 'L' ) {
                 do_transition( S_L_STRING );
@@ -237,12 +237,12 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_NAME );
         } else switch( LookAhead ) {
             case '"':
-                newstring = VarStringStart();  /* don't include the " */
+                varstr = VarStringStart();  /* don't include the " */
                 newLineInString = 0; /* reset newline in string status */
                 do_transition( S_STRING );
             case '.':
-                newstring = VarStringStart();
-                VarStringAddChar( newstring, LookAhead );
+                varstr = VarStringStart();
+                VarStringAddChar( varstr, LookAhead );
                 do_transition( S_DOS_FILENAME );
             case EOF:
                 DEBUGPUTS( "EOF" );
@@ -272,8 +272,8 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             case ',':           do_transition( S_COMMA );
             case ';':           do_transition( S_COMMENT );
             case '\\':
-                newstring = VarStringStart();
-                VarStringAddChar( newstring, LookAhead );
+                varstr = VarStringStart();
+                VarStringAddChar( varstr, LookAhead );
                 do_transition( S_DOS_FILENAME );
             default:
                 value->UnknownChar = LookAhead;
@@ -282,7 +282,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
     state( S_L_STRING ):
         if( LookAhead =='"' ) {
             longString = true;
-            MemFree( VarStringEnd( newstring, NULL ) );
+            MemFree( VarStringEnd( varstr, NULL ) );
             change_state( S_START );
         } else {
             change_state( S_NAME );
@@ -455,10 +455,10 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
          */
         i = CharSetLen[LookAhead];
         if( i ) {
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             for( ; i > 0; --i ) {
                 GetNextChar();
-                VarStringAddChar( newstring, LookAhead );
+                VarStringAddChar( varstr, LookAhead );
             }
             do_transition( S_STRING );
         }
@@ -482,7 +482,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         case '\\':          do_transition( S_ESCAPE_CHAR );
         case '\n':
             if( RcIoIsCOrHFile() ) {
-                value->string.string = VarStringEnd( newstring, &(value->string.length) );
+                value->string.string = VarStringEnd( varstr, &(value->string.length) );
                 DEBUGPUTS( "STRING" );
                 return( Y_STRING );
             } else {
@@ -491,13 +491,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                  * First store <space> and then <newline character>. Then on next line, all white
                  * spaces from begining of line is removed
                  */
-                VarStringAddChar( newstring, ' ' );
-                VarStringAddChar( newstring, LookAhead );
+                VarStringAddChar( varstr, ' ' );
+                VarStringAddChar( varstr, LookAhead );
                 newLineInString = 1;
                 do_transition( S_STRING );
             }
         default:
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_STRING );
         }
 
@@ -516,35 +516,35 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             /*
              * this is what Microsoft's RC adds for a \a
              */
-            VarStringAddChar( newstring, '\x8' );
+            VarStringAddChar( varstr, '\x8' );
             do_transition( S_STRING );
             break;
         case 'b':
-            VarStringAddChar( newstring, '\b' );
+            VarStringAddChar( varstr, '\b' );
             do_transition( S_STRING );
             break;
         case 'f':
-            VarStringAddChar( newstring, '\f' );
+            VarStringAddChar( varstr, '\f' );
             do_transition( S_STRING );
             break;
         case 'n':
-            VarStringAddChar( newstring, '\n' );
+            VarStringAddChar( varstr, '\n' );
             do_transition( S_STRING );
             break;
         case 'r':
-            VarStringAddChar( newstring, '\r' );
+            VarStringAddChar( varstr, '\r' );
             do_transition( S_STRING );
             break;
         case 't':
-            VarStringAddChar( newstring, '\t' );
+            VarStringAddChar( varstr, '\t' );
             do_transition( S_STRING );
             break;
         case 'v':
-            VarStringAddChar( newstring, '\v' );
+            VarStringAddChar( varstr, '\v' );
             do_transition( S_STRING );
             break;
         default:
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_STRING );
             break;
         }
@@ -560,10 +560,10 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
     state( S_HEX_ESCAPE_2 ):
         if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
-            VarStringAddChar( newstring, newint );
+            VarStringAddChar( varstr, newint );
             do_transition( S_STRING );
         } else {
-            VarStringAddChar( newstring, newint );
+            VarStringAddChar( varstr, newint );
             change_state( S_STRING );
         }
 
@@ -574,7 +574,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_2 );
         } else {
-            VarStringAddChar( newstring, newint );
+            VarStringAddChar( varstr, newint );
             change_state( S_STRING );
         }
 
@@ -585,20 +585,20 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             AddDigitToInt( &newint, 8, LookAhead );
             do_transition( S_OCTAL_ESCAPE_3 );
         } else {
-            VarStringAddChar( newstring, newint );
+            VarStringAddChar( varstr, newint );
             change_state( S_STRING );
         }
 
     state( S_OCTAL_ESCAPE_3 ):
-        VarStringAddChar( newstring, newint );
+        VarStringAddChar( varstr, newint );
         change_state( S_STRING );
 
     state( S_STRINGEND ):
         if( LookAhead == '"' ) {   /* a "" in a string means include one " */
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_STRING );
         } else {
-            stringFromFile = VarStringEnd( newstring, &(value->string.length) );
+            stringFromFile = VarStringEnd( varstr, &(value->string.length) );
             value->string.string = stringFromFile;
 #ifndef NO_REPLACE
             /*
@@ -630,7 +630,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         }
 
     state( S_DECIMAL ):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         if( isdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 10, LookAhead );
             do_transition( S_DECIMAL );
@@ -645,13 +645,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
     state( S_LONGSUFFIX ):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         value->intinfo.type |= SCAN_INT_TYPE_LONG;
         if( toupper( LookAhead ) == 'U' ) {
             value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
@@ -663,13 +663,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
     state( S_UNSIGNEDSUFFIX ):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         value->intinfo.type |= SCAN_INT_TYPE_UNSIGNED;
         if( toupper( LookAhead ) == 'L' ) {
             value->intinfo.type |= SCAN_INT_TYPE_LONG;
@@ -681,7 +681,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
@@ -691,17 +691,17 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
           || LookAhead == '.'
           || LookAhead == '\\'
           || LookAhead == '_' ) {
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
     state( S_HEXSTART ):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         if( isdigit( LookAhead ) ) {
             if( LookAhead == '8'
               || LookAhead == '9' ) {
@@ -724,12 +724,12 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         } else {
             value->intinfo.val = newint;
             DEBUGPUTS_NEWINT;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             return( Y_INTEGER );
         }
 
     state( S_OCT ):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         if( isdigit( LookAhead ) ) {
             if( LookAhead == '8'
               || LookAhead == '9' ) {
@@ -749,13 +749,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
 
     state(S_HEX):
-        VarStringAddChar( newstring, LookAhead );
+        VarStringAddChar( varstr, LookAhead );
         if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
             do_transition( S_HEX );
@@ -770,7 +770,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             do_transition( S_DOS_FILENAME );
         } else {
             value->intinfo.val = newint;
-            value->intinfo.str = VarStringEnd( newstring, NULL );
+            value->intinfo.str = VarStringEnd( varstr, NULL );
             DEBUGPUTS_NEWINT;
             return( Y_INTEGER );
         }
@@ -778,15 +778,15 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
     state(S_NAME):
         if( isalnum( LookAhead )
           || LookAhead == '_' ) {
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_NAME );
         } else if( LookAhead == ':'
           || LookAhead == '\\'
           || LookAhead == '.' ) {
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring, &(value->string.length) );
+            value->string.string = VarStringEnd( varstr, &(value->string.length) );
             DEBUGPUTS( value->string.string );
             token = LookupKeywordOS2( value->string );
             if( token != Y_NAME ) {
@@ -812,10 +812,10 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
           || LookAhead == '\\'
           || LookAhead == '.'
           || LookAhead == '_' ) {
-            VarStringAddChar( newstring, LookAhead );
+            VarStringAddChar( varstr, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring, &(value->string.length) );
+            value->string.string = VarStringEnd( varstr, &(value->string.length) );
             DEBUGPUTS( value->string.string );
             return( Y_DOS_FILENAME );
         }

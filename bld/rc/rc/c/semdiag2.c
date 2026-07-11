@@ -455,7 +455,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
             ptr += 4;
             strcpy( ptr, presparams->Name->name );
             ptr += len;
-            MPUT_32_UN( ptr, (uint_32)-1 );           // Not sure what this is
+            MPUT_32_UN( ptr, 0xffffffff );  // Not sure what this is
             ptr    += 4;
             bytes  += len + 12;
         } else {
