@@ -76,8 +76,8 @@ static size_t SortAndRemoveRedundantStrings( name_ptr *strlist, size_t num,
     return( RemoveRedundantStrings( strlist, num, compare ) );
 } /* SortAndRemoveRedundantStrings */
 
-static size_t InitStringList( WResDir dir, name_ptr *list, size_t len )
-/*******************************************************************
+static size_t InitStringIDNamesList( WResDir dir, name_ptr *list, size_t len )
+/*****************************************************************************
  * The list will be a list of pointers to WResIDName's
  */
 {
@@ -111,12 +111,14 @@ static size_t InitStringList( WResDir dir, name_ptr *list, size_t len )
     }
 
     return( element - list );
-} /* InitStringList */
+} /* InitStringIDNamesList */
 
-static char *StrUprCopy( char *dst, const char *src, unsigned length )
+static char *StringUprCopy( char *dst, const char *src, unsigned length )
 /********************************************************************/
 {
+    /* output length */
     *dst++ = length;
+    /* output string without NULL terminator*/
     while( length-- > 0 ) {
         *dst++ = toupper( *(unsigned char *)src );
         src++;
@@ -124,11 +126,13 @@ static char *StrUprCopy( char *dst, const char *src, unsigned length )
     return( dst );
 }
 
-static char *StrUprCopyToUni( char *dst, const char *src, unsigned length )
-/*************************************************************************/
+static char *StringUprCpyToUni( char *dst, const char *src, unsigned length )
+/***************************************************************************/
 {
+    /* output length */
     MPUT_16( dst, (uint_16)length );
     dst += sizeof( uint_16 );
+    /* output string without NULL terminator*/
     while( length-- > 0 ) {
         *dst++ = toupper( *(unsigned char *)src );
         *dst++ = '\0';
@@ -138,7 +142,7 @@ static char *StrUprCopyToUni( char *dst, const char *src, unsigned length )
 }
 
 static void ConstructStringIDNamesBlock( StringsBlock *str )
-/****************************************************
+/*************************************************************
  * the string list should be filled in when this is called
  */
 {
@@ -174,9 +178,9 @@ static void ConstructStringIDNamesBlock( StringsBlock *str )
         name_id = str->StringList[i].u.name_id;
         str->StringList[i].u.str = nextstring;
         if( str->UseUnicode ) {
-            nextstring = StrUprCopyToUni( nextstring, name_id->Name, name_id->NumChars );
+            nextstring = StringUprCpyToUni( nextstring, name_id->Name, name_id->NumChars );
         } else {
-            nextstring = StrUprCopy( nextstring, name_id->Name, name_id->NumChars );
+            nextstring = StringUprCpy( nextstring, name_id->Name, name_id->NumChars );
         }
     }
 } /* ConstructStringIDNamesBlock */
@@ -190,8 +194,7 @@ static int CompareWResIDNames( const void *n1, const void *n2 )
 void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
 /***********************************************************************/
 {
-    size_t      list_len;
-    name_ptr    *new_list;
+    size_t          list_len;
 
     if( WResIsEmpty( dir ) ) {
         /*
@@ -206,7 +209,7 @@ void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
         str->UseUnicode = use_unicode;
         str->StringList = MemAllocSafe( list_len * sizeof( void * ) );
 
-        list_len = InitStringList( dir, str->StringList, list_len );
+        list_len = InitStringIDNamesList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList, list_len, CompareWResIDNames );
         str->StringListLen = (uint_16)list_len;
 
@@ -216,8 +219,7 @@ void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            new_list = MemReallocSafe( str->StringList, list_len * sizeof( void * ) );
-            str->StringList = new_list;
+            str->StringList = MemReallocSafe( str->StringList, list_len * sizeof( name_ptr * ) );
             ConstructStringIDNamesBlock( str );
         }
     }
