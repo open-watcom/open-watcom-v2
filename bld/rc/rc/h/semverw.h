@@ -66,7 +66,7 @@ typedef struct FullVerBlock {
     struct FullVerBlock     *Prev;
     bool                    iswin32;
     VerBlockHeader          Head;
-    FullVerValueList        *Value;
+    FullVerValueList        *Values;
     FullVerBlockNest        *Nest;
 } FullVerBlock;
 

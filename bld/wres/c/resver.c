@@ -85,8 +85,8 @@ size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool iswin32 )
     return( fixed_size + key_size + padding );
 }
 
-bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, FILE *fp )
-/*************************************************************************/
+bool ResWriteVerValueItem( VerValueItem *item, bool iswin32, FILE *fp )
+/*********************************************************************/
 {
     bool            error;
 
@@ -95,16 +95,16 @@ bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, FILE *fp )
         error = ResWriteUint16( item->Value.Num, fp );
     } else {
         if( item->strlen == VER_CALC_SIZE ) {
-            error = ResWriteString( item->Value.String, use_unicode, fp );
+            error = ResWriteString( item->Value.String, iswin32, fp );
         } else {
-            error = ResWriteStringLen( item->Value.String, use_unicode, fp, item->strlen );
+            error = ResWriteStringLen( item->Value.String, iswin32, fp, item->strlen );
         }
     }
     return( error );
 }
 
-size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
-/*****************************************************************/
+size_t ResSizeVerValueItem( VerValueItem * item, bool iswin32 )
+/*************************************************************/
 {
     size_t  size;
 
@@ -116,7 +116,7 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
         } else {
             size = item->strlen + 1;
         }
-        if( use_unicode ) {
+        if( iswin32 ) {
             size = ConvToUnicode( item->Value.String, size, NULL, 0 );
         } else {
             size = ConvToMultiByte( item->Value.String, size, NULL, 0 );

@@ -94,15 +94,15 @@ static void FreeValList( FullVerValueList *list )
     MemFree( list );
 }
 
-static bool semWriteVerValueList( FullVerValueList *list, bool use_unicode, FILE *fp, int *err_code )
-/***************************************************************************************************/
+static bool semWriteVerValueList( FullVerValueList *list, bool iswin32, FILE *fp, int *err_code )
+/***********************************************************************************************/
 {
     bool        error;
     unsigned    i;
 
     error = false;
     for( i = 0; !error && i < list->NumItems; i++ ) {
-        error = ResWriteVerValueItem( list->Item + i, use_unicode, fp );
+        error = ResWriteVerValueItem( list->Item + i, iswin32, fp );
     }
     *err_code = LastWresErr();
     return( error );
@@ -119,7 +119,7 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     block->Prev = NULL;
     block->Head.Key = name;
     block->iswin32 = CmdLineParms.iswin32;
-    block->Value = list;
+    block->Values = list;
     block->Nest = NULL;
 
     return( block );
@@ -135,7 +135,7 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     block->Prev = NULL;
     block->Head.Key = name;
     block->iswin32 = CmdLineParms.iswin32;
-    block->Value = NULL;
+    block->Values = NULL;
     block->Nest = nest;
 
     return( block );
@@ -151,13 +151,13 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
 
     head_size = ResSizeVerBlockHeader( &block->Head, block->iswin32 );
     val_size = 0;
-    if( block->Value == NULL ) {
+    if( block->Values == NULL ) {
         padding = 0;
     } else {
         unsigned    i;
 
-        for( i = 0; i < block->Value->NumItems; i++ ) {
-            val_size += ResSizeVerValueItem( block->Value->Item + i, block->iswin32 );
+        for( i = 0; i < block->Values->NumItems; i++ ) {
+            val_size += ResSizeVerValueItem( block->Values->Item + i, block->iswin32 );
         }
         padding = RES_PADDING_DWORD( val_size );
     }
@@ -188,8 +188,8 @@ static bool SemWriteVerBlock( FullVerBlock *block, FILE *fp, int *err_code )
     error = ResWriteVerBlockHeader( &block->Head, block->iswin32, fp );
     *err_code = LastWresErr();
     if( !error
-      && block->Value != NULL ) {
-        error = semWriteVerValueList( block->Value, block->iswin32, fp, err_code );
+      && block->Values != NULL ) {
+        error = semWriteVerValueList( block->Values, block->iswin32, fp, err_code );
         if( !error ) {
             error = ResWritePadDWord( fp );
             *err_code = LastWresErr();
@@ -207,8 +207,8 @@ static void FreeVerBlock( FullVerBlock *block )
 /*********************************************/
 {
     MemFree( block->Head.Key );
-    if( block->Value != NULL ) {
-        FreeValList( block->Value );
+    if( block->Values != NULL ) {
+        FreeValList( block->Values );
     }
     if( block->Nest != NULL ) {
         FreeVerBlockNest( block->Nest );
