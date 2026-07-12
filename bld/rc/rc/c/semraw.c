@@ -42,7 +42,7 @@
 
 
 void SemWriteRawDataItem( RawDataItem item )
-/*******************************************
+/******************************************/
 {
     bool        error;
 
