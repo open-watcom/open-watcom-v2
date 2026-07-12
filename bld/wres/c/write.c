@@ -122,61 +122,13 @@ bool ResWritePadDWord( FILE *fp )
 bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FILE *fp )
 /*************************************************************************************/
 {
-    bool            error;
-    unsigned        numchars;
-    unsigned        size;
-    char            *buf;
-
-    error = false;
-    if( name_id == NULL ) {
-        /* a NULL name means write 0 length name */
-        numchars = 0;
+    if( name_id != NULL && name_id->NumChars != 0 ) {
+        return( ResWriteStringLen( name_id->Name, use_unicode, fp, name_id->NumChars, true ) );
+    } else if( use_unicode ) {
+        return( ResWriteUint16( 0, fp ) );
     } else {
-        numchars = name_id->NumChars;
+        return( ResWriteUint8( 0, fp ) );
     }
-    buf = ConvBuffer;
-    size = 2 * numchars;        /* 16-bit Unicode or double-byte */
-    if( numchars > 0 ) {
-        /*
-         * for short strings use a static buffer in improve performance
-         */
-        if( size > CONV_BUF_SIZE ) {
-            buf = WRESALLOC( size );
-        } else {
-            size = CONV_BUF_SIZE;
-        }
-        if( use_unicode ) {
-            size = ConvToUnicode( name_id->Name, numchars, buf, size );
-        } else {
-            size = ConvToMultiByte( name_id->Name, numchars, buf, size );
-        }
-    }
-    if( use_unicode ) {
-        error = ResWriteUint16( numchars, fp );
-    } else {
-        /*
-         * in 16-bit resources the string can be no more than 255 characters
-         * it means length of converted string, which can be double-byte or
-         * UTF-8 encoded and this length can be longer then original string
-         * character count
-         */
-        numchars = size;
-        if( numchars > 255 )
-            numchars = 255;
-        size = numchars;
-        error = ResWriteUint8( numchars, fp );
-    }
-    if( !error ) {
-        if( size > 0 ) {
-            if( WRESWRITE( fp, buf, size ) != size ) {
-                error = WRES_ERROR( WRS_WRITE_FAILED );
-            }
-        }
-    }
-    if( buf != ConvBuffer ) {
-        WRESFREE( buf );
-    }
-    return( error );
 } /* WResWriteWResIDNameString */
 
 bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
@@ -269,8 +221,8 @@ bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
     return( ResWriteUint16( extheader->reserved[3], fp ) );
 }
 
-bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numchars )
-/************************************************************************************/
+bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numchars, bool with_len )
+/***************************************************************************************************/
 {
     char            *buf;
     bool            error;
@@ -289,8 +241,20 @@ bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numc
         size = ConvToMultiByte( str, numchars, buf, size );
     }
     error = false;
-    if( WRESWRITE( fp, buf, size ) != size )
-        error = WRES_ERROR( WRS_WRITE_FAILED );
+    if( with_len ) {
+        if( use_unicode ) {
+            error = ResWriteUint16( numchars, fp );
+        } else {
+            numchars = size;
+            if( numchars > 255 )
+                numchars = 255;
+            size = numchars;
+            error = ResWriteUint8( numchars, fp );
+        }
+    }
+    if( !error ) {
+        error = ResWrite( buf, size, fp );
+    }
     if( buf != ConvBuffer ) {
         WRESFREE( buf );
     }
@@ -309,7 +273,7 @@ bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
 
     /* the +1 is so we will output the '\0' as well */
     len = strlen( str ) + 1;
-    return( ResWriteStringLen( str, use_unicode, fp, len ) );
+    return( ResWriteStringLen( str, use_unicode, fp, len, false ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )

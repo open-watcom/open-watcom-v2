@@ -47,7 +47,7 @@ void SemWriteRawDataItem( RawDataItem item )
     bool        error;
 
     if( item.IsString ) {
-        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fp, item.StrLen );
+        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fp, item.StrLen, false );
         if( !error ) {
             if( item.WriteNull ) {
                 if( item.LongItem ) {
