@@ -110,7 +110,7 @@ static bool readResList( FILE *fp, WResTypeNode *typenode, uint_16 ver, void *fi
                 return( true );
             }
         }
-        resnode = ResReadWResID( offsetof( WResResNode, Info.ResName ), fp, ver );
+        resnode = ResReadWResID( fp, offsetof( WResResNode, Info.ResName ), ver );
         if( resnode == NULL )
             return( true );
         resnode->Info.NumResources = numres;
@@ -154,7 +154,7 @@ static bool readTypeList( FILE *fp, WResDir dir, uint_16 ver, void *fileinfo )
         numres = ResReadUint16( &error, fp );
         if( error )
             return( true );
-        typenode = ResReadWResID( offsetof( WResTypeNode, Info.TypeName ), fp, ver );
+        typenode = ResReadWResID( fp, offsetof( WResTypeNode, Info.TypeName ), ver );
         if( typenode == NULL )
             return( true );
         /* initialize the linked list of resources */

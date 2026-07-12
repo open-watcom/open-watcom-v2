@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,15 +44,15 @@ bool ResWriteToolBarHeader( FILE *fp, uint_16 item1, uint_16 item2, uint_16 cnt 
 
     // don't know why but MS RC puts out a 1 at the start of the resourece
     // perhaps this is a version ????
-    ret =  ResWriteUint16( 1, fp );
+    ret =  ResWriteUint16( fp, 1 );
     if( !ret ) {
-        ret =  ResWriteUint16( item1, fp );
+        ret =  ResWriteUint16( fp, item1 );
     }
     if( !ret ) {
-        ret =  ResWriteUint16( item2, fp );
+        ret =  ResWriteUint16( fp, item2 );
     }
     if( !ret ) {
-        ret =  ResWriteUint16( cnt, fp );
+        ret =  ResWriteUint16( fp, cnt );
     }
     return( ret );
 }

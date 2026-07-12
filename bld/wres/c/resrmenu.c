@@ -41,7 +41,7 @@
 #include "wresrtns.h"
 
 bool ResReadMenuHeader( MenuHeader *head, FILE *fp )
-/******************************************************/
+/**************************************************/
 {
     bool            error;
 
@@ -52,7 +52,7 @@ bool ResReadMenuHeader( MenuHeader *head, FILE *fp )
     return( error );
 }
 
-bool ResReadMenuExtraBytes( MenuHeader *header, FILE *fp, char *buf )
+bool ResReadMenuExtraBytes( MenuHeader *header, char *buf, FILE *fp )
 /*******************************************************************/
 {
     unsigned        size;

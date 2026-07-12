@@ -74,16 +74,16 @@ static size_t DefaultMBConversion( const char *str, size_t len, char *buf, size_
     return( len );
 }
 
-bool ResWriteUint8( uint_8 value, FILE *fp )
-/*******************************************/
+bool ResWriteUint8( FILE *fp, uint_8 value )
+/******************************************/
 {
     if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
-bool ResWriteUint16( uint_16 value, FILE *fp )
-/*********************************************/
+bool ResWriteUint16( FILE *fp, uint_16 value )
+/********************************************/
 {
     CONV_LE_16( value );
     if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
@@ -91,8 +91,8 @@ bool ResWriteUint16( uint_16 value, FILE *fp )
     return( false );
 }
 
-bool ResWriteUint32( uint_32 value, FILE *fp )
-/*********************************************/
+bool ResWriteUint32( FILE *fp, uint_32 value )
+/********************************************/
 {
     CONV_LE_32( value );
     if( WRESWRITE( fp, &value, sizeof( value ) ) != sizeof( value ) )
@@ -123,11 +123,11 @@ bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FIL
 /*************************************************************************************/
 {
     if( name_id != NULL && name_id->NumChars != 0 ) {
-        return( ResWriteStringLen( name_id->Name, use_unicode, fp, name_id->NumChars, true ) );
+        return( ResWriteStringLen( name_id->Name, use_unicode, name_id->NumChars, true, fp ) );
     } else if( use_unicode ) {
-        return( ResWriteUint16( 0, fp ) );
+        return( ResWriteUint16( fp, 0 ) );
     } else {
-        return( ResWriteUint8( 0, fp ) );
+        return( ResWriteUint8( fp, 0 ) );
     }
 } /* WResWriteWResIDNameString */
 
@@ -140,12 +140,12 @@ bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
 bool WResWriteWResID( const WResID *id, FILE *fp )
 /************************************************/
 {
-    if( ResWriteUint8( id->IsName, fp ) )
+    if( ResWriteUint8( fp, id->IsName ) )
         return( true );
     if( id->IsName ) {
         return( WResWriteWResIDName( &(id->ID.Name), fp ) );
     } else {
-        return( ResWriteUint16( id->ID.Num, fp ) );
+        return( ResWriteUint16( fp, id->ID.Num ) );
     }
 }
 
@@ -156,7 +156,7 @@ bool WResWriteWResID( const WResID *id, FILE *fp )
 bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp )
 /************************************************************/
 {
-    if( ResWriteUint16( type->NumResources, fp ) )
+    if( ResWriteUint16( fp, type->NumResources ) )
         return( true );
     return( WResWriteWResID( &type->TypeName, fp ) );
 }
@@ -168,7 +168,7 @@ bool WResWriteTypeRecord( const WResTypeInfo *type, FILE *fp )
 bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
 /*********************************************************/
 {
-    if( ResWriteUint16( res->NumResources, fp ) )
+    if( ResWriteUint16( fp, res->NumResources ) )
         return( true );
     return( WResWriteWResID( &res->ResName, fp ) );
 }
@@ -180,48 +180,48 @@ bool WResWriteResRecord( const WResResInfo *res, FILE *fp )
 bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
 /************************************************************/
 {
-    if( ResWriteUint16( info->lang.lang, fp ) )
+    if( ResWriteUint16( fp, info->lang.lang ) )
         return( true );
-    if( ResWriteUint8( info->lang.sublang, fp ) )
+    if( ResWriteUint8( fp, info->lang.sublang ) )
         return( true );
-    if( ResWriteUint16( info->MemoryFlags, fp ) )
+    if( ResWriteUint16( fp, info->MemoryFlags ) )
         return( true );
-    if( ResWriteUint32( info->Offset, fp ) )
+    if( ResWriteUint32( fp, info->Offset ) )
         return( true );
-    return( ResWriteUint32( info->Length, fp ) );
+    return( ResWriteUint32( fp, info->Length ) );
 }
 
 bool WResWriteHeader( const WResHeader *header, FILE *fp )
 /********************************************************/
 {
-    if( ResWriteUint32( header->Magic[0], fp ) )
+    if( ResWriteUint32( fp, header->Magic[0] ) )
         return( true );
-    if( ResWriteUint32( header->Magic[1], fp ) )
+    if( ResWriteUint32( fp, header->Magic[1] ) )
         return( true );
-    if( ResWriteUint32( header->DirOffset, fp ) )
+    if( ResWriteUint32( fp, header->DirOffset ) )
         return( true );
-    if( ResWriteUint16( header->NumResources, fp ) )
+    if( ResWriteUint16( fp, header->NumResources ) )
         return( true );
-    if( ResWriteUint16( header->NumTypes, fp ) )
+    if( ResWriteUint16( fp, header->NumTypes ) )
         return( true );
-    return( ResWriteUint16( header->WResVer, fp ) );
+    return( ResWriteUint16( fp, header->WResVer ) );
 }
 
 bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
 /*****************************************************************/
 {
-    if( ResWriteUint16( extheader->TargetOS, fp ) )
+    if( ResWriteUint16( fp, extheader->TargetOS ) )
         return( true );
-    if( ResWriteUint16( extheader->reserved[0], fp ) )
+    if( ResWriteUint16( fp, extheader->reserved[0] ) )
         return( true );
-    if( ResWriteUint16( extheader->reserved[1], fp ) )
+    if( ResWriteUint16( fp, extheader->reserved[1] ) )
         return( true );
-    if( ResWriteUint16( extheader->reserved[2], fp ) )
+    if( ResWriteUint16( fp, extheader->reserved[2] ) )
         return( true );
-    return( ResWriteUint16( extheader->reserved[3], fp ) );
+    return( ResWriteUint16( fp, extheader->reserved[3] ) );
 }
 
-bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numchars, bool with_len )
+bool ResWriteStringLen( const char *str, bool use_unicode, size_t numchars, bool with_len, FILE *fp )
 /***************************************************************************************************/
 {
     char            *buf;
@@ -243,13 +243,13 @@ bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t numc
     error = false;
     if( with_len ) {
         if( use_unicode ) {
-            error = ResWriteUint16( numchars, fp );
+            error = ResWriteUint16( fp, numchars );
         } else {
             numchars = size;
             if( numchars > 255 )
                 numchars = 255;
             size = numchars;
-            error = ResWriteUint8( numchars, fp );
+            error = ResWriteUint8( fp, numchars );
         }
     }
     if( !error ) {
@@ -273,7 +273,7 @@ bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
 
     /* the +1 is so we will output the '\0' as well */
     len = strlen( str ) + 1;
-    return( ResWriteStringLen( str, use_unicode, fp, len, false ) );
+    return( ResWriteStringLen( str, use_unicode, len, false, fp ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
@@ -286,12 +286,12 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                error = ResWriteUint16( 0xffff, fp );
+                error = ResWriteUint16( fp, 0xffff );
             } else {
-                error = ResWriteUint8( 0xff, fp );
+                error = ResWriteUint8( fp, 0xff );
             }
             if( !error ) {
-                error = ResWriteUint16( name->ord.wOrdinalID, fp );
+                error = ResWriteUint16( fp, name->ord.wOrdinalID );
             }
         } else {
             error = ResWriteString( name->name, use_unicode, fp );
@@ -338,13 +338,13 @@ static size_t MResFindHeaderSize( MResResourceHeader *msheader, bool iswin32 )
     return( headersize );
 }
 
-bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin32 )
+bool MResWriteResourceHeader( MResResourceHeader *msheader, bool iswin32, FILE *fp )
 /**********************************************************************************/
 {
     if( iswin32 ) {
-        if( ResWriteUint32( msheader->Size, fp ) )
+        if( ResWriteUint32( fp, msheader->Size ) )
             return( true );
-        if( ResWriteUint32( MResFindHeaderSize( msheader, iswin32 ), fp ) )
+        if( ResWriteUint32( fp, MResFindHeaderSize( msheader, iswin32 ) ) )
             return( true );
         if( ResWriteNameOrOrdinal( msheader->Type, true, fp ) )
             return( true );
@@ -352,23 +352,23 @@ bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin
             return( true );
         if( ResWritePadDWord( fp ) )
             return( true );
-        if( ResWriteUint32( msheader->DataVersion, fp ) )
+        if( ResWriteUint32( fp, msheader->DataVersion ) )
             return( true );
-        if( ResWriteUint16( msheader->MemoryFlags, fp ) )
+        if( ResWriteUint16( fp, msheader->MemoryFlags ) )
             return( true );
-        if( ResWriteUint16( msheader->LanguageId, fp ) )
+        if( ResWriteUint16( fp, msheader->LanguageId ) )
             return( true );
-        if( ResWriteUint32( msheader->Version, fp ) )
+        if( ResWriteUint32( fp, msheader->Version ) )
             return( true );
-        return( ResWriteUint32( msheader->Characteristics, fp ) );
+        return( ResWriteUint32( fp, msheader->Characteristics ) );
     } else {
         if( ResWriteNameOrOrdinal( msheader->Type, false, fp ) )
             return( true );
         if( ResWriteNameOrOrdinal( msheader->Name, false, fp ) )
             return( true );
-        if( ResWriteUint16( msheader->MemoryFlags, fp ) )
+        if( ResWriteUint16( fp, msheader->MemoryFlags ) )
             return( true );
-        return( ResWriteUint32( msheader->Size, fp ) );
+        return( ResWriteUint32( fp, msheader->Size ) );
     }
 }
 

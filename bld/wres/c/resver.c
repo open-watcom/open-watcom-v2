@@ -48,12 +48,12 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool iswin32, FILE *fp )
 {
     bool        error;
 
-    error = ResWriteUint16( head->Size, fp );
+    error = ResWriteUint16( fp, head->Size );
     if( !error ) {
-        error = ResWriteUint16( head->ValSize, fp );
+        error = ResWriteUint16( fp, head->ValSize );
     }
     if( !error && iswin32 ) {
-        error = ResWriteUint16( head->Type, fp );
+        error = ResWriteUint16( fp, head->Type );
     }
     if( !error ) {
         error = ResWriteString( head->Key, iswin32, fp );
@@ -92,12 +92,12 @@ bool ResWriteVerValueItem( VerValueItem *item, bool iswin32, FILE *fp )
 
     error = false;
     if( item->IsNum ) {
-        error = ResWriteUint16( item->Value.Num, fp );
+        error = ResWriteUint16( fp, item->Value.Num );
     } else {
         if( item->strlen == VER_CALC_SIZE ) {
             error = ResWriteString( item->Value.String, iswin32, fp );
         } else {
-            error = ResWriteStringLen( item->Value.String, iswin32, fp, item->strlen, false );
+            error = ResWriteStringLen( item->Value.String, iswin32, item->strlen, false, fp );
         }
     }
     return( error );

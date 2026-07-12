@@ -59,7 +59,7 @@ void *ResReadWResIDNum( unsigned offs, FILE *fp )
     return( ptr );
 }
 
-void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
+void *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver )
 /*********************************************************/
 {
     WResID          *id;
@@ -73,7 +73,7 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
         return( NULL );
     if( isname ) {
         isname = true;  /* normalize value to boolean type */
-        ptr = ResReadWResIDName( offs + offsetof( WResID, ID ), fp, ver );
+        ptr = ResReadWResIDName( fp, offs + offsetof( WResID, ID ), ver );
     } else {
         ptr = ResReadWResIDNum( offs + offsetof( WResID, ID ), fp );
     }
@@ -88,6 +88,6 @@ void *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver )
 WResID *WResReadWResID( FILE *fp )
 /********************************/
 {
-    return( ResReadWResID( 0, fp, WRESVERSION ) );
+    return( ResReadWResID( fp, 0, WRESVERSION ) );
 }
 

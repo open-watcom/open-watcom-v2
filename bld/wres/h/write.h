@@ -42,9 +42,9 @@ typedef size_t ConvToMultiByte_fn( const char *, size_t, char *, size_t );
 extern ConvToUnicode_fn     *ConvToUnicode;
 extern ConvToMultiByte_fn   *ConvToMultiByte;
 
-extern bool ResWriteUint8( uint_8 value, FILE *fp );
-extern bool ResWriteUint16( uint_16 value, FILE *fp );
-extern bool ResWriteUint32( uint_32 value, FILE *fp );
+extern bool ResWriteUint8( FILE *fp, uint_8 value );
+extern bool ResWriteUint16( FILE *fp, uint_16 value );
+extern bool ResWriteUint32( FILE *fp, uint_32 value );
 extern bool ResWritePadDWord( FILE *fp );
 extern bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp );
 extern bool WResWriteResRecord( const WResResInfo *res, FILE *fp );
@@ -56,9 +56,9 @@ extern bool WResWriteHeader( const WResHeader *header, FILE *fp );
 extern bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp );
 extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp );
 extern bool ResWriteString( const char *str, bool use_unicode, FILE *fp );
-extern bool ResWriteStringLen( const char *str, bool use_unicode, FILE *fp, size_t len, bool with_len );
+extern bool ResWriteStringLen( const char *str, bool use_unicode, size_t len, bool with_len, FILE *fp );
 extern void WriteInitStatics( void );
 extern void MResFreeResourceHeader( MResResourceHeader *msheader );
-extern bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin32 );
+extern bool MResWriteResourceHeader( MResResourceHeader *msheader, bool iswin32, FILE *fp );
 
 #endif

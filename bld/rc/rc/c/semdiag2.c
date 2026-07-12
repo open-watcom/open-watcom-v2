@@ -102,24 +102,24 @@ static bool WriteOS2DialogBoxHeader( DialogHeaderOS2 *header, FILE *fp )
 {
     bool    error;
 
-    error = ResWriteUint16( header->Size, fp );
+    error = ResWriteUint16( fp, header->Size );
     if( !error ) {
-        error = ResWriteUint16( header->Type, fp );
+        error = ResWriteUint16( fp, header->Type );
     }
     if( !error ) {
-        error = ResWriteUint16( header->Codepage, fp );
+        error = ResWriteUint16( fp, header->Codepage );
     }
     if( !error ) {
-        error = ResWriteUint16( header->OffsetFirstTmpl, fp );
+        error = ResWriteUint16( fp, header->OffsetFirstTmpl );
     }
     if( !error ) {
-        error = ResWriteUint16( header->TemplateStatus, fp );
+        error = ResWriteUint16( fp, header->TemplateStatus );
     }
     if( !error ) {
-        error = ResWriteUint16( header->ItemFocus, fp );
+        error = ResWriteUint16( fp, header->ItemFocus );
     }
     if( !error ) {
-        error = ResWriteUint16( header->OffsetPresParams, fp );
+        error = ResWriteUint16( fp, header->OffsetPresParams );
     }
     return( error );
 }

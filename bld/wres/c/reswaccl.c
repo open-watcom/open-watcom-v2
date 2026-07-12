@@ -42,11 +42,11 @@
 bool ResWriteAccelEntry( AccelTableEntry *entry, FILE *fp )
 /*********************************************************/
 {
-    if( ResWriteUint8( entry->Flags, fp ) )
+    if( ResWriteUint8( fp, entry->Flags ) )
         return( true );
-    if( ResWriteUint16( entry->Ascii, fp ) )
+    if( ResWriteUint16( fp, entry->Ascii ) )
         return( true );
-    if( ResWriteUint16( entry->Id, fp ) )
+    if( ResWriteUint16( fp, entry->Id ) )
         return( true );
     return( false );
 }
@@ -54,13 +54,13 @@ bool ResWriteAccelEntry( AccelTableEntry *entry, FILE *fp )
 bool ResWriteAccelEntry32( AccelTableEntry32 *entry, FILE *fp )
 /*************************************************************/
 {
-    if( ResWriteUint16( entry->Flags, fp ) )
+    if( ResWriteUint16( fp, entry->Flags ) )
         return( true );
-    if( ResWriteUint16( entry->Ascii, fp ) )
+    if( ResWriteUint16( fp, entry->Ascii ) )
         return( true );
-    if( ResWriteUint16( entry->Id, fp ) )
+    if( ResWriteUint16( fp, entry->Id ) )
         return( true );
-    if( ResWriteUint16( entry->Unknown, fp ) )
+    if( ResWriteUint16( fp, entry->Unknown ) )
         return( true );
     return( false );
 }

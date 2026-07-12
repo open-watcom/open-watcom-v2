@@ -66,15 +66,15 @@ static bool ResOS2WriteMenuHeader( MenuHeaderOS2 *currhead, FILE *fp )
 {
     bool        error;
 
-    error = ResWriteUint32( currhead->Size, fp );
+    error = ResWriteUint32( fp, currhead->Size );
     if( !error ) {
-        error = ResWriteUint16( currhead->Codepage, fp );
+        error = ResWriteUint16( fp, currhead->Codepage );
     }
     if( !error ) {
-        error = ResWriteUint16( currhead->Class, fp );
+        error = ResWriteUint16( fp, currhead->Class );
     }
     if( !error ) {
-        error = ResWriteUint16( currhead->NumItems, fp );
+        error = ResWriteUint16( fp, currhead->NumItems );
     }
     return( error );
 }
@@ -84,12 +84,12 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
 {
     bool        error;
 
-    error = ResWriteUint16( curritem->ItemStyle, fp );
+    error = ResWriteUint16( fp, curritem->ItemStyle );
     if( !error ) {
-        error = ResWriteUint16( curritem->ItemAttrs, fp );
+        error = ResWriteUint16( fp, curritem->ItemAttrs );
     }
     if( !error ) {
-        error = ResWriteUint16( curritem->ItemCmd, fp );
+        error = ResWriteUint16( fp, curritem->ItemCmd );
     }
     if( !error ) {
         if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR)

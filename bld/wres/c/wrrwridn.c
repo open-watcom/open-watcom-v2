@@ -38,7 +38,7 @@
 #include "wresrtns.h"
 
 
-void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
+void *ResReadWResIDName( FILE *fp, unsigned offs, uint_16 ver )
 /*************************************************************/
 {
     size_t          numread;
@@ -78,6 +78,6 @@ void *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver )
 WResIDName *WResReadWResIDName( FILE *fp )
 /****************************************/
 {
-    return( ResReadWResIDName( 0, fp, WRESVERSION ) );
+    return( ResReadWResIDName( fp, 0, WRESVERSION ) );
 }
 

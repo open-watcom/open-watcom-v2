@@ -51,7 +51,7 @@ WResResInfo *WResReadResRecord( FILE *fp )
     numres = ResReadUint16( &error, fp );
     if( error )
         return( NULL );
-    ptr = ResReadWResID( offsetof( WResResInfo, ResName ), fp, WRESVERSION );
+    ptr = ResReadWResID( fp, offsetof( WResResInfo, ResName ), WRESVERSION );
     ptr->NumResources = numres;
     return( ptr );
 }

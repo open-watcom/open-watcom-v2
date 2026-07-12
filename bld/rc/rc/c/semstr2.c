@@ -49,7 +49,7 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
     /*
      * Write string table codepage
      */
-    error = ResWriteUint16( codepage, fp );
+    error = ResWriteUint16( fp, codepage );
     if( error )
         return( error );
 
@@ -60,7 +60,7 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
             /*
              * Write an empty string
              */
-            error = ResWriteUint16( 1, fp );
+            error = ResWriteUint16( fp, 1 );
         } else {
             size_t  len;
             /*
@@ -69,14 +69,14 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
             len = name_id->NumChars + 1;
             if( len > 255 )
                 len = 255;
-            error = ResWriteUint8( len, fp );
+            error = ResWriteUint8( fp, len );
             if( !error )
-                error = ResWriteStringLen( name_id->Name, false, fp, len - 1, false );
+                error = ResWriteStringLen( name_id->Name, false, len - 1, false, fp );
             /*
              * The terminating NULL is not stored in the table, need to add it now
              */
             if( !error ) {
-                error = ResWriteUint8( 0, fp );
+                error = ResWriteUint8( fp, 0 );
             }
         }
     }

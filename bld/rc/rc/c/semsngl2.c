@@ -392,7 +392,7 @@ void SemOS2WriteFontDir( void )
 
     loc.start = SemStartResource();
 
-    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fp );
+    error = ResWriteUint16( CurrResFile.fp, CurrResFile.FontDir->NumOfFonts );
     if( error)
         goto OUTPUT_WRITE_ERROR;
 

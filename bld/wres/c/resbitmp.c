@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,23 +48,23 @@ bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, FILE *fp )
 bool ResWriteWinOldBitmapHeader( BitmapInfoHeader *head, FILE *fp ) {
     bool error;
 
-    error = ResWriteUint8( 0x02, fp ); // rnType
+    error = ResWriteUint8( fp, 0x02 ); // rnType
     if( !error )
-        error = ResWriteUint8( 0x00, fp );
+        error = ResWriteUint8( fp, 0x00 );
     if( !error )
-        error = ResWriteUint16( 0x0000, fp ); // bmType
+        error = ResWriteUint16( fp, 0x0000 ); // bmType
     if( !error )
-        error = ResWriteUint16( head->Width, fp ); // bmWidth
+        error = ResWriteUint16( fp, head->Width ); // bmWidth
     if( !error )
-        error = ResWriteUint16( head->Height, fp ); // bmHeight
+        error = ResWriteUint16( fp, head->Height ); // bmHeight
     if( !error )
-        error = ResWriteUint16( (((head->Width*head->BitCount+15u)&(~15u))/8u)/*WORD align*/, fp ); // bmWidthBytes
+        error = ResWriteUint16( fp, (((head->Width*head->BitCount+15u)&(~15u))/8u)/*WORD align*/ ); // bmWidthBytes
     if( !error )
-        error = ResWriteUint8( 1, fp ); // bmPlanes
+        error = ResWriteUint8( fp, 1 ); // bmPlanes
     if( !error )
-        error = ResWriteUint8( head->BitCount, fp ); // bmBitsPixel
+        error = ResWriteUint8( fp, head->BitCount ); // bmBitsPixel
     if( !error )
-        error = ResWriteUint32( 0, fp ); // unknown zero field
+        error = ResWriteUint32( fp, 0 ); // unknown zero field
 
     return( error );
 }

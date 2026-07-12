@@ -115,7 +115,7 @@ extern bool     ResWriteMenuItemPopup( const MenuItemPopup *item, bool use_unico
 extern bool     ResWriteMenuItemPopupOldWin( const MenuItemPopup *item, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuItemOldWin( const MenuItem *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuExHeader( MenuHeader *head, FILE *fp, uint_8 *data );
+extern bool     ResWriteMenuExHeader( MenuHeader *head, uint_8 *data, FILE *fp );
 extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *item, const MenuExItemPopup *exdata, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, FILE *fp );
 
@@ -125,7 +125,7 @@ extern bool     ResReadMenuHeader( MenuHeader *head, FILE *fp );
 extern bool     ResReadMenuItem( MenuItem *item, FILE *fp );
 extern bool     ResReadMenuItem32( MenuItem *item, FILE *fp );
 extern bool     ResReadMenuExItem( MenuExItem *item, FILE *fp );
-extern bool     ResReadMenuExtraBytes( MenuHeader *header, FILE *fp, char *buf );
+extern bool     ResReadMenuExtraBytes( MenuHeader *header, char *buf, FILE *fp );
 extern bool     ResIsMenuEx( FILE *fp );
 extern bool     ResIsHeaderMenuEx( MenuHeader *hdr );
 extern MenuItem *ResNewMenuItem( void );

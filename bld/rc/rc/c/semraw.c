@@ -42,18 +42,18 @@
 
 
 void SemWriteRawDataItem( RawDataItem item )
-/******************************************/
+/*******************************************
 {
     bool        error;
 
     if( item.IsString ) {
-        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fp, item.StrLen, false );
+        error = ResWriteStringLen( item.Item.String, item.LongItem, item.StrLen, false, CurrResFile.fp );
         if( !error ) {
             if( item.WriteNull ) {
                 if( item.LongItem ) {
-                    error = ResWriteUint16( 0, CurrResFile.fp );
+                    error = ResWriteUint16( CurrResFile.fp, 0 );
                 } else {
-                    error = ResWriteUint8( '\0', CurrResFile.fp );
+                    error = ResWriteUint8( CurrResFile.fp, '\0' );
                 }
             }
         }
@@ -64,9 +64,9 @@ void SemWriteRawDataItem( RawDataItem item )
         error = false;
         if( !ErrorHasOccured ) {
             if( item.LongItem ) {
-                error = ResWriteUint32( item.Item.Num, CurrResFile.fp );
+                error = ResWriteUint32( CurrResFile.fp, item.Item.Num );
             } else {
-                error = ResWriteUint16( item.Item.Num, CurrResFile.fp );
+                error = ResWriteUint16( CurrResFile.fp, item.Item.Num );
             }
         }
     }

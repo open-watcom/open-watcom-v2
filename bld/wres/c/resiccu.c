@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,51 +100,52 @@ bool ResWriteCurHotspot( const CurHotspot *hotspot, FILE *fp )
 }
 
 bool ResWriteWinOldIconHeader( const IconDirEntry *entry, FILE *fp )
-/************************************************************/
+/******************************************************************/
 {
     bool error;
 
-    error = ResWriteUint8( 0x01, fp ); // rnType
+    error = ResWriteUint8( fp, 0x01 ); // rnType
     if( !error )
-        error = ResWriteUint8( 0x01, fp ); // rnFlags. Magic undocumented bit 0 must be set or Windows 2.x shows the icon at full scale and randomly corrupts it.
+        error = ResWriteUint8( fp, 0x01 ); // rnFlags. Magic undocumented bit 0 must be set or Windows 2.x shows the icon at full scale and randomly corrupts it.
     if( !error )
-        error = ResWriteUint16( 0x0000, fp ); // rnZero
+        error = ResWriteUint16( fp, 0x0000 ); // rnZero
     if( !error )
-        error = ResWriteUint16( 0x0000, fp ); // bmType
+        error = ResWriteUint16( fp, 0x0000 ); // bmType
     if( !error )
-        error = ResWriteUint16( entry->Info.Width, fp ); // bmWidth
+        error = ResWriteUint16( fp, entry->Info.Width ); // bmWidth
     if( !error )
-        error = ResWriteUint16( entry->Info.Height, fp ); // bmHeight
+        error = ResWriteUint16( fp, entry->Info.Height ); // bmHeight
     if( !error )
-        error = ResWriteUint16( (((entry->Info.Width*entry->Info.BitCount+15u)&(~15u))/8u)/*WORD align*/, fp ); // bmWidthBytes
+        error = ResWriteUint16( fp, (((entry->Info.Width*entry->Info.BitCount+15u)&(~15u))/8u)/*WORD align*/ ); // bmWidthBytes
     if( !error )
-        error = ResWriteUint8( entry->Info.BitCount != 1 ? 1 : 0, fp ); // bmPlanes
+        error = ResWriteUint8( fp, entry->Info.BitCount != 1 ? 1 : 0 ); // bmPlanes
     if( !error )
-        error = ResWriteUint8( entry->Info.BitCount != 1 ? entry->Info.BitCount : 0, fp ); // bmBitsPixel
+        error = ResWriteUint8( fp, entry->Info.BitCount != 1 ? entry->Info.BitCount : 0 ); // bmBitsPixel
 
     return( error );
 }
 
-bool ResWriteWinOldCursorHeader( const CurDirEntry *entry, const CurHotspot *hotspot, FILE *fp ) {
+bool ResWriteWinOldCursorHeader( const CurDirEntry *entry, const CurHotspot *hotspot, FILE *fp )
+{
     bool error;
 
-    error = ResWriteUint8( 0x03, fp ); // rnType
+    error = ResWriteUint8( fp, 0x03 ); // rnType
     if( !error )
-        error = ResWriteUint8( 0x01, fp ); // rnFlags. Magic undocumented bit 0 must be set or Windows 2.x shows the icon at full scale and randomly corrupts it.
+        error = ResWriteUint8( fp, 0x01 ); // rnFlags. Magic undocumented bit 0 must be set or Windows 2.x shows the icon at full scale and randomly corrupts it.
     if( !error )
-        error = ResWriteUint16( hotspot->X, fp ); // rnZero
+        error = ResWriteUint16( fp, hotspot->X ); // rnZero
     if( !error )
-        error = ResWriteUint16( hotspot->Y, fp ); // bmType
+        error = ResWriteUint16( fp, hotspot->Y ); // bmType
     if( !error )
-        error = ResWriteUint16( entry->Width, fp ); // bmWidth
+        error = ResWriteUint16( fp, entry->Width ); // bmWidth
     if( !error )
-        error = ResWriteUint16( entry->Height, fp ); // bmHeight
+        error = ResWriteUint16( fp, entry->Height ); // bmHeight
     if( !error )
-        error = ResWriteUint16( (((entry->Width*entry->BitCount+15u)&(~15u))/8u)/*WORD align*/, fp ); // bmWidthBytes
+        error = ResWriteUint16( fp, (((entry->Width*entry->BitCount+15u)&(~15u))/8u)/*WORD align*/ ); // bmWidthBytes
     if( !error )
-        error = ResWriteUint8( entry->BitCount != 1 ? 1 : 0, fp ); // bmPlanes
+        error = ResWriteUint8( fp, entry->BitCount != 1 ? 1 : 0 ); // bmPlanes
     if( !error )
-        error = ResWriteUint8( entry->BitCount != 1 ? entry->BitCount : 0, fp ); // bmBitsPixel
+        error = ResWriteUint8( fp, entry->BitCount != 1 ? entry->BitCount : 0 ); // bmBitsPixel
 
     return( error );
 }

@@ -44,12 +44,12 @@ static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, FILE *fp )
 {
     bool                error;
 
-    error = ResWriteUint16( currentry->Flags, fp );
+    error = ResWriteUint16( fp, currentry->Flags );
     if( !error ) {
-        error = ResWriteUint16( currentry->Ascii, fp );
+        error = ResWriteUint16( fp, currentry->Ascii );
     }
     if( !error ) {
-        error = ResWriteUint16( currentry->Id, fp );
+        error = ResWriteUint16( fp, currentry->Id );
     }
     return( error );
 }
@@ -200,9 +200,9 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
     FullAccelEntryOS2   *currentry;
     bool                error;
 
-    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), fp );
+    error = ResWriteUint16( fp, SemOS2CountAccelTableEntries( acctable ) );
     if( !error ) {
-        error = ResWriteUint16( codepage, fp );
+        error = ResWriteUint16( fp, codepage );
     }
     for( currentry = acctable->head; currentry != NULL && !error; currentry = currentry->next ) {
         error = ResOS2WriteAccelEntry( &currentry->entry, fp );

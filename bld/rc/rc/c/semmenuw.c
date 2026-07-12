@@ -353,7 +353,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags flags, FullMenu *menu,
             memset( headerdata, 0, head.Size );
             ResWritePadDWord( CurrResFile.fp );
             loc.start = SemStartResource();
-            error = ResWriteMenuExHeader( &head, CurrResFile.fp, headerdata );
+            error = ResWriteMenuExHeader( &head, headerdata, CurrResFile.fp );
         } else {
             loc.start = 0;      // Is this valid?
         }

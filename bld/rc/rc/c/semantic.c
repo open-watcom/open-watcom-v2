@@ -132,7 +132,7 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags flags,
     /*
      * OS/2 resource header happens to be identical to Win16
      */
-    error = MResWriteResourceHeader( &msheader, CurrResFile.fp, iswin32 );
+    error = MResWriteResourceHeader( &msheader, iswin32, CurrResFile.fp );
     MemFree( msheader.Type );
     MemFree( msheader.Name );
     ErrorHasOccured = true;

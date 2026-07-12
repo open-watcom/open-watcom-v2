@@ -51,9 +51,9 @@ typedef enum WResResType {
 extern WResResInfo          *WResReadResRecord( FILE *fp );
 extern WResTypeInfo         *WResReadTypeRecord( FILE *fp );
 extern WResID               *WResReadWResID( FILE *fp );
-extern void                 *ResReadWResID( unsigned offs, FILE *fp, uint_16 ver );
+extern void                 *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver );
 extern WResIDName           *WResReadWResIDName( FILE *fp );
-extern void                 *ResReadWResIDName( unsigned offs, FILE *fp, uint_16 ver );
+extern void                 *ResReadWResIDName( FILE *fp, unsigned offs, uint_16 ver );
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );
