@@ -326,13 +326,16 @@ static size_t MResFindHeaderSize( MResResourceHeader *msheader, bool iswin32 )
     size_t  typesize;
     size_t  padding;
 
-    headersize = 2 * sizeof( uint_16 ) + 5 * sizeof( uint_32 );
     namesize = MResFindNameOrOrdSize( msheader->Name, iswin32 );
     typesize = MResFindNameOrOrdSize( msheader->Type, iswin32 );
-    headersize += ( namesize + typesize );
-    padding = RES_PADDING_DWORD( typesize + namesize );
-
-    return( headersize + padding );
+    if( iswin32 ) {
+        headersize = 2 * sizeof( uint_32 ) + namesize + typesize;
+        padding = RES_PADDING_DWORD( headersize );
+        headersize += padding + 3 * sizeof( uint_32 ) + 2 * sizeof( uint_16 );
+    } else {
+        headersize = namesize + typesize + sizeof( uint_16 ) + sizeof( uint_32 );
+    }
+    return( headersize );
 }
 
 bool MResWriteResourceHeader( MResResourceHeader *msheader, FILE *fp, bool iswin32 )
