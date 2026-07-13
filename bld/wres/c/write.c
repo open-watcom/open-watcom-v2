@@ -140,7 +140,7 @@ bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
     unsigned        numchars;
 
     numchars = name_id->NumChars;
-    error = ResWriteUint16( numchars, fp );
+    error = ResWriteUint16( fp, numchars );
     if( numchars > 0 ) {
         if( !error ) {
             if( WRESWRITE( fp, name_id->Name, numchars ) != numchars ) {
