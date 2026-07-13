@@ -93,5 +93,4 @@ wres_more_objs = &
     wrmergdi.obj &
     wrnextrs.obj &
     wrrwrid.obj &
-    wrrwridn.obj &
     wrwritdi.obj

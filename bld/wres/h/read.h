@@ -52,8 +52,6 @@ extern WResResInfo          *WResReadResRecord( FILE *fp );
 extern WResTypeInfo         *WResReadTypeRecord( FILE *fp );
 extern WResID               *WResReadWResID( FILE *fp );
 extern void                 *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver );
-extern WResIDName           *WResReadWResIDName( FILE *fp );
-extern void                 *ResReadWResIDName( FILE *fp, unsigned offs, uint_16 ver );
 extern bool                 WResReadHeader( WResHeader *header, FILE *fp );
 extern bool                 WResReadExtHeader( WResExtHeader *extheader, FILE *fp );
 extern WResResType          WResReadResType( FILE *fp );

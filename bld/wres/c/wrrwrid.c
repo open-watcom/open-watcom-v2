@@ -39,26 +39,6 @@
 #include "wresrtns.h"
 
 
-static void *ResReadWResIDNum( unsigned offs, FILE *fp )
-/******************************************************/
-{
-    char            *ptr;
-    bool            error;
-
-    ptr = AllocWResIDNum( offs );
-    if( ptr == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED );
-    } else {
-        error = false;
-        *(uint_16 *)( ptr + offs ) = ResReadUint16( &error, fp );
-        if( error ) {
-            WRESFREE( ptr );
-            return( NULL );
-        }
-    }
-    return( ptr );
-}
-
 void *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver )
 /*********************************************************/
 {
@@ -66,6 +46,8 @@ void *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver )
     uint_8          isname;
     char            *ptr;
     bool            error;
+    unsigned        numchars;
+    size_t          numread;
 
     error = false;
     isname = ResReadUint8( &error, fp );
@@ -73,14 +55,39 @@ void *ResReadWResID( FILE *fp, unsigned offs, uint_16 ver )
         return( NULL );
     if( isname ) {
         isname = true;  /* normalize value to boolean type */
-        ptr = ResReadWResIDName( fp, offs + offsetof( WResID, ID ), ver );
+        if( ver < 3 ) {
+            numchars = ResReadUint8( &error, fp );
+        } else {
+            numchars = ResReadUint16( &error, fp );
+        }
+        if( error )
+            return( NULL );
+        ptr = AllocWResIDName( offs + offsetof( WResID, ID.Name ), numchars );
+        if( ptr == NULL ) {
+            WRES_ERROR( WRS_MALLOC_FAILED );
+            return( NULL );
+        }
+        id = (WResID *)( ptr + offs );
+        id->ID.Name.NumChars = numchars;
+        /* read in the characters */
+        if( (numread = WRESREAD( fp, id->ID.Name.Name, numchars )) != numchars ) {
+            WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+            WRESFREE( ptr );
+            ptr = NULL;
+        }
     } else {
-        ptr = ResReadWResIDNum( offs + offsetof( WResID, ID ), fp );
+        ptr = AllocWResIDNum( offs + offsetof( WResID, ID.Num ) );
+        if( ptr == NULL ) {
+            WRES_ERROR( WRS_MALLOC_FAILED );
+            return( NULL );
+        }
+        id = (WResID *)( ptr + offs );
+        id->ID.Num = ResReadUint16( &error, fp );
+        if( error ) {
+            WRESFREE( ptr );
+            return( NULL );
+        }
     }
-    if( ptr == NULL ) {
-        return( NULL );
-    }
-    id = (WResID *)( ptr + offs );
     id->IsName = isname;
     return( ptr );
 }
@@ -90,4 +97,3 @@ WResID *WResReadWResID( FILE *fp )
 {
     return( ResReadWResID( fp, 0, WRESVERSION ) );
 }
-
