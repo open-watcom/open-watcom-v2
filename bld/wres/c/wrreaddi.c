@@ -250,8 +250,6 @@ static bool readResDir( FILE *fp, WResDir dir, void *fileinfo, bool *dup_discard
     WResExtHeader   extheader;
     bool            iswin32;
 
-    if( WRESSEEK( fp, 0, SEEK_SET ) )
-        return( WRES_ERROR( WRS_SEEK_FAILED ) );
     /*
      * OW header is shorter then Microsoft headers
      */
