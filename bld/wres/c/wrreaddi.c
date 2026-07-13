@@ -252,6 +252,7 @@ static bool readResDir( FILE *fp, WResDir dir, void *fileinfo, bool *dup_discard
 
     /*
      * OW header is shorter then Microsoft headers
+     * we can read it and use it for check file type
      */
     if( WResReadHeader( &header, fp ) )
         return( true );
