@@ -54,7 +54,7 @@ bool WResReadHeader( WResHeader *header, FILE *fp )
     header->DirOffset = ResReadUint32( &error, fp );
     if( error )
         return( true );
-    header->NumResources = ResReadUint32( &error, fp );
+    header->NumResources = ResReadUint16( &error, fp );
     if( error )
         return( true );
     header->NumTypes = ResReadUint16( &error, fp );
