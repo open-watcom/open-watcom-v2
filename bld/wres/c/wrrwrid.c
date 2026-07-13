@@ -39,8 +39,8 @@
 #include "wresrtns.h"
 
 
-void *ResReadWResIDNum( unsigned offs, FILE *fp )
-/***********************************************/
+static void *ResReadWResIDNum( unsigned offs, FILE *fp )
+/******************************************************/
 {
     char            *ptr;
     bool            error;
