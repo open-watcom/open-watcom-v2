@@ -132,9 +132,23 @@ bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FIL
 } /* WResWriteWResIDNameString */
 
 bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
-/*************************************************************/
+/**************************************************************
+ * write type and resource IDs names (only ASCII characters)
+ */
 {
-    return( WResWriteWResIDNameString( name_id, false, fp ) );
+    bool            error;
+    unsigned        numchars;
+
+    numchars = name_id->NumChars;
+    error = ResWriteUint16( numchars, fp );
+    if( numchars > 0 ) {
+        if( !error ) {
+            if( WRESWRITE( fp, name_id->Name, numchars ) != numchars ) {
+                error = WRES_ERROR( WRS_WRITE_FAILED );
+            }
+        }
+    }
+    return( error );
 }
 
 bool WResWriteWResID( const WResID *id, FILE *fp )
