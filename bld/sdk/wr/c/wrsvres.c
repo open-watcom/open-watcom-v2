@@ -169,7 +169,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
         msheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (msheader.Type != NULL && msheader.Name != NULL);
         if( ok ) {
-            ok = !MResWriteResourceHeader( &msheader, dst_fp, iswin32 );
+            ok = !MResWriteResourceHeader( &msheader, iswin32, dst_fp );
         }
         if( ok ) {
             if( lnode->data != NULL ) {
