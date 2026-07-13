@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +42,7 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
 /*************************************************************************/
 {
     WResDirWindow       wind;
-    WResDirWindow       dup;
+    WResDirWindow       wind_dup;
     WResLangInfo        *langinfo;
     WResResInfo         *resinfo;
     WResTypeInfo        *typeinfo;
@@ -58,12 +59,12 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
         WResAddResource2( &typeinfo->TypeName, &resinfo->ResName,
                         langinfo->MemoryFlags, langinfo->Offset,
                         langinfo->Length, dstdir, &langinfo->lang,
-                        &dup, fileinfo );
-        if( !WResIsEmptyWindow( dup ) && errs != NULL ) {
+                        &wind_dup, fileinfo );
+        if( !WResIsEmptyWindow( wind_dup ) && errs != NULL ) {
             newerr = WRESALLOC( sizeof( WResMergeError ) );
             newerr->next = *errs;
             *errs = newerr;
-            newerr->dstres = dup;
+            newerr->dstres = wind_dup;
             newerr->srcres = wind;
         }
         wind = WResNextResource( wind, srcdir );

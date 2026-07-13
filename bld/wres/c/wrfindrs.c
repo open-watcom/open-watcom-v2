@@ -90,25 +90,25 @@ WResLangNode *__FindLang( const WResLangType *lang, WResResNode *resnode )
 WResDirWindow WResFindResource( const WResID *type_id, const WResID *res_id,
                         WResDir dir, const WResLangType *lang )
 {
-    WResDirWindow   newwind;
+    WResDirWindow   wind;
 
-    newwind.CurrType = __FindType( type_id, dir );
-    if( newwind.CurrType != NULL ) {
-        newwind.CurrRes = __FindRes( res_id, newwind.CurrType );
-        if( newwind.CurrRes != NULL ) {
+    wind.CurrType = __FindType( type_id, dir );
+    if( wind.CurrType != NULL ) {
+        wind.CurrRes = __FindRes( res_id, wind.CurrType );
+        if( wind.CurrRes != NULL ) {
             if( lang == NULL ) {
-                newwind.CurrLang = newwind.CurrRes->Head;
+                wind.CurrLang = wind.CurrRes->Head;
             } else {
-                newwind.CurrLang = __FindLang( lang, newwind.CurrRes );
+                wind.CurrLang = __FindLang( lang, wind.CurrRes );
             }
         } else {
-            newwind.CurrLang = NULL;
-            newwind.CurrType = NULL;
+            wind.CurrLang = NULL;
+            wind.CurrType = NULL;
         }
     } else {
-        newwind.CurrRes = NULL;
-        newwind.CurrLang = NULL;
+        wind.CurrRes = NULL;
+        wind.CurrLang = NULL;
     }
 
-    return( newwind );
+    return( wind );
 }

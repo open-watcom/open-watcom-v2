@@ -122,14 +122,14 @@ static void delALang( WResResNode *resnode, const WResLangType *lang )
     if( langnode->Next != NULL ) {
         langnode->Next->Prev = langnode->Prev;
     } else {
-        res->Tail = langnode->Prev;
+        resnode->Tail = langnode->Prev;
     }
     if( langnode->Prev != NULL ) {
         langnode->Prev->Next = langnode->Next;
     } else {
-        res->Head = langnode->Head;
+        resnode->Head = langnode->Head;
     }
-    res->Info.NumResources --;
+    resnode->Info.NumResources --;
     WRESFREE( langnode );
 }
 

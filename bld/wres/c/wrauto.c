@@ -45,7 +45,7 @@ char *WResGetAutoDep( const char *fname )
     bool            dup_discarded;
     WResID          *res_id;
     WResID          *type_id;
-    WResDirWindow   window;
+    WResDirWindow   wind;
     WResLangInfo    *info;
     char            *ret;
     size_t          numread;
@@ -59,11 +59,11 @@ char *WResGetAutoDep( const char *fname )
                 type_id = WResIDFromNum( DEP_LIST_TYPE );
                 if( res_id != NULL
                   && type_id != NULL ) {
-                    window = WResFindResource( type_id, res_id, dir, NULL );
-                    if( WResIsEmptyWindow( window ) ) {
+                    wind = WResFindResource( type_id, res_id, dir, NULL );
+                    if( WResIsEmptyWindow( wind ) ) {
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
-                        info = WResGetLangInfo( window );
+                        info = WResGetLangInfo( wind );
                         if( WRESSEEK( fp, info->Offset, SEEK_SET ) ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
                         } else {

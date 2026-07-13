@@ -177,7 +177,7 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
 /**********************************************************************/
 {
     MResResourceHeader      *msheader;
-    WResDirWindow           dup;
+    WResDirWindow           wind_dup;
     bool                    error;
     WResID                  *res_id;
     WResID                  *type_id;
@@ -215,9 +215,9 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
               || type_id->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = WResAddResource2( type_id, res_id, msheader->MemoryFlags,
                             WRESTELL( fp ), msheader->Size, dir, NULL,
-                            &dup, fileinfo );
+                            &wind_dup, fileinfo );
                 if( error
-                  && !WResIsEmptyWindow( dup ) ) {
+                  && !WResIsEmptyWindow( wind_dup ) ) {
                     error = false;
                     if( dup_discarded != NULL  ) {
                         *dup_discarded = true;

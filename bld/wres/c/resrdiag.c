@@ -218,7 +218,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
 static ControlClass *ReadControlClass( FILE *fp )
 /***********************************************/
 {
-    ControlClass    *newclass;
+    ControlClass    *class_id;
     uint_8          class;
     bool            error;
     size_t          stringlen;
@@ -243,31 +243,31 @@ static ControlClass *ReadControlClass( FILE *fp )
     }
 
     /* allocate memory for the new class */
-    newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
-    if( newclass == NULL ) {
+    class_id = WRESALLOC( sizeof( ControlClass ) + stringlen );
+    if( class_id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         /* copy the class or string into the correct place */
         if( class & 0x80 ) {
-            newclass->Class = class;
+            class_id->Class = class;
         } else if( class == 0 ) {
-            newclass->ClassName[0] = '\0';
+            class_id->ClassName[0] = '\0';
         } else {
-            newclass->ClassName[0] = class;
-            memcpy( newclass->ClassName + 1, restofstring, stringlen );
+            class_id->ClassName[0] = class;
+            memcpy( class_id->ClassName + 1, restofstring, stringlen );
         }
     }
 
     if( restofstring != NULL ) {
         WRESFREE( restofstring );
     }
-    return( newclass );
+    return( class_id );
 }
 
 static ControlClass *Read32ControlClass( FILE *fp )
 /*************************************************/
 {
-    ControlClass    *newclass;
+    ControlClass    *class_id;
     uint_16         flags;
     uint_16         class;
     bool            error;
@@ -298,25 +298,25 @@ static ControlClass *Read32ControlClass( FILE *fp )
     }
 
     /* allocate memory for the new class */
-    newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
-    if( newclass == NULL ) {
+    class_id = WRESALLOC( sizeof( ControlClass ) + stringlen );
+    if( class_id == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         /* copy the class or string into the correct place */
         if( flags == 0xffff ) {
-            newclass->Class = (uint_8)class;
+            class_id->Class = (uint_8)class;
         } else if( flags == 0 ) {
-            newclass->ClassName[0] = '\0';                  /* NUL character */
+            class_id->ClassName[0] = '\0';                  /* NUL character */
         } else {
-            newclass->ClassName[0] = UNI2ASCII( flags );    /* first 16-bit UNICODE character */
-            memcpy( newclass->ClassName + 1, restofstring, stringlen );
+            class_id->ClassName[0] = UNI2ASCII( flags );    /* first 16-bit UNICODE character */
+            memcpy( class_id->ClassName + 1, restofstring, stringlen );
         }
     }
 
     if( restofstring != NULL ) {
         WRESFREE( restofstring );
     }
-    return( newclass );
+    return( class_id );
 }
 
 bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )

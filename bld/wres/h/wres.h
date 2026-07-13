@@ -102,7 +102,7 @@ extern bool             WResReadDir2( FILE *fp, WResDir *dir, bool *dup_discarde
 extern bool             WResAddResource( const WResID *type_id, const WResID *res_id, uint_16 memflags, long offset,
                                 uint_32 length, WResDir dir, const WResLangType *lang, bool *duplicate );
 extern bool             WResAddResource2( const WResID *type_id, const WResID *res_id, uint_16 memflags, long offset,
-                                uint_32 length, WResDir dir, const WResLangType *lang, WResDirWindow *duplicate,
+                                uint_32 length, WResDir dir, const WResLangType *lang, WResDirWindow *wind_dup,
                                 void *fileinfo );
 extern WResDirWindow    WResFindResource( const WResID *type_id, const WResID *res_id, WResDir, const WResLangType *lang );
 extern void             WResRemoveResource( WResDir dir, const WResID *type_id, const WResID *res_id, const WResLangType *lang );

@@ -132,12 +132,12 @@ bool WResAddResource( const WResID *type_id, const WResID *res_id,
 /************************************************************/
 {
     bool                rc;
-    WResDirWindow       dup;
+    WResDirWindow       wind_dup;
 
     rc = WResAddResource2( type_id, res_id, memflags, offset, length, dir,
-                             lang, &dup, NULL );
+                             lang, &wind_dup, NULL );
     if( duplicate != NULL ) {
-        *duplicate = !WResIsEmptyWindow( dup );
+        *duplicate = !WResIsEmptyWindow( wind_dup );
     }
     return( rc );
 }
@@ -145,7 +145,7 @@ bool WResAddResource( const WResID *type_id, const WResID *res_id,
 bool WResAddResource2( const WResID *type_id, const WResID *res_id,
                     uint_16 memflags, long offset, uint_32 length,
                     WResDir dir, const WResLangType *lang,
-                    WResDirWindow *duplicate, void *fileinfo )
+                    WResDirWindow *wind_dup, void *fileinfo )
 /************************************************************/
 {
 
@@ -154,8 +154,8 @@ bool WResAddResource2( const WResID *type_id, const WResID *res_id,
     WResLangNode        *langnode;
 
     /* set duplicate false so other errors will have it set correctly */
-    if( duplicate != NULL ) {
-        WResSetEmptyWindow( duplicate );
+    if( wind_dup != NULL ) {
+        WResSetEmptyWindow( wind_dup );
     }
     resnode = NULL;
 
@@ -166,8 +166,8 @@ bool WResAddResource2( const WResID *type_id, const WResID *res_id,
         if( resnode != NULL ) {
             langnode = __FindLang( lang, resnode );
             if( langnode != NULL ) {
-                if( duplicate != NULL )
-                    WResMakeWindow( duplicate, typenode, resnode, langnode );
+                if( wind_dup != NULL )
+                    WResMakeWindow( wind_dup, typenode, resnode, langnode );
                 return( WRES_ERROR( WRS_DUP_ENTRY ) );
             }
         }

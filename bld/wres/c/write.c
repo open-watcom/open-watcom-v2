@@ -119,8 +119,8 @@ bool ResWritePadDWord( FILE *fp )
     return( false );
 }
 
-bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FILE *fp )
-/*************************************************************************************/
+bool ResWriteStringWResIDName( const WResIDName *name_id, bool use_unicode, FILE *fp )
+/************************************************************************************/
 {
     if( name_id != NULL && name_id->NumChars != 0 ) {
         return( ResWriteStringLen( name_id->Name, name_id->NumChars, use_unicode, true, fp ) );
@@ -129,7 +129,7 @@ bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FIL
     } else {
         return( ResWriteUint8( fp, 0 ) );
     }
-} /* WResWriteWResIDNameString */
+} /* ResWriteStringWResIDName */
 
 bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
 /**************************************************************
