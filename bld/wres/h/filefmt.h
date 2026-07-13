@@ -48,7 +48,7 @@ typedef enum {
 /************************************************************************
  *
  * resource file structures format declaration (unaligned and packed)
- *    also old resource formats structures (version 1 and 2)
+ *    also old resource formats structures (version 0, 1 and 2)
  *
  ************************************************************************/
 
@@ -180,7 +180,7 @@ typedef struct WResIDName {         /* this is a "Pascal style" string */
 } WResIDName;                       /* NOTE: there is no trailing '\0' */
 
 typedef struct WResID {
-    uint_16         IsName;         /* if true then ID is a Name otherwise Num */
+    uint_8          IsName;         /* if true then ID is a Name otherwise Num */
     union {
         uint_16     Num;            /* number of the ID */
         WResIDName  Name;           /* name of the ID */
@@ -188,7 +188,7 @@ typedef struct WResID {
 } WResID;
 
 typedef struct WResHelpID {
-    uint_32         IsName;         /* if true then ID is a Name otherwise Num */
+    uint_8          IsName;         /* if true then ID is a Name otherwise Num */
     union {
         uint_32     Num;            /* number of the Help ID */
         WResIDName  Name;           /* name of the Help ID */
@@ -207,7 +207,7 @@ typedef struct WResResInfo {
 
 typedef struct WResLangType {
     uint_16         lang;
-    uint_16         sublang;
+    uint_8          sublang;
 } WResLangType;
 
 typedef struct WResLangInfo {
