@@ -82,7 +82,7 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     msheader.Size = langinfo->Length;
 
     //FIXME! The last argument should be true for Win32 resources
-    error = MResWriteResourceHeader( &msheader, out_fp, iswin32 );
+    error = MResWriteResourceHeader( &msheader, iswin32, out_fp );
     if( !error ) {
         RESSEEK( in_fp, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( in_fp, out_fp, msheader.Size );
