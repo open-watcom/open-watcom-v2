@@ -71,7 +71,7 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock, FILE *fp, 
                 len = 255;
             error = ResWriteUint8( fp, len );
             if( !error )
-                error = ResWriteStringLen( name_id->Name, false, len - 1, false, fp );
+                error = ResWriteStringLen( name_id->Name, len - 1, false, false, fp );
             /*
              * The terminating NULL is not stored in the table, need to add it now
              */

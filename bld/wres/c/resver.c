@@ -97,7 +97,7 @@ bool ResWriteVerValueItem( VerValueItem *item, bool iswin32, FILE *fp )
         if( item->strlen == VER_CALC_SIZE ) {
             error = ResWriteString( item->Value.String, iswin32, fp );
         } else {
-            error = ResWriteStringLen( item->Value.String, iswin32, item->strlen, false, fp );
+            error = ResWriteStringLen( item->Value.String, item->strlen, iswin32, false, fp );
         }
     }
     return( error );

@@ -123,7 +123,7 @@ bool WResWriteWResIDNameString( const WResIDName *name_id, bool use_unicode, FIL
 /*************************************************************************************/
 {
     if( name_id != NULL && name_id->NumChars != 0 ) {
-        return( ResWriteStringLen( name_id->Name, use_unicode, name_id->NumChars, true, fp ) );
+        return( ResWriteStringLen( name_id->Name, name_id->NumChars, use_unicode, true, fp ) );
     } else if( use_unicode ) {
         return( ResWriteUint16( fp, 0 ) );
     } else {
@@ -221,7 +221,7 @@ bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
     return( ResWriteUint16( fp, extheader->reserved[3] ) );
 }
 
-bool ResWriteStringLen( const char *str, bool use_unicode, size_t numchars, bool with_len, FILE *fp )
+bool ResWriteStringLen( const char *str, size_t numchars, bool use_unicode, bool with_len, FILE *fp )
 /***************************************************************************************************/
 {
     char            *buf;
@@ -273,7 +273,7 @@ bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
 
     /* the +1 is so we will output the '\0' as well */
     len = strlen( str ) + 1;
-    return( ResWriteStringLen( str, use_unicode, len, false, fp ) );
+    return( ResWriteStringLen( str, len, use_unicode, false, fp ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
