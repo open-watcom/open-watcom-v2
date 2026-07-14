@@ -42,7 +42,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
 {
     uint_8              flags;
     uint_16             ord;
-    ResNameOrOrdinal    *newptr;
+    ResNameOrOrdinal    *name;
     bool                error;
     size_t              stringlen;
     char                *restofstr;
@@ -71,19 +71,19 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
     }
 
     /* allocate space for the new Name or Ordinal */
-    newptr = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
-    if( newptr == NULL ) {
+    name = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
+    if( name == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         /* copy the new new Name or Ordinal into the correct place */
         if( flags == 0xff ) {
-            newptr->ord.fFlag = 0xff;
-            newptr->ord.wOrdinalID = ord;
+            name->ord.fFlag = 0xff;
+            name->ord.wOrdinalID = ord;
         } else if( flags == 0) {
-            newptr->name[0] = '\0';
+            name->name[0] = '\0';
         } else {
-            newptr->name[0] = flags;
-            memcpy( newptr->name + 1, restofstr, stringlen );
+            name->name[0] = flags;
+            memcpy( name->name + 1, restofstr, stringlen );
         }
     }
 
@@ -91,7 +91,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
         WRESFREE( restofstr );
     }
 
-    return( newptr );
+    return( name );
 }
 
 ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
@@ -99,7 +99,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
 {
     uint_16             flags;
     uint_16             ord;
-    ResNameOrOrdinal    *newptr;
+    ResNameOrOrdinal    *name;
     bool                error;
     size_t              stringlen;
     char                *restofstr;
@@ -128,19 +128,19 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
     }
 
     /* allocate space for the new Name or Ordinal */
-    newptr = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
-    if( newptr == NULL ) {
+    name = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
+    if( name == NULL ) {
         error = WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         /* copy the new Name or Ordinal into the correct place */
         if( flags == 0xffff ) {
-            newptr->ord.fFlag = 0xff;
-            newptr->ord.wOrdinalID = ord;
+            name->ord.fFlag = 0xff;
+            name->ord.wOrdinalID = ord;
         } else if( flags == 0 ) {
-            newptr->name[0] = '\0';                 /* NUL character */
+            name->name[0] = '\0';                 /* NUL character */
         } else {
-            newptr->name[0] = UNI2ASCII( flags );
-            memcpy( newptr->name + 1, restofstr, stringlen );
+            name->name[0] = UNI2ASCII( flags );
+            memcpy( name->name + 1, restofstr, stringlen );
         }
     }
 
@@ -148,5 +148,5 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
         WRESFREE( restofstr );
     }
 
-    return( newptr );
+    return( name );
 }

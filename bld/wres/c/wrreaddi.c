@@ -187,11 +187,9 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     if( iswin32 ) {
         /* Read initial NULL header */
         msheader = MResReadResourceHeader( fp, iswin32 );
-        if( msheader == NULL ) {
-            error = true;
-        } else {
-            MResFreeResourceHeader( msheader );
-        }
+        if( msheader == NULL )
+            return( true );
+        MResFreeResourceHeader( msheader );
     }
     if( dup_discarded != NULL  ) {
         *dup_discarded = false;

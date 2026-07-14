@@ -40,54 +40,54 @@
 ResNameOrOrdinal *WResIDToNameOrOrdinal( WResID *id )
 /***************************************************/
 {
-    ResNameOrOrdinal *  newname;
+    ResNameOrOrdinal    *name;
 
     if( id->IsName ) {
         /* the one char in the ResNameOrOrdinal gives room for the '\0' */
-        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + id->ID.Name.NumChars );
-        if( newname == NULL ) {
+        name = WRESALLOC( sizeof( ResNameOrOrdinal ) + id->ID.Name.NumChars );
+        if( name == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            memcpy( newname->name, id->ID.Name.Name, id->ID.Name.NumChars );
-            newname->name[id->ID.Name.NumChars] = '\0';
+            memcpy( name->name, id->ID.Name.Name, id->ID.Name.NumChars );
+            name->name[id->ID.Name.NumChars] = '\0';
         }
     } else {
-        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
-        if( newname == NULL ) {
+        name = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+        if( name == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            newname->ord.fFlag = 0xff;
-            newname->ord.wOrdinalID = id->ID.Num;
+            name->ord.fFlag = 0xff;
+            name->ord.wOrdinalID = id->ID.Num;
         }
     }
 
-    return( newname );
+    return( name );
 }
 
 
 ResNameOrOrdinal *WResHelpIDToNameOrOrdinal( WResHelpID *help_id )
 /****************************************************************/
 {
-    ResNameOrOrdinal *  newname;
+    ResNameOrOrdinal    *name;
 
     if( help_id->IsName ) {
         /* the one char in the ResNameOrOrdinal gives room for the '\0' */
-        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) + help_id->ID.Name.NumChars );
-        if( newname == NULL ) {
+        name = WRESALLOC( sizeof( ResNameOrOrdinal ) + help_id->ID.Name.NumChars );
+        if( name == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            memcpy( newname->name, help_id->ID.Name.Name, help_id->ID.Name.NumChars );
-            newname->name[help_id->ID.Name.NumChars] = '\0';
+            memcpy( name->name, help_id->ID.Name.Name, help_id->ID.Name.NumChars );
+            name->name[help_id->ID.Name.NumChars] = '\0';
         }
     } else {
-        newname = WRESALLOC( sizeof( ResNameOrOrdinal ) );
-        if( newname == NULL ) {
+        name = WRESALLOC( sizeof( ResNameOrOrdinal ) );
+        if( name == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            newname->ord.fFlag = 0xff;
-            newname->ord.wOrdinalID = help_id->ID.Num;
+            name->ord.fFlag = 0xff;
+            name->ord.wOrdinalID = help_id->ID.Num;
         }
     }
 
-    return( newname );
+    return( name );
 }

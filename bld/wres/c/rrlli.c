@@ -64,25 +64,25 @@ struct ss *next,*prev;
  * ResReplaceLLItem - drop a replacement item into a linked list
  */
 void ResReplaceLLItem( void **headptr, void **tailptr,
-                        void *itemptr, void *newptr )
+                        void *olditemptr, void *newitemptr )
 {
     ss          **head;
     ss          **tail;
-    ss          *item;
-    ss          *new;
+    ss          *olditem;
+    ss          *newitem;
 
     head = (ss **)headptr;
     tail = (ss **)tailptr;
-    item = (ss *)itemptr;
-    new  = (ss *)newptr;
+    olditem = (ss *)olditemptr;
+    newitem = (ss *)newitemptr;
 
-    if( item == *head ) *head = new;
-    if( item == *tail ) *tail = new;
+    if( olditem == *head ) *head = newitem;
+    if( olditem == *tail ) *tail = newitem;
 
-    new->prev = item->prev;
-    new->next = item->next;
+    newitem->prev = olditem->prev;
+    newitem->next = olditem->next;
 
-    if( item->prev != NULL ) item->prev->next = new;
-    if( item->next != NULL ) item->next->prev = new;
+    if( olditem->prev != NULL ) olditem->prev->next = newitem;
+    if( olditem->next != NULL ) olditem->next->prev = newitem;
 
 } /* ResReplaceLLItem */

@@ -305,18 +305,18 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
     return( error );
 } /* ResWriteNameOrOrdinal */
 
-static size_t MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
+static size_t MResFindNameOrOrdSize( ResNameOrOrdinal *name, bool use_unicode )
 /*****************************************************************************/
 {
     size_t  size;
 
-    if( data->ord.fFlag == 0xff ) {
+    if( name->ord.fFlag == 0xff ) {
         size = 4;
     } else {
         if( use_unicode ) {
-            size = 2 * ( strlen( data->name ) + 1 );
+            size = 2 * ( strlen( name->name ) + 1 );
         } else {
-            size = strlen( data->name ) + 1;
+            size = strlen( name->name ) + 1;
         }
     }
     return( size );
