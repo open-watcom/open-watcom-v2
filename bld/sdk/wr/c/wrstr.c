@@ -57,13 +57,13 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-static size_t getUniStringLength( WResIDName *id, bool is32bit )
+static size_t getUniStringLength( WResIDName *name_id, bool is32bit )
 {
     char        *str;
     size_t      len;
 
     if( is32bit ) {
-        str = WRStringFromWResIDName( id );
+        str = WRStringFromWResIDName( name_id );
         if( str != NULL ) {
             len = 0;
             WRmbcs2unicode( str, NULL, &len );
@@ -73,8 +73,8 @@ static size_t getUniStringLength( WResIDName *id, bool is32bit )
         }
     } else {
         len = 1;
-        if( id != NULL ) {
-            len += id->NumChars;
+        if( name_id != NULL ) {
+            len += name_id->NumChars;
         }
     }
 
@@ -110,20 +110,20 @@ static char *copyNULLWResIDNameToData( char *data, bool is32bit )
     return( data );
 }
 
-static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
+static char *copyWResIDNameToData( char *data, WResIDName *name_id, bool is32bit )
 {
     char        *str;
     char        *new_str;
     size_t      len;
 
-    if( name == NULL ) {
+    if( name_id == NULL ) {
         return( copyNULLWResIDNameToData( data, is32bit ) );
     }
 
     if( is32bit ) {
         new_str = NULL;
         len = 0;
-        str = WRStringFromWResIDName( name );
+        str = WRStringFromWResIDName( name_id );
         if( str != NULL ) {
             WRmbcs2unicode( str, &new_str, &len );
             MemFree( str );
@@ -143,11 +143,11 @@ static char *copyWResIDNameToData( char *data, WResIDName *name, bool is32bit )
         MemFree( new_str );
     } else {
         // write the length of the string
-        VALU8( data ) = name->NumChars;
+        VALU8( data ) = name_id->NumChars;
         INCU8( data );
 
         // write the string
-        data = WRCopyString( data, &name->Name[0], name->NumChars );
+        data = WRCopyString( data, name_id->Name, name_id->NumChars );
     }
 
     return( data );

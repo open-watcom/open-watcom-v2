@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ WRDLLENTRY extern void      WRAPI WRMassageFilter( char *filter );
 WRDLLENTRY extern size_t    WRAPI WRStrlen( const char *str, bool is32Bit );
 WRDLLENTRY extern size_t    WRAPI WRStrlen32( const char *str );
 
-WRDLLENTRY extern char      *WRAPI WRStringFromWResIDName( WResIDName *name );
+WRDLLENTRY extern char      *WRAPI WRStringFromWResIDName( WResIDName *name_id );
 
 WRDLLENTRY extern size_t    WRAPI WRFindFnOffset( const char *name );
 

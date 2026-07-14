@@ -119,7 +119,7 @@ bool ResWritePadDWord( FILE *fp )
     return( false );
 }
 
-bool ResWriteStringWResIDName( const WResIDName *name_id, bool use_unicode, FILE *fp )
+bool ResWriteWResStringIDName( const WResIDName *name_id, bool use_unicode, FILE *fp )
 /************************************************************************************/
 {
     if( name_id != NULL && name_id->NumChars != 0 ) {
@@ -129,35 +129,25 @@ bool ResWriteStringWResIDName( const WResIDName *name_id, bool use_unicode, FILE
     } else {
         return( ResWriteUint8( fp, 0 ) );
     }
-} /* ResWriteStringWResIDName */
-
-bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
-/**************************************************************
- * write type and resource IDs names (only ASCII characters)
- */
-{
-    bool            error;
-    size_t          numchars;
-
-    numchars = name_id->NumChars;
-    error = ResWriteUint16( fp, numchars );
-    if( numchars > 0 ) {
-        if( !error ) {
-            if( WRESWRITE( fp, name_id->Name, numchars ) != numchars ) {
-                error = WRES_ERROR( WRS_WRITE_FAILED );
-            }
-        }
-    }
-    return( error );
-}
+} /* ResWriteWResStringIDName */
 
 bool WResWriteWResID( const WResID *id, FILE *fp )
 /************************************************/
 {
+    size_t          numchars;
+
     if( ResWriteUint8( fp, id->IsName ) )
         return( true );
     if( id->IsName ) {
-        return( WResWriteWResIDName( &(id->ID.Name), fp ) );
+        numchars = id->ID.Name.NumChars;
+        if( ResWriteUint16( fp, numchars ) )
+            return( true );
+        if( numchars > 0 ) {
+            if( WRESWRITE( fp, id->ID.Name.Name, numchars ) != numchars ) {
+                return( WRES_ERROR( WRS_WRITE_FAILED ) );
+            }
+        }
+        return( false );
     } else {
         return( ResWriteUint16( fp, id->ID.Num ) );
     }
