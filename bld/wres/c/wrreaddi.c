@@ -38,7 +38,7 @@
 #include "wresrtns.h"
 
 
-static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
+static bool readLangInfoLang( WResLangType *lang, FILE *fp )
 {
     bool        error;
 
@@ -50,7 +50,7 @@ static bool ResReadLangInfoLang( WResLangType *lang, FILE *fp )
     return( error );
 }
 
-static bool ResReadLangInfo( WResLangInfo *linfo, FILE *fp )
+static bool readLangInfo( WResLangInfo *linfo, FILE *fp )
 {
     bool        error;
 
@@ -74,9 +74,9 @@ static bool readLangInfoList( FILE *fp, WResResNode *resnode, void *fileinfo )
         langnode = WRESALLOC( sizeof( WResLangNode ) );
         if( langnode == NULL )
             return( WRES_ERROR( WRS_MALLOC_FAILED ) );
-        if( ResReadLangInfoLang( &(langnode->Info.lang), fp ) )
+        if( readLangInfoLang( &(langnode->Info.lang), fp ) )
             return( true );
-        if( ResReadLangInfo( &(langnode->Info), fp ) )
+        if( readLangInfo( &(langnode->Info), fp ) )
             return( true );
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
@@ -100,7 +100,7 @@ static bool readResList( FILE *fp, WResTypeNode *typenode, uint_16 ver, void *fi
         /* read a resource record from disk */
         if( ver < 2 ) {
             numres = 1;
-            if( ResReadLangInfo( &v1_linfo, fp ) ) {
+            if( readLangInfo( &v1_linfo, fp ) ) {
                 return( true );
             }
         } else {
