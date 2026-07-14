@@ -61,11 +61,11 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
                         langinfo->Length, dstdir, &langinfo->lang,
                         &wind_dup, fileinfo );
         if( !WResIsEmptyWindow( wind_dup ) && errs != NULL ) {
-            newerr = WRESALLOC( sizeof( WResMergeError ) );
-            newerr->next = *errs;
-            *errs = newerr;
-            newerr->dstres = wind_dup;
-            newerr->srcres = wind;
+            err = WRESALLOC( sizeof( WResMergeError ) );
+            err->next = *errs;
+            *errs = err;
+            err->dstres = wind_dup;
+            err->srcres = wind;
         }
         wind = WResNextResource( wind, srcdir );
     }
