@@ -113,8 +113,8 @@ static size_t InitStringIDNamesList( WResDir dir, name_ptr *list, size_t len )
     return( element - list );
 } /* InitStringIDNamesList */
 
-static char *StrUprCpy( char *dst, const char *src, unsigned length )
-/*******************************************************************/
+static char *StrUprCpy( char *dst, const char *src, uint_16 length )
+/******************************************************************/
 {
     /* output length */
     *dst++ = length;
@@ -126,11 +126,11 @@ static char *StrUprCpy( char *dst, const char *src, unsigned length )
     return( dst );
 }
 
-static char *StrUprCpyToUni( char *dst, const char *src, unsigned length )
-/************************************************************************/
+static char *StrUprCpyToUni( char *dst, const char *src, uint_16 length )
+/***********************************************************************/
 {
     /* output length */
-    MPUT_16( dst, (uint_16)length );
+    MPUT_16( dst, length );
     dst += sizeof( uint_16 );
     /* output string without NULL terminator*/
     while( length-- > 0 ) {
@@ -192,7 +192,7 @@ static int CompareWResIDNames( const void *n1, const void *n2 )
 }
 
 void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
-/***********************************************************************/
+/******************************************************************************/
 {
     size_t          list_len;
 
@@ -207,7 +207,7 @@ void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
          */
         list_len = dir->NumTypes + dir->NumResources;
         str->UseUnicode = use_unicode;
-        str->StringList = MemAllocSafe( list_len * sizeof( void * ) );
+        str->StringList = MemAllocSafe( list_len * sizeof( *str->StringList ) );
 
         list_len = InitStringIDNamesList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList, list_len, CompareWResIDNames );
@@ -219,7 +219,7 @@ void StringIDNamesBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
         } else {
-            str->StringList = MemReallocSafe( str->StringList, list_len * sizeof( name_ptr * ) );
+            str->StringList = MemReallocSafe( str->StringList, list_len * sizeof( *str->StringList ) );
             ConstructStringIDNamesBlock( str );
         }
     }
@@ -352,11 +352,11 @@ int_32 StringBlockFind( StringsBlock *str, WResIDName *name_id )
 
     if( str->UseUnicode ) {
         location = bsearch( name_id, str->StringList, str->StringListLen,
-                    sizeof( void * ),
+                    sizeof( *str->StringList ),
                     ( int (*)(const void *, const void *) )compareStrings32 );
     } else {
         location = bsearch( name_id, str->StringList, str->StringListLen,
-                    sizeof( void * ),
+                    sizeof( *str->StringList ),
                     ( int (*)(const void *, const void *) )compareStrings16 );
     }
 
