@@ -629,9 +629,9 @@ static void TI_SETCOLOUR( int f, int b )
         // simulate colour using reverse (this assumes background is
         // darker than foreground).
         if( colorpri[f % 8] < colorpri[b % 8] ) {
-            UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
-            UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
-            UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
+UIDebugPrintf0( "[<enter_reverse_mode-vvvvvvvvvvvv>]" );
+UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
+UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
             TI_FillColourSet = false;
         } else {
@@ -672,10 +672,10 @@ static void TI_SETATTR( void )
                 0,              // invisible
                 0,              // protected
                 TIAACS ) );     // alt. char set
-        UIDebugPrintf0("\n[******]");
-        UIDebugPrintf1("%s", set_attributes);
-        UIDebugPrintf1("%s",x);
-        UIDebugPrintf0("[~~~~~~]\n");
+UIDebugPrintf0("\n[******]");
+UIDebugPrintf1("%s", set_attributes);
+UIDebugPrintf1("%s",x);
+UIDebugPrintf0("[~~~~~~]\n");
     } else {
         // Believe it or not, some terminals don't have the set_attributes
         // code in the database, so we have to simulate it occasionally
@@ -935,7 +935,7 @@ static bool td_initconsole( void )
     TI_NOWRAP();
     // if we can't then we just won't use the bottom right corner
     TI_ignore_bottom_right = !TCAP_NOSCROLL;
-    UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
+UIDebugPrintf1( "IgnoreLowerRight=%d", TI_ignore_bottom_right );
 
     TI_NOBOLD();
     TI_NOBLINK();
@@ -1089,25 +1089,25 @@ static struct {
 
 static int td_update( SAREA *area )
 {
-    if( area == NULL ) {
-        UIDebugPrintf0("td_update: no arg");
+    if( !area ) {
+UIDebugPrintf0("td_update: no arg");
         dirty_area.row0 = 0;
         dirty_area.col0 = 0;
         dirty_area.row1 = UIData->height;
         dirty_area.col1 = UIData->width;
         return( 0 );
     }
-    UIDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
-    if( dirty_area.row0 > area->row ) {
+UIDebugPrintf4("td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width);
+    if( area->row < dirty_area.row0 ) {
         dirty_area.row0 = area->row;
     }
-    if( dirty_area.col0 > area->col ) {
+    if( area->col < dirty_area.col0 ) {
         dirty_area.col0 = area->col;
     }
-    if( dirty_area.row1 < area->row + area->height ) {
+    if( area->row + area->height > dirty_area.row1 ) {
         dirty_area.row1 = area->row + area->height;
     }
-    if( dirty_area.col1 < area->col + area->width ) {
+    if( area->col + area->width > dirty_area.col1 ) {
         dirty_area.col1 = area->col + area->width;
     }
     return( 0 );
@@ -1178,7 +1178,7 @@ static int td_refresh( bool must )
         return( 0 );
     }
 
-    UIDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1);
+UIDebugPrintf4("td_refresh (%d,%d)->(%d,%d)", dirty_area.row0, dirty_area.col0, dirty_area.row1, dirty_area.col1);
 
     if( UIData->cursor_type != C_OFF )
         QNX_CURSOR_OFF();
@@ -1206,7 +1206,7 @@ static int td_refresh( bool must )
             }
 
             if( !ca_valid ) {
-                UIDebugPrintf2("cursor address %d,%d\n",j,i);
+UIDebugPrintf2("cursor address %d,%d\n",j,i);
                 QNX_CURSOR_MOVE( j, i );
                 ca_valid = true;
             }

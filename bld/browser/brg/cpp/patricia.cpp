@@ -149,7 +149,7 @@ const char * PatriciaNode::insert( const char * str )
                 : curr->_left;
     }
 
-    if( std::strcmp( str, curr->_key ) == 0 ) {   // already in tree
+    if( strcmp( str, curr->_key ) == 0 ) {   // already in tree
 #ifdef INSTRUMENTS_FULL_LOGGING
         Log.printf( "\"%s\" has been seen - returning \"%s\"\n", str, curr->_key );
 #endif

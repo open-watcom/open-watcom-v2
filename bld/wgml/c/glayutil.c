@@ -97,9 +97,9 @@ static char *get_lay_attname( const char *p, char *attname )
     int     i;
 
     i = 0;
-    while( is_lay_att_char( *(unsigned char *)p ) ) {
+    while( is_lay_att_char( *p ) ) {
         if( i < LAY_ATT_NAME_LENGTH ) {
-            attname[i++] = tolower( *(unsigned char *)p );
+            attname[i++] = my_tolower( *p );
         }
         p++;
     }
@@ -460,14 +460,14 @@ bool    i_font_number( const char *p, lay_attr_i lay_attr, font_number *tm )
     const char      *pb;
     unsigned        len;
     font_number     font;
-    int             c;
 
     (void)lay_attr;
 
-    len = 0;
     pb = p;
-    while( (c = *(unsigned char *)pb++) != '\0' && !is_space_tab_dot_char( c ) ) {
+    len = 0;
+    while( *pb != '\0' && !is_space_tab_char( *pb ) && *pb != '.' ) {   // get length
         len++;
+        pb++;
     }
     font = get_font_number( p, len );
     CHECK_FONT( font );
@@ -556,7 +556,7 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
     if( !cvterr
       && *p != '\0'
       && (*p != ' ') ) {    // second letter
-        c = tolower( *(unsigned char *)p );
+        c = my_tolower( *p );
         switch( c ) {
         case 'd':
             wk |= STYLE_xd;
@@ -565,7 +565,7 @@ bool    i_number_style( const char *p, lay_attr_i lay_attr, num_style *tm )
             p++;
             if( *p != '\0'
               && (*p != ' ') ) {   // third letter
-                c = tolower( *(unsigned char *)p );
+                c = my_tolower( *p );
                 switch( c ) {
                 case 'a':
                     wk |= STYLE_xpa;    // only left parenthesis

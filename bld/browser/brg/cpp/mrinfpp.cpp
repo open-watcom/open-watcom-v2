@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <wcvector.h>
 
 #include "mrabbrev.h"

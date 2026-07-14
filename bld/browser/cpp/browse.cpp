@@ -61,7 +61,7 @@
 
 #include "browse.h"
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <string.h>
 
 Browse  * browseTop = NULL;

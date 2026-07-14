@@ -24,10 +24,10 @@
 *
 *  ========================================================================
 *
-* Description:  Prelude for NetWare shared library.
+* Description:  DLL prelude for NetWare shared library NLMs.
 *
 ****************************************************************************/
 
 
-#define __SW_BD
+#define _THIN_LIB_DLL
 #include "prelude.c"

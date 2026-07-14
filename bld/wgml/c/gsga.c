@@ -214,7 +214,7 @@ static  condcode    scan_att_optionsA( gaflags *att_flags )
             break;
         }
         p = g_tok_start;
-        switch( tolower( *(unsigned char *)p ) ) {
+        switch( my_tolower( *p ) ) {
         case 'u' :
             if( (arg_flen > 1)
               && (arg_flen < 11)
@@ -273,7 +273,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
     stringval[0] = '\0';
     cc = CC_pos;
 
-    switch( tolower( *(unsigned char *)g_tok_start ) ) {
+    switch( my_tolower( *g_tok_start ) ) {
     case 'a' :
         if( strnicmp( "ANY", g_tok_start, arg_flen ) == 0 ) {
             *val_flags |= GAVAL_any;

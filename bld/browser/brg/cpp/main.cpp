@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <stdio.h>
 #include <direct.h>
 #include <wclist.h>

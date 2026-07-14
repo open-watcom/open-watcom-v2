@@ -35,7 +35,7 @@
 #define __OPSTREAM_H__
 
 #include <string.h>
-#include <cstdlib>
+#include <stdlib.h>
 #include <wtptlist.hpp>
 #include <wstring.hpp>
 

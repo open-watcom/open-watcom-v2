@@ -218,7 +218,7 @@ static bool referenceHook( drmem_hdl, dr_ref_info * refinfo, char * name,
     for( int i = 0; i < list->count(); i++ ) {
         ref = (Reference *) (*list)[i];
         if( ref->line() == refinfo->line && ref->column() == refinfo->column
-                && std::strcmp( ref->sourceFile(), refinfo->file ) == 0 ) {
+                && strcmp( ref->sourceFile(), refinfo->file ) == 0 ) {
             WBRFree( name );
             return true;
         }

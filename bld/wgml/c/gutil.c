@@ -111,11 +111,11 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
 
     wh = 0;
-    for( i = 0; i < 4 && isdigit( *(unsigned char *)ps ); i++ ) { // max four digits in whole part
+    for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) { // max four digits in whole part
         wh = (10 * wh) + (*ps - '0');
         ps++;
     }
-    if( isdigit( *(unsigned char *)ps ) ) {           // too many digits in whole part
+    if( my_isdigit( *ps ) ) {           // too many digits in whole part
         val_parse_err_exit( base + (ps - in_su->su_txt), tag );
         /* never return */
     }
@@ -124,11 +124,11 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     if( *ps == '.' ) {                  // check for decimal point
         pd = ps++;
         pd1 = ps;                       // remember start of decimals
-        for( i = 0; i < 2 && isdigit( *(unsigned char *)ps ); i++ ) { // max two digits in decimals
+        for( i = 0; i < 2 && my_isdigit( *ps ); i++ ) { // max two digits in decimals
             wd = 10 * wd + *ps - '0';
             ps++;
         }
-        if( isdigit( *(unsigned char *)ps ) ) {       // too many digits in decimals
+        if( my_isdigit( *ps ) ) {       // too many digits in decimals
             val_parse_err_exit( base + (ps - in_su->su_txt), tag );
             /* never return */
         }
@@ -147,11 +147,11 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     unit[2] = '\0';
     unit[1] = '\0';
     unit[0] = '\0';
-    if( isalpha( *(unsigned char *)ps ) )             // check first
+    if( my_isalpha( *ps ) )             // check first
         unit[0] = *ps++;                // save Unit
-    if( isalpha( *(unsigned char *)ps ) )             // check second
+    if( my_isalpha( *ps ) )             // check second
         unit[1] = *ps++;                // save Unit
-    if( isalpha( *(unsigned char *)ps ) ) {           // too many characters in unit
+    if( my_isalpha( *ps ) ) {           // too many characters in unit
         val_parse_err_exit( base + (ps - in_su->su_txt), tag );
         /* never return */
     }
@@ -211,11 +211,11 @@ static const bool internal_to_su( su *in_su, bool tag, const char *base )
     }
 
     if( is_cp ) {                       // "c" and "p" can be followed by max four digits
-        for( i = 0; i < 4 && isdigit( *(unsigned char *)ps ); i++ ) {
+        for( i = 0; i < 4 && my_isdigit( *ps ); i++ ) {
             wd = (10 * wd) + (*ps - '0');
             ps++;
         }
-        if( isdigit( *(unsigned char *)ps ) ) {       // too many digits after "c" or "p"
+        if( my_isdigit( *ps ) ) {       // too many digits after "c" or "p"
             val_parse_err_exit( base + (ps - in_su->su_txt), tag );
             /* never return */
         }
@@ -562,7 +562,7 @@ bool cw_val_to_su( const char **scanp, su *in_su )
     }
     /* lowercase input string */
     for( i = 0; i < len; i++ ) {
-        ps[i] = tolower( ((unsigned char *)pb)[i] );
+        ps[i] = my_tolower( pb[i] );
     }
     ps[i] = '\0';
 
@@ -624,7 +624,7 @@ bool lay_init_su( const char *p, su *in_su )
     }
     /* lowercase input string */
     for( i = 0; i < len; i++ ) {
-        ps[i] = tolower( ((unsigned char *)pb)[i] );
+        ps[i] = my_tolower( pb[i] );
     }
     ps[i] = '\0';
 
@@ -863,7 +863,7 @@ char *get_tag_attname( const char *p, char *attname )
     i = 0;
     while( is_tag_att_char( *p ) ) {
         if( i < TAG_ATT_NAME_LENGTH ) {
-            attname[i++] = tolower( *(unsigned char *)p );
+            attname[i++] = my_tolower( *p );
         }
         p++;
     }
@@ -889,8 +889,8 @@ char *get_att_name_start( char *p, char **orig, bool layout )
             return( p );
         }
         process_line();
-        if( (*(unsigned char *)g_scandata.s == SCR_char)      // cw found: end-of-tag
-          || (*(unsigned char *)g_scandata.s == GML_char) ) { // tag found: end-of-tag
+        if( (*g_scandata.s == SCR_char)      // cw found: end-of-tag
+          || (*g_scandata.s == GML_char) ) { // tag found: end-of-tag
             ProcFlags.reprocess_line = true;
             return( p );
         }
@@ -936,7 +936,7 @@ void get_att_specval( att_val_type *attr_val )
     if( len > SPECVAL_LENGTH )
         len = SPECVAL_LENGTH;
     for( i = 0; i < len && is_su_char( attr_val->tok.s[i] ); i++) {
-        attr_val->specval[i] = tolower( ((unsigned char *)attr_val->tok.s)[i] );
+        attr_val->specval[i] = my_tolower( attr_val->tok.s[i] );
     }
     attr_val->specval[i] = '\0';
 }
@@ -1055,7 +1055,7 @@ font_number get_font_number( const char *value, unsigned len )
     p = value;
     pb = p + len;
 
-    while( isdigit( *(unsigned char *)p ) ) {                 // ensure entire token consists of decimal digits
+    while( my_isdigit( *p ) ) {                 // ensure entire token consists of decimal digits
         p++;
     }
 
@@ -1096,7 +1096,7 @@ char *int_to_roman( unsigned n, char *res, unsigned ressize, bool ucase )
     unsigned    digit;
     unsigned    pos;
     char        *p;
-    int         c;
+    char        c;
 
     p = res;
     *p = '\0';
@@ -1118,12 +1118,12 @@ char *int_to_roman( unsigned n, char *res, unsigned ressize, bool ucase )
         }
         if( n >= i_2_r[digit].val49 ) {
             c = i_2_r[digit].ch49;
-            *p++ = ( ucase ) ? toupper( c ) : c;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
             if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
             c = i_2_r[digit].ch;
-            *p++ = ( ucase ) ? toupper( c ) : c;
+            *p++ = ( ucase ) ? my_toupper( c ) : c;
             if( ++pos >= ressize ) {
                 return( NULL );         // result field overflow
             }
@@ -1297,7 +1297,7 @@ char *get_macro_name( const char *p, char *macname )
     i = 0;
     while( is_macro_char( *p ) ) {
         if( i < MAC_NAME_LENGTH ) {
-            macname[i++] = tolower( *(unsigned char *)p );
+            macname[i++] = my_tolower( *p );
         }
         p++;
     }

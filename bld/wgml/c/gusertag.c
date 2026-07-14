@@ -182,7 +182,6 @@ bool process_tag( gtentry *ge, mac_entry * me )
     unsigned        len;
     symdict_hdl     loc_dict;   // for preparing local vars
     char            attname[TAG_ATT_NAME_LENGTH + 1];
-    int             c;
 
     processed = true;           // return value, always true
     init_dict( &loc_dict );
@@ -209,7 +208,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
             while( *p != '\0' ) {
                 p++;
             }
-            if( *(unsigned char *)(p - 1) == CONT_char ) {    // remove continue character if present
+            if( *(p - 1) == CONT_char ) {    // remove continue character if present
                 p--;
                 *p = '\0';
             }
@@ -241,39 +240,40 @@ bool process_tag( gtentry *ge, mac_entry * me )
                             xx_line_err_exit_cc( ERR_AUTO_ATT, attname, pa );
                             /* never return */
                         }
-                        if( is_space_tab_char( *(unsigned char *)p ) ) { // no whitespace allowed before '='
+
+                        if( is_space_tab_char( *p ) ) { // no whitespace allowed before '='
                             xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                             /* never return */
                         }
 
                         /* no line end allowed before '=' except with TEXTLine */
-                        if( (c == '\0')
+                        if( (*p == '\0')
                           && (ge->tagflags & GTFLG_textline) == 0 ) {
                             xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                             /* never return */
                         }
 
-                        if( *(unsigned char *)p == '=' ) {   // value follows
+                        if( *p == '=' ) {   // value follows
                             p++;            // over =
 
-                            if( is_space_tab_char( *(unsigned char *)p ) ) { // no whitespace allowed after '='
+                            if( is_space_tab_char( *p ) ) { // no whitespace allowed after '='
                                 xx_line_err_exit_cc( ERR_NO_ATT_VAL, attname, p );
                                 /* never return */
                             }
 
                             ga->attflags |= GAFLG_proc_val;
                             p2 = token_buf;
-                            if( is_quote_char( *(unsigned char *)p ) ) {
-                                quote = *(unsigned char *)p++;
-                                while( *p != '\0' && *(unsigned char *)p != quote ) {// quoted value
+                            if( is_quote_char( *p ) ) {
+                                quote = *p++;
+                                while( *p != '\0' && *p != quote ) {// quoted value
                                     *p2++ = *p++;
                                 }
-                                if( *(unsigned char *)p == quote ) {
+                                if( *p == quote ) {
                                     p++;// over ending quote
                                 }
                             } else {
                                 quote = '\0';
-                                while( (c = *(unsigned char *)p) != '\0' && !is_space_tab_dot_char( c ) ) {
+                                while( *p != '\0' && (*p != ' ') && (*p != '.') ) {
                                     *p2++ = *p++;
                                 }
                             }
@@ -425,7 +425,7 @@ bool process_tag( gtentry *ge, mac_entry * me )
         // remove trailing continue character if tag has NOCONTinue option
         if( (ge->tagflags & GTFLG_nocont) ) {
             len = strlen( p );
-            if( *(unsigned char *)(p + len - 1) == CONT_char ) {
+            if( *(p + len - 1) == CONT_char ) {
                 len--;
             }
             *(p + len) = '\0';

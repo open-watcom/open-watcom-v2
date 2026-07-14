@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <cstdlib>
+#include <stdlib.h>
 #include <ctype.h>
 #include <watcom.h>
 #include <wstring.hpp>
@@ -234,7 +234,7 @@ static int samelen( char * a, char * b )
 static int compNodes( const void * left, const void * right )
 /***********************************************************/
 {
-    return std::strcmp( ((tokenInfo *)left)->name, ((tokenInfo *)right)->name );
+    return strcmp( ((tokenInfo *)left)->name, ((tokenInfo *)right)->name );
 }
 
 /*

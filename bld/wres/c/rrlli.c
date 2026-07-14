@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -72,10 +71,10 @@ void ResReplaceLLItem( void **headptr, void **tailptr,
     ss          *olditem;
     ss          *newitem;
 
-    head     = (ss **)headptr;
-    tail     = (ss **)tailptr;
-    olditem  = (ss *)olditemptr;
-    newitem  = (ss *)newitemptr;
+    head = (ss **)headptr;
+    tail = (ss **)tailptr;
+    olditem = (ss *)olditemptr;
+    newitem = (ss *)newitemptr;
 
     if( olditem == *head ) *head = newitem;
     if( olditem == *tail ) *tail = newitem;

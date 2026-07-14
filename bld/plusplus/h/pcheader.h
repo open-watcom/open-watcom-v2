@@ -202,7 +202,7 @@ typedef enum {
 
 // MACROS
 
-#define PCH_ALIGN               sizeof( void * )
+#define PCH_ALIGN               sizeof( unsigned )
 
 #define _pch_align_size( x )    _RoundUp(x, PCH_ALIGN)
 

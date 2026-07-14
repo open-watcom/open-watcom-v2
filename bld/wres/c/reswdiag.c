@@ -100,18 +100,18 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, bool add_quot
 {
     bool    error;
     size_t  len;
-    char    *name;
+    char    *newname;
 
     if( add_quotes ) {
         if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
             len = strlen( head->MenuName->name );
-            name = WRESALLOC( len + 3 );
-            name[0] = '"';
-            strcpy( name + 1, head->MenuName->name );
-            name[len + 1] = '"';
-            name[len + 2] = '\0';
-            head->MenuName = ResStrToNameOrOrdinal( name );
-            WRESFREE( name );
+            newname = WRESALLOC( len + 3 );
+            newname[0] = '"';
+            strcpy( newname + 1, head->MenuName->name );
+            newname[len + 1] = '"';
+            newname[len + 2] = '\0';
+            head->MenuName = ResStrToNameOrOrdinal( newname );
+            WRESFREE( newname );
         }
     }
 

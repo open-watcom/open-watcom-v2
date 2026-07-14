@@ -45,9 +45,9 @@ static char *get_func_name( const char *p, char *funcname )
     if( funcname == NULL )
         funcname = buf;
     i = 0;
-    while( is_function_char( *(unsigned char *)p ) ) {
+    while( is_function_char( *p ) ) {
         if( i < FUNC_NAME_LENGTH ) {
-            funcname[i++] = tolower( *(unsigned char *)p );
+            funcname[i++] = my_tolower( *p );
         }
         p++;
     }
@@ -72,10 +72,10 @@ void process_late_subst( char * buf )
     symvar          symvar_entry;
 
     p = buf; // look for & in buffer
-    while( (p = strchr( p, CHAR_amp )) != NULL ) {        // & found
+    while( (p = strchr( p, ampchar )) != NULL ) {        // & found
         if( p[1] == ' ' ) { // not a symbol substition, attribute, or function
             p++;
-        } else if( isalpha( ((unsigned char *)p)[1] )
+        } else if( my_isalpha( p[1] )
           && p[2] == '\''
           && p[3] > ' ' ) {     // attribute
             p += 3;
@@ -205,7 +205,7 @@ static void split_at_GML_tag( void )
 
     pchar = buff2;
     while( (pchar = strchr( pchar + 1, GML_char )) != NULL ) {
-        while( ((unsigned char *)pchar)[1] == GML_char ) {
+        while( pchar[1] == GML_char ) {
             pchar++;                    // handle repeated GML_chars
         }
         p2 = check_tagname( pchar, tagname );
@@ -314,7 +314,7 @@ static bool split_input_buffer( void )
         /*  .xx SCRIPT control line                                        */
         /*******************************************************************/
         p = buff2;
-        if( (*(unsigned char *)p++ == SCR_char) ) {
+        if( (*p++ == SCR_char) ) {
             if( p[0] == '*'
               || p[0] == '\'' && p[1] == '*' ) {
                 return( false );  // for .* comment minimal processing
@@ -326,7 +326,7 @@ static bool split_input_buffer( void )
             /*  and                                                        */
             /* ..dm xxx / &*1 / &*2 / &*0 / &* /                           */
             /***************************************************************/
-            if( *(unsigned char *)p == SCR_char )
+            if( *p == SCR_char )
                 p++;
             if( strnicmp( "dm ", p, 3 ) == 0 ) {
                 return( false );
@@ -447,10 +447,10 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
             strcpy( tail, curr->orig.e );      // copy tail
             p = curr->orig.s;
             /* If we're replacing &* with &*, we have a real problem. */
-            if( ( (((unsigned char *)p)[0] == CHAR_amp )
-              && ( ((unsigned char *)p)[1] == '*' ))
-              && ( (((unsigned char *)curr->value)[0] == CHAR_amp )
-              && ( ((unsigned char *)curr->value)[1] == '*' )) ) {
+            if( ((p[0] == ampchar)
+              && (p[1] == '*'))
+              && ((curr->value[0] == ampchar)
+              && (curr->value[1] == '*')) ) {
                 internal_err_exit( __FILE__, __LINE__ );
                 /* never return */
             }
@@ -468,7 +468,7 @@ static bool parse_r2l( sym_list_entry *stack, char *buf, bool subscript )
                 if( curr->orig.s == buf ) {              // symbol at start of input line
                     sym_space = true;
                 } else {                                // symbol not at start of input line
-                    if( *(unsigned char *)curr->value == !SCR_char ) {   // not an scw or macro
+                    if( *curr->value == !SCR_char ) {   // not an scw or macro
                         sym_space = (*(curr->orig.s - 1) == ' ');
                     }
                 }
@@ -555,10 +555,10 @@ static char *scan_sym_or_sep( char *buf, bool splittable )
 
     p = NULL;
     for( pa = buf; *pa != '\0'; pa++ ) {
-        if( *(unsigned char *)pa == CHAR_amp ) {
+        if( *pa == ampchar ) {
             p = pa;
             break;
-        } else if( *(unsigned char *)pa == cw_sep_char ) {
+        } else if( *pa == cw_sep_char ) {
             if( splittable
               && (ProcFlags.scr_cw
               || ProcFlags.cw_force_sep)
@@ -599,7 +599,6 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
     sym_list_entry  *curr    = NULL;        // current top-of-stack
     sym_list_entry  *temp    = NULL;        // used to create new top-of-stack
     char            funcname[FUNC_NAME_LENGTH + 1];
-    int             c;
 
     p = buf;
     while( (p = scan_sym_or_sep( p, splittable )) != NULL ) {         // & found
@@ -614,12 +613,12 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
         if( p[1] == ' ' ) {  // not a symbol substition, attribute, or function
             curr->orig.e = p + 2;
             curr->type = SL_text;               // text
-        } else if( isalpha( ((unsigned char *)p)[1] ) && (p[2] == '\'') ) {   // attribute or text
+        } else if( my_isalpha( p[1] ) && (p[2] == '\'') ) {   // attribute or text
             if( (p[3] > ' ') ) {
                 funcname[0] = p[1];
                 funcname[1] = '\0';
                 curr->orig.e = curr->orig.s;
-                while( (c = *(unsigned char *)curr->orig.e) != '\0' && !is_space_tab_dot_char( c ) )
+                while( !is_space_tab_char( *curr->orig.e ) && (*curr->orig.e != '\0') && (*curr->orig.e != '.') )
                     curr->orig.e++;
                 if( GlobalFlags.firstpass && (input_cbs->fmflags & II_research) ) {
                     add_single_func_research( funcname );
@@ -640,7 +639,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
             p = get_func_name( p + 2, funcname );// over "&'" and get function name
             if( *p == '(' ) {                   // &'xyz( is start of multi char function
                 curr->orig.e = curr->orig.s;
-                while( (c = *(unsigned char *)curr->orig.e) != '\0' && !is_space_tab_dot_char( c ) )
+                while( !is_space_tab_char( *curr->orig.e ) && (*curr->orig.e != '\0') && (*curr->orig.e != '.') )
                     curr->orig.e++;
                 pa = valbuf;
                 curr->orig.e = scr_multi_funcs( funcname, p, &pa, BUF_SIZE );
@@ -655,7 +654,7 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                 curr->type = SL_text;           // text
             }
         } else {                                // symbol
-            if( (((unsigned char *)p)[1] == '*') && (((unsigned char *)p)[2] == CHAR_amp) ) {  // special for &*&<var>
+            if( (p[1] == '*') && (p[2] == ampchar) ) {  // special for &*&<var>
                 curr->orig.e = p + 2;
                 curr->type = SL_text;
                 p = p + 2;
@@ -674,13 +673,13 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                             break;                      // end of text terminates processing
                         }
                         p = curr->orig.e;                // skip argument
-                        p = strchr( p, CHAR_amp );       // look for next & in buffer
+                        p = strchr( p, ampchar );       // look for next & in buffer
                     } else {
                         if( !ProcFlags.cw_sep_ignore
                           && splittable
                           && (cw_sep_char != '\0')
-                          && (((unsigned char *)valbuf)[0] == cw_sep_char)
-                          && (((unsigned char *)valbuf)[1] != cw_sep_char) ) {
+                          && (valbuf[0] == cw_sep_char)
+                          && (valbuf[1] != cw_sep_char) ) {
                             strcpy( curr->value, valbuf );  // repurpose curr
                             curr->orig.s = p + 1;            // & of symbol causing split
                             curr->type = SL_split;
@@ -713,8 +712,8 @@ static sym_list_entry *parse_l2r( char *buf, bool splittable )
                         expand_subscripts( curr->value, symsubval->base, lo_bound, hi_bound );
                     } else if( rc == 2 ) {          // variable found + resolved
                         if( !ProcFlags.cw_sep_ignore && splittable && cw_sep_char != '\0' &&
-                                ((unsigned char *)symsubval->value)[0] == cw_sep_char &&
-                                ((unsigned char *)symsubval->value)[1] != cw_sep_char ) {
+                                symsubval->value[0] == cw_sep_char &&
+                                symsubval->value[1] != cw_sep_char ) {
                             curr->type = SL_split;
                             strcpy( curr->value, symsubval->value );  // save value in current stack entry
                             SkipDot( curr->orig.e );
@@ -816,7 +815,7 @@ void classify_record( const char *p )
         ProcFlags.cw_force_sep = false;
     } else {
         ProcFlags.gml_tag = false;
-        if( *(unsigned char *)p == SCR_char ) {
+        if( *p == SCR_char ) {
             ProcFlags.scr_cw = true;
         } else {
             ProcFlags.scr_cw = false;
@@ -835,7 +834,7 @@ static void reclassify_record( const char *p )
     // if record was a GML tag, it will stay a GML tag, unless it's now
     // a SCRIPT control word (if that's even possible). But a record that
     // wasn't already a GML tag will *not* become one after substitution.
-    if( *(unsigned char *)p == SCR_char ) {
+    if( *p == SCR_char ) {
         ProcFlags.scr_cw  = true;
         ProcFlags.gml_tag = false;
     } else {
@@ -910,10 +909,10 @@ void process_line( void )
     /*  this can probably be improved                                          */
     /***************************************************************************/
     if( ProcFlags.scr_cw
-      && (((toupper( *(unsigned char *)(buff2 + 1) ) == 'I')
-      && (toupper( *(unsigned char *)(buff2 + 2) ) == 'F'))
-      || ((toupper( *(unsigned char *)(buff2 + 1) ) == 'E')
-      && (toupper( *(unsigned char *)(buff2 + 2) ) == 'L'))) ) {
+      && (((my_toupper(*(buff2 + 1)) == 'I')
+      && (my_toupper(*(buff2 + 2)) == 'F'))
+      || ((my_toupper(*(buff2 + 1)) == 'E')
+      && (my_toupper(*(buff2 + 2)) == 'L'))) ) {
         ProcFlags.if_cond = true;
     } else {
         ProcFlags.if_cond = false;

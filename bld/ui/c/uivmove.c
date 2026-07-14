@@ -39,37 +39,32 @@ void UIAPI uivmoveblock( VSCREEN *vs, SAREA area, int drow, int dcol )
 {
     BUFFER          *bptr;
     ORD             row;
-    uisize          height;
 
     okopen( vs );
     bptr = &(vs->window.buffer);
-    if( area.row < -drow ) {
+    if( area.row + drow < 0 ) {
         area.height += area.row + drow;
         area.row = -drow;
     }
-    if( area.col < -dcol ) {
+    if( area.col + dcol < 0 ) {
         area.width += area.col + dcol;
         area.col = -dcol;
     }
-    if( area.height > vs->area.height - area.row - drow ) {
+    if( area.row + area.height + drow > vs->area.height ) {
         area.height = vs->area.height - area.row - drow;
     }
-    if( area.width > vs->area.width - area.col - dcol ) {
+    if( area.col + area.width + dcol > vs->area.width ) {
         area.width = vs->area.width - area.col - dcol;
     }
     oksubarea( area, vs->area );
-    height = area.height;
     if( drow > 0 ) {
-        row = area.row + area.height - 1;
-        while( height-- > 0 ) {
+        for( row = area.height + area.row; row > area.row;  ) {
+            --row;
             uibcopy( bptr, row, area.col, bptr, row + drow, area.col + dcol, area.width );
-            row--;
         }
     } else {
-        row = area.row;
-        while( height-- > 0 ) {
+        for( row = area.row; row < area.row + area.height; ++row ) {
             uibcopy( bptr, row, area.col, bptr, row + drow, area.col + dcol, area.width );
-            row++;
         }
     }
     area.row += drow;

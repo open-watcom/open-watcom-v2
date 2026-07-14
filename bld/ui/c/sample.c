@@ -265,8 +265,7 @@ int main( void )
     char                buff[80];
     an_event_string     *ptr;
     ORD                 evrow = TOP_ROW;
-    int                 mrow;
-    int                 mcol;
+    int                 mrow, mcol;
     int                 diff;
 
     UIMemOpen();
@@ -376,8 +375,14 @@ int main( void )
                     case EV_MOUSE_DRAG:
                         if( BandOn ) {
                             uimousepos( NULL, &mrow, &mcol );
-                            BandArea.width = ( mcol < BandArea.col ) ? 0 : mcol - BandArea.col;
-                            BandArea.height = ( mrow < BandArea.row ) ? 0 : mrow - BandArea.row;
+                            diff = mcol - BandArea.col;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.width = diff;
+                            diff = mrow - BandArea.row;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.height = diff;
                             uibandmove( BandArea );
                         }
                         break;

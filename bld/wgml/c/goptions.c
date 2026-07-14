@@ -93,7 +93,6 @@ static int split_tokens( char *str )
     char        *   tokstart;
     int             cnt;
     unsigned        toklen;
-    int             c;
 
     linestart = true;                   // assume start of line
     cnt = 0;                            // found tokens
@@ -122,13 +121,13 @@ static int split_tokens( char *str )
             quote = '\0';
         }
         tokstart = str;
-        while( (c = *(unsigned char *)str) != '\0' ) {
+        while( *str != '\0' ) {
             if( quote == '\0'
-              && is_space_tab_char( c )
-              || c == '\n' ) {
+              && is_space_tab_char( *str )
+              || *str == '\n' ) {
                 break;
             }
-            if( c == quote ) {
+            if( *str == quote ) {
                 break;
             }
             str++;
@@ -161,7 +160,7 @@ static int split_tokens( char *str )
 }
 
 
-static bool CmdScanSwitchChar( int c )
+static bool CmdScanSwitchChar( char c )
 {
 #ifdef __UNIX__
     return( c == '-' );
@@ -173,25 +172,25 @@ static bool CmdScanSwitchChar( int c )
 /***************************************************************************/
 /*  Format error in cmdline                                                */
 /***************************************************************************/
-NO_RETURN( static void bad_cmd_line_err_exit( msg_ids msg, const char *str, int n ) );
+NO_RETURN( static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n ) );
 
-static void bad_cmd_line_err_exit( msg_ids msg, const char *str, int n )
+static void bad_cmd_line_err_exit( msg_ids msg, const char *str, char n )
 {
     char    *   p;
     char    *   pbuff;
-    int         c;
 
     pbuff = MemAllocSafe( strlen( str ) + 1 );
     p = pbuff;
 
-    for( ; (c = *(unsigned char *)str) != '\0'; ) {
-        if( c == '\n' )
+    for( ; ; ) {
+        if( *str == '\0' )
+            break;
+        if( *str == '\n' )
             break;
         *p++ = *str++;
-        c = *(unsigned char *)str;
-        if( CmdScanSwitchChar( c ) )
+        if( CmdScanSwitchChar( *str ) )
             break;
-        if( c == n ) {
+        if( *str == n ) {
             break;         // for additional stop char '(' or ' '
         }
     }
@@ -247,8 +246,8 @@ static int get_num_value( const char *p )
     int     value;
 
     value = 0;
-    for( ; isdigit( *(unsigned char *)p ); p++ ) {
-        value = value * 10 + *(unsigned char *)p - '0';
+    for( ; my_isdigit( *p ); p++ ) {
+        value = value * 10 + *p - '0';
     }
     return( value );
 }
@@ -273,7 +272,7 @@ static void ign_option( option * opt )
                 break;
             if( tokennext->bol )
                 break;
-            if( *(unsigned char *)tokennext->token == '(' )
+            if( tokennext->token[0] == '(' )
                 break;
             if( is_option() )
                 break;
@@ -298,7 +297,7 @@ static void wng_option( option * opt )
                 break;
             if( tokennext->bol )
                 break;
-            if( *(unsigned char *)tokennext->token == '(' )
+            if( tokennext->token[0] == '(' )
                 break;
             if( is_option() )
                 break;
@@ -355,7 +354,7 @@ static void set_bind( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_cc( ERR_MISS_INV_OPT_VALUE, opt->option, "" );
         /* never return */
@@ -377,7 +376,7 @@ static void set_bind( option * opt )
     tokennext = tokennext->nxt; // check for optional bind even val
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         memcpy( &bind_even, &bind_odd, sizeof( bind_even ) );  // use bind_odd
     } else {
@@ -409,7 +408,7 @@ static void set_cpinch( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_OPT_VALUE, opt->option );
         /* never return */
@@ -438,7 +437,7 @@ static void set_lpinch( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_OPT_VALUE, opt->option );
         /* never return */
@@ -470,7 +469,7 @@ static void set_delim( option * opt )
         xx_simple_err_exit_cc( ERR_MISS_INV_OPT_VALUE, opt->option, tokennext == NULL ? " " : tokennext->token );
         /* never return */
     }
-    GML_char = *(unsigned char *)tokennext->token; // new delimiter
+    GML_char = tokennext->token[0]; // new delimiter
     tokennext = tokennext->nxt;
     return;
 }
@@ -534,7 +533,7 @@ static bool font_points( cmd_tok * in_tok, char buff[5] )
     pre_pt = 0;
     for( i = 0; i < len; i++ ) {
         if( p[i] != '.' ) {
-            if( !isdigit( ((unsigned char *)p)[i] ) ) {
+            if( !my_isdigit( p[i] ) ) {
                 good = false;
                 break;
             }
@@ -626,7 +625,7 @@ static void set_font( option * opt )
 
     good = true;
     for( i = 0; i < len; i++ ) {
-        if( !isdigit( ((unsigned char *)p)[i] ) ) {
+        if( !my_isdigit( p[i] ) ) {
             good = false;
             break;
         }
@@ -959,7 +958,7 @@ static void set_passes( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_OPT_VALUE, opt->option );
         /* never return */
@@ -987,7 +986,7 @@ static void set_from( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_OPT_VALUE, opt->option );
         /* never return */
@@ -1015,7 +1014,7 @@ static void set_symbol( option *opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_NAME, opt->option );
         /* never return */
@@ -1026,7 +1025,7 @@ static void set_symbol( option *opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
@@ -1045,7 +1044,7 @@ static void set_to( option * opt )
 
     if( tokennext == NULL
       || tokennext->bol
-      || *(unsigned char *)tokennext->token == '('
+      || tokennext->token[0] == '('
       || is_option() ) {
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
@@ -1112,7 +1111,7 @@ static void set_optfile( option *opt )
     if( tokennext == NULL
       || tokennext->bol
       || is_option()
-      /* || *(unsigned char *)tokennext->token == '('  allow (t:123)file.opt construct */
+      /* || tokennext->token[0] == '('  allow (t:123)file.opt construct */
       ) {
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
@@ -1176,7 +1175,7 @@ static void set_incpath( option * opt )
     if( tokennext == NULL
       || tokennext->bol
       || is_option()
-      || *(unsigned char *)tokennext->token == '(' ) {
+      || tokennext->token[0] == '(' ) {
         str[0] = '\0';
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
@@ -1209,7 +1208,7 @@ static void set_libpath( option * opt )
     if( tokennext == NULL
       || tokennext->bol
       || is_option()
-      || *(unsigned char *)tokennext->token == '(' ) {
+      || tokennext->token[0] == '(' ) {
         str[0] = '\0';
         xx_simple_err_exit_c( ERR_MISSING_VALUE, opt->option );
         /* never return */
@@ -1256,7 +1255,7 @@ static void set_research( option * opt )
     if( tokennext == NULL
       || tokennext->bol
       || is_option()
-      || *(unsigned char *)tokennext->token == '(' ) {
+      || tokennext->token[0] == '(' ) {
         str[0] = '\0';
     } else {
         len = tokennext->toklen;
@@ -1270,7 +1269,7 @@ static void set_research( option * opt )
         research_to = LAST_LINE;
 
         research_file_name[0] = '\0';   // no filename
-        if( isalpha( *(unsigned char *)str ) ) {      // filename ?
+        if( my_isalpha( *str ) ) {      // filename ?
             if( len < sizeof( research_file_name ) ) {
                 strcpy( research_file_name, str );
             }
@@ -1278,7 +1277,7 @@ static void set_research( option * opt )
             if( tokennext == NULL
               || tokennext->bol
               || is_option()
-              || *(unsigned char *)tokennext->token == '(' ) {
+              || tokennext->token[0] == '(' ) {
                 /* nothing to do */
             } else {                    // get from and to values
                 research_from = get_num_value( tokennext->token );
@@ -1288,7 +1287,7 @@ static void set_research( option * opt )
                 if( tokennext == NULL
                   || tokennext->bol
                   || is_option()
-                  || *(unsigned char *)tokennext->token == '(' ) {
+                  || tokennext->token[0] == '(' ) {
                     /* nothing to do */
                 } else {
                     research_to = get_num_value( tokennext->token );
@@ -1301,7 +1300,7 @@ static void set_research( option * opt )
             if( tokennext == NULL
               || tokennext->bol
               || is_option()
-              || *(unsigned char *)tokennext->token == '(' ) {
+              || tokennext->token[0] == '(' ) {
                 /* nothing to do */
             } else {                    // get from and to values
                 research_from = get_num_value( tokennext->token );
@@ -1309,7 +1308,7 @@ static void set_research( option * opt )
                 if( tokennext == NULL
                   || tokennext->bol
                   || is_option()
-                  || *(unsigned char *)tokennext->token == '(' ) {
+                  || tokennext->token[0] == '(' ) {
                     /* nothing to do */
                 } else {
                     research_to = get_num_value( tokennext->token );
@@ -1435,7 +1434,7 @@ void split_attr_file( char *filename , char *attr, unsigned attrlen )
 /*  test for delimiter                                                     */
 /***************************************************************************/
 
-static bool option_delimiter( int c )
+static bool option_delimiter( char c )
 {
     return( c == ' ' || c == '\t' || c == '(' || CmdScanSwitchChar( c ) || c == '\n' );
 }
@@ -1476,9 +1475,7 @@ static void strip_quotes( char * fname )
 static cmd_tok * process_option( option * op_table, cmd_tok * tok )
 {
     bool        opt_delim_start;
-    int         first_c;
-    int         c1;
-    int         c2;
+    char        first_c;
     char    *   opt;
     char    *   option_start;
     char    *   p;
@@ -1488,31 +1485,29 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
 
     option_start = tok->token;
     p = option_start;
-    opt_delim_start = option_delimiter( *(unsigned char *)p );
+    opt_delim_start = option_delimiter( *p );
     if( opt_delim_start ) {
         p++;
     }
-    first_c = tolower( *(unsigned char *)p );
+    first_c = my_tolower( *p );
     tokennext = tok->nxt;
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
-        if( first_c == *(unsigned char *)opt ) {    // match for first char
+        if( first_c == *opt ) {               // match for first char
             opt_value = op_table[i].value;
-            for( opt++, pa = p + 1; (c1 = *(unsigned char *)opt) != '\0'; opt++, pa++ ) {
-                c2 = *(unsigned char *)pa;
-                if( c1 != tolower( c2 ) ) {
-                    if( c1 < 'A'
-                      || c1 > 'Z' )
+            for( opt++, pa = p + 1; *opt != '\0'; opt++, pa++ ) {
+                if( *opt != (char)my_tolower( *pa ) ) {
+                    if( *opt < 'A'
+                      || *opt > 'Z' )
                         break;
-                    if( c1 != c2 ) {
+                    if( *opt != *pa ) {
                         break;
                     }
                 }
             }
-            if( c1 == '\0' ) {
-                c2 = *(unsigned char *)pa;
+            if( *opt == '\0' ) {
                 if( !opt_delim_start
-                  || c2 == '\0'
-                  || option_delimiter( c2 ) ) {
+                  || *pa == '\0'
+                  || option_delimiter( *pa ) ) {
                     break;
                 }
             }
@@ -1536,9 +1531,8 @@ static cmd_tok * process_option( option * op_table, cmd_tok * tok )
 static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
 {
     bool        opt_delim_start;
-    int         c1;
-    int         c2;
-    int         first_c;
+    char        c;
+    char        first_c;
     char    *   opt;
     char    *   option_start;
     char    *   p;
@@ -1550,7 +1544,7 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
     option_start = p;
     len = tok->toklen;
     tokennext = tok->nxt;
-    opt_delim_start = ( *(unsigned char *)p == '(' );
+    opt_delim_start = ( *p == '(' );
     if( opt_delim_start ) {
         if( len == 1 ) {
             return( tokennext );        // skip single (
@@ -1558,9 +1552,9 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
         p++;
         len--;
     }
-    first_c = tolower( *(unsigned char *)p );
+    first_c = my_tolower( *p );
     for( i = 0; (opt = op_table[i].option) != NULL; i++ ) {
-        if( first_c != *(unsigned char *)opt )
+        if( first_c != *opt )
             continue;
         if( len < op_table[i].minLength )
             continue;                   // cannot be this option
@@ -1575,74 +1569,72 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
         /* if a capital letter appears in the option, then input must match exactly */
         /* otherwise all input characters are changed to lower case before matching */
         opt_value = op_table[i].value;
-        for( pa = p + len, opt += op_table[i].optionLen; (c1 = *(unsigned char *)opt) != '\0' && c1 != '*'; opt++ ) {
-            if( c1 == '#' ) {         // collect a number
+        for( pa = p + len, opt += op_table[i].optionLen; *opt != '\0' && *opt != '*'; opt++ ) {
+            if( *opt == '#' ) {         // collect a number
                 SkipSpaces( pa );       // skip blanks
-                if( isdigit( *(unsigned char *)pa ) ) {
+                if( my_isdigit( *pa ) ) {
                     opt_value = 0;
-                    for( ; isdigit( *(unsigned char *)pa ); pa++ ) {
-                        opt_value = opt_value * 10 + *(unsigned char *)pa - '0';
+                    for( ; my_isdigit( *pa ); pa++ ) {
+                        opt_value = opt_value * 10 + *pa - '0';
                     }
                     opt_scan_ptr = pa;
                 }
                 g_info_research( INF_RECOGNIZED_XXX, "num", option_start );
-            } else if( c1 == '$' ) {  // collect an identifer
-                if( *(unsigned char *)pa == ' ' )        // skip 1 blank
+            } else if( *opt == '$' ) {  // collect an identifer
+                if( *pa == ' ' )        // skip 1 blank
                     pa++;
                 opt_parm = pa;
-                for( ; (c2 = *(unsigned char *)pa) != '\0'; pa++ ) {
-                    if( c2 == '(' )
+                for( ; (c = *pa) != '\0'; pa++ ) {
+                    if( c == '(' )
                         break;
-                    if( c2 == ' ' )
+                    if( c == ' ' )
                         break;
-                    if( CmdScanSwitchChar( c2 ) )
+                    if( CmdScanSwitchChar( c ) )
                         break;
-                    if( c2 == '\n' ) {
+                    if( c == '\n' ) {
                         *pa = ' ';
                         break;
                     }
                 }
                 opt_scan_ptr = pa;
                 g_info_research( INF_RECOGNIZED_XXX, "id", option_start );
-            } else if( c1 == '@' ) {  // collect a filename
+            } else if( *opt == '@' ) {  // collect a filename
                 opt_parm = pa;
-                c2 = *(unsigned char *)pa;
-                if( c2 == '"' ){         // "filename"
-                    for( pa++; (c2 = *(unsigned char *)pa) != '\0'; pa++ ) {
-                        if( c2 == '"' ){
+                c = *pa;
+                if( c == '"' ){         // "filename"
+                    for( pa++; (c = *pa) != '\0'; pa++ ) {
+                        if( c == '"' ){
                             pa++;
                             break;
                         }
-                        if( c2 == '\\' ){
+                        if( c == '\\' ){
                             pa++;
                         }
                     }
                 } else {
-                    for( ; (c2 = *(unsigned char *)pa) != '\0'; pa++ ) {
-                        if( is_space_tab_char( c2 ) )
+                    for( ; (c = *pa) != '\0'; pa++ ) {
+                        if( is_space_tab_char( c ) )
                             break;
-                        if( CmdScanSwitchChar( c2 ) )
+                        if( CmdScanSwitchChar( c ) )
                             break;
-                        if( c2 == '\n' ) {
+                        if( c == '\n' ) {
                             *pa = ' ';
                             break;
                         }
                     }
                 }
                 g_info_research( INF_RECOGNIZED_XXX, "fn", option_start );
-            } else if( c1 == '=' ) {  // collect an optional '='
-                c2 = *(unsigned char *)pa;
-                if( c2 == '='
-                  || c2 == '#' ) {
+            } else if( *opt == '=' ) {  // collect an optional '='
+                if( *pa == '='
+                  || *pa == '#' ) {
                     pa++;
                 }
             } else {
-                c2 = *(unsigned char *)pa;
-                if( c1 != tolower( c2 ) ) {
-                    if( c1 < 'A'
-                      || c1 > 'Z' )
+                if( *opt != (char)my_tolower( *pa ) ) {
+                    if( *opt < 'A'
+                      || *opt > 'Z' )
                         break;
-                    if( c2 != c1 ) {
+                    if( *opt != *pa ) {
                         break;
                     }
                 }
@@ -1650,14 +1642,13 @@ static cmd_tok * process_option_old( option * op_table, cmd_tok * tok )
                 opt_scan_ptr = pa;
             }
         }
-        if( c1 == '*' ) {
+        if( *opt == '*' ) {
             break;
         }
-        if( c1 == '\0' ) {
-            c2 = *(unsigned char *)pa;
+        if( *opt == '\0' ) {
             if( !opt_delim_start
-              || c2 == '\0'
-              || option_delimiter( c2 ) ) {
+              || *pa == '\0'
+              || option_delimiter( *pa ) ) {
                 break;
             }
         }
@@ -1692,18 +1683,18 @@ static bool is_option( void )
     p = tokennext->token;
     option_start = p;
     len = tokennext->toklen;
-    c = tolower( *(unsigned char *)p );
+    c = my_tolower( *p );
     if( c == '(' ) {
         if( len == 1 ) {            // skip single (
             tokennext = tokennext->nxt;
             p = tokennext->token;
             option_start = p;
             len = tokennext->toklen;
-            c = tolower( *(unsigned char *)p );
+            c = my_tolower( *p );
         } else {
             p++;
             len--;
-            c = tolower( *(unsigned char *)p );
+            c = my_tolower( *p );
         }
     }
     for( i = 0; ; i++ ) {
@@ -1724,10 +1715,10 @@ static bool is_option( void )
     p = tokennext->token;
     option_start = p;
     len = tokennext->toklen;
-    c = tolower( *(unsigned char *)p );
+    c = my_tolower( *p );
     if( option_delimiter( c ) ) {
         p++;
-        c = tolower( *(unsigned char *)p );
+        c = my_tolower( *p );
         --len;
 
         for( i = 0; ; i++ ) {
@@ -1788,7 +1779,7 @@ static cmd_tok * process_master_filename( cmd_tok * tok )
 int proc_options( char * string )
 {
     bool            sol;                    // start of line switch
-    int             c;
+    char            c;
     char            linestr[NUM2STR_LENGTH + 1];
     char            linestr2[NUM2STR_LENGTH + 1];
     char            *p;
@@ -1800,14 +1791,14 @@ int proc_options( char * string )
 
     SkipSpaces( string );
     s_after_dq = string;                // assume no starting quote
-    if( *string == CHAR_dq ) {          // take care of possible quotes
+    if( *string == d_q ) {              // take care of possible quotes
         for( p = string + 1; *p != '\0'; p++ )
             /* empty */ ;
         p--;
         while( *p == ' ' ) {            // ignore trailing spaces
             p--;
         }
-        if( *p == CHAR_dq ) {           // ending quote
+        if( *p == d_q ) {               // ending quote
             *p = '\0';                  // remove
             s_after_dq = string + 1;    // start after leading quote
         }
@@ -1821,7 +1812,7 @@ int proc_options( char * string )
     for( ;; ) {
         while( tok != NULL ) {
             sol = tok->bol;
-            c = *(unsigned char *)tok->token;
+            c = tok->token[0];
 
             if( CmdScanSwitchChar( c ) ) {
                 /***************************************************************/

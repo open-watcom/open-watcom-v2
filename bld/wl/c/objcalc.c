@@ -422,7 +422,7 @@ static bool FindCopyGroups( void *_seg, void *_info )
     if( info->lastgrp != seg->group ) {   // Only interate new groups
         info->lastgrp = seg->group;
         // Check each initialized segment in group
-        Ring2Lookup( seg->group->leaders, FindInitEndAddr, info );
+        Ring2Lookup( seg->group->leaders, FindInitEndAddr, info);
     }
     return( false );
 }

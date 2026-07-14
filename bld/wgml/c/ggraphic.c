@@ -161,7 +161,7 @@ void    gml_graphic( const gmltag * entry )
                     /* never return */
                 }
                 scale = 0;
-                while( isdigit( *(unsigned char *)pb ) ) {            // convert to number
+                while( my_isdigit( *pb ) ) {            // convert to number
                     scale = (10 * scale) + (*pb - '0');
                     pb++;
                     if( (pb - attr_val.tok.s) > attr_val.tok.l ) {  // value end reached

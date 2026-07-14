@@ -35,7 +35,6 @@
 #include "util.h"
 #include "wresrtns.h"
 
-
 void WResIDFree( WResID *id )
 /****************************
  * release the space occupied by an ID

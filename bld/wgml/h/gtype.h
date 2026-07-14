@@ -110,23 +110,31 @@
 #define LPI6                6           // 6 as an LPI value
 
 /* string start / end characters Possible incomplete list*/
-#define CHAR_dq             '\"'        // change also is_quote_char()
-#define CHAR_sq             '\''        // in gargutil.c
-#define CHAR_cent           0x9b        // if list is extended
-#define CHAR_excl           '!'
-#define CHAR_not_c          '^'
-#define CHAR_slash          '/'
-#define CHAR_vbar1          '|'
-#define CHAR_vbar2          0xdd
-#define CHAR_bq             '`'
-#define CHAR_amp            '&'
+#define d_q                 '\"'        // change also is_quote_char()
+#define s_q                 '\''        // in gargutil.c
+#define cent                '\x9b'      // if list is extended
+#define excl                '!'
+#define not_c               '^'
+#define slash               '/'
+#define vbar1               '|'
+#define vbar2               '\xdd'
+#define l_q                 '`'
 
-#define SkipSpaces( p )     while( *(unsigned char *)(p) == ' ' ) (p)++
-#define SkipNonSpaces( p )  while( *(p) != '\0' && *(unsigned char *)(p) != ' ' ) (p)++
-#define SkipDot( p )        if( *(unsigned char *)(p) == '.' ) (p)++
-#define SkipSpacesTabs( p ) while( is_space_tab_char( *(unsigned char *)(p) ) ) (p)++
+#define my_tolower( p )     tolower( (unsigned char)(p) )
+#define my_toupper( p )     toupper( (unsigned char)(p) )
 
-#define SkipSpacesTok(p,e)  while( *(unsigned char *)(p) == ' ' && (p) < (e) ) (p)++
+#define my_isalpha( p )     isalpha( (unsigned char)(p) )
+#define my_isalnum( p )     isalnum( (unsigned char)(p) )
+#define my_isdigit( p )     isdigit( (unsigned char)(p) )
+#define my_isxdigit( p )    isxdigit( (unsigned char)(p) )
+#define my_isspace( p )     isspace( (unsigned char)(p) )
+
+#define SkipSpaces( p )     while( *(p) == ' ' ) (p)++
+#define SkipNonSpaces( p )  while( *(p) != '\0' && *(p) != ' ' ) (p)++
+#define SkipDot( p )        if( *(p) == '.' ) (p)++
+#define SkipSpacesTabs( p ) while( is_space_tab_char( *(p) ) ) (p)++
+
+#define SkipSpacesTok(p,e)  while( *(p) == ' ' && (p) < (e) ) (p)++
 
 #define TABLE_SIZE(x)       (sizeof( (x) ) / sizeof( (x)[0] ))
 
@@ -805,12 +813,12 @@ typedef enum ju_enum {                  // for .ju(stify)
 /****************************************************************************/
 
 typedef enum functs {
-    FUNC_escape          = 0xfd,
-    FUNC_end             = 0x01,
-    FUNC_subscript_beg   = 0x02,
-    FUNC_subscript_end   = 0x03,
-    FUNC_superscript_beg = 0x04,
-    FUNC_superscript_end = 0x05,
+    FUNC_escape          = '\xfd',
+    FUNC_end             = '\x01',
+    FUNC_subscript_beg   = '\x02',
+    FUNC_subscript_end   = '\x03',
+    FUNC_superscript_beg = '\x04',
+    FUNC_superscript_end = '\x05',
 } functs;
 
 /***************************************************************************/

@@ -234,7 +234,6 @@ static char *get_exp( const char *start, const char *end )
     const char *p = start;
     char *tptr = tokbuf;
     struct operator *op;
-    int c;
 
     while( p < end ) {
         if( *p == ' ' ) {
@@ -246,15 +245,13 @@ static char *get_exp( const char *start, const char *end )
         }
         op = get_op( p );
         if( NULL != op ) {
-            c = *(unsigned char *)p;
-            if( ('-' == c) || ('+' == c) ) {
-                c = *(unsigned char *)(p + 1);
-                if( ( p + 1 < end ) && ( ('-' == c) || ('+' == c) ) ) {
+            if( ('-' == p[0]) || ('+' == p[0]) ) {
+                if( ( p + 1 < end ) && ( ('-' == p[1]) || ('+' == p[1]) ) ) {
                     return( NULL );
                 }
                 if( start != p )
                     break;
-                if( ( p + 1 == end ) || !isdigit( c ) && '.' != c ) {
+                if( ( p + 1 == end ) || !my_isdigit( p[1] ) && '.' != p[1] ) {
                     push_val( 0 );
                     *tptr++ = *p++;
                     break;

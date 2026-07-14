@@ -174,12 +174,12 @@ void uieditpoplist( void )
     uipoplist( /* LineEvents */ );
 }
 
-static bool mouse( int *mrow, int *mcol )
+static bool mouse( int *row, int *col )
 {
-    return( uimousepos( UIEdit->edit_vs, mrow, mcol ) == UIEdit->edit_vs
-            && *mrow == UIEdit->edit_eline.row
-            && *mcol >= UIEdit->edit_eline.col
-            && *mcol - UIEdit->edit_eline.col < UIEdit->edit_eline.fldlen );
+    return( uimousepos( UIEdit->edit_vs, row, col ) == UIEdit->edit_vs
+            && *row == UIEdit->edit_eline.row
+            && *col >= UIEdit->edit_eline.col
+            && *col - UIEdit->edit_eline.col < UIEdit->edit_eline.fldlen );
 }
 
 ui_event uiledit( ui_event ui_ev )
@@ -191,8 +191,7 @@ ui_event uiledit( ui_event ui_ev )
     };
 
     unsigned    before;
-    int         mrow;
-    int         mcol;
+    int         row, col;
     unsigned    i;
     ui_event    new_ui_ev;
 
@@ -215,8 +214,8 @@ ui_event uiledit( ui_event ui_ev )
         }
         break;
     case EV_MOUSE_PRESS:
-        if( mouse( &mrow, &mcol ) ) {
-            i = UIEdit->edit_eline.scroll + mcol - UIEdit->edit_eline.col;
+        if( mouse( &row, &col ) ) {
+            i = UIEdit->edit_eline.scroll + col - UIEdit->edit_eline.col;
             if( i > trim( UIEdit->edit_buffer ) ) {
                 i = trim( UIEdit->edit_buffer );
             }

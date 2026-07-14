@@ -37,7 +37,6 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-
 VarString *VarStringStart( void )
 /*******************************/
 {
@@ -55,7 +54,7 @@ VarString *VarStringStart( void )
 } /* VarStringStart */
 
 void VarStringAddChar( VarString *varstr, char chr )
-/**************************************************/
+/****************************************************/
 {
     if( varstr != NULL ) {
         /* skip the parts that are already full */
@@ -90,15 +89,14 @@ static size_t ComputeVarStringLen( VarString *varstr )
 } /* ComputeVarStringLen */
 
 char *VarStringEnd( VarString *varstr, size_t *plen )
-/****************************************************
- * allocated a continous string for list, copies the string, and free's list/
- * if retlength is not NULL the lenght of the string (excluding the '\0') is
- * returned there
- */
+/******************************************************/
+/* allocated a continous string for list, copies the string, and free's list */
+/* if retlength is not NULL the lenght of the string (excluding the '\0') is */
+/* returned there */
 {
     VarString       *tmp;
     char            *str;
-    char            *p;
+    char            *part;
     size_t          len;
 
     len = ComputeVarStringLen( varstr );
@@ -107,16 +105,18 @@ char *VarStringEnd( VarString *varstr, size_t *plen )
     if( str == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        p = str;
+        part = str;
         while( varstr != NULL ) {
             /* copy the current string part */
-            memcpy( p, varstr->partString, varstr->len );
-            p += varstr->len;
+            memcpy( part, varstr->partString, varstr->len );
+            part += varstr->len;
+
             /* free the current string part */
             tmp = varstr;
             varstr = varstr->next;
             WRESFREE( tmp );
         }
+
         /* write the '\0' character */
         str[len] = '\0';
 
@@ -124,5 +124,6 @@ char *VarStringEnd( VarString *varstr, size_t *plen )
             *plen = len;
         }
     }
+
     return( str );
 } /* EndStringList */

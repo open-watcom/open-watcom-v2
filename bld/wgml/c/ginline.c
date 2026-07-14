@@ -147,9 +147,9 @@ static void gml_inline_common( const gmltag *entry, font_number font )
 
     if( entry->u.tagid == T_Q ) {       // Q/eQ inserts quote char
         if( (quote_lvl % 2) ) {
-            token_buf[0] = CHAR_sq;
+            token_buf[0] = s_q;
         } else {
-            token_buf[0] = CHAR_dq;
+            token_buf[0] = d_q;
         }
         if( !ProcFlags.concat
           && ((input_cbs->hidden_head != NULL)
@@ -171,7 +171,7 @@ static void gml_inline_common( const gmltag *entry, font_number font )
 
     if( *p != '\0' ) {
         if( (*(p + 1) == '\0')
-          && (*(unsigned char *)p == CONT_char) ) { // text is continuation character only
+          && (*p == CONT_char) ) { // text is continuation character only
             /* tbd */
         } else {
             process_text( p, g_curr_font);          // if text follows
@@ -319,9 +319,9 @@ static void gml_e_inline_common( const gmltag *entry )
     if( entry->u.tagid == T_EQ ) {          // Q/eQ insert quote character
         quote_lvl--;
         if( (quote_lvl % 2) ) {
-            token_buf[0] = CHAR_sq;
+            token_buf[0] = s_q;
         } else {
-            token_buf[0] = CHAR_dq;
+            token_buf[0] = d_q;
         }
         token_buf[1] = CONT_char;
         token_buf[2] = '\0';
@@ -333,7 +333,7 @@ static void gml_e_inline_common( const gmltag *entry )
     SkipDot( p );                           // over '.'
     if( *p != '\0' ) {
         if( (*(p + 1) == '\0')
-          && (*(unsigned char *)p == CONT_char) ) { // text is continuation character only
+          && (*p == CONT_char) ) { // text is continuation character only
             /* tbd */
         } else {
             process_text( p, g_curr_font);          // if text follows

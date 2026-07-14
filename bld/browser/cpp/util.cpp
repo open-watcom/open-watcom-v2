@@ -153,8 +153,8 @@ static bool matchesAll( char * name )
         *nameend = '\0';
         nameend--;
     }
-    return std::strcmp( name, "*" ) == 0 || std::strcmp( name, ".*" ) == 0
-           || std::strcmp( name, "*.*" ) == 0;
+    return strcmp( name, "*" ) == 0 || strcmp( name, ".*" ) == 0
+           || strcmp( name, "*.*" ) == 0;
 }
 
 void * WBRRegComp( const char * cname )

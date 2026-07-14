@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cstdlib>
+#include <stdlib.h>
 #include <wcvector.h>
 #include <wstring.hpp>
 

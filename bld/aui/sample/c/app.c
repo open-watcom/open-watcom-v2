@@ -149,7 +149,7 @@ extern void BIOSSetPage( char pagenb );
 #endif
 
 gui_window_styles WndStyle = GUI_PLAIN | GUI_GMOUSE;
-const char *WndGadgetHint[] =
+char *WndGadgetHint[] =
 {
     "this is help for the folder",
     "this is help for the stop sign"

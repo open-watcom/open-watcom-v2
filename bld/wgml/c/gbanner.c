@@ -638,8 +638,6 @@ static text_chars * split_text_chars( text_chars * in_chars )
     text_chars  *   c_chars;
     text_chars  *   old_next;
     unsigned        o_count;
-    int             c1;
-    int             c2;
 
     old_next = in_chars->next;
     if( old_next != NULL ) {
@@ -651,11 +649,8 @@ static text_chars * split_text_chars( text_chars * in_chars )
         o_count = c_chars->count;
         p = c_chars->text;
         while( *p != '\0' ) {
-            c1 = *(unsigned char *)p;
-            c2 = *(unsigned char *)(p + 1);
-            if( (c1 == FUNC_escape)
-              && (c2 >= FUNC_end)
-              && (c2 <= FUNC_superscript_end) ) {
+            if( (*p == FUNC_escape) && (*(p + 1) >= FUNC_end) &&
+                                           (*(p + 1) <= FUNC_superscript_end) ) {
                 if( *(p + 2) != '\0' ) {    // only split if text follows
                     /* Reset c_chars to include text up to split */
                     c_chars->count = p - c_chars->text;
@@ -670,9 +665,9 @@ static text_chars * split_text_chars( text_chars * in_chars )
                     /* Finish configuring the post-split text_chars */
                     c_chars->width = cop_text_width( c_chars->text, c_chars->count, c_chars->font );
                     c_chars->x_address = c_chars->prev->x_address + c_chars->prev->width;
-                    if( c2 == FUNC_subscript_beg ) {
+                    if( *(p + 1) == FUNC_subscript_beg ) {
                         c_chars->type |= TXT_sub;
-                    } else if( c2 == FUNC_superscript_beg ) {
+                    } else if( *(p + 1) == FUNC_superscript_beg ) {
                         c_chars->type |= TXT_sup;
                     }
 
@@ -738,7 +733,6 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
     unsigned            cur_width;
     unsigned            cur_v_pos;
     unsigned            text_width;
-    int                 c;
 
     cur_line = NULL;
     ban_line.first = NULL;
@@ -764,10 +758,10 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                         continue;               // skip empty part
                     }
                     cur_width = 0;
-                    for( cur_p = cur_region->final_content[k].string; (c = *(unsigned char *)cur_p) != '\0'; cur_p++ ) {
-                        if( (cur_width + wgml_fonts[cur_region->font].width.table[c]) <
+                    for( cur_p = cur_region->final_content[k].string; *cur_p != '\0'; cur_p++ ) {
+                        if( (cur_width + wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                 cur_region->reg_width ) {
-                            cur_width += wgml_fonts[cur_region->font].width.table[c];
+                            cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                         } else {
                             while( *cur_p != ' ' ) {
                                 cur_p--;
@@ -893,12 +887,12 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                             cur_region->final_content[1].string[0] = '\0';
                         } else {
                             cur_width = 0;
-                            for( cur_p = cur_region->final_content[1].string; (c = *(unsigned char *)cur_p) != '\0';
+                            for( cur_p = cur_region->final_content[1].string; *cur_p != '\0';
                                     cur_p++ ) {
                                 if( (cur_width +
-                                        wgml_fonts[cur_region->font].width.table[c]) <
+                                        wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                         cur_region->final_content[2].hoffset - cur_region->final_content[1].hoffset ) {
-                                    cur_width += wgml_fonts[cur_region->font].width.table[c];
+                                    cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                                 } else {
                                     *cur_p = '\0';     // This is where multiline support goes!!!
                                     break;
@@ -911,12 +905,12 @@ static void out_ban_common( banner_lay_tag * ban, bool top )
                             cur_region->final_content[0].string[0] = '\0';
                         } else {
                             cur_width = 0;
-                            for( cur_p = cur_region->final_content[0].string; (c = *(unsigned char *)cur_p) != '\0';
+                            for( cur_p = cur_region->final_content[0].string; *cur_p != '\0';
                                     cur_p++ ) {
                                 if( (cur_width +
-                                        wgml_fonts[cur_region->font].width.table[c]) <
+                                        wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p]) <
                                         cur_region->final_content[1].hoffset - cur_region->final_content[0].hoffset ) {
-                                    cur_width += wgml_fonts[cur_region->font].width.table[c];
+                                    cur_width += wgml_fonts[cur_region->font].width.table[*(unsigned char *)cur_p];
                                 } else {
                                     *cur_p = '\0';     // This is where multiline support goes!!!
                                     break;

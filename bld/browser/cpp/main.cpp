@@ -31,7 +31,7 @@
 
 
 #include <except.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 #include <wfilenam.hpp>
 #include <wwinmain.hpp>

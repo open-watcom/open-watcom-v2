@@ -288,7 +288,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
             g_scandata.s = buff2;
             g_scandata.e = buff2 + buff2_lg;
             if( check_tagname( g_scandata.s, NULL ) != NULL // tag found: error
-              || (*(unsigned char *)g_scandata.s == SCR_char)          // cw found: error
+              || (*g_scandata.s == SCR_char)          // cw found: error
               || (input_cbs->fmflags & II_eof) ) {  // EOF found: error
                 xx_err_exit( ERR_TEXT_NOT_TAG_CW );
                 /* never return */
@@ -305,7 +305,7 @@ static void gml_ixxx_common( const gmltag * entry, int hx_lvl )
 
     txt = p;
     txtlen = strlen( txt );
-    if( ((unsigned char *)txt)[txtlen - 1] == CONT_char ) {
+    if( txt[txtlen - 1] == CONT_char ) {
         txt[txtlen - 1] = '\0';
         txtlen--;
     }

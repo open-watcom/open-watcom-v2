@@ -181,14 +181,12 @@ static void gen_box_head( char * letter )
 {
     doc_element *   h_box_el;       // PS only
     unsigned        full_line;      // PS only: original frame_line_len
-    int             c;
 
-    c = *(unsigned char *)letter;
     if( bin_driver->hline.text == NULL ) {                      // character device
         process_text( frame_line_1, layout_work.ixhead.font );  // top line
         scr_process_break();
         t_page.cur_width += ixh_indent;
-        frame_line_2[2] = c;
+        frame_line_2[2] = letter[0];
         process_text( frame_line_2, layout_work.ixhead.font );  // middle line
         scr_process_break();
         t_page.cur_width += ixh_indent;
@@ -209,7 +207,7 @@ static void gen_box_head( char * letter )
         g_subs_skip += wgml_fonts[layout_work.ixhead.font].line_height;
         full_line = frame_line_len;
         full_line +=
-            wgml_fonts[layout_work.ixhead.font].width.table[c];
+            wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
         t_page.cur_width += frame_line_len / 2;
         process_text( letter, layout_work.ixhead.font );    // middle line
         scr_process_break();
@@ -236,7 +234,6 @@ static void gen_rule_head( char * letter )
     unsigned        cur_limit;
     unsigned        full_line;      // PS only: original frame_line_len
     unsigned        half_line;      // one half of frame_line_len
-    int             c;
 
     half_line = frame_line_len / 2;
     if( bin_driver->hline.text == NULL ) {                      // character device
@@ -250,9 +247,8 @@ static void gen_rule_head( char * letter )
         process_text( frame_line_1, layout_work.ixhead.font );  // bottom line
         scr_process_break();
     } else {                                            // page-oriented device
-        c = *(unsigned char *)letter;
         full_line = frame_line_len;
-        full_line += wgml_fonts[layout_work.ixhead.font].width.table[c];
+        full_line += wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter];
         if( layout_work.ixhead.frame.type == FRAME_rule ) {
 
         /*******************************************************************/
@@ -648,7 +644,6 @@ static void gen_index( void )
     unsigned        cur_limit;
     unsigned        indent[3];          // I1/I2/I3 cumulative indents
     unsigned        spc_count;
-    int             c;
 
     scr_process_break();                // flush any pending text
     start_doc_sect();                   // emit heading regardless of pass
@@ -707,6 +702,9 @@ static void gen_index( void )
 
     /* Initialize values used in outputting the index */
 
+    letter[0]  = 0;
+    letter[1]  = 0;
+
     indent[0] = conv_hor_unit( &layout_work.ix[0].indent, layout_work.ix[0].font );
     indent[1] = indent[0] + conv_hor_unit( &layout_work.ix[1].indent, layout_work.ix[1].font );
     if( ProcFlags.has_aa_block ) {
@@ -746,8 +744,7 @@ static void gen_index( void )
      */
     first[0] = true;
     for( ixh1 = index_dict; ixh1 != NULL; ixh1 = ixh1->next ) {
-        c = *(unsigned char *)letter;
-        if( c != toupper( *(unsigned char *)ixh1->ix_term ) ) {
+        if( letter[0] != my_toupper( *(ixh1->ix_term) ) ) {
             /*
              * Set g_subs_skip for IXHEAD
              */
@@ -756,7 +753,7 @@ static void gen_index( void )
             /*
              * Generate IXHEAD heading
              */
-            c = toupper( *(unsigned char *)ixh1->ix_term );
+            letter[0] = my_toupper( *(ixh1->ix_term) );
             /*
              * The factor 4.6 is empirical and chosen to match wgml 4.0
              */
@@ -766,9 +763,9 @@ static void gen_index( void )
             }
 
             if( layout_work.ixhead.header ) {
-                spc_count = wgml_fonts[layout_work.ixhead.font].width.table[c] /
+                spc_count = wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter] /
                             wgml_fonts[layout_work.ixhead.font].spc_width;  // integer ratio
-                if( (wgml_fonts[layout_work.ixhead.font].width.table[c] %
+                if( (wgml_fonts[layout_work.ixhead.font].width.table[*(unsigned char *)letter] %
                             wgml_fonts[layout_work.ixhead.font].spc_width) > 0 ) {
                     spc_count++;                            // increment unless exact ratio
                 }
@@ -776,8 +773,6 @@ static void gen_index( void )
                     wgml_fonts[layout_work.ixhead.font].spc_width;  // length without letter width
                 t_page.cur_width += ixh_indent;
 
-                letter[0] = c;
-                letter[1] = 0;
                 switch( layout_work.ixhead.frame.type ) {
                 case FRAME_none:
                     process_text( letter, layout_work.ixhead.font );

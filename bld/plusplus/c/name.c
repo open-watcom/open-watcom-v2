@@ -118,12 +118,11 @@ int NameMemCmp( const char *t1, const char *t2, size_t len )
 unsigned NameCalcHashLen( const char *id, size_t len )
 /****************************************************/
 {
-    unsigned char s[4];
-    unsigned    mask;
-    unsigned    c;
-    unsigned    g;
-    unsigned    h;
-    int         i;
+    const unsigned *s = (const unsigned *)id;
+    unsigned mask;
+    unsigned c;
+    unsigned g;
+    unsigned h;
 
     ExtraRptIncrementCtr( ctr_hashes );
     /* modelled on hashpjw from the Dragon book */
@@ -132,20 +131,17 @@ unsigned NameCalcHashLen( const char *id, size_t len )
     c = len;
     if( len > sizeof( unsigned ) ) {
         do {
-            c ^= MGET_LE_U32_UN( id );
+            c ^= *s;
             h = ( h << 4 ) + c;
             g = h & ~0x0ffffff;
             h ^= g;
             h ^= g >> (4+4+4+4+4);
-            id += sizeof( unsigned );
+            ++s;
             len -= sizeof( unsigned );
         } while( len > sizeof( unsigned ) );
     }
     mask = NameCmpMask[len];
-    for( i = 0; i < 4; i++ ) {
-        s[i] = ( i < len ) ? id[i] : 0;
-    }
-    c ^= MGET_LE_U32_UN( s ) & mask;
+    c ^= *s & mask;
     h = ( h << 4 ) + c;
     g = h & ~0x0ffffff;
     h ^= g;

@@ -63,8 +63,8 @@ extern void FREEPROCINSTANCE_WIN(void);
 #define MAKEPROCINSTANCE_INLINE __parm [__dx __eax] [__bx] __value [__eax]
 #define GETWNDPROC_INLINE       __parm [__dx __eax] __value [__eax]
 
-#endif /* _M_I86 */
-#endif /* __WINDOWS__ */
+#endif
+#endif
 
 #if defined( __WINDOWS_386__ )
 typedef INT_PTR             (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
@@ -80,7 +80,7 @@ typedef void                (CALLBACK *LINEDDAPROCx)( int, int, LPARAM );
 typedef UINT_PTR            (CALLBACK *__CDHOOKPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
 #endif
-#else /* ! __WINDOWS_386__ */
+#else
 #define DLGPROCx            DLGPROC
 #define FARPROCx            FARPROC
 #define FONTENUMPROCx       FONTENUMPROC
@@ -93,7 +93,7 @@ typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
 #if !defined( __WINDOWS__ ) || defined( INCLUDE_COMMDLG_H )
 #define LPOFNHOOKPROCx      LPOFNHOOKPROC
 #endif
-#endif /* __WINDOWS_386__ */
+#endif
 
 #if defined( __WINDOWS__ )
 extern WNDPROC              GetWndProc( WNDPROCx p );
@@ -122,7 +122,7 @@ extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTAN
 #if defined( INCLUDE_COMMDLG_H )
 #pragma aux MakeProcInstance_OFNHOOK     = MAKEPROCINSTANCE_INLINE
 #endif
-#else /* ! __WINDOWS__ */
+#else
 #define GetWndProc(p)                       p
 #define MakeProcInstance_DLG(f,i)           ((void)i,f)
 #define MakeProcInstance_FONTENUM(f,i)      ((void)i,f)
@@ -133,7 +133,7 @@ extern LPOFNHOOKPROC        MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTAN
 #define MakeProcInstance_WND(f,i)           ((void)i,f)
 #define MakeProcInstance_TIMER(f,i)         ((void)i,f)
 #define MakeProcInstance_LINEDDA(f,i)       ((void)i,f)
-#endif /* __WINDOWS__ */
+#endif
 
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
 extern void FreeProcInstance_DLG( DLGPROC f );
@@ -158,7 +158,7 @@ extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 #if defined( INCLUDE_COMMDLG_H )
 #pragma aux FreeProcInstance_OFNHOOK     = FREEPROCINSTANCE_INLINE
 #endif
-#else /* ! ( __WINDOWS__ && _M_I86 ) */
+#else
 #define FreeProcInstance_DLG(f)             ((void)f)
 #define FreeProcInstance_FONTENUM(f)        ((void)f)
 #define FreeProcInstance_OLDFONTENUM(f)     ((void)f)
@@ -168,7 +168,7 @@ extern void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC f );
 #define FreeProcInstance_WND(f)             ((void)f)
 #define FreeProcInstance_TIMER(f)           ((void)f)
 #define FreeProcInstance_LINEDDA(f)         ((void)f)
-#endif /* __WINDOWS__ && _M_I86 */
+#endif
 
 #ifdef __cplusplus
 }

@@ -187,7 +187,7 @@ void    scr_tb( void )
             // Parse fill chars/strings
 
             if( (*p != '+')
-              && !isdigit( *(unsigned char *)p ) ) {    // potential fill char
+              && !my_isdigit( *p ) ) {    // potential fill char
                 if( (*p == '\'')
                   || (*p == '"')
                   || (*p == '/') ) {
@@ -196,7 +196,7 @@ void    scr_tb( void )
                     if( *p == '\0'
                       || (*p == ' ')
                       || (*p == '+')
-                      || isdigit( *(unsigned char *)p ) ) { // ' " or / only before tab stop position
+                      || my_isdigit( *p ) ) { // ' " or / only before tab stop position
                         xx_line_err_exit_c( ERR_RIGHT_DELIM, pa );
                         /* never return */
                     }
@@ -248,7 +248,7 @@ void    scr_tb( void )
               && (p > pa) ) {      // as needed by getnum
                 p--;                            // *p is last character of tab stop
             }
-            while( (p != pa) && !isdigit( *(unsigned char *)p ) ) { // back up over alignment
+            while( (p != pa) && !my_isdigit( *p ) ) { // back up over alignment
                 p--;
             }
             p++;

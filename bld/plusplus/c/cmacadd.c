@@ -47,9 +47,6 @@
 #define MAC_SEGMENT_LIMIT       (MAC_SEGMENT_SIZE - 2)
 #define HASH_TABLE_SIZE         (MACRO_HASH_SIZE * sizeof( *macroHashTable ))
 
-#define MACRO_ALIGN             sizeof( void * )
-#define macroSizeAlign(x)       _RoundUp( (x), MACRO_ALIGN )
-
 typedef struct macro_seg_list MACRO_SEG_LIST;
 struct macro_seg_list {
     MACRO_SEG_LIST  *next;
@@ -75,6 +72,8 @@ ExtraRptCtr( macros_defined );
 ExtraRptCtr( macros_defined_with_parms );
 ExtraRptCtr( macros_redefined );
 ExtraRptSpace( macro_space );
+
+#define macroSizeAlign( s )     _RoundUp((s), sizeof( void * ))
 
 static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
     size_t size )               // - size

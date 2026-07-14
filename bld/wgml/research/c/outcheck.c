@@ -2016,7 +2016,7 @@ static void oc_process_text( char * input_text, font_number font )
                 space_width = wgml_fonts[old_font].spc_width;
 
                 ch = the_line->last->text[the_line->last->count - 1];
-                if( is_stop_char( ch ) ) {
+                if( ch == '.' || ch == '!' || ch == '?' || ch == ':' ) {
                     space_width *= 2;
                 }
 
@@ -2085,7 +2085,7 @@ static void oc_process_text( char * input_text, font_number font )
                         space_width = wgml_fonts[font].spc_width;
 
                         ch = the_line->last->text[the_line->last->count - 1];
-                        if( is_stop_char( ch ) ) {
+                        if( ch == '.' || ch == '!' || ch == '?' || ch == ':' ) {
                             space_width *= 2;
                         }
                     }

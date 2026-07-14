@@ -958,7 +958,7 @@ bool DR_WalkContaining( drmem_hdl mod, drmem_hdl target, DRWLKBLK wlk, void *d )
     return( true );
 }
 
-bool DR_WalkSiblings( drmem_hdl arrhdl, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
+bool DR_WalkSiblings( drmem_hdl curr, const dw_tagnum *tags, const DRWLKBLK *wlks, void *d )
 /******************************************************************************************/
 // takes an array of tags and wlks and calls wlk on tag match
 // default func called if the 0 tag at end of array has a non NULL func
@@ -973,8 +973,8 @@ bool DR_WalkSiblings( drmem_hdl arrhdl, const dw_tagnum *tags, const DRWLKBLK *w
     DRWLKBLK        wlk;
 
     cont = true;
-    start = arrhdl;
-    while( !DR_ReadTagEnd( &arrhdl, &abbrev, &tag ) ) {
+    start = curr;
+    while( !DR_ReadTagEnd( &curr, &abbrev, &tag ) ) {
         haschild = DR_VMReadByte( abbrev );
         abbrev++;
         index = 0;
@@ -991,11 +991,11 @@ bool DR_WalkSiblings( drmem_hdl arrhdl, const dw_tagnum *tags, const DRWLKBLK *w
             }
         }
         if( haschild == DW_CHILDREN_yes ) {
-            DR_SkipChildren( &abbrev, &arrhdl );
+            DR_SkipChildren( &abbrev, &curr );
         } else {
-            DR_SkipAttribs( abbrev, &arrhdl );
+            DR_SkipAttribs( abbrev, &curr );
         }
-        start = arrhdl;
+        start = curr;
     }
     return( cont );
 }

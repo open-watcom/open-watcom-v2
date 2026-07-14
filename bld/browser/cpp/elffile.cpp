@@ -195,7 +195,7 @@ bool ElfFile::addSection( const char * name, void * h )
     Elf32_Shdr * hdr = (Elf32_Shdr *) h;
 
     for( int i = DR_DEBUG_NUM_SECTS; i > 0; i -= 1 ) {
-        if( std::strcmp( name, _drSectNames[i - 1] ) == 0 ) {
+        if( strcmp( name, _drSectNames[i - 1] ) == 0 ) {
             _drSections[i - 1] = hdr->sh_offset;
             _drSizes[i - 1] = hdr->sh_size;
 
@@ -203,7 +203,7 @@ bool ElfFile::addSection( const char * name, void * h )
         }
     }
 
-    if( std::strcmp( name, _componentSectName ) == 0 ) {
+    if( strcmp( name, _componentSectName ) == 0 ) {
         readComponentSect( hdr->sh_offset, hdr->sh_size );
         return true;
     }
@@ -268,7 +268,7 @@ void ElfFile::addComponentFile( const char * fileName, bool enable )
 
     // NYI -- use the WCVector find!
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        if( std::strcmp( (*_components)[i]->name, fileName ) == 0 ) {
+        if( strcmp( (*_components)[i]->name, fileName ) == 0 ) {
             comp = (*_components)[i];
             found = true;
         }
@@ -473,7 +473,7 @@ void ElfFile::startWriteSect( const char * name, long sh_type )
     _sectNames->append( name );
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( std::strcmp( _drSectNames[i], name ) == 0 ) {
+        if( strcmp( _drSectNames[i], name ) == 0 ) {
             _drSections[i] = _file->tell();
             break;
         }
@@ -492,7 +492,7 @@ void ElfFile::endWriteSect()
     shdr->sh_size = _file->tell() - shdr->sh_offset;
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( std::strcmp( _drSectNames[i], _sectNames->last() ) == 0 ) {
+        if( strcmp( _drSectNames[i], _sectNames->last() ) == 0 ) {
             _drSizes[i] = _file->st_size() - _drSections[i];
             break;
         }

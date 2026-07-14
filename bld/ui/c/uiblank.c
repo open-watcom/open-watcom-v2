@@ -40,13 +40,9 @@ static void blankarea( SAREA area, ATTR attr )
 {
     uisize      row;
     SAREA       up_area;
-    uisize      height;
 
-    row = area.row;
-    height = area.height;
-    while( height-- > 0 ) {
+    for( row = area.row; row < area.row + area.height; ++row ) {
         bfill( &UIData->screen, row, area.col, attr, ' ', area.width );
-        row++;
     }
     up_area.row = 0;
     up_area.col = 0;

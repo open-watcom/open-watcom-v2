@@ -178,13 +178,13 @@ static char *scr_single_func_u( char *args, char *end, char **result )
         if( rc == 2 ) {
             sym_valid = true;           // variable found
             for( pval = symsubval->value; *pval != '\0'; pval++ ) {
-                *(*result)++ = toupper( *(unsigned char *)pval );
+                *(*result)++ = my_toupper( *pval );
             }
         }
     }
     if( !sym_valid ) {                  // string or invalid symbol
         for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
-            *(*result)++ = toupper( *(unsigned char *)pchar );
+            *(*result)++ = my_toupper( *pchar );
         }
     }
     **result = '\0';
@@ -266,7 +266,7 @@ static char *scr_single_func_x( char *args, char *end, char **result )
             accept = false;
         } else {
             for( pchar = args; pchar < end; pchar++ ) { // check for non-hex-digit in input
-                if( !isxdigit( *(unsigned char *)pchar ) ) {
+                if( !my_isxdigit( *pchar ) ) {
                     accept = false;
                     break;
                 }
@@ -276,17 +276,17 @@ static char *scr_single_func_x( char *args, char *end, char **result )
             for( pchar = args; pchar < end; pchar++ ) { // convert input from hex
 
                 c = 0;
-                if( isdigit( *(unsigned char *)pchar ) ) {
+                if( my_isdigit( *pchar ) ) {
                     c += *pchar - '0';
                 } else {
-                    c += toupper( *(unsigned char *)pchar ) - 'A' + 10;
+                    c += my_toupper( *pchar ) - 'A' + 10;
                 }
                 c *= 16;
                 pchar++;
-                if( isdigit( *(unsigned char *)pchar ) ) {
+                if( my_isdigit( *pchar ) ) {
                     c += *pchar - '0';
                 } else {
-                    c += toupper( *(unsigned char *)pchar ) - 'A' + 10;
+                    c += my_toupper( *pchar ) - 'A' + 10;
                 }
 
                 *(*result)++ = c;

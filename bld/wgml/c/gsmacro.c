@@ -503,7 +503,7 @@ void    scr_dm( void )
             len = 0;
             p = buff2;
             pa = cw;
-            if( *(unsigned char *)p == SCR_char ) {              // only test script control words
+            if( *p == SCR_char ) {              // only test script control words
                 p++;
 
                 /****************************************************************/
@@ -511,7 +511,7 @@ void    scr_dm( void )
                 /* constructs like "..'" ".'." have yet to be explored          */
                 /****************************************************************/
 
-                if( (*(unsigned char *)p == SCR_char)
+                if( (*p == SCR_char)
                   || (*p == '\'') ) {
                     p++;                        // over ".." or ".'"
                 }
@@ -731,7 +731,7 @@ void    scr_em( void )
         /* never return */
     }
 
-    if( *(unsigned char *)g_tok_start == SCR_char ) {      // possible macro name
+    if( *g_tok_start == SCR_char ) {      // possible macro name
         /*  truncate name if too long WITHOUT error msg
          *  this is wgml 4.0 behaviour
          *

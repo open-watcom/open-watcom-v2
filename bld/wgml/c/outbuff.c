@@ -1330,7 +1330,7 @@ void ob_setup( void )
     /* The record type must be "t"; it must have only one character and be */
     /* followed by ":".                                                    */
 
-    if( ( tolower( ((unsigned char *)out_file_attr)[0] ) != 't' ) || ( ((unsigned char *)out_file_attr)[1] != ':' ) ) {
+    if( ( my_tolower( out_file_attr[0] ) != 't' ) || ( out_file_attr[1] != ':' ) ) {
         xx_simple_err_exit_c( ERR_REC_ATT_NOT_SUP, out_file_attr );
         /* never return */
     }
@@ -1340,7 +1340,7 @@ void ob_setup( void )
     count = 0;
 
     for( i = 2; i < strlen( out_file_attr ); i++ ) {
-        if( !isdigit( ((unsigned char *)out_file_attr)[i] ) ) {
+        if( !my_isdigit( out_file_attr[i] ) ) {
             xx_simple_err_exit_c( ERR_REC_ATT_BAD_FMT, out_file_attr );
             /* never return */
         }

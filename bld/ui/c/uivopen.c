@@ -46,16 +46,11 @@ static void vs_update_fn( SAREA area, void *_vs )
     int             vrow;
     int             vcol;
     VSCREEN         *vs = (VSCREEN *)_vs;
-    uisize          height;
 
     vcol = (int)area.col - (int)vs->area.col;
-    row = area.row;
-    vrow = row - (int)vs->area.row;
-    height = area.height;
-    while( height-- > 0 ) {
+    for( row = area.row; row < area.row + area.height; ++row ) {
+        vrow = row - (int)vs->area.row;
         uibcopy( &(vs->window.buffer), vrow, vcol, &UIData->screen, row, area.col, area.width );
-        row++;
-        vrow++;
     }
 }
 

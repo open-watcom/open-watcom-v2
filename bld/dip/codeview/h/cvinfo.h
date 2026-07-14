@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,14 +66,10 @@ struct imp_sym_handle {
     unsigned short      mfunc_idx;
 };
 
-struct imp_array {
-    unsigned short      dims;
-};
-
 struct imp_type_handle {
     virt_mem            handle;
     unsigned short      idx;
-    struct imp_array    array;
+    unsigned short      array_dim;
 };
 
 struct imp_cue_handle {
