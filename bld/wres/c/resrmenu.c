@@ -203,33 +203,33 @@ bool ResReadMenuItem32( MenuItem *item, FILE *fp )
 MenuItem * ResNewMenuItem( void )
 /*******************************/
 {
-    MenuItem *  newitem;
+    MenuItem        *menuitem;
 
-    newitem = WRESALLOC( sizeof( MenuItem ) );
-    if( newitem == NULL ) {
+    menuitem = WRESALLOC( sizeof( MenuItem ) );
+    if( menuitem == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newitem->IsPopup = false;
-        newitem->Item.Normal.ItemFlags = 0;
-        newitem->Item.Normal.ItemID = 0;
-        newitem->Item.Normal.ItemText = NULL;
+        menuitem->IsPopup = false;
+        menuitem->Item.Normal.ItemFlags = 0;
+        menuitem->Item.Normal.ItemID = 0;
+        menuitem->Item.Normal.ItemText = NULL;
     }
 
-    return( newitem );
+    return( menuitem );
 }
 
-void ResFreeMenuItem( MenuItem * olditem )
+void ResFreeMenuItem( MenuItem *menuitem )
 /****************************************/
 {
-    if( olditem->IsPopup ) {
-        if( olditem->Item.Popup.ItemText != NULL ) {
-            WRESFREE( olditem->Item.Popup.ItemText );
+    if( menuitem->IsPopup ) {
+        if( menuitem->Item.Popup.ItemText != NULL ) {
+            WRESFREE( menuitem->Item.Popup.ItemText );
         }
     } else {
-        if( olditem->Item.Normal.ItemText != NULL ) {
-            WRESFREE( olditem->Item.Normal.ItemText );
+        if( menuitem->Item.Normal.ItemText != NULL ) {
+            WRESFREE( menuitem->Item.Normal.ItemText );
         }
     }
 
-    WRESFREE( olditem );
+    WRESFREE( menuitem );
 }

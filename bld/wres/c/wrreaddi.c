@@ -199,7 +199,7 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
     } else {
         dir->TargetOS = WRES_OS_WIN16;
     }
-    /* assume that a NULL header is the EOF which is the only way of detecting */
+    /* assume that a NULL msheader is the EOF which is the only way of detecting */
     /* the end of a MS .RES file */
     error = false;
     while( !error && (msheader = MResReadResourceHeader( fp, iswin32 )) != NULL ) {
