@@ -99,7 +99,7 @@ static size_t create_sym_extname( symbol *sym, char *ext_name )
 static unsigned_32 WriteNovImports( fixed_header *header )
 /********************************************************/
 {
-    nov_import      *import;
+    nov_import      *nov_imp;
     unsigned_32     count;
     size_t          len;
     unsigned_32     wrote;
@@ -115,25 +115,25 @@ static unsigned_32 WriteNovImports( fixed_header *header )
         /* so SymFini doesn't try to free it */
         if( sym->p.import == DUMMY_IMPORT_PTR )
             sym->p.import = NULL;
-        import = sym->p.import;
-        if( import != NULL ) {
+        nov_imp = sym->p.import;
+        if( nov_imp != NULL ) {
             char    ext_name[255 + 1];
 
             len = create_sym_extname( sym, ext_name );
             wrote += WriteLoadU8Name( ext_name, len, false );
 
-            if( import->contents <= MAX_IMP_INTERNAL ) {
-                refs = import->contents;
+            if( nov_imp->contents <= MAX_IMP_INTERNAL ) {
+                refs = nov_imp->contents;
             } else {        // imports are in virtual memory.
-                refs = import->u.v.num_relocs;
+                refs = nov_imp->u.v.num_relocs;
             }
             WriteLoadU32( refs );
             size = refs * sizeof( refs );
             wrote += sizeof( unsigned_32 ) + size;
-            if( import->contents <= MAX_IMP_INTERNAL ) {
-                WriteLoad( import->u.r.relocs, size );
+            if( nov_imp->contents <= MAX_IMP_INTERNAL ) {
+                WriteLoad( nov_imp->u.r.relocs, size );
             } else {        // imports are in virtual memory.
-                vmem_array = import->u.v.vm_ptr;
+                vmem_array = nov_imp->u.v.vm_ptr;
                 for( ; size > IMP_VIRT_ALLOC_SIZE; size -= IMP_VIRT_ALLOC_SIZE ) {
                     WriteInfoLoad( *vmem_array++, IMP_VIRT_ALLOC_SIZE );
                 }
@@ -650,8 +650,8 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
 /**********************************************************************************/
 // add a relocation to the import record.
 {
-    nov_import      *imp;
-    nov_import      *new;
+    nov_import      *nov_imp;
+    nov_import      *tmp;
     virt_mem        vmem_ptr;
     unsigned        vblock;     // which virt_mem block
     unsigned        voff;       // offset into a virt_mem block
@@ -662,44 +662,44 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
     if( !isdata ) {
         offset |= NOV_IMP_ISCODE;
     }
-    imp = sym->p.import;
-    if( imp == DUMMY_IMPORT_PTR ) {
-        imp = MemAllocSafe( sizeof( nov_import ) );
-        sym->p.import = imp;
-        imp->contents = 0;
-        imp->u.r.relocs[imp->contents++] = offset;
-    } else if( imp->contents < MAX_IMP_INTERNAL ) {
-        if( imp->contents == 2 ) {
-            new = MemAllocSafe( ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
-            memcpy( new, imp, sizeof( nov_import ) );
-            MemFree( imp );
-            imp = new;
-            sym->p.import = imp;
+    nov_imp = sym->p.import;
+    if( nov_imp == DUMMY_IMPORT_PTR ) {
+        nov_imp = MemAllocSafe( sizeof( nov_import ) );
+        sym->p.import = nov_imp;
+        nov_imp->contents = 0;
+        nov_imp->u.r.relocs[nov_imp->contents++] = offset;
+    } else if( nov_imp->contents < MAX_IMP_INTERNAL ) {
+        if( nov_imp->contents == 1 ) {
+            tmp = MemAllocSafe( ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
+            memcpy( tmp, nov_imp, sizeof( nov_import ) );
+            MemFree( nov_imp );
+            nov_imp = tmp;
+            sym->p.import = nov_imp;
         }
-        imp->u.r.relocs[imp->contents++] = offset;
-    } else if( imp->contents == MAX_IMP_INTERNAL ) { // set up virt.mem
+        nov_imp->u.r.relocs[nov_imp->contents++] = offset;
+    } else if( nov_imp->contents == MAX_IMP_INTERNAL ) { // set up virt.mem
         vmem_ptr = AllocStg( IMP_VIRT_ALLOC_SIZE );
-        PutInfo( vmem_ptr, imp->u.r.relocs, MAX_IMP_INTERNAL * sizeof( unsigned_32 ) );
+        PutInfo( vmem_ptr, nov_imp->u.r.relocs, MAX_IMP_INTERNAL * sizeof( unsigned_32 ) );
         PutInfo( vmem_ptr + MAX_IMP_INTERNAL * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
-        imp->contents++;
-        imp->u.v.num_relocs = imp->contents;
-        imp->u.v.vm_ptr[0] = vmem_ptr;
-    } else {    // imp->contents > MAX_IMP_INTERNAL
-        vblock = imp->u.v.num_relocs / IMP_NUM_VIRT;
-        voff = imp->u.v.num_relocs % IMP_NUM_VIRT;
+        nov_imp->contents++;
+        nov_imp->u.v.num_relocs = nov_imp->contents;
+        nov_imp->u.v.vm_ptr[0] = vmem_ptr;
+    } else {    // nov_imp->contents > MAX_IMP_INTERNAL
+        vblock = nov_imp->u.v.num_relocs / IMP_NUM_VIRT;
+        voff = nov_imp->u.v.num_relocs % IMP_NUM_VIRT;
         if( voff == 0 ) {
-            if( vblock >= (unsigned)( imp->contents - MAX_IMP_INTERNAL ) * MAX_IMP_VIRT ) {
-                new = MemAllocSafe( sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
-                memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
-                MemFree( imp );
-                imp = new;
-                imp->contents++;
-                sym->p.import = imp;
+            if( vblock >= (unsigned)( nov_imp->contents - MAX_IMP_INTERNAL ) * MAX_IMP_VIRT ) {
+                tmp = MemAllocSafe( sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
+                memcpy( tmp, nov_imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
+                MemFree( nov_imp );
+                nov_imp = tmp;
+                nov_imp->contents++;
+                sym->p.import = nov_imp;
             }
-            imp->u.v.vm_ptr[vblock] = AllocStg( IMP_VIRT_ALLOC_SIZE );
+            nov_imp->u.v.vm_ptr[vblock] = AllocStg( IMP_VIRT_ALLOC_SIZE );
         }
-        PutInfo( imp->u.v.vm_ptr[vblock] + voff * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
-        imp->u.v.num_relocs++;
+        PutInfo( nov_imp->u.v.vm_ptr[vblock] + voff * sizeof( unsigned_32 ), &offset, sizeof( unsigned_32 ) );
+        nov_imp->u.v.num_relocs++;
     }
 }
 
