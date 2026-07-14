@@ -43,7 +43,8 @@
 #define AllocWResIDNum(o)       WRESALLOC((o) + sizeof( ((WResID *)0)->ID.Num ))
 #define AllocWResHelpIDNum(o)   WRESALLOC((o) + sizeof( ((WResHelpID *)0)->ID.Num ))
 
-extern WResIDName           *WResIDNameFromStr( const char *str );
+extern WResIDName           *WResStringIDNameFromStr( const char *str );
+
 extern WResID               *WResIDFromStr( const char *str );
 extern WResID               *WResIDFromNum( long num );
 extern void                 WResInitIDFromNum( long num, WResID *id );

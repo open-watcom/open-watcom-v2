@@ -39,8 +39,8 @@
 #include "wresrtns.h"
 
 
-WResIDName *WResIDNameFromStr( const char *str )
-/**********************************************/
+WResIDName *WResStringIDNameFromStr( const char *str )
+/****************************************************/
 {
     WResIDName      *name_id;
     size_t          len;

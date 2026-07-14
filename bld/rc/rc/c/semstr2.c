@@ -171,7 +171,7 @@ void SemOS2AddStrToStringTable( FullStringTable *currtable,
         ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), currblock );
     }
 
-    currblock->Block.String[stringnum] = WResIDNameFromStr( string );
+    currblock->Block.String[stringnum] = WResStringIDNameFromStr( string );
 } /* SemOS2AddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock *currblock,

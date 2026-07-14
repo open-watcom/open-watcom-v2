@@ -102,13 +102,13 @@ WStringBlock *WInsertStringData( WStringEditInfo *einfo, uint_16 id,
 
     if( ok ) {
         if( block->block.String[id & 0xf] == NULL ) {
-            block->block.String[id & 0xf] = WResIDNameFromStr( text );
+            block->block.String[id & 0xf] = WResStringIDNameFromStr( text );
             block->symbol[id & 0xf] = WStrdup( symbol );
             einfo->info->modified = true;
         } else {
             if( WQueryReplaceString( einfo->edit_dlg ) ) {
                 MemFree( block->block.String[id & 0xf] );
-                block->block.String[id & 0xf] = WResIDNameFromStr( text );
+                block->block.String[id & 0xf] = WResStringIDNameFromStr( text );
                 block->symbol[id & 0xf] = WStrdup( symbol );
                 einfo->info->modified = true;
                 *replace = true;

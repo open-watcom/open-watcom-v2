@@ -127,7 +127,7 @@ void SemWINAddStrToStringTable( FullStringTable *currtable,
         ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), currblock );
     }
 
-    currblock->Block.String[stringnum] = WResIDNameFromStr( string );
+    currblock->Block.String[stringnum] = WResStringIDNameFromStr( string );
 } /* SemWINAddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock *currblock,

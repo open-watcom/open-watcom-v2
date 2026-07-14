@@ -261,7 +261,7 @@ bool WRAPI WRMakeStringBlockFromData( StringTableBlock *block, char *data, size_
                 return( false );
             }
 
-            block->String[i] = WResIDNameFromStr( str );
+            block->String[i] = WResStringIDNameFromStr( str );
             if( block->String[i] == NULL ) {
                 return( false );
             }

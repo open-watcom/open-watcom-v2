@@ -137,7 +137,7 @@ bool WResWriteWResIDName( const WResIDName *name_id, FILE *fp )
  */
 {
     bool            error;
-    unsigned        numchars;
+    size_t          numchars;
 
     numchars = name_id->NumChars;
     error = ResWriteUint16( fp, numchars );

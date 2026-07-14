@@ -295,7 +295,7 @@ bool WGetEditWindowStringEntry( WStringEditInfo *einfo, WStringBlock *block,
         if( id == string_id ) {
             // text was modified
             MemFree( block->block.String[string_id & 0xf] );
-            block->block.String[string_id & 0xf] = WResIDNameFromStr( text );
+            block->block.String[string_id & 0xf] = WResStringIDNameFromStr( text );
         } else {
             // identifier was modified
             if( block == new_block ) {
