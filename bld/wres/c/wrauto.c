@@ -73,6 +73,7 @@ char *WResGetAutoDep( const char *fname )
                             } else {
                                 if( (numread = WRESREAD( fp, ret, info->Length )) != (size_t)info->Length ) {
                                     WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                                    WRESFREE( ret );
                                     ret = NULL;
                                 }
                             }
