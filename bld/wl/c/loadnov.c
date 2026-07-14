@@ -670,7 +670,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
         nov_imp->u.r.relocs[nov_imp->contents++] = offset;
     } else if( nov_imp->contents < MAX_IMP_INTERNAL ) {
         if( nov_imp->contents == 1 ) {
-            tmp = MemAllocSafe( ( MAX_IMP_INTERNAL - 2 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
+            tmp = MemAllocSafe( ( MAX_IMP_INTERNAL - 1 ) * sizeof( unsigned_32 ) + sizeof( nov_import ) );
             memcpy( tmp, nov_imp, sizeof( nov_import ) );
             MemFree( nov_imp );
             nov_imp = tmp;
