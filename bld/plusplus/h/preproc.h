@@ -58,6 +58,19 @@
 #define IS_PPOPERATOR_PRAGMA(s,l)   ((CompFlags.extensions_enabled || (CompVars.cxxstd > STD_CXX98 )) \
                                     && l == (sizeof(PPOPERATOR_PRAGMA) - 1) \
                                     && memcmp(s, PPOPERATOR_PRAGMA, sizeof(PPOPERATOR_PRAGMA)) == 0)
+#if 0
+#define SIZE_MTOKEN         2
+#define GET_MTOKEN(x)       MGET_U16_UN((x))
+#define SET_MTOKEN(x,v)     MPUT_16_UN((x),(v))
+#define INC_MTOKEN(x)       (x)+=SIZE_MTOKEN
+#define DEC_MTOKEN(x)       (x)-=SIZE_MTOKEN
+#else
+#define SIZE_MTOKEN         sizeof( TOKEN )
+#define GET_MTOKEN(x)       (*(TOKEN *)(x))
+#define SET_MTOKEN(x,v)     *(TOKEN *)(x)=(v)
+#define INC_MTOKEN(x)       (x)+=SIZE_MTOKEN
+#define DEC_MTOKEN(x)       (x)-=SIZE_MTOKEN
+#endif
 
 #define TYPE_MTOKEN     unsigned char
 #define SIZE_MTOKEN     sizeof(TYPE_MTOKEN)

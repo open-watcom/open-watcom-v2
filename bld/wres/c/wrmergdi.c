@@ -47,7 +47,7 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
     WResResInfo         *resinfo;
     WResTypeInfo        *typeinfo;
     void                *fileinfo;
-    WResMergeError      *newerr;
+    WResMergeError      *err;
 
     if( errs != NULL ) *errs = NULL;
     wind = WResFirstResource( srcdir );
@@ -75,11 +75,10 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
 void WResFreeMergeErrors( WResMergeError *errs )
 /**********************************************/
 {
-    WResMergeError      *tmp;
+    WResMergeError      *err;
 
-    while( errs != NULL ) {
-        tmp = errs;
+    while( (err = errs) != NULL ) {
         errs = errs->next;
-        WRESFREE( tmp );
+        WRESFREE( err );
     }
 }

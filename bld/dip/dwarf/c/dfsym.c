@@ -1167,10 +1167,7 @@ static bool ASym( drmem_hdl var, int index, void *_df )
     saved = DRGetDebug();
     df->wr = df->wk( df->com.iih, SWI_SYMBOL, ish, df->com.d );
     DRSetDebug( saved );
-    cont = true;
-    if( df->wr != WR_CONTINUE ) {
-        cont = false;
-    }
+    cont = ( df->wr == WR_CONTINUE );
     df->com.cont = cont;
     return( cont );
 }
@@ -1209,7 +1206,6 @@ static bool AModSym( drmem_hdl var, int index, void *_df )
     sc = DRGetTagType( var );
     if( sc == DR_TAG_NAMESPACE ) {
         DRWalkBlock( var, df->com.what, AModSym, (void *)df );
-        cont = true;
     } else {
         ish = df->ish;
         ish->sclass = SYM_VAR;
@@ -1219,11 +1215,8 @@ static bool AModSym( drmem_hdl var, int index, void *_df )
         saved = DRGetDebug();
         df->wr = df->wk( df->com.iih, SWI_SYMBOL, ish, df->com.d );
         DRSetDebug( saved );
-        cont = true;
     }
-    if( df->wr != WR_CONTINUE ) {
-        cont = false;
-    }
+    cont = ( df->wr == WR_CONTINUE );
     df->com.cont = cont;
     return( cont );
 }
@@ -1254,6 +1247,7 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
             ish = DCSymCreate( df->com.iih, df->com.d );
             if( ish == NULL ) {
                 df->sr = SR_FAIL;
+                df->com.cont = false;
             } else {
                 ish->sclass = SYM_VAR;
                 ish->imh = df->com.imh;

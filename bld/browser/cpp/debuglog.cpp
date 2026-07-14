@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <stdarg.h>
 #include <string.h>
 #include <time.h>

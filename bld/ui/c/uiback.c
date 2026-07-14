@@ -37,12 +37,16 @@
 static void backblank_update_fn( SAREA area, void *dummy )
 /********************************************************/
 {
-    uisize      row;
+    ORD         row;
+    uisize      height;
 
     /* unused parameters */ (void)dummy;
 
-    for( row = area.row; row < area.row + area.height; ++row ) {
+    row = area.row;
+    height = area.height;
+    while( height-- > 0 ) {
         bfill( &UIData->screen, row, area.col, UIData->attrs[ATTR_NORMAL], ' ', area.width );
+        row++;
     }
 }
 

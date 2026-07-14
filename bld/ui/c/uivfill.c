@@ -38,11 +38,15 @@ void UIAPI uivfill( VSCREEN *vs, SAREA area, ATTR attr, char ch )
 /***************************************************************/
 {
     uisize      row;
+    uisize      height;
 
     okopen( vs );
     oksubarea( area, vs->area );
-    for( row = area.row; row < area.row + area.height; ++row ) {
+    row = area.row;
+    height = area.height;
+    while( height-- > 0 ) {
         bfill( &(vs->window.buffer), row, area.col, attr, ch, area.width );
+        row++;
     }
     uivdirty( vs, area );
 }

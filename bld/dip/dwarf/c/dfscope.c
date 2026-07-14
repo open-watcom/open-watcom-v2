@@ -59,7 +59,7 @@ scope_node *FindScope( scope_node *last, addr_off in )
         if( last->start <= in  && in < last->end ) {
             down = last; // if containing go up the branch
             last = last->up;
-        }else{
+        } else {
             last = last->next; /* try next branch */
         }
     }
@@ -81,11 +81,11 @@ static void FreeScope( scope_node *last )
             old = last;
             last = last->up;
             old->up = NULL; /* don't go up again */
-        }else{
+        } else {
             if( last->next != NULL ) {
                 old = last;
                 last = last->next;
-            }else{ /* done this level */
+            } else { /* done this level */
                 old = last;
                 last = last->down;
             }

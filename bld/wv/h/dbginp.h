@@ -50,12 +50,12 @@ typedef enum {
         INP_REPLAYED    = 0x0200,
 } input_type;
 
-typedef void *inp_data_handle;
+typedef const void *inp_data_handle;
 
 typedef bool (inp_rtn_func)(inp_data_handle, inp_rtn_action);
 
 typedef struct input_stack {
-        struct  input_stack     *link;
+        struct input_stack      *link;
         const char              *scan;
         inp_data_handle         handle;
         inp_rtn_func            *rtn;

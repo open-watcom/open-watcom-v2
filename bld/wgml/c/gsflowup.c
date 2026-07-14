@@ -136,9 +136,9 @@ static condcode scr_lowup( parm parms[MAX_FUN_PARMS], unsigned parmcount,
          */
         for( k = 0; k < length && string.s < string.e && ressize > 0; k++ ) {        // translate
             if( upper ) {
-               *(*result)++ = my_toupper( *string.s++ );
+               *(*result)++ = toupper( *(unsigned char *)string.s++ );
             } else {
-               *(*result)++ = my_tolower( *string.s++ );
+               *(*result)++ = tolower( *(unsigned char *)string.s++ );
             }
             ressize--;
         }

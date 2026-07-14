@@ -35,24 +35,28 @@
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
 
-char parse_char( const char *p, unsigned len )
+int parse_char( const char *p, unsigned len )
 {
-    char        c;
+    int             c;
+    int             c1;
+    int             c2;
 
     c = '\0';
     if( len == 1 ) {
-        c = p[0];
+        c = ((unsigned char *)p)[0];
     } else if( len == 2 ) {         // 2 hex characters
-        if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
-            if( my_isdigit( p[0] ) ) {
-                c = p[0] - '0';
+        c1 = ((unsigned char *)p)[0];
+        c2 = ((unsigned char *)p)[1];
+        if( isxdigit( c1 ) && isxdigit( c2 ) ) {
+            if( isdigit( c1 ) ) {
+                c = c1 - '0';
             } else {
-                c = my_toupper( p[0] ) - 'A' + 10;
+                c = toupper( c1 ) - 'A' + 10;
             }
-            if( my_isdigit( p[1] ) ) {
-                c = c * 16 + p[1] - '0';
+            if( isdigit( c2 ) ) {
+                c = c * 16 + c2 - '0';
             } else {
-                c = c * 16 + my_toupper( p[1] ) - 'A' + 10;
+                c = c * 16 + toupper( c2 ) - 'A' + 10;
             }
         } else {
             xx_line_err_exit_ci( ERR_CW_NOT_CHAR, p, len );
@@ -70,11 +74,11 @@ char parse_char( const char *p, unsigned len )
 /* return true if the character parameter is a string delimiter            */
 /***************************************************************************/
 
-bool is_quote_char( char c )
+bool is_quote_char( int c )
 {
-    if( c == s_q || c == d_q || c == slash || c == excl  || c == cent ||
-        ((c == l_q) && (c != cw_sep_char)) ||
-        c == not_c || c == vbar1 || c == vbar2 ) {
+    if( c == CHAR_sq || c == CHAR_dq || c == CHAR_slash || c == CHAR_excl  || c == CHAR_cent ||
+        ((c == CHAR_bq) && (c != cw_sep_char)) ||
+        c == CHAR_not_c || c == CHAR_vbar1 || c == CHAR_vbar2 ) {
         return( true );
     }
     return( false );
@@ -84,7 +88,7 @@ bool is_quote_char( char c )
 /* return true if the character parameter is a string delimiter            */
 /***************************************************************************/
 
-bool is_base_quote_char( char c )
+bool is_base_quote_char( int c )
 {
     if( c == '"'
       || c == '\''
@@ -255,11 +259,11 @@ condcode getqst( void )
  * Test character as valid for a GML Tag name
  */
 
-bool is_tag_char( char c )
+bool is_tag_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     return( test );
 }
 
@@ -267,11 +271,11 @@ bool is_tag_char( char c )
  * Test character as valid for a GML predefined attribute name
  */
 
-bool is_tag_att_char( char c )
+bool is_tag_att_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     if( !test ) {
         test = ( c == '_' );
     }
@@ -282,11 +286,11 @@ bool is_tag_att_char( char c )
  * Test character as valid for a Layout predefined attribute name
  */
 
-bool is_lay_att_char( char c )
+bool is_lay_att_char( int c )
 {
     bool    test;
 
-    test = my_isalpha( c );
+    test = isalpha( c );
     if( !test ) {
         test = ( c == '_' );
     }
@@ -297,11 +301,11 @@ bool is_lay_att_char( char c )
  * Test character as valid for a function name
  */
 
-bool is_function_char( char c )
+bool is_function_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     return( test );
 }
 
@@ -309,22 +313,22 @@ bool is_function_char( char c )
  * Test character as valid for an identifier name
  */
 
-bool is_id_char( char c )
+bool is_id_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     return( test );
 }
 
 /*
  * Test character as valid for an label name
  */
-bool is_label_char( char c )
+bool is_label_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     return( test );
 }
 
@@ -332,11 +336,11 @@ bool is_label_char( char c )
  * Test character as valid for an space unit value
  */
 
-bool is_su_char( char c )
+bool is_su_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     if( !test ) {
         test = ( c == '.' );
     }
@@ -347,11 +351,11 @@ bool is_su_char( char c )
  * Test character as valid for a macro name
  */
 
-bool is_macro_char( char c )
+bool is_macro_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     if( !test ) {
         test = ( c == '@' ) || ( c == '#' ) || ( c == '$' ) || ( c == '_' );
     }
@@ -362,11 +366,11 @@ bool is_macro_char( char c )
  * Test character as valid for a symbol name
  */
 
-bool is_symbol_char( char c )
+bool is_symbol_char( int c )
 {
     bool    test;
 
-    test = my_isalnum( c );
+    test = isalnum( c );
     if( !test ) {
         test = ( c == '@' ) || ( c == '#' ) || ( c == '$' ) || ( c == '_' );
     }
@@ -377,7 +381,7 @@ bool is_symbol_char( char c )
  * Test character for a full stop character
  */
 
-bool is_stop_char( char c )
+bool is_stop_char( int c )
 {
     bool    test;
 
@@ -389,9 +393,14 @@ bool is_stop_char( char c )
  * Test character for a space or tab character
  */
 
-bool is_space_tab_char( char c )
+bool is_space_tab_char( int c )
 {
     return( ( c == ' ' ) || ( c == '\t' ) );
+}
+
+bool is_space_tab_dot_char( int c )
+{
+    return( ( c == ' ' ) || ( c == '\t' ) || ( c == '.' ) );
 }
 
 /*
@@ -420,9 +429,9 @@ char *get_tagname( const char *p, char *tagname )
     if( tagname == NULL )
         tagname = tagbuf;
     i = 0;
-    while( is_tag_char( *p ) ) {
+    while( is_tag_char( *(unsigned char *)p ) ) {
         if( i < TAG_NAME_LENGTH ) {
-            tagname[i++] = my_toupper( *p );
+            tagname[i++] = toupper( *(unsigned char *)p );
         }
         p++;
     }
@@ -433,12 +442,12 @@ char *get_tagname( const char *p, char *tagname )
 char *check_tagname( const char *p, char *tagname )
 {
     char    *p1;
-    char    c;
+    int     c;
 
-    if( *p == GML_char ) {
+    if( *(unsigned char *)p == GML_char ) {
         p++;
         p1 = get_tagname( p, tagname );
-        c = *p1;
+        c = *(unsigned char *)p1;
         if( p1 != p
           && ( c == ' '
           || c == '.'

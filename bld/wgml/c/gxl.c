@@ -719,7 +719,7 @@ static void     gml_exl_common( const gmltag * entry )
     SkipDot( p );                       // over '.'
     SkipSpaces( p );                    // over WS to <text line>
     if( *p != '\0' ) {
-        if( !input_cbs->hidden_head->ip_start && (*(p + 1) == '\0') && (*p == CONT_char) ) { // text is continuation character only
+        if( !input_cbs->hidden_head->ip_start && (*(p + 1) == '\0') && (*(unsigned char *)p == CONT_char) ) { // text is continuation character only
 //            if( &l_post_skip != NULL ) {
                 g_post_skip = conv_vert_unit( &l_post_skip , g_text_spacing, l_font );
 //            } else {
@@ -1200,7 +1200,7 @@ void gml_dthd( const gmltag * entry )
 
     p = get_text_line( p );
     pa = p + strlen(p);
-    if( (pa > p) && (*(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
+    if( (pa > p) && (*(unsigned char *)(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
         *pa = CONT_char;                        // add continue character to GT text
         *(pa + 1) = '\0';
     }
@@ -1346,7 +1346,7 @@ void gml_dt( const gmltag * entry )
 
     p = get_text_line( p );
     pa = p + strlen(p);
-    if( (pa > p) && (*(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
+    if( (pa > p) && (*(unsigned char *)(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
         *pa = CONT_char;                        // add continue character to GT text
         *(pa + 1) = '\0';
     }
@@ -1498,7 +1498,7 @@ void gml_gt( const gmltag * entry )
 
     p = get_text_line( p );
     pa = p + strlen(p);
-    if( (pa > p) && (*(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
+    if( (pa > p) && (*(unsigned char *)(pa - 1) != CONT_char) ) { // text exists and does not end with a continue character
         *pa = CONT_char;                        // add continue character to GT text
         *(pa + 1) = '\0';
     }

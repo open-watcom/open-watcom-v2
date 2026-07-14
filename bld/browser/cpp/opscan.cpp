@@ -32,7 +32,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <ctype.h>
 #include <assert.h>
 

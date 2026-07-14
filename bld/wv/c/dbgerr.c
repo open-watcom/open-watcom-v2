@@ -116,7 +116,7 @@ static int error( dbg_err_flags flg, const char *fmt, va_list args )
             where = LIT_ENG( ERR_EXECUTING_AT );
             for( inp = InpStack; inp != NULL; inp = inp->link ) {
                 if( inp->type & INP_CMD_FILE ) {
-                    inv = inp->handle;
+                    inv = (invokes *)( inp->handle );
                     ptr = StrCopyDst( "\n    ", ptr );
                     ptr = Format( ptr, where, inv->line, inv->name );
                     where = LIT_ENG( ERR_CALLED_FROM );

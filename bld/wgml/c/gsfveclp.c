@@ -145,7 +145,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
         if( parmcount > 3 ) {
             tok_type tmp = parms[3].arg;
             if( unquote_arg( &tmp ) > 0 ) {
-                casechar = my_toupper( *tmp.s );
+                casechar = toupper( *(unsigned char *)tmp.s );
             }
         }
 #endif

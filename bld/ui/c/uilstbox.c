@@ -78,12 +78,15 @@ bool uigetlistelement( const char **data, unsigned item, char *buff, unsigned bu
 
 void uipaintlistbox( a_list *list )
 {
-    unsigned        i;
     char            *buf;
     bool            ok;
     unsigned        length;
     UIATTR          uiattr;
     UIPICKGETTEXT   *fn_get;
+    uisize          height;
+    ORD             row;
+    unsigned        line;
+
 
     if( list->box == NULL ) {
         return;
@@ -94,27 +97,29 @@ void uipaintlistbox( a_list *list )
     fn_get = list->get;
     if( fn_get == NULL )
         fn_get = uigetlistelement;
-    for( i = 0; i < list->box->area.height; ++i ) {
-        uiattr = ATTR_NORMAL;
-        if( list->box->row == i + list->box->line ) {
-            uiattr = list->box->uiattr;
-        }
-        ok = (*fn_get)( list->data, list->box->line + i, buf, length );
-        /* buf does not have to be null terminated */
-        /* terminate it at maximum length */
-        buf[length] = '\0';
+    line = list->box->line;
+    row = list->box->area.row;
+    ok = true;
+    height = list->box->area.height;
+    while( height-- > 0 ) {
         if( ok ) {
-            uitextfield( list->box->vs, list->box->area.row + i,
-                         list->box->area.col, list->box->area.width,
-                         UIData->attrs[uiattr], buf, strlen( buf ) );
-        } else {
-            break;
+            ok = (*fn_get)( list->data, line, buf, length );
         }
-    }
-    for( ; i < list->box->area.height; ++i ) {
-        uitextfield( list->box->vs, list->box->area.row + i,
-                     list->box->area.col, list->box->area.width,
-                     UIData->attrs[ATTR_NORMAL], "", 0 );
+        if( ok ) {
+            /* buf does not have to be null terminated */
+            /* terminate it at maximum length */
+            buf[length] = '\0';
+            uiattr = ( list->box->row == line ) ? list->box->uiattr : ATTR_NORMAL;
+            uitextfield( list->box->vs, row,
+                        list->box->area.col, list->box->area.width,
+                        UIData->attrs[uiattr], buf, strlen( buf ) );
+            line++;
+        } else {
+            uitextfield( list->box->vs, row,
+                        list->box->area.col, list->box->area.width,
+                        UIData->attrs[ATTR_NORMAL], "", 0 );
+        }
+        row++;
     }
     MemFree( buf );
 }
@@ -303,24 +308,24 @@ unsigned uiendlistbox( a_list *list )
     return( k );
 }
 
-static maction getmouseregion( a_list *list, int *row, int *col )
+static maction getmouseregion( a_list *list, int *mrow, int *mcol )
 {
     a_list_info     *box;
 
     box  = list->box;
 
-    uimousepos( box->vs, row, col );
+    uimousepos( box->vs, mrow, mcol );
 
-    if( *row >= box->area.row + uilistsize( list ) ) {
+    if( *mrow >= box->area.row + uilistsize( list ) ) {
         return( R_UNS );
     }
-    if( *row >= box->area.height + box->area.row ) {
+    if( *mrow >= box->area.height + box->area.row ) {
         return( R_DOWN );
     }
-    if( *row < box->area.row ) {
+    if( *mrow < box->area.row ) {
         return( R_UP );
     }
-    if( ( *col >= box->area.col + box->area.width ) || ( *col <  box->area.col ) ) {
+    if( ( *mcol >= box->area.col + box->area.width ) || ( *mcol <  box->area.col ) ) {
         return( R_UNS );
     }
     return( R_SEL );
@@ -407,14 +412,15 @@ ui_event uilistbox( ui_event ui_ev, a_list *list, bool permanent )
     case EV_MOUSE_REPEAT:
     case EV_MOUSE_DRAG:
         {
-            int     row, col;
+            int     mrow;
+            int     mcol;
             maction mpos;
 
-            mpos = getmouseregion( list, &row, &col );
+            mpos = getmouseregion( list, &mrow, &mcol );
             newevent = ui_ev;
             if( mpos == R_SEL ) {
                 SelStart = true;
-                box->row  = (ORD)row - box->area.row;
+                box->row = (ORD)mrow - box->area.row;
                 box->row += box->line;
             }
             if( ui_ev == EV_MOUSE_RELEASE ) {

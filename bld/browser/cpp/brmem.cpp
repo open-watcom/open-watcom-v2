@@ -37,7 +37,7 @@
  * appropriate C code use #pragma aux ... __frame to do same
  * for some unknown reason this doesn't work for C++ compiler now
  */
-#include <stdlib.h>
+#include <cstdlib>
 #include <string.h>
 #ifndef STANDALONE_MERGER
     #include <dr.h>

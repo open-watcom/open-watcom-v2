@@ -35,7 +35,7 @@
 #include <wclist.h>
 #include <wclistit.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <string.h>
 #include <direct.h>
 #include <ctype.h>

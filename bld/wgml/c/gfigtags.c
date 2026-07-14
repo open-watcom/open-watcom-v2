@@ -1081,7 +1081,7 @@ void gml_efig( const gmltag * entry )
     if( *p != '\0' ) {
         if( !input_cbs->hidden_head->ip_start
           && (*(p + 1) == '\0')
-          && (*p == CONT_char) ) {      // text is continuation character only
+          && (*(unsigned char *)p == CONT_char) ) {      // text is continuation character only
 //            if( &layout_work.fig.post_skip != NULL ) {
                 g_post_skip = conv_vert_unit( &layout_work.fig.post_skip, g_text_spacing, layout_work.fig.font );
 //            } else {

@@ -41,7 +41,7 @@ static char *get_labelname( const char *p, char *labelname )
     i = 0;
     while( is_label_char( *p ) ) {
         if( i < LABEL_NAME_LENGTH ) {
-            labelname[i++] = my_toupper( *p );
+            labelname[i++] = toupper( *(unsigned char *)p );
         }
         p++;
     }

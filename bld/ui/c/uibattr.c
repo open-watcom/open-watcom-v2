@@ -38,14 +38,16 @@
 void intern battribute( BUFFER *bptr, int row, int col, uisize height, uisize width, ATTR attr )
 /**********************************************************************************************/
 {
-    LP_PIXEL                dst;
-    bool                    snow;
-    int                     r;
+    LP_PIXEL        dst;
+    bool            snow;
+    uisize          incr;
 
     snow = issnow( bptr );
-    for( r = row; r < row + height; ++r ) {
-        dst = bptr->origin + r * bptr->increment + col;
+    incr = bptr->increment;
+    dst = bptr->origin + row * incr + col;
+    while( height-- > 0 ) {
         farattrib( dst, attr, width, snow );
+        dst += incr;
     }
 }
 
@@ -53,13 +55,15 @@ void intern battribute( BUFFER *bptr, int row, int col, uisize height, uisize wi
 void intern battrflip( BUFFER *bptr, int row, int col, uisize height, uisize width )
 /**********************************************************************************/
 {
-    LP_PIXEL                dst;
-    int                     r;
-    bool                    snow;
+    LP_PIXEL        dst;
+    bool            snow;
+    uisize          incr;
 
     snow = issnow( bptr );
-    for( r = row; r < row + height; ++r ) {
-        dst = bptr->origin + r * bptr->increment + col;
+    incr = bptr->increment;
+    dst = bptr->origin + row * incr + col;
+    while( height-- > 0 ) {
         farattrflip( dst, width, snow );
+        dst += incr;
     }
 }

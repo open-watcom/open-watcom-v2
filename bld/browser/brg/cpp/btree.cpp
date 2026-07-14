@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wclist.h>
 #include <wclistit.h>
 #include "btree.h"

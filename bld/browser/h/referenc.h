@@ -38,7 +38,7 @@
 #include <dr.h>
 #include <wobject.hpp>
 #include <string.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 class Module;
 class Reference : public WObject

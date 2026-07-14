@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wpshbttn.hpp>
 #include <wlistbox.hpp>
 #include <wmetrics.hpp>

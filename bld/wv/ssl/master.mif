@@ -18,6 +18,7 @@ prs_list = &
 !ifneq debug 0
 ssl_options = -v
 !endif
+#ssl_options = -v -c
 
 all : $(prs_list) .SYMBOLIC
 

@@ -65,8 +65,6 @@ typedef enum LocaleSpecificSig {
 #define LSF_MINOR               0x00
 
 
-#include "pushpck1.h"
-
 typedef struct LocaleData {
     char        text_header[ ( sizeof( LSF_TEXT_HEADER ) + 3 ) & ~3 ];
     uint_32     signature;
@@ -93,8 +91,6 @@ typedef struct LocaleUsage {
     _LocaleItem header;
     char        data[1];        // <text> <0> ... <text> <0> <0>
 } LocaleUsage;
-
-#include "poppck.h"
 
 #define LOCALE_DATA_EXT         "int"
 

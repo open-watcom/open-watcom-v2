@@ -792,8 +792,8 @@ static bool setupscrnbuff( uisize srows, uisize scols )
     unsigned            size;
     unsigned            i;
     struct winsize      wsize;
-    int                 rows;
-    int                 cols;
+    uisize              rows;
+    uisize              cols;
 
     rows = 0;
     cols = 0;
@@ -1065,16 +1065,16 @@ UIDebugPrintf0( "td_update: no arg" );
         return( 0 );
     }
 UIDebugPrintf4( "td_update(%d,%d,%d,%d)", area->row, area->col, area->height, area->width );
-    if( area->row < dirty_area.row0 ) {
+    if( dirty_area.row0 > area->row ) {
         dirty_area.row0 = area->row;
     }
-    if( area->col < dirty_area.col0 ) {
+    if( dirty_area.col0 > area->col ) {
         dirty_area.col0 = area->col;
     }
-    if( area->row + area->height > dirty_area.row1 ) {
+    if( dirty_area.row1 < area->row + area->height ) {
         dirty_area.row1 = area->row + area->height;
     }
-    if( area->col + area->width > dirty_area.col1 ) {
+    if( dirty_area.col1 < area->col + area->width ) {
         dirty_area.col1 = area->col + area->width;
     }
     return( 0 );
