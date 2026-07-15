@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,14 +51,16 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
     long                currpos;
     long                offset;
-    master_dbg_header   header;
+    uint_8              header[sizeof( master_dbg_header )];
     bool                notfound;
     char                buffer[sizeof( PATCH_LEVEL )];
+    uint_16             sign;
+    uint_32             size;
 
     notfound = !res_file;
     WResFileShift = 0;
     if( notfound ) {
-        offset = sizeof( master_dbg_header );
+        offset = sizeof( header );
         if( !WRESSEEK( hinfo->fp, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
@@ -68,15 +71,17 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
         WRESSEEK( hinfo->fp, -offset, SEEK_END );
         currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
-            WRESREAD( hinfo->fp, &header, sizeof( master_dbg_header ) );
-            if( header.signature == WAT_RES_SIG ) {
+            WRESREAD( hinfo->fp, &header, sizeof( header ) );
+            sign = MGET_LE_U16( header + offsetof( master_dbg_header, signature ) );
+            size = MGET_LE_U32_UN( header + offsetof( master_dbg_header, debug_size ) );
+            if( sign == WAT_RES_SIG ) {
                 notfound = false;
-                WResFileShift = currpos - header.debug_size + sizeof( master_dbg_header );
+                WResFileShift = currpos - size + sizeof( header );
                 break;
-            } else if( header.signature == WAT_DBG_SIGNATURE ||
-                       header.signature == FOX_SIGNATURE1 ||
-                       header.signature == FOX_SIGNATURE2 ) {
-                currpos -= header.debug_size;
+            } else if( sign == WAT_DBG_SIGNATURE
+              || sign == FOX_SIGNATURE1
+              || sign == FOX_SIGNATURE2 ) {
+                currpos -= size;
                 WRESSEEK( hinfo->fp, currpos, SEEK_SET );
             } else {        /* did not find the resource information */
                 break;

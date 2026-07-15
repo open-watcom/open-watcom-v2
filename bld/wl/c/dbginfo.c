@@ -93,7 +93,7 @@ typedef struct snamelist {              // source name list
 } snamelist;
 
 static unsigned_32          DBISize;
-static master_dbg_header    Master;             // rest depend on .obj files.
+static uint_8               Master[sizeof( master_dbg_header )];    // rest depend on .obj files.
 
 static snamelist            *DBISourceLang;     // list of source languages
 
@@ -119,12 +119,12 @@ static snamelist *LangAlloc( size_t len, const char *buff )
 void ODBIInit( section *sect )
 /****************************/
 {
-    DBISize = sizeof( master_dbg_header );
-    Master.signature = WAT_DBG_SIGNATURE;
-    Master.exe_major_ver = EXE_MAJOR_VERSION;
-    Master.exe_minor_ver = EXE_MINOR_VERSION;
-    Master.obj_major_ver = 0;
-    Master.obj_minor_ver = 0;
+    DBISize = sizeof( Master );
+    MPUT_LE_16( Master + offsetof( master_dbg_header, signature ), WAT_DBG_SIGNATURE );
+    Master[offsetof( master_dbg_header, exe_major_ver )] = EXE_MAJOR_VERSION;
+    Master[offsetof( master_dbg_header, exe_minor_ver )] = EXE_MINOR_VERSION;
+    Master[offsetof( master_dbg_header, obj_major_ver )] = 0;
+    Master[offsetof( master_dbg_header, obj_minor_ver )] = 0;
     DBISourceLang = LangAlloc( sizeof( FE_LANG_C ) - 1, FE_LANG_C );
     DBISourceLang->next = NULL;
     sect->dbg_info = _PermAlloc( sizeof( debug_info ) );
@@ -173,14 +173,14 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
 {
     snamelist   *node;
 
-    if( Master.obj_major_ver == 0 )
-        Master.obj_major_ver = major;
-    if( major != Master.obj_major_ver ) {
+    if( Master[offsetof( master_dbg_header, obj_major_ver )] == 0 )
+        Master[offsetof( master_dbg_header, obj_major_ver )] = major;
+    if( major != Master[offsetof( master_dbg_header, obj_major_ver )] ) {
         LnkMsg( WRN+LOC+MSG_CANT_USE_LOCALS, NULL );
         CurrMod->flags_dbi &= ~( DBI_TYPE | DBI_LOCAL );
     }
-    if( minor > Master.obj_minor_ver ) {
-        Master.obj_minor_ver = minor;
+    if( Master[offsetof( master_dbg_header, obj_minor_ver )] < minor ) {
+        Master[offsetof( master_dbg_header, obj_minor_ver )] = minor;
     }
     if( !FindMatch( len, name, &CurrMod->u3.o->dbisourceoffset ) ) {
         node = LangAlloc( len, name );
@@ -890,22 +890,24 @@ void ODBIWrite( void )
 {
     snamelist   *node;
     snamelist   *next;
+    uint_16     langsize;
 
     CurrSect = Root;
-    Master.lang_size = 0;
+    langsize = 0;
     for( node = DBISourceLang; node != NULL; node = next ) {
         next = node->next;
-        Master.lang_size += node->len + 1;
+        langsize += node->len + 1;
         DBIWriteLocal( node->name, node->len + 1 );  // +1 for nullchar
         _PermFree( node );
     }
+    MPUT_LE_16( Master + offsetof( master_dbg_header, lang_size ), langsize );
     DBISourceLang = NULL;
-    Master.segment_size = WriteSegValues();
+    MPUT_LE_16( Master + offsetof( master_dbg_header, segment_size ), WriteSegValues() );
     WalkAllSects( WriteDBISecs );
-    Master.debug_size = DBISize;
-    if( Master.obj_major_ver == 0 )
-        Master.obj_major_ver = 1;
-    WriteLoad( &Master, sizeof( master_dbg_header ) );
+    MPUT_LE_32_UN( Master + offsetof( master_dbg_header, debug_size ), DBISize );
+    if( Master[offsetof( master_dbg_header, obj_major_ver )] == 0 )
+        Master[offsetof( master_dbg_header, obj_major_ver )] = 1;
+    WriteLoad( Master, sizeof( Master ) );
 #ifdef DEVBUILD
     if( TraceInfo.sizeadded != TraceInfo.sizegenned ) {
         LnkMsg( WRN+MSG_INTERNAL, "s", "size mismatch in watcom dbi" );

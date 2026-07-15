@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <string.h>
 #include "wio.h"
 #include "wdglb.h"
@@ -124,35 +125,39 @@ static bool os2_debug( void )
 /*
  * Dump the Master Debug Header, if any.
  */
-static void dmp_master( master_dbg_header mdh )
-/*********************************************/
+static void dmp_master( uint_8 *mdh )
+/***********************************/
 {
     size_t          i;
+    uint_16         langsize;
+    uint_16         segm_size;
 
     Banner( "Master Debug Info" );
-    Dump_header( (char *)&mdh.exe_major_ver, mdh_msg, 4 );
+    Dump_header( mdh + offsetof( master_dbg_header, exe_major_ver ), mdh_msg, 4 );
     Wdputslc( "\n" );
 
-    Curr_sectoff -= (long)mdh.debug_size;
+    Curr_sectoff -= (long)MGET_LE_U32_UN( mdh + offsetof( master_dbg_header, debug_size ) );
     Wlseek( Curr_sectoff );
-    Lang_lst = Wmalloc( mdh.lang_size );
-    Wread( Lang_lst, mdh.lang_size );
-    Curr_sectoff += (long)mdh.lang_size;
+    langsize = MGET_LE_U16( mdh + offsetof( master_dbg_header, lang_size ) );
+    Lang_lst = Wmalloc( langsize );
+    Wread( Lang_lst, langsize );
+    Curr_sectoff += (long)langsize;
     Wdputslc( "Languages\n" );
     Wdputslc( "=========\n" );
-    for( i = 0; i < mdh.lang_size; i += strlen( &Lang_lst[i] ) + 1 ) {
+    for( i = 0; i < langsize; i += strlen( &Lang_lst[i] ) + 1 ) {
         Wdputs( &Lang_lst[i] );
         Wdputslc( "\n" );
     }
     Wdputslc( "\n" );
 
     Wbuff = Wmalloc( MAX_BUFF );
-    Wread( Wbuff, mdh.segment_size );
-    Curr_sectoff += (long)mdh.segment_size;
+    segm_size = MGET_LE_U16( mdh + offsetof( master_dbg_header, segment_size ) );
+    Wread( Wbuff, segm_size );
+    Curr_sectoff += (long)segm_size;
     Wdputslc( "Segments\n" );
     Wdputslc( "========\n" );
-    for( i = 0; i < mdh.segment_size; i += sizeof( unsigned_16 ) ) {
-        Puthex( *(unsigned_16 *)&Wbuff[i], 4 );
+    for( i = 0; i < segm_size; i += sizeof( unsigned_16 ) ) {
+        Puthex( MGET_LE_U16( Wbuff + i ), 4 );
         Wdputslc( "\n" );
     }
     Wdputslc( "\n" );
@@ -167,17 +172,17 @@ bool Dmp_mdbg_head( void )
     debug_header        dbg;
     char                *signature = "TIS";
     unsigned_16         cnt;
-    master_dbg_header   mdh;
+    uint_8              mdh[sizeof( master_dbg_header )];
 
     cnt = 0;
     Curr_sectoff = lseek( Handle, 0, SEEK_END );
-    Wlseek( Curr_sectoff -(int)sizeof( master_dbg_header ) );
-    Wread( &mdh, sizeof( master_dbg_header ) );
-    if( mdh.signature == WAT_DBG_SIGNATURE &&
-        mdh.exe_major_ver == EXE_MAJOR_VERSION &&
-        (signed)mdh.exe_minor_ver <= EXE_MINOR_VERSION &&
-        mdh.obj_major_ver == OBJ_MAJOR_VERSION &&
-        mdh.obj_minor_ver <= OBJ_MINOR_VERSION ) {
+    Wlseek( Curr_sectoff -(int)sizeof( mdh ) );
+    Wread( mdh, sizeof( mdh ) );
+    if( MGET_LE_U16( mdh + offsetof( master_dbg_header, signature ) ) == WAT_DBG_SIGNATURE
+      && (int)mdh[offsetof( master_dbg_header, exe_major_ver )] == EXE_MAJOR_VERSION
+      && (int)mdh[offsetof( master_dbg_header, exe_minor_ver )] <= EXE_MINOR_VERSION
+      && (int)mdh[offsetof( master_dbg_header, obj_major_ver )] == OBJ_MAJOR_VERSION
+      && (int)mdh[offsetof( master_dbg_header, obj_minor_ver )] <= OBJ_MINOR_VERSION ) {
         dmp_master( mdh );
         Dump_section();
         return( true );

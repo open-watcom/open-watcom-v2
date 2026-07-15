@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -228,7 +228,7 @@ static dip_status ProcSectionsInfo( imp_image_handle *iih, unsigned num_sects )
 
 static dip_status DoPermInfo( imp_image_handle *iih )
 {
-    master_dbg_header   header;
+    uint_8              header[sizeof( master_dbg_header )];
     dip_status          ds;
     unsigned long       end;
     unsigned long       curr;
@@ -236,6 +236,10 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     unsigned            num_sects;
     bool                v2;
     char                *new;
+    uint_16             sign;
+    uint_32             size;
+    uint_16             lang_size;
+    uint_16             segm_size;
 
     if( DCSeek( iih->sym_fp, DIG_SEEK_POSBACK( sizeof( header ) ), DIG_SEEK_END ) )
         return( DS_FAIL );
@@ -243,20 +247,24 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     if( DCRead( iih->sym_fp, &header, sizeof( header ) ) != sizeof( header ) ) {
         return( DS_FAIL );
     }
-    while( header.signature == FOX_SIGNATURE1
-            || header.signature == FOX_SIGNATURE2
-            || header.signature == WAT_RES_SIG ) {
-        if( header.debug_size > end ) {
+    sign = MGET_LE_U16( header + offsetof( master_dbg_header, signature ) );
+    size = MGET_LE_U32_UN( header + offsetof( master_dbg_header, debug_size ) );
+    while( sign == FOX_SIGNATURE1
+            || sign == FOX_SIGNATURE2
+            || sign == WAT_RES_SIG ) {
+        if( size > end ) {
             DCStatus( DS_ERR | DS_INFO_INVALID );
             return( DS_ERR | DS_INFO_INVALID );
         }
-        end -= header.debug_size;
+        end -= size;
         DCSeek( iih->sym_fp, end, DIG_SEEK_ORG );
         DCRead( iih->sym_fp, &header, sizeof( header ) );
+        sign = MGET_LE_U16( header + offsetof( master_dbg_header, signature ) );
+        size = MGET_LE_U32_UN( header + offsetof( master_dbg_header, debug_size ) );
     }
-    if( header.signature != WAT_DBG_SIGNATURE )
+    if( sign != WAT_DBG_SIGNATURE )
         return( DS_FAIL );
-    switch( header.exe_major_ver ) {
+    switch( header[offsetof( master_dbg_header, exe_major_ver )] ) {
     case EXE_MAJOR_VERSION:
         v2 = false;
         break;
@@ -267,29 +275,31 @@ static dip_status DoPermInfo( imp_image_handle *iih )
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header.exe_minor_ver > EXE_MINOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, exe_minor_ver )] > EXE_MINOR_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header.obj_major_ver != OBJ_MAJOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, obj_major_ver )] != OBJ_MAJOR_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header.obj_minor_ver > OBJ_MINOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, obj_minor_ver )] > OBJ_MINOR_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( ( end + sizeof( header ) ) < header.debug_size ) {
+    if( ( end + sizeof( header ) ) < size ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
         return( DS_ERR | DS_INFO_INVALID );
     }
-    num_segs = header.segment_size / sizeof( addr_seg );
-    DCSeek( iih->sym_fp, header.lang_size + header.segment_size - header.debug_size, DIG_SEEK_CUR );
+    segm_size = MGET_LE_U16( header + offsetof( master_dbg_header, segment_size ) );
+    lang_size = MGET_LE_U16( header + offsetof( master_dbg_header, lang_size ) );
+    num_segs = segm_size / sizeof( addr_seg );
+    DCSeek( iih->sym_fp, lang_size + segm_size - size, DIG_SEEK_CUR );
     curr = DCTell( iih->sym_fp );
     ds = GetNumSect( iih->sym_fp, curr, end, &num_sects );
     if( ds != DS_OK )
         return( ds );
-    new = DCAlloc( header.lang_size
+    new = DCAlloc( lang_size
                 + num_segs * ( sizeof( addr_seg ) + sizeof( addr_ptr ) )
                 + num_sects * sizeof( section_info ) );
     if( new == NULL ) {
@@ -299,16 +309,16 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     iih->v2 = v2;
     iih->lang = new;
     iih->num_segs = num_segs;
-    iih->map_segs = (void *)( new + header.lang_size );
+    iih->map_segs = (void *)( new + lang_size );
     iih->real_segs = (void *)( iih->map_segs + num_segs );
     iih->sect = (void *)( iih->real_segs + num_segs );
     iih->num_sects = 0;
-    DCSeek( iih->sym_fp, curr - header.lang_size - header.segment_size, DIG_SEEK_ORG );
-    if( DCRead( iih->sym_fp, iih->lang, header.lang_size ) != header.lang_size ) {
+    DCSeek( iih->sym_fp, curr - lang_size - segm_size, DIG_SEEK_ORG );
+    if( DCRead( iih->sym_fp, iih->lang, lang_size ) != lang_size ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
         return( DS_ERR | DS_INFO_INVALID );
     }
-    if( DCRead( iih->sym_fp, iih->map_segs, header.segment_size ) != header.segment_size ) {
+    if( DCRead( iih->sym_fp, iih->map_segs, segm_size ) != segm_size ) {
         DCStatus( DS_ERR | DS_INFO_INVALID );
         return( DS_ERR | DS_INFO_INVALID );
     }
