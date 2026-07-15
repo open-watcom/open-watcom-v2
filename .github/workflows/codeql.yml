@@ -73,23 +73,23 @@ jobs:
           - category: 'qry-1-cpp'
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
             threads: 1
-            extra_opts: '--threads=1'
+            extra_opts:
           - category: "qry-2-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
-            extra_opts: '--threads=1 --timeout=300'
+            extra_opts: '--timeout=300'
           - category: "qry-3-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-022/TaintedPath.ql'
             threads: 1
-            extra_opts: '--threads=1 --timeout=300'
+            extra_opts: '--timeout=300'
           - category: "qry-4-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-134/UncontrolledFormatString.ql'
             threads: 1
-            extra_opts: '--threads=1 --timeout=300'
+            extra_opts: '--timeout=300'
           - category: "qry-5-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-190/TaintedAllocationSize.ql'
             threads: 1
-            extra_opts: '--threads=1 --timeout=300'
+            extra_opts: '--timeout=300'
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
