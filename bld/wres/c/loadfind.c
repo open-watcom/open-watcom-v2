@@ -40,7 +40,9 @@
 #include "patchsig.h"
 
 
-long    WResFileShift = 0;
+#define SEEK_POSBACK(p)     (-(long)(p))
+
+long                WResFileShift = 0;
 
 bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 /*************************************************************
@@ -51,44 +53,55 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
     long                currpos;
     long                offset;
-    uint_8              header[sizeof( master_dbg_header )];
-    bool                notfound;
+    bool                error;
     char                buffer[sizeof( PATCH_LEVEL )];
     uint_16             sign;
     uint_32             size;
 
-    notfound = !res_file;
+    error = false;
     WResFileShift = 0;
-    if( notfound ) {
-        offset = sizeof( header );
-        if( !WRESSEEK( hinfo->fp, -(long)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
+    if( !res_file ) {
+        /* Look for a PATCH header and skip block if present */
+        offset = sizeof( master_dbg_header );
+        if( !WRESSEEK( hinfo->fp, SEEK_POSBACK( sizeof( PATCH_LEVEL ) ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fp, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                     offset += sizeof( PATCH_LEVEL );
                 }
             }
         }
-        WRESSEEK( hinfo->fp, -offset, SEEK_END );
+        error = WRESSEEK( hinfo->fp, SEEK_POSBACK( offset ), SEEK_END );
+        if( error )
+            return( true );
         currpos = WRESTELL( hinfo->fp );
         for( ;; ) {
-            WRESREAD( hinfo->fp, &header, sizeof( header ) );
-            sign = MGET_LE_U16( header + offsetof( master_dbg_header, signature ) );
-            size = MGET_LE_U32_UN( header + offsetof( master_dbg_header, debug_size ) );
+            sign = ResReadUint16( &error, hinfo->fp );
+            if( error )
+                break;
+            error = WRESSEEK( hinfo->fp, offsetof( master_dbg_header, debug_size ) - sizeof( uint_16 ), SEEK_CUR );
+            if( error )
+                break;
+            size = ResReadUint32( &error, hinfo->fp );
+            if( error )
+                break;
             if( sign == WAT_RES_SIG ) {
-                notfound = false;
-                WResFileShift = currpos - size + sizeof( header );
+                WResFileShift = currpos - size + sizeof( master_dbg_header );
                 break;
             } else if( sign == WAT_DBG_SIGNATURE
               || sign == FOX_SIGNATURE1
               || sign == FOX_SIGNATURE2 ) {
                 currpos -= size;
-                WRESSEEK( hinfo->fp, currpos, SEEK_SET );
+                error = WRESSEEK( hinfo->fp, currpos, SEEK_SET );
+                if( error ) {
+                    break;
+                }
             } else {        /* did not find the resource information */
+                error = true;
                 break;
             }
         }
     }
-    return( notfound );
+    return( error );
 }
 
 bool FindResources( PHANDLE_INFO hinfo )
