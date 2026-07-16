@@ -114,7 +114,7 @@ jobs:
         ${{ steps.codeql.outputs.codeql-path }} database analyze "${{ runner.temp }}/${{ env.DB_PATH }}" \
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
-          --output=results-${{ matrix.category }}.sarif \
+          --output=${{ runner.temp }}/results-${{ matrix.category }}.sarif \
           --verbosity=progress \
           ${{ matrix.extra_opts }} \
           --ram=14000 \
@@ -123,5 +123,5 @@ jobs:
     - name: Upload Results to GitHub
       uses: github/codeql-action/upload-sarif@v4
       with:
-        sarif_file: results-${{ matrix.category }}.sarif
+        sarif_file: ${{ runner.temp }}/results-${{ matrix.category }}.sarif
         category: ${{ matrix.category }}
