@@ -74,9 +74,10 @@ jobs:
             #query_selection: '.github/codeql/custom/UnboundedWriteFast.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
             #query_selection: '.github/codeql/custom/TestBufferWrite.ql'
-            query_selection: '.github/codeql/custom/TestTaintTracking.ql'
+            #query_selection: '.github/codeql/custom/TestTaintTracking.ql'
+            query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
             threads: 1
-            extra_opts: 
+            extra_opts: '--timeout=1800'
           - category: "qry-2-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
