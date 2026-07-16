@@ -73,7 +73,7 @@ jobs:
           - category: 'qry-1-cpp'
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
             threads: 1
-            extra_opts: '-O=general:dataflow:max-path-depth=10 -O=general:dataflow:exploration-limit=1000'
+            extra_opts: '--evaluator-option=-O=general:dataflow:max-path-depth=10 --evaluator-option=-O=general:dataflow:exploration-limit=1000'
           - category: "qry-2-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
