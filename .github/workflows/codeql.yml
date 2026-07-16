@@ -71,8 +71,9 @@ jobs:
             threads: 0
             extra_opts: '--timeout=300'
           - category: 'qry-1-cpp'
-            query_selection: '.github/codeql/custom/UnboundedWriteFast.ql'
+            #query_selection: '.github/codeql/custom/UnboundedWriteFast.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
+            query_selection: '.github/codeql/custom/TestBufferWrite.ql'
             threads: 1
             extra_opts: 
           - category: "qry-2-cpp"
@@ -109,6 +110,9 @@ jobs:
         name: codeql-database-artifact
         path: ${{ runner.temp }}/${{ env.DB_PATH }}
 
+    - name: Install query dependencies
+      run: |
+        ${{ steps.codeql.outputs.codeql-path }} pack install .github/codeql/custom
     - name: Run Matrix Security Analysis
       continue-on-error: true
       run: |
