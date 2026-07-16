@@ -73,7 +73,8 @@ jobs:
           - category: 'qry-1-cpp'
             #query_selection: '.github/codeql/custom/UnboundedWriteFast.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
-            query_selection: '.github/codeql/custom/TestBufferWrite.ql'
+            #query_selection: '.github/codeql/custom/TestBufferWrite.ql'
+            query_selection: '.github/codeql/custom/TestTaintTracking.ql'
             threads: 1
             extra_opts: 
           - category: "qry-2-cpp"
@@ -120,7 +121,8 @@ jobs:
           ${{ matrix.query_selection }} \
           --format=sarif-latest \
           --output=results-${{ matrix.category }}.sarif \
-          --verbosity=progress \
+          --tuple-counting \
+          --verbosity=progress++ \
           ${{ matrix.extra_opts }} \
           --ram=14000 \
           --threads=${{ matrix.threads }}
