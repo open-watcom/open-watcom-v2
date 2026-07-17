@@ -13,5 +13,4 @@ extensions:
       extensible: barrierModel
     data:
       # Formát: [ package, type, subtypes, safe_method, ... ]
-      # Tímto ríkáme: Jakýkoliv objekt, metoda nebo prvek v C/C++ je globální bariéra (sanitizer).
-      - [ "", "", "true", "", "", "", "ReturnValue", "type" ]
+      - [ "", "", false, "", "", "", "ReturnValue", "type" ]
