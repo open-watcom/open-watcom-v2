@@ -6,3 +6,12 @@ library: true
 
 dependencies:
   codeql/cpp-all: "*"
+
+extensions:
+  - addsTo:
+      pack: codeql/cpp-all
+      extensible: barrierModel
+    data:
+      # Formát: [ package, type, subtypes, safe_method, ... ]
+      # Tímto ríkáme: Jakýkoliv objekt, metoda nebo prvek v C/C++ je globální bariéra (sanitizer).
+      - [ "", "", "true", "", "", "", "ReturnValue", "type" ]
