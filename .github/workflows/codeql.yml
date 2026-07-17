@@ -72,12 +72,12 @@ jobs:
             extra_opts: '--timeout=300'
           - category: 'qry-1-cpp'
             #query_selection: '.github/codeql/custom/UnboundedWriteFast.ql'
-            #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
-            query_selection: '.github/codeql/custom/TestBufferWrite.ql'
+            query_selection: 'codeql/cpp-queries:Security/CWE/CWE-120/UnboundedWrite.ql'
+            #query_selection: '.github/codeql/custom/TestBufferWrite.ql'
             #query_selection: '.github/codeql/custom/TestTaintTracking.ql'
-            ##query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
+            #query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
             threads: 1
-            extra_opts: '--timeout=1800 --search-path=.github/codeql/ --additional-packs=.github/codeql/custom --extension-packs=custom-cpp-queries'
+            extra_opts: '--timeout=1800 --additional-packs=.github/codeql/custom --extension-packs=custom-cpp-queries --no-strict-mode'
           - category: "qry-2-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
