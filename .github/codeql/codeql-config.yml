@@ -1,0 +1,7 @@
+name: "Global Taint Tracking Limits"
+
+# Pass low-level pruning directives directly to the Datalog solver engine
+compiler:
+  options:
+    - "--max-path-depth=4"
+    - "--interprocedural-dataflow-limit=5"
