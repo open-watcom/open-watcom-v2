@@ -2,5 +2,7 @@ name: custom-cpp-queries
 
 version: 0.0.1
 
+library: true
+
 dependencies:
   codeql/cpp-all: "*"
