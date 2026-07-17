@@ -12,5 +12,5 @@ extensions:
       pack: codeql/cpp-all
       extensible: barrierModel
     data:
-      # Formát: [ package, type, subtypes, safe_method, ... ]
+      # Formï¿½t: [ package, type, subtypes, safe_method, ... ]
       - [ "", "", false, "", "", "", "ReturnValue", "type" ]
