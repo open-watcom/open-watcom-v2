@@ -112,9 +112,9 @@ jobs:
         name: codeql-database-artifact
         path: ${{ runner.temp }}/${{ env.DB_PATH }}
 
-    - name: Install query dependencies
-      run: |
-        ${{ steps.codeql.outputs.codeql-path }} pack install .github/codeql/custom
+    #- name: Install query dependencies
+    #  run: |
+    #    ${{ steps.codeql.outputs.codeql-path }} pack install .github/codeql/custom
     - name: Run Matrix Security Analysis
       continue-on-error: true
       run: |
