@@ -78,9 +78,9 @@ jobs:
             #query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
             threads: 1
             #extra_opts: '--timeout=1800 --additional-packs=.github/codeql --extension-packs=custom-cpp-queries'
-            extra_opts: '--timeout=1800'
+            extra_opts: '--timeout=1800 -J=-Dcodeql.dataflow.maxEvaluationSteps=10000 -J=-Dcodeql.dataflow.maxExplorationDepth=10'
             # Pass low-level pruning options straight to the query compilation server
-            java_args:   '-Dcodeql.dataflow.maxEvaluationSteps=10000 -Dcodeql.dataflow.maxExplorationDepth=10'
+            #java_args:   '-Dcodeql.dataflow.maxEvaluationSteps=10000 -Dcodeql.dataflow.maxExplorationDepth=10'
           - category: "qry-2-cpp"
             query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
