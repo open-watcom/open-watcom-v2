@@ -2,15 +2,6 @@ name: custom-cpp-queries
 
 version: 0.0.1
 
-library: true
-
 dependencies:
   codeql/cpp-all: "*"
-
-extensions:
-  - addsTo:
-      pack: codeql/cpp-all
-      extensible: barrierModel
-    data:
-      # Form�t: [ package, type, subtypes, safe_method, ... ]
-      - [ "", "", false, "", "", "", "ReturnValue", "type" ]
+  codeql/cpp-queries: "*"
