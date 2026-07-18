@@ -76,10 +76,11 @@ jobs:
             #query_selection: '.github/codeql/custom/TestBufferWrite.ql'
             #query_selection: '.github/codeql/custom/TestTaintTracking.ql'
             #query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
-            query_selection: '.github/codeql/custom/FastUnboundedWrite.ql'
+            query_selection: '.github/codeql/custom/FastUnboundedWrite2.ql'
             threads: 1
             #extra_opts: '--timeout=1800 --additional-packs=.github/codeql --extension-packs=custom-cpp-queries'
-            extra_opts: '--timeout=1800 -J=-Dcodeql.dataflow.maxEvaluationSteps=10000 -J=-Dcodeql.dataflow.maxExplorationDepth=10'
+            #extra_opts: '--timeout=1800 -J=-Dcodeql.dataflow.maxEvaluationSteps=10000 -J=-Dcodeql.dataflow.maxExplorationDepth=10'
+            extra_opts: '--timeout=1800'
             # Pass low-level pruning options straight to the query compilation server
             #java_args:   '-Dcodeql.dataflow.maxEvaluationSteps=10000 -Dcodeql.dataflow.maxExplorationDepth=10'
           - category: "qry-2-cpp"
@@ -116,9 +117,10 @@ jobs:
         name: codeql-database-artifact
         path: ${{ runner.temp }}/${{ env.DB_PATH }}
 
-    #- name: Install query dependencies
-    #  run: |
-    #    ${{ steps.codeql.outputs.codeql-path }} pack install .github/codeql/custom
+    - name: Install query dependencies
+      run: |
+        ${{ steps.codeql.outputs.codeql-path }} pack install .github/codeql/custom
+
     - name: Run Matrix Security Analysis
       continue-on-error: true
       run: |
@@ -128,12 +130,19 @@ jobs:
           --output=results-${{ matrix.category }}.sarif \
           --tuple-counting \
           --verbosity=progress++ \
+          --evaluator-log=evaluator-${{ matrix.category }}.log \
           ${{ matrix.extra_opts }} \
           --ram=14000 \
           --threads=${{ matrix.threads }}
       env:
         CODEQL_JAVA_ARGS: ${{ matrix.java_args }}
 
+    - name: Upload evaluator log
+      if: always()
+      uses: actions/upload-artifact@v6
+      with:
+        name: evaluator-${{ matrix.category }}
+        path: evaluator-${{ matrix.category }}.log
 
     - name: Upload Results to GitHub
       uses: github/codeql-action/upload-sarif@v4
