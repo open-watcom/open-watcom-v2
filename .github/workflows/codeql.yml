@@ -71,26 +71,26 @@ jobs:
             threads: 0
             extra_opts: '--timeout=300'
           - category: 'qry-1-cpp'
-            query_selection: '.github/codeql/custom/OW-UnboundedWrite.ql'
+            query_selection: '.github/codeql/custom/OW-1-UnboundedWrite.ql'
             threads: 1
             extra_opts: '--timeout=300'
           - category: "qry-2-cpp"
-            query_selection: '.github/codeql/custom/OW-OverrunWriteProductFlow.ql'
+            query_selection: '.github/codeql/custom/OW-2-OverrunWriteProductFlow.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-119/OverrunWriteProductFlow.ql'
             threads: 1
             extra_opts: '--timeout=100'
           - category: "qry-3-cpp"
-            query_selection: '.github/codeql/custom/OW-TaintedPath.ql'
+            query_selection: '.github/codeql/custom/OW-3-TaintedPath.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-022/TaintedPath.ql'
             threads: 1
             extra_opts: '--timeout=100'
           - category: "qry-4-cpp"
-            query_selection: '.github/codeql/custom/OW-UncontrolledFormatString.ql'
+            query_selection: '.github/codeql/custom/OW-4-UncontrolledFormatString.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-134/UncontrolledFormatString.ql'
             threads: 1
             extra_opts: '--timeout=100'
           - category: "qry-5-cpp"
-            query_selection: '.github/codeql/custom/OW-TaintedAllocationSize.ql'
+            query_selection: '.github/codeql/custom/OW-5-TaintedAllocationSize.ql'
             #query_selection: 'codeql/cpp-queries:Security/CWE/CWE-190/TaintedAllocationSize.ql'
             threads: 1
             extra_opts: '--timeout=100'

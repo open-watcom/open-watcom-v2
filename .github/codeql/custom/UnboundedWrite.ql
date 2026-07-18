@@ -159,4 +159,3 @@ where
 select bw, source, sink,
   "This '" + bw.getBWDesc() + "' with input from $@ may overflow the destination.",
   source.getNode(), sourceType
-
