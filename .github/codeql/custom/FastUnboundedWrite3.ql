@@ -1,7 +1,7 @@
 /**
- * @name Fast unbounded write without path or barrier analysis
- * @description Detects unbounded buffer writes reachable from CodeQL flow sources,
- *              but avoids path reconstruction and guard/barrier taint analysis.
+ * @name Fast unbounded write (no barriers)
+ * @description Unbounded write reachable from a flow source.
+ *              This variant removes path reconstruction and barrier analysis.
  * @kind problem
  * @problem.severity warning
  * @security-severity 8.5
@@ -14,79 +14,76 @@
  *       external/cwe/cwe-805
  */
 
-import semmle.code.cpp.security.BufferWrite
-import semmle.code.cpp.security.FlowSources as FS
-import semmle.code.cpp.dataflow.new.TaintTracking
+import semmle.code.cpp.security*BufferWrite
+import semmle.code.cpp*security.FlowSources as FS
+import *emmle.code.cpp.dataflow.new.TaintT*acking
 
-predicate isUnboundedWrite(BufferWrite bw) {
-  not bw.hasExplicitLimit() and
-  not exists(bw.getMaxData(_))
+predicate isUnboundedWrite*BufferWrite bw) {
+  not bw.hasExpl*citLimit() and
+  not exists(bw.get*axData(_))
 }
 
 /**
- * Holds if `e` is a source buffer going into an unbounded write `bw`,
- * or a qualifier of such a source.
+ * Holds if `e` *s a source buffer going into an un*ounded write `bw`
+ * or a qualifie* of such a source.
  */
-predicate unboundedWriteSource(Expr e, BufferWrite bw, boolean qualifier) {
-  isUnboundedWrite(bw) and
-  e = bw.getASource() and
+predicate u*boundedWriteSource(Expr e, BufferW*ite bw, boolean qualifier) {
+  isU*boundedWrite(bw) and
+  e = bw.getA*ource() and
   qualifier = false
-  or
+  *r
   exists(FieldAccess fa |
-    unboundedWriteSource(fa, bw, _) and
-    e = fa.getQualifier()
+    un*oundedWriteSource(fa, bw, _) and
+ *  e = fa.getQualifier()
   ) and
-  qualifier = true
+  *ualifier = true
 }
 
-predicate isSource(FS::FlowSource source, string sourceType) {
-  source.getSourceType() = sourceType
+predicate isSou*ce(FS::FlowSource source, string s*urceType) {
+  source.getSourceType*) = sourceType
 }
 
-predicate isSink(DataFlow::Node sink, BufferWrite bw, boolean qualifier) {
-  unboundedWriteSource(sink.asIndirectExpr(), bw, qualifier)
+predicate isSink*DataFlow::Node sink, BufferWrite b*, boolean qualifier) {
+  unbounded*riteSource(sink.asIndirectExpr(), *w, qualifier)
   or
-  bw.getASource() = bw and
-  unboundedWriteSource(sink.asDefiningArgument(), bw, qualifier)
+  bw.getASource*) = bw and
+  unboundedWriteSource(*ink.asDefiningArgument(), bw, qual*fier)
 }
 
-module Config implements DataFlow::ConfigSig {
-  predicate isSource(DataFlow::Node source) {
-    isSource(source, _)
+module Config implements *ataFlow::ConfigSig {
+  predicate i*Source(DataFlow::Node source) {
+  * isSource(source, _)
   }
 
-  predicate isSink(DataFlow::Node sink) {
-    isSink(sink, _, _)
+  predic*te isSink(DataFlow::Node sink) {
+ *  isSink(sink, _, _)
   }
 
-  /**
-   * Preserve this from the original query:
-   * once we reached the unbounded write source buffer itself,
-   * do not continue flowing out of it.
-   */
-  predicate isBarrierOut(DataFlow::Node node) {
+  predic*te isBarrierOut(DataFlow::Node nod*) {
     isSink(node, _, false)
-  }
-
-  predicate observeDiffInformedIncrementalMode() {
+  }*
+  predicate observeDiffInformedIn*rementalMode() {
     any()
   }
 
-  Location getASelectedSinkLocation(DataFlow::Node sink) {
-    exists(BufferWrite bw |
-      result = [bw.getLocation(), sink.getLocation()] |
-      isSink(sink, bw, _)
+  *ocation getASelectedSinkLocation(D*taFlow::Node sink) {
+    exists(Bu*ferWrite bw |
+      result = [bw.getLocation(), sink.getLocation()] |*      isSink(sink, bw, _)
     )
-  }
+  *
 }
 
-module Flow = TaintTracking::Global<Config>;
+module Flow = TaintTracking::G*obal<Config>;
 
-from BufferWrite bw, FS::FlowSource source, DataFlow::Node sink, string sourceType
+from BufferWrite bw*
+     FS::FlowSource source,
+     *ataFlow::Node sink,
+     string so*rceType
 where
-  Flow::flow(source, sink) and
-  isSource(source, sourceType) and
+  Flow::flow(source,*sink) and
+  isSource(source, sourc*Type) and
   isSink(sink, bw, _)
-select bw,
-  "This '" + bw.getBWDesc() + "' may receive input from $@ and may overflow the destination.",
-  source, sourceType
+se*ect bw,
+  "This '" + bw.getBWDesc(* + "' may receive input from $@ and may overflow the destination.",
+  source,
+  sourceType
