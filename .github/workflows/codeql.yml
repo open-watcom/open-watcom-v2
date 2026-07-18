@@ -76,7 +76,8 @@ jobs:
             #query_selection: '.github/codeql/custom/TestBufferWrite.ql'
             #query_selection: '.github/codeql/custom/TestTaintTracking.ql'
             #query_selection: '.github/codeql/custom/UnboundedWriteStrcpyFast.ql'
-            query_selection: '.github/codeql/custom/FastUnboundedWrite3.ql'
+            #query_selection: '.github/codeql/custom/FastUnboundedWrite3.ql'
+            query_selection: '.github/codeql/custom/FastUnboundedWriteNoBarrier.ql'
             threads: 1
             #extra_opts: '--timeout=1800 --additional-packs=.github/codeql --extension-packs=custom-cpp-queries'
             #extra_opts: '--timeout=1800 -J=-Dcodeql.dataflow.maxEvaluationSteps=10000 -J=-Dcodeql.dataflow.maxExplorationDepth=10'
