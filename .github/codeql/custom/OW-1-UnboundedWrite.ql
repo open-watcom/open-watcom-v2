@@ -1,13 +1,12 @@
 /**
- * @name Candidate unbounded write
- * @description Finds buffer write operations without an explicit or deduced bound.
- *              This is a fast candidate query for large C/C++ databases where
- *              full global taint tracking is too expensive.
- * @kind problem
- * @problem.severity warning
- * @security-severity 7.5
- * @precision low
- * @id local/cpp/candidate-unbounded-write
+ * @name Unbounded write
+ * @description Buffer write operations that do not control the length
+ *              of data written may overflow.
+ * @kind path-problem
+ * @problem.severity error
+ * @security-severity 9.3
+ * @precision medium
+ * @id cpp/unbounded-write
  * @tags reliability
  *       security
  *       external/cwe/cwe-120
@@ -18,8 +17,8 @@
 import semmle.code.cpp.security.BufferWrite
 
 predicate isUnboundedWrite(BufferWrite bw) {
-  not bw.hasExplicitLimit() and
-  not exists(bw.getMaxData(_))
+  not bw.hasExplicitLimit() and // has no explicit size limit
+  not exists(bw.getMaxData(_)) // and we can't deduce an upper bound to the amount copied
 }
 
 from BufferWrite bw
