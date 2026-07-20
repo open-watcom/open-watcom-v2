@@ -537,8 +537,8 @@ static dir_node_handle pop_proc( void )
     return( (dir_node_handle)pop( &ProcStack ) );
 }
 
-static void dir_add( dir_node_handle new, int tab )
-/*************************************************/
+static void dir_add( dir_node_handle new, table_type tab )
+/********************************************************/
 {
     /*
      * note: this is only for those above which do NOT return right away
@@ -556,8 +556,8 @@ static void dir_add( dir_node_handle new, int tab )
     Tables[tab].tail = new;
 }
 
-void dir_init( dir_node_handle dir, int tab )
-/********************************************
+void dir_init( dir_node_handle dir, table_type tab )
+/***************************************************
  * Change node and insert it into the table specified by tab
  */
 {
@@ -645,8 +645,8 @@ void dir_init( dir_node_handle dir, int tab )
     return;
 }
 
-static void dir_move_to_tail( dir_node_handle dir, int tab )
-/***********************************************************
+static void dir_move_to_tail( dir_node_handle dir, table_type tab )
+/******************************************************************
  * move item which is already in the list to the end of list
  * expect the item is not last item that the list contains
  * at minimum two items
@@ -675,9 +675,9 @@ static void dir_move_to_tail( dir_node_handle dir, int tab )
     Tables[tab].tail = dir;
 }
 
-static int get_dir_tab( dir_node_handle dir )
+static table_type get_dir_tab( dir_node_handle dir )
 {
-    int         tab;
+    table_type      tab;
 
     switch( dir->sym.state ) {
     case SYM_EXTERNAL:
@@ -702,7 +702,7 @@ static int get_dir_tab( dir_node_handle dir )
         tab = TAB_CONST;
         break;
     default:
-        tab = -1;
+        tab = TAB_NONE;
         break;
     }
     return( tab );
@@ -716,10 +716,10 @@ static dir_node_handle dir_reset( dir_node_handle dir )
         dir->next->prev = dir->prev;
         dir->prev->next = dir->next;
     } else {
-        int     tab;
+        table_type  tab;
 
         tab = get_dir_tab( dir );
-        if( tab == -1 ) {
+        if( tab == TAB_NONE ) {
             return( NULL );
         }
         if( dir->next != NULL ) {
@@ -746,8 +746,8 @@ void dir_to_sym( dir_node_handle dir )
     dir->sym.state = SYM_UNDEFINED;
 }
 
-void dir_change( dir_node_handle dir, int tab )
-/**********************************************
+void dir_change( dir_node_handle dir, table_type tab )
+/*****************************************************
  * Change node type and insert it into the table specified by tab
  */
 {
@@ -756,8 +756,8 @@ void dir_change( dir_node_handle dir, int tab )
     dir_init( dir, tab );
 }
 
-dir_node_handle dir_insert( const char *name, int tab )
-/******************************************************
+dir_node_handle dir_insert( const char *name, table_type tab )
+/*************************************************************
  * Insert a node into the table specified by tab
  */
 {

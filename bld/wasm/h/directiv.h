@@ -74,7 +74,8 @@ typedef enum {
 } os_type;              // Type of operating system
 #define NUM_OS 2
 
-enum {
+typedef enum {
+    TAB_NONE = -1,
     TAB_SEG,            // order seg, grp, lname is important
     TAB_GRP,
     TAB_EXT,
@@ -89,7 +90,7 @@ enum {
     TAB_LIB,
     TAB_FPPATCH,
     TAB_SIZE,
-};
+} table_type;
 
 #define TAB_SYMSPACE_SIZE   TAB_CLASS_LNAME
 
@@ -363,10 +364,10 @@ extern symbol_queue     Tables[TAB_SIZE];   // tables of definitions
 
 extern dir_node_handle  AllocD( const char * );
 
-extern dir_node_handle  dir_insert( const char *, int );
+extern dir_node_handle  dir_insert( const char *, table_type );
 extern void             dir_to_sym( dir_node_handle );
-extern void             dir_change( dir_node_handle, int );
-extern void             dir_init( dir_node_handle, int );
+extern void             dir_change( dir_node_handle, table_type );
+extern void             dir_init( dir_node_handle, table_type );
 extern void             dir_fini( dir_node_handle );
 
 extern uint_32          GetCurrAddr( void );    // Get offset from current segment
