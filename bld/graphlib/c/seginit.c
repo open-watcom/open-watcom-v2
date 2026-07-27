@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include "grdbcs.h"
 #include "gbios.h"
 #if defined( __DOS__ )
-    #include "getltdos.h"
+    #include "tinyio.h"
     #include "realmod.h"
     #if !defined( _M_I86 )
         #include "extender.h"
@@ -181,6 +181,73 @@ extern unsigned char    dos_version( void );
     __value     [__al] \
     __modify __exact [ __ax __bx __cx __dx]
 
+#ifdef _M_I86
+extern unsigned short __far *__get_dbcs_lead_table( void );
+#pragma aux __get_dbcs_lead_table = \
+        "push bp"       \
+        "push ds"       \
+        "xor ax,ax"     \
+        "mov ds,ax"     \
+        "mov ah,63h"    \
+        __INT_21        \
+        "mov di,ds"     \
+        "jc short L1"   \
+        "test al,al"    \
+        "jnz short L1"  \
+        "test di,di"    \
+        "jnz short L2"  \
+    "L1: xor di,di"     \
+        "xor si,si"     \
+    "L2: pop ds"        \
+        "pop bp"        \
+    __value     [__di __si] \
+    __modify    [__ax __bx __cx __dx]
+#endif
+
+static unsigned short __far *_get_dbcs_lead_table( void )
+/*******************************************************/
+{
+#ifdef _M_I86
+    return( __get_dbcs_lead_table() );
+#else
+    if( _IsPharLap() ) {
+        pharlap_regs_struct dp;
+        int                 cflag;
+
+        memset( &dp, 0, sizeof( dp ) );
+        dp.r.h.ah = 0x63;                   /* get DBCS vector table */
+        dp.intno = 0x21;                    /* DOS call */
+        cflag = PharlapSimulateRealModeInterruptExt( &dp );
+        if( cflag == 0 && dp.r.h.al == 0 ) {
+            /*
+             * check if DS not 0 or weird OS/2 value 0xFFFF
+             * otherwise it is invalid
+             */
+            if( dp.ds != 0 && dp.ds != 0xFFFF ) {
+                return( RealModeDataPtr( dp.ds, dp.r.x.esi ) );
+            }
+        }
+    } else if( _DPMI || _IsRational() ) {
+        dpmi_regs_struct    dr;
+        int                 cflag;
+
+        memset( &dr, 0, sizeof( dr ) );
+        dr.r.h.ah = 0x63;                   /* get DBCS vector table */
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        if( cflag == 0 && dr.r.h.al == 0 ) {
+            /*
+             * check if DS not 0
+             * otherwise it is invalid
+             */
+            if( dr.ds != 0 && dr.ds != 0xFFFF ) {
+                return( RealModeDataPtr( dr.ds, dr.r.x.esi ) );
+            }
+        }
+    }
+#endif
+    return( NULL );
+}
+
 void _InitSegments( void )
 //========================
 {
@@ -206,7 +273,7 @@ void _InitSegments( void )
     if( dos_version() >= 5 ) {
         // The DBCS vector table call is not supported in earlier versions
         p = _DBCSPairs;
-        s = (dbcs_pair __far *)dos_get_dbcs_lead_table();
+        s = (dbcs_pair __far *)_get_dbcs_lead_table();
         if( s != NULL ) {
             while( s->start_range != 0 ) {
                 p->start_range = s->start_range;
