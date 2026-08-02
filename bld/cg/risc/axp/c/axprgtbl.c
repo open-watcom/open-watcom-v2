@@ -856,48 +856,41 @@ void            InitRegTbl( void )
 {
 }
 
+static int findArchRegInfo( hw_reg_set regs )
+/********************************************/
+{
+    int         i;
+
+    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
+        if( HW_Ovlap( regs, RegsTab[i].hw_reg ) ) {
+            return( i );
+        }
+    }
+    _Zoiks( ZOIKS_031 );
+    return( ARCH_IDX_START );
+}
+
+
 reg_idx RegTrans( hw_reg_set regs )
 /**********************************
  * Translate reg to register index
  */
 {
-    int         i;
-
-    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
-            return( RegsTab[i].idx );
-        }
-    }
-    return( 0 );
+    return( RegsTab[findArchRegInfo( regs )].idx );
 }
 
 int GetArchIndex( hw_reg_set regs )
 /*********************************/
 {
-    int         i;
-
-    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( regs, RegsTab[i].hw_reg ) ) {
-            return( RegsTab[i].idx );
-        }
-    }
-    return( 0 );
+    return( RegsTab[findArchRegInfo( regs )].idx );
 }
 
-dw_regs   RegTransDW( hw_reg_set reg )
+dw_regs   RegTransDW( hw_reg_set regs )
 /*************************************
  * Translate reg to Dwarf enum name
  */
 {
-    int         i;
-
-    for( i = ARCH_IDX_START; i < ARCH_IDX_END; i++ ) {
-        if( HW_Equal( reg, RegsTab[i].hw_reg ) ) {
-            return( RegsTab[i].dw_idx );
-        }
-    }
-    _Zoiks( ZOIKS_031 );
-    return( DW_REG_END );
+    return( RegsTab[findArchRegInfo( regs )].dw_idx );
 }
 
 hw_reg_set      FirstReg( reg_set_index regs_idx )
