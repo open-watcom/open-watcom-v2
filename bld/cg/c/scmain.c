@@ -193,7 +193,7 @@ static  void    InitZero( void )
     ScZero->class       = SC_N_CONSTANT;
     ScZero->offset      = 0;
     ScZero->symbol.u.p  = NULL;
-    ScZero->index_reg   = NO_INDEX;
+    ScZero->reg_index   = NO_INDEX;
     ScZero->base        = NULL;
 }
 

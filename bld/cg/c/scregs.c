@@ -199,8 +199,8 @@ void    RegKill( score_hdl scoreboard, hw_reg_set regs )
                 scoreboard->generation = 0;
             } else {
                 for( owner = scoreboard->list; (curr_list = *owner) != NULL; ) {
-                    if( curr_list->info.index_reg != NO_INDEX
-                      && HW_Ovlap( ScoreList[curr_list->info.index_reg]->reg, regs ) ) {
+                    if( curr_list->info.reg_index != NO_INDEX
+                      && HW_Ovlap( ScoreList[curr_list->info.reg_index]->reg, regs ) ) {
                         *owner = curr_list->next;
                         FreeScListEntry( curr_list );
                     } else {

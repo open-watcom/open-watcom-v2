@@ -53,7 +53,7 @@ static  bool    ScoreSame( score_info *x, score_info *y )
         return( false );
     if( x->base != y->base )
         return( false );
-    if( x->index_reg != y->index_reg )
+    if( x->reg_index != y->reg_index )
         return( false );
     if( x->class == SC_N_TEMP && x->symbol.u.t->v.id == y->symbol.u.t->v.id )
         return( true );
@@ -214,11 +214,11 @@ static  void    ScoreAdd( score_hdl scoreboard, int i, score_info *info )
         score_hdl   first;
         score_hdl   curr;
 
-        if( (info->class == SC_N_INDEXED) && (info->index_reg != NO_INDEX) ) {
-            first = &scoreboard[info->index_reg];
+        if( (info->class == SC_N_INDEXED) && (info->reg_index != NO_INDEX) ) {
+            first = &scoreboard[info->reg_index];
             curr = first;
             for( ;; ) {
-                info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
+                info->reg_index = ScoreList[curr->index]->reg_name->r.reg_index;
                 if( !ScoreLookup( &scoreboard[i], info ) ) {
                     ScoreInsert( scoreboard, i, info );
                 }
@@ -276,13 +276,13 @@ void    ScoreInfo( score_info *info, name *op )
 /*********************************************/
 {
     if( op->n.class == N_INDEXED
-     && op->i.index_flags ==( X_FAKE_BASE | X_BASE_IS_INDEX) ) {
+      && op->i.index_flags == (X_FAKE_BASE | X_BASE_IS_INDEX) ) {
         op = op->i.base; /* track memory location */
     }
     info->class = (score_name_class_def)op->n.class;
     info->scale = SCALE_NONE;
     info->base  = NULL;
-    info->index_reg = NO_INDEX;
+    info->reg_index = NO_INDEX;
     switch( op->n.class ) {
     case N_CONSTANT:
         switch( op->c.const_type ) {
@@ -334,7 +334,7 @@ void    ScoreInfo( score_info *info, name *op )
         }
         info->symbol.u.p = NULL;
         info->offset = op->i.constant;
-        info->index_reg = op->i.index->r.reg_index;
+        info->reg_index = op->i.index->r.reg_index;
         info->base = op->i.base;
         info->scale = op->i.scale;
         break;
@@ -351,7 +351,7 @@ bool    ScoreLAInfo( score_info *info, name *op )
         info->class = SC_N_ADDRESS;
         info->symbol.u.p = op;
         info->offset = 0;
-        info->index_reg = NO_INDEX;
+        info->reg_index = NO_INDEX;
         info->base = NULL;
         info->scale = SCALE_NONE;
         return( true );

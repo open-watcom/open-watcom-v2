@@ -312,8 +312,8 @@ void    ScoreMakeEqual( score_hdl scoreboard, name *op1, name *op2 )
             /*
              * NB: reg can never have the value x[reg]
              */
-            if( info.index_reg == NO_INDEX
-                || !HW_Ovlap( op2->r.reg, ScoreList[info.index_reg]->reg ) ) {
+            if( info.reg_index == NO_INDEX
+                || !HW_Ovlap( op2->r.reg, ScoreList[info.reg_index]->reg ) ) {
                 ScoreAssign( scoreboard, op2_index, &info );
             }
         }
@@ -358,8 +358,8 @@ bool    ScoreMove( score_hdl scoreboard, instruction *ins )
                 /*
                  * NB: reg can never have the value x[reg]
                  */
-                if( info.index_reg == NO_INDEX
-                  || !HW_Ovlap( dst->r.reg, ScoreList[info.index_reg]->reg ) ) {
+                if( info.reg_index == NO_INDEX
+                  || !HW_Ovlap( dst->r.reg, ScoreList[info.reg_index]->reg ) ) {
                     if( !FPIsConvert( ins ) ) {
                         ScoreAssign( scoreboard, dst_index, &info );
                     }

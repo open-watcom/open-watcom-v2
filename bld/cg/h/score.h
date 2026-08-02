@@ -81,7 +81,7 @@ typedef struct score_info {
             void                *p;
         } u;
     } symbol;
-    int                     index_reg;  /*  indexed names only */
+    int                     reg_index;  /*  indexed names only */
     scale_typ               scale;      /*  indexed names only */
     score_name_class_def    class;
 } score_info;
