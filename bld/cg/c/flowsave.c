@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -289,9 +289,10 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
 void FlowSave( hw_reg_set *preg )
 /*******************************/
 {
-    int                 score;
-    int                 i, j;
-    int                 best;
+    int                 curr_score;
+    int                 best_score;
+    int                 i;
+    int                 j;
     int                 num_blocks;
     int                 num_regs;
     int                 curr_reg;
@@ -332,7 +333,7 @@ void FlowSave( hw_reg_set *preg )
             continue;  // don't mess with BP - it's magical
 #endif
         GetRegUsage( &reg_info[curr_reg] );
-        best = 0;
+        best_score = 0;
         for( i = 0; i < num_blocks; i++ ) {
             for( j = 0; j < num_blocks; j++ ) {
                 if( PairOk( blockArray[i], blockArray[j], &reg_info[0], curr_reg ) ) {
@@ -341,10 +342,10 @@ void FlowSave( hw_reg_set *preg )
                     // rough metric for determining how much we like a given (valid)
                     // pair of blocks - the more blocks dominated, the further 'in'
                     // we have pushed the save, which should be good
-                    score =  CountDomBits( &blockArray[i]->dom.dominator );
-                    score += CountDomBits( &blockArray[j]->dom.post_dominator );
-                    if( score > best ) {
-                        best = score;
+                    curr_score =  CountDomBits( &blockArray[i]->dom.dominator );
+                    curr_score += CountDomBits( &blockArray[j]->dom.post_dominator );
+                    if( best_score < curr_score ) {
+                        best_score = curr_score;
                         reg_info[curr_reg].save    = blockArray[i];
                         reg_info[curr_reg].restore = blockArray[j];
                     }
