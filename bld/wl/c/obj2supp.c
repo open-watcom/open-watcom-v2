@@ -1358,6 +1358,9 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
             reltype = PE_FIX_HIGHADJ;   // NYI: can be high when objalign == 0x10000
             breloc->rel_size = sizeof( high_pe_reloc_item );
             breloc->item.hpe.low_off = (unsigned_16)target.off;
+        } else if( (LinkState & LS_HAVE_MACHTYPE_MASK) == LS_HAVE_MIPS_CODE
+          && ftype == FIX_OFFSET_26 ) {
+            reltype = PE_FIX_MIPSJMP;
         } else if( ftype == FIX_OFFSET_16 ) {
             if( (FmtData.objalign & 0xFFFF) == 0 ) {
                 save = false;
