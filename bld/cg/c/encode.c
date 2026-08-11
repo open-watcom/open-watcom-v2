@@ -42,6 +42,7 @@
 #include "revcond.h"
 #include "dumpio.h"
 #include "insutil.h"
+#include "score.h"
 
 
 static  label_handle    LocateLabel( instruction *ins, cond_dst_idx dest_idx )
