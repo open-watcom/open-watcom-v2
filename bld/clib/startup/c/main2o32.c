@@ -52,7 +52,7 @@
 #include "xmain.h"
 
 
-_WCNORETURN void _WCNEAR __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod,
+void _WCNEAR __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod,
                             unsigned reserved, char *env, char *cmd )
 /********************************************************************/
 {
