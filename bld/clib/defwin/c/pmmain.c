@@ -37,6 +37,8 @@
 #define INCL_WIN
 #include <wos2.h>
 #include "win.h"
+#include "defwin.h"
+#include "initwin.h"
 #include "pmmenu.rh"
 
 
@@ -189,10 +191,10 @@ _WCRTLINK void  __InitDefaultWin( void )
 _WCRTLINK void  __FiniDefaultWin( void )
 //======================================
 {
-    _FiniMainWindowData();
     if( _MainWindow != 0 ) {
         WinDestroyWindow( _MainWindow );
     }
+    _FiniMainWindowData();
     if( hMessageQueue != 0 ) {
         WinDestroyMsgQueue( hMessageQueue );
     }

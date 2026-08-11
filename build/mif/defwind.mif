@@ -1,3 +1,8 @@
 !ifeq system windows
 default_windowing = 1
 !endif
+!ifeq system os2
+!ifeq host_cpu 386
+default_windowing = 1
+!endif
+!endif
