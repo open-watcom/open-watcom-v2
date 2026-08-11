@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,7 +148,7 @@ void EncodeCond( oc_jcond *oc )
     if( oc->hdr.class & OC_ATTR_FLOAT ) {
         floating = 1;
     }
-    reg2 = ( oc->index2 == -1 ) ? 0 : (reg_idx)oc->index2;
+    reg2 = ( oc->index2 == NO_INDEX ) ? 0 : (reg_idx)oc->index2;
     opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][0];
     cncode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating][1];
     /*

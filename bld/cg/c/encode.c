@@ -188,7 +188,7 @@ static  void    DoCondJump( instruction *cond )
         if( cond->operands[1]->n.class == N_REGISTER ) {
             oc.oc_jcond.index2 = cond->operands[1]->r.arch_index;
         } else {
-            oc.oc_jcond.index2 = -1;
+            oc.oc_jcond.index2 = NO_INDEX;
         }
 #endif
         InputOC( &oc );
