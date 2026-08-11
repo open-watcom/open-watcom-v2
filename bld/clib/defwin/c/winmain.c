@@ -110,8 +110,8 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 
     rc = pmain( ___Argc, ___Argv );
 
-    windowsFini();
     _WindowsExit();
+    windowsFini();
     return( rc );
 
 } /* DefaultWinMain */

@@ -273,7 +273,11 @@ void _WCNEAR _InitMainWindowData( HANDLE inst )
 void _WCNEAR _FiniMainWindowData( void )
 {
 
-    FARfree( _MainWindowData );
+    if( _MainWindowData != NULL ) {
+        FARfree( _MainWindowData->windows );
+        FARfree( _MainWindowData );
+        _MainWindowData = NULL;
+    }
 
 } /* _FiniMainWindowData */
 
