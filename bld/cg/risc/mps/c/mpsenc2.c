@@ -37,6 +37,7 @@
 #include "rscenc2.h"
 #include "rscobj.h"
 #include "mpsenc.h"
+#include "score.h"
 
 
 void EncodeRet( oc_ret *oc )
