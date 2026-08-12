@@ -35,7 +35,7 @@
     #if defined(__SW_BD)
         extern int _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
     #else
-        extern _WCNORETURN void _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
+        extern void _WCNEAR _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
     #endif
         #pragma aux _OS2Main "_*" __parm __caller [__dx __ax] [__cx __bx]
   #else
