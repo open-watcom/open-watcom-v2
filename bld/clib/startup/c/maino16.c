@@ -111,7 +111,7 @@ FPEhandler  *__FPE_handler = __null_FPE_handler;
 #if defined(__SW_BD)
 int
 #else
-_WCNORETURN void
+void
 #endif
 _WCNEAR _OS2Main( char __far *stklow, char __far *stktop, unsigned envseg, unsigned cmdoff )
 /******************************************************************************************/
