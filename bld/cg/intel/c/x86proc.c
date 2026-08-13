@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "_cgstd.h"
 #include "coderep.h"
 #include "cgaux.h"
@@ -1027,7 +1028,23 @@ void    GenProlog( void )
                              */
                             if( HW_COvlap( CurrProc->state.unalterable, HW_xAX )
                               || HW_COvlap( CurrProc->state.parm.used, HW_xAX ) ) {
-                                FEMessage( FEMSG_ERROR, "exported routine with AX live on entry" );
+                                #define MSGFMT  "exported routine '%-.256s' with AX live on entry"
+
+                                cg_sym_handle sym;
+                                const char    *src;
+                                char          buffer[sizeof( MSGFMT ) - 7 + 256];
+
+                                src = NULL;
+                                sym = AskForLblSym( CurrProc->label );
+                                if( sym != NULL ) {
+                                    src = FEExtName( sym, EXTN_BASENAME );
+                                }
+                                if( src == NULL ) {
+                                    src = "";
+                                }
+                                sprintf( buffer, MSGFMT, src );
+                                FEMessage( FEMSG_ERROR, buffer );
+                                #undef MSGFMT
                             }
     #endif
                             GenWindowsProlog();
