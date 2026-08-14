@@ -639,7 +639,11 @@ unsigned long ResNonResNameTable( bool dores )
     }
     if( dores
       || len > 0 ) {
-        size += WriteLoadU8Name( name, len, false );
+        /*
+         * MK_OS2_FLAT | MK_OS2_NE | MK_WIN_NE | MK_WIN_VXD
+         * output upper-cased name to resident name table
+         */
+        size += WriteLoadU8Name( name, len, true );
         WriteLoadU16( 0 );
         size += 2;
     }
