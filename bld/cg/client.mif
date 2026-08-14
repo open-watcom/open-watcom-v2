@@ -1,7 +1,7 @@
 # This file is designed to be included by users of the cg library
 
-# target_cpu = 386 | i86 | ppc | axp | mps
-# host_cpu = 386 | ppc | axp
+# target_cpu = 386 | i86 | ppc | axp | mps | x64
+# host_cpu = 386 | ppc | axp | x64 | a64 | arm
 # host_os  = nt | os2 | qnx | dos | rdos | linux | osx | bsd | haiku
 
 !include $(cg_dir)/mif/cghost.mif
@@ -27,12 +27,14 @@ o_dir_i86    = $(cg_dir)/intel/i86/$(obj_dir)
 o_dir_axp    = $(cg_dir)/risc/axp/$(obj_dir)
 o_dir_ppc    = $(cg_dir)/risc/ppc/$(obj_dir)
 o_dir_mps    = $(cg_dir)/risc/mps/$(obj_dir)
+o_dir_x64    = $(cg_dir)/intel/x64/$(obj_dir)
 
 i_path_386   = -I"$(cg_dir)/intel/386/h" -I"$(cg_dir)/intel/h"
 i_path_i86   = -I"$(cg_dir)/intel/i86/h" -I"$(cg_dir)/intel/h"
 i_path_axp   = -I"$(cg_dir)/risc/axp/h" -I"$(cg_dir)/risc/h"
 i_path_ppc   = -I"$(cg_dir)/risc/ppc/h" -I"$(cg_dir)/risc/h"
 i_path_mps   = -I"$(cg_dir)/risc/mps/h" -I"$(cg_dir)/risc/h"
+i_path_x64   = -I"$(cg_dir)/intel/x64/h" -I"$(cg_dir)/intel/h"
 
 !ifndef o_dir_$(target_cpu)
 !error unsupported target_cpu
@@ -49,6 +51,7 @@ use_owl_lib_ppc   = 1
 use_owl_lib_mps   = 1
 use_owl_lib_386   = 0
 use_owl_lib_i86   = 0
+use_owl_lib_x64   = 1
 
 cli_cg_inc_dirs = $(i_path)
 
