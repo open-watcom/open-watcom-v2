@@ -134,6 +134,7 @@ typedef enum {
 } omf_dbg_type;
 
 typedef enum {
+    CLASS_NONE          = 0x0000,
     CLASS_TRANSFER      = 0x0001,   /* used for PE import transfer code */
     CLASS_MS_TYPE       = 0x0002,
     CLASS_MS_LOCAL      = 0x0004,

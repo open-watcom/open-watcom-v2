@@ -269,7 +269,7 @@ static void AllocFileSegs( void )
     unsigned            seg_num;
 
     seg_num = 1;
-    for( group = Groups; group != NULL; group = group->next ){
+    for( group = Groups; group != NULL; group = group->next ) {
         group->grp_addr.off = 0;
         if( setGroupSeg( group, seg_num ) ) {
             seg_num++;
@@ -299,7 +299,7 @@ static void ReallocFileSegs( void )
     unsigned            seg_num;
 
     seg_num = 1;
-    for( group = Groups; group != NULL; group = group->next ){
+    for( group = Groups; group != NULL; group = group->next ) {
         /*
          * segment number is also set for zero length group to be
          * segments in map file sorted properly even if they are not emited
@@ -316,7 +316,7 @@ static void ReallocFileSegs( void )
             NumGroups--;
         }
     }
-    for( class = Root->classes; class != NULL; class = class->next ){
+    for( class = Root->classes; class != NULL; class = class->next ) {
         if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             RingWalk( class->segs, SetLeaderSeg );
         }
@@ -910,7 +910,7 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
     class_entry     *class;
     class_status    class_flags;
 
-    class_flags = 0;
+    class_flags = CLASS_NONE;
     if( type == SEGFLAG_CODE ) {
         class_flags = CLASS_CODE;
     }
@@ -922,32 +922,37 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 }
 
 
-void SetSegFlags( xxx_seg_flags *flag_list )
-/******************************************/
+void SetSegFlags( xxx_seg_flags *start )
+/**************************************/
 {
     xxx_seg_flags   *next;
     seg_leader      *leader;
-    xxx_seg_flags   *start;
+    xxx_seg_flags   *flag_list;
     class_entry     *class;
 
     for( class = Root->classes; class != NULL; class = class->next ) {
         RingWalk( class->segs, SetReadOnly );
     }
-    start = flag_list;
-    // process all class type def'ns first.
-    for( ; flag_list != NULL; flag_list = flag_list->next ) {
+    /*
+     * process all class type def'ns first.
+     */
+    for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
         if( ( flag_list->type == SEGFLAG_CODE )
-          || ( flag_list->type == SEGFLAG_DATA ) ){
+          || ( flag_list->type == SEGFLAG_DATA ) ) {
             FillTypeFlags( flag_list->flags, flag_list->type );
         }
     }
-    // process all class def'ns second.
+    /*
+     * process all class def'ns second.
+     */
     for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
         if( flag_list->type == SEGFLAG_CLASS ) {
             FillClassFlags( flag_list->name, flag_list->flags );
         }
     }
-    // now process individual segments
+    /*
+     * now process individual segments
+     */
     for( flag_list = start; flag_list != NULL; flag_list = next ) {
         next = flag_list->next;
         if( flag_list->type == SEGFLAG_SEGMENT ) {
@@ -973,7 +978,7 @@ static void SplitDGroupClasses( section *sect )
     seg_leader          *newlist;
     seg_leader          *oldlist;
 
-    for( class = sect->classes; class != NULL; class = class->next ){
+    for( class = sect->classes; class != NULL; class = class->next ) {
         newlist = NULL;
         oldlist = NULL;
         while( (curr = RingPop( &class->segs )) != NULL ) {
