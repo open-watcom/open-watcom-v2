@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #define _PPC    2
 #define _SPARC  3
 #define _MIPS   4
+#define _X64    5
 #define _370    370     // on a IBM S370
 #define _80286  286     // >= 286 running 16-bit protected-mode ( OS/2 or DOS/16M )
 #define _80386  386     // >= 386 running 32-bit

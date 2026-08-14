@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,5 +37,6 @@
 #define __TGT_SYS_AXP_NT    1   // Win32 on DEC Alpha AXP
 #define __TGT_SYS_PPC_NT    2   // Win32 on IBM/Motorola PowerPC
 #define __TGT_SYS_MIPS      3   // MIPS RISC Architecture
+#define __TGT_SYS_X64       4   // Intel 64-bit Architecture
 
 #endif
