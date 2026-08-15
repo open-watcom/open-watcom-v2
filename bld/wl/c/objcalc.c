@@ -1166,11 +1166,11 @@ static void SortClasses( section *sect )
                 for( ;; ) {
                     if( stricmp( currseg->segname.u.ptr, MatchSeg->Name ) == 0 ) {
                         if( MatchSeg->FixedAddr ) {    // and copy any flags or address from it
-                            currseg->segflags |= SEG_FIXED;
+                            currseg->info |= SEG_FIXED;
                             currseg->seg_addr = MatchSeg->Base;
                         }
                         if( MatchSeg->NoEmit ) {
-                            currseg->segflags |= SEG_NOEMIT;
+                            currseg->info |= SEG_NOEMIT;
                         }
                         RingPromote( &class->segs, currseg, prevseg );
                         break;

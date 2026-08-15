@@ -134,7 +134,7 @@ static bool CanPack( seg_leader *one, seg_leader *two )
     if( (one->info & (USE_32 | SEG_CODE)) != (two->info & (USE_32 | SEG_CODE)) )
         return( false );
     if( one->segflags != two->segflags
-      || (two->segflags & SEG_FIXED) )
+      || (two->info & SEG_FIXED) )
         return( false );
     if( one->class != two->class
       && (two->class->flags & CLASS_FIXED) )
