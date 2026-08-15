@@ -1305,8 +1305,8 @@ static ordinal_t ChkOS2IntEntry( group_entry *group, segdata *seg,
     // handling in LX/LE executables. However, conforming IOPL
     // segments do not need that and references between IOPL
     // segments don't either.
-    if( (group->segflags & SEG_LEVEL_MASK) != (seg->u.leader->group->segflags & SEG_LEVEL_MASK) ) {
-        if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2
+    if( GET_SEG_PMODE_DPL( group->segflags ) != GET_SEG_PMODE_DPL( seg->u.leader->group->segflags ) ) {
+        if( GET_SEG_PMODE_DPL( group->segflags ) == SEG_PMODE_DPL_2
           && !(group->segflags & SEG_CONFORMING) ) {
 
             // The target has to be in the entry table, otherwise we can't
@@ -1465,7 +1465,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *tthread, segdata *
                     }
                 }
                 if( group != NULL ) {
-                    group->u.os2flags |= SEG_16_ALIAS;
+                    group->u.os2flags |= OS2_SEG_16_ALIAS;
                     int_ordinal = ChkOS2IntEntry( group, seg, tthread, fix );
                 }
                 break;

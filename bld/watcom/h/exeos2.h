@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,29 +176,32 @@ typedef struct segment_record {
 /* NOTE: the linker uses some of the unused bits here. If these bits become
  * used, make sure the linker developer knows about it! */
 
-#define SEG_DATA            1
-#define SEG_FLAG_1       0x02
-#define SEG_FLAG_2       0x04
-#define SEG_ITERATED        8
-#define SEG_MOVABLE      0x10
-#define SEG_PURE         0x20       /* i.e. segment is sharable. */
-#define SEG_PRELOAD      0x40
-#define SEG_READ_ONLY    0x80
-#define SEG_RELOC       0x100
-#define SEG_CONFORMING  0x200       /* was SEG_DEBUG */
-#define SEG_LEVEL_1     0x400
-#define SEG_LEVEL_2     0x800
-#define SEG_LEVEL_3     0xC00
-#define SEG_DISCARD    0x1000
-#define SEG_32_BIT     0x2000
-#define SEG_HUGE       0x4000
-#define SEG_RESRC_HIGH 0x8000
-#define SEG_SHIFT_PMODE_LVL     10
-#define SEG_SHIFT_PRI_LVL       12
+#define SEG_DATA        0x0001
+#define SEG_FLAG_1      0x0002
+#define SEG_FLAG_2      0x0004
+#define SEG_ITERATED    0x0008
+#define SEG_MOVABLE     0x0010
+#define SEG_PURE        0x0020      /* i.e. segment is sharable. */
+#define SEG_PRELOAD     0x0040
+#define SEG_READ_ONLY   0x0080
+#define SEG_RELOC       0x0100
+#define SEG_CONFORMING  0x0200      /* was SEG_DEBUG */
+#define SEG_PMODE_DPL_1 (1 << SEG_SHIFT_PMODE_DPL)
+#define SEG_PMODE_DPL_2 (2 << SEG_SHIFT_PMODE_DPL)
+#define SEG_PMODE_DPL_3 (3 << SEG_SHIFT_PMODE_DPL)
+#define SEG_DISCARD     0x1000
+#define SEG_32_BIT      0x2000
+#define SEG_HUGE        0x4000
+#define SEG_RESRC_HIGH  0x8000
 
-#define SEG_LEVEL_MASK  0x0C00
+#define SEG_SHIFT_PMODE_DPL         10
+#define SEG_SHIFT_DISCARD_PRIORITY  12
 
-#define MOVABLE_ENTRY_PNT       0xff
+#define GET_SEG_DISCARD_PRIORITY(x) ((x) >> SEG_SHIFT_DISCARD_PRIORITY)
+#define GET_SEG_PMODE_DPL(x)        ((x) & (3 << SEG_SHIFT_PMODE_DPL))
+#define SET_SEG_PMODE_DPL(x,v)      (x) = (((x) & ~(3 << SEG_SHIFT_PMODE_DPL)) | (v))
+
+#define MOVABLE_ENTRY_PNT   0xff
 
 typedef struct bundle_prefix {
     unsigned_8          number;         /* number of entries in bundle      */

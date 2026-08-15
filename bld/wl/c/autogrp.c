@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "linkstd.h"
+#include "exeos2.h"
 #include "ring.h"
 #include "pcobj.h"
 #include "specials.h"

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -134,7 +134,7 @@ static void dmp_resrc_flag( unsigned_16 flag )
         Wdputs( "|LOADONCALL" );
     }
     Wdputs( " Prior " );
-    Putdec( flag >> SEG_SHIFT_PRI_LVL );
+    Putdec( GET_SEG_DISCARD_PRIORITY( flag ) );
 }
 
 /*

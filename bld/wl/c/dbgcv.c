@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include "linkstd.h"
+#include "exeos2.h"
 #include "exepe.h"
 #include "cv4w.h"
 #include "virtmem.h"
@@ -715,8 +716,8 @@ void CVFini( section *sect )
     map.cSegLog = NumGroups;
     DumpInfo( CVSECT_MISC, &map, sizeof( cv_sst_seg_map ) - sizeof( seg_desc ) );
     memset( &desc, 0, sizeof( seg_desc ) );
-    desc.u.b.fSel = 1;
-    desc.u.b.fRead = 1;
+    desc.u.b.fSel = true;
+    desc.u.b.fRead = true;
     desc.iSegName = 0xFFFF;
     desc.iClassName = 0xFFFF;
     for( group = Groups; group != NULL; group = group->next ) {
@@ -724,20 +725,20 @@ void CVFini( section *sect )
         desc.offset = group->grp_addr.off;
         desc.cbseg = group->totalsize;
         if( (group->segflags & SEG_DATA) == 0 ) {
-            desc.u.b.fExecute = 1;
+            desc.u.b.fExecute = true;
         } else {
-            desc.u.b.fExecute = 0;
+            desc.u.b.fExecute = false;
         }
         if( (group->segflags & (SEG_DATA | SEG_READ_ONLY)) == SEG_DATA ) {
-            desc.u.b.fWrite = 1;
+            desc.u.b.fWrite = true;
         } else {
-            desc.u.b.fWrite = 0;
+            desc.u.b.fWrite = false;
         }
         leader = Ring2First( group->leaders );
         if( leader->info & USE_32 ) {
-            desc.u.b.f32Bit = 1;
+            desc.u.b.f32Bit = true;
         }
-//        desc.u.b.fSel = 1;
+//        desc.u.b.fSel = true;
         DumpInfo( CVSECT_MISC, &desc, sizeof( seg_desc ) );
     }
 }

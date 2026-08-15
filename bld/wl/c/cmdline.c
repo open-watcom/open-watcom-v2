@@ -147,7 +147,7 @@ static void ResetCmdFile( void )
     FmtData.base = NO_BASE_SPEC;
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
-    FmtData.def_seg_flags = SEG_LEVEL_3;
+    FmtData.def_seg_flags = SEG_PMODE_DPL_3;
     FmtData.Hshift = 12;    /* May want different value for some 32 bit segmented modes */
     FmtData.FillChar = 0;   /* Default fillchar for segment alignment */
     SetSegMask();

@@ -440,19 +440,11 @@ typedef struct group_entry {
     unsigned            num;
 } group_entry;
 
-// this is a bit in the segflags field. This is also defined in exeos2.h
-
-#define SEG_DATA        1
-#define SEG_READ_ONLY   0x80
-
-// the default value to initialize group flags to. This is the same as
-// SEG_LEVEL_3 in exeos2.h.
-
-#define DEFAULT_GRP_FLAGS (0xC00 | SEG_READ_ONLY)
+#define DEFAULT_GRP_FLAGS (SEG_PMODE_DPL_3 | SEG_READ_ONLY)
 
 // flags used under OS/2 to indicate special information about a segment
 
-#define SEG_16_ALIAS    1
+#define OS2_SEG_16_ALIAS    1
 
 typedef struct seg_leader {
     SEG_LEADER          *next;
@@ -548,14 +540,13 @@ typedef struct {
     symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
 
-// this structure used for processing segment flags for various executable types
-// structures qnx_seg_flags and os2_seg_flags depend on this declaration
-typedef struct xxx_seg_flags {
-    struct xxx_seg_flags    *next;
-    unsigned_16             flags;
-    char                    *name;
-    segflag_type            type;   // as above.
-} xxx_seg_flags;
+typedef struct seg_flags_struct {
+    struct seg_flags_struct *next;
+    unsigned_16         flags;
+    char                *name;
+    segflag_type        type;
+    unsigned_16         specified;  // used for enforcing mutual exclusion
+} seg_flags_struct;
 
 typedef struct {
     symbol              *entry;

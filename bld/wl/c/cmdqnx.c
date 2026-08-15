@@ -64,7 +64,7 @@ void SetQNXFmt( void )
 void FreeQNXFmt( void )
 /*********************/
 {
-    FreeSegFlags( (xxx_seg_flags *)FmtData.u.qnx.seg_flags );
+    FreeSegFlags( FmtData.u.qnx.seg_flags );
 }
 
 void CmdQNXFini( void )
@@ -208,20 +208,21 @@ static parse_entry  QNXSegModel[] = {
 static bool getSegFlags( void )
 /*****************************/
 {
-    bool            isclass;
-    qnx_seg_flags   *entry;
+    bool                isclass;
+    seg_flags_struct    *seg_flags;
 
     Token.thumb = true;
     isclass = ProcOne( QNXSegDesc, SEP_NO );
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
         return( false );
     }
-    entry = MemAllocSafe( sizeof( qnx_seg_flags ) );
-    entry->flags = 0;
-    entry->name = getstring();
-    entry->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
-    entry->next = FmtData.u.qnx.seg_flags;
-    FmtData.u.qnx.seg_flags = entry;
+    seg_flags = MemAllocSafe( sizeof( seg_flags_struct ) );
+    seg_flags->specified = 0;
+    seg_flags->flags = 0;
+    seg_flags->name = getstring();
+    seg_flags->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
+    seg_flags->next = FmtData.u.qnx.seg_flags;
+    FmtData.u.qnx.seg_flags = seg_flags;
     return( ProcOne( QNXSegModel, SEP_NO ) );
 }
 

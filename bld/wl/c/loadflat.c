@@ -137,10 +137,10 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         leader = Ring2First( group->leaders );
         if( leader->info & USE_32 ) {
             objrec.flags |= OBJ_BIG;
-        } else { //if( group->u.os2flags & SEG_16_ALIAS ) {
+        } else { //if( group->u.os2flags & OS2_SEG_16_ALIAS ) {
             objrec.flags |= OBJ_ALIAS_REQUIRED;
         }
-        if( (group->segflags & SEG_LEVEL_MASK) != SEG_LEVEL_3 ) {
+        if( GET_SEG_PMODE_DPL( group->segflags ) != SEG_PMODE_DPL_3 ) {
             objrec.flags |= OBJ_IOPL;
         }
         if( group->segflags & SEG_DATA ) {

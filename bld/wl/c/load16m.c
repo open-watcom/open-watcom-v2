@@ -36,6 +36,7 @@
 #include "linkstd.h"
 #include "exedos.h"
 #include "exe16m.h"
+#include "exeos2.h"
 #include "load16m.h"
 #include "pcobj.h"
 #include "reloc.h"

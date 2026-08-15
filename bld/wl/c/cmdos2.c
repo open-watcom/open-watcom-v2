@@ -83,7 +83,7 @@ void FreeOS2Fmt( void )
     MemFree( FmtData.description );
     FreeImpNameTab();
     FreeExportList();
-    FreeSegFlags( (xxx_seg_flags *)FmtData.u.os2fam.seg_flags );
+    FreeSegFlags( FmtData.u.os2fam.seg_flags );
 }
 
 static entry_export *ProcWlibDLLImportEntry( void )
@@ -700,8 +700,7 @@ static bool ProcIopl( void )
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
         LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
-    FmtData.u.os2fam.seg_flags->flags &= ~SEG_LEVEL_3;
-    FmtData.u.os2fam.seg_flags->flags |= SEG_LEVEL_2;
+    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, SEG_PMODE_DPL_2 );
     FmtData.u.os2fam.seg_flags->specified |= SEG_IOPL_SPECD;
     return( true );
 }
@@ -712,7 +711,7 @@ static bool ProcNoIopl( void )
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
         LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
-    FmtData.u.os2fam.seg_flags->flags |= SEG_LEVEL_3;
+    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, SEG_PMODE_DPL_3 );
     FmtData.u.os2fam.seg_flags->specified |= SEG_IOPL_SPECD;
     return( true );
 }
@@ -943,25 +942,25 @@ static parse_entry  SegModel[] = {
 static bool getsegflags( void )
 /*****************************/
 {
-    os2_seg_flags   *entry;
+    seg_flags_struct    *seg_flags;
 
     Token.thumb = true;
-    entry = MemAllocSafe( sizeof( os2_seg_flags ) );
-    entry->specified = 0;
-    entry->flags = FmtData.def_seg_flags;   // default value.
-    entry->name = NULL;
-    entry->type = SEGFLAG_SEGMENT;
-    entry->next = FmtData.u.os2fam.seg_flags;
-    FmtData.u.os2fam.seg_flags = entry;
+    seg_flags = MemAllocSafe( sizeof( seg_flags_struct ) );
+    seg_flags->specified = 0;
+    seg_flags->flags = FmtData.def_seg_flags;  // default value.
+    seg_flags->name = NULL;
+    seg_flags->type = SEGFLAG_SEGMENT;
+    seg_flags->next = FmtData.u.os2fam.seg_flags;
+    FmtData.u.os2fam.seg_flags = seg_flags;
     ProcOne( SegDesc, SEP_NO );             // look for an optional segdesc
-    if( entry->type != SEGFLAG_CODE
-      && entry->type != SEGFLAG_DATA ) {
+    if( seg_flags->type != SEGFLAG_CODE
+      && seg_flags->type != SEGFLAG_DATA ) {
         if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-            FmtData.u.os2fam.seg_flags = entry->next;
-            MemFree( entry );
+            FmtData.u.os2fam.seg_flags = seg_flags->next;
+            MemFree( seg_flags );
             return( false );
         }
-        entry->name = getstring();
+        seg_flags->name = getstring();
     }
     while( ProcOne( SegModel, SEP_NO ) )
         /* nothing */;

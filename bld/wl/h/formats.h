@@ -104,7 +104,7 @@ struct fmt_os2fam_data {
     char                    *stub_file_name;
     char                    *module_name;
     char                    *old_lib_name;
-    struct os2_seg_flags    *seg_flags;
+    seg_flags_struct        *seg_flags;
     unsigned_32             heapsize;
     unsigned                segment_shift;
     unsigned                flags;              // in LOADOS2.H
@@ -196,7 +196,7 @@ struct fmt_nov_data {
 // linker specific QNX 4.0 data
 
 struct fmt_qnx_data {
-    struct qnx_seg_flags    *seg_flags;
+    seg_flags_struct        *seg_flags;
     unsigned_32             heapsize;
     unsigned                flags;
     unsigned                priv_level;

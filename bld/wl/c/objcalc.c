@@ -910,10 +910,7 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
     class_entry     *class;
     class_status    class_flags;
 
-    class_flags = CLASS_NONE;
-    if( type == SEGFLAG_CODE ) {
-        class_flags = CLASS_CODE;
-    }
+    class_flags = ( type == SEGFLAG_CODE ) ? CLASS_NONE : CLASS_CODE;
     for( class = Root->classes; class != NULL; class = class->next ) {
         if( class_flags == (class->flags & CLASS_CODE) ) {
             RingLookup( class->segs, SetClassFlag, &flags );
@@ -922,13 +919,13 @@ static void FillTypeFlags( unsigned_16 flags, segflag_type type )
 }
 
 
-void SetSegFlags( xxx_seg_flags *start )
-/**************************************/
+void SetSegFlags( seg_flags_struct *start )
+/*****************************************/
 {
-    xxx_seg_flags   *next;
-    seg_leader      *leader;
-    xxx_seg_flags   *flag_list;
-    class_entry     *class;
+    seg_flags_struct    *next;
+    seg_leader          *leader;
+    seg_flags_struct    *seg_flags;
+    class_entry         *class;
 
     for( class = Root->classes; class != NULL; class = class->next ) {
         RingWalk( class->segs, SetReadOnly );
@@ -936,35 +933,35 @@ void SetSegFlags( xxx_seg_flags *start )
     /*
      * process all class type def'ns first.
      */
-    for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
-        if( ( flag_list->type == SEGFLAG_CODE )
-          || ( flag_list->type == SEGFLAG_DATA ) ) {
-            FillTypeFlags( flag_list->flags, flag_list->type );
+    for( seg_flags = start; seg_flags != NULL; seg_flags = seg_flags->next ) {
+        if( ( seg_flags->type == SEGFLAG_CODE )
+          || ( seg_flags->type == SEGFLAG_DATA ) ) {
+            FillTypeFlags( seg_flags->flags, seg_flags->type );
         }
     }
     /*
      * process all class def'ns second.
      */
-    for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
-        if( flag_list->type == SEGFLAG_CLASS ) {
-            FillClassFlags( flag_list->name, flag_list->flags );
+    for( seg_flags = start; seg_flags != NULL; seg_flags = seg_flags->next ) {
+        if( seg_flags->type == SEGFLAG_CLASS ) {
+            FillClassFlags( seg_flags->name, seg_flags->flags );
         }
     }
     /*
      * now process individual segments
      */
-    for( flag_list = start; flag_list != NULL; flag_list = next ) {
-        next = flag_list->next;
-        if( flag_list->type == SEGFLAG_SEGMENT ) {
-            leader = FindSegment( Root, flag_list->name );
+    for( seg_flags = start; seg_flags != NULL; seg_flags = next ) {
+        next = seg_flags->next;
+        if( seg_flags->type == SEGFLAG_SEGMENT ) {
+            leader = FindSegment( Root, seg_flags->name );
             if( leader == NULL ) {
-                LnkMsg( WRN + MSG_SEG_NAME_NOT_FOUND, "s", flag_list->name );
+                LnkMsg( WRN + MSG_SEG_NAME_NOT_FOUND, "s", seg_flags->name );
             } else {
-                leader->segflags = flag_list->flags;
+                leader->segflags = seg_flags->flags;
             }
         }
-        MemFree( flag_list->name );
-        MemFree( flag_list );
+        MemFree( seg_flags->name );
+        MemFree( seg_flags );
     }
 }
 

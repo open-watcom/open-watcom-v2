@@ -38,17 +38,6 @@
 
 // linker specific OS/2 load file stuff.
 
-// the first 4 fields must be the same as the xxx_seg_flags structure
-// defined in objstruc.h
-
-typedef struct os2_seg_flags {
-    struct os2_seg_flags    *next;
-    unsigned_16             flags;
-    char                    *name;
-    segflag_type            type;
-    unsigned_16             specified;  // used for enforcing mutual exclusion
-} os2_seg_flags;
-
 // These used in the specified field.
 #define SEG_IOPL_SPECD  0x800
 #define SEG_READ_SPECD  0x400

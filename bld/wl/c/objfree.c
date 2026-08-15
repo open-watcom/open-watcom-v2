@@ -202,10 +202,10 @@ void CleanLinkStruct( void )
 }
 
 #if defined( _OS2 ) || defined( _QNX )
-void FreeSegFlags( xxx_seg_flags *curr )
-/**************************************/
+void FreeSegFlags( seg_flags_struct *curr )
+/*****************************************/
 {
-    xxx_seg_flags   *next;
+    seg_flags_struct    *next;
 
     for( ; curr != NULL; curr = next ) {
         next = curr->next;

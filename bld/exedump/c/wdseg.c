@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -123,10 +123,10 @@ static void dmp_seg_ent( struct segment_record *seg_ent )
     Puthex( seg_ent->min, 4 );
     Wdputc( ' ' );
     Wdputc( ' ' );
-    Puthex( seg_ent->info >> SEG_SHIFT_PRI_LVL , 4 );
+    Puthex( GET_SEG_DISCARD_PRIORITY( seg_ent->info ), 4 );
     Wdputc( ' ' );
     Wdputc( ' ' );
-    Puthex( seg_ent->info >> SEG_SHIFT_PMODE_LVL, 4 );
+    Puthex( GET_SEG_PMODE_DPL( seg_ent->info ), 4 );
     Wdputc( ' ' );
     Puthex( seg_ent->info, 4 );
     Wdputslc( "\n" );

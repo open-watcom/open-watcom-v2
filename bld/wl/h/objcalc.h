@@ -59,6 +59,6 @@ extern void     AllocClasses( section * );
 extern void     CombineSeg( seg_leader *, signed_32 *, offset, byte, byte );
 extern void     ProcPubsSect( mod_entry *, section * );
 extern void     DoPubsSect( section * );
-extern void     SetSegFlags( xxx_seg_flags * );
+extern void     SetSegFlags( seg_flags_struct * );
 extern void     CalcSegSizes( void );
 extern void     ConvertToFrame( targ_addr *, segment, bool );

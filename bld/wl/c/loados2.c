@@ -796,7 +796,7 @@ static unsigned long WriteEntryTable( void )
 void SetOS2SegFlags( void )
 /*************************/
 {
-    SetSegFlags( (xxx_seg_flags *)FmtData.u.os2fam.seg_flags );
+    SetSegFlags( FmtData.u.os2fam.seg_flags );
     FmtData.u.os2fam.seg_flags = NULL;
 }
 
@@ -814,10 +814,9 @@ static void CheckGrpFlags( void *_leader )
     leader->group->segflags |= sflags & DEF_SEG_OFF;
     // if any of these flags off, make sure they are off in the group.
     leader->group->segflags &= (sflags & DEF_SEG_ON) | ~DEF_SEG_ON;
-    if( (sflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
+    if( GET_SEG_PMODE_DPL( sflags ) == SEG_PMODE_DPL_2 ) {
         /* if any are level 2 then all have to be. */
-        leader->group->segflags &= ~SEG_LEVEL_MASK;
-        leader->group->segflags |= SEG_LEVEL_2;
+        SET_SEG_PMODE_DPL( leader->group->segflags, SEG_PMODE_DPL_2 );
     }
 }
 
@@ -837,7 +836,7 @@ void SetOS2GroupFlags( void )
         /*
          * for some insane reason, level 2 segments must be marked as movable
          */
-        if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
+        if( GET_SEG_PMODE_DPL( group->segflags ) == SEG_PMODE_DPL_2 ) {
             group->segflags |= SEG_MOVABLE;
         }
     }
@@ -892,7 +891,7 @@ void ChkOS2Exports( void )
                 group = sym->p.seg->u.leader->group;
                 if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
                     exp->addr.off -= group->grp_addr.off;
-                    if( (group->segflags & SEG_LEVEL_MASK) == SEG_LEVEL_2 ) {
+                    if( GET_SEG_PMODE_DPL( group->segflags ) == SEG_PMODE_DPL_2 ) {
                         exp->isiopl = true; // Conforming or not doesn't matter!
                         if( exp->addr.off > 65535 ) {
                             // Call gates are 16-bit only
