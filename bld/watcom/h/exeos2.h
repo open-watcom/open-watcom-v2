@@ -173,9 +173,10 @@ typedef struct segment_record {
  *
  *****************************************************************************/
 
-/* NOTE: the linker uses some of the unused bits here. If these bits become
- * used, make sure the linker developer knows about it! */
-
+/*
+ * NOTE: the linker uses some of the unused bits here. If these bits become
+ * used, make sure the linker developer knows about it!
+ */
 #define SEG_DATA        0x0001
 #define SEG_FLAG_1      0x0002
 #define SEG_FLAG_2      0x0004

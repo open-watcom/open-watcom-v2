@@ -288,7 +288,7 @@ static bool checkGroupFlags( void *_seg, void *_group )
 
     sflags = seg->segflags;
 
-    // the default value for segflags is set to SEG_PMODE_DPL_3 (0xC00) for OS/2
+    // the default value for segflags is set to SEG_PMODE_DPL_3 (0x0C00) for OS/2
     // and SEG_MOVABLE (0x10) for windows. Since the highest value that can be
     // specified for a QNX seg flag is 4, if sflags >= 0x10, there was no QNX value
     // specified.

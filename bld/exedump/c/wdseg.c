@@ -115,8 +115,7 @@ static void dmp_seg_ent( struct segment_record *seg_ent )
 /*******************************************************/
 {
     Wdputc( ' ' );
-    Puthex( (unsigned_32)seg_ent->address
-        << Os2_head.align, 8 );
+    Puthex( (unsigned_32)seg_ent->address << Os2_head.align, 8 );
     Wdputc( ' ' );
     Puthex( seg_ent->size, 4 );
     Wdputc( ' ' );
