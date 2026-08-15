@@ -198,7 +198,7 @@ enum {
     SEG_BOTH_MASK       = 0x8641,   /* flags common to both structures */
 };
 
-#define EMIT_SEG(s)     (((s)->segflags & SEG_NOEMIT) == 0)
+#define EMIT_SEG(s)     (((s)->info & SEG_NOEMIT) == 0)
 
 enum {
     NOT_DEBUGGING_INFO  = 0x0000,
