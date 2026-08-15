@@ -104,7 +104,7 @@ static bool CheckLxdataSeen( void *_seg, void *dummy )
 
     /* unused parameters */ (void)dummy;
 
-    if( seg->info & SEG_LXDATA_SEEN ) {
+    if( seg->info & SEGINF_LXDATA_SEEN ) {
         seg->class->flags |= CLASS_LXDATA_SEEN;
         return( true );
     }
@@ -165,7 +165,7 @@ static void AddUpSegData( void *_sdata )
     if( sdata->isdead )
         return;
     leader = sdata->u.leader;
-    if( leader->info & SEG_ABSOLUTE ) {
+    if( leader->info & SEGINF_ABSOLUTE ) {
         leader->vsize = sdata->a.delta = 0;
         if( leader->size < sdata->length ) {
             leader->vsize = leader->size = sdata->length;
@@ -282,7 +282,7 @@ static void SetLeaderSeg( void *_seg )
 {
     seg_leader      *seg = _seg;
 
-    if( (seg->info & SEG_ABSOLUTE) == 0 ) {
+    if( (seg->info & SEGINF_ABSOLUTE) == 0 ) {
         seg->seg_addr.seg = seg->group->grp_addr.seg;
     }
 }
@@ -394,7 +394,7 @@ static bool FindInitEndAddr( void *_seg, void *_info )
     } else {
         seg_addr = seg->seg_addr.off;
     }
-    if( seg->info & SEG_LXDATA_SEEN ) {
+    if( seg->info & SEGINF_LXDATA_SEEN ) {
         if( info->first_time ) { // First time, use seg_addr values
             info->grp_addr = seg_addr;
             info->end_addr = seg_addr + seg->size;
@@ -434,7 +434,7 @@ static void AllocSeg( void *_seg )
 {
     seg_leader  *seg = _seg;
 
-    if( (seg->info & SEG_ABSOLUTE) == 0 ) {
+    if( (seg->info & SEGINF_ABSOLUTE) == 0 ) {
         if( IS_DBG_DWARF( seg ) ) {
             CurrLoc.off = 0;
         }
@@ -490,7 +490,7 @@ static void CalcGrpAddr( group_entry *group )
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
             if( (FmtData.type & MK_REAL_MODE)
-              && (seg->info & USE_32) == 0
+              && (seg->info & SEGINF_USE_32) == 0
               && (info.end_addr - info.grp_addr > _64K) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", group->sym->name,
                         info.end_addr - info.grp_addr - _64K );
@@ -1166,11 +1166,11 @@ static void SortClasses( section *sect )
                 for( ;; ) {
                     if( stricmp( currseg->segname.u.ptr, MatchSeg->Name ) == 0 ) {
                         if( MatchSeg->FixedAddr ) {    // and copy any flags or address from it
-                            currseg->info |= SEG_FIXED;
+                            currseg->info |= SEGINF_FIXED;
                             currseg->seg_addr = MatchSeg->Base;
                         }
                         if( MatchSeg->NoEmit ) {
-                            currseg->info |= SEG_NOEMIT;
+                            currseg->info |= SEGINF_NOEMIT;
                         }
                         RingPromote( &class->segs, currseg, prevseg );
                         break;

@@ -469,7 +469,7 @@ void ODBIGenGlobal( symbol *sym, section *sect )
             data->kind |= GBL_KIND_STATIC;
         }
         if( sym->p.seg != NULL ) {
-            if( sym->p.seg->u.leader->info & SEG_CODE ) {
+            if( sym->p.seg->u.leader->info & SEGINF_CODE ) {
                 data->kind |= GBL_KIND_CODE;
             } else {
                 data->kind |= GBL_KIND_DATA;

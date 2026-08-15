@@ -424,7 +424,7 @@ static void DoAllocateSegment( segdata *sdata, const char *clname )
     AddSegment( sdata, class );
 #ifdef _EXE
     if( isovlclass ) {
-        sdata->u.leader->info |= SEG_OVERLAYED;
+        sdata->u.leader->info |= SEGINF_OVERLAYED;
     }
 #endif
     if( !sdata->isdead
@@ -466,7 +466,7 @@ unsigned long IncPass1( void )
           && !seg->isdead
           && !seg->iscdat ) {
             PutInfo( seg->u1.vm_ptr, GetSegContents( seg, dataoff ), seg->length );
-            seg->u.leader->info |= SEG_LXDATA_SEEN;
+            seg->u.leader->info |= SEGINF_LXDATA_SEEN;
         }
     }
     publist = CurrMod->publist;
@@ -551,10 +551,10 @@ static void CheckForLast( seg_leader *seg, class_entry *class )
     if( (CurrMod->flags_mod & MOD_LAST_SEG)
       && (class->flags & CLASS_CODE) ) {
         if( LastCodeSeg != NULL ) {             // more than one code seg
-            LastCodeSeg->info &= ~LAST_SEGMENT; // so don't end at previous
+            LastCodeSeg->info &= ~SEGINF_LAST_SEGMENT; // so don't end at previous
         }
         LastCodeSeg = seg;
-        seg->info |= LAST_SEGMENT;
+        seg->info |= SEGINF_LAST_SEGMENT;
     }
 }
 
@@ -660,13 +660,13 @@ void AddSegment( segdata *sd, class_entry *class )
                       sd->length, sd->combine, sd->align ));
     info = 0;
     if( sd->bits != BITS_16 ) {
-        info |= USE_32;
+        info |= SEGINF_USE_32;
     }
     if( class->flags & CLASS_CODE ) {
-        info |= SEG_CODE;
+        info |= SEGINF_CODE;
     }
     if( sd->isabs ) {
-        info |= SEG_ABSOLUTE;
+        info |= SEGINF_ABSOLUTE;
         sd->isdefd = true;
     }
     if( sd->isabs
@@ -676,14 +676,14 @@ void AddSegment( segdata *sd, class_entry *class )
         const char  *seg_name = sd->u.name.u.ptr;
 
         leader = FindALeader( sd, class, info );
-        if( ( (leader->info & USE_32) != (info & USE_32) )
+        if( ( (leader->info & SEGINF_USE_32) != (info & SEGINF_USE_32) )
           && !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD))
           && FmtData.u.os2fam.mixed1632 )
           && (FmtData.type & MK_RAW) == 0 ) {
             const char  *segname_16;
             const char  *segname_32;
 
-            if( info & USE_32 ) {
+            if( info & SEGINF_USE_32 ) {
                 segname_16 = leader->segname.u.ptr;
                 segname_32 = seg_name;
             } else {
@@ -743,7 +743,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
         return;
     }
     if( ( group->leaders != NULL )
-      && ( (group->leaders->info & USE_32) != (seg->info & USE_32) )
+      && ( (group->leaders->info & SEGINF_USE_32) != (seg->info & SEGINF_USE_32) )
       && !( (FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD))
       && FmtData.u.os2fam.mixed1632 )
       && (FmtData.type & MK_RAW) == 0 ) {
@@ -751,7 +751,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
         const char  *segname_16;
         const char  *segname_32;
 
-        if( seg->info & USE_32 ) {
+        if( seg->info & SEGINF_USE_32 ) {
             segname_16 = group->leaders->segname.u.ptr;
             segname_32 = seg->segname.u.ptr;
         } else {
@@ -830,7 +830,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             if( LinkFlags & LF_STRIP_CODE ) {
                 DefStripSym( sym, seg->entry );
             }
-            if( seg->info & SEG_CODE ) {
+            if( seg->info & SEGINF_CODE ) {
 #ifdef _EXE
                 if( (FmtData.type & MK_OVERLAYS)
                   && FmtData.u.dos.distribute ) {
@@ -853,7 +853,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             if( LinkFlags & LF_STRIP_CODE ) {
                 CleanStripInfo( sym );
             }
-            sym->info |= SYM_ABSOLUTE;
+            sym->info |= SEGINF_ABSOLUTE;
             sym->p.seg = NULL;
         }
     }
@@ -884,7 +884,7 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     sdata->align = align;
     sdata->combine = comb;
     sdata->isuninit = true;
-    leader = FindALeader( sdata, class, ( bits == BITS_16 ) ? 0 : USE_32 );
+    leader = FindALeader( sdata, class, ( bits == BITS_16 ) ? 0 : SEGINF_USE_32 );
     if( group_name != NULL ) {
         /* put in appropriate group */
         group = GetGroup( group_name );
@@ -1219,7 +1219,7 @@ void DefineVFReference( void *src, symbol *targ, bool issym )
     if( issym ) {
         AddSymEdge( src, targ );
     } else {
-        if( ((segnode *)src)->info & SEG_CODE ) {
+        if( ((segnode *)src)->info & SEGINF_CODE ) {
             AddEdge( (segdata *)((segnode *)src)->entry, targ );
         }
     }

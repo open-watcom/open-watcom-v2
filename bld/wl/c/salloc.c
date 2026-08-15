@@ -75,7 +75,7 @@ static offset BumpUp( offset ptr, offset size )
 {
     ptr += size;
     if( CurrentSeg != NULL
-      && (CurrentSeg->info & USE_32) == 0
+      && (CurrentSeg->info & SEGINF_USE_32) == 0
       && (FmtData.type & MK_RAW) == 0
       && ptr > 0x10000 ) {
         LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname, (unsigned long)( ptr - 0x10000 ) );
@@ -180,7 +180,7 @@ void NewSegment( seg_leader *seg )
     if( IS_DBG_INFO( seg ) ) {
         CurrentSeg = NULL;
         Align( seg->align );
-        ChkLocated( &seg->seg_addr, ( (seg->info & SEG_FIXED) != 0 ) );
+        ChkLocated( &seg->seg_addr, ( (seg->info & SEGINF_FIXED) != 0 ) );
         AddSize( seg->size );
     } else if( FmtData.type & MK_REAL_MODE ) {
         if( group->isautogrp
@@ -198,7 +198,7 @@ void NewSegment( seg_leader *seg )
         if( !auto_group ) {
             NormalizeAddr();    /*  to normalize address of segment */
         }
-        ChkLocated( &(seg->seg_addr), ( (seg->info & SEG_FIXED) != 0 ) );
+        ChkLocated( &(seg->seg_addr), ( (seg->info & SEGINF_FIXED) != 0 ) );
         AddSize( seg->size );
         group->totalsize += seg->size;
     } else if( FmtData.type & (MK_FLAT_OFFS | MK_ID_SPLIT) ) {

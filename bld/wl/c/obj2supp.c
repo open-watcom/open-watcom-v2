@@ -170,7 +170,7 @@ static void TraceFixup( fix_type type, target_spec *target )
     overlay = ( (FmtData.type & MK_OVERLAYS) && !FmtData.u.dos.noindirect );
     if( (LinkFlags & LF_STRIP_CODE)
       || overlay ) {
-        isovldata = ( (CurrRec.seg->u.leader->info & SEG_OVERLAYED) == 0 );
+        isovldata = ( (CurrRec.seg->u.leader->info & SEGINF_OVERLAYED) == 0 );
         if( ObjFormat & OBJ_FMT_UNSAFE_FIXUPP ) {
             isovldata = true;
         }

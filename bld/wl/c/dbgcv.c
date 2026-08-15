@@ -573,7 +573,7 @@ static void CVAddAddrAdd( segdata *sdata, offset delta, offset size, void *cooki
 void CVAddAddrInfo( seg_leader *seg )
 /***********************************/
 {
-    if( seg->info & SEG_CODE ) {
+    if( seg->info & SEGINF_CODE ) {
         DBIAddrInfoScan( seg, CVAddAddrInit, CVAddAddrAdd, NULL );
     }
 }
@@ -604,7 +604,7 @@ void CVGenAddrInfo( seg_leader *seg )
 {
     cv_seginfo          info;
 
-    if( seg->info & SEG_CODE ) {
+    if( seg->info & SEGINF_CODE ) {
         DBIAddrInfoScan( seg, CVGenAddrInit, CVGenAddrAdd, &info );
     }
 }
@@ -735,7 +735,7 @@ void CVFini( section *sect )
             desc.u.b.fWrite = false;
         }
         leader = Ring2First( group->leaders );
-        if( leader->info & USE_32 ) {
+        if( leader->info & SEGINF_USE_32 ) {
             desc.u.b.f32Bit = true;
         }
 //        desc.u.b.fSel = true;

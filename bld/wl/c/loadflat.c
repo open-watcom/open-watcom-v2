@@ -135,7 +135,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
          * into the appropriate V2.0 bits
          */
         leader = Ring2First( group->leaders );
-        if( leader->info & USE_32 ) {
+        if( leader->info & SEGINF_USE_32 ) {
             objrec.flags |= OBJ_BIG;
         } else { //if( group->u.os2flags & OS2_SEG_16_ALIAS ) {
             objrec.flags |= OBJ_ALIAS_REQUIRED;

@@ -113,7 +113,7 @@ static void CheckUninit( void *_seg, void *dummy )
 
     /* unused parameters */ (void)dummy;
 
-    if( (seg->info & SEG_LXDATA_SEEN) == 0 ) {
+    if( (seg->info & SEGINF_LXDATA_SEEN) == 0 ) {
         seg->entry->isuninit = true;
         if( seg->entry->u1.vm_ptr ) {
             ReleaseInfo( seg->entry->u1.vm_ptr );
@@ -308,7 +308,7 @@ static void ProcModuleEnd( void )
             seg = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
             StartInfo.targ.sdata= seg->entry;
-            if( (seg->info & SEG_CODE)
+            if( (seg->info & SEGINF_CODE)
               && (LinkFlags & LF_STRIP_CODE) ) {
                 RefSeg( (segdata *)seg->entry );
             }
@@ -712,7 +712,7 @@ static void ProcLinnum( void )
 
     SkipIdx();          /* don't need the group idx */
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEG_DEAD )                  /* ignore dead segments */
+    if( seg->info & SEGINF_DEAD )                  /* ignore dead segments */
         return;
     is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
     DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
@@ -830,8 +830,8 @@ static void ProcLxdata( bool islidata )
     unsigned_32 obj_offset;
 
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    seg->entry->u.leader->info |= SEG_LXDATA_SEEN;
-    seg->info |= SEG_LXDATA_SEEN;
+    seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
+    seg->info |= SEGINF_LXDATA_SEEN;
     if( ObjFormat & OBJ_FMT_32BIT_REC ) {
         obj_offset = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );

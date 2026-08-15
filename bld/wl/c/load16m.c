@@ -430,12 +430,12 @@ static void RemapAliasSels( void *_leader )
     seg_leader  *seg;
     section     *sect;
 
-    if( leader->info & SEG_ABSOLUTE ) {
+    if( leader->info & SEGINF_ABSOLUTE ) {
         sect = Root;
         while( (seg = FindSegment( sect, leader->segname.u.ptr )) != NULL ) {
             sect = NULL;
-            if( (seg->info & SEG_ABSOLUTE) == 0 ) {
-                seg->info |= SEG_ABSOLUTE;
+            if( (seg->info & SEGINF_ABSOLUTE) == 0 ) {
+                seg->info |= SEGINF_ABSOLUTE;
                 seg->combine = COMBINE_INVALID;
                 seg->seg_addr = leader->seg_addr;
                 RingWalk( seg->pieces, SetSegDataAbs );

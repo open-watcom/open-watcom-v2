@@ -496,7 +496,7 @@ void ProcComdat( void )
         sdata->isabs = ( seg == NULL );
         sdata->align = align;
         sdata->u.leader = seg->entry->u.leader;
-        sdata->iscode = ( (seg->info & SEG_CODE) != 0 );
+        sdata->iscode = ( (seg->info & SEGINF_CODE) != 0 );
         sdata->bits = ( ObjFormat & OBJ_FMT_32BIT_REC ) ? BITS_32 : BITS_16;
         info = AllocCDatInfo();
         info->sdata = sdata;
@@ -517,7 +517,7 @@ void ProcComdat( void )
             }
             ClearSymUnion( sym );
             if( alloc == 0 ) {  /* explicit */
-                seg->entry->u.leader->info |= SEG_LXDATA_SEEN;
+                seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
                 RingAppend( &sdata->u.leader->pieces, sdata );
                 Ring2Append( &CurrMod->segs, sdata );
 #if 0

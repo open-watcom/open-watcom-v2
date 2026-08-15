@@ -58,7 +58,7 @@ static offset GetSegGroupPackLimit( seg_leader *seg )
 {
     offset      limit;
 
-    if( seg->info & SEG_CODE ) {
+    if( seg->info & SEGINF_CODE ) {
         if( LinkFlags & LF_PACKCODE_FLAG ) {
             return( PackCodeLimit );
         }
@@ -67,7 +67,7 @@ static offset GetSegGroupPackLimit( seg_leader *seg )
             return( PackDataLimit );
         }
     }
-    if( seg->info & USE_32 ) {
+    if( seg->info & SEGINF_USE_32 ) {
         limit = 0xFFFFFFFF;
     } else if( FmtData.type & MK_WIN_NE ) { /* windows doesn't like */
         limit = 0xFFF0;                     /* large code segments */
@@ -119,27 +119,27 @@ static seg_leader *GetNextSeg( section *sect, seg_leader *seg )
     return( seg );
 }
 
-static bool CanPack( seg_leader *one, seg_leader *two )
-/*****************************************************/
+static bool CanPack( seg_leader *seg1, seg_leader *seg2 )
+/*******************************************************/
 {
-    if( one->info & SEG_CODE ) {
-        if( two->combine == COMBINE_INVALID ) {
+    if( seg1->info & SEGINF_CODE ) {
+        if( seg2->combine == COMBINE_INVALID ) {
             return( false );
         }
     } else {
-        if( one->align != two->align ) {
+        if( seg1->align != seg2->align ) {
             return( false );
         }
     }
-    if( (one->info & (USE_32 | SEG_CODE)) != (two->info & (USE_32 | SEG_CODE)) )
+    if( (seg1->info & (SEGINF_USE_32 | SEGINF_CODE)) != (seg2->info & (SEGINF_USE_32 | SEGINF_CODE)) )
         return( false );
-    if( one->segflags != two->segflags
-      || (two->info & SEG_FIXED) )
+    if( seg1->segflags != seg2->segflags
+      || (seg2->info & SEGINF_FIXED) )
         return( false );
-    if( one->class != two->class
-      && (two->class->flags & CLASS_FIXED) )
+    if( seg1->class != seg2->class
+      && (seg2->class->flags & CLASS_FIXED) )
         return( false );
-    if( one->group != two->group )
+    if( seg1->group != seg2->group )
         return( false );
     return( true );
 }
@@ -173,13 +173,13 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
     if( seg->group != NULL ) {
         group = seg->group;
     } else {
-        group = GetAutoGroup( seg->info & SEG_ABSOLUTE );
+        group = GetAutoGroup( seg->info & SEGINF_ABSOLUTE );
     }
     group->section = seg->class->section;
     while( num_segs != 0 ) {
         if( seg->group == NULL
           || seg->group == group ) {
-            if( (seg->info & SEG_CODE) == 0 ) {
+            if( (seg->info & SEGINF_CODE) == 0 ) {
                 group->segflags |= SEG_DATA;
             }
             if( (seg->class->flags & CLASS_READ_ONLY) == 0 ) {
@@ -215,7 +215,7 @@ static void AutoGroupSect( section *sect )
     num_segs = 0;
     packstart = NULL;
     for( seg = NULL; (seg = GetNextSeg( sect, seg )) != NULL; ) {
-        if( seg->info & SEG_ABSOLUTE ) {
+        if( seg->info & SEGINF_ABSOLUTE ) {
             PackSegs( seg, 1 );
         } else {
             if( packstart == NULL ) {
@@ -242,7 +242,7 @@ static void AutoGroupSect( section *sect )
                 size = new_size;
                 ++num_segs;
             }
-            if( seg->info & LAST_SEGMENT ) {
+            if( seg->info & SEGINF_LAST_SEGMENT ) {
                 lastseg = true;
             }
         }
@@ -296,7 +296,7 @@ static void SortGroup( seg_leader *seg )
 {
     if( seg->group == NULL )
         return;
-    if( seg->info & SEG_ABSOLUTE )
+    if( seg->info & SEGINF_ABSOLUTE )
         return;
     Ring2Append( &seg->group->leaders, seg );
     if( seg->group->next == NULL ) { // not in the list yet

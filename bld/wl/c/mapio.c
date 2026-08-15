@@ -248,11 +248,11 @@ static void WriteMapAbsSeg( void *_leader )
 {
     seg_leader  *leader = _leader;
 
-    if( leader->info & SEG_ABSOLUTE ) {
+    if( leader->info & SEGINF_ABSOLUTE ) {
         WriteMapColPrintf( 0, "%s", leader->segname );
         WriteMapColPrintf( 24, "%s", leader->class->name );
         if( (FmtData.type & MK_16BIT)
-          && (leader->info & USE_32) ) {
+          && (leader->info & SEGINF_USE_32) ) {
             WriteMapColPrintf( 40, "%A", &leader->seg_addr );
         } else {
             WriteMapColPrintf( 40, "%a", &leader->seg_addr );
@@ -267,7 +267,7 @@ static void WriteMapNonAbsSeg( void *_seg )
 {
     seg_leader  *seg = _seg;
 
-    if( seg->info & SEG_ABSOLUTE ) {
+    if( seg->info & SEGINF_ABSOLUTE ) {
         Absolute_Seg = true;
     } else {
         WriteMapColPrintf( 0, "%s", seg->segname );
@@ -276,7 +276,7 @@ static void WriteMapNonAbsSeg( void *_seg )
             WriteMapColPrintf( 38, "%s", seg->group->sym->name );
         }
         if( (FmtData.type & MK_16BIT)
-          && (seg->info & USE_32) ) {
+          && (seg->info & SEGINF_USE_32) ) {
             WriteMapColPrintf( 53, "%A", &seg->seg_addr );
         } else {
             WriteMapColPrintf( 53, "%a", &seg->seg_addr );
@@ -546,7 +546,7 @@ static void WriteMapSegment( void *_seg )
         return;
     WriteMapColPrintf( 16, "%s", leader->segname );
     WriteMapColPrintf( 38, "%s", leader->class->name );
-    star = ( leader->info & SEG_ABSOLUTE ) ? '*' : ' ';
+    star = ( leader->info & SEGINF_ABSOLUTE ) ? '*' : ' ';
     bang = ( seg->bits == BITS_32 ) ? '!' : ' ';
     see = ( seg->iscdat ) ? 'c' : ' ';
     addr = leader->seg_addr;

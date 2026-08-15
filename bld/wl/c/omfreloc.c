@@ -287,7 +287,7 @@ void ProcBakpat( void )
     byte                loctype;
 
     seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEG_DEAD )
+    if( seg->info & SEGINF_DEAD )
         return;
     loctype = *ObjBuff++;
     StoreBakPat( seg->entry, loctype );

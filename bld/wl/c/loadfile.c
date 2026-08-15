@@ -497,7 +497,7 @@ static void DefBSSStartSize( const char *name, class_entry *class )
         seg = (seg_leader *)RingFirst( class->segs );
         sym->p.seg = (segdata *)RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
+        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
     } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
@@ -518,7 +518,7 @@ static void DefBSSEndSize( const char *name, class_entry *class )
         /* set end of BSS class */
         sym->p.seg = (segdata *)RingLast( seg->pieces );
         SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
+        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
     } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }

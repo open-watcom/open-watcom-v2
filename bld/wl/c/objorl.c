@@ -371,9 +371,9 @@ static void AllocSeg( void *_snode, void *dummy )
         if( sdata->isidata
           || sdata->iscode ) {
             if( sdata->iscode ) {
-                snode->info |= SEG_CODE;
+                snode->info |= SEGINF_CODE;
             }
-            snode->info |= SEG_DEAD;
+            snode->info |= SEGINF_DEAD;
             snode->entry = NULL;
             FreeSegData( sdata );
             return;
@@ -382,7 +382,7 @@ static void AllocSeg( void *_snode, void *dummy )
     isdbi = false;
     if( strnicmp( CoffDebugPrefix, sdata->u.name.u.ptr, sizeof( CoffDebugPrefix ) - 1 ) == 0 ) {
         if( CurrMod->flags_mod & MOD_IMPORT_LIB ) {
-            snode->info |= SEG_DEAD;
+            snode->info |= SEGINF_DEAD;
             snode->entry = NULL;
             FreeSegData( sdata );
             return;
@@ -421,7 +421,7 @@ static void AllocSeg( void *_snode, void *dummy )
     if( sdata->isuninit ) {
         snode->contents = NULL;
     } else {
-        snode->entry->u.leader->info |= SEG_LXDATA_SEEN;
+        snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
         if( !sdata->isdead ) {
             ORLSecGetContents( snode->handle, &snode->contents );
             if( !sdata->iscdat
@@ -442,7 +442,7 @@ static void DefNosymComdats( void *_snode, void *dummy )
 
     sdata = snode->entry;
     if( sdata == NULL
-      || (snode->info & SEG_DEAD) )
+      || (snode->info & SEGINF_DEAD) )
         return;
     if( sdata->iscdat
       && !sdata->hascdatsym
@@ -573,7 +573,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
             }
         }
     } else if( snode != NULL
-      && (snode->info & SEG_CODE) ) {
+      && (snode->info & SEGINF_CODE) ) {
         if( FirstCodeSymName == NULL ) {
             FirstCodeSymName = name;
         }
@@ -698,7 +698,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     } else if( (type & ORL_SYM_TYPE_SECTION)
       && (type & ORL_SYM_CDAT_MASK)
       && snode != NULL
-      && (snode->info & SEG_DEAD) == 0 ) {
+      && (snode->info & SEGINF_DEAD) == 0 ) {
         snode->entry->select = (type & ORL_SYM_CDAT_MASK) >> ORL_SYM_CDAT_SHIFT;
     }
     return( ORL_OKAY );
@@ -810,7 +810,7 @@ static orl_return DoReloc( orl_reloc reloc )
     }
     seg = FindSegNode( reloc->section );
     if( seg != NULL
-      && (seg->info & SEG_DEAD) == 0
+      && (seg->info & SEGINF_DEAD) == 0
       && seg->entry != NULL
       && !seg->entry->isdead ) {
         addend = 0;
