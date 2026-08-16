@@ -378,6 +378,12 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->om ) {
         GenSwitches |= CGSW_GEN_I_MATH_INLINE;
     }
+    if( data->eoe ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_COFF) | CGSW_GEN_OBJ_ELF;
+    }
+    if( data->eoc ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_ELF) | CGSW_GEN_OBJ_COFF;
+    }
     if( data->nm ) {
         SetStringOption( &ModuleName, &(data->nm_value) );
     }

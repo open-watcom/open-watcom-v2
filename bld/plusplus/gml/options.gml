@@ -476,6 +476,21 @@
 :usage.  emit routine names in the code segment
 :jusage. ルーチン名をコードセグメントに出力します
 
+:option. eoc
+:target. 386 axp ppc mps
+:usage.  emit COFF object files
+:jusage.
+
+:option. eoe
+:target. 386 axp ppc mps
+:usage.  emit ELF object files
+:jusage.
+
+:option. eoo
+:target. i86 386
+:usage.  emit OMF object files
+:jusage.
+
 :option. ep
 :target. any
 :number. checkPrologSize 0
