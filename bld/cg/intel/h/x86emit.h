@@ -35,7 +35,8 @@
 
 /*
  * Format-neutral object writer used by the Intel backends.  The existing
- * implementation is the OMF provider.
+ * implementation is the OMF provider.  The 386 backend can also select the
+ * OWL provider for COFF or ELF output.
  */
 typedef struct x86_obj_emitter {
     void            (*init_seg_defs)( void );
@@ -103,5 +104,8 @@ typedef struct x86_obj_emitter {
 } x86_obj_emitter;
 
 extern const x86_obj_emitter X86OmfEmitter;
+#if _TARGET & _TARG_80386
+extern const x86_obj_emitter X86OwlEmitter;
+#endif
 
 #endif

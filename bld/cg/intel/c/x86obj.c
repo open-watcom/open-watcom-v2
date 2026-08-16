@@ -28,6 +28,7 @@
 
 #include "_cgstd.h"
 #include "coderep.h"
+#include "model.h"
 #include "x86objd.h"
 #include "objout.h"
 #include "x86obj.h"
@@ -35,7 +36,19 @@
 
 static const x86_obj_emitter *Emitter = &X86OmfEmitter;
 
-void InitSegDefs( void ) { Emitter->init_seg_defs(); }
+static void selectObjEmitter( void )
+{
+#if _TARGET & _TARG_80386
+    if( _IsModel( CGSW_GEN_OBJ_OWL ) ) {
+        Emitter = &X86OwlEmitter;
+    } else
+#endif
+    {
+        Emitter = &X86OmfEmitter;
+    }
+}
+
+void InitSegDefs( void ) { selectObjEmitter(); Emitter->init_seg_defs(); }
 bool FreeObjCache( void ) { return( Emitter->free_obj_cache() ); }
 segment_id AskOP( void ) { return( Emitter->ask_op() ); }
 segment_id ChangeOP( segment_id s ) { return( Emitter->change_op( s ) ); }

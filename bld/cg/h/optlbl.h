@@ -84,6 +84,8 @@ typedef struct code_lbl {
 #endif
 #if _TARGET_RISC
     struct code_lbl         *ppc_alt_name;
+#endif
+#if _TARGET_RISC || (_TARGET & _TARG_80386)
     void                    *owl_symbol;
 #endif
 } code_lbl;

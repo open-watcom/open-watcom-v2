@@ -18,6 +18,7 @@ intel_objs = &
     x86lesds.obj &
     x86mul.obj &
     x86omf.obj &
+    x86owl.obj &
     x86opcod.obj &
     x86parm.obj &
     x86proc.obj &
@@ -41,7 +42,7 @@ intel_objs = &
     wvsyms.obj &
     wvtypes.obj
 
-inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h"
+inc_dirs_targ   = -I"$(cg_dir)/$(target_cls)/$(target_cpu)/h" -I"$(cg_dir)/$(target_cls)/h" $(cli_owl_inc_dirs)
 src_path        = $(cg_dir)/$(target_cls)/$(target_cpu)/c;$(cg_dir)/$(target_cls)/c
 
 !include $(cg_dir)/mif/master.mif

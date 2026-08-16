@@ -58,6 +58,8 @@ static  label_handle DoAskForLabel( cg_sym_handle sym )
 #endif
 #if _TARGET_RISC
     new_lbl->ppc_alt_name = NULL;
+#endif
+#if _TARGET_RISC || (_TARGET & _TARG_80386)
     new_lbl->owl_symbol   = NULL;
 #endif
 #ifdef DEVBUILD

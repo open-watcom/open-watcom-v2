@@ -555,6 +555,14 @@ static void SetGenSwitches( OPT_STORAGE *data )
     if( data->eoo ) {
         GenSwitches &= ~(CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF);
     }
+#if _CPU == 386
+    if( data->eoe ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_COFF) | CGSW_GEN_OBJ_ELF;
+    }
+    if( data->eoc ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_ELF) | CGSW_GEN_OBJ_COFF;
+    }
+#endif
     if( data->eq ) {
         CompFlags.eq_switch_used = true;
     }
