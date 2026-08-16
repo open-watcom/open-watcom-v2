@@ -177,26 +177,29 @@ typedef struct segment_record {
  * NOTE: the linker uses some of the unused bits here. If these bits become
  * used, make sure the linker developer knows about it!
  */
-#define SEG_DATA        0x0001
-#define SEG_FLAG_1      0x0002
-#define SEG_FLAG_2      0x0004
-#define SEG_ITERATED    0x0008
-#define SEG_MOVABLE     0x0010
-#define SEG_PURE        0x0020      /* i.e. segment is sharable. */
-#define SEG_PRELOAD     0x0040
-#define SEG_READ_ONLY   0x0080
-#define SEG_RELOC       0x0100
-#define SEG_CONFORMING  0x0200      /* was SEG_DEBUG */
-#define SEG_PMODE_DPL_1 (1 << SEG_SHIFT_PMODE_DPL)
-#define SEG_PMODE_DPL_2 (2 << SEG_SHIFT_PMODE_DPL)
-#define SEG_PMODE_DPL_3 (3 << SEG_SHIFT_PMODE_DPL)
-#define SEG_DISCARD     0x1000
-#define SEG_32_BIT      0x2000
-#define SEG_HUGE        0x4000
-#define SEG_RESRC_HIGH  0x8000
 
 #define SEG_SHIFT_PMODE_DPL         10
 #define SEG_SHIFT_DISCARD_PRIORITY  12
+
+typedef enum seg_flags_type {
+    SEG_DATA        = 0x0001,
+    SEG_FLAG_1      = 0x0002,
+    SEG_FLAG_2      = 0x0004,
+    SEG_ITERATED    = 0x0008,
+    SEG_MOVABLE     = 0x0010,
+    SEG_PURE        = 0x0020,       /* i.e. segment is sharable. */
+    SEG_PRELOAD     = 0x0040,
+    SEG_READ_ONLY   = 0x0080,
+    SEG_RELOC       = 0x0100,
+    SEG_CONFORMING  = 0x0200,       /* was SEG_DEBUG */
+    SEG_PMODE_DPL_1 = (1 << SEG_SHIFT_PMODE_DPL),
+    SEG_PMODE_DPL_2 = (2 << SEG_SHIFT_PMODE_DPL),
+    SEG_PMODE_DPL_3 = (3 << SEG_SHIFT_PMODE_DPL),
+    SEG_DISCARD     = 0x1000,
+    SEG_32_BIT      = 0x2000,
+    SEG_HUGE        = 0x4000,
+    SEG_RESRC_HIGH  = 0x8000,
+} seg_flags_type;
 
 #define GET_SEG_DISCARD_PRIORITY(x) ((x) >> SEG_SHIFT_DISCARD_PRIORITY)
 #define GET_SEG_PMODE_DPL(x)        ((x) & (3 << SEG_SHIFT_PMODE_DPL))

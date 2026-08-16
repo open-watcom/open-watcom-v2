@@ -183,20 +183,20 @@ typedef enum {
  * field, so the two words have overlapping bits.
  */
 
-enum {
-    SEGINF_ABSOLUTE         = 0x0001,
-    SEGINF_COMDAT           = 0x0002,   /* seg is a comdat */
-    SEGINF_OVERLAYED        = 0x0040,   /* segment belongs to an overlay class */
-    SEGINF_MAKE_ADDR_INFO   = 0x0080,   /* set if making an addr info next time */
-    SEGINF_DEAD             = 0x0080,   /* mark a segdef as being "dead"(pass 2) */
-    SEGINF_CODE             = 0x0200,   /* segment is a code segment.         */
-    SEGINF_USE_32           = 0x0400,   /* segment uses 32 bit addresses      */
-    SEGINF_LAST_SEGMENT     = 0x0800,   /* force last segment in a code group */
-    SEGINF_FIXED            = 0x1000,   /* Segment should start at seg_addr, not next addr */
-    SEGINF_NOEMIT           = 0x2000,   /* Segment should not generate output */
-    SEGINF_LXDATA_SEEN      = 0x8000,   /* LxDATA rec. seen for this segment */
-    SEGINF_BOTH_MASK        = 0x8641,   /* flags common to both structures */
-};
+typedef enum seg_info_type {
+    SEGINF_ABSOLUTE     = 0x0001,
+    SEGINF_COMDAT       = 0x0002,   /* seg is a comdat */
+    SEGINF_OVERLAYED    = 0x0040,   /* segment belongs to an overlay class */
+    SEGINF_MAKE_ADDR    = 0x0080,   /* set if making an addr info next time */
+    SEGINF_DEAD         = 0x0080,   /* mark a segdef as being "dead"(pass 2) */
+    SEGINF_CODE         = 0x0200,   /* segment is a code segment.         */
+    SEGINF_USE_32       = 0x0400,   /* segment uses 32 bit addresses      */
+    SEGINF_LAST_SEGMENT = 0x0800,   /* force last segment in a code group */
+    SEGINF_FIXED        = 0x1000,   /* Segment should start at seg_addr, not next addr */
+    SEGINF_NOEMIT       = 0x2000,   /* Segment should not generate output */
+    SEGINF_LXDATA_SEEN  = 0x8000,   /* LxDATA rec. seen for this segment */
+    SEGINF_BOTH_MASK    = 0x8641,   /* flags common to both structures */
+} seg_info_type;
 
 #define EMIT_SEG(s)     (((s)->info & SEGINF_NOEMIT) == 0)
 
