@@ -822,7 +822,7 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
         RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
         return( true );
     }
-
+    errres = NULL;
     ret = copyPEResources( dst, resfiles, dst->fp, writebyfile, &errres );
     /*
      * warning - the file names output in these messages could be
