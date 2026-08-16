@@ -556,6 +556,18 @@ void DBICleanup( void )
     FreeGroups( DBIGroups );
 }
 
+static void do_DBIWrite( void )
+/*****************************/
+{
+    if( LinkFlags & LF_OLD_DBI_FLAG ) {
+        ODBIWrite();
+    } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
+        DwarfWrite();
+    } else if( LinkFlags & LF_CV_DBI_FLAG ) {
+        CVWrite();
+    }
+}
+
 void DBIWrite( void )
 /*******************/
 // called during load file generation.  It is assumed that the loadfile is
@@ -574,22 +586,16 @@ void DBIWrite( void )
             CVWriteDebugTypeMisc( Root->outfile->fname );
         }
     }
-    save = NULL;
     if( SymFileName != NULL ) {
+        save = NULL;
         InitBuffFile( &symfile, SymFileName, false );
         OpenBuffFile( &symfile );
         save = Root->outfile;
         Root->outfile = &symfile;
-    }
-    if( LinkFlags & LF_OLD_DBI_FLAG ) {
-        ODBIWrite();
-    } else if( LinkFlags & LF_DWARF_DBI_FLAG ) {
-        DwarfWrite();
-    } else if( LinkFlags & LF_CV_DBI_FLAG ) {
-        CVWrite();
-    }
-    if( SymFileName != NULL ) {
+        do_DBIWrite();
         CloseBuffFile( &symfile );
         Root->outfile = save;
+    } else {
+        do_DBIWrite();
     }
 }
