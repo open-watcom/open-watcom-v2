@@ -853,7 +853,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
             if( LinkFlags & LF_STRIP_CODE ) {
                 CleanStripInfo( sym );
             }
-            sym->info |= SEGINF_ABSOLUTE;
+            sym->info |= SYM_ABSOLUTE;
             sym->p.seg = NULL;
         }
     }
