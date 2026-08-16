@@ -16,7 +16,7 @@ intel_objs = &
     x86ldstr.obj &
     x86lesds.obj &
     x86mul.obj &
-    x86obj.obj &
+    x86omf.obj &
     x86opcod.obj &
     x86parm.obj &
     x86proc.obj &
