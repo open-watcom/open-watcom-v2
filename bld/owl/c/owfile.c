@@ -118,12 +118,6 @@ static void doReloc( owl_section_handle section, owl_reloc_info *reloc ) {
         // ugly kludge for the MOTOROLA PPC linker
         displacement += reloc->location;
     }
-    if( section->file->format == OWL_FORMAT_ELF &&
-        section->file->info->cpu == OWL_CPU_X86 &&
-        reloc->type == OWL_RELOC_BRANCH_REL ) {
-        // ugly kludge for 386 ELF objects
-        displacement += 4;
-    }
     data = (data&~bit_mask)|(((displacement&bit_mask)+(data&bit_mask))&bit_mask);
     OWLBufferWrite( section->buffer, (char *)&data, 4 );
     OWLBufferSeek( section->buffer, old_loc );

@@ -383,6 +383,20 @@ static void emitReloc( owl_section_handle sec, owl_reloc_info *reloc, Elf32_Rela
     elf_reloc->r_offset = reloc->location;
     elf_reloc->r_info = ELF32_R_INFO( reloc->symbol->index, ElfRelocType( reloc->type, sec->file->info->cpu ) );
     bit_mask = OWLRelocBitMask( sec->file, reloc );
+    if( sec->file->info->cpu == OWL_CPU_X86 && reloc->type == OWL_RELOC_BRANCH_REL ) {
+        /*
+         * An x86 relative branch is based at the end of its four-byte
+         * displacement, while R_386_PC32 uses the address of the relocation
+         * field itself as P.  Supply A = -4 so S + A - P has the processor's
+         * required base address.
+         */
+        old_loc = OWLBufferTell( sec->buffer );
+        OWLBufferSeek( sec->buffer, reloc->location );
+        OWLBufferRead( sec->buffer, reloc->location, (char *)&data, sizeof( data ) );
+        data = (data&~bit_mask)|(((data&bit_mask)-4)&bit_mask);
+        OWLBufferWrite( sec->buffer, (char *)&data, sizeof( data ) );
+        OWLBufferSeek( sec->buffer, old_loc );
+    }
 #ifdef __BIG_ENDIAN__
     /*
      *TODO check target, not host
