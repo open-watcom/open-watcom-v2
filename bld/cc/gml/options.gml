@@ -522,7 +522,6 @@
 
 :option. eoo
 :target. i86 386
-:internal.
 :usage. emit OMF object files
 :jusage.
 

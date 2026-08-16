@@ -10,6 +10,7 @@ intel_objs = &
     x86dbsup.obj &
     x86enc.obj &
     x86enc2.obj &
+    x86obj.obj &
     x86esc.obj &
     x86half.obj &
     x86index.obj &

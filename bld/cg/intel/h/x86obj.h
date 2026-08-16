@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Emit OMF object records.
+* Description:  Format-neutral Intel object output interface.
 *
 ****************************************************************************/
 

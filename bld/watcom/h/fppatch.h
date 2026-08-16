@@ -30,6 +30,9 @@
 ****************************************************************************/
 
 
+#ifndef FP_PATCH_INCLUDED
+#define FP_PATCH_INCLUDED
+
 typedef enum {
     FPP_NONE = -1,
     #define pick_fp(enum,name,alt_name,win,alt_win,others,alt_others) enum,
@@ -37,3 +40,5 @@ typedef enum {
     #undef pick_fp
     FPP_NUMBER_OF_TYPES
 } fp_patches;
+
+#endif
