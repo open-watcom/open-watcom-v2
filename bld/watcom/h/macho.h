@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -310,29 +311,26 @@ typedef struct section_64 {
 #define S_ATTR_LOC_RELOC                0x00000100
 
 /* "Known" segment and section names */
-#define SEG_PAGEZERO                    "__PAGEZERO"
-#define SEG_TEXT                        "__TEXT"
-#define SECT_TEXT                       "__text"
-#define SECT_FVMLIB_INIT0               "__fvmlib_init0"
-#define SECT_FVMLIB_INIT1               "__fvmlib_init1"
-#define MACH_SEG_DATA                   "__DATA"
-#ifndef SEG_DATA        /* conflicts with exeos2.h */
-#define SEG_DATA                        MACH_SEG_DATA
-#endif
-#define SECT_DATA                       "__data"
-#define SECT_BSS                        "__bss"
-#define SECT_COMMON                     "__common"
-#define SEG_OBJC                        "__OBJC"
-#define SECT_OBJC_SYMBOLS               "__symbol_table"
-#define SECT_OBJC_MODULES               "__module_info"
-#define SECT_OBJC_STRINGS               "__selector_strs"
-#define SECT_OBJC_REFS                  "__selector_refs"
-#define SEG_ICON                        "__ICON"
-#define SECT_ICON_HEADER                "__header"
-#define SECT_ICON_TIFF                  "__tiff"
-#define SEG_LINKEDIT                    "__LINKEDIT"
-#define SEG_UNIXSTACK                   "__UNIXSTACK"
-#define SEG_IMPORT                      "__IMPORT"
+#define S_SEG_PAGEZERO                    "__PAGEZERO"
+#define S_SEG_TEXT                        "__TEXT"
+#define S_SECT_TEXT                       "__text"
+#define S_SECT_FVMLIB_INIT0               "__fvmlib_init0"
+#define S_SECT_FVMLIB_INIT1               "__fvmlib_init1"
+#define S_SEG_DATA                        "__DATA"
+#define S_SECT_DATA                       "__data"
+#define S_SECT_BSS                        "__bss"
+#define S_SECT_COMMON                     "__common"
+#define S_SEG_OBJC                        "__OBJC"
+#define S_SECT_OBJC_SYMBOLS               "__symbol_table"
+#define S_SECT_OBJC_MODULES               "__module_info"
+#define S_SECT_OBJC_STRINGS               "__selector_strs"
+#define S_SECT_OBJC_REFS                  "__selector_refs"
+#define S_SEG_ICON                        "__ICON"
+#define S_SECT_ICON_HEADER                "__header"
+#define S_SECT_ICON_TIFF                  "__tiff"
+#define S_SEG_LINKEDIT                    "__LINKEDIT"
+#define S_SEG_UNIXSTACK                   "__UNIXSTACK"
+#define S_SEG_IMPORT                      "__IMPORT"
 
 struct fvmlib {
     union lc_str    name;
