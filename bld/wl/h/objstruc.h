@@ -544,10 +544,10 @@ typedef struct {
 
 typedef struct seg_flags_struct {
     struct seg_flags_struct *next;
-    unsigned_16         flags;
+    seg_flags_type      flags;
     char                *name;
     segflag_type        type;
-    unsigned_16         specified;  // used for enforcing mutual exclusion
+    seg_flags_type      specified;      // used for enforcing mutual exclusion
 } seg_flags_struct;
 
 typedef struct {

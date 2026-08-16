@@ -107,7 +107,7 @@ struct fmt_os2fam_data {
     seg_flags_struct        *seg_flags;
     unsigned_32             heapsize;
     unsigned                segment_shift;
-    unsigned                flags;              // in LOADOS2.H
+    seg_flags_type          flags;              // in LOADOS2.H
     boolbit                 chk_seg_relocs : 1;
     boolbit                 toggle_relocs  : 1;
     boolbit                 gen_int_relocs : 1;
@@ -256,7 +256,7 @@ struct fmt_data {
     unsigned        major;
     unsigned        minor;
     unsigned        revision;
-    unsigned        def_seg_flags;
+    seg_flags_type  def_seg_flags;
     unsigned        Hshift;         // Corresponds to huge shift variable used by libr
     unsigned        SegShift;       // 16 - HShift, used to convert a segment to an address
     unsigned_32     SegMask;        // used to extract remainder for segment normalization
