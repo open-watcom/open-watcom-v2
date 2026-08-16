@@ -182,6 +182,7 @@ typedef struct segment_record {
 #define SEG_SHIFT_DISCARD_PRIORITY  12
 
 typedef enum seg_flags_type {
+    SEG_NONE        = 0x0000,
     SEG_DATA        = 0x0001,
     SEG_FLAG_1      = 0x0002,
     SEG_FLAG_2      = 0x0004,
