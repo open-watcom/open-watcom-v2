@@ -594,8 +594,8 @@ static void AddToLeader( seg_leader *seg, segdata *sdata )
     Ring2Append( &CurrMod->segs, sdata );
 }
 
-static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_16 info )
-/**************************************************************************************/
+static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, seg_info_type info )
+/****************************************************************************************/
 {
     seg_leader *leader;
 
@@ -611,8 +611,8 @@ static seg_leader *MakeNewLeader( segdata *sdata, class_entry *class, unsigned_1
     return( leader );
 }
 
-static seg_leader *FindALeader( segdata *sdata, class_entry *class, unsigned_16 info )
-/************************************************************************************/
+static seg_leader *FindALeader( segdata *sdata, class_entry *class, seg_info_type info )
+/**************************************************************************************/
 {
     seg_leader  *leader;
 
@@ -652,7 +652,7 @@ void AddSegment( segdata *sd, class_entry *class )
 /************************************************/
 /* Add a segment to the segment list for an object file */
 {
-    unsigned_16     info;
+    seg_info_type   info;
     seg_leader      *leader;
 
     DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name.u.ptr, class->name.u.ptr ));
@@ -884,7 +884,7 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     sdata->align = align;
     sdata->combine = comb;
     sdata->isuninit = true;
-    leader = FindALeader( sdata, class, ( bits == BITS_16 ) ? 0 : SEGINF_USE_32 );
+    leader = FindALeader( sdata, class, ( bits == BITS_16 ) ? SEGINF_NONE : SEGINF_USE_32 );
     if( group_name != NULL ) {
         /* put in appropriate group */
         group = GetGroup( group_name );

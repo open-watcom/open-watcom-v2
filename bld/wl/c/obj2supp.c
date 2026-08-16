@@ -35,7 +35,6 @@
 #include "pcobj.h"
 #include "newmem.h"
 #include "mapio.h"
-#include "exeos2.h"
 #include "exeflat.h"
 #include "exeqnx.h"
 #include "exeelf.h"

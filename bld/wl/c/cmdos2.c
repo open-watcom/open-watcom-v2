@@ -36,7 +36,6 @@
 #include "linkstd.h"
 #include "cmdutils.h"
 #include "cmdos2.h"
-#include "exeos2.h"
 #include "exepe.h"
 #include "loados2.h"
 #include "loadpe.h"

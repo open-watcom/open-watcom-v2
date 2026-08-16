@@ -33,7 +33,6 @@
 #include <string.h>
 #include "linkstd.h"
 #include "reloc.h"
-#include "exeos2.h"
 #include "exeflat.h"
 #include "loados2.h"
 #include "loadfile.h"

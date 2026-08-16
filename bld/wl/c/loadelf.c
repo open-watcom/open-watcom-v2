@@ -62,7 +62,6 @@ String table for sections
 #include "walloca.h"
 #include "linkstd.h"
 #include "exeelf.h"
-#include "exeos2.h"
 #include "loadelf.h"
 #include "loadelf2.h"
 #include "reloc.h"

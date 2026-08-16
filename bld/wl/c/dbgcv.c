@@ -32,7 +32,6 @@
 
 #include <string.h>
 #include "linkstd.h"
-#include "exeos2.h"
 #include "exepe.h"
 #include "cv4w.h"
 #include "virtmem.h"

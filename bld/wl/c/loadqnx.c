@@ -36,7 +36,6 @@
 #include "ring.h"
 #include "exeqnx.h"
 #include "loadqnx.h"
-#include "exeos2.h"
 #include "reloc.h"
 #include "specials.h"
 #include "objcalc.h"
@@ -282,9 +281,9 @@ static void WriteQNXData( unsigned_32 * segments )
 static bool checkGroupFlags( void *_seg, void *_group )
 /*****************************************************/
 {
-    seg_leader     *seg = _seg;
-    group_entry    *group = _group;
-    unsigned_16     sflags;
+    seg_leader      *seg = _seg;
+    group_entry     *group = _group;
+    seg_flags_type  sflags;
 
     sflags = seg->segflags;
 

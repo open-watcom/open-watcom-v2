@@ -32,7 +32,6 @@
 #include <string.h>
 #include "linkstd.h"
 #include "exephar.h"
-#include "exeos2.h"
 #include "loadphar.h"
 #include "reloc.h"
 #include "proc386.h"

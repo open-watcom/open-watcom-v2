@@ -32,7 +32,6 @@
 
 
 #include "linkstd.h"
-#include "exeos2.h"
 #include "pcobj.h"
 #include "loadpe.h"
 #include "ring.h"

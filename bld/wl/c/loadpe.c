@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include "linkstd.h"
-#include "exeos2.h"
 #include "loados2.h"
 #include "exepe.h"
 #include "exedos.h"

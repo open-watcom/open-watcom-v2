@@ -36,7 +36,6 @@
 #include "linkstd.h"
 #include "specials.h"
 #include "fileio.h"
-#include "exeos2.h"
 #include "exeflat.h"
 #include "exepe.h"
 #include "exedos.h"

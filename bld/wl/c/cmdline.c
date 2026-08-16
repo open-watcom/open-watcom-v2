@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "linkstd.h"
-#include "exeos2.h"
 #include "cmdutils.h"
 #include "cmdall.h"
 #include "cmdos2.h"

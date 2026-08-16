@@ -40,7 +40,6 @@
 #include "pcobj.h"
 #include "newmem.h"
 #include "reloc.h"
-#include "exeos2.h"
 #include "exeflat.h"
 #include "exepe.h"
 #include "exedos.h"
@@ -806,8 +805,8 @@ void SetOS2SegFlags( void )
 static void CheckGrpFlags( void *_leader )
 /****************************************/
 {
-    seg_leader     *leader = _leader;
-    unsigned_16     sflags;
+    seg_leader      *leader = _leader;
+    seg_flags_type  sflags;
 
     sflags = leader->segflags;
     // if any of these flags are on, turn it on for the entire group.

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -80,8 +80,6 @@
 
 #define FLAT_GRANULARITY    _64K
 #define FLAT_ROUND( x )     __ROUND_UP_SIZE( x, FLAT_GRANULARITY )
-
-#include "exeos2.h"
 
 /* in loadflat.c */
 

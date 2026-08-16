@@ -32,6 +32,7 @@
 
 #include "orl.h"
 #include "hash.h"
+#include "exeos2.h"
 
 
 typedef enum {
@@ -184,6 +185,7 @@ typedef enum {
  */
 
 typedef enum seg_info_type {
+    SEGINF_NONE         = 0x0000,
     SEGINF_ABSOLUTE     = 0x0001,
     SEGINF_COMDAT       = 0x0002,   /* seg is a comdat */
     SEGINF_OVERLAYED    = 0x0040,   /* segment belongs to an overlay class */
@@ -421,7 +423,7 @@ typedef struct group_entry {
     symbol              *sym;
     section             *section;
     targ_addr           grp_addr;
-    unsigned_16         segflags;
+    seg_flags_type      segflags;
     offset              size;
     offset              totalsize;
     offset              linear;         // preferred base address
@@ -457,13 +459,13 @@ typedef struct seg_leader {
     offset              size;               // total size of segment
     offset              vsize;              // total virtual size of segment
     SEG_LEADER          *DupSeg;            // Segment to get data from for output
-    unsigned_16         info;
+    seg_info_type       info;
     unsigned_16         align   : 5;        // alignment of seg (power of 2)
     unsigned_16         dbgtype : 3;        // debugging type of seg
     unsigned_16         combine : 2;        // combine val. of seg
     unsigned_32         num;                // # of addrinfos to output (video)
     targ_addr           seg_addr;           // address of segment.
-    unsigned_16         segflags;           // format specific segment flags
+    seg_flags_type      segflags;           // format specific segment flags
 } seg_leader;
 
 /*
