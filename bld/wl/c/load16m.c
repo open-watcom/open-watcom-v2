@@ -386,7 +386,7 @@ segment Find16MSeg( segment selector )
 
     result = 0;
     for( group = Groups; group != NULL; group = group->next ) {
-        if( group->grp_addr.seg == selector ) {
+        if( group->addr.seg == selector ) {
             result = group->u.dos_segment;
             break;
         }

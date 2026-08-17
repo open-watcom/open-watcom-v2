@@ -270,7 +270,7 @@ typedef struct section {
     MOD_ENTRY           *mods;
     CLASS_ENTRY         *classes;
     ORDER_CLASS         *orderlist;     // Link to data for ordering, if used
-    targ_addr           sect_addr;
+    addr_type           sect_addr;
     overlay_ref         ovlref;
     areasect            *areas;
     SECTION             *parent;
@@ -413,7 +413,7 @@ typedef struct class_entry {
     class_status        flags;
     byte                bits;           // segment bitnese
     section             *section;
-    targ_addr           BaseAddr;       // Fixed location to of this class for loadfile
+    addr_type           BaseAddr;       // Fixed location to of this class for loadfile
     CLASS_ENTRY         *DupClass;      // Class to get data from for output
 } class_entry;
 
@@ -422,7 +422,7 @@ typedef struct group_entry {
     SEG_LEADER          *leaders;
     symbol              *sym;
     section             *section;
-    targ_addr           grp_addr;
+    addr_type           addr;
     seg_flags_type      segflags;
     offset              size;
     offset              totalsize;
@@ -464,7 +464,7 @@ typedef struct seg_leader {
     unsigned_16         dbgtype : 3;        // debugging type of seg
     unsigned_16         combine : 2;        // combine val. of seg
     unsigned_32         num;                // # of addrinfos to output (video)
-    targ_addr           seg_addr;           // address of segment.
+    addr_type           seg_addr;           // address of segment.
     seg_flags_type      segflags;           // format specific segment flags
 } seg_leader;
 
@@ -577,7 +577,7 @@ typedef struct list_of_names {
 typedef struct {
     segdata             *seg;
     offset              obj_offset; // pass 1: delta for fixup offsets
-    targ_addr           addr;
+    addr_type           addr;
     unsigned_8          *data;
 } lobject_data;
 
@@ -591,7 +591,7 @@ typedef struct order_class {
     class_entry         *Ring;  // Used for sorting
     char                *Name;
     char                *SrcName;
-    targ_addr           Base;
+    addr_type           Base;
     ORDER_SEGMENT       *SegList;
     boolbit             FixedAddr   : 1;
     boolbit             NoEmit      : 1;
@@ -601,7 +601,7 @@ typedef struct order_class {
 typedef struct order_segment {
     ORDER_SEGMENT       *NextSeg;
     char                *Name;
-    targ_addr           Base;
+    addr_type           Base;
     boolbit             FixedAddr   : 1;
     boolbit             NoEmit      : 1;
 } order_segment;

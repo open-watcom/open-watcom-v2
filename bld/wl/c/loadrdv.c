@@ -75,7 +75,7 @@ static void WriteBinData( void )
     OrderGroups( CompareDosSegments );
 
     Root->outfile->file_loc = Root->u.file_loc;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
 
     /* write groups and relocations */
     for( group = Groups; group != NULL; group = group->next ) {
@@ -102,7 +102,7 @@ static void WriteRDOSCode( void )
     OrderGroups( CompareDosSegments );
 
     Root->outfile->file_loc = Root->u.file_loc;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
     leader = NULL;
 
     /* write groups and relocations */

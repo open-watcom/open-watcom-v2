@@ -75,10 +75,10 @@ typedef enum {
 
 
 typedef struct  {
-    offset      grp_addr;
-    offset      end_addr;
+    offset      start_offs;
+    offset      end_offs;
     group_entry *group;
-    group_entry *lastgrp;       // used only for copy classes
+    group_entry *last_group;       // used only for copy classes
     boolbit     first_time  : 1;
 } grpaddrinfo;
 
@@ -226,39 +226,39 @@ static bool setGroupSeg( group_entry *group, unsigned seg_num )
 {
 #ifdef _DOS16M
     if( FmtData.type & MK_DOS16M ) {
-        group->grp_addr.seg = ToD16MSel( seg_num );
+        group->addr.seg = ToD16MSel( seg_num );
         return( true );
     }
 #endif
 #ifdef _NOVELL
     if( FmtData.type & MK_ID_SPLIT ) {
         if( group->segflags & SEG_DATA ) {
-            group->grp_addr.seg = DATA_SEGMENT;
+            group->addr.seg = DATA_SEGMENT;
         } else {
-            group->grp_addr.seg = CODE_SEGMENT;
+            group->addr.seg = CODE_SEGMENT;
         }
         return( false );
     }
 #endif
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {
-        group->grp_addr.seg = ToQNXSel( seg_num );
+        group->addr.seg = ToQNXSel( seg_num );
         return( true );
     }
 #endif
 #if defined( _PHARLAP ) || defined( _RAW )
     if( FmtData.type & MK_FLAT_OFFS ) {
-        group->grp_addr.seg = seg_num;    // only segment 1 in flat mem. model
+        group->addr.seg = seg_num;    // only segment 1 in flat mem. model
         return( false );
     }
 #endif
 #ifdef _PHARLAP
     if( FmtData.type & MK_PHAR_MULTISEG ) {
-        group->grp_addr.seg = ( seg_num << 3 ) | 4;
+        group->addr.seg = ( seg_num << 3 ) | 4;
         return( true );
     }
 #endif
-    group->grp_addr.seg = seg_num;
+    group->addr.seg = seg_num;
     return( true );
 }
 
@@ -270,7 +270,7 @@ static void AllocFileSegs( void )
 
     seg_num = 1;
     for( group = Groups; group != NULL; group = group->next ) {
-        group->grp_addr.off = 0;
+        group->addr.off = 0;
         if( setGroupSeg( group, seg_num ) ) {
             seg_num++;
         }
@@ -283,7 +283,7 @@ static void SetLeaderSeg( void *_seg )
     seg_leader      *seg = _seg;
 
     if( (seg->info & SEGINF_ABSOLUTE) == 0 ) {
-        seg->seg_addr.seg = seg->group->grp_addr.seg;
+        seg->seg_addr.seg = seg->group->addr.seg;
     }
 }
 
@@ -356,25 +356,25 @@ static bool FindEndAddr( void *_seg, void *_info )
 {
     seg_leader  *seg  = _seg;
     grpaddrinfo *info = _info;
-    offset      seg_addr;
+    offset      seg_offs;
 
     if( FmtData.type & MK_REAL_MODE ) {
-        seg_addr = MK_REAL_ADDR( seg->seg_addr.seg, seg->seg_addr.off );
+        seg_offs = MK_REAL_ADDR( seg->seg_addr.seg, seg->seg_addr.off );
     } else {
-        seg_addr = seg->seg_addr.off;
+        seg_offs = seg->seg_addr.off;
     }
     if( info->first_time ) {
-        info->group->grp_addr = seg->seg_addr;
-        info->grp_addr = seg_addr;
-        info->end_addr = seg_addr + seg->size;
+        info->group->addr = seg->seg_addr;
+        info->start_offs = seg_offs;
+        info->end_offs = seg_offs + seg->size;
         info->first_time = false;
     } else {
-        if( info->grp_addr > seg_addr ) {
-            info->group->grp_addr = seg->seg_addr;
-            info->grp_addr = seg_addr;
+        if( info->start_offs > seg_offs ) {
+            info->group->addr = seg->seg_addr;
+            info->start_offs = seg_offs;
         }
-        if( info->end_addr < seg_addr + seg->size ) {
-            info->end_addr = seg_addr + seg->size;
+        if( info->end_offs < seg_offs + seg->size ) {
+            info->end_offs = seg_offs + seg->size;
         }
     }
     return( false );
@@ -387,24 +387,24 @@ static bool FindInitEndAddr( void *_seg, void *_info )
 {
     seg_leader  *seg  = _seg;
     grpaddrinfo *info = _info;
-    offset      seg_addr;
+    offset      seg_offs;
 
     if( FmtData.type & MK_REAL_MODE ) {
-        seg_addr = MK_REAL_ADDR( seg->seg_addr.seg, seg->seg_addr.off );
+        seg_offs = MK_REAL_ADDR( seg->seg_addr.seg, seg->seg_addr.off );
     } else {
-        seg_addr = seg->seg_addr.off;
+        seg_offs = seg->seg_addr.off;
     }
     if( seg->info & SEGINF_LXDATA_SEEN ) {
-        if( info->first_time ) { // First time, use seg_addr values
-            info->grp_addr = seg_addr;
-            info->end_addr = seg_addr + seg->size;
+        if( info->first_time ) { // First time, use seg_offs values
+            info->start_offs = seg_offs;
+            info->end_offs = seg_offs + seg->size;
             info->first_time = false;
         } else {  // If more segs found, use lowest start address and highest end address;
-            if( info->grp_addr > seg_addr ) {
-                info->grp_addr = seg_addr;
+            if( info->start_offs > seg_offs ) {
+                info->start_offs = seg_offs;
             }
-            if( info->end_addr < seg_addr + seg->size ) {
-                info->end_addr = seg_addr + seg->size;
+            if( info->end_offs < seg_offs + seg->size ) {
+                info->end_offs = seg_offs + seg->size;
             }
         }
     }
@@ -419,8 +419,8 @@ static bool FindCopyGroups( void *_seg, void *_info )
     seg_leader  *seg = _seg;
     grpaddrinfo *info = _info;
 
-    if( info->lastgrp != seg->group ) {   // Only interate new groups
-        info->lastgrp = seg->group;
+    if( info->last_group != seg->group ) {   // Only interate new groups
+        info->last_group = seg->group;
         // Check each initialized segment in group
         Ring2Lookup( seg->group->leaders, FindInitEndAddr, info);
     }
@@ -455,7 +455,7 @@ static void CalcGrpAddr( group_entry *group )
     seg_leader      *seg;
     class_entry     *class;
     offset          addr;
-    targ_addr       save;
+    addr_type       save_addr;
 
     for( ; group != NULL; group = group->next ) {
         info.group = group;
@@ -463,24 +463,24 @@ static void CalcGrpAddr( group_entry *group )
         seg = group->leaders;
         class = seg->class;
         if( class->flags & CLASS_COPY ) {
-            group->grp_addr = seg->seg_addr; // Get address of real segment (there's only one)
+            group->addr = seg->seg_addr; // Get address of real segment (there's only one)
             // For copy classes must check eash segment to see if it is in a new group
             // this could be the case with FAR_DATA class in large model
-            info.lastgrp = NULL; // so it will use the first group
+            info.last_group = NULL; // so it will use the first group
             RingLookup( class->DupClass->segs, FindCopyGroups, &info );
-            group->size = info.end_addr - info.grp_addr;
+            group->size = info.end_offs - info.start_offs;
             group->totalsize = group->size;
             // for copy classes put it in class size, also, so map file can find it.
             seg->size = group->totalsize;
             // Now must recompute addresses for all segments in all classes beyond this
-            addr = (group->grp_addr.seg << FmtData.SegShift) +
-                   group->grp_addr.off + group->totalsize;
+            addr = (group->addr.seg << FmtData.SegShift) +
+                   group->addr.off + group->totalsize;
             CurrLoc.seg = addr >> FmtData.SegShift;
             CurrLoc.off = addr & FmtData.SegMask;
             while( (class = class->next) != NULL ) {
                 if( class->flags & CLASS_FIXED ) {
-                    save = class->BaseAddr;     // If class is fixed, can stop
-                    ChkLocated( &save, true );  //   after making sure address
+                    save_addr = class->BaseAddr;     // If class is fixed, can stop
+                    ChkLocated( &save_addr, true );  //   after making sure address
                     break;                      //   isn't already past here
                 }
                 if( (class->flags & CLASS_DEBUG_INFO) == 0 ) { // skip Debug classes, they've already been done
@@ -491,11 +491,11 @@ static void CalcGrpAddr( group_entry *group )
             Ring2Lookup( seg, FindEndAddr, &info );
             if( (FmtData.type & MK_REAL_MODE)
               && (seg->info & SEGINF_USE_32) == 0
-              && (info.end_addr - info.grp_addr > _64K) ) {
+              && (info.end_offs - info.start_offs > _64K) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", group->sym->name,
-                        info.end_addr - info.grp_addr - _64K );
+                        info.end_offs - info.start_offs - _64K );
             }
-            group->totalsize = info.end_addr - info.grp_addr;
+            group->totalsize = info.end_offs - info.start_offs;
         }
     }
 }
@@ -504,7 +504,7 @@ void AllocClasses( section *sect )
 /********************************/
 /* Allocate all classes in the list */
 {
-    targ_addr       save;
+    addr_type       save_addr;
     unsigned_32     size;
     class_entry     *class;
 
@@ -512,25 +512,25 @@ void AllocClasses( section *sect )
         DEBUG(( DBG_OLD, "Allocating class %s", class->name.u.ptr ));
         if( class->flags & CLASS_DEBUG_INFO ) {
             /* don't *really* allocate room for these guys */
-            save = CurrLoc;
+            save_addr = CurrLoc;
             CurrLoc.off = 0;
             CurrLoc.seg = 0;
             size = CurrSect->size;
             RingWalk( class->segs, AllocSeg );
             DBIDefClass( class, CurrSect->size - size );
             CurrSect->size = size;
-            CurrLoc = save;
+            CurrLoc = save_addr;
         } else {
             if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
                 // flat addresses
                 if( class->flags & CLASS_FIXED ) {
-                    class->segs->group->grp_addr.off = class->BaseAddr.off;
+                    class->segs->group->addr.off = class->BaseAddr.off;
                     // Group inherits fixed address from class (only useful if it is first thing in group)
                 }
             } else {
                 // segmented
-                save = class->BaseAddr;
-                ChkLocated( &save, ( (class->flags & CLASS_FIXED) != 0 ) );    // Process fixed locations if any
+                save_addr = class->BaseAddr;
+                ChkLocated( &save_addr, ( (class->flags & CLASS_FIXED) != 0 ) );    // Process fixed locations if any
             }
             RingWalk( class->segs, AllocSeg );
         }
@@ -538,20 +538,20 @@ void AllocClasses( section *sect )
 }
 
 
-void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
-/*********************************************************************/
+void ConvertToFrame( addr_type *frame_addr, segment frame, bool check_16bit )
+/***************************************************************************/
 {
     unsigned long   off;
 
     if( FmtData.type & MK_REAL_MODE ) {
-        off = MK_REAL_ADDR( (int)( addr->seg - frame ), addr->off );
+        off = MK_REAL_ADDR( (int)( frame_addr->seg - frame ), frame_addr->off );
         if( check_16bit
           && ( off >= 0x10000 )) {
-            LnkMsg( ERR+LOC+MSG_FRAME_INVALID, "Ax", addr, frame );
+            LnkMsg( ERR+LOC+MSG_FRAME_INVALID, "Ax", frame_addr, frame );
         }
-        addr->off = off;
+        frame_addr->off = off;
     }
-    addr->seg = frame;
+    frame_addr->seg = frame;
 }
 
 /* -------------------------Defining Publics--------------------------------- */
@@ -652,7 +652,7 @@ static bool DefPubSym( void *_pub, void *_info )
             temp = sym->addr.off;
             temp += seg->a.delta;
             temp += SEG_GROUP_DELTA( leader );
-            SET_SYM_ADDR( sym, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
+            SET_SYM_ADDR( sym, temp + leader->group->addr.off, leader->group->addr.seg );
             DBIGenGlobal( sym, info->sect );
         }
     }
@@ -858,11 +858,11 @@ void CalcAddresses( void )
         flat = getFlatOffset();
         for( group = Groups; group != NULL; group = group->next ) {
             size = group->totalsize;
-            if( group->grp_addr.off > flat + FmtData.base) {
-               // ORDER CLNAME name OFFSET option sets grp_addr,
+            if( group->addr.off > flat + FmtData.base) {
+               // ORDER CLNAME name OFFSET option sets start_offs,
                //   retrieve this information here and wrap into linear address
-               flat = group->grp_addr.off - FmtData.base;
-               group->grp_addr.off = 0;
+               flat = group->addr.off - FmtData.base;
+               group->addr.off = 0;
             }
             group->linear = flat;
             if(( group == DataGroup )

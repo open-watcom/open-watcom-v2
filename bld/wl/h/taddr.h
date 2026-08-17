@@ -34,7 +34,7 @@ typedef signed_32   soffset;
 typedef unsigned_32 offset;
 typedef unsigned_16 segment;
 
-typedef struct targ_addr {
+typedef struct addr_type {
     offset              off;
     segment             seg;
-} targ_addr;
+} addr_type;

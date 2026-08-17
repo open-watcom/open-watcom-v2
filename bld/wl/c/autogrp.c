@@ -252,7 +252,7 @@ static void AutoGroupSect( section *sect )
 static void InitGroup( group_entry *group )
 /*****************************************/
 {
-    SET_ADDR_UNDEFINED( group->grp_addr );
+    SET_ADDR_UNDEFINED( group->addr );
     group->totalsize = 0;
     group->size = 0;
     group->segflags = DEFAULT_GRP_FLAGS;

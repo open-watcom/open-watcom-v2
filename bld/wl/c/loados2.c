@@ -889,7 +889,7 @@ void ChkOS2Exports( void )
             } else {
                 group = sym->p.seg->u.leader->group;
                 if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
-                    exp->addr.off -= group->grp_addr.off;
+                    exp->addr.off -= group->addr.off;
                     if( GET_SEG_PMODE_DPL( group->segflags ) == SEG_PMODE_DPL_2 ) {
                         exp->isiopl = true; // Conforming or not doesn't matter!
                         if( exp->addr.off > 65535 ) {
@@ -898,7 +898,7 @@ void ChkOS2Exports( void )
                         }
                     }
                 } else if( FmtData.type & MK_PE ) {
-                    exp->addr.off += (group->linear - group->grp_addr.off);
+                    exp->addr.off += (group->linear - group->addr.off);
                 }
                 if( group->segflags & SEG_MOVABLE ) {
                     exp->ismovable = true;
@@ -1023,7 +1023,7 @@ void FiniOS2LoadFile( void )
     dgroup_size = 0;
     imageguess = 0;
     if( DataGroup != NULL ) {
-        adseg = DataGroup->grp_addr.seg;
+        adseg = DataGroup->addr.seg;
         if( DataGroup->segflags & SEG_PURE ) {
             FmtData.u.os2fam.flags |= SHARABLE_DGROUP;
         }

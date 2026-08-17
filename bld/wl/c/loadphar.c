@@ -70,7 +70,7 @@ static unsigned_32 WritePharData( unsigned file_pos )
     fnode = Root->outfile;
     fnode->file_loc = file_pos;
     Root->u.file_loc = file_pos;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
     for( group = Groups; group != NULL; group = group->next ) {
         repos = WriteGroup( group );
         if( repos ) {
@@ -196,7 +196,7 @@ static unsigned_32 WritePharSegData( void )
     tss.esp = StackAddr.off;
     tss.cs = StartInfo.addr.seg;
     tss.ss = StackAddr.seg;
-    tss.ds = DataGroup->grp_addr.seg;
+    tss.ds = DataGroup->addr.seg;
     tss.ldt = 0x28;
     WriteLoad( &tss, sizeof( TSS ) );
     WriteDescriptor( 0, 0, 0 );                             // NULL GDT entry;
@@ -279,7 +279,7 @@ static unsigned_32 WriteSIT( void )
     sit.extra = 0;
     sit.base = FmtData.base;
     for( group = Groups; group != NULL; group = group->next ) {
-        sit.selector = group->grp_addr.seg;
+        sit.selector = group->addr.seg;
         sit.extra = group->totalsize - group->size;
         WriteLoad( &sit, sizeof( seg_info_table ) );
         size += sizeof( seg_info_table );

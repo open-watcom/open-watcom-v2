@@ -597,26 +597,26 @@ group_entry *FindGroup( segment seg )
     group_entry *group;
 
     for( group = Groups; group != NULL; group = group->next ) {
-        if( group->grp_addr.seg == seg ) {
+        if( group->addr.seg == seg ) {
             break;
         }
     }
     return( group );
 }
 
-offset FindLinearAddr( targ_addr *addr )
+offset FindLinearAddr( addr_type *addr )
 /**************************************/
 {
     group_entry *group;
 
     group = FindGroup( addr->seg );
     if( group != NULL ) {
-        return( addr->off + ( group->linear - group->grp_addr.off ) );
+        return( addr->off + ( group->linear - group->addr.off ) );
     }
     return( addr->off );
 }
 
-offset FindLinearAddr2( targ_addr *addr )
+offset FindLinearAddr2( addr_type *addr )
 /***************************************/
 {
     group_entry *group;

@@ -137,7 +137,7 @@ static unsigned long WriteDOSData( unsigned_32 mz_hdr_size )
         fnode->file_loc = 0;
     }
     Root->outfile->file_loc = Root->u.file_loc;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
 
     /* write groups and relocations */
     root_size = 0;
@@ -232,7 +232,7 @@ static bool WriteCOMGroup( group_entry *group, soffset chop )
         repos = true;
     }
     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-            &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
+            &group->addr, sect->ovlref, file_loc, finfo->fname ));
     COMAmountWritten = 0;
     Ring2Lookup( group->leaders, DoCOMGroup, &chop );
     file_loc += COMAmountWritten;
@@ -264,11 +264,11 @@ static void WriteCOMFile( void )
     CurrSect = Root;        // needed for WriteInfo.
     fnode = Root->outfile;
     fnode->file_loc = Root->u.file_loc = 0;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
 
     /* write groups */
     for( group = Groups; group != NULL; group = group->next ) {
-        chop = SUB_REAL_ADDR( group->grp_addr, StartInfo.addr );
+        chop = SUB_REAL_ADDR( group->addr, StartInfo.addr );
         if( chop > 0 ) {
             chop = 0;
         }

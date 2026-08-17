@@ -156,7 +156,7 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
     return( size );
 }
 
-static size_t fmtAddr( char *dest, size_t len, targ_addr *addr, bool offs_32 )
+static size_t fmtAddr( char *dest, size_t len, addr_type *addr, bool offs_32 )
 /****************************************************************************/
 {
 #if defined( _PHARLAP ) || defined( _RAW )
@@ -217,7 +217,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
     unsigned_16     num;
     unsigned_32     num2;
     size_t          size;
-    targ_addr       *addr;
+    addr_type       *addr;
     unsigned int    i;
     static char     hexchar[] = "0123456789abcdef";
     int             temp;
@@ -351,7 +351,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list args )
                     addr = MsgArgInfo.arg[MsgArgInfo.index].address;
                     IncremIndex();
                 } else {
-                    addr = va_arg( args, targ_addr * );
+                    addr = va_arg( args, addr_type * );
                 }
                 temp = MsgArgInfo.index;
                 MsgArgInfo.index = -1;

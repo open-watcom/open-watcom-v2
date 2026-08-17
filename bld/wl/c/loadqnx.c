@@ -70,7 +70,7 @@ static void WriteLoadRec( void )
         record.data_nbytes = CurrGroup->size - AmountWritten + sizeof( lmf_data );
     }
     WriteLoad( &record, sizeof( lmf_record ) );
-    data.segment = QNX_SEL_NUM( CurrGroup->grp_addr.seg );
+    data.segment = QNX_SEL_NUM( CurrGroup->addr.seg );
     data.offset = AmountWritten;
     WriteLoad( &data, sizeof( lmf_data ) );
 }
@@ -194,7 +194,7 @@ static void WriteQNXGroup( group_entry *group, unsigned_32 *segments )
 {
     segment     seg;
 
-    seg = QNX_SEL_NUM( group->grp_addr.seg );
+    seg = QNX_SEL_NUM( group->addr.seg );
     segments[seg] = group->totalsize | ((unsigned_32)group->u.qnxflags << 28);
     if( StackSegPtr != NULL && group == StackSegPtr->group ) {
         segments[seg] -= StackSize;      // stack size gets
@@ -273,7 +273,7 @@ static void WriteQNXData( unsigned_32 * segments )
             WriteQNXGroup( group, segments );
         }
         WriteQNXRelocs( group->g.grp_relocs, LMF_LINEAR_FIXUP_REC,
-                        QNX_SEL_NUM( group->grp_addr.seg ) );
+                        QNX_SEL_NUM( group->addr.seg ) );
     }
 }
 
@@ -434,7 +434,7 @@ void FiniQNXLoadFile( void )
     header.stack_index = QNX_SEL_NUM( StackAddr.seg );
     adseg = header.stack_index;
     if( DataGroup != NULL ) {
-        adseg = QNX_SEL_NUM( DataGroup->grp_addr.seg );
+        adseg = QNX_SEL_NUM( DataGroup->addr.seg );
     }
     header.heap_index = adseg;  // all in DGROUP.
     header.argv_index = adseg;

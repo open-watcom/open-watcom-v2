@@ -39,8 +39,8 @@
 #include "salloc.h"
 
 
-static targ_addr    DataLoc;
-static targ_addr    CodeLoc;
+static addr_type    DataLoc;
+static addr_type    CodeLoc;
 
 void ResetAddr( void )
 /***************************/
@@ -135,45 +135,47 @@ void StartMemMap( void )
     }
 }
 
-static targ_addr *GetIDLoc( group_entry *group )
-/***********************************************/
-/* return a pointer to the current address for ID split format */
+static addr_type *GetIDLoc( group_entry *group )
+/***********************************************
+ * return a pointer to the current address for ID split format
+ */
 {
-    targ_addr   *retval;
+    addr_type       *addr;
 
     if( group->segflags & SEG_DATA ) {
-        retval = &DataLoc;
+        addr = &DataLoc;
     } else {
-        retval = &CodeLoc;
+        addr = &CodeLoc;
     }
-    return( retval );
+    return( addr );
 }
 
-void ChkLocated( targ_addr *segadr, bool fixed)
-/*******************************************************/
-// If segment has been given a fixed address, use it
-//  unless location counter is already past it
-// This should only be called from real mode
+void ChkLocated( addr_type *seg_addr, bool fixed )
+/***********************************************
+ * If segment has been given a fixed address, use it
+ * unless location counter is already past it
+ * This should only be called from real mode
+ */
 {
     if( fixed ) {
         if( ( CurrLoc.seg << FmtData.SegShift ) + CurrLoc.off >
-            ( segadr->seg << FmtData.SegShift ) + segadr->off ) {
-            LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", segadr);
+            ( seg_addr->seg << FmtData.SegShift ) + seg_addr->off ) {
+            LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", seg_addr );
         } else {
-            CurrLoc = *segadr;
+            CurrLoc = *seg_addr;
         }
    } else {
-        *segadr = CurrLoc;
+        *seg_addr = CurrLoc;
    }
 }
 
 void NewSegment( seg_leader *seg )
-/***************************************/
+/********************************/
 {
-    group_entry *group;
-    targ_addr   *loc;
-    offset      off;
-    bool        auto_group;
+    group_entry     *group;
+    addr_type       *loc_addr;
+    offset          off;
+    bool            auto_group;
 
     group = seg->group;
     if( IS_DBG_INFO( seg ) ) {
@@ -202,8 +204,8 @@ void NewSegment( seg_leader *seg )
         group->totalsize += seg->size;
     } else if( FmtData.type & (MK_FLAT_OFFS | MK_ID_SPLIT) ) {
         if( FmtData.type & MK_ID_SPLIT ) {
-            loc = GetIDLoc( group );
-            CurrLoc = *loc;
+            loc_addr = GetIDLoc( group );
+            CurrLoc = *loc_addr;
         }
         off = CAlign( CurrLoc.off, seg->align );
         group->totalsize += off - CurrLoc.off;
@@ -212,11 +214,11 @@ void NewSegment( seg_leader *seg )
         AddSize( seg->size );
         group->totalsize += seg->size;
         if( FmtData.type & MK_ID_SPLIT ) {
-            loc = GetIDLoc( group );
-            *loc = CurrLoc;
+            loc_addr = GetIDLoc( group );
+            *loc_addr = CurrLoc;
         }
     } else {
-        CurrLoc.seg = group->grp_addr.seg;
+        CurrLoc.seg = group->addr.seg;
         seg->seg_addr.seg = CurrLoc.seg;
         CurrLoc.off = group->totalsize;
         if( seg == FmtData.dgroupsplitseg ) {

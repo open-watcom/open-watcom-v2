@@ -618,7 +618,7 @@ void CVDefClass( class_entry *class, unsigned_32 size )
     SectAddrs[CVSECT_MISC].u.vm_offs += size;
     group = AllocGroup( AutoGrpName, &DBIGroups );
     group->g.class = class;
-    group->grp_addr.seg = 0;
+    group->addr.seg = 0;
 }
 
 static void DefLocal( void *_sdata )
@@ -720,8 +720,8 @@ void CVFini( section *sect )
     desc.iSegName = 0xFFFF;
     desc.iClassName = 0xFFFF;
     for( group = Groups; group != NULL; group = group->next ) {
-        desc.frame = group->grp_addr.seg;
-        desc.offset = group->grp_addr.off;
+        desc.frame = group->addr.seg;
+        desc.offset = group->addr.off;
         desc.cbseg = group->totalsize;
         if( (group->segflags & SEG_DATA) == 0 ) {
             desc.u.b.fExecute = true;

@@ -85,7 +85,7 @@ typedef struct {
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
-    group_entry *lastgrp;       // used only for copy classes
+    group_entry *last_group;       // used only for copy classes
     boolbit     repos   : 1;
     boolbit     copy    : 1;
 } grpwriteinfo;
@@ -497,7 +497,7 @@ static void DefBSSStartSize( const char *name, class_entry *class )
         seg = (seg_leader *)RingFirst( class->segs );
         sym->p.seg = (segdata *)RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
+        ConvertToFrame( &sym->addr, seg->group->addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
     } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
@@ -518,7 +518,7 @@ static void DefBSSEndSize( const char *name, class_entry *class )
         /* set end of BSS class */
         sym->p.seg = (segdata *)RingLast( seg->pieces );
         SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
+        ConvertToFrame( &sym->addr, seg->group->addr.seg, ( (seg->info & SEGINF_USE_32) == 0 ) );
     } else if( LinkState & LS_DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
@@ -638,7 +638,7 @@ void GetStartAddr( void )
                 StartInfo.addr.seg = 0;
                 StartInfo.addr.off = 0;
             } else {
-                StartInfo.addr = Groups->grp_addr;
+                StartInfo.addr = Groups->addr;
             }
             LnkMsg( WRN+MSG_NO_START_ADDR, "a", &StartInfo.addr );
         }
@@ -652,11 +652,11 @@ void GetStartAddr( void )
         if( (StartInfo.targ.sdata->u.leader->seg_addr.seg > 0)
           && (StartInfo.targ.sdata->u.leader->group != NULL) ) {
             deltaseg = StartInfo.targ.sdata->u.leader->seg_addr.seg
-              - StartInfo.targ.sdata->u.leader->group->grp_addr.seg;
+              - StartInfo.targ.sdata->u.leader->group->addr.seg;
             if( (deltaseg > 0)
               && (deltaseg <= StartInfo.targ.sdata->u.leader->seg_addr.seg) ) {
                 StartInfo.addr.seg -= deltaseg;
-                StartInfo.addr.off += 16 * deltaseg - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
+                StartInfo.addr.off += 16 * deltaseg - StartInfo.targ.sdata->u.leader->group->addr.off;
             }
         }
         break;
@@ -677,7 +677,7 @@ offset CalcGroupSize( group_entry *group )
 
     if(( group == DataGroup )
       && ( FmtData.dgroupsplitseg != NULL )) {
-        size = FmtData.dgroupsplitseg->seg_addr.off - group->grp_addr.off - FmtData.bsspad;
+        size = FmtData.dgroupsplitseg->seg_addr.off - group->addr.off - FmtData.bsspad;
         DbgAssert( size >= group->size );
     } else {
         size = group->totalsize;
@@ -694,7 +694,7 @@ offset CalcSplitSize( void )
     if( FmtData.dgroupsplitseg == NULL ) {
         return( 0 );
     } else {
-        size = DataGroup->totalsize - (FmtData.dgroupsplitseg->seg_addr.off - DataGroup->grp_addr.off);
+        size = DataGroup->totalsize - (FmtData.dgroupsplitseg->seg_addr.off - DataGroup->addr.off);
         if( StackSegPtr != NULL ) {
             size -= StackSize;
         }
@@ -702,19 +702,19 @@ offset CalcSplitSize( void )
     }
 }
 
-bool CompareDosSegments( targ_addr *left, targ_addr *right )
+bool CompareDosSegments( addr_type *left, addr_type *right )
 /**********************************************************/
 {
     return( LESS_THAN_ADDR( *left, *right ) );
 }
 
-bool CompareOffsets( targ_addr *left, targ_addr *right )
+bool CompareOffsets( addr_type *left, addr_type *right )
 /******************************************************/
 {
     return( left->off < right->off );
 }
 
-bool CompareProtSegments( targ_addr *left, targ_addr *right )
+bool CompareProtSegments( addr_type *left, addr_type *right )
 /***********************************************************/
 {
     if( left->seg == right->seg ) {
@@ -723,33 +723,36 @@ bool CompareProtSegments( targ_addr *left, targ_addr *right )
     return( left->seg < right->seg );
 }
 
-void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
+void OrderGroups( bool (*lessthan)(addr_type *, addr_type *) )
 /************************************************************/
 {
-    group_entry     *group, *low_group, *firstgroup, **lastgroup;
-    targ_addr       *low_addr;
-    targ_addr       *grp_addr;
+    group_entry     *group;
+    group_entry     *low_group;
+    group_entry     *first_group;
+    group_entry     **last_group;
+    addr_type       *low_addr;
+    addr_type       *group_addr;
 
-    firstgroup = Groups;
-    lastgroup = &Groups;
-    while( firstgroup != NULL ) {
-        low_addr = &firstgroup->grp_addr;
+    first_group = Groups;
+    last_group = &Groups;
+    while( first_group != NULL ) {
+        low_addr = &first_group->addr;
         low_group = NULL;
-        for( group = firstgroup; group->next != NULL; group = group->next ) {
-            grp_addr =  &group->next->grp_addr;
-            if( lessthan( grp_addr, low_addr ) ) {
-                low_addr = grp_addr;
+        for( group = first_group; group->next != NULL; group = group->next ) {
+            group_addr = &group->next->addr;
+            if( lessthan( group_addr, low_addr ) ) {
+                low_addr = group_addr;
                 low_group = group;
             }
         }
         if( low_group == NULL ) {
-            *lastgroup = firstgroup;
-            lastgroup = &(firstgroup->next);
-            firstgroup = *lastgroup;
+            *last_group = first_group;
+            last_group = &(first_group->next);
+            first_group = *last_group;
         } else {
-            *lastgroup = low_group->next;
-            lastgroup = &(low_group->next->next);
-            low_group->next = *lastgroup;
+            *last_group = low_group->next;
+            last_group = &(low_group->next->next);
+            low_group->next = *last_group;
         }
     }
 }
@@ -782,7 +785,7 @@ bool WriteGroup( group_entry *group )
         }
 #endif
         DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
+                &group->addr, sect->ovlref, file_loc, finfo->fname ));
         file_loc += WriteGroupLoad( group, repos );
         if( file_loc > finfo->file_loc ) {
             finfo->file_loc = file_loc;
@@ -1167,8 +1170,8 @@ static bool WriteCopyGroups( void *_seg, void *_info )
     seg_leader      *seg = _seg;
     grpwriteinfo    *info = _info;
 
-    if( info->lastgrp != seg->group ) {   // Only interate new groups
-        info->lastgrp = seg->group;
+    if( info->last_group != seg->group ) {   // Only interate new groups
+        info->last_group = seg->group;
         // Check each initialized segment in group
         Ring2Lookup( seg->group->leaders, DoDupGroupLeader, info );
         info->grp_start += seg->group->totalsize;
@@ -1190,7 +1193,7 @@ offset  WriteGroupLoad( group_entry *group, bool repos )
     class = group->leaders->class;
     if( class->flags & CLASS_COPY ) {
         info.copy = true;
-        info.lastgrp = NULL; // so it will use the first group
+        info.last_group = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteCopyGroups, &info );
     } else {
         info.copy = false;

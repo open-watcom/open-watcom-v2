@@ -196,7 +196,7 @@ typedef struct symbol {
     struct symbol       *hash;
     struct symbol       *next_by_publist; /* Ring2... */
     struct symbol       *next;
-    targ_addr           addr;
+    addr_type           addr;
     unsigned_16         namelen_cmp;
     sym_info            info;       // flags & floating point patch type.
     struct mod_entry    *mod;

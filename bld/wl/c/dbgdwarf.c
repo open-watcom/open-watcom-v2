@@ -445,7 +445,7 @@ static void DefAClass( void *_seg )
     int         index;
 
     seg->group = AllocGroup( AutoGrpName, &DBIGroups );
-    seg->group->grp_addr.seg = 0;
+    seg->group->addr.seg = 0;
     if( SectionTable[SECT_DEBUG_INFO].size > 0 ) {
         for( index = 0; index < SECT_NUM_SECTIONS; index++ ) {
             if( stricmp( seg->segname.u.ptr, SectionTable[index].name ) == 0 ) {
@@ -490,7 +490,7 @@ static offset GetLinearGroupOffset( group_entry *group )
 
     off = 0;
     if( group != NULL ) {
-        off = group->linear - group->grp_addr.off;
+        off = group->linear - group->addr.off;
         if( FmtData.type & MK_ELF ) {
             off += FmtData.base;
         } else {

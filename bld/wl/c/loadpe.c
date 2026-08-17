@@ -391,7 +391,7 @@ static unsigned_32 WriteDataPages( pe_exe_header *pehdr, pe_object *object, unsi
         }
         linear = __ROUND_UP_SIZE( size_v, FmtData.objalign );
         linear += group->linear;
-        if( StartInfo.addr.seg == group->grp_addr.seg ) {
+        if( StartInfo.addr.seg == group->addr.seg ) {
             entry_rva = group->linear + StartInfo.addr.off;
         }
         object->rva = group->linear;
@@ -1773,8 +1773,8 @@ void AllocPETransferTable( void )
     piece = RingLast( lead->pieces );
     CurrMod = FakeModule;
     group = lead->group;
-    seg = group->grp_addr.seg;
-    off = group->grp_addr.off + group->totalsize;
+    seg = group->addr.seg;
+    off = group->addr.off + group->totalsize;
     // now calc addresses for imported local symbols
     for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
         off -= sizeof( pe_va );

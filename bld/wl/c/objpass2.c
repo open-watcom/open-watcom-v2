@@ -127,7 +127,7 @@ bool LoadObj( segdata *seg )
         LnkMsg( WRN+MSG_INTERNAL, "s", "null leader group found" );
 #endif
     } else {
-        CurrRec.addr = leader->group->grp_addr;
+        CurrRec.addr = leader->group->addr;
         CurrRec.addr.off += SEG_GROUP_DELTA( leader );
     }
     CurrRec.addr.off += seg->a.delta;

@@ -234,7 +234,7 @@ static void WriteMapGroups( void )
         for( group = Groups; group != NULL; group = group->next ) {
             if( !group->isautogrp ) { /* if not an autogroup */
                 WriteMapColPrintf( 0, "%s", group->sym->name );
-                WriteMapColPrintf( 32, "%a", &group->grp_addr );
+                WriteMapColPrintf( 32, "%a", &group->addr );
                 WriteMapColPrintf( 53, "%h", group->totalsize );
                 WriteMapNL();
             }
@@ -438,10 +438,10 @@ void WriteMapLnkMsgCallback( unsigned msgnum, const char *str, size_t len )
 void WriteMapOvlVectHead( vect_state *VectState )
 /***********************************************/
 {
-    vecnode             *vectnode;
-    int                 n;
-    targ_addr           addr;
-    symbol              *sym;
+    vecnode         *vectnode;
+    int             n;
+    addr_type       addr;
+    symbol          *sym;
 
     WriteMapNL();
     WriteMapNL();
@@ -532,12 +532,12 @@ static void WriteMapSegment( void *_seg )
  * NYI: completely broken for absolute segments
  */
 {
-    segdata     *seg = _seg;
-    char        star;
-    char        bang;
-    char        see;
-    targ_addr   addr;
-    seg_leader  *leader;
+    segdata         *seg = _seg;
+    char            star;
+    char            bang;
+    char            see;
+    addr_type       addr;
+    seg_leader      *leader;
 
     if( seg->isdead )
         return;

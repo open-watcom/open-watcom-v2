@@ -31,23 +31,23 @@
 
 
 typedef struct entry_export {
-    struct entry_export     *next;
-    name_strtab             name;
-    ordinal_t               ordinal;
-    unsigned_16             iopl_words;
-    boolbit                 isresident  : 1;
-    boolbit                 isexported  : 1;
-    boolbit                 ismovable   : 1;
-    boolbit                 isanonymous : 1;
-    boolbit                 isfree      : 1;
-    boolbit                 isprivate   : 1;
-    boolbit                 isiopl      : 1;
-    symbol                  *sym;
-    char                    *impname;
-    targ_addr               addr;
+    struct entry_export *next;
+    name_strtab         name;
+    ordinal_t           ordinal;
+    unsigned_16         iopl_words;
+    boolbit             isresident  : 1;
+    boolbit             isexported  : 1;
+    boolbit             ismovable   : 1;
+    boolbit             isanonymous : 1;
+    boolbit             isfree      : 1;
+    boolbit             isprivate   : 1;
+    boolbit             isiopl      : 1;
+    symbol              *sym;
+    char                *impname;
+    addr_type           addr;
 } entry_export;
 
-extern ordinal_t        FindEntryOrdinal( targ_addr, group_entry * );
+extern ordinal_t        FindEntryOrdinal( addr_type, group_entry * );
 extern void             FreeExportList( void );
 extern void             AddToExportList( entry_export * );
 extern void             MSExportKeyword( const length_name *, const length_name *, unsigned, ordinal_t );

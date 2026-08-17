@@ -371,7 +371,7 @@ static void AllocDBIClasses( class_entry *class )
     for( ; class != NULL; class = class->next ) {
         if( class->flags & CLASS_DEBUG_INFO ) {
             group = AllocGroup( AutoGrpName, &DBIGroups );
-            group->grp_addr.seg = 0;
+            group->addr.seg = 0;
             RingLookup( class->segs, AllocASeg, group );
         }
     }
@@ -507,8 +507,8 @@ static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
         seghdr.base.offset = seg->seg_addr.off;
         seghdr.base.segment = seg->seg_addr.seg;
     } else {
-        seghdr.base.offset = seg->group->grp_addr.off + SEG_GROUP_DELTA( seg );
-        seghdr.base.segment = seg->group->grp_addr.seg;
+        seghdr.base.offset = seg->group->addr.off + SEG_GROUP_DELTA( seg );
+        seghdr.base.segment = seg->group->addr.seg;
     }
     seghdr.count = seg->num;
     if( CurrSect == NonSect )
@@ -843,7 +843,7 @@ static unsigned_16 WriteSegValues( void )
         buffer = (unsigned_16 *)TokBuff;
         buflen = 0;
         for( group = Groups; group != NULL; group = group->next ) {
-            *buffer++ = group->grp_addr.seg;
+            *buffer++ = group->addr.seg;
             buflen += sizeof( unsigned_16 );
         }
         DBIWriteLocal( TokBuff, buflen );

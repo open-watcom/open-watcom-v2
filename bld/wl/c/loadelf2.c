@@ -155,7 +155,7 @@ static unsigned_16 ElfSymSecNum( ElfHdr *hdr, symbol *sym, group_entry *group )
     } else if( group == NULL ) {
         return( SHN_ABS );
     } else {
-        secnum += group->grp_addr.seg - 1;
+        secnum += group->addr.seg - 1;
     }
     DbgAssert(group != NULL);
     return( secnum );

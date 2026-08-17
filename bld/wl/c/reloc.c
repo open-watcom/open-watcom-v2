@@ -184,7 +184,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
            reloclist = PERelocInit( group->totalsize );
            group->g.grp_relocs = reloclist;
         }
-        idx = ( off - group->grp_addr.off ) >> OSF_PAGE_SHIFT;
+        idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
         header = &reloclist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )];
         DoWriteReloc( header, reloc, size );
         group->section->relocs++;
@@ -196,7 +196,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
             pagelist = OS2FlatRelocInit( group->totalsize );
             group->g.grp_relocs = pagelist;
         }
-        idx = ( off - group->grp_addr.off ) >> OSF_PAGE_SHIFT;
+        idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
         header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
         switch( ((os2_flat_reloc_item *)reloc)->nr_flags & OSF_TARGET_MASK )  {
         case OSF_TARGET_INTERNAL:

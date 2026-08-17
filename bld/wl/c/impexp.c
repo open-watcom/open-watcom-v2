@@ -358,7 +358,7 @@ void CheckExport( const char *name, ordinal_t ordinal, bool cmpcase )
     }
 }
 
-ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *group )
+ordinal_t FindEntryOrdinal( addr_type addr, group_entry *group )
 /**************************************************************/
 {
     ordinal_t       max_ord;

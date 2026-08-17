@@ -111,20 +111,20 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     numobjects = 0;
     objrec.reserved = 0;
     if( DataGroup != NULL ) {
-        header->autodata_obj = DataGroup->grp_addr.seg;
+        header->autodata_obj = DataGroup->addr.seg;
     } else {
         header->autodata_obj = 0;
     }
     for( group = Groups; group != NULL; group = group->next ) {
         if( group->totalsize == 0 )
             continue;   // DANGER DANGER DANGER <--!!!
-        if( group->grp_addr.seg == StackAddr.seg ) {
+        if( group->addr.seg == StackAddr.seg ) {
             header->stack_obj = StackAddr.seg;
-            header->esp = StackAddr.off - group->grp_addr.off;
+            header->esp = StackAddr.off - group->addr.off;
         }
-        if( group->grp_addr.seg == StartInfo.addr.seg ) {
+        if( group->addr.seg == StartInfo.addr.seg ) {
             header->start_obj = StartInfo.addr.seg;
-            header->eip = StartInfo.addr.off - group->grp_addr.off;
+            header->eip = StartInfo.addr.off - group->addr.off;
         }
         objrec.size = group->totalsize;
         objrec.addr = group->linear;

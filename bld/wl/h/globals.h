@@ -47,7 +47,7 @@ GLOB outfilelist    *OutFiles;      /* list of files which will be written to   
 GLOB char           *MapFName;      /* name of map file                         */
 GLOB FILE           *MapFile;       /* handle of map file                       */
 GLOB mapflag        MapFlags;       /* flags dealing with the map file          */
-GLOB targ_addr      StackAddr;      /* initial stack address                    */
+GLOB addr_type      StackAddr;      /* initial stack address                    */
 GLOB linkflag       LinkFlags;      /* flags to indicate presence of parms      */
 GLOB stateflag      LinkState;      /* flags to indicate linker state           */
 GLOB file_list      *ObjLibFiles;   /* list of library files (for searching)    */
@@ -59,7 +59,7 @@ GLOB group_entry    *IDataGroup;    /* pointer to .idata                        
 GLOB byte           *ObjBuff;       /* offset into object buffer                */
 GLOB mod_entry      *CurrMod;       /* pointer to current mod_entry struct      */
 GLOB byte           *EOObjRec;      /* end of object buffer                     */
-GLOB targ_addr      CurrLoc;        /* current location pointer                 */
+GLOB addr_type      CurrLoc;        /* current location pointer                 */
 GLOB int            RecNum;         /* record number of the obj file            */
 GLOB seg_leader     *CurrentSeg;    /* current segment being allocated          */
 GLOB section        *Root;          /* pointer to root information              */

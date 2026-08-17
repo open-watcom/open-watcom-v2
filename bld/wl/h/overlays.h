@@ -51,7 +51,7 @@ extern void             OvlVectorize( symbol * );
 extern void             OvlTryRefVector( symbol * );
 extern void             OvlUseVector( symbol *, extnode * );
 extern void             OvlIndirectCall( symbol * );
-extern void             OvlGetVecAddr( int, targ_addr * );
+extern void             OvlGetVecAddr( int, addr_type * );
 extern bool             OvlCheckOvlClass( const char *, bool * );
 extern section          *OvlCheckOvlSection( const char * );
 extern void             OvlEmitVectors( void );

@@ -175,7 +175,7 @@ void Msg_Put_Args(
                 break;
             case 'A':
             case 'a':
-                arginfo->address = va_arg( args, targ_addr * );
+                arginfo->address = va_arg( args, addr_type * );
                 break;
             case 'S':
                 arginfo->symb = va_arg( args, symbol * );

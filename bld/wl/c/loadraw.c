@@ -81,7 +81,7 @@ static bool WriteBinSegGroup( group_entry *group )
                 repos = true;
             }
             DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovlref, file_loc, finfo->fname ));
+                &group->addr, sect->ovlref, file_loc, finfo->fname ));
             file_loc += WriteGroupLoad( group, repos );
             if( file_loc > finfo->file_loc ) {
                 finfo->file_loc = file_loc;
@@ -106,7 +106,7 @@ void BinOutput( void )
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
         CurrSect = Root;        // needed for WriteInfo.
-        Root->sect_addr = Groups->grp_addr;
+        Root->sect_addr = Groups->addr;
         fnode = Root->outfile;
         fnode->file_loc = 0;
         Root->u.file_loc = Root->sect_addr.off - FmtData.output_offset;
@@ -118,9 +118,9 @@ void BinOutput( void )
                 size = CalcGroupSize( group );
             }
             if( size ) {
-                diff = ( FmtData.base + group->grp_addr.off + group->linear - FmtData.output_offset ) - PosLoad();
+                diff = ( FmtData.base + group->addr.off + group->linear - FmtData.output_offset ) - PosLoad();
                 if( diff < 0 ) {
-                    LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
+                    LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->addr));
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }
@@ -131,7 +131,7 @@ void BinOutput( void )
 #endif
         OrderGroups( CompareDosSegments );
         CurrSect = Root;        // needed for WriteInfo.
-        Root->sect_addr = Groups->grp_addr;
+        Root->sect_addr = Groups->addr;
         fnode = Root->outfile;
         fnode->file_loc = 0;
         Root->u.file_loc = ( Root->sect_addr.seg << FmtData.SegShift ) + Root->sect_addr.off - FmtData.output_offset;
@@ -235,7 +235,7 @@ static bool WriteHexData( void *_sdata, void *_offs )
       && len > 0 ) {
         if( offs != next_addr.off + buf_offset ) {  // Must start new record if address not contiguous
             if( offs < next_addr.off + buf_offset ) {
-                targ_addr   addr;
+                addr_type   addr;
 
                 addr.off = offs;
                 addr.seg = 0;
@@ -304,7 +304,7 @@ static void WriteStart( void )
 
 typedef struct {
     hex_offset      offs;
-    group_entry     *lastgrp;  // used only for copy classes
+    group_entry     *last_group;  // used only for copy classes
 } grpwriteinfo;
 
 static bool WriteHexCopyGroups( void *_seg, void *_info )
@@ -315,8 +315,8 @@ static bool WriteHexCopyGroups( void *_seg, void *_info )
     seg_leader * seg = _seg;
     grpwriteinfo *info = _info;
 
-    if( info->lastgrp != seg->group ) {   // Only interate new groups
-        info->lastgrp = seg->group;
+    if( info->last_group != seg->group ) {   // Only interate new groups
+        info->last_group = seg->group;
         // Check each initialized segment in group
         Ring2Lookup( seg->group->leaders, DoHexDupLeader, &info->offs );
         info->offs += seg->group->totalsize;
@@ -350,7 +350,7 @@ void HexOutput( void )
 #if defined( _OS2 ) || defined( _QNX ) || defined( _ELF )
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_ELF) ) {
         CurrSect = Root;    // needed for WriteInfo.
-        Root->sect_addr = Groups->grp_addr;
+        Root->sect_addr = Groups->addr;
         fnode = Root->outfile;
         fnode->file_loc = 0;
         Root->u.file_loc = Root->sect_addr.off - FmtData.output_offset;
@@ -364,13 +364,13 @@ void HexOutput( void )
             }
             size = CalcGroupSize( wrkgrp );
             if( size != 0 ) {
-                info.offs = (group->grp_addr.off + group->linear - FmtData.output_offset);
+                info.offs = (group->addr.off + group->linear - FmtData.output_offset);
                 sect = wrkgrp->section;
                 CurrSect = sect;
     #ifdef DEVBUILD
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
+                    &group->addr, sect->ovlref, info.offs, finfo->fname ));
     #endif
                 if( group->leaders->class->flags & CLASS_COPY ) {
                     Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.offs );
@@ -383,7 +383,7 @@ void HexOutput( void )
 #endif
         OrderGroups( CompareDosSegments );
         CurrSect = Root;    // needed for WriteInfo.
-        Root->sect_addr = Groups->grp_addr;
+        Root->sect_addr = Groups->addr;
         fnode = Root->outfile;
         fnode->file_loc = 0;
         Root->u.file_loc = (Root->sect_addr.seg << FmtData.SegShift) + Root->sect_addr.off - FmtData.output_offset;
@@ -397,9 +397,9 @@ void HexOutput( void )
 #ifdef DEVBUILD
                 finfo = sect->outfile;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
+                    &group->addr, sect->ovlref, info.offs, finfo->fname ));
 #endif
-                info.lastgrp = NULL;
+                info.last_group = NULL;
                 RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info);
             } else {
                 if( group->size != 0 ) {
@@ -409,7 +409,7 @@ void HexOutput( void )
 #ifdef DEVBUILD
                     finfo = sect->outfile;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                        &group->grp_addr, sect->ovlref, info.offs, finfo->fname ));
+                        &group->addr, sect->ovlref, info.offs, finfo->fname ));
 #endif
                     Ring2Lookup( group->leaders, DoHexLeader, &info.offs );
                 }
@@ -439,7 +439,7 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
     info.offs = GROUP_SECTION_DELTA( group );
     // If group is a copy group, substitute source group(s) here
     if( class->flags & CLASS_COPY ) {
-        info.lastgrp = NULL; // so it will use the first group
+        info.last_group = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info );
     } else {
         Ring2Lookup( group->leaders, DoHexLeader, &info.offs );
@@ -463,7 +463,7 @@ void FiniRawLoadFile( void )
     fnode = Root->outfile;
     fnode->file_loc = 0;
     Root->u.file_loc = 0;
-    Root->sect_addr = Groups->grp_addr;
+    Root->sect_addr = Groups->addr;
     if( FmtData.raw_hex_output ) {
         next_addr.off = 0;      // Start at absolute linear address 0
         next_addr.seg = 0;
@@ -481,7 +481,7 @@ void FiniRawLoadFile( void )
             } else {
                 diff = file_loc - PosLoad();
                 if( diff < 0 ) {
-                    LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
+                    LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->addr));
                 } else if( diff > 0 ) {
                     PadLoad( (size_t)diff );
                 }

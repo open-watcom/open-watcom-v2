@@ -40,7 +40,7 @@ typedef union msg_arg {
     char            c;
     unsigned_16     int_16;
     unsigned_32     int_32;
-    targ_addr       *address;
+    addr_type       *address;
 } MSG_ARG;
 
 typedef struct msg_arg_list {

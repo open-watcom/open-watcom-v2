@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Macros for converting segment and offset data 
+* Description:  Macros for converting segment and offset data
 *               into linear address and subtracting and comparing
 *
 ****************************************************************************/
@@ -40,8 +40,8 @@ extern segment Find16MSeg( segment );
 
 #define MK_REAL_ADDR( seg, off )  ( ((offset)(seg) << FmtData.SegShift) + (off) )
 
-#define SEG_GROUP_DELTA(x)  SUB_REAL_ADDR( (x)->seg_addr, (x)->group->grp_addr )
+#define SEG_GROUP_DELTA(x)  SUB_REAL_ADDR( (x)->seg_addr, (x)->group->addr )
 
-#define GROUP_SECTION_DELTA(x) SUB_REAL_ADDR( (x)->grp_addr, (x)->section->sect_addr )
+#define GROUP_SECTION_DELTA(x) SUB_REAL_ADDR( (x)->addr, (x)->section->sect_addr )
 
-#define GROUP_FILE_LOC(x) ( SUB_REAL_ADDR( (x)->grp_addr, (x)->section->sect_addr ) + (x)->section->u.file_loc )
+#define GROUP_FILE_LOC(x) ( SUB_REAL_ADDR( (x)->addr, (x)->section->sect_addr ) + (x)->section->u.file_loc )
