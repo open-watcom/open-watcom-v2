@@ -156,8 +156,8 @@ void DoRelocs( void )
     unsigned    typ;
     offset      location;
     offset      addend;
-    frame_spec  fthread;
-    target_spec tthread;
+    frame_spec  frame;
+    target_spec target;
 
     if( ObjFormat & OBJ_FMT_IGNORE_FIXUPP )
         return;
@@ -221,17 +221,17 @@ void DoRelocs( void )
              * frame processing
              */
             if( typ & FIXDAT_FTHREAD ) {
-                fthread = FrameThreads[( typ >> 4 ) & 3];
+                frame = FrameThreads[( typ >> 4 ) & 3];
             } else {
-                GetFrame( ( typ >> 4 ) & 7, &fthread );
+                GetFrame( ( typ >> 4 ) & 7, &frame );
             }
             /*
              * target processing
              */
             if( typ & FIXDAT_TTHREAD ) {
-                tthread = TargThreads[typ & 3];
+                target = TargThreads[typ & 3];
             } else {
-                GetTarget( typ & 3, &tthread );
+                GetTarget( typ & 3, &target );
             }
             /*
              * target addend processing
@@ -246,7 +246,7 @@ void DoRelocs( void )
                     ObjBuff += sizeof( unsigned_16 );
                 }
             }
-            StoreFixup( location, fixtype, &fthread, &tthread, addend );
+            StoreFixup( location, fixtype, &frame, &target, addend );
         } else {
             /*
              * thread
