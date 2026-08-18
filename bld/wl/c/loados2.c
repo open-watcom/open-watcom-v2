@@ -261,12 +261,12 @@ static unsigned long WriteOS2Relocs( group_entry *group )
     unsigned long relocsize;
     unsigned long relocnum;
 
-    relocsize = RelocSize( group->g.grp_relocs );
+    relocsize = RelocSize( group->g.reloclist );
     relocnum = relocsize / sizeof( os2_reloc_item );
     if( relocnum == 0 )
         return( 0 );
     WriteLoadU16( relocnum );
-    DumpRelocList( group->g.grp_relocs );
+    DumpRelocList( group->g.reloclist );
     return( relocsize );
 }
 

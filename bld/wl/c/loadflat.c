@@ -357,7 +357,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     numentries = 0;
     size = 0;
     for( group = Groups; group != NULL; group = group->next ) {
-        reloclist = group->g.grp_relocs;
+        reloclist = group->g.reloclist;
         numpages = PAGE_COUNT( group->size );
         numentries += numpages;
         for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {

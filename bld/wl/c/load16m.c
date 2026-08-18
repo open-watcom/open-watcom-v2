@@ -182,18 +182,18 @@ static int cmp_reloc_entry( const void *a, const void *b )
 static unsigned GetRelocBlock( reloc_addr **reloc_data )
 /******************************************************************/
 {
-    RELOC_INFO      *relocs;
+    reloc_info      reloclist;
     size_t          num_relocs;
     context         info;
 
     *reloc_data = NULL;
     if( (LinkState & LS_MAKE_RELOCS) && Root->relocs ) {
-        relocs = Root->reloclist;
+        reloclist = Root->reloclist;
         num_relocs = Root->relocs;
         *reloc_data = MemAllocSafe( sizeof( reloc_addr ) * num_relocs );
         if( *reloc_data != NULL ) {
             info.reloc_data = *reloc_data;
-            WalkRelocList( &relocs, RelocWalkFn, &info );
+            WalkRelocList( &reloclist, RelocWalkFn, &info );
             if( reloc_fmt == 1 ) {
                 return( 2 );
             } else {

@@ -260,7 +260,7 @@ static void InitGroup( group_entry *group )
     group->isfree = false;
     group->isautogrp = false;
     group->isdup = false;
-    group->g.grp_relocs = NULL;
+    group->g.reloclist = NULL;
 }
 
 group_entry *AllocGroup( const char *name, group_entry **grp_list )

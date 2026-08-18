@@ -718,7 +718,7 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
      * not be in sync at all.
      */
     for( group = Groups; group != NULL; group = group->next ) {
-        reloclist = group->g.grp_relocs;
+        reloclist = group->g.reloclist;
         if( reloclist != NULL ) {
             pagerva = group->linear;
             numpages = __ROUND_UP_SIZE_TO_4K( group->size );
@@ -886,7 +886,7 @@ static void CheckNumRelocs( void )
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     for( group = Groups; group != NULL; group = group->next ) {
-        if( group->g.grp_relocs != NULL ) {
+        if( group->g.reloclist != NULL ) {
             return;
         }
     }

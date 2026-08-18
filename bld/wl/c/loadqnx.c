@@ -207,8 +207,8 @@ static void WriteQNXGroup( group_entry *group, unsigned_32 *segments )
     Ring2Walk( group->leaders, DoGroupLeader );
 }
 
-static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg )
-/********************************************************************************/
+static void WriteQNXRelocs( reloc_info reloclist, unsigned lmf_type, unsigned_16 seg )
+/************************************************************************************/
 {
     lmf_record          record;
     unsigned_32         pos;
@@ -224,12 +224,12 @@ static void WriteQNXRelocs( RELOC_INFO *head, unsigned lmf_type, unsigned_16 seg
         adjust = 2;
     }
     pos = PosLoad();    /* get current position */
-    while( head != NULL ) {
+    while( reloclist != NULL ) {
         SeekLoad( pos + sizeof( lmf_record ) );
         if( islinear ) {
             WriteLoad( &seg, sizeof( unsigned_16 ) );
         }
-        size = DumpMaxRelocList( &head, QNX_MAX_FIXUPS - adjust ) + adjust;
+        size = DumpMaxRelocList( &reloclist, QNX_MAX_FIXUPS - adjust ) + adjust;
         SeekLoad( pos );
         record.data_nbytes = size;
         WriteLoad( &record, sizeof( lmf_record ) );
@@ -272,8 +272,7 @@ static void WriteQNXData( unsigned_32 * segments )
         if( group->u.qnxflags != QNX_READ_WRITE && group->totalsize != 0 ) {
             WriteQNXGroup( group, segments );
         }
-        WriteQNXRelocs( group->g.grp_relocs, LMF_LINEAR_FIXUP_REC,
-                        QNX_SEL_NUM( group->addr.seg ) );
+        WriteQNXRelocs( group->g.reloclist, LMF_LINEAR_FIXUP_REC, QNX_SEL_NUM( group->addr.seg ) );
     }
 }
 

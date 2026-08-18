@@ -263,6 +263,13 @@ typedef struct areasect {
 typedef struct order_class      ORDER_CLASS;
 typedef struct order_segment    ORDER_SEGMENT;
 
+typedef struct reloc_info_struct *reloc_info;
+
+typedef struct {
+    reloc_info          externals; /* external and segment style fixups */
+    reloc_info          internals; /* internal, non-segment fixups */
+} os2_reloc_header;
+
 typedef struct section {
     SECTION             *next;
     FILE_LIST           *files;
@@ -428,7 +435,7 @@ typedef struct group_entry {
     offset              totalsize;
     offset              linear;         // preferred base address
     union {
-        void            *grp_relocs;    // OS2/ELF only.
+        void            *reloclist;     // OS2/ELF only.
         class_entry     *class;         // CV (during addr calc )
     } g;
     union {

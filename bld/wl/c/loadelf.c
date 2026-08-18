@@ -110,7 +110,7 @@ static void InitSections( ElfHdr *hdr )
     num += hdr->i.grpnum;
     hdr->i.relbase = num;
     for( group = Groups; group != NULL; group = group->next ) {
-        if( group->g.grp_relocs != NULL ) {
+        if( group->g.reloclist != NULL ) {
             hdr->i.relnum++;
         }
     }
@@ -341,13 +341,13 @@ static void WriteRelocsSections( ElfHdr *hdr )
     group_entry *group;
     unsigned    currgrp;
     Elf32_Shdr  *sh;
-    void        *relocs;
+    void        *reloclist;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
     for( group = Groups; group != NULL; group = group->next ) {
-        relocs = group->g.grp_relocs;
-        if( relocs != NULL ) {
+        reloclist = group->g.reloclist;
+        if( reloclist != NULL ) {
             sh->sh_offset = hdr->curr_off;
             sh->sh_entsize = sizeof( elf_reloc_item );
             sh->sh_type = SHT_RELA;
@@ -356,9 +356,9 @@ static void WriteRelocsSections( ElfHdr *hdr )
             sh->sh_link = hdr->i.symtab;
             sh->sh_info = currgrp;
             sh->sh_addralign = 4;
-            sh->sh_size = RelocSize( relocs );
+            sh->sh_size = RelocSize( reloclist );
             sh->sh_name = AddRelocSectName( hdr, GroupSecName( group ) );
-            DumpRelocList( relocs );
+            DumpRelocList( reloclist );
             hdr->curr_off += sh->sh_size;
             sh++;
         }

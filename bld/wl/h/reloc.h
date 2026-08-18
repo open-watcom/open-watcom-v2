@@ -174,24 +174,22 @@ typedef union {
     elf_reloc_item      elf;
 } reloc_item;
 
-typedef struct reloc_info RELOC_INFO;
-
 #include "poppck.h"
 
 extern unsigned         FmtRelocSize;
-extern RELOC_INFO       *FloatFixups;
+extern reloc_info       FloatFixups;
 
-extern void             WriteReloc( group_entry *, offset, void *, size_t );
+extern void             WriteReloc( group_entry *group, offset, void *, size_t );
 #ifdef _QNX
 extern void             WriteQNXFloatReloc( qnx_reloc_item * item );
-extern void             WriteQNXLinearReloc( group_entry *, qnx_linear_item * );
+extern void             WriteQNXLinearReloc( group_entry *group, qnx_linear_item * );
 #endif
-extern bool             TraverseOS2RelocList( group_entry *, bool (*)(RELOC_INFO *));
+extern bool             TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info));
 extern void             FreeRelocInfo( void );
-extern unsigned_32      RelocSize( RELOC_INFO * );
-extern unsigned_32      DumpMaxRelocList( RELOC_INFO **, unsigned_32 );
-extern bool             DumpRelocList( RELOC_INFO * );
+extern unsigned_32      RelocSize( reloc_info );
+extern unsigned_32      DumpMaxRelocList( reloc_info *, unsigned_32 );
+extern bool             DumpRelocList( reloc_info );
 extern void             SetRelocSize( void );
 extern bool             SwapOutRelocs( void );
 extern void             ResetReloc( void );
-extern unsigned_32      WalkRelocList( RELOC_INFO **head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx );
+extern unsigned_32      WalkRelocList( reloc_info *head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx );
