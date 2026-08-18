@@ -33,6 +33,6 @@
 /*      enum    DIP manager handle size DIP's imp.handle size       Debugger imp.handle size    CV demand type          Watcom demand type
         enum    hsize                   ihsize                      wvihsize                    cvdmndtype              wdmndtype */
 pick( HK_IMAGE, sizeof( image_handle ), sizeof( imp_image_handle ), 0,                          0,                      0 )
-pick( HK_TYPE,  sizeof( type_handle ),  sizeof( imp_type_handle ),  sizeof( imp_type_handle ),  0 /*sstGlobalTypes*/,   DMND_TYPES )
+pick( HK_TYPE,  sizeof( type_handle ),  sizeof( imp_type_handle ),  sizeof( imp_type_handle ),  sstGlobalTypes,   DMND_TYPES )
 pick( HK_CUE,   sizeof( cue_handle ),   sizeof( imp_cue_handle ),   0,                          sstSrcModule,           DMND_LINES )
 pick( HK_SYM,   sizeof( sym_handle ),   sizeof( imp_sym_handle ),   sizeof( imp_sym_handle ),   sstAlignSym,            DMND_LOCALS )

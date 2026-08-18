@@ -131,8 +131,12 @@ typedef enum {
 typedef enum {
     OMF_DBG_UNKNOWN,
     OMF_DBG_CODEVIEW,
-    OMF_DBG_HLL
+    OMF_DBG_HLL_03,
+    OMF_DBG_HLL_04,
+    OMF_DBG_HLL_06
 } omf_dbg_type;
+
+#define IS_OMF_DBG_HLL(omfdbg) ( (omfdbg) >= OMF_DBG_HLL_03 && (omfdbg) <= OMF_DBG_HLL_06 )
 
 typedef enum {
     CLASS_NONE          = 0x0000,
@@ -148,9 +152,10 @@ typedef enum {
     CLASS_FIXED         = 0x1000,   // Class should load at specified address
     CLASS_COPY          = 0x2000,   // Class should use data from DupClass
     CLASS_NOEMIT        = 0x4000,   // Class should not generate output
+    CLASS_HLL_LINE      = 0x8000,   // HLL Line Number (debug info)
 } class_status;
 
-#define CLASS_DEBUG_INFO    (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF)
+#define CLASS_DEBUG_INFO    (CLASS_MS_TYPE | CLASS_MS_LOCAL | CLASS_DWARF | CLASS_HLL_LINE)
 
 #define EMIT_CLASS(c)       (((c)->flags & CLASS_NOEMIT) == 0)
 
@@ -210,7 +215,8 @@ enum {
     DWARF_DEBUG_ABBREV  = 0x0004,
     DWARF_DEBUG_LINE    = 0x0005,
     DWARF_DEBUG_ARANGE  = 0x0006,
-    DWARF_DEBUG_OTHER   = 0x0007
+    DWARF_DEBUG_OTHER   = 0x0007,
+    HLL_LINE            = 0x0008    /* IBM HLL line numbers. */
 };
 
 enum {
@@ -380,6 +386,7 @@ typedef struct obj_name_list {
 typedef struct odbimodinfo      ODBIMODINFO;    // defd in dbg information hdrs
 typedef struct dwarfmodinfo     DWARFMODINFO;
 typedef struct cvmodinfo        CVMODINFO;
+typedef struct hllmodinfo       HLLMODINFO;
 
 typedef struct mod_entry {
     union {
@@ -410,6 +417,7 @@ typedef struct mod_entry {
         ODBIMODINFO     *o;
         DWARFMODINFO    *d;
         CVMODINFO       *cv;
+        HLLMODINFO      *hll;
     } u3;                           // union used for debugging information
 } mod_entry;
 
@@ -468,7 +476,7 @@ typedef struct seg_leader {
     SEG_LEADER          *DupSeg;            // Segment to get data from for output
     seg_info_type       info;
     unsigned_16         align   : 5;        // alignment of seg (power of 2)
-    unsigned_16         dbgtype : 3;        // debugging type of seg
+    unsigned_16         dbgtype : 4;        // debugging type of seg
     unsigned_16         combine : 2;        // combine val. of seg
     unsigned_32         num;                // # of addrinfos to output (video)
     addr_type           seg_addr;           // address of segment.

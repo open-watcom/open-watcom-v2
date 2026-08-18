@@ -55,11 +55,13 @@ typedef enum {
     LF_NOCACHE_FLAG         = 0x00100000,
     LF_CACHE_FLAG           = 0x00200000,
     LF_FAR_CALLS_FLAG       = 0x00400000,   // optimize far calls
+    LF_HLL_DBI_FLAG         = 0x00800000,   // write HLL debug Info.
+    LF_HLLPACK_FLAG         = 0x01000000,   // pack HLL debug info.
 } linkflag;
 
 // Novell treated differently, as it can be generated at the same time as the others.
 
-#define LF_ANY_DBI_FLAG     (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG)
+#define LF_ANY_DBI_FLAG     (LF_DWARF_DBI_FLAG | LF_CV_DBI_FLAG | LF_OLD_DBI_FLAG | LF_HLL_DBI_FLAG)
 
 typedef enum {
     MAP_FLAG                = 0x0001,

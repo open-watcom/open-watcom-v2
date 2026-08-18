@@ -1002,6 +1002,9 @@ static offset FindRealAddr( fix_relo_data *fix )
 
     off = fix->target_addr.off;
     dbiflat = DBINoReloc( CurrRec.seg->u.leader );
+    if ( CurrRec.seg->u.leader->dbgtype == HLL_LINE ) { // FIXME! DBINoReloc() abuse here?
+        dbiflat = false;
+    }
     if( (fix->type & FIX_ABS)
       || dbiflat
       && (CurrMod->flags_mod & MOD_FLATTEN_DBI) == 0 ) {
@@ -1143,7 +1146,7 @@ static void PatchData( fix_relo_data *fix )
         if( fix->done
           || (FmtData.type & (MK_QNX | MK_DOS)) ) {
             if( isdbi
-              && (LinkFlags & LF_CV_DBI_FLAG) ) {    // FIXME
+              && (LinkFlags & (LF_CV_DBI_FLAG | LF_HLL_DBI_FLAG)) ) {    // FIXME
                 segval = FindGroupIdx( fix->target_addr.seg );
             } else if( fix->type & FIX_ABS ) {
                 /* MASM 5.1 stuffs abs seg length in displacement; ignore it like LINK. */

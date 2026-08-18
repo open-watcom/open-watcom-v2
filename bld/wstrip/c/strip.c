@@ -47,6 +47,7 @@
 #include "machtype.h"
 #include "wdbginfo.h"
 #include "cv4.h"
+#include "hll.h"
 #include "tistrail.h"
 #include "wstrip.h"
 #include "wressetr.h"
@@ -222,7 +223,8 @@ static bool TryCV4( FILE *fp, info_info *info )
     if( memcmp( head.sig, CV4_NB09, sizeof( head.sig ) ) != 0
       && memcmp( head.sig, CV4_NB08, sizeof( head.sig ) ) != 0
       && memcmp( head.sig, CV4_NB07, sizeof( head.sig ) ) != 0
-      && memcmp( head.sig, CV4_NB05, sizeof( head.sig ) ) != 0 ) {
+      && memcmp( head.sig, CV4_NB05, sizeof( head.sig ) ) != 0
+      && memcmp( head.sig, HLL_NB04, sizeof( head.sig ) ) != 0 ) {
         return( false );
     }
     info->len = head.offset;

@@ -2,7 +2,6 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,23 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  WLINK banner message definitions.
+* Description:  routines for producing HLL debug information in the load file
 *
 ****************************************************************************/
 
 
-#if 0
-    #define IDV     "** EXPERIMENTAL ** "
-#elif 1
-    #define IDV     "** EXPERIMENTAL (HLL) ** "
-#elif defined( DEVBUILD )
-    #define IDV     "**INTERNAL DEVELOPMENT** "
-#else
-    #define IDV
-#endif
+extern void     HllInit( void );
+extern void     HllInitModule( mod_entry * );
+extern void     HllP1ModuleScanned( void );
+extern void     HllP1ModuleFinished( mod_entry * );
+extern void     HllAddModule( mod_entry *, section * );
+extern void     HllGenModule( void );
+extern void     HllAddLocal( seg_leader *, offset );
+extern void     HllAddGlobal( symbol * );
+extern void     HllGenGlobal( symbol *, section * );
+extern void     HllGenLines( lineinfo * );
+extern void     HllAddAddrInfo( seg_leader * );
+extern void     HllGenAddrInfo( seg_leader * );
+extern void     HllAddrStart( void );
+extern void     HllDefClass( class_entry *, unsigned_32 );
+extern void     HllFini( section * );
+extern void     HllWrite( void );
 
-pick( PRODUCT,      banner1w( "Linker", _WLINK_VERSION_ ) IDV )
-pick( COPYRIGHT,    banner2 )
-pick( COPYRIGHT2,   banner2a( 1985 ) )
-pick( TRADEMARK,    banner3 )
-pick( TRADEMARK2,   banner3a )
+//extern unsigned_32      HllSize;- loadpe.c?

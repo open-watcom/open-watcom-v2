@@ -238,7 +238,7 @@ extern dip_status           hllSymType( imp_image_handle *, imp_sym_handle *, im
 
 extern void                 hllConfused(void);
 extern dip_status           hllDoIndirection( imp_image_handle *, dig_type_info *, location_context *, location_list * );
-extern hll_ssr_cuinfo      *hllGetCompInfo( imp_image_handle *, imp_mod_handle );
+extern hll_ssr_cu_info     *hllGetCompInfo( imp_image_handle *, imp_mod_handle );
 extern hll_style            hllGetModStyle( imp_image_handle *, imp_mod_handle );
 
 #define T_CODE_LBL16    0x00f01
