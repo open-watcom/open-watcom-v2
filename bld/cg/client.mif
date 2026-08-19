@@ -49,7 +49,7 @@ i_path += -I"$(o_dir_$(target_cpu))"
 use_owl_lib_axp   = 1
 use_owl_lib_ppc   = 1
 use_owl_lib_mps   = 1
-use_owl_lib_386   = 0
+use_owl_lib_386   = 1
 use_owl_lib_i86   = 0
 use_owl_lib_x64   = 1
 

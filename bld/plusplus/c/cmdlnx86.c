@@ -1219,6 +1219,17 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     if( data->om ) {
         GenSwitches |= CGSW_GEN_I_MATH_INLINE;
     }
+    if( data->eoo ) {
+        GenSwitches &= ~(CGSW_GEN_OBJ_ELF | CGSW_GEN_OBJ_COFF);
+    }
+#if _CPU == 386
+    if( data->eoe ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_COFF) | CGSW_GEN_OBJ_ELF;
+    }
+    if( data->eoc ) {
+        GenSwitches = (GenSwitches & ~CGSW_GEN_OBJ_ELF) | CGSW_GEN_OBJ_COFF;
+    }
+#endif
     if( data->r ) {
         CompFlags.save_restore_segregs = true;
     }

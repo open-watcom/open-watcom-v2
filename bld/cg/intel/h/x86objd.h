@@ -31,6 +31,9 @@
 ****************************************************************************/
 
 
+#ifndef X86_OBJD_INCLUDED
+#define X86_OBJD_INCLUDED
+
 /* aligned */
 //#include "objrep.h"
 #include "pcobj.h"
@@ -179,3 +182,5 @@ typedef struct abs_patch {
     long_offset             value;
     abspatch_flags          flags;
 } abs_patch;
+
+#endif
