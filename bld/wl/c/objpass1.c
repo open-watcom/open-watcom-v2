@@ -434,13 +434,13 @@ static void DoAllocateSegment( segdata *sdata, const char *clname )
     }
 }
 
-void AllocateSegment( segnode *newseg, const char *clname )
+void AllocateSegment( segnode *snode, const char *clname )
 /**********************************************************
  * allocate a new segment (or new piece of a segment)
  */
 {
-    DoAllocateSegment( newseg->entry, clname );
-    newseg->info = newseg->entry->u.leader->info;
+    DoAllocateSegment( snode->entry, clname );
+    snode->info = snode->entry->u.leader->info;
 }
 
 unsigned long IncPass1( void )
@@ -773,23 +773,23 @@ void SetAddPubSym( symbol *sym, sym_info type, mod_entry *mod, offset off, unsig
     Ring2Append( &mod->publist, sym );
 }
 
-void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
-/***************************************************************************/
+void DefineSymbol( symbol *sym, segnode *snode, offset off, unsigned_16 frame )
+/*****************************************************************************/
 // do the object file independent public symbol definition.
 {
     size_t          name_len;
     bool            frame_ok;
     sym_info        sym_type;
 
-    if( seg != NULL ) {
+    if( snode != NULL ) {
         frame = 0;
     }
     name_len = strlen( sym->name.u.ptr );
     if( !IS_ADDR_UNDEFINED( sym->addr )
       && !IS_SYM_COMMUNAL( sym ) ) {
-        if( seg != NULL
+        if( snode != NULL
           && sym->p.seg != NULL ) {
-            frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
+            frame_ok = (sym->p.seg->u.leader == snode->entry->u.leader);
             if( sym->p.seg->u.leader->combine != COMBINE_COMMON ) {
                 frame_ok = false;
             }
@@ -826,11 +826,11 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
         ClearSymUnion( sym );
         SetAddPubSym( sym, sym_type, CurrMod, off, frame );
         sym->info &= ~SYM_1_DISTRIB;
-        if( seg != NULL ) {
+        if( snode != NULL ) {
             if( LinkFlags & LF_STRIP_CODE ) {
-                DefStripSym( sym, seg->entry );
+                DefStripSym( sym, snode->entry );
             }
-            if( seg->info & SEGINF_CODE ) {
+            if( snode->info & SEGINF_CODE ) {
 #ifdef _EXE
                 if( (FmtData.type & MK_OVERLAYS)
                   && FmtData.u.dos.distribute ) {
@@ -840,7 +840,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
                 }
 #endif
             }
-            sym->p.seg = seg->entry;
+            sym->p.seg = snode->entry;
             if( sym->p.seg->isabs ) {
                 sym->info |= SYM_ABSOLUTE;
             }
@@ -1213,14 +1213,14 @@ void DefineVFTableRecord( symbol *sym, symbol *defsym, bool ispure,
     }
 }
 
-void DefineVFReference( void *src, symbol *targ, bool issym )
+void DefineVFReference( void *snode, symbol *targ, bool issym )
 /***********************************************************/
 {
     if( issym ) {
-        AddSymEdge( src, targ );
+        AddSymEdge( snode, targ );
     } else {
-        if( ((segnode *)src)->info & SEGINF_CODE ) {
-            AddEdge( (segdata *)((segnode *)src)->entry, targ );
+        if( ((segnode *)snode)->info & SEGINF_CODE ) {
+            AddEdge( (segdata *)((segnode *)snode)->entry, targ );
         }
     }
 }

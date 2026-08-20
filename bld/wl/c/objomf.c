@@ -110,15 +110,15 @@ static unsigned long ProcObj( const file_list *file, unsigned long loc, void (*p
 static void CheckUninit( void *_seg, void *dummy )
 /************************************************/
 {
-    segnode *seg = _seg;
+    segnode *snode = _seg;
 
     /* unused parameters */ (void)dummy;
 
-    if( (seg->info & SEGINF_LXDATA_SEEN) == 0 ) {
-        seg->entry->isuninit = true;
-        if( seg->entry->u1.vm_ptr ) {
-            ReleaseInfo( seg->entry->u1.vm_ptr );
-            seg->entry->u1.vm_ptr = 0;
+    if( (snode->info & SEGINF_LXDATA_SEEN) == 0 ) {
+        snode->entry->isuninit = true;
+        if( snode->entry->u1.vm_ptr ) {
+            ReleaseInfo( snode->entry->u1.vm_ptr );
+            snode->entry->u1.vm_ptr = 0;
         }
     }
 }
@@ -290,7 +290,7 @@ static void ProcModuleEnd( void )
     byte        frame;
     byte        target;
     unsigned    targetidx;
-    segnode     *seg;
+    segnode     *snode;
     extnode     *ext;
     bool        hasdisp;
 
@@ -314,12 +314,12 @@ static void ProcModuleEnd( void )
                 LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS, "12", StartInfo.mod->u1.source->infile->name, StartInfo.mod->name );
                 return;                 /* <-------- NOTE: premature return */
             }
-            seg = (segnode *)FindNode( SegNodes, targetidx );
+            snode = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
-            StartInfo.targ.sdata= seg->entry;
-            if( (seg->info & SEGINF_CODE)
+            StartInfo.targ.sdata= snode->entry;
+            if( (snode->info & SEGINF_CODE)
               && (LinkFlags & LF_STRIP_CODE) ) {
-                RefSeg( (segdata *)seg->entry );
+                RefSeg( (segdata *)snode->entry );
             }
             StartInfo.mod = CurrMod;
             break;
@@ -452,7 +452,7 @@ static void DefineGroup( void )
 {
     int                 num_segs;
     byte                *anchor;
-    segnode             *seg;
+    segnode             *snode;
     list_of_names       *grp_name;
     grpnode             *newnode;
     group_entry         *group;
@@ -482,8 +482,8 @@ static void DefineGroup( void )
     ObjBuff = anchor;
     while( ObjBuff < EOObjRec ) {
         ObjBuff++;
-        seg = (segnode *)FindNode( SegNodes, GetIdx() );
-        AddToGroup( group, seg->entry->u.leader );
+        snode = (segnode *)FindNode( SegNodes, GetIdx() );
+        AddToGroup( group, snode->entry->u.leader );
     }
 }
 
@@ -494,7 +494,7 @@ static void ProcPubdef( bool static_sym )
 {
     symbol          *sym;
     char            *sym_name;
-    segnode         *seg;
+    segnode         *snode;
     offset          off;
     size_t          sym_len;
     unsigned_16     frame;
@@ -505,10 +505,10 @@ static void ProcPubdef( bool static_sym )
     SkipIdx();
     segidx = GetIdx();
     if( segidx != 0 ) {
-        seg = (segnode *) FindNode( SegNodes, segidx );
+        snode = (segnode *)FindNode( SegNodes, segidx );
         frame = 0;
     } else {
-        seg = NULL;
+        snode = NULL;
         frame = MGET_LE_U16_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_16 );
     }
@@ -532,7 +532,7 @@ static void ProcPubdef( bool static_sym )
             ObjBuff += sizeof( unsigned_16 );
         }
         sym = SymOp( symop, sym_name, sym_len );
-        DefineSymbol( sym, seg, off, frame );
+        DefineSymbol( sym, snode, off, frame );
         SkipIdx();   /* skip type index */
     }
 }
@@ -611,7 +611,7 @@ static void ProcVFReference( void )
  */
 {
     extnode             *ext;
-    segnode             *seg;
+    segnode             *snode;
     symbol              *sym;
     list_of_names       *lname;
     unsigned            index;
@@ -634,8 +634,8 @@ static void ProcVFReference( void )
             }
             DefineVFReference( sym, ext->entry, true );
         } else {                /* it's a seg idx */
-            seg = (segnode *)FindNode( SegNodes, GetIdx() );
-            DefineVFReference( seg, ext->entry, false );
+            snode = (segnode *)FindNode( SegNodes, GetIdx() );
+            DefineVFReference( snode, ext->entry, false );
         }
     }
     if( (ext->entry->info & SYM_DEFINED) == 0 ) {
@@ -716,29 +716,29 @@ static void ProcLinnum( void )
  * do some processing for the linnum record
  */
 {
-    segnode     *seg;
+    segnode     *snode;
     bool        is32bit;
 
     SkipIdx();          /* don't need the group idx */
-    seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEGINF_DEAD )                  /* ignore dead segments */
+    snode = (segnode *)FindNode( SegNodes, GetIdx() );
+    if( snode->info & SEGINF_DEAD )                  /* ignore dead segments */
         return;
     is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
-    DBIAddLines( seg->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
+    DBIAddLines( snode->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 
 static void EnumFindLinesSeg( void *_seg, void *_result_seg )
 /****************************/
 {
-    segnode **result_seg = (segnode **)_result_seg;
-    segnode *seg = _seg;
+    segnode **result_snode = (segnode **)_result_seg;
+    segnode *snode = _seg;
 
-    if (    seg->entry->bits == BITS_32
-        &&  !seg->entry->align
-        &&  !seg->entry->iscode
-        &&  !strcmp( seg->entry->u.leader->segname.u.ptr, "$$LINES" )
+    if (    snode->entry->bits == BITS_32
+        &&  !snode->entry->align
+        &&  !snode->entry->iscode
+        &&  !strcmp( snode->entry->u.leader->segname.u.ptr, "$$LINES" )
         /* FIXME: compare class? */) {
-        *result_seg = seg;
+        *result_snode = snode;
     }
 }
 
@@ -813,16 +813,16 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
     }
 }
 
-static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
-/*************************************************************************
+static void GetObject( segdata *snode, unsigned_32 obj_offset, bool lidata )
+/***************************************************************************
  * Load object code.
  */
 {
     size_t      size;
     virt_mem    start;
 
-    if( seg->isdead
-      || seg->isabs ) {   /* ignore dead or abs segments */
+    if( snode->isdead
+      || snode->isabs ) {   /* ignore dead or abs segments */
         ObjFormat |= OBJ_FMT_IGNORE_FIXUPP; /* and any corresponding fixupps */
         return;
     }
@@ -832,17 +832,17 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
     }
     if( ObjBuff != EOObjRec ) {
         size = EOObjRec - ObjBuff;
-        start = seg->u1.vm_ptr + obj_offset;
+        start = snode->u1.vm_ptr + obj_offset;
         if( lidata ) {
             DoLIData( start, ObjBuff, size );
         } else {
-            if( size + obj_offset > seg->length ) {
+            if( size + obj_offset > snode->length ) {
                 LnkMsg( FTL+LOC_REC+MSG_OBJ_FILE_ATTR, NULL );
             }
             PutInfo( start, ObjBuff, size );
         }
     }
-    SetCurrSeg( seg, obj_offset, NULL );
+    SetCurrSeg( snode, obj_offset, NULL );
 }
 
 static void ProcLxdata( bool islidata )
@@ -850,12 +850,12 @@ static void ProcLxdata( bool islidata )
  * process ledata and lidata records
  */
 {
-    segnode     *seg;
+    segnode     *snode;
     unsigned_32 obj_offset;
 
-    seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
-    seg->info |= SEGINF_LXDATA_SEEN;
+    snode = (segnode *)FindNode( SegNodes, GetIdx() );
+    snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
+    snode->info |= SEGINF_LXDATA_SEEN;
     if( ObjFormat & OBJ_FMT_32BIT_REC ) {
         obj_offset = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
@@ -864,11 +864,11 @@ static void ProcLxdata( bool islidata )
         ObjBuff += sizeof( unsigned_16 );
     }
 #ifdef DEVBUILD
-    if( stricmp( seg->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
+    if( stricmp( snode->entry->u.leader->segname.u.ptr, "_BSS" ) == 0 ) {
         LnkMsg( ERR+LOC_REC+MSG_INTERNAL, "s", "Initialized BSS found" );
     }
 #endif
-    GetObject( seg->entry, obj_offset, islidata );
+    GetObject( snode->entry, obj_offset, islidata );
 }
 
 static void ProcHllLinnum( void )
@@ -880,16 +880,16 @@ static void ProcHllLinnum( void )
 // FIXME: check what the LINNUM records looks like in the other HLL versions!
 {
     static unsigned_32 HllLineNumOffset;
-    segnode *   seg;
+    segnode *snode;
     unsigned_32 obj_offset;
 
     if( !(LinkFlags & LF_HLL_DBI_FLAG) )
         return;
 
     /* find the $$LINES segment, create it if not found with this module. */
-    seg = NULL;
-    IterateNodelist( SegNodes, EnumFindLinesSeg, &seg );
-    if (!seg) {
+    snode = NULL;
+    IterateNodelist( SegNodes, EnumFindLinesSeg, &snode );
+    if( !snode ) {
         segdata *           sdata;
         segnode *           snode;
         omf_record *        rec;
@@ -945,7 +945,7 @@ static void ProcHllLinnum( void )
         AllocateSegment( snode, _HllLineClass );
 
         HllLineNumOffset = 0;
-        IterateNodelist( SegNodes, EnumFindLinesSeg, &seg );
+        IterateNodelist( SegNodes, EnumFindLinesSeg, &snode );
     }
 
     SkipIdx(); // group idx (0)
@@ -955,9 +955,9 @@ static void ProcHllLinnum( void )
     obj_offset = HllLineNumOffset;
     DEBUG(( DBG_HLL, "ProcHllLinnum: HllLineNumOffset=%h length=%h", HllLineNumOffset, EOObjRec - ObjBuff ));
     HllLineNumOffset += EOObjRec - ObjBuff;
-   seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
-    seg->info |= SEGINF_LXDATA_SEEN;
-    GetObject( seg->entry, obj_offset, false );
+    snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
+    snode->info |= SEGINF_LXDATA_SEEN;
+    GetObject( snode->entry, obj_offset, false );
 }
 
 static void LinkDirective( void )
@@ -965,7 +965,7 @@ static void LinkDirective( void )
 {
     unsigned        directive;
     lib_priority    priority;
-    segnode         *seg;
+    segnode         *snode;
 
     directive = *ObjBuff++;
     switch( directive ) {
@@ -994,9 +994,9 @@ static void LinkDirective( void )
         }
         break;
     case LDIR_OPT_FAR_CALLS:
-        seg = (segnode *)FindNode( SegNodes, GetIdx() );
-        seg->entry->canfarcall = true;
-        seg->entry->iscode = true;
+        snode = (segnode *)FindNode( SegNodes, GetIdx() );
+        snode->entry->canfarcall = true;
+        snode->entry->iscode = true;
         break;
     case LDIR_FLAT_ADDRS:
         CurrMod->flags_mod |= MOD_FLATTEN_DBI;

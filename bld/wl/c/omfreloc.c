@@ -75,12 +75,12 @@ static void GetFrame( unsigned method, frame_spec *frame )
 {
     extnode     *ext;
     grpnode     *group;
-    segnode     *seg;
+    segnode     *snode;
 
     switch( method ) {
     case FRAME_SEG:
-        seg = (segnode *) FindNode( SegNodes, GetIdx() );
-        frame->u.sdata = seg->entry;
+        snode = (segnode *)FindNode( SegNodes, GetIdx() );
+        frame->u.sdata = snode->entry;
         frame->type = FIX_FRAME_SEG;
         break;
     case FRAME_GRP:
@@ -122,12 +122,12 @@ static void GetTarget( unsigned method, target_spec *target )
 {
     extnode             *ext;
     grpnode             *group;
-    segnode             *seg;
+    segnode             *snode;
 
     switch( method ) {
     case TARGET_SEG:
-        seg = (segnode *) FindNode( SegNodes, GetIdx() );
-        target->u.sdata = seg->entry;
+        snode = (segnode *)FindNode( SegNodes, GetIdx() );
+        target->u.sdata = snode->entry;
         target->type = FIX_TARGET_SEG;
         break;
     case TARGET_GRP:
@@ -283,14 +283,14 @@ void ProcBakpat( void )
 /****************************/
 /* store the bakpat record away for future processing */
 {
-    segnode             *seg;
+    segnode             *snode;
     byte                loctype;
 
-    seg = (segnode *) FindNode( SegNodes, GetIdx() );
-    if( seg->info & SEGINF_DEAD )
+    snode = (segnode *)FindNode( SegNodes, GetIdx() );
+    if( snode->info & SEGINF_DEAD )
         return;
     loctype = *ObjBuff++;
-    StoreBakPat( seg->entry, loctype );
+    StoreBakPat( snode->entry, loctype );
 }
 
 void DoBakPats( void )

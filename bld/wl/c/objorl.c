@@ -585,14 +585,14 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *nam
     }
 }
 
-static void DefineComdatSym( segnode *seg, symbol *sym, unsigned_32 value )
-/*************************************************************************/
+static void DefineComdatSym( segnode *snode, symbol *sym, unsigned_32 value )
+/***************************************************************************/
 {
     unsigned    select;
     sym_info    sym_type;
     segdata     *sdata;
 
-    sdata = seg->entry;
+    sdata = snode->entry;
     sdata->hascdatsym = true;
     select = sdata->select;
     if( select == 0 ) {
@@ -600,7 +600,7 @@ static void DefineComdatSym( segnode *seg, symbol *sym, unsigned_32 value )
     } else {
         sym_type = (select - 1) << SYM_CDAT_SEL_SHIFT;
     }
-    DefineComdat( sdata, sym, value, sym_type, seg->contents );
+    DefineComdat( sdata, sym, value, sym_type, snode->contents );
 }
 
 static orl_return ProcSymbol( orl_symbol_handle symhdl )
@@ -717,8 +717,8 @@ static orl_return DoReloc( orl_reloc reloc )
     frame_spec  frame;
     target_spec target;
     offset      addend;
-    segnode     *seg;
-    segnode     *symseg;
+    segnode     *snode;
+    segnode     *sym_snode;
     extnode     *ext;
     bool        istoc;
 
@@ -808,28 +808,28 @@ static orl_return DoReloc( orl_reloc reloc )
         LnkMsg( ERR+LOC+MSG_BAD_RELOC_TYPE, NULL );
         break;
     }
-    seg = FindSegNode( reloc->section );
-    if( seg != NULL
-      && (seg->info & SEGINF_DEAD) == 0
-      && seg->entry != NULL
-      && !seg->entry->isdead ) {
+    snode = FindSegNode( reloc->section );
+    if( snode != NULL
+      && (snode->info & SEGINF_DEAD) == 0
+      && snode->entry != NULL
+      && !snode->entry->isdead ) {
         addend = 0;
-        SetCurrSeg( seg->entry, 0, seg->contents );
+        SetCurrSeg( snode->entry, 0, snode->contents );
         frame.type = FIX_FRAME_TARG;
         ext = FindExtHandle( reloc->symbol );
         if( ext == NULL ) {
-            symseg = FindSegNode( ORLSymbolGetSecHandle( reloc->symbol ) );
-            if( symseg == NULL ) {
+            sym_snode = FindSegNode( ORLSymbolGetSecHandle( reloc->symbol ) );
+            if( sym_snode == NULL ) {
                 return( ORL_OKAY );
             } else {
                 unsigned_64 val64;
 
                 ORLSymbolGetValue( reloc->symbol, &val64 );
                 addend = U64Low( val64 );
-                target.u.sdata = symseg->entry;
+                target.u.sdata = sym_snode->entry;
                 target.type = FIX_TARGET_SEG;
                 if( istoc ) {
-                    AddSdataOffToToc( symseg->entry, addend );
+                    AddSdataOffToToc( sym_snode->entry, addend );
                 }
             }
         } else {

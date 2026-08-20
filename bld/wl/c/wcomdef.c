@@ -418,7 +418,7 @@ void ProcComdat( void )
     comdat_piece *      piece;
     offset              dataoff;
     segdata *           sdata;
-    segnode *           seg;
+    segnode *           snode;
     list_of_names *     symname;
     symbol *            sym;
     size_t              namelen;
@@ -452,9 +452,9 @@ void ProcComdat( void )
         SkipIdx();                              /* get public base */
         segidx = GetIdx();
         if( segidx != 0 ) {
-            seg = (segnode *) FindNode( SegNodes, segidx );
+            snode = (segnode *)FindNode( SegNodes, segidx );
             if( usealign ) {
-                align = seg->entry->align;
+                align = snode->entry->align;
             }
         } else {
             BadObject();        // do not support absolute comdats
@@ -493,10 +493,10 @@ void ProcComdat( void )
         sdata->length = piece->length;
         sdata->combine = COMBINE_ADD;
         sdata->iscdat = true;
-        sdata->isabs = ( seg == NULL );
+        sdata->isabs = ( snode == NULL );
         sdata->align = align;
-        sdata->u.leader = seg->entry->u.leader;
-        sdata->iscode = ( (seg->info & SEGINF_CODE) != 0 );
+        sdata->u.leader = snode->entry->u.leader;
+        sdata->iscode = ( (snode->info & SEGINF_CODE) != 0 );
         sdata->bits = ( ObjFormat & OBJ_FMT_32BIT_REC ) ? BITS_32 : BITS_16;
         info = AllocCDatInfo();
         info->sdata = sdata;
@@ -517,7 +517,7 @@ void ProcComdat( void )
             }
             ClearSymUnion( sym );
             if( alloc == 0 ) {  /* explicit */
-                seg->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
+                snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
                 RingAppend( &sdata->u.leader->pieces, sdata );
                 Ring2Append( &CurrMod->segs, sdata );
 #if 0
