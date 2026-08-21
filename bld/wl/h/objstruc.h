@@ -289,7 +289,7 @@ typedef struct section {
     SECTION             *parent;
     unsigned_32         relocs;
     unsigned_32         size;
-    void                *reloclist;
+    reloc_info          reloclist;
     union {
         unsigned_32     file_loc;
         MOD_ENTRY       *dist_mods;

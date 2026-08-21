@@ -669,7 +669,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     return( size );
 }
 
-static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
+static unsigned_32 WriteRelocList( reloc_info *reloclist, unsigned_32 size,
                                    unsigned_32 pagerva, unsigned limit )
 /**********************************************************************/
 {
@@ -707,7 +707,7 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
     unsigned_32         highidx;
     unsigned_32         pagerva;
     group_entry         *group;
-    void ***            reloclist;
+    reloc_info          **reloclist;
     unsigned long       size;
 
     strncpy( object->name, ".reloc", PE_OBJ_NAME_LEN );
