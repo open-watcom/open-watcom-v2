@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,8 +52,13 @@
 
 #ifdef __OS2__
 typedef int         HANDLE;
+/*
+ * following in-line function uses '=' equal character but without code (no body)
+ * the purpose is only to signal code generator to save/restore ebx register before/after
+ * WinSetWindowPos function call if necessary
+ */
 extern  unsigned    __WinSetWindowPos(unsigned);
-#pragma aux __WinSetWindowPos __parm [__eax] __modify [__ebx]
+#pragma aux __WinSetWindowPos = __parm [__eax] __value [__eax] __modify [__ebx]
 #define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
         __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #endif

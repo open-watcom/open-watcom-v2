@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "_defwin.h"
+#include "variety.h"
 #include <stddef.h>
 
 
@@ -42,8 +42,9 @@ char __init_default_win;
 #if defined(__OS2_32BIT__) || defined(__NT__) || defined(__WINDOWS__)
 
 #define __SW_BW
-#include "variety.h"
 #include <wdefwin.h>
+#include "_defwin.h"
+
 
 _WCRTLINK int   _dwDeleteOnClose( int handle )
 {

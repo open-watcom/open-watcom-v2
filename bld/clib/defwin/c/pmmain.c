@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,8 @@
 #include <wos2.h>
 #include "win.h"
 #include "pmmenu.rh"
+#include "defwin.h"
+#include "initwin.h"
 
 
 static  FATTRS          FontAttrs;
@@ -189,10 +191,10 @@ _WCRTLINK void  __InitDefaultWin( void )
 _WCRTLINK void  __FiniDefaultWin( void )
 //======================================
 {
-    _FiniMainWindowData();
     if( _MainWindow != 0 ) {
         WinDestroyWindow( _MainWindow );
     }
+    _FiniMainWindowData();
     if( hMessageQueue != 0 ) {
         WinDestroyMsgQueue( hMessageQueue );
     }
