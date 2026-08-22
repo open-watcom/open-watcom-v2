@@ -119,12 +119,12 @@ static void *OS2PagedRelocInit( offset size, int unitsize )
     return( start );
 }
 
-static void *OS2FlatRelocInit( offset size )
-/*******************************************
+static os2_reloc_header **OS2FlatRelocInit( offset size )
+/********************************************************
  * initialize relocations for OS2 flat memory manager.
  */
 {
-    return( OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
+    return( (os2_reloc_header **)OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
 }
 
 static void *PERelocInit( offset size )
@@ -189,10 +189,10 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         os2_reloc_header    **pagelist;
         reloc_info          *header;
 
-        pagelist = group->g.reloclist;
+        pagelist = group->g.pagelist;
         if( pagelist == NULL ) {
             pagelist = OS2FlatRelocInit( group->totalsize );
-            group->g.reloclist = pagelist;
+            group->g.pagelist = pagelist;
         }
         idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
         header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
