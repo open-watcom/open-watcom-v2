@@ -721,7 +721,7 @@ static void ProcLinnum( void )
 
     SkipIdx();          /* don't need the group idx */
     snode = (segnode *)FindNode( SegNodes, GetIdx() );
-    if( snode->info & SEGINF_DEAD )                  /* ignore dead segments */
+    if( snode->info & SEGINF_DEAD )   /* ignore dead segments */
         return;
     is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
     DBIAddLines( snode->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
@@ -883,15 +883,15 @@ static void ProcHllLinnum( void )
     segnode *snode;
     unsigned_32 obj_offset;
 
-    if( !(LinkFlags & LF_HLL_DBI_FLAG) )
+    if( (LinkFlags & LF_HLL_DBI_FLAG) == 0 )
         return;
 
     /* find the $$LINES segment, create it if not found with this module. */
     snode = NULL;
     IterateNodelist( SegNodes, EnumFindLinesSeg, &snode );
-    if( !snode ) {
-        segdata *           sdata;
-        segnode *           snode;
+    if( snode == NULL ) {
+        segdata *           *sdata;
+        segnode *           snode1;
         omf_record *        rec;
         unsigned_32         loc;
         unsigned_32         loc_1st_linnum;
@@ -940,9 +940,9 @@ static void ProcHllLinnum( void )
             ObjBuff = buf;
         }
 
-        snode = AllocNode( SegNodes );
-        snode->entry = sdata;
-        AllocateSegment( snode, _HllLineClass );
+        snode1 = AllocNode( SegNodes );
+        snode1->entry = sdata;
+        AllocateSegment( snode1, _HllLineClass );
 
         HllLineNumOffset = 0;
         IterateNodelist( SegNodes, EnumFindLinesSeg, &snode );
