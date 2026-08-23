@@ -582,7 +582,7 @@ typedef struct {
     SEGDATA             *entry;
     orl_sec_handle      handle;     // ORL: handle for the segment.
     unsigned_8          *contents;  // ORL: pointer to contents of segment.
-    unsigned            info;
+    seg_info_type       info;
 } segnode;
 
 typedef struct list_of_names {

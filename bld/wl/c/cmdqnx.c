@@ -217,8 +217,8 @@ static bool getSegFlags( void )
         return( false );
     }
     seg_flags = MemAllocSafe( sizeof( seg_flags_struct ) );
-    seg_flags->specified = 0;
-    seg_flags->flags = 0;
+    seg_flags->specified = SEG_NONE;
+    seg_flags->flags = SEG_NONE;
     seg_flags->name = getstring();
     seg_flags->type = ( isclass ) ? SEGFLAG_CLASS : SEGFLAG_SEGMENT;
     seg_flags->next = FmtData.u.qnx.seg_flags;

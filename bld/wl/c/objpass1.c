@@ -435,7 +435,7 @@ static void DoAllocateSegment( segdata *sdata, const char *clname )
 }
 
 void AllocateSegment( segnode *snode, const char *clname )
-/**********************************************************
+/*********************************************************
  * allocate a new segment (or new piece of a segment)
  */
 {
@@ -525,10 +525,7 @@ class_entry *FindClass( section *sect, const char *name, byte bits, bool iscode 
     class->segs = NULL;
     class->section = sect;
     class->next = NULL;
-    class->flags = 0;
-    if( iscode ) {
-        class->flags |= CLASS_CODE;
-    }
+    class->flags = ( iscode ) ? CLASS_CODE : CLASS_NONE;
     if( IsConstClass( name, namelen ) ) {
         class->flags |= CLASS_READ_ONLY;
     }
@@ -641,7 +638,7 @@ seg_leader *InitLeader( const char *segname )
     seg->num = 0;
     SET_ADDR_UNDEFINED( seg->seg_addr );
     seg->group = NULL;
-    seg->info = 0;
+    seg->info = SEGINF_NONE;
     seg->segname.u.ptr = AddStringStringTable( &PermStrings, segname );
     seg->dbgtype = NOT_DEBUGGING_INFO;
     seg->segflags = FmtData.def_seg_flags;
@@ -658,10 +655,7 @@ void AddSegment( segdata *sd, class_entry *class )
     DEBUG((DBG_OLD,"- adding segment %s, class %s",sd->u.name.u.ptr, class->name.u.ptr ));
     DEBUG(( DBG_OLD, "- - size = %h, comb = %x, alignment = %x",
                       sd->length, sd->combine, sd->align ));
-    info = 0;
-    if( sd->bits != BITS_16 ) {
-        info |= SEGINF_USE_32;
-    }
+    info = ( sd->bits == BITS_16 ) ? SEGINF_NONE : SEGINF_USE_32;
     if( class->flags & CLASS_CODE ) {
         info |= SEGINF_CODE;
     }
