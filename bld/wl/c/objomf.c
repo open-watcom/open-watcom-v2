@@ -890,13 +890,13 @@ static void ProcHllLinnum( void )
     snode = NULL;
     IterateNodelist( SegNodes, EnumFindLinesSeg, &snode );
     if( snode == NULL ) {
-        segdata *           *sdata;
-        segnode *           snode1;
-        omf_record *        rec;
+        segdata             *sdata;
+        segnode             *snode1;
+        omf_record          *rec;
         unsigned_32         loc;
         unsigned_32         loc_1st_linnum;
         unsigned_32         len_1st_linnum;
-        byte *              buf;
+        byte                *buf;
 
         sdata = AllocSegData();
         sdata->u.name.u.ptr  = "$$LINES";
