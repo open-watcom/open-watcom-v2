@@ -318,9 +318,8 @@ static unsigned long WriteFlatEntryTable( void )
     return( size + 1 );
 }
 
-static unsigned_32 WriteRelocSize( reloc_info **reloclist_array, unsigned_32 size,
-                                                        unsigned limit )
-/**********************************************************************/
+static unsigned_32 WriteRelocSize( reloc_info **reloclist_array, unsigned_32 size, unsigned limit )
+/*************************************************************************************************/
 {
     reloc_info      *reloclist_head;
 

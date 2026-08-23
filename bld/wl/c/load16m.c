@@ -180,7 +180,7 @@ static int cmp_reloc_entry( const void *a, const void *b )
 }
 
 static unsigned GetRelocBlock( reloc_addr **reloc_data )
-/******************************************************************/
+/******************************************************/
 {
     reloc_info      reloclist;
     size_t          num_relocs;
@@ -220,7 +220,7 @@ static unsigned GetRelocBlock( reloc_addr **reloc_data )
 // low four bits are unused).
 
 static unsigned_32 Write16MRelocs( reloc_addr *reloc_data )
-/*********************************************************************/
+/*********************************************************/
 {
     unsigned        num_relocs;
     unsigned_32     pos;

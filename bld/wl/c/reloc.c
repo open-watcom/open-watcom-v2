@@ -256,8 +256,8 @@ static bool FreeRelocList( reloc_info reloclist )
     return( false );  /* needed for OS2 generic traversal routines */
 }
 
-static void FreeRelocSect( section *sect )
-/****************************************/
+static void FreeRelocListSect( section *sect )
+/********************************************/
 {
     FreeRelocList( sect->reloclist );
 }
@@ -362,12 +362,12 @@ void FreeRelocInfo( void )
             FreeGroupRelocs( group );
         }
     } else if( Root != NULL ) {
-        WalkAllSects( FreeRelocSect );
+        WalkAllSects( FreeRelocListSect );
     }
 #ifdef _QNX
     if( FmtData.type & MK_QNX ) {
         FreeRelocList( FloatFixups );
-        FreeRelocSect( Root );
+        FreeRelocListSect( Root );
     }
 #endif
 }
