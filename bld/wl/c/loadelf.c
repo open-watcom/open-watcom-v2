@@ -341,7 +341,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
     group_entry *group;
     unsigned    currgrp;
     Elf32_Shdr  *sh;
-    void        *reloclist;
+    reloc_info  reloclist;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;

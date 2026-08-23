@@ -318,24 +318,24 @@ static unsigned long WriteFlatEntryTable( void )
     return( size + 1 );
 }
 
-static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
+static unsigned_32 WriteRelocSize( reloc_info **reloclist_array, unsigned_32 size,
                                                         unsigned limit )
 /**********************************************************************/
 {
-    void **     rptr;
+    reloc_info      *reloclist_head;
 
-    if( reloclist != NULL ) {
-        rptr = *reloclist;
+    if( reloclist_array != NULL ) {
+        reloclist_head = *reloclist_array;
     } else {
-        rptr = NULL;
+        reloclist_head = NULL;
     }
     for( ; limit > 0; --limit ) {
         WriteLoadU32( size );
-        if( rptr != NULL ) {
+        if( reloclist_head != NULL ) {
             /* first one for external fixups */
-            size += RelocSize( *rptr++ );
+            size += RelocSize( *reloclist_head++ );
             /* second for internals */
-            size += RelocSize( *rptr++ );
+            size += RelocSize( *reloclist_head++ );
         }
     }
     return( size );
@@ -348,8 +348,8 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     unsigned_32     size;
     unsigned_32     numpages;
     unsigned_32     numentries;
-    group_entry *   group;
-    void ***        reloclist;
+    group_entry     *group;
+    reloc_info      **reloclist_array;
     unsigned_32     highidx;
     unsigned        lowidx;
 
@@ -357,18 +357,18 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
     numentries = 0;
     size = 0;
     for( group = Groups; group != NULL; group = group->next ) {
-        reloclist = group->g.reloclist;
+        reloclist_array = group->g.reloclist_array;
         numpages = PAGE_COUNT( group->size );
         numentries += numpages;
         for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {
-            size = WriteRelocSize( reloclist, size, OSF_RLIDX_MAX );
-            if( reloclist != NULL ) {
-                reloclist++;
+            size = WriteRelocSize( reloclist_array, size, OSF_RLIDX_MAX );
+            if( reloclist_array != NULL ) {
+                reloclist_array++;
             }
         }
-        lowidx = OSF_RLIDX_LOW(numpages);
+        lowidx = OSF_RLIDX_LOW( numpages );
         if( lowidx > 0 ) {
-            size = WriteRelocSize( reloclist, size, lowidx );
+            size = WriteRelocSize( reloclist_array, size, lowidx );
         }
     }
     WriteLoadU32( size );

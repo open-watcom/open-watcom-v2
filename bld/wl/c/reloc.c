@@ -86,15 +86,15 @@ static reloc_info AllocRelocInfo( void )
     return( reloclist );
 }
 
-static void *OS2PagedRelocInit( offset size, int unitsize )
-/**********************************************************
+static void **OS2PagedRelocInit( offset size, int unitsize )
+/***********************************************************
  * For some OS/2 formats we have to split up the structure off the reloclist
  * field up into small bits to ensure that we don't get structure allocations
  * > 64K. This is stored basically as a 2-d array
  */
 {
-    void **     mem;
-    void **     start;
+    void        **mem;
+    void        **start;
     offset      pageidx;
     offset      idxhigh;
     unsigned    idxlow;
@@ -127,18 +127,17 @@ static os2_reloc_header **OS2FlatRelocInit( offset size )
     return( (os2_reloc_header **)OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
 }
 
-static void *PERelocInit( offset size )
-/**************************************
+static reloc_info **PERelocInit( offset size )
+/*********************************************
  * initialize relocations for PE executable format
  */
 {
-    return( OS2PagedRelocInit( size, sizeof( reloc_info ) ) );
+    return( (reloc_info **)OS2PagedRelocInit( size, sizeof( reloc_info ) ) );
 }
 
-static void DoWriteReloc( void *lst, const void *reloc, size_t size )
-/*******************************************************************/
+static void DoWriteReloc( reloc_info *reloclist_head, const void *reloc, size_t size )
+/************************************************************************************/
 {
-    reloc_info      *reloclist_head = (reloc_info *)lst;
     reloc_info      reloclist;
     size_t          offset;
 
@@ -171,31 +170,31 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
     unsigned_32         idx;
 
     if( FmtData.type & MK_PE ) {
-        reloc_info  **reloclist;
-        reloc_info  *header;
+        reloc_info  **reloclist_array;
+        reloc_info  *reloclist_head;
 
-        reloclist = group->g.reloclist;
-        if( reloclist == NULL ) {
-           reloclist = PERelocInit( group->totalsize );
-           group->g.reloclist = reloclist;
+        reloclist_array = group->g.reloclist_array;
+        if( reloclist_array == NULL ) {
+           reloclist_array = PERelocInit( group->totalsize );
+           group->g.reloclist_array = reloclist_array;
         }
         idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
-        header = &reloclist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )];
-        DoWriteReloc( header, reloc, size );
+        reloclist_head = &reloclist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )];
+        DoWriteReloc( reloclist_head, reloc, size );
         group->section->relocs++;
         return;
     }
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
-        os2_reloc_header    **pagelist;
-        reloc_info          *header;
+        os2_reloc_header    **pagelist_array;
+        reloc_info          *reloclist_head;
 
-        pagelist = group->g.pagelist;
-        if( pagelist == NULL ) {
-            pagelist = OS2FlatRelocInit( group->totalsize );
-            group->g.pagelist = pagelist;
+        pagelist_array = group->g.pagelist_array;
+        if( pagelist_array == NULL ) {
+            pagelist_array = OS2FlatRelocInit( group->totalsize );
+            group->g.pagelist_array = pagelist_array;
         }
         idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
-        header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
+        reloclist_head = &pagelist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
         switch( ((os2_flat_reloc_item *)reloc)->nr_flags & OSF_TARGET_MASK )  {
         case OSF_TARGET_INTERNAL:
             switch( ((os2_flat_reloc_item *)reloc)->nr_stype ) {
@@ -204,12 +203,12 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
             case OSF_SOURCE_OFF_32_REL:
                 //NYI: don't have to write this out if we can figure out
                 // how to tell the loader that we're doing it.
-                header = &pagelist[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].internals;
+                reloclist_head = &pagelist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].internals;
                 break;
             }
             break;
         }
-        DoWriteReloc( header, reloc, size );
+        DoWriteReloc( reloclist_head, reloc, size );
         group->section->relocs++;
         return;
     }
@@ -263,14 +262,14 @@ static void FreeRelocSect( section *sect )
     FreeRelocList( sect->reloclist );
 }
 
-static bool TraverseRelocBlock( reloc_info *reloclist, unsigned num, bool (*fn)(reloc_info) )
-/*******************************************************************************************/
+static bool TraverseRelocBlock( reloc_info *reloclist_head, unsigned num, bool (*fn)(reloc_info) )
+/************************************************************************************************/
 {
     while( num-- > 0 ) {
-        if( fn( *reloclist++ ) )
+        if( fn( *reloclist_head++ ) )
             return( true );
         if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
-            if( fn( *reloclist++ ) ) {
+            if( fn( *reloclist_head++ ) ) {
                 return( true );
             }
         }
@@ -286,19 +285,19 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
     unsigned_32         index;
     unsigned_32         highidx;
     unsigned            lowidx;
-    reloc_info          **reloclist;
+    reloc_info          **reloclist_array;
 
-    reloclist = group->g.reloclist;
-    if( reloclist != NULL ) {
+    reloclist_array = group->g.reloclist_array;
+    if( reloclist_array != NULL ) {
         index = OSF_PAGE_COUNT( group->totalsize );
         for( highidx = OSF_RLIDX_HIGH( index ); highidx > 0; --highidx ) {
-            if( TraverseRelocBlock( *reloclist, OSF_RLIDX_MAX, fn ) )
+            if( TraverseRelocBlock( *reloclist_array, OSF_RLIDX_MAX, fn ) )
                 return( true );
-            reloclist++;
+            reloclist_array++;
         }
         lowidx = OSF_RLIDX_LOW( index );
         if( lowidx > 0 ) {
-            return( TraverseRelocBlock( *reloclist, OSF_RLIDX_LOW( index ), fn ) );
+            return( TraverseRelocBlock( *reloclist_array, OSF_RLIDX_LOW( index ), fn ) );
         }
     }
     return( false );
@@ -310,7 +309,7 @@ static void FreeGroupRelocs( group_entry *group )
 #ifdef _OS2
     unsigned_32         highidx;
     unsigned_32         index;
-    reloc_info          **reloclist;
+    reloc_info          **reloclist_array;
 #endif
 
 #if !defined( _OS2 ) && !defined( _ELF ) && !defined( _QNX )
@@ -323,16 +322,16 @@ static void FreeGroupRelocs( group_entry *group )
 #ifdef _OS2
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
-        reloclist = group->g.reloclist;
-        if( reloclist != NULL ) {
+        reloclist_array = group->g.reloclist_array;
+        if( reloclist_array != NULL ) {
             index = OSF_PAGE_COUNT( group->totalsize );
             highidx = OSF_RLIDX_HIGH( index );
             if( OSF_RLIDX_LOW( index ) != 0 ) {
                 highidx++;
             }
             while( highidx-- > 0 ) {
-                MemFree( *reloclist );
-                reloclist++;
+                MemFree( *reloclist_array );
+                reloclist_array++;
             }
         }
         return;
