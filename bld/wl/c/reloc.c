@@ -86,11 +86,9 @@ static reloc_info AllocRelocInfo( void )
     return( reloclist );
 }
 
-static void *OS2PagedRelocInit( offset size, int unitsize )
-/**********************************************************
- * For some OS/2 formats we have to split up the structure off the reloclist
- * field up into small bits to ensure that we don't get structure allocations
- * > 64K. This is stored basically as a 2-d array
+static void *OS2PagedRelocInit( offset size, unsigned unitsize )
+/***************************************************************
+ * allocate simple array for all pages
  */
 {
     void        *mem;
@@ -150,7 +148,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
  */
 {
 #ifdef _OS2
-    unsigned_32         idx;
+    unsigned        idx;
 
     if( FmtData.type & MK_PE ) {
         reloc_info  *reloclist_array;
@@ -250,7 +248,7 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
  * traverse all items in one of the big OS2 page relocation lists
  */
 {
-    unsigned_32         numpages;
+    unsigned        numpages;
 
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
         os2_reloc_header    *pagelist_array;
@@ -336,12 +334,12 @@ void FreeRelocInfo( void )
 #endif
 }
 
-unsigned_32 RelocSize( reloc_info reloclist )
-/********************************************
+unsigned RelocSize( reloc_info reloclist )
+/*****************************************
  * find the size of all the relocations stored here
  */
 {
-    unsigned_32 size;
+    unsigned        size;
 
     size = 0;
     for( ; reloclist != NULL; reloclist = reloclist->next ) {
@@ -350,14 +348,14 @@ unsigned_32 RelocSize( reloc_info reloclist )
     return( size );
 }
 
-unsigned_32 DumpMaxRelocList( reloc_info *reloclist_head, unsigned_32 max )
-/**************************************************************************
+unsigned DumpMaxRelocList( reloc_info *reloclist_head, unsigned max )
+/********************************************************************
  * write the given reloc information list to loadfile
  */
 {
-    unsigned_32         size;
-    unsigned_32         total;
-    reloc_info          reloclist;
+    unsigned        size;
+    unsigned        total;
+    reloc_info      reloclist;
 
     total = 0;
     for( reloclist = *reloclist_head; reloclist != NULL; reloclist = reloclist->next ) {
@@ -385,16 +383,17 @@ bool DumpRelocList( reloc_info reloclist )
     return( false );            /* so traverse works */
 }
 
-unsigned_32 WalkRelocList( reloc_info *reloclist_head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx )
-/*******************************************************************************************************************
+unsigned WalkRelocList( reloc_info *reloclist_head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx )
+/****************************************************************************************************************
  * walk the given reloc information list and call user fn for each reloc
  */
 {
-    size_t              size;
-    unsigned_32         total;
-    reloc_info          reloclist;
-    bool                quit = false;
+    size_t          size;
+    unsigned        total;
+    reloc_info      reloclist;
+    bool            quit;
 
+    quit = false;
     total = 0;
     for( reloclist = *reloclist_head; reloclist != NULL; reloclist = reloclist->next ) {
         if( quit )
@@ -408,7 +407,7 @@ unsigned_32 WalkRelocList( reloc_info *reloclist_head, bool (*fn)( void *data, s
                 quit = fn( reloclist->loc.u.addr, size, ctx );
             }
         }
-        total += (unsigned_32)size;
+        total += (unsigned)size;
     }
     *reloclist_head = reloclist;
     return( total );

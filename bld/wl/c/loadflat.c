@@ -53,13 +53,13 @@
 #define PAGEMAP_BUF_SIZE (MAX_HEADROOM / sizeof( map_entry ) * (unsigned long)OSF_DEF_PAGE_SIZE)
 
 
-static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf )
-/********************************************************************************/
+static unsigned NumberBuf( unsigned *start, unsigned limit, map_entry *buf )
+/**************************************************************************/
 /* fill a buffer with consecutive numbers */
 {
-    unsigned    size;
-    unsigned_32 num;
-    unsigned    shift;
+    unsigned        size;
+    unsigned        num;
+    unsigned        shift;
 
     num = PAGE_COUNT(limit);
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
@@ -92,15 +92,16 @@ static unsigned NumberBuf( unsigned_32 *start, unsigned_32 limit, map_entry *buf
     return( size );
 }
 
-static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
-/******************************************************************************/
-/* write the object table and the object page map */
+static unsigned WriteObjectTables( os2_flat_header *header,unsigned long loc)
+/****************************************************************************
+ * write the object table and the object page map
+ */
 {
-    unsigned_32     numpages;
-    unsigned_32     numobjects;
-    unsigned_32     size;
-    unsigned_32     start;
-    unsigned_32     sizeleft;
+    unsigned        numpages;
+    unsigned        numobjects;
+    unsigned        size;
+    unsigned        start;
+    unsigned        sizeleft;
     group_entry     *group;
     object_record   objrec;
     size_t          map_size;
@@ -318,13 +319,14 @@ static unsigned long WriteFlatEntryTable( void )
     return( size + 1 );
 }
 
-static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
-/******************************************************************************/
-/* write the fixup page table and the fixup record table */
+static unsigned WriteFixupTables( os2_flat_header *header, unsigned long loc)
+/****************************************************************************
+ * write the fixup page table and the fixup record table
+ */
 {
-    unsigned_32         size;
-    unsigned_32         numpages;
-    unsigned_32         numentries;
+    unsigned            size;
+    unsigned            numpages;
+    unsigned            numentries;
     group_entry         *group;
     os2_reloc_header    *pagelist_array;
 
@@ -335,16 +337,10 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
         pagelist_array = group->g.pagelist_array;
         numpages = PAGE_COUNT( group->size );
         numentries += numpages;
-        if( pagelist_array == NULL ) {
-            while( numpages-- > 0 ) {
-                WriteLoadU32( size );
-            }
-        } else {
-            while( numpages-- > 0 ) {
-                WriteLoadU32( size );
-                /* first one for external fixups */
+        while( numpages-- > 0 ) {
+            WriteLoadU32( size );
+            if( pagelist_array != NULL ) {
                 size += RelocSize( pagelist_array->externals );
-                /* second for internals */
                 size += RelocSize( pagelist_array->internals );
                 pagelist_array++;
             }
@@ -400,8 +396,8 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 {
     entry_export *exp;
     vxd_ddb      ddb;
-    unsigned_32  adjust;
-    unsigned_32  vm_off;
+    unsigned     adjust;
+    unsigned     vm_off;
 
     exp = FmtData.u.os2fam.exports;
     if( ( exp != NULL ) && ( exp->sym != NULL ) ) {
@@ -421,7 +417,7 @@ void FiniOS2FlatLoadFile( void )
     os2_flat_header     exe_head;
     unsigned long       curr_loc;
     unsigned long       debug_size;
-    unsigned_32         stub_len;
+    unsigned            stub_len;
     unsigned long       count;
     unsigned            last_page;
 
