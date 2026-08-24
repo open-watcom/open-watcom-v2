@@ -250,12 +250,12 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
 {
     unsigned        numpages;
 
+    numpages = OSF_PAGE_COUNT( group->totalsize );
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
         os2_reloc_header    *pagelist_array;
 
         pagelist_array = group->g.pagelist_array;
         if( pagelist_array != NULL ) {
-            numpages = OSF_PAGE_COUNT( group->totalsize );
             while( numpages-- > 0 ) {
                 if( fn( pagelist_array->externals ) )
                     return( true );
@@ -265,11 +265,10 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
             }
         }
     } else { /* FmtData.type & MK_PE */
-        reloc_info          *reloclist_array;
+        reloc_info  *reloclist_array;
 
         reloclist_array = group->g.reloclist_array;
         if( reloclist_array != NULL ) {
-            numpages = OSF_PAGE_COUNT( group->totalsize );
             while( numpages-- > 0 ) {
                 if( fn( *reloclist_array++ ) ) {
                     return( true );
@@ -315,7 +314,7 @@ void FreeRelocInfo( void )
  * free up blocks allocated for relocations
  */
 {
-    group_entry         *group;
+    group_entry     *group;
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
@@ -515,7 +514,7 @@ static bool SpillAreas( AREASECT *area, bool (*rtn)( section * ) )
 bool SwapOutRelocs( void )
 /************************/
 {
-    group_entry         *group;
+    group_entry     *group;
 
     if( (LinkState & LS_FMT_DECIDED) == 0 )
         return( false );
