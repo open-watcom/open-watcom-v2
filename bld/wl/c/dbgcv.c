@@ -613,8 +613,7 @@ void CVDefClass( class_entry *class, unsigned_32 size )
 {
     group_entry *group;
 
-    if( ( class->flags & CLASS_DEBUG_INFO ) == CLASS_DWARF
-        || ( class->flags & CLASS_DEBUG_INFO ) == CLASS_HLL_LINE )
+    if( class->flags & (CLASS_DWARF | CLASS_HLL_LINE) )
         return;
     SectAddrs[CVSECT_MISC].u.vm_offs += size;
     group = AllocGroup( AutoGrpName, &DBIGroups );

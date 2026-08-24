@@ -80,7 +80,7 @@ String table for sections
 #ifdef _ELF
 
 static stringtable      SymStrTab;
-static ElfSymTable *    ElfSymTab;
+static ElfSymTable      *ElfSymTab;
 
 static int              NumPhdr = 0;    /* just for now untill dynamic objects supported */
 
@@ -92,8 +92,8 @@ static int              NumPhdr = 0;    /* just for now untill dynamic objects s
 static void InitSections( ElfHdr *hdr )
 /*************************************/
 {
-    unsigned    num;
-    group_entry *group;
+    unsigned        num;
+    group_entry     *group;
 
     num = 1;
     memset( &hdr->i, 0, sizeof( hdr->i ) );
@@ -201,7 +201,7 @@ static void SetHeaders( ElfHdr *hdr )
 unsigned GetElfHeaderSize( void )
 /**************************************/
 {
-    unsigned    size;
+    unsigned        size;
 
     size = sizeof( Elf32_Ehdr ) + sizeof( Elf32_Phdr ) * ( NumGroups + NumPhdr );
     return( __ROUND_UP_SIZE_PAGE( size ) );
@@ -217,7 +217,7 @@ size_t AddSecName( ElfHdr *hdr, const char *name )
 static void WriteSHStrings( ElfHdr *hdr, int str_idx, stringtable *strtab )
 /*************************************************************************/
 {
-    Elf32_Shdr *sh;
+    Elf32_Shdr      *sh;
 
     sh = hdr->sh + str_idx;
     sh->sh_name = AddSecName( hdr, ".shstrtab" );
@@ -285,11 +285,11 @@ static const char *GroupSecName( group_entry *group )
 static void WriteELFGroups( ElfHdr *hdr )
 /***************************************/
 {
-    group_entry *group;
-    Elf32_Shdr *sh;
-    Elf32_Phdr *ph;
-    offset      off;
-    offset      linear;
+    group_entry     *group;
+    Elf32_Shdr      *sh;
+    Elf32_Phdr      *ph;
+    offset          off;
+    offset          linear;
 
     sh = hdr->sh + hdr->i.grpbase;
     ph = hdr->ph + NumPhdr;
@@ -324,8 +324,8 @@ static void WriteELFGroups( ElfHdr *hdr )
 static size_t AddRelocSectName( ElfHdr *hdr, const char *secname )
 /****************************************************************/
 {
-    size_t      len;
-    char        *name;
+    size_t          len;
+    char            *name;
 
     len = strlen( secname );
     name = alloca( RELA_NAME_SIZE + len );
@@ -338,10 +338,10 @@ static size_t AddRelocSectName( ElfHdr *hdr, const char *secname )
 static void WriteRelocsSections( ElfHdr *hdr )
 /********************************************/
 {
-    group_entry *group;
-    unsigned    currgrp;
-    Elf32_Shdr  *sh;
-    reloc_info  reloclist;
+    group_entry     *group;
+    unsigned        currgrp;
+    Elf32_Shdr      *sh;
+    reloc_info      reloclist;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
@@ -369,7 +369,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
 void FiniELFLoadFile( void )
 /*********************************/
 {
-    ElfHdr      hdr;
+    ElfHdr          hdr;
 
     if( FmtData.dll )
         NumPhdr = 1;
@@ -414,8 +414,8 @@ void FiniELFLoadFile( void )
 void ChkElfData( void )
 /****************************/
 {
-    group_entry *group;
-    symbol *    sym;
+    group_entry     *group;
+    symbol          *sym;
 
     NumExports = NumImports = 0;
     for( sym = HeadSym; sym != NULL; sym = sym->next ) {

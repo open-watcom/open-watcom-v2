@@ -257,7 +257,6 @@ static void DoMSOMF( void )
         } else {
             CurrMod->omfdbg = OMF_DBG_UNKNOWN;
         }
-        ObjBuff += 2;
     }
 }
 
