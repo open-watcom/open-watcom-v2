@@ -669,32 +669,27 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     return( size );
 }
 
-static unsigned_32 WriteRelocList( reloc_info *reloclist_head, unsigned_32 size,
-                                   unsigned_32 pagerva, unsigned limit )
-/**********************************************************************/
+static unsigned_32 WriteRelocList( reloc_info *reloclist_head, unsigned_32 size, unsigned_32 pagerva )
+/****************************************************************************************************/
 {
     unsigned_32 pagesize;
     bool        padme;
 
-    for( ; limit > 0; --limit ) {
-        pagesize = RelocSize( *reloclist_head );
-        if( pagesize != 0 ) {
-            padme = false;
-            if( ( pagesize / sizeof( pe_reloc_item ) ) & 0x1 ) {
-                pagesize += sizeof( pe_reloc_item );
-                padme = true;
-            }
-            pagesize += 2 * sizeof( unsigned_32 );
-            WriteLoadU32( pagerva );
-            WriteLoadU32( pagesize );
-            DumpRelocList( *reloclist_head );
-            if( padme ) {
-                PadLoad( sizeof( pe_reloc_item ) );
-            }
-            size += pagesize;
+    pagesize = RelocSize( *reloclist_head );
+    if( pagesize != 0 ) {
+        padme = false;
+        if( ( pagesize / sizeof( pe_reloc_item ) ) & 0x1 ) {
+            pagesize += sizeof( pe_reloc_item );
+            padme = true;
         }
-        pagerva += OSF_PAGE_SIZE;
-        reloclist_head++;
+        pagesize += 2 * sizeof( unsigned_32 );
+        WriteLoadU32( pagerva );
+        WriteLoadU32( pagesize );
+        DumpRelocList( *reloclist_head );
+        if( padme ) {
+            PadLoad( sizeof( pe_reloc_item ) );
+        }
+        size += pagesize;
     }
     return( size );
 }
@@ -704,10 +699,9 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
 /* dump the fixup table */
 {
     unsigned_32         numpages;
-    unsigned_32         highidx;
     unsigned_32         pagerva;
     group_entry         *group;
-    reloc_info          **reloclist_array;
+    reloc_info          *reloclist_array;
     unsigned long       size;
 
     strncpy( object->name, ".reloc", PE_OBJ_NAME_LEN );
@@ -722,12 +716,11 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
         if( reloclist_array != NULL ) {
             pagerva = group->linear;
             numpages = __ROUND_UP_SIZE_TO_4K( group->size );
-            for( highidx = OSF_RLIDX_HIGH( numpages ); highidx > 0; --highidx ) {
-                size = WriteRelocList( *reloclist_array, size, pagerva, OSF_RLIDX_MAX );
+            while( numpages-- > 0 ) {
+                size = WriteRelocList( reloclist_array, size, pagerva );
+                pagerva += OSF_PAGE_SIZE;
                 reloclist_array++;
-                pagerva += OSF_PAGE_SIZE * ((unsigned_32)OSF_RLIDX_MAX);
             }
-            size = WriteRelocList( *reloclist_array, size, pagerva, OSF_RLIDX_LOW(numpages) );
         }
     }
     PadLoad( sizeof( pe_fixup_header ) );

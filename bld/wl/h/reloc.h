@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,11 +59,6 @@
 #define PE_FIX_HIGHLOW          (0x3<<PEUP)     /* add all 32 bits of delta */
 #define PE_FIX_HIGHADJ          (0x4<<PEUP)     /* see the doc */
 #define PE_FIX_MIPSJMP          (0x5<<PEUP)     /* see the doc */
-
-#define OSF_RLIDX_MASK          0x3FF
-#define OSF_RLIDX_LOW(val)      (val & OSF_RLIDX_MASK)
-#define OSF_RLIDX_HIGH(val)     ((val & (~OSF_RLIDX_MASK)) >> 10)
-#define OSF_RLIDX_MAX           0x400
 
 #define OSF_PAGE_SHIFT          12
 #define OSF_PAGE_SIZE           (1 << OSF_PAGE_SHIFT)

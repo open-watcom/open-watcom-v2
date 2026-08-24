@@ -443,8 +443,8 @@ typedef struct group_entry {
     offset              totalsize;
     offset              linear;         // preferred base address
     union {
-        reloc_info      **reloclist_array;  // PE only
-        os2_reloc_header **pagelist_array;  // OS/2 flat and Windows 3.x VxD only.
+        reloc_info      *reloclist_array;   // PE only
+        os2_reloc_header *pagelist_array;   // OS/2 flat and Windows 3.x VxD only.
         reloc_info      reloclist;          // others
         class_entry     *class;         // debug info CV (during addr calc )
     } g;

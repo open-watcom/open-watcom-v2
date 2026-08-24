@@ -86,53 +86,36 @@ static reloc_info AllocRelocInfo( void )
     return( reloclist );
 }
 
-static void **OS2PagedRelocInit( offset size, int unitsize )
-/***********************************************************
+static void *OS2PagedRelocInit( offset size, int unitsize )
+/**********************************************************
  * For some OS/2 formats we have to split up the structure off the reloclist
  * field up into small bits to ensure that we don't get structure allocations
  * > 64K. This is stored basically as a 2-d array
  */
 {
-    void        **mem;
-    void        **start;
-    offset      pageidx;
-    offset      idxhigh;
-    unsigned    idxlow;
+    void        *mem;
     unsigned    allocsize;
 
-    pageidx = OSF_PAGE_COUNT( size );
-    idxhigh = OSF_RLIDX_HIGH( pageidx );
-    mem = _PermAlloc( ( idxhigh + 1 ) * sizeof( void * ) );
-    start = mem;
-    allocsize = OSF_RLIDX_MAX * unitsize;
-    while( idxhigh-- > 0 ) {
-        *mem = MemAllocSafe( allocsize );
-        memset( *mem, 0, allocsize );
-        mem++;
-    }
-    idxlow = OSF_RLIDX_LOW( pageidx );
-    if( idxlow != 0 ) {
-        allocsize = idxlow * unitsize;
-        *mem = MemAllocSafe( allocsize );
-        memset( *mem, 0, allocsize );
-    }
-    return( start );
+    allocsize = unitsize * OSF_PAGE_COUNT( size );
+    mem = MemAllocSafe( allocsize );
+    memset( mem, 0, allocsize );
+    return( mem );
 }
 
-static os2_reloc_header **OS2FlatRelocInit( offset size )
+static os2_reloc_header *OS2FlatRelocInit( offset size )
 /********************************************************
  * initialize relocations for OS2 flat memory manager.
  */
 {
-    return( (os2_reloc_header **)OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
+    return( (os2_reloc_header *)OS2PagedRelocInit( size, sizeof( os2_reloc_header ) ) );
 }
 
-static reloc_info **PERelocInit( offset size )
+static reloc_info *PERelocInit( offset size )
 /*********************************************
  * initialize relocations for PE executable format
  */
 {
-    return( (reloc_info **)OS2PagedRelocInit( size, sizeof( reloc_info ) ) );
+    return( (reloc_info *)OS2PagedRelocInit( size, sizeof( reloc_info ) ) );
 }
 
 static void DoWriteReloc( reloc_info *reloclist_head, const void *reloc, size_t size )
@@ -170,7 +153,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
     unsigned_32         idx;
 
     if( FmtData.type & MK_PE ) {
-        reloc_info  **reloclist_array;
+        reloc_info  *reloclist_array;
         reloc_info  *reloclist_head;
 
         reloclist_array = group->g.reloclist_array;
@@ -179,13 +162,13 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
            group->g.reloclist_array = reloclist_array;
         }
         idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
-        reloclist_head = &reloclist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )];
+        reloclist_head = &reloclist_array[idx];
         DoWriteReloc( reloclist_head, reloc, size );
         group->section->relocs++;
         return;
     }
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
-        os2_reloc_header    **pagelist_array;
+        os2_reloc_header    *pagelist_array;
         reloc_info          *reloclist_head;
 
         pagelist_array = group->g.pagelist_array;
@@ -194,7 +177,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
             group->g.pagelist_array = pagelist_array;
         }
         idx = ( off - group->addr.off ) >> OSF_PAGE_SHIFT;
-        reloclist_head = &pagelist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].externals;
+        reloclist_head = &pagelist_array[idx].externals;
         switch( ((os2_flat_reloc_item *)reloc)->nr_flags & OSF_TARGET_MASK )  {
         case OSF_TARGET_INTERNAL:
             switch( ((os2_flat_reloc_item *)reloc)->nr_stype ) {
@@ -203,7 +186,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
             case OSF_SOURCE_OFF_32_REL:
                 //NYI: don't have to write this out if we can figure out
                 // how to tell the loader that we're doing it.
-                reloclist_head = &pagelist_array[OSF_RLIDX_HIGH( idx )][OSF_RLIDX_LOW( idx )].internals;
+                reloclist_head = &pagelist_array[idx].internals;
                 break;
             }
             break;
@@ -262,42 +245,38 @@ static void FreeRelocListSect( section *sect )
     FreeRelocList( sect->reloclist );
 }
 
-static bool TraverseRelocBlock( reloc_info *reloclist_head, unsigned num, bool (*fn)(reloc_info) )
-/************************************************************************************************/
-{
-    while( num-- > 0 ) {
-        if( fn( *reloclist_head++ ) )
-            return( true );
-        if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
-            if( fn( *reloclist_head++ ) ) {
-                return( true );
-            }
-        }
-    }
-    return( false );
-}
-
 bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
 /**********************************************************************
  * traverse all items in one of the big OS2 page relocation lists
  */
 {
-    unsigned_32         index;
-    unsigned_32         highidx;
-    unsigned            lowidx;
-    reloc_info          **reloclist_array;
+    unsigned_32         numpages;
 
-    reloclist_array = group->g.reloclist_array;
-    if( reloclist_array != NULL ) {
-        index = OSF_PAGE_COUNT( group->totalsize );
-        for( highidx = OSF_RLIDX_HIGH( index ); highidx > 0; --highidx ) {
-            if( TraverseRelocBlock( *reloclist_array, OSF_RLIDX_MAX, fn ) )
-                return( true );
-            reloclist_array++;
+    if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD) ) {
+        os2_reloc_header    *pagelist_array;
+
+        pagelist_array = group->g.pagelist_array;
+        if( pagelist_array != NULL ) {
+            numpages = OSF_PAGE_COUNT( group->totalsize );
+            while( numpages-- > 0 ) {
+                if( fn( pagelist_array->externals ) )
+                    return( true );
+                if( fn( pagelist_array->internals ) )
+                    return( true );
+                pagelist_array++;
+            }
         }
-        lowidx = OSF_RLIDX_LOW( index );
-        if( lowidx > 0 ) {
-            return( TraverseRelocBlock( *reloclist_array, OSF_RLIDX_LOW( index ), fn ) );
+    } else { /* FmtData.type & MK_PE */
+        reloc_info          *reloclist_array;
+
+        reloclist_array = group->g.reloclist_array;
+        if( reloclist_array != NULL ) {
+            numpages = OSF_PAGE_COUNT( group->totalsize );
+            while( numpages-- > 0 ) {
+                if( fn( *reloclist_array++ ) ) {
+                    return( true );
+                }
+            }
         }
     }
     return( false );
@@ -306,12 +285,6 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info) )
 static void FreeGroupRelocs( group_entry *group )
 /***********************************************/
 {
-#ifdef _OS2
-    unsigned_32         highidx;
-    unsigned_32         index;
-    reloc_info          **reloclist_array;
-#endif
-
 #if !defined( _OS2 ) && !defined( _ELF ) && !defined( _QNX )
     /* unused parameters */ (void)group;
 #endif
@@ -322,17 +295,8 @@ static void FreeGroupRelocs( group_entry *group )
 #ifdef _OS2
     if( FmtData.type & (MK_OS2_FLAT | MK_WIN_VXD | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
-        reloclist_array = group->g.reloclist_array;
-        if( reloclist_array != NULL ) {
-            index = OSF_PAGE_COUNT( group->totalsize );
-            highidx = OSF_RLIDX_HIGH( index );
-            if( OSF_RLIDX_LOW( index ) != 0 ) {
-                highidx++;
-            }
-            while( highidx-- > 0 ) {
-                MemFree( *reloclist_array );
-                reloclist_array++;
-            }
+        if( group->g.reloclist_array != NULL ) {
+            MemFree( group->g.reloclist_array );
         }
         return;
     }
