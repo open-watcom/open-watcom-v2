@@ -260,5 +260,6 @@ extern offset           SymbolAbsAddr( symbol * );
 extern struct group_entry *SymbolGroup( symbol * );
 
 extern size_t           NameLen;
-extern int              (*CmpRtn)( const char *, const char *, size_t );
+extern int              (*CmpNRtn)( const char *, const char *, size_t );
+extern int              (*CmpRtn)( const char *, const char * );
 extern symbol           *LastSym;

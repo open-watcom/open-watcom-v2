@@ -600,7 +600,7 @@ void SetStartSym( const char *name )
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
             if( namelen != strlen( StartInfo.targ.sym->name.u.ptr )
-              || CmpRtn( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
+              || (*CmpNRtn)( StartInfo.targ.sym->name.u.ptr, name, namelen ) != 0 ) {
                 LnkMsg( MILD_ERR+LOC+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name.u.ptr, name );
             }
         } else {

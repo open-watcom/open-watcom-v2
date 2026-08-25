@@ -116,16 +116,10 @@ typedef unsigned    index_type;
 
 static char         **d_symbtab;   /* pointer to AR dictionary structures */
 
-static int ARCompI( const void *index1, const void *index2 )
-/**********************************************************/
-{
-    return( stricmp( d_symbtab[*(index_type *)index1], d_symbtab[*(index_type *)index2] ) );
-}
-
 static int ARComp( const void *index1, const void *index2 )
 /**********************************************************/
 {
-    return( strcmp( d_symbtab[*(index_type *)index1], d_symbtab[*(index_type *)index2] ) );
+    return( (*CmpRtn)( d_symbtab[*(index_type *)index1], d_symbtab[*(index_type *)index2] ) );
 }
 
 static void SortARDict( ar_dict_entry *ar_dict )
@@ -154,11 +148,7 @@ static void SortARDict( ar_dict_entry *ar_dict )
     }
     // Sort the index table using the corresponding symbol names
     // to determine the sort order (see ARCompI() for more info).
-    if( LinkFlags & LF_CASE_FLAG ) {
-        qsort( index_tab, d.num_entries, sizeof( index_type ), ARComp );
-    } else {
-        qsort( index_tab, d.num_entries, sizeof( index_type ), ARCompI );
-    }
+    qsort( index_tab, d.num_entries, sizeof( index_type ), ARComp );
 
     // Reorder the function name table (a vector of pointers to
     // symbol names) and the offset table (a vector of 16-bit offsets
@@ -460,19 +450,13 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
     size_t      len;
     unsigned    off;
     unsigned    returnval;
-    int         result;
 
     returnval = 0;
     off = ((unsigned char *)buff)[index];
     buff += off * 2;
     len = *(unsigned char *)buff;
     buff++;
-    if( LinkFlags & LF_CASE_FLAG ) {
-        result = strncmp( buff, name, len );
-    } else {
-        result = strnicmp( buff, name, len );
-    }
-    if( result == 0
+    if( (*CmpNRtn)( buff, name, len ) == 0
       && name[len] == '\0' ) {
         returnval = MGET_LE_U16_UN( buff + len );
     }
@@ -581,16 +565,7 @@ static int ARCompName( const void *key, const void *vbase )
     char        **base;
 
     base = (char **)vbase;
-    return( strcmp( key, *base ) );
-}
-
-static int ARCompIName( const void *key, const void *vbase )
-/**********************************************************/
-{
-    char        **base;
-
-    base = (char **)vbase;
-    return( stricmp( key, *base ) );
+    return( (*CmpRtn)( key, *base ) );
 }
 
 static bool ARSearchExtLib( file_list *file, const char *name, unsigned long *off )
@@ -602,11 +577,7 @@ static bool ARSearchExtLib( file_list *file, const char *name, unsigned long *of
     unsigned            tabidx;
 
     dict = &file->u.dict->a;
-    if( LinkFlags & LF_CASE_FLAG ) {
-        result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
-    } else {
-        result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompIName );
-    }
+    result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
     if( result != NULL ) {
         tabidx = result - dict->symbtab;
         if( dict->offsettab == NULL ) {

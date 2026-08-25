@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -174,7 +174,7 @@ static void ResetMisc( void )
  * Linker support initialization.
  */
 {
-    LinkFlags = LF_REDEFS_OK | LF_CASE_FLAG | LF_FAR_CALLS_FLAG;
+    LinkFlags = LF_REDEFS_OK | LF_FAR_CALLS_FLAG;
     LinkState = LS_MAKE_RELOCS;
     AbsGroups = NULL;
     DataGroup = NULL;
@@ -187,7 +187,6 @@ static void ResetMisc( void )
     CurrMod = NULL;
     StackSize = DEF_STACK_SIZE;
     ResetSym();
-    SetSymCase();
 }
 
 static void DoDefaultSystem( void )
