@@ -152,6 +152,7 @@ static void SetupImpLib( void )
 {
     const char  *fname;
     size_t      namelen;
+    unsigned    i;
 
     ImpLib.bufsize = 0;
     ImpLib.handle = NIL_FHANDLE;
@@ -166,18 +167,30 @@ static void SetupImpLib( void )
         } else {
             ImpLib.handle = openTempFile( &ImpLib.fname );
         }
-        /* GetBaseName results in the filename only   *
-         * it trims both the path, and the extension */
+        /*
+         * GetBaseName results in the filename only
+         * it trims both the path, and the extension
+         */
         fname = GetBaseName( Root->outfile->fname, 0, &namelen );
         ImpLib.module_name_len = namelen;
         /*
-         * increase length to restore full extension if not OS2
-         * sometimes the extension of the output name is important
+         * for NE format (16-bit OS/2 and Windows 3.x)
+         * - get base file name
+         * - uppercase name
+         * for other formats
+         * - get base file name with extension
+         * - no change case of name
          */
-        if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE)) == 0 )
+        if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+            ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
+            for( i = 0; i < ImpLib.module_name_len; i++ ) {
+                ImpLib.module_name[i] = toupper( (unsigned char)fname[i] );
+            }
+        } else {
             ImpLib.module_name_len += strlen( fname + namelen );
-        ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
-        memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
+            ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
+            memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
+        }
     }
 }
 
@@ -244,8 +257,9 @@ void CleanLoadFile( void )
 }
 
 void InitLoadFile( void )
-/***********************/
-/* open the file, and write out header info */
+/************************
+ * open the file, and write out header info
+ */
 {
     DEBUG(( DBG_OLD, "InitLoadFile()" ));
     LnkMsg( INF+MSG_CREATE_EXE, "f" );
@@ -335,8 +349,9 @@ static void finiLoad( void )
 }
 
 void FiniLoadFile( void )
-/***********************/
-/* terminate writing of load file */
+/************************
+ * terminate writing of load file
+ */
 {
     CurrSect = Root;
     FreeSavedRelocs();
@@ -372,8 +387,9 @@ static seg_leader *FindStack( section *sect )
 }
 
 static seg_leader *StackSegment( void )
-/*************************************/
-/* Find stack segment. */
+/**************************************
+ * Find stack segment.
+ */
 {
     seg_leader  *seg;
 
@@ -389,8 +405,9 @@ static seg_leader *StackSegment( void )
 }
 
 void GetStkAddr( void )
-/*********************/
-/* Find the address of the stack */
+/**********************
+ * Find the address of the stack
+ */
 {
     if( (FmtData.type & MK_NOVELL) == 0
       && !FmtData.dll ) {
@@ -485,8 +502,9 @@ static void CheckBSSInStart( symbol *sym, const char *name )
 }
 
 static void DefBSSStartSize( const char *name, class_entry *class )
-/*****************************************************************/
-/* set the value of an start symbol, and see if it has been defined */
+/******************************************************************
+ * set the value of an start symbol, and see if it has been defined
+ */
 {
     symbol      *sym;
     seg_leader  *seg;
@@ -504,16 +522,19 @@ static void DefBSSStartSize( const char *name, class_entry *class )
 }
 
 static void DefBSSEndSize( const char *name, class_entry *class )
-/***************************************************************/
-/* set the value of an end symbol, and see if it has been defined */
+/****************************************************************
+ * set the value of an end symbol, and see if it has been defined
+ */
 {
     symbol      *sym;
     seg_leader  *seg;
 
     sym = FindISymbol( name );
     if( IS_ADDR_UNDEFINED( sym->addr ) ) {
-        /* if the symbol was defined internally */
-        /* find last segment in BSS class */
+        /*
+         * if the symbol was defined internally
+         * find last segment in BSS class
+         */
         seg = (seg_leader *)RingLast( class->segs );
         /* set end of BSS class */
         sym->p.seg = (segdata *)RingLast( seg->pieces );
@@ -525,8 +546,9 @@ static void DefBSSEndSize( const char *name, class_entry *class )
 }
 
 void GetBSSSize( void )
-/*********************/
-/* Find size of BSS segment, and set the special symbols */
+/**********************
+ * Find size of BSS segment, and set the special symbols
+ */
 {
     class_entry *class;
 
@@ -670,8 +692,9 @@ void GetStartAddr( void )
 }
 
 offset CalcGroupSize( group_entry *group )
-/****************************************/
-/* calculate the total memory size of a potentially split group */
+/*****************************************
+ * calculate the total memory size of a potentially split group
+ */
 {
     offset size;
 
@@ -686,8 +709,9 @@ offset CalcGroupSize( group_entry *group )
 }
 
 offset CalcSplitSize( void )
-/**************************/
-/* calculate the size of the uninitialized portion of a group */
+/***************************
+ * calculate the size of the uninitialized portion of a group
+ */
 {
     offset size;
 
@@ -758,9 +782,10 @@ void OrderGroups( bool (*lessthan)(addr_type *, addr_type *) )
 }
 
 bool WriteGroup( group_entry *group )
-/***********************************/
-/* write the data for group to the loadfile */
-/* returns true if the file should be repositioned */
+/************************************
+ * write the data for group to the loadfile
+ * returns true if the file should be repositioned
+ */
 {
     unsigned long       file_loc;
     section             *sect;
@@ -795,8 +820,9 @@ bool WriteGroup( group_entry *group )
 }
 
 unsigned_32 MemorySize( void )
-/****************************/
-/* Compute size of image when loaded into memory. */
+/*****************************
+ * Compute size of image when loaded into memory.
+ */
 {
 #ifdef _EXE
     unsigned_32         start;
@@ -949,7 +975,7 @@ static void FlushImpBuffer( void )
 }
 
 void BuildImpLib( void )
-/*****************************/
+/**********************/
 {
     if( (LinkState & LS_LINK_ERROR)
       || ImpLib.handle == NIL_FHANDLE
@@ -1040,8 +1066,9 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
 }
 
 void WriteLoad3( void *dummy, const char *buff, size_t size )
-/***********************************************************/
-/* write a buffer out to the load file (useful as a callback) */
+/************************************************************
+ * write a buffer out to the load file (useful as a callback)
+ */
 {
     /* unused parameters */ (void)dummy;
 
@@ -1065,8 +1092,9 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
 }
 
 unsigned long NullAlign( unsigned align )
-/***************************************/
-/* align loadfile -- assumed power of two alignment */
+/****************************************
+ * align loadfile -- assumed power of two alignment
+ */
 {
     unsigned long   off;
     size_t          pad;
@@ -1078,8 +1106,9 @@ unsigned long NullAlign( unsigned align )
 }
 
 unsigned long OffsetAlign( unsigned long off, unsigned long align )
-/*****************************************************************/
-/* align loadfile -- assumed power of two alignment */
+/******************************************************************
+ * align loadfile -- assumed power of two alignment
+ */
 {
     size_t          pad;
 
@@ -1151,9 +1180,10 @@ static bool DoGroupLeader( void *_seg, void *_info )
 }
 
 static bool DoDupGroupLeader( void *seg, void *_info )
-/****************************************************/
-// Substitute groups generally are sourced from NO_EMIT classes,
-// As copies, they need to be output, so ignore their MOEMIT flag here
+/*****************************************************
+ * Substitute groups generally are sourced from NO_EMIT classes,
+ * As copies, they need to be output, so ignore their MOEMIT flag here
+ */
 {
     grpwriteinfo    *info = _info;
 
@@ -1163,9 +1193,10 @@ static bool DoDupGroupLeader( void *seg, void *_info )
 }
 
 static bool WriteCopyGroups( void *_seg, void *_info )
-/****************************************************/
-// This is called by the outer level iteration looking for classes
-//  that have more than one group in them
+/*****************************************************
+ * This is called by the outer level iteration looking for classes
+ * that have more than one group in them
+ */
 {
     seg_leader      *seg = _seg;
     grpwriteinfo    *info = _info;
@@ -1283,15 +1314,17 @@ void PadBuffFile( outfilelist *outfile, size_t size )
 }
 
 void PadLoad( size_t size )
-/*************************/
-/* pad out load file with zeros */
+/**************************
+ * pad out load file with zeros
+ */
 {
     PadBuffFile( CurrSect->outfile, size );
 }
 
 void WriteLoad( const void *buff, size_t size )
-/*********************************************/
-/* write a buffer out to the load file */
+/**********************************************
+ * write a buffer out to the load file
+ */
 {
     outfilelist         *outfile;
 
@@ -1382,7 +1415,7 @@ void SeekLoad( unsigned long offset )
 }
 
 void SeekEndLoad( unsigned long offset )
-/*********************************************/
+/**************************************/
 {
     outfilelist         *outfile;
 
@@ -1397,7 +1430,7 @@ void SeekEndLoad( unsigned long offset )
 }
 
 unsigned long PosLoad( void )
-/**********************************/
+/***************************/
 {
     if( CurrSect->outfile->buffer != NULL ) {
         return( CurrSect->outfile->bufpos - CurrSect->outfile->origin );
@@ -1407,7 +1440,7 @@ unsigned long PosLoad( void )
 }
 
 void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
-/*******************************************************************************/
+/************************************************************************/
 {
     outfile->fname    = filename;
     outfile->handle   = NIL_FHANDLE;
@@ -1426,7 +1459,7 @@ void SetOriginLoad( unsigned long origin )
 }
 
 void OpenBuffFile( outfilelist *outfile )
-/**********************************************/
+/***************************************/
 {
     if( outfile->is_exe ) {
         outfile->handle = ExeCreate( outfile->fname );
@@ -1440,7 +1473,7 @@ void OpenBuffFile( outfilelist *outfile )
 }
 
 void CloseBuffFile( outfilelist *outfile )
-/***********************************************/
+/****************************************/
 {
     if( outfile->buffer != NULL ) {
         FlushBuffFile( outfile );

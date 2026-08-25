@@ -432,23 +432,19 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 } /* findExeTypeRecord */
 
 static void FreeResTable( ResTable *restab )
-/*******************************************/
+/******************************************/
 {
     FullTypeRecord              *type;
-    FullTypeRecord              *type_next;
     FullResourceRecord          *res;
-    FullResourceRecord          *res_next;
 
-    for( type = restab->Dir.Head; type != NULL; type = type_next ) {
-        type_next = type->Next;
-        for( res = type->Head; res != NULL; res = res_next ) {
-            res_next = res->Next;
+    while( (type = restab->Dir.Head) != NULL ) {
+        restab->Dir.Head = type->Next;
+        while( (res = type->Head) != NULL ) {
+            type->Head = res->Next;
             MemFree( res );
         }
         MemFree( type );
     }
-
-    restab->Dir.Head = NULL;
     restab->Dir.Tail = NULL;
 }
 
@@ -842,7 +838,7 @@ void SetOS2GroupFlags( void )
 }
 
 void ChkOS2Exports( void )
-/********************************
+/*************************
  * NOTE: there is a continue in this loop!
  */
 {
@@ -914,7 +910,7 @@ void ChkOS2Exports( void )
 }
 
 void PhoneyStack( void )
-/******************************
+/***********************
  * signal that we will be making a fake stack later on.
  */
 {
@@ -995,7 +991,7 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
 #define MAX_DGROUP_SIZE _64K
 
 void FiniOS2LoadFile( void )
-/****************************
+/***************************
  * terminate writing of load file
  */
 {
@@ -1220,7 +1216,7 @@ void FiniOS2LoadFile( void )
 }
 
 void FreeImpNameTab( void )
-/********************************/
+/*************************/
 {
     FmtData.u.os2fam.mod_ref_list = NULL;  /* these are permalloc'd */
     FmtData.u.os2fam.imp_tab_list = NULL;

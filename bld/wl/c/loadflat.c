@@ -54,17 +54,18 @@
 
 
 static unsigned NumberBuf( unsigned *start, unsigned limit, map_entry *buf )
-/**************************************************************************/
-/* fill a buffer with consecutive numbers */
+/***************************************************************************
+ * fill a buffer with consecutive numbers
+ */
 {
     unsigned        size;
-    unsigned        num;
+    unsigned        numpages;
     unsigned        shift;
 
-    num = PAGE_COUNT(limit);
+    numpages = PAGE_COUNT( limit );
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
-        size = num * sizeof( le_map_entry );
-        while( num-- > 0 ) {
+        size = numpages * sizeof( le_map_entry );
+        while( numpages-- > 0 ) {
             *start += 1;
             buf->le.page_num[2] = *start;
             buf->le.page_num[1] = *start >> 8;
@@ -72,9 +73,9 @@ static unsigned NumberBuf( unsigned *start, unsigned limit, map_entry *buf )
             buf->le.flags = PAGE_VALID; //NYI: have to figure out how to fill in
             buf = (map_entry *)((char *)buf + sizeof( le_map_entry ));
         }
-    } else {
+    } else { /* FmtData.type & MK_OS2_LX */
         shift = FmtData.u.os2fam.segment_shift;
-        size = num * sizeof( lx_map_entry );
+        size = numpages * sizeof( lx_map_entry );
         while( limit > 0 ) {
             buf->lx.page_offset = *start >> shift;
             if( limit > OSF_DEF_PAGE_SIZE ) {
@@ -92,8 +93,8 @@ static unsigned NumberBuf( unsigned *start, unsigned limit, map_entry *buf )
     return( size );
 }
 
-static unsigned WriteObjectTables( os2_flat_header *header,unsigned long loc)
-/****************************************************************************
+static unsigned WriteObjectTables( os2_flat_header *header, unsigned long loc )
+/******************************************************************************
  * write the object table and the object page map
  */
 {
@@ -206,30 +207,32 @@ static unsigned WriteObjectTables( os2_flat_header *header,unsigned long loc)
  *       one as well.
  */
 static unsigned long WriteFlatEntryTable( void )
-/**********************************************/
-/* Write the entry table to the file */
+/***********************************************
+ * Write the entry table to the file
+ */
 {
-    entry_export        *start;
-    entry_export        *place;
-    entry_export        *prev;
-    ordinal_t           prevord;
-    unsigned long       size;
-    unsigned            gap;
-    unsigned            entries;
+    entry_export    *start;
+    entry_export    *place;
+    entry_export    *prev;
+    ordinal_t       prevord;
+    unsigned long   size;
+    unsigned        gap;
+    unsigned        entries;
     union {
-        flat_bundle_prefix      real;
-        flat_null_prefix        null;
-    }                   prefix;
-    flat_bundle_entry32 bundle_item;
-    flat_bundle_entryfwd bundle_fwd;
-    flat_bundle_gate16  bundle_gate;
-
-    // NB: The logic here relies on the fact that entries into a particular
-    // object will always be of the same type. All forwarder entries will be
-    // associated with nonexistent object 0. IOPL objects will have call gate
-    // entries, and the rest will have 32-bit entries.
-    // Note: 16-bit objects smaller than 64K could use 16-bit entries to save
-    // space, but that should not be required.
+        flat_bundle_prefix  real;
+        flat_null_prefix    null;
+    }               prefix;
+    flat_bundle_entry32     bundle_item;
+    flat_bundle_entryfwd    bundle_fwd;
+    flat_bundle_gate16      bundle_gate;
+    /*
+     * NB: The logic here relies on the fact that entries into a particular
+     * object will always be of the same type. All forwarder entries will be
+     * associated with nonexistent object 0. IOPL objects will have call gate
+     * entries, and the rest will have 32-bit entries.
+     * Note: 16-bit objects smaller than 64K could use 16-bit entries to save
+     * space, but that should not be required.
+     */
     size = 0;
     start = FmtData.u.os2fam.exports;
     if( start != NULL ) {
@@ -358,8 +361,9 @@ static unsigned WriteFixupTables( os2_flat_header *header, unsigned long loc)
 }
 
 static unsigned WriteDataPages( unsigned long loc )
-/*************************************************/
-/* write the enumerated data pages */
+/**************************************************
+ * write the enumerated data pages
+ */
 {
     group_entry *group;
     unsigned    last_page;
@@ -371,7 +375,7 @@ static unsigned WriteDataPages( unsigned long loc )
             if( last_page != 0 ) {
                 if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
-                } else {
+                } else { /* FmtData.type & MK_OS2_LX */
                     size = __ROUND_UP_SIZE_PWROF2( last_page, FmtData.u.os2fam.segment_shift ) - last_page;
                 }
                 PadLoad( size );
@@ -384,15 +388,18 @@ static unsigned WriteDataPages( unsigned long loc )
     }
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
-    } else if( (FmtData.type & (MK_OS2_LE | MK_WIN_VXD)) == 0 ) {
+    } else if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
+        /* nothing */
+    } else { /* FmtData.type & MK_OS2_LX */
         PadLoad( __ROUND_UP_SIZE_PWROF2( last_page, FmtData.u.os2fam.segment_shift ) - last_page );
     }
     return( last_page );
 }
 
-static void SetHeaderVxDInfo(os2_flat_header *exe_head)
-/**********************************************/
-/* setup VxD specific info in the header */
+static void SetHeaderVxDInfo( os2_flat_header *exe_head )
+/********************************************************
+ * setup VxD specific info in the header
+ */
 {
     entry_export *exp;
     vxd_ddb      ddb;
@@ -411,8 +418,9 @@ static void SetHeaderVxDInfo(os2_flat_header *exe_head)
 }
 
 void FiniOS2FlatLoadFile( void )
-/*************************************/
-/* make an OS/2 flat model executable file */
+/*******************************
+ * make an OS/2 flat model executable file
+ */
 {
     os2_flat_header     exe_head;
     unsigned long       curr_loc;
@@ -456,7 +464,7 @@ void FiniOS2FlatLoadFile( void )
     last_page = WriteDataPages( curr_loc );
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         exe_head.l.last_page = last_page;
-    } else {
+    } else { /* FmtData.type & MK_OS2_LX */
         exe_head.l.page_shift = FmtData.u.os2fam.segment_shift;
     }
     exe_head.nonres_off = PosLoad();
@@ -477,7 +485,7 @@ void FiniOS2FlatLoadFile( void )
     }
     if( FmtData.type & (MK_OS2_LE | MK_WIN_VXD) ) {
         exe_head.signature = EXESIGN_LE;
-    } else {
+    } else { /* FmtData.type & MK_OS2_LX */
         exe_head.signature = EXESIGN_LX;
     }
     exe_head.byte_order = OSF_386_BYTE_ORDER;
@@ -561,7 +569,7 @@ void FiniOS2FlatLoadFile( void )
 }
 
 bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
-/********************************************************************/
+/*************************************************************/
 {
     dll_sym_info *      dll;
 

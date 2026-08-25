@@ -669,13 +669,13 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     return( size );
 }
 
-static unsigned_32 WriteRelocList( reloc_info *reloclist_head, unsigned_32 size, unsigned_32 pagerva )
-/****************************************************************************************************/
+static unsigned_32 WriteRelocList( reloc_info reloclist, unsigned_32 size, unsigned_32 pagerva )
+/**********************************************************************************************/
 {
     unsigned_32 pagesize;
     bool        padme;
 
-    pagesize = RelocSize( *reloclist_head );
+    pagesize = RelocSize( reloclist );
     if( pagesize != 0 ) {
         padme = false;
         if( ( pagesize / sizeof( pe_reloc_item ) ) & 0x1 ) {
@@ -685,7 +685,7 @@ static unsigned_32 WriteRelocList( reloc_info *reloclist_head, unsigned_32 size,
         pagesize += 2 * sizeof( unsigned_32 );
         WriteLoadU32( pagerva );
         WriteLoadU32( pagesize );
-        DumpRelocList( *reloclist_head );
+        DumpRelocList( reloclist );
         if( padme ) {
             PadLoad( sizeof( pe_reloc_item ) );
         }
@@ -695,8 +695,9 @@ static unsigned_32 WriteRelocList( reloc_info *reloclist_head, unsigned_32 size,
 }
 
 static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe_dir_entry *entry )
-/*************************************************************************************************/
-/* dump the fixup table */
+/**************************************************************************************************
+ * dump the fixup table
+ */
 {
     unsigned_32         numpages;
     unsigned_32         pagerva;
@@ -708,7 +709,8 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
     object->physical_offset = NullAlign( file_align );
     object->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE | PE_OBJ_DISCARDABLE;
     size = 0;
-    /* When using non-default object alignment, groups and pages need
+    /*
+     * When using non-default object alignment, groups and pages need
      * not be in sync at all.
      */
     for( group = Groups; group != NULL; group = group->next ) {
@@ -717,9 +719,8 @@ static unsigned_32 WriteFixupInfo( pe_object *object, unsigned_32 file_align, pe
             pagerva = group->linear;
             numpages = __ROUND_UP_SIZE_TO_4K( group->size );
             while( numpages-- > 0 ) {
-                size = WriteRelocList( reloclist_array, size, pagerva );
+                size = WriteRelocList( *reloclist_array++, size, pagerva );
                 pagerva += OSF_PAGE_SIZE;
-                reloclist_array++;
             }
         }
     }
@@ -780,7 +781,7 @@ RcStatus CopyExeData( FILE *in_fp, FILE *out_fp, unsigned_32 length )
 }
 
 void DoAddResource( char *name )
-/*************************************/
+/******************************/
 {
     list_of_names       *info;
     unsigned            len;
@@ -870,8 +871,9 @@ static unsigned_32 WriteDebugTable( pe_object *object, const char *symfilename,
 }
 
 static void CheckNumRelocs( void )
-/********************************/
-// don't want to generate a .reloc section if we don't have any relocs
+/*********************************
+ * don't want to generate a .reloc section if we don't have any relocs
+ */
 {
     group_entry *group;
     symbol      *sym;
@@ -879,7 +881,7 @@ static void CheckNumRelocs( void )
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
     for( group = Groups; group != NULL; group = group->next ) {
-        if( group->g.reloclist != NULL ) {
+        if( group->g.reloclist_array != NULL ) {
             return;
         }
     }
@@ -1064,8 +1066,9 @@ static unsigned get_heap_commit_size( unsigned size )
 }
 
 void FiniPELoadFile( void )
-/*************************/
-/* make a PE executable file */
+/**************************
+ * make a PE executable file
+ */
 {
     pe_exe_header   pehdr;
     unsigned_32     stub_len;
@@ -1472,8 +1475,9 @@ void FiniPELoadFile( void )
 }
 
 static unsigned_32 getStubSize( void )
-/************************************/
-/* return the size of the stub file (unaligned) */
+/*************************************
+ * return the size of the stub file (unaligned)
+ */
 {
     unsigned_32     stub_len = 0;
     f_handle        the_file;
@@ -1511,7 +1515,7 @@ static unsigned_32 getStubSize( void )
 }
 
 unsigned long GetPEHeaderSize( void )
-/******************************************/
+/***********************************/
 {
     unsigned long       size;
     unsigned            num_objects;
@@ -1715,7 +1719,7 @@ static void CreateTransferSegment( class_entry *class )
 }
 
 void ChkPEData( void )
-/***************************/
+/********************/
 {
     class_entry *class;
 
@@ -1735,7 +1739,7 @@ void ChkPEData( void )
 }
 
 void AllocPETransferTable( void )
-/**************************************/
+/*******************************/
 {
     symbol              *sym;
     class_entry         *class;

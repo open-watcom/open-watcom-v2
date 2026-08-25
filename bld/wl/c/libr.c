@@ -83,7 +83,7 @@ static void BadLibrary( file_list *file )
 }
 
 static int ReadOMFDict( file_list *file, unsigned_8 *header, bool makedict )
-/***************************************************************************/
+/**************************************************************************/
 {
     omf_dict_entry  *omf_dict;
     unsigned        reclength;
@@ -117,7 +117,7 @@ typedef unsigned    index_type;
 static char         **d_symbtab;   /* pointer to AR dictionary structures */
 
 static int ARComp( const void *index1, const void *index2 )
-/**********************************************************/
+/*********************************************************/
 {
     return( (*CmpRtn)( d_symbtab[*(index_type *)index1], d_symbtab[*(index_type *)index2] ) );
 }
@@ -130,33 +130,41 @@ static void SortARDict( ar_dict_entry *ar_dict )
     index_type      ix_next;
     index_type      ix1;
     char            *symb_save;
-    unsigned_32     offset_save;
+    unsigned        offset_save;
     ar_dict_entry   d;
 
     if( ar_dict->num_entries < 2 )
         return;
 
     d = *ar_dict;
-    // store the dictionary pointer into memory so we can fetch ar_dict in ARCompI
+    /*
+     * store the dictionary pointer into memory so we can fetch ar_dict in ARComp
+     */
     d_symbtab = d.symbtab;
-
-    // Create an index table that we will sort to match the
-    // case-insensitive sort order that we want for our symbol names.
+    /*
+     * Create an index table that we will sort to match the
+     * case-insensitive sort order that we want for our symbol names.
+     */
     index_tab = MemAllocSafe( sizeof( index_type ) * d.num_entries );
     for( ix = 0; ix < d.num_entries; ix++ ) {
         index_tab[ix] = ix;
     }
-    // Sort the index table using the corresponding symbol names
-    // to determine the sort order (see ARCompI() for more info).
+    /*
+     * Sort the index table using the corresponding symbol names
+     * to determine the sort order (see ARComp() for more info).
+     */
     qsort( index_tab, d.num_entries, sizeof( index_type ), ARComp );
-
-    // Reorder the function name table (a vector of pointers to
-    // symbol names) and the offset table (a vector of 16-bit offsets
-    // into the file position table) (see ReadARDict() for info).
+    /*
+     * Reorder the function name table (a vector of pointers to
+     * symbol names) and the offset table (a vector of 16-bit offsets
+     * into the file position table) (see ReadARDict() for info).
+     */
     for( ix = 0; ix < d.num_entries; ++ix ) {
-        // If this entry hasn't been corrected
-        // then move out the entry that is present
-        // so that we can correct it.
+        /*
+         * If this entry hasn't been corrected
+         * then move out the entry that is present
+         * so that we can correct it.
+         */
         if( ix != index_tab[ix] ) {
             symb_save = d.symbtab[ix];
             if( d.offsettab == NULL ) {
@@ -164,7 +172,9 @@ static void SortARDict( ar_dict_entry *ar_dict )
             } else {
                 offset_save = d.offsettab[ix];
             }
-            // Correct all the entries in this sequence
+            /*
+             * Correct all the entries in this sequence
+             */
             for( ix1 = ix; (ix_next = index_tab[ix1]) != ix; ix1 = ix_next ) {
                 d.symbtab[ix1] = d.symbtab[ix_next];
                 if( d.offsettab == NULL ) {
@@ -174,8 +184,10 @@ static void SortARDict( ar_dict_entry *ar_dict )
                 }
                 index_tab[ix1] = ix1;
             }
-            // Update this final entry in the sequence from the
-            // values we set aside.
+            /*
+             * Update this final entry in the sequence from the
+             * values we set aside.
+             */
             d.symbtab[ix1] = symb_save;
             if( d.offsettab == NULL ) {
                 d.filepostab[ix1] = offset_save;
@@ -193,36 +205,35 @@ static void ReadARDictData( file_list *file, unsigned long *loc, unsigned size, 
 {
     ar_dict_entry   *dict;
     char            *data;
-    unsigned_32     num;
-    unsigned_32     index;
-
-    /* a dictionary in an AR archive commonly starts with a header marked with '/ '.
-
-    Be careful, more AR formats exists, GNU, BSD and COFF. Each handle dictionaries
-    a little bit different way.
-
-    GNU (Linux) and BSD AR archives commonly have only one dictionary which is of the form:
-
-    (all numbers in *big* endian format)
-    unsigned_32: number of entries (num)
-    num unsigned_32's: offset within AR file of the object file that the symbol name belongs too.
-    num zero terminated strings: the symbols themselves (unsorted).
-
-    COFF AR archieves however use two dictionaries.
-    First one is the same as for GNU and BSD, but WLINK uses second one, more efficient dictionary:
-
-    (all numbers in *little* endian format)
-    unsigned_32: number of files in object
-    nfiles unsigned_32's: offsets of the files within the archive
-    unsigned_32: number of entries (num)
-    num unsigned_16's: the file number that the symbol belongs to
-    num zero terminated strings: the symbols themselves (sorted case-sensitively).
-
-    however WLINK needs to be able to parse both kinds.
-    (dict->offsettab == NULL) means that we only know about an unsorted dictionary and
-    it will be sorted later.
-    */
-
+    unsigned        num;
+    unsigned        index;
+    /*
+     * a dictionary in an AR archive commonly starts with a header marked with '/ '.
+     *
+     * Be careful, more AR formats exists, GNU, BSD and COFF. Each handle dictionaries
+     * a little bit different way.
+     *
+     * GNU (Linux) and BSD AR archives commonly have only one dictionary which is of the form:
+     *
+     * (all numbers in *big* endian format)
+     * unsigned_32: number of entries (num)
+     * num unsigned_32's: offset within AR file of the object file that the symbol name belongs too.
+     * num zero terminated strings: the symbols themselves (unsorted).
+     *
+     * COFF AR archieves however use two dictionaries.
+     * First one is the same as for GNU and BSD, but WLINK uses second one, more efficient dictionary:
+     *
+     * (all numbers in *little* endian format)
+     * unsigned_32: number of files in object
+     * nfiles unsigned_32's: offsets of the files within the archive
+     * unsigned_32: number of entries (num)
+     * num unsigned_16's: the file number that the symbol belongs to
+     * num zero terminated strings: the symbols themselves (sorted case-sensitively).
+     *
+     * however WLINK needs to be able to parse both kinds.
+     * (dict->offsettab == NULL) means that we only know about an unsorted dictionary and
+     * it will be sorted later.
+     */
     dict = &file->u.dict->a;
     data = CachePermRead( file, *loc, size );
     if( numdicts == 1 ) {
@@ -337,14 +348,16 @@ static bool ReadARDict( file_list *file, unsigned long *loc, bool makedict )
 int CheckLibraryType( file_list *file, unsigned long *loc, bool makedict )
 /************************************************************************/
 {
-    unsigned_8          *header;
-    int                 reclength;
+    unsigned_8      *header;
+    int             reclength;
 
     reclength = 0;
     header = CacheRead( file, *loc, sizeof( omf_lib_header ) );
     if( header[0] == 0xf0
       && header[1] == 0x01 ) {
-        // COFF object for PPC
+        /*
+         * COFF object for PPC
+         */
     } else if( header[0] == LIB_HEADER_REC ) {   // reading from a library
         file->flags_file |= STAT_OMF_LIB;
         reclength = ReadOMFDict( file, header, makedict );
@@ -373,8 +386,9 @@ static void FreeDictCache( void **cache, unsigned buckets )
 }
 
 static void **AllocDict( unsigned num_buckets, unsigned residue )
-/***************************************************************/
-/* allocate a chunk of dict memory, down from the top */
+/****************************************************************
+ * allocate a chunk of dict memory, down from the top
+ */
 {
     void            **cache;
     unsigned        bucket;
@@ -403,8 +417,9 @@ static void **AllocDict( unsigned num_buckets, unsigned residue )
 }
 
 static void SetDict( file_list *file, unsigned dict_page )
-/********************************************************/
-/* set lib->buffer to the dict_page th page in lib 's dictionary */
+/*********************************************************
+ * set lib->buffer to the dict_page th page in lib 's dictionary
+ */
 {
     unsigned        pages;
     unsigned        num_buckets;
@@ -444,12 +459,13 @@ static void SetDict( file_list *file, unsigned dict_page )
 }
 
 static unsigned OMFCompName( const char *name, const char *buff, unsigned index )
-/*******************************************************************************/
-/* Compare name. */
+/********************************************************************************
+ * Compare name.
+ */
 {
-    size_t      len;
-    unsigned    off;
-    unsigned    returnval;
+    size_t          len;
+    unsigned        off;
+    unsigned        returnval;
 
     returnval = 0;
     off = ((unsigned char *)buff)[index];
@@ -464,8 +480,9 @@ static unsigned OMFCompName( const char *name, const char *buff, unsigned index 
 }
 
 static bool OMFSearchExtLib( file_list *file, const char *name, unsigned long *off )
-/**********************************************************************************/
-/* Search library for specified member. */
+/***********************************************************************************
+ * Search library for specified member.
+ */
 {
     unsigned        num_blocks;
     unsigned        sector;
@@ -506,11 +523,12 @@ static bool OMFSearchExtLib( file_list *file, const char *name, unsigned long *o
 }
 
 bool DiscardDicts( void )
-/******************************/
-/* called when dictionaries forced out of dict memory */
+/************************
+ * called when dictionaries forced out of dict memory
+ */
 {
-    omf_dict_entry      *ptr;
-    file_list           *file;
+    omf_dict_entry  *ptr;
+    file_list       *file;
 
     ptr = NULL;
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
@@ -531,11 +549,12 @@ bool DiscardDicts( void )
 
 
 void BurnLibs( void )
-/**************************/
-/* let dict memory know it's no longer needed */
+/********************
+ * let dict memory know it's no longer needed
+ */
 {
-    file_list   *file;
-    dict_entry  *dict;
+    file_list       *file;
+    dict_entry      *dict;
 
     for( file = ObjLibFiles; file != NULL; file = file->next ) {
         if( file->flags_file & STAT_AR_LIB ) {
@@ -560,21 +579,22 @@ void BurnLibs( void )
 }
 
 static int ARCompName( const void *key, const void *vbase )
-/**********************************************************/
+/*********************************************************/
 {
-    char        **base;
+    char            **base;
 
     base = (char **)vbase;
     return( (*CmpRtn)( key, *base ) );
 }
 
 static bool ARSearchExtLib( file_list *file, const char *name, unsigned long *off )
-/*********************************************************************************/
-/* Search AR format library for specified member. */
+/**********************************************************************************
+ * Search AR format library for specified member.
+ */
 {
-    char                **result;
-    ar_dict_entry       *dict;
-    unsigned            tabidx;
+    char            **result;
+    ar_dict_entry   *dict;
+    unsigned        tabidx;
 
     dict = &file->u.dict->a;
     result = bsearch( name, dict->symbtab, dict->num_entries, sizeof( char * ), ARCompName );
@@ -595,11 +615,11 @@ mod_entry *SearchLib( file_list *file, const char *name )
  * Search the specified library file for the specified name & make a module
  */
 {
-    mod_entry           *obj;
-    unsigned long       pos;
-    unsigned long       dummy;
-    bool                retval;
-    char                *objname;
+    mod_entry       *obj;
+    unsigned long   pos;
+    unsigned long   dummy;
+    bool            retval;
+    char            *objname;
 
     pos = 0;
     if( file->u.dict == NULL ) {
@@ -675,10 +695,11 @@ char *GetARName( const ar_header *header, const file_list *file, unsigned long *
 }
 
 unsigned long GetARValue( const char *str, size_t max )
-/*****************************************************/
-// get a numeric value from an ar_header
+/******************************************************
+ * get a numeric value from an ar_header
+ */
 {
-    char                *p;
+    char            *p;
 
     DUPSTR_STACK( p, str, max );
     return( strtoul( p, NULL, 10 ) );

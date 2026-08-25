@@ -41,10 +41,6 @@
 #include "exeflat.h"
 
 
-/* note: if either of these two structures get any bigger, the magic constants
- * in the RLIDX_* macros will have to change to ensure that no allocation > 64k
- * occurs. */
-
 typedef struct reloc_info_struct {
     struct reloc_info_struct *next;
     size_t              sizeleft;
@@ -101,7 +97,7 @@ static void *OS2PagedRelocInit( offset size, unsigned unitsize )
 }
 
 static os2_reloc_header *OS2FlatRelocInit( offset size )
-/********************************************************
+/*******************************************************
  * initialize relocations for OS2 flat memory manager.
  */
 {
@@ -109,7 +105,7 @@ static os2_reloc_header *OS2FlatRelocInit( offset size )
 }
 
 static reloc_info *PERelocInit( offset size )
-/*********************************************
+/********************************************
  * initialize relocations for PE executable format
  */
 {
