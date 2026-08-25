@@ -181,10 +181,10 @@ extern void             WriteQNXLinearReloc( group_entry *group, qnx_linear_item
 #endif
 extern bool             TraverseOS2RelocList( group_entry *group, bool (*fn)(reloc_info));
 extern void             FreeRelocInfo( void );
-extern unsigned_32      RelocSize( reloc_info reloclist );
-extern unsigned_32      DumpMaxRelocList( reloc_info *reloclist_head, unsigned_32 );
+extern unsigned         RelocSize( reloc_info reloclist );
+extern unsigned         DumpMaxRelocList( reloc_info *reloclist_head, unsigned );
 extern bool             DumpRelocList( reloc_info reloclist );
 extern void             SetRelocSize( void );
 extern bool             SwapOutRelocs( void );
 extern void             ResetReloc( void );
-extern unsigned_32      WalkRelocList( reloc_info *reloclist_head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx );
+extern unsigned         WalkRelocList( reloc_info *reloclist_head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx );
