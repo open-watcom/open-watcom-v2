@@ -110,8 +110,8 @@ void DBIInitModule( mod_entry *obj )
 void DBIP1Source( const byte *buff, const byte *endbuff )
 /*******************************************************/
 {
-    byte        major;
-    byte        minor;
+    byte            major;
+    byte            minor;
 
     major = *buff++;
     minor = *buff++;
@@ -192,8 +192,8 @@ void DBIP1ModuleScanned( void )
 static bool MSSkip( void )
 /************************/
 {
-    bool        iscv;
-    bool        seencmt;
+    bool            iscv;
+    bool            seencmt;
 
     if( ObjFileFormat != FILE_FMT_OMF ) {
         return( LinkFlags & LF_DWARF_DBI_FLAG );
@@ -277,10 +277,10 @@ void DBIAddrInfoScan( seg_leader *seg,
                          void *cookie )
 /********************************************************************************/
 {
-    segdata     *prev;
-    segdata     *curr;
-    offset      size;
-    bool        isnewmod;
+    segdata         *prev;
+    segdata         *curr;
+    offset          size;
+    bool            isnewmod;
 
     if( IS_DBG_INFO( seg ) )
         return;
@@ -407,7 +407,7 @@ void DBIAddLocal( seg_leader *seg, offset length )
         ODBIAddLocal( seg, length );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddLocal( seg, length );
-   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
         HllAddLocal( seg, length );
     }
 }
@@ -415,7 +415,7 @@ void DBIAddLocal( seg_leader *seg, offset length )
 void DBIModGlobal( void *_sym )
 /*****************************/
 {
-    symbol *sym = _sym;
+    symbol          *sym = _sym;
 
     if( !IS_SYM_ALIAS( sym )
       && (sym->info & SYM_DEAD) == 0 ) {
@@ -438,7 +438,7 @@ void DBIAddGlobal( symbol *sym )
         DwarfAddGlobal( sym );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVAddGlobal( sym );
-   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
         HllAddGlobal( sym );
     }
 }
@@ -454,7 +454,7 @@ void DBIGenGlobal( symbol *sym, section *sect )
         DwarfGenGlobal( sym, sect );
     } else if( LinkFlags & LF_CV_DBI_FLAG ) {
         CVGenGlobal( sym, sect );
-   } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
+    } else if( LinkFlags & LF_HLL_DBI_FLAG ) {
         HllGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
@@ -469,7 +469,7 @@ void DBIAddLines( segdata *seg, const void *line, size_t size, bool is32bit )
 /***************************************************************************/
 // called during pass 1 linnum processing
 {
-    lineinfo    *info;
+    lineinfo        *info;
 
     info = _PermAlloc( sizeof( lineinfo ) + size - 1 );
     info->seg = seg;
@@ -483,7 +483,7 @@ void DBIAddLines( segdata *seg, const void *line, size_t size, bool is32bit )
 unsigned DBICalcLineQty( lineinfo *info )
 /***************************************/
 {
-    unsigned    size;
+    unsigned        size;
 
     size = info->size & ~LINE_IS_32BIT;
     if( info->size & LINE_IS_32BIT ) {
@@ -612,8 +612,8 @@ void DBIWrite( void )
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {
-    outfilelist symfile;
-    outfilelist *save;
+    outfilelist     symfile;
+    outfilelist     *save;
 
     if( (LinkFlags & LF_ANY_DBI_FLAG) == 0 )
         return;

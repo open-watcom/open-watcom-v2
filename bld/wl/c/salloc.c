@@ -53,7 +53,7 @@ void ResetAddr( void )
 void NormalizeAddr( void )
 /*******************************/
 {
-    unsigned_32 new_seg;
+    unsigned_32     new_seg;
 
     DbgAssert( (FmtData.type & MK_PROT_MODE) == 0 );
 
@@ -94,7 +94,7 @@ offset CAlign( offset off, unsigned align )
 /************************************************/
 /* this aligns to 2^align */
 {
-    unsigned      part;
+    unsigned        part;
 
     if( align > 0 ) {
         align = 1 << align;
@@ -109,7 +109,7 @@ offset CAlign( offset off, unsigned align )
 void Align( byte align )
 /*****************************/
 {
-    offset  off;
+    offset          off;
 
     off = CAlign( CurrLoc.off, align );
     AddSize( off - CurrLoc.off );
@@ -158,15 +158,14 @@ void ChkLocated( addr_type *seg_addr, bool fixed )
  */
 {
     if( fixed ) {
-        if( ( CurrLoc.seg << FmtData.SegShift ) + CurrLoc.off >
-            ( seg_addr->seg << FmtData.SegShift ) + seg_addr->off ) {
+        if( ( CurrLoc.seg << FmtData.SegShift ) + CurrLoc.off > ( seg_addr->seg << FmtData.SegShift ) + seg_addr->off ) {
             LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", seg_addr );
         } else {
             CurrLoc = *seg_addr;
         }
-   } else {
+    } else {
         *seg_addr = CurrLoc;
-   }
+    }
 }
 
 void NewSegment( seg_leader *seg )

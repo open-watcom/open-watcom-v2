@@ -208,8 +208,8 @@ static bool AddAlias( void )
  * add an individual alias
  */
 {
-    char        *name;
-    size_t      namelen;
+    char            *name;
+    size_t          namelen;
 
     DUPBUF_STACK( name, Token.this, Token.len );
     namelen = Token.len;
@@ -229,7 +229,7 @@ static bool ProcAlias( void )
 static bool AddReference( void )
 /******************************/
 {
-    symbol      *sym;
+    symbol          *sym;
 
     sym = SymOp( ST_CREATE_REFERENCE, Token.this, Token.len );
     sym->info |= SYM_1_DCE_REF;   /* make sure it stays around */
@@ -328,9 +328,9 @@ static void *AddObjFile( const char *name, const char *membname, file_list **fil
 static bool AddLibFile( void )
 /****************************/
 {
-    char        *ptr;
-    char        *membname;
-    file_list   *file;
+    char            *ptr;
+    char            *membname;
+    file_list       *file;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
     ptr = GetFileName( &membname );
@@ -370,8 +370,8 @@ static bool ProcLibFile( void )
 static bool AddModFile( void )
 /****************************/
 {
-    char        *ptr;
-    char        *membname;
+    char            *ptr;
+    char            *membname;
 
     ptr = GetFileName( &membname );
     AddHTableElem( Root->modFilesHashed, ptr );
@@ -385,9 +385,9 @@ static bool AddModFile( void )
 static bool AddFile( void )
 /*************************/
 {
-    char        *ptr;
-    char        *membname;
-    file_list   **file;
+    char            *ptr;
+    char            *membname;
+    file_list       **file;
 
     CmdFlags &= ~CF_MEMBER_ADDED;
 #ifdef _EXE
@@ -441,8 +441,8 @@ static bool ProcModFiles( void )
 static bool AddLib( void )
 /************************/
 {
-    char        *ptr;
-    file_list   *file;
+    char            *ptr;
+    file_list       *file;
 
     ptr = FileName( Token.this, Token.len, E_LIBRARY, false );
     file = AddObjLib( ptr, LIB_PRIORITY_MAX );
@@ -476,7 +476,7 @@ bool ProcLibrary( void )
 static bool ProcOptLib( void )
 /****************************/
 {
-    bool    retval;
+    bool            retval;
 
     CmdFlags |= CF_DOING_OPTLIB;
     retval = ProcLibrary();
@@ -828,7 +828,7 @@ static bool ProcVFRemoval( void )
 static bool ProcStart( void )
 /***************************/
 {
-    char        *name;
+    char            *name;
 
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) )
         return( false );
@@ -841,7 +841,7 @@ static bool ProcStart( void )
 static bool GetPackValue( unsigned_32 *value, const char *message )
 /*****************************************************************/
 {
-    ord_state   ret;
+    ord_state       ret;
 
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
@@ -904,7 +904,7 @@ static bool ProcNewSegment( void )
 sysblock *FindSysBlock( const char *name )
 /****************************************/
 {
-    sysblock    *sys;
+    sysblock        *sys;
 
     for( sys = SysBlocks; sys != NULL; sys = sys->next ) {
         if( sys->name != NULL
@@ -918,9 +918,9 @@ sysblock *FindSysBlock( const char *name )
 static sysblock *FindSystemBlock( const char *name )
 /**************************************************/
 {
-    sysblock    *sys;
-    sysblock    *tmpblk;
-    size_t      len;
+    sysblock        *sys;
+    sysblock        *tmpblk;
+    size_t          len;
 
     tmpblk = FindSysBlock( name );
     if( tmpblk == NULL ) {
@@ -948,7 +948,7 @@ static bool ProcSysDelete( void )
 static void CopyBlocks( void *copyp, const char *data, size_t size )
 /******************************************************************/
 {
-    char    **copyptr = copyp;
+    char            **copyptr = copyp;
 
     memcpy( *copyptr, data, size );
     *copyptr += size;
@@ -957,9 +957,9 @@ static void CopyBlocks( void *copyp, const char *data, size_t size )
 static void GetCommandBlock( sysblock **hdr, const char *name, parse_entry *endtab )
 /**********************************************************************************/
 {
-    char        *copyptr;
-    sysblock    *sys;
-    stringtable strtab;
+    char            *copyptr;
+    sysblock        *sys;
+    stringtable     strtab;
 
     InitStringTable( &strtab, false );
     AddBufferStringTable( &strtab, &strtab, offsetof( sysblock, commands ) );
@@ -1023,8 +1023,8 @@ static char **getStubNamePtr( void )
 static bool ProcStub( void )
 /**************************/
 {
-    char        *name;
-    char        **nameptr;
+    char            *name;
+    char            **nameptr;
 
     if( !HaveEquals( TOK_IS_FILENAME ) )
         return( false );
@@ -1167,8 +1167,8 @@ static bool ProcOutputStart( void )
 static bool ProcOutputOffset( void )
 /**********************************/
 {
-    ord_state   retval;
-    unsigned_32 value;
+    ord_state       retval;
+    unsigned_32     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1188,8 +1188,8 @@ static bool ProcOutputOffset( void )
 static bool ProcOutputHshift( void )
 /**********************************/
 {
-    ord_state   ret;
-    unsigned_16 value;
+    ord_state       ret;
+    unsigned_16     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1210,8 +1210,8 @@ static bool ProcOutputHshift( void )
 static bool ProcHshift( void )
 /****************************/
 {
-    ord_state   ret;
-    unsigned_16 value;
+    ord_state       ret;
+    unsigned_16     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1231,8 +1231,8 @@ static bool ProcHshift( void )
 static bool ProcFillchar( void )
 /******************************/
 {
-    ord_state   ret;
-    unsigned_16 value;
+    ord_state       ret;
+    unsigned_16     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1251,8 +1251,8 @@ static bool ProcFillchar( void )
 static bool ProcOrdSegAdr( void )
 /*******************************/
 {
-    ord_state   ret;
-    unsigned_16 value;
+    ord_state       ret;
+    unsigned_16     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1272,8 +1272,8 @@ static bool ProcOrdSegAdr( void )
 static bool ProcOrdOfsAdr( void )
 /*******************************/
 {
-    ord_state   retval;
-    unsigned_32 value;
+    ord_state       retval;
+    unsigned_32     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1313,8 +1313,8 @@ static bool ProcOrdNoEmit( void )
 static bool ProcOrdSegSegAdr( void )
 /**********************************/
 {
-    ord_state   ret;
-    unsigned_16 value;
+    ord_state       ret;
+    unsigned_16     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1334,8 +1334,8 @@ static bool ProcOrdSegSegAdr( void )
 static bool ProcOrdSegOfsAdr( void )
 /**********************************/
 {
-    ord_state   retval;
-    unsigned_32 value;
+    ord_state       retval;
+    unsigned_32     value;
 
     if( !GetToken( SEP_EQUALS, TOK_NORMAL ) ) {
         return( false );
@@ -1366,8 +1366,8 @@ static bool ProcObjAlign( void )
  * process ObjAlign option
  */
 {
-    ord_state           ret;
-    unsigned_32         value;
+    ord_state       ret;
+    unsigned_32     value;
 
     if( !HaveEquals( TOK_NORMAL ) )
         return( false );
@@ -1613,7 +1613,7 @@ static bool ProcXDbg( void )
  * process DEBUG command
  */
 {
-    char        value[7];
+    char            value[7];
 
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         if( Token.len > 6 ) {
@@ -1674,7 +1674,7 @@ static parse_entry  OrderClassOpts[] = {
 static bool ProcOrdClass( void )
 /******************************/
 {
-    ORDER_CLASS *LastOClass;
+    ORDER_CLASS     *LastOClass;
 
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         return( false );
@@ -1708,7 +1708,7 @@ static parse_entry  OrderOpts[] = {
 static bool ProcOrder( void )
 /***************************/
 {
-    bool    ret;
+    bool            ret;
 
     ret = false;
     CurrOClass = CurrSect->orderlist;
@@ -1735,16 +1735,16 @@ static parse_entry  OutputOpts[] = {
 static bool ProcOutput( void )
 /****************************/
 {
-   bool     ret;
+    bool            ret;
 
-   FmtData.output_offset = 0L;
-   FmtData.output_hshift = false;
-   FmtData.output_start = false;
-   ret = false;
-   while( ProcOne( OutputOpts, SEP_NO ) ) {
-       ret = true;
-   }
-   return( ret );
+    FmtData.output_offset = 0L;
+    FmtData.output_hshift = false;
+    FmtData.output_start = false;
+    ret = false;
+    while( ProcOne( OutputOpts, SEP_NO ) ) {
+        ret = true;
+    }
+    return( ret );
 }
 #endif
 
@@ -1808,8 +1808,8 @@ static bool ProcSysBegin( void )
  * and store it somewhere
  */
 {
-    char        *sysname;
-    sysblock    *sys;
+    char            *sysname;
+    sysblock        *sys;
 
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", "SYSTEM BEGIN" );
@@ -1845,10 +1845,10 @@ static bool ProcSystem( void )
  * process the system directive
  */
 {
-    char        *sysname;
-    sysblock    *sys;
-    sysblock    **prev;
-    bool        dodelete;
+    char            *sysname;
+    sysblock        *sys;
+    sysblock        **prev;
+    bool            dodelete;
 
     if( ProcOne( SysBeginOptions, SEP_NO ) )
         return( true );
@@ -1939,7 +1939,7 @@ static parse_entry  DbgMods[] = {
 static bool ProcDebug( void )
 /***************************/
 {
-    bool        gotmod;
+    bool            gotmod;
 
     if( CmdFlags & CF_FILES_BEFORE_DBI ) {
         LnkMsg( WRN+LOC+LINE+MSG_DEBUG_AFTER_FILES, NULL );
