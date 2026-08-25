@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -97,27 +98,27 @@ enum {
 // Collected during the early link phases and used to calculate the
 // actual size of the debug info and where to put things (SectOffsets).
 
-static unsigned_32 SectSizes[NUM_HLL_SECTS];
+static unsigned     SectSizes[NUM_HLL_SECTS];
 
 // Where to write bits bits of information. This is as
 // Calculated by HllAddrStart.
 
-static virt_mem SectOffsets[NUM_HLL_SECTS];
+static virt_mem     SectOffsets[NUM_HLL_SECTS];
 
 // The HLL information is just one big memory block. This is the start
 // of it, and the length of it
 
-static virt_mem         HllBase;
-static unsigned_32      HllSize;
-static hll_dirinfo     *HllDirHdr;
+static virt_mem     HllBase;
+static unsigned     HllSize;
+static hll_dirinfo  *HllDirHdr;
 
 // The current module index.
 
-static unsigned         ModIndex;
+static unsigned     ModIndex;
 
 // something todo with line numbers?
 
-static hll_lineinfo     LineInfo;
+static hll_lineinfo LineInfo;
 
 static void     hllSrcModHeader( void );
 
@@ -143,7 +144,7 @@ extern void HllInitModule( mod_entry *obj )
     memset( obj->u3.hll, 0, sizeof( hllmodinfo ) );
 }
 
-static void hllDumpInfo( unsigned sect, void *data, unsigned_32 len )
+static void hllDumpInfo( unsigned sect, void *data, unsigned len )
 /****************************************************************/
 {
     PutInfo( SectOffsets[sect], data, len );
@@ -153,21 +154,21 @@ static void hllDumpInfo( unsigned sect, void *data, unsigned_32 len )
 static segment hllGetSegment( seg_leader *seg )
 /********************************************/
 {
-    int             index;
+    segment         segm_index;
     group_entry     *group;
 
-    if( ( seg == NULL ) || ( seg->group == NULL ) ) {
-        return( 0 );
-    }
-    if( FmtData.type & ( MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT ) ) {
-        index = 1;
-        for( group = Groups; group != NULL; group = group->next ) {
-            if( group == seg->group )
-                return( index );
-            index++;
+    if( ( seg != NULL )
+      && ( seg->group != NULL ) ) {
+        if( FmtData.type & (MK_REAL_MODE | MK_FLAT_OFFS | MK_ID_SPLIT) ) {
+            segm_index = 1;
+            for( group = Groups; group != NULL; group = group->next ) {
+                if( group == seg->group )
+                    return( segm_index );
+                segm_index++;
+            }
+        } else {
+            return( seg->seg_addr.seg );
         }
-    } else {
-        return( seg->seg_addr.seg );
     }
     return( 0 );
 }
@@ -179,8 +180,8 @@ static void hllAddSubSection( void )
     SectSizes[HLL_SECT_DIRECTORY] += sizeof( hll_dir_entry );
 }
 
-static void hllGenSubSection( hll_sst sect, unsigned_32 size )
-/*****************************************************/
+static void hllGenSubSection( hll_sst sect, unsigned size )
+/*********************************************************/
 // generate a subsection entry
 {
     hll_dir_entry entry;
@@ -221,8 +222,9 @@ static void hllAddLines( segdata * seg, void *line, unsigned size, bool is32bit 
 #endif // FIXME: Implement support for non-HLL linenumbers.
 
 extern void HllP1ModuleFinished( mod_entry *obj )
-/**********************************************/
-// calculate size of the sstModule
+/************************************************
+ * calculate size of the sstModule
+ */
 {
     byte    namelen;
 
@@ -255,7 +257,7 @@ extern void HllP1ModuleFinished( mod_entry *obj )
     }
 
     if( obj->d.cv->numlines > 0 ) {
-        unsigned_32     temp;
+        unsigned    temp;
 
         hllAddSubSection();
         temp = sizeof( cheesy_module_header );
@@ -273,9 +275,9 @@ extern void HllAddModule( mod_entry *obj, section *sect )
 // called just before publics have been assigned addresses between p1 & p2
 // We generate the module entry and some other bits now.
 {
-    hll_module          mod;
-    unsigned_32         size;
-    byte                namelen;
+    hll_module      mod;
+    unsigned        size;
+    byte            namelen;
 
     DEBUG(( DBG_HLL, "HllAddModule: obj=%p %s sect=%p implib=%d pubsize=%h",
             obj, obj->name.u.ptr, sect, obj->modinfo & MOD_IMPORT_LIB,
@@ -295,18 +297,26 @@ extern void HllAddModule( mod_entry *obj, section *sect )
     mod.SegInfo.Seg     = 0;        /* corrected later if any code */
     mod.SegInfo.offset  = 0;
     mod.SegInfo.cbSeg   = 0;
-    mod.ovlNumber = 0;
-    mod.iLib    = 0; /// @todo add library table and indexes into it. (not important)
-    mod.cSeg    = obj->u3.hll->numsegs;
-    mod.Style   = 0;
-    mod.Version = 0;
-    if( IS_OMF_DBG_HLL(obj->omfdbg) ) {
-        mod.Style = HLL_DEBUG_STYLE_HL;
-        switch( obj->omfdbg ) {
-        case OMF_DBG_HLL_03: mod.Version = 0x300; break;
-        case OMF_DBG_HLL_04: mod.Version = 0x400; break;
-        case OMF_DBG_HLL_06: mod.Version = 0x600; break;
-        }
+    mod.ovlNumber       = 0;
+    mod.iLib            = 0; /// @todo add library table and indexes into it. (not important)
+    mod.cSeg            = obj->u3.hll->numsegs;
+    switch( obj->omfdbg ) {
+    case OMF_DBG_HLL_03:
+        mod.Version = 0x300;
+        mod.Style   = HLL_DEBUG_STYLE_HL;
+        break;
+    case OMF_DBG_HLL_04:
+        mod.Version = 0x400;
+        mod.Style   = HLL_DEBUG_STYLE_HL;
+        break;
+    case OMF_DBG_HLL_06:
+        mod.Version = 0x600;
+        mod.Style   = HLL_DEBUG_STYLE_HL;
+        break;
+    default:
+        mod.Version = 0;
+        mod.Style   = 0;
+        break;
     }
     mod.name_len = namelen;
     hllDumpInfo( HLL_SECT_MODULE, &mod, sizeof( mod ) );
@@ -315,8 +325,7 @@ extern void HllAddModule( mod_entry *obj, section *sect )
     /* next comes extra segment info structures. reserve space for them. */
     obj->u3.hll->next_segloc = SectOffsets[HLL_SECT_MODULE];
     if( obj->u3.hll->numsegs ) {
-        SectSizes[HLL_SECT_MODULE] += ( obj->u3.hll->numsegs - 1 )
-                                    * sizeof( hll_seginfo );
+        SectSizes[HLL_SECT_MODULE] += ( obj->u3.hll->numsegs - 1 ) * sizeof( hll_seginfo );
     }
 
 #ifdef HLL_INC_PUBLIC
@@ -338,7 +347,7 @@ static int hllRelocCompare( virt_mem a, virt_mem b )
 
     GET32INFO( a, a32 );
     GET32INFO( b, b32 );
-    return( (signed_32)a32 - b32 );
+    return( (int)a32 - (int)b32 );
 }
 
 static void hllSwapRelocs( virt_mem a, virt_mem b )
@@ -418,10 +427,10 @@ extern void HllAddGlobal( symbol *sym )
 // called during pass 1 symbol definition
 {
 #ifdef HLL_INC_PUBLIC
-    if( !( sym->info & SYM_STATIC ) ) {
+    if( (sym->info & SYM_STATIC) == 0 ) {
         unsigned size;
 
-        size = (byte)strlen( sym->name.u.ptr ) + sizeof(hll_public);
+        size = (byte)strlen( sym->name.u.ptr ) + sizeof( hll_public );
         CurrMod->u3.hll->pubsize += size;
         SectSizes[HLL_SECT_MISC] += size;
         DEBUG(( DBG_HLL, "HllAddGlobal: size=%h sym=%p %s",
@@ -437,7 +446,7 @@ extern void HllGenGlobal( symbol * sym, section *sect )
 // also called by loadpe between passes
 {
 #ifdef HLL_INC_PUBLIC
-    if( !(sym->info & SYM_STATIC) ) {
+    if( (sym->info & SYM_STATIC) == 0 ) {
         hll_public  pub;
 
         DEBUG(( DBG_HLL, "HllGenGlobal: %h: sym=%p %s sect=%p",
@@ -461,11 +470,11 @@ static void hllSrcModHeader( void )
 // is.
 {
 #if 0 // FIXME: Implement support for non-HLL linenumbers.
-    cheesy_module_header        mod_hdr;
-    cheesy_file_table           file_tbl;
-    cheesy_mapping_table        map_tbl;
-    unsigned                    adjust;
-    unsigned_32                 buff;
+    cheesy_module_header    mod_hdr;
+    cheesy_file_table       file_tbl;
+    cheesy_mapping_table    map_tbl;
+    unsigned                adjust;
+    unsigned                buff;
 
     if( LineInfo.linestart == 0 )
         return;
@@ -545,7 +554,7 @@ extern void HllAddAddrInfo( seg_leader *seg )
 /******************************************/
 // We take this opportunity to count seginfo structures.
 {
-    if( !( seg->info & SEGINF_CODE ) )
+    if( (seg->info & SEGINF_CODE) == 0 )
         return;
     DEBUG(( DBG_HLL, "HllAddAddrInfo: seg=%p %s", seg, seg->segname ));
     DBIAddrInfoScan( seg, hllAddAddrInit, hllAddAddrAdd, NULL );
@@ -580,16 +589,17 @@ extern void HllGenAddrInfo( seg_leader *seg )
 {
     hll_seginfo info;
 
-    if( !( seg->info & SEGINF_CODE ) )
+    if( (seg->info & SEGINF_CODE) == 0 )
         return;
     DEBUG(( DBG_HLL, "HllGenAddrInfo: seg=%p %s", seg, seg->segname ));
     DBIAddrInfoScan( seg, hllGenAddrInit, hllGenAddrAdd, &info );
 }
 
-extern void HllDefClass( class_entry *class, unsigned_32 size )
-/************************************************************/
-// called during address calculation for the purpose of catching
-// debug info segment classes.
+extern void HllDefClass( class_entry *class, unsigned size )
+/***********************************************************
+ * called during address calculation for the purpose of catching
+ * debug info segment classes.
+ */
 {
 #if defined(HLL_INC_LINE) || defined(HLL_INC_LOCAL) || defined(HLL_INC_TYPE)
     group_entry *group;
@@ -747,9 +757,9 @@ extern void HllWrite( void )
     dir_entries = (hll_dir_entry *)(HllDirHdr + 1);
     for( i = 0; i < HllDirHdr->cDir; i++ ) {
         for( j = i + 1; j < HllDirHdr->cDir; j++ ) {
-            if(     dir_entries[j].iMod < dir_entries[i].iMod
-                ||  (   dir_entries[j].iMod == dir_entries[i].iMod
-                     && dir_entries[j].subsection < dir_entries[i].subsection ) ) {
+            if( dir_entries[j].iMod < dir_entries[i].iMod
+              || ( dir_entries[j].iMod == dir_entries[i].iMod
+              && dir_entries[j].subsection < dir_entries[i].subsection ) ) {
                 hll_dir_entry tmp = dir_entries[j];
                 dir_entries[j] = dir_entries[i];
                 dir_entries[i] = tmp;

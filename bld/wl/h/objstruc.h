@@ -136,8 +136,6 @@ typedef enum {
     OMF_DBG_HLL_06
 } omf_dbg_type;
 
-#define IS_OMF_DBG_HLL(omfdbg) ( (omfdbg) >= OMF_DBG_HLL_03 && (omfdbg) <= OMF_DBG_HLL_06 )
-
 typedef enum {
     CLASS_NONE          = 0x0000,
     CLASS_TRANSFER      = 0x0001,   /* used for PE import transfer code */

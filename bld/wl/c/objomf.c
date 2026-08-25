@@ -75,7 +75,7 @@ static unsigned long ProcObj( const file_list *file, unsigned long loc, void (*p
 {
     omf_record          *rec;
     byte                cmd;
-    unsigned_16         len;
+    unsigned            len;
 
     RecNum = 0;
     do {
@@ -163,7 +163,8 @@ static void ProcTHEADR( void )
 {
     int     sym_len;
 
-    if( CurrMod->omfdbg == OMF_DBG_CODEVIEW ) {
+    switch( CurrMod->omfdbg ) {
+    case OMF_DBG_CODEVIEW:
         sym_len = *ObjBuff++;
         if( sym_len == 0 ) {
             BadObject();
@@ -173,6 +174,7 @@ static void ProcTHEADR( void )
 // source file name by multiple THEADR records
 // now not used, need to resolve backward compatibility
 // with modules created by older Open Watcom or WATCOM tools
+        break;
     }
 }
 
@@ -247,9 +249,15 @@ static void DoMSOMF( void )
         } else if( ObjBuff[0] == 'H'
           && ObjBuff[1] == 'L' ) {
             switch( version ) {
-            case 3: CurrMod->omfdbg = OMF_DBG_HLL_03; break;
-            case 4: CurrMod->omfdbg = OMF_DBG_HLL_04; break;
-            case 6: CurrMod->omfdbg = OMF_DBG_HLL_06; break;
+            case 3:
+                CurrMod->omfdbg = OMF_DBG_HLL_03;
+                break;
+            case 4:
+                CurrMod->omfdbg = OMF_DBG_HLL_04;
+                break;
+            case 6:
+                CurrMod->omfdbg = OMF_DBG_HLL_06;
+                break;
             default:
                 CurrMod->omfdbg = OMF_DBG_UNKNOWN;
                 break;
@@ -497,7 +505,7 @@ static void ProcPubdef( bool static_sym )
     offset          off;
     size_t          sym_len;
     unsigned_16     frame;
-    unsigned_16     segidx;
+    unsigned        segidx;
     sym_flags       symop;
 
     DEBUG(( DBG_OLD, "ProcPubdef" ));
@@ -741,16 +749,16 @@ static void EnumFindLinesSeg( void *_seg, void *_result_seg )
     }
 }
 
-static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
-/****************************************************************************
+static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned iterate )
+/*************************************************************************
  * Process logically iterated data blocks.
  */
 {
     size_t          len;
     byte            *anchor;
-    unsigned_16     count;
-    unsigned_16     inner;
-    unsigned_32     rep;
+    unsigned        count;
+    unsigned        inner;
+    unsigned        rep;
 
     if( iterate == 0 ) {  /* no iterations, so abort. */
         return( EOObjRec );
@@ -797,11 +805,11 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
  * Expand logically iterated data.
  */
 {
-    unsigned_32 rep;
+    unsigned    rep;
     byte        *end_data;
 
     end_data = data + size;
-    for( ; data < end_data; data = ProcIDBlock( &start, data, rep ) ) {
+    while( data < end_data ) {
         if( ObjFormat & OBJ_FMT_MS_386 ) {
             rep = MGET_LE_U32_UN( data );
             data += sizeof( unsigned_32 );
@@ -809,11 +817,12 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
             rep = MGET_LE_U16_UN( data );
             data += sizeof( unsigned_16 );
         }
+        data = ProcIDBlock( &start, data, rep );
     }
 }
 
-static void GetObject( segdata *snode, unsigned_32 obj_offset, bool lidata )
-/***************************************************************************
+static void GetObject( segdata *snode, unsigned obj_offset, bool lidata )
+/************************************************************************
  * Load object code.
  */
 {
@@ -850,7 +859,7 @@ static void ProcLxdata( bool islidata )
  */
 {
     segnode     *snode;
-    unsigned_32 obj_offset;
+    unsigned    obj_offset;
 
     snode = (segnode *)FindNode( SegNodes, GetIdx() );
     snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
@@ -878,9 +887,9 @@ static void ProcHllLinnum( void )
 // the 'LEDATA' - at least not for HLL v4.
 // FIXME: check what the LINNUM records looks like in the other HLL versions!
 {
-    static unsigned_32 HllLineNumOffset;
-    segnode *snode;
-    unsigned_32 obj_offset;
+    static unsigned HllLineNumOffset;
+    segnode         *snode;
+    unsigned        obj_offset;
 
     if( (LinkFlags & LF_HLL_DBI_FLAG) == 0 )
         return;
@@ -892,17 +901,17 @@ static void ProcHllLinnum( void )
         segdata             *sdata;
         segnode             *snode1;
         omf_record          *rec;
-        unsigned_32         loc;
-        unsigned_32         loc_1st_linnum;
-        unsigned_32         len_1st_linnum;
+        unsigned            loc;
+        unsigned            loc_1st_linnum;
+        unsigned            len_1st_linnum;
         byte                *buf;
 
         sdata = AllocSegData();
-        sdata->u.name.u.ptr  = "$$LINES";
-        sdata->combine = COMBINE_ADD;
-        sdata->align   = 0;
-        sdata->bits = BITS_32;
-        sdata->iscode  = false;
+        sdata->u.name.u.ptr = "$$LINES";
+        sdata->combine      = COMBINE_ADD;
+        sdata->align        = 0;
+        sdata->bits         = BITS_32;
+        sdata->iscode       = false;
 
         /* This is EXTEREMLY UGLY! Sorry about that.
          * But, we need to get the segment size right when defining
@@ -926,7 +935,7 @@ static void ProcHllLinnum( void )
                     loc_1st_linnum = loc + sizeof( *rec );
                     len_1st_linnum = rec->length;
                 }
-                DEBUG(( DBG_HLL, "ProcHllLinnum: %h: +%h", loc, rec->length - 3 ));
+                DEBUG(( DBG_HLL, "ProcHllLinnum: %d: +%h", loc, rec->length - 3 ));
                 sdata->length += rec->length - 3; /* 0 grp idx, 0 seg idx, crc */
             }
             loc += rec->length + sizeof( omf_record );
@@ -952,7 +961,7 @@ static void ProcHllLinnum( void )
 
     /* Do like ProcLxData */
     obj_offset = HllLineNumOffset;
-    DEBUG(( DBG_HLL, "ProcHllLinnum: HllLineNumOffset=%h length=%h", HllLineNumOffset, EOObjRec - ObjBuff ));
+    DEBUG(( DBG_HLL, "ProcHllLinnum: HllLineNumOffset=%d length=%h", HllLineNumOffset, EOObjRec - ObjBuff ));
     HllLineNumOffset += EOObjRec - ObjBuff;
     snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
     snode->info |= SEGINF_LXDATA_SEEN;
@@ -1134,10 +1143,16 @@ static void Pass1Cmd( byte cmd )
     case CMD_LINN32:
         ObjFormat |= OBJ_FMT_MS_386;
     case CMD_LINNUM:
-        if( CurrMod->omfdbg == OMF_DBG_CODEVIEW )
+        switch( CurrMod->omfdbg ) {
+        case OMF_DBG_CODEVIEW:
             ProcLinnum();
-        else if ( IS_OMF_DBG_HLL( CurrMod->omfdbg ) )
+            break;
+        case OMF_DBG_HLL_03:
+        case OMF_DBG_HLL_04:
+        case OMF_DBG_HLL_06:
             ProcHllLinnum();
+            break;
+        }
         break;
     case CMD_LINS32:
         ObjFormat |= OBJ_FMT_MS_386;
