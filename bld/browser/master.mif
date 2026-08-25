@@ -63,9 +63,9 @@ extra_cxx_flags += -db
 
 extra_c_flags_i86 = -zc -zm
 !ifdef DBG
-extra_c_flags_i86 += -zw
+extra_c_flags_win = -zw
 !else
-extra_c_flags_i86 += -zW
+extra_c_flags_win = -zW
 !endif
 
 extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)brmem.h
