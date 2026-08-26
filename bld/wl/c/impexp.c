@@ -386,12 +386,6 @@ ordinal_t FindEntryOrdinal( addr_type addr, group_entry *group )
     return( exp->ordinal );
 }
 
-char *ImpModuleName( dll_sym_info *dll )
-/**************************************/
-{
-    return( dll->m.modnum->name.u.ptr );
-}
-
 bool IsSymElfImported( symbol *sym )
 /**********************************/
 {

@@ -504,7 +504,7 @@ static void WriteMapImports( void )
                 }
 #ifdef _OS2
                 if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
-                    WriteMapColPrintf( 36, "%s", ImpModuleName( sym->p.import ) );
+                    WriteMapColPrintf( 36, "%s", ((dll_sym_info *)sym->p.import)->m.modnum->name.u.ptr );
                 }
 #endif
                 WriteMapNL();

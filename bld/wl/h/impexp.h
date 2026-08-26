@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,7 +55,6 @@ extern void             MSImportKeyword( symbol *, const length_name *, const le
 extern dll_sym_info     *AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
 extern entry_export     *AllocExport( const char *, size_t );
-extern char             *ImpModuleName( dll_sym_info * );
 extern bool             IsSymElfImported( symbol * );
 extern bool             IsSymElfExported( symbol * );
 extern bool             IsSymElfImpExp( symbol * );
