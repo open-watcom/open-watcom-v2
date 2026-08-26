@@ -46,13 +46,13 @@
 #include "clibext.h"
 
 
-#define PREFIX_SIZE     8
+#define DIRECTIVE_SIZE  8
 
 #define IDEFN(x)        IdeCbs->x
 
 typedef struct {
     IDEInfoType type;
-    char        prefix[PREFIX_SIZE + 1];
+    char        directive[DIRECTIVE_SIZE + 1];
     bool        retry;
 } extra_cmd_info;
 
@@ -162,14 +162,14 @@ void GetExtraCommands( void )
 /***************************/
 {
     extra_cmd_info const    *cmd;
-    char                    buff[_MAX_PATH + PREFIX_SIZE];
+    char                    buff[_MAX_PATH + DIRECTIVE_SIZE];
     char                    *p;
 
     if( !InitInfo.cmd_line_has_files ) {
-        for( cmd = ExtraCmds; cmd->prefix[0] != '\0'; ++cmd ) {
+        for( cmd = ExtraCmds; cmd->directive[0] != '\0'; ++cmd ) {
             for( ;; ) {
-                memcpy( buff, cmd->prefix, PREFIX_SIZE );
-                p = buff + PREFIX_SIZE;
+                memcpy( buff, cmd->directive, DIRECTIVE_SIZE );
+                p = buff + DIRECTIVE_SIZE;
                 if( IDEFN( GetInfo )( IdeHdl, cmd->type, (IDEGetInfoWParam)NULL, (IDEGetInfoLParam)p ) )
                     break;
                 if( DoBuffCmdParse( buff ) )
