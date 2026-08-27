@@ -318,15 +318,12 @@ ord_state getatol( unsigned_32 *pnt )
     gotdigit = false;
     value = 0;
     radix = 10;
-    if( len >= 2
-      && *p == '0' ) {
-        --len;
-        ++p;
-        if( tolower( *(unsigned char *)p ) == 'x' ) {
-            radix = 16;
-            ++p;
-            --len;
-        }
+    if( p[0] == '0'
+      && ( p[1] == 'x'
+      || p[1] == 'X' ) ) {
+        radix = 16;
+        len -= 2;
+        p += 2;
     }
     for( ; len != 0; --len ) {
         ch = tolower( *(unsigned char *)p++ );
@@ -346,10 +343,10 @@ ord_state getatol( unsigned_32 *pnt )
             }
         } else {
             isdig = ( isdigit( ch ) != 0 );
-            if( radix == 10 ) {
-                isvalid = isdig;
-            } else {
+            if( radix == 16 ) {
                 isvalid = ( isxdigit( ch ) != 0 );
+            } else {
+                isvalid = isdig;
             }
             if( !isvalid ) {
                 return( ST_NOT_ORDINAL );

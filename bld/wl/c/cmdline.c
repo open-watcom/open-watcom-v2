@@ -385,8 +385,8 @@ void DoCmdFile( const char *fname )
           && (LinkFlags & LF_ANY_DBI_FLAG) ) ) {
             SymFileName = FileName( Name, namelen, E_SYM, true );
         }
-        if( FmtData.implibname == NULL
-          && FmtData.make_implib ) {
+        if( FmtData.make_implib
+          && FmtData.implibname == NULL ) {
             if( FmtData.make_impfile ) {
                 extension = E_LBC;
             } else {

@@ -160,36 +160,48 @@ static void SetupImpLib( void )
     ImpLib.module_name = NULL;
     ImpLib.didone = false;
     if( FmtData.make_implib ) {
-        ImpLib.buffer = MemAllocSafe( IMPLIB_BUFSIZE );
         if( FmtData.make_impfile ) {
             ImpLib.fname = MemStrdupSafe( FmtData.implibname );
             ImpLib.handle = QOpenRW( ImpLib.fname );
         } else {
             ImpLib.handle = openTempFile( &ImpLib.fname );
         }
-        /*
-         * GetBaseName results in the filename only
-         * it trims both the path, and the extension
-         */
-        fname = GetBaseName( Root->outfile->fname, 0, &namelen );
-        ImpLib.module_name_len = namelen;
-        /*
-         * for NE format (16-bit OS/2 and Windows 3.x)
-         * - get base file name
-         * - uppercase name
-         * for other formats
-         * - get base file name with extension
-         * - no change case of name
-         */
-        if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
-            ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
-            for( i = 0; i < ImpLib.module_name_len; i++ ) {
-                ImpLib.module_name[i] = toupper( (unsigned char)fname[i] );
+        if( ImpLib.handle != NIL_FHANDLE ) {
+            ImpLib.buffer = MemAllocSafe( IMPLIB_BUFSIZE );
+            /*
+             * for NE format (16-bit OS/2 and Windows 3.x)
+             * - get base file name only
+             * - uppercase name
+             * for LE and LX format (OS/2 + Windows VxD + 32-bit DOS)
+             * - get base file name with extension
+             * - uppercase name
+             * for PE format
+             * - get base file name with extension
+             * - preserves the case of name
+             */
+            fname = GetBaseName( Root->outfile->fname, 0, &namelen );
+            if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+                if( namelen > 8 ) {
+                    namelen = 8;
+                }
+            } else {
+                /*
+                 * use base name + extension
+                 */
+                namelen = strlen( fname );
             }
-        } else {
-            ImpLib.module_name_len += strlen( fname + namelen );
-            ImpLib.module_name = MemAllocSafe( ImpLib.module_name_len );
-            memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
+            ImpLib.module_name_len = namelen;
+            ImpLib.module_name = MemAllocSafe( namelen );
+            if( FmtData.type & (MK_OS2 | MK_WIN_VXD | MK_WIN_NE) ) {
+                /*
+                 * upper-case module name
+                 */
+                for( i = 0; i < namelen; i++ ) {
+                    ImpLib.module_name[i] = toupper( (unsigned char)fname[i] );
+                }
+            } else { /* FmtData.type & MK_PE */
+                memcpy( ImpLib.module_name, fname, namelen );
+            }
         }
     }
 }
@@ -977,24 +989,26 @@ static void FlushImpBuffer( void )
 void BuildImpLib( void )
 /**********************/
 {
-    if( (LinkState & LS_LINK_ERROR)
-      || ImpLib.handle == NIL_FHANDLE
-      || !FmtData.make_implib )
+    if( LinkState & LS_LINK_ERROR )
         return;
-    if( ImpLib.bufsize > 0 ) {
-        FlushImpBuffer();
-    }
-    QClose( ImpLib.handle, ImpLib.fname );
-    if( !FmtData.make_impfile ) {
-        if( ImpLib.didone ) {
-            ExecWlib();
+    if( FmtData.make_implib ) {
+        if( ImpLib.handle != NIL_FHANDLE ) {
+            if( ImpLib.bufsize > 0 ) {
+                FlushImpBuffer();
+            }
+            QClose( ImpLib.handle, ImpLib.fname );
+            if( !FmtData.make_impfile ) {
+                if( ImpLib.didone ) {
+                    ExecWlib();
+                }
+                QDelete( ImpLib.fname );
+            }
+            MemFree( ImpLib.buffer );
+            MemFree( ImpLib.module_name );
         }
-        QDelete( ImpLib.fname );
+        MemFree( ImpLib.fname );
+        MemFree( FmtData.implibname );
     }
-    MemFree( FmtData.implibname );
-    MemFree( ImpLib.fname );
-    MemFree( ImpLib.buffer );
-    MemFree( ImpLib.module_name );
 }
 
 static void BufImpWrite( const char *buffer, size_t len )
@@ -1025,44 +1039,45 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     char        *buff;
     char        *currpos;
 
-    if( ImpLib.handle == NIL_FHANDLE )
-        return;
-    ImpLib.didone = true;
-    intlen = strlen( intname );
-    if( by_name ) {
-        otherlen = strlen( extname );
-    } else {
-        otherlen = 10;          // max length of a 32-bit int.
-    }
-    buff = alloca( intlen + otherlen + ImpLib.module_name_len + 13 );
-    buff[0] = '+';
-    buff[1] = '+';
-    buff[2] = '\'';
-    currpos = buff + 3;
-    memcpy( currpos, intname, intlen );
-    currpos += intlen;
-    *currpos++ = '\'';
-    *currpos++ = '.';
-    *currpos++ = '\'';
-    memcpy( currpos, ImpLib.module_name, ImpLib.module_name_len );
-    currpos += ImpLib.module_name_len;
-    *currpos++ = '\'';
-    *currpos++ = '.';
-    if( by_name ) {
+    if( FmtData.make_implib
+      && ImpLib.handle != NIL_FHANDLE ) {
+        ImpLib.didone = true;
+        intlen = strlen( intname );
+        if( by_name ) {
+            otherlen = strlen( extname );
+        } else {
+            otherlen = 10;          // max length of a 32-bit int.
+        }
+        buff = alloca( intlen + otherlen + ImpLib.module_name_len + 13 );
+        buff[0] = '+';
+        buff[1] = '+';
+        buff[2] = '\'';
+        currpos = buff + 3;
+        memcpy( currpos, intname, intlen );
+        currpos += intlen;
+        *currpos++ = '\'';
         *currpos++ = '.';
         *currpos++ = '\'';
-        memcpy( currpos, extname, otherlen );
-        currpos += otherlen;
+        memcpy( currpos, ImpLib.module_name, ImpLib.module_name_len );
+        currpos += ImpLib.module_name_len;
         *currpos++ = '\'';
-    } else {
-        sprintf( currpos, "%ld", (long)ordinal );
-        currpos += strlen( currpos );
-    }
+        *currpos++ = '.';
+        if( by_name ) {
+            *currpos++ = '.';
+            *currpos++ = '\'';
+            memcpy( currpos, extname, otherlen );
+            currpos += otherlen;
+            *currpos++ = '\'';
+        } else {
+            sprintf( currpos, "%ld", (long)ordinal );
+            currpos += strlen( currpos );
+        }
 #if !defined( __UNIX__ )
-    *currpos++ = '\r';
+        *currpos++ = '\r';
 #endif
-    *currpos = '\n';
-    BufImpWrite( buff, currpos - buff + 1 );
+        *currpos = '\n';
+        BufImpWrite( buff, currpos - buff + 1 );
+    }
 }
 
 void WriteLoad3( void *dummy, const char *buff, size_t size )
