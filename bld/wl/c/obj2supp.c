@@ -1384,7 +1384,18 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
         os2item = &(breloc->item.os2);
         os2item->fixtype = MapOS2FixType( fix->type );
         os2item->reloc_offset = off - seg->u.leader->group->addr.off;
-        if( !fix->imported ) {
+        if( fix->imported ) {
+            dll = target->u.sym->p.import;
+            if( dll->isordinal ) {
+                os2item->reloc_type = IMPORTED_ORDINAL;
+                os2item->put.ordinal.ord_num = dll->u.ordinal;
+                os2item->put.ordinal.modref_idx = dll->m.modnum->num;
+            } else {
+                os2item->reloc_type = IMPORTED_NAME;
+                os2item->put.name.impnam_off = dll->u.entry->num;
+                os2item->put.name.modref_idx = dll->m.modnum->num;
+            }
+        } else {
             os2item->reloc_type = INTERNAL_REFERENCE;
             os2item->put.internal.rsrvd = 0;
             for( group = Groups; group != NULL; group = group->next ) {
@@ -1399,17 +1410,6 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
             } else {
                 os2item->put.internal.grp_num = target_addr.seg;
                 os2item->put.internal.off = target_addr.off;
-            }
-        } else {
-            dll = target->u.sym->p.import;
-            if( !dll->isordinal ) {
-                os2item->reloc_type = IMPORTED_NAME;
-                os2item->put.name.impnam_off = dll->u.entry->num;
-                os2item->put.name.modref_idx = dll->m.modnum->num;
-            } else {
-                os2item->reloc_type = IMPORTED_ORDINAL;
-                os2item->put.ordinal.ord_num = dll->u.ordinal;
-                os2item->put.ordinal.modref_idx = dll->m.modnum->num;
             }
         }
         if( fix->additive ) {
@@ -1494,32 +1494,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
                 MPUT_8( fixptr, int_ordinal );
                 fixptr += 1;
             }
-        } else if( !fix->imported ) {
-            if( !fix->os2_selfrel ) {
-                target_addr.off += fix->value;
-            }
-            flags = OSF_TARGET_INTERNAL;
-            if( target_addr.seg > 0xFF ) {
-                flags |= OSF_TFLAG_OBJ_MOD_16BIT;
-                MPUT_16_UN( fixptr, target_addr.seg );
-                fixptr += 2;
-            } else {
-                MPUT_8( fixptr, target_addr.seg );
-                fixptr += 1;
-            }
-            group = FindGroup( target_addr.seg );
-            target_addr.off -= group->addr.off;
-            if( ftype != FIX_BASE ) {
-                if( target_addr.off > 0xFFFF ) {
-                    flags |= OSF_TFLAG_OFF_32BIT;
-                    MPUT_32_UN( fixptr, target_addr.off );
-                    fixptr += 4;
-                } else {
-                    MPUT_16_UN( fixptr, target_addr.off );
-                    fixptr += 2;
-                }
-            }
-        } else {
+        } else if( fix->imported ) {
             if( dll == NULL ) {
                 dll = target->u.sym->p.import;
             }
@@ -1575,6 +1550,31 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
                     fixptr += 4;
                 } else {
                     MPUT_16_UN( fixptr, fix->value );
+                    fixptr += 2;
+                }
+            }
+        } else {
+            if( !fix->os2_selfrel ) {
+                target_addr.off += fix->value;
+            }
+            flags = OSF_TARGET_INTERNAL;
+            if( target_addr.seg > 0xFF ) {
+                flags |= OSF_TFLAG_OBJ_MOD_16BIT;
+                MPUT_16_UN( fixptr, target_addr.seg );
+                fixptr += 2;
+            } else {
+                MPUT_8( fixptr, target_addr.seg );
+                fixptr += 1;
+            }
+            group = FindGroup( target_addr.seg );
+            target_addr.off -= group->addr.off;
+            if( ftype != FIX_BASE ) {
+                if( target_addr.off > 0xFFFF ) {
+                    flags |= OSF_TFLAG_OFF_32BIT;
+                    MPUT_32_UN( fixptr, target_addr.off );
+                    fixptr += 4;
+                } else {
+                    MPUT_16_UN( fixptr, target_addr.off );
                     fixptr += 2;
                 }
             }
