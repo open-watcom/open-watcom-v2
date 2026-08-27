@@ -35,8 +35,8 @@
 
 #include "exepe.h"
 
-#define DEF_VALUE                   0xFFFFFFFFU
-#define PE_DEFAULT_BASE             0x400000U
+#define DEF_VALUE           0xFFFFFFFFU
+#define PE_DEFAULT_BASE     0x400000U
 
 /*
  * NOTE for initial heap setup:
@@ -77,17 +77,17 @@ extern void             AddPEImportLocalSym( symbol *, symbol * );
 extern bool             ImportPELocalSym( symbol * );
 extern void             FreePELocalImports( void );
 
-struct import_name {
+typedef struct import_name {
     struct import_name  *next;
     dll_sym_info        *dll;
     obj_name_list       *imp;
-};
+} import_name;
 
 typedef struct module_import {
-    struct module_import        *next;
-    struct obj_name_list        *mod;
-    struct import_name          *imports;
-    unsigned                    num_entries;
+    struct module_import    *next;
+    obj_name_list           *mod;
+    import_name             *imports;
+    unsigned                num_entries;
 } module_import;
 
 extern unsigned     DefStackSizePE( void );
