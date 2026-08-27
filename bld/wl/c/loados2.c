@@ -275,12 +275,12 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
  * copy code from extra memory to loadfile.
  */
 {
-    group_entry         *group;
-    unsigned            group_num;
-    unsigned long       off;
-    segment_record      segrec;
-    unsigned_32         seg_addr;
-    unsigned long       relocsize;
+    group_entry     *group;
+    unsigned        group_num;
+    unsigned long   off;
+    segment_record  segrec;
+    unsigned_32     seg_addr;
+    unsigned long   relocsize;
 
     DEBUG(( DBG_BASE, "Writing data" ));
 
@@ -585,25 +585,6 @@ static unsigned long ModRefTable( void )
     return( nodenum );
 }
 
-static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase )
-{
-    size_t  len;
-    size_t  i;
-
-    len = strlen( exp->name.u.ptr );
-    if( len > 255 )
-        len = 255;
-    if( ucase ) {
-        for( i = 0; i < len; ++i ) {
-            ext_name[i] = toupper( exp->name.u.ptr[i] );
-        }
-    } else {
-        memcpy( ext_name, exp->name.u.ptr, len );
-    }
-    ext_name[len] = '\0';
-    return( len );
-}
-
 unsigned long ResNonResNameTable( bool dores )
 /*********************************************
  * NOTE: this routine assumes INTEL byte ordering (in the use of namelen)
@@ -613,16 +594,53 @@ unsigned long ResNonResNameTable( bool dores )
     unsigned long   size;
     const char      *name;
     size_t          len;
+    size_t          i;
+    char            external_name[255 + 1];
 
     size = 0;
     if( dores ) {
+        /*
+         * resident names table
+         * get first item - module name
+         */
         if( FmtData.u.os2fam.module_name != NULL ) {
             name = FmtData.u.os2fam.module_name;
             len = strlen( name );
         } else {
             name = GetBaseName( Root->outfile->fname, 0, &len );
+            if( FmtData.type & (MK_OS2_LE | MK_OS2_LX) ) {
+                /*
+                 * use base name + extension
+                 */
+                len = strlen( name );
+            }
         }
-    } else {     /* in non-resident names table */
+        /*
+         * for 16-bit NE and VxD format module name is truncated to 8 characters
+         */
+        if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE) )
+          && len > 8 ) {
+            len = 8;
+        } else if( FmtData.type & MK_WIN_VXD ) {
+            /*
+             * for VxD format module name is always 8 characters
+             * if length > 8 then it is truncated to 8 characters
+             * if length < 8 then it is expanded up to 8 characters
+             *      by space character ( )
+             */
+            if( len < 8 ) {
+                for( i = 0; i < 8; i++ ) {
+                    external_name[i] = ( i < len ) ? name[i] : ' ';
+                }
+                name = external_name;
+            }
+            len = 8;
+        }
+    } else {
+        /*
+         * non-resident names table
+         * get first idem - module description
+         */
         if( FmtData.description != NULL ) {
             name = FmtData.description;
         } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
@@ -632,58 +650,60 @@ unsigned long ResNonResNameTable( bool dores )
         }
         len = strlen( name );
     }
+    /*
+     * resident name table - always write module name upper-cased
+     * non-resident name table - write module description if not blank
+     */
     if( dores
       || len > 0 ) {
-        /*
-         * MK_OS2_FLAT | MK_OS2_NE | MK_WIN_NE | MK_WIN_VXD
-         * output upper-cased name to resident name table
-         */
-        size += WriteLoadU8Name( name, len, true );
-        WriteLoadU16( 0 );
+        size += WriteLoadU8Name( name, len, dores );
+        WriteLoadU16( 0 );  /* first item in table - ordinal 0 */
         size += 2;
-    }
-    if( dores ) {
-        if( FmtData.u.os2fam.module_name != NULL ) {
-            MemFree( FmtData.u.os2fam.module_name );
-            FmtData.u.os2fam.module_name = NULL;
-        }
-    } else {     /* in non-resident names table */
-        if( FmtData.description != NULL ) {
-            MemFree( FmtData.description );
-            FmtData.description = NULL;
-        }
     }
     for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
         if( !exp->isexported )
             continue;
         if( exp->isanonymous )
             continue;
-        if( (dores
-          && exp->isresident)
-          || (!dores
-          && !exp->isresident) ) {
-            char    ext_name[255 + 1];
-
-            len = create_exp_extname( exp, ext_name, (LinkFlags & LF_CASE_FLAG) == 0 );
-            size += WriteLoadU8Name( ext_name, len, false );
-            WriteLoadU16( exp->ordinal );
-            size += 2;
-            if( !exp->isprivate ) {
-                if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, ext_name, 0, true );
-                } else {
-                    AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal, false );
-                }
+        if( exp->isresident && !dores )
+            continue;
+        if( !exp->isresident && dores )
+            continue;
+        /*
+         * get external name for export
+         */
+        name = exp->name.u.ptr;
+        len = strlen( name );
+        if( len > 255 )
+            len = 255;
+        if( LinkFlags & LF_CASE_FLAG ) {
+            memcpy( external_name, name, len );
+        } else {
+            for( i = 0; i < len; i++ ) {
+                external_name[i] = toupper( (unsigned char)*name++ );
+            }
+        }
+        external_name[len] = '\0';
+        /*
+         * write external name to name table
+         */
+        size += WriteLoadU8Name( external_name, len, false );
+        WriteLoadU16( exp->ordinal );
+        size += 2;
+        if( !exp->isprivate ) {
+            if( exp->impname != NULL ) {
+                AddImpLibEntry( exp->impname, external_name, 0, true );
+            } else {
+                AddImpLibEntry( exp->sym->name.u.ptr, NULL, exp->ordinal, false );
             }
         }
     }
     if( size > 0 ) {
-        PadLoad( 1 );
+        WriteLoadU8( 0 ); /* name table terminating zero byte */
         ++size;
     }
     return( size );
 }
-
 
 /*
  * NOTE: The routine WriteFlatEntryTable in LOADFLAT.C is very similar to this
