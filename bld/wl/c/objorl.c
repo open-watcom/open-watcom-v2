@@ -855,7 +855,6 @@ static void HandleImportSymbol( const char *name )
 {
     length_name intname;
     length_name modname;
-    length_name extname;
 
     intname.name = name;
     intname.len = strlen( name );
@@ -867,11 +866,14 @@ static void HandleImportSymbol( const char *name )
     if( ImpExternalName == NULL ) {
         if( ImpOrdinal == 0 ) {
             ImpOrdinal = NOT_IMP_BY_ORDINAL;
+            HandleImport( &intname, &modname, &intname, ImpOrdinal );
         } else {
             ImpOrdinal &= 0x7FFFFFFF;           /* get rid of that high bit */
+            HandleImport( &intname, &modname, NULL, ImpOrdinal );
         }
-        HandleImport( &intname, &modname, &intname, ImpOrdinal );
     } else {
+        length_name     extname;
+
         extname.name = ImpExternalName;
         extname.len = strlen( ImpExternalName );
         HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );

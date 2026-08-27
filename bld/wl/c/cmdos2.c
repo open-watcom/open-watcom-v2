@@ -478,7 +478,6 @@ static bool getimport( void )
 {
     length_name         intname;
     length_name         modname;
-    length_name         extname;
     unsigned_16         ordinal;
     ord_state           state;
 
@@ -490,25 +489,21 @@ static bool getimport( void )
     DUPSTR_STACK( modname.name, Token.this, Token.len );
     modname.len = Token.len;
     ordinal = 0;
-    state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         state =  getatoi( &ordinal );
-        if( state == ST_NOT_ORDINAL ) {
-            DUPSTR_STACK( extname.name, Token.this, Token.len );
-            extname.len = Token.len;
-        } else if( state == ST_INVALID_ORDINAL ) {
+        if( state == ST_INVALID_ORDINAL ) {
             LnkMsg( LOC+LINE+MSG_IMPORT_ORD_INVALID + ERR, NULL );
-            return( true );
-        }
-    }
-    if( state == ST_IS_ORDINAL ) {
-        HandleImport( &intname, &modname, &intname, ordinal );
-    } else {
-        if( state == ST_NOT_ORDINAL ) {
+        } else if( state == ST_IS_ORDINAL ) {
+            HandleImport( &intname, &modname, NULL, ordinal );
+        } else if( state == ST_NOT_ORDINAL ) {
+            length_name extname;
+
+            extname.name = Token.this;
+            extname.len = Token.len;
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
-        } else {
-            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
         }
+    } else {
+        HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
     }
     return( true );
 }

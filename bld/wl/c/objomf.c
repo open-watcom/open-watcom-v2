@@ -207,7 +207,6 @@ static void ProcImportKeyword( void )
 {
     length_name intname;
     length_name modname;
-    length_name extname;
     unsigned_8  info;
 
     info = *ObjBuff++;
@@ -221,13 +220,15 @@ static void ProcImportKeyword( void )
         if( *ObjBuff == 0 ) {   /* use internal name */
             HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
         } else {
+            length_name     extname;
+
             extname.len = *ObjBuff++;
             extname.name = (char *)ObjBuff;
             ObjBuff += extname.len;
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
     } else {
-        HandleImport(&intname, &modname, &extname, MGET_LE_U16_UN( ObjBuff ) );
+        HandleImport(&intname, &modname, NULL, MGET_LE_U16_UN( ObjBuff ) );
     }
 }
 
