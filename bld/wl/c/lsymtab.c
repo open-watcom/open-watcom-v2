@@ -407,13 +407,14 @@ static void WipeSym( symbol *sym )
     if( IS_SYM_IMPORTED( sym )
       && (FmtData.type & MK_ELF) == 0 ) {
         if( FmtData.type & MK_NOVELL ) {
-            if( sym->p.import != DUMMY_IMPORT_PTR ) {
-                MemFree( sym->p.import );
+            if( sym->p.import_nov != DUMMY_IMPORT_PTR ) {
+                MemFree( sym->p.import_nov );
             }
+            sym->p.import_nov = NULL;
         } else {
             FreeImport( sym->p.import );
+            sym->p.import = NULL;
         }
-        sym->p.import = NULL;
     } else if( IS_SYM_ALIAS( sym ) ) {
         if( sym->p.alias.u.ptr != NULL ) {
             MemFree( sym->p.alias.u.ptr );

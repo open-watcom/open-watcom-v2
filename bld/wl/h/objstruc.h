@@ -542,7 +542,7 @@ typedef struct {
 
 typedef signed_32       ordinal_t;
 
-typedef struct {
+typedef struct dll_sym_info {
     union {
         obj_name_list   *modnum;        /* # of DLL in imported names table */
         name_strtab     modname;

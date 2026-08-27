@@ -261,7 +261,7 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
 void SetNovImportSymbol( symbol *sym )
 /************************************/
 {
-    sym->p.import = DUMMY_IMPORT_PTR;
+    sym->p.import_nov = DUMMY_IMPORT_PTR;
 }
 
 static bool GetNovSymbolImportExport( bool import )
@@ -269,8 +269,8 @@ static bool GetNovSymbolImportExport( bool import )
 {
     symbol      *sym;
     const char  *name;
-    const char  *prefix;
     size_t      namelen;
+    const char  *prefix;
     size_t      prefixlen;
     bool        result;
 
@@ -308,7 +308,7 @@ static bool GetNovSymbolImportExport( bool import )
     if( import ) {
         sym = SymOpNWPfx( ST_CREATE_DEFINE_NOALIAS, name, namelen, prefix, prefixlen );
         if( sym == NULL
-          || sym->p.import != NULL ) {
+          || sym->p.import_nov != NULL ) {
             return( true );
         }
 #ifdef DEVBUILD

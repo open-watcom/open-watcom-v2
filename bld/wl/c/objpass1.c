@@ -805,8 +805,7 @@ void DefineSymbol( symbol *sym, segnode *snode, offset off, unsigned_16 frame )
 #ifdef _OS2
             if( FmtData.type & MK_PE ) {
                 if( sym->p.import != NULL ) {
-                    dll_sym_info  *dll_info = sym->p.import;
-                    AddPEImportLocalSym( sym, dll_info->iatsym );
+                    AddPEImportLocalSym( sym, sym->p.import->iatsym );
                     sym_type |= SYM_REFERENCED;
                     LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
                 }

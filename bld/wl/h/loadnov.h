@@ -91,7 +91,7 @@ typedef struct {
 #define IMP_VIRT_ALLOC_SIZE 512     // size of virtual mem block to allocate
 #define IMP_NUM_VIRT        (IMP_VIRT_ALLOC_SIZE / sizeof( unsigned_32 ) )
 
-typedef struct {
+typedef struct nov_import {
     byte        contents;           // # of relocs || # of virtmem blocks + 10
     union {
         struct {

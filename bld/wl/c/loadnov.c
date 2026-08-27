@@ -113,9 +113,9 @@ static unsigned_32 WriteNovImports( fixed_header *header )
         if( !IS_SYM_IMPORTED( sym ) )
             continue;
         /* so SymFini doesn't try to free it */
-        if( sym->p.import == DUMMY_IMPORT_PTR )
-            sym->p.import = NULL;
-        nov_imp = sym->p.import;
+        if( sym->p.import_nov == DUMMY_IMPORT_PTR )
+            sym->p.import_nov = NULL;
+        nov_imp = sym->p.import_nov;
         if( nov_imp != NULL ) {
             char    ext_name[255 + 1];
 
@@ -662,10 +662,10 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
     if( !isdata ) {
         offset |= NOV_IMP_ISCODE;
     }
-    nov_imp = sym->p.import;
+    nov_imp = sym->p.import_nov;
     if( nov_imp == DUMMY_IMPORT_PTR ) {
         nov_imp = MemAllocSafe( sizeof( nov_import ) );
-        sym->p.import = nov_imp;
+        sym->p.import_nov = nov_imp;
         nov_imp->contents = 0;
         nov_imp->u.r.relocs[nov_imp->contents++] = offset;
     } else if( nov_imp->contents < MAX_IMP_INTERNAL ) {
@@ -674,7 +674,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
             memcpy( tmp, nov_imp, sizeof( nov_import ) );
             MemFree( nov_imp );
             nov_imp = tmp;
-            sym->p.import = nov_imp;
+            sym->p.import_nov = nov_imp;
         }
         nov_imp->u.r.relocs[nov_imp->contents++] = offset;
     } else if( nov_imp->contents == MAX_IMP_INTERNAL ) { // set up virt.mem
@@ -694,7 +694,7 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
                 MemFree( nov_imp );
                 nov_imp = tmp;
                 nov_imp->contents++;
-                sym->p.import = nov_imp;
+                sym->p.import_nov = nov_imp;
             }
             nov_imp->u.v.vm_ptr[vblock] = AllocStg( IMP_VIRT_ALLOC_SIZE );
         }

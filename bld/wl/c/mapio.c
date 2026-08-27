@@ -489,25 +489,31 @@ static void WriteMapModulesSegmentsHead( void )
 static void WriteMapImports( void )
 /*********************************/
 {
-    symbol *    sym;
+    symbol          *sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->next ) {
-        if( IS_SYM_IMPORTED( sym )
-          && sym->p.import != NULL ) {
-            if( (FmtData.type & MK_NOVELL) == 0
-              || sym->p.import != DUMMY_IMPORT_PTR ) {
-                if( sym->prefix != NULL
-                  && ( sym->prefix[0] != '\0' ) ) {
-                    WriteMapColPrintf( 0, "%s@%s", sym->prefix, sym->name );
-                } else {
+        if( IS_SYM_IMPORTED( sym ) ) {
+            if( FmtData.type & MK_NOVELL ) {
+                if( sym->p.import_nov != NULL
+                  && sym->p.import_nov != DUMMY_IMPORT_PTR ) {
+                    if( sym->prefix != NULL
+                      && ( sym->prefix[0] != '\0' ) ) {
+                        WriteMapColPrintf( 0, "%s@%s", sym->prefix, sym->name );
+                    } else {
+                        WriteMapColPrintf( 0, "%s", sym->name );
+                    }
+                    WriteMapNL();
+                }
+            } else {
+                if( sym->p.import != NULL ) {
                     WriteMapColPrintf( 0, "%s", sym->name );
-                }
 #ifdef _OS2
-                if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
-                    WriteMapColPrintf( 36, "%s", ((dll_sym_info *)sym->p.import)->m.modnum->name.u.ptr );
-                }
+                    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+                        WriteMapColPrintf( 36, "%s", sym->p.import->m.modnum->name.u.ptr );
+                    }
 #endif
-                WriteMapNL();
+                    WriteMapNL();
+                }
             }
         }
     }
