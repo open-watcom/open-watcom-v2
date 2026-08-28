@@ -300,12 +300,12 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
         }
         SET_SYM_TYPE( sym, SYM_IMPORTED );
         dll = AllocDLLInfo();
-        sym->p.import = dll;
+        sym->p.import_dll = dll;
         if( FmtData.type & MK_PE ) {
             dll->iatsym = GetIATSym( sym );
             dll->iatsym->info |= SYM_DEFINED | SYM_1_DCE_REF;
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
-            dll->iatsym->p.import = NULL;
+            dll->iatsym->p.import_dll = NULL;
         }
         dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2fam.mod_ref_list );
         if( ordinal == NOT_IMP_BY_ORDINAL ) {

@@ -343,7 +343,7 @@ static void PrepSymbol( void *_sym, void *info )
         }
     } else if( IS_SYM_IMPORTED( sym ) ) {
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
-            sym->p.import = CarveGetIndex( CarveDLLInfo, sym->p.import );
+            sym->p.import_dll = CarveGetIndex( CarveDLLInfo, sym->p.import_dll );
         }
     } else if( (sym->info & SYM_IS_ALTDEF) == 0
       || IS_SYM_COMDAT( sym ) ) {
@@ -743,7 +743,7 @@ static void RebuildSymbol( void *_sym, void *info )
         sym->p.alias.u.ptr = MapString( sym->p.alias.u.offs );
     } else if( IS_SYM_IMPORTED( sym ) ) {
         if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
-            sym->p.import = CarveMapIndex( CarveDLLInfo, sym->p.import );
+            sym->p.import_dll = CarveMapIndex( CarveDLLInfo, sym->p.import_dll );
         }
     } else if( (sym->info & SYM_IS_ALTDEF) == 0
       || IS_SYM_COMDAT( sym ) ) {

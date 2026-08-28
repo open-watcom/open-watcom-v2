@@ -1071,7 +1071,10 @@ void FiniOS2LoadFile( void )
     }
     exe_head.resident_off = temp;
     SeekLoad( stub_len + temp );
-    temp += ResNonResNameTable( true );  // true - do resident table.
+    /*
+     * do resident names table (true value)
+     */
+    temp += ResNonResNameTable( true );
     exe_head.module_off = temp;
     exe_head.modrefs = ModRefTable();
     temp += exe_head.modrefs * sizeof( unsigned_16 );
@@ -1083,7 +1086,10 @@ void FiniOS2LoadFile( void )
     temp += size;
     temp += stub_len;
     exe_head.nonres_off = temp;
-    exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
+    /*
+     * do non-resident names table (false value)
+     */
+    exe_head.nonres_size = ResNonResNameTable( false );
     temp += exe_head.nonres_size;
     /*
      * if no segment shift specified, figure out the best one, assuming that

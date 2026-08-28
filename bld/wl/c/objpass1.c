@@ -84,8 +84,8 @@ static void DoSavedImport( symbol *sym )
     length_name         extname;
 
     if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
-        dll = sym->p.import;
-        sym->p.import = NULL;
+        dll = sym->p.import_dll;
+        sym->p.import_dll = NULL;
         sym->info &= ~SYM_DEFINED;
         modname.name = dll->m.modname.u.ptr;
         modname.len = strlen( modname.name );
@@ -804,8 +804,8 @@ void DefineSymbol( symbol *sym, segnode *snode, offset off, unsigned_16 frame )
             sym = HashReplace( sym );
 #ifdef _OS2
             if( FmtData.type & MK_PE ) {
-                if( sym->p.import != NULL ) {
-                    AddPEImportLocalSym( sym, sym->p.import->iatsym );
+                if( sym->p.import_dll != NULL ) {
+                    AddPEImportLocalSym( sym, sym->p.import_dll->iatsym );
                     sym_type |= SYM_REFERENCED;
                     LnkMsg( WRN+MSG_IMPORT_LOCAL, "s", sym->name.u.ptr );
                 }

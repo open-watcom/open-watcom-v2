@@ -119,7 +119,7 @@ static struct {
 
 #define WALK_IMPORT_SYMBOLS(sym) \
     for( (sym) = HeadSym; (sym) != NULL; (sym) = (sym)->next ) \
-        if( IS_SYM_IMPORTED(sym) && (sym)->p.import != NULL \
+        if( IS_SYM_IMPORTED(sym) && (sym)->p.import_dll != NULL \
             /*&& ((sym)->info & SYM_DEAD) == 0 */)
 
 static offset CalcIDataSize( void )
@@ -227,7 +227,7 @@ offset FindIATSymAbsOff( symbol *sym )
 {
     dll_sym_info    *dll;
 
-    dll = sym->p.import;
+    dll = sym->p.import_dll;
     DbgAssert( IS_SYM_IMPORTED( sym ) && dll != NULL );
     return( dll->iatsym->addr.off );
 }
@@ -1618,7 +1618,7 @@ static void CreateIDataSection( void )
     }
 }
 
-static void RegisterImport( dll_sym_info *sym )
+static void RegisterImport( dll_sym_info *dll )
 /*********************************************/
 {
     module_import   *mod;
@@ -1630,7 +1630,7 @@ static void RegisterImport( dll_sym_info *sym )
     unsigned        len;
 
     for( mod = PEImpList; mod != NULL; mod = mod->next ) {
-        if( mod->mod == sym->m.modnum ) {
+        if( mod->mod == dll->m.modnum ) {
             break;
         }
     }
@@ -1639,18 +1639,18 @@ static void RegisterImport( dll_sym_info *sym )
         mod = _PermAlloc( sizeof( module_import ) );
         mod->next = PEImpList;
         PEImpList = mod;
-        mod->mod = sym->m.modnum;
+        mod->mod = dll->m.modnum;
         mod->imports = NULL;
         mod->num_entries = 0;
     }
-    if( !sym->isordinal ) {
-        os2_imp = sym->u.entry;
+    if( !dll->isordinal ) {
+        os2_imp = dll->u.entry;
     } else {
         os2_imp = NULL;
     }
     mod->num_entries++;
     imp = _PermAlloc( sizeof( import_name ) );
-    imp->dll = sym;
+    imp->dll = dll;
     imp->imp = os2_imp;
     /* keep the list sorted by name for calculating hint values */
     owner = &mod->imports;
@@ -1692,7 +1692,7 @@ static void CreateTransferSegment( class_entry *class )
     glue_size = GetTransferGlueSize();
     WALK_IMPORT_SYMBOLS( sym ) {
         size += glue_size;
-        RegisterImport( sym->p.import );
+        RegisterImport( sym->p.import_dll );
         DBIAddGlobal( sym );
     }
     size += NumLocalImports * sizeof( pe_va );

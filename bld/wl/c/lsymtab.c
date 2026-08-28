@@ -412,8 +412,8 @@ static void WipeSym( symbol *sym )
             }
             sym->p.import_nov = NULL;
         } else {
-            FreeImport( sym->p.import );
-            sym->p.import = NULL;
+            FreeImport( sym->p.import_dll );
+            sym->p.import_dll = NULL;
         }
     } else if( IS_SYM_ALIAS( sym ) ) {
         if( sym->p.alias.u.ptr != NULL ) {

@@ -1385,7 +1385,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
         os2item->fixtype = MapOS2FixType( fix->type );
         os2item->reloc_offset = off - seg->u.leader->group->addr.off;
         if( fix->imported ) {
-            dll = target->u.sym->p.import;
+            dll = target->u.sym->p.import_dll;
             if( dll->isordinal ) {
                 os2item->reloc_type = IMPORTED_ORDINAL;
                 os2item->put.ordinal.ord_num = dll->u.ordinal;
@@ -1496,7 +1496,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
             }
         } else if( fix->imported ) {
             if( dll == NULL ) {
-                dll = target->u.sym->p.import;
+                dll = target->u.sym->p.import_dll;
             }
             if( dll->isordinal ) {
                 flags = OSF_TARGET_EXT_ORD;

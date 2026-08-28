@@ -288,8 +288,9 @@ static unsigned long WriteFlatEntryTable( void )
             for( ; entries > 0; --entries, start = start->next ) {
                 if( start->addr.seg == 0xFFFF ) {
                     // Forwarder entry
-                    dll_sym_info   *dll = start->sym->p.import;
+                    dll_sym_info   *dll;
 
+                    dll = start->sym->p.import_dll;
                     bundle_fwd.e32_flags = 0;
                     bundle_fwd.modord    = dll->m.modnum->num;
                     if( dll->isordinal ) {
@@ -435,7 +436,10 @@ void FiniOS2FlatLoadFile( void )
     SeekLoad( stub_len + sizeof( os2_flat_header ) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );
     exe_head.resname_off = curr_loc;
-    curr_loc += ResNonResNameTable( true );  // true - do resident table.
+    /*
+     * do resident names table (true value)
+     */
+    curr_loc += ResNonResNameTable( true );
     exe_head.rsrc_off = exe_head.resname_off;
     exe_head.num_rsrcs = 0;
     exe_head.entry_off = curr_loc;
@@ -468,7 +472,10 @@ void FiniOS2FlatLoadFile( void )
         exe_head.l.page_shift = FmtData.u.os2fam.segment_shift;
     }
     exe_head.nonres_off = PosLoad();
-    exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
+    /*
+     * do non-resident names table (false value)
+     */
+    exe_head.nonres_size = ResNonResNameTable( false );
     if( exe_head.nonres_size == 0 )
         exe_head.nonres_off = 0;
     curr_loc = PosLoad();
@@ -568,17 +575,17 @@ void FiniOS2FlatLoadFile( void )
     WriteLoad( &exe_head, sizeof( os2_flat_header ) );
 }
 
-bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
-/*************************************************************/
+bool FindOS2ExportSym( symbol *sym, dll_sym_info **pdll )
+/*******************************************************/
 {
-    dll_sym_info *      dll;
+    dll_sym_info    *dll;
 
     if( sym->info & SYM_EXPORTED ) {
         dll = AllocDLLInfo();
         dll->isordinal = true;
         dll->m.modnum = NULL;
         dll->u.ordinal = ((entry_export *)sym->e.export)->ordinal;
-        *dllhandle = dll;
+        *pdll = dll;
         return( true );
     }
     return( false );

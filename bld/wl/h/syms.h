@@ -204,8 +204,8 @@ typedef struct symbol {
         void            *edges;     // for dead code elim. when sym undefd
         struct segdata  *seg;       // seg symbol is in.
         name_strtab     alias;      // for aliased syms.
-        struct nov_import *import_nov;// NOVELL only: imported symbol data.
-        struct dll_sym_info *import;    // OS/2 only: imported symbol data.
+        struct nov_import   *import_nov; // NOVELL only: imported symbol data.
+        struct dll_sym_info *import_dll; // OS/2 only: imported symbol data.
         offset          cdefsize;   // altdef comdefs: size of comdef
     } p;
     union {
