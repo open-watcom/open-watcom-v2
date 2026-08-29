@@ -53,8 +53,12 @@ def_files = &
     ../def/win31.def &
     ../def/win31_16.def
 
+!ifeq debug 0
+conv_opts = -q
+!endif
+
 winobjs.lbc : ./conv.exe $(def_files) $(__MAKEFILES__)
-    $[@ ../def/win386 ../def -l=$@ -s -q
+    $[@ ../def/win386 ../def -l=$@ -s $(conv_opts)
 
 ./conv.exe : conv.c $(__MAKEFILES__)
     @%make echo_bldccl

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "bool.h"
 
-#include "clibext.h"
 
 #define MAX_BUFF 256
 
@@ -50,8 +50,8 @@
 #define LINE  ";****************************************************************************\n"
 #define BLANK ";***                                                                      ***\n"
 
-#define STRIP_TRAIL_WS(i,s) for( i = strlen( s ); i-- > 0 && isspace( (s)[i] ); ) (s)[i] = '\0'
-#define SKIP_LEAD_WS(s)     while( isspace( *(s) ) ) (s)++
+#define STRIP_TRAIL_WS(i,s) for( i = strlen( s ); i-- > 0 && isspace( (byte)(s)[i] ); ) (s)[i] = '\0'
+#define SKIP_LEAD_WS(s)     while( isspace( (byte)*(s) ) ) (s)++
 
 #define OBJBUF_SIZE     512
 
@@ -76,7 +76,7 @@ typedef enum {
 typedef struct subparm {
     struct subparm  *next;
     unsigned        offset;
-    byte            param_num;
+    unsigned        param_num;
 } subparm;
 
 /*
@@ -87,7 +87,7 @@ typedef struct fcn {
     char            *fn;                /* function name */
     param_types     *param_type_list;   /* parameter list */
     subparm         *subparms;          /* sub parms that need aliasing */
-    int             class;              /* what class it belongs to */
+    unsigned        class;              /* what class it belongs to */
     struct fcn      *next_class;        /* connects to next function in same class */
     unsigned        thunk           :1; /* requires a thunking layer */
     unsigned        is_16           :1; /* is an _16 function */
@@ -95,20 +95,20 @@ typedef struct fcn {
     unsigned        need_fpusave    :1; /* function requires floating point save */
     unsigned        special_func    :1; /* special @func requires extra thunking */
     return_types    return_type;        /* function return type */
-    byte            param_count;        /* number of parms */
-    byte            alias_count;        /* number of 16-bit aliases to be created */
-    byte            thunk_index;        /* ThunkStrs index */
+    unsigned        param_count;        /* number of parms */
+    unsigned        alias_count;        /* number of 16-bit aliases to be created */
+    unsigned        thunk_index;        /* ThunkStrs index */
 } fcn;
 
 typedef struct param_list {
     struct param_list   *next;
-    byte                param_count;
-    byte                alias_count;
+    unsigned            param_count;
+    unsigned            alias_count;
     param_types         param_type_list[1];
 } param_list;
 
-static int         genstubs = 0;
-static int         quiet = 0;
+static bool        genstubs = false;
+static bool        quiet = false;
 static char        *listfile = NULL;
 
 static char        **ThunkStrs;
@@ -164,7 +164,7 @@ static void *_fmyrealloc( void *ptr, size_t size )
     return( tmp );
 } /* _fmyrealloc */
 
-static int IsWord( char *str )
+static bool IsWord( char *str )
 {
     if( stricmp( str, "int" ) == 0
       || stricmp( str, "char" ) == 0
@@ -173,9 +173,9 @@ static int IsWord( char *str )
       || stricmp( str, "unsigned" ) == 0
       || stricmp( str, "unsigned short" ) == 0
       || stricmp( str, "unsigned int" ) == 0 ) {
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 
 } /* IsWord */
 
@@ -231,7 +231,7 @@ static void ClassifyParmList( char *plist, fcn *tmpf )
     subparm         *sub_parm;
     param_types     param_type_list[32];
     param_types     param_type;
-    byte            param_count;
+    unsigned        param_count;
     char            c;
 
     k = 0;
@@ -318,7 +318,9 @@ static void ProcessDefFile( FILE *f )
 {
     char        buffer[MAX_BUFF];
     char        *buff;
-    size_t      i,j,k;
+    size_t      i;
+    size_t      j;
+    size_t      k;
     char        *fn;            // function name
     char        *type;          // return type
     char        *plist;         // parameter list
@@ -409,30 +411,30 @@ static void ProcessDefFile( FILE *f )
         tmpf = _fmyalloc( sizeof( fcn ) );
         tmpf->return_type = ClassifyReturnType( type );
 
-        tmpf->need_fpusave = 0;
+        tmpf->need_fpusave = false;
         if( *fn == '^' ) {
             fn++;
-            tmpf->need_fpusave = 1;
+            tmpf->need_fpusave = true;
         }
-        tmpf->special_func = 0;
+        tmpf->special_func = false;
         if( *fn == '@' ) {
             *fn = '#';
-            tmpf->special_func = 1;
+            tmpf->special_func = true;
         }
         if( *fn == '#' ) {
             fn++;
-            tmpf->thunk = 1;
+            tmpf->thunk = true;
             tmpf->thunk_index = ThunkIndex - 1;
         } else {
-            tmpf->thunk = 0;
+            tmpf->thunk = false;
         }
         tmpf->fn = myalloc( strlen( fn ) + 1 );
         strcpy( tmpf->fn, fn );
-        tmpf->noregfor_16 = 0;
+        tmpf->noregfor_16 = false;
         if( strncmp( fn, "_16", 3 ) == 0 ) {
-            tmpf->is_16 = 1;
+            tmpf->is_16 = true;
         } else {
-            tmpf->is_16 = 0;
+            tmpf->is_16 = false;
         }
         ClassifyParmList( plist, tmpf );
 
@@ -460,7 +462,7 @@ static void ProcessDefFile( FILE *f )
 static void BuildClasses( void )
 {
     int         j;
-    int         class_count;
+    unsigned    class_count;
     fcn         *tmpf;
     fcn         *cl;
 
@@ -781,7 +783,7 @@ static void cleanupSubParms( subparm *sub_parm )
 /***  the function.                                             ****/
 /*******************************************************************/
 
-static void emitnormalThunk( const char *proc, fcn *tmpf, int index )
+static void emitnormalThunk( const char *proc, fcn *tmpf, unsigned index )
 {
     size_t      size;
     size_t      segsize;
@@ -897,7 +899,7 @@ static void emitnormalThunk( const char *proc, fcn *tmpf, int index )
     emitBYTE( 0 );
 }
 
-static void emitspecialThunk( const char *proc, fcn *tmpf, int index )
+static void emitspecialThunk( const char *proc, fcn *tmpf, unsigned index )
 {
     size_t      size;
     size_t      segsize;
@@ -1030,7 +1032,7 @@ static void emitMODEND( void )
     emitBYTE( 0 );
 }
 
-static void emitOBJECT( int modindex, const char *proc, fcn *tmpf, int index )
+static void emitOBJECT( int modindex, const char *proc, fcn *tmpf, unsigned index )
 {
     emitTHEADR( modindex );
     emitCOMMENT();
@@ -1060,28 +1062,43 @@ static void endOBJECT( void )
  */
 static void GenerateCStubs( void )
 {
-    fcn         *tmpf, *tmpf2;
-    short       i=0,index,ii=0;
-    char        fn2[128];
-    FILE        *fp;
-    char        fname[20];
+    fcn             *tmpf;
+    fcn             *tmpf2;
+    unsigned        i;
+    unsigned        ii;
+    unsigned        index;
+    unsigned        check;
+    char            proc[128];
+    FILE            *fp;
+    char            fname[20];
+    char            *dst;
+    char            *src;
+    int             c;
 
     if( !genstubs ) {
         return;
     }
+    i = 0;
+    ii = 0;
     for( tmpf = Head; tmpf != NULL; tmpf = tmpf->next ) {
+        dst = proc;
+        src = tmpf->fn;
+        check = 3;
         if( tmpf->special_func ) {
-            fn2[0] = '_';
-            fn2[1] = '_';
-            strcpy( &fn2[2], tmpf->fn );
-        } else if( tmpf->fn[0] == '_'
-          && tmpf->fn[1] == '_' ) {
-            strcpy( fn2, &tmpf->fn[2] );
-        } else {
-            strcpy( fn2, tmpf->fn );
+            *dst++ = '_';
+            *dst++ = '_';
+            check -= 2;
+        } else if( src[0] == '_'
+          && src[1] == '_' ) {
+            src += 2;
+            check += 2;
         }
+        while( (c = (byte)*src++) != '\0' ) {
+            *dst++ = (char)toupper( c );
+        }
+        *dst = '\0';
         if( !quiet ) {
-            printf( "Generating stub %s\n", fn2 );
+            printf( "Generating stub %s\n", proc );
         }
 
         if( tmpf->is_16 ) {
@@ -1090,7 +1107,7 @@ static void GenerateCStubs( void )
             } else {
                 index = 0;
                 for( tmpf2 = Head; tmpf2 != NULL; tmpf2 = tmpf2->next ) {
-                    if( strcmp( &fn2[3], tmpf2->fn ) == 0 ) {
+                    if( strcmp( tmpf->fn + check, tmpf2->fn ) == 0 ) {
                         break;
                     }
                     /*
@@ -1116,8 +1133,7 @@ static void GenerateCStubs( void )
             exit( 1 );
         }
         startOBJECT();
-        strupr( fn2 );
-        emitOBJECT( ii, fn2, tmpf, 4 * index );
+        emitOBJECT( ii, proc, tmpf, 4 * index );
         endOBJECT();
         fclose( objFile );
         ii++;
@@ -1637,7 +1653,7 @@ static void GenerateCode( void )
                 }
             }
             if( tmpf2 == NULL ) {
-                tmpf->noregfor_16 = 1;
+                tmpf->noregfor_16 = true;
             }
         }
     }
@@ -1739,10 +1755,10 @@ int main( int argc, char *argv[] )
                     }
                     break;
                 case 'q':
-                    quiet = 1;
+                    quiet = true;
                     break;
                 case 's':
-                    genstubs = 1;
+                    genstubs = true;
                     break;
                 case '?':
                     printf( "conv -s (gen stubs)\n" );
