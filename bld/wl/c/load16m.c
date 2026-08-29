@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "linkstd.h"
 #include "exedos.h"
 #include "exe16m.h"
