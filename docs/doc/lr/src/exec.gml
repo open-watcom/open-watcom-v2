@@ -37,6 +37,19 @@ int execv(   path, argv );
 int execve(  path, argv, envp );
 int execvp(  file, argv );
 int execvpe( file, argv, envp );
+  const char *path;             /* file name incl. path */
+  const char *file;             /* file name            */
+  const char *arg0, ..., *argn; /* arguments            */
+  char *const argv[];           /* array of arguments   */
+  char *const envp[];           /* environment strings  */
+.ixfunc2 '&Process' execl
+.ixfunc2 '&Process' execle
+.ixfunc2 '&Process' execlp
+.ixfunc2 '&Process' execlpe
+.ixfunc2 '&Process' execv
+.ixfunc2 '&Process' execve
+.ixfunc2 '&Process' execvp
+.ixfunc2 '&Process' execvpe
 int _execl(   path, arg0, arg1..., argn, NULL );
 int _execle(  path, arg0, arg1..., argn, NULL, envp );
 int _execlp(  file, arg0, arg1..., argn, NULL );
@@ -50,14 +63,6 @@ int _execvpe( file, argv, envp );
   const char *arg0, ..., *argn; /* arguments            */
   const char *const argv[];     /* array of arguments   */
   const char *const envp[];     /* environment strings  */
-.ixfunc2 '&Process' execl
-.ixfunc2 '&Process' execle
-.ixfunc2 '&Process' execlp
-.ixfunc2 '&Process' execlpe
-.ixfunc2 '&Process' execv
-.ixfunc2 '&Process' execve
-.ixfunc2 '&Process' execvp
-.ixfunc2 '&Process' execvpe
 .ixfunc2 '&Process' _execl
 .ixfunc2 '&Process' _execle
 .ixfunc2 '&Process' _execlp
