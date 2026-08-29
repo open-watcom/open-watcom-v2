@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@
 #include "linuxsys.h"
 
 
-_WCRTLINK int execve( const char *__path, const char *const __argv[], const char *const __envp[] )
+_WCRTLINK int _execve( const char *__path, const char *const __argv[], const char *const __envp[] )
 {
     syscall_res res = sys_call3( SYS_execve, (u_long)__path, (u_long)__argv, (u_long)__envp );
     __syscall_return( int, res );

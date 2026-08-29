@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -195,7 +195,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #if defined( __OS2__ )
     prot_mode286 = _osmode_PROTMODE();
     if( mode == OLD_P_OVERLAY ) {
-        rc = execve(path, argv, envp);
+        rc = _execve(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
@@ -229,7 +229,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
  #else      /* __OS2__, __NT__ */
     use_cmd = true;
     if( mode == OLD_P_OVERLAY ) {
-        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
+        rc = __F_NAME(_execve,_wexecve)(path, argv, envp);
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 
 int __p_overlay = 2;
 
-_WCRTLINK int execve( const char *path, const char *const argv[],
+_WCRTLINK int _execve( const char *path, const char *const argv[],
     const char *const envp[] )
 {
     int         rc;

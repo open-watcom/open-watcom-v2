@@ -10,8 +10,8 @@ _WCRTLINK extern int        _wexecvpe( const wchar_t *__file, const wchar_t *con
 _WCRTLINK extern int        _execlpe( const char *__file, const char *__arg0, ... );
 _WCRTLINK extern int        _execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
 :elsesegment
-:: MS deprecated
+:: POSIX syntax, MS deprecated
 _WCRTLINK extern int        execlpe( const char *__file, const char *__arg0, ... );
-_WCRTLINK extern int        execvpe( const char *__file, const char *const __argv[], const char *const __envp[] );
+_WCRTLINK extern int        execvpe( const char *__file, char *const __argv[], char *const __envp[] );
 :endsegment
 ::

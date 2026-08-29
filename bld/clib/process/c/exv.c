@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,8 @@
 #include "_process.h"
 
 
-_WCRTLINK int __F_NAME(execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * const *argv )
+_WCRTLINK int __F_NAME(_execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * const *argv )
 {
     CHECK_WIDE_ENV();
-    return( __F_NAME(execve,_wexecve)( path, argv, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
+    return( __F_NAME(_execve,_wexecve)( path, argv, (ENVP_TYPE_ARR)__F_NAME(_RWD_environ,_RWD_wenviron) ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,7 +84,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *ext;
 
     if( mode == P_OVERLAY ) {
-        rc = __F_NAME(execve,_wexecve)( path, argv, envp );
+        rc = __F_NAME(_execve,_wexecve)( path, argv, envp );
         return( rc );
     }
 

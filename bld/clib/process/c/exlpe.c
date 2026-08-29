@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "_environ.h"
 
 
-_WCRTLINK int __F_NAME(execlpe,_wexeclpe)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
+_WCRTLINK int __F_NAME(_execlpe,_wexeclpe)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {
     va_list         args;
     ARGS_TYPE_ARR   argv;
@@ -58,5 +58,5 @@ _WCRTLINK int __F_NAME(execlpe,_wexeclpe)( const CHAR_TYPE *path, const CHAR_TYP
     env = ENVP_ARRAY_VA( args );
     va_end( args );
 
-    return( __F_NAME(execvpe,_wexecvpe)( path, argv, env ) );
+    return( __F_NAME(_execvpe,_wexecvpe)( path, argv, env ) );
 }

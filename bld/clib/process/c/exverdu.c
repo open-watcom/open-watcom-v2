@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,7 @@
 #include "rtdata.h"
 #include "_process.h"
 
-_WCRTLINK int execve( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
+_WCRTLINK int _execve( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
 {
     return( spawnve( P_WAIT, path, argv, envp ) );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,7 +42,7 @@
 #include "thread.h"
 
 
-_WCRTLINK int __F_NAME(execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
+_WCRTLINK int __F_NAME(_execve,_wexecve)( const CHAR_TYPE *path, const CHAR_TYPE * const argv[], const CHAR_TYPE * const envp[] )
 {
     int         rc;
 

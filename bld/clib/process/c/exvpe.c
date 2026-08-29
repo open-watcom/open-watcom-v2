@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@
 #include "pathmac.h"
 
 
-_WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
+_WCRTLINK int __F_NAME(_execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYPE * const *argv, const CHAR_TYPE * const *envp )
 {
     register CHAR_TYPE *p;
     register CHAR_TYPE *p2;
@@ -60,7 +60,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
     size_t file_len;
     CHAR_TYPE *end;
 
-    retval = __F_NAME(execve,_wexecve)( file, argv, envp );
+    retval = __F_NAME(_execve,_wexecve)( file, argv, envp );
     if( retval != -1
       || lib_get_errno() != ENOENT
       && lib_get_errno() != EINVAL ) {
@@ -93,7 +93,7 @@ _WCRTLINK int __F_NAME(execvpe,_wexecvpe)( const CHAR_TYPE *file, const CHAR_TYP
             *p2++ = DIR_SEP;
         }
         memcpy( p2, file, file_len * sizeof( CHAR_TYPE ) );
-        retval = __F_NAME(execve,_wexecve)( buffer, argv, envp );
+        retval = __F_NAME(_execve,_wexecve)( buffer, argv, envp );
         if( retval != -1
           || lib_get_errno() != ENOENT
           && lib_get_errno() != EINVAL ) {

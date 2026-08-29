@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
     int                 status_pipe[2];
 
     if( mode == P_OVERLAY )
-        return( execve( path, argv, envp ) );
+        return( _execve( path, argv, envp ) );
 
     if( pipe( status_pipe ) == -1 )
         return( -1 );
@@ -86,7 +86,7 @@ _WCRTLINK int (spawnve)( int mode, const char *path, const char *const argv[], c
     err = pid = fork();
     if( pid == 0 ) {
         close( status_pipe[0] );
-        execve( path, argv, envp );
+        _execve( path, argv, envp );
         errno_save = lib_get_errno();
         write( status_pipe[1], &errno_save, sizeof( errno_save ) );
         _exit( 127 );

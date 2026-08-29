@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,7 +71,7 @@ _WCRTLINK int _wexecve( const wchar_t *path, const wchar_t *const argv[], const 
     if( rc == 0 )  return( -1 );
 
     /*** Call MBCS version, free converted strings, and return ***/
-    rc = execve( mbPath, (const char **)mbArgv, (const char **)mbEnvp );
+    rc = _execve( mbPath, (const char **)mbArgv, (const char **)mbEnvp );
     if( sameEnv ) {
         __exec_wide_to_mbcs_cleanup( mbPath, mbArgv, NULL );
     } else {

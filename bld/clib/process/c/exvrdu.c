@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,7 +63,7 @@ static int _WCNEAR file_exists( const CHAR_TYPE *filename )
 
 #pragma on( check_stack );
 
-_WCRTLINK int execve( const CHAR_TYPE * path,
+_WCRTLINK int _execve( const CHAR_TYPE * path,
                      const CHAR_TYPE * const argv[],
                      const CHAR_TYPE * const *envp )
 {
