@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <time.h>
+#include <ctype.h>
 #include "linkstd.h"
 #include "exenov.h"
 #include "dbginfo.h"
@@ -472,61 +473,48 @@ void FiniNovellLoadFile( void )
     unsigned_32         temp;
     unsigned_32         image_size;
     const char          *startname;
-    const char          *p;
-    char                ch;
+    const char          *src;
     size_t              len;
     size_t              len1;
     struct tm           *currtime;
     time_t              thetime;
-    const char          *pPeriod = NULL;
+    const char          *pPeriod;
     char                module_name[NOV_MAX_MODNAME_LEN + 1];
     bool                name_trunc;
     const char          *desc;
 
-/* find module name (output file name without the path.) */
-
-    startname = Root->outfile->fname;
-    for( p = startname; (ch = *p) != '\0'; p++ ) {
-        if( '.' == ch ) {
-            pPeriod = p;
-            continue;
-        }
-        if( IS_PATH_SEP( ch ) ) {
-            startname = p + 1;
-            pPeriod = NULL;
-        }
-    }
-
+    memset( &nov_header, 0, sizeof( nov_header ) );
     /*
-    // cull the module name to 8.3 (NOV_MAX_MODNAME_LEN) if necessary
-    */
+     * get module name (output file base name without the path)
+     */
+    startname = GetBaseName( Root->outfile->fname, 0, &len1 );
+    pPeriod = startname + len1;
+    /*
+     * truncate the module name to 8.3 (NOV_MAX_MODNAME_LEN) if necessary
+     */
     name_trunc = false;
-    if( pPeriod != NULL ) {
+    if( len1 > NOV_MAX_NAME_LEN ) {
+        len1 = NOV_MAX_NAME_LEN;
+        name_trunc = true;
+    }
+    len = 0;
+    src = startname;
+    while( len < len1 ) {
+        module_name[len++] = toupper( (unsigned char)*src++ );
+    }
+    if( pPeriod[0] == '.' ) {
         len1 = strlen( pPeriod );
         if( len1 > NOV_MAX_EXT_LEN + 1 ) {   /* +1 include period */
             len1 = NOV_MAX_EXT_LEN + 1;
             name_trunc = true;
         }
-        len = pPeriod - startname;
-        if( len > NOV_MAX_NAME_LEN ) {
-            len = NOV_MAX_NAME_LEN;
-            name_trunc = true;
+        len1 += len;
+        src = pPeriod;
+        while( len < len1 ) {
+            module_name[len++] = toupper( (unsigned char)*src++ );
         }
-        memcpy( module_name, startname, len );
-        memcpy( module_name + len, pPeriod, len1 );   /* must include period */
-        len += len1;
-    } else {
-        /* still only copy 8 chars else the module name will be too long */
-        len = strlen( startname );
-        if( len > NOV_MAX_NAME_LEN ) {
-            len = NOV_MAX_NAME_LEN;
-            name_trunc = true;
-        }
-        memcpy( module_name, startname, len );
     }
     module_name[len] = '\0';
-    strupr( module_name );
-
     if( name_trunc ) {
         LnkMsg( WRN+MSG_INTERNAL_MOD_NAME_DIFF_FROM_FILE, "s", module_name );
     }

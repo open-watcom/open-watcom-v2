@@ -174,7 +174,6 @@ static bool ProcExpName( void )
         MemFree( FmtData.u.d16m.exp_name );
     }
     FmtData.u.d16m.exp_name = FileName( Token.this, Token.len, E_PROTECT, true );     // just keep the name around for now.
-    strupr( FmtData.u.d16m.exp_name );
     return( true );
 }
 

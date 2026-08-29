@@ -127,8 +127,8 @@ static void WriteGDT( unsigned_32 reloc_size )
     }
 }
 
-static unsigned_32 Write16MData( unsigned hdr_size )
-/**************************************************/
+static unsigned Write16MData( unsigned hdr_size )
+/***********************************************/
 {
     group_entry     *group;
 
@@ -281,21 +281,22 @@ static unsigned_32 WriteStubProg( void )
 void Fini16MLoadFile( void )
 /**************************/
 {
-    unsigned_32         hdr_size;
-    unsigned_32         temp;
-    unsigned_32         exe_size;
+    unsigned            hdr_size;
+    unsigned            temp;
+    unsigned            i;
+    unsigned            exe_size;
     dos16m_exe_header   exe_head;
     unsigned            extra_sels;
-    unsigned_32         stub_size;
-    unsigned_32         reloc_size;
+    unsigned            stub_size;
+    unsigned            reloc_size;
     reloc_addr          *reloc_data;
 
+    memset( &exe_head, 0, sizeof( exe_head ) );
     // TODO: add some parameter for reloc format switching
     // for now it is setup to RSI-2 reloc format
     reloc_fmt = 2;
     extra_sels = GetRelocBlock( &reloc_data );
     stub_size = WriteStubProg();
-    memset( &exe_head, 0, sizeof( exe_head ) );
     hdr_size = sizeof( exe_head ) + (NumGroups + extra_sels) * sizeof( gdt_info );
     hdr_size = __ROUND_UP_SIZE_PARA( hdr_size );
     reloc_size = 0;
@@ -354,9 +355,13 @@ void Fini16MLoadFile( void )
     /*
      * add original EXP name
      */
-    strncpy( exe_head.EXP_path, FmtData.u.d16m.exp_name, sizeof( exe_head.EXP_path ) - 1 );
-    exe_head.EXP_path[sizeof( exe_head.EXP_path ) - 1] = '\0';
-    strupr( exe_head.EXP_path );
+    temp = strlen( FmtData.u.d16m.exp_name );
+    if( temp > sizeof( exe_head.EXP_path ) - 1 )
+        temp = sizeof( exe_head.EXP_path ) - 1;
+    for( i = 0; i < temp; i++ ) {
+        exe_head.EXP_path[i] = toupper( (unsigned char)FmtData.u.d16m.exp_name[i] );
+    }
+    exe_head.EXP_path[temp] = '\0';
 
     WriteLoad( &exe_head, sizeof( exe_head ) );
     WriteGDT( reloc_size );
