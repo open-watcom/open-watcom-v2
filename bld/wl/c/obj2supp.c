@@ -1514,22 +1514,22 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
                 MPUT_8( fixptr, dll->m.modnum->num );
                 fixptr += 1;
             }
-            if( !dll->isordinal ) {
-                if( dll->u.entry->num > 0xFFFF ) {
-                    flags |= OSF_TFLAG_OFF_32BIT;
-                    MPUT_32_UN( fixptr, dll->u.entry->num );
-                    fixptr += 4;
-                } else {
-                    MPUT_16_UN( fixptr, dll->u.entry->num );
+            if( dll->isordinal ) {
+                if( dll->u.ordinal > 0xFF ) {
+                    MPUT_16_UN( fixptr, dll->u.ordinal );
                     fixptr += 2;
+                } else {
+                    flags |= OSF_TFLAG_ORDINAL_8BIT;
+                    MPUT_8( fixptr, dll->u.ordinal );
+                    fixptr += 1;
                 }
-            } else if( dll->u.ordinal > 0xFF ) {
-                MPUT_16_UN( fixptr, dll->u.ordinal );
-                fixptr += 2;
+            } else if( dll->u.entry->num > 0xFFFF ) {
+                flags |= OSF_TFLAG_OFF_32BIT;
+                MPUT_32_UN( fixptr, dll->u.entry->num );
+                fixptr += 4;
             } else {
-                flags |= OSF_TFLAG_ORDINAL_8BIT;
-                MPUT_8( fixptr, dll->u.ordinal );
-                fixptr += 1;
+                MPUT_16_UN( fixptr, dll->u.entry->num );
+                fixptr += 2;
             }
             if( fix->additive ) {
                 flags |= OSF_TFLAG_ADDITIVE_VAL;
