@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +43,9 @@
 
 
 #ifdef __STDC__
-_WCRTLINK int (execl)( const char *path, const char *arg, ... )
+_WCRTLINK int (_execl)( const char *path, const char *arg, ... )
 #else
-_WCRTLINK int (execl)( const char *path, const char *arg )
+_WCRTLINK int (_execl)( const char *path, const char *arg )
 #endif
 {
     return( spawnve( P_OVERLAY, path, &arg, (ENVP_TYPE_ARR)_RWD_environ ) );

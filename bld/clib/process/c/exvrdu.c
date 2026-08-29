@@ -148,7 +148,7 @@ spawn_command_com:
                     lib_free( _envptr );
                     _envptr = NULL;
                     __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
-                    retval = execl( getenv("COMSPEC"),
+                    retval = _execl( getenv("COMSPEC"),
                         "COMMAND",
                         "/c ",
                         p, cmdline );

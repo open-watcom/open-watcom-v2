@@ -76,7 +76,7 @@ _WCRTLINK FILE *popen( const char *command, const char *mode )
         close( fd[0] );
         close( fd[1] );
 
-        execl( "/bin/sh", "sh", "-c", command, (char *)NULL );
+        _execl( "/bin/sh", "sh", "-c", command, (char *)NULL );
         _exit( 1 );
         // never return
     default:

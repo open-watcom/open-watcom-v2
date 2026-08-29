@@ -2,7 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
-;* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+;* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -99,7 +99,7 @@ nomem     db    'Not enough memory on exec',CR,NL,'$'
         _endif                          ; Endif.
         endm
 
-        extrn   execve_         : proc
+        extrn   _execve_        : proc
         extrn   __init_execve_  : near
 
 fake    proc    far                     ; Force returns to be far returns.

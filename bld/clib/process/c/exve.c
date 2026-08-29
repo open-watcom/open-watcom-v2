@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -220,7 +220,7 @@ static void _WCNEAR save_file_handles( void )
     }
 }
 
-_WCRTLINK int execve( path, argv, envp )
+_WCRTLINK int _execve( path, argv, envp )
     const char          *path;          /* Path name of file to be executed */
     const char * const  argv[];         /* Array of pointers to arguments */
     const char * const  envp[];         /* Array of pointers to environment settings */
@@ -301,7 +301,7 @@ error: /* Clean up after error */
 
 void _WCNEAR __init_execve( void )      /* called from initializer segment */
 {
-    __Exec_addr = execve;
+    __Exec_addr = _execve;
 }
 
 #pragma pop( check_stack );
