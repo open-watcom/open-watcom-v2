@@ -76,23 +76,24 @@ static unsigned_32 WriteNovRelocs( fixed_header *header )
 static size_t create_sym_extname( symbol *sym, char *ext_name )
 /*************************************************************/
 {
-    size_t  len;
-    size_t  len1;
+    size_t      len;
+    const char  *src;
 
+    len = 0;
     /*
-    //    netware prefix support
-    */
-    *ext_name = '\0';
-    if( sym->prefix != NULL ) {
-        strcpy( ext_name, sym->prefix );    // len < 255
-        strcat( ext_name, "@" );
+     * netware prefix support
+     */
+    src = sym->prefix;
+    if( src != NULL ) {
+        while( len < 255 - 1 ) {
+            ext_name[len++] = *src++;
+        }
+        ext_name[len++] = '@';
     }
-    len = strlen( sym->name.u.ptr );
-    len1 = strlen( ext_name );
-    if( len + len1 > 255 )
-        len = 255 - len1;
-    memcpy( ext_name + len1, sym->name.u.ptr, len );
-    len += len1;
+    src = sym->name.u.ptr;
+    while( len < 255 ) {
+        ext_name[len++] = *src++;
+    }
     ext_name[len] = '\0';
     return( len );
 }
@@ -593,8 +594,7 @@ void FiniNovellLoadFile( void )
     memcpy( nov_header.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH );
     nov_header.version = NLM_VERSION;
     nov_header.moduleName[0] = (char)len;
-    memcpy( nov_header.moduleName + 1, module_name, len );
-    memset( nov_header.moduleName + 1 + len, 0, NOV_MAX_MODNAME_LEN - len ); // zero rest.
+    strncpy( nov_header.moduleName + 1, module_name, len );
     nov_header.uninitializedDataSize = 0; // MemorySize() - image_size;
     GetProcOffsets( &nov_header );
     nov_header.moduleType = FmtData.u.nov.moduletype;
