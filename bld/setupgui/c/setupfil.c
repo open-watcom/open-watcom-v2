@@ -1556,10 +1556,8 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
     if( ok ) {
         VbufSplitpath( name, &drive, &dir, NULL, NULL );
         VbufMakepath( &path1, &drive, &dir, NULL, NULL );
-//        strupr( path1 );
         VbufSplitpath( &prev_path, &drive, &dir, NULL, NULL );
         VbufMakepath( &path2, &drive, &dir, NULL, NULL );
-//        strupr( path2 );
         VbufSetStr( &dst_dir, GetVariableStrVal( "DstDir" ) );
         if( VbufCompVbuf( &path1, &dst_dir, true ) == 0
           && VbufCompVbuf( &path2, &dst_dir, true ) == 0 ) {
@@ -1601,7 +1599,6 @@ bool CheckInstallDLL( const VBUF *name, vhandle var_handle )
         ok = false;
     }
     if( ok ) {
-//        strupr( &dll_name );
         VbufSetVbuf( &path1, &unpacked_as );
         VbufSetVbuf( &path2, &prev_path );
         CheckVersion( &path1, &drive, &dir );

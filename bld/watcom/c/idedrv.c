@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <signal.h>
 #include "wio.h"
 #include "bool.h"
@@ -159,9 +160,11 @@ static int sysdepDLLgetProc( IDEDRV *inf
          */
         unsigned    size = strlen( fun_name ) + 1;
         char        *p = alloca( size );
+        unsigned    i;
 
-        p = memcpy( p, fun_name, size );
-        p = strupr( p );
+        for( i = 0; i < size; i++ ) {
+            p[i] = toupper( (unsigned char)fun_name[i] );
+        }
         retcode = (int)DosQueryProcAddr( (DLL_HANDLE)inf->dll_handle
                                        , 0
                                        , (PSZ)p
@@ -228,9 +231,11 @@ static int sysdepDLLgetProc( IDEDRV *inf
          */
         unsigned    size = strlen( fun_name ) + 1;
         char        *p = alloca( size );
+        unsigned    i;
 
-        p = memcpy( p, fun_name, size );
-        p = strupr( p );
+        for( i = 0; i < size; i++ ) {
+            p[i] = toupper( (unsigned char)fun_name[i] );
+        }
         *fun = GetProcAddress( inf->dll_handle, (void *)p );
     }
     return( 0 == *fun );

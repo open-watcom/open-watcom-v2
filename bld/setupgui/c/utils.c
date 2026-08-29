@@ -2062,7 +2062,6 @@ void GetInstallName( VBUF *name )
 
         VbufSetStr( &argv0, InstallerFile );
         VbufSplitpath( &argv0, NULL, NULL, name, NULL );
-//        strupr( name );
 
         VbufFree( &argv0 );
     }
