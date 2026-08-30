@@ -659,7 +659,7 @@ cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)arm)
 cppflags_a64    = $(common_cppflags_a64) $(common_cppflags_$(host_os)a64)
 
-c_flags   = -std=gnu99
+c_flags   = -std=gnu99 -Werror=implicit-function-declaration
 cxx_flags = -std=c++98
 
 cflags_gen  = $(common_cflags) $(target_cflags_$(bld_cpu)) $(common_flags) $(common_cflags_exe) -o $@
