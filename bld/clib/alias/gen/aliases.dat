@@ -53,7 +53,7 @@ excle_        _execle           execle            d16     nt  nta ntm ntp       
 exclp_        _execlp           execlp            d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 exclpe        _execlpe          execlpe           d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 excv__        _execv            execv             d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
-excve_        _execve           execve            d16     nt  nta ntm ntp                 o16 o32 q16 q32                     rdu
+excve_        _execve           execve            d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 excvp_        _execvp           execvp            d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 excvpe        _execvpe          execvpe           d16     nt  nta ntm ntp                 o16 o32 q16 q32         l32 lpc lmp rdu
 _exit_        _exit             _Exit             d16 d32 nt  nta ntm ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 l32 lpc lmp rdu rdk
