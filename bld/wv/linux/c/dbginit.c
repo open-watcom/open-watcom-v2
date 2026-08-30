@@ -193,11 +193,7 @@ long _fork( const char *cmd, size_t len )
         close( DbgConHandle );
         DbgConHandle = -1;
         setsid();
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-        execve( shell, (char * const *)argv, (char * const *)environ );
-#else
-        execve( shell, argv, (const char **)environ );
-#endif
+        execve( shell, (char **)argv, (char **)environ );
         exit( 1 );
     } else {
         fcntl( DbgConHandle, F_SETFD, FD_CLOEXEC );
