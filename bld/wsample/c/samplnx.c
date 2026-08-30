@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -807,7 +807,7 @@ void StartProg( const char *cmd, const char *prog, const char *full_args, char *
             for( rc = 0; argv[rc] != NULL; ++rc )
                 dbg_printf( "argv[%d] = '%s'\n", rc, argv[rc] );
 
-            rc = execve( prog, (char const * const *)argv, (char const * const *)environ );
+            rc = execve( prog, (char **)argv, (char **)environ );
             dbg_printf( "execve() failed, returned %d\n", rc );
             internalErrorMsg( MSG_SAMPLE_3 );  // failsafe
         }

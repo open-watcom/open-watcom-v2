@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -281,7 +281,7 @@ trap_retval TRAP_FILE( run_cmd )( void )
         tcsetpgrp( 0, pgrp );
         tcsetpgrp( 1, pgrp );
         tcsetpgrp( 2, pgrp );
-        execve( shell, argv, (const char **)dbg_environ );
+        execve( shell, (char **)argv, (char **)dbg_environ );
         exit( 1 );
     }
     /* parent */

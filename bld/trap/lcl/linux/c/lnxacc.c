@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -257,7 +257,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
             if( ptrace( PTRACE_TRACEME, 0, NULL, NULL ) < 0 ) {
                 exit( 1 );
             }
-            execve( exe_name, (const char **)args, (const char **)dbg_environ );
+            execve( exe_name, (char **)args, (char **)dbg_environ );
             exit( 1 ); /* failsafe */
         }
         setpgid( 0, save_pgrp );
