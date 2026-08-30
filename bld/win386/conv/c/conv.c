@@ -166,13 +166,13 @@ static void *_fmyrealloc( void *ptr, size_t size )
 
 static bool IsWord( char *str )
 {
-    if( stricmp( str, "int" ) == 0
-      || stricmp( str, "char" ) == 0
-      || stricmp( str, "unsigned char" ) == 0
-      || stricmp( str, "short" ) == 0
-      || stricmp( str, "unsigned" ) == 0
-      || stricmp( str, "unsigned short" ) == 0
-      || stricmp( str, "unsigned int" ) == 0 ) {
+    if( strcmp( str, "int" ) == 0
+      || strcmp( str, "char" ) == 0
+      || strcmp( str, "unsigned char" ) == 0
+      || strcmp( str, "short" ) == 0
+      || strcmp( str, "unsigned" ) == 0
+      || strcmp( str, "unsigned short" ) == 0
+      || strcmp( str, "unsigned int" ) == 0 ) {
         return( true );
     }
     return( false );
@@ -191,7 +191,7 @@ static param_types ClassifyParm( char *buff )
         return( PARM_WORD );
     } else if( strchr( buff, '*' ) != NULL ) {
         return( PARM_PTR );
-    } else if( stricmp( buff, "void" ) == 0 ) {
+    } else if( strcmp( buff, "void" ) == 0 ) {
         return( PARM_VOID );
     } else {
         return( PARM_DWORD );
@@ -207,12 +207,12 @@ static return_types ClassifyReturnType( char *buff )
     size_t  i;
 
     STRIP_TRAIL_WS( i, buff );
-    if( stricmp( buff, "int" ) == 0
-      || stricmp( buff, "short" ) == 0 ) {
+    if( strcmp( buff, "int" ) == 0
+      || strcmp( buff, "short" ) == 0 ) {
         return( RETURN_INT );
-    } else if( stricmp( buff, "void" ) == 0 ) {
+    } else if( strcmp( buff, "void" ) == 0 ) {
         return( RETURN_VOID );
-    } else if( stricmp( buff, "char" ) == 0 ) {
+    } else if( strcmp( buff, "char" ) == 0 ) {
         return( RETURN_CHAR );
     } else if( strchr( buff, '*' ) != NULL ) {
         return( RETURN_PTR );
@@ -327,6 +327,7 @@ static void ProcessDefFile( FILE *f )
     fcn         *tmpf;
 
     while( (buff = fgets( buffer, sizeof( buffer ), f )) != NULL ) {
+        buff[strcspn( buff, "\r\n" )] = '\0';
         SKIP_LEAD_WS( buff );
         if( buff[0] == '#'
           || buff[0] == '\0' ) {
@@ -1794,6 +1795,7 @@ int main( int argc, char *argv[] )
     }
 
     while( (fname = fgets( buffer, sizeof( buffer ), pf )) != NULL ) {
+        fname[strcspn( fname, "\r\n" )] = '\0';
         SKIP_LEAD_WS( fname );
         if( fname[0] == '#'
           || fname[0] == '\0' ) {
