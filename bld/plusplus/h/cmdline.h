@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,11 +52,11 @@ void GenCOptions(               // PROCESS ALL OPTIONS
 // PROTOTYPES -- internal to command-line processing
 
 void AddUndefName(              // SAVE A #UNDEF NAME
-    void );
-
+    void )
+;
 void BadCmdLine(                // SIGNAL CMD-LINE ERROR
-    MSG_NUM error_code );       // - error code
-
+    MSG_NUM error_code )        // - error code
+;
 void CmdLnBatchAbort(           // ABANDON BATCH-FILE PROCESSING
     void )
 ;

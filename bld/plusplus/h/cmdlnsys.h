@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@ extern void CmdX86CheckThreshold( unsigned * );
 // defined in CMDLNANY
 extern char *SetStringOption( char **, OPT_STRING ** );
 extern void SetTargetLiteral( char **, const char * );
+extern void SetTargetNameBT( char **, OPT_STRING ** );
 extern bool MergeIncludeFromEnv( const char * );
 extern void DefSwitchMacro( const char * );
 extern void ConcatBase10( char *, unsigned );

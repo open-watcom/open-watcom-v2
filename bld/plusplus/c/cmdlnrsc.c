@@ -99,9 +99,7 @@ static char *setTargetSystem( OPT_STORAGE *data )
      * right now, the only targeted system is NT
      */
     if( data->bt ) {
-        char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetLiteral( &target_name, strupr( target ) );
-        CMemFree( target );
+        SetTargetNameBT( &target_name, &(data->bt_value) );
     }
     if( target_name == NULL ) {
         SetTargetLiteral( &target_name, "NT" );

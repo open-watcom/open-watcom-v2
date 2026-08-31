@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -70,22 +70,24 @@ static BRI_StringID addStringLower  // ADD A STRING, IN LOWER CASE
     , char const * str )            // - the string
 {
     char buffer[256];               // - buffer big enough for most file names
-    char * alloced = NULL;          // - allocated buffer
-    char * lowername = buffer;      // - buffer used
+    char *lowername;                // - buffer used
     BRI_StringID string_id;         // - return: string id
-    int buf_size;                   // - buffer size required
+    unsigned buf_size;              // - buffer size required
+    char *p;
+    int c;
 
-    buf_size = strlen( str ) + 1;
-    buf_size *= sizeof( char );
+    lowername = buffer;
+    buf_size = ( strlen( str ) + 1 ) * sizeof( char );
     if( buf_size > sizeof( buffer ) ) {
-        alloced = (char *)CMemAlloc( buf_size );
-        lowername = alloced;
+        lowername = (char *)CMemAlloc( buf_size );
     }
-    lowername = memcpy( lowername, str, buf_size );
-    lowername = strlwr( lowername );
+    p = memcpy( lowername, str, buf_size );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     string_id = BRIAddString( bri_handle, id, lowername );
-    if( NULL != alloced ) {
-        CMemFree( alloced );
+    if( lowername != buffer ) {
+        CMemFree( lowername );
     }
     return( string_id );
 }

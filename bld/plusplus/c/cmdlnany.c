@@ -415,13 +415,28 @@ void ConcatBase10( char *buff, unsigned num )
     sprintf( dest, "%u", num );
 }
 
-void SetTargetLiteral( char **n, const char *t )
-/**********************************************/
+void SetTargetLiteral( char **target_name, const char *target )
+/*************************************************************/
 {
-    if( *n != NULL ) {
-        CMemFree( *n );
+    if( *target_name != NULL ) {
+        CMemFree( *target_name );
     }
-    *n = CMemStrdup( t );
+    *target_name = CMemStrdup( target );
+}
+
+void SetTargetNameBT( char **target_name, OPT_STRING **bt_value )
+/***************************************************************/
+{
+    int             c;
+    char            *p;
+
+    if( *target_name != NULL ) {
+        CMemFree( *target_name );
+    }
+    *target_name = p = SetStringOption( NULL, bt_value );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
 }
 
 static void procOptions(        // PROCESS AN OPTIONS LINE

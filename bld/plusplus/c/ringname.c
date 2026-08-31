@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +32,7 @@
 
 
 #include "plusplus.h"
+#include <ctype.h>
 #include "ring.h"
 #include "ringname.h"
 
@@ -43,11 +45,16 @@ char *RingNameAllocVct(         // ALLOCATE A NAME, FOR A VECTOR
     size_t len )                // - length of vector
 {
     RINGNAME *element;          // - new entry
+    char     *p;
+    int      c;
 
     element = RingAlloc( &ctl->ring, offsetof( RINGNAME, name ) + len + 1 );
     stxvcpy( element->name, vector, len );
     if( ! ctl->case_sensitive ) {
-        strlwr( element->name );
+        p = element->name;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
     }
     return( element->name );
 }
