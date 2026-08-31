@@ -4408,8 +4408,13 @@ static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     }
     len = sizeof( EMU_INT ) - 1;
     strcpy( op_buff, EMU_INT );
-    if( flags & DFF_INS_UP )
-        strupr( op_buff );
+    if( flags & DFF_INS_UP ) {
+        int  c;
+        char *p = op_buff;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)toupper( c );
+        }
+    }
     len += DisCliValueString( d, ins, MAX_NUM_OPERANDS - 1, op_buff + len, buff_len - len );
     return( len );
 }
