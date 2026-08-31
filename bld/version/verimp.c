@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,15 @@
 
 
 /*
- Description:
- ============
- This is the import library side of the version verification. This module
- must be added to the import library and can be added to the dll (although
- that copy of it will never be used).
-
-*/
+ * Description:
+ * ============
+ * This is the import library side of the version verification. This module
+ * must be added to the import library and can be added to the dll (although
+ * that copy of it will never be used).
+ */
 
 #include <string.h>
+#include <ctype.h>
 #include <windows.h>
 #include "version.h"
 
@@ -72,8 +73,14 @@ extern unsigned _func_name( version_dll )( void )
     HANDLE      lib;
     FARPROC     ver_dll_num;
     unsigned    ver;
+    char        *p;
+    int         c;
 
-    strupr( VersionDllProc );
+    /* change to upper-case */
+    p = VersionDllProc;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
 
     lib = LoadLibrary( _xstr( DLL_FILE_NAME ) );
 #if defined( __WINDOWS__ )
