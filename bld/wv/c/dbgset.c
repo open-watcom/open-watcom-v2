@@ -53,7 +53,6 @@
 #include "dbgparse.h"
 #include "dbgtrace.h"
 #include "dbgset.h"
-#include "dbglkup.h"
 #include "dbgchopt.h"
 #include "dbgsetfn.h"
 #include "dbgsetfg.h"
@@ -291,7 +290,9 @@ const char  *GetLanguage( void )
 
 void NewLang( const char *lang, size_t len )
 {
-    char       *new_lang;
+    char            *new_lang;
+    char            *p;
+    int             c;
 
     if( lang == NULL )
         return;
@@ -300,7 +301,11 @@ void NewLang( const char *lang, size_t len )
     } else {
         new_lang = MemToStringSafe( lang, len );
     }
-    strlwr( new_lang );
+    /* change to lower-case */
+    p = new_lang;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     if( strcmp( new_lang, Language ) != 0 ) {
         if( LangLoad( new_lang ) ) {
             MemFree( Language );

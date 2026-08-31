@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dlglist.h"
@@ -45,10 +47,15 @@ char_ring       *DLLList;
 
 bool DLLMatch( void )
 {
-    char_ring *curr;
+    char_ring       *curr;
+    char            *p;
+    int             c;
 
-    strcpy( TxtBuff, GetLastImageName() );
-    strupr( TxtBuff );
+    p = strcpy( TxtBuff, GetLastImageName() );
+    /* change to upper-case */
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
     for( curr = DLLList; curr != NULL; curr = curr->next ) {
         if( curr->name[0] == '*' )
             return( true );

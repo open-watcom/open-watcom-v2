@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -94,14 +94,20 @@ void DeleteRing( char_ring **owner, const char *start, unsigned len, bool ucase 
 
 void InsertRing( char_ring **owner, const char *start, unsigned len, bool ucase )
 {
-    char_ring *path;
+    char_ring       *path;
+    char            *p;
+    int             c;
 
     if( len != 0 ) {
         path = MemAllocSafe( sizeof( *path ) + len );
         memcpy( path->name, start, len );
         path->name[len] = NULLCHAR;
         if( ucase ) {
-            strupr( path->name );
+            /* change to upper-case */
+            p = path->name;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = (char)toupper( c );
+            }
         }
         path->next = NULL;
         *owner = path;

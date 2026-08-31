@@ -219,6 +219,28 @@ static const char * const Day[] = {
 /* UTILITIES                                                              */
 /**************************************************************************/
 
+#if 0
+static void my_strupr( char *str )
+/********************************/
+{
+    int             c;
+
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = toupper( c );
+    }
+}
+#endif
+
+static void my_strlwr( char *str )
+/********************************/
+{
+    int             c;
+
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = tolower( c );
+    }
+}
+
 static void MemInit( void )
 {
 }
@@ -705,10 +727,10 @@ static const char    *_FileParse( const char *name, file_parse *file )
         }
     }
     *p1 = NULLCHAR;
-//    strupr( file->drive );
-//    strupr( file->path );
-//    strupr( file->name );
-//    strupr( file->ext );
+//    my_strupr( file->drive );
+//    my_strupr( file->path );
+//    my_strupr( file->name );
+//    my_strupr( file->ext );
     return( dosname );
 }
 
@@ -1762,10 +1784,10 @@ static void CheckError( void )
     }
 }
 
-static int ProcessArgv( int argc, char **argv, const char *cmd ) {
-
+static int ProcessArgv( int argc, char **argv, const char *cmd ) 
+{
     ErrorStatus = 0;
-    strlwr( argv[0] );
+    my_strlwr( argv[0] );
     if( strcmp( argv[0], "copy" ) == 0 ) {
         ProcCopy( argc - 1, argv + 1 );
     } else if( strcmp( argv[0], "dir" ) == 0 ) {
