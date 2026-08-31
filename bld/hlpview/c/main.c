@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "wdirent.h"
 #include "help.h"
 #include "helpmemu.h"
@@ -107,6 +108,8 @@ int main( int argc, char *argv[] )
     HelpSrchPathItem    *srchlist;
     int                 rc;
     int                 err;
+    char                *p;
+    int                 c;
 
     rc = EXIT_SUCCESS;
     HelpMemOpen();
@@ -119,7 +122,11 @@ int main( int argc, char *argv[] )
         rc = EXIT_FAILURE;
     } else {
         srchlist = checkFileName( argv[1], filename );
-        strlwr( filename );
+        /* change to lower-case */
+        p = filename;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
         helpfiles[0] = filename;
         if( argc == 3 ) {
             topic = argv[2];
