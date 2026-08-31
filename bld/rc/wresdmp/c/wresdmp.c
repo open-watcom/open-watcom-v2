@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "trmemcvr.h"
 #include "dmpfile.h"
 #include "param.h"
@@ -59,9 +60,14 @@ static void PrintUsageMessage( const char * progpath )
 {
     int         linenum;
     pgroup2     pg;
+    char        *p;
+    int         c;
 
     _splitpath2( progpath, pg.buffer, NULL, NULL, &pg.fname, NULL );
-    strlwr( pg.fname );
+    p = pg.fname;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
 
     fprintf( stdout, HelpText[ 0 ], pg.fname );
     fputc( '\n', stdout );

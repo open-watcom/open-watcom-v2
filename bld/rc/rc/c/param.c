@@ -553,7 +553,9 @@ char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
     size_t              lenOfReplaceString;
     size_t              diffInLen;
     size_t              newMemSize;
-    size_t              i, j, k;
+    size_t              i;
+    size_t              j;
+    size_t              k;
     int                 noOfInstances; //this is the number of instances
                                        //of the find string in the string
                                        //from the file
@@ -707,26 +709,30 @@ static bool scanDefine( OPT_STRING **h )
     return( false );
 }
 
-static bool scanTarget( unsigned *p )
+static bool scanTarget( unsigned *value )
 {
     const char  *str;
     size_t      len;
     char        buff[16];
+    char        *p;
+    int         c;
 
     CmdRecogEquals();
     len = CmdScanId( &str );
     if( len > sizeof( buff ) - 1 ) {
         len = sizeof( buff ) - 1;
     }
-    strncpy( buff, str, len );
+    p = strncpy( buff, str, len );
     buff[len] = '\0';
-    strupr( buff );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
     if( strcmp( buff, "WINDOWS" ) == 0 || strcmp( buff, "WIN" ) == 0 ) {
-        *p = RC_TARGET_OS_WIN16;
+        *value = RC_TARGET_OS_WIN16;
     } else if( strcmp( buff, "NT" ) == 0 ) {
-        *p = RC_TARGET_OS_WIN32;
+        *value = RC_TARGET_OS_WIN32;
     } else if( strcmp( buff, "OS2" ) == 0 ) {
-        *p = RC_TARGET_OS_OS2;
+        *value = RC_TARGET_OS_OS2;
     } else {
         BadCmdLineId();
         return( false );
