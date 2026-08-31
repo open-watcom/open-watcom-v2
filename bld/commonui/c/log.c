@@ -35,6 +35,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <time.h>
 #include "wio.h"
 #include "bool.h"
@@ -231,7 +232,14 @@ INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         case LOG_CFG_BROWSE:
             buf = MemAlloc( LOG_MAX_FNAME );
             if( getLogName( buf, hwnd ) ) {
-                strlwr( buf );
+                int c;
+                char *p;
+
+                /* change to lower-case */
+                p = buf;
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = (char)tolower( c );
+                }
                 SetDlgItemText( hwnd, LOG_CFG_NAME_EDIT, buf );
             }
             MemFree( buf );

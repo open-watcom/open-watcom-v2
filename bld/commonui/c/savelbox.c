@@ -59,6 +59,16 @@
 /* Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
+static void my_strupr( char *str )
+/********************************/
+{
+    int             c;
+
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = (char)toupper( c );
+    }
+}
+
 static bool isListView( HWND list )
 {
 #ifdef __WINDOWS__
@@ -264,8 +274,8 @@ static void relToAbs( const char *path, char *out )
     _splitpath2( out, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
 
     /* create absolute path for file */
-    strupr( pg1.fname );
-    strupr( pg1.ext );
+    my_strupr( pg1.fname );
+    my_strupr( pg1.ext );
     _makepath( out, pg2.drive, pg2.dir, pg1.fname, pg1.ext );
 
 } /* relToAbs */
