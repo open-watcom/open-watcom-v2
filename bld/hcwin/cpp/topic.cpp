@@ -31,6 +31,7 @@
 
 
 #include <string.h>
+#include <ctype.h>
 #include "topic.h"
 
 #include "clibext.h"
@@ -41,6 +42,16 @@
 #define COMP_PAGE_SIZE  4096
 
 #define NULLVAL32       ((uint_32)-1L)
+
+static void my_strupr( char *str )
+/********************************/
+{
+    int             c;
+
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = toupper( c );
+    }
+}
 
 //
 //  TextAttr    --Structure to record changes to text.
@@ -1070,7 +1081,7 @@ void HFTopic::recordBrowse( TopicLink *me )
     newnode->_me = me;
     newnode->_charOffset = _browseOffset;
     newnode->_string = _browseStr;
-    strlwr( newnode->_string );
+    my_strupr( newnode->_string );
     _browseStr = NULL;
     for( current = _bhead; current != NULL; current = current->_next ) {
         if( strcmp( current->_string, newnode->_string ) > 0 )
