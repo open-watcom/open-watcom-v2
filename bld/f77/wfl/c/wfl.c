@@ -722,8 +722,8 @@ static  int     Parse( char *cmd )
     int         opt;
     int         ch;
     char        *end;
-//    char        *cmd;
     size_t      len;
+    size_t      i;
     bool        cmp_option;
     int         cmp_opt_index;
     bool        in_quotes;
@@ -771,9 +771,10 @@ static  int     Parse( char *cmd )
 
         if( len != 0 ) {
             if( opt == ' ' ) {  // if filename, add to list
-                strncpy( Word, cmd, len );
-                Word[len] = '\0';
-                strlwr( Word );
+                for( i = 0; i < len; i++ ) {
+                    Word[i] = (char)tolower( (unsigned char)cmd[i] );
+                }
+                Word[i] = '\0';
                 if( strstr( Word, ".lib" ) != NULL ) {
                     ListAppendString( &Lib_List, Word );
                     AddDirectivePath( "library ", Word );
@@ -1079,6 +1080,10 @@ static  int     CompLink( void )
     pgroup2     pg;
     int         i;
     list        *currobj;
+#ifndef __UNIX__
+    char        *p;
+    int         c;
+#endif
 
     comp_err = false;
     Obj_List = NULL;
@@ -1087,9 +1092,15 @@ static  int     CompLink( void )
         MakeName( Word, "." TOOL_FOR_EXT ); // if no extension, assume "for"
         file = DoWildCard( Word );
         while( file != NULL ) {     // while more filenames:
+#ifdef __UNIX__
             strcpy( Word, file );
-#ifndef __UNIX__
-            strlwr( Word );
+#else
+            p = Word;
+            while( (c = *(unsigned char *)file) != '\0' ) {
+                *p++ = (char)tolower( c );
+                file++;
+            }
+            *p = '\0';
 #endif
             _splitpath2( Word, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
             if( !IS_OBJ( pg.ext ) ) {   // if not object, compile
