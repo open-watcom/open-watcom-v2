@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,20 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "fnutils.h"
+
 
 char *FNameLower( char *filename )
 {
+    char            *p;
+    int             c;
+
     if( getenv( POSIX_PRESERVE_CASE ) == NULL ) {
-        strlwr( filename );
+        p = filename;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
     }
     return( filename );
 }

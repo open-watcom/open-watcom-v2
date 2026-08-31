@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,9 +41,10 @@
  */
 
 #include <stdio.h>
-#include <sys/types.h>                  /* Needed for typedefs in tar.h */
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <sys/types.h>                  /* Needed for typedefs in tar.h */
 #include "wio.h"
 
 #ifdef MSDOS
@@ -410,15 +411,17 @@ static void name_init( int argc, char **argv )
  * FIXME: This code is embarassingly complex and needs to be rewritten.
  */
 
-char *fixname( char *s )
+char *fixname( const char *s )
 {
-    char  *q;
-    char  *prd;
-    char  *lsl;
-    int   name_cnt;
+    char            *q;
+    char            *prd;
+    char            *lsl;
+    int             name_cnt;
     static char     buf[256];       /* where the copy of the name is stored */
 
 #ifdef MSDOS
+
+    int             c;
 
     /*
      * CODE TO FIX DOS NAMES: DOS's filenames are always uppercase, though
@@ -430,14 +433,14 @@ char *fixname( char *s )
      * transformation occurs on the actual string we were passed, rather than
      * a copy of it.
      */
-    strcpy( buf, s );
     q = buf;
-    strlwr( q );
-    for( ; *q; q++ ) {
-        if( *q == '\\' ) {
-            *q = '/';
-        }
+    while( (c = *(unsigned char *)s) != '\0' ) {
+        if( c == '\\' )
+            c = '/';
+        *q++ = (char)tolower( c );
+        s++;
     }
+    *q = '\0';
 
     /*
      * CODE TO FIX UNIX NAMES: if more than one '.' in name, DOS won't create

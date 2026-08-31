@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,7 +58,7 @@ extern void    name_gather( void );
 extern char    *name_next( void );
 extern void    name_close( void );
 extern int     convmode( char * s );
-extern char    *fixname( char *s );
+extern char    *fixname( const char *s );
 
 /*
  * Kludge for handling systems that can't cope with multiple

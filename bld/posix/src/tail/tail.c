@@ -187,7 +187,7 @@ int main( int argc, char *argv[] )
 
     tailCount = 10;
     rxflag = false;
-    for(;;) {
+    for( ;; ) {
         ch = GetOpt( &argc, argv1, "#X", usageMsg );
         if( ch == -1 ) {
             break;
@@ -209,7 +209,7 @@ int main( int argc, char *argv[] )
     } else {
         for( i = 1; i < argc; i++ ) {
             if( argc > 2 ) {
-                printf( "\n%s:\n", strupr( argv[i] ) );
+                printf( "\n%s:\n", argv[i] );
             }
             tailFile( argv[i] );
         }

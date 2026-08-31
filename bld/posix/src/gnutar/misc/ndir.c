@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -110,6 +110,8 @@ struct direct *readdir( DIR *dirp )
     union REGS      inregs;
     union REGS      outregs;
     char            *search;
+    char            *p;
+    int             c;
 
     inregs.h.ah = 0x1a;                 /* set DTA */
     inregs.x.dx = (int)&dirp->dosdir;
@@ -143,7 +145,11 @@ struct direct *readdir( DIR *dirp )
         dir.d_name[0] = '\0';
         return( NULL );
     } else {
-        strncpy( dir.d_name, strlwr( dirp->dosdir.name ), 13 );
+        p = dirp->dosdir.name;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
+        strncpy( dir.d_name, dirp->dosdir.name, 13 );
     }
     dir.d_namlen = strlen( dir.d_name );
     return( &dir );
