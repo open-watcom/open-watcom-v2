@@ -1382,8 +1382,8 @@ bool SetCurrSeg( token_buffer *tokbuf, token_idx i )
 static seg_type ClassNameType( const char *name )
 /***********************************************/
 {
-    size_t  slen;
-    char    uname[257];
+    size_t          slen;
+    char            uname[257];
 
     if( name == NULL )
         return( SEGTYPE_UNDEF );
@@ -1393,12 +1393,7 @@ static seg_type ClassNameType( const char *name )
             return( SEGTYPE_ISCODE );
         }
     }
-    slen = strlen( name );
-    if( slen > 256 )
-        slen = 256;
-    strncpy( uname, name, slen );
-    uname[slen] = '\0';
-    strupr( uname );
+    slen = get_ucase_name( uname, sizeof( uname ), name, 0 )
     if( slen < 3 ) {
         return( SEGTYPE_UNDEF );
     }
@@ -1438,15 +1433,10 @@ static seg_type ClassNameType( const char *name )
 static seg_type SegmentNameType( const char *name )
 /*************************************************/
 {
-    size_t  slen;
-    char    uname[257];
+    size_t          slen;
+    char            uname[257];
 
-    slen = strlen( name );
-    if( slen > 256 )
-        slen = 256;
-    strncpy( uname, name, slen );
-    uname[slen] = '\0';
-    strupr( uname );
+    slen = get_ucase_name( uname, sizeof( uname ), name, 0 )
     if( slen < 4 ) {
         return( SEGTYPE_UNDEF );
     }

@@ -47,6 +47,23 @@ enum changes {
 
 #define USCORE "_"
 
+size_t get_ucase_name( char *dst, size_t len, const char *src, size_t slen )
+{
+    size_t          i;
+
+    if( slen == 0 )
+        slen = strlen( src );
+    if( len > 0 )
+        len--;
+    if( len > slen )
+        len = slen;
+    for( i = 0; i < len; i++ ) {
+        *dst++ = (char)toupper( (unsigned char)*src++ );
+    }
+    *dst = '\0';
+    return( len );
+}
+
 static char *AsmMangler( asm_sym_handle sym )
 /*******************************************/
 {
@@ -57,9 +74,12 @@ static char *UCaseMangler( asm_sym_handle sym )
 /*********************************************/
 {
     char        *name;
+    size_t      slen;
 
-    name = MemStrdupSafe( sym->name );
-    return( strupr( name ) );
+    slen = strlen( sym->name );
+    name = MemAllocSafe( slen + 1 );
+    get_ucase_name( name, slen + 1, sym->name, slen );
+    return( name );
 }
 
 static char *UScoreMangler( asm_sym_handle sym )

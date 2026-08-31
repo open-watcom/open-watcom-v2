@@ -32,6 +32,7 @@
 #ifndef _MANGLE_H_
 #define _MANGLE_H_
 
+extern size_t       get_ucase_name( char *dst, size_t len, const char *src, size_t slen )
 extern char         *Mangle( asm_sym_handle sym );
 extern void         SetMangler( asm_sym_handle sym, mangle_func, lang_type );
 extern mangle_func  GetMangler( const char *mangle_type );
