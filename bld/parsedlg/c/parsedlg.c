@@ -133,7 +133,9 @@ void disp_usage( void )
 
     for( p = UsageText; *p != '\0'; ) {
         puts( p );
-        while( *p++ != '\0' ) ;
+        while( *p++ != '\0' ) {
+            /* nothing */;
+        }
     }
 }
 
@@ -144,7 +146,8 @@ void process_f_option( char *fname )
     char    buff1[MAX_NAME_LEN];
     int     i;
 
-    if(( fname != NULL ) && ( *fname != '\0' )) {
+    if( ( fname != NULL )
+      && ( *fname != '\0' ) ) {
         if( (fp = fopen( fname, "r" )) != NULL ) {
             for( opt.flist_cnt = 0; !feof( fp ); ++opt.flist_cnt )
                 fgets( buff1, sizeof( buff1 ), fp );
@@ -180,7 +183,8 @@ int process_cmdl( int argc, char *argv[] )
 #if defined( __UNIX__ )
         if( *p != '-' )
 #else
-        if(( *p != '-' ) && ( *p != '/' ))
+        if( ( *p != '-' )
+          && ( *p != '/' ) )
 #endif
             break;
         ++p;
@@ -188,7 +192,8 @@ int process_cmdl( int argc, char *argv[] )
         for( j = 0; options_text[j] != NULL; ++j ) {
             o = options_text[j];
             len = strlen( o );
-            if(( p[len] == '=' ) && ( strnicmp( o, p, len ) == 0 ))
+            if( ( p[len] == '=' )
+              && ( strnicmp( o, p, len ) == 0 ) )
                 break;
             if( stricmp( o, p ) == 0 ) {
                 break;
@@ -228,8 +233,11 @@ int process_cmdl( int argc, char *argv[] )
 char *skip_separator( char *str )
 /*******************************/
 {
-    while(( *str == ' ' ) || ( *str == '\t' ) || ( *str == ',' ))
+    while( ( *str == ' ' )
+      || ( *str == '\t' )
+      || ( *str == ',' ) ) {
         ++str;
+    }
     return( str );
 }
 
@@ -269,14 +277,18 @@ char *skip_keyword( char *str, int *plen )
     char    *p2;
 
     flag = 0;
-    while(( *str != '"' ) && !isdigit( *str ) && ( *str != '+' )
-        && ( *str != '-' ) && ( *str != '\0' )) {
+    while( ( *str != '"' )
+      && !isdigit( *str )
+      && ( *str != '+' )
+      && ( *str != '-' )
+      && ( *str != '\0' ) ) {
         if( flag == 0 ) {
             if( isalpha( *str ) ) {
                 flag = 1;
             }
         } else if( flag == 1 ) {
-            if(( *str == '\t' ) || ( *str == ' ' )) {
+            if( ( *str == '\t' )
+              || ( *str == ' ' ) ) {
                 flag = 2;
             }
         } else if( flag == 2 ) {
@@ -363,7 +375,8 @@ void convert_parm_table( char *keyword, char *parms[], control_type control, int
 
     for( i = 0; i < tab_cnt; ++i ) {
         if( strcmp( str, win_tab[i] ) == 0 ) {
-            if(( win_tab == control_style_win ) && !check_control_style( i, control ) ) {
+            if( ( win_tab == control_style_win )
+              && !check_control_style( i, control ) ) {
                 *(parms[parm_idx]) = '\0';
             } else {
                 strcpy( parms[parm_idx], os2_tab[i] );
@@ -410,7 +423,8 @@ void convert_buttons( char *ID, char *name, int flag )
         }
     } else if( strcmp( ID, "IDCANCEL" ) == 0 ) {
         strcpy( ID, "DID_CANCEL" );
-    } else if(( strcmp( ID, "IDHELP" ) == 0 ) || ( strcmp( ID, "IDC_HELP" ) == 0 )) {
+    } else if( ( strcmp( ID, "IDHELP" ) == 0 )
+      || ( strcmp( ID, "IDC_HELP" ) == 0 ) ) {
         strcpy( ID, "DID_HELP_BUTTON" );
     }
 }
@@ -463,18 +477,17 @@ void add_parms_list( statement *stmt, char *separators, int flag )
             strcpy( stmt->parms[i], p );
         }
     }
-    if(( strstr( stmt->name, "TEXT" ) != NULL )
-        || ( strcmp( stmt->name, "GROUPBOX" ) == 0 )
-        || ( strcmp( stmt->name, "CONTROL" ) == 0 )) {
-        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win,
-            control_style_os2, CTRL_STYLE_CNT, 0, check_parm_item, "DT_MNEMONIC" )
-            && strcmp( stmt->text, "\"\"" ) ) {
+    if( ( strstr( stmt->name, "TEXT" ) != NULL )
+      || ( strcmp( stmt->name, "GROUPBOX" ) == 0 )
+      || ( strcmp( stmt->name, "CONTROL" ) == 0 ) ) {
+        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win, control_style_os2, CTRL_STYLE_CNT, 0, check_parm_item, "DT_MNEMONIC" )
+          && strcmp( stmt->text, "\"\"" ) ) {
             add_parms_item( stmt->parms, "DT_MNEMONIC", ADD_AFTER );
         }
     }
-    if(( strcmp( stmt->name + 1, "TEXT" ) == 0 ) && ( strlen( stmt->text ) > 10 )) {
-        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win,
-            control_style_os2, CTRL_STYLE_CNT, 0, check_parm_item, "DT_WORDBREAK" ) ) {
+    if( ( strcmp( stmt->name + 1, "TEXT" ) == 0 )
+      && ( strlen( stmt->text ) > 10 ) ) {
+        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win, control_style_os2, CTRL_STYLE_CNT, 0, check_parm_item, "DT_WORDBREAK" ) ) {
             add_parms_item( stmt->parms, "DT_WORDBREAK", ADD_AFTER );
         }
     }
@@ -522,7 +535,8 @@ void out_parms_style( FILE *fo, char *parms[], char *str )
     item_idx = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         p = parms[i];
-        if(( *p != '\0' ) && !isdigit( *p ) ) {
+        if( ( *p != '\0' )
+          && !isdigit( *p ) ) {
 #if defined( OLD_FORMAT )
             if( item_idx == 1 ) {
                 fprintf( fo, "\n\t\t" );
@@ -536,20 +550,21 @@ void out_parms_style( FILE *fo, char *parms[], char *str )
                     fprintf( fo, "\t" );
                 }
 #endif
-            } else if(( item_idx == 1 ) && ( strcmp( str, "CONTROL" ) == 0 )) {
+            } else if( ( item_idx == 1 )
+              && ( strcmp( str, "CONTROL" ) == 0 ) ) {
                 fprintf( fo, " , " );
             } else if( oper_NOT == 0 ) {
                 fprintf( fo, " | " );
             } else {
                 fprintf( fo, " " );
             }
-            if(( strcmp( p, "SS_WHITEFRAME" ) == 0 )
-                || ( strcmp( p, "SS_BLACKFRAME" ) == 0 )
-                || ( strcmp( p, "SS_GRAYFRAME" ) == 0 )) {
+            if( ( strcmp( p, "SS_WHITEFRAME" ) == 0 )
+              || ( strcmp( p, "SS_BLACKFRAME" ) == 0 )
+              || ( strcmp( p, "SS_GRAYFRAME" ) == 0 ) ) {
                 fprintf( fo, "SS_BKGNDFRAME" );
-            } else if(( strcmp( p, "SS_WHITERECT" ) == 0 )
-                || ( strcmp( p, "SS_BLACKRECT" ) == 0 )
-                || ( strcmp( p, "SS_GRAYRECT" ) == 0 )) {
+            } else if( ( strcmp( p, "SS_WHITERECT" ) == 0 )
+              || ( strcmp( p, "SS_BLACKRECT" ) == 0 )
+              || ( strcmp( p, "SS_GRAYRECT" ) == 0 ) ) {
                 fprintf( fo, "SS_BKGNDRECT" );
             } else {
                 fprintf( fo, "%s", p );
@@ -575,17 +590,14 @@ void process_style( char *parms[], char *str )
             CTRL_TYPE_CNT, 0, convert_parm_table, NULL );
         free( ptr );
         if( control == T_COMBOBOX ) {
-            if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
-                control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_DROPDOWNLIST" ) ) {
-                if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
-                    control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_OWNERDRAW" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_DROPDOWNLIST" ) ) {
+                if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_OWNERDRAW" ) ) {
                     strcpy( str, "CONTROL" );
                     add_parms_item( parms, "\"watcombo\"", ADD_BEFORE );
                 }
             }
         } else if( control == T_CONTROL ) {
-            if( process_parms( parms, MAX_STMT_PARMS, style_win[control], style_os2[control],
-                style_cnt[control], control, check_parm_item, "BS_GROUPBOX" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, style_win[control], style_os2[control], style_cnt[control], control, check_parm_item, "BS_GROUPBOX" ) ) {
                 strcpy( str, "GROUPBOX" );
                 control = T_GROUPBOX;
                 for( i = 0; i < MAX_STMT_PARMS; ++i ) {
@@ -598,19 +610,15 @@ void process_style( char *parms[], char *str )
         if( control == T_CONTROL ) {
             process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
                 CTRL_NAME_CNT, control, convert_parm_table, NULL );
-            if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
-                CTRL_NAME_CNT, control, check_parm_item, "WC_STATIC" ) ) {
-                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win,
-                    control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "SS_" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "WC_STATIC" ) ) {
+                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "SS_" ) ) {
                     add_parms_item( parms, "SS_GROUPBOX", ADD_AFTER );
                 }
             }
         } else {
-            process_parms( parms, MAX_STMT_PARMS, control_style_win, control_style_os2,
-                CTRL_STYLE_CNT, control, convert_parm_table, NULL );
+            process_parms( parms, MAX_STMT_PARMS, control_style_win, control_style_os2, CTRL_STYLE_CNT, control, convert_parm_table, NULL );
         }
-        if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
-            CTRL_NAME_CNT, control, check_parm_item, "WS_VISIBLE" ) ) {
+        if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "WS_VISIBLE" ) ) {
             add_parms_item( parms, "WS_VISIBLE", ADD_AFTER );
         }
     }
@@ -626,16 +634,16 @@ void out_color_style( FILE *fo, statement *x )
 
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         p = x->parms[i];
-        if(( strcmp( p, "SS_WHITEFRAME" ) == 0 )
-            || ( strcmp( p, "SS_WHITERECT" ) == 0 )) {
+        if( ( strcmp( p, "SS_WHITEFRAME" ) == 0 )
+          || ( strcmp( p, "SS_WHITERECT" ) == 0 ) ) {
             fprintf( fo, "%sPRESPARAMS PP_BACKGROUNDCOLOR, RGB_WHITE\n", STR_SPC STR_SPC );
             fprintf( fo, "%sPRESPARAMS PP_FOREGROUNDCOLOR, RGB_WHITE\n", STR_SPC STR_SPC );
-        } else if(( strcmp( p, "SS_BLACKFRAME" ) == 0 )
-            || ( strcmp( p, "SS_BLACKRECT" ) == 0 )) {
+        } else if( ( strcmp( p, "SS_BLACKFRAME" ) == 0 )
+          || ( strcmp( p, "SS_BLACKRECT" ) == 0 ) ) {
             fprintf( fo, "%sPRESPARAMS PP_BACKGROUNDCOLOR, RGB_BLACK\n", STR_SPC STR_SPC );
             fprintf( fo, "%sPRESPARAMS PP_FOREGROUNDCOLOR, RGB_BLACK\n", STR_SPC STR_SPC );
-        } else if(( strcmp( p, "SS_GRAYFRAME" ) == 0 )
-            || ( strcmp( p, "SS_GRAYRECT" ) == 0 )) {
+        } else if( ( strcmp( p, "SS_GRAYFRAME" ) == 0 )
+          || ( strcmp( p, "SS_GRAYRECT" ) == 0 ) ) {
             fprintf( fo, "%sPRESPARAMS PP_BACKGROUNDCOLOR, 0x00C0C0C0L\n", STR_SPC STR_SPC );
             fprintf( fo, "%sPRESPARAMS PP_FOREGROUNDCOLOR, 0x00C0C0C0L\n", STR_SPC STR_SPC );
         }
@@ -678,7 +686,8 @@ void get_rectangle_parms( statement *x )
         p = x->parms[i];
         if( !isdigit( *p ) )
             continue;
-        if(( *p == '0' ) && ( tolower( *(p + 1) ) == 'x' ))
+        if( ( *p == '0' )
+          && ( tolower( *(p + 1) ) == 'x' ) )
             continue;
         if( j == 0 ) {
             x->x = atoi( p ) * CONV_X;
@@ -729,10 +738,10 @@ int process_statement( char *line, FILE *fo )
         add_parms_list( &dlg_item, separators, 0 );
         get_rectangle_parms( &dlg_item );
     } else {
-        if(( strcmp( dlg_item.name, "COMBOBOX" ) == 0 )
-            || ( strcmp( dlg_item.name, "LISTBOX" ) == 0 )
-            || ( strcmp( dlg_item.name, "SCROLLBAR" ) == 0 )
-            || ( strcmp( dlg_item.name, "EDITTEXT" ) == 0 )) {
+        if( ( strcmp( dlg_item.name, "COMBOBOX" ) == 0 )
+          || ( strcmp( dlg_item.name, "LISTBOX" ) == 0 )
+          || ( strcmp( dlg_item.name, "SCROLLBAR" ) == 0 )
+          || ( strcmp( dlg_item.name, "EDITTEXT" ) == 0 ) ) {
             strcpy( dlg_item.text, "\"\"" );
             p = NULL;
         } else {
@@ -801,8 +810,10 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
     if( p != NULL )
         strcpy( dlg_hdr.ID, p );
     p = strtok( NULL, " ,\t" );
-    while(( p != NULL ) && !isdigit( *p ) )
+    while( ( p != NULL )
+      && !isdigit( *p ) ) {
         p = strtok( NULL, separators );
+    }
     if( p != NULL )
         dlg_hdr.x = atoi( p ) * CONV_X;
     p = strtok( NULL, separators );
@@ -818,7 +829,8 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
     strcpy( dlg_hdr.text, "\"\"" );
     // process next lines
     my_fgets( line, max_len, fi );
-    while(( *line != '\0' ) && ( strstr( line, "BEGIN" ) == NULL )) {
+    while( ( *line != '\0' )
+      && ( strstr( line, "BEGIN" ) == NULL ) ) {
         strcpy( buff1, line );
         strtok( buff1, separators );
         if( strstr( line, "STYLE" ) != NULL ) {
@@ -1049,7 +1061,8 @@ int main( int argc, char *argv[] )
             }
         }
         p = "";
-        while( !feof( fi ) && strcmp( p, "END" ) ) {
+        while( !feof( fi )
+          && strcmp( p, "END" ) ) {
             while( my_fgets( buff1, MAX_LINE_LEN, fi ) != NULL ) {
                 if( check_statement( buff1 ) )
                     break;
