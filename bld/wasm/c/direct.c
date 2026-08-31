@@ -1393,7 +1393,7 @@ static seg_type ClassNameType( const char *name )
             return( SEGTYPE_ISCODE );
         }
     }
-    slen = get_ucase_name( uname, sizeof( uname ), name, 0 )
+    slen = get_ucase_name( uname, sizeof( uname ), name, 0 );
     if( slen < 3 ) {
         return( SEGTYPE_UNDEF );
     }
@@ -1436,7 +1436,7 @@ static seg_type SegmentNameType( const char *name )
     size_t          slen;
     char            uname[257];
 
-    slen = get_ucase_name( uname, sizeof( uname ), name, 0 )
+    slen = get_ucase_name( uname, sizeof( uname ), name, 0 );
     if( slen < 4 ) {
         return( SEGTYPE_UNDEF );
     }

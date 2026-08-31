@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "asmglob.h"
 #include "asmalloc.h"
 #include "directiv.h"

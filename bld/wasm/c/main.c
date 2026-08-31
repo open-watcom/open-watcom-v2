@@ -48,6 +48,7 @@
 #include "cmdlnprs.gh"
 #include "cmdlnprs.h"
 #include "cmdscan.h"
+#include "mangle.h"
 
 #include "clibint.h"
 #include "clibext.h"
@@ -221,7 +222,7 @@ static char *SetTargetNameBT( char *target_name, OPT_STRING **bt_value )
     char            *p;
 
     if( target_name != NULL ) {
-        CMemFree( target_name );
+        MemFree( target_name );
     }
     target_name = p = SetStringOption( NULL, bt_value );
     while( (c = *(unsigned char *)p) != '\0' ) {
@@ -519,7 +520,7 @@ static bool scanMode( unsigned *p )
 
     CmdRecogEquals();
     len = CmdScanId( &str );
-    len = get_ucase_name( buff, sizeof( buff ), str, len )
+    len = get_ucase_name( buff, sizeof( buff ), str, len );
     if( strcmp( buff, "MASM5" ) == 0 ) {
 #if 0
         *p = MODE_MASM5;
