@@ -377,7 +377,7 @@ void convert_parm_table( char *keyword, char *parms[], control_type control, int
         if( strcmp( str, win_tab[i] ) == 0 ) {
             if( ( win_tab == control_style_win )
               && !check_control_style( i, control ) ) {
-                *(parms[parm_idx]) = '\0';
+                *parms[parm_idx] = '\0';
             } else {
                 strcpy( parms[parm_idx], os2_tab[i] );
             }
@@ -400,7 +400,7 @@ control_type process_parms( char *parms[], int parms_cnt, char **win_tab,
 
     retval = 0;
     for( i = 0; i < parms_cnt; ++i ) {
-        if( *(parms[i]) != '\0' ) {
+        if( *parms[i] != '\0' ) {
             p = strcpy( buff1, parms[i] );
             if( win_tab != font_win ) {
                 while( (c = *(unsigned char *)p) != '\0' ) {
@@ -436,17 +436,17 @@ void add_parms_item( char *parms[], char *str, int after )
 
     if( after ) {
         for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-            if( *(parms[i]) == '\0' ) {
+            if( *parms[i] == '\0' ) {
                 strcpy( parms[i], str );
                 return;
             }
         }
         fprintf( stderr, "Error - number of the internal parameter overflow!\n" );
     } else {
-        if( *(parms[MAX_STMT_PARMS - 1]) != '\0' )
+        if( *parms[MAX_STMT_PARMS - 1] != '\0' )
             fprintf( stderr, "Error - number of the internal parameter overflow!\n" );
         for( i = MAX_STMT_PARMS - 1; i; --i ) {
-            if( *(parms[i - 1]) != '\0' ) {
+            if( *parms[i - 1] != '\0' ) {
                 strcpy( parms[i], parms[i - 1] );
             }
         }
@@ -462,7 +462,7 @@ void add_parms_list( statement *stmt, char *separators, int flag )
 
     if( flag ) {
         for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-            if( *(stmt->parms[i]) == '\0' ) {
+            if( *stmt->parms[i] == '\0' ) {
                 break;
             }
         }
@@ -472,7 +472,7 @@ void add_parms_list( statement *stmt, char *separators, int flag )
         if( p == NULL ) {
             if( flag )
                 break;
-            *(stmt->parms[i]) = '\0';
+            *stmt->parms[i] = '\0';
         } else {
             strcpy( stmt->parms[i], p );
         }
@@ -499,9 +499,9 @@ void remove_parms_item( char *parms[], char *str )
     int i;
 
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-        if( *(parms[i]) != '\0' ) {
+        if( *parms[i] != '\0' ) {
             if( strcmp( parms[i], str ) == 0 ) {
-                *(parms[i]) = '\0';
+                *parms[i] = '\0';
                 return;
             }
         }
@@ -590,35 +590,47 @@ void process_style( char *parms[], char *str )
             CTRL_TYPE_CNT, 0, convert_parm_table, NULL );
         free( ptr );
         if( control == T_COMBOBOX ) {
-            if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_DROPDOWNLIST" ) ) {
-                if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_OWNERDRAW" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
+                    control_class_os2, CTRL_NAME_CNT, control, check_parm_item,
+                    "CBS_DROPDOWNLIST" ) ) {
+                if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
+                        control_class_os2, CTRL_NAME_CNT, control,
+                        check_parm_item, "CBS_OWNERDRAW" ) ) {
                     strcpy( str, "CONTROL" );
                     add_parms_item( parms, "\"watcombo\"", ADD_BEFORE );
                 }
             }
         } else if( control == T_CONTROL ) {
-            if( process_parms( parms, MAX_STMT_PARMS, style_win[control], style_os2[control], style_cnt[control], control, check_parm_item, "BS_GROUPBOX" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, style_win[control],
+                    style_os2[control], style_cnt[control], control,
+                    check_parm_item, "BS_GROUPBOX" ) ) {
                 strcpy( str, "GROUPBOX" );
                 control = T_GROUPBOX;
                 for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-                    *(parms[i]) = '\0';
+                    *parms[i] = '\0';
                 }
             }
         }
-        process_parms( parms, MAX_STMT_PARMS, style_win[control], style_os2[control],
-            style_cnt[control], control, convert_parm_table, NULL );
+        process_parms( parms, MAX_STMT_PARMS, style_win[control],
+            style_os2[control], style_cnt[control], control, convert_parm_table, NULL );
         if( control == T_CONTROL ) {
             process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
                 CTRL_NAME_CNT, control, convert_parm_table, NULL );
-            if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "WC_STATIC" ) ) {
-                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "SS_" ) ) {
+            if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
+                    control_class_os2, CTRL_NAME_CNT, control, check_parm_item,
+                    "WC_STATIC" ) ) {
+                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win,
+                        control_class_os2, CTRL_NAME_CNT, control, check_parm_item,
+                        "SS_" ) ) {
                     add_parms_item( parms, "SS_GROUPBOX", ADD_AFTER );
                 }
             }
         } else {
-            process_parms( parms, MAX_STMT_PARMS, control_style_win, control_style_os2, CTRL_STYLE_CNT, control, convert_parm_table, NULL );
+            process_parms( parms, MAX_STMT_PARMS, control_style_win, control_style_os2,
+                CTRL_STYLE_CNT, control, convert_parm_table, NULL );
         }
-        if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "WS_VISIBLE" ) ) {
+        if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
+          CTRL_NAME_CNT, control, check_parm_item, "WS_VISIBLE" ) ) {
             add_parms_item( parms, "WS_VISIBLE", ADD_AFTER );
         }
     }
@@ -946,7 +958,7 @@ void alloc_statement( statement *stmt )
 
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         stmt->parms[i] = malloc( MAX_PARM_LEN );
-        *(stmt->parms[i]) = '\0';
+        *stmt->parms[i] = '\0';
     }
 }
 
