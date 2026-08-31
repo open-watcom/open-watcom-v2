@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +33,7 @@
 
 #include "vi.h"
 #include "posix.h"
+#include <ctype.h>
 #include <fcntl.h>
 #include <errno.h>
 #if defined( __UNIX__ ) || defined( __WATCOMC__ )
@@ -236,10 +237,14 @@ void GetFromEnv( const char *what, char *path )
  */
 void FileLower( char *str )
 {
-#ifndef __UNIX__
-    strlwr( str );
-#else
+#ifdef __UNIX__
     /* unused parameters */ (void)str;
+#else
+    int             c;
+
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = (char)tolower( c );
+    }
 #endif
 
 } /* FileLower */

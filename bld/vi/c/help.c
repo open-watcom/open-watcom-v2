@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -122,6 +122,8 @@ vi_rc DoHelp( const char *data )
     char        path[_MAX_PATH];
     char        tmp[MAX_STR];
     int         i;
+    char        *p;
+    int         c;
 
     token = Tokenize( HelpCmdTokens, data, false );
     if( token == TOK_INVALID ) {
@@ -152,8 +154,10 @@ vi_rc DoHelp( const char *data )
         return( rc );
     }
     tstr = GetTokenString( HelpCmdTokens, token );
-    strcpy( tmp, tstr );
-    strlwr( tmp );
+    p = strcpy( tmp, tstr );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     strcat( tmp, " Help" );
     tmp[0] = toupper( tmp[0] );
     CurrentFile->read_only = false;

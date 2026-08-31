@@ -321,6 +321,10 @@ static void processFileList( const char *fullmask )
     char                mask[_MAX_PATH];
     pgroup2             pg1;
     pgroup2             pg2;
+#ifndef __UNIX__
+    char                *p;
+    int                 c;
+#endif
 
     has_wild = false;
     for( tmp = fullmask; *tmp != '\0'; tmp++ ) {
@@ -346,7 +350,10 @@ static void processFileList( const char *fullmask )
             _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, &pg2.fname, &pg2.ext );
             _makepath( fullname, pg1.drive, pg1.dir, pg2.fname, pg2.ext );
 #ifndef __UNIX__
-            strlwr( fullname );
+            p = fullname;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = (char)tolower( c );
+            }
 #endif
             processFile( fullname );
         }

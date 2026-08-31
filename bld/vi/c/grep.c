@@ -91,22 +91,26 @@ static bool         isFgrep, caseIgn;
 vi_rc DoFGREP( const char *dirlist, const char *string, bool ci )
 {
     char        table[256];
-    int         i;
+    int         c;
     vi_rc       rc;
+    char        *p;
 
     origString = string;
     searchString = MemStrdupSafe( string );
     isFgrep = true;
     caseIgn = ci;
-    for( i = 0; i < sizeof( table ); i++ ) {
-        table[i] = i;
+    for( c = 0; c < sizeof( table ); c++ ) {
+        table[c] = c;
     }
     cTable = table;
     if( ci ) {
-        for( i = 'A'; i <= 'Z'; i++) {
-            table[i] = i - 'A' + 'a';
+        for( c = 'A'; c <= 'Z'; c++) {
+            table[c] = c - 'A' + 'a';
         }
-        strlwr( searchString );
+        p = searchString;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
     }
     rc = doGREP( dirlist );
     MemFree( searchString );

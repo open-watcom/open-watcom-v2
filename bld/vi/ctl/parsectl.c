@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -112,13 +112,15 @@ static bool empty_data( char *str )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    FILE                *in;
-    FILE                *out;
-    char                buf[MAX_LINE_LEN];
-    int                 elt;
-    char                *end;
-    char                *line;
-    char                type[50];
+    FILE            *in;
+    FILE            *out;
+    char            buf[MAX_LINE_LEN];
+    int             elt;
+    char            *end;
+    char            *line;
+    char            type[50];
+    char            *p;
+    int             c;
 
     if( argc != 4 ) {
         printf( "FORMAT: parsectl [input file] [output file] [Ctl data name]\n" );
@@ -173,7 +175,11 @@ int main( int argc, char *argv[] )
             goto error;
         }
         if( !empty_data( line ) ) {
-            fprintf( out,  "            %s            d1;\n", my_strlwr( type ) );
+            p = type;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = (char)tolower( c );
+            }
+            fprintf( out,  "            %s            d1;\n", type );
         }
         fputs( "            ctl_info      d2;\n", out );
         fputs( "        } d3;\n", out );
@@ -190,7 +196,11 @@ int main( int argc, char *argv[] )
         end = strpbrk( line, WS_delims );
         if( end != NULL ) {
             *end++ = '\0';
-            fprintf( out, "{ %s, %s, false,", my_strupr( line ), end );
+            p = line;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = (char)toupper( c );
+            }
+            fprintf( out, "{ %s, %s, false,", line, end );
         }
 
         line = get_line( buf, sizeof( buf ), in );

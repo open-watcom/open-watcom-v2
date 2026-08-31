@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +51,9 @@ extern void Lead( char c, int num, char *buff );
 bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
 {
     const char  *src;
-    char        *dst, c;
-    int         no, len;
+    char        *dst;
+    int         no;
+    int         len;
     bool        splitit = false;
     bool        upper_flag = false;
     bool        lower_flag = false;
@@ -61,13 +62,14 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
     char        buff[MAX_STR];
     int         i, j;
     linenum     ll;
-
+    char        *p;
+    int         c;
 
     tmp = StaticAlloc();
 
     src = source;
     dst = dest;
-    while( (c = *src++) != '\0' ) {
+    while( (c = (unsigned char)*src++) != '\0' ) {
         if( c == '&' ) {
             no = 0;
         } else if( c == '\\'
@@ -133,8 +135,8 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
                     break;
                 case '\\':
                 case '&':
-                    c = *src++;
-                    *dst++ = c;
+                    c = (unsigned char)*src++;
+                    *dst++ = (char)c;
                     break;
                 case 'u':
                     src++;
@@ -180,7 +182,7 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
                         lower_flag = false;
                     }
                 }
-                *dst++ = c;
+                *dst++ = (char)c;
             }
         /*
          * copy in a sub expression
@@ -189,14 +191,20 @@ bool RegSub( regexp *prog, const char *source, char *dest, linenum lineno )
           && prog->endp[no] != NULL ) {
             len = prog->endp[no] - prog->startp[no];
             if( upper_flag ) {
-                strcpy( tmp, prog->startp[no] );
-                strncpy( dst, strupr( tmp ), len );
+                p = strcpy( tmp, prog->startp[no] );
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = (char)toupper( c );
+                }
+                strncpy( dst, tmp, len );
                 if( !perm_flag ) {
                     upper_flag = false;
                 }
             } else if( lower_flag ) {
-                strcpy( tmp, prog->startp[no] );
-                strncpy( dst, strlwr( tmp ), len );
+                p = strcpy( tmp, prog->startp[no] );
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = (char)tolower( c );
+                }
+                strncpy( dst, tmp, len );
                 if( !perm_flag ) {
                     lower_flag = false;
                 }
