@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +34,7 @@
 #include <setjmp.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "wdglb.h"
 #include "wdfunc.h"
 #include "pathgrp2.h"
@@ -271,9 +272,14 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off, unsigned_32 
     size_t          i;
     unsigned_32     export_rva;
     pgroup2         pg;
+    char            *p;
+    int             c;
 
     _splitpath2( Name, pg.buffer, NULL, NULL, &pg.fname, NULL );
-    strupr( pg.fname );
+    p = pg.fname;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
     Wlseek( nam_off );
     addr_size = num_ptr * sizeof( unsigned_32 );
     nam_addr = Wmalloc( addr_size );
