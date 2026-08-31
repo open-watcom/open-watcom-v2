@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -239,12 +239,15 @@ int check_statement( char *str )
     char    buff1[ MAX_LINE_LEN ];
     char    *p;
     int     i;
+    int     c;
 
     if( *str != '\0' ) {
         while( isspace( *str ) )
             ++str;
-        strcpy( buff1, str );
-        strupr( buff1 );
+        p = strcpy( buff1, str );
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)toupper( c );
+        }
         p = strtok( buff1, " \t," );
         for( i = 0; i < CTRL_TYPE_CNT; i++ ) {
             if( strcmp( p, control_type_win[ i ] ) == 0 ) {
@@ -379,13 +382,18 @@ control_type process_parms( char *parms[], int parms_cnt, char **win_tab,
     int     i;
     int     retval;
     char    buff1[ MAX_LINE_LEN ];
+    char    *p;
+    int     c;
 
     retval = 0;
     for( i = 0; i < parms_cnt; ++i ) {
         if( *(parms[ i ]) != '\0' ) {
-            strcpy( buff1, parms[ i ] );
-            if( win_tab != font_win )
-                strupr( buff1 );
+            p = strcpy( buff1, parms[ i ] );
+            if( win_tab != font_win ) {
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = (char)toupper( c );
+                }
+            }
             fn( keyword, parms, control, i, tab_cnt, buff1, win_tab, os2_tab, &retval );
         }
     }
