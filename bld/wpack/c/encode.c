@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -810,6 +810,8 @@ int Encode( arccmd *cmd )
     file_info **    filedata;       // block of file infos from old archive.
     char            tmpfile[ L_tmpnam ];    // pass1 info temp file name;
     char            runfile[ L_tmpnam ];    // run length temp file name;
+    char            *p;
+    int             c;
 
     if( cmd->files == NULL  ||  cmd->files->filename == NULL ) {
         Error( -1, "No files to pack\n" );
@@ -844,7 +846,10 @@ int Encode( arccmd *cmd )
     for( currname = cmd->files; currname->filename != NULL; currname++ ) {
         FlushRead();
         if( !(cmd->flags & PRESERVE_FNAME_CASE) ) {
-            strlwr( currname->filename );
+            p = currname->filename;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = (char)tolower( c );
+            }
         }
         infile = QOpenR( currname->filename );
         if( infile == -1 ) {
