@@ -68,10 +68,12 @@ static  void    print_total( int cnt, int icnt )
 /*  Add and/or count GMLtag                                                */
 /***************************************************************************/
 
-void add_GML_tag_research( char * tag )
+void add_GML_tag_research( char *tag )
 {
-    taglist *   wk;
-    taglist *   new;
+    taglist     *wk;
+    taglist     *new;
+    char        *p;
+    int         c;
 
     if( ProcFlags.layout ) {
         wk = lay_tags;
@@ -101,8 +103,10 @@ void add_GML_tag_research( char * tag )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy( new->tagname, tag );
-    strupr( new->tagname );
+    p = strcpy( new->tagname, tag );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
     new->count = 1;
 }
 
@@ -173,6 +177,8 @@ void    add_SCR_tag_research( char * tag )
 {
     taglist     *wk;
     taglist     *new;
+    char        *p;
+    int         c;
 
     for( wk = scrkws; wk != NULL; wk = wk->nxt ) {
         if( stricmp( tag, wk->tagname ) == 0 ) {
@@ -190,8 +196,10 @@ void    add_SCR_tag_research( char * tag )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy( new->tagname, tag );
-    strlwr( new->tagname );
+    p = strcpy( new->tagname, tag );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     new->count = 1;
 }
 
@@ -244,6 +252,8 @@ void    add_multi_func_research( const char *fun )
 {
     taglist     *wk;
     taglist     *new;
+    char        *p;
+    int         c;
 
     for( wk = multi_funcs; wk != NULL; wk = wk->nxt ) {
         if( stricmp( fun, wk->tagname ) == 0 ) {
@@ -261,8 +271,10 @@ void    add_multi_func_research( const char *fun )
         wk->nxt = new;
     }
     new->nxt = NULL;
-    strcpy( new->tagname, fun );
-    strlwr( new->tagname );
+    p = strcpy( new->tagname, fun );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     new->count = 1;
 }
 

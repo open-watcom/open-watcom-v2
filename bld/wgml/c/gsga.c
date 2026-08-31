@@ -265,6 +265,8 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
     condcode        cc;
     getnum_block    gn;
     int             k;
+    char            *p;
+    int             c;
 
     if( cca == CC_omit ) {
         return( cca );                  // no more parms
@@ -393,7 +395,10 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     strncpy( stringval, g_tok_start, arg_flen );
                     stringval[arg_flen] = '\0';
                     if( *att_flags & GAFLG_upper ) {
-                        strupr( stringval );
+                        p = stringval;
+                        while( (c = *(unsigned char *)p) != '\0' ) {
+                            *p++ = (char)toupper( c );
+                        }
                     }
                  } else {
 #if 1
@@ -403,7 +408,10 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     *val_flags |= GAVAL_valptr;
                     valptr = MemToStringSafe( g_tok_start, arg_flen );
                     if( *att_flags & GAFLG_upper ) {
-                        strupr( valptr );
+                        p = valptr;
+                        while( (c = *(unsigned char *)p) != '\0' ) {
+                            *p++ = (char)toupper( c );
+                        }
                     }
 #endif
                  }

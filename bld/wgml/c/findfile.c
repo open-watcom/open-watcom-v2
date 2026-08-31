@@ -128,6 +128,8 @@ static FILE *try_open( char *prefix, char *filename )
     FILE        *fp;
     char        buff[_MAX_PATH];
     unsigned    filename_length;
+    int         c;
+    char        *p;
 
     /* Prevent buffer overflow. */
 
@@ -151,12 +153,18 @@ static FILE *try_open( char *prefix, char *filename )
     fp = fopen( buff, "rb" );
 #if defined( __UNIX__ )
     if( fp == NULL ) {
-        strlwr( buff );                 // for the sake of linux try again with lower case filename
+        p = buff;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
         fp = fopen( buff, "rb" );
     }
 #else       // DOS, OS/2, Windows
     if( fp != NULL ) {
-        strlwr( buff );                 // to match wgml 4.0
+        p = buff;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = (char)tolower( c );
+        }
     }
 #endif
 
@@ -453,11 +461,17 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                     pg.ext = "COP";
                 }
                 _makepath( primary_file, NULL, NULL, member_name, pg.ext );
-                strlwr( primary_file );
+                p = primary_file;
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = (char)tolower( c );
+                }
                 fp = try_open( dir_name, primary_file );
 #ifdef __UNIX__
                 if( fp == NULL ) {
-                    strupr( primary_file );
+                    p = primary_file;
+                    while( (c = *(unsigned char *)p) != '\0' ) {
+                        *p++ = (char)toupper( c );
+                    }
                     fp = try_open( dir_name, primary_file );
                 }
 #endif

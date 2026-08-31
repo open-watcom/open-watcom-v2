@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -487,13 +487,17 @@ static void display_font( cop_font * in_font )
 
 static cop_device * get_cop_device( char const * in_name )
 {
-    cop_device      *   out_device  = NULL;
-    cop_file_type       file_type;
+    cop_device      *out_device  = NULL;
+    cop_file_type   file_type;
 #if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
+    char            fname[_MAX_PATH];
+    char            *p;
+    int             c;
 
-    strcpy( fname, in_name );
-    strlwr( fname );
+    p = strcpy( fname, in_name );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     in_name = fname;
 #endif
 
@@ -565,13 +569,17 @@ static cop_device * get_cop_device( char const * in_name )
 
 static cop_driver * get_cop_driver( char const * in_name )
 {
-    cop_driver      *   out_driver  = NULL;
-    cop_file_type       file_type;
+    cop_driver      *out_driver  = NULL;
+    cop_file_type   file_type;
 #if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
+    char            fname[_MAX_PATH];
+    char            *p;
+    int             c;
 
-    strcpy( fname, in_name );
-    strlwr( fname );
+    p = strcpy( fname, in_name );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
     in_name = fname;
 #endif
 
@@ -643,13 +651,17 @@ static cop_driver * get_cop_driver( char const * in_name )
 
 static cop_font * get_cop_font( char const * in_name )
 {
-    cop_font        *   out_font    = NULL;
-    cop_file_type       file_type;
+    cop_font        *out_font = NULL;
+    cop_file_type   file_type;
 #if defined( __UNIX__ )
-    char                fname[_MAX_PATH];
+    char            fname[_MAX_PATH];
+    char            *p;
+    int             c;
 
-    strcpy( fname, in_name );
-    strlwr( fname );
+    p = strcpy( fname, in_name );
+    while( (c = *(unsigned char *)str) != '\0' ) {
+        *str++ = (char)tolower( c );
+    }
     in_name = fname;
 #endif
 

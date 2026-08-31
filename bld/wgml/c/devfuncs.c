@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -2032,6 +2033,8 @@ static void *df_lower( void )
 {
     char            *first;
     parameters      my_parameters;
+    char            *p;
+    int             c;
 
     /* Extract parameter offset. */
 
@@ -2043,7 +2046,11 @@ static void *df_lower( void )
 
     /* Convert and return the parameter. */
 
-    return( (void *)strlwr( first ) );
+    p = first;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)tolower( c );
+    }
+    return( (void *)first );
 }
 
 /* Function df_remainder().
