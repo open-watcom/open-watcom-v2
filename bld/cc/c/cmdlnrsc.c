@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,9 +74,7 @@ static char *setTargetSystem( OPT_STORAGE *data )
     char *target_name = NULL;
 
     if( data->bt ) {
-        char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetName( &target_name, strupr( target ) );
-        CMemFree( target );
+        SetTargetNameBT( &target_name, &(data->bt_value) );
     }
 
     if( target_name == NULL ) {

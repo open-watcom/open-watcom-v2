@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,5 +41,6 @@ extern void CmdSysAnalyse( OPT_STORAGE * );
 // defined in coptions.c
 extern char *SetStringOption( char **, OPT_STRING ** );
 extern void SetTargetName( char **, const char * );
+extern void SetTargetNameBT( char **target_name, OPT_STRING **bt_value );
 extern bool MergeIncludeFromEnv( const char * );
 extern void DefSwitchMacro( const char * );

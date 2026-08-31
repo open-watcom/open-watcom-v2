@@ -392,6 +392,21 @@ void SetTargetName( char **target_name, const char *name )
     *target_name = CMemStrdup( name );
 }
 
+void SetTargetNameBT( char **target_name, OPT_STRING **bt_value )
+/***************************************************************/
+{
+    char            *p;
+    int             c;
+
+    if( *target_name != NULL ) {
+        CMemFree( *target_name );
+    }
+    *target_name = p = SetStringOption( NULL, bt_value );
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
+}
+
 static void AnalyseAnyTargetOptions( OPT_STORAGE *data )
 /******************************************************/
 {

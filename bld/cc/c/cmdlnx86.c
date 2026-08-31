@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -95,9 +95,7 @@ static char *setTargetSystem( OPT_STORAGE *data )
      * -bt specify a build target name
      */
     if( data->bt ) {
-        char *target = SetStringOption( NULL, &(data->bt_value) );
-        SetTargetName( &target_name, strupr( target ) );
-        CMemFree( target );
+        SetTargetNameBT( &target_name, &(data->bt_value) );
     }
     /*
      * -zw overrides a build target name and setting
@@ -681,8 +679,7 @@ static void PreDefine_UMIX86_Macro( void )
     case CPU_486:       cpu = 400; break;
     case CPU_586:       cpu = 500; break;
     case CPU_686:       cpu = 600; break;
-    default:
-        return;
+    default:            cpu = 0;   break;
     }
     sprintf( buff, "_M_IX86=%u", cpu );
     PreDefine_Macro( buff );
