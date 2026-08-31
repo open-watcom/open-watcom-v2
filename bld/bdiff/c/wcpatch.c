@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <ctype.h>
 #include "bdiff.h"
 #include "wdirent.h"
 #include "diff.h"
@@ -60,17 +61,24 @@ static int cmpStrings( const void *op1, const void *op2 )
 static void DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] )
 {
     struct dirent   *dire;
-    int             file = 0;
-    int             dir  = 0;
+    int             file;
+    int             dir;
     char            *diritem;
+    size_t          len;
+    size_t          i;
 
+    file = 0;
+    dir = 0;
     for( ; (dire = readdir( dirp )) != NULL; ) {
         if( SKIP_ENTRY( dire ) )
             continue;
-        diritem = (char *)bdiff_malloc( strlen( dire->d_name ) + 1 );
-        strcpy( diritem, dire->d_name );
-        strlwr( diritem );
-        if( ( dire->d_attr & _A_SUBDIR ) == 0 ) {
+        len = strlen( dire->d_name );
+        diritem = (char *)bdiff_malloc( len + 1 );
+        for( i = 0; i < len; i++ ) {
+            diritem[i] = (char)tolower( (unsigned char)dire->d_name[i] );
+        }
+        diritem[i] = '\0';
+        if( (dire->d_attr & _A_SUBDIR) == 0 ) {
             /* must be a file */
             Files[file++] = diritem;
             if( file >= 1000 ) {
