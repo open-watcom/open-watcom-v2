@@ -73,6 +73,8 @@ static void quit( char *msg )
 
 static void makeName( const char *original, const char *ext, char *target )
 {
+    int             c;
+
     getcwd( path, _MAX_PATH );
     strcat( path, "\\dummy.ext" );
     _splitpath2( original, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
@@ -87,7 +89,10 @@ static void makeName( const char *original, const char *ext, char *target )
         ext = pg1.ext;
     }
     _makepath( target, pg1.drive, pg1.dir, pg1.fname, ext );
-    strupr( target );
+    /* change to upper-case */
+    while( (c = *(unsigned char *)target) != '\0' ) {
+        *target++ = (char)toupper( c );
+    }
 }
 
 static void transferUpTo( fpos_t from, fpos_t to )

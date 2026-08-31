@@ -67,6 +67,7 @@ static void makeName( const char *original, const char *ext, char *target )
 {
     pgroup2     pg1;
     pgroup2     pg2;
+    int         c;
 
     getcwd( path, _MAX_PATH );
     strcat( path, "\\dummy.ext" );
@@ -82,7 +83,10 @@ static void makeName( const char *original, const char *ext, char *target )
         ext = pg1.ext;
     }
     _makepath( target, pg1.drive, pg1.dir, pg1.fname, ext );
-    strupr( target );
+    /* change to upper-case */
+    while( (c = *(unsigned char *)target) != '\0' ) {
+        *target++ = (char)toupper( c );
+    }
 }
 
 #if 0
