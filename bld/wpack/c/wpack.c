@@ -348,7 +348,7 @@ static int ProcessArgs( char **argv, arccmd *cmd )
 static void WriteNumber( unsigned long number, unsigned indent )
 /**************************************************************/
 {
-    char            numstr[ 11 ];
+    char            numstr[11];
 
     sprintf( numstr, "%lu", number );
     IndentLine( indent - strlen( numstr ) );
@@ -408,7 +408,7 @@ static void HandleError( arccmd *cmd )
 static int DeleteEntry( arccmd *cmd )
 /***********************************/
 {
-    char            tempname[ L_tmpnam ];
+    char            tempname[L_tmpnam];
     pgroup2         pg1;
     pgroup2         pg2;
     char            *tmpfname;
@@ -560,7 +560,7 @@ int main( int argc, char **argv )
     int     action;
     arccmd  cmd;
 
-    if (argc < 2) {
+    if( argc < 2 ) {
         Usage( false );
     } else {
         action = ProcessArgs( argv, &cmd );

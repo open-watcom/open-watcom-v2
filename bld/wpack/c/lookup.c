@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,9 @@
 #include "string.h"
 #include "txttable.h"
 
-static char *text_table[ TXT_LAST_TXT ];
+static char *text_table[TXT_LAST_TXT];
 
-#define DEF_MSG( txt_num, text )  text_table[ txt_num ] = text
+#define DEF_MSG( txt_num, text )  text_table[txt_num] = text
 
 void SetupTextTable()
 //===================
@@ -50,5 +51,5 @@ char *LookupText( char *destination, unsigned text_num )
 {
     destination = destination;  //only used in projects that use forms
 
-    return( text_table[ text_num ] );
+    return( text_table[text_num] );
 }

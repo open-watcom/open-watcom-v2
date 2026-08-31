@@ -54,7 +54,7 @@ typedef struct runlist {
 // the code array is also used to keep track of the frequency in the first
 // pass through encoding the information
 
-unsigned                code[ NUM_CHARS ];     // the code value for each char
+unsigned                code[NUM_CHARS];     // the code value for each char
 unsigned long           codesize;
 
 static int              match_position, match_length;
@@ -108,10 +108,10 @@ static void InitTree( void )  /* Initializing tree */
 {
     int  i;
 
-    for (i = STRBUF_SIZE + 1; i <= STRBUF_SIZE + 256; i++) {
+    for( i = STRBUF_SIZE + 1; i <= STRBUF_SIZE + 256; i++ ) {
         rson[i] = NIL;            /* root */
     }
-    for (i = 0; i < STRBUF_SIZE; i++) {
+    for( i = 0; i < STRBUF_SIZE; i++ ) {
         dad[i] = NIL;            /* node */
     }
 }
@@ -128,19 +128,19 @@ static void InsertNode(int r)  /* Inserting node to the tree */
     p = STRBUF_SIZE + 1 + key[0];
     rson[r] = lson[r] = NIL;
     match_length = 0;
-    for ( ; ; ) {
-        if (cmp >= 0) {
-            if (rson[p] != NIL)
+    for( ;; ) {
+        if( cmp >= 0 ) {
+            if( rson[p] != NIL ) {
                 p = rson[p];
-            else {
+            } else {
                 rson[p] = r;
                 dad[r] = p;
                 return;
             }
         } else {
-            if (lson[p] != NIL)
+            if( lson[p] != NIL ) {
                 p = lson[p];
-            else {
+            } else {
                 lson[p] = r;
                 dad[r] = p;
                 return;
@@ -150,22 +150,22 @@ static void InsertNode(int r)  /* Inserting node to the tree */
 #if defined( __WATCOMC__ ) && defined( __386__ )
         i = fastcmp( key + 1, &text_buf[p + 1], &cmp ) + 1;
 #else
-        for (i = 1; i < LAHEAD_SIZE; i++) {
+        for( i = 1; i < LAHEAD_SIZE; i++ ) {
             if( key[i] != text_buf[p + i] ) {
                 cmp = key[i] - text_buf[p + i];
                 break;
             }
         }
 #endif
-        if (i > THRESHOLD) {
-            if (i > match_length) {
+        if( i > THRESHOLD ) {
+            if( i > match_length ) {
                 match_position = ((r - p) & (STRBUF_SIZE - 1)) - 1;
-                if ((match_length = i) >= LAHEAD_SIZE) {
+                if( (match_length = i) >= LAHEAD_SIZE ) {
                     break;
                 }
             }
-            if (i == match_length) {
-                if ((c = ((r - p) & (STRBUF_SIZE - 1)) - 1) < match_position) {
+            if( i == match_length ) {
+                if( (c = ((r - p) & (STRBUF_SIZE - 1)) - 1) < match_position ) {
                     match_position = c;
                 }
             }
@@ -176,10 +176,11 @@ static void InsertNode(int r)  /* Inserting node to the tree */
     rson[r] = rson[p];
     dad[lson[p]] = r;
     dad[rson[p]] = r;
-    if (rson[dad[p]] == p)
+    if( rson[dad[p]] == p ) {
         rson[dad[p]] = r;
-    else
+    } else {
         lson[dad[p]] = r;
+    }
     dad[p] = NIL;  /* remove p */
 }
 
@@ -188,32 +189,34 @@ static void DeleteNode(int p)  /* Deleting node from the tree */
 {
     int  q;
 
-    if (dad[p] == NIL)
+    if( dad[p] == NIL )
         return;            /* unregistered */
-    if (rson[p] == NIL)
+    if( rson[p] == NIL ) {
         q = lson[p];
-    else
-    if (lson[p] == NIL)
-        q = rson[p];
-    else {
-        q = lson[p];
-        if (rson[q] != NIL) {
-            do {
-                q = rson[q];
-            } while (rson[q] != NIL);
-            rson[dad[q]] = lson[q];
-            dad[lson[q]] = dad[q];
-            lson[q] = lson[p];
-            dad[lson[p]] = q;
+    } else {
+        if( lson[p] == NIL ) {
+            q = rson[p];
+        } else {
+            q = lson[p];
+            if( rson[q] != NIL ) {
+                do {
+                    q = rson[q];
+                } while( rson[q] != NIL );
+                rson[dad[q]] = lson[q];
+                dad[lson[q]] = dad[q];
+                lson[q] = lson[p];
+                dad[lson[p]] = q;
+            }
+            rson[q] = rson[p];
+            dad[rson[p]] = q;
         }
-        rson[q] = rson[p];
-        dad[rson[p]] = q;
     }
     dad[q] = dad[p];
-    if (rson[dad[p]] == p)
+    if( rson[dad[p]] == p ) {
         rson[dad[p]] = q;
-    else
+    } else {
         lson[dad[p]] = q;
+    }
     dad[p] = NIL;
 }
 
@@ -250,7 +253,7 @@ static int CompLen( const void *_left, const void *_right )
     const int *left  = _left;
     const int *right = _right;
 
-    return( (int)len[ *left ] - (int)len[ *right ] );
+    return( (int)len[*left] - (int)len[*right] );
 }
 
 static void SortLengths( int num )
@@ -270,7 +273,7 @@ static bool AssignCodes( int num, arccmd *cmd )
     int         index;
 
     SortLengths( num );
-    if( len[ indicies[ num - 1 ] ] > MAX_CODE_BITS ) {
+    if( len[indicies[num - 1]] > MAX_CODE_BITS ) {
         if( !(cmd->flags & BE_QUIET) ) {
             WriteMsg( "Can't do shannon-fano compression: code length too long\n" );
         }
@@ -282,11 +285,11 @@ static bool AssignCodes( int num, arccmd *cmd )
     lastlen = 0;
     for( index = num - 1; index >= 0; index -- ) {
         codeval += codeinc;
-        if( len[ indicies[ index ] ] != lastlen ) {
-            lastlen = len[ indicies[ index ] ];
+        if( len[indicies[index]] != lastlen ) {
+            lastlen = len[indicies[index]];
             codeinc = 1 << (MAX_CODE_BITS - lastlen);
         }
-        code[ indicies[ index ] ] = codeval;
+        code[indicies[index]] = codeval;
     }
     return( true );
 }
@@ -298,9 +301,9 @@ static void Putcode(int l, unsigned c)        /* output c bits */
 /************************************/
 {
     putbuf |= c >> putlen;
-    if ((putlen += l) >= 8) {
+    if( (putlen += l) >= 8 ) {
         EncWriteByte( putbuf >> 8 );
-        if ((putlen -= 8) >= 8) {
+        if( (putlen -= 8) >= 8 ) {
             EncWriteByte( putbuf );
             codesize += 2;
             putlen -= 8;
@@ -329,7 +332,7 @@ static void EncodePosition( void )
 static void EncodeEnd( void )
 /***************************/
 {
-    if (putlen) {
+    if( putlen ) {
         EncWriteByte( putbuf >> 8 );
         codesize++;
     }
@@ -349,7 +352,7 @@ static void CalcLengths( unsigned long num, int start, int finish, byte tlen )
     subtotal = 0;
     index = start;
     for(;;) {
-        subtotal += code[ indicies[ index ] ];
+        subtotal += code[indicies[index]];
         if( subtotal >= num / 2 )
             break;
         if( index >= finish - 1 )
@@ -361,12 +364,12 @@ static void CalcLengths( unsigned long num, int start, int finish, byte tlen )
 
     tlen++;
     if( index == start ) {
-        len[ indicies[ index ] ] = tlen;
+        len[indicies[index]] = tlen;
     } else {
         CalcLengths( subtotal, start, index, tlen );
     }
     if( index >= finish - 1 ) {
-        len[ indicies[ finish ] ] = tlen;
+        len[indicies[finish]] = tlen;
     } else {
         CalcLengths( num - subtotal, index + 1, finish, tlen );
     }
@@ -439,12 +442,12 @@ static void WriteTmpByte( bool inliteral, unsigned c )
         WasLiteral = inliteral;
    }
     CurrRunLen++;
-    if( code[ c ] == 0xFFFF ) {
+    if( code[c] == 0xFFFF ) {
         for( index = 0; index < NUM_CHARS; index++ ) {
-            code[ index ] = (code[ index ] + 1) / 2;
+            code[index] = (code[index] + 1) / 2;
         }
     }
-    code[ c ]++;
+    code[c]++;
 }
 
 static void WriteCodes( void )
@@ -535,14 +538,14 @@ static void DoSecondPass( bool doshannon )
                 c = EncReadByte();
                 if( inliteral ) {
                     if( doshannon ) {
-                        Putcode( len[ c ], code[ c ] );
+                        Putcode( len[c], code[c] );
                     } else {
                         Putcode( 9, c << 7 );  /* 0 bit, then code word. */
                     }
                 } else {
                     if( doshannon ) {
                         c = 255 - THRESHOLD + c;
-                        Putcode( len[ c ], code[ c ] );
+                        Putcode( len[c], code[c] );
                     } else {
                         Putcode( 7, (c + 0x40) << 9 ); /* 1, then length */
                     }
@@ -579,22 +582,22 @@ static int DoEncode( arccmd *cmd )
     InitTree();
     s = 0;
     r = STRBUF_SIZE - LAHEAD_SIZE;
-    for (index = s; index < r; index++) {
+    for( index = s; index < r; index++ ) {
         text_buf[index] = ' ';
     }
-    for (num = 0; num < LAHEAD_SIZE && (c = EncReadByte(),IOStatus == OK); num++) {
+    for( num = 0; num < LAHEAD_SIZE && ( c = EncReadByte(), IOStatus == OK ); num++ ) {
         text_buf[r + num] = c;
     }
     if( IOStatus == IO_PROBLEM )
         return( -1 );
-    for (index = 1; index <= LAHEAD_SIZE; index++) {
+    for( index = 1; index <= LAHEAD_SIZE; index++ ) {
         InsertNode(r - index);
     }
     InsertNode(r);
     do {
-        if (match_length > num)
+        if( match_length > num )
             match_length = num;
-        if (match_length <= THRESHOLD) {
+        if( match_length <= THRESHOLD ) {
             match_length = 1;
             inliteral = true;
             currvalue = text_buf[r];
@@ -608,26 +611,28 @@ static int DoEncode( arccmd *cmd )
         }
         WriteTmpByte( inliteral, currvalue );
         last_match_length = match_length;
-        for (index = 0;
-             index < last_match_length && (c=EncReadByte(),IOStatus == OK);
-                                                                 index++ ) {
-            DeleteNode(s);
+        for( index = 0;
+             index < last_match_length && ( c = EncReadByte(), IOStatus == OK );
+             index++ ) {
+            DeleteNode( s );
             text_buf[s] = c;
-            if (s < LAHEAD_SIZE - 1)
+            if( s < LAHEAD_SIZE - 1 )
                 text_buf[s + STRBUF_SIZE] = c;
             s = (s + 1) & (STRBUF_SIZE - 1);
             r = (r + 1) & (STRBUF_SIZE - 1);
-            InsertNode(r);
+            InsertNode( r );
         }
         if( IOStatus == IO_PROBLEM )
             return( -1 );
-        while (index++ < last_match_length) {
-            DeleteNode(s);
+        while( index++ < last_match_length ) {
+            DeleteNode( s );
             s = (s + 1) & (STRBUF_SIZE - 1);
             r = (r + 1) & (STRBUF_SIZE - 1);
-            if (--num) InsertNode(r);
+            if( --num ) {
+                InsertNode( r );
+            }
         }
-    } while (num > 0);
+    } while( num > 0 );
     AddRunEntry();
     FlushWrite();
     RestoreBuffer( true );
@@ -637,10 +642,10 @@ static int DoEncode( arccmd *cmd )
     total = 0;
     uptr = code;
     for( index = 0; index < NUM_CHARS; index++ ) {
-        len[ index ] = 0;
+        len[index] = 0;
         if( *uptr != 0 ) {
             total += *uptr;
-            indicies[ num ] = index;
+            indicies[num] = index;
             num++;
         }
         uptr++;
@@ -724,7 +729,7 @@ static void MultiPack( arccmd *cmd, info_list *list )
     unsigned long   currspot;
     unsigned        entrylen;
     unsigned long   limit;
-    char            extension[ 4 ];
+    char            extension[4];
     char *          arcfname;
     info_list *     nextfile;
     arc_header      header;
@@ -808,8 +813,8 @@ int Encode( arccmd *cmd )
     info_list *     liststart;      // beginning of the info_list
     arc_header      header;         // archive main header.
     file_info **    filedata;       // block of file infos from old archive.
-    char            tmpfile[ L_tmpnam ];    // pass1 info temp file name;
-    char            runfile[ L_tmpnam ];    // run length temp file name;
+    char            tmpfile[L_tmpnam];    // pass1 info temp file name;
+    char            runfile[L_tmpnam];    // run length temp file name;
     char            *p;
     int             c;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,9 +55,9 @@
 
 
 unsigned short   MinCodeLen;
-unsigned short   MinVal[ MAX_CODE_BITS + 1];
-unsigned short   MapOffset[ MAX_CODE_BITS + 1];
-unsigned short   CharMap[ NUM_CHARS ];
+unsigned short   MinVal[MAX_CODE_BITS + 1];
+unsigned short   MapOffset[MAX_CODE_BITS + 1];
+unsigned short   CharMap[NUM_CHARS];
 
 /* decoder table */
 static uchar d_code[256] = {
@@ -225,8 +225,8 @@ static void MakeShannonTrie( void )
             entrynum = (entry >> 4) + 1;
             entrylen = (entry & 0xF) + 1;
             while( entrynum > 0 ) {
-                indicies[ num ] = curr;
-                len[ curr ] = entrylen;
+                indicies[num] = curr;
+                len[curr] = entrylen;
                 num++;
                 curr++;
                 entrynum--;
@@ -240,7 +240,7 @@ static void MakeShannonTrie( void )
 static int CompLen( const int *left, const int *right )
 /*****************************************************/
 {
-    return( (int)len[ *left ] - (int)len[ *right ] );
+    return( (int)len[*left] - (int)len[*right] );
 }
 
 
@@ -262,22 +262,22 @@ void AssignCodes( int num )
 
     SortLengths( num );
     for( index = 0; index <= MAX_CODE_BITS; index++ ) { // so lengths with no
-        MinVal[ index ] = 0xFFFF;                   // codes are never decoded
+        MinVal[index] = 0xFFFF;                   // codes are never decoded
     }
     codeval = 0;
     codeinc = 0;
     lastlen = 0;
     curroffset = 0;
-    MinCodeLen = len[ indicies[ 0 ] ];
+    MinCodeLen = len[indicies[0]];
     for( index = num - 1; index >= 0; index-- ) {
         codeval += codeinc;
-        if( len[ indicies[ index ] ] != lastlen ) {
-            lastlen = len[ indicies[ index ] ];
+        if( len[indicies[index]] != lastlen ) {
+            lastlen = len[indicies[index]];
             codeinc = 1 << (16 - lastlen);
-            MinVal[ lastlen ] = codeval;
-            MapOffset[ lastlen ] = curroffset;
+            MinVal[lastlen] = codeval;
+            MapOffset[lastlen] = curroffset;
         }
-        CharMap[ curroffset ] = indicies[ index ];
+        CharMap[curroffset] = indicies[index];
         curroffset++;
     }
 }
@@ -289,15 +289,16 @@ void NoShannonDecode( unsigned long textsize )
     int             i, j, k, r, c;
     unsigned long   count;
 
-    if (textsize == 0) return;
+    if( textsize == 0 )
+        return;
     getlen = 0;
     getbuf = 0;
     secondbuf = DecReadByte();
-    for (i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++) {
+    for( i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++ ) {
         text_buf[i] = ' ';
     }
     r = STRBUF_SIZE - LAHEAD_SIZE;
-    for (count = 0; count < textsize; ) {
+    for( count = 0; count < textsize; ) {
         if( getlen == 0 ) {
             getbuf = ((unsigned short)secondbuf << 8) | DecReadByte();
             getlen = 16;
@@ -312,7 +313,7 @@ void NoShannonDecode( unsigned long textsize )
             getlen -= 7;
             getbuf <<= 7;
             i = (r - DecodePosition() - 1) & (STRBUF_SIZE - 1);
-            for (k = 0; k < j; k++) {
+            for( k = 0; k < j; k++ ) {
                 c = text_buf[(i + k) & (STRBUF_SIZE - 1)];
                 text_buf[r++] = c;
                 DecWriteByte( c );
@@ -341,16 +342,17 @@ void DoDecode( unsigned long textsize )
     int             codelen;
     unsigned long   count;
 
-    if (textsize == 0) return;
+    if( textsize == 0 )
+        return;
     MakeShannonTrie();
     getlen = 0;
     getbuf = 0;
     secondbuf = DecReadByte();
-    for (i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++) {
+    for( i = 0; i < STRBUF_SIZE - LAHEAD_SIZE; i++ ) {
         text_buf[i] = ' ';
     }
     r = STRBUF_SIZE - LAHEAD_SIZE;
-    for (count = 0; count < textsize; ) {
+    for( count = 0; count < textsize; ) {
         if( getlen < 8 ) {
             getbuf |= (unsigned short)secondbuf << ( 8 - getlen );
             getlen += 8;
@@ -361,29 +363,29 @@ void DoDecode( unsigned long textsize )
         getbuf |= secondbuf >> spare;    // fill getbuf to 16 bits.
         codelen = MinCodeLen;
         for(;;) {
-            if( getbuf >= MinVal[ codelen ] )break;
+            if( getbuf >= MinVal[codelen] )break;
             codelen++;
         }
-        c = CharMap[ MapOffset[ codelen ] +
-                            ((getbuf - MinVal[ codelen ]) >> (16 - codelen)) ];
+        c = CharMap[MapOffset[codelen] +
+                            ((getbuf - MinVal[codelen]) >> (16 - codelen))];
         getbuf <<= codelen;
         getlen -= codelen;
         if( spare > codelen ) {
             getlen -= 8 - spare;
         } else {
-            getbuf |= (secondbuf & Mask[ spare ]) << (codelen - spare);
+            getbuf |= (secondbuf & Mask[spare]) << (codelen - spare);
             getlen += spare;
             secondbuf = DecReadByte();
         }
-        if (c < 256) {
-            DecWriteByte( c);
+        if( c < 256 ) {
+            DecWriteByte( c );
             text_buf[r++] = c;
             r &= (STRBUF_SIZE - 1);
             count++;
         } else {
             i = (r - DecodePosition() - 1) & (STRBUF_SIZE - 1);
             j = c - 255 + THRESHOLD;
-            for (k = 0; k < j; k++) {
+            for( k = 0; k < j; k++ ) {
                 c = text_buf[(i + k) & (STRBUF_SIZE - 1)];
                 text_buf[r++] = c;
                 DecWriteByte( c );
@@ -502,7 +504,7 @@ bool DecodeFile( file_info *info, arccmd *cmd )
             QClose( outfile );
             QSetDate( name, info->stamp );
             if( !CompareCRC( info->crc ) && info->length > 0 ) {
-                char msg[ 100 ];
+                char msg[100];
                 strcpy( msg, LookupText( NULL, TXT_WARN_FILE ) );
                 strcat( msg, " \'" );
                 strcat( msg, name );
