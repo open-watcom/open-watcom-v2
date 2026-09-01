@@ -47,7 +47,7 @@
     #endif
   #endif
   #if !defined( boolbit )
-    #ifdef _MSC_VER
+    #if defined( _MSC_VER ) && _MSC_VER < 1928
         #define boolbit     unsigned char
     #else
         #define boolbit     bool
