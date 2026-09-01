@@ -548,6 +548,8 @@ static void gml_hx_common( const gmltag *entry, hdlvl hn_lvl )
     char            hdrefid[REFID_LEN + 1];
     char            *p;
     char            *pa;
+    char            *p1;
+    int             c1;
     hdsrc           hds_lvl;
     hdlvl           hlvl;
     text_space      sav_spacing;
@@ -716,9 +718,15 @@ static void gml_hx_common( const gmltag *entry, hdlvl hn_lvl )
             /* Implement the case attribute */
 
             if( layout_work.hx.hx_head[hds_lvl].hd_case == case_lower ) {
-                strlwr( p );
+                p1 = p;
+                while( (c1 = *(unsigned char *)p1) != '\0' ) {
+                    *p1++ = my_tolower( c1 );
+                }
             } else if( layout_work.hx.hx_head[hds_lvl].hd_case == case_upper ) {
-                strupr( p );
+                p1 = p;
+                while( (c1 = *(unsigned char *)p1) != '\0' ) {
+                    *p1++ = my_toupper( c1 );
+                }
             }
         }
         if( ProcFlags.overprint

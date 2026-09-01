@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -90,7 +90,7 @@ static  condcode    get_vector_pos( parm parms[MAX_FUN_PARMS], unsigned parmcoun
     tok_type        haystack;
 #if 0
     int             start;
-    char                        casechar;
+    char            casechar;
 #endif
     int             rc;
     int             index;

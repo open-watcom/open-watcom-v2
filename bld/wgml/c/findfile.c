@@ -128,8 +128,8 @@ static FILE *try_open( char *prefix, char *filename )
     FILE        *fp;
     char        buff[_MAX_PATH];
     unsigned    filename_length;
-    int         c;
     char        *p;
+    int         c;
 
     /* Prevent buffer overflow. */
 
@@ -155,7 +155,7 @@ static FILE *try_open( char *prefix, char *filename )
     if( fp == NULL ) {
         p = buff;
         while( (c = *(unsigned char *)p) != '\0' ) {
-            *p++ = (char)tolower( c );
+            *p++ = my_tolower( c );
         }
         fp = fopen( buff, "rb" );
     }
@@ -163,7 +163,7 @@ static FILE *try_open( char *prefix, char *filename )
     if( fp != NULL ) {
         p = buff;
         while( (c = *(unsigned char *)p) != '\0' ) {
-            *p++ = (char)tolower( c );
+            *p++ = my_tolower( c );
         }
     }
 #endif
@@ -299,8 +299,8 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
     unsigned        member_length;
     pgroup2         pg;
     directory_list  *pd;
-    char            c;
     char            *p;
+    int             c;
     char            dir_name[_MAX_PATH];
     FILE            *fp;
 
@@ -463,14 +463,14 @@ FILE *search_file_in_dirs( const char *filename, const char *defext, const char 
                 _makepath( primary_file, NULL, NULL, member_name, pg.ext );
                 p = primary_file;
                 while( (c = *(unsigned char *)p) != '\0' ) {
-                    *p++ = (char)tolower( c );
+                    *p++ = my_tolower( c );
                 }
                 fp = try_open( dir_name, primary_file );
 #ifdef __UNIX__
                 if( fp == NULL ) {
                     p = primary_file;
                     while( (c = *(unsigned char *)p) != '\0' ) {
-                        *p++ = (char)toupper( c );
+                        *p++ = my_toupper( c );
                     }
                     fp = try_open( dir_name, primary_file );
                 }

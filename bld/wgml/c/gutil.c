@@ -757,6 +757,8 @@ char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
     char        a1;
     char        a2;
     char        charbase;
+    char        *p1;
+    int         c1;
 
 
     p = temp;
@@ -823,7 +825,10 @@ char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
         if( rp == NULL ) {
             return( NULL );             // field overflow
         }
-        strupr( p );
+        p1 = p;
+        while( (c1 = *(unsigned char *)p1) != '\0' ) {
+            *p1++ = my_toupper( c1 );
+        }
         pos1 = strlen( rp );
         p += pos1;
         break;

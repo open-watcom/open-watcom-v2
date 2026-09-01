@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -878,9 +878,9 @@ typedef struct tag_cb {
     uint8_t         headhi;             // current attribute value
     uint8_t         termhi;             // current attribute value
     font_number     font;               // font on entry
-    bool            compact  : 1;       // current attribute value
-    bool            dl_break : 1;       // current attribute value
-    bool            in_list  : 1;       // true if inside a list, including current tag
+    bool            compact;            // current attribute value
+    bool            dl_break;           // current attribute value
+    bool            in_list;            // true if inside a list, including current tag
     g_tags          gtag;               // enum of tag
 } tag_cb;
 

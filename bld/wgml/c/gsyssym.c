@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -1208,7 +1208,7 @@ void    init_sysparm( char *cmdline, char *banner )
     }
     p = sysparm0.value;
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)toupper( c );
+        *p++ = my_toupper( c );
     }
 
     syspdev0.value = g_dev_name;

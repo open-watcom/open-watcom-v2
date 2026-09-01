@@ -2048,7 +2048,7 @@ static void *df_lower( void )
 
     p = first;
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)tolower( c );
+        *p++ = my_tolower( c );
     }
     return( (void *)first );
 }

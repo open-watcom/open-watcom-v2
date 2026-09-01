@@ -496,7 +496,7 @@ static cop_device * get_cop_device( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)tolower( c );
+        *p++ = my_tolower( c );
     }
     in_name = fname;
 #endif
@@ -578,7 +578,7 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)tolower( c );
+        *p++ = my_tolower( c );
     }
     in_name = fname;
 #endif
@@ -660,7 +660,7 @@ static cop_font * get_cop_font( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = (char)tolower( c );
+        *str++ = my_tolower( c );
     }
     in_name = fname;
 #endif

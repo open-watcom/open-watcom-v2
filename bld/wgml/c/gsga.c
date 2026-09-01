@@ -397,7 +397,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     if( *att_flags & GAFLG_upper ) {
                         p = stringval;
                         while( (c = *(unsigned char *)p) != '\0' ) {
-                            *p++ = (char)toupper( c );
+                            *p++ = my_toupper( c );
                         }
                     }
                  } else {
@@ -410,7 +410,7 @@ static  condcode    scan_att_optionsB( gavalflags *val_flags, condcode cca, gafl
                     if( *att_flags & GAFLG_upper ) {
                         p = valptr;
                         while( (c = *(unsigned char *)p) != '\0' ) {
-                            *p++ = (char)toupper( c );
+                            *p++ = my_toupper( c );
                         }
                     }
 #endif

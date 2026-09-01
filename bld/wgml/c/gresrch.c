@@ -105,7 +105,7 @@ void add_GML_tag_research( char *tag )
     new->nxt = NULL;
     p = strcpy( new->tagname, tag );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)toupper( c );
+        *p++ = my_toupper( c );
     }
     new->count = 1;
 }
@@ -198,7 +198,7 @@ void    add_SCR_tag_research( char * tag )
     new->nxt = NULL;
     p = strcpy( new->tagname, tag );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)tolower( c );
+        *p++ = my_tolower( c );
     }
     new->count = 1;
 }
@@ -273,7 +273,7 @@ void    add_multi_func_research( const char *fun )
     new->nxt = NULL;
     p = strcpy( new->tagname, fun );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = (char)tolower( c );
+        *p++ = my_tolower( c );
     }
     new->count = 1;
 }
