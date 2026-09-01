@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -326,27 +326,6 @@ static char *get_word_ucase( const char *p, char *word, unsigned maxlen )
     return( (char *)p );
 }
 
-static int get_char_val( const char *p )
-{
-    int             c;
-
-    if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
-        if( my_isdigit( p[0] ) ) {
-            c = p[0] - '0';
-        } else {
-            c = p[0] - 'A' + 10;
-        }
-        if( my_isdigit( p[1] ) ) {
-            c = c * 16 + p[1] - '0';
-        } else {
-            c = c * 16 + p[1] - 'A' + 10;
-        }
-    } else {
-        c = -1;
-    }
-    return( c );
-}
-
 void    scr_dc( void )
 {
     char            c;                  // character provided (or 0x00)
@@ -389,7 +368,7 @@ void    scr_dc( void )
             } else if( val_len == 2 ) {
                 int     x;
 
-                x = get_char_val( value );
+                x = get_char_hexval( value );
                 if( x == -1 ) {
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
@@ -419,7 +398,7 @@ void    scr_dc( void )
             } else if( val_len == 2 ) {
                 int     x;
 
-                x = get_char_val( value );
+                x = get_char_hexval( value );
                 if( x == -1 ) {
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
@@ -451,7 +430,7 @@ void    scr_dc( void )
             } else if( val_len == 2 ) {
                 int     x;
 
-                x = get_char_val( value );
+                x = get_char_hexval( value );
                 if( x == -1 ) {
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
@@ -495,7 +474,7 @@ void    scr_dc( void )
             } else if( val_len == 2 ) {
                 int     x;
 
-                x = get_char_val( value );
+                x = get_char_hexval( value );
                 if( x == -1 ) {
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2004-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2004-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -31,30 +31,42 @@
 
 #include "wgml.h"
 
+
+static int get_hexdigit_bin( int c )
+/**********************************/
+{
+    if( isdigit( c ) )
+        return( c - '0' );
+    return( toupper( c ) - 'A' + 10 );
+}
+
+int get_char_hexval( const char *str )
+/************************************/
+{
+    int         c1;
+    int         c2;
+
+    c1 = *(unsigned char *)( str + 0 );
+    c2 = *(unsigned char *)( str + 1 );
+    if( isxdigit( c1 ) && isxdigit( c2 ) )
+        return( get_hexdigit_bin( c1 ) * 16 + get_hexdigit_bin( c2 ) );
+    return( -1 );
+}
+
 /***************************************************************************/
 /* validate and return the character parameter, or raise an error          */
 /***************************************************************************/
 
-char parse_char( const char *p, unsigned len )
+int parse_char( const char *p, unsigned len )
 {
-    char        c;
+    int         c;
 
     c = '\0';
     if( len == 1 ) {
-        c = p[0];
+        c = *(unsigned char *)p;
     } else if( len == 2 ) {         // 2 hex characters
-        if( my_isxdigit( p[0] ) && my_isxdigit( p[1] ) ) {
-            if( my_isdigit( p[0] ) ) {
-                c = p[0] - '0';
-            } else {
-                c = my_toupper( p[0] ) - 'A' + 10;
-            }
-            if( my_isdigit( p[1] ) ) {
-                c = c * 16 + p[1] - '0';
-            } else {
-                c = c * 16 + my_toupper( p[1] ) - 'A' + 10;
-            }
-        } else {
+        c = get_char_hexval( p );
+        if( c == -1 ) {
             xx_line_err_exit_ci( ERR_CW_NOT_CHAR, p, len );
             /* never return */
         }

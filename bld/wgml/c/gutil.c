@@ -760,7 +760,6 @@ char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
     char        *p1;
     int         c1;
 
-
     p = temp;
     pos = 0;
     if( ns & STYLE_xpa ) {
@@ -827,7 +826,7 @@ char *format_num( unsigned n, char *res, unsigned ressize, num_style ns )
         }
         p1 = p;
         while( (c1 = *(unsigned char *)p1) != '\0' ) {
-            *p1++ = my_toupper( c1 );
+            *p1++ = toupper( c1 );
         }
         pos1 = strlen( rp );
         p += pos1;
