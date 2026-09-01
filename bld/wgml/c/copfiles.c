@@ -685,25 +685,25 @@ static void free_opt_fonts( void )
  *      The appropriate character, which may be the same as in_char.
  */
 
-char cop_in_trans( char in_char, font_number font )
+int cop_in_trans( int in_char, font_number font )
 {
     intrans_block   *block   = NULL;
-    char            retval;
+    int             retval;
 
     CHECK_FONT( font );
 
-    retval = ti_table[(unsigned char)in_char];
+    retval = ti_table[in_char];
     if( retval == in_char ) {
         block = wgml_fonts[font].bin_font->intrans;
         if( block != NULL ) {
-            retval = block->table[(unsigned char)in_char];
+            retval = block->table[in_char];
         }
     }
 
     if( retval == in_char ) {
         block = bin_device->intrans;
         if( block != NULL ) {
-            retval = block->table[(unsigned char)in_char];
+            retval = block->table[in_char];
         }
     }
 

@@ -856,6 +856,7 @@ static void do_doc_panes_out( void )
     doc_element *       cur_el[MAX_COL];
     doc_pane    *       cur_pane;
     int                 i;
+    unsigned            j;
     unsigned            col_count;
 
     for( i = 0; i < MAX_COL; i++ ) {
@@ -877,68 +878,68 @@ static void do_doc_panes_out( void )
                 cur_el[0] = cur_el[0]->next;
             cur_pane->page_width = NULL;
         }
-        for( i = 0; i < cur_pane->col_count; i++ ) {
+        for( j = 0; j < cur_pane->col_count; j++ ) {
             ProcFlags.page_started = false;
-            if( cur_pane->cols[i].col_width != NULL ) {
-                ProcFlags.page_started = !set_positions( cur_pane->cols[i].col_width,
-                               cur_pane->cols[i].col_left, cur_pane->col_width_top );
-                if( out_el[i] == NULL ) {
-                    out_el[i] = cur_pane->cols[i].col_width;
+            if( cur_pane->cols[j].col_width != NULL ) {
+                ProcFlags.page_started = !set_positions( cur_pane->cols[j].col_width,
+                               cur_pane->cols[j].col_left, cur_pane->col_width_top );
+                if( out_el[j] == NULL ) {
+                    out_el[j] = cur_pane->cols[j].col_width;
                 }
-                if( cur_el[i] == NULL ) {
-                    cur_el[i] = cur_pane->cols[i].col_width;
+                if( cur_el[j] == NULL ) {
+                    cur_el[j] = cur_pane->cols[j].col_width;
                 } else {
-                    cur_el[i]->next = cur_pane->cols[i].col_width;
+                    cur_el[j]->next = cur_pane->cols[j].col_width;
                 }
-                while( cur_el[i]->next != NULL )
-                    cur_el[i] = cur_el[i]->next;
-                cur_pane->cols[i].col_width = NULL;
+                while( cur_el[j]->next != NULL )
+                    cur_el[j] = cur_el[j]->next;
+                cur_pane->cols[j].col_width = NULL;
             }
-            if( cur_pane->cols[i].main != NULL ) {
-                set_positions( cur_pane->cols[i].main, cur_pane->cols[i].col_left,
-                               cur_pane->cols[i].main_top );
-                if( out_el[i] == NULL ) {
-                    out_el[i] = cur_pane->cols[i].main;
+            if( cur_pane->cols[j].main != NULL ) {
+                set_positions( cur_pane->cols[j].main, cur_pane->cols[j].col_left,
+                               cur_pane->cols[j].main_top );
+                if( out_el[j] == NULL ) {
+                    out_el[j] = cur_pane->cols[j].main;
                 }
-                if( cur_el[i] == NULL ) {
-                    cur_el[i] = cur_pane->cols[i].main;
+                if( cur_el[j] == NULL ) {
+                    cur_el[j] = cur_pane->cols[j].main;
                 } else {
-                    cur_el[i]->next = cur_pane->cols[i].main;
+                    cur_el[j]->next = cur_pane->cols[j].main;
                 }
-                while( cur_el[i]->next != NULL )
-                    cur_el[i] = cur_el[i]->next;
-                cur_pane->cols[i].main = NULL;
+                while( cur_el[j]->next != NULL )
+                    cur_el[j] = cur_el[j]->next;
+                cur_pane->cols[j].main = NULL;
             }
             ProcFlags.page_started = true;
-            if( cur_pane->cols[i].bot_fig != NULL ) {
-                set_positions( cur_pane->cols[i].bot_fig, cur_pane->cols[i].col_left,
-                               cur_pane->cols[i].fig_top );
-                if( out_el[i] == NULL ) {
-                    out_el[i] = cur_pane->cols[i].bot_fig;
+            if( cur_pane->cols[j].bot_fig != NULL ) {
+                set_positions( cur_pane->cols[j].bot_fig, cur_pane->cols[j].col_left,
+                               cur_pane->cols[j].fig_top );
+                if( out_el[j] == NULL ) {
+                    out_el[j] = cur_pane->cols[j].bot_fig;
                 }
-                if( cur_el[i] == NULL ) {
-                    cur_el[i] = cur_pane->cols[i].bot_fig;
+                if( cur_el[j] == NULL ) {
+                    cur_el[j] = cur_pane->cols[j].bot_fig;
                 } else {
-                    cur_el[i]->next = cur_pane->cols[i].bot_fig;
+                    cur_el[j]->next = cur_pane->cols[j].bot_fig;
                 }
-                while( cur_el[i]->next != NULL )
-                    cur_el[i] = cur_el[i]->next;
-                cur_pane->cols[i].bot_fig = NULL;
+                while( cur_el[j]->next != NULL )
+                    cur_el[j] = cur_el[j]->next;
+                cur_pane->cols[j].bot_fig = NULL;
             }
-            if( cur_pane->cols[i].footnote != NULL ) {
-                set_positions( cur_pane->cols[i].footnote, cur_pane->cols[i].col_left,
-                               cur_pane->cols[i].fn_top );
-                if( out_el[i] == NULL ) {
-                    out_el[i] = cur_pane->cols[i].footnote;
+            if( cur_pane->cols[j].footnote != NULL ) {
+                set_positions( cur_pane->cols[j].footnote, cur_pane->cols[j].col_left,
+                               cur_pane->cols[j].fn_top );
+                if( out_el[j] == NULL ) {
+                    out_el[j] = cur_pane->cols[j].footnote;
                 }
-                if( cur_el[i] == NULL ) {
-                    cur_el[i] = cur_pane->cols[i].footnote;
+                if( cur_el[j] == NULL ) {
+                    cur_el[j] = cur_pane->cols[j].footnote;
                 } else {
-                    cur_el[i]->next = cur_pane->cols[i].footnote;
+                    cur_el[j]->next = cur_pane->cols[j].footnote;
                 }
-                while( cur_el[i]->next != NULL )
-                    cur_el[i] = cur_el[i]->next;
-                cur_pane->cols[i].footnote = NULL;
+                while( cur_el[j]->next != NULL )
+                    cur_el[j] = cur_el[j]->next;
+                cur_pane->cols[j].footnote = NULL;
             }
         }
     }
@@ -2411,7 +2412,7 @@ void reset_top_ban( void )
 void reset_t_page( void )
 {
     doc_pane        *cur_pane;
-    int             i;
+    unsigned        i;
 
     if( n_page.fk_queue == NULL ){
         t_page.cur_depth = n_page.prev_pg_depth;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,7 +90,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
 
         if( position == 79 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted designator\n", block, i);
-            display_hex_char( junk_byte, **current );
+            display_hex_char( junk_byte, *(*current + 0) );
             display_hex_char( first_byte, *(*current + 1) );
             printf_s( "Values: %s %s\n", junk_byte, first_byte );
             *current += 1;
@@ -112,7 +113,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
 
         if( position == 76 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted pass.\n", block, i);
-            display_hex_char( junk_byte, **current );
+            display_hex_char( junk_byte, *(*current + 0) );
             display_hex_char( first_byte, *(*current + 1) );
             display_hex_char( second_byte, *(*current + 2) );
             printf_s( "Values: %s %s %s\n", junk_byte, first_byte, second_byte );
@@ -126,7 +127,7 @@ code_block * get_code_blocks( char **current, uint16_t cb_count, char *base, cha
 
         if( position == 74 ) {
             printf_s( "Parsing %s block: CodeBlock %i has a shifted count\n", block, i);
-            display_hex_char( junk_byte, **current );
+            display_hex_char( junk_byte, *(*current + 0) );
             display_hex_char( first_byte, *(*current + 1) );
             display_hex_char( second_byte, *(*current + 2) );
             printf_s( "Values: %s %s %s\n", junk_byte, first_byte, second_byte );

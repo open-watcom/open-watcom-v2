@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,7 +81,7 @@ static bool is_quote( char ch )
  *      The values indicated above are returned in the out_chars.
  */
 
-void display_char( char * out_chars, char in_char )
+void display_char( char *out_chars, int in_char )
 {
     if ( isgraph( in_char ) ) {
         out_chars[0] = ' ';
@@ -90,8 +90,6 @@ void display_char( char * out_chars, char in_char )
         out_chars[0] = hexchar[ ( in_char >> 4 ) & 0x0f ];
         out_chars[1] = hexchar[ in_char & 0x0f ];
     }
-
-    return;
 }
 
 /*  Function display_hex_block().
@@ -103,9 +101,9 @@ void display_char( char * out_chars, char in_char )
  *      in_length contains the number of bytes in the block.
  */
 
-void display_hex_block( uint8_t * in_data, uint16_t in_count )
+void display_hex_block( uint8_t *in_data, unsigned in_count )
 {
-    uint16_t    i;
+    unsigned    i;
     char        data_buffer[16];
     char        data_display[69];
 
@@ -119,8 +117,6 @@ void display_hex_block( uint8_t * in_data, uint16_t in_count )
         display_hex_line( data_display, data_buffer );
         printf_s( "%s\n", data_display );
     }
-
-    return;
 }
 
 /*  Function display_hex_char().
@@ -135,13 +131,11 @@ void display_hex_block( uint8_t * in_data, uint16_t in_count )
  *      out_chars contains a string representing the char in hex.
  */
 
-void display_hex_char( char * out_chars, char in_char )
+void display_hex_char( char * out_chars, int in_char )
 {
     out_chars[0] = hexchar[ ( in_char >> 4 ) & 0x0f ];
     out_chars[1] = hexchar[ in_char & 0x0f ];
     out_chars[2] = '\0';
-
-    return;
 }
 
 /*  Function display_hex_line().
@@ -167,10 +161,10 @@ void display_hex_line( char * out_chars, char * in_chars )
 
     /* Process the first eight input values. */
 
-    for( i = 0; i < 8; i++) {
-        out_chars[3*i] = hexchar[ ( in_chars[i] >> 4 ) & 0x0f ];
-        out_chars[3*i + 1] = hexchar[ in_chars[i] & 0x0f ];
-        out_chars[3*i + 2] = ' ';
+    for( i = 0; i < 8; i++ ) {
+        out_chars[3 * i + 0] = hexchar[( in_chars[i] >> 4 ) & 0x0f];
+        out_chars[3 * i + 1] = hexchar[in_chars[i] & 0x0f];
+        out_chars[3 * i + 2] = ' ';
     }
 
     /* Insert the second space between the columns. */
@@ -179,10 +173,10 @@ void display_hex_line( char * out_chars, char * in_chars )
 
     /* Process the second eight input values. */
 
-    for( i = 8; i < 16; i++) {
-        out_chars[3*i + 1] = hexchar[ ( in_chars[i] >> 4 ) & 0x0f ];
-        out_chars[3*i + 2] = hexchar[ in_chars[i] & 0x0f ];
-        out_chars[3*i + 3] = ' ';
+    for( i = 8; i < 16; i++ ) {
+        out_chars[3 * i + 1] = hexchar[( in_chars[i] >> 4 ) & 0x0f];
+        out_chars[3 * i + 2] = hexchar[in_chars[i] & 0x0f];
+        out_chars[3 * i + 3] = ' ';
     }
 
     /* Insert three more spaces. */
@@ -195,17 +189,15 @@ void display_hex_line( char * out_chars, char * in_chars )
 
     for( i = 0; i < 16; i++ ) {
         if ( isprint( in_chars[i] ) ) {
-            out_chars[i+52] = in_chars[i];
+            out_chars[i + 52] = in_chars[i];
         } else {
-           out_chars[i+52] = ' ';
+           out_chars[i + 52] = ' ';
         }
     }
 
     /* Make out_chars a character string. */
 
     out_chars[68] = '\0';
-
-    return;
 }
 
 /*  Function parse_cmdline().
@@ -257,8 +249,7 @@ int parse_cmdline( char * cmdline )
 
     /* In case someone managed to enter a zero-length path. */
 
-    if( len <= 0)
-    {
+    if( len <= 0 ) {
         print_usage();
         return( FAILURE );
     }
@@ -270,7 +261,8 @@ int parse_cmdline( char * cmdline )
     /* Allocate memory for the global pointer tgt_path. */
 
     tgt_path = malloc( len );
-    if( tgt_path == NULL ) return( FAILURE );
+    if( tgt_path == NULL )
+        return( FAILURE );
 
     /* Copy the parameter into tgt_path. */
     /* It will be null-terminated per documentation of strncpy_s(). */
@@ -279,7 +271,8 @@ int parse_cmdline( char * cmdline )
 
     /* Remove doublequotes, if present. */
 
-    if(opt == '\"') UnquoteItem( tgt_path, len, tgt_path, is_quote );
+    if( opt == '\"' )
+        UnquoteItem( tgt_path, len, tgt_path, is_quote );
 
     /* We are done. */
 
@@ -295,5 +288,3 @@ void res_initialize_globals( void )
 {
     tgt_path = NULL;
 }
-
-

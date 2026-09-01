@@ -63,7 +63,7 @@ extern "C" {    /* Use "C" linkage when in C++ mode */
 //================= Function Prototypes ========================
 
 /* copfiles.c                           */
-extern char         cop_in_trans( char in_char, font_number font );
+extern int          cop_in_trans( int in_char, font_number font );
 extern void         cop_setup( void );
 extern void         cop_teardown( void );
 extern unsigned     cop_text_width( const char *text, unsigned count, font_number font );

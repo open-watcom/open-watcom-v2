@@ -136,7 +136,7 @@ static void display_device( cop_device * in_device )
         puts( "Intrans Table:" );
         for( i = 0; i < 0x100; i++ ) {
             if( in_device->intrans->table[i] != i ) {
-                display_char( font_character, (char) i );
+                display_char( font_character, i );
                 display_char( translation, in_device->intrans->table[i] );
                 printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
@@ -148,7 +148,7 @@ static void display_device( cop_device * in_device )
         puts( "Outtrans Table:" );
         for( i = 0; i < 0x100; i++ ) {
             if( in_device->outtrans->table[i] != NULL ) {
-                display_char( font_character, (char) i );
+                display_char( font_character, i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_device->outtrans->table[i]->count; j++ ) {
                     display_char( translation, in_device->outtrans->table[i]->data[j] );
@@ -432,7 +432,7 @@ static void display_font( cop_font * in_font )
         puts( "Intrans Table:" );
         for( i = 0; i < 0x100; i++ ) {
             if( in_font->intrans->table[i] != i ) {
-                display_char( font_character, (char) i );
+                display_char( font_character, i );
                 display_char( translation, in_font->intrans->table[i] );
                 printf_s( "%c%c %c%c\n", font_character[0], font_character[1], translation[0], translation[1] );
             }
@@ -444,7 +444,7 @@ static void display_font( cop_font * in_font )
         puts( "Outtrans Table:" );
         for( i = 0; i < 0x100; i++ ) {
             if( in_font->outtrans->table[i] != NULL ) {
-                display_char( font_character, (char) i );
+                display_char( font_character, i );
                 printf_s( "%c%c ", font_character[0], font_character[1] );
                 for( j = 0; j < in_font->outtrans->table[i]->count; j++ ) {
                     display_char( translation, in_font->outtrans->table[i]->data[j] );
@@ -460,7 +460,7 @@ static void display_font( cop_font * in_font )
         puts( "Width Table:" );
         for( i = 0; i < 0x100; i++ ) {
             if( in_font->width->table[i] != in_font->char_width ) {
-                display_char( font_character, (char) i );
+                display_char( font_character, i );
                 printf_s( "%c%c %lu\n", font_character[0], font_character[1], in_font->width->table[i] );
             }
         }
@@ -496,7 +496,7 @@ static cop_device * get_cop_device( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = my_tolower( c );
+        *p++ = tolower( c );
     }
     in_name = fname;
 #endif
@@ -578,7 +578,7 @@ static cop_driver * get_cop_driver( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = my_tolower( c );
+        *p++ = tolower( c );
     }
     in_name = fname;
 #endif
@@ -660,7 +660,7 @@ static cop_font * get_cop_font( char const * in_name )
 
     p = strcpy( fname, in_name );
     while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = my_tolower( c );
+        *str++ = tolower( c );
     }
     in_name = fname;
 #endif

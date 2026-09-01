@@ -1208,7 +1208,7 @@ void    init_sysparm( char *cmdline, char *banner )
     }
     p = sysparm0.value;
     while( (c = *(unsigned char *)p) != '\0' ) {
-        *p++ = my_toupper( c );
+        *p++ = toupper( c );
     }
 
     syspdev0.value = g_dev_name;

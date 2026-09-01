@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,10 +68,10 @@ global  char *  tgt_path;
 extern "C" {    /* Use "C" linkage when in C++ mode. */
 #endif
 
-extern void    display_char( char * out_chars, char in_char );
-extern void    display_hex_block( uint8_t * in_data, uint16_t in_count );
-extern void    display_hex_char(char * out_chars, char in_char );
-extern void    display_hex_line( char * out_chars, char * in_chars );
+extern void    display_char( char *out_chars, int in_char );
+extern void    display_hex_block( uint8_t *in_data, unsigned in_count );
+extern void    display_hex_char( char *out_chars, int in_char );
+extern void    display_hex_line( char *out_chars, char *in_chars );
 extern void    res_initialize_globals( void );
 
 #ifdef  __cplusplus

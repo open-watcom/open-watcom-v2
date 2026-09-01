@@ -1439,7 +1439,7 @@ unsigned intrans( char *data, unsigned len, font_number font )
               && (k < (len - 1)) ) {  // translate needed
                 ps++;                                   // skip escape char
                 k++;                                    // and count
-                *pt = cop_in_trans( *ps, font );        // translate
+                *pt = cop_in_trans( *(unsigned char *)ps, font );        // translate
                 ps++;
                 pt++;
             } else {
