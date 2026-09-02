@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +45,13 @@ typedef enum {
 #undef pick
 
 #define pick(a,b) #a,
-char *control_type_win[] = {
+const char * const control_type_win[] = {
 #include "restab.h"
 };
 #undef pick
 
 #define pick(a,b) #b,
-char *control_type_os2[] = {
+const char * const control_type_os2[] = {
 #include "restab.h"
 };
 #undef pick
@@ -69,13 +70,13 @@ enum {
 #undef pick
 
 #define pick(a,b) __str__(#a),
-char *control_class_win[] = {
+const char * const control_class_win[] = {
 #include "restab.h"
 };
 #undef pick
 
 #define pick(a,b) #b,
-char *control_class_os2[] = {
+const char * const control_class_os2[] = {
 #include "restab.h"
 };
 #undef pick
@@ -94,13 +95,13 @@ enum {
 #undef pick
 
 #define pick(a,b,c) #b,
-char *font_win[] = {
+const char * const font_win[] = {
 #include "restab.h"
 };
 #undef pick
 
 #define pick(a,b,c) #c,
-char *font_os2[] = {
+const char * const font_os2[] = {
 #include "restab.h"
 };
 #undef pick
@@ -122,7 +123,7 @@ enum {
 
 #define pick(a,b) #a,
 #define pick1(a) #a,
-char *window_style_win[] = {
+const char * const window_style_win[] = {
 #include "restab.h"
 };
 #undef pick
@@ -130,7 +131,7 @@ char *window_style_win[] = {
 
 #define pick(a,b) #b,
 #define pick1(a) "",
-char *window_style_os2[] = {
+const char * const window_style_os2[] = {
 #include "restab.h"
 };
 #undef pick
@@ -153,7 +154,7 @@ typedef enum {
 
 #define pick(a,b,c) #b,
 #define pick1(a,b) #b,
-char *style_win_items[] = {
+const char * const style_win_items[] = {
 #include "restab.h"
 };
 #undef pick
@@ -161,7 +162,7 @@ char *style_win_items[] = {
 
 #define pick(a,b,c) #c,
 #define pick1(a,b) "",
-char *style_os2_items[] = {
+const char * const style_os2_items[] = {
 #include "restab.h"
 };
 #undef pick
@@ -185,7 +186,7 @@ int style_cnt[] = {
     STYLE_CNT - T_CONTROL_BS_PUSHBUTTON
 };
 
-char **style_win[] = {
+const char * const * const style_win[] = {
     style_win_items + T_LTEXT_WS_TABSTOP,
     style_win_items + T_RTEXT_WS_TABSTOP,
     style_win_items + T_CTEXT_WS_TABSTOP,
@@ -202,7 +203,7 @@ char **style_win[] = {
     style_win_items + T_CONTROL_BS_PUSHBUTTON
 };
 
-char **style_os2[] = {
+const char * const * const style_os2[] = {
     style_os2_items + T_LTEXT_WS_TABSTOP,
     style_os2_items + T_RTEXT_WS_TABSTOP,
     style_os2_items + T_CTEXT_WS_TABSTOP,
@@ -224,5 +225,5 @@ char **style_os2[] = {
  ***************************************************************************/
 #define CTRL_STYLE_CNT (STYLE_CNT-T_CONTROL_BS_PUSHBUTTON)
 
-char **control_style_win = style_win_items + T_CONTROL_BS_PUSHBUTTON;
-char **control_style_os2 = style_os2_items + T_CONTROL_BS_PUSHBUTTON;
+const char * const * const control_style_win = style_win_items + T_CONTROL_BS_PUSHBUTTON;
+const char * const * const control_style_os2 = style_os2_items + T_CONTROL_BS_PUSHBUTTON;

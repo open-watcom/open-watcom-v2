@@ -79,7 +79,7 @@ typedef struct _statement {
     char    *parms[MAX_STMT_PARMS];
 } statement;
 
-typedef void (*fnx)(char*,char**,control_type,int,int,char*,char**,char**,int*);
+typedef void (*fnx)(char*,char**,control_type,int,int,char*,const char* const*,const char* const*,int*);
 
 static const char   UsageText[] = {
     "Usage: parsedlg [options] <in_file> [<out_file>]\0"
@@ -90,7 +90,7 @@ static const char   UsageText[] = {
     "     -font=font name : dialog font overwrite\0"
 };
 
-char *options_text[] = {
+const char * const options_text[] = {
     "f",
     "hide",
     "quiet",
@@ -112,8 +112,8 @@ statement   dlg_hdr;
 statement   dlg_item;
 int         dialogs_cnt = 0;
 
-char *my_fgets( char *buf, int max_len, FILE *fp )
-/************************************************/
+static char *my_fgets( char *buf, int max_len, FILE *fp )
+/*******************************************************/
 {
     char    *rc;
     size_t  i;
@@ -126,8 +126,8 @@ char *my_fgets( char *buf, int max_len, FILE *fp )
     return( rc );
 }
 
-void disp_usage( void )
-/*********************/
+static void disp_usage( void )
+/****************************/
 {
     const char  *p;
 
@@ -139,8 +139,8 @@ void disp_usage( void )
     }
 }
 
-void process_f_option( char *fname )
-/**********************************/
+static void process_f_option( const char *fname )
+/***********************************************/
 {
     FILE    *fp;
     char    buff1[MAX_NAME_LEN];
@@ -163,13 +163,14 @@ void process_f_option( char *fname )
     }
 }
 
-int process_cmdl( int argc, char *argv[] )
-/****************************************/
+static int process_cmdl( int argc, char *argv[] )
+/***********************************************/
 {
-    char    *p;
-    char    *o;
-    int     i, j;
-    size_t  len;
+    char            *p;
+    const char      *o;
+    int             i;
+    int             j;
+    size_t          len;
 
     opt.quiet = 0;
     opt.hide = 0;
@@ -230,8 +231,8 @@ int process_cmdl( int argc, char *argv[] )
     }
 }
 
-char *skip_separator( char *str )
-/*******************************/
+static const char *skip_separator( const char *str )
+/**************************************************/
 {
     while( ( *str == ' ' )
       || ( *str == '\t' )
@@ -241,8 +242,8 @@ char *skip_separator( char *str )
     return( str );
 }
 
-int check_statement( char *str )
-/******************************/
+static int check_statement( const char *str )
+/*******************************************/
 {
     char    buff1[MAX_LINE_LEN];
     char    *p;
@@ -268,8 +269,9 @@ int check_statement( char *str )
     }
     return( 0 );
 }
-char *skip_keyword( char *str, int *plen )
-/****************************************/
+
+static char *skip_keyword( char *str, int *plen )
+/***********************************************/
 {
     int     flag;
     int     len;
@@ -324,8 +326,8 @@ char *skip_keyword( char *str, int *plen )
     return( str );
 }
 
-int check_control_style( style idx, control_type control )
-/********************************************************/
+static int check_control_style( style idx, control_type control )
+/***************************************************************/
 {
     switch( control ) {
     case T_LTEXT:
@@ -354,9 +356,9 @@ int check_control_style( style idx, control_type control )
     }
 }
 
-void check_parm_item( char *keyword, char *parms[], control_type control, int parm_idx,
-                int tab_cnt, char *str, char **win_tab, char **os2_tab, int *retval )
-/************************************************************************************/
+static void check_parm_item( char *keyword, char *parms[], control_type control, int parm_idx,
+    int tab_cnt, char *str, const char * const *win_tab, const char * const *os2_tab, int *retval )
+/*************************************************************************************************/
 {
     /* unused parameters */ (void)parms; (void)control; (void)parm_idx; (void)tab_cnt; (void)win_tab; (void)os2_tab;
 
@@ -365,9 +367,9 @@ void check_parm_item( char *keyword, char *parms[], control_type control, int pa
     }
 }
 
-void convert_parm_table( char *keyword, char *parms[], control_type control, int parm_idx,
-                   int tab_cnt, char *str, char **win_tab, char **os2_tab, int *retval )
-/***************************************************************************************/
+static void convert_parm_table( char *keyword, char *parms[], control_type control, int parm_idx,
+    int tab_cnt, char *str, const char * const *win_tab, const char * const *os2_tab, int *retval )
+/*************************************************************************************************/
 {
     int i;
 
@@ -388,9 +390,9 @@ void convert_parm_table( char *keyword, char *parms[], control_type control, int
 }
 
 
-control_type process_parms( char *parms[], int parms_cnt, char **win_tab,
-    char **os2_tab, int tab_cnt, control_type control, fnx fn, char *keyword )
-/****************************************************************************/
+static control_type process_parms( char *parms[], int parms_cnt, const char * const * win_tab,
+    const char * const * os2_tab, int tab_cnt, control_type control, fnx fn, char *keyword )
+/******************************************************************************************/
 {
     int     i;
     int     retval;
@@ -413,8 +415,8 @@ control_type process_parms( char *parms[], int parms_cnt, char **win_tab,
     return( retval );
 }
 
-void convert_buttons( char *ID, char *name, int flag )
-/****************************************************/
+static void convert_buttons( char *ID, char *name, int flag )
+/***********************************************************/
 {
     if( strcmp( ID, "IDOK" ) == 0 ) {
         strcpy( ID, "DID_OK" );
@@ -429,8 +431,8 @@ void convert_buttons( char *ID, char *name, int flag )
     }
 }
 
-void add_parms_item( char *parms[], char *str, int after )
-/********************************************************/
+static void add_parms_item( char *parms[], char *str, int after )
+/***************************************************************/
 {
     int i;
 
@@ -454,8 +456,8 @@ void add_parms_item( char *parms[], char *str, int after )
     }
 }
 
-void add_parms_list( statement *stmt, char *separators, int flag )
-/****************************************************************/
+static void add_parms_list( statement *stmt, char *separators, int flag )
+/***********************************************************************/
 {
     int     i = 0;
     char    *p;
@@ -493,8 +495,9 @@ void add_parms_list( statement *stmt, char *separators, int flag )
     }
 }
 
-void remove_parms_item( char *parms[], char *str )
-/************************************************/
+#if 0
+static void remove_parms_item( char *parms[], char *str )
+/*******************************************************/
 {
     int i;
 
@@ -507,9 +510,10 @@ void remove_parms_item( char *parms[], char *str )
         }
     }
 }
+#endif
 
-void convert_font( char *parms[], int parms_cnt )
-/***********************************************/
+static void convert_font( char *parms[], int parms_cnt )
+/******************************************************/
 {
     int i;
 
@@ -523,8 +527,8 @@ void convert_font( char *parms[], int parms_cnt )
     }
 }
 
-void out_parms_style( FILE *fo, char *parms[], char *str )
-/********************************************************/
+static void out_parms_style( FILE *fo, char *parms[], char *str )
+/***************************************************************/
 {
     int     oper_NOT;
     int     item_idx;
@@ -576,8 +580,8 @@ void out_parms_style( FILE *fo, char *parms[], char *str )
     fprintf( fo, "\n" );
 }
 
-void process_style( char *parms[], char *str )
-/********************************************/
+static void process_style( char *parms[], char *str )
+/***************************************************/
 {
     char            **ptr;
     control_type    control = 0;
@@ -638,8 +642,8 @@ void process_style( char *parms[], char *str )
         WND_STYLE_CNT, control, convert_parm_table, NULL );
 }
 
-void out_color_style( FILE *fo, statement *x )
-/********************************************/
+static void out_color_style( FILE *fo, statement *x )
+/***************************************************/
 {
     int     i;
     char    *p;
@@ -663,8 +667,8 @@ void out_color_style( FILE *fo, statement *x )
     }
 }
 
-void get_rectangle_list( statement *x, char *separators )
-/*******************************************************/
+static void get_rectangle_list( statement *x, char *separators )
+/**************************************************************/
 {
     char    *p;
 
@@ -686,8 +690,8 @@ void get_rectangle_list( statement *x, char *separators )
     }
 }
 
-void get_rectangle_parms( statement *x )
-/**************************************/
+static void get_rectangle_parms( statement *x )
+/*********************************************/
 {
     int     i;
     int     j;
@@ -715,8 +719,8 @@ void get_rectangle_parms( statement *x )
     }
 }
 
-int process_statement( char *line, FILE *fo )
-/*******************************************/
+static int process_statement( char *line, FILE *fo )
+/**************************************************/
 {
     char    *separators = " ,\t|";
     char    buff1[MAX_LINE_LEN + 1];
@@ -796,8 +800,8 @@ int process_statement( char *line, FILE *fo )
     return( 0 );
 }
 
-void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
-/****************************************************************************/
+static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
+/***********************************************************************************/
 {
     long    font_size = 0;
     char    *font_name = NULL;
@@ -951,8 +955,8 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
     free( buff1 );
 }
 
-void alloc_statement( statement *stmt )
-/*************************************/
+static void alloc_statement( statement *stmt )
+/********************************************/
 {
     int i;
 
@@ -962,8 +966,8 @@ void alloc_statement( statement *stmt )
     }
 }
 
-void free_statement( statement *stmt )
-/************************************/
+static void free_statement( statement *stmt )
+/*******************************************/
 {
     int i;
 
