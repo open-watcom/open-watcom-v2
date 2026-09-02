@@ -318,7 +318,7 @@ static char *skip_keyword( char *str, int *plen )
         }
     } else if( *str != '\0' ) {
         len = 1;
-        for( p = str + 1; isdigit( *p ) || ((flag == 3) && isalpha( *p )); ++p ) {
+        for( p = str + 1; isdigit( *p ) || ( ( flag == 3 ) && isalpha( *p ) ); ++p ) {
             ++len;
         }
     }
@@ -588,7 +588,7 @@ static void process_style( char *parms[], char *str )
     int             i;
 
     if( strcmp( str, "DIALOG" ) != 0 ) {
-        ptr = malloc( sizeof(char *) );
+        ptr = malloc( sizeof( char * ) );
         *ptr = str;
         control = process_parms( ptr, 1, control_type_win, control_type_os2,
             CTRL_TYPE_CNT, 0, convert_parm_table, NULL );
