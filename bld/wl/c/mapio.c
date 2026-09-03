@@ -508,7 +508,7 @@ static void WriteMapImports( void )
                 if( sym->p.import_dll != NULL ) {
                     WriteMapColPrintf( 0, "%s", sym->name );
 #ifdef _OS2
-                    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+                    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) ) {
                         WriteMapColPrintf( 36, "%s", sym->p.import_dll->m.modnum->name.u.ptr );
                     }
 #endif
@@ -1007,7 +1007,7 @@ static const char *getStubName( void )
     if( FmtData.u.os2fam.no_stub ) {
         return( "none" );
     }
-    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) ) {
         return( FmtData.u.os2fam.stub_file_name );
     }
 #endif
@@ -1034,7 +1034,7 @@ static void WriteMapSizes( void )
     if( UndefList != NULL ) {
         WriteMapNL();
     }
-    if( FmtData.type & (MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE) ) {
+    if( FmtData.type & (MK_NOVELL | MK_NE | MK_OS2_FLAT | MK_PE) ) {
         WriteMapImportsHead();
         WriteMapImports();
     }

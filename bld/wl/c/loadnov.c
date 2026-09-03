@@ -501,7 +501,7 @@ void FiniNovellLoadFile( void )
     len = 0;
     src = startname;
     while( len < len1 ) {
-        module_name[len++] = toupper( (unsigned char)*src++ );
+        module_name[len++] = toupper( *(unsigned char *)src++ );
     }
     if( pPeriod[0] == '.' ) {
         len1 = strlen( pPeriod );
@@ -512,7 +512,7 @@ void FiniNovellLoadFile( void )
         len1 += len;
         src = pPeriod;
         while( len < len1 ) {
-            module_name[len++] = toupper( (unsigned char)*src++ );
+            module_name[len++] = toupper( *(unsigned char *)src++ );
         }
     }
     module_name[len] = '\0';

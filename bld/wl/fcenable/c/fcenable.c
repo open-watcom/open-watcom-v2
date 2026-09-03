@@ -279,7 +279,7 @@ static void ProcessOption( const char ***argv )
     NewOption = true;
     (**argv)++;        // skip the switch character.
     item = **argv;
-    option = (char)tolower( (unsigned char)*item );
+    option = (char)tolower( *(unsigned char *)item );
     switch( option ) {
     case 'c':           // class list.
         ProcList( ProcClass, argv );
@@ -295,7 +295,7 @@ static void ProcessOption( const char ***argv )
         (*argv)++;
         break;
     default:
-        printf( "option not recognized: %c\n", item[0] );
+        printf( "option not recognized: %c\n", *(unsigned char *)item );
         (*argv)++;
     }
 }

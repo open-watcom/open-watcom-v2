@@ -43,6 +43,7 @@ typedef enum {          // there is a corresp. table in MSG.C
 } exe_format;
 
 #define MK_DOS          (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
+#define MK_NE           (MK_OS2_NE | MK_WIN_NE)
 #define MK_OS2_FLAT     (MK_OS2_LE | MK_OS2_LX)
 #define MK_OS2          (MK_OS2_NE | MK_OS2_FLAT)
 #define MK_PHAR_LAP     (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_PHAR_MULTISEG)
@@ -50,7 +51,7 @@ typedef enum {          // there is a corresp. table in MSG.C
 #define MK_RDOS         (MK_RDOS_16 | MK_RDOS_32)
 #define MK_64BIT        (MK_PE | MK_ELF)
 #define MK_32BIT        (MK_PHAR_LAP | MK_NOVELL | MK_QNX | MK_OS2_FLAT | MK_PE | MK_ELF | MK_WIN_VXD | MK_RAW | MK_RDOS_32)
-#define MK_16BIT        (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_RDOS_16)
+#define MK_16BIT        (MK_DOS | MK_NE | MK_DOS16M | MK_RDOS_16)
 /* MK_OS2_LE, MK_OS2_LX, MK_WIN_VXD and MK_PE are not treated as FLAT internally */
 #define MK_FLAT_OFFS    (MK_PHAR_SIMPLE | MK_PHAR_FLAT | MK_PHAR_REX | MK_RAW)
 #define MK_ALLOW_64     (MK_64BIT)
@@ -60,7 +61,7 @@ typedef enum {          // there is a corresp. table in MSG.C
 #define MK_REAL_MODE    (MK_DOS)
 #define MK_PROT_MODE    (~MK_REAL_MODE)
 #define MK_SEGMENTED    (MK_16BIT | MK_OS2_FLAT | MK_PHAR_MULTISEG)
-#define MK_IMPORTS      (MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE | MK_ELF)
+#define MK_IMPORTS      (MK_NOVELL | MK_NE | MK_OS2_FLAT | MK_PE | MK_ELF)
 #define MK_SPLIT_DATA   (MK_ELF | MK_PE)
 #define MK_LINEARIZE    (MK_ELF | MK_PE)
 #define MK_END_PAD      (MK_DOS)

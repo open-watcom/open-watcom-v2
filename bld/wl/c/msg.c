@@ -186,7 +186,7 @@ static size_t fmtAddr( char *dest, size_t len, addr_type *addr, bool offs_32 )
 #endif
     /* segmented formats 16:16 or 16:32 */
     if( !offs_32
-      && (FmtData.type & (MK_DOS | MK_OS2_NE | MK_WIN_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
+      && (FmtData.type & (MK_DOS | MK_NE | MK_DOS16M | MK_QNX_16 | MK_RDOS_16)) ) {
         return( FmtStr( dest, len, "%x:%x", addr->seg, (unsigned short)addr->off ) );
     } else {
         return( FmtStr( dest, len, "%x:%h", addr->seg, addr->off ) );

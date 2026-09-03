@@ -360,7 +360,7 @@ void Fini16MLoadFile( void )
     if( temp > sizeof( exe_head.EXP_path ) - 1 )
         temp = sizeof( exe_head.EXP_path ) - 1;
     for( i = 0; i < temp; i++ ) {
-        exe_head.EXP_path[i] = toupper( (unsigned char)FmtData.u.d16m.exp_name[i] );
+        exe_head.EXP_path[i] = toupper( ((unsigned char *)FmtData.u.d16m.exp_name)[i] );
     }
     exe_head.EXP_path[temp] = '\0';
 

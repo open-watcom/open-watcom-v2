@@ -83,7 +83,7 @@ static void DoSavedImport( symbol *sym )
     length_name         modname;
     length_name         extname;
 
-    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
+    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE) ) {
         dll = sym->p.import_dll;
         sym->p.import_dll = NULL;
         sym->info &= ~SYM_DEFINED;
@@ -106,7 +106,7 @@ static void DoSavedExport( symbol *sym )
     /* unused parameters */ (void)sym;
 
 #ifdef _OS2
-    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) ) {
         entry_export    *exp;
 
         exp = sym->e.export;
@@ -1285,7 +1285,7 @@ bool SeenDLLRecord( void )
 /*******************************/
 {
     LinkState |= LS_FMT_SEEN_IMPORT_CMT;
-    if( !HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_ELF | MK_NOVELL ) ) {
+    if( !HintFormat( MK_NE | MK_OS2_FLAT | MK_PE | MK_ELF | MK_NOVELL ) ) {
         LnkMsg( WRN+LOC+MSG_DLL_WITH_386, NULL );
         return( false );    /* Not OK to process import/export records. */
     } else {
@@ -1311,7 +1311,7 @@ void HandleImport( const length_name *intname, const length_name *modname,
             sym->mod = CurrMod;
         }
 #ifdef _OS2
-        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+        if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) ) {
             MSImportKeyword( sym, modname, extname, ordinal );
         } else {
 #endif
@@ -1361,7 +1361,7 @@ void HandleExport( const length_name *expname, const length_name *intname,
 #endif
 
 #ifdef _OS2
-    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) ) {
+    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );
     } else {
 #endif

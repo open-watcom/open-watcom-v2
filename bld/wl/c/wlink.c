@@ -104,9 +104,9 @@ static void PreAddrCalcFormatSpec( void )
  */
 {
 #ifdef _OS2
-    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2 | MK_WIN_NE) ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_NE | MK_OS2_FLAT) ) {
   #if 0
-        if( (FmtData.type & (MK_OS2 | MK_WIN_NE)) && (LinkState & LS_HAVE_PPC_CODE) ) {
+        if( (FmtData.type & (MK_NE | MK_OS2_FLAT)) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             // ChkOS2ElfData();
         } else {
@@ -138,9 +138,9 @@ static void PostAddrCalcFormatSpec( void )
  */
 {
 #ifdef _OS2
-    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_OS2 | MK_WIN_NE) ) {
+    if( FmtData.type & (MK_PE | MK_WIN_VXD | MK_NE | MK_OS2_FLAT) ) {
   #if 0
-        if( (FmtData.type & (MK_OS2 | MK_WIN_NE)) && (LinkState & LS_HAVE_PPC_CODE) ) {
+        if( (FmtData.type & (MK_NE | MK_OS2_FLAT)) && (LinkState & LS_HAVE_PPC_CODE) ) {
             // Development temporarly on hold:
             //PrepareOS2Elf();
         } else {

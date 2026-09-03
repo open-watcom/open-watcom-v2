@@ -376,7 +376,7 @@ void FiniELFLoadFile( void )
 
     SetHeaders( &hdr );
 #if 0
-    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_OS2 | MK_WIN_NE)) ) {
+    if( (LinkState & LS_HAVE_PPC_CODE) && (FmtData.type & (MK_NE | MK_OS2_FLAT)) ) {
         // Development temporarly on hold
         // BuildOS2Imports(); // Build .got section
     }

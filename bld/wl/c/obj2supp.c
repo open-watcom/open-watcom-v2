@@ -911,7 +911,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
     }
     if( fix->imported ) {
 #ifdef _OS2
-        if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {  // can not get at a DLL relatively
+        if( FmtData.type & MK_NE ) {  // can not get at a DLL relatively
             LnkMsg( ERR+LOC+MSG_DLL_IN_REL_RELOC, "a", &fix->loc_addr );
             return( true );
         }
@@ -1112,7 +1112,7 @@ static void PatchData( fix_relo_data *fix )
     } else {    // its a seg reloc and maybe an offset as well.
         if( (fix->type & FIX_OFFSET_MASK) != FIX_NO_OFFSET ) {
             if( !fix->done
-              && (FmtData.type & (MK_OS2 | MK_WIN_NE | MK_WIN_VXD)) )
+              && (FmtData.type & (MK_NE | MK_OS2_FLAT | MK_WIN_VXD)) )
                 return;
             PatchOffset( fix, FindRealAddr( fix ), false );
             data += OffsetSizes[FIX_GET_OFFSET( fix->type )];
@@ -1225,7 +1225,7 @@ static bool FarCallOpt( fix_relo_data *fix )
         } else {
             temp16 = MGET_U16_UN( code + 1 );
         }
-        if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_WIN_VXD) ) {
+        if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_WIN_VXD) ) {
             if( is32bit ) {
                 temp32 += fix->target_addr.off;     // haven't done this for OS/2
             } else {
@@ -1373,7 +1373,7 @@ static bool formatBaseReloc( fix_relo_data *fix, target_spec *target, segdata *s
         }
         breloc->item.pe = ( off & OSF_PAGE_MASK ) | reltype;
         return( save );
-    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    } else if( FmtData.type & MK_NE ) {
         os2_reloc_item  *os2item;
         offset          off;
         byte            *fixptr;

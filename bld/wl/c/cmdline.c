@@ -327,7 +327,7 @@ void DoCmdFile( const char *fname )
 #elif defined( __BSD__ )
 #define LAST_CHANCE ( MK_OS2 | MK_ELF )
 #elif defined( __NT__ )
-#define LAST_CHANCE ( MK_OS2_LX | MK_OS2_NE | MK_WIN_NE | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
+#define LAST_CHANCE ( MK_OS2_LX | MK_NE | MK_PE | MK_DOS_EXE | MK_WIN_VXD )
 #elif defined( __RDOS__ )
 #define LAST_CHANCE ( MK_RDOS | MK_PE | MK_DOS_EXE)
 #else
@@ -495,7 +495,7 @@ bool HintFormat( exe_format hint )
     }
     if( possible == 0 ) {
 #ifdef _OS2
-        if( (~(MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
+        if( (~(MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD) & FmtData.type) == 0 ) {
             /* Windows, OS/2 V1.x, OS/2 V2.x, PE, VxD all
                 want the same structure */
             InitFmt( SetOS2Fmt );

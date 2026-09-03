@@ -189,7 +189,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
         group->section->relocs++;
         return;
     }
-    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    if( FmtData.type & MK_NE ) {
         DoWriteReloc( &group->g.reloclist, reloc, size );
         group->section->relocs++;
         return;
@@ -293,7 +293,7 @@ static void FreeGroupRelocs( group_entry *group )
         }
         return;
     }
-    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    if( FmtData.type & MK_NE ) {
         FreeRelocList( group->g.reloclist );
         return;
     }
@@ -314,7 +314,7 @@ void FreeRelocInfo( void )
 
     if( (LinkState & LS_MAKE_RELOCS) == 0 )
         return;
-    if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
+    if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_NE | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next ) {
             FreeGroupRelocs( group );
         }
@@ -412,7 +412,7 @@ void SetRelocSize( void )
 /***********************/
 {
 #ifdef _OS2
-    if( FmtData.type & ( MK_OS2 | MK_WIN_NE | MK_WIN_VXD ) ) {
+    if( FmtData.type & ( MK_NE | MK_OS2_FLAT | MK_WIN_VXD ) ) {
         FmtRelocSize = sizeof( os2_reloc_item );
         return;
     }
@@ -520,7 +520,7 @@ bool SwapOutRelocs( void )
                 return( true );
             }
         }
-    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE | MK_QNX) ) {
+    } else if( FmtData.type & (MK_NE | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next ) {
             if( SpillRelocList( group->g.reloclist ) ) {
                 return( true );

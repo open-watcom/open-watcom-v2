@@ -180,7 +180,7 @@ static void SetupImpLib( void )
              * - preserves the case of name
              */
             fname = GetBaseName( Root->outfile->fname, 0, &namelen );
-            if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+            if( FmtData.type & MK_NE ) {
                 if( namelen > 8 ) {
                     namelen = 8;
                 }
@@ -192,12 +192,12 @@ static void SetupImpLib( void )
             }
             ImpLib.module_name_len = namelen;
             ImpLib.module_name = MemAllocSafe( namelen );
-            if( FmtData.type & (MK_OS2 | MK_WIN_VXD | MK_WIN_NE) ) {
+            if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_WIN_VXD) ) {
                 /*
                  * upper-case module name
                  */
                 for( i = 0; i < namelen; i++ ) {
-                    ImpLib.module_name[i] = toupper( (unsigned char)fname[i] );
+                    ImpLib.module_name[i] = toupper( ((unsigned char *)fname)[i] );
                 }
             } else { /* FmtData.type & MK_PE */
                 memcpy( ImpLib.module_name, fname, namelen );
@@ -304,7 +304,7 @@ static void finiLoad( void )
 #endif
 #ifdef _OS2
   #if 0
-    if( (FmtData.type & (MK_OS2 | MK_WIN_NE))
+    if( (FmtData.type & (MK_NE | MK_OS2_FLAT))
       && (LinkState & LS_HAVE_PPC_CODE) ) {
         // development temporarly on hold:
         FiniELFLoadFile();
@@ -317,7 +317,7 @@ static void finiLoad( void )
     } else if( FmtData.type & MK_PE ) {
         FiniPELoadFile();
         return;
-    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    } else if( FmtData.type & MK_NE ) {
         FiniOS2LoadFile();
         return;
     }

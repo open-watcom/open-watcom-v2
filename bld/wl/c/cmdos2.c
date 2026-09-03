@@ -374,14 +374,14 @@ static bool ProcMixed1632( void )
 }
 
 static parse_entry  MainOptions[] = {
-    "NOSTUB",               ProcNoStub,                 MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
-    "ONEautodata",          ProcSingle,                 MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
-    "MANYautodata",         ProcMultiple,               MK_OS2 | MK_WIN_NE,                         CF_AUTO_SEG_FLAG,
-    "NOAutodata",           ProcNone,                   MK_OS2_NE | MK_WIN_NE,                      CF_AUTO_SEG_FLAG,
-    "OLDlibrary",           ProcOldLibrary,             MK_OS2 | MK_WIN_NE | MK_PE,                 0,
-    "MODName",              ProcModName,                MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD,    0,
+    "NOSTUB",               ProcNoStub,                 MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD,   0,
+    "ONEautodata",          ProcSingle,                 MK_NE | MK_OS2_FLAT,                        CF_AUTO_SEG_FLAG,
+    "MANYautodata",         ProcMultiple,               MK_NE | MK_OS2_FLAT,                        CF_AUTO_SEG_FLAG,
+    "NOAutodata",           ProcNone,                   MK_NE,                                      CF_AUTO_SEG_FLAG,
+    "OLDlibrary",           ProcOldLibrary,             MK_NE | MK_OS2_FLAT | MK_PE,                0,
+    "MODName",              ProcModName,                MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD,   0,
     "NEWFiles",             ProcNewFiles,               MK_OS2_NE,                                  0,
-    "PROTmode",             ProcProtMode,               MK_OS2_NE | MK_WIN_NE,                      0,
+    "PROTmode",             ProcProtMode,               MK_NE,                                      0,
     "NOSTDCall",            ProcNoStdCall,              MK_PE,                                      0,
     "RWReloccheck",         ProcRWRelocCheck,           MK_WIN_NE,                                  0,
     "SELFrelative",         ProcSelfRelative,           MK_OS2_LX,                                  0,
@@ -534,8 +534,8 @@ static bool ProcPrivate( void )
 }
 
 static parse_entry  Exp_Keywords[] = {
-    "RESident",     ProcExpResident,    MK_OS2 | MK_WIN_NE, 0,
-    "PRIVATE",      ProcPrivate,        MK_OS2 | MK_WIN_NE | MK_PE, 0,
+    "RESident",     ProcExpResident,    MK_NE | MK_OS2_FLAT, 0,
+    "PRIVATE",      ProcPrivate,        MK_NE | MK_OS2_FLAT | MK_PE, 0,
     NULL
 };
 
@@ -652,8 +652,8 @@ static bool ProcSegData( void )
 }
 
 static parse_entry  SegTypeDesc[] = {
-    "CODE",         ProcSegCode,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
-    "DATA",         ProcSegData,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "CODE",         ProcSegCode,        MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
+    "DATA",         ProcSegData,        MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
@@ -900,25 +900,25 @@ static bool ProcNonPageable( void )
 }
 
 static parse_entry  SegDesc[] = {
-    "Class",            ProcOS2Class,       MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
-    "TYpe",             ProcSegType,        MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
+    "Class",            ProcOS2Class,       MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
+    "TYpe",             ProcSegType,        MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
     NULL
 };
 
 static parse_entry  SegModel[] = {
-    "PReload",          ProcPreload,        MK_OS2 | MK_WIN_NE | MK_WIN_VXD, 0,
-    "LOadoncall",       ProcLoadoncall,     MK_OS2 | MK_WIN_NE | MK_WIN_VXD, 0,
+    "PReload",          ProcPreload,        MK_NE | MK_OS2_FLAT | MK_WIN_VXD, 0,
+    "LOadoncall",       ProcLoadoncall,     MK_NE | MK_OS2_FLAT | MK_WIN_VXD, 0,
     "Iopl",             ProcIopl,           MK_OS2 | MK_WIN_VXD, 0,
     "NOIopl",           ProcNoIopl,         MK_OS2 | MK_WIN_VXD, 0,
-    "EXECUTEOnly",      ProcExecuteonly,    MK_OS2 | MK_WIN_NE, 0,
-    "EXECUTERead",      ProcExecuteread,    MK_OS2 | MK_WIN_NE, 0,
-    "SHared",           ProcShared,         MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
-    "NONShared",        ProcNonShared,      MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD, 0,
-    "READOnly",         ProcReadOnly,       MK_OS2 | MK_WIN_NE, 0,
-    "READWrite",        ProcReadWrite,      MK_OS2 | MK_WIN_NE, 0,
+    "EXECUTEOnly",      ProcExecuteonly,    MK_NE | MK_OS2_FLAT, 0,
+    "EXECUTERead",      ProcExecuteread,    MK_NE | MK_OS2_FLAT, 0,
+    "SHared",           ProcShared,         MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
+    "NONShared",        ProcNonShared,      MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD, 0,
+    "READOnly",         ProcReadOnly,       MK_NE | MK_OS2_FLAT, 0,
+    "READWrite",        ProcReadWrite,      MK_NE | MK_OS2_FLAT, 0,
     "CONforming",       ProcConforming,     MK_OS2 | MK_WIN_VXD, 0,
     "NONConforming",    ProcNonConforming,  MK_OS2 | MK_WIN_VXD, 0,
-    "MOVeable",         ProcMovable,        MK_OS2_NE | MK_WIN_NE, 0,
+    "MOVeable",         ProcMovable,        MK_NE, 0,
     "FIXed",            ProcFixed,          MK_WIN_NE, 0,
     "DIScardable",      ProcDiscardable,    MK_WIN_NE | MK_WIN_VXD, 0,
     "NONDiscardable",   ProcNonDiscardable, MK_WIN_VXD, 0,
@@ -1160,8 +1160,8 @@ static bool ProcTermThread( void )
 }
 
 static parse_entry  Init_Keywords[] = {
-    "INITGlobal",   ProcInitGlobal,     MK_OS2 | MK_WIN_NE | MK_PE, 0,
-    "INITInstance", ProcInitInstance,   MK_OS2 | MK_WIN_NE | MK_PE, 0,
+    "INITGlobal",   ProcInitGlobal,     MK_NE | MK_OS2_FLAT | MK_PE, 0,
+    "INITInstance", ProcInitInstance,   MK_NE | MK_OS2_FLAT | MK_PE, 0,
     "INITThread",   ProcInitThread,     MK_PE, 0,
     NULL
 };

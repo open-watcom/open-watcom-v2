@@ -1002,7 +1002,7 @@ static char **getStubNamePtr( void )
 /**********************************/
 {
 #ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD ) ) {
+    if( HintFormat( MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD ) ) {
         return( &FmtData.u.os2fam.stub_file_name );
     }
 #endif
@@ -1421,7 +1421,7 @@ static bool ProcImport( void )
 /****************************/
 {
 #ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_WIN_NE | MK_PE ) ) {
+    if( HintFormat( MK_NE | MK_OS2_FLAT | MK_PE ) ) {
         return( ProcOS2Import() );
     }
 #endif
@@ -1442,7 +1442,7 @@ static bool ProcExport( void )
 /****************************/
 {
 #ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD ) ) {
+    if( HintFormat( MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD ) ) {
         return( ProcOS2Export() );
     }
 #endif
@@ -1493,7 +1493,7 @@ static bool ProcSegment( void )
 /*****************************/
 {
 #ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD ) ) {
+    if( HintFormat( MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD ) ) {
         return( ProcOS2Segment() );
     }
 #endif
@@ -1511,7 +1511,7 @@ static bool ProcAlignment( void )
 /*******************************/
 {
 #ifdef _OS2
-    if( HintFormat( MK_OS2_NE | MK_WIN_NE | MK_OS2_LX | MK_PE ) ) {
+    if( HintFormat( MK_NE | MK_OS2_LX | MK_PE ) ) {
         return( ProcOS2Alignment() );
     }
 #endif
@@ -1534,7 +1534,7 @@ static bool ProcHeapSize( void )
     }
 #endif
 #ifdef _OS2
-    if( HintFormat( MK_OS2 | MK_WIN_NE | MK_PE ) ) {
+    if( HintFormat( MK_NE | MK_OS2_FLAT | MK_PE ) ) {
         return( ProcOS2HeapSize() );
     }
 #endif
@@ -1573,7 +1573,7 @@ static bool ProcOffset( void )
     }
 #endif
 //#ifdef _OS2
-//    if( FmtData.type & (MK_OS2 | MK_WIN_NE | MK_PE) ) {
+//    if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_PE) ) {
 //        ChkBase( _64K );
 //        return( true );
 //    }
@@ -1996,28 +1996,28 @@ static parse_entry  MainOptions[] = {
     "INCremental",  ProcIncremental,    MK_ALL, 0,
     "FILLchar",     ProcFillchar,       MK_ALL, 0,
 #if defined( _OS2 ) || defined( _EXE ) || defined( _DOS16M ) || defined( _QNX )
-    "PACKCode",     ProcPackcode,       (MK_OS2_NE | MK_WIN_NE | MK_DOS | MK_QNX | MK_DOS16M), 0,
-    "PACKData",     ProcPackdata,       (MK_OS2_NE | MK_WIN_NE | MK_DOS | MK_QNX | MK_DOS16M), 0,
+    "PACKCode",     ProcPackcode,       (MK_NE | MK_DOS | MK_QNX | MK_DOS16M), 0,
+    "PACKData",     ProcPackdata,       (MK_NE | MK_DOS | MK_QNX | MK_DOS16M), 0,
 #endif
 #if defined( _OS2 ) || defined( _ELF )
-    "Alignment",    ProcAlignment,      (MK_OS2_NE | MK_WIN_NE | MK_OS2_LX | MK_PE | MK_ELF), 0,
+    "Alignment",    ProcAlignment,      (MK_NE | MK_OS2_LX | MK_PE | MK_ELF), 0,
 #endif
 #if defined( _OS2 ) || defined( _PHARLAP ) || defined( _DOS16M )
-    "STUB",         ProcStub,           (MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M), 0,
+    "STUB",         ProcStub,           (MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD | MK_PHAR_LAP | MK_DOS16M), 0,
 #endif
 #if defined( _OS2 ) || defined( _NOVELL )
-    "DEscription",  ProcDescription,    MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD | MK_NOVELL, 0,
+    "DEscription",  ProcDescription,    MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD | MK_NOVELL, 0,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
-    "Heapsize",     ProcHeapSize,       (MK_OS2 | MK_WIN_NE | MK_QNX | MK_PE), 0,
+    "Heapsize",     ProcHeapSize,       (MK_NE | MK_OS2_FLAT | MK_QNX | MK_PE), 0,
 #endif
 #if defined(_PHARLAP) || defined(_QNX) || defined(_OS2) || defined(_RAW)
     "OFFset",       ProcOffset,         MK_PHAR_FLAT | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_QNX_FLAT | MK_ELF | MK_RAW, 0,
 #endif
 #if defined( _OS2 ) || defined( _NOVELL )
     "VERSion",      ProcVersion,        MK_NOVELL | MK_OS2_FLAT | MK_WIN_VXD | MK_PE | MK_WIN_NE, 0,
-    "IMPLib",       ProcImplib,         MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE, 0,
-    "IMPFile",      ProcImpFile,        MK_NOVELL | MK_OS2 | MK_WIN_NE | MK_PE, 0,
+    "IMPLib",       ProcImplib,         MK_NOVELL | MK_NE | MK_OS2_FLAT | MK_PE, 0,
+    "IMPFile",      ProcImpFile,        MK_NOVELL | MK_NE | MK_OS2_FLAT | MK_PE, 0,
 #endif
 #if defined( _DOS16M ) || defined( _QNX ) || defined( _OS2 ) || defined( _ELF )
     "NORelocs",     ProcNoRelocs,       (MK_QNX | MK_DOS16M  | MK_PE | MK_ELF), 0,
@@ -2155,14 +2155,14 @@ static parse_entry  Directives[] = {
 #ifdef _OS2
     "RESource",     ProcResource,       MK_PE,              0,
     "COMmit",       ProcCommit,         MK_PE,              0,
-    "ANONymousexport",ProcAnonExport,   MK_OS2 | MK_WIN_NE, CF_AFTER_INC,
+    "ANONymousexport",ProcAnonExport,   MK_NE | MK_OS2_FLAT, CF_AFTER_INC,
 #endif
 #if defined( _NOVELL ) || defined( _OS2 ) || defined( _ELF )
-    "IMPort",       ProcImport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_WIN_NE | MK_PE), CF_AFTER_INC,
-    "EXPort",       ProcExport,         (MK_NOVELL | MK_ELF | MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
+    "IMPort",       ProcImport,         (MK_NOVELL | MK_ELF | MK_NE | MK_OS2_FLAT | MK_PE), CF_AFTER_INC,
+    "EXPort",       ProcExport,         (MK_NOVELL | MK_ELF | MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD), CF_AFTER_INC,
 #endif
 #if defined( _OS2 ) || defined( _QNX )
-    "SEGment",      ProcSegment,        (MK_QNX | MK_OS2 | MK_WIN_NE | MK_PE | MK_WIN_VXD ), CF_SUBSET,
+    "SEGment",      ProcSegment,        (MK_QNX | MK_NE | MK_OS2_FLAT | MK_PE | MK_WIN_VXD ), CF_SUBSET,
 #endif
 #ifdef _EXE
     "OVerlay",      ProcOverlay,        MK_OVERLAYS,        0,
@@ -2183,7 +2183,7 @@ static parse_entry  Directives[] = {
     "TRansparent",  Proc16MTransparent, MK_DOS16M,          CF_SUBSET,
 #endif
 #if defined( _OS2 ) || defined( _EXE ) || defined ( _QNX )
-    "NEWsegment",   ProcNewSegment,     (MK_OS2_NE | MK_WIN_NE | MK_DOS | MK_QNX), 0,
+    "NEWsegment",   ProcNewSegment,     (MK_NE | MK_DOS | MK_QNX), 0,
 #endif
 #ifdef DEVBUILD
     "Xdbg",         ProcXDbg,           MK_ALL,             0,

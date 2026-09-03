@@ -568,7 +568,7 @@ static unsigned long ModRefTable( void )
     unsigned long       nodenum;
     unsigned long       off;
 
-    if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+    if( FmtData.type & MK_NE ) {
         off = 1;
         for( inode = FmtData.u.os2fam.imp_tab_list; inode != NULL; inode = inode->next ) {
             off += inode->len + 1;
@@ -618,7 +618,7 @@ unsigned long ResNonResNameTable( bool dores )
         /*
          * for 16-bit NE and VxD format module name is truncated to 8 characters
          */
-        if( (FmtData.type & (MK_OS2_NE | MK_WIN_NE) )
+        if( (FmtData.type & MK_NE )
           && len > 8 ) {
             len = 8;
         } else if( FmtData.type & MK_WIN_VXD ) {
@@ -643,7 +643,7 @@ unsigned long ResNonResNameTable( bool dores )
          */
         if( FmtData.description != NULL ) {
             name = FmtData.description;
-        } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+        } else if( FmtData.type & MK_NE ) {
             name = Root->outfile->fname;
         } else {
             name = "";
@@ -680,7 +680,7 @@ unsigned long ResNonResNameTable( bool dores )
             memcpy( external_name, name, len );
         } else {
             for( i = 0; i < len; i++ ) {
-                external_name[i] = toupper( (unsigned char)*name++ );
+                external_name[i] = toupper( *(unsigned char *)name++ );
             }
         }
         external_name[len] = '\0';
