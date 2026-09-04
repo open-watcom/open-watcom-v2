@@ -389,7 +389,7 @@ static char *SubstOne( const char **inp, char *out )
             parm = 1;
             for( starpos = out; isdigit( *(unsigned char *)starpos ); starpos++ )
                 ;
-            if( stricmp( starpos, "*" ) == 0 ) {
+            if( strcmp( starpos, "*" ) == 0 ) {
                 rep = NULL;
                 p = out;
                 sscanf( out, "%u", &parm );

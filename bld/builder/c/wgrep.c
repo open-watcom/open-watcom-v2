@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -152,26 +152,42 @@ char            StdoutBuf[512];       // used for files w/o \r
 int             CurOutMode;
 int             FileMode = 0;
 
-unsigned char   CharInSrchStrings[] = {
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+bool CharInSrchStrings[] = {
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
+    false,false,false,false,false,false,false,false,
 };
 
-unsigned char CharTrans[] = {
+char CharTrans[] = {
     0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0a,0x0b,0x0c,0x0d,0x0e,0x0f,
     0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1a,0x1b,0x1c,0x1d,0x1e,0x1f,
     0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,
@@ -518,7 +534,7 @@ static void searchBuffer( char *srch, size_t read )
                 if( tolower( *(unsigned char *)s ) != tolower( *(unsigned char *)p ) ) {
                     // if the mismatched character is not in the string,
                     // restart search AFTER the mismatching character
-                    if( !CharInSrchStrings[CharTrans[*(unsigned char *)p]] ) {
+                    if( !CharInSrchStrings[(unsigned char)CharTrans[*(unsigned char *)p]] ) {
                         next = p + 1;
                         Recs += skip;
                     }
@@ -552,7 +568,7 @@ static void searchBuffer( char *srch, size_t read )
                 if( *s != CharTrans[*(unsigned char *)p] ) {
                     // if the mismatched character is not in the string,
                     // restart search AFTER the mismatching character
-                    if( !CharInSrchStrings[CharTrans[*(unsigned char *)p]] ) {
+                    if( !CharInSrchStrings[(unsigned char)CharTrans[*(unsigned char *)p]] ) {
                         next = p + 1;
                         Recs += skip;
                     }
@@ -897,8 +913,7 @@ static void startWgrep( char **paths )
     char            *env;
     char            *more_paths[50];
     int             i, j;
-    unsigned char   c;
-
+    char            c;
     char            *p;
     char            **currs;
     size_t          len;
@@ -1136,7 +1151,7 @@ int main( int argc, char **argv )
         if( argv[0][1] == 'e' ) {
             break;
         }
-        switch( tolower( (unsigned char)argv[0][1] ) ) {
+        switch( (char)tolower( ((unsigned char **)argv)[0][1] ) ) {
         case 'a':
             PrtAll = true;
             break;
@@ -1180,7 +1195,7 @@ int main( int argc, char **argv )
             PrtFiles = false;
             break;
         case 'r':
-            ch = (char)tolower( (unsigned char)argv[0][2] );
+            ch = (char)tolower( ((unsigned char **)argv)[0][2] );
             if( ch == 'o' ) {
                 FileMode = PMODE_W;                    // -ro
             } else if( ch == '\0' ) {

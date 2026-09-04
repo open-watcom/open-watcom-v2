@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -459,7 +459,7 @@ static void CloseFile( void )
 
 static void EatWhite( void )
 {
-    while( isspace( (unsigned char)*Rptr ) ) {
+    while( isspace( *(unsigned char *)Rptr ) ) {
         ++Rptr;
     }
 }
@@ -496,7 +496,7 @@ static bool ScanString( void )
     }
     eptr = cptr + sizeof( Token ) - 1;
     for( ;; ) {
-        if( isspace( (unsigned char)*rptr ) )
+        if( isspace( *(unsigned char *)rptr ) )
             break;
         if( IsOper( *rptr ) )
             break;

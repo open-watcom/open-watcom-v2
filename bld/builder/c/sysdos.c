@@ -57,7 +57,7 @@ int SysChdir( const char *dir )
 
     if( dir[0] == '\0' )
         return( 0 );
-    drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+    drive = ( dir[1] == ':' ) ? toupper( ((unsigned char *)dir)[0] ) - 'A' + 1 : 0;
     if( dir[1] != '\0' ) {
         len = strlen( dir );
         if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {

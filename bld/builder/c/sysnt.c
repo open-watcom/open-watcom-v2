@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -158,7 +158,7 @@ int SysChdir( const char *dir )
 
     rc = 0;
     if( dir[0] != '\0' ) {
-        drive = ( dir[1] == ':' ) ? toupper( (unsigned char)dir[0] ) - 'A' + 1 : 0;
+        drive = ( dir[1] == ':' ) ? toupper( ((unsigned char *)dir)[0] ) - 'A' + 1 : 0;
         if( dir[1] != '\0' ) {
             len = strlen( dir );
             if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {
