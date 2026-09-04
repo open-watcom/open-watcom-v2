@@ -117,7 +117,7 @@ static size_t MakeExeTypeString( char *buff, size_t max )
         Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
         str = rc_buff;
     }
-    if( IS_VOWEL( tolower(*str) ) ) {
+    if( IS_VOWEL( tolower( *(unsigned char *)str ) ) ) {
         *buff++ = 'n';
         len++;
     }

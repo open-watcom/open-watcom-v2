@@ -1380,7 +1380,7 @@ size_t WriteLoadU8Name( const char *data, size_t len, bool ucase )
     WriteLoadU8( len );
     if( ucase ) {
         for( i = 0; i < len; ++i ) {
-            buff[i] = toupper( data[i] );
+            buff[i] = toupper( ((unsigned char *)data)[i] );
         }
         data = buff;
     }

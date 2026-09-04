@@ -214,7 +214,7 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
                 return( ret );
             }
             if( *key == '\0'
-              || tolower( *ptr ) != tolower( *key ) )
+              || tolower( *(unsigned char *)ptr ) != tolower( *(unsigned char *)key ) )
                 break;
             ptr++;
             key++;
@@ -270,7 +270,7 @@ bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match
                 return( true );
             }
             if( *key == '\0'
-              || tolower( *ptr ) != tolower( *key ) )
+              || tolower( *(unsigned char *)ptr ) != tolower( *(unsigned char *)key ) )
                 break;
             ptr++;
             key++;
@@ -310,6 +310,7 @@ ord_state getatol( unsigned_32 *pnt )
     bool                isdig;
     bool                gotdigit;
     int                 ch;
+    char                c;
 
     len = Token.len;
     if( len == 0 )
@@ -326,15 +327,15 @@ ord_state getatol( unsigned_32 *pnt )
         p += 2;
     }
     for( ; len != 0; --len ) {
-        ch = tolower( *(unsigned char *)p++ );
-        if( ch == 'k' ) {               // constant of the form 64k
+        c = ch = tolower( *(unsigned char *)p++ );
+        if( c == 'k' ) {               // constant of the form 64k
             if( len > 1
               || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
             } else {
                 value <<= 10;           // value = value * 1024;
             }
-        } else if( ch == 'm' ) {        // constant of the form 64M
+        } else if( c == 'm' ) {        // constant of the form 64M
             if( len > 1
               || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
@@ -353,9 +354,9 @@ ord_state getatol( unsigned_32 *pnt )
             }
             value *= radix;
             if( isdig ) {
-                value += ch - '0';
+                value += c - '0';
             } else {
-                value += ch - 'a' + 10;
+                value += c - 'a' + 10;
             }
             gotdigit = true;
         }
@@ -407,16 +408,17 @@ static unsigned ParseNumber( const char *str, int radix, int *shift )
     bool        isdig;
     bool        isvalid;
     int         ch;
+    char        c;
     int         size;
     unsigned    value;
 
     size = 0;
     value = 0;
     for( ;; ) {
-        ch = tolower( *(unsigned char *)str );
+        c = ch = tolower( *(unsigned char *)str );
         isdig = ( isdigit( ch ) != 0 );
         if( radix == 8 ) {
-            isvalid = ( isdig && ch != '8' && ch != '9' );
+            isvalid = ( isdig && c != '8' && c != '9' );
         } else {
             isvalid = ( isxdigit( ch ) != 0 );
         }
@@ -424,9 +426,9 @@ static unsigned ParseNumber( const char *str, int radix, int *shift )
             break;
         value *= radix;
         if( isdig ) {
-            value += ch - '0';
+            value += c - '0';
         } else {
-            value += ch - 'a' + 10;
+            value += c - 'a' + 10;
         }
         size++;
         str++;
@@ -442,11 +444,11 @@ static void MapEscapeChar( void )
 {
     const char      *str;
     int             shift;
-    int             c;
+    char            c;
 
     shift = 2;
     str = Token.next + 1;
-    switch( *(unsigned char *)str ) {
+    switch( *str ) {
     case 'a':
         c = '\a';
         break;
@@ -469,7 +471,7 @@ static void MapEscapeChar( void )
         c = '\v';
         break;
     case 'x':   /* '\x' */
-        c = (unsigned char)ParseNumber( ++str, 16, &shift );
+        c = ParseNumber( ++str, 16, &shift );
         break;
     case '0':
     case '1':
@@ -481,7 +483,7 @@ static void MapEscapeChar( void )
     case '7':
     case '8':
     case '9':
-        c = (unsigned char)ParseNumber( str, 8, &shift );
+        c = ParseNumber( str, 8, &shift );
         break;
     default:
         c = *str;
@@ -526,7 +528,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 /**********************************************************/
 {
     bool        quit;
-    int         hmm;
+    char        c;
     size_t      len;
     bool        forcematch;
     bool        hitmatch;
@@ -546,13 +548,13 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
       && (ctrl & TOK_IS_FILENAME) == 0 ) {
         MapEscapeChar();        /* get escape chars starting in 1st pos. */
     }
-    hmm = *(unsigned char *)Token.next;
-    len += MapDoubleByteChar( hmm );
+    c = *Token.next;
+    len += MapDoubleByteChar( (unsigned char)c );
     hitmatch = false;
     for( ;; ) {
         len++;
-        hmm = *(unsigned char *)++Token.next;
-        switch( hmm ) {
+        c = *++Token.next;
+        switch( c ) {
         case '\'':
             if( separator == SEP_QUOTE ) {
                 ++Token.next;      // don't include end quote in next token.
@@ -617,7 +619,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             quit = true;
             break;
         default:
-            len += MapDoubleByteChar( hmm );
+            len += MapDoubleByteChar( (unsigned char)c );
         }
         if( quit ) {
             break;
@@ -756,7 +758,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
 /* return true if no problem */
 /* return false if problem   */
 {
-    char    hmm;
+    char    c;
     bool    ret;
     bool    need_sep;
 
@@ -796,8 +798,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
         switch( Token.where ) {
         case MIDST:
             EatWhite();
-            hmm = *Token.next;
-            switch( hmm ) {
+            c = *Token.next;
+            switch( c ) {
             case '\0':
                 if( Token.how == BUFFERED
                   || Token.how == ENVIRONMENT
@@ -854,44 +856,44 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                     Token.quoted = false;
                     switch( req ) {
                     case SEP_NO:
-                        if( hmm == ','
-                          || hmm == '=' )
+                        if( c == ','
+                          || c == '=' )
                             return( false );
                         break;
                     case SEP_COMMA:
-                        if(hmm != ',' )
+                        if( c != ',' )
                             return( false);
                         Token.next++;
                         break;
                     case SEP_EQUALS:
-                        if( hmm != '=' )
+                        if( c != '=' )
                             return( false );
                         Token.next++;
                         break;
                     case SEP_PERIOD:
                     case SEP_DOT_EXT:
-                        if( hmm != '.' )
+                        if( c != '.' )
                             return( false );
                         Token.next++;
                         break;
                     case SEP_PAREN:
-                        if( hmm != '(' )
+                        if( c != '(' )
                             return( false );
                         Token.next++;
                         break;
                     case SEP_LCURLY:
-                        if( hmm != '{' )
+                        if( c != '{' )
                             return( false );
                         Token.next++;
                         break;
                     case SEP_QUOTE:
-                        if( hmm != '\'' )
+                        if( c != '\'' )
                             return( false );
                         Token.next++;
                         Token.quoted = true;
                         break;
                     case SEP_RCURLY:
-                        if( hmm != '}' )
+                        if( c != '}' )
                             return( false );
                         Token.next++;
                         return( true );
@@ -901,7 +903,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                     need_sep = false;
                     EatWhite();
                 } else {                /*  must have good separator here */
-                    if( hmm == '\''
+                    if( c == '\''
                       && req != SEP_PAREN
                       && req != SEP_SPACE ) {
                         req = SEP_QUOTE;   /* token has been quoted */
@@ -1266,7 +1268,7 @@ version_state GetGenVersion( version_block *vb, version_state enq, bool novell_r
          */
         if( retval == ST_NOT_ORDINAL
           && Token.len == 1 ) {
-            value  = tolower( *(unsigned char *)Token.this ) - 'a' + 1;
+            value = (char)tolower( *(unsigned char *)Token.this ) - 'a' + 1;
         } else if( retval == ST_NOT_ORDINAL ) {
             LnkMsg( WRN+LOC+LINE+MSG_VALUE_INCORRECT, "s", vb->message );
             return( state );

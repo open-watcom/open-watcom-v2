@@ -171,11 +171,11 @@ static size_t CheckStdCall( const char *name, size_t len )
     chop = 0;
     if( len > 3 ) {
         teststr = name + len - 1;
-        if( *name == '_' && isdigit( *teststr ) ) {
+        if( *name == '_' && isdigit( *(unsigned char *)teststr ) ) {
             teststr--;
             if( *teststr == '@' ) {
                 chop = 3;
-            } else if( isdigit( *teststr ) ) {
+            } else if( isdigit( *(unsigned char *)teststr ) ) {
                 teststr--;
                 if( *teststr == '@' ) {
                     chop = 4;

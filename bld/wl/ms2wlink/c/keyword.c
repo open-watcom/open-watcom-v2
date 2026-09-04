@@ -333,22 +333,23 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
     unsigned        radix;
     bool            isvalid;
     bool            isdig;
-    char            ch;
+    int             ch;
+    char            c;
 
     value = 0ul;
     radix = 10;
     if( *s == '0' ) {
         --len;
         radix = 8;
-        if( tolower( *++s ) == 'x') {
+        if( (char)tolower( *(unsigned char *)++s ) == 'x') {
             radix = 16;
             ++s;
             --len;
         }
     }
     for( ; len != 0; --len ) {
-        ch = tolower( *s++ );
-        if( ch == 'k' ) {         // constant of the form 64k
+        c = ch = tolower( *(unsigned char *)s++ );
+        if( c == 'k' ) {         // constant of the form 64k
             if( len > 1 ) {
                 return( false );
             } else {
@@ -359,8 +360,8 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
             if( radix == 10 ) {
                 isvalid = isdig;
             } else if( radix == 8 ) {
-                if( ch == '8'
-                  || ch == '9'
+                if( c == '8'
+                  || c == '9'
                   || !isdig ) {
                     isvalid = false;
                 } else {
@@ -374,9 +375,9 @@ static bool GetNumberStr( unsigned long *val, const char *s, size_t len )
             }
             value *= radix;
             if( isdig ) {
-                value += ch - '0';
+                value += c - '0';
             } else {
-                value += ch - 'a' + 10;
+                value += c - 'a' + 10;
             }
         }
     }
@@ -424,7 +425,7 @@ static bool ProcessKeyList( word_entry *entry, const char *arg, size_t arg_len )
                 return( true );
             }
             if( *key == '\0'
-              || tolower( *ptr ) != *key )
+              || (char)tolower( *(unsigned char *)ptr ) != *key )
                 break;
             ptr++;
             key++;
@@ -1630,7 +1631,7 @@ void ProcessOption( const char *opt )
                 return;
             }
             if( *key == '\0'
-              || tolower( *ptr ) != *key )
+              || (char)tolower( *(unsigned char *)ptr ) != *key )
                 break;
             ptr++;
             key++;

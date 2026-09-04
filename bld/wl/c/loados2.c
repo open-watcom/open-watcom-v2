@@ -213,7 +213,7 @@ static void AssignOrdinals( void )
     entry_export        *exp;
     entry_export        *place;
     entry_export        *prev;
-    bool                isspace;
+    bool                is_space;
 
     if( FmtData.u.os2fam.exports != NULL ) {
         if( FmtData.u.os2fam.old_lib_name != NULL ) {
@@ -221,7 +221,7 @@ static void AssignOrdinals( void )
         }
         prev = FmtData.u.os2fam.exports;
         place = prev->next;
-        isspace = false;
+        is_space = false;
         for( exp = FmtData.u.os2fam.exports; exp->ordinal == 0; exp = FmtData.u.os2fam.exports ) {
             /*
              * while still unassigned values
@@ -229,10 +229,10 @@ static void AssignOrdinals( void )
              */
             for( ;; ) {
                 if( place != NULL ) {
-                    isspace = ( ( place->ordinal - prev->ordinal ) > 1 );
+                    is_space = ( ( place->ordinal - prev->ordinal ) > 1 );
                 }
                 if( place == NULL
-                  || isspace ) {
+                  || is_space ) {
                     if( FmtData.u.os2fam.exports != prev ) {
                         FmtData.u.os2fam.exports = exp->next;
                         prev->next = exp;

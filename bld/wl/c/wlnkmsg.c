@@ -153,7 +153,7 @@ void Msg_Put_Args(
                 if( types_buff[j] == specifier ) {
                     order[j] = argnum;
                     argnum++;
-                    if( isdigit( specifier ) )          // Digit becomes s
+                    if( isdigit( (unsigned char)specifier ) )          // Digit becomes s
                         types_buff[j] = percent[1] = 's';
                     break;
                 }
