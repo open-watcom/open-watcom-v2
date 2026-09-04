@@ -49,8 +49,6 @@
 /*
 //  should move these somewhere more suitable
 */
-#define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
-#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
 void SetNovFmt( void )
 /********************/
@@ -94,9 +92,10 @@ static bool IsNetWarePrefix( const char *token, size_t tokenlen )
 static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char **name, size_t *namelen, const char **prefix, size_t *prefixlen )
 /**********************************************************************************************************************************************/
 {
-    const char  *findAt = token;
+    const char  *findAt;
     size_t      len;
 
+    findAt = token;
     if( (NULL == token)
       || (0 == tokenlen)
       || (NULL == name)
@@ -108,7 +107,7 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
     *name = *prefix = NULL;
     *namelen = *prefixlen = 0;
 
-    for( len = tokenlen; len; len-- ) {
+    for( len = tokenlen; len > 0; len-- ) {
         if( '@' == *findAt )
             break;
         if( '\0' == *findAt ) {
@@ -130,7 +129,7 @@ static bool NetWareSplitSymbol( const char *token, size_t tokenlen, const char *
      *  a function name with a numeric character (I believe)
      */
 
-    if( IS_NUMBER( &findAt[1] ) ) {
+    if( isdigit( ((unsigned char *)findAt)[1] ) ) {
         *name = token;
         *namelen = tokenlen;
         return( true );
@@ -169,7 +168,7 @@ static bool SetCurrentPrefix( const char *str, size_t len )
     len--;  /* and record that */
 
     for( ; len > 0; --len, ++str ) {
-        if( !IS_WHITESPACE( str ) ) {
+        if( !isspace( *(unsigned char *)str ) ) {
             break;
         }
     }
@@ -181,7 +180,7 @@ static bool SetCurrentPrefix( const char *str, size_t len )
         return( false );
 
     for( s = str + len - 1; len > 0; --len, --s ) {
-        if( !IS_WHITESPACE( s ) ) {
+        if( !isspace( *(unsigned char *)s ) ) {
             break;
         }
     }
@@ -210,7 +209,7 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
         return( false );
 
     for( parse = Token.next; *parse != '\0'; parse++ ) {
-        if( !IS_WHITESPACE( parse ) ) {
+        if( !isspace( *(unsigned char *)parse ) ) {
             break;
         }
     }
@@ -242,10 +241,11 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
         //  before allowing the skip!
         */
         if( CheckDirectives ) {
-            size_t      len = 0;
+            size_t      len;
             const char  *t;
 
-            for( t = parse; !IS_WHITESPACE(t); ++t ) {
+            len = 0;
+            for( t = parse; !isspace( *(unsigned char *)t ); ++t ) {
                 len++;
             }
 

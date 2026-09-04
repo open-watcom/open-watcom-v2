@@ -51,8 +51,6 @@
 #include "clibext.h"
 
 
-#define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
-
 cmdfilelist     *CmdFile = NULL;
 
 static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
@@ -1062,7 +1060,7 @@ void SetCommandFile( f_handle file, const char *fname )
 void EatWhite( void )
 /*******************/
 {
-    while( IS_WHITESPACE( Token.next ) ) {
+    while( isspace( *(unsigned char *)Token.next ) ) {
         Token.next++;
     }
 }

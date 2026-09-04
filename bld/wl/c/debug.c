@@ -197,7 +197,7 @@ static void OneLineDumpByte( const unsigned char *p, int size )
         if( len >= max - 2 ) {
             break;
         }
-        buf[len++] = isprint( p[i] ) ? p[i] : '.';
+        buf[len++] = isprint( ((unsigned char *)p)[i] ) ? p[i] : '.';
     }
     buf[len] = 0;
     WriteStdOutWithNL( buf );
