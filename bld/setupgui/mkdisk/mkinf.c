@@ -58,12 +58,9 @@
 
 #define IS_EMPTY(p)     ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
-#define IS_WS(c)        ((c) == ' ' || (c) == '\t')
-#define SKIP_WS(p)      while(IS_WS(*(p))) (p)++
-
 #define IS_ASCII(c)     (c < 0x80)
 
-#define IS_LANG_TAG(s)  ((s)[0] == '/' && (s)[1] == '/' && (isdigit( (s)[2] ) || (s)[2] == '-' && isdigit( (s)[3] )))
+#define IS_LANG_TAG(s)  ((s)[0] == '/' && (s)[1] == '/' && (isdigit( ((unsigned char *)(s))[2] ) || (s)[2] == '-' && isdigit( ((unsigned char *)(s))[3] )))
 
 typedef int (*comp_fn)(const void *,const void *);
 
@@ -257,7 +254,9 @@ static char *mygets( char *buf, int max_len_buf, FILE *fp )
             return( NULL );
         }
         q = p;
-        SKIP_WS( q );
+        while( isspace( *(unsigned char *)q ) ) {
+            q++;
+        }
         got = strlen( q );
         if( p != q )
             memmove( p, q, got + 1 );
@@ -343,9 +342,9 @@ bool CheckParms( int *pargc, char **pargv[] )
 
     if( *pargc > 1 ) {
         while( ((*pargv)[1] != NULL) && ((*pargv)[1][0] == '-') ) {
-            if( tolower( (*pargv)[1][1] ) == 'l' ) {
+            if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'l' ) {
                 Lang = strtol( (*pargv)[1] + 2, NULL, 10 );
-            } else if( tolower( (*pargv)[1][1] ) == 'd' ) {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'd' ) {
                 new = malloc( sizeof( LIST ) );
                 if( new == NULL ) {
                     printf( "\nOut of memory\n" );
@@ -354,7 +353,7 @@ bool CheckParms( int *pargc, char **pargv[] )
                 new->next = NULL;
                 new->item = strdup( &(*pargv)[1][2] );
                 AddToList( new, &AppSection );
-            } else if( tolower( (*pargv)[1][1] ) == 'i' ) {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'i' ) {
                 new = malloc( sizeof( LIST ) );
                 if( new == NULL ) {
                     printf( "\nOut of memory\n" );
@@ -363,13 +362,16 @@ bool CheckParms( int *pargc, char **pargv[] )
                 new->next = NULL;
                 new->item = strdup( &(*pargv)[1][2] );
                 AddToList( new, &Include );
-            } else if( tolower( (*pargv)[1][1] ) == 'u' && tolower( (*pargv)[1][2] ) == 't' && tolower( (*pargv)[1][3] ) == 'f' && (*pargv)[1][4] == '8') {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'u'
+              && (char)tolower( (*(unsigned char ***)pargv)[1][2] ) == 't'
+              && (char)tolower( (*(unsigned char ***)pargv)[1][3] ) == 'f'
+              && (*pargv)[1][4] == '8') {
                 Utf8 = true;
-            } else if( tolower( (*pargv)[1][1] ) == 'v' ) {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'v' ) {
                 Verbose = true;
-            } else if( tolower( (*pargv)[1][1] ) == 'f' ) {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'f' ) {
                 IgnoreMissingFiles = true;
-            } else if( tolower( (*pargv)[1][1] ) == 'x' ) {
+            } else if( (char)tolower( (*(unsigned char ***)pargv)[1][1] ) == 'x' ) {
                 CreateMissingFiles = true;
             } else {
                 printf( "Unrecognized option %s\n", (*pargv)[1] );
@@ -1211,12 +1213,12 @@ void DumpSizes( FILE *fp, FILE_INFO *curr )
         }
         fprintf( fp, "!" );
         if( csize->type != '\0' ) {
-            fprintf( fp, "%c", tolower( csize->type ) );
+            fprintf( fp, "%c", tolower( (unsigned char)csize->type ) );
         }
         if( csize->redist != '\0' ) {
             // 'o' for ODBC file
             // 's' for supplemental file (not deleted)
-            fprintf( fp, "!%c", tolower( csize->redist ) );
+            fprintf( fp, "!%c", tolower( (unsigned char)csize->redist ) );
         }
         fprintf( fp, "," );
         if( curr->num_files > 1 ) {

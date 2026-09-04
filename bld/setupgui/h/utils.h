@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#define DRIVE_NUM(x)    ((x)[1] == ':' ? (char)toupper((unsigned char)(x)[0]) - 'A' + 1 : 0)
+
 typedef enum {
     CFE_NOERROR,
     CFE_NOMEMORY,

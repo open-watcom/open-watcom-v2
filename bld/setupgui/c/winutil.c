@@ -97,13 +97,13 @@ static void CreateRegEntry( const VBUF *hive_key, const VBUF *app_name, const VB
                 bin_buf = malloc( len / 2 );
                 if( bin_buf != NULL ) {
                     for( i = 0; i < len / 2; ++i ) {
-                        if( tolower( p[0] ) >= 'a' ) {
+                        if( (char)tolower( ((unsigned char *)p)[0] ) >= 'a' ) {
                             bin_buf[i] = p[0] - 'a' + 10;
                         } else {
                             bin_buf[i] = p[0] - '0';
                         }
                         bin_buf[i] = bin_buf[i] * 16;
-                        if( tolower( p[1] ) >= 'a' ) {
+                        if( (char)tolower( ((unsigned char *)p)[1] ) >= 'a' ) {
                             bin_buf[i] += p[1] - 'a' + 10;
                         } else {
                             bin_buf[i] += p[1] - '0';

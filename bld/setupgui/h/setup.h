@@ -96,11 +96,8 @@
 
 #define IS_VALID_DIR(p)     ((p)->d_name[0] != '.' || (p)->d_name[1] != '\0' && ((p)->d_name[1] != '.' || (p)->d_name[2] != '\0'))
 
-#define SKIP_SPACES(s)      while(isspace(*s)) s++
-#define SKIP_CHAR_SPACES(s) while(isspace(*++s))
-
 #define TEST_UNC(x)         ((x)[0] == '\\' && (x)[1] == '\\')
-#define TEST_DRIVE(x)       (isalpha( (x)[0] ) && (x)[1] == ':')
+#define TEST_DRIVE(x)       (isalpha( ((unsigned char *)(x))[0] ) && (x)[1] == ':')
 #define TEST_NODE(x)        ((x)[0] == '/' && (x)[1] == '/')
 
 #define SEEK_POSBACK(p)     (-(long)(p))

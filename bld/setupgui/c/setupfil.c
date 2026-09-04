@@ -319,7 +319,9 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
      * NAME VALUE
      */
     VbufRewind( name );
-    SKIP_SPACES( line );
+    while( isspace( *(unsigned char *)line ) ) {
+        line++;
+    }
     if( noecho ) {
         if( strnicmp( line, NOECHO_PREFIX, sizeof( NOECHO_PREFIX ) - 1 ) == 0 ) {
             line += sizeof( NOECHO_PREFIX ) - 1;
@@ -327,7 +329,9 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     }
     if( IS_SETENVCMD( line ) ) {
         line += SETENV_LEN;
-        SKIP_SPACES( line );
+        while( isspace( *(unsigned char *)line ) ) {
+            line++;
+        }
         if( vt_setenv == VAR_ASSIGN_SETENV ) {
             VbufConcStr( name, SETENV );
         }
@@ -337,7 +341,7 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     }
     s = line;
     for( ; (c = *line) != '\0'; line++ ) {
-        if( isspace( c )
+        if( isspace( (unsigned char)c )
           || c == '=' ) {
             break;
         }
@@ -345,12 +349,16 @@ static var_type parse_line( char *line, VBUF *name, VBUF *value, var_type vt_set
     VbufConcBuffer( name, s, (vbuflen)( line - s ) );
     VbufRewind( value );
     if( *line == '=' ) {
-        SKIP_CHAR_SPACES( line );
+        while( isspace( *(unsigned char *)++line ) ) {
+            /* nothing */
+        }
         VbufConcStr( value, line );
     } else if( vt == vt_setenv ) {
         vt = VAR_ERROR;
     } else {
-        SKIP_SPACES( line );
+        while( isspace( *(unsigned char *)line ) ) {
+            line++;
+        }
         VbufConcStr( value, line );
         vt = VAR_CMD;
     }
@@ -607,7 +615,9 @@ static bool ModFile( const VBUF *orig, const VBUF *new,
          * don't process empty lines but keep them in new file
          */
         line = envbuf;
-        SKIP_SPACES( line );
+        while( isspace( *(unsigned char *)line ) ) {
+            line++;
+        }
         if( line[0] != '\0' ) {
             func_xxx( line, num_xxx, found_xxx, uninstall, noecho );
             if( num_env > 0 ) {
@@ -886,7 +896,7 @@ static void CheckConfigLine( char *line, int num_cfg, bool *found_cfg, bool unin
                 }
                 continue;
             }
-            if( isdigit( VbufString( &line_val )[0] ) ) {
+            if( isdigit( ((unsigned char *)VbufString( &line_val ))[0] ) ) {
                 /*
                  * for files=20, linefers=30 etc
                  */
@@ -1084,7 +1094,7 @@ bool ModifyAutoExec( bool uninstall )
                  */
                 const char  *sys_drv;
                 sys_drv = GetVariableStrVal( "WinSystemDir" );
-                boot_drive = toupper( sys_drv[0] );
+                boot_drive = toupper( *(unsigned char *)sys_drv );
             }
 #else
             /*

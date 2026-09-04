@@ -67,9 +67,6 @@
 
 #define IS_EMPTY(p)         ((p)[0] == '\0' || (p)[0] == '.' && (p)[1] == '\0')
 
-#define IS_WS(c)            ((c) == ' ' || (c) == '\t')
-#define SKIP_WS(p)          while(IS_WS(*(p))) (p)++
-
 #define __ROUND_UP_SIZE_TEXTBUF(x)      __ROUND_UP_SIZE((x), TEXTBUF_SIZE)
 #define __ROUND_UP_SIZE_BLOCK(x)        __ROUND_UP_SIZE((x), block_size)
 
@@ -670,11 +667,13 @@ static char *NextToken( char *buf, char delim )
     } else {
         next = p;
         *next++ = '\0';
-        SKIP_WS( next );
+        while( isspace( *(unsigned char *)next ) ) {
+            next++;
+        }
     }
     if( p != buf ) {
         p--;
-        while( p >= buf && IS_WS( *p ) ) {
+        while( p >= buf && isspace( *(unsigned char *)p ) ) {
             *p-- = '\0';
         }
     }
@@ -701,10 +700,11 @@ static char *StripBlanks( char *p )
     if( p == NULL ) {
         return p;
     }
-
-    SKIP_WS( p );
+    while( isspace( *(unsigned char *)p ) ) {
+        p++;
+    }
     q = p + strlen( p ) - 1;
-    while( q >= p && (IS_WS( *q ) || *q == '\n') ) {
+    while( q >= p && ( isspace( *(unsigned char *)q ) || *q == '\n') ) {
         *q = '\0';
         --q;
     }
@@ -873,7 +873,7 @@ static char *find_break( char *text, DIALOG_PARSER_INFO *parse_dlg, int *chwidth
         /*
          * is this a good place to break?
          */
-        if( IS_WS( *e ) ) { /* English */
+        if( isspace( *(unsigned char *)e ) ) { /* English */
             br = n;
         } else if( valid_last_char( e )
           && valid_first_char( n ) ) {
@@ -1059,7 +1059,9 @@ static char *textwindow_wrap( char *text, DIALOG_PARSER_INFO *parse_dlg, bool co
     break_candidate = find_break( orig_index, parse_dlg, &chwidth );
     for( ; orig_index[0] != '\0'; orig_index++ ) {
         if( new_line ) {
-            SKIP_WS( orig_index );
+            while( isspace( *(unsigned char *)orig_index ) ) {
+                orig_index++;
+            }
         }
 
         if( convert_newline
@@ -2291,7 +2293,9 @@ static int PrepareSetupInfo( file_handle afh, pass_type pass )
              * Eliminate leading blanks on lines
              */
             p = readbuf;
-            SKIP_WS( p );
+            while( isspace( *(unsigned char *)p ) ) {
+                p++;
+            }
             bytes_read = len + bytes_read - ( p - readbuf );
             if( bufsize < bytes_read ) {
                 bufsize = __ROUND_UP_SIZE_TEXTBUF( bytes_read );
@@ -3155,7 +3159,7 @@ static const char *GetTargetFullPath( int parm, VBUF *buff )
     }
 #if !defined( __UNIX__ )
     if( TEST_DRIVE( VbufString( buff ) ) ) {
-        VbufSetPathDrive( buff, toupper( VbufString( buff )[0] ) );
+        VbufSetPathDrive( buff, toupper( ((unsigned char *)VbufString( buff ))[0] ) );
     }
 #endif
     return( VbufString( buff ) );

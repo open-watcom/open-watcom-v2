@@ -137,7 +137,7 @@ static unsigned int hashKey( size_t size, hash_key k )
     assert( size != 0 );
 
     while( *k ) {
-        hash = (hash << 4) + tolower( *k );
+        hash = (hash << 4) + tolower( *(unsigned char *)k );
         if( hash & 0xffff0000 ) {
             hash += hash >> 24;
         }

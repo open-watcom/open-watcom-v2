@@ -139,7 +139,7 @@ static void SetDefaultVals( gui_window *gui, a_dialog_header *dlg )
     for( i = 0; (var_handle = dlg->pVariables[i]) != NO_VAR; ++i ) {
         cond = dlg->pConditions[i];
         if( !dlg->defaults_set && cond != NULL && !VarGetBoolVal( var_handle ) ) {
-            if( isdigit( *cond ) ) {
+            if( isdigit( *(unsigned char *)cond ) ) {
                 SetVariableByHandle( var_handle, cond );
             } else if( EvalCondition( cond ) ) {
                 SetBoolVariableByHandle( var_handle, true );

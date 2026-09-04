@@ -69,8 +69,6 @@
 #include "clibext.h"
 
 
-#define DRIVE_NUM(x)    (toupper((x)) - 'A' + 1)
-
 #define TMPFILENAME     "_watcom_.tmp"
 
 #define GB_UNITS        "GB"
@@ -560,14 +558,14 @@ static const char *GetRootFromPath( VBUF *root, const char *path )
         /*
          * turn a path like "c:\dir" into "c:\"
          */
-        c = toupper( path[0] );
+        c = toupper( ((unsigned char *)path)[0] );
     } else if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
         return( NULL );
     } else {
         /*
          * for relative paths like "\dir" use the current drive.
          */
-        c = toupper( curr_dir[0] );
+        c = toupper( ((unsigned char *)curr_dir)[0] );
     }
     VbufSetChr( root, c );
     VbufConcStr( root, ":\\" );
@@ -691,7 +689,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
 
         /* unused parameters */ (void)removable;
 
-        drive_num = DRIVE_NUM( info->root[0] );
+        drive_num = DRIVE_NUM( info->root );
 
         rc = DosQueryFSInfo( (ULONG)drive_num, FSIL_ALLOC, (PVOID)&fsinfo, sizeof( fsinfo ) );
         if( rc == 0 ) {
@@ -763,7 +761,7 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
         union REGS          r;
         char                drive_num;
 
-        drive_num = DRIVE_NUM( info->root[0] );
+        drive_num = DRIVE_NUM( info->root );
 
         r.w.ax = 0x440E;    /* get logical drive */
         r.w.bx = drive_num;
@@ -2498,7 +2496,7 @@ static void removeTrailingSpaces( char *s )
     size_t  len;
 
     len = strlen( s );
-    while( len-- > 0 && isspace( s[len] ) ) {
+    while( len-- > 0 && isspace( ((unsigned char *)s)[len] ) ) {
         s[len] = '\0';
     }
 }
@@ -2518,7 +2516,9 @@ void ReadVariablesFile( const char *name )
     }
 
     while( (line = fgets( buf, sizeof( buf ), fp )) != NULL ) {
-        SKIP_SPACES( line );
+        while( isspace( *(unsigned char *)line ) ) {
+            line++;
+        }
         if( *line == '#'
           || *line == '\0' ) {
             continue;
@@ -2528,7 +2528,9 @@ void ReadVariablesFile( const char *name )
         if( variable != NULL ) {
             value = strtok( NULL, "=\t\0" );
             if( value != NULL ) {
-                SKIP_SPACES( value );
+                while( isspace( *(unsigned char *)value ) ) {
+                    value++;
+                }
                 removeTrailingSpaces( value );
                 if( name == NULL
                   || stricmp( name, variable ) == 0 ) {
