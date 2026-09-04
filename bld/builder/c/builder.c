@@ -171,7 +171,7 @@ static bool ProcessOptions( char *argv[], bool opt_end )
 
     while( argv[0] != NULL ) {
         if( !opt_end && argv[0][0] == '-' ) {
-            switch( tolower( argv[0][1] ) ) {
+            switch( (char)tolower( ((unsigned char **)argv)[0][1] ) ) {
             case 'c':
                 argv = getvalue( argv, parm_buff );
                 AddCtlFile( parm_buff );
@@ -300,9 +300,8 @@ static bool ProcessEnv( bool opt_end )
             argc = parse_string( env, args );
             args[argc] = NULL;
             opt_end = ProcessOptions( args, opt_end );
-            while( argc > 0 ) {
+            while( argc > 0 )
                 MemFree( args[--argc] );
-            }
             MemFree( args );
         }
     }
@@ -439,7 +438,8 @@ static void SubstLine( const char *in, char *out )
     bool        first;
 
     first = true;
-    SKIP_BLANKS( in );
+    while( isspace( *(unsigned char *)in ) )
+        in++;
     for( ;; ) {
         switch( *in ) {
         case '^':                       /* Escape next byte special meaning */
@@ -479,9 +479,10 @@ static void SubstLine( const char *in, char *out )
 
 static char *GetWord( char *p, char **start )
 {
-    SKIP_BLANKS( p );
+    while( isspace( *(unsigned char *)p ) )
+        p++;
     for( *start = p; *p != '\0'; ++p ) {
-        if( IS_BLANK( *p ) ) {
+        if( isspace( *(unsigned char *)p ) ) {
             *p++ = '\0';
             break;
         }
@@ -621,7 +622,8 @@ static int ProcessCtlFile( const char *name )
             logit = ( VerbLevel > 0 );
             if( *p == '@' ) {
                 p++;
-                SKIP_BLANKS( p );
+                while( isspace( *(unsigned char *)p ) )
+                    p++;
                 logit = false;
             }
             if( includeStk->skipping == 0 && includeStk->ifdefskipping == 0 ) {

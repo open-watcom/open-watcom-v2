@@ -255,9 +255,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
 
     *list = NULL;
     dst_end = &dst[strlen( dst ) - 1];
-    while( IS_BLANK( dst_end[0] ) ) {
+    while( isspace( *(unsigned char *)dst_end ) )
         --dst_end;
-    }
     dst_end[1] = '\0';
     if( strpbrk( src, WILD_METAS ) == NULL ) {
         /*
@@ -819,29 +818,32 @@ static int ProcRm( const char *cmd )
         /*
          * process -r option
          */
-        while( (cmd = GetPathOrFile( cmd, buffer )) != NULL ) {
-            if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
-                int rc = RecursiveRM( "." );
-                if( rc != 0 ) {
-                    retval = rc;
-                }
-            } else if( strpbrk( buffer, WILD_METAS ) != NULL ) {
-                /*
-                 * wild cards is not processed for directories
-                 */
-                continue;
-            } else {
-                struct stat buf;
-                if( stat( buffer, &buf ) == 0 ) {
-                    if( S_ISDIR( buf.st_mode ) ) {
-                        int rc = RecursiveRM( buffer );
-                        if( rc != 0 ) {
-                            retval = rc;
-                        }
-                    } else {
-                        int rc = DoRM( buffer );
-                        if( rc != 0 ) {
-                            retval = rc;
+        while( cmd[0] != '\0' ) {
+            cmd = GetPathOrFile( cmd, buffer );
+            if( *buffer != '\0' ) {
+                if( strcmp( buffer, MASK_ALL_ITEMS ) == 0 ) {
+                    int rc = RecursiveRM( "." );
+                    if( rc != 0 ) {
+                        retval = rc;
+                    }
+                } else if( strpbrk( buffer, WILD_METAS ) != NULL ) {
+                    /*
+                     * wild cards is not processed for directories
+                     */
+                    continue;
+                } else {
+                    struct stat buf;
+                    if( stat( buffer, &buf ) == 0 ) {
+                        if( S_ISDIR( buf.st_mode ) ) {
+                            int rc = RecursiveRM( buffer );
+                            if( rc != 0 ) {
+                                retval = rc;
+                            }
+                        } else {
+                            int rc = DoRM( buffer );
+                            if( rc != 0 ) {
+                                retval = rc;
+                            }
                         }
                     }
                 }
@@ -851,70 +853,96 @@ static int ProcRm( const char *cmd )
         /*
          * run through all specified files
          */
-        while( (cmd = GetPathOrFile( cmd, buffer )) != NULL ) {
-            int rc = DoRM( buffer );
-            if( rc != 0 ) {
-                retval = rc;
+        while( cmd[0] != '\0' ) {
+            int rc;
+
+            cmd = GetPathOrFile( cmd, buffer );
+            if( *buffer != '\0' ) {
+                rc = DoRM( buffer );
+                if( rc != 0 ) {
+                    retval = rc;
+                }
             }
         }
     }
     return( retval );
 }
 
+static bool BuiltIn( const char **ptr, const char *cmd )
+{
+    size_t          len;
+    const char      *p;
+    bool            found;
+
+    found = false;
+    p = *ptr;
+    len = strlen( cmd );
+    if( strnicmp( p, cmd, len ) == 0 ) {
+        p += len;
+        if( *p == '\0' ) {
+            *ptr = p;
+            found = true;
+        } else if( isspace( *(unsigned char *)p ) ) {
+            while( isspace( *(unsigned char *)p ) )
+                p++;
+            *ptr = p;
+            found = true;
+        }
+    }
+    return( found );
+}
+
 int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
 {
     int     res;
-
-    #define BUILTIN( c, b )     (strnicmp( (c), b, sizeof( b ) - 1 ) == 0 && (c)[sizeof( b ) - 1] == ' ')
-    #define SKIP_CMD( c, b )    SkipBlanks( c + sizeof( b ) )
+    char    path[_MAX_PATH];
 
     *res_nolog = false;
-    if( BUILTIN( cmd, "CD" ) ) {
-        char    path[_MAX_PATH];
-
-        cmd = GetPathOrFile( SKIP_CMD( cmd, "CD" ), path );
+    if( BuiltIn( &cmd, "CD" ) ) {
+        cmd = GetPathOrFile( cmd, path );
         res = SysChdir( path );
         if( res == 0 ) {
             SetIncludeCWD();
         }
-    } else if( BUILTIN( cmd, "CDSAY" ) ) {
-        char    path[_MAX_PATH];
-
-        cmd = GetPathOrFile( SKIP_CMD( cmd, "CDSAY" ), path );
+    } else if( BuiltIn( &cmd, "CDSAY" ) ) {
+        cmd = GetPathOrFile( cmd, path );
         res = SysChdir( path );
         if( res == 0 ) {
             SetIncludeCWD();
             LogDir( GetIncludeCWD() );
         }
-    } else if( BUILTIN( cmd, "SET" ) ) {
-        res = ProcSet( SKIP_CMD( cmd, "SET" ) );
-    } else if( BUILTIN( cmd, "ECHO" ) ) {
-        Log( Quiet, "%s\n", SKIP_CMD( cmd, "ECHO" ) );
+    } else if( BuiltIn( &cmd, "SET" ) ) {
+        res = ProcSet( cmd );
+    } else if( BuiltIn( &cmd, "ECHO" ) ) {
+        Log( Quiet, "%s\n", cmd );
         res = 0;
-    } else if( BUILTIN( cmd, "ERROR" ) ) {
-        Log( Quiet, "%s\n", SKIP_CMD( cmd, "ERROR" ) );
+    } else if( BuiltIn( &cmd, "ERROR" ) ) {
+        Log( Quiet, "%s\n", cmd );
         res = 1;
-    } else if( BUILTIN( cmd, "COPY" ) ) {
-        res = ProcCopy( SKIP_CMD( cmd, "COPY" ), false, false, ignore_errors );
+    } else if( BuiltIn( &cmd, "COPY" ) ) {
+        res = ProcCopy( cmd, false, false, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( cmd, "ACOPY" ) ) {
-        res = ProcCopy( SKIP_CMD( cmd, "ACOPY" ), true, false, ignore_errors );
+    } else if( BuiltIn( &cmd, "ACOPY" ) ) {
+        res = ProcCopy( cmd, true, false, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( cmd, "CCOPY" ) ) {
-        res = ProcCopy( SKIP_CMD( cmd, "CCOPY" ), false, true, ignore_errors );
+    } else if( BuiltIn( &cmd, "CCOPY" ) ) {
+        res = ProcCopy( cmd, false, true, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( cmd, "ACCOPY" ) ) {
-        res = ProcCopy( SKIP_CMD( cmd, "ACCOPY" ), true, true, ignore_errors );
+    } else if( BuiltIn( &cmd, "ACCOPY" ) ) {
+        res = ProcCopy( cmd, true, true, ignore_errors );
         *res_nolog = true;
-    } else if( BUILTIN( cmd, "MKDIR" ) ) {
-        res = ProcMkdir( SKIP_CMD( cmd, "MKDIR" ) );
-    } else if( BUILTIN( cmd, "PMAKE" ) ) {
-        res = ProcPMake( SKIP_CMD( cmd, "PMAKE" ), ignore_errors );
+    } else if( BuiltIn( &cmd, "MKDIR" ) ) {
+        res = ProcMkdir( cmd );
+    } else if( BuiltIn( &cmd, "PMAKE" ) ) {
+        res = ProcPMake( cmd, ignore_errors );
         *res_nolog = ignore_errors;
-    } else if( BUILTIN( cmd, "RM" ) ) {
-        res = ProcRm( SKIP_CMD( cmd, "RM" ) );
+    } else if( BuiltIn( &cmd, "RM" ) ) {
+        res = ProcRm( cmd );
     } else if( cmd[0] == '!' ) {
-        res = SysRunCommand( SkipBlanks( cmd + 1 ) );
+        cmd++;
+        while( isspace( *(unsigned char *)cmd ) )
+            cmd++;
+        res = SysRunCommand( cmd );
     } else {
         res = SysRunCommand( cmd );
     }

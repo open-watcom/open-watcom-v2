@@ -35,14 +35,8 @@
 #include <string.h>
 #include <ctype.h>
 
-char    buf[2048];
 
-static char *skipwhite( char *s )
-{
-    while( *s != '\0' && isspace( *(unsigned char *)s ) )
-        s++;
-    return *s ? s : NULL;
-}
+char    buf[2048];
 
 int main( int argc, char *argv[] )
 {
@@ -62,10 +56,12 @@ int main( int argc, char *argv[] )
         printf( "Unable to open input file %s!\n", argv[1] );
         return -1;
     }
-    while( fgets( buf, sizeof( buf ), in ) != NULL ) {
+    while( (p = fgets( buf, sizeof( buf ), in )) != NULL ) {
+        /* Skip white spaces */
+        while( isspace( *(unsigned char *)p ) )
+            p++;
         /* Skip comment and blank lines */
-        p = skipwhite( buf );
-        if( p == NULL || *p == '#' )
+        if( *p == '\0' || *p == '#' )
             continue;
         if( argc == 3 )
             fputs( argv[2], stdout );

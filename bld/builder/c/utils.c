@@ -192,39 +192,32 @@ void MemFree( void *p )
 #endif
 }
 
-const char *SkipBlanks( const char *p )
-{
-    while( IS_BLANK( *p ) ) {
-        ++p;
-    }
-    return( p );
-}
-
 char *GetPathOrFile( const char *p, char *buffer )
 {
     char        c;
     char        quotechar;
 
-    p = SkipBlanks( p );
-    if( *p == '\0' )
-        return( NULL );
-    quotechar = ( *p == '"' ) ? *p++ : ' ';
-    while( (c = *p) != '\0' ) {
-        if( c == quotechar ) {
-            p++;
-            break;
-        }
-#ifdef __UNIX__
-        if( c == '\\' ) {
-            c = '/';
-        }
-#else
-        if( c == '/' ) {
-            c = '\\';
-        }
-#endif
-        *buffer++ = c;
+    while( isspace( *(unsigned char *)p ) )
         p++;
+    if( *p != '\0' ) {
+        quotechar = ( *p == '"' ) ? *p++ : ' ';
+        while( (c = *p) != '\0' ) {
+            if( c == quotechar ) {
+                p++;
+                break;
+            }
+#ifdef __UNIX__
+            if( c == '\\' ) {
+                c = '/';
+            }
+#else
+            if( c == '/' ) {
+                c = '\\';
+            }
+#endif
+            *buffer++ = c;
+            p++;
+        }
     }
     *buffer = '\0';
     return( (char *)p );

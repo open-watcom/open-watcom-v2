@@ -34,11 +34,10 @@
 #include <stddef.h>
 #include "bool.h"
 
-#define MAX_LINE    (4096 + 1)
 
-#define IS_BLANK(c) ((c)==' ' || (c)=='\t')
+#define DRIVE_NUM(x)    ((x)[1] == ':' ? (char)toupper((unsigned char)(x)[0]) - 'A' + 1 : 0)
+#define MAX_LINE        (4096 + 1)
 
-#define SKIP_BLANKS(p)  while( IS_BLANK( *(p) ) ) (p)++
 
 extern FILE         *LogFile;
 
@@ -47,5 +46,4 @@ extern void         Log( bool quiet, const char *, ... );
 extern void         LogFlush( void );
 extern void         OpenLog( const char * );
 extern void         CloseLog( void );
-extern const char   *SkipBlanks( const char * );
 extern char         *GetPathOrFile( const char *p, char *buffer );

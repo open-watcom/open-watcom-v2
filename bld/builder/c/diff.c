@@ -679,7 +679,7 @@ static bool getinpline( FILE *fd, char *buffer, int max_len )
                 }
             }
             if( iflag ) {
-                c = tolower( c );
+                c = tolower( (unsigned char)c );
             }
             *top++ = c;
         }

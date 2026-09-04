@@ -158,18 +158,20 @@ int SysChdir( const char *dir )
 
     rc = 0;
     if( dir[0] != '\0' ) {
-        drive = ( dir[1] == ':' ) ? toupper( ((unsigned char *)dir)[0] ) - 'A' + 1 : 0;
         if( dir[1] != '\0' ) {
             len = strlen( dir );
-            if( ( dir[len - 1] == '\\' || dir[len - 1] == '/' ) && ( len > 3 || drive == 0 ) ) {
-                len--;
-                memcpy( tmp_buf, dir, len );
-                tmp_buf[len] = '\0';
-                dir = tmp_buf;
+            if( dir[len - 1] == '\\' || dir[len - 1] == '/' ) {
+                if( len > 3 || dir[1] != ':' ) {
+                    len--;
+                    memcpy( tmp_buf, dir, len );
+                    tmp_buf[len] = '\0';
+                    dir = tmp_buf;
+                }
             }
-        }
-        if( drive ) {
-            _chdrive( drive );
+            drive = DRIVE_NUM( dir );
+            if( drive ) {
+                _chdrive( drive );
+            }
         }
         rc = chdir( dir );
     }
