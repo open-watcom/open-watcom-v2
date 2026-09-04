@@ -308,7 +308,7 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
             dll->iatsym->p.import_dll = NULL;
         }
         dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2fam.mod_ref_list );
-        if( ordinal == NOT_IMP_BY_ORDINAL ) {
+        if( ordinal == IMP_BY_NAME ) {
             dll->isordinal = false;
             dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2fam.imp_tab_list );
         } else {

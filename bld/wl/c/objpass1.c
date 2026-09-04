@@ -94,7 +94,7 @@ static void DoSavedImport( symbol *sym )
         } else {
             extname.name = dll->u.entname.u.ptr;
             extname.len = strlen( extname.name );
-            MSImportKeyword( sym, &modname, &extname, NOT_IMP_BY_ORDINAL );
+            MSImportKeyword( sym, &modname, &extname, IMP_BY_NAME );
         }
         FreeImport( dll );
     }

@@ -500,10 +500,10 @@ static bool getimport( void )
 
             extname.name = Token.this;
             extname.len = Token.len;
-            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &extname, IMP_BY_NAME );
         }
     } else {
-        HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
+        HandleImport( &intname, &modname, &intname, IMP_BY_NAME );
     }
     return( true );
 }

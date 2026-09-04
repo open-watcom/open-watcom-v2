@@ -218,14 +218,14 @@ static void ProcImportKeyword( void )
     ObjBuff += modname.len;
     if( info == DLL_RELOC_NAME ) {
         if( *ObjBuff == 0 ) {   /* use internal name */
-            HandleImport( &intname, &modname, &intname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &intname, IMP_BY_NAME );
         } else {
             length_name     extname;
 
             extname.len = *ObjBuff++;
             extname.name = (char *)ObjBuff;
             ObjBuff += extname.len;
-            HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
+            HandleImport( &intname, &modname, &extname, IMP_BY_NAME );
         }
     } else {
         HandleImport(&intname, &modname, NULL, MGET_LE_U16_UN( ObjBuff ) );
