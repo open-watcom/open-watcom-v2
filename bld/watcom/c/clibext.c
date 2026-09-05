@@ -433,59 +433,6 @@ char *_fullpath( char *buff, const char *path, size_t size )
 
 #endif
 
-/****************************************************************************
-*
-* Description:  Implementation of strlwr().
-*
-****************************************************************************/
-
-#ifdef __WATCOMC__
-
-#elif defined(__UNIX__)
-
-char *strlwr( char *str )
-{
-    char            *p;
-    unsigned char   c;
-
-    for( p = str; (c = *p) != '\0'; p++ ) {
-        c -= 'A';
-        if( c <= 'Z' - 'A' ) {
-            c += 'a';
-            *p = c;
-        }
-    }
-    return( str );
-}
-
-#endif
-
-/****************************************************************************
-*
-* Description:  Implementation of strupr().
-*
-****************************************************************************/
-
-#ifdef __WATCOMC__
-
-#elif defined(__UNIX__)
-
-char *strupr( char *str )
-{
-    char            *p;
-    unsigned char   c;
-
-    for( p = str; (c = *p) != '\0'; p++ ) {
-        c -= 'a';
-        if( c <= 'z' - 'a' ) {
-            c += 'A';
-            *p = c;
-        }
-    }
-    return( str );
-}
-
-#endif
 
 /****************************************************************************
 *
