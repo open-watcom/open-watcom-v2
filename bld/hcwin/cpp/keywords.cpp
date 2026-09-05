@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@ KEYWORDS:  Keyword searching support
 */
 
 #include "keywords.h"
-#include <ctype.h>      // for isalnum()
+#include <cctype>      // for isalnum()
 
 
 //
@@ -119,8 +119,8 @@ inline KWoffset::KWoffset( uint_32 off )
 
 KWKey::KWKey( char const kword[] )
 {
-    _keyword = new char[strlen( kword ) + 1];
-    strcpy( _keyword, kword );
+    _keyword = new char[std::strlen( kword ) + 1];
+    std::strcpy( _keyword, kword );
 }
 
 
@@ -162,9 +162,9 @@ bool KWKey::lessThan( BtreeData * other )
     } while( left == right && left != '\0' );
 
     bool result = ( left < right );
-    if( isalnum( left ) && !isalnum( right ) ) {
+    if( std::isalnum( left ) && !std::isalnum( right ) ) {
         result = false;
-    } else if( !isalnum( left ) && isalnum( right ) ) {
+    } else if( !std::isalnum( left ) && std::isalnum( right ) ) {
         result = true;
     }
 
@@ -176,7 +176,7 @@ bool KWKey::lessThan( BtreeData * other )
 
 uint_32 KWKey::size()
 {
-    return (uint_32)( strlen( _keyword ) + 1 );
+    return (uint_32)( std::strlen( _keyword ) + 1 );
 }
 
 
@@ -217,7 +217,7 @@ KWRec::~KWRec()
 
 uint_32 KWRec::size()
 {
-    return( (uint_32)( strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 ) ) );
+    return( (uint_32)( std::strlen( _keyword ) + 1 + sizeof( uint_16 ) + sizeof( uint_32 ) ) );
 }
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,9 +35,9 @@
 MYFILE:  Special purpose file handling
 */
 
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cctype>
+#include <cstdlib>
 #include "myfile.h"
 
 #include "clibext.h"
@@ -51,8 +51,8 @@ File::File( char const filename[], uint_8 type )
 {
     char    mode[3] = "rb";
 
-    _shortName.resize( strlen( filename ) + 1 );
-    strcpy( _shortName, filename );
+    _shortName.resize( std::strlen( filename ) + 1 );
+    std::strcpy( _shortName, filename );
 
     if( type & WRITE ) {
         mode[0] = 'w';
@@ -60,7 +60,7 @@ File::File( char const filename[], uint_8 type )
     if( type & TEXT ) {
         mode[1] = 't';
     }
-    _fp = fopen( filename, mode );
+    _fp = std::fopen( filename, mode );
     _badFile = ( _fp == NULL );
     if( !_badFile ) {
         _flags = type;
@@ -87,8 +87,8 @@ bool File::open( char const filename[], uint_8 type )
 {
     char mode[3] = "rb";
 
-    _shortName.resize( strlen( filename ) + 1 );
-    strcpy( _shortName, filename );
+    _shortName.resize( std::strlen( filename ) + 1 );
+    std::strcpy( _shortName, filename );
 
     if( type & WRITE ) {
         mode[0] = 'w';
@@ -97,8 +97,8 @@ bool File::open( char const filename[], uint_8 type )
         mode[1] = 't';
     }
     if( _fp )
-        fclose( _fp );
-    _fp = fopen( filename, mode );
+        std::fclose( _fp );
+    _fp = std::fopen( filename, mode );
     _badFile = ( _fp == NULL );
     if( !_badFile ) {
         _flags = type;
@@ -123,7 +123,7 @@ File::~File()
     if( _fullName )
         delete[] _fullName;
     if( _fp ) {
-        fclose( _fp );
+        std::fclose( _fp );
     }
 }
 
@@ -138,7 +138,7 @@ bool File::open()
         if( _flags & WRITE ) {
             mode[0] = 'w';
         }
-        _fp = fopen( _fullName, mode );
+        _fp = std::fopen( _fullName, mode );
         if( _fp != NULL ) {
             _flags |= _isOpen;
         }
@@ -150,7 +150,7 @@ void File::close()
 // Shut down a file (to preserve file handles when necessary)
 {
     if( _flags & _isOpen ) {
-        fclose( _fp );
+        std::fclose( _fp );
         _fp = NULL;
         _flags ^= _isOpen;
     }
@@ -175,10 +175,10 @@ extern uint_32 Hash( char const *str )
     uint_32 result = 0;
     char increment;
     for( int i=0; str[i] != '\0'; i++ ) {
-        if( isalpha( str[i] ) ) {
-            increment = (char) (tolower( str[i] ) - 'a' + 17);
-        } else if( isdigit( str[i] ) ) {
-            increment = (char) ( str[i] - '1' + 1 );
+        if( std::isalpha( str[i] ) ) {
+            increment = (char)( (char)std::tolower( str[i] ) - 'a' + 17 );
+        } else if( std::isdigit( str[i] ) ) {
+            increment = (char)( str[i] - '1' + 1 );
             if( !increment ) {
                 increment = 10;
             }

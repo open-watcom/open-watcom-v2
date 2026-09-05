@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +32,8 @@
 
 #include "parsing.h"
 #include "hcerrors.h"
-#include <string.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 
 
 #define ROUND_UP(x,b)   (((x)/(b) + 1)*(b))
@@ -65,7 +65,7 @@ static int FindCommand( char const string[] )
     // I use binary search; the list is reasonably small.
     while( right >= left ) {
         _current = (left+right)/2;
-        result = strcmp( string, com_strs[_current] );
+        result = std::strcmp( string, com_strs[_current] );
         if( result < 0 ) {
             right = _current - 1;
         } else if( result > 0 ) {
@@ -97,8 +97,8 @@ RTFparser::RTFparser( Pointers *p, InFile *src )
     _sysFile = p->_sysFile;
 
     _input = new Scanner( src );
-    _fname = new char[strlen( src->name() ) + 1];
-    strcpy( _fname, src->name() );
+    _fname = new char[std::strlen( src->name() ) + 1];
+    std::strcpy( _fname, src->name() );
 
     _nestLevel = 0;
 
@@ -695,17 +695,17 @@ void RTFparser::Go()
 
                 FontFlags   bmtype = NOT_A_BITMAP;
 
-                if( strncmp( string, "bmc ", 4 ) == 0 ) {
+                if( std::strncmp( string, "bmc ", 4 ) == 0 ) {
                     bmtype = TOP_CENT_BITMAP;
-                } else if( strncmp( string, "bml ", 4 ) == 0 ) {
+                } else if( std::strncmp( string, "bml ", 4 ) == 0 ) {
                     bmtype = TOP_LEFT_BITMAP;
-                } else if( strncmp( string, "bmr ", 4 ) == 0 ) {
+                } else if( std::strncmp( string, "bmr ", 4 ) == 0 ) {
                     bmtype = TOP_RIGHT_BITMAP;
                 }
 
                 if( bmtype != NOT_A_BITMAP ) {
                     string += 4;
-                    while( isspace( *string ) ) {
+                    while( std::isspace( *string ) ) {
                         string++;
                     }
                     try {
@@ -807,7 +807,7 @@ void RTFparser::Go()
 
 char *RTFparser::skipSpaces( char * start )
 {
-    while( isspace( *start ) ) {
+    while( std::isspace( *start ) ) {
         start++;
     }
     return start;
@@ -830,7 +830,7 @@ void RTFparser::handleFootnote( char Fchar )
             if( _storSize + _current->_value + 1 >= _storage.len() ) {
                 _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage + _storSize, _current->_text, _current->_value );
+            std::memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
         } else if( _current->_type == TOK_SPEC_CHAR ) {
             if( _storSize + 2 >= _storage.len() ) {
@@ -862,15 +862,15 @@ void RTFparser::handleFootnote( char Fchar )
             break;
         }
         end = start;
-        while( *end != '\0' && !isspace( *end ) ) {
-            if( !isalnum( *end ) && *end != '.' && *end != '_' ) {
+        while( *end != '\0' && !std::isspace( *end ) ) {
+            if( !std::isalnum( *end ) && *end != '.' && *end != '_' ) {
                 HCWarning( CON_BADCHAR, _current->_lineNum, _fname );
                 _wereWarnings = true;
                 break;
             }
             ++end;
         }
-        if( *end == '\0' || isspace( *end ) ) {
+        if( *end == '\0' || std::isspace( *end ) ) {
             *end = '\0';
             _hashFile->addOffset( Hash( start ), _topFile->charOffset() );
         }
@@ -882,7 +882,7 @@ void RTFparser::handleFootnote( char Fchar )
         if( *start != '\0' ) {
             end = _storage + _storSize;
             --end;
-            while( end > start && isspace( *end ) ) {
+            while( end > start && std::isspace( *end ) ) {
                 --end;
             }
             *++end = '\0';
@@ -910,7 +910,7 @@ void RTFparser::handleFootnote( char Fchar )
                 finished = true;
             do {
                 --end;
-            } while( end >= start && isspace( *end ) );
+            } while( end >= start && std::isspace( *end ) );
             *++end = '\0';
             if( start != end ) {
                 _keyFile->addKW( start, _topFile->charOffset() );
@@ -925,7 +925,7 @@ void RTFparser::handleFootnote( char Fchar )
         if( *start != '\0' ) {
             end = _storage + _storSize;
             --end;
-            while( end > start && isspace( *end ) ) {
+            while( end > start && std::isspace( *end ) ) {
             --end;
             }
             *++end = '\0';
@@ -945,7 +945,7 @@ void RTFparser::handleFootnote( char Fchar )
             char    terminator = '\0';
             end = _storage + _storSize;
             --end;
-            while( end > start && isspace( *end ) ) {
+            while( end > start && std::isspace( *end ) ) {
                 --end;
             }
             *++end = '\0';
@@ -1009,7 +1009,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             if( _storSize + _current->_value + 1 >= _storage.len() ) {
                 _storage.resize( ROUND_UP( _storSize + _current->_value + 1, BLOCK_SIZE ) );
             }
-            memcpy( _storage + _storSize, _current->_text, _current->_value );
+            std::memcpy( _storage + _storSize, _current->_text, _current->_value );
             _storSize += _current->_value;
             break;
 
@@ -1066,9 +1066,9 @@ void RTFparser::handleHidden( bool IsHotLink )
 
             hash_value = Hash( pstorage );
 
-            length = (uint_16)( strlen( pfile ) + 2 );
+            length = (uint_16)( std::strlen( pfile ) + 2 );
             if( pwindow != NULL ) {
-                length = (uint_16)( length + strlen( pwindow ) + 1 );
+                length = (uint_16)( length + std::strlen( pwindow ) + 1 );
             }
 
             if( pwindow != NULL && *pwindow != '\0' ) {
@@ -1093,7 +1093,7 @@ void RTFparser::handleHidden( bool IsHotLink )
             }
         } else {
             hash_value = 0;
-            length = (uint_16)( strlen( pstorage ) + 1 );
+            length = (uint_16)( std::strlen( pstorage ) + 1 );
         }
 
         FontFlags   link_t;
@@ -1301,7 +1301,7 @@ void RTFparser::handleFonts()
                     ++i;
                     ++charp;
                 }
-                memcpy( cur_name+name_size, _current->_text, i );
+                std::memcpy( cur_name+name_size, _current->_text, i );
                 name_size += i;
                 if( *charp == ';' ) {
                     cur_name[name_size] = '\0';

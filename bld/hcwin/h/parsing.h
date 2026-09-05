@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,10 +78,10 @@ class RTFparser
 
     // An all-purpose string buffer.
     Buffer<char>    _storage;
-    size_t  _storSize;
+    std::size_t _storSize;
 
-    Token   *_current;
-    bool    _wereWarnings;
+    Token       *_current;
+    bool        _wereWarnings;
 
     // The current "tab stop type".
     TabTypes    _tabType;

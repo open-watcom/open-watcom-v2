@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +36,7 @@ TTLBTREE:  topic-offset-to-topic-title mapping
 */
 
 #include "ttlbtree.h"
-#include <string.h>
+#include <cstring>
 
 
 //
@@ -118,8 +118,8 @@ int TTLKey::dump( OutFile * dest )
 TTLRec::TTLRec( uint_32 off, char const string[] )
     : TTLKey( off )
 {
-    _title = new char[strlen( string ) + 1];
-    strcpy( _title, string );
+    _title = new char[std::strlen( string ) + 1];
+    std::strcpy( _title, string );
 }
 
 
@@ -135,7 +135,7 @@ TTLRec::~TTLRec()
 
 uint_32 TTLRec::size()
 {
-    return( (uint_32)( 5 + strlen( _title ) ) );
+    return( (uint_32)( 5 + std::strlen( _title ) ) );
 }
 
 

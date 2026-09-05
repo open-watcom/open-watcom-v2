@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 CONTEXT:  Hash-value-to-topic-offset mapping.
 */
 
-#include <string.h>
+#include <cstring>
 #include "context.h"
 #include "hcmem.h"
 
@@ -52,7 +52,7 @@ struct FutureHash
     FutureHash      *_prev;
     FutureHash      *_next;
 
-    FutureHash( size_t len ) : _string( len ), _next( NULL ) {};
+    FutureHash( std::size_t len ) : _string( len ), _next( NULL ) {};
 };
 
 
@@ -237,8 +237,8 @@ void HFContext::recordContext( char const str[] )
 
     // If this topic has not been referenced or defined before,
     // add it to the list of references.
-    FutureHash  *newnode = new FutureHash( strlen( str ) + 1 );
-    strcpy( newnode->_string, str );
+    FutureHash  *newnode = new FutureHash( std::strlen( str ) + 1 );
+    std::strcpy( newnode->_string, str );
     if( current == NULL ) {
         newnode->_prev = _tail;
         _tail = newnode;

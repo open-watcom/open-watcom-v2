@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 #include "wio.h"
 #include "hcerrors.h"
 #include "errstrs.h"
@@ -40,7 +41,7 @@ typedef const char *ErrString;
 
 //  ErrorPrint  --"printf" function to print error messages.
 
-void ErrorPrint( FILE *fp, ErrString format, va_list values )
+void ErrorPrint( std::FILE *fp, ErrString format, std::va_list values )
 {
     const char  *letter;
     ErrString   string;
@@ -48,24 +49,24 @@ void ErrorPrint( FILE *fp, ErrString format, va_list values )
 
     for( letter = format; *letter != '\0'; letter++ ) {
         if( *letter != '%' ) {
-            fputc( *letter, fp );
+            std::fputc( *letter, fp );
         } else {
             // Currently, only %s (strings) and %d (integers) are supported.
             switch( *++letter ) {
             case 'S':
             case 's':
                 string = va_arg( values, ErrString );
-                fprintf( fp, "%s", string );
+                std::fprintf( fp, "%s", string );
                 break;
 
             case 'D':
             case 'd':
                 value = va_arg( values, int );
-                fprintf( fp, "%d", value );
+                std::fprintf( fp, "%d", value );
                 break;
 
             case '%':
-                fputc( '%', fp );
+                std::fputc( '%', fp );
             }
         }
     }
@@ -78,9 +79,9 @@ void ErrorPrint( FILE *fp, ErrString format, va_list values )
 void HCError( int err_num, ... )
 {
     ErrString   string = err_strings[err_num];
-    va_list values;
+    std::va_list values;
 
-    fputc( '\n', stderr );
+    std::fputc( '\n', stderr );
     va_start( values, err_num );
     ErrorPrint( stderr, string, values );
     va_end( values );
@@ -95,9 +96,9 @@ void HCError( int err_num, ... )
 void HCWarning( int err_num, ... )
 {
     ErrString   string = err_strings[err_num];
-    va_list values;
+    std::va_list values;
 
-    fputc( '\n', stderr );
+    std::fputc( '\n', stderr );
     va_start( values, err_num );
     ErrorPrint( stderr, string, values );
     va_end( values );
@@ -124,7 +125,7 @@ void SetQuiet( bool be_quiet )
 void HCStartFile( char const name[] )
 {
     if( printOutput ) {
-        fprintf( stderr, "\nReading %s  ", name );
+        std::fprintf( stderr, "\nReading %s  ", name );
     }
 }
 
@@ -133,35 +134,35 @@ void HCTick()
     static const char wheel[]="\\|/-";
     static unsigned i=0;
     if( printOutput ) {
-        fputc( '\b', stderr );
-        fputc( wheel[i++ % 4], stderr );
+        std::fputc( '\b', stderr );
+        std::fputc( wheel[i++ % 4], stderr );
     }
 }
 
 void HCDoneTick()
 {
     if( printOutput ) {
-        fprintf( stderr, "\nFinished.\n" );
+        std::fprintf( stderr, "\nFinished.\n" );
     }
 }
 
 void HCStartOutput()
 {
     if( printOutput ) {
-        fprintf( stderr, "\nWriting .HLP file.  " );
+        std::fprintf( stderr, "\nWriting .HLP file.  " );
     }
 }
 
 void HCStartPhrase()
 {
     if( printOutput ) {
-        fprintf( stderr, "\nConstructing phrase table:         " );
+        std::fprintf( stderr, "\nConstructing phrase table:         " );
     }
 }
 
 void HCPhraseLoop( int pass )
 {
     if( printOutput ) {
-        fprintf( stderr, "\b\b\b\b\b\b\bPass %d.", pass );
+        std::fprintf( stderr, "\b\b\b\b\b\b\bPass %d.", pass );
     }
 }

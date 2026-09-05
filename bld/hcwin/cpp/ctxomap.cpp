@@ -37,7 +37,7 @@ CTXOMAP:  Context-number-to-topic-offset mapping.
 
 #include "ctxomap.h"
 #include "hcerrors.h"
-#include <stdlib.h> // for ltoa()
+#include <cstdlib> // for ltoa()
 
 
 //  HFCtxomap::CmapRec::CmapRec
@@ -116,7 +116,7 @@ uint_32 HFCtxomap::size()
             true_offset = _offsetFile->getOffset( current->_offset );
             if( true_offset == HFContext::_badValue ) {
                 char str[30];
-                sprintf( str, "MAP number %ld", (long)current->_mapnum );
+                std::sprintf( str, "MAP number %ld", (long)current->_mapnum );
                 HCWarning( HLP_NOTOPIC, (const char *)str );
             } else {
                 current->_offset = true_offset;

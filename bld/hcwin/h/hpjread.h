@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,11 +63,11 @@ class HPJScanner
     InFile          *_input;
 
     Buffer<char>    _curLine;
-    size_t          _lineSize;
+    std::size_t     _lineSize;
     int             _lineNum;
 
     // Some buffering is needed for the "tokLine" function.
-    size_t          _bufPos;
+    std::size_t     _bufPos;
     char            _bufChar;
 
     // Assignment of HPJScanner's is not allowed.
@@ -80,15 +80,15 @@ public:
 
     // Functions to access the raw data.
     int             lineNum() { return _lineNum; };
-    char            &operator[]( size_t i ) { return _curLine[i]; };
+    char            &operator[]( std::size_t i ) { return _curLine[i]; };
     operator char *() { return _curLine; };
 
-    size_t          getLine();                      // Get a new line.
-    char            *getArg( size_t start_pos );    // Read an argument.
-    char            *tokLine();                     // Tokenize a line.
+    std::size_t     getLine();                          // Get a new line.
+    char            *getArg( std::size_t start_pos );   // Read an argument.
+    char            *tokLine();                         // Tokenize a line.
     char            *endTok();
 
-    void            chkLineSize( size_t size );     // Check line size.
+    void            chkLineSize( std::size_t size );    // Check line size.
 
     bool            open( char const filename[] );
     void            close() { _input->close(); };
@@ -125,14 +125,14 @@ class HPJReader
     Baggage         **_bagFiles;    // List of baggage files.
     int             _numBagFiles;   // number of baggage files specified.
 
-    size_t  skipSection();      // Skip a section of the file.
-    size_t  handleBaggage();    // Read the [Baggage] section.
-    size_t  handleOptions();    // Read the [Options] section.
-    size_t  handleConfig();     // Read the [Config] section.
-    size_t  handleFiles();      // Read the [Files] section.
-    size_t  handleMap();        // Read the [Map] section.
-    size_t  handleBitmaps();    // Read the [Bitmaps] section.
-    size_t  handleWindows();    // Read the [Windows] section.
+    std::size_t  skipSection();      // Skip a section of the file.
+    std::size_t  handleBaggage();    // Read the [Baggage] section.
+    std::size_t  handleOptions();    // Read the [Options] section.
+    std::size_t  handleConfig();     // Read the [Config] section.
+    std::size_t  handleFiles();      // Read the [Files] section.
+    std::size_t  handleMap();        // Read the [Map] section.
+    std::size_t  handleBitmaps();    // Read the [Bitmaps] section.
+    std::size_t  handleWindows();    // Read the [Windows] section.
 
     char    *_winParamBuf;
     char    *nextWinParam();    // Helper function for handleWindows().

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 BMX:  Image file handling
 */
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "bmx.h"
 #include "wio.h"
 #include "compress.h"
@@ -393,7 +393,7 @@ void HFBitmaps::addToPath( char const path[] )
         }
         temp = new StrNode;
         temp->_name = new char[j + 1];
-        memcpy( temp->_name, arg, j );
+        std::memcpy( temp->_name, arg, j );
         temp->_name[j] = '\0';
         temp->_next = NULL;
         if( chdir( temp->_name ) ) {
@@ -457,8 +457,8 @@ void HFBitmaps::note( char const name[] )
     bmp->reset();
 
     current = new Image;
-    current->_name = new char[strlen( name ) + 1];
-    strcpy( current->_name, name );
+    current->_name = new char[std::strlen( name ) + 1];
+    std::strcpy( current->_name, name );
     current->_next = _files;
     _files = current;
     if( magic == BITMAP_MAGIC ) {
@@ -557,8 +557,8 @@ uint_16 HFBitmaps::use( char const name[] )
             bmp->reset();
 
             current = new Image;
-            current->_name = new char[strlen( name ) + 1];
-            strcpy( current->_name, name );
+            current->_name = new char[std::strlen( name ) + 1];
+            std::strcpy( current->_name, name );
             if( magic == BITMAP_MAGIC ) {
                 current->_image = new Bitmap(bmp);
             } else {
@@ -573,7 +573,7 @@ uint_16 HFBitmaps::use( char const name[] )
     } else {
         _usedFiles = current;
     }
-    sprintf( filename + 3, "%u", result );
+    std::sprintf( filename + 3, "%u", result );
     _dfile->addFile( current->_image, filename );
 
     _numImages += 1;

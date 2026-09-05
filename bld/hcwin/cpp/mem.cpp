@@ -36,8 +36,8 @@
  * appropriate C code use #pragma aux ... __frame to do same
  * for some unknown reason this doesn't work for C++ compiler now
  */
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include "hcmem.h"
 #ifdef TRMEM
     #include "trmem.h"
@@ -124,9 +124,9 @@ void mem_statistic()
 //
 
 #ifdef __WATCOMC__
-void *operator new( size_t size )
+void *operator new( std::size_t size )
 #else
-void *operator new( size_t size ) throw(std::bad_alloc)
+void *operator new( std::size_t size ) throw(std::bad_alloc)
 #endif
 {
     void *p;
@@ -134,7 +134,7 @@ void *operator new( size_t size ) throw(std::bad_alloc)
 #ifdef TRMEM
     p = _trmem_alloc( size, _TRMEM_WHO( 1 ), TrHdl );
 #else
-    p = malloc( size );
+    p = std::malloc( size );
 #endif
     return( p );
 }
@@ -144,12 +144,12 @@ void *operator new( size_t size ) throw(std::bad_alloc)
 //  renew -- global realloc function with hooks into the memory tracker.
 //
 
-void *renew( void *p, size_t size )
+void *renew( void *p, std::size_t size )
 {
 #ifdef TRMEM
     p = _trmem_realloc( p, size, _TRMEM_WHO( 2 ), TrHdl );
 #else
-    p = realloc( p, size );
+    p = std::realloc( p, size );
 #endif
     return( p );
 }
@@ -170,7 +170,7 @@ void operator delete( void *p ) throw()
 #ifdef TRMEM
     _trmem_free( p, _TRMEM_WHO( 3 ), TrHdl );
 #else
-    free( p );
+    std::free( p );
 #endif
 }
 
@@ -181,7 +181,7 @@ void operator delete( void *p ) throw()
 
 const unsigned Pool::BLOCK_SIZE = 1024;
 
-Pool::Pool( size_t size, unsigned b_size )
+Pool::Pool( std::size_t size, unsigned b_size )
     : _block( b_size ? b_size : BLOCK_SIZE ),
       _size( size > sizeof( void * ) ? size : sizeof( void * ) )
 {

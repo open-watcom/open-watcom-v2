@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -179,7 +179,7 @@ class HFTopic : public Dumpable
     bool        _haveCleanedUp;
 
     // A private function called by the appendAttr() functions.
-    void        addZero( size_t index );
+    void        addZero( std::size_t index );
 
     // Assignment of HFTopic's is not allowed.
     HFTopic( HFTopic const & ) {};

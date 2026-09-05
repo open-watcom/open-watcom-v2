@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +43,8 @@
 //
 #define MYFILE_H
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include "watcom.h"
 #include "hcmem.h"
 
@@ -63,7 +63,7 @@ class File
     File &  operator=( File const & ) { return *this; };
 
 protected:
-    FILE            *_fp;
+    std::FILE       *_fp;
     bool            _badFile;
     char            *_fullName;     // Path + name
     Buffer<char>    _shortName;     // Name as passed to the object.
@@ -86,10 +86,10 @@ public:
     void    close();        // Close the current file.
 
     int reset( long pos = 0, int where = SEEK_SET )
-        { return fseek( _fp, pos, where ); };
+        { return std::fseek( _fp, pos, where ); };
 
     long tell()
-        { return ftell( _fp ); };
+        { return std::ftell( _fp ); };
 };
 
 
@@ -103,19 +103,19 @@ public:
     OutFile( char const filename[] ) : File( filename, WRITE|BIN ) {};
 
     int write( uint_8 c )
-        { return fputc( c, _fp ); };
+        { return std::fputc( c, _fp ); };
 
-    size_t write( uint_16 d )
-        { return fwrite( &d, sizeof( d ), 1, _fp ); };
+    std::size_t write( uint_16 d )
+        { return std::fwrite( &d, sizeof( d ), 1, _fp ); };
 
-    size_t write( uint_32 d )
-        { return fwrite( &d, sizeof( d ), 1, _fp ); };
+    std::size_t write( uint_32 d )
+        { return std::fwrite( &d, sizeof( d ), 1, _fp ); };
 
-    size_t write( const void *buf, size_t nelems, size_t el_size=1 )
-        { return fwrite( buf, el_size, nelems, _fp ); };
+    std::size_t write( const void *buf, std::size_t nelems, std::size_t el_size=1 )
+        { return std::fwrite( buf, el_size, nelems, _fp ); };
 
-    size_t write( const char *d )
-        { return fwrite( d, strlen( d ) + 1, 1, _fp ); };
+    std::size_t write( const char *d )
+        { return std::fwrite( d, std::strlen( d ) + 1, 1, _fp ); };
 
 };
 
@@ -134,19 +134,19 @@ public:
     bool open() { return File::open(); };
 
     int nextch()
-        { return fgetc( _fp ); };
+        { return std::fgetc( _fp ); };
 
-    size_t read( uint_16 *buf )
-        { return fread( buf, sizeof( uint_16 ), 1, _fp ); };
+    std::size_t read( uint_16 *buf )
+        { return std::fread( buf, sizeof( uint_16 ), 1, _fp ); };
 
-    size_t read( uint_32 *buf )
-        { return fread( buf, sizeof( uint_32 ), 1, _fp ); };
+    std::size_t read( uint_32 *buf )
+        { return std::fread( buf, sizeof( uint_32 ), 1, _fp ); };
 
-    size_t read( void *buf, size_t num, size_t el_size = 1 )
-        { return fread( buf, el_size, num, _fp ); };
+    std::size_t read( void *buf, std::size_t num, std::size_t el_size = 1 )
+        { return std::fread( buf, el_size, num, _fp ); };
 
     int putback( int c )
-        { return ungetc( c, _fp ); };
+        { return std::ungetc( c, _fp ); };
 };
 
 

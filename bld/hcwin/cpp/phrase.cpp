@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cctype>
 #include "phrase.h"
 #include "compress.h"
 
@@ -66,8 +66,8 @@ struct Phrase
     static void initPool() { _pool = new Pool( sizeof( Phrase ) , PTBL_SIZE ); };
     static void freePool() { delete _pool; };
 
-    void *operator new( size_t ) { return _pool->get(); };
-    void operator delete( void *p, size_t ) { _pool->release( p ); };
+    void *operator new( std::size_t ) { return _pool->get(); };
+    void operator delete( void *p, std::size_t ) { _pool->release( p ); };
 
     Phrase();
     Phrase( Phrase &p );
@@ -113,7 +113,7 @@ Phrase::Phrase( Phrase &p )
       _firstEdge( NULL ),
       _next( NULL )
 {
-    memcpy( _str, p._str, _len );
+    std::memcpy( _str, p._str, _len );
 }
 
 
@@ -123,7 +123,7 @@ Phrase & Phrase::operator=( Phrase &p )
 {
     _len = p._len;
     _str.resize( _len );
-    memcpy( _str, p._str, _len );
+    std::memcpy( _str, p._str, _len );
     _numUses = 1;
     _firstEdge = NULL;
     _next = NULL;
@@ -166,7 +166,7 @@ private:
 P_String::P_String( Phrase &p )
     : _str( p._len ), _next( NULL )
 {
-    memcpy( _str, p._str, p._len );
+    std::memcpy( _str, p._str, p._len );
 }
 
 
@@ -203,7 +203,7 @@ class PTable
     void                heapify( unsigned start );
 
     // Helper function for hashing.
-    size_t              getHash( const char *str, size_t len );
+    std::size_t         getHash( const char *str, std::size_t len );
 
     // Assignment of PTable's is not permitted, so it's private.
     PTable( PTable const & ) : _hptable( 0 ), _phrases( 0 ) {};
@@ -251,11 +251,11 @@ PTable::PTable()
 PTable::~PTable()
 {
     // Delete any phrases remaining in the Pool.
-    for( size_t i = 0; i < _size; i++ ) {
+    for( std::size_t i = 0; i < _size; i++ ) {
         delete _phrases[i];
     }
     _size = _hptable.len();
-    for( size_t i = 0; i < _size; i++ ) {
+    for( std::size_t i = 0; i < _size; i++ ) {
         delete _hptable[i];
     }
     if( _edges ) {
@@ -266,13 +266,13 @@ PTable::~PTable()
 
 #define PH_MIN_LEN  3
 
-size_t PTable::getHash( const char *str, size_t len )
+std::size_t PTable::getHash( const char *str, std::size_t len )
 {
     uint_32 h_val = 0;
 
     if( len > PH_MIN_LEN )
         len = PH_MIN_LEN;
-    memcpy( &h_val, str, len );
+    std::memcpy( &h_val, str, len );
     return( h_val % HASH_SIZE );
 }
 
@@ -280,11 +280,11 @@ size_t PTable::getHash( const char *str, size_t len )
 
 Phrase *PTable::match( char * &start )
 {
-    size_t      length;
-    size_t      h_val;
-    Phrase      *result;
+    std::size_t     length;
+    std::size_t     h_val;
+    Phrase          *result;
 
-    length = strlen( start );
+    length = std::strlen( start );
     if( length == 0 ) {
         return NULL;
     }
@@ -300,21 +300,21 @@ Phrase *PTable::match( char * &start )
             }
         }
         for( ; result != NULL; result = result->_next ) {
-            if( memcmp( result->_str, start, result->_len ) == 0 ) {
+            if( std::memcmp( result->_str, start, result->_len ) == 0 ) {
                 break;
             }
         }
     }
     if( result != NULL ) {
         start += result->_len;
-        if( isspace( *start ) ) {
+        if( std::isspace( *start ) ) {
             start++;
         }
     } else {
         // If necessary, check for a shorter match.
         if( length >= PH_MIN_LEN - 1 ) {
             for( length = 1; length < PH_MIN_LEN - 1; ++length ) {
-                if( isspace( start[length] ) ) {
+                if( std::isspace( start[length] ) ) {
                     break;
                 }
             }
@@ -326,22 +326,22 @@ Phrase *PTable::match( char * &start )
             }
         }
         for( ; result != NULL; result = result->_next ) {
-            if( memcmp( result->_str, start, result->_len ) == 0 ) {
+            if( std::memcmp( result->_str, start, result->_len ) == 0 ) {
                 break;
             }
         }
         if( result != NULL ) {
             start += result->_len;
-            if( isspace( *start ) ) {
+            if( std::isspace( *start ) ) {
                 start++;
             }
         } else {
             bool found_text = false;
             while( *start != '\0' ) {
-                if( found_text && isspace( *start ) ) {
+                if( found_text && std::isspace( *start ) ) {
                     start++;
                     break;
-                } else if( !found_text && !isspace( *start ) ) {
+                } else if( !found_text && !std::isspace( *start ) ) {
                     found_text = true;
                 }
                 start++;
@@ -356,10 +356,10 @@ Phrase *PTable::match( char * &start )
 
 Phrase *PTable::find( Phrase *other )
 {
-    size_t      h_val;
-    Phrase      *result;
-    unsigned    len = other->_len;
-    char        *str = other->_str;
+    std::size_t     h_val;
+    Phrase          *result;
+    unsigned        len = other->_len;
+    char            *str = other->_str;
 
     h_val = getHash( str, len );
     for( result = _hptable[h_val]; result != NULL; result = result->_next ) {
@@ -368,7 +368,7 @@ Phrase *PTable::find( Phrase *other )
         }
     }
     for( ; result != NULL; result = result->_next ) {
-        if( result->_len != len || memcmp( result->_str, str, len ) == 0 ) {
+        if( result->_len != len || std::memcmp( result->_str, str, len ) == 0 ) {
             break;
         }
     }
@@ -405,9 +405,9 @@ int &PTable::follows( Phrase *first, Phrase *second )
 
 void PTable::insert( Phrase *p )
 {
-    Phrase  *current, *temp;
-    size_t  h_val;
-    size_t  len = p->_len;
+    Phrase          *current, *temp;
+    std::size_t     h_val;
+    std::size_t     len = p->_len;
 
     h_val = getHash( p->_str, len );
     temp = NULL;
@@ -526,14 +526,14 @@ void PTable::prune()
         firstc = _phrases[i]->_str;
         startc = _phrases[i]->_str;
         while( firstc - startc < _phrases[i]->_len ) {
-            if( isspace( *firstc ) ) {
+            if( std::isspace( *firstc ) ) {
                 firstc++;
             } else {
                 break;
             }
         }
         if( firstc > startc ) {
-            memmove( startc, firstc, _phrases[i]->_len - (unsigned)( firstc - startc ) );
+            std::memmove( startc, firstc, _phrases[i]->_len - (unsigned)( firstc - startc ) );
             _phrases[i]->_len -= (unsigned)( firstc - startc );
         }
         _phrases[i]->_val = ( _phrases[i]->_len - 2 ) * ( _phrases[i]->_numUses - 1 );
@@ -572,7 +572,7 @@ void PTable::prune()
         delete _phrases[i];
     }
     _size = old_size - i;
-    memmove( _phrases, _phrases + i, _size * sizeof( Phrase * ) );
+    std::memmove( _phrases, _phrases + i, _size * sizeof( Phrase * ) );
 }
 
 
@@ -723,10 +723,10 @@ char* HFPhrases::nextInput( InFile *input )
 
             for( ; next->_type != TOK_END && next->_type != TOK_TEXT; next = _scanner->next() ) {
                 if( next->_type == TOK_COMMAND ) {
-                    if( strcmp( next->_text, "colortbl" ) == 0
-                      || strcmp( next->_text, "fonttbl" ) == 0
-                      || strcmp( next->_text, "footnote" ) == 0
-                      || strcmp( next->_text, "stylesheet" ) == 0 ) {
+                    if( std::strcmp( next->_text, "colortbl" ) == 0
+                      || std::strcmp( next->_text, "fonttbl" ) == 0
+                      || std::strcmp( next->_text, "footnote" ) == 0
+                      || std::strcmp( next->_text, "stylesheet" ) == 0 ) {
                         push_level = 0;
                         do {
                             next = _scanner->next();
@@ -738,7 +738,7 @@ char* HFPhrases::nextInput( InFile *input )
                                 break;
                             }
                         } while( push_level >= 0 );
-                    } else if( strcmp( next->_text, "v" ) == 0
+                    } else if( std::strcmp( next->_text, "v" ) == 0
                       && (!next->_hasValue || next->_value != 0 ) ) {
                         push_level = 0;
                         do {
@@ -748,7 +748,7 @@ char* HFPhrases::nextInput( InFile *input )
                             } else if( next->_type == TOK_POP_STATE ) {
                                 push_level--;
                             } else if( next->_type == TOK_COMMAND
-                              && strcmp( next->_text, "v" ) == 0
+                              && std::strcmp( next->_text, "v" ) == 0
                               && next->_hasValue && next->_value == 0 ) {
                                 break;
                             } else if( next->_type == TOK_END ) {
@@ -811,9 +811,9 @@ void HFPhrases::readPhrases()
             phr._len = 0;
             end = block;
             while( *end != '\0' ) {
-                if( found_text && isspace( *end ) ) {
+                if( found_text && std::isspace( *end ) ) {
                     break;
-                } else if( !found_text && !isspace( *end ) ) {
+                } else if( !found_text && !std::isspace( *end ) ) {
                     found_text = true;
                 }
                 phr.chkBufSize();
@@ -891,9 +891,9 @@ void HFPhrases::readPhrases()
                     // Set phr to (next + lookahead).
                     phr.chkBufSize( next->_len + lookahead->_len + 1 );
                     phr._len = phr._str.len();
-                    memcpy( phr._str, next->_str, next->_len );
+                    std::memcpy( phr._str, next->_str, next->_len );
                     phr._str[next->_len] = ' ';
-                    memcpy( phr._str + next->_len + 1, lookahead->_str, lookahead->_len );
+                    std::memcpy( phr._str + next->_len + 1, lookahead->_str, lookahead->_len );
 
                     p_phr = _newPtable->find( &phr );
                     if( p_phr != NULL ) {
@@ -961,11 +961,11 @@ void HFPhrases::initHashPTable()
     if( _hptable.len() == 0 ) {
         _hptable.resize( HASH_SIZE );
     }
-    memset( _hptable, 0, HASH_SIZE * sizeof( P_String * ) );
+    std::memset( _hptable, 0, HASH_SIZE * sizeof( P_String * ) );
 
-    for( size_t i = 0; i < _resultSize; i++ ) {
+    for( std::size_t i = 0; i < _resultSize; i++ ) {
         curr_str = _result[i];
-        memcpy( &hvalue, curr_str->_str, PH_MIN_LEN );
+        std::memcpy( &hvalue, curr_str->_str, PH_MIN_LEN );
         hvalue &= 0xFFFFFF;
         hvalue %= HASH_SIZE;
 
@@ -981,8 +981,8 @@ void HFPhrases::initHashPTable()
 
 void HFPhrases::createQueue( char const *path )
 {
-    Phrase      *current;
-    size_t      i;
+    Phrase          *current;
+    std::size_t     i;
 
     _newPtable->prune();
 
@@ -1069,21 +1069,21 @@ int HFPhrases::oldTable( char const *path )
 //  HFPhrases::replace  --Go through a block of text and replace
 //            common phrases where they appear.
 
-void HFPhrases::replace( char * dst, char const *src, size_t & len )
+void HFPhrases::replace( char * dst, char const *src, std::size_t & len )
 {
-    uint_32     hvalue = 0;
-    P_String    *current, *best;
-    size_t      read_pos = 0;
-    size_t      write_pos = 0;
+    uint_32         hvalue = 0;
+    P_String        *current, *best;
+    std::size_t     read_pos = 0;
+    std::size_t     write_pos = 0;
 
     if( len > 2 ) {
         while( read_pos < len - 2 ) {
-            memcpy( &hvalue, src + read_pos, PH_MIN_LEN );
+            std::memcpy( &hvalue, src + read_pos, PH_MIN_LEN );
             hvalue %= HASH_SIZE;
 
             best = NULL;
             for( current = _hptable[hvalue]; current != NULL; current = current->_next ) {
-                if( current->_str.len() <= len - read_pos && memcmp( current->_str, src + read_pos, current->_str.len() ) == 0 ) {
+                if( current->_str.len() <= len - read_pos && std::memcmp( current->_str, src + read_pos, current->_str.len() ) == 0 ) {
                     if( best == NULL || best->_str.len() < current->_str.len() ) {
                         best = current;
                     }

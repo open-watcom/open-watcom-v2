@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <ctype.h>
+#include <cstring>
+#include <cctype>
 #include "topic.h"
 
 #include "clibext.h"
@@ -42,16 +42,6 @@
 #define COMP_PAGE_SIZE  4096
 
 #define NULLVAL32       ((uint_32)-1L)
-
-static void my_strupr( char *str )
-/********************************/
-{
-    int             c;
-
-    while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = toupper( c );
-    }
-}
 
 //
 //  TextAttr    --Structure to record changes to text.
@@ -131,7 +121,7 @@ struct PageHeader
 #define GENERIC_NODE_SIZE   21
 class GenericNode
 {
-    static const size_t _size = GENERIC_NODE_SIZE;
+    static const std::size_t _size = GENERIC_NODE_SIZE;
 
     uint_32     _topicSize;
     uint_32     _dataSize;
@@ -157,7 +147,7 @@ class GenericNode
 #define TOPIC_HEADER_SIZE   28
 class TopicHeader
 {
-    static const size_t _size = TOPIC_HEADER_SIZE;
+    static const std::size_t _size = TOPIC_HEADER_SIZE;
 
     uint_32 _totalSize;
     uint_32 _nextBrowse;
@@ -193,15 +183,15 @@ class TextHeader
         TabTypes    type;
     };
 
-    uint_32 _size;
-    size_t  _parAttrSize;
-    uint_16 _headerSize;
-    uint_16 _textSize;
-    uint_8  _numColumns;
-    uint_32 _flags;
+    uint_32         _size;
+    std::size_t     _parAttrSize;
+    uint_16         _headerSize;
+    uint_16         _textSize;
+    uint_8          _numColumns;
+    uint_32         _flags;
 
-    Buffer<Tabs>        _tabs;
-    size_t              _numStops;
+    Buffer<Tabs>    _tabs;
+    std::size_t     _numStops;
 
     uint_32 _border;
     uint_16 _spacing[TOP_TAB_STOPS];
@@ -229,7 +219,7 @@ class TextHeader
     void        chgAttr( unsigned index, FontFlags type, uint_32 val, char const str[], uint_16 length );
     uint_32     attrData( unsigned index );
     void        reset();
-    void        chkTabsLen( size_t cur_len );
+    void        chkTabsLen( std::size_t cur_len );
 
     friend class HFTopic;
 };
@@ -251,7 +241,7 @@ class TextHolder
     // I must be able to insert those zeroes in the middle of the text.
 
     Buffer<uint_16> _zeroes;
-    size_t          _numZeroes;
+    std::size_t     _numZeroes;
 
     TextHolder();
 
@@ -381,7 +371,7 @@ TextHeader::~TextHeader()
     reset();
 }
 
-void TextHeader::chkTabsLen( size_t cur_len )
+void TextHeader::chkTabsLen( std::size_t cur_len )
 {
     if( cur_len && cur_len == _tabs.len() ) {
         _tabs.resize( cur_len + TSTOP_BLOCKS );
@@ -541,7 +531,7 @@ void TextHeader::unsetPar( ParFlags type )
         _flags ^= _parBits[type];
         if( type == TOP_TAB_STOPS ) {
             _parAttrSize -= _numStops;
-            for( size_t i = 0; i < _numStops; ++i ) {
+            for( std::size_t i = 0; i < _numStops; ++i ) {
                 if( _tabs[i].pos & 0x1 ) {
                     _parAttrSize -= 1;
                 }
@@ -601,7 +591,7 @@ void TextHeader::setAttr( unsigned index, FontFlags type, uint_32 val,
     _attribs[index]._data = val;
     if( length > 0 ) {
         _attribs[index]._stringDat = new char[length];
-        memcpy( _attribs[index]._stringDat, str, length );
+        std::memcpy( _attribs[index]._stringDat, str, length );
     } else {
         _attribs[index]._stringDat = NULL;
     }
@@ -642,7 +632,7 @@ unsigned TextHeader::appendAttr( unsigned index, FontFlags type, uint_32 val,
     if( _numAttribs == _attribs.len() )
         _attribs.resize( _numAttribs + TEXT_ATTR_MAX );
     if( result < _numAttribs ) {
-        memmove( &_attribs[result + 1], &_attribs[result],
+        std::memmove( &_attribs[result + 1], &_attribs[result],
              ( _numAttribs - result ) * sizeof( TextAttr ) );
     }
     setAttr( result, type, val, str, length );
@@ -686,8 +676,8 @@ uint_32 TextHeader::attrData( unsigned index )
 
 void TextHeader::dumpTo( TopicLink *dest )
 {
-    char        *location = dest->_myData;
-    size_t      i;
+    char            *location = dest->_myData;
+    std::size_t     i;
 
     if( _size > dest->_myData.len() )
         HCError( BOUND_ERR );
@@ -793,7 +783,7 @@ void TextHeader::dumpTo( TopicLink *dest )
             length = (uint_16)( _attribs[i]._size - 3 );
             *(uint_16 *)location = length;
             location += sizeof( uint_16 );
-            memcpy( location, _attribs[i]._stringDat, length );
+            std::memcpy( location, _attribs[i]._stringDat, length );
             location += length;
             break;
 
@@ -804,7 +794,7 @@ void TextHeader::dumpTo( TopicLink *dest )
             *location++ = _attribs[i]._stringDat[0];
             *(uint_32 *)location = _attribs[i]._data;
             location += sizeof( uint_32 );
-            memcpy( location, _attribs[i]._stringDat + 1, length - 1 );
+            std::memcpy( location, _attribs[i]._stringDat + 1, length - 1 );
             location += length - 1;
         }
     }
@@ -833,7 +823,7 @@ void TextHolder::dumpTo( TopicLink *dest )
     if( _size > 0 ) {
         if( _size > dest->_myData.len() )
             HCError( BOUND_ERR );
-        memcpy( dest->_myData, _text, _size );
+        std::memcpy( dest->_myData, _text, _size );
     }
     dest->_size = _size;
 }
@@ -1009,7 +999,7 @@ int HFTopic::dump( OutFile * dest )
             // "Magic" check to see if the current node is a topic header
             // or a text header.  This is the only way to do it since
             // at this stage the node is just a binary data block.
-            if( current->_myData[(size_t)20] == 0x02 ) {
+            if( current->_myData[(std::size_t)20] == 0x02 ) {
                 current = current->_next;
                 page_size += _myReader->add( current->_myData, current->_size );
             } else {
@@ -1064,8 +1054,8 @@ void HFTopic::addBrowse( char const str[] )
         HCWarning( TOP_TWOBROWSE, _browseStr, str );
         delete[] _browseStr;
     }
-    _browseStr = new char[strlen( str ) + 1];
-    strcpy( _browseStr, str );
+    _browseStr = new char[std::strlen( str ) + 1];
+    std::strcpy( _browseStr, str );
     _browseOffset = _curCharOffset;
 }
 
@@ -1075,16 +1065,22 @@ void HFTopic::addBrowse( char const str[] )
 
 void HFTopic::recordBrowse( TopicLink *me )
 {
+    int             c;
+    char            *p;
+
     StringNode  *current;
     StringNode  *prev = NULL;
     StringNode  *newnode = new StringNode;
     newnode->_me = me;
     newnode->_charOffset = _browseOffset;
     newnode->_string = _browseStr;
-    my_strupr( newnode->_string );
+    p = newnode->_string;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = std::toupper( c );
+    }
     _browseStr = NULL;
     for( current = _bhead; current != NULL; current = current->_next ) {
-        if( strcmp( current->_string, newnode->_string ) > 0 )
+        if( std::strcmp( current->_string, newnode->_string ) > 0 )
             break;
         prev = current;
     }
@@ -1116,14 +1112,14 @@ void HFTopic::recordBrowse( TopicLink *me )
 
 void HFTopic::dumpBrowse()
 {
-    StringNode  *current;
-    StringNode  *lastlocal = NULL;
-    StringNode  *lastglobal = NULL;
-    char        *colonpos;
-    size_t      seqlen;
+    StringNode      *current;
+    StringNode      *lastlocal = NULL;
+    StringNode      *lastglobal = NULL;
+    char            *colonpos;
+    std::size_t     seqlen;
 
     for( current = _bhead; current != NULL; current = current->_next ) {
-        colonpos = strchr( current->_string, ':' );
+        colonpos = std::strchr( current->_string, ':' );
         seqlen = colonpos - current->_string + 1;
         if( colonpos == NULL ) {
             if( lastlocal != NULL ) {
@@ -1139,7 +1135,7 @@ void HFTopic::dumpBrowse()
             lastglobal = current;
         } else {
             if( lastlocal != NULL ) {
-                if( strncmp( lastlocal->_string, current->_string, seqlen ) == 0 ) {
+                if( std::strncmp( lastlocal->_string, current->_string, seqlen ) == 0 ) {
                     lastlocal->nextBrowse() = current->_charOffset;
                     current->prevBrowse() = lastlocal->_charOffset;
                 } else {
@@ -1202,11 +1198,11 @@ void HFTopic::newNode( bool is_new_topic )
                     j++;
                 }
                 if( j > i + 1 ) {
-                    memmove( &_curPar->_attribs[i], &_curPar->_attribs[j - 1],
+                    std::memmove( &_curPar->_attribs[i], &_curPar->_attribs[j - 1],
                              ( _curPar->_numAttribs - j + 1 ) * sizeof( TextAttr ) );
                     _curPar->_numAttribs -= ( j - 1 - i );
                     _curPar->_size -= ( j - 1 - i ) * 3;
-                    memmove( _curText->_text + _curText->_zeroes[i] + 1,
+                    std::memmove( _curText->_text + _curText->_zeroes[i] + 1,
                              _curText->_text + _curText->_zeroes[j - 1] + 1,
                          _curText->_size - _curText->_zeroes[j - 1] - 1 );
                     _curText->_size -= j - 1 - i;
@@ -1355,13 +1351,13 @@ void HFTopic::newNode( bool is_new_topic )
 
 void HFTopic::addText( char const source[], bool use_phr )
 {
-    size_t  length;
-    size_t  len_full;
+    std::size_t     length;
+    std::size_t     len_full;
 
     if( source[0] == '\0' ) {
         length = 1;
     } else {
-        length = strlen( source );
+        length = std::strlen( source );
     }
     len_full = length + _curText->_size;
     if( len_full >= _curText->_text.len() ) {
@@ -1374,7 +1370,7 @@ void HFTopic::addText( char const source[], bool use_phr )
     if( use_phr && _useCompress ) {
         _phFile->replace( _curText->_text + _curText->_size, source, length );
     } else {
-        memcpy( _curText->_text + _curText->_size, source, length );
+        std::memcpy( _curText->_text + _curText->_size, source, length );
     }
 
     if( len_full > COMP_PAGE_SIZE ) {
@@ -1387,9 +1383,9 @@ void HFTopic::addText( char const source[], bool use_phr )
 //  HFTopic::addZero    --Add a 0x00 byte (to signal a format change) to
 //            the current text buffer.
 
-void HFTopic::addZero( size_t index )
+void HFTopic::addZero( std::size_t index )
 {
-    size_t zero_pos;
+    std::size_t zero_pos;
     if( _curText->_size == COMP_PAGE_SIZE ) {
         HCError( TOP_TOOLARGE );
     }
@@ -1402,8 +1398,8 @@ void HFTopic::addZero( size_t index )
     if( index < _curText->_numZeroes ) {
         zero_pos = _curText->_zeroes[index] + 1;
         char    *position = _curText->_text + zero_pos;
-        memmove( position + 1, position, _curText->_size - zero_pos );
-        memmove( _curText->_zeroes + index + 2, _curText->_zeroes + index + 1, ( _curText->_numZeroes - index - 1 ) * 2 );
+        std::memmove( position + 1, position, _curText->_size - zero_pos );
+        std::memmove( _curText->_zeroes + index + 2, _curText->_zeroes + index + 1, ( _curText->_numZeroes - index - 1 ) * 2 );
         _curText->_zeroes[index + 1] = (uint_16)zero_pos;
     } else {
         zero_pos = _curText->_size;

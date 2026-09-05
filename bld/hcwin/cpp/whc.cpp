@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cctype>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
@@ -79,20 +79,20 @@ int main( int argc, char *argv[] )
     cmd_line = new char[cmd_len];
     _bgetcmd( cmd_line, cmd_len );
     cmd = cmd_line;
-    while( *cmd != '\0' && isspace( *cmd ) ) {
+    while( *cmd != '\0' && std::isspace( *cmd ) ) {
         cmd++;
     }
     pfilename = NULL;
     if( *cmd == '-' || *cmd == '/' ) {
         cmd++;
-        if( (cmd[0] != 'q' && cmd[0] != 'Q') || !isspace( cmd[1] ) ) {
+        if( (cmd[0] != 'q' && cmd[0] != 'Q') || !std::isspace( cmd[1] ) ) {
             delete[] cmd_line;
             HCWarning( USAGE );
             return( -1 );
         }
         quiet = true;
         cmd++;
-        while( *cmd != '\0' && isspace( *cmd ) ) {
+        while( *cmd != '\0' && std::isspace( *cmd ) ) {
             cmd++;
         }
         if( *cmd == '\0' ) {
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
                 return( -1 );
             }
             cmd++;
-            while( *cmd != '\0' && isspace( *cmd ) ) {
+            while( *cmd != '\0' && std::isspace( *cmd ) ) {
                 cmd++;
             }
             if( *cmd != '\0' ) {

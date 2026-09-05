@@ -63,13 +63,13 @@ extern void mem_statistic();
 //
 
 #ifdef __WATCOMC__
-extern void *operator new( size_t size );
+extern void *operator new( std::size_t size );
 extern void operator delete( void *p );
 #else
-extern void *operator new( size_t size ) throw(std::bad_alloc);
+extern void *operator new( std::size_t size ) throw(std::bad_alloc);
 extern void operator delete( void *p ) throw();
 #endif
-extern void *renew( void *p, size_t size );
+extern void *renew( void *p, std::size_t size );
 
 
 //
@@ -84,8 +84,8 @@ class Pool
     char    *_array;
     void    *_pfree;
 
-    const unsigned  _block;
-    const size_t    _size;
+    const unsigned      _block;
+    const std::size_t   _size;
 
     // Assignment of Pool's is not permitted.
     Pool( Pool const & ) : _block( 0 ), _size( 0 ) {};
@@ -95,7 +95,7 @@ protected:
     static const unsigned BLOCK_SIZE;
 
 public:
-    Pool( size_t size, unsigned b_size = BLOCK_SIZE );
+    Pool( std::size_t size, unsigned b_size = BLOCK_SIZE );
     ~Pool();
 
     void *get();
@@ -110,8 +110,8 @@ public:
 
 template<class T> class Buffer
 {
-    T       *_data;
-    size_t  _len;
+    T           *_data;
+    std::size_t _len;
 
     // Assignment of Buffer's is not allowed. (I could do it,
     // but I don't need to and it would involve storing size information).
@@ -119,18 +119,18 @@ template<class T> class Buffer
     Buffer<T> & operator=( Buffer<T> const & ) { return *this; };
 
 public:
-    Buffer( size_t size );
+    Buffer( std::size_t size );
     ~Buffer();
 
-    size_t len() { return _len; };
+    std::size_t len() { return _len; };
     operator T *() { return _data; };
-    T &operator[]( size_t index ) { return _data[index]; };
-    void *resize( size_t size );
-    void *resizeNull( size_t size );
+    T &operator[]( std::size_t index ) { return _data[index]; };
+    void *resize( std::size_t size );
+    void *resizeNull( std::size_t size );
 };
 
 template<class T>
-inline Buffer<T>::Buffer( size_t size )
+inline Buffer<T>::Buffer( std::size_t size )
 {
     if( size == 0 ) {
         _data = NULL;
@@ -148,7 +148,7 @@ inline Buffer<T>::~Buffer()
 }
 
 template<class T>
-void *Buffer<T>::resize( size_t size )
+void *Buffer<T>::resize( std::size_t size )
 {
     if( size == 0 ) {
         if( _data )
@@ -162,7 +162,7 @@ void *Buffer<T>::resize( size_t size )
 }
 
 template<class T>
-void *Buffer<T>::resizeNull( size_t size )
+void *Buffer<T>::resizeNull( std::size_t size )
 {
     if( size == 0 ) {
         if( _data )
@@ -171,7 +171,7 @@ void *Buffer<T>::resizeNull( size_t size )
     } else {
         _data = (T*)renew( _data, size * sizeof( T ) );
         if( _len < size ) {
-            memset( _data + _len, 0, ( size - _len ) * sizeof( T ) );
+            std::memset( _data + _len, 0, ( size - _len ) * sizeof( T ) );
         }
     }
     _len = size;

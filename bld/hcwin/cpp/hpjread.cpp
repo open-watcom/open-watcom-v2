@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdlib>
+#include <cctype>
 #include "wdirent.h"
 #include "wio.h"
 #include "hpjread.h"
@@ -136,7 +136,7 @@ size_t HPJScanner::getLine()
                 break;
             if( current == EOF || current == '\n' )
                 break;
-            if( !isspace( current ) ) {
+            if( !std::isspace( current ) ) {
                 has_text = true;
             }
             chkLineSize( cur_len );
@@ -177,7 +177,7 @@ char *HPJScanner::getArg( size_t start_pos )
 
     arg = _curLine + start_pos;
     // Eat whitespace.
-    while( isspace( *arg ) )
+    while( std::isspace( *arg ) )
         arg++;
 
     // The next character had better be an '='.
@@ -187,7 +187,7 @@ char *HPJScanner::getArg( size_t start_pos )
     }
 
     // Eat whitespace.
-    while( isspace( *arg ) )
+    while( std::isspace( *arg ) )
         arg++;
 
     return arg;
@@ -203,7 +203,7 @@ char *HPJScanner::tokLine()
 
     i = _bufPos;
     // Eat whitespace.
-    while( isspace( _curLine[i] ) )
+    while( std::isspace( _curLine[i] ) )
         i++;
 
     if( _curLine[i] == '\0' )
@@ -211,7 +211,7 @@ char *HPJScanner::tokLine()
 
     // Find the end of the token.
     for( j = i; _curLine[j] != '\0'; ++j ) {
-        if( isspace( _curLine[j] ) ) {
+        if( std::isspace( _curLine[j] ) ) {
             break;
         }
     }
@@ -352,7 +352,7 @@ void HPJReader::parseFile()
         // Read in the name of the section.
         for( i=1; i < length ; i++ ) {
             if( _scanner[i] == ']' ) break;
-            section[i - 1] = (char)toupper( _scanner[i] );
+            section[i - 1] = (char)std::toupper( _scanner[i] );
         }
 
         // If the section name wasn't terminated properly, skip the section.
@@ -364,19 +364,19 @@ void HPJReader::parseFile()
         section[i - 1] = '\0';
 
         // Pass control to the appropriate "section handler".
-        if( strcmp( section, SBaggage ) == 0 ) {
+        if( std::strcmp( section, SBaggage ) == 0 ) {
             length = handleBaggage();
-        } else if( strcmp( section, SOptions ) == 0 ) {
+        } else if( std::strcmp( section, SOptions ) == 0 ) {
             length = handleOptions();
-        } else if( strcmp( section, SConfig ) == 0 ) {
+        } else if( std::strcmp( section, SConfig ) == 0 ) {
             length = handleConfig();
-        } else if( strcmp( section, SFiles ) == 0 ) {
+        } else if( std::strcmp( section, SFiles ) == 0 ) {
             length = handleFiles();
-        } else if( strcmp( section, SMap ) == 0 ) {
+        } else if( std::strcmp( section, SMap ) == 0 ) {
             length = handleMap();
-        } else if( strcmp( section, SBitmaps ) == 0 ) {
+        } else if( std::strcmp( section, SBitmaps ) == 0 ) {
             length = handleBitmaps();
-        } else if( strcmp( section, SWindows ) == 0 ) {
+        } else if( std::strcmp( section, SWindows ) == 0 ) {
             length = handleWindows();
         } else {
             HCWarning( HPJ_BADSECTION, _scanner.lineNum(), _scanner.name() );
@@ -488,28 +488,28 @@ size_t HPJReader::handleOptions()
 
         // Read in the name of the option.
         for( i = 0; i < MAX_OPTION_LEN; i++ ) {
-            if( isspace( _scanner[i] ) || _scanner[i] == '=' )
+            if( std::isspace( _scanner[i] ) || _scanner[i] == '=' )
                 break;
-            option[i] = (char)toupper( _scanner[i] );
+            option[i] = (char)std::toupper( _scanner[i] );
         }
         option[i] = '\0';
 
         // At present, I only support a few options.
         // Most of these involve passing information to
         // the HFSystem object "_sysFile".
-        if( strcmp( option, STitle ) == 0 ) {
+        if( std::strcmp( option, STitle ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
                 _sysFile->addRecord( new SystemText( HFSystem::SYS_TITLE, arg ) );
             }
-        } else if( strcmp( option, SCopyright ) == 0 ) {
+        } else if( std::strcmp( option, SCopyright ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
-                if( strlen( arg ) > SYS_COPYRIGHT_MAXLEN )
+                if( std::strlen( arg ) > SYS_COPYRIGHT_MAXLEN )
                     arg[SYS_COPYRIGHT_MAXLEN] = '\0';
                 _sysFile->addRecord( new SystemText( HFSystem::SYS_COPYRIGHT, arg ) );
             }
-        } else if( strcmp( option, SCompress ) == 0 ) {
+        } else if( std::strcmp( option, SCompress ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
                 if( stricmp( arg, STrue ) == 0 ||
@@ -523,20 +523,20 @@ size_t HPJReader::handleOptions()
                     _sysFile->setCompress( 0 );
                 }
             }
-        } else if( strcmp( option, SOldKeyPhrase ) == 0 ) {
+        } else if( std::strcmp( option, SOldKeyPhrase ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
                 _oldPhrases = ( stricmp( arg, STrue ) == 0 || stricmp( arg, SYes  ) == 0 );
             }
-        } else if( strcmp( option, SContents ) == 0 || strcmp( option, SIndex    ) == 0 ) {
+        } else if( std::strcmp( option, SContents ) == 0 || std::strcmp( option, SIndex    ) == 0 ) {
             arg = _scanner.getArg( i );
             if( arg != NULL ) {
                 _sysFile->setContents( Hash( arg ) );
             }
-        } else if( strcmp( option, SBmRoot ) == 0 ) {
+        } else if( std::strcmp( option, SBmRoot ) == 0 ) {
             arg = _scanner.getArg( i );
             _theFiles->_bitFiles->addToPath( arg );
-        } else if( strcmp( option, SRoot ) == 0 ) {
+        } else if( std::strcmp( option, SRoot ) == 0 ) {
 
             // Update the search paths.
             arg = _scanner.getArg( i );
@@ -559,7 +559,7 @@ size_t HPJReader::handleOptions()
                     }
                     temp = new StrNode;
                     temp->_name = new char[j + 1];
-                    memcpy( temp->_name, arg, j );
+                    std::memcpy( temp->_name, arg, j );
                     temp->_name[j] = '\0';
                     temp->_next = NULL;
                     if( chdir( temp->_name ) ) {
@@ -625,14 +625,14 @@ size_t HPJReader::handleFiles()
         if( result == 0 || _scanner[0] == '[' )
             break;
         for( i = 0; _scanner[i] != '\0'; ++i ) {
-            if( isspace( _scanner[i] ) ) {
+            if( std::isspace( _scanner[i] ) ) {
                 break;
             }
         }
         _scanner[i] = '\0';
         temp = new StrNode;
         temp->_name = new char[i + 1];
-        memcpy( temp->_name, _scanner, i + 1 );
+        std::memcpy( temp->_name, _scanner, i + 1 );
         temp->_next = NULL;
         if( current == NULL ) {
             current = _rtfFiles = temp;
@@ -656,7 +656,7 @@ size_t HPJReader::handleBitmaps()
             break;
         i = 0;
         // Eat whitespace.
-        while( isspace( _scanner[i] ) )
+        while( std::isspace( _scanner[i] ) )
             i++;
         if( _scanner[i] == '\0' )
             continue;
@@ -711,7 +711,7 @@ size_t HPJReader::handleWindows()
             limit = result - 1;
         }
         for( i = 0; i < limit; i++ ) {
-            if( isspace( _scanner[i] ) || _scanner[i] == '=' )
+            if( std::isspace( _scanner[i] ) || _scanner[i] == '=' )
                 break;
             name[i] = _scanner[i];
         }
@@ -722,7 +722,7 @@ size_t HPJReader::handleWindows()
             HCWarning( HPJ_LONGWINNAME, _scanner.lineNum(), _scanner.name() );
         }
         name[i] = '\0';
-        while( i < result - 1 && !isspace( _scanner[i] ) ) {
+        while( i < result - 1 && !std::isspace( _scanner[i] ) ) {
             i++;
         }
 
@@ -751,7 +751,7 @@ size_t HPJReader::handleWindows()
         bad_param = false;
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            x = (uint_16)strtol( arg, NULL, 0 );
+            x = (uint_16)std::strtol( arg, NULL, 0 );
             if( x > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -760,7 +760,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            y = (uint_16)strtol( arg, NULL, 0 );
+            y = (uint_16)std::strtol( arg, NULL, 0 );
             if( y > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -769,7 +769,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            width = (uint_16)strtol( arg, NULL, 0 );
+            width = (uint_16)std::strtol( arg, NULL, 0 );
             if( width > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -778,7 +778,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            height = (uint_16)strtol( arg, NULL, 0 );
+            height = (uint_16)std::strtol( arg, NULL, 0 );
             if( height > PARAM_MAX ) {
                 bad_param = true;
             } else {
@@ -792,7 +792,7 @@ size_t HPJReader::handleWindows()
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            use_max_flag = (uint_16)strtol( arg, NULL, 0 );
+            use_max_flag = (uint_16)std::strtol( arg, NULL, 0 );
             wflags |= VALID_MAX;
         }
 
@@ -801,7 +801,7 @@ size_t HPJReader::handleWindows()
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            red = strtol( arg, NULL, 0 );
+            red = std::strtol( arg, NULL, 0 );
             if( red < 0 || red > 255 ) {
                 bad_param = true;
             }
@@ -809,7 +809,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            green = strtol( arg, NULL, 0 );
+            green = std::strtol( arg, NULL, 0 );
             if( green < 0 || green > 255 ) {
                 bad_param = true;
             }
@@ -817,7 +817,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            blue = strtol( arg, NULL, 0 );
+            blue = std::strtol( arg, NULL, 0 );
             if( blue < 0 || blue > 255 ) {
                 bad_param = true;
             }
@@ -836,7 +836,7 @@ size_t HPJReader::handleWindows()
 
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            red = strtol( arg, NULL, 0 );
+            red = std::strtol( arg, NULL, 0 );
             if( red < 0 || red > 255 ) {
                 bad_param = true;
             }
@@ -844,7 +844,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            green = strtol( arg, NULL, 0 );
+            green = std::strtol( arg, NULL, 0 );
             if( green < 0 || green > 255 ) {
                 bad_param = true;
             }
@@ -852,7 +852,7 @@ size_t HPJReader::handleWindows()
         }
         arg = nextWinParam();
         if( *arg != '\0' ) {
-            blue = strtol( arg, NULL, 0 );
+            blue = std::strtol( arg, NULL, 0 );
             if( blue < 0 || blue > 255 ) {
                 bad_param = true;
             }
@@ -867,11 +867,11 @@ size_t HPJReader::handleWindows()
         }
 
         arg = nextWinParam();
-        if( *arg != 0 || strtol( arg, NULL, 0 ) != 0 ) {
+        if( *arg != 0 || std::strtol( arg, NULL, 0 ) != 0 ) {
             wflags |= VALID_ONTOP;
         }
 
-        if( strcmp( name, Smain ) == 0 ) {
+        if( std::strcmp( name, Smain ) == 0 ) {
             _sysFile->addRecord( new SystemWin( wflags, Smain, name, caption,
                             x, y, width, height, use_max_flag,
                         rgb_main, rgb_nonscroll ) );
@@ -894,7 +894,7 @@ char *HPJReader::nextWinParam()
 
     if( *result != '\0' ) {
         // Eat whitespace.
-        while( isspace( *result ) )
+        while( std::isspace( *result ) )
             result++;
         newbuf = result;
         if( *newbuf == '"' ) {
@@ -909,7 +909,7 @@ char *HPJReader::nextWinParam()
                 newbuf++;
             }
             // Eat whitespace.
-            while( isspace( *result ) ) {
+            while( std::isspace( *result ) ) {
                 result++;
             }
         }
@@ -957,7 +957,7 @@ size_t HPJReader::handleMap()
         // verify that the current token at this point is a context string.
         is_good_string = true;
         for( i=0; token[i] != '\0'; ++i ) {
-            if( !isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
+            if( !std::isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
                 is_good_string = false;
             }
         }
@@ -970,7 +970,7 @@ size_t HPJReader::handleMap()
             if( token == NULL ) {
                 HCWarning( CON_NONUM, token, _scanner.lineNum(), _scanner.name() );
             } else {
-                con_num = atol( token );
+                con_num = std::atol( token );
                 _theFiles->_mapFile->addMapRec( con_num, hash_value );
             }
         }
@@ -987,7 +987,7 @@ void HPJReader::includeMapFile( char *str )
     char *name;
 
     // Eat whitespace.
-    while( isspace( *str ) )
+    while( std::isspace( *str ) )
         str++;
     // Get the filename.
     switch( *str++ ) {
@@ -1065,7 +1065,7 @@ void HPJReader::includeMapFile( char *str )
                 continue;
             is_good_str = true;
             for( int i = 0; token[i] != '\0'; ++i ) {
-                if( !isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
+                if( !std::isalnum( token[i] ) && token[i] != '.' && token[i] != '_' ) {
                     is_good_str = false;
                 }
             }
@@ -1077,15 +1077,15 @@ void HPJReader::includeMapFile( char *str )
                 if( token == NULL ) {
                     HCWarning( CON_NONUM, token, input.lineNum(), input.name() );
                 } else {
-                    con_num = atol( token );
+                    con_num = std::atol( token );
                     _theFiles->_mapFile->addMapRec( con_num, hash_value );
                 }
             }
-        } else if( strncmp( token, SstartComment, 2 ) == 0 ) {
+        } else if( std::strncmp( token, SstartComment, 2 ) == 0 ) {
 
             // #include-d files may contain comments.
             int startcomment = input.lineNum();
-            while( token != NULL && strstr( token, SendComment ) == NULL ) {
+            while( token != NULL && std::strstr( token, SendComment ) == NULL ) {
                 do {
                     token = input.tokLine();
                     if( token != NULL )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -81,8 +82,8 @@ class Scanner
 
     // A buffer to provide a little extra lookahead.
     Buffer<uint_8> _buffer;
-    size_t      _maxBuf;
-    size_t      _curPos;
+    std::size_t _maxBuf;
+    std::size_t _curPos;
 
     int     nextch();
     void    putback( int c );

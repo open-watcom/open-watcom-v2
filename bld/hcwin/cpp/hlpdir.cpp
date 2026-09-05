@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 HLPDIR:  directory for the WinHelp "file system"
 */
 
-#include <string.h>
+#include <cstring>
 #include "hlpdir.h"
 
 
@@ -54,14 +54,14 @@ protected:
     char            _name[HFSKEY_SIZE + 1];
 
     // Overrides of the BtreeData virtual functions.
-    virtual uint_32 size() { return( (uint_32)( strlen( _name ) + 1 ) ); };
+    virtual uint_32 size() { return( (uint_32)( std::strlen( _name ) + 1 ) ); };
     virtual int     dump( OutFile * dest );
     BtreeData       *myKey();
     bool            lessThan( BtreeData *other );
 
 public:
     HFSkey( char const n[] )
-        { strncpy( _name, n, HFSKEY_SIZE ); _name[HFSKEY_SIZE] = '\0'; };
+        { std::strncpy( _name, n, HFSKEY_SIZE ); _name[HFSKEY_SIZE] = '\0'; };
 };
 
 
@@ -74,7 +74,7 @@ class   HFSnode : public HFSkey
     Dumpable    *_pointer;
     uint_32     _offset;
 
-    uint_32 size() { return( (uint_32)( strlen( _name ) + 1 + sizeof( uint_32 ) ) ); };
+    uint_32 size() { return( (uint_32)( std::strlen( _name ) + 1 + sizeof( uint_32 ) ) ); };
     int     dump( OutFile * dest );
 
 public:
@@ -107,7 +107,7 @@ inline BtreeData *HFSkey::myKey()
 bool HFSkey::lessThan( BtreeData *other )
 {
     HFSkey  *trueother = (HFSkey*) other;
-    return( strcmp( _name, trueother->_name ) < 0 );
+    return( std::strcmp( _name, trueother->_name ) < 0 );
 }
 
 

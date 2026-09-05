@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 /*
 BAGGAGE:  Baggage file handling.
 */
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #include "baggage.h"
 #if defined( __UNIX__ ) && defined( __WATCOMC__ )
   #if ( __WATCOMC__ < 1300 )
@@ -84,11 +84,11 @@ int Baggage::dump( OutFile * dest )
         return 1;
     }
     char    *buf = new char[BDUMP_SIZE];
-    size_t  left_to_dump;
-    size_t  amount_dumped;
+    std::size_t  left_to_dump;
+    std::size_t  amount_dumped;
 
     for( left_to_dump = _size; left_to_dump != 0; left_to_dump -= amount_dumped ) {
-        amount_dumped = fread( buf, 1, BDUMP_SIZE, _fp );
+        amount_dumped = std::fread( buf, 1, BDUMP_SIZE, _fp );
         dest->write( buf, amount_dumped );
     }
     delete[] buf;

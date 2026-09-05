@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +35,7 @@
 SYSTEM:  handle "global" WinHelp file information
 */
 
-#include <time.h>
+#include <ctime>
 #include "system.h"
 #include "hcerrors.h"
 
@@ -45,7 +45,7 @@ SYSTEM:  handle "global" WinHelp file information
 SystemText::SystemText( uint_16 flg, const char *txt )
 {
     _flag = flg;
-    size_t length = strlen( txt ) + 1;
+    std::size_t length = std::strlen( txt ) + 1;
 
     // Impose a maximum size restriction: the size has to
     // be expressible as a uint_16.
@@ -56,7 +56,7 @@ SystemText::SystemText( uint_16 flg, const char *txt )
     }
 
     _text = new char[_size];
-    strncpy( _text, txt, _size - 1 );
+    std::strncpy( _text, txt, _size - 1 );
     _text[_size - 1] = '\0';
 }
 
@@ -121,11 +121,11 @@ SystemWin::SystemWin( uint_16 wflgs,
     _position[1] = y;
     _position[2] = w;
     _position[3] = h;
-    strncpy( _type, type, HLP_SYS_TYPE );
+    std::strncpy( _type, type, HLP_SYS_TYPE );
     _type[HLP_SYS_TYPE] = '\0';
-    strncpy( _name, name, HLP_SYS_NAME );
+    std::strncpy( _name, name, HLP_SYS_NAME );
     _name[HLP_SYS_NAME] = '\0';
-    strncpy( _caption, cap, HLP_SYS_CAP  );
+    std::strncpy( _caption, cap, HLP_SYS_CAP  );
     _caption[HLP_SYS_CAP] = '\0';
 }
 
@@ -257,7 +257,7 @@ int HFSystem::winNumberOf( char * win_name )
             break;
         if( current->_flag == SYS_WINDOW ) {
             cur_win = (SystemWin*) current;
-            if( strcmp( cur_win->_name, win_name ) == 0 ) {
+            if( std::strcmp( cur_win->_name, win_name ) == 0 ) {
                 return i;
             } else {
                 i++;
@@ -290,7 +290,7 @@ int HFSystem::dump( OutFile *dest )
     // Write the format major version.
     dest->write( (uint_16)0x0001 );
     // Write the "time of creation" for the help file.
-    dest->write( (uint_32)time( NULL ) );
+    dest->write( (uint_32)std::time( NULL ) );
     // Write out the compression level.
     dest->write( _compLevel );
 

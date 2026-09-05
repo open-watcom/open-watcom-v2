@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +37,7 @@
 #ifndef PHRASE_H
 #define PHRASE_H
 
-#include <string.h>
+#include <cstring>
 #include "scanning.h"
 #include "hlpdir.h" // for class HFSDirectory.
 
@@ -91,7 +91,7 @@ public:
     void                createQueue( char const *path );
     int                 oldTable( char const *path );
 
-    void                replace( char *dst, char const *src, size_t &len );
+    void                replace( char *dst, char const *src, std::size_t &len );
 };
 
 #endif

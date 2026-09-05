@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,13 +52,13 @@ class CompWriter
     CompWriter &    operator=( CompWriter const & ) { return *this; };
 
 protected:
-    uint_8  *_buffer;
-    size_t  _numBytes;
-    int     _numTokens;
-    uint_8  _bitMask;
+    uint_8      *_buffer;
+    std::size_t _numBytes;
+    int         _numTokens;
+    uint_8      _bitMask;
 public:
     CompWriter();
-    virtual ~CompWriter();
+    virtual     ~CompWriter();
 
     virtual void    dump();
     unsigned    putChr( uint_8 c );

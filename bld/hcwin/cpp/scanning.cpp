@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,9 @@
 ****************************************************************************/
 
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cstdlib>
+#include <cstring>
 #include "scanning.h"
 #include "hcerrors.h"
 
@@ -88,7 +89,7 @@ inline int Scanner::nextch()
             _curPos = 0;
         }
     } else if( _curPos == _maxBuf - 1 ) {
-        size_t  newPos = 0;
+        std::size_t  newPos = 0;
         _buffer[newPos] = _buffer[_curPos];
         _maxBuf = _source->read( _buffer + 1, BUF_SIZE - 1 ) + 1;
         _curPos = newPos;
@@ -135,7 +136,7 @@ TokenTypes Scanner::handleSlash( Token * tok )
 
         // A "\" just before a new-line is the same as "\par".
 
-        memcpy( tok->_text, "par", 4 );
+        std::memcpy( tok->_text, "par", 4 );
         result = TOK_COMMAND;
         ++_lineNum;
     } else if( isSpecial( current ) ) {
@@ -150,7 +151,7 @@ TokenTypes Scanner::handleSlash( Token * tok )
 
         result = TOK_SPEC_CHAR;
         pullHex( tok );
-    } else if( islower( current ) ) {
+    } else if( std::islower( current ) ) {
 
         // All RTF commands are in lower case.
 
@@ -206,32 +207,32 @@ void Scanner::pullCommand( Token * tok )
 {
     int     current = 0;
     char    num_string[7];
-    size_t  i = 0;
+    std::size_t  i = 0;
 
     tok->_text[i] = static_cast<char>(nextch());
 
     for( i = 1; i < BUF_SIZE - 1; i++ ) {
         current = nextch();
-        if( !islower( current ) )
+        if( !std::islower( current ) )
             break;
         tok->_text[i] = static_cast<char>(current);
     }
     tok->_text[i] = '\0';
 
-    if( current == S_ENDC || (!isdigit(current) && current != '-') ) {
+    if( current == S_ENDC || (!std::isdigit(current) && current != '-') ) {
         tok->_hasValue = false;
     } else {
         tok->_hasValue = true;
         for( i = 0; i < sizeof( num_string ) - 1; i++ ) {
             num_string[i] = static_cast<char>(current);
             current = nextch();
-            if( !isdigit(current) ) {
+            if( !std::isdigit(current) ) {
                 i++;
                 break;
             }
         }
         num_string[i] = '\0';
-        tok->_value = atoi( num_string );
+        tok->_value = std::atoi( num_string );
     }
     if( current != S_ENDC && current != ' ' ) {
         putback( current );
@@ -246,7 +247,7 @@ void Scanner::pullCommand( Token * tok )
 void Scanner::pullText( Token * tok )
 {
 
-    size_t  i = 0;
+    std::size_t  i = 0;
     int     current;
     tok->_text[i] = static_cast<char>(nextch());
 
@@ -293,7 +294,7 @@ void Scanner::pullHex( Token * tok )
 
     for( i = 0; i < 2; ++i ) {
         current = nextch();
-        if( !isxdigit( current ) ) {
+        if( !std::isxdigit( current ) ) {
             break;
         }
         result[i] = static_cast<char>(current);
@@ -306,7 +307,7 @@ void Scanner::pullHex( Token * tok )
         tok->_type = TOK_NONE;
     } else {
         tok->_hasValue = true;
-        tok->_value = strtol( result, NULL, 16 );
+        tok->_value = std::strtol( result, NULL, 16 );
     }
 }
 
@@ -349,7 +350,7 @@ void Scanner::getToken( Token * tok )
 
     case '\t':
         tok->_type = TOK_COMMAND;
-        memcpy( tok->_text, "tab", 4 );
+        std::memcpy( tok->_text, "tab", 4 );
         break;
 
     default:

@@ -39,7 +39,7 @@
 #define HLPDIR_H
 
 #include <watcom.h> // for uint_8, etc
-#include <string.h>
+#include <cstring>
 #include "myfile.h" // for class Dumpable, OutFile
 #include "btrees.h" // for the Btree* classes.
 

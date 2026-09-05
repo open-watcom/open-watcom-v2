@@ -35,7 +35,7 @@
 BTREES:  WinHelp-style B-tree implementation.
 */
 #include "btrees.h"
-#include <stdlib.h>
+#include <cstdlib>
 
 
 //
@@ -461,7 +461,7 @@ int Btree::dump( OutFile *dest )
 {
     char        format[16];
 
-    strncpy( format, _format, sizeof( format ) );
+    std::strncpy( format, _format, sizeof( format ) );
     // Write the b-tree header information.
     dest->write( (uint_16)0x293B ); // magic
     dest->write( (uint_16)_flags );

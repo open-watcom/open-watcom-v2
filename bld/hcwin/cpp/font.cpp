@@ -31,7 +31,7 @@
 
 #include "font.h"
 #include "hcerrors.h"
-#include <string.h>
+#include <cstring>
 
 
 #define FONT_NAME_LEN   20
@@ -47,7 +47,7 @@ FontName::FontName( char const fontname[], short num1, uint_16 num2, uint_8 fam 
       _family( fam )
 {
     _name = new char[FONT_NAME_LEN];
-    strncpy( _name, fontname, FONT_NAME_LEN );
+    std::strncpy( _name, fontname, FONT_NAME_LEN );
 }
 
 
@@ -205,7 +205,7 @@ void HFFont::addFont( char const fontname[], uint_8 family, short num )
 
     // Check if a font with that name is already defined.
     for( current = _firstName; current != NULL; current = current->_nextName ) {
-        if( strcmp( current->_name, fontname ) == 0 ) {
+        if( std::strcmp( current->_name, fontname ) == 0 ) {
             break;
         }
     }
