@@ -185,7 +185,6 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
     const char          *ptr;
     size_t              len;
     bool                ret;
-    char                keybuff[20];
 
     if( !GetToken( req, TOK_INCLUDE_DOT ) )
         return( false );
@@ -205,9 +204,7 @@ static bool procOne( parse_entry *entry, sep_type req, bool suicide, bool subset
                     ret = (*entry->rtn)();
                     CmdFlags |= entry->flags & ~CF_SUBSET;
                 } else {
-                    strcpy( keybuff, entry->keyword );
-                    strlwr( keybuff );
-                    LnkMsg( WRN+LOC+LINE+MSG_FORMAT_BAD_OPTION, "s", keybuff );
+                    LnkMsg( WRN+LOC+LINE+MSG_FORMAT_BAD_OPTION, "s", entry->keyword );
                 }
                 return( ret );
             }
