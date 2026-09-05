@@ -694,22 +694,21 @@ static  void InitExtName( struct xlist **where  )
     *where = NULL;
 }
 
-static void CheckExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
-/***Restricted extern names i.e 8 char upper check *****/
+static void CheckExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name )
+/****************************************************************************
+ * Restricted extern names i.e 8 char upper check
+ */
 {
     struct xlist    *new;
     struct xlist    *curr;
-    char            *p;
-    char            *s;
+    int             i;
     int             c;
 
     new =  CMemAlloc( sizeof ( struct xlist ) );
-    p = new->xname;
-    len = 8;
-    s = name;
-    while( len-- > 0 && (c = *(unsigned char *)s++) != '\0' ) {
-        *p++ = toupper( c );
+    for( i = 0; i < 8 && (c = name[i]) != 0; i++ ) {
+        new->xname[i] = (char)tolower( c );
     }
+    new->xname[i} = '\0';
     for( ; (curr = *link) != NULL; link = &curr->next ) {
         int cmp;
 
