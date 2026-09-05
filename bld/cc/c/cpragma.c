@@ -1046,13 +1046,13 @@ static void changeStatus( bool enabled, int msg_index )
 bool GetMsgNum( const char *str, msg_codes *val )
 /***********************************************/
 {
-    int     c;
+    char            c;
 
     /*
      * skip, C++ compiler messages, prefixed by 'P' character
      */
-    c = *(unsigned char *)str;
-    if( ONE_CASE_EQUAL( c, 'P' ) ) {
+    c = *str;
+    if( c == 'P' || c == 'p' ) {
         *val = 0;
         return( true );
     }
@@ -1061,7 +1061,7 @@ bool GetMsgNum( const char *str, msg_codes *val )
      * or old messages without prefix which can be C or C++ message
      * it is for backward compatibility
      */
-    if( ONE_CASE_EQUAL( c, 'C' ) )
+    if( c == 'C' || c == 'c' ) {
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
         *val = atol( str );
