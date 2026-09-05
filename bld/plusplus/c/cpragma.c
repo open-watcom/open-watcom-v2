@@ -122,7 +122,10 @@ INITDEFN( pragma_extref, init, fini );
 
 bool GetMsgNum( const char *str, MSG_NUM *msgnum )
 {
-    if( tolower( *(unsigned char *)str ) == 'c' ) {
+    char            c;
+
+    c = *str;
+    if( c == 'C' || c == 'c' ) {
         /*
          * skip C compiler messages, prefixed by 'C' character
          */
@@ -133,7 +136,7 @@ bool GetMsgNum( const char *str, MSG_NUM *msgnum )
      * process C++ compiler messages, prefixed by 'P' character
      * or old messages, may be C or C+++ message
      */
-    if( tolower( *(unsigned char *)str ) == 'p' )
+    if( c == 'P' || c == 'p' ) {
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
         *msgnum = atol( str );
