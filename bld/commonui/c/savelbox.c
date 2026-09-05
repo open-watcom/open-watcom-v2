@@ -59,16 +59,6 @@
 /* Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static void my_strupr( char *str )
-/********************************/
-{
-    int             c;
-
-    while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = (char)toupper( c );
-    }
-}
-
 static bool isListView( HWND list )
 {
 #ifdef __WINDOWS__
@@ -240,11 +230,13 @@ bool GenTmpFileName( const char *tmpname, char *buf )
  */
 static void relToAbs( const char *path, char *out )
 {
-    char        *cwd;
-    int         old_drive;
-    pgroup2     pg1;
-    pgroup2     pg2;
-    size_t      len;
+    char            *cwd;
+    int             old_drive;
+    pgroup2         pg1;
+    pgroup2         pg2;
+    size_t          len;
+    int             c;
+    char            *p;
 
     /* remove directory separator on the path end */
     _splitpath2( path, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
@@ -272,10 +264,14 @@ static void relToAbs( const char *path, char *out )
     out[len++] = 'a';   /* add fake file name for _splitpath2 */
     out[len] = '\0';
     _splitpath2( out, pg2.buffer, &pg2.drive, &pg2.dir, NULL, NULL );
-
-    /* create absolute path for file */
-    my_strupr( pg1.fname );
-    my_strupr( pg1.ext );
+    p = pg1.fname;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
+    p = pg1.ext;
+    while( (c = *(unsigned char *)p) != '\0' ) {
+        *p++ = (char)toupper( c );
+    }
     _makepath( out, pg2.drive, pg2.dir, pg1.fname, pg1.ext );
 
 } /* relToAbs */
