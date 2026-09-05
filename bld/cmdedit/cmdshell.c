@@ -81,6 +81,7 @@ static void SetOurCwd( char * buff )
  */
 {
     char        *p;
+    int         c;
 
     p = buff;
     while( (c = *(unsigned char *)p) != '\0' && (char)c != '#' ) {
