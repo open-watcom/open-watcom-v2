@@ -47,34 +47,6 @@ static char WS_delims[] = " \t";
 
 static int Line = 1;
 
-/* Local implementations of strupr()/strlwr() for portability */
-
-char *my_strupr( char *string )
-/*****************************/
-{
-    char    *s;
-
-    if( string != NULL ) {
-        for( s = string; *s != '\0'; ++s ) {
-            *s = (char)toupper( *s );
-        }
-    }
-    return( string );
-}
-
-char *my_strlwr( char *string )
-/*****************************/
-{
-    char    *s;
-
-    if( string != NULL ) {
-        for( s = string; *s != '\0'; ++s ) {
-            *s = (char)tolower( *s );
-        }
-    }
-    return( string );
-}
-
 static char *get_line( char *buf, int max_len, FILE *file )
 /*********************************************************/
 {
