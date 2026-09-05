@@ -52,7 +52,6 @@ extern int      isdigit( char ch );
 #endif
 extern int      strnicmp( const char *a, const char *b, size_t len );
 extern int      stricmp( const char *a, const char *b );
-extern char     *strupr( char *str );
 extern char     *strcpy( char *dst, const char *src );
 extern char     *strcat( char *dst, const char *src );
 extern size_t   strlen( const char *str );

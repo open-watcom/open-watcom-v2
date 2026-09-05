@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -189,17 +189,6 @@ int stricmp( const char *a, const char *b )
         ++a;
         ++b;
     }
-}
-
-char *strupr( char *str )
-{
-    char *p = str;
-
-    while( *p != '\0' ) {
-        *p = upper( *p );
-        ++p;
-    }
-    return( str );
 }
 
 char *strcpy( char *dst, const char *src )

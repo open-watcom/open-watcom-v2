@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -467,6 +467,8 @@ static bool StartDebuggee( void )
         DWORD               bytesNeeded;
         DWORD               servicesReturned;
         DWORD               resumeHandle = 0;
+        int                 c;
+        char                *p;
 
         EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, NULL, 0, &bytesNeeded, &servicesReturned, &resumeHandle );
         if( servicesReturned == 0 ) {
@@ -476,10 +478,19 @@ static bool StartDebuggee( void )
             }
             EnumServicesStatus( service_manager, SERVICE_WIN32 + SERVICE_DRIVER, SERVICE_ACTIVE + SERVICE_INACTIVE, eenum, bytesNeeded, &bytesNeeded, &servicesReturned, &resumeHandle );
             for( i = 0; i < servicesReturned; ++i ) {
-                strlwr( eenum[i].lpServiceName );
-                strlwr( eenum[i].lpDisplayName );
+                p = eenum[i].lpServiceName;
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = tolower( c );
+                }
+                p = eenum[i].lpDisplayName;
+                while( (c = *(unsigned char *)p) != '\0' ) {
+                    *p++ = tolower( c );
+                }
             }
-            strlwr( service_name );
+            p = service_name;
+            while( (c = *(unsigned char *)p) != '\0' ) {
+                *p++ = tolower( c );
+            }
             for( i = 0; i < servicesReturned; ++i ) {
                 if( strcmp( eenum[i].lpServiceName, service_name ) == 0 ) {
                     service_name = eenum[i].lpServiceName;
