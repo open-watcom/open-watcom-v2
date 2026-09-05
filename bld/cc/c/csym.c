@@ -697,11 +697,19 @@ static  void InitExtName( struct xlist **where  )
 static void CheckExtName( struct xlist **link, SYMPTR sym, SYM_NAMEPTR name  )
 /***Restricted extern names i.e 8 char upper check *****/
 {
-    struct xlist    *new, *curr;
+    struct xlist    *new;
+    struct xlist    *curr;
+    char            *p;
+    char            *s;
+    int             c;
 
     new =  CMemAlloc( sizeof ( struct xlist ) );
-    Copy8( name, new->xname );
-    strupr( new->xname );
+    p = new->xname;
+    len = 8;
+    s = name;
+    while( len-- > 0 && (c = *(unsigned char *)s++) != '\0' ) {
+        *p++ = toupper( c );
+    }
     for( ; (curr = *link) != NULL; link = &curr->next ) {
         int cmp;
 
@@ -730,19 +738,6 @@ static void FiniExtName( struct xlist *head )
         CMemFree( head );
         head = next;
     }
-}
-
-static  void    Copy8( char const *nstr, char *name )
-/***************************************************/
-{
-    char        *curr;
-
-    for( curr = name; curr < &name[8]; curr++, nstr++ ) {
-        if( *nstr == '\0' )
-            break;
-        *curr = *nstr;
-    }
-    *curr = '\0';
 }
 #endif /* IBM370 names */
 
