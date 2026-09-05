@@ -219,28 +219,6 @@ static const char * const Day[] = {
 /* UTILITIES                                                              */
 /**************************************************************************/
 
-#if 0
-static void my_strupr( char *str )
-/********************************/
-{
-    int             c;
-
-    while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = toupper( c );
-    }
-}
-#endif
-
-static void my_strlwr( char *str )
-/********************************/
-{
-    int             c;
-
-    while( (c = *(unsigned char *)str) != '\0' ) {
-        *str++ = tolower( c );
-    }
-}
-
 static void MemInit( void )
 {
 }
@@ -382,15 +360,6 @@ static char *Copy( const void *s, void *d, unsigned len ) {
 
     while( len-- > 0 ) {
         *dst++ = *src++;
-    }
-    return( dst );
-}
-
-static char *Fill( void *d, int len, char filler ) {
-
-    char *dst = d;
-    while( len-- > 0 ) {
-        *dst++ = filler;
     }
     return( dst );
 }
@@ -673,7 +642,7 @@ static const char    *_FileParse( const char *name, file_parse *file )
     char        ch;
     int         extlen;
 
-    Fill( file, sizeof( file_parse ), 0 );
+    memset( file, 0, sizeof( file_parse ) );
     dosname = name;
     if( dosname[1] == ':' ) {
         file->drive[0] = DRIVECHAR( *dosname );
@@ -727,10 +696,22 @@ static const char    *_FileParse( const char *name, file_parse *file )
         }
     }
     *p1 = NULLCHAR;
-//    my_strupr( file->drive );
-//    my_strupr( file->path );
-//    my_strupr( file->name );
-//    my_strupr( file->ext );
+//    p1 = file->drive;
+//    while( (c = *(unsigned char *)p1) != '\0' ) {
+//        *p1++ = toupper( c );
+//    }
+//    p1 = file->path;
+//    while( (c = *(unsigned char *)p1) != '\0' ) {
+//        *p1++ = toupper( c );
+//    }
+//    p1 = file->name;
+//    while( (c = *(unsigned char *)p1) != '\0' ) {
+//        *p1++ = toupper( c );
+//    }
+//    p1 = file->ext;
+//    while( (c = *(unsigned char *)p1) != '\0' ) {
+//        *p1++ = toupper( c );
+//    }
     return( dosname );
 }
 
@@ -1375,7 +1356,7 @@ static void     FormatDTA( char *buff, const rfx_find *info, bool wide )
     unsigned int        time;
     unsigned int        hour;
 
-    Fill( buff, 39, ' ' );
+    memset( buff, ' ', 39 );
     buff[39] = NULLCHAR;
     if( info->attr & IO_SUBDIRECTORY ) {
         *CopyStr( info->name, buff ) = ' ';
@@ -1784,10 +1765,15 @@ static void CheckError( void )
     }
 }
 
-static int ProcessArgv( int argc, char **argv, const char *cmd ) 
+static int ProcessArgv( int argc, char **argv, const char *cmd )
 {
+    char            *p;
+    int             c;
+
     ErrorStatus = 0;
-    my_strlwr( argv[0] );
+    p = argv[0];
+    while( (c = *(unsigned char *)p) != '\0' )
+        *p++ = tolower( c );
     if( strcmp( argv[0], "copy" ) == 0 ) {
         ProcCopy( argc - 1, argv + 1 );
     } else if( strcmp( argv[0], "dir" ) == 0 ) {
