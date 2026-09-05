@@ -513,6 +513,29 @@ static void BuildCList( BrokenName_T *decname, Loc_T *loc )
     }
 }
 
+static char *my_strrev( char *str )
+/**********************************
+ * reverse characters in string
+ */
+{
+    char       *p1;
+    char       *p2;
+    char       c1;
+    char       c2;
+
+    p1 = str;
+    p2 = p1 + strlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
+    }
+    return( str );
+}
+
 static void GrabName( drmem_hdl abbrev, drmem_hdl entry, String *name )
 /*********************************************************************/
 // read a name, setting length and reversing
@@ -523,7 +546,7 @@ static void GrabName( drmem_hdl abbrev, drmem_hdl entry, String *name )
         *name->s = '\0';
     }
     name->l = strlen( name->s );
-    strrev( name->s );
+    my_strrev( name->s );
 }
 
 static void DRGetClassName( drmem_hdl entry, String *containing_name )
@@ -550,7 +573,7 @@ static void DRGetClassName( drmem_hdl entry, String *containing_name )
         name = DR_ALLOC( 1 );
         *name = '\0';
     }
-    strrev( name );
+    my_strrev( name );
     containing_name->s = name;
     containing_name->l = strlen( name );
 }
@@ -679,7 +702,7 @@ static BrokenName_T *DecorateMember( BrokenName_T *decname, Loc_T *loc )
         tmp_str.s = DR_ALLOC( 1 );
         *tmp_str.s = '\0';
     }
-    tmp_str.s = strrev( tmp_str.s );
+    tmp_str.s = my_strrev( tmp_str.s );
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), true, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
@@ -1108,7 +1131,7 @@ static void SwapModifier( BrokenName_T *decname )
         target->next = decname->type_plg.head;
         decname->type_plg.head = target;
     }
-    strrev( target->buf.s );
+    my_strrev( target->buf.s );
 }
 
 static BrokenName_T *AddPtrModifier( BrokenName_T *decname, Loc_T *loc )
@@ -1292,7 +1315,7 @@ static BrokenName_T *DecoratePtrToMember( BrokenName_T *decname, Loc_T *loc )
             *containing_name.s = '\0';
         }
 
-        containing_name.s = strrev( containing_name.s );
+        containing_name.s = my_strrev( containing_name.s );
         containing_name.l = strlen( containing_name.s );
 
         EndNode( &( decname->var_plg ), true, containing_entry, DR_SYM_CLASS );
@@ -1373,7 +1396,7 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
         ReallocStr( &tmpStr );
         strncat( tmpStr.s, bounds.s, bounds.l );
     }
-    strrev( tmpStr.s );
+    my_strrev( tmpStr.s );
 
     ListConcat( &(decname->var_elg), tmpStr );
 
@@ -1655,7 +1678,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             }
         }
 
-        value.s = strrev( charBuf );
+        value.s = my_strrev( charBuf );
         value.l = strlen( charBuf );
         ListConcat( &(decname->var_elg), value );
         ListConcat( &(decname->var_elg), FOREqualKwd );
@@ -1699,7 +1722,7 @@ static void FORDecMember( BrokenName_T *decname, Loc_T *loc )
         tmp_str.s = DR_ALLOC( 1 );
         *tmp_str.s = '\0';
     }
-    tmp_str.s = strrev( tmp_str.s );
+    tmp_str.s = my_strrev( tmp_str.s );
     tmp_str.l = strlen( tmp_str.s );
     EndNode( &( decname->var_bas ), true, loc->parent, DR_SYM_CLASS );
     ListConcat( &( decname->var_bas ), tmp_str );
@@ -1888,7 +1911,7 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
     }
 
     GrabName( loc.abbrev_current, loc.entry_current, &itemName );
-    strrev( itemName.s );
+    my_strrev( itemName.s );
 
     EndNode( &( decname->type_elg ), true, loc.entry_start, DR_SYM_VARIABLE );
     ListConcat( &( decname->type_elg ), itemName );
@@ -2077,7 +2100,7 @@ static void FORDecArray( BrokenName_T *decname, Loc_T *loc )
     ReallocStr( &tmpStr );
     strncat( tmpStr.s, FORArrayRightKwd.s, FORArrayRightKwd.l );
 
-    strrev( tmpStr.s );
+    my_strrev( tmpStr.s );
 
     ListConcat( &(decname->var_elg), tmpStr );
 
@@ -2175,7 +2198,7 @@ static void FORDecString( BrokenName_T *decname, Loc_T *loc )
         strcpy( buf, "(*)" );
     }
 
-    sizeExpr.s = strrev( buf );
+    sizeExpr.s = my_strrev( buf );
     sizeExpr.l = strlen( buf );
 
     ListConcat( &( decname->type_bas ), SpaceKwd );
@@ -2232,7 +2255,7 @@ static String FormName( BrokenName_T *decname )
 }
 
 /*
- * take two lists and tack on on the end of the other, doing strrev as
+ * take two lists and tack on on the end of the other, doing my_strrev as
  * appropriate
  */
 
@@ -2244,7 +2267,7 @@ static List_T *ListTack( List_T *addto, List_T *add )
         if( add->end == LIST_HEAD ) {
             for( curr = add->head; curr != NULL; curr = curr->next ) {
                 if( curr->buf.s != NULL ) {
-                    curr->buf.s = strrev( curr->buf.s );
+                    curr->buf.s = my_strrev( curr->buf.s );
                 }
             }
         }

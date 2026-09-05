@@ -433,40 +433,6 @@ char *_fullpath( char *buff, const char *path, size_t size )
 
 #endif
 
-
-/****************************************************************************
-*
-* Description:  Implementation of strrev().
-*
-****************************************************************************/
-
-#ifdef __WATCOMC__
-
-#elif defined(__UNIX__)
-
-char *strrev( char *str )
-/* reverse characters in string */
-{
-    char       *p1;
-    char       *p2;
-    char       c1;
-    char       c2;
-
-    p1 = str;
-    p2 = p1 + strlen( p1 ) - 1;
-    while( p1 < p2 ) {
-        c1 = *p1;
-        c2 = *p2;
-        *p1 = c2;
-        *p2 = c1;
-        ++p1;
-        --p2;
-    }
-    return( str );
-}
-
-#endif /* __UNIX__ */
-
 /****************************************************************************
 *
 * Description:  Implementation of _cmdname().

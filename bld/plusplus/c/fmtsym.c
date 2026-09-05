@@ -383,6 +383,29 @@ static void fmtSymScope( SCOPE scope, VBUF *pvbuf, bool include_function )
     }
 }
 
+static char *my_strrev( char *str )
+/**********************************
+ * reverse characters in string
+ */
+{
+    char       *p1;
+    char       *p2;
+    char       c1;
+    char       c2;
+
+    p1 = str;
+    p2 = p1 + strlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
+    }
+    return( str );
+}
+
 void FormatScope( SCOPE scope, VBUF *pvbuf, bool include_function )
 /*****************************************************************/
 // include_function - if true, include function scope resolution in formatting
@@ -390,7 +413,7 @@ void FormatScope( SCOPE scope, VBUF *pvbuf, bool include_function )
 {
     VbufInit( pvbuf );
     fmtSymScope( scope, pvbuf, include_function );
-    strrev( VbufString( pvbuf ) );
+    my_strrev( VbufString( pvbuf ) );
 }
 
 static char *doFormatSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
@@ -400,7 +423,7 @@ static char *doFormatSym( SYMBOL sym, VBUF *pvbuf, FMT_CONTROL control )
         VbufConcStr( pvbuf, nullSymbol );
         return( VbufString( pvbuf ) );
     } else {
-        return( strrev( formatScopedSym( sym, pvbuf, control ) ) );
+        return( my_strrev( formatScopedSym( sym, pvbuf, control ) ) );
     }
 }
 
@@ -441,5 +464,5 @@ char *FormatName( NAME name, VBUF *pvbuf )
         VbufConcVbuf( pvbuf, &prefix );
     }
     VbufFree( &prefix );
-    return( strrev( VbufString( pvbuf ) ) );
+    return( my_strrev( VbufString( pvbuf ) ) );
 }

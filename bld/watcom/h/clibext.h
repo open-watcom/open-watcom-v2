@@ -215,7 +215,6 @@
 
     extern void     _makepath( char *path, const char *drive, const char *dir, const char *fname, const char *ext );
     extern char     *_fullpath( char *buf, const char *path, size_t size );
-    extern char     *strrev( char *string );
     extern void     _searchenv( const char *name, const char *env_var, char *buf );
     extern int      spawnlp( int mode, const char *path, const char *cmd, ... );
     extern int      spawnvp( int mode, const char *cmd, const char * const *args );

@@ -57,6 +57,29 @@ MemoryPool TreeFuncNode::_pool( sizeof( TreeFuncNode ), "TreeFuncNode",
                                 NODEPOOLSIZE );
 #pragma enable_message( P549 )
 
+static char *my_strrev( char *str )
+/**********************************
+ * reverse characters in string
+ */
+{
+    char       *p1;
+    char       *p2;
+    char       c1;
+    char       c2;
+
+    p1 = str;
+    p2 = p1 + strlen( p1 ) - 1;
+    while( p1 < p2 ) {
+        c1 = *p1;
+        c2 = *p2;
+        *p1 = c2;
+        *p2 = c1;
+        ++p1;
+        --p2;
+    }
+    return( str );
+}
+
 /*---------------------------- TreeFuncPtr --------------------------*/
 
 TreeFuncPtr::TreeFuncPtr( TreeFuncWindow * prt, TreeNode * from,
@@ -116,21 +139,21 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
 
     container = DRGetContaining( drhdl );
     if( container != DRMEM_HDL_NULL ) {
-        accum = strrev( _name );
-        strrev( _name );
+        accum = my_strrev( _name );
+        my_strrev( _name );
 
         while( container != DRMEM_HDL_NULL ) {
             Symbol contSym( drhdl, NULL, mod, DRGetName( container ) );
             name = WBRStrdup( contSym.name() );
             accum += "::";
-            accum += strrev( name );
+            accum += my_strrev( name );
             WBRFree( name );
 
             container = DRGetContaining( container );
         }
 
         _decName = WBRStrdup( (const char *)accum );
-        strrev( _decName );
+        my_strrev( _decName );
     }
 }
 
