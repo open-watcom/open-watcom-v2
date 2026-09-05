@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <ctype.h>
 #include <conio.h>
 #include <stdio.h>
 #include <i86.h>
@@ -186,13 +187,19 @@ static int __cdecl D32NullPtrCheck( unsigned short on )
     static int  old_state;
     int         old;
     char        buff[128];
+    int         c;
+    char        *p;
 
     if( _D32NullPtrCheck == P1616NULL ) {
         _D32NullPtrCheck = find_entry();
         if( _D32NullPtrCheck == P1616NULL )
             return( 0 );
         EnvLkup( "DOS4G", buff, sizeof( buff ) );
-        if( strstr( strupr( buff ), "NULLP" ) ) {
+        p = buff;
+        while( (c = *(unsigned char *)p) != '\0' ) {
+            *p++ = toupper( c );
+        }
+        if( strstr( buff, "NULLP" ) ) {
             old_state = 1;
         }
     }
