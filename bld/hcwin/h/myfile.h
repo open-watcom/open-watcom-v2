@@ -44,7 +44,6 @@
 #define MYFILE_H
 
 #include <cstdio>
-#include <cstring>
 #include "watcom.h"
 #include "hcmem.h"
 

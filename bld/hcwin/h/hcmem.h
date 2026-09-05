@@ -39,6 +39,7 @@
 #ifndef HCMEM_H
 #define HCMEM_H
 
+#include <cstring>
 #ifndef __WATCOMC__
     #include <new>
 #endif
