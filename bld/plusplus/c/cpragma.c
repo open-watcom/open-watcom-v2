@@ -136,7 +136,7 @@ bool GetMsgNum( const char *str, MSG_NUM *msgnum )
      * process C++ compiler messages, prefixed by 'P' character
      * or old messages, may be C or C+++ message
      */
-    if( c == 'P' || c == 'p' ) {
+    if( c == 'P' || c == 'p' )
         str++;
     if( isdigit( *(unsigned char *)str ) ) {
         *msgnum = atol( str );
