@@ -391,15 +391,13 @@ static FILE *OpenFilePathList(  //OPEN FILE, TRY EACH LOCATION IN PATH LIST
         char            buff[FILENAME_MAX];
         IPATHLST        *list;
 
-        list = IncPathList;
-        while( list != NULL ) {
+        for( list = IncPathList; list != NULL; list = list->next ) {
             strcpy( buff, list->path );
             strcat( buff, file_name );
             fp = OpenFileTruncate( buff, mode );
             if( fp != NULL ) {
                 break;
             }
-            list = list->next;
         }
     }
     return( fp );
@@ -581,13 +579,10 @@ static SEGMENT *SegmentLookUp( const char *seg_name )
     SEGMENT     *segment;       // - points to current segment
     size_t      size;           // - size of name
 
-    segment = Segments;
-    for( ;; ) {
-        if( segment == NULL )
-            break;
-        if( 0 == stricmp( seg_name, segment->name ) )
+    for( segment = Segments; segment != NULL; segment = segment->next ) {
+        if( 0 == stricmp( seg_name, segment->name ) ) {
             return( segment );
-        segment = segment->next;
+        }
     }
 
     size = strlen( seg_name );
@@ -877,11 +872,10 @@ static void AddIncludePathList( const char *path )
         lptr->path[size] = '/';
 #else
         lptr->path[size] = '\\';
-        ptr = lptr->path;
-        while( *ptr != '\0' ) {
-            if( *ptr == '/' )
+        for( ptr = lptr->path; *ptr != '\0'; ++ptr ) {
+            if( *ptr == '/' ) {
                 *ptr = '\\';
-            ++ptr;
+            }
         }
 #endif
         lptr->next = NULL;
@@ -1004,7 +998,7 @@ int main(               // MAIN-LINE
 #define get_value() ( (arg[2]=='\0') ? (param[++count]) : arg + 2)
 
         tgt = tgt_file;
-        if( 0 == stricmp( tgt, "-" ) ) {
+        if( 0 == strcmp( tgt, "-" ) ) {
             OutputFile = stdout;
         } else {
             OutputFile = fopen( tgt, "wb" );
@@ -1084,7 +1078,7 @@ int main(               // MAIN-LINE
 #undef get_value
     }
     AddDepClose();
-    if( RestoreTime && stricmp( tgt, "-" ) != 0 ) {
+    if( RestoreTime && strcmp( tgt, "-" ) != 0 ) {
         if( stat( src, &src_time ) == 0 ) {
             dest_time.actime = src_time.st_atime;
             dest_time.modtime = src_time.st_mtime;
