@@ -191,7 +191,7 @@ static const char * const KwTable[] = {     // - key words table
 // DATA (READ/WRITE)
 static unsigned     ErrCount;               // - number of errors
 static FILE         *OutputFile;            // - output file
-static FILESTK      *Files;                 // - stack of opened files
+static FILESTK      *FileStk;               // - stack of opened files
 static SEGMENT      *Segments;              // - list of segments
 static SEGMSTK      *SegmStk;               // - active-segments stack
 static char         KwChar = { ':' };       // - key word definition character
@@ -229,8 +229,8 @@ static void Error( const char *msg, ... )
 
     count = sprintf( emsg, "**** WSPLICE ERROR **** " );
     eptr = &emsg[count];
-    if( Files != NULL ) {
-        count = sprintf( eptr, "%s, line %u ", Files->name, Files->rec_count );
+    if( FileStk != NULL ) {
+        count = sprintf( eptr, "%s, line %u ", FileStk->name, FileStk->rec_count );
         eptr = &eptr[count];
     }
     vsprintf( eptr, msg, args );
@@ -266,7 +266,7 @@ static SEGMSTK *PushSegStack( void )
     if( segm_stk != NULL ) {
         segm_stk->action = ProcessMode;
         segm_stk->next = SegmStk;
-        segm_stk->rec_def = Files->rec_count;
+        segm_stk->rec_def = FileStk->rec_count;
         SegmStk = segm_stk;
     }
     return( segm_stk );
@@ -431,10 +431,10 @@ static void OpenFileNormal(
             Error( "Can not open '%s'", file_stk->name );
             free( file_stk );
         } else {
-            file_stk->next = Files;
+            file_stk->next = FileStk;
             file_stk->fp = fp;
-            Files = file_stk;
-            Files->segm_stk = SegmStk;
+            FileStk = file_stk;
+            FileStk->segm_stk = SegmStk;
             SegmStk = NULL;
         }
     }
@@ -449,10 +449,10 @@ static void CloseFile( void )
         Error( "Unclosed segment from line %u", SegmStk->rec_def );
         PopSegStack();
     }
-    SegmStk = Files->segm_stk;
-    fclose( Files->fp );
-    file_stk = Files;
-    Files = file_stk->next;
+    SegmStk = FileStk->segm_stk;
+    fclose( FileStk->fp );
+    file_stk = FileStk;
+    FileStk = file_stk->next;
     free( file_stk );
 }
 
@@ -568,10 +568,10 @@ static KW ReadInput( void )
     char    *p;
     KW      retn;           // - return: type of record
 
-    if( NULL == fgets( Record, sizeof( Record ), Files->fp ) ) {
+    if( NULL == fgets( Record, sizeof( Record ), FileStk->fp ) ) {
         retn = KW_EOF;
     } else {
-        ++Files->rec_count;
+        FileStk->rec_count++;
         p = Record + strlen( Record ) - 1;
         if( *p == '\n' )    // turf \n on the end
             *p = '\0';
@@ -854,9 +854,9 @@ static void ProcessSource( const char *src_file ) // - starting file
     ProcessMode = MODE_OUTPUT;
     SegmStk = NULL;
     SourceText = NULL;
-    Files = NULL;
+    FileStk = NULL;
     OpenFileNormal( src_file, "r" );
-    while( Files != NULL ) {
+    while( FileStk != NULL ) {
         kw = ReadInput();
         if( kw == KW_EOF ) {
             CloseFile();
