@@ -183,6 +183,7 @@ SET BOOKSHELF=%WATCOM%\BINP\HELP;%BOOKSHELF%
 
 Linux 32-bit shell script:
 ---------------------------------------------------------------------------
+#!/bin/bash
 export WATCOM=/usr/bin/watcom
 export PATH=$WATCOM/binl:$PATH
 export EDPATH=$WATCOM/eddat
@@ -195,6 +196,7 @@ export INCLUDE=$WATCOM/lh
 
 Linux 64-bit shell script:
 ---------------------------------------------------------------------------
+#!/bin/bash
 export WATCOM=/usr/bin/watcom
 export PATH=$WATCOM/binl64:$WATCOM/binl:$PATH
 export EDPATH=$WATCOM/eddat
