@@ -84,7 +84,8 @@
 #include "clibext.h"
 
 
-#define MAX_DEPS    50
+#define MAX_DEPS    	50
+#define TOKEN_MAX_LEN	31
 
 // wsplice expression operators definition
 #define OP_OR       '|'
@@ -195,7 +196,7 @@ static SEGMENT      *Segments;              // - list of segments
 static SEGMSTK      *SegmStk;               // - active-segments stack
 static char         KwChar = { ':' };       // - key word definition character
 static TEXTENT      *SourceText;            // - source text
-static char         Token[32];              // - scan token
+static char         Token[TOKEN_MAX_LEN + 1]; // - scan token
 static char         Record[1024];           // - input record
 static const char   *Rptr;                  // - ptr into record
 static PROCMODE     ProcessMode;            // - processing mode
@@ -492,7 +493,7 @@ static bool ScanString( void )
         Rptr = rptr + 1;
         return( true );
     }
-    eptr = cptr + sizeof( Token ) - 1;
+    eptr = cptr + TOKEN_MAX_LEN;
     for( ;; ) {
         if( isspace( *(unsigned char *)rptr ) )
             break;
@@ -526,8 +527,10 @@ static bool GetToken( char op )
 // INITIALIZE TO PROCESS RECORD
 static KW RecordInitialize( const char *record )
 {
-    KW          i;
+    int         i;
     const char  *token;
+    char        word[TOKEN_MAX_LEN + 1];
+    int         c;
 
     Rptr = record;
     if( !ScanString() )
@@ -547,8 +550,12 @@ static KW RecordInitialize( const char *record )
         ScanString();
         token = Token;
     }
+    i = 0;
+    while( (c = ((unsigned char *)token)[i]) != '\0' )
+        word[i++] = tolower( c );
+    word[i] = '\0';
     for( i = 0; i < ARRAY_SIZE( KwTable ); ++i ) {
-        if( 0 == stricmp( KwTable[i], token ) ) {
+        if( 0 == strcmp( KwTable[i], word ) ) {
             return( i );
         }
     }
@@ -574,13 +581,25 @@ static KW ReadInput( void )
 }
 
 // LOOK UP A SEGMENT
-static SEGMENT *SegmentLookUp( const char *seg_name )
+static SEGMENT *SegmentLookUp( const char *name )
 {
     SEGMENT     *segment;       // - points to current segment
     size_t      size;           // - size of name
+    char        seg_name[TOKEN_MAX_LEN + 1];
+    int         c;
+
+    size = 0;
+    while( (c = ((unsigned char *)name)[size]) != '\0' ) {
+        if( size == TOKEN_MAX_LEN ) {
+            Error( "Invalid segment name" );
+            return( NULL );
+        }
+        seg_name[size++] = tolower( c );
+    }
+    seg_name[size] = '\0';
 
     for( segment = Segments; segment != NULL; segment = segment->next ) {
-        if( 0 == stricmp( seg_name, segment->name ) ) {
+        if( 0 == strcmp( seg_name, segment->name ) ) {
             return( segment );
         }
     }
