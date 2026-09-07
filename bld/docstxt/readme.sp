@@ -204,3 +204,32 @@ export INCLUDE=$WATCOM/lh
 #export LIB=
 #export WWINHELP=$WATCOM/binw
 ---------------------------------------------------------------------------
+:segment C
+
+macOS specifics
+- PATH - must point to the architecture-specific binary directory (bino64
+  or armo64) and binw
+- Since Open Watcom on macOS is a portable distribution, you must manually 
+  clear the Gatekeeper quarantine flag after extraction, or macOS will block 
+  the binaries from executing. To do this, run:
+  xattr -dr com.apple.quarantine /path/to/your/watcom
+
+---------------------------------------------------------------------------
+macOS Intel (x86_64) environment script:
+---------------------------------------------------------------------------
+#!/bin/bash
+export WATCOM=/path/to/your/watcom
+export PATH=$WATCOM/bino64:$WATCOM/binw:$PATH
+export EDPATH=$WATCOM/eddat
+export INCLUDE=$WATCOM/h
+
+---------------------------------------------------------------------------
+macOS Apple Silicon (ARM64) environment script:
+---------------------------------------------------------------------------
+#!/bin/bash
+export WATCOM=/path/to/your/watcom
+export PATH=$WATCOM/armo64:$WATCOM/binw:$PATH
+export EDPATH=$WATCOM/eddat
+export INCLUDE=$WATCOM/h
+---------------------------------------------------------------------------
+:endsegment
