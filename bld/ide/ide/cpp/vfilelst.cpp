@@ -34,8 +34,8 @@
  * specific directories.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
@@ -102,7 +102,7 @@ static void checkRemoveButton( HWND hwnd )
 
 static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
 {
-    size_t      len;
+    std::size_t len;
     pgroup2     pg;
 
     /* unused parameters */ (void)hwnd;
@@ -111,7 +111,7 @@ static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
     if( pg.drive[0] == '\0' ) {
         getcwd( pg.buffer, sizeof( pg.buffer ) );
         *fullname = pg.buffer;
-        len = strlen( pg.buffer );
+        len = std::strlen( pg.buffer );
         if( pg.buffer[len - 1] != '\\' ) {
             fullname->concat( "\\" );
         }
@@ -128,7 +128,7 @@ static void formRelDir( const char *filedir, const char *tgtdir,WString *dir )
     file_bs = filedir;
     // get rid of identical prefix directories
     for( ;; ) {
-        if( tolower( *filedir ) != tolower( *tgtdir ) ) {
+        if( std::tolower( *filedir ) != std::tolower( *tgtdir ) ) {
             filedir = file_bs;
             tgtdir = tgt_bs;
             break;
@@ -208,7 +208,7 @@ static void addFileToList( HWND hwnd, char *fname )
     WFileName   fullname;
     bool        isLong = false;
 
-    size_t len = strlen( fname ) - 1;
+    std::size_t len = std::strlen( fname ) - 1;
     if( fname[0] == '"' && fname[len] == '"' ) {
         fname++;
         fname[len - 1] = '\0';
@@ -250,10 +250,10 @@ static void addCurrentFile( HWND hwnd  )
     if( len > 0 ) {
         fname = new char [len + 1];
         GetWindowText( ctl, fname, len + 1 );
-        if( fname[strlen( fname ) - 1] != '\\' ) {
+        if( fname[std::strlen( fname ) - 1] != '\\' ) {
             stat( fname, &buf );
             if( !S_ISDIR( buf.st_mode ) ) {
-                if( strpbrk( fname, "?*" ) == NULL ) {
+                if( std::strpbrk( fname, "?*" ) == NULL ) {
                     addFileToList( hwnd, fname );
                     SetWindowText( ctl, "" );
                 }
@@ -269,12 +269,12 @@ static void addCurrentFile95( HWND hwnd )
     char        fname[MAX_PATH];
     struct stat buf;
     SendMessage( GetParent( hwnd ), CDM_GETSPEC, MAX_PATH, (LPARAM)fname );
-    if( fname[strlen( fname ) - 1] == '\\' )
+    if( fname[std::strlen( fname ) - 1] == '\\' )
         return;
     stat( fname, &buf );
     if( S_ISDIR( buf.st_mode ) )
         return;
-    if( strpbrk( fname, "?*" ) != NULL )
+    if( std::strpbrk( fname, "?*" ) != NULL )
         return;
     addFileToList( hwnd, fname );
 }
@@ -576,7 +576,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     _makepath( newpath, pg.drive, pg.dir, NULL, NULL );
     fname[0] = 0;
-    memset( &of, 0, sizeof( OPENFILENAME ) );
+    std::memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = parent;
     of.hInstance = hinst;

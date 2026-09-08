@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -350,7 +350,7 @@ void VCompDialog::browseButton( WWindow* )
     fn = _browseDialog->getOpenFileName( NULL, "Enter target filename", WFOpenNew );
         if( fn.size() > 0 ) {
             WFileName cwd; cwd.getCWD( true );
-            size_t len = cwd.size();
+            std::size_t len = cwd.size();
             if( len > 0 ) {
                 if( strnicmp( cwd, fn, len ) == 0 ) {
                     fn.chop( len );

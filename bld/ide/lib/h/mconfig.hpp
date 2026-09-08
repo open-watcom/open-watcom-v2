@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,7 +129,7 @@ WCLASS MConfig : public WObject
         MCommand        _before;
         MCommand        _after;
         char*           _fileFilters;
-        size_t          _fileFilterSize;
+        std::size_t     _fileFilterSize;
         MTool*          _nilTool;
         MRule*          _nilRule;
         void configMsgLog( WTokenFile& fil, WString& tok );

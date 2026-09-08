@@ -77,8 +77,8 @@ void MSwitch::addOptText( WString& s )
         s.concat( ' ' );
         s.concat( '[' );
         const char* c = _on;
-        size_t i;
-        for( i=strlen( c ); i>0; i-- ) {
+        std::size_t i;
+        for( i=std::strlen( c ); i>0; i-- ) {
             if( c[i-1] == '\\' ) {
                 break;
             }
@@ -120,7 +120,7 @@ bool MSwitch::isTagEqual( const char* swtag, int kludge ) const
             if( cs == '-' && ct == ' ' || cs == ' ' && ct == '-' )
                 continue;
             // ignore upper/lower case mismatch
-            if( toupper( cs ) == toupper( ct ) ) {
+            if( std::toupper( cs ) == std::toupper( ct ) ) {
                 continue;
             }
 //        } else if( kludge == 2 ) {

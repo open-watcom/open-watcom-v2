@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -330,7 +330,7 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
     if( fn.size() > 0 ) {
         WFileName cwd;
         _component->filename().path( cwd, true );
-        size_t len = cwd.size();
+        std::size_t len = cwd.size();
         if( len > 0 ) {
             if( strnicmp( cwd, fn, len ) == 0 ) {
                 fn.chop( len );
@@ -802,9 +802,9 @@ void WEXPORT VComponent::bActionComponent( WWindow* b )
 void VComponent::actionError( MItem* item, const WString& actionName )
 {
     WString t;
-    for( size_t i = 0; i < actionName.size(); i++ ) {
+    for( std::size_t i = 0; i < actionName.size(); i++ ) {
         if( actionName[i] != '&' ) {
-            t.concat( (char)tolower( actionName[i] ) );
+            t.concat( (char)std::tolower( actionName[i] ) );
         }
     }
     WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, "You cannot %s '%s'", (const char*)t, (const char*)*item );

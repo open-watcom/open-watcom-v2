@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdio.h>
+#include <cstddef>
+#include <cstdio>
 #include "ide.rh"
 #ifdef __WINDOWS__
     #include "common.h"
@@ -265,11 +265,11 @@ void VMsgLog::getState( bool& editOk, bool& helpOk )
     if( index >= 0 ) {
         char file[101]; int line, offset; char help[51];
         if( matchLine( index, file, line, offset, help ) ) {
-            if( strlen( file ) > 0 ) {
+            if( std::strlen( file ) > 0 ) {
                 editOk = true;
             }
             int hcount = _helpList.count();
-            if( hcount > 0 && strlen( help ) > 0 ) {
+            if( hcount > 0 && std::strlen( help ) > 0 ) {
                 helpOk = true;
             }
         }
@@ -419,8 +419,8 @@ void VMsgLog::doRun()
         }
     }
 
-    size_t icount = _command.size();
-    for( size_t i = 0; i < icount; ) {
+    std::size_t icount = _command.size();
+    for( std::size_t i = 0; i < icount; ) {
         WString cbuff;
         for( ; i < icount; ) {
             char ch = _command[i++];
@@ -496,7 +496,7 @@ static char buff[MAX_BUFF+1];
             }
         }
     }
-    if( strlen( buffer ) > 0 ) {
+    if( std::strlen( buffer ) > 0 ) {
         addLine( buffer );
     }
 }
@@ -512,18 +512,18 @@ static bool parseFortranId( WString &str, unsigned j, char *help ) {
     bool        ret;
 
     ret = true;
-    if( isalpha( str[j] ) && isalpha( str[j+1] ) && str[j+2] == '-' ) {
+    if( std::isalpha( str[j] ) && std::isalpha( str[j+1] ) && str[j+2] == '-' ) {
         groupid[0] = str[j];
         groupid[1] = str[j+1];
         j += 3;
     } else {
         ret = false;
     }
-    if( !isdigit( str[j] ) )
+    if( !std::isdigit( str[j] ) )
         ret = false;
     if( ret ) {
         i=0;
-        while( isdigit( str[j] ) ) {
+        while( std::isdigit( str[j] ) ) {
             num[i] = str[j];
             j++;
             i++;
@@ -537,7 +537,7 @@ static bool parseFortranId( WString &str, unsigned j, char *help ) {
                 break;
             }
             if( groupid[0] == table[0] && groupid[1] == table[1] ) {
-                id += atoi( num );
+                id += std::atoi( num );
                 ltoa( id, help, 10 );
                 break;
             }
@@ -572,10 +572,10 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
             return( false );
         if( p[i] == '>' )
             break;
-        if( strncmp( &p[i], "%f", 2 ) == 0 ) {
+        if( std::strncmp( &p[i], "%f", 2 ) == 0 ) {
             i += 2;
             k = 0;
-            if( isalpha( str[j] ) && str[j+1]==':' ) {
+            if( std::isalpha( str[j] ) && str[j+1]==':' ) {
                 file[k++] = str[j++];
                 file[k++] = str[j++];
             }
@@ -583,45 +583,45 @@ bool VMsgLog::matchPattern( const char* p, int index, char* file, int& line, int
                 kk = k;
                 if( str[j] == '\\' || str[j] == '/' )
                     file[k++] = str[j++];
-                while( isalnum( str[j] ) || str[j] == '.'
+                while( std::isalnum( str[j] ) || str[j] == '.'
                         || str[j] == '_' || str[j] == '-' ) {
                     file[k++] = str[j++];
                 }
             }
             file[k] = '\0';
-        } else if( strncmp( &p[i], "%l", 2 ) == 0 ) {
+        } else if( std::strncmp( &p[i], "%l", 2 ) == 0 ) {
             i += 2;
             line = 0;
             for( ;; ) {
-                if( !isdigit( str[j] ) )
+                if( !std::isdigit( str[j] ) )
                     break;
                 line = line*10 + (str[j++]-'0');
             }
-        } else if( strncmp( &p[i], "%o", 2 ) == 0 ) {
+        } else if( std::strncmp( &p[i], "%o", 2 ) == 0 ) {
             i += 2;
             offset = 0;
             for( ;; ) {
-                if( !isdigit( str[j] ) )
+                if( !std::isdigit( str[j] ) )
                     break;
                 offset = offset*10 + (str[j++]-'0');
             }
-        } else if( strncmp( &p[i], "%h", 2 ) == 0 ) {
+        } else if( std::strncmp( &p[i], "%h", 2 ) == 0 ) {
             i += 2;
             if( str[j] == 'E' || str[j] == 'W' || str[j] == 'N' ) {
 //              help[k++] = str[j++];   drw 12/13/94 k could be uninitialized
                 j++;
             }
-            for( k=0; isdigit( str[j] ); ) {
+            for( k=0; std::isdigit( str[j] ); ) {
                 help[k++] = str[j++];
             }
             help[k] = '\0';
         // this is a kludge to get fortran help working
-        } else if( strncmp( &p[i], "%i", 2 ) == 0 ) {
+        } else if( std::strncmp( &p[i], "%i", 2 ) == 0 ) {
             i += 2;
             if( !parseFortranId( str, j, help ) ) {
                 break;
             }
-        } else if( strncmp( &p[i], "%*", 2 ) == 0 ) {
+        } else if( std::strncmp( &p[i], "%*", 2 ) == 0 ) {
             i += 2;
             for( ;; ) {
                 if( p[i] != '>' && str[j] == p[i] )
@@ -665,12 +665,12 @@ bool VMsgLog::matchLine( int index, char* file, int& line, int& offset, char* he
                 WString* data = (WString*)_data[index];
                 if( data->match( "cd *" ) ) {
                     WString dir( &(*data)[3] );
-                    size_t dirLen = dir.size() - 1;
+                    std::size_t dirLen = dir.size() - 1;
                     if( dir[dirLen] != '\\' ) {
                         dir.concat( '\\' );
                     }
                     f.absoluteTo( dir );
-                    strcpy( file, f );
+                    std::strcpy( file, f );
                     break;
                 }
             }
@@ -689,7 +689,7 @@ void VMsgLog::loadHelpList()
     for( int i=0; i<hcount; i+=LOG_HELP_WIDTH ) {
         const char* hx = *(WString*)_config->logHtmlHelpFiles()[i];
         const char* hf = *(WString*)_config->logHtmlHelpFiles()[i + 1];
-        int offset = atoi( *(WString*)_config->logHtmlHelpFiles()[i + 2] );
+        int offset = std::atoi( *(WString*)_config->logHtmlHelpFiles()[i + 2] );
         _helpList.add( new WSystemHelp( this, hx, NULL, hf, offset ) );
     }
 #endif
@@ -697,14 +697,14 @@ void VMsgLog::loadHelpList()
     for( int i=0; i<hcount; i+=LOG_HELP_WIDTH ) {
         const char* hx = *(WString*)_config->logHelpFiles()[i];
         const char* hf = *(WString*)_config->logHelpFiles()[i + 1];
-        int offset = atoi( *(WString*)_config->logHelpFiles()[i + 2] );
+        int offset = std::atoi( *(WString*)_config->logHelpFiles()[i + 2] );
         _helpList.add( new WSystemHelp( this, hx, hf, NULL, offset ) );
     }
 }
 
 int VMsgLog::findHelpFile( const char *file, WSystemHelp **hobj, int from )
 {
-    if( strlen( file ) > 0 ) {
+    if( std::strlen( file ) > 0 ) {
         int hcount = _helpList.count();
         if( hcount > 0 ) {
             WFileName f( file );
@@ -732,7 +732,7 @@ void VMsgLog::helpRequest( WMenuItem* )
             WSystemHelp* hobj;
             int next = 0;
             while( (next = findHelpFile( file, &hobj, next )) != 0 ) {
-                if( hobj->sysHelpId( atoi( help ) + hobj->getHelpOffset() ) ) {
+                if( hobj->sysHelpId( std::atoi( help ) + hobj->getHelpOffset() ) ) {
                     return;
                 }
             }
@@ -761,7 +761,7 @@ void VMsgLog::editRequest( WMenuItem* )
                 hf = sh->getHelpFile();
             }
             WString msg;
-            int resId = atoi( help ) + 1;
+            int resId = std::atoi( help ) + 1;
             WFileName filename( file );
             if( filename.needQuotes() ) {
                 filename.addQuotes();
@@ -790,7 +790,7 @@ void VMsgLog::addLine( const WString& str, bool newline )
         }
         lastCD = str;
     }
-//drw    size_t length = str.size();
+//drw    std::size_t length = str.size();
 //drw    if( length > _maxLength ) {
 //drw   _maxLength = length;
 //drw   _batcher->setExtent( _batcher->getTextExtentX( str ) + WSystemMetrics::vScrollBarWidth() );

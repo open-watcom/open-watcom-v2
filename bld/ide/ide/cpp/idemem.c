@@ -93,7 +93,7 @@ void GUIMemOpen( void )
         TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
             NULL, GUIMemPrintLine, _TRMEM_DEF );
 
-        tmpdir = getenv( "TRMEMFILE" );
+        tmpdir = std::getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
             TrFile = fopen( tmpdir, "w" );
         }

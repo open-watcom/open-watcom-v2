@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <cstdio>
 #include "ide2make.hpp"
 #include "mconfig.hpp"
 #include "mproject.hpp"
@@ -150,7 +150,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
         } else if( streq( argv[i], "-h" ) ) {
             if( i+1 < argc ) {
                 i++;
-                host = (HostType)atoi( argv[i] );
+                host = (HostType)std::atoi( argv[i] );
             }
         } else {
             parms.add( new WString( argv[i] ) );

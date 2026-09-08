@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +29,9 @@
 *
 ****************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "wio.h"
 #if defined( __WINDOWS__ ) || defined( __NT__ )
     #include <windows.h>
@@ -54,16 +54,16 @@
     IniFile::IniFile()
     {
         char    buff[FILENAME_MAX];
-        char    *p = getenv( "USER_INI" );
+        char    *p = std::getenv( "USER_INI" );
 
-        strcpy( buff, p );
-        for( p = buff + strlen(buff) - 1; p >= buff; p-- ) {
+        std::strcpy( buff, p );
+        for( p = buff + std::strlen( buff ) - 1; p >= buff; p-- ) {
             if( *p == '\\' ) {
                 *p = 0;
                 break;
             }
         }
-        strcat( buff, "\\" IDE_INI_FILENAME);
+        std::strcat( buff, "\\" IDE_INI_FILENAME);
         _handle = PrfOpenProfile( NULL, (PSZ)buff );
     }
 
@@ -97,8 +97,8 @@
         if ( library ) {
             GetFolderPath getpath = (GetFolderPath)GetProcAddress(library, "SHGetFolderPathA");
             if( SUCCEEDED( getpath( NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, path ) ) ) {
-                if( strlen( path ) + strlen( "\\" IDE_INI_DIR ) + 12 < FILENAME_MAX) {
-                    strcat( path, "\\" IDE_INI_DIR);
+                if( std::strlen( path ) + std::strlen( "\\" IDE_INI_DIR ) + 12 < FILENAME_MAX) {
+                    std::strcat( path, "\\" IDE_INI_DIR);
                     if( access(path, F_OK) ) {  // make sure CONFIG_DIR diretory is present
                         mkdir( path );          // if not, create it
                     }
@@ -111,7 +111,7 @@
 #else
         GetWindowsDirectory( path, FILENAME_MAX );
 #endif
-        strcat( path, "\\" IDE_INI_FILENAME );
+        std::strcat( path, "\\" IDE_INI_FILENAME );
         _path = path;
     }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -86,7 +86,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     bool browse = false;
     const char* cmd = gets();
     int location = EXECUTE_NORMAL;
-    size_t i=0;
+    std::size_t i=0;
 
     if( strnicmp( &cmd[i], "!Batch ", 7 ) == 0 ) {
         i += 7;
@@ -108,10 +108,10 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
         location = EXECUTE_TOUCH_ALL;
     }
     WString com;
-    size_t len = strlen( cmd );
+    std::size_t len = std::strlen( cmd );
     for( ; i < len; ) {
-        if( strncmp( &cmd[i], BMACRO, 2 ) == 0 ) {
-            size_t j;
+        if( std::strncmp( &cmd[i], BMACRO, 2 ) == 0 ) {
+            std::size_t j;
             WString m;
             for( j = 2; i + j < len; j++ ) {
                 if( cmd[i + j] == EMACRO ) {
@@ -119,7 +119,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                     WString v;
                     if( m.size() > 0 && *m == '%' ) {
                         m.deleteChar( 0 );
-                        v.puts( getenv( m ) );
+                        v.puts( std::getenv( m ) );
                     } else {
                         WVList list;
                         if( *m == '#' ) {
@@ -152,17 +152,17 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
         *browseSwitch = "";
     }
     if( target ) {
-        size_t icount = com.size();
+        std::size_t icount = com.size();
         for( i = 0; i < icount; ) {
             WFileName f;
-            if( strncmp( &com[i], "$@", 2 ) == 0 ) {
+            if( std::strncmp( &com[i], "$@", 2 ) == 0 ) {
                 i += 2;
                 if( target->needQuotes() ) {
                     target->addQuotes();
                 }
                 command.concat( *target );
                 target->removeQuotes();
-            } else if( strncmp( &com[i], "$*", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$*", 2 ) == 0 ) {
                 i += 2;
                 target->noExt( f );
                 if( com[i] == '.' ) {
@@ -177,7 +177,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 }
                 command.concat( f );
                 f.removeQuotes();
-            } else if( strncmp( &com[i], "$'", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$'", 2 ) == 0 ) {
                 i += 2;
                 target->noExt( f );
                 if( com[i] == '.' ) {
@@ -192,7 +192,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 }
                 command.concat( f );
                 f.removeQuotes( '\'' );
-            } else if( strncmp( &com[i], "$&", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$&", 2 ) == 0 ) {
                 i += 2;
                 target->noPathNoExt( f );
                 if( com[i] == '.' ) {
@@ -207,7 +207,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 }
                 command.concat( f );
                 f.removeQuotes();
-            } else if( strncmp( &com[i], "$.", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$.", 2 ) == 0 ) {
                 i += 2;
                 target->noPath( f );
                 if( f.needQuotes() ) {
@@ -215,11 +215,11 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 }
                 command.concat( f );
                 f.removeQuotes();
-            } else if( strncmp( &com[i], "$:", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$:", 2 ) == 0 ) {
                 i += 2;
                 target->path( f );
                 command.concat( f );
-            } else if( strncmp( &com[i], "$!", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$!", 2 ) == 0 ) {
                 i += 2;
                 f = *target;
                 f.relativeTo();
@@ -228,11 +228,11 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                 }
                 command.concat( f );
                 f.removeQuotes();
-            } else if( strncmp( &com[i], "$$", 2 ) == 0 ) {
+            } else if( std::strncmp( &com[i], "$$", 2 ) == 0 ) {
                 i += 2;
                 command.concat( '$' );
-            } else if( strncmp( &com[i], "$(", 2 ) == 0 ) {
-                size_t j;
+            } else if( std::strncmp( &com[i], "$(", 2 ) == 0 ) {
+                std::size_t j;
                 WString m;
                 for( j = i + 2; j < icount; j++ ) {
                     if( com[j] == ')' ) {
@@ -240,7 +240,7 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
                         WString v;
                         if( m.size() > 0 && *m == '%' ) {
                             m.deleteChar( 0 );
-                            v.puts( getenv( m ) );
+                            v.puts( std::getenv( m ) );
                         } else {
                             //lookup *v in makeinit
                             //command.concat( "value" )

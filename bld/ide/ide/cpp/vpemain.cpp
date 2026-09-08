@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
+#include <cstdlib>
 #include <io.h>
-#include <stdlib.h>
 #include "idecfg.h"
 #include "ide.rh"
 #include "banner.h"
@@ -181,7 +181,7 @@ WEXPORT VpeMain::VpeMain()
      * the GUI library and not here.
      */
     watcom_setup_env();
-    watcom = getenv( "WATCOM" );
+    watcom = std::getenv( "WATCOM" );
     if( watcom == NULL ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
         "WATCOM environment variable not set.\n"
@@ -191,7 +191,7 @@ WEXPORT VpeMain::VpeMain()
      * check and fix WWINHELP environment variable if needed
      */
 #if defined( __WINDOWS__ ) || defined( __NT__ )
-    if( getenv( "WWINHELP" ) == NULL && watcom != NULL ) {
+    if( std::getenv( "WWINHELP" ) == NULL && watcom != NULL ) {
         char helppath[FILENAME_MAX];
 
 #if defined( __WINDOWS__ )
@@ -207,7 +207,7 @@ WEXPORT VpeMain::VpeMain()
      * check and fix WHTMLHELP environment variable if needed
      */
 #if defined( __NT__ )
-    if( getenv( "WHTMLHELP" ) == NULL && watcom != NULL ) {
+    if( std::getenv( "WHTMLHELP" ) == NULL && watcom != NULL ) {
         char helppath[FILENAME_MAX];
 
         sprintf( helppath, "%s%s", watcom, "\\binnt\\help" );
@@ -1534,7 +1534,7 @@ bool VpeMain::createDirectory( const WFileName& f )
 char* VpeMain::getFilters()
 {
     WStringList filtList;
-    size_t maxLen = 0;
+    std::size_t maxLen = 0;
     WPickList& rules = _config->rules();
     int icount = rules.count();
     for( int i = 0; i < icount; i++ ) {
@@ -1554,12 +1554,12 @@ char* VpeMain::getFilters()
     filtList.add( new WString( "*.*" ) );
     maxLen += 3 + 1;
     char* filts = new char [maxLen + 1];
-    size_t off = 0;
+    std::size_t off = 0;
     icount = filtList.count();
     for( i = 0; i < icount; i++ ) {
         char* p = filtList.cStringAt( i );
-        strcpy( &filts[off], p );
-        off += strlen( p ) + 1;
+        std::strcpy( &filts[off], p );
+        off += std::strlen( p ) + 1;
     }
     filts[off] = '\0';
     return( filts );

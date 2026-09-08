@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,7 +62,7 @@ WINEXPORT int RCSAPI GetInputCB( rcsstring text, rcsstring title, char *buffer, 
     if( dlg->getInput( input ) ) {
         item = (WString *)input[0];
         item->truncate( len );
-        strcpy( buffer, item->gets() );
+        std::strcpy( buffer, item->gets() );
         return( TRUE );
     } else {
         return( FALSE );
@@ -170,7 +170,7 @@ bool VRcsClient::Init( void ) {
         return( false );
 
     // getting the HWND like this violates GUI
-    _dllcookie = _init( GET_HWND( _parent->handle() ), getenv( "WATCOM" ) );
+    _dllcookie = _init( GET_HWND( _parent->handle() ), std::getenv( "WATCOM" ) );
     if( _dllcookie == NULL )
         return( false );
 

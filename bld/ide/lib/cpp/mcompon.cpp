@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,7 +127,7 @@ void WEXPORT MComponent::readSelf( WObjectFile& p )
     if( p.version() > 31 ) {
         p.readObject( &_items );
     }
-    if( _mask[(size_t)1] == 'v' ) {
+    if( _mask[1] == 'v' ) {
         //turn VP targets into MFC targets - VP targets no longer exist
         _mask.setChar( 1, 'm' );
         WFileName fn;

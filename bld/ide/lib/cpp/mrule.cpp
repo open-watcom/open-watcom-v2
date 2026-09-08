@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -203,7 +203,7 @@ bool MRule::match( WString& tag, WFileName& tgt )
 MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
 {
     bool found = false;
-    size_t len = 0;
+    std::size_t len = 0;
     MSymbol* o = NULL;
     WString oName;
     int icount = _symbols.count();
@@ -222,7 +222,7 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
         bool incName = true;
         char afterName = ' ';
         char quoteChar = '"';
-        char sep[2]; strcpy( sep, " " );
+        char sep[2]; std::strcpy( sep, " " );
         for( bool done=false; !done; ) {
             char ch = s[len];
             switch( ch ) {
@@ -278,7 +278,7 @@ void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList*
 {
     MCommand c;
     if( s.size() > 0 ) {
-        for( size_t i=0; s[i] != '\0'; ) {
+        for( std::size_t i=0; s[i] != '\0'; ) {
             WString v;
             int len = 0;
             if( strnicmp( &s[i], BMACRO, 2 ) == 0 ) {

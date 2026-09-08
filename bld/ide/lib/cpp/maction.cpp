@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -132,8 +132,8 @@ int MAction::accelKey()
 {
     int accel = 0;
     if( _accelString.size() > 1 ) {
-        if( toupper( *_accelString ) == 'F' ) {
-            WString x( &_accelString[(size_t)1] );
+        if( std::toupper( *_accelString ) == 'F' ) {
+            WString x( &_accelString[1] );
             accel = 0x006F + (int)x;
         }
     }
@@ -169,8 +169,8 @@ void WEXPORT MAction::writeSelf( WObjectFile& p )
 
 void MAction::text( WString& t )
 {
-    size_t icount = _name.size();
-    for( size_t i=0; i<icount; i++ ) {
+    std::size_t icount = _name.size();
+    for( std::size_t i=0; i<icount; i++ ) {
         if( _name[i] != '&' ) {
             t.concat( _name[i] );
         }

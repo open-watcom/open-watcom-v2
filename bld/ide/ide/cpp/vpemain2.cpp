@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +30,9 @@
 *
 ****************************************************************************/
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
 #include <io.h>
-#include <stdlib.h>
 #include "ide.rh"
 #include "banner.h"
 
@@ -169,16 +169,16 @@ void VpeMain::readIdeInit()
         }
     }
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_HEIGHT, "0", buff, sizeof( buff ) );
-    height = atoi( buff );
+    height = std::atoi( buff );
 
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_WIDTH, "0", buff, sizeof( buff ) );
-    width = atoi( buff );
+    width = std::atoi( buff );
 
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_X, "0", buff, sizeof( buff ) );
-    x = atoi( buff );
+    x = std::atoi( buff );
 
     _ini.read( IDE_INI_IDENTIFIER, IDE_INI_Y, "0", buff, sizeof( buff ) );
-    y = atoi( buff );
+    y = std::atoi( buff );
 
     WRect sc;
     WSystemMetrics::screenCoordinates( sc );
@@ -249,7 +249,7 @@ bool VpeMain::executeCommand( const char *cmdl, int location, const char* title 
 {
     unsigned i;
 
-    if( cmdl != NULL && strlen( cmdl ) > 0 ) {
+    if( cmdl != NULL && std::strlen( cmdl ) > 0 ) {
         WString* cur = NULL;
         WStringList opts;
         for( i = 0; cmdl[i] != '\0'; i++ ) {
@@ -357,10 +357,10 @@ bool VpeMain::execute( const WString& cmd )
     }
     startWait();
 
-    size_t icount = strlen( cmd );
-    for( size_t i = 0; i < icount; ) {
+    std::size_t icount = std::strlen( cmd );
+    for( std::size_t i = 0; i < icount; ) {
         WString cbuff;
-        while( isspace( cmd[i] ) )
+        while( std::isspace( cmd[i] ) )
             i++;
         for( ; i < icount; ) {
             char ch = cmd[i];
@@ -372,7 +372,7 @@ bool VpeMain::execute( const WString& cmd )
         if( cbuff.size() > 0 ) {
             if( strnicmp( cbuff, "!Error ", 7 ) == 0 ) {
                 WString msg;
-                for( size_t j = 7; j < cbuff.size() && cbuff[j] != '$'; j++ ) {
+                for( std::size_t j = 7; j < cbuff.size() && cbuff[j] != '$'; j++ ) {
                     msg.concat( cbuff[j] );
                 }
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, msg );
@@ -419,7 +419,7 @@ bool VpeMain::executeOne( const WString& cmd )
         //
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                                 "Unable to run %s: %s.",
-                                (const char*)cmdmsg, strerror( errno ) );
+                                (const char*)cmdmsg, std::strerror( errno ) );
         return( false );
     }
 #endif
@@ -478,26 +478,26 @@ void VpeMain::executeEditor( const WString& cmd )
                                     _viperInfo, "Unable to start editor" );
                     }
                 } else if( x.stringAt( 0 ) == "EditLocate" ) {
-                    long lRow = atol( x.stringAt( 1 ) );
-                    int nCol = atoi( x.stringAt( 2 ) );
-                    int len = atoi( x.stringAt( 3 ) );
+                    long lRow = std::atol( x.stringAt( 1 ) );
+                    int nCol = std::atoi( x.stringAt( 2 ) );
+                    int len = std::atoi( x.stringAt( 3 ) );
                     _editorDll.EDITLocate( lRow, nCol, len );
                     _editorDll.EDITShowWindow( EDIT_SHOWNORMAL );
                 } else if( x.stringAt( 0 ) == "EditLocateError" ) {
-                    long lRow = atol( x.stringAt( 1 ) );
-                    int nCol = atoi( x.stringAt( 2 ) );
-                    int len = atoi( x.stringAt( 3 ) );
-                    int resId = atoi( x.stringAt( 4 ) );
+                    long lRow = std::atol( x.stringAt( 1 ) );
+                    int nCol = std::atoi( x.stringAt( 2 ) );
+                    int len = std::atoi( x.stringAt( 3 ) );
+                    int resId = std::atoi( x.stringAt( 4 ) );
                     char* msg = (char*)(const char*)x.stringAt( 5 );
                     _editorDll.EDITLocateError( lRow, nCol, len, resId, msg );
                     _editorDll.EDITShowWindow( EDIT_SHOWNORMAL );
                 } else if( x.stringAt(0) == "EditFileAtPos" ) {
                     char* file = (char*)(const char*)x.stringAt( 1 );
                     file += 2; // for "-f" before filename
-                    long lRow = atol( x.stringAt( 2 ) );
-                    int nCol = atoi( x.stringAt( 3 ) );
-                    int len = atoi( x.stringAt( 4 ) );
-                    int resId = atoi( x.stringAt( 5 ) );
+                    long lRow = std::atol( x.stringAt( 2 ) );
+                    int nCol = std::atoi( x.stringAt( 3 ) );
+                    int len = std::atoi( x.stringAt( 4 ) );
+                    int resId = std::atoi( x.stringAt( 5 ) );
                     char* msg = (char*)(const char*)x.stringAt( 6 );
                     char* help = (char*)(const char*)x.stringAt( 7 );
                     if( _editorDll.EDITFile( file, help ) ) {
@@ -527,8 +527,8 @@ void VpeMain::executeEditor( const WString& cmd )
     } else if( x.stringAt(0) == "EditFileAtPos" ) {
         WString bat( _editor );
         bat.concat( ' ' ); // space after editor name before parms
-        size_t parmsize = _editorParms.size();
-        for( size_t i = 0; i < parmsize; i++ ) {
+        std::size_t parmsize = _editorParms.size();
+        for( std::size_t i = 0; i < parmsize; i++ ) {
             switch( _editorParms[i] ) {
             case '%':
                 switch( _editorParms[i+1] ) {

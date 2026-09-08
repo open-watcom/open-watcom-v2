@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #if defined( __WATCOMC__ )
     #include <mbctype.h>
 #endif
@@ -50,9 +50,9 @@
 #include "mtypo.hpp"
 
 
-#define MALLOC(s)       (char *)malloc(s)
-#define REALLOC(p,s)    (char *)realloc(p,s)
-#define FREE(p)         if( p != NULL ) free(p)
+#define MALLOC(s)       (char *)std::malloc(s)
+#define REALLOC(p,s)    (char *)std::realloc(p,s)
+#define FREE(p)         if( p != NULL ) std::free(p)
 
 Define( MConfig )
 
@@ -177,8 +177,8 @@ void MConfig::zapTargetMasks()
         #include "hosttype.hpp"
         #undef pick
     };
-    size_t  i;
-    int     j;
+    std::size_t i;
+    int         j;
 
     for( i=0; i<_hostMask.size(); i++ ) {
         if( _hostMask[i] == '@' ) {
@@ -367,7 +367,7 @@ void MConfig::expandMacroes( WString &str ) {
                     i--; // don't let the outside loop go past the NULLCHAR
                     break;
                 } else if( tok[i] == ')' ) {
-                    str.concat( getenv( envvar ) );
+                    str.concat( std::getenv( envvar ) );
                     break;
                 } else {
                     envvar.concat( tok[i] );
@@ -428,11 +428,11 @@ void MConfig::configProject( WTokenFile& fil, WString& tok )
             }
         } else if( tok == "Filter" ) {
             fil.token( tok );
-            size_t size = _fileFilterSize;
+            std::size_t size = _fileFilterSize;
             for( int i=0; i<2; i++ ) {
                 _fileFilters = REALLOC( _fileFilters, size + (tok.size() + 1) + 1 );
                 if( _fileFilters ) {
-                    strcpy( &_fileFilters[size], tok );
+                    std::strcpy( &_fileFilters[size], tok );
                     size += tok.size() + 1;
                     _fileFilters[size] = '\0';
                 }
@@ -523,7 +523,7 @@ MRule* MConfig::findMatchingRule( WFileName& fn, WString& mask )
 
 void MConfig::zapMask( WString& mask )
 {
-    for( size_t i=0; i<_hostMask.size(); i++ ) {
+    for( std::size_t i=0; i<_hostMask.size(); i++ ) {
         if( _hostMask[i] != '?' ) {
             mask.setChar( i, _hostMask[i] );
         }
@@ -534,7 +534,7 @@ void MConfig::kludgeMask( WString& str )
 {
     if( _kludge ) {
         WString temp;
-        for( size_t i=0; i<str.size(); i++ ) {
+        for( std::size_t i=0; i<str.size(); i++ ) {
             temp.concat( str[i] );
             if( _kludge == 3 && i == 0 )
                 temp.concat( '?' );
