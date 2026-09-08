@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -197,7 +198,7 @@ int Scanner::getToken( YYSTYPE & lval )
                     }
                 }
             } else {
-                _stringTable.add( strdup( _buffer ));
+                _stringTable.add( WBRStrdup( _buffer ));
                 lval = _stringTable.count() - 1;
                 if( _lookFor == LF_String ) {
                     _lastToken = T_String;

@@ -37,8 +37,8 @@
  * appropriate C code use #pragma aux ... __frame to do same
  * for some unknown reason this doesn't work for C++ compiler now
  */
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 #ifndef STANDALONE_MERGER
     #include <dr.h>
 #endif
@@ -99,7 +99,7 @@ void *operator new( size_t size )
 #ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-        p = malloc( size );
+        p = std::malloc( size );
 #endif
 #ifndef STANDALONE_MERGER
         if( p != NULL || size == 0 )    // successful allocation
@@ -129,7 +129,7 @@ void * WBRAlloc( size_t size )
 #ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
 #else
-        p = malloc( size );
+        p = std::malloc( size );
 #endif
 #ifndef STANDALONE_MERGER
         if( p != NULL || size == 0 )    // successful allocation
@@ -157,7 +157,7 @@ char * WBRStrdup( const char *str )
 #ifdef TRMEM
         p = _trmem_strdup( str, _trmem_guess_who(), TrHdl );
 #else
-        p = strdup( str );
+        p = ::strdup( str );
 #endif
 #ifndef STANDALONE_MERGER
         if( p != NULL )             // successful allocation
@@ -183,7 +183,7 @@ void * WBRRealloc( void * p, size_t size )
 #ifdef TRMEM
         p = _trmem_realloc( p, size, _trmem_guess_who(), TrHdl );
 #else
-        p = realloc( p, size );
+        p = std::realloc( p, size );
 #endif
 #ifndef STANDALONE_MERGER
         if( p != NULL || size == 0 )    // successful allocation
@@ -206,7 +206,7 @@ void WBRFree( void *p )
 #ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
-    free( p );
+    std::free( p );
 #endif
 }
 
@@ -226,13 +226,13 @@ void *MemAllocSafe( unsigned a )
 char *MemStrdup( const char *a )
 //--------------------------
 {
-    return strdup( a );
+    return WBRStrdup( a );
 }
 
 char *MemStrdupSafe( const char *a )
 //--------------------------
 {
-    return strdup( a );
+    return WBRStrdup( a );
 }
 
 void *MemRealloc( void *ptr, unsigned size )
@@ -271,7 +271,7 @@ void operator delete( void *p )
 #ifdef TRMEM
     _trmem_free( p, _trmem_guess_who(), TrHdl );
 #else
-    free( p );
+    std::free( p );
 #endif
 }
 

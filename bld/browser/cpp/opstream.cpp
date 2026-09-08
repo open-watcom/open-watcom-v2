@@ -31,10 +31,10 @@
 ****************************************************************************/
 
 
+#include <cstdio>
+#include <cerrno>
 #include <io.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
 
 #include <wstring.hpp>
 #include "assure.h"
@@ -125,7 +125,7 @@ void ScanStreamBase::streamInit( const char * srchPath )
 //------------------------------------------------------
 {
     if( srchPath != NULL ) {
-        char * buffer = strdup( srchPath );
+        char * buffer = WBRStrdup( srchPath );
         char * path;
 
         path = strtok( buffer, PathSeperator );
