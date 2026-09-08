@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wpshbttn.hpp>
 #include <wlistbox.hpp>
 #include <wmetrics.hpp>
@@ -134,7 +134,7 @@ void DTViewSymbol::initialize()
     } else {
         height = _fileNameR.r.y();
     }
-    tmpWidth = _fileNameR.r.x() + abs( _fileNameR.r.w() ) +
+    tmpWidth = _fileNameR.r.x() + std::abs( _fileNameR.r.w() ) +
                 getTextExtentX( _fileText.gets() );
 
     width = maxInt( width, tmpWidth );
@@ -147,7 +147,7 @@ void DTViewSymbol::initialize()
     _descPaint = new DescriptionPaint( this, tmpRect, _symbol );
 
     height += _symbolBoxR.r.y() - _symbolLineR.r.y();
-    tmpWidth = _symbolLineR.r.x() + _descPaint->rect().w() + abs( _symbolLineR.r.w() );
+    tmpWidth = _symbolLineR.r.x() + _descPaint->rect().w() + std::abs( _symbolLineR.r.w() );
     width = maxInt( width, tmpWidth );
 
     //------------------ member listbox --------------------

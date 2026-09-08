@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
 #include <wcvector.h>
 #include <wclist.h>
 #include <wclistit.h>
@@ -102,7 +102,7 @@ DwarfFileMerger::DwarfFileMerger( const char * file,
                                 (const char *) enabIt.current() );
                 } else {
                     #ifdef STANDALONE_MERGER
-                        fputs( "\n", stderr );
+                        std::fputs( "\n", stderr );
                     #endif
 
                     IdentifyAssassin( cause );
@@ -170,7 +170,7 @@ void DwarfFileMerger::doMerge( bool quiet )
         drSizes = file->getDRSizes();
 
         if( !quiet ) {
-            sprintf( message, " %s: ", file->getFileName() );
+            std::sprintf( message, " %s: ", file->getFileName() );
             blip->start( message );
         }
 
@@ -183,7 +183,7 @@ void DwarfFileMerger::doMerge( bool quiet )
         }
 
         if( !quiet ) {
-            sprintf( message, "%3.1f%% done", 100.0 * ( (double)currSize / (double)_totalSize ) );
+            std::sprintf( message, "%3.1f%% done", 100.0 * ( (double)currSize / (double)_totalSize ) );
             blip->end( message );
         }
     }
@@ -233,7 +233,7 @@ void DwarfFileMerger::doMerge( bool quiet )
 #endif
     } catch( CauseOfDeath cause ) {
 #ifdef STANDALONE_MERGER
-            fputs( "\n", stderr );
+            std::fputs( "\n", stderr );
 #endif
 
         IdentifyAssassin( cause );

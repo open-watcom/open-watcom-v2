@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,9 +45,9 @@ public:
                         : _fileName( fileName ) { refresh(); }
                     ~FileInfo(){};
 
-            dev_t   st_dev() { return (_status == 0) ? _statBuf.st_dev : -1; }
-            time_t  st_mtime() { return (_status == 0) ? _statBuf.st_mtime : -1; }
-            off_t   st_size() { return (_status == 0) ? _statBuf.st_size : -1; }
+            dev_t       st_dev() { return (_status == 0) ? _statBuf.st_dev : -1; }
+            std::time_t st_mtime() { return (_status == 0) ? _statBuf.st_mtime : -1; }
+            off_t       st_size() { return (_status == 0) ? _statBuf.st_size : -1; }
 
             void    refresh() { _status = stat( _fileName, &_statBuf ); }
             bool    exists() { return access( _fileName, F_OK ) == 0; }

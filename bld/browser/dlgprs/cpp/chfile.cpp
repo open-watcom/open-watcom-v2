@@ -51,7 +51,7 @@ FileExcept::FileExcept( Action act, int error, const char * fn,
 // have to make a copy of the messages as they may be destroyed
 // during stack unwinding
 {
-    size_t len;
+    std::size_t len;
     const char * storeMsg = (msg) ? msg : std::strerror( error );
 
     len = std::strlen( fn );
@@ -87,7 +87,7 @@ CheckedFile::CheckedFile( const char * fileName )
                 , _logOpen( false )
 //---------------------------------------------------------------------------
 {
-    size_t len;
+    std::size_t len;
 
     len = std::strlen( fileName ) + 1;
     _fileName = new char [len];
@@ -109,7 +109,7 @@ CheckedFile::~CheckedFile()
 void CheckedFile::setFileName( const char * fileName )
 //----------------------------------------------------
 {
-    size_t len;
+    std::size_t len;
 
     assert( !_isOpen && !_logOpen );
 
@@ -402,7 +402,7 @@ int CheckedFile::fstat( struct stat * buf )
     return retVal;
 }
 
-time_t CheckedFile::get_st_mtime()
+std::time_t CheckedFile::get_st_mtime()
 //----------------------------
 {
     struct stat buf;

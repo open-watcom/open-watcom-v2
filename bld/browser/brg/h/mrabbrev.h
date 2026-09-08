@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,11 +85,11 @@ public:
     bool            operator== ( const MergeAbbrev& other ) const {
                         return _code == other._code;
                     }
-    void *          operator new( size_t ) { return _pool.alloc(); };
+    void *          operator new( std::size_t ) { return _pool.alloc(); };
     void            operator delete( void * p ) { _pool.free( p ); };
 
-    static void *   allocHNode( size_t );
-    static void     freeHNode( void *, size_t );
+    static void *   allocHNode( std::size_t );
+    static void     freeHNode( void *, std::size_t );
 
     static void     skipAbbrev( MergeFile * file, uint_32& off );
 

@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include <cstring>
 
 #include "assure.h"
 #include "classtyp.h"

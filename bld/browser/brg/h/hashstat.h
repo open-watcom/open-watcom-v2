@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@ public:
                        ) : WCValHashSet( fn, buckets ) {};
     inline StatsHashSet( unsigned (*fn)( const Type & )
                         , unsigned buckets
-                        , void * (*user_alloc)( size_t )
-                        , void (*user_dealloc)( void *, size_t )
+                        , void * (*user_alloc)( std::size_t )
+                        , void (*user_dealloc)( void *, std::size_t )
                         ) : WCValHashSet( fn, buckets
                                          , user_alloc, user_dealloc ) {};
 
@@ -103,8 +104,8 @@ public:
                        ) : WCPtrHashSet( fn, buckets ) {};
     inline PtrStatsHashSet( unsigned (*fn)( const Type & )
                         , unsigned buckets
-                        , void * (*user_alloc)( size_t )
-                        , void (*user_dealloc)( void *, size_t )
+                        , void * (*user_alloc)( std::size_t )
+                        , void (*user_dealloc)( void *, std::size_t )
                         ) : WCPtrHashSet( fn, buckets
                                          , user_alloc, user_dealloc ) {};
 

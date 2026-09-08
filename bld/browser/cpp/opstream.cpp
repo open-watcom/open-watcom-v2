@@ -149,7 +149,7 @@ ScanStreamFile::ScanStreamFile( const char * fname )
 
         strcpy( buffer, _searchPaths[ i ] );
 
-        char c = buffer[ strlen( buffer ) - 1 ];
+        char c = buffer[ std::strlen( buffer ) - 1 ];
         if( !strchr( PathDelim, c ) ) {
             strcat( buffer, "/" );
         }
@@ -160,7 +160,7 @@ ScanStreamFile::ScanStreamFile( const char * fname )
 
     if( _handle < 0 ) {
         if( errno != ENOENT ) {
-            errMessage( "ScanStream::Streamfile - [%s]: %s", fname, strerror( errno ) );
+            errMessage( "ScanStream::Streamfile - [%s]: %s", fname, std::strerror( errno ) );
         } else {
             _error = true;
         }
@@ -175,7 +175,7 @@ ScanStreamFile::~ScanStreamFile()
 {
     if( _handle >= 0 ) {
         if( close( _handle ) < 0 ) {
-            errMessage( "ScanStream::~Streamfile: %s", strerror( errno ) );
+            errMessage( "ScanStream::~Streamfile: %s", std::strerror( errno ) );
             throw DEATH_BY_FILE_READING;
         }
     }
@@ -204,7 +204,7 @@ void ScanStreamFile::refill( void )
 
         _endPos = read( _handle, _buffer, SECTOR_SIZE );
         if( _endPos < 0 ) {
-            errMessage( "ScanStream::~Streamfile: %s", strerror( errno ) );
+            errMessage( "ScanStream::~Streamfile: %s", std::strerror( errno ) );
             throw DEATH_BY_BAD_FILE;
         }
 
@@ -237,7 +237,7 @@ void ScanStreamMem::refill( void )
     strncpy( _buffer, _memPtr + _offset, SECTOR_SIZE );
     _offset += SECTOR_SIZE;
     if( _offset > _end ) {
-        _endPos = strlen( _buffer );
+        _endPos = std::strlen( _buffer );
     } else {
         _endPos = SECTOR_SIZE;
     }

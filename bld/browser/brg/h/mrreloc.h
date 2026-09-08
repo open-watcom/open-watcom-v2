@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,8 +44,8 @@ public:
     void            addReloc( MergeOffset & replaced, MergeDIE * replacer );
     MergeDIE *      getReloc( const MergeOffset & off );
 
-    static void *   allocHNode( size_t ) { return _hPool.alloc(); }
-    static void     freeHNode( void * item, size_t ) { _hPool.free( item ); }
+    static void *   allocHNode( std::size_t ) { return _hPool.alloc(); }
+    static void     freeHNode( void * item, std::size_t ) { _hPool.free( item ); }
 
 private:
     int                                     _numFiles;

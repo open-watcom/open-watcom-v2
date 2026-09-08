@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,9 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <errno.h>
-#include <assert.h>
+#include <cstring>
+#include <cerrno>
+#include <cassert>
 
 #include "chbffile.h"
 
@@ -105,7 +106,7 @@ int CheckedBufferedFile::read( void * buffer, int len )
     if( _bufLen < BUFFERSIZE && _buffOffset + len >= _bufLen ) {
         lenRead = _bufLen - _buffOffset;
         if( lenRead > 0 ) {
-            memcpy( buffer, _buffer + _buffOffset, lenRead );
+            std::memcpy( buffer, _buffer + _buffOffset, lenRead );
             _buffOffset = _bufLen;
             return lenRead;
         } else {
@@ -116,7 +117,7 @@ int CheckedBufferedFile::read( void * buffer, int len )
     for( ;; ) {
         if( _buffOffset + len <= _bufLen ) break;
         amt = _bufLen - _buffOffset;
-        memcpy( buffer, _buffer + _buffOffset, amt );
+        std::memcpy( buffer, _buffer + _buffOffset, amt );
         _buffOffset += amt;
         len -= amt;
         lenRead += amt;
@@ -128,7 +129,7 @@ int CheckedBufferedFile::read( void * buffer, int len )
             break;
         }
     }
-    memcpy( buffer, _buffer + _buffOffset, len );
+    std::memcpy( buffer, _buffer + _buffOffset, len );
     _buffOffset += len;
     lenRead += len;
 
@@ -147,13 +148,13 @@ void CheckedBufferedFile::write( const void * buffer, int len )
     for( ;; ) {
         if( _buffOffset + len <= BUFFERSIZE ) break;
         amt = BUFFERSIZE - _buffOffset;
-        memcpy( _buffer + _buffOffset, buffer, amt );
+        std::memcpy( _buffer + _buffOffset, buffer, amt );
         _buffOffset += amt;
         len -= amt;
         buffer = (char *) buffer + amt;
         flushBuffer();
     }
-    memcpy( _buffer + _buffOffset, buffer, len );
+    std::memcpy( _buffer + _buffOffset, buffer, len );
     _buffOffset += len;
 }
 

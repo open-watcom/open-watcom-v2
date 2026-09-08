@@ -31,10 +31,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cctype>
 #include <watcom.h>
 #include <wstring.hpp>
 #include "util.h"
@@ -115,7 +115,7 @@ extern int tryToken( LookForType lf, char * buf )
 {
     int         i;
     tokenInfo * fnd = NULL;
-    int         count = strlen( buf );
+    int         count = std::strlen( buf );
 
     for( int cnt = 0; TokenTables[cnt].table != NULL; cnt += 1 ) {
         tokenTable * table = &TokenTables[cnt];
@@ -142,7 +142,7 @@ extern char * tryAmbig( LookForType lf, char * buf )
 /**************************************************/
 {
     int          i;
-    int          count = strlen( buf );
+    int          count = std::strlen( buf );
     tokenTable * table;
 
     for( int cnt = 0; TokenTables[cnt].table != NULL; cnt += 1 ) {
@@ -234,7 +234,7 @@ static int samelen( char * a, char * b )
 static int compNodes( const void * left, const void * right )
 /***********************************************************/
 {
-    return strcmp( ((tokenInfo *)left)->name, ((tokenInfo *)right)->name );
+    return std::strcmp( ((tokenInfo *)left)->name, ((tokenInfo *)right)->name );
 }
 
 /*
@@ -248,7 +248,7 @@ static void setupTokenTable( tokenTable * table )
     int prev;
     int next;
 
-    qsort( table->table, table->num_elem, sizeof(tokenInfo), compNodes );
+    std::qsort( table->table, table->num_elem, sizeof(tokenInfo), compNodes );
 
     for( i = 0; i < table->num_elem; i += 1 ) {
         unique = 0;
@@ -270,7 +270,7 @@ static void setupTokenTable( tokenTable * table )
         unique = maxi( unique, next );
 
         table->table[i].unique = mini( unique + 1,
-                                        strlen( table->table[i].name ));
+                                        std::strlen( table->table[i].name ));
 
 #if 0   // this modifies a static string, and doesn't work with /zc
         showUnique( table->table[i].name, table->table[i].unique );

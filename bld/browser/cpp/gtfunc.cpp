@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include <cstring>
 #include <string.hpp>
 
 #include <wpopmenu.hpp>
@@ -68,7 +68,7 @@ static char *my_strrev( char *str )
     char       c2;
 
     p1 = str;
-    p2 = p1 + strlen( p1 ) - 1;
+    p2 = p1 + std::strlen( p1 ) - 1;
     while( p1 < p2 ) {
         c1 = *p1;
         c2 = *p2;
@@ -92,8 +92,8 @@ TreeFuncPtr::TreeFuncPtr( TreeFuncWindow * prt, TreeNode * from,
 {
 }
 
-void * TreeFuncPtr::operator new( size_t )
-//-----------------------------------------
+void * TreeFuncPtr::operator new( std::size_t )
+//---------------------------------------------
 {
     return( _pool.alloc() );
 }
@@ -163,8 +163,8 @@ TreeFuncNode::~TreeFuncNode()
     WBRFree( _decName );
 }
 
-void * TreeFuncNode::operator new( size_t )
-//-----------------------------------------
+void * TreeFuncNode::operator new( std::size_t )
+//----------------------------------------------
 {
     return( _pool.alloc() );
 }

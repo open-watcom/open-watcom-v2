@@ -45,7 +45,7 @@ const char * const   Scanner::_SpecialCharacters = ",{}|:()@#;";
 
 static void my_clear( std::vector<char*> *vec )
 {
-    for (size_t i = 0; i < vec->size(); ++i) {
+    for (std::size_t i = 0; i < vec->size(); ++i) {
         delete[] (*vec)[i];
     }
     vec->clear();

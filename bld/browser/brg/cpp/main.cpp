@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 #include <direct.h>
 #include <wclist.h>
 #include <process.h>
@@ -77,13 +77,13 @@ int main()
             WCValSList<String> disabled;
             DwarfFileMerger merger( prs.database(), *prs.files(), disabled );
             if( merger.upToDate() ) {
-                printf( "Database %s already up-to-date\n", prs.database() );
+                std::printf( "Database %s already up-to-date\n", prs.database() );
             } else {
                 merger.doMerge( prs.quiet() );
             }
         }
     } catch ( ... ) {
-        fputs( "Merging aborted\n\n", stderr );
+        std::fputs( "Merging aborted\n\n", stderr );
         return -1;
     }
 
@@ -93,7 +93,7 @@ int main()
 static void printHeader()
 //-----------------------
 {
-    puts(
+    std::puts(
         banner1t( "Browsing Information Merger" ) "\n"
         banner1v( _WBRG_VERSION_ ) "\n"
         banner2 "\n"
@@ -106,7 +106,7 @@ static void printHeader()
 static void printUsage()
 //----------------------
 {
-    puts(
+    std::puts(
         "\n"
         "Usage:    wbrg <merger_cmd> ... <merger_cmd>" "\n"
         "\n"

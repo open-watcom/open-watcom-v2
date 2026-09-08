@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +218,7 @@ static bool referenceHook( drmem_hdl, dr_ref_info * refinfo, char * name,
     for( int i = 0; i < list->count(); i++ ) {
         ref = (Reference *) (*list)[i];
         if( ref->line() == refinfo->line && ref->column() == refinfo->column
-                && strcmp( ref->sourceFile(), refinfo->file ) == 0 ) {
+                && std::strcmp( ref->sourceFile(), refinfo->file ) == 0 ) {
             WBRFree( name );
             return true;
         }
@@ -282,8 +282,8 @@ bool Module::findRefSyms( WVList *list, Symbol * sym )
  * these are the routines which are called by the debug reading library
 */
 
-static void dbgReadHook( void * obj, dr_section sect, void * buf, size_t len )
-//-------------------------------------------------------------------------
+static void dbgReadHook( void * obj, dr_section sect, void * buf, std::size_t len )
+//---------------------------------------------------------------------------------
 {
     ((Module *)obj)->readSect( sect, buf, len );
 }

@@ -78,7 +78,7 @@ class Memory : public DebuggingLog
 
 static Memory bogus;        // just need to get the ctor's called
 
-void PrintLine( void *parm, const char *buf, size_t len )
+void PrintLine( void *parm, const char *buf, std::size_t len )
 {
     /* unused parameters */ (void)parm; (void)len;
 
@@ -88,8 +88,8 @@ void PrintLine( void *parm, const char *buf, size_t len )
 
 #endif  // TRMEM
 
-void *operator new( size_t size )
-//-------------------------------
+void *operator new( std::size_t size )
+//------------------------------------
 {
     void *p;
 
@@ -116,8 +116,8 @@ void *operator new( size_t size )
 
 extern "C" {
 
-void * WBRAlloc( size_t size )
-//----------------------------
+void * WBRAlloc( std::size_t size )
+//------------------------------*--
 // note: code directly cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
@@ -172,8 +172,8 @@ char * WBRStrdup( const char *str )
     return p;
 }
 
-void * WBRRealloc( void * p, size_t size )
-//----------------------------------------
+void * WBRRealloc( void * p, std::size_t size )
+//---------------------------------------------
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
@@ -310,7 +310,7 @@ Memory::~Memory()
         WMessageDialog::message( NULL, MsgWarning, MsgOk,
                          "Memory problems detected", "Browser Memory Tracker" );
 #else
-        fprintf( stderr, "Memory problems detected" );
+        std::fprintf( stderr, "Memory problems detected" );
 #endif
     }
 }

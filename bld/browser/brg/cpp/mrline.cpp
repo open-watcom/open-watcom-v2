@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +34,7 @@
 #include <wchash.h>
 #include <wchiter.h>
 #include <wcvector.h>
-#include <string.h>
+#include <cstring>
 #include "watcom.h"
 #include "dwarf.h"
 
@@ -94,7 +94,7 @@ MergeFileEntry& MergeFileEntry::operator=( const MergeFileEntry& other )
 uint MergeFileEntry::getLen()
 //---------------------------
 {
-    return( strlen( name.getString() ) + 1
+    return( std::strlen( name.getString() ) + 1
             + MergeFile::ULEB128Len( directoryIdx )
             + MergeFile::ULEB128Len( modTime )
             + MergeFile::ULEB128Len( length ) );
@@ -382,7 +382,7 @@ void MergeLineSection::writePass( MergeFile * outFile )
 
     // directories
     for( i = 0; i < _directories->entries(); i += 1 ) {
-        length += strlen( (*_directories)[ i ].getString() ) + 1;
+        length += std::strlen( (*_directories)[ i ].getString() ) + 1;
     }
     length += sizeof( uint_8 );     // terminating null for directories
 

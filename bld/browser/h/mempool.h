@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +34,8 @@
 #ifndef __MEMPOOL_H__
 #define __MEMPOOL_H__
 
-#include <stddef.h>
-#include <string.h>
+#include <cstddef>
+#include <cstring>
 
 #ifdef DEBUG
 #  include "debuglog.h"
@@ -57,20 +57,20 @@ class MemoryPool {
 
 public:
                     MemoryPool( const char * owner );
-                    MemoryPool( size_t elemSize, const char * owner,
+                    MemoryPool( std::size_t elemSize, const char * owner,
                                 int elemsPerBlock = 10 );
                     ~MemoryPool();
 
             void *  alloc();
             void    free( void * );
             void    ragnarok();         // free entire pool
-            void    setSize( size_t elemSize, int elemsPerBlock = 10 );
+            void    setSize( std::size_t elemSize, int elemsPerBlock = 10 );
 
 protected:
             void        grow();
 
-            size_t      _blockSize;
-            size_t      _elemSize;
+            std::size_t _blockSize;
+            std::size_t _elemSize;
             int         _elemsPerBlock;
             char *      _lastElement;
             char *      _currElement;

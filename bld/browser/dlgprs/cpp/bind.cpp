@@ -91,7 +91,7 @@ static int cprintf( CheckedBufferedFile & file, const char * fmt, ... )
 void Binding::writeTimeStamp( CheckedBufferedFile & out )
 //-------------------------------------------------------
 {
-    time_t  timeOfDay;
+    std::time_t  timeOfDay;
     char *  tText;
 
     timeOfDay = std::time( NULL );

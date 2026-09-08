@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,8 +40,8 @@ const int POOLSIZE = 16;
 MemoryPool VariableSym::_pool( sizeof( VariableSym ), "VariableSym", POOLSIZE );
 #pragma enable_message( P549 )
 
-void * VariableSym::operator new( size_t )
-//----------------------------------------
+void * VariableSym::operator new( std::size_t )
+//---------------------------------------------
 {
     return( _pool.alloc() );
 }

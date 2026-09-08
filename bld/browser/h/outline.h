@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,7 +68,7 @@ public:
                                     return this == &o;
                                 }
 
-            void *              operator new( size_t );
+            void *              operator new( std::size_t );
             void                operator delete( void * );
 
             OutlineElement *    next() const;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,8 +69,8 @@ TreeLine::~TreeLine()
     }
 }
 
-void * TreeLine::operator new( size_t )
-//-------------------------------------
+void * TreeLine::operator new( std::size_t )
+//------------------------------------------
 {
     return( _pool.alloc() );
 }

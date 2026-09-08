@@ -34,15 +34,15 @@
 #ifndef mem_h_included
 #define mem_h_included
 
-#include <stddef.h>
+#include <cstddef>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void *  WBRAlloc( size_t );
+void *  WBRAlloc( std::size_t );
 char *  WBRStrdup( const char * );
-void *  WBRRealloc( void *, size_t );
+void *  WBRRealloc( void *, std::size_t );
 void    WBRFree( void * );
 
 #ifdef __cplusplus

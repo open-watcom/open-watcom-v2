@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,9 +38,9 @@
 
 class StringPool {
 public:
-                            StringPool( size_t size, const char * owner );
+                            StringPool( std::size_t size, const char * owner );
                             ~StringPool();
-    char *                  alloc( size_t len );
+    char *                  alloc( std::size_t len );
     void                    ragnarok();
 private:
     void                    grow();
@@ -54,7 +54,7 @@ private:
     char *                  _currPos;           // position within block
     char *                  _endOfCurrBlock;
     StringBlock *           _firstBlock;
-    size_t                  _blockSize;
+    std::size_t             _blockSize;
 
 #ifdef DEBUG
     const   char *          _owner;

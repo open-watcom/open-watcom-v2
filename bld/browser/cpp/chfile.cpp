@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,11 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include <string.h>
-#include <errno.h>
+#include <cassert>
+#include <cstring>
+#include <cerrno>
 #include <wcvector.h>
-#include <stdio.h>      // need for seek-whence defines
+#include <cstdio>      // need for seek-whence defines
 #include <string.hpp>
 
 #include "chfile.h"
@@ -53,15 +53,15 @@ FileExcept::FileExcept( Action act, int error, const char * fn,
 // during stack unwinding
 {
     int len;
-    const char * storeMsg = (msg) ? msg : strerror( error );
+    const char * storeMsg = (msg) ? msg : std::strerror( error );
 
-    len = strlen( fn );
+    len = std::strlen( fn );
     _fileName = new char [len + 1];
-    memcpy( _fileName, fn, len + 1 );
+    std::memcpy( _fileName, fn, len + 1 );
 
-    len = strlen( storeMsg );
+    len = std::strlen( storeMsg );
     _message = new char [len + 1];
-    memcpy( _message, storeMsg, len + 1 );
+    std::memcpy( _message, storeMsg, len + 1 );
 }
 
 FileExcept::~FileExcept()
@@ -89,10 +89,10 @@ CheckedFile::CheckedFile( const char * fileName )
 {
     int len;
 
-    len = strlen( fileName ) + 1;
+    len = std::strlen( fileName ) + 1;
     _fileName = new char [len];
 
-    memcpy( _fileName, fileName, len );
+    std::memcpy( _fileName, fileName, len );
 }
 
 
@@ -115,10 +115,10 @@ void CheckedFile::setFileName( const char * fileName )
 
     delete[] _fileName;
 
-    len = strlen( fileName ) + 1;
+    len = std::strlen( fileName ) + 1;
     _fileName = new char [len];
 
-    memcpy( _fileName, fileName, len );
+    std::memcpy( _fileName, fileName, len );
 }
 
 
@@ -379,7 +379,7 @@ int CheckedFile::fstat( struct stat * buf )
     return retVal;
 }
 
-time_t CheckedFile::st_mtime()
+std::time_t CheckedFile::st_mtime()
 //----------------------------
 {
     struct stat buf;

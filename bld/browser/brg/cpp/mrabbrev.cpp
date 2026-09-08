@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,14 +62,14 @@ MergeAbbrev::MergeAbbrev( uint_32 code )
     setup();
 }
 
-static void * MergeAbbrev::allocHNode( size_t )
-//---------------------------------------------
+static void * MergeAbbrev::allocHNode( std::size_t )
+//--------------------------------------------------
 {
     return _hPool.alloc();
 }
 
-static void MergeAbbrev::freeHNode( void * item, size_t )
-//-------------------------------------------------------
+static void MergeAbbrev::freeHNode( void * item, std::size_t )
+//------------------------------------------------------------
 {
     _hPool.free( item );
 }

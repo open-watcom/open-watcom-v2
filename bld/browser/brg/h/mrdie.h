@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,8 +78,8 @@ public:
                         return( this == &o );
                     }
 
-    void *          operator new( size_t ) { return _pool.alloc(); };
-    void *          operator new( size_t, void * ptr ) { return ptr; };
+    void *          operator new( std::size_t ) { return _pool.alloc(); };
+    void *          operator new( std::size_t, void * ptr ) { return ptr; };
     void            operator delete( void * p ) { _pool.free( p ); };
     static void     ragnarok();
 

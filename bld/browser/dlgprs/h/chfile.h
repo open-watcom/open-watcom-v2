@@ -102,9 +102,9 @@ public:
                         return( this == &other );
                     }
 
-            int     fstat( struct stat * buf );
-            time_t  get_st_mtime();
-            off_t   get_st_size();
+            int         fstat( struct stat * buf );
+            std::time_t get_st_mtime();
+            off_t       get_st_size();
 
     const   char *  getFileName() const { return _fileName; }
             void    setFileName( const char * fn );

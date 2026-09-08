@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,7 +76,7 @@ public:
     virtual BTreeNodeBase<Key_T,Obj_T> *    nextNode( int_16 & idx );
     virtual Obj_T *                         nextObj( int_16 & idx );
 
-            void *  operator new( size_t ) { return _pool.alloc(); };
+            void *  operator new( std::size_t ) { return _pool.alloc(); };
             void    operator delete( void * p ) { _pool.free( p ); };
     static  void    ragnarok();
     static  void    setKeyOrder( uint KeyOrder );
@@ -122,7 +122,7 @@ public:
     virtual BTreeNodeBase<Key_T,Obj_T> *        nextNode( int_16 & idx );
     virtual Obj_T *                             nextObj( int_16 & idx );
 
-            void *      operator new( size_t ) { return _pool.alloc(); };
+            void *      operator new( std::size_t ) { return _pool.alloc(); };
             void        operator delete( void * p ) { _pool.free( p ); };
     static  void        ragnarok();
     static  void        setObjOrder( uint objOrder );

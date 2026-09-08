@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,7 +40,7 @@
 // disable "integral value may be truncated" warning
 #pragma disable_message( P389 )
 
-#include <time.h>
+#include <ctime>
 #include "watcom.h"
 
 #ifndef _WATCOM_H_INCLUDED_     // otherwise <exeelf.h> will try to haul it in
@@ -58,7 +58,7 @@ class CheckedBufferedFile;
 #pragma pack(__push, 1);
 
 struct ComponentFile {
-    time_t          time;           /* time last modified */
+    std::time_t     time;           /* time last modified */
     bool            enabled;        /* true if enabled */
     uint_16         nameLen;        /* length of file name, including '\0' */
     char            name[1];        /* file name (entire path) */

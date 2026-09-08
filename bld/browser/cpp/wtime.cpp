@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ WTime::WTime()
 {
 }
 
-WTime::WTime( time_t time )
+WTime::WTime( std::time_t time )
     : _time( time )
 /*************************/
 {
@@ -68,8 +69,8 @@ int WTime::operator== ( const WTime & rhs ) const
     return( _time == rhs._time );
 }
 
-void WTime::set ( const time_t time )
-/***********************************/
+void WTime::set ( const std::time_t time )
+/****************************************/
 {
     _time = time;
 }

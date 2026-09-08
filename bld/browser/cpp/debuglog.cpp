@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,10 +31,10 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <time.h>
+#include <cstdlib>
+#include <cstdarg>
+#include <cstring>
+#include <ctime>
 #include <wclist.h>
 #include <wcstack.h>
 
@@ -60,7 +60,7 @@ DebuggingLog::DebuggingLog( const char * name, bool append )
     }
 
     if( _fp == NULL ) {
-        fprintf( stderr, "%s: %s (error %d)\n\n", name, strerror( errno ), errno );
+        std::fprintf( stderr, "%s: %s (error %d)\n\n", name, std::strerror( errno ), errno );
         _fp = stderr;
     }
 
@@ -70,7 +70,7 @@ DebuggingLog::DebuggingLog( const char * name, bool append )
 DebuggingLog::~DebuggingLog()
 //---------------------------
 {
-    fprintf( _fp, "\n\n<log end> %s\n", DebuggingLog::timeStamp() );
+    std::fprintf( _fp, "\n\n<log end> %s\n", DebuggingLog::timeStamp() );
 
     if( _times ) {
         _times->clear();
@@ -83,13 +83,13 @@ int DebuggingLog::printf( const char * format, ... )
 //--------------------------------------------------
 // normal printf to the file
 {
-    va_list args;
-    int     rc;
+    std::va_list    args;
+    int             rc;
 
     va_start( args, format );
-    rc = vfprintf( _fp, format, args );
+    rc = std::vfprintf( _fp, format, args );
     va_end( args );
-    fflush( _fp );
+    std::fflush( _fp );
 
     if( rc < 0 ) {
         throw WriteError;
@@ -98,15 +98,15 @@ int DebuggingLog::printf( const char * format, ... )
     return rc;
 }
 
-void DebuggingLog::write( const char * buffer, size_t len )
-//---------------------------------------------------------
+void DebuggingLog::write( const char * buffer, std::size_t len )
+//--------------------------------------------------------------
 // write a straight buffer out.  I don't know a good
 // use for this, but trmem uses it, so...
 {
-    size_t numWritten;
+    std::size_t numWritten;
 
-    numWritten = fwrite( buffer, len, 1, _fp );
-    fflush( _fp );
+    numWritten = std::fwrite( buffer, len, 1, _fp );
+    std::fflush( _fp );
 
     if( numWritten != 1 ) {
         throw WriteError;
@@ -119,8 +119,8 @@ void DebuggingLog::puts( const char * buffer )
 {
     int rc;
 
-    rc = fputs( buffer, _fp );
-    fflush( _fp );
+    rc = std::fputs( buffer, _fp );
+    std::fflush( _fp );
 
     if( rc ) {
         throw WriteError;
@@ -131,9 +131,9 @@ static char * DebuggingLog::timeStamp()
 //-------------------------------------
 // writes a time / date stamp then a newline
 {
-    time_t  timeOfDay;
+    std::time_t  timeOfDay;
 
-    timeOfDay = time( NULL );
+    timeOfDay = std::time( NULL );
     return ctime( &timeOfDay );
 }
 
@@ -144,7 +144,7 @@ static char * AppendSlash( char * fileName )
 {
     int len;
 
-    len = strlen( fileName );
+    len = std::strlen( fileName );
     if( fileName[ len - 1 ] != '\\' && fileName[ len - 1 ] != '/' ) {
         fileName[ len ] = '\\';
         fileName[ len + 1 ] = '\0';
@@ -210,13 +210,13 @@ static void PrintHeader( const char * name, FILE * fp )
     int     nChars;
     int     i;
 
-    nChars = fprintf( fp, "%s:  %s", name, DebuggingLog::timeStamp() );
+    nChars = std::fprintf( fp, "%s:  %s", name, DebuggingLog::timeStamp() );
 
     for( i = 0; i < nChars; i += 1 ) {
-        fputc( '-', fp );
+        std::fputc( '-', fp );
     }
 
-    fputs( "\n", fp );
+    std::fputs( "\n", fp );
 }
 
 void DebuggingLog::startTiming()

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include <cstring>
 
 #include "mempool.h"
 #include "assure.h"
@@ -64,7 +64,7 @@ MemoryPool::MemoryPool( const char * owner )
 }
 
 
-MemoryPool::MemoryPool( size_t elemSize, const char * owner, int elemsPerBlock )
+MemoryPool::MemoryPool( std::size_t elemSize, const char * owner, int elemsPerBlock )
     : _elemSize( 0 )
     , _elemsPerBlock( 0 )
     , _lastElement( NULL )
@@ -99,8 +99,8 @@ MemoryPool::~MemoryPool()
     ragnarok();
 }
 
-void MemoryPool::setSize( size_t elemSize, int elemsPerBlock )
-//------------------------------------------------------------
+void MemoryPool::setSize( std::size_t elemSize, int elemsPerBlock )
+//-----------------------------------------------------------------
 {
     ASSERTION( _elemSize == 0 || _elemSize == elemSize );
 

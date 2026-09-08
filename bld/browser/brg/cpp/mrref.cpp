@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@
 #include "mrfile.h"
 
 #ifdef INSTRUMENTS
-#include <stdio.h>
+#include <cstdio>
 #endif
 
 void RefLineCol::codeBase( uint_8 opcode )
@@ -253,7 +253,7 @@ void MergeRefSection::scanFile( MergeFile * file, uint_8 indx,
                     Log.printf( "\n" );
                 }
 
-                fprintf( stderr, "Could not find dependant die!\n" );
+                std::fprintf( stderr, "Could not find dependant die!\n" );
                 continue;
             }
 #endif

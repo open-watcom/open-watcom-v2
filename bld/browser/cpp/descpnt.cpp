@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wcvector.h>
 #include <wstring.hpp>
 
@@ -149,7 +150,7 @@ DescriptionPaint::DescriptionPaint( WBRWindow * prnt, const WRect & r,
         x+=w;
     }
 
-    _rect.w( x - abs( _rect.x() ) );
+    _rect.w( x - std::abs( _rect.x() ) );
 }
 
 DescriptionPaint::~DescriptionPaint()

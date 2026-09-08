@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,14 +31,14 @@
 ****************************************************************************/
 
 
-#include <errno.h>
+#include <cerrno>
 #include <wclist.h>
 #include <wclistit.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <direct.h>
-#include <ctype.h>
+#include <cctype>
 
 #include "assure.h"
 #include "chbffile.h"
@@ -451,7 +451,7 @@ char CommandParser::getNextChar()
 
 #ifdef DEBUG_CMDPARSE
 
-#include <stdio.h>
+#include <cstdio>
 #include <process.h>
 
 void main()

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -120,17 +120,17 @@ MergeDIE::operator const char*() const
     char *      off = buffer;
     int         len;
 
-    len = sprintf( off, "[name: %s, old offset: %s, new offset: %#lx, ",
+    len = std::sprintf( off, "[name: %s, old offset: %s, new offset: %#lx, ",
             _nameKey.getString(), _offset.getString(), _newOffset );
     off += len;
 
-    len = sprintf( off, "child: %s, ", _firstChild.getString() );
+    len = std::sprintf( off, "child: %s, ", _firstChild.getString() );
     off += len;
 
-    len = sprintf( off, "sib: %s, ", _sibling.getString() );
+    len = std::sprintf( off, "sib: %s, ", _sibling.getString() );
     off += len;
 
-    len = sprintf( off, "%s, length: %d, occurs: %lu]",
+    len = std::sprintf( off, "%s, length: %d, occurs: %lu]",
             definition() ? "<definition>" : "<declaration>", _length, _occurs );
 
     return buffer;

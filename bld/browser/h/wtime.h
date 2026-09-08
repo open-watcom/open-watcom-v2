@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef __WTIME_H__
 #define __WTIME_H__
 
-#include <time.h>
+#include <ctime>
 
 // Class methods could be expanded if necessary (eg. day(), hour(),
 // etc.)
@@ -41,18 +42,18 @@
 class WTime {
 public:
                 WTime();
-                WTime( time_t );
+                WTime( std::time_t );
                 ~WTime() {}
 
     int         operator < ( const WTime & ) const;
     int         operator > ( const WTime & ) const;
     int         operator == ( const WTime & ) const;
 
-    void        set( const time_t );
+    void        set( const std::time_t );
 
 private :
-    time_t      _time;
-    struct tm   _tmstruct;
+    std::time_t     _time;
+    struct std::tm  _tmstruct;
 };
 
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,7 +43,7 @@ public:
                             // not called as ragnarok() is used
                         };
 
-    void *              operator new( size_t ) { return _nodePool.alloc(); };
+    void *              operator new( std::size_t ) { return _nodePool.alloc(); };
     void                operator delete( void * p ) { _nodePool.free( p ); };
 
     const char *        insert( const char * str );
@@ -58,7 +58,7 @@ private:
                                         PatriciaNode * left,
                                         PatriciaNode * right );
 
-    static uint_8       getBit( const char * str, size_t len, uint_16 bitpos );
+    static uint_8       getBit( const char * str, std::size_t len, uint_16 bitpos );
 
     int_16              _bitPos;    // bit to compare for this node
     char *              _key;       // the key value
@@ -101,7 +101,7 @@ static void PatriciaNode::ragnarok()
     _stringPool.ragnarok();
 }
 
-static inline uint_8 PatriciaNode::getBit( const char * str, size_t len,
+static inline uint_8 PatriciaNode::getBit( const char * str, std::size_t len,
                                          uint_16 bitPos )
 //--------------------------------------------------------------------
 {
@@ -133,14 +133,14 @@ const char * PatriciaNode::insert( const char * str )
     PatriciaNode *  curr;
     PatriciaNode *  other;      // node with key to be distinguished from this
     int_16          sameBits;   // number of same bits between str and other
-    size_t          len;        // length of string
+    std::size_t     len;        // length of string
     char *          strCopy;    // copy of the string
-    size_t          lenCurrStr; // length of string in current node
+    std::size_t     lenCurrStr; // length of string in current node
 
     prev = this;
     curr = _left;
 
-    len = strlen( str ) + 1;
+    len = std::strlen( str ) + 1;
 
     while( prev->_bitPos < curr->_bitPos ) {
         prev = curr;
@@ -149,7 +149,7 @@ const char * PatriciaNode::insert( const char * str )
                 : curr->_left;
     }
 
-    if( strcmp( str, curr->_key ) == 0 ) {   // already in tree
+    if( std::strcmp( str, curr->_key ) == 0 ) {   // already in tree
 #ifdef INSTRUMENTS_FULL_LOGGING
         Log.printf( "\"%s\" has been seen - returning \"%s\"\n", str, curr->_key );
 #endif
@@ -157,7 +157,7 @@ const char * PatriciaNode::insert( const char * str )
         return curr->_key;
     }
 
-    lenCurrStr = strlen( curr->_key ) + 1;
+    lenCurrStr = std::strlen( curr->_key ) + 1;
 
     for( sameBits = 0; (((sameBits / 8) < len) && ((sameBits / 8) < lenCurrStr)); sameBits += 1 ) {
         if( getBit( curr->_key, lenCurrStr, sameBits ) != getBit( str, len, sameBits ) ) {
@@ -176,7 +176,7 @@ const char * PatriciaNode::insert( const char * str )
     }
 
     strCopy = _stringPool.alloc( len );
-    memcpy( strCopy, str, len );
+    std::memcpy( strCopy, str, len );
     curr = new PatriciaNode( sameBits, strCopy,
                                 getBit( str, len, sameBits ) ? other : NULL,
                                 getBit( str, len, sameBits ) ? NULL : other );

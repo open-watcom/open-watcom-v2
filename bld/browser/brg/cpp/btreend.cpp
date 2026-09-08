@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -144,9 +144,9 @@ print( int indent )
 
     for( i = 0; i < _degree - 1; i += 1 ) {
         if( _nodes[ i ]._separator.getString() ) {
-            test = strlen( _nodes[ i ]._separator.getString() );
+            test = std::strlen( _nodes[ i ]._separator.getString() );
         } else {
-            test = strlen( "NULL" );
+            test = std::strlen( "NULL" );
         }
         len = (test>len) ? test : len;
     }

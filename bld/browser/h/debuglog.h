@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +44,7 @@
 #ifndef __DEBUG_LOG__
 #define __DEBUG_LOG__
 
-#include <stdio.h>
+#include <cstdio>
 #include "watcom.h"
 
 template <class Type> class              WCValSList;
@@ -65,7 +65,7 @@ public:
 
                     // printf returns # chars written, as usual
             int     printf( const char * format, ... );
-            void    write( const char * buffer, size_t len );
+            void    write( const char * buffer, std::size_t len );
             void    puts( const char * buf );
 
             void    startTiming();
@@ -87,7 +87,7 @@ public:
             ~DebuggingLog(){};
 
             int     printf( const char *, ... ) { return 0; }
-            void    write( const char *, size_t ) {}
+            void    write( const char *, std::size_t ) {}
             void    puts( const char * ) {}
 
             void    startTiming() {}

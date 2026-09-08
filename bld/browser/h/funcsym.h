@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@ public:
     virtual             ~FunctionSym() {}
     virtual dr_sym_type symtype() const { return DR_SYM_FUNCTION; }
 
-            void *      operator new( size_t );
+            void *      operator new( std::size_t );
             void        operator delete( void * );
 
             void        localVars( WVList & );

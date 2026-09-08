@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@ public:
             TreeFuncPtr( TreeFuncWindow * prt, TreeNode * from,
                          TreeNode * to, dr_ref_info ref );
     virtual ~TreeFuncPtr() {}
-    void *              operator new( size_t );
+    void *              operator new( std::size_t );
     void                operator delete( void * );
 
     virtual PaintInfo * getPaintInfo( void );
@@ -92,7 +93,7 @@ public:
                           TreeCycleList * flatNode = NULL,
                           TreeRefList * ref = NULL );
     virtual ~TreeFuncNode();
-    void *              operator new( size_t );
+    void *              operator new( std::size_t );
     void                operator delete( void * );
 
     virtual drmem_hdl   getHandle( void ) const { return _drhandle; }

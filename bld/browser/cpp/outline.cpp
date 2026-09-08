@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +85,7 @@ OutlineElement::OutlineElement( int level, TreeNode * node, OutlineElement * nex
     OutlineElement *    prevChild = next;
     OutlineElement *    lastChild = NULL;
 
-    _name = new char [strlen( node->name() ) + 1];
+    _name = new char [std::strlen( node->name() ) + 1];
     strcpy( _name, node->name() );
 
     numChildren = node->getCount( TreeNode::ChildList );
@@ -181,8 +181,8 @@ void OutlineElement::setEnable( bool en )
 }
 
 
-void * OutlineElement::operator new( size_t )
-//-------------------------------------------
+void * OutlineElement::operator new( std::size_t )
+//------------------------------------------------
 {
     return _pool.alloc();
 }

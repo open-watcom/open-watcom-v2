@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,8 +54,8 @@ EnumType::EnumType( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * nam
     _byteSize = DRGetByteSize( getHandle() );
 }
 
-void * EnumType::operator new( size_t )
-//-------------------------------------
+void * EnumType::operator new( std::size_t )
+//------------------------------------------
 {
     return( _pool.alloc() );
 }

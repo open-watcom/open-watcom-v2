@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 #include <wcvector.h>
 
 #include "death.h"
@@ -76,13 +76,13 @@ static ComponentFile * ComponentFile::createComponent( uint_32 t, bool en, const
     ComponentFile * comp;
     uint_16 len;
 
-    len = (uint_16)( strlen( name ) + 1 );
+    len = (uint_16)( std::strlen( name ) + 1 );
     comp = (ComponentFile *) new char [sizeof( ComponentFile ) + len];
 
     comp->time =    t;
     comp->enabled = en;
     comp->nameLen = len;
-    memcpy( comp->name, name, len );
+    std::memcpy( comp->name, name, len );
 
     return comp;
 }
@@ -195,7 +195,7 @@ bool ElfFile::addSection( const char * name, void * h )
     Elf32_Shdr * hdr = (Elf32_Shdr *) h;
 
     for( int i = DR_DEBUG_NUM_SECTS; i > 0; i -= 1 ) {
-        if( strcmp( name, _drSectNames[i - 1] ) == 0 ) {
+        if( std::strcmp( name, _drSectNames[i - 1] ) == 0 ) {
             _drSections[i - 1] = hdr->sh_offset;
             _drSizes[i - 1] = hdr->sh_size;
 
@@ -203,7 +203,7 @@ bool ElfFile::addSection( const char * name, void * h )
         }
     }
 
-    if( strcmp( name, _componentSectName ) == 0 ) {
+    if( std::strcmp( name, _componentSectName ) == 0 ) {
         readComponentSect( hdr->sh_offset, hdr->sh_size );
         return true;
     }
@@ -222,7 +222,7 @@ void ElfFile::writeStringSect()
 
     for( i = 0; i < _sectNames->entries(); i += 1 ) {
         str = (*_sectNames)[i];
-        _file->write( str, strlen( str ) + 1 );
+        _file->write( str, std::strlen( str ) + 1 );
     }
 
     endWriteSect();
@@ -268,7 +268,7 @@ void ElfFile::addComponentFile( const char * fileName, bool enable )
 
     // NYI -- use the WCVector find!
     for( int i = 0; i < _components->entries(); i += 1 ) {
-        if( strcmp( (*_components)[i]->name, fileName ) == 0 ) {
+        if( std::strcmp( (*_components)[i]->name, fileName ) == 0 ) {
             comp = (*_components)[i];
             found = true;
         }
@@ -317,7 +317,7 @@ void ElfFile::writeComponentSect()
 
     startWriteSect( _componentSectName, SHT_PROGBITS );
 
-    memcpy( hdr.signature, ComponentSignature, COMP_HDR_SIG_LEN );
+    std::memcpy( hdr.signature, ComponentSignature, COMP_HDR_SIG_LEN );
     hdr.numItms = (short) _components->entries();
     _file->write( &hdr, sizeof( ComponentHeader ) );
 
@@ -416,7 +416,7 @@ void ElfFile::startWrite()
     invalid = new SectHdr;
 
     memset( &_elfHdr, 0, sizeof( Elf32_Ehdr ) );
-    memcpy( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN );
+    std::memcpy( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN );
     _elfHdr.e_ident[EI_CLASS] = ELFCLASS32;
     _elfHdr.e_ident[EI_DATA] = ELFDATA2LSB;
     _elfHdr.e_ident[EI_VERSION] = EV_CURRENT;
@@ -463,7 +463,7 @@ void ElfFile::startWriteSect( const char * name, long sh_type )
     memset( shdr, 0, sizeof( SectHdr ) );
 
     shdr->sh_name = _sectNameOff;
-    _sectNameOff += strlen( name ) + 1;
+    _sectNameOff += std::strlen( name ) + 1;
 
     shdr->sh_type = sh_type;
     shdr->sh_offset = _file->tell();
@@ -473,7 +473,7 @@ void ElfFile::startWriteSect( const char * name, long sh_type )
     _sectNames->append( name );
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( strcmp( _drSectNames[i], name ) == 0 ) {
+        if( std::strcmp( _drSectNames[i], name ) == 0 ) {
             _drSections[i] = _file->tell();
             break;
         }
@@ -492,7 +492,7 @@ void ElfFile::endWriteSect()
     shdr->sh_size = _file->tell() - shdr->sh_offset;
 
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i += 1 ) {
-        if( strcmp( _drSectNames[i], _sectNames->last() ) == 0 ) {
+        if( std::strcmp( _drSectNames[i], _sectNames->last() ) == 0 ) {
             _drSizes[i] = _file->st_size() - _drSections[i];
             break;
         }

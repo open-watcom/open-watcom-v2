@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,8 +37,8 @@
 #include "wbrdefs.h"
 #include <dr.h>
 #include <wobject.hpp>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 class Module;
 class Reference : public WObject
@@ -51,7 +51,7 @@ public:
     char *      name();
     ulong       line() { return _line; }
     uint        column() { return _column; }
-    uint        length() { return strlen( _name ); }
+    uint        length() { return std::strlen( _name ); }
     void        editRef();
 private:
     char        _file[_MAX_PATH];

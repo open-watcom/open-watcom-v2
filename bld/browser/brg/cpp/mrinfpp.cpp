@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <wcvector.h>
 
 #include "mrabbrev.h"
@@ -149,7 +149,7 @@ void MergeInfoPP::execute( MergeInfoSection * sect,
         // now j == _reqCount[ i ]
 
         if( j ) {
-            qsort( vector, j, sizeof( InfoPPReqNode * ), (icbvv) &CompReq );
+            std::qsort( vector, j, sizeof( InfoPPReqNode * ), (icbvv) &CompReq );
 
             doFile( sect, outFile, *inFiles[ i ], i, vector, j );
         }

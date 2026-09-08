@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@ public:
                             : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual             ~MacroSym() {}
     virtual dr_sym_type symtype() const { return DR_SYM_MACRO; }
-            void *      operator new( size_t );
+            void *      operator new( std::size_t );
             void        operator delete( void * );
 
             char *      value() { return NULL; }        // NYI

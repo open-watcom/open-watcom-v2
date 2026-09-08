@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -74,7 +75,7 @@ public :
               LineType lineType );
     TreeLine();
     ~TreeLine( void );
-    void *      operator new( size_t );
+    void *      operator new( std::size_t );
     void        operator delete( void * );
 
     void        set( TreeCoord _x1, TreeCoord _y1,

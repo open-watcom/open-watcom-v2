@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <cstdio>
 #include "blip.h"
 
 #ifndef STANDALONE_MERGER
@@ -57,11 +57,11 @@ void BlipCount::start( const char * startMessage )
     _str = startMessage;
 
 #ifndef STANDALONE_MERGER
-    strcpy( _Buffer, _str );
+    std::strcpy( _Buffer, _str );
     browseTop->statusText( _Buffer );
 #else
-    printf( "%s", _str );
-    fflush( stdout );
+    std::printf( "%s", _str );
+    std::fflush( stdout );
 #endif
 }
 
@@ -84,13 +84,13 @@ void BlipCount::doBlip()
         }
 
 #ifndef STANDALONE_MERGER
-        sprintf( _Buffer, "%s: %*c%*c", _str, _spinPos, Spins[ _spinState ],
+        std::sprintf( _Buffer, "%s: %*c%*c", _str, _spinPos, Spins[ _spinState ],
                                         MaxSpin - _spinPos, ' ' );
         browseTop->statusText( _Buffer );
 #else
-        printf( "\r%s: %*c%*c", _str, _spinPos, Spins[ _spinState ],
+        std::printf( "\r%s: %*c%*c", _str, _spinPos, Spins[ _spinState ],
                                         MaxSpin - _spinPos, ' ' );
-        fflush( stdout );
+        std::fflush( stdout );
 #endif
 
         _blipCount = 0;
@@ -109,11 +109,11 @@ void BlipCount::end( const char * endMsg )
     // NYI -- this has to be re-implemented nicely for standalone and GUI
 
 #ifndef STANDALONE_MERGER
-    strcat( _Buffer, endMsg );
+    std::strcat( _Buffer, endMsg );
     browseTop->statusText( _Buffer );
 #else
-    puts( endMsg );
-    fflush( stdout );
+    std::puts( endMsg );
+    std::fflush( stdout );
 #endif
 }
 
