@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,13 +63,24 @@
  * precedence is structured in regular expressions.  Serious changes in
  * regular-expression syntax might require a total rethink.
  */
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include "owregexp.h"
-#if !defined( ALLOC ) || !defined( FREE )
-#include <stdlib.h>
+#ifdef __cplusplus
+    #include <cstdio>
+    #include <cstring>
+    #include <cctype>
+#else
+    #include <stdio.h>
+    #include <string.h>
+    #include <ctype.h>
 #endif
+#if !defined( ALLOC ) || !defined( FREE )
+  #ifdef __cplusplus
+    #include <cstdlib>
+  #else
+    #include <stdlib.h>
+  #endif
+#endif
+#include "nsstd.h"
+#include "owregexp.h"
 
 
 /* IMPORTANT: must have ^$\\ FIRST */
@@ -108,11 +119,11 @@ char    *MagicString = "()";
 #endif
 
 #if !defined( ALLOC )
-#define ALLOC           malloc
+#define ALLOC           NSSTD( malloc )
 #endif
 
 #if !defined( FREE )
-#define FREE            free
+#define FREE            NSSTD( free )
 #endif
 
 #ifdef STANDALONE_RX
@@ -126,7 +137,7 @@ regex_error     RegExpError;
 static const char *StrChr( const char *s, char c )
 {
     if( CASEIGNORE ) {
-        while( ( tolower( *s ) != tolower( c ) ) && *s != 0 ) {
+        while( ( NSSTD( tolower )( *s ) != NSSTD( tolower )( c ) ) && *s != 0 ) {
             s++;
         }
     } else {
@@ -288,14 +299,14 @@ static void regoptail( reg_node *p, const reg_node *val );
  */
 regexp *RegComp( const char *instr )
 {
-    regexp      *r;
-    reg_node    *scan;
-    const char  *longest;
-    const char  *exp;
-    char        buff[MAX_STR*2];
-    int         flags;
-    unsigned    j;
-    size_t      i, k, len;
+    regexp          *r;
+    reg_node        *scan;
+    const char      *longest;
+    const char      *exp;
+    char            buff[MAX_STR*2];
+    int             flags;
+    unsigned        j;
+    NSSTD( size_t ) i, k, len;
 
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
@@ -308,15 +319,15 @@ regexp *RegComp( const char *instr )
          */
         if( !MAGICFLAG && MagicString != NULL && *MagicString != '\0' ) {
             j = 0;
-            k = strlen( instr );
+            k = NSSTD( strlen )( instr );
             for( i = 0; i < k; i++ ) {
                 if( instr[i] == '\\' ) {
-                    if( strchr( MagicString, instr[i + 1] ) == NULL ) {
+                    if( NSSTD( strchr )( MagicString, instr[i + 1] ) == NULL ) {
                         buff[j++] = '\\';
                     }
                     i++;
                 } else {
-                    if( strchr( MagicString, instr[i] ) != NULL ) {
+                    if( NSSTD( strchr )( MagicString, instr[i] ) != NULL ) {
                         buff[j++] = '\\';
                     }
                 }
@@ -348,7 +359,7 @@ regexp *RegComp( const char *instr )
     }
 
     /* Allocate space. */
-    r = ALLOC( sizeof( regexp ) + (unsigned)regsize );
+    r = (regexp *)ALLOC( sizeof( regexp ) + (unsigned)regsize );
 
     /* Second pass: emit code. */
     regparse = exp;
@@ -389,7 +400,7 @@ regexp *RegComp( const char *instr )
             len = 0;
             for( ; scan != NULL; scan = regnext( scan ) ) {
                 if( OP( scan ) == EXACTLY ) {
-                    i = strlen( OPERAND_STR( scan ) );
+                    i = NSSTD( strlen )( OPERAND_STR( scan ) );
                     if( i >= len ) {
                         longest = OPERAND_STR( scan );
                         len = i;
@@ -636,16 +647,16 @@ static reg_node *regatom( int *flagp )
                     if( *regparse == ']' || *regparse == '\0' ) {
                         regc( '-' );
                     } else {
-                        int class;
+                        int classcur;
                         int classend;
 
-                        class = UCHARAT( regparse - 2 ) + 1;
+                        classcur = UCHARAT( regparse - 2 ) + 1;
                         classend = UCHARAT( regparse );
-                        if( class > classend + 1 ) {
+                        if( classcur > classend + 1 ) {
                             FAIL( ERR_RE_INVALID_SB_RANGE );
                         }
-                        for( ; class <= classend; class++ ) {
-                            regc( (char)class );
+                        for( ; classcur <= classend; classcur++ ) {
+                            regc( (char)classcur );
                         }
                         regparse++;
                     }
@@ -676,13 +687,13 @@ static reg_node *regatom( int *flagp )
     case '\0':
     case '|':
     case ')':
-        FAIL( ERR_RE_INTERNAL_FOULUP );   /* Supposed to be caught earlier. */
-        break;
+        regError( ERR_RE_INTERNAL_FOULUP );   /* Supposed to be caught earlier. */
+        return( NULL );
     case '?':
     case '+':
     case '*':
-        FAIL( ERR_RE_OPERAND_FOLLOWS_NOTHING );
-        break;
+        regError( ERR_RE_OPERAND_FOLLOWS_NOTHING );
+        return( NULL );
     case '\\':
         if( *regparse == '\0' ) {
             FAIL( ERR_RE_TRAILING_SLASH );
@@ -699,11 +710,11 @@ static reg_node *regatom( int *flagp )
         break;
     default:
         {
-            size_t len;
-            char ender;
+            NSSTD( size_t ) len;
+            char            ender;
 
             regparse--;
-            len = strcspn( regparse, META );
+            len = NSSTD( strcspn )( regparse, META );
             if( len == 0 ) {
                 FAIL( ERR_RE_INTERNAL_FOULUP );
             }
@@ -836,9 +847,9 @@ static const char   **regstartp;    /* Pointer to startp array. */
 static const char   **regendp;      /* Ditto for endp. */
 
 /* Forwards.  */
-static bool     regtry( regexp *prog, const char *string );
-static bool     regmatch( reg_node *prog );
-static size_t   regrepeat( reg_node *p );
+static bool             regtry( regexp *prog, const char *string );
+static bool             regmatch( reg_node *prog );
+static NSSTD( size_t )  regrepeat( reg_node *p );
 
 /* RegExec2 - match a regexp against a string */
 static bool RegExec2( regexp *prog, const char *string, bool anchflag )
@@ -855,7 +866,7 @@ static bool RegExec2( regexp *prog, const char *string, bool anchflag )
                     break;
                 }
             } else {
-                if( strncmp( s, prog->regmust, prog->regmlen ) == 0 ) {
+                if( NSSTD( strncmp )( s, prog->regmust, prog->regmlen ) == 0 ) {
                     break;
                 }
             }
@@ -972,13 +983,13 @@ static bool regmatch( reg_node *prog )
             break;
         case EXACTLY:
             {
-                size_t len;
-                const char *opnd;
+                NSSTD( size_t ) len;
+                const char      *opnd;
 
                 opnd = OPERAND_STR( node );
                 /* Inline the first character, for speed. */
                 if( CASEIGNORE ) {
-                    if( tolower( *opnd ) != tolower( *reginput ) ) {
+                    if( NSSTD( tolower )( *opnd ) != NSSTD( tolower )( *reginput ) ) {
                         return( false );
                     }
                 } else {
@@ -986,14 +997,14 @@ static bool regmatch( reg_node *prog )
                         return( false );
                     }
                 }
-                len = strlen( opnd );
+                len = NSSTD( strlen )( opnd );
                 if( len > 1 ) {
                     if( CASEIGNORE ) {
                         if( strnicmp( opnd, reginput, len ) != 0 ) {
                             return( false );
                         }
                     } else {
-                        if( strncmp( opnd, reginput, len ) != 0 ) {
+                        if( NSSTD( strncmp )( opnd, reginput, len ) != 0 ) {
                             return( false );
                         }
                     }
@@ -1054,9 +1065,8 @@ static bool regmatch( reg_node *prog )
                     }
                     return( true );
                 }
-                return( false );
             }
-            break;
+            return( false );
         case CLOSE + 1:
         case CLOSE + 2:
         case CLOSE + 3:
@@ -1094,10 +1104,8 @@ static bool regmatch( reg_node *prog )
                     }
                     return( true );
                 }
-                return( false );
-
             }
-            break;
+            return( false );
 #if 0
         case MATCHPREV + 1:
         case MATCHPREV + 2:
@@ -1131,7 +1139,7 @@ static bool regmatch( reg_node *prog )
                 save = reginput;
                 if( CASEIGNORE ) {
                     for( ;; ) {
-                        if( tolower( *curr ) == tolower( *reginput ) ) {
+                        if( NSSTD( tolower )( *curr ) == NSSTD( tolower )( *reginput ) ) {
                             if( curr == regendp[no] ) {
                                 return( true );
                             }
@@ -1201,7 +1209,7 @@ static bool regmatch( reg_node *prog )
                 for( check = reginput; reginput >= start; reginput = --check ) {
                     /* If it could work, try it. */
                     if( CASEIGNORE ) {
-                        if( nextch == '\0' || tolower( *reginput ) == tolower( nextch ) ) {
+                        if( nextch == '\0' || NSSTD( tolower )( *reginput ) == NSSTD( tolower )( nextch ) ) {
                             if( regmatch( next ) ) {
                                 return( true );
                             }
@@ -1214,9 +1222,8 @@ static bool regmatch( reg_node *prog )
                         }
                     }
                 }
-                return( false );
             }
-            break;
+            return( false );
         case CASEI:
             CASEIGNORE = true;
             break;
@@ -1225,11 +1232,9 @@ static bool regmatch( reg_node *prog )
             break;
         case END:
             return( true );      /* Success! */
-            break;
         default:
             regError( ERR_RE_MEMORY_CORRUPTION );
             return( false );
-            break;
         }
     }
 
@@ -1242,22 +1247,22 @@ static bool regmatch( reg_node *prog )
 }
 
 /* regrepeat - repeatedly match something simple, report how many */
-static size_t regrepeat( reg_node *p )
+static NSSTD( size_t ) regrepeat( reg_node *p )
 {
-    size_t      count = 0;
-    const char  *scan;
-    const char  *opnd;
+    NSSTD( size_t ) count = 0;
+    const char      *scan;
+    const char      *opnd;
 
     scan = reginput;
     opnd = OPERAND_STR( p );
     switch( OP( p ) ) {
     case ANY:
-        count = strlen( scan );
+        count = NSSTD( strlen )( scan );
         scan += count;
         break;
     case EXACTLY:
         if( CASEIGNORE ) {
-            while( tolower( *opnd ) == tolower( *scan ) ) {
+            while( NSSTD( tolower )( *opnd ) == NSSTD( tolower )( *scan ) ) {
                 count++;
                 scan++;
             }
