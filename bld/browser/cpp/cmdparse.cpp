@@ -468,15 +468,15 @@ void main()
     prs( cmd_line, true );
     delete[] cmd_line;
     iter( *prs.files() );
-    printf( "    database = \"%s\"\n", prs.database() ? prs.database() : "<NULL>" );
-    printf( "    options  = \"%s\"\n", prs.options()  ? prs.options()  : "<NULL>" );
-    printf( "    files  = \n" );
+    std::printf( "    database = \"%s\"\n", prs.database() ? prs.database() : "<NULL>" );
+    std::printf( "    options  = \"%s\"\n", prs.options()  ? prs.options()  : "<NULL>" );
+    std::printf( "    files  = \n" );
 
     while( ++ iter ) {
-        printf( "        %s\n", (const char *) iter.current() );
+        std::printf( "        %s\n", (const char *) iter.current() );
     }
 
-    printf( "--------------" );
+    std::printf( "--------------" );
 }
 
 #endif

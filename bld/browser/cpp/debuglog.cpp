@@ -134,7 +134,7 @@ static char * DebuggingLog::timeStamp()
     std::time_t  timeOfDay;
 
     timeOfDay = std::time( NULL );
-    return ctime( &timeOfDay );
+    return std::ctime( &timeOfDay );
 }
 
 static char * AppendSlash( char * fileName )
@@ -174,31 +174,31 @@ FILE * OpenFile( const char * name, bool append )
     foundName = getenv( name );
 
     if( foundName != NULL ) {
-        strcpy( fileName, foundName );
+        std::strcpy( fileName, foundName );
     } else {
         foundName = getenv( LogDirEnvVar );
         if( foundName != NULL ) {
-            strcpy( fileName, foundName );
+            std::strcpy( fileName, foundName );
             AppendSlash( fileName );
-            strncat( fileName, name, _MAX_FNAME - 1 );
-            strcat( fileName, ".log" );
+            std::strncat( fileName, name, _MAX_FNAME - 1 );
+            std::strcat( fileName, ".log" );
         } else {
             foundName = getenv( TmpEnvVar );
             if( foundName != NULL ) {
-                strcpy( fileName, foundName );
+                std::strcpy( fileName, foundName );
                 AppendSlash( fileName );
-                strncat( fileName, name, _MAX_FNAME );
-                strcat( fileName, ".log" );
+                std::strncat( fileName, name, _MAX_FNAME );
+                std::strcat( fileName, ".log" );
             } else {
-                strcpy( fileName, name );           // give up, use name
+                std::strcpy( fileName, name );           // give up, use name
             }
         }
     }
 
     if( append ) {
-        fp = fopen( fileName, "at" );               // append to end
+        fp = std::fopen( fileName, "at" );               // append to end
     } else {
-        fp = fopen( fileName, "wt" );
+        fp = std::fopen( fileName, "wt" );
     }
 
     return fp;
@@ -222,9 +222,9 @@ static void PrintHeader( const char * name, FILE * fp )
 void DebuggingLog::startTiming()
 //------------------------------
 {
-    clock_t  timeOfDay;
+    std::clock_t  timeOfDay;
 
-    timeOfDay = clock();
+    timeOfDay = std::clock();
 
 
     if( _times == NULL ) {
@@ -237,14 +237,14 @@ void DebuggingLog::startTiming()
 double DebuggingLog::endTiming()
 //------------------------------
 {
-    clock_t  oldTime;
-    clock_t  newTime;
+    std::clock_t  oldTime;
+    std::clock_t  newTime;
 
     if( _times->isEmpty() ) {
         return 0.0;
     } else {
         oldTime = _times->pop();
-        newTime = clock();
+        newTime = std::clock();
 
         return (double)(newTime - oldTime) / CLOCKS_PER_SEC;
     }

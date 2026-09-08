@@ -185,7 +185,7 @@ void MergeFile::skipForm( dr_section sect, uint_32& off, uint_32 form,
         break;
     default:
 #ifdef DEBUG
-        printf( "ACK -- form %#x\n", form );
+        std::printf( "ACK -- form %#x\n", form );
 #endif
         InternalAssert( 0 );
     }
@@ -273,7 +273,7 @@ void MergeFile::copyFormTo( MergeFile& out, dr_section sect,
         break;
     default:
 #ifdef DEBUG
-        printf( "ACK -- form %#x\n", form );
+        std::printf( "ACK -- form %#x\n", form );
 #endif
         InternalAssert( 0 );
     }

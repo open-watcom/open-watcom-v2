@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,7 @@ Reference::Reference( dr_ref_info * ref, char *name )
                 , _name( name )
 //---------------------------------------------------
 {
-    strcpy( _file, ref->file );
+    std::strcpy( _file, ref->file );
     browseTop->makeFileName( _file );
 }
 

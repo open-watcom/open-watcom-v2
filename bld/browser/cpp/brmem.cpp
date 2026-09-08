@@ -117,7 +117,7 @@ void *operator new( std::size_t size )
 extern "C" {
 
 void * WBRAlloc( std::size_t size )
-//------------------------------*--
+//---------------------------------
 // note: code directly cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {

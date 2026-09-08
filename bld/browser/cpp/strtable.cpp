@@ -49,7 +49,7 @@ StringTable::StringTable( int numCols, ... )
 /******************************************/
 {
     int i;
-    va_list args;
+    std::va_list args;
 
     _colWidths = new int [numCols];
 
@@ -94,7 +94,7 @@ void StringTable::setOutputCallback( WObject * client, CBStringTable cb )
 void StringTable::add( const char * firstString, ... )
 /****************************************************/
 {
-    va_list args;
+    std::va_list args;
     int i;
     char const ** row;
 
@@ -114,7 +114,7 @@ void StringTable::add( const char * firstString, ... )
 void StringTable::replaceAt( int rowNum, const char * firstString, ... )
 /**********************************************************************/
 {
-    va_list args;
+    std::va_list args;
     int i;
     char const ** row;
 
@@ -136,7 +136,7 @@ void StringTable::outputRow( const char * firstString, ... )
 /**********************************************************/
 // Number of strings expected is the number of columns
 {
-    va_list args;
+    std::va_list args;
     int i;
     char const ** row;
 

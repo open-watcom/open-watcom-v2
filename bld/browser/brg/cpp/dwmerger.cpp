@@ -101,10 +101,9 @@ DwarfFileMerger::DwarfFileMerger( const char * file,
                     errMessage( "\n\n%s: invalid Browser module",
                                 (const char *) enabIt.current() );
                 } else {
-                    #ifdef STANDALONE_MERGER
-                        std::fputs( "\n", stderr );
-                    #endif
-
+#ifdef STANDALONE_MERGER
+                    std::fputs( "\n", stderr );
+#endif
                     IdentifyAssassin( cause );
                 }
 
@@ -233,7 +232,7 @@ void DwarfFileMerger::doMerge( bool quiet )
 #endif
     } catch( CauseOfDeath cause ) {
 #ifdef STANDALONE_MERGER
-            std::fputs( "\n", stderr );
+        std::fputs( "\n", stderr );
 #endif
 
         IdentifyAssassin( cause );

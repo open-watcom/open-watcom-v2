@@ -399,30 +399,30 @@ void main() {
     DIETree     tree;
     MergeDIE *  die;
 
-    printf( "Ready\n" );
+    std::printf( "Ready\n" );
 
-    while( fgets( buf, sizeof( buf ), stdin ) != NULL ) {
+    while( std::fgets( buf, sizeof( buf ), stdin ) != NULL ) {
         buf[ std::strlen( buf ) - 1 ] = '\0';
         die = tree.find( buf );
-        printf( "%s -- %s:%s\n", buf, (die) ? "found" : "not found",
+        std::printf( "%s -- %s:%s\n", buf, (die) ? "found" : "not found",
                 (die) ? die->name() : "" );
 
         while( (die = tree.next()) ) {
-            printf( "    next = %s\n", die->name() );
+            std::printf( "    next = %s\n", die->name() );
         }
 
-        printf( "Inserting...\n" );
+        std::printf( "Inserting...\n" );
         tree.insert( new MergeDIE( buf ) );
 
-        printf( "Whole Tree:\n" );
+        std::printf( "Whole Tree:\n" );
         tree.setToStart();
         while( (die = tree.next()) ) {
-            printf( "    next = %s\n", die->name() );
+            std::printf( "    next = %s\n", die->name() );
         }
 
         tree.print( NULL, 0 );
 
-        printf( "Ready\n" );
+        std::printf( "Ready\n" );
     }
 }
 #endif
