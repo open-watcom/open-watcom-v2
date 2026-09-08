@@ -290,7 +290,7 @@ Memory::Memory()
 //--------------------------------
 {
     DebuggingLog::printf( "Address of GetOffset is %#p\n\n", &GetOffset );
-    TrHdl = _trmem_open( malloc, free, realloc, strdup,
+    TrHdl = _trmem_open( std::malloc, std::free, std::realloc, ::strdup,
             NULL, PrintLine, _TRMEM_DEF );
 
     _trmem_set_min_alloc( MINALLOC, TrHdl );
