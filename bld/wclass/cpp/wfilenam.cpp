@@ -35,7 +35,6 @@
 #include "wobjfile.hpp"
 
 #include <cstdio>
-#include <cstdint>
 #include <cstdlib>
 #include <ctime>
 #ifdef __UNIX__
@@ -391,7 +390,11 @@ bool WEXPORT WFileName::attribs( unsigned* pattribs ) const
     }
 #else
     struct _finddata_t fileinfo;
-    std::intptr_t handle;
+  #ifdef _WIN64
+    __int64 handle;
+  #else
+    long handle;
+  #endif
     int rc;
 
     handle = _findfirst( *this, &fileinfo );
