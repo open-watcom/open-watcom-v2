@@ -391,7 +391,7 @@ bool WEXPORT WFileName::attribs( unsigned* pattribs ) const
     }
 #else
     struct _finddata_t fileinfo;
-    intptr_t handle;
+    std::intptr_t handle;
     int rc;
 
     handle = _findfirst( *this, &fileinfo );
