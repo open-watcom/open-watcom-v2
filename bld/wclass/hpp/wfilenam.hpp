@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +36,8 @@
 
 #include "wstring.hpp"
 
-#include <stdlib.h>
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 #include "diskos.h"
 
 WCLASS WFileName : public WString {
@@ -56,7 +56,7 @@ WCLASS WFileName : public WString {
         bool WEXPORT dirExists() const;
         #define attrWriteable 0x01
         bool WEXPORT attribs( unsigned* attribs = NULL ) const;
-        void WEXPORT touch( time_t tm=0 ) const;
+        void WEXPORT touch( std::time_t tm=0 ) const;
 
         void WEXPORT setDrive( const char* drive );
         const char* WEXPORT drive();

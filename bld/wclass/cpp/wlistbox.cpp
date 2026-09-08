@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -89,9 +89,9 @@ void WEXPORT WListBox::onDblClick( WObject* client, cbw click ) {
 int WListBox::findString( int index, const char *str ) {
 /******************************************************/
 
-    size_t len = strlen( str );
+    std::size_t len = std::strlen( str );
     int icount = count();
-    size_t k;
+    std::size_t k;
 
     if( icount > 0 ) {
         if( index < 0 )
@@ -103,7 +103,7 @@ int WListBox::findString( int index, const char *str ) {
                 i = 0;
             WString s;
             getString( i, s );
-            for( k = 0; isspace( s[k] ); k++ )
+            for( k = 0; std::isspace( s[k] ); k++ )
                 ;
             if( strnicmp( str, &s[k], len ) == 0 ) {
                 return( i );

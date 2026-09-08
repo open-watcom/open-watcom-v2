@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@ WString& WTokenFile::token( WString& tok, bool* quoted, bool* eol )
     char ch = 0;
     for(;;) {
         ch = getch();
-        if( !isspace( ch ) ) {
+        if( !std::isspace( ch ) ) {
             break;
         }
     }
@@ -72,7 +72,7 @@ WString& WTokenFile::token( WString& tok, bool* quoted, bool* eol )
         for(;;) {
             if( ch == 0 || ch == 10 )
                 break;
-            if( isspace( ch ) || ch == ',' )
+            if( std::isspace( ch ) || ch == ',' )
                 break;
             tok.concat( ch );
             ch = getch();
@@ -89,7 +89,7 @@ WString& WTokenFile::token( WString& tok, bool* quoted, bool* eol )
                 *eol = _eol;
             return( tok );
         }
-        if( !isspace( ch ) ) {
+        if( !std::isspace( ch ) ) {
             break;
         }
     }

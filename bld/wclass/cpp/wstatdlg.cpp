@@ -113,32 +113,32 @@ void WEXPORT WStatDialog::getCtrlText( WControlId id, WString & str ) {
     str = t;
 }
 
-void WEXPORT WStatDialog::getCtrlText( WControlId id, char *buff, size_t len ) {
-/******************************************************************************/
+void WEXPORT WStatDialog::getCtrlText( WControlId id, char *buff, std::size_t len ) {
+/***********************************************************************************/
 
-    char    *text;
-    size_t  text_len;
+    char        *text;
+    std::size_t text_len;
 
     text = GUIGetText( handle(), id );
     if( text == NULL ) {
         *buff = '\0';
     } else {
-        text_len = strlen( text );
+        text_len = std::strlen( text );
         if( text_len > len - 1 )
             text_len = len - 1;
-        memcpy( buff, text, text_len );
+        std::memcpy( buff, text, text_len );
         buff[text_len] = '\0';
         MemFree( text );
     }
 }
 
-size_t WEXPORT WStatDialog::getCtrlTextLength( WControlId id ) {
-/**************************************************************/
+std::size_t WEXPORT WStatDialog::getCtrlTextLength( WControlId id ) {
+/*******************************************************************/
 
     char *text = GUIGetText( handle(), id );
     if( text == NULL )
         return( 0 );
-    size_t len = strlen( text );
+    std::size_t len = std::strlen( text );
     MemFree( text );
     return( len );
 }

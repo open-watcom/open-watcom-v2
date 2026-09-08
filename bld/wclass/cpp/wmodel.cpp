@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,10 +34,8 @@
 #include "wmodel.hpp"
 #include "wstring.hpp"
 
-extern "C" {
-    #include <stdio.h>
-    #include <stdarg.h>
-}
+#include <cstdio>
+#include <cstdarg>
 
 #define MAX_MESSAGE 500
 
@@ -75,10 +73,10 @@ SayReturn WEXPORT WModel::sayf( SayStyle style, SayCode code, const char* text..
     SayReturn ret = RetOk;
     if( _views.count() > 0 ) {
         char* txt = new char [MAX_MESSAGE + 1];
-        va_list args;
+        std::va_list args;
 
         va_start( args, text );
-        vsprintf( txt, text, args );
+        std::vsprintf( txt, text, args );
         va_end( args );
         ret = ((WView*)_views[0])->say( style, code, txt );  //illegal cast
         delete[] txt;

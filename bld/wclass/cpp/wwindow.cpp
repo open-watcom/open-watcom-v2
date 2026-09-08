@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,7 +29,7 @@
 *
 ****************************************************************************/
 
-#include <ctype.h>
+#include <cctype>
 
 #include "wwindow.hpp"
 #include "wvlist.hpp"
@@ -642,8 +642,8 @@ void WEXPORT WWindow::addAccelKey( int key, WObject* client, bcbk cb )
 {
     WKeyCode    kc;
 
-    if( isalpha( key ) ) {
-        key = toupper( key );
+    if( std::isalpha( key ) ) {
+        key = std::toupper( key );
     }
     kc = MapAccelKey( key );
     if( kc ) {
@@ -672,8 +672,8 @@ void WEXPORT WWindow::close()
 }
 
 
-void WEXPORT WWindow::getText( char* textBuf, size_t textLen )
-/************************************************************/
+void WEXPORT WWindow::getText( char* textBuf, std::size_t textLen )
+/*****************************************************************/
 {
     GUIGetWindowText( _handle, textBuf, textLen );
 }
@@ -682,7 +682,7 @@ void WEXPORT WWindow::getText( char* textBuf, size_t textLen )
 void WEXPORT WWindow::getText( WString& str )
 /*******************************************/
 {
-    size_t len = getTextLength();
+    std::size_t len = getTextLength();
     char* t = new char [len + 1];
     getText( t, len + 1 );
     str = t;
@@ -1356,7 +1356,7 @@ void WEXPORT WWindow::updateTextExtents( const char *text, gui_ord *extentx, gui
 {
     gui_ord tmp;
 
-    tmp = GUIGetExtentX( _handle, text, strlen( text ) );
+    tmp = GUIGetExtentX( _handle, text, std::strlen( text ) );
     if( *extentx < tmp ) {
         *extentx = tmp;
     }

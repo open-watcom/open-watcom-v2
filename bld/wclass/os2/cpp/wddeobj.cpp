@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include <cstring>
 #include "wddeobj.hpp"
 
 
@@ -39,16 +40,16 @@ PDDESTRUCT WEXPORT WDDEObject::makeDDEObject( HWND hwnd,
                                               USHORT fsStatus,
                                               USHORT usFormat,
                                               const void *data,
-                                              size_t data_len ) {
+                                              std::size_t data_len ) {
 /***************************************************************/
 
     DDESTRUCT   *dde;
-    size_t      item_len;
+    std::size_t item_len;
     PID         pid;
     TID         tid;
 
     if( item_name != NULL ) {
-        item_len = strlen( item_name ) + 1;
+        item_len = std::strlen( item_name ) + 1;
     } else {
         item_len = 1;
     }
@@ -67,12 +68,12 @@ PDDESTRUCT WEXPORT WDDEObject::makeDDEObject( HWND hwnd,
             dde->offabData = 0;
         }
         if( item_name != NULL ) {
-            strcpy( (char *)DDES_PSZITEMNAME( dde ), item_name );
+            std::strcpy( (char *)DDES_PSZITEMNAME( dde ), item_name );
         } else {
-            strcpy( (char *)DDES_PSZITEMNAME( dde ), "" );
+            std::strcpy( (char *)DDES_PSZITEMNAME( dde ), "" );
         }
         if( data != NULL ) {
-            memcpy( DDES_PABDATA( dde ), data, data_len );
+            std::memcpy( DDES_PABDATA( dde ), data, data_len );
         }
         return( dde );
     }

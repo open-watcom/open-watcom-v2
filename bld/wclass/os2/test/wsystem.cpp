@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <cstdio>
 #include <process.h>
 #include "wsystem.hpp"
 #include "wstrlist.hpp"
@@ -71,7 +71,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     args.parseIn( cmd );
     pgm = args.stringAt( 0 );
     rc = DosQueryAppType( (char const *)pgm, &app_type );
-    printf( "DosQueryAppType returned %d\n", rc );
+    std::printf( "DosQueryAppType returned %d\n", rc );
     if( rc != 0 )
         return( -1 );
 
@@ -147,7 +147,7 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             cmdline = NULL;
         } else {
             cmdline = (char *)args.cString();
-            cmdline[strlen( pgm )] = '\0';
+            cmdline[std::strlen( pgm )] = '\0';
         }
         rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)NULL,
                          &returncodes, (char *)(const char *)fn );

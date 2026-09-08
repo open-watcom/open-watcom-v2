@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -58,9 +58,9 @@ WCLASS WControl : public WWindow {
             return( WWindow::processMsg( gui_ev, parm ) );
         };
         virtual void WEXPORT autosize();
-        virtual void WEXPORT getText( char* buff, size_t len );
+        virtual void WEXPORT getText( char* buff, std::size_t len );
         virtual void WEXPORT getText( WString& str );
-        virtual size_t WEXPORT getTextLength( void );
+        virtual std::size_t WEXPORT getTextLength( void );
         virtual void WEXPORT setText( const char *text );
         virtual void WEXPORT setUpdates( bool start_update=true );
         virtual void WEXPORT show( WWindowState state=WWinStateShow );
@@ -71,11 +71,11 @@ WCLASS WControl : public WWindow {
         virtual bool WEXPORT isHidden( void );
         virtual bool WEXPORT setFocus( void );
 #if 0
-        virtual int WEXPORT getTextExtentX( const char *text, size_t len ) {
+        virtual int WEXPORT getTextExtentX( const char *text, std::size_t len ) {
             return( GUIGetControlExtentX( parent()->handle(), controlId(), text, len ) );
         }
         virtual int WEXPORT getTextExtentX( const char *text ) {
-            return( GUIGetControlExtentX( parent()->handle(), controlId(), text, strlen( text ) ) );
+            return( GUIGetControlExtentX( parent()->handle(), controlId(), text, std::strlen( text ) ) );
         }
         virtual int WEXPORT getTextExtentY( const char *text ) {
             return( GUIGetControlExtentY( parent()->handle(), controlId(), text ) );

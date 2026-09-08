@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +45,8 @@ WEXPORT WButton::WButton( WWindow *parent, gui_control_class control_class,
 /*************************/
 
     if( text != NULL ) {
-        size_t icount = strlen( text );
-        for( size_t i = 0; i < icount; ++i ) {
+        std::size_t icount = std::strlen( text );
+        for( std::size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
                 int key = text[i + 1];
                 if( key != '\0' ) {
@@ -68,8 +68,8 @@ WEXPORT WButton::WButton( WStatDialog *parent, WControlId id, WStyle wstyle )
 
 #if 0 // NYI -- DAGLO
     if( text != NULL ) {
-        size_t icount = strlen( text );
-        for( size_t i = 0; i < icount; ++i ) {
+        std::size_t icount = std::strlen( text );
+        for( std::size_t i = 0; i < icount; ++i ) {
             if( text[i] == '&' ) {
                 int key = text[i + 1];
                 if( key != '\0' ) {

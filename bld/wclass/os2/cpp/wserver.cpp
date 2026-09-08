@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <string.h>
+#include <cstring>
 #include "wddeobj.hpp"
 #include "wserver.hpp"
 
@@ -46,8 +47,8 @@ MRESULT EXPENTRY serverWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2
     switch( msg ) {
     case WM_DDE_INITIATE: { // new client
         DDEINIT *ddei = (PDDEINIT)mp2;
-        if( (strcmp( server->_serverName, (char *)ddei->pszAppName ) == 0) &&
-            (strcmp( server->_topic, (char *)ddei->pszTopic ) == 0) ) {
+        if( (std::strcmp( server->_serverName, (char *)ddei->pszAppName ) == 0) &&
+            (std::strcmp( server->_topic, (char *)ddei->pszTopic ) == 0) ) {
             WinDdeRespond( (HWND)mp1, hwnd,
                            (PSZ)(const char *)server->_serverName,
                            (PSZ)(const char *)server->_topic, &ConvContext );

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ void WAutoDialog::initialize() {
     for( i = 0; i < icount; i++ ) {
         WString s( _prompts->cStringAt( i ) );
         bool bro = false;
-        char* p = strchr( (char *)s.gets(), '=' );
+        char* p = std::strchr( (char *)s.gets(), '=' );
         if( p != NULL ) { // this code depends on internals of WString!
             *p = '\0';
             p++;

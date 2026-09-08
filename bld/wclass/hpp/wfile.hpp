@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -63,8 +64,8 @@ class WFile : public WObject {
         long WEXPORT getl();
         WString& WEXPORT getLine( WString& str );
         WString& WEXPORT gets( WString& str );
-        void WEXPORT gets( char* str, size_t len );
-        void WEXPORT gets_exact( char* str, size_t len ); // read EXACTLY len bytes
+        void WEXPORT gets( char* str, std::size_t len );
+        void WEXPORT gets_exact( char* str, std::size_t len ); // read EXACTLY len bytes
         char WEXPORT getch();
         void WEXPORT ungetch( char chr );
         bool WEXPORT eof() { return( _eof ); }
@@ -82,7 +83,7 @@ class WFile : public WObject {
         virtual bool putByte( char ch );
     private:
         void freeBuffer();
-        bool putBytes( const char* s, size_t len );
+        bool putBytes( const char* s, std::size_t len );
     private:
         WFileName       _filename;
         Handle          _handle;

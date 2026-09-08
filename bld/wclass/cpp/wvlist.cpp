@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,9 +34,7 @@
 #include "wvlist.hpp"
 #include "wobjfile.hpp"
 
-extern "C" {
-    #include <stdlib.h>
-};
+#include <cstdlib>
 
 Define( WVList )
 
@@ -168,7 +167,7 @@ WObject* WEXPORT WVList::insertAt( int i, WObject* obj )
     growBlock();
     if( _set != NULL && i <= _free ) {
         if( i < _free ) {
-            memmove( _set + i + 1, _set + i,
+            std::memmove( _set + i + 1, _set + i,
                     ( _free - i ) * sizeof( WObject * ) );
         }
         _set[i] = obj;
@@ -231,6 +230,6 @@ extern "C" int ccompare( const void* lhs, const void* rhs )
 void WEXPORT WVList::sort()
 {
     if( _free > 1 ) {
-        qsort( _set, _free, sizeof( WObject* ), ccompare );
+        std::qsort( _set, _free, sizeof( WObject* ), ccompare );
     }
 }

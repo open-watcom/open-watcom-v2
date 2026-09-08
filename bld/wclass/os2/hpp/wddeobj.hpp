@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef wddeobject_class
 #define wddeobject_class
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "wobject.hpp"
 
 #include "system.hpp"
@@ -41,7 +42,7 @@
 WCLASS WDDEObject {
     public:
         static PDDESTRUCT WEXPORT makeDDEObject( HWND, const char *, USHORT,
-                                                 USHORT, const void *, size_t );
+                                                 USHORT, const void *, std::size_t );
 };
 
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,8 +46,8 @@ WCLASS WStatDialog : public WDialog {
         virtual WControl * WEXPORT getControl( WControlId id );
 
         void WEXPORT getCtrlText( WControlId id, WString & str );
-        void WEXPORT getCtrlText( WControlId id, char* buff, size_t len );
-        size_t WEXPORT getCtrlTextLength( WControlId id );
+        void WEXPORT getCtrlText( WControlId id, char* buff, std::size_t len );
+        std::size_t WEXPORT getCtrlTextLength( WControlId id );
         void WEXPORT setCtrlText( WControlId id, const char *text );
         void WEXPORT getCtrlRect( WControlId id, WRect & r );
         bool WEXPORT isCtrlEnabled( WControlId id );

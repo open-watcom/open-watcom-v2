@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,7 @@
 #include "wobjfile.hpp"
 // set DEBUG_WOBJFILE to check that the separator chars read in are correct
 #ifdef DEBUG_WOBJFILE
-    #include <assert.h>
+    #include <cassert>
 #endif
 
 // separator = CR LF
@@ -187,7 +188,7 @@ void WEXPORT WObjectFile::readObject( unsigned char* obj )
     readEOItem();
 }
 
-void WEXPORT WObjectFile::readObject( char* obj, size_t len, bool exact )
+void WEXPORT WObjectFile::readObject( char* obj, std::size_t len, bool exact )
 {
     if( exact ) {
         gets_exact( obj, len );

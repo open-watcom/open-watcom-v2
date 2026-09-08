@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,15 +33,13 @@
 #ifndef wstring_class
 #define wstring_class
 
-#define strieq(a,b) (stricmp((a),(b))==0)
-#define streq(a,b) (strcmp((a),(b))==0)
+#define strieq(a,b) (::stricmp((a),(b))==0)
+#define streq(a,b) (std::strcmp((a),(b))==0)
 
 #include "wobject.hpp"
 
-extern "C" {
-    #include <ctype.h>
-    #include <string.h>
-};
+#include <cctype>
+#include <cstring>
 
 WCLASS WString : public WObject
 {
@@ -60,10 +59,10 @@ WCLASS WString : public WObject
         virtual bool operator==( WObject const & obj ) const
             { return( isEqual( &obj ) ); }
         virtual int WEXPORT compare( const WObject * ) const;
-        const char& operator[]( size_t index ) const { return( _value[index] ); }
-        void setChar( size_t index, char ch ) { _value[index] = ch; }
-        void WEXPORT deleteChar( size_t index, size_t count=1 );
-        size_t WEXPORT size() const { return( (_value==NULL) ? 0 : strlen( _value ) ); }
+        const char& operator[]( std::size_t index ) const { return( _value[index] ); }
+        void setChar( std::size_t index, char ch ) { _value[index] = ch; }
+        void WEXPORT deleteChar( std::size_t index, std::size_t count=1 );
+        std::size_t WEXPORT size() const { return( (_value==NULL) ? 0 : std::strlen( _value ) ); }
         const char* WEXPORT gets() const;
         WEXPORT operator const char*() const { return( gets() ); }
         WEXPORT operator int() const;
@@ -74,9 +73,9 @@ WCLASS WString : public WObject
         virtual void WEXPORT concat( const char* str );
         virtual void WEXPORT concat( char chr );
         void WEXPORT concatf( const char* parms... );
-        void WEXPORT truncate( size_t count );
-        void WEXPORT chop( size_t count );
-        size_t WEXPORT trim( bool beg=true, bool end=true );
+        void WEXPORT truncate( std::size_t count );
+        void WEXPORT chop( std::size_t count );
+        std::size_t WEXPORT trim( bool beg=true, bool end=true );
         virtual bool WEXPORT match( const char* mask ) const;
         virtual bool WEXPORT isMask() const;
         void WEXPORT toLower();

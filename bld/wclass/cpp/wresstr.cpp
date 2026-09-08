@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,9 @@
 ****************************************************************************/
 
 
-#include <assert.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cassert>
+#include <cstdarg>
+#include <cstring>
 
 #include "wresstr.hpp"
 
@@ -43,8 +44,8 @@ WEXPORT WResStr::WResStr( WResourceId str_id ) {
     assert( GUILoadString( str_id, _buffer, BUFFERSIZE ) );
 }
 
-const char * GetParm( char idxChar, va_list args ) {
-/**************************************************/
+const char * GetParm( char idxChar, std::va_list args ) {
+/*******************************************************/
 
     const char * ret = NULL;
     unsigned     i;
@@ -67,8 +68,8 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, WResourceId format_id
     WResStr         format( format_id );
     const char *    fmts = format;
     const char *    parm;
-    size_t          src = 0;
-    size_t          dest = 0;
+    std::size_t     src = 0;
+    std::size_t     dest = 0;
     bool            done;
 
     /* unused parameters */ (void)len;
@@ -82,15 +83,15 @@ char * WEXPORT WResStr::formats( char * buf, unsigned len, WResourceId format_id
             if( fmts[src] == '%' ) {  // escaped % (%%)
                 buf[dest] = fmts[src];
             } else {
-                va_list     args;
+                std::va_list     args;
 
                 va_start( args, format_id );
                 parm = GetParm( fmts[src], args );
 
-                assert( strlen( parm ) + dest < len );
+                assert( std::strlen( parm ) + dest < len );
 
-                strcpy( buf + dest, parm );
-                dest += strlen( parm );
+                std::strcpy( buf + dest, parm );
+                dest += std::strlen( parm );
                 dest--;                     // it will be incremented at bottom
 
                 va_end( args );

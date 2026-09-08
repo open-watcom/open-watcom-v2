@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef wtptlist_class
 #define wtptlist_class
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "wobject.hpp"
 
 typedef int (*TComp)( const void *, const void *);
@@ -168,7 +169,7 @@ template<class T> T WEXPORT TemplateList<T>::insertAt( int i, T obj )
     growBlock();
     if( _set != NULL && i <= _free ) {
         if( i < _free ) {
-            memmove( _set + i + 1, _set + i, (_free - i)*sizeof(T));
+            std::memmove( _set + i + 1, _set + i, (_free - i)*sizeof(T));
         }
         _set[i] = obj;
         _free += 1;
@@ -229,12 +230,12 @@ template<class T> T WEXPORT TemplateList<T>::removeSame( T obj )
 
 template<class T> T* WEXPORT TemplateList<T>::search( void * key, TComp compFn )
 {
-    return( (T*) bsearch( key, _set, _free, sizeof(T), compFn ) );
+    return( (T*) std::bsearch( key, _set, _free, sizeof(T), compFn ) );
 }
 
 template<class T> void WEXPORT TemplateList<T>::sort( TComp compFn )
 {
-    qsort( _set, _free, sizeof(T), compFn );
+    std::qsort( _set, _free, sizeof(T), compFn );
 }
 
 #endif //wtptlist_class

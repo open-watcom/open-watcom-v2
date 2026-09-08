@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,10 +47,10 @@
 // Build an environment array suitable for DosExecPgm
 char    *build_exec_env( char **env )
 {
-    char    **s;
-    size_t  len;
-    char    *env_copy;
-    char    *d;
+    char        **s;
+    std::size_t len;
+    char        *env_copy;
+    char        *d;
 
     if( env == NULL ) {
         return( NULL );
@@ -58,17 +58,17 @@ char    *build_exec_env( char **env )
     // figure out how much memory we need
     len = 0;
     for( s = env; *s != NULL; s++ ) {
-        len += strlen( *s ) + 1;
+        len += std::strlen( *s ) + 1;
     }
     ++len;  // for terminating NUL
-    env_copy = (char *)malloc( len );
+    env_copy = (char *)std::malloc( len );
     if( env_copy == NULL ) {
         return( NULL );
     }
     // copy the environment strings
     d = env_copy;
     for( s = env; *s != NULL; s++ ) {
-        d = strcpy( d, *s ) + strlen( *s ) + 1;
+        d = std::strcpy( d, *s ) + std::strlen( *s ) + 1;
     }
     *d = '\0';  // terminate array
     return( env_copy );
@@ -104,8 +104,8 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
     // if the filename was quoted, we need to strip the quotes
     // or OS/2 won't like us
     if( arg_pgm[0] == '\"' ) {
-        strncpy( pgm_buf, arg_pgm + 1, _MAX_PATH - 1 );
-        pgm_buf[strlen( pgm_buf ) - 1] = '\0';
+        std::strncpy( pgm_buf, arg_pgm + 1, _MAX_PATH - 1 );
+        pgm_buf[std::strlen( pgm_buf ) - 1] = '\0';
         pgm = pgm_buf;
     } else {
         pgm = arg_pgm;
@@ -199,13 +199,13 @@ int WEXPORT WSystemService::sysExec( const char *cmd,
             cmdline = NULL;
         } else {
             cmdline = (char *)args.cString();
-            cmdline[strlen( args.stringAt( 0 ) )] = '\0';
+            cmdline[std::strlen( args.stringAt( 0 ) )] = '\0';
         }
         exec_env = build_exec_env( environ );
         rc = DosExecPgm( (char *)NULL, 0, exec_state, (char const *)cmdline, (char const *)exec_env,
                          &returncodes, (char *)(const char *)fn );
         if( exec_env != NULL ) {
-            free( exec_env );
+            std::free( exec_env );
         }
         if( rc != 0 )
             return( -1 );

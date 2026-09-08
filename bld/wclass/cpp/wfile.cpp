@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +37,11 @@
 
 #include "wfile.hpp"
 
-extern "C" {
-    #include <string.h>
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <stdarg.h>
-    #include "wio.h"
-};
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cstdarg>
+#include "wio.h"
 
 #include "clibext.h"
 
@@ -127,13 +125,13 @@ long WEXPORT WFile::getl()
     for( unsigned i = 0; !_eof && i < sizeof( temp ); i++ ) {
         temp[i] = getch();
         len = i;
-        if( !( isdigit( temp[i] ) || temp[i] == '-' ) ) {
+        if( !( std::isdigit( temp[i] ) || temp[i] == '-' ) ) {
             ungetch( temp[i] );
             break;
         }
     }
     temp[len] = '\0';
-    return( atol( temp ) );
+    return( std::atol( temp ) );
 }
 
 WString& WEXPORT WFile::getLine( WString& str )
@@ -161,9 +159,9 @@ WString& WEXPORT WFile::gets( WString& str )
     return( str );
 }
 
-void WEXPORT WFile::gets( char* str, size_t len )
+void WEXPORT WFile::gets( char* str, std::size_t len )
 {
-    size_t  i;
+    std::size_t  i;
 
     for( i=0; !_eof && i<len; i++ ) {
         str[i] = getch();
@@ -175,9 +173,9 @@ void WEXPORT WFile::gets( char* str, size_t len )
     str[i] = '\0';
 }
 
-void WEXPORT WFile::gets_exact( char* str, size_t len )
+void WEXPORT WFile::gets_exact( char* str, std::size_t len )
 {
-    size_t  i;
+    std::size_t  i;
 
     // read exactly len bytes -- don't stop for separator characters ( CR/LF )
     for( i=0; !_eof && i<len; i++ ) {
@@ -217,14 +215,14 @@ void WEXPORT WFile::ungetch( char chr )
 bool WEXPORT WFile::putl( long n )
 {
     char temp[11];
-    sprintf( temp, "%ld", n );
+    std::sprintf( temp, "%ld", n );
     return( puts( temp ) );
 }
 
 bool WEXPORT WFile::puts( const char* str )
 {
     if( str != NULL ) {
-        return( putBytes( str, strlen( str ) ) );
+        return( putBytes( str, std::strlen( str ) ) );
     }
     return( true );
 }
@@ -232,12 +230,12 @@ bool WEXPORT WFile::puts( const char* str )
 bool WEXPORT WFile::printf( const char* parms... )
 {
     char* buffer = new char [MAX_FORMATTED + 1];
-    va_list args;
+    std::va_list args;
 
     va_start( args, parms );
-    vsprintf( buffer, parms, args );
+    std::vsprintf( buffer, parms, args );
     va_end( args );
-    bool ok = putBytes( buffer, strlen( buffer ) );
+    bool ok = putBytes( buffer, std::strlen( buffer ) );
     delete[] buffer;
     return( ok );
 }
@@ -279,10 +277,10 @@ char WFile::getByte()
     return( _buffer[_bOffset++] );
 }
 
-bool WFile::putBytes( const char* str, size_t len )
+bool WFile::putBytes( const char* str, std::size_t len )
 {
     if( str != NULL ) {
-        for( size_t i=0; i<len; i++ ) {
+        for( std::size_t i=0; i<len; i++ ) {
             if( !putByte( str[i] ) ) {
                 return( false );
             }

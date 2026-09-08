@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,22 +34,23 @@
 #ifndef system_include
 #define system_include
 
-extern "C" {
-    #define INCL_DOSERRORS
-    #define INCL_DOSSESMGR
-    #define INCL_DOSQUEUES
-    #define INCL_DOSMEMMGR
-    #define INCL_WINDDE
-    #define INCL_WINTIMER
-    #define INCL_WINPROGRAMLIST
-    #define INCL_DOSPROCESS
-    #define INCL_DOSDATETIME
-    #define INCL_WINWINDOWMGR
-    #define INCL_WINMESSAGEMGR
-    #define INCL_DOSSEMAPHORES
-    #define INCL_DOSMODULEMGR
-    #include <os2.h>
+#define INCL_DOSERRORS
+#define INCL_DOSSESMGR
+#define INCL_DOSQUEUES
+#define INCL_DOSMEMMGR
+#define INCL_WINDDE
+#define INCL_WINTIMER
+#define INCL_WINPROGRAMLIST
+#define INCL_DOSPROCESS
+#define INCL_DOSDATETIME
+#define INCL_WINWINDOWMGR
+#define INCL_WINMESSAGEMGR
+#define INCL_DOSSEMAPHORES
+#define INCL_DOSMODULEMGR
+#include <os2.h>
 
+
+extern "C" {
     typedef struct WPI_INST {
         HAB             hab;
         HMODULE         mod_handle;
@@ -56,4 +58,5 @@ extern "C" {
 
     extern WPI_INST             GUIMainHInst;
 }
+
 #endif

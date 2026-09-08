@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +54,7 @@ WCLASS WObjectFile : public WFile {
         void WEXPORT readObject( bool* obj );
         void WEXPORT readObject( char* obj );           // read a char
         void WEXPORT readObject( unsigned char* obj );  // read a byte
-        void WEXPORT readObject( char* obj, size_t len, bool exact=0 ); // read a string
+        void WEXPORT readObject( char* obj, std::size_t len, bool exact=0 ); // read a string
         void WEXPORT readObject( short* obj );
         void WEXPORT readObject( unsigned short* obj );
         void WEXPORT readObject( int* obj );

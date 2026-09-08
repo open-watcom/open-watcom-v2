@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -115,11 +115,11 @@ void WFileDialog::init( const char *fn, const char *title ) {
     if( fn == NULL ) {
         fn = "";
     }
-    strcpy( _fileName, fn );
+    std::strcpy( _fileName, fn );
     WFileName f( fn );
     f.setFName( NULL );
     f.setExt( NULL );
-    strcpy( _dirName, f );
+    std::strcpy( _dirName, f );
 }
 
 
@@ -142,7 +142,7 @@ const char * WEXPORT WFileDialog::getOpenFileName( const char *fn,
         f.absoluteTo( path );
         MemFree( _ofn.last_path );
         _ofn.last_path = NULL;
-        strcpy( _fileName, f );
+        std::strcpy( _fileName, f );
 #endif
         return( _fileName );
     }
