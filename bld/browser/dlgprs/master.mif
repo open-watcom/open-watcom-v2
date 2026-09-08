@@ -24,7 +24,7 @@ additional_clean = $(bnd_yacc_file).cpp $(dlg_yacc_file).cpp $(bnd_yacc_file).h 
 #
 .cpp: .;../cpp;$(browser_dir)/cpp
 
-inc_dirs = -I. -I"../h"
+inc_dirs = -I. -I"../h" -I"../../h"
 
 extra_c_flags=-xs
 
