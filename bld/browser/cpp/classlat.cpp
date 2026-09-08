@@ -475,10 +475,10 @@ char * ClassLattice::derivation( ClassLattice *cls )
 
     switch( ptr->_access ) {
     case DR_ACCESS_PUBLIC:
-        strcpy( buf, "public" );
+        std::strcpy( buf, "public" );
         break;
     case DR_ACCESS_PROTECTED:
-        strcpy( buf, "protected" );
+        std::strcpy( buf, "protected" );
         break;
     default:
         REQUIRE( ptr->_access == DR_ACCESS_PRIVATE,

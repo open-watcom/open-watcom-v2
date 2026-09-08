@@ -156,8 +156,8 @@ bool ElfFile::initSections()
         throw DEATH_BY_BAD_SIGNATURE;
     }
 
-    memset( _drSections, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
-    memset( _drSizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
+    std::memset( _drSections, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
+    std::memset( _drSizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
 
     _file->seek( _elfHdr.e_shoff + _elfHdr.e_shstrndx * _elfHdr.e_shentsize, SEEK_SET );
     _file->read( &sectHdr, _elfHdr.e_shentsize );
@@ -279,7 +279,7 @@ void ElfFile::addComponentFile( const char * fileName, bool enable )
     }
 
     if( !found ) {
-        strcpy( comp->name, fileName );
+        std::strcpy( comp->name, fileName );
         _components->append( comp );
     }
 }
@@ -415,7 +415,7 @@ void ElfFile::startWrite()
 
     invalid = new SectHdr;
 
-    memset( &_elfHdr, 0, sizeof( Elf32_Ehdr ) );
+    std::memset( &_elfHdr, 0, sizeof( Elf32_Ehdr ) );
     std::memcpy( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN );
     _elfHdr.e_ident[EI_CLASS] = ELFCLASS32;
     _elfHdr.e_ident[EI_DATA] = ELFDATA2LSB;
@@ -436,7 +436,7 @@ void ElfFile::startWrite()
 
     _file->write( &_elfHdr, sizeof( Elf32_Ehdr ) );
 
-    memset( invalid, 0, sizeof( SectHdr ) );
+    std::memset( invalid, 0, sizeof( SectHdr ) );
     _sections->append( invalid );
     _sectNames->append( "" );
     _sectNameOff += 1;          // strlen( "" );
@@ -460,7 +460,7 @@ void ElfFile::startWriteSect( const char * name, long sh_type )
     int         i;
 
     shdr = new SectHdr;
-    memset( shdr, 0, sizeof( SectHdr ) );
+    std::memset( shdr, 0, sizeof( SectHdr ) );
 
     shdr->sh_name = _sectNameOff;
     _sectNameOff += std::strlen( name ) + 1;

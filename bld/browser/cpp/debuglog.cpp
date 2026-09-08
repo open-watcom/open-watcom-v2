@@ -40,9 +40,9 @@
 
 #include "debuglog.h"
 
-static FILE * OpenFile( const char * name, bool append );
+static std::FILE * OpenFile( const char * name, bool append );
 static char * AppendSlash( char * fileName );
-static void   PrintHeader( const char * name, FILE * fp );
+static void   PrintHeader( const char * name, std::FILE * fp );
 
 DebuggingLog::DebuggingLog( const char * name, bool append )
                 : _fp( stderr )
@@ -164,26 +164,26 @@ static char * AppendSlash( char * fileName )
 const char * LogDirEnvVar = "log_dir";
 const char * TmpEnvVar = "tmp";
 
-FILE * OpenFile( const char * name, bool append )
-//-----------------------------------------------
+std::FILE * OpenFile( const char * name, bool append )
+//----------------------------------------------------
 {
     char    fileName[ _MAX_PATH ];
     char *  foundName;
-    FILE *  fp;
+    std::FILE *  fp;
 
-    foundName = getenv( name );
+    foundName = std::getenv( name );
 
     if( foundName != NULL ) {
         std::strcpy( fileName, foundName );
     } else {
-        foundName = getenv( LogDirEnvVar );
+        foundName = std::getenv( LogDirEnvVar );
         if( foundName != NULL ) {
             std::strcpy( fileName, foundName );
             AppendSlash( fileName );
             std::strncat( fileName, name, _MAX_FNAME - 1 );
             std::strcat( fileName, ".log" );
         } else {
-            foundName = getenv( TmpEnvVar );
+            foundName = std::getenv( TmpEnvVar );
             if( foundName != NULL ) {
                 std::strcpy( fileName, foundName );
                 AppendSlash( fileName );
@@ -204,8 +204,8 @@ FILE * OpenFile( const char * name, bool append )
     return fp;
 }
 
-static void PrintHeader( const char * name, FILE * fp )
-//-----------------------------------------------------
+static void PrintHeader( const char * name, std::FILE * fp )
+//----------------------------------------------------------
 {
     int     nChars;
     int     i;

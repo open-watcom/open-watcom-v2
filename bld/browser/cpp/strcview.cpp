@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -325,7 +325,7 @@ char * StrucViewItem::name( void )
 
     if( _indentLevel > 0 ) {
         tmp = new char [_indentLevel * 2 + 3 + _name.size()];
-        memset( tmp, ' ', _indentLevel * 2 );
+        std::memset( tmp, ' ', _indentLevel * 2 );
         tmp[_indentLevel * 2] = '\0';
     } else {
         tmp = new char [_name.size() + 3];

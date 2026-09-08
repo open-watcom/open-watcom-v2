@@ -86,7 +86,7 @@ OutlineElement::OutlineElement( int level, TreeNode * node, OutlineElement * nex
     OutlineElement *    lastChild = NULL;
 
     _name = new char [std::strlen( node->name() ) + 1];
-    strcpy( _name, node->name() );
+    std::strcpy( _name, node->name() );
 
     numChildren = node->getCount( TreeNode::ChildList );
 

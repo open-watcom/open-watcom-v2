@@ -167,7 +167,7 @@ void * MemoryPool::alloc()
     _currElement -= _elemSize;
 
 #ifdef DEBUG
-    memset( _currElement, ALLOCSIG, _elemSize );
+    std::memset( _currElement, ALLOCSIG, _elemSize );
 #endif
 
     return( _currElement );
@@ -181,7 +181,7 @@ void MemoryPool::free( void * mem )
     }
 
 #ifdef DEBUG
-    memset( mem, FREESIG, _elemSize );
+    std::memset( mem, FREESIG, _elemSize );
     _numFrees += 1;
 #endif
 

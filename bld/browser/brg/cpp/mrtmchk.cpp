@@ -131,8 +131,8 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
             // different time stamps on files
 #ifdef INSTRUMENTS
             Log.printf( "\n%s: .mbr in database different time: (database, disk)\n", file->name );
-            Log.printf( "%s", ctime( &file->time ) );
-            Log.printf( "%s\n\n", ctime( &compFile._time ) );
+            Log.printf( "%s", std::ctime( &file->time ) );
+            Log.printf( "%s\n\n", std::ctime( &compFile._time ) );
 #endif
             dict.clear();
             return false;

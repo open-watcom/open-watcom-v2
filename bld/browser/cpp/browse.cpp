@@ -192,7 +192,7 @@ bool Browse::makeFileName( char *buff )
     p = new char [_searchPath.length() + 1];
     if( p == NULL )
         return( false );
-    strcpy( p, _searchPath );
+    std::strcpy( p, _searchPath );
 
     q = strtok( p, ";" );
     while( q != NULL ) {
@@ -201,7 +201,7 @@ bool Browse::makeFileName( char *buff )
         nfile.setFName( file.fName() );
         nfile.setExt( file.ext() );
         if( nfile.attribs() ) {
-            strcpy( buff, nfile.gets() );
+            std::strcpy( buff, nfile.gets() );
             delete[] p;
             return( true );
         }

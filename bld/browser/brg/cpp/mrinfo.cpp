@@ -128,7 +128,7 @@ void MergeInfoSection::writePass( MergeFile * outFile,
     relocPass( postProcess );
 
     block = new char [BufSize];
-    memset( block, 0, BufSize );
+    std::memset( block, 0, BufSize );
     len = _compunitHdr->_infoLength + sizeof(uint_32);
     while( len ) {
         size = (BufSize < len) ? BufSize : len;

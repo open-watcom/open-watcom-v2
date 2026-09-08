@@ -75,7 +75,7 @@ public:
     static  char *  timeStamp();
 
 private:
-            FILE *                                      _fp;
+            std::FILE *                                      _fp;
             WCStack< uint_32, WCValSList< uint_32 > > * _times;
 };
 

@@ -143,19 +143,19 @@ ScanStreamFile::ScanStreamFile( const char * fname )
 {
     char buffer[ _MAX_PATH ];
 
-    _handle = open( fname, O_TEXT | O_RDONLY );
+    _handle = ::open( fname, O_TEXT | O_RDONLY );
     for( int i = 0; i < _searchPaths.count() &&
                     _handle < 0 && errno == ENOENT; i += 1 ) {
 
-        strcpy( buffer, _searchPaths[ i ] );
+        std::strcpy( buffer, _searchPaths[ i ] );
 
         char c = buffer[ std::strlen( buffer ) - 1 ];
-        if( !strchr( PathDelim, c ) ) {
-            strcat( buffer, "/" );
+        if( !std::strchr( PathDelim, c ) ) {
+            std::strcat( buffer, "/" );
         }
 
-        strcat( buffer, fname );
-        _handle = open( buffer, O_TEXT | O_RDONLY );
+        std::strcat( buffer, fname );
+        _handle = ::open( buffer, O_TEXT | O_RDONLY );
     }
 
     if( _handle < 0 ) {

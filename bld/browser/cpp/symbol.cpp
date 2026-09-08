@@ -154,7 +154,7 @@ bool Symbol::defSourceFile( char *buff )
 
     p = DRGetFileName( _drhandle );
     if( p == NULL ) return( false );
-    strcpy( buff, p );
+    std::strcpy( buff, p );
     return browseTop->makeFileName( buff );
 }
 
