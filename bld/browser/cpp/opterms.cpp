@@ -122,7 +122,7 @@ extern int tryToken( LookForType lf, char * buf )
 
         if( table->type & lf ) {
             for( i = 0; i < table->num_elem; i += 1 ) {
-                if( strnicmp( table->table[i].name, buf, count ) == 0
+                if( ::strnicmp( table->table[i].name, buf, count ) == 0
                   && count >= table->table[i].unique ) {
                     fnd = &table->table[i];
                     break;
@@ -150,7 +150,7 @@ extern char * tryAmbig( LookForType lf, char * buf )
 
         if( table->type & lf ) {
             for( i = 0; i < table->num_elem; i += 1 ) {
-                if( strnicmp( table->table[i].name, buf, count ) == 0 ) {
+                if( ::strnicmp( table->table[i].name, buf, count ) == 0 ) {
                     break;
                 }
             }
@@ -160,7 +160,7 @@ extern char * tryAmbig( LookForType lf, char * buf )
 
                 ambigs.concat( table->table[i].name );
                 i += 1;
-                while( i < table->num_elem && strnicmp( table->table[i].name, buf, count ) == 0 ) {
+                while( i < table->num_elem && ::strnicmp( table->table[i].name, buf, count ) == 0 ) {
                     ambigs.concat( " or " );
                     ambigs.concat( table->table[i].name );
                     i += 1;
@@ -207,7 +207,7 @@ static void showUnique( char * name, int unique )
     strlwr( name );
     while( unique > 0 ) {
         unique -= 1;
-        name[unique] = (char) toupper( name[unique] );
+        name[unique] = (char)std::tolower( name[unique] );
     }
 }
 
@@ -221,7 +221,7 @@ static int samelen( char * a, char * b )
 {
     int i = 0;
 
-    while( *a != '\0' && *b != '\0' && toupper( *a++ ) == toupper( *b++ ) ) {
+    while( *a != '\0' && *b != '\0' && std::tolower( *a++ ) == std::tolower( *b++ ) ) {
         i += 1;
     }
 

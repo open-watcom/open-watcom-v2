@@ -174,7 +174,7 @@ ScanStreamFile::~ScanStreamFile()
 //-------------------------------
 {
     if( _handle >= 0 ) {
-        if( close( _handle ) < 0 ) {
+        if( ::close( _handle ) < 0 ) {
             errMessage( "ScanStream::~Streamfile: %s", std::strerror( errno ) );
             throw DEATH_BY_FILE_READING;
         }
@@ -202,7 +202,7 @@ void ScanStreamFile::refill( void )
 
         _currPos = 0;
 
-        _endPos = read( _handle, _buffer, SECTOR_SIZE );
+        _endPos = ::read( _handle, _buffer, SECTOR_SIZE );
         if( _endPos < 0 ) {
             errMessage( "ScanStream::~Streamfile: %s", std::strerror( errno ) );
             throw DEATH_BY_BAD_FILE;

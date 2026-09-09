@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -200,7 +201,7 @@ void DTViewClass::event( ViewEvent ev, View * )
 
     switch( ev ) {
     case VEOptionValChange:
-        if( memcmp( &_filter, &test, sizeof( MemberFilter ) ) ) {
+        if( std::memcmp( &_filter, &test, sizeof( MemberFilter ) ) ) {
             _filter = optManager()->getMemberFilter();
             load();
         }

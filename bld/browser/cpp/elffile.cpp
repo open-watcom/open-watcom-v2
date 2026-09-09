@@ -144,7 +144,7 @@ bool ElfFile::initSections()
     _file->open( CheckedFile::ReadBinary, CheckedFile::UserReadWrite );
     _file->read( &_elfHdr, sizeof( Elf32_Ehdr ) );
 
-    if( memcmp( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
+    if( std::memcmp( _elfHdr.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
         throw DEATH_BY_BAD_SIGNATURE;
     }
     if( _elfHdr.e_ident[EI_VERSION] != EV_CURRENT
@@ -294,7 +294,7 @@ void ElfFile::readComponentSect( long offset, long )
     _file->seek( offset, SEEK_SET );
     _file->read( &hdr, sizeof( ComponentHeader ) );
 
-    if( memcmp( hdr.signature, ComponentSignature, COMP_HDR_SIG_LEN ) != 0 ) {
+    if( std::memcmp( hdr.signature, ComponentSignature, COMP_HDR_SIG_LEN ) != 0 ) {
         throw DEATH_BY_BAD_SIGNATURE;
     }
 

@@ -500,12 +500,12 @@ void OptionManager::loadFrom( const char * file )
             throw DEATH_BY_FILE_READING;    // fixme -- change throw
         }
 
-        if( memcmp( sigCheck, SIG, SIGLEN ) ) {
+        if( std::memcmp( sigCheck, SIG, SIGLEN ) ) {
             errMessage( "%s is not a valid option file", file );
             throw DEATH_BY_FILE_READING;    // fixme -- change throw
         }
 
-        if( memcmp( sigCheck + SIGLEN, VER, VERLEN ) ) {
+        if( std::memcmp( sigCheck + SIGLEN, VER, VERLEN ) ) {
             errMessage( "%s is an out-of-date option file -- ignoring", file );
             throw DEATH_BY_FILE_READING;    // fixme -- change throw
         }
