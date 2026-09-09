@@ -172,7 +172,7 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname )
     getFullFname( hwnd, fname, &fullpath );
     filename = fullpath.gets();
     _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-    if( stricmp( pg.drive, filename.drive() ) == 0 ) {
+    if( ::stricmp( pg.drive, filename.drive() ) == 0 ) {
         formRelDir( filename.dir(), pg.dir, relname );
         relname->concat( filename.fName() );
         relname->concat( filename.ext() );

@@ -211,7 +211,7 @@ MSymbol* MRule::expandSymbol( WString& v, const char* s, WVList* workFiles )
         o = (MSymbol*)_symbols[i];
         o->name( oName );
         len = oName.size();
-        if( strnicmp( s, oName, len ) == 0 ) {
+        if( ::strnicmp( s, oName, len ) == 0 ) {
             found = true;
             break;
         }
@@ -281,7 +281,7 @@ void MRule::expandCommand( WString& cmd, MCommand& s, WFileName* target, WVList*
         for( std::size_t i=0; s[i] != '\0'; ) {
             WString v;
             int len = 0;
-            if( strnicmp( &s[i], BMACRO, 2 ) == 0 ) {
+            if( ::strnicmp( &s[i], BMACRO, 2 ) == 0 ) {
                 len = 2;
                 WString m;
                 for(; s[i+len] != '\0';) {

@@ -88,22 +88,22 @@ int WEXPORT MCommand::expand( WString& command, WFileName* target, MTool* tool, 
     int location = EXECUTE_NORMAL;
     std::size_t i=0;
 
-    if( strnicmp( &cmd[i], "!Batch ", 7 ) == 0 ) {
+    if( ::strnicmp( &cmd[i], "!Batch ", 7 ) == 0 ) {
         i += 7;
         location = EXECUTE_BATCH;
-    } else if( strnicmp( &cmd[i], "!Help ", 6 ) == 0 ) {
+    } else if( ::strnicmp( &cmd[i], "!Help ", 6 ) == 0 ) {
         i += 6;
         location = EXECUTE_HELP;
-    } else if( strnicmp( &cmd[i], "!Make ", 6 ) == 0 ) {
+    } else if( ::strnicmp( &cmd[i], "!Make ", 6 ) == 0 ) {
         i += 6;
         location = EXECUTE_MAKE;
-    } else if( strnicmp( &cmd[i], "!Editor ", 8 ) == 0 ) {
+    } else if( ::strnicmp( &cmd[i], "!Editor ", 8 ) == 0 ) {
         i += 8;
         location = EXECUTE_EDITOR;
-    } else if( strnicmp( &cmd[i], "!Browse ", 8 ) == 0 ) {
+    } else if( ::strnicmp( &cmd[i], "!Browse ", 8 ) == 0 ) {
         i += 8;
         location = EXECUTE_BROWSE;
-    } else if( strnicmp( &cmd[i], "!RemakeAll", 10 ) == 0 ) {
+    } else if( ::strnicmp( &cmd[i], "!RemakeAll", 10 ) == 0 ) {
         i += 10;
         location = EXECUTE_TOUCH_ALL;
     }

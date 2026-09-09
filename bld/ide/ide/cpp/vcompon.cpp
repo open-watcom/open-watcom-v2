@@ -332,7 +332,7 @@ bool VComponent::newItem( WFileName& fn, bool warn, bool mark, unsigned owner )
         _component->filename().path( cwd, true );
         std::size_t len = cwd.size();
         if( len > 0 ) {
-            if( strnicmp( cwd, fn, len ) == 0 ) {
+            if( ::strnicmp( cwd, fn, len ) == 0 ) {
                 fn.chop( len );
             }
         }

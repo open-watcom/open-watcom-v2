@@ -352,7 +352,7 @@ void VCompDialog::browseButton( WWindow* )
             WFileName cwd; cwd.getCWD( true );
             std::size_t len = cwd.size();
             if( len > 0 ) {
-                if( strnicmp( cwd, fn, len ) == 0 ) {
+                if( ::strnicmp( cwd, fn, len ) == 0 ) {
                     fn.chop( len );
                 }
             }

@@ -370,7 +370,7 @@ bool VpeMain::execute( const WString& cmd )
             cbuff.concat( ch );
         }
         if( cbuff.size() > 0 ) {
-            if( strnicmp( cbuff, "!Error ", 7 ) == 0 ) {
+            if( ::strnicmp( cbuff, "!Error ", 7 ) == 0 ) {
                 WString msg;
                 for( std::size_t j = 7; j < cbuff.size() && cbuff[j] != '$'; j++ ) {
                     msg.concat( cbuff[j] );
@@ -392,13 +392,13 @@ bool VpeMain::executeOne( const WString& cmd )
     int i = 0;
     WWindowState wstate = WWinStateShowNormal;
     WWindowType wtype = WWinTypeDefault;
-    if( strnicmp( cmd, "!FullScreen ", 12 ) == 0 ) {
+    if( ::strnicmp( cmd, "!FullScreen ", 12 ) == 0 ) {
         i += 12;
         wtype = WWinTypeFullScreen;
-    } else if( strnicmp( cmd, "!Windowed ", 10 ) == 0 ) {
+    } else if( ::strnicmp( cmd, "!Windowed ", 10 ) == 0 ) {
         i += 10;
         wtype = WWinTypeWindowed;
-    } else if( strnicmp( cmd, "!Hidden ", 8 ) == 0 ) {
+    } else if( ::strnicmp( cmd, "!Hidden ", 8 ) == 0 ) {
         i += 10;
         wstate = WWinStateHide;
     }

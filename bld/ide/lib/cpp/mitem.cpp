@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -148,24 +148,24 @@ int MItem::compare( const WObject* obj ) const
     MItem* robj = (MItem*)obj;
     if( _parent ) {
         if( robj->_parent ) {
-            comp = stricmp( *_parent, *robj->_parent );
+            comp = ::stricmp( *_parent, *robj->_parent );
             if( comp == 0 ) {
-                comp = stricmp( *this, *robj );
+                comp = ::stricmp( *this, *robj );
             }
         } else {
-            comp = stricmp( *_parent, *robj );
+            comp = ::stricmp( *_parent, *robj );
             if( comp == 0 ) {
                 comp = 1;
             }
         }
     } else {
         if( robj->_parent ) {
-            comp = stricmp( *this, *robj->_parent );
+            comp = ::stricmp( *this, *robj->_parent );
             if( comp == 0 ) {
                 comp = -1;
             }
         } else {
-            comp = stricmp( *this, *robj );
+            comp = ::stricmp( *this, *robj );
         }
     }
     return( comp );
@@ -222,7 +222,7 @@ void MItem::updateAttribs()
         WFileName fn;
         absName( fn );
         _exists = fn.attribs( &attribs );
-        _writeable = ( attribs & attrWriteable ) ? true : false; 
+        _writeable = ( attribs & attrWriteable ) ? true : false;
     }
 }
 
