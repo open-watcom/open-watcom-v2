@@ -776,6 +776,8 @@ static void executeWgrep( void )
     size_t              i;
     pgroup2             pg1;
     pgroup2             pg2;
+    int                 c;
+    char                *p;
 
     if( strcmp( CurrPattern, "@@" ) == 0 ) {
         performSearch( CurrPattern );
@@ -800,9 +802,17 @@ static void executeWgrep( void )
                     continue;
                 if( IgnoreListCnt > 0 ) {
                     _splitpath2( dire->d_name, pg2.buffer, NULL, NULL, NULL, &pg2.ext );
-                    if( stricmp( pg1.ext, pg2.ext ) != 0 ) {
+#ifndef __UNIX__
+                    p = pg1.ext;
+                    while( (c = *(unsigned char *)p) != '\0' )
+                        *p++ = tolower( c );
+                    p = pg2.ext;
+                    while( (c = *(unsigned char *)p) != '\0' )
+                        *p++ = tolower( c );
+#endif
+                    if( strcmp( pg1.ext, pg2.ext ) != 0 ) {
                         for( i = 0; i < IgnoreListCnt; i++ ) {
-                            if( stricmp( pg2.ext, IgnoreList[i] ) == 0 ) {
+                            if( strcmp( pg2.ext, IgnoreList[i] ) == 0 ) {
                                 break;
                             }
                         }

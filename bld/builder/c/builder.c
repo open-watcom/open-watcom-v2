@@ -374,6 +374,7 @@ static char *SubstOne( const char **inp, char *out )
     char        *starpos;
     const char  *rep;
     unsigned    parm;
+    int         c;
 
     in = *inp;
     p = out;
@@ -381,6 +382,14 @@ static char *SubstOne( const char **inp, char *out )
         switch( *in ) {
         case '>':
             *p = '\0';
+            /*
+             * only environment variable names can exist
+             * therefore it is upper-cased before processing
+             * to use case-sensitive keyword compare
+             */
+            p = out;
+            while( (c = *(unsigned char *)p) != '\0' )
+                *p++ = toupper( c );
             /*
              * If the parameter is a number (n) followed by an asterisk,
              * copy from parameter n to the end to out. E.g. <2*>
@@ -405,7 +414,7 @@ static char *SubstOne( const char **inp, char *out )
                 *inp = in + 1;
                 *out = '\0';
                 return( out );
-            } else if( stricmp( out, "CWD" ) == 0 ) {
+            } else if( strcmp( out, "CWD" ) == 0 ) {
                 rep = GetIncludeCWD();
             } else {
                 rep = getenv( out );
@@ -478,15 +487,20 @@ static void SubstLine( const char *in, char *out )
 }
 
 static char *GetWord( char *p, char **start )
+/********************************************
+ * read word and upper-case it
+ */
 {
+    int             c;
+
     while( isspace( *(unsigned char *)p ) )
         p++;
-    for( *start = p; *p != '\0'; ++p ) {
-        if( isspace( *(unsigned char *)p ) ) {
-            *p++ = '\0';
-            break;
-        }
+    *start = p;
+    while( (c = *(unsigned char *)p) != '\0' && !isspace( c ) ) {
+        *p++ = toupper( c );
     }
+    if( c )
+        *p++ = '\0';
     return( p );
 }
 
@@ -510,13 +524,12 @@ static int MatchFound( char *p )
     p = GetWord( p, &word );
     if( *word == '\0' )
         Fatal( "Missing match word\n" );
-
     if( *word == '(' ) { /* Multiple match words, store them */
         p = GetWord( p, &word );
         for( ; MatchWords < 20; ) {
             if( *word == '\0' )
                 Fatal( "Missing match word\n" );
-            if( stricmp( word, "\"\"" ) == 0 ) { /* 'No parameter' indicator */
+            if( strcmp( word, "\"\"" ) == 0 ) { /* 'No parameter' indicator */
                 EmptyOk = true;
             } else {
                 Match[MatchWords++] = word;
@@ -544,7 +557,7 @@ static int MatchFound( char *p )
         }
         WordsExamined++;
         for( i = 0; i < MatchWords; i++ ) {
-            if( stricmp( Match[i], word ) == 0 ) {
+            if( strcmp( Match[i], word ) == 0 ) {
                 return( 1 );
             }
         }
@@ -575,14 +588,14 @@ static int ProcessCtlFile( const char *name )
         case '[':
             /* a directive */
             p = GetWord( p + 1, &word );
-            if( stricmp( word, "INCLUDE" ) == 0 ) {
+            if( strcmp( word, "INCLUDE" ) == 0 ) {
                 if( !includeStk->skipping && !includeStk->ifdefskipping ) {
                     char    inc_file[_MAX_PATH];
 
                     p = GetPathOrFile( p, inc_file );
                     PushInclude( inc_file );
                 }
-            } else if( stricmp( word, "LOG" ) == 0 ) {
+            } else if( strcmp( word, "LOG" ) == 0 ) {
                 if( includeStk->skipping == 0 ) {
                     char    log_name[_MAX_PATH];
 
@@ -597,19 +610,19 @@ static int ProcessCtlFile( const char *name )
                         OpenLog( log_name );
                     }
                 }
-            } else if( stricmp( word, "BLOCK" ) == 0 ) {
+            } else if( strcmp( word, "BLOCK" ) == 0 ) {
                 includeStk->skipping = 0;   /* New block: reset skip flags */
                 includeStk->ifdefskipping = 0;
                 if( !MatchFound( p ) )
                     includeStk->skipping++;
                 break;
-            } else if( stricmp( word, "IFDEF" ) == 0 ) {
+            } else if( strcmp( word, "IFDEF" ) == 0 ) {
                 if( includeStk->ifdefskipping != 0 )
                     includeStk->ifdefskipping--;
                 if( !MatchFound( p ) )
                     includeStk->ifdefskipping++;
                 break;
-            } else if( stricmp( word, "ENDIF" ) == 0 ) {
+            } else if( strcmp( word, "ENDIF" ) == 0 ) {
                 if( includeStk->ifdefskipping != 0 )
                     includeStk->ifdefskipping--;
                 break;

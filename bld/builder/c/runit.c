@@ -868,16 +868,23 @@ static int ProcRm( const char *cmd )
     return( retval );
 }
 
+#define BUILTIN_CMD_MAX	10
 static bool BuiltIn( const char **ptr, const char *cmd )
 {
     size_t          len;
     const char      *p;
     bool            found;
+    char            cmd_buf[BUILTIN_CMD_MAX + 1];  /* must be enoght long to hold longst command */
+    int             c;
 
     found = false;
     p = *ptr;
+    len = 0;
+    while( len < BUILTIN_CMD_MAX && (c = p[len]) != '\0' )
+        cmd_buf[len++] = toupper( c );
+    cmd_buf[len] = '\0';
     len = strlen( cmd );
-    if( strnicmp( p, cmd, len ) == 0 ) {
+    if( strncmp( cmd_buf, cmd, len ) == 0 ) {
         p += len;
         if( *p == '\0' ) {
             *ptr = p;
@@ -891,6 +898,7 @@ static bool BuiltIn( const char **ptr, const char *cmd )
     }
     return( found );
 }
+#undef BUILTIN_CMD_MAX
 
 int RunIt( const char *cmd, bool ignore_errors, bool *res_nolog )
 {

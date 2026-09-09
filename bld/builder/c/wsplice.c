@@ -87,6 +87,8 @@
 #define MAX_DEPS    	50
 #define TOKEN_MAX_LEN	31
 
+#define KEYWORD_CHAR    ':'
+
 // wsplice expression operators definition
 #define OP_OR       '|'
 #define OP_AND      '&'
@@ -96,8 +98,7 @@
 
 #define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
 
-enum                    // PROCESSING MODES
-{
+enum {                  // PROCESSING MODES
     MODE_DELETE,        // - deleting
     MODE_OUTPUT,        // - outputting
     MODE_SKIPPING       // - skipping to ENDSEGMENT
@@ -144,14 +145,14 @@ union textent {                         // define TEXTENT
 
 struct segment {                        // define SEGMENT
     SEGMENT             *next;          // - next element
-    char                seg_type;       // - segment type
+    char                type;           // - segment type
 #define SEG_REMOVE    'R'               // - - segment to be removed
 #define SEG_KEEP      'K'               // - - segment to be kept
 #define SEG_NONE      ' '               // - - keep and remove not specified
     char                name[1];        // - segment name
 };
 
-struct segmstk {                         // define SEGMSTK
+struct segmstk {                        // define SEGMSTK
     SEGMSTK             *next;          // - next entry
     unsigned            rec_def;        // - record number of definition
     PROCMODE            action;         // - saved processing mode
@@ -194,7 +195,6 @@ static FILE         *OutputFile;            // - output file
 static FILESTK      *FileStk;               // - stack of opened files
 static SEGMENT      *Segments;              // - list of segments
 static SEGMSTK      *SegmStk;               // - active-segments stack
-static char         KwChar = { ':' };       // - key word definition character
 static TEXTENT      *SourceText;            // - source text
 static char         Token[TOKEN_MAX_LEN + 1]; // - scan token
 static char         Record[1024];           // - input record
@@ -406,8 +406,8 @@ static FILE *OpenFilePathList(  //OPEN FILE, TRY EACH LOCATION IN PATH LIST
 
 // OPEN FILE
 static void OpenFileNormal(
-    const char *file_name,    // - file to be opened
-    const char *mode )        // - file mode
+    const char *file_name,      // - file to be opened
+    const char *mode )          // - file mode
 {
     FILE        *fp;            // - new file ptr.
     FILESTK     *file_stk;      // - new stack entry
@@ -518,10 +518,11 @@ static bool ScanString( void )
 
 static bool GetToken( char op )
 {
-    if( Token[0] != op || Token[1] != '\0' )
-        return( false );
-    ScanString();
-    return( true );
+    if( Token[0] == op && Token[1] == '\0' ) {
+        ScanString();
+        return( true );
+    }
+    return( false );
 };
 
 // INITIALIZE TO PROCESS RECORD
@@ -535,10 +536,10 @@ static KW RecordInitialize( const char *record )
     Rptr = record;
     if( !ScanString() )
         return( KW_TEXT );
-    if( Token[0] != KwChar )
+    if( Token[0] != KEYWORD_CHAR )
         return( KW_TEXT );
-    if( Token[1] == KwChar ) {
-        if( record[0] != KwChar || record[1] != KwChar ) {
+    if( Token[1] == KEYWORD_CHAR ) {
+        if( record[0] != KEYWORD_CHAR || record[1] != KEYWORD_CHAR ) {
             // verify comment started in column one
             // (both checks are necessary (i.e., <TAB>::))
             return( KW_TEXT );
@@ -565,16 +566,13 @@ static KW RecordInitialize( const char *record )
 // READ A RECORD
 static KW ReadInput( void )
 {
-    char    *p;
     KW      retn;           // - return: type of record
 
     if( NULL == fgets( Record, sizeof( Record ), FileStk->fp ) ) {
         retn = KW_EOF;
     } else {
         FileStk->rec_count++;
-        p = Record + strlen( Record ) - 1;
-        if( *p == '\n' )    // turf \n on the end
-            *p = '\0';
+        Record[strcspn( Record, "\n" )] = '\0';
         retn = RecordInitialize( Record );
     }
     return( retn );
@@ -604,11 +602,10 @@ static SEGMENT *SegmentLookUp( const char *name )
         }
     }
 
-    size = strlen( seg_name );
-    segment = ( SEGMENT *)GetMem( sizeof( SEGMENT ) + size );
+    segment = (SEGMENT *)GetMem( sizeof( SEGMENT ) + size );
     if( segment != NULL ) {
         memcpy( segment->name, seg_name, size + 1 );
-        segment->seg_type = ' ';
+        segment->type = ' ';
         segment->next = Segments;
         Segments = segment;
     }
@@ -641,7 +638,7 @@ static bool PrimaryExpr( void )
     } else {
         segment = SegmentLookUp( Token );
         ScanString();
-        if( segment != NULL && segment->seg_type == SEG_KEEP ) {
+        if( segment != NULL && segment->type == SEG_KEEP ) {
             ret = true;
         } else {
             ret = false;
@@ -808,7 +805,7 @@ static void ProcessRecord( KW kw, const char *record )
         case MODE_OUTPUT:
             segment = ScanSegment();
             if( segment != NULL )
-                segment->seg_type = SEG_KEEP;
+                segment->type = SEG_KEEP;
             break;
         }
         break;
@@ -817,7 +814,7 @@ static void ProcessRecord( KW kw, const char *record )
         case MODE_OUTPUT:
             segment = ScanSegment();
             if( segment != NULL )
-                segment->seg_type = SEG_REMOVE;
+                segment->type = SEG_REMOVE;
             break;
         }
         break;
@@ -1038,13 +1035,13 @@ int main(               // MAIN-LINE
                         p = get_value();
                         segment = SegmentLookUp( p );
                         if( segment != NULL )
-                            segment->seg_type = SEG_KEEP;
+                            segment->type = SEG_KEEP;
                         break;
                     case 'r':
                         p = get_value();
                         segment = SegmentLookUp( p );
                         if( segment != NULL )
-                            segment->seg_type = SEG_REMOVE;
+                            segment->type = SEG_REMOVE;
                         break;
                     case 'f':
                         OutFmt = get_value();
