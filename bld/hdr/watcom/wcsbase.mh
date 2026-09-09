@@ -14,8 +14,8 @@
 
 :include owrtlink.sp
 
-#ifndef _STDDEF_H_INCLUDED
- #include <stddef.h>
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
 #endif
 
 :include undefnew.sp

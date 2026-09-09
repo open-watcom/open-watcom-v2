@@ -19,8 +19,8 @@
  #include <wcexcept.h>
 #endif
 
-#ifndef _STRING_H_INCLUDED
- #include <string.h>
+#ifndef _CSTRING_INCLUDED
+ #include <cstring>
 #endif
 
 #ifndef _WCVBASE_H_INCLUDED

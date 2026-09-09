@@ -1,5 +1,5 @@
 //
-//  wcstack.h    Defines the WATCOM Stack Container Class
+//  wcstack.h    Defines the WATCOM Container Stack Class
 //
 :keep CPP_HDR
 :include crwat.sp
