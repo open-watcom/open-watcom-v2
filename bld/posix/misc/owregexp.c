@@ -862,7 +862,7 @@ static bool RegExec2( regexp *prog, const char *string, bool anchflag )
     if( prog->regmust != NULL ) {
         for( s = string; (s = StrChr( s, prog->regmust[0] )) != NULL; ++s ) {
             if( CASEIGNORE ) {
-                if( strnicmp( s, prog->regmust, prog->regmlen ) == 0 ) {
+                if( NSGLOB( strnicmp )( s, prog->regmust, prog->regmlen ) == 0 ) {
                     break;
                 }
             } else {
@@ -1000,7 +1000,7 @@ static bool regmatch( reg_node *prog )
                 len = NSSTD( strlen )( opnd );
                 if( len > 1 ) {
                     if( CASEIGNORE ) {
-                        if( strnicmp( opnd, reginput, len ) != 0 ) {
+                        if( NSGLOB( strnicmp )( opnd, reginput, len ) != 0 ) {
                             return( false );
                         }
                     } else {

@@ -17,8 +17,10 @@
 
 #ifdef __cplusplus
 #define NSSTD(x)    std::x
+#define NSGLOB(x)   ::x
 #else
 #define NSSTD(x)    x
+#define NSGLOB(x)   x
 #endif
 
 #endif
