@@ -840,7 +840,7 @@ template<class Type, class BaseClass>
 void WCPtrVectorBase<Type, BaseClass>::base_init_upto( int index ) {
     if( index >= num_init ){
         // intialize the vector by NULLing out unitialized elements
-        memset( &vector[ num_init ], 0
+        std::memset( &vector[ num_init ], 0
               , ( index + 1 - num_init ) * sizeof( void * ) );
         num_init = index + 1;
     }
