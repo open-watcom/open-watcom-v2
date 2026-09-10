@@ -23,7 +23,9 @@
 :: The following segment only appears in stdarg.h.
 #ifdef __cplusplus
 
-#include <cstdarg>
+#ifndef _CSTDARG_INCLUDED
+ #include <cstdarg>
+#endif
 
 using std::va_list;
 

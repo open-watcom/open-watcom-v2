@@ -22,7 +22,9 @@
 :: In C++ .h header version import names into standard namespace
 #ifdef __cplusplus
 
-#include <cstdint>
+#ifndef _CSTDINT_INCLUDED
+ #include <cstdint>
+#endif
 
 using std::int8_t;
 using std::uint8_t;

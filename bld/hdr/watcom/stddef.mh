@@ -22,7 +22,9 @@
 
 #ifdef __cplusplus
 
-#include <cstddef>
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
+#endif
 
 // C99 types in stddef.h
 #ifndef _SIZE_T_DEFINED

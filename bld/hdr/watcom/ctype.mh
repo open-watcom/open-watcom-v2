@@ -22,7 +22,9 @@
 :: The following somewhat long segment only appears in ctype.h.
 #ifdef __cplusplus
 
-#include <cctype>
+#ifndef _CCTYPE_INCLUDED
+ #include <cctype>
+#endif
 
 // C99 functions in ctype.h
 using std::isalnum;

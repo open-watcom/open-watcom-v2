@@ -35,7 +35,9 @@
 :: The following segment only appears in locale.h.
 #ifdef __cplusplus
 
-#include <clocale>
+#ifndef _CLOCALE_INCLUDED
+ #include <clocale>
+#endif
 
 // C99 types in locale.h.
 using std::lconv;

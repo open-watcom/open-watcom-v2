@@ -38,7 +38,9 @@
 :elsesegment
 #ifdef __cplusplus
 
-#include <cstdbool>
+#ifndef _CSTDBOOL_INCLUDED
+ #include <cstdbool>
+#endif
 
 #else /* __cplusplus not defined */
 

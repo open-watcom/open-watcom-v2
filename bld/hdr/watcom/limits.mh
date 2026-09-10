@@ -259,8 +259,12 @@
 :: the other hand a C++ programmer using numeric_limits probably won't
 :: want the preprocessor name pollution caused by including these headers.
 :: (Peter Chapin)
-#include <cfloat>
-#include <climits>
+#ifndef _FLOAT_H_INCLUDED
+ #include <cfloat>
+#endif
+#ifndef _LIMITS_H_INCLUDED
+ #include <climits>
+#endif
 
 :include nsstd.sp
   enum float_round_style {

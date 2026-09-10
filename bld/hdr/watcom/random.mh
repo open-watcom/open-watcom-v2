@@ -13,7 +13,9 @@
 
 :include cpponly.sp
 
-#include <cstdint>
+#ifndef _CSTDINT_INCLUDED
+ #include <cstdint>
+#endif
 
 namespace _ow {
 

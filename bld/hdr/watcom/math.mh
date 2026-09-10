@@ -22,9 +22,11 @@
 :: The following somewhat long segment only appears in math.h
 #ifdef __cplusplus
 
-#define _INCLUDED_FROM_MATH_H
-#include <cmath>
-#undef  _INCLUDED_FROM_MATH_H
+#ifndef _CMATH_INCLUDED
+ #define _INCLUDED_FROM_MATH_H
+ #include <cmath>
+ #undef  _INCLUDED_FROM_MATH_H
+#endif
 
 // functions in math.h
 using std::acos;

@@ -22,7 +22,9 @@
 :: The following segment only appears in signal.h.
 #ifdef __cplusplus
 
-#include <csignal>
+#ifndef _CSIGNAL_INCLUDED
+ #include <csignal>
+#endif
 
 // C99 types in signal.h.
 using std::sig_atomic_t;
