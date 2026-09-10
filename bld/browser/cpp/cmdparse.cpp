@@ -313,7 +313,7 @@ int CommandParser::scan()
             }
             return state;
         default:
-            if( isspace( _lookAhead ) ) {
+            if( std::isspace( _lookAhead ) ) {
                 getNextChar();
                 if( state != TOK_NotATok ) {
                     return state;

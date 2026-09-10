@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +80,7 @@ _WPRTLINK istream &operator >> ( istream &strm, String &s ) {
                 done = true;
                 break;
             }
-            if( isspace( chunk[count] ) ) {
+            if( std::isspace( chunk[count] ) ) {
                 strm.putback( chunk[count] );
                 done = true;
                 break;
