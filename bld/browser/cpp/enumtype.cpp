@@ -119,7 +119,7 @@ WString & EnumElement::value( WString & str )
 {
     EnumViewStyle style = WBRWinBase::optManager()->getEnumStyle();
 
-    if( style == EV_Character && !isprint( (char) _value ) ){
+    if( style == EV_Character && !std::isprint( (char) _value ) ){
         style = EV_HexMixedCase;
     }
 

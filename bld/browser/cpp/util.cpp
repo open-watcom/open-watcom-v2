@@ -145,11 +145,11 @@ static bool matchesAll( char * name )
 
     if( name == NULL || *name == '\0' )
         return true;
-    while( isspace( *name ) ) name++;
+    while( std::isspace( *name ) ) name++;
     if( name == '\0' )
         return true;
     nameend = name + std::strlen(name) - 1;
-    while( isspace( *nameend ) ) {
+    while( std::isspace( *nameend ) ) {
         *nameend = '\0';
         nameend--;
     }
