@@ -13,19 +13,19 @@
 
 :include owrtlink.sp
 
-#ifndef _CTYPE_H_INCLUDED
- #include <ctype.h>
+#ifndef _CCTYPE_INCLUDED
+ #include <cctype>
 #endif
 
-#ifndef _STDDEF_H_INCLUDED
- #include <stddef.h>
+#ifndef _CSTDDEF_INCLUDED
+ #include <cstddef>
 #endif
 
 #ifndef _IOSTREAM_H_INCLUDED
  #include <iostream.h>
 #endif
 
-const size_t NPOS = (size_t) -1;
+const std::size_t NPOS = (std::size_t) -1;
 
 // Define a typedef for a "C" function
 extern "C" {
@@ -41,12 +41,12 @@ public:
     } capacity;
                                                 // constructors
     String();                                   //   default
-    String( size_t, capacity );                 //   with specified size
+    String( std::size_t, capacity );            //   with specified size
     String( String const &,                     //   from another String
-            size_t __pos = 0,
-            size_t __n = NPOS );
-    String( char const *, size_t __n = NPOS );  //   from C string
-    String( char, size_t __rep = 1 );           //   from single character
+            std::size_t __pos = 0,
+            std::size_t __n = NPOS );
+    String( char const *, std::size_t __n = NPOS ); //   from C string
+    String( char, std::size_t __rep = 1 );          //   from single character
 
     ~String();                                  // destructor
 
@@ -64,15 +64,15 @@ public:
     String & operator += ( String const & );    //   a String
     String & operator += ( char const * );      //   a C string
 
-    String operator () ( size_t __pos,          // substring operator
-                         size_t __len ) const;
+    String operator () ( std::size_t __pos,     // substring operator
+                         std::size_t __len ) const;
 
-    char & operator () ( size_t __pos );        // reference-to-char operator
+    char & operator () ( std::size_t __pos );   // reference-to-char operator
     char const & operator ()
-                       ( size_t __pos ) const;  // reference-to-char operator
-    char & operator [] ( size_t __pos );        // subscript operator
+                       ( std::size_t __pos ) const;  // reference-to-char operator
+    char & operator [] ( std::size_t __pos );        // subscript operator
     char const & operator []
-                       ( size_t __pos ) const;  // subscript operator
+                       ( std::size_t __pos ) const;  // subscript operator
 
                                                 // comparison operators
     friend _WPRTLINK int operator == (
@@ -164,10 +164,10 @@ public:
             ostream &, String const & );        // output
 
 // Member functions:
-    size_t length() const;                  // length of String
+    std::size_t length() const;                 // length of String
 
-    char const & get_at( size_t ) const;    // get the n'th character
-    void put_at( size_t, char );            // replace the n'th character
+    char const & get_at( std::size_t ) const;   // get the n'th character
+    void put_at( std::size_t, char );           // replace the n'th character
 
                                             // find differing character loc
     int match( String const & ) const;      //   search string is a String
@@ -175,9 +175,9 @@ public:
 
                                             // find substring location
     int index( String const &,              //   search string is a String
-               size_t __pos = 0 ) const;
+               std::size_t __pos = 0 ) const;
     int index( char const *,                //   search string is a C string
-               size_t __pos = 0 ) const;
+               std::size_t __pos = 0 ) const;
 
                                             // letter case conversion
     String upper() const;                   //   to upper case
@@ -195,26 +195,26 @@ private:
 
     class StringRep {
     public:
-        size_t  __refcount;
-        size_t  __avail_length;
-        size_t  __used_length;
-        char    __value[1];           // variable length
+        std::size_t __refcount;
+        std::size_t __avail_length;
+        std::size_t __used_length;
+        char        __value[1];             // variable length
     };
 
     StringRep   *__srep;
-    size_t      __offset;
-    size_t      __slength;
+    std::size_t __offset;
+    std::size_t __slength;
     char        *__c_string;
 
     // Memory for StringRep's is allocated in multiples of string_mult_size
-    static size_t __string_mult_size;
-    static char   __ref_char;
+    static std::size_t __string_mult_size;
+    static char        __ref_char;
 
-    static StringRep *__AllocStringRep( StringRep *, size_t );
+    static StringRep *__AllocStringRep( StringRep *, std::size_t );
     static int        __CompareStrings( String const &, String const & );
-    void   __AppendToStringRep( String const &, char const *, size_t );
+    void   __AppendToStringRep( String const &, char const *, std::size_t );
     void   __FreeStringRep();
-    void   __JoinStrings( char const *, size_t, char const *, size_t );
+    void   __JoinStrings( char const *, std::size_t, char const *, std::size_t );
     String __ZapCase( __zapcase_t ) const;
 };
 
@@ -222,19 +222,19 @@ inline char const * String::c_str() const {
     return( this->operator const char *() );
 }
 
-inline char &String::operator [] ( size_t __pos ) {
+inline char &String::operator [] ( std::size_t __pos ) {
     return( this->operator()( __pos ) );
 }
 
-inline char const &String::operator [] ( size_t __pos ) const {
+inline char const &String::operator [] ( std::size_t __pos ) const {
     return( this->operator()( __pos ) );
 }
 
-inline char const &String::get_at( size_t __pos ) const {
+inline char const &String::get_at( std::size_t __pos ) const {
     return( this->operator()( __pos ) );
 }
 
-inline void String::put_at( size_t __pos, char __c ) {
+inline void String::put_at( std::size_t __pos, char __c ) {
     if( __pos < __slength ) {
         this->operator()( __pos ) = __c;
     } else if( __pos == __slength ) {
@@ -243,11 +243,11 @@ inline void String::put_at( size_t __pos, char __c ) {
 }
 
 inline String String::upper() const {
-    return( __ZapCase( &::toupper ) );
+    return( __ZapCase( &std::toupper ) );
 }
 
 inline String String::lower() const {
-    return( __ZapCase( &::tolower ) );
+    return( __ZapCase( &std::tolower ) );
 }
 
 inline int String::operator ! () const {
@@ -262,7 +262,7 @@ inline int valid( String const &__s ) {
     return( __s.__srep != NULL );
 }
 
-inline size_t String::length() const {
+inline std::size_t String::length() const {
     return( __slength );
 }
 
