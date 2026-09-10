@@ -411,14 +411,14 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 
 /* Execute functions */
 
-#define _texecl         execl
-#define _texecle        execle
-#define _texeclp        execlp
-#define _texeclpe       execlpe
-#define _texecv         execv
-#define _texecve        execve
-#define _texecvp        execvp
-#define _texecvpe       execvpe
+#define _texecl         _execl
+#define _texecle        _execle
+#define _texeclp        _execlp
+#define _texeclpe       _execlpe
+#define _texecv         _execv
+#define _texecve        _execve
+#define _texecvp        _execvp
+#define _texecvpe       _execvpe
 
 #define _tspawnl        spawnl
 #define _tspawnle       spawnle
