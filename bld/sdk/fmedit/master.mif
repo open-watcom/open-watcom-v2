@@ -25,7 +25,7 @@ inc_dirs = -I"../src" -I"../dev" -I"../res"
 
 extra_cpp_flags = -DFMEDITDLL
 
-extra_c_flags_win = -zu -zw
+extra_c_flags_win = -zu -zW
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_fmedit = -bd

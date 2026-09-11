@@ -32,17 +32,8 @@
 
 #include "spy.h"
 #include "spymem.h"
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "trmem.h"
 
-
-#if defined( TRMEM ) && defined( _M_IX86 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #ifdef TRMEM
 

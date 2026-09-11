@@ -2,9 +2,9 @@
 
 name_exe = builder.exe
 
-inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(watcom_dir)/h"
+inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(watcom_dir)/h" -I"$(trmem_dir)"
 
-.c : ../c;$(pmake_dir);$(watcom_dir)/c
+.c : ../c;$(pmake_dir);$(watcom_dir)/c;$(trmem_dir)
 
 !ifdef __WATCOM_TOOLS__
 !ifeq bld_cpu x64

@@ -26,7 +26,7 @@ ui_autodepends = .AUTODEPEND
 #
 .c: ../c;../../c;$(extra_cdir);$(trmem_dir)
 
-inc_dirs = -I"../h" $(cli_ui_inc_dirs)
+inc_dirs = -I"../h" $(cli_ui_inc_dirs) -I"$(trmem_dir)"
 inc_dirs_dos = -I"$(clib_dir)/mbyte/h"
 #inc_dirs_nov = -I"$(watcom_nw40_h)" -I"$(lib_misc_dir)/h"
 inc_dirs_nov = -I"$(lib_misc_dir)/h"

@@ -17,7 +17,7 @@ memory_model_i86 = s
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"../h"
+inc_dirs = -I"../h" -I"$(trmem_dir)"
 inc_dirs_os2 = -I"$(clib_dir)/process/h" -I"$(lib_misc_dir)/h"
 
 !ifeq trmem 1

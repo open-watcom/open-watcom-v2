@@ -13,7 +13,7 @@ pmake_trmem = 1
 #
 .c : ..;$(trmem_dir)
 
-inc_dirs = -I.. -I"$(builder_dir)/h"
+inc_dirs = -I.. -I"$(builder_dir)/h" -I"$(trmem_dir)"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

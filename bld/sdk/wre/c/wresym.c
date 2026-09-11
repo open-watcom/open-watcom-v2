@@ -61,13 +61,6 @@
 #define MAX_PP_CHARS    512
 #define MAX_SYM_ADDS    128
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
-
 typedef struct {
     unsigned        add_count;
     unsigned        busy_count;

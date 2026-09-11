@@ -34,7 +34,13 @@
 #ifndef WRMEM_INCLUDED
 #define WRMEM_INCLUDED
 
-#include "trmem.h"
+#ifndef TRMEM
+    #define TRMEM
+    #include "trmem.h"
+    #undef TRMEM
+#else
+    #include "trmem.h"
+#endif
 
 /****************************************************************************/
 /* function prototypes                                                      */

@@ -37,8 +37,8 @@
     #include <i86.h>
 #endif
 #ifdef __WINDOWS__
-#define INCLUDE_TOOLHELP_H
-#include <windows.h>
+    #define INCLUDE_TOOLHELP_H
+    #include <windows.h>
 #endif
 #include "trmem.h"
 

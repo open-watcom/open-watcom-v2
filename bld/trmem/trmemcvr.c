@@ -40,13 +40,6 @@
 #include "clibext.h"
 
 
-#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
-
 #ifdef TRMEM
 
 static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;

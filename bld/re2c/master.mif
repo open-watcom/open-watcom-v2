@@ -15,7 +15,7 @@ additional_clean = ytab.c ytab.h y.out
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(re2c_dir)/h"
+inc_dirs = -I. -I"$(re2c_dir)/h" -I"$(trmem_dir)"
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_ytab = -pil

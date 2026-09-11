@@ -64,6 +64,7 @@
 #include "savings.h"
 #include "regsave.h"
 #include "i64.h"
+#include "trmem.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -72,13 +73,6 @@
 #include <stdlib.h>
 #endif
 
-
-#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #define MAX_BCK_INFO    1000    // number of bck_info's per carve block
 

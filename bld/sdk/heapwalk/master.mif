@@ -20,13 +20,14 @@ additional_clean = *.gh *.grh
 #
 # cflags
 #
-.c   : ../c;$(dis_srcs);$(commonui_dir)/c
+.c   : ../c;$(dis_srcs);$(commonui_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(dis_includes)
+inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(dis_includes) -I"$(trmem_dir)"
 
 extra_cpp_flags_f_ldstr = -dSPECIAL_STRING_LOADING
 
-extra_c_flags_i86   = -zu-zW
+extra_c_flags_i86 = -zu
+extra_c_flags_win = -zW
 
 extra_c_flags_f_heapwalk = -3
 extra_c_flags_f_segmem2  = -3

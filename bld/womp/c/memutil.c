@@ -37,22 +37,15 @@
 #include "womp.h"
 #include "genutil.h"
 #include "memutil.h"
+#include "trmem.h"
 #ifdef  TRMEM
 //    #include <malloc.h>
     #include <io.h>
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <fcntl.h>
-    #include "trmem.h"
 #endif
 
-
-#if defined( TRMEM ) && defined( _M_IX86 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #ifdef  TRMEM
 

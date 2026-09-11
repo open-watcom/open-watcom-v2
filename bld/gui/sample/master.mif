@@ -27,9 +27,9 @@ additional_clean = *.grh
 #
 # cflags
 #
-.c: ../c;$(os_source_dir);$(os_extra_dir)
+.c: ../c;$(os_source_dir);$(os_extra_dir);$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal)
+inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) $(cli_gui_inc_dirs_internal) -I"$(trmem_dir)"
 
 !ifdef sys_windowed
 extra_cpp_flags = -DGUI_IS_GUI

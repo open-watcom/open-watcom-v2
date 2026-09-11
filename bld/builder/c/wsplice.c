@@ -381,9 +381,9 @@ static FILE *OpenFileTruncate(
     return( fp );
 }
 
-static FILE *OpenFilePathList(  //OPEN FILE, TRY EACH LOCATION IN PATH LIST
-    const char *file_name,    // - file to be opened
-    const char *mode )        // - file mode
+static FILE *OpenFilePathList(  // OPEN FILE, TRY EACH LOCATION IN PATH LIST
+    const char *file_name,      // - file to be opened
+    const char *mode )          // - file mode
 {
     FILE        *fp = NULL;
 

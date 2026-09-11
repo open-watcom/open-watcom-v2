@@ -15,7 +15,7 @@ hcdos_trmem = 1
 #
 .c: ../c;$(hlpview_dir)/c;$(trmem_dir)
 
-inc_dirs = -I"../h" $(cli_hlpview_inc_dirs)
+inc_dirs = -I"../h" $(cli_hlpview_inc_dirs) -I"$(trmem_dir)"
 
 # explicit rules
 #################

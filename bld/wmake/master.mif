@@ -44,7 +44,7 @@ additional_clean = *.gh *.grc
 #
 .c : ../c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(wmake_dir)/h" $(cli_orl_inc_dirs)
+inc_dirs = -I. -I"$(wmake_dir)/h" $(cli_orl_inc_dirs) -I"$(trmem_dir)"
 
 extra_cpp_flags =
 !ifdef DLLS_IMPLEMENTED

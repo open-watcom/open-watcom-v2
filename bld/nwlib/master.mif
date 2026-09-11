@@ -45,10 +45,10 @@ additional_clean = *.gh *.grh *.grc *.gc
 !ifdef bootstrap
 !include $(orl_dir)/orlobjs.mif
 .c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir);$(cli_orl_c_dirs)
-inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h" $(cli_orl_inc_dirs_internal)
+inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h" $(cli_orl_inc_dirs_internal) -I"$(trmem_dir)"
 !else
 .c: ../c;$(lib_misc_dir)/c;$(fe_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
-inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h"
+inc_dirs =  -I. -I.. -I"../h" $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(fe_misc_dir)/h" -I"$(trmem_dir)"
 !endif
 
 extra_cpp_flags = -DINSIDE_WLIB

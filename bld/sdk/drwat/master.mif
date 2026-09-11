@@ -31,9 +31,9 @@ common_dir = ../../common
 #
 # cflags
 #
-.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c;$(watcom_dir)/c
+.c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs);$(commonui_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(cli_commonui_inc_dirs)
+inc_dirs = -I. -I"../$(host_os)" -I"../h" -I"$(dig_dir)/h" $(dis_includes) $(cli_commonui_inc_dirs) -I"$(trmem_dir)"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 !ifdef drwatcom_95
@@ -44,8 +44,9 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_cpp_flags_f_mem = -DWANT_MSGS
 
-extra_c_flags_i86 = -zW -zu -3
+extra_c_flags_i86 = -zu -3
 extra_c_flags_axp =
+extra_c_flags_win = -zW
 
 #
 # aflags

@@ -42,12 +42,12 @@ c_path_os2  = $(batch_dir)/os2
 c_path_nt   = $(batch_dir)/nt
 c_path_win  = $(batch_dir)/dos
 
-.c : ../cpp;$(c_path_$(host_os));$(batch_dir)/c;$(watcom_dir)/c
+.c : ../cpp;$(c_path_$(host_os));$(batch_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 .cpp : ../cpp
 
 inc_dirs_win = -I"$(batch_dir)/dos"
 inc_dirs = -I"../h" $(cli_idelib_inc_dirs) $(cli_wpi_inc_dirs) &
-    -I"$(docs_host_dir)" -I"$(editdll_dir)" $(cli_rcsdll_inc_dirs) -I"$(batch_dir)/h"
+    -I"$(docs_host_dir)" -I"$(editdll_dir)" $(cli_rcsdll_inc_dirs) -I"$(batch_dir)/h" -I"$(trmem_dir)"
 
 extra_cpp_flags     = -DGUI_IS_GUI
 !ifdef nowgml

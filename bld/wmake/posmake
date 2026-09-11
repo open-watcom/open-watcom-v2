@@ -3,9 +3,9 @@
 # specific extensions, no 'clever' tricks here. That means the stupid hard
 # tabs, too!
 
-INCS = -I. -I../h -I../../watcom/h -I../../lib_misc/h $(DEFS)
+INCS = -I. -I../h -I../../watcom/h -I../../trmem -I../../lib_misc/h $(DEFS)
 DEFS = $(TARGETDEF) -D__UNIX__ -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT -D_XOPEN_SOURCE=600 -D_BLDVER=$(OWBLDVERTOOL) -D_CYEAR=xxxx $(EXTRADEF)
-CFLAGS = -g -O2 $(INCS)
+CFLAGS = -g -O2 $(INCS) #-DTRMEM
 
 all: ../../../build/$(OWOBJDIR)/wmake
 
@@ -65,11 +65,13 @@ wsplice.o: ../../builder/c/wsplice.c
 	$(CC) $(CFLAGS) -c $?
 clibext.o: ../../watcom/c/clibext.c
 	$(CC) $(CFLAGS) -c $?
+trmem.o: ../../trmem/trmem.c
+	$(CC) $(CFLAGS) -c $?
 
 OBJS = macros.o main.o mautodep.o mautoomf.o \
  mcache.o memory.o mexec.o mglob.o mhash.o misc.o mlex.o mlexmac.o mlexprs.o \
  mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
- mtarget.o mupdate.o mvecstr.o depinfo.o clibext.o
+ mtarget.o mupdate.o mvecstr.o depinfo.o clibext.o #trmem.o
 
 wsplice.exe: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@

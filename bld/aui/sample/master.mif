@@ -20,9 +20,9 @@ additional_clean = *.grh *.dlg
 #
 # cflags
 #
-.c: ../c
+.c: ../c;$(trmem_dir)
 
-inc_dirs = -I"../h" $(cli_aui_inc_dirs)
+inc_dirs = -I"../h" $(cli_aui_inc_dirs) -I"$(trmem_dir)"
 
 !ifdef sys_windowed
 extra_c_flags = -DGUI_IS_GUI

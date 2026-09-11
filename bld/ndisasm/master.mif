@@ -31,7 +31,7 @@ dig_arch = all
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
 
 inc_dirs = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" -I"$(disasm_dir)/h" &
-    $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h"
+    $(cli_orl_inc_dirs) -I"$(lib_misc_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(trmem_dir)"
 
 extra_cpp_flags = -DINSIDE_WDIS $(dig_arch_cpp_flags)
 

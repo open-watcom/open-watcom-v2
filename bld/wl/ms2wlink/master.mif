@@ -17,7 +17,7 @@ memory_model_i86 = m
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I"../h"
+inc_dirs = -I"../h" -I"$(trmem_dir)"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

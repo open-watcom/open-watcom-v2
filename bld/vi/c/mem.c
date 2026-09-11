@@ -36,19 +36,12 @@
 #ifdef __WATCOMC__
     #include <malloc.h>
 #endif
+#include "trmem.h"
 #ifdef TRMEM
     #include "wio.h"
-    #include "trmem.h"
 #endif
 #include "memdmp.h"
 
-
-#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #ifdef TRMEM
     #define MSIZE( x )          _trmem_msize( x, TrHdl )

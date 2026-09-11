@@ -22,11 +22,13 @@ additional_clean = *.gh *.grh *.grc
 #
 # cflags
 #
-.c: ../c;$(commonui_dir)/c
+.c: ../c;$(commonui_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) -I"$(trmem_dir)"
 
 extra_cpp_flags_nt = -DNOUSE3D
+
+extra_c_flags_win = -zW
 
 #
 # lflags

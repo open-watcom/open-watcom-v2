@@ -18,7 +18,7 @@ wcpp_trmem = 1
 #
 .c : $(cli_cpp_c_dirs);$(trmem_dir);$(watcom_dir)/c
 
-inc_dirs = $(cli_cpp_inc_dirs)
+inc_dirs = $(cli_cpp_inc_dirs) -I"$(trmem_dir)"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

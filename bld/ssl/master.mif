@@ -15,7 +15,7 @@ ssl_trmem = 1
 #
 .c: ../c;$(cli_cpp_c_dirs);$(watcom_dir)/c;$(trmem_dir)
 
-inc_dirs = -I"../h" $(cli_cpp_inc_dirs)
+inc_dirs = -I"../h" $(cli_cpp_inc_dirs) -I"$(trmem_dir)"
 
 # explicit rules
 #################

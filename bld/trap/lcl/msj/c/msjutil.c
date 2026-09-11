@@ -34,8 +34,8 @@
 #include <windows.h>
 #include <malloc.h>
 #include "msjutil.h"
+#include "trmem.h"
 #ifdef TRMEM
-    #include "trmem.h"
     #include "bool.h"
     #include <stdlib.h>
     #include <unistd.h>
@@ -43,13 +43,6 @@
     #include <dip.h>
 #endif
 
-
-#if defined( TRMEM ) && defined( _M_IX86 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #ifdef TRMEM
 

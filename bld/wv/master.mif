@@ -55,7 +55,7 @@ dig_arch = all
 .c: ../c;../../c;$(aui_dir)/c;$(dig_srcs);$(watcom_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"../h" -I"../../h" -I"../../res" -I"$(dig_dir)/h" $(cli_aui_inc_dirs) &
-	$(cli_ui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(cli_wpi_inc_dirs)
+	$(cli_ui_inc_dirs_internal) $(cli_hlpview_inc_dirs) $(cli_wpi_inc_dirs) -I"$(trmem_dir)"
 !ifdef sys_rtdll
 !else
 inc_dirs += $(cli_gui_inc_dirs_internal)

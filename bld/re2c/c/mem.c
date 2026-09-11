@@ -35,17 +35,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "mem.h"
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "trmem.h"
 
-
-#if defined( TRMEM ) && defined( _M_IX86 ) && ( __WATCOMC__ > 1290 )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
 
 #if defined( TRMEM )
 

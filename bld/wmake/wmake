@@ -25,9 +25,11 @@ objs = &
   memory.obj mexec.obj mglob.obj mhash.obj mlex.obj mlexmac.obj &
   mlexprs.obj mparse.obj mpreproc.obj mrcmsg.obj msg.obj mstream.obj &
   msuffix.obj msysdep.obj mtarget.obj mupdate.obj mvecstr.obj &
-  mcache.obj misc.obj depinfo.obj clibext.obj
+  mcache.obj misc.obj depinfo.obj clibext.obj #trmem.obj
 
-.c : ../c;../../builder/c;../../watcom/c
+.c : ../c;../../builder/c;../../watcom/c;../../trmem
+
+inc_dirs = -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -I"../../trmem"
 
 !ifdef __UNIX__
 ../../../build/$(%OWOBJDIR)/wmake : wmk.exe
@@ -38,7 +40,7 @@ objs = &
 !endif
 
 .c.obj : .AUTODEPEND
-    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) -I. -I"../h" -I"../../lib_misc/h" -I"../../watcom/h" -fo="$@" "$<"
+    *wcc386 -zq -D_BLDVER=$(%OWBLDVERTOOL) -D_CYEAR=xxxx -DBOOTSTRAP -DPREBOOT -DINCL_MSGTEXT $(EXTRADEF) -w8-we-s-oaxt-j-fpc-zc -d2 -bt=$(bld_os) $(inc_dirs) -fo="$@" "$<"
 
 ./wsplice.exe : wsplice.obj
     *wlink name $@ op q, map sys $(link_sys_$(bld_os)) file {$<}

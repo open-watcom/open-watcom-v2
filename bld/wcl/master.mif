@@ -20,9 +20,9 @@ additional_clean = *.gh *.grh *.grc $(owcc_specs)
 .c: $(wcl_dir)/c;$(posix_dir)/misc;$(watcom_dir)/c;$(trmem_dir)
 
 !ifdef target_cpu
-inc_dirs = -I. -I"$(wcl_dir)/h"
+inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(trmem_dir)"
 !else
-inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(posix_dir)/h"
+inc_dirs = -I. -I"$(wcl_dir)/h" -I"$(posix_dir)/h" -I"$(trmem_dir)"
 !endif
 
 !ifeq dos_extender causeway

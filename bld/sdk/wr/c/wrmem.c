@@ -35,13 +35,6 @@
 #include "wrmemi.h"
 
 
-#if defined( _M_IX86 ) && defined( __NT__ )
-#define _XSTR(s)    # s
-#define TRMEMAPI(x)     _Pragma(_XSTR(aux x __frame))
-#else
-#define TRMEMAPI(x)
-#endif
-
 static _trmem_hdl   TrHdl = _TRMEM_HDL_NONE;
 static FILE         *TrFile = NULL;
 static wr_nomem_cb  *nomem_cb = NULL;

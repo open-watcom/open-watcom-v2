@@ -40,7 +40,7 @@ ntverrc_exe = $(exetarg_name)
 
 inc_dirs= -I. -I.. -I"$(f77wfc_dir)/h" -I"$(f77_dir)/h" &
     $(cli_cg_inc_dirs) $(cli_dwarfw_inc_dirs) $(cli_cfloat_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" &
-    $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
+    $(cli_asminline_inc_dirs) $(cli_owl_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h" -I"$(trmem_dir)"
 
 extra_cpp_flags_target_axp = -DAS_ALPHA
 extra_cpp_flags_target_mps = -DAS_MIPS

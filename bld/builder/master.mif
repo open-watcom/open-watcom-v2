@@ -19,7 +19,7 @@ all_commands    += builder.exe
 !endif
 #all_commands    += wgrep.exe
 
-inc_dirs = -I"../h" -I"$(pmake_dir)"
+inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(trmem_dir)"
 
 .c : ../c;$(pmake_dir);$(watcom_dir)/c;$(trmem_dir)
 

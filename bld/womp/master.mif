@@ -17,7 +17,7 @@ womp_wreslib_cli = text
 #
 .c: ../c;$(trmem_dir)
 
-inc_dirs = -I. -I"$(womp_dir)/h"
+inc_dirs = -I. -I"$(womp_dir)/h" -I"$(trmem_dir)"
 
 # explicit rules
 #################
