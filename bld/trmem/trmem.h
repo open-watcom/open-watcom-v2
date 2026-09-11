@@ -34,10 +34,17 @@
 #ifndef _TRMEM_H_INCLUDED
 #define _TRMEM_H_INCLUDED
 
+#if defined( TRMEM )
+
 #include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 ) && defined( _M_IX86 )
+    #define _XSTR(s)    # s
+    #define TRMEMAPI(x) _Pragma(_XSTR(aux x __frame))
 #endif
 
 #if defined( _WIN64 )
@@ -266,4 +273,10 @@ extern _trmem_who  _trmem_whoami( void );
 } /* extern "C" */
 #endif
 
+#endif /* TRMEM */
+
+#ifndef TRMEMAPI
+    #define TRMEMAPI(x)
 #endif
+
+#endif /* _TRMEM_H_INCLUDED */
