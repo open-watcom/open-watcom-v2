@@ -107,7 +107,7 @@ static void getFullFname( HWND hwnd, const char *fname, WString *fullname )
 
     /* unused parameters */ (void)hwnd;
 
-    _splitpath2( fname, pg.buffer, &pg.drive, NULL, NULL, NULL );
+    ::_splitpath2( fname, pg.buffer, &pg.drive, NULL, NULL, NULL );
     if( pg.drive[0] == '\0' ) {
         getcwd( pg.buffer, sizeof( pg.buffer ) );
         *fullname = pg.buffer;
@@ -171,7 +171,7 @@ static void getRelFname( HWND hwnd, const char *fname, WString *relname )
     info = (GetFilesInfo *)GET_DLGDATA( hwnd );
     getFullFname( hwnd, fname, &fullpath );
     filename = fullpath.gets();
-    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    ::_splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     if( ::stricmp( pg.drive, filename.drive() ) == 0 ) {
         formRelDir( filename.dir(), pg.dir, relname );
         relname->concat( filename.fName() );
@@ -330,7 +330,7 @@ static void addAllFiles95( HWND hwnd )
         ext++;
     }
     SendMessage( GetParent( hwnd ), CDM_GETFOLDERPATH, _MAX_PATH, (LPARAM)folder );
-    _makepath( path, NULL, folder, ext, NULL );
+    ::_makepath( path, NULL, folder, ext, NULL );
     osffh = FindFirstFile( path, &wfd );
     if( osffh != INVALID_HANDLE_VALUE ) {
         found = true;
@@ -573,8 +573,8 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     pgroup2         pg;
     char            newpath[_MAX_PATH];
 
-    _splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-    _makepath( newpath, pg.drive, pg.dir, NULL, NULL );
+    ::_splitpath2( info->tgt_file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+    ::_makepath( newpath, pg.drive, pg.dir, NULL, NULL );
     fname[0] = 0;
     std::memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
