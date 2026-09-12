@@ -34,6 +34,11 @@
 #ifndef _MEMFUNCS_H_INCLUDED
 #define _MEMFUNCS_H_INCLUDED
 
+#ifdef __cplusplus
+    #include <cstddef>
+#else
+    #include <stddef.h>
+#endif
 #include "nsstd.h"
 
 #ifdef __cplusplus
