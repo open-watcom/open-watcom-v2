@@ -425,7 +425,11 @@ bld_fortify = 0
 !endif
 
 # common release/debug options
+!ifdef __OSX__
+common_flags_rel = -O2 -g1 -gdwarf-2
+!else
 common_flags_rel = -O -g1 -gdwarf-2
+!endif
 common_flags_dbg = -g -gdwarf
 
 # common debug info compression options
