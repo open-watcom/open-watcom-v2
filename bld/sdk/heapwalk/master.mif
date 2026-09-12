@@ -20,7 +20,7 @@ additional_clean = *.gh *.grh
 #
 # cflags
 #
-.c   : ../c;$(dis_srcs);$(commonui_dir)/c;$(trmem_dir)
+.c : ../c;$(dis_srcs);$(commonui_dir)/c;$(trmem_dir)
 
 inc_dirs = -I. -I"../h" $(cli_commonui_inc_dirs) $(dis_includes) -I"$(trmem_dir)"
 

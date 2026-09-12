@@ -62,11 +62,7 @@ extra_cxx_flags += -db
 !endif
 
 extra_c_flags_i86 = -zc -zm
-!ifdef DBG
-extra_c_flags_win = -zw
-!else
 extra_c_flags_win = -zW
-!endif
 
 extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)memfuncs.h
 extra_c_flags_f_keysym = -I"$(posix_dir)/h"
@@ -75,7 +71,7 @@ extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
-extra_c_flags_f_brmem = -of+
+#extra_c_flags_f_brmem = -of+
 ! endif
 !endif
 

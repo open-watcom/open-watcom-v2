@@ -26,9 +26,9 @@ dig_arch = $(host_cpu)
 #
 # cflags
 #
-.c: ../../$(rfx_os)/c;..;../../c;$(dig_srcs)
+.c: ../../$(rfx_os)/c;..;../../c;$(dig_srcs);$(trmem_dir)
 
-inc_dirs = -I. -I"../../$(rfx_os)/h" -I.. -I"../../h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h" -I"$(trap_dir)/h"
+inc_dirs = -I. -I"../../$(rfx_os)/h" -I.. -I"../../h" -I"$(dig_dir)/h" -I"$(dig_dir)/c" -I"$(clib_dir)/h" -I"$(trap_dir)/h" -I"$(trmem_dir)"
 
 extra_cpp_flags = -DBUILD_RFX
 

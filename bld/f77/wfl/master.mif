@@ -25,7 +25,7 @@ ntverrc_exe = $(exetarg_name)
 #
 .c: $(f77wfl_dir)/c;$(trmem_dir)
 
-inc_dirs = -I. -I.. -I"$(f77wfl_dir)/h" -I"$(comp_cfg_dir)/h"
+inc_dirs = -I. -I.. -I"$(f77wfl_dir)/h" -I"$(comp_cfg_dir)/h" -I"$(trmem_dir)"
 
 !ifeq dos_extender causeway
 extra_cpp_flags_dos = -DCAUSEWAY

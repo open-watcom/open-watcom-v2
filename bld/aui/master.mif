@@ -45,27 +45,6 @@ extra_c_flags_f_wndsrch = -I"$(posix_dir)/h"
 #
 # objects
 #
-!ifdef aui_os2pm
-
-aui_dialogs = &
-    dlgrx.dlg &
-    dlgsrch.dlg &
-    dlgsrcha.dlg &
-    japrx.dlg &
-    japsrch.dlg &
-    japsrcha.dlg
-
-!else
-
-aui_dialogs = &
-    ../res/dlgs/dlgrx.dlg &
-    ../res/dlgs/dlgsrch.dlg &
-    ../res/dlgs/dlgsrcha.dlg &
-    ../res/dlgs/japrx.dlg &
-    ../res/dlgs/japsrch.dlg &
-    ../res/dlgs/japsrcha.dlg
-
-!endif
 
 #
 # LIB
