@@ -1712,7 +1712,7 @@ void    GenWindowsProlog( void )
     _Emit;
 }
 
-void    GenCypWindowsProlog( void )
+void    GenCheapWindowsProlog( void )
 /************************************
  * Generate a "cheap" windows prolog
  */
@@ -1739,7 +1739,7 @@ void    GenWindowsEpilog( void )
     _Emit;
 }
 
-void    GenCypWindowsEpilog( void )
+void    GenCheapWindowsEpilog( void )
 /************************************
  * Generate a "cheap" windows epilog
  */

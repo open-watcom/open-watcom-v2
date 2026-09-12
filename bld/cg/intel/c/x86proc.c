@@ -812,7 +812,7 @@ static  void    DoEpilog( void )
                 EpilogHook();
                 if( FAR_RET_ON_STACK ) {
                     if( CHEAP_FRAME ) {
-                        GenCypWindowsEpilog();
+                        GenCheapWindowsEpilog();
                     } else {
                         GenWindowsEpilog();
                     }
@@ -1018,7 +1018,7 @@ void    GenProlog( void )
                     CurrProc->parms.base += WORD_SIZE;
                     if( FAR_RET_ON_STACK ) {
                         if( CHEAP_FRAME ) {
-                            GenCypWindowsProlog();
+                            GenCheapWindowsProlog();
                         } else {
     #if _TARGET & _TARG_8086
                             /*
