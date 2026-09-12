@@ -37,7 +37,7 @@
 #include "assure.h"
 #include "brmerge.h"
 #include "dietree.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "mrdie.h"          // comment this out for DEBUG_DIETREE
 
 const int   SearchPoolSize = 16;   // 16 elements per hunk
@@ -61,7 +61,7 @@ DIETree::DIETree()
 
     ASSERTION( Stack == NULL );     // ensure only one copy running
 
-    Stack = (DIETreeSearchP *) WBRAlloc( StackSize * sizeof(DIETreeSearchP) );
+    Stack = (DIETreeSearchP *)MemAlloc( StackSize * sizeof(DIETreeSearchP) );
 
     _root = allocSearch();
     rhs = allocBucket( NULL );
@@ -80,7 +80,7 @@ DIETree::~DIETree()
 {
     _searchPool.ragnarok();
     _bucketPool.ragnarok();
-    WBRFree( Stack );
+    MemFree( Stack );
     Stack = NULL;       // for following executions
 }
 
@@ -179,7 +179,7 @@ void DIETree::insert( MergeDIE * die )
         Stack[ depth++ ] = search;
         if( depth >= StackSize ) {
             StackSize += StackGuess;
-            Stack = (DIETreeSearchP *) WBRRealloc( Stack,
+            Stack = (DIETreeSearchP *)MemRealloc( Stack,
                                     StackSize * sizeof(DIETreeSearchP) );
         }
         lower = 0;

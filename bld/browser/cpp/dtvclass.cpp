@@ -40,10 +40,11 @@
 #include "assure.h"
 #include "dtvclass.h"
 #include "classtyp.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "util.h"
 #include "menuids.h"
 #include "viewmgr.h"
+
 
 static char * AccessStr[] = {
     "",
@@ -282,7 +283,7 @@ void DTViewClass::addDescriptions()
                 tmpName = NULL;
             }
             desc.append( new ClassMember( mem->_parent, (dr_access)0, tmpName ) );
-            WBRFree( tmpName );
+            MemFree( tmpName );
         }
         if( mem->_access != prevAccess ) {
             prevAccess = mem->_access;

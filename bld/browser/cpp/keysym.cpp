@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +37,10 @@
 #include "chfile.h"
 #include "filefilt.h"
 #include "keysym.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "symbol.h"
 #include "util.h"
+
 
 // convert from dr_sym_type to KeySymType
 KeySymType SymTypeConvert[] = {
@@ -82,9 +83,9 @@ KeySymbol::KeySymbol( const KeySymbol & o )
 KeySymbol::~KeySymbol()
 //---------------------
 {
-    WBRFree( _nameProg );
-    WBRFree( _contClassProg );
-    WBRFree( _contFunctionProg );
+    MemFree( _nameProg );
+    MemFree( _contClassProg );
+    MemFree( _contFunctionProg );
     delete _fileFilter;
 }
 
@@ -92,7 +93,7 @@ void KeySymbol::setSearchString( String & str, void ** prog,
                                  const char *name )
 //------------------------------------------------------------
 {
-    WBRFree( *prog );   // free existing program
+    MemFree( *prog );   // free existing program
     str = name;         // assign to the string
 
     try {
@@ -191,7 +192,7 @@ bool KeySymbol::matches( Symbol * sym )
             container = DRGetName( sym->getParent() );
             if( container ) {
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
-                WBRFree( container );
+                MemFree( container );
                 if( !accept ) {
                     return( false );
                 }
@@ -260,7 +261,7 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
             container = DRGetName( ctxt->context->classhdl );
             if( container ) {
                 accept = (bool)RegExec( (regexp *)_contClassProg, container, true );
-                WBRFree( container );
+                MemFree( container );
                 if( !accept ) {
                     return( false );
                 }
@@ -279,7 +280,7 @@ bool KeySymbol::matches( dr_sym_context * ctxt )
             container = DRGetName( ctxt->context->functionhdl );
             if( container ) {
                 accept = (bool)RegExec( (regexp *)_contFunctionProg, container, true );
-                WBRFree( container );
+                MemFree( container );
                 if( !accept ) {
                     return( false );
                 }

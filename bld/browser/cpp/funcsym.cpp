@@ -32,8 +32,9 @@
 
 
 #include "module.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "funcsym.h"
+
 
 const int POOLSIZE = 32;
 
@@ -127,7 +128,7 @@ static bool FunctionSym::callHook( drmem_hdl, dr_ref_info * ref, char * name,
         sym = Symbol::defineSymbol(stype, other, DRMEM_HDL_NULL, data->me->getModule(),name);
         data->list->add( sym );
     } else {
-        WBRFree( name );
+        MemFree( name );
     }
     return true;    // continue
 }

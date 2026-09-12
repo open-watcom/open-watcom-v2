@@ -43,12 +43,9 @@
     #include <dr.h>
 #endif
 #include "death.h"
-#include "brmem.h"
-#include "debuglog.h"
 #include "memfuncs.h"
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "debuglog.h"
+#include "trmem.h"
 
 
 #ifdef TRMEM
@@ -116,15 +113,16 @@ void *operator new( std::size_t size )
 
 extern "C" {
 
-void * WBRAlloc( std::size_t size )
-//---------------------------------
+TRMEMAPI( MemAlloc )
+void *MemAlloc( unsigned size )
+//-----------------------------
 // note: code directly cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
     void *p;
 
 #ifndef STANDALONE_MERGER
-    for(;;) {
+    for( ;; ) {
 #endif
 #ifdef TRMEM
         p = _trmem_alloc( size, _trmem_guess_who(), TrHdl );
@@ -144,8 +142,18 @@ void * WBRAlloc( std::size_t size )
     return p;
 }
 
-char * WBRStrdup( const char *str )
+#ifndef STANDALONE_MERGER
+TRMEMAPI( MemAllocSafe )
+void *MemAllocSafe( unsigned size )
 //---------------------------------
+{
+    return MemAlloc( size );
+}
+#endif
+
+TRMEMAPI( MemStrdup )
+char *MemStrdup( const char *str )
+//--------------------------------
 // note: code directly cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
@@ -172,8 +180,18 @@ char * WBRStrdup( const char *str )
     return p;
 }
 
-void * WBRRealloc( void * p, std::size_t size )
-//---------------------------------------------
+#ifndef STANDALONE_MERGER
+TRMEMAPI( MemStrdupSafe )
+char *MemStrdupSafe( const char *str )
+//------------------------------------
+{
+    return MemStrdup( str );
+}
+#endif
+
+TRMEMAPI( MemRealloc )
+void *MemRealloc( void *p, unsigned size )
+//------------------------------------------
 // note: code cloned from above since we need to be able to trace
 // calling functions when the memory tracker is in.
 {
@@ -198,7 +216,8 @@ void * WBRRealloc( void * p, std::size_t size )
     return p;
 }
 
-void WBRFree( void *p )
+TRMEMAPI( MemFree )
+void MemFree( void *p )
 //---------------------
 {
     if( p == NULL )
@@ -211,42 +230,6 @@ void WBRFree( void *p )
 }
 
 #ifndef STANDALONE_MERGER
-void *MemAlloc( unsigned a )
-//--------------------------
-{
-    return WBRAlloc( a );
-}
-
-void *MemAllocSafe( unsigned a )
-//------------------------------
-{
-    return WBRAlloc( a );
-}
-
-char *MemStrdup( const char *a )
-//--------------------------
-{
-    return WBRStrdup( a );
-}
-
-char *MemStrdupSafe( const char *a )
-//--------------------------
-{
-    return WBRStrdup( a );
-}
-
-void *MemRealloc( void *ptr, unsigned size )
-//------------------------------------------
-{
-    return WBRRealloc( ptr, size );
-}
-
-void MemFree( void *p )
-//---------------------
-{
-    WBRFree( p );
-}
-
 void GUIMemOpen( void )
 {
 }

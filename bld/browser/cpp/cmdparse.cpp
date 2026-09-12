@@ -360,7 +360,7 @@ void CommandParser::addFile( const char * fname )
     // FIXME -- these error messages have to do something smarter!
     if( ( strchr( file, '?' ) != NULL ) || ( strchr( file, '*' ) != NULL ) ) {
 
-        _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
+        ::_splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
         dirp = opendir( file );
         if( dirp == NULL ) {
             errMessage( "No files found matching \"%s\".", fname );
@@ -410,12 +410,12 @@ void CommandParser::setExtension( String & str, const char * ext )
     char        newDir[_MAX_PATH];
     char *      res;
 
-    _splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
+    ::_splitpath2( str, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] != '\0' )
         ext = pg.ext;
-    _makepath( path, pg.drive, pg.dir, pg.fname, ext );
+    ::_makepath( path, pg.drive, pg.dir, pg.fname, ext );
 
-    res = _fullpath( newDir, path, _MAX_PATH );
+    res = ::_fullpath( newDir, path, _MAX_PATH );
 
     if( res == NULL ) {
         FileExcept oops( FileExcept::Read, errno, str );
@@ -462,9 +462,9 @@ void main()
     int                     i;
     WCValSListIter<String>  iter;
 
-    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_len = ::_bgetcmd( NULL, 0 ) + 1;
     cmd_line = new char[cmd_len];
-    _bgetcmd( cmd_line, cmd_len );
+    ::_bgetcmd( cmd_line, cmd_len );
     prs( cmd_line, true );
     delete[] cmd_line;
     iter( *prs.files() );

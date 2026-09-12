@@ -38,9 +38,10 @@
 #include "death.h"
 #include "util.h"
 #include "elffile.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "chbffile.h"
 #include "fileinfo.h"
+
 
 static const char * ElfFile::_drSectNames[DR_DEBUG_NUM_SECTS] = {
     ".debug_info",

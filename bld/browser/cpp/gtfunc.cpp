@@ -43,9 +43,10 @@
 #include "gtfunc.h"
 #include "gtfnopt.h"
 #include "keysym.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "module.h"
 #include "brwhelp.h"
+
 
 const int PTRPOOLSIZE = 128;
 const int NODEPOOLSIZE = 64;
@@ -144,23 +145,23 @@ TreeFuncNode::TreeFuncNode( TreeWindow * prt, dr_sym_type stp,
 
         while( container != DRMEM_HDL_NULL ) {
             Symbol contSym( drhdl, NULL, mod, DRGetName( container ) );
-            name = WBRStrdup( contSym.name() );
+            name = MemStrdup( contSym.name() );
             accum += "::";
             accum += my_strrev( name );
-            WBRFree( name );
+            MemFree( name );
 
             container = DRGetContaining( container );
         }
 
-        _decName = WBRStrdup( (const char *)accum );
+        _decName = MemStrdup( (const char *)accum );
         my_strrev( _decName );
     }
 }
 
 TreeFuncNode::~TreeFuncNode()
 {
-    WBRFree( _name );
-    WBRFree( _decName );
+    MemFree( _name );
+    MemFree( _decName );
 }
 
 void * TreeFuncNode::operator new( std::size_t )
@@ -206,7 +207,7 @@ void TreeFuncNode::sortPrtKids()
 Symbol * TreeFuncNode::makeSymbol( void )
 //---------------------------------------
 {
-    char * name = WBRStrdup( _name );
+    char * name = MemStrdup( _name );
     return Symbol::defineSymbol( _symType, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
@@ -269,7 +270,7 @@ bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
 
     depName = DRGetName( ref->dependent );
     accept = data->key->matches( ref->dependent, depName );
-    WBRFree( depName ); // OPTIMIZE -- could use this later
+    MemFree( depName ); // OPTIMIZE -- could use this later
 
     if( !accept ) {
         return true;    // <---- early return -- discard symbol, keep looking
@@ -300,7 +301,7 @@ bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
     }
 
     if( child != NULL && parent != NULL ) {
-        WBRFree( ownerName );
+        MemFree( ownerName );
 
         if( parentRoot == childRoot ) {
             int prtIdx = child->findParent( parent );
@@ -382,7 +383,7 @@ bool TreeFuncNode::TreeFuncHook( drmem_hdl owner, dr_ref_info * ref,
                     new TreeFuncPtr( data->parentWin, child, parent, *ref ) );
         } else {
             if( parent != NULL ) {
-                WBRFree( ownerName );
+                MemFree( ownerName );
 
                 child = new TreeFuncNode( data->parentWin,
                                           DRGetSymType( ref->dependent ),

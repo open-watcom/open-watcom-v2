@@ -41,13 +41,14 @@
 #include "varsym.h"
 #include "macrosym.h"
 #include "wbrw.rh"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "util.h"
 #include "module.h"
 #include "referenc.h"
 #include "wbrwin.h"
 #include "viewmgr.h"
 #include "browse.h"
+
 
 Symbol::Symbol( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * n )
         :_drhandle(drhdl)
@@ -62,7 +63,7 @@ Symbol::Symbol( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * n )
     _defined = DRIsSymDefined( drhdl );
 
     if( _name == NULL || _name[ 0 ] == '\0' ) {
-        WBRFree( _name );
+        MemFree( _name );
         _name = NULL;
         _anonymous = true;
     }
@@ -78,16 +79,16 @@ Symbol::Symbol( const Symbol &i )
 //-------------------------------
 {
     if( i._name ) {
-        _name = WBRStrdup( i._name );
+        _name = MemStrdup( i._name );
     }
-    _decname = (_decname) ? WBRStrdup( i._decname ) : NULL;
+    _decname = (_decname) ? MemStrdup( i._decname ) : NULL;
 }
 
 Symbol::~Symbol()
 //---------------
 {
-    WBRFree( _name );
-    WBRFree( _decname );
+    MemFree( _name );
+    MemFree( _decname );
 }
 
 bool Symbol::isEqual( WObject const * o ) const
@@ -129,7 +130,7 @@ const char * Symbol::scopedName( bool fullScoping )
 
         desc.deleteContents();
 
-        _decname = WBRStrdup( scoped.gets() );
+        _decname = MemStrdup( scoped.gets() );
     }
     return _decname;
 }
@@ -261,7 +262,7 @@ static Symbol * Symbol::defineSymbol( const Symbol * info )
     char *      newname;
 
     if( info->_name ) {
-        newname = WBRStrdup( info->_name );
+        newname = MemStrdup( info->_name );
     } else {
         newname = NULL;
     }
@@ -357,13 +358,13 @@ void Symbol::getAnonName()
     WString name;
     int     i;
 
-    WBRFree( _name );
+    MemFree( _name );
     _name = NULL;
 
     loadReferences( refs );
 
     if( refs.count() <= 0 ) {
-        _name = WBRStrdup( "[anonymous]" );
+        _name = MemStrdup( "[anonymous]" );
         return;
     }
 
@@ -377,7 +378,7 @@ void Symbol::getAnonName()
 
     name.concat( ']' );
 
-    _name = WBRStrdup( name.gets() );
+    _name = MemStrdup( name.gets() );
 
     refs.deleteContents();
 }

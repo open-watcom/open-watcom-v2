@@ -166,7 +166,7 @@ extern char * tryAmbig( LookForType lf, char * buf )
                     i += 1;
                 }
 
-                return WBRStrdup( ambigs );
+                return MemStrdup( ambigs );
             }
         }
     }

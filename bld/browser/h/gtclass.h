@@ -34,10 +34,11 @@
 #ifndef __GTCLASS_H__
 #define __GTCLASS_H__
 
-#include "brmem.h"
+#include "memfuncs.h"
 #include "classlat.h"
 #include "gtwin.h"
 #include "mempool.h"
+
 
 class TreeClassNode;
 class TreeClassOptions;

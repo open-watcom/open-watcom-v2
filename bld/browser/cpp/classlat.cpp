@@ -36,7 +36,8 @@
 #include "classlat.h"
 #include "classtyp.h"
 #include "util.h"
-#include "brmem.h"
+#include "memfuncs.h"
+
 
 inline int myabs( int a ) { return (a < 0) ? -1 * a : a; }
 
@@ -63,7 +64,7 @@ DerivationPtr * ClassLattice::newPtr( ClassLattice * cls,
 ClassLattice::ClassLattice( Symbol * sym, bool relax )
         : _drhandle( sym->getHandle() )
         , _module( sym->getModule() )
-        , _name( WBRStrdup( sym->name() ) )
+        , _name( MemStrdup( sym->name() ) )
         , _basesLoaded( false )
         , _derivedsLoaded( false )
         , _effAccess( (dr_access)0 )
@@ -96,7 +97,7 @@ ClassLattice::ClassLattice( drmem_hdl drhdl, Module * mod, char * name,
 
     if( _name == NULL ) {               /* OPTME this is expensive */
         Symbol * sym = makeSymbol();
-        _name = WBRStrdup( sym->name() );
+        _name = MemStrdup( sym->name() );
         delete sym;
     }
 }
@@ -106,7 +107,7 @@ ClassLattice::~ClassLattice( void )
 {
     int     i;
 
-    WBRFree( _name );
+    MemFree( _name );
     for( i = _bases.count(); i > 0; i -= 1 ) {
         delete _bases[ i - 1 ];
     }
@@ -156,7 +157,7 @@ bool ClassLattice::isEqual( WObject const * obj ) const
 Symbol * ClassLattice::makeSymbol( void )
 //---------------------------------------
 {
-    char * name = WBRStrdup( _name );
+    char * name = MemStrdup( _name );
     return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
@@ -348,7 +349,7 @@ static bool ClassLattice::baseHook( dr_sym_type, drmem_hdl drhdl, char * name,
     addnode = me->joinTo( drhdl, virtuality, effAccess, me->_level - 1 );
 
     if( addnode != NULL ) {
-        WBRFree( name );
+        MemFree( name );
     } else {
         // NYI - _module isn't necessarily what we want it to be!
         addnode = me->newLattice( drhdl, me->_module, name, me->_flatClasses,
@@ -431,7 +432,7 @@ static bool ClassLattice::deriveHook( dr_sym_type, drmem_hdl drhdl,
     addnode = me->joinTo( drhdl, virtuality, effAccess, me->_level + 1 );
 
     if( addnode != NULL ) {
-        WBRFree( name );
+        MemFree( name );
     } else {
         addnode = me->newLattice( drhdl, me->_module, name, me->_flatClasses,
                                   access, (dr_virtuality) VIRT_NOT_SET,
@@ -490,7 +491,7 @@ char * ClassLattice::derivation( ClassLattice *cls )
         strcat( buf, " virtual" );
     }
     if( buf[0] != '\0' ) {
-        return WBRStrdup( buf );
+        return MemStrdup( buf );
     }
     return NULL;
 }

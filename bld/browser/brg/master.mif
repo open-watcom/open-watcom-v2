@@ -18,7 +18,7 @@ merge_trmem = 1
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browser_dir)/cpp
 
-inc_dirs = -I"../h" -I"$(browser_dir)/h" $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(browser_dir)/h" $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/h" -I"$(trmem_dir)"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__

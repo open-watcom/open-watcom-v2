@@ -43,7 +43,7 @@
 
 #include "rxwrap.h"
 #include "util.h"
-#include "brmem.h"
+#include "memfuncs.h"
 
 #ifndef STANDALONE_MERGER
 #  include "wbrwin.h"

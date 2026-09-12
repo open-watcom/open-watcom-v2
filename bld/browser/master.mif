@@ -41,7 +41,7 @@ ntverrc_exe = $(exetarg_name)
 .gpp: ../gen
 
 inc_dirs = -I"../h" -I"../brg/h" -I"../gen" $(cli_wclass_inc_dirs) -I"$(docs_host_dir)" &
-    $(cli_dwarfr_inc_dirs) -I"$(editdll_dir)"
+    $(cli_dwarfr_inc_dirs) -I"$(editdll_dir)" -I"$(trmem_dir)"
 
 extra_cpp_flags = -DNOPERSIST
 !ifeq debug 2
@@ -54,7 +54,7 @@ extra_cpp_flags += -DUSE_VIRTMEM
 extra_cpp_flags += -DNOWGML
 !endif
 
-extra_cpp_flags_f_rxwrap = -DALLOC=WBRAlloc
+extra_cpp_flags_f_rxwrap = -DALLOC=MemAlloc -DFREE=MemFree
 
 extra_cxx_flags = -ew -xs
 !ifdef gen_browser_file
@@ -68,7 +68,7 @@ extra_c_flags_win = -zw
 extra_c_flags_win = -zW
 !endif
 
-extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)brmem.h
+extra_c_flags_f_rxwrap = -I"$(posix_dir)/h" -I"$(posix_dir)/misc" $(incl_file_opts)memfuncs.h
 extra_c_flags_f_keysym = -I"$(posix_dir)/h"
 extra_c_flags_f_util = -I"$(posix_dir)/h"
 extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
@@ -104,7 +104,7 @@ mbr_files = $+$(template)$-
 !endif
 
 ext = obj
-objs      = $+$(template)$- rxwrap.obj brmem.obj $(trmem_objs)
+objs      = $+$(template)$- $(trmem_objs)
 
 !ifeq debug 2
 objs_dbg  = debuglog.obj

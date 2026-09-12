@@ -63,9 +63,9 @@ int main()
 
     printHeader();
 
-    cmd_len = _bgetcmd( NULL, 0 ) + 1;
+    cmd_len = ::_bgetcmd( NULL, 0 ) + 1;
     cmd_line = new char[cmd_len];
-    _bgetcmd( cmd_line, cmd_len );
+    ::_bgetcmd( cmd_line, cmd_len );
 
     try {
         CommandParser prs( cmd_line, false );

@@ -32,9 +32,10 @@
 
 
 #include "enumtype.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "optmgr.h"
 #include "util.h"
+
 
 const int POOLSIZE = 32;
 

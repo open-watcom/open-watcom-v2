@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,5 +34,5 @@
 // needed since the compiler can't deal with more than 1 /fi switch, and
 // since it can't /undefine something it /defines.
 
-#include "brmem.h"
+#include "memfuncs.h"
 #include "bool.h"

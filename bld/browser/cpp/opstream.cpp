@@ -125,7 +125,7 @@ void ScanStreamBase::streamInit( const char * srchPath )
 //------------------------------------------------------
 {
     if( srchPath != NULL ) {
-        char * buffer = WBRStrdup( srchPath );
+        char * buffer = MemStrdup( srchPath );
         char * path;
 
         path = strtok( buffer, PathSeperator );
@@ -187,7 +187,7 @@ char * ScanStreamFile::name( void )
     WString val;
 
     val.printf( "file \"%s\" (line %d)", _fileName, _line );
-    return WBRStrdup( val );
+    return MemStrdup( val );
 }
 
 void ScanStreamFile::refill( void )
@@ -247,5 +247,5 @@ void ScanStreamMem::refill( void )
 char * ScanStreamMem::name( void )
 //--------------------------------
 {
-    return WBRStrdup( "command line" );
+    return MemStrdup( "command line" );
 }

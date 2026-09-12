@@ -45,9 +45,9 @@
 
 #include "util.h"
 #include "browse.h"
-#include "util.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "wbrw.rh"
+
 
 static WHotSpots hs( NumHotSpots );
 extern WHotSpots * GlobalHotSpots = &hs;
@@ -149,9 +149,9 @@ mainline::mainline()
     char *cmd_line;
     try {
         WBRInit();
-        cmd_len = _bgetcmd( NULL, 0 ) + 1;
+        cmd_len = ::_bgetcmd( NULL, 0 ) + 1;
         cmd_line = new char[cmd_len];
-        _bgetcmd( cmd_line, cmd_len );
+        ::_bgetcmd( cmd_line, cmd_len );
         topLevelWindow = new Browse( cmd_line );
         delete[] cmd_line;
     } catch( CauseOfDeath cause ) {

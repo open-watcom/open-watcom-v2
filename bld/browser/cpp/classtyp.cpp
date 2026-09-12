@@ -34,9 +34,10 @@
 #include <wtptlist.hpp>
 #include "assure.h"
 #include "classtyp.h"
-#include "brmem.h"
+#include "memfuncs.h"
 #include "optmgr.h"
 #include "util.h"
+
 
 const int POOLSIZE = 32;
 
@@ -129,7 +130,7 @@ static bool ClassType::memberHook( dr_sym_type symtype, drmem_hdl drhdl,
     }
 
     if( quit ) {
-        WBRFree( name );
+        MemFree( name );
     } else {
         sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
         data->list->add( sym );

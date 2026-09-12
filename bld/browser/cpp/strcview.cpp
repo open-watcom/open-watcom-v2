@@ -34,7 +34,7 @@
 #include <wtext.hpp>
 #include <wstring.hpp>
 #include <wpshbttn.hpp>
-#include "brmem.h"
+#include "memfuncs.h"
 #include "verblist.h"
 #include "strcview.h"
 #include "assure.h"
@@ -44,6 +44,7 @@
 #include "varsym.h"
 #include "classlat.h"
 #include "projmodl.h"
+
 
 const short StrucWidth = 200;
 const short StrucHeight = 208;
