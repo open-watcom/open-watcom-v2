@@ -104,35 +104,25 @@ _WCRTLINK extern size_t _memmax( void );
 #ifdef __cplusplus
 namespace std {
 #endif
-
 _WCRTLINK extern void *calloc( size_t __n, size_t __size );
 _WCRTLINK extern void free( void *__ptr );
 _WCRTLINK extern void *malloc( size_t __size );
 _WCRTLINK extern void *realloc( void *__ptr, size_t __size );
-
-:segment DOS
-#if defined(__OS2__) && !defined(_M_I86)
-_WCRTLINK extern int _use_os2_high_mem( int __himem );     /* Returns prior setting */
-_WCRTLINK extern void *_os2lmalloc( size_t __size );
-_WCRTLINK extern void *_os2hmalloc( size_t __size );
-#endif
-
-:endsegment
 #ifdef __cplusplus
 } // namespace std
 using std::calloc;
 using std::free;
 using std::malloc;
 using std::realloc;
-
+#endif
 :segment DOS
+
 #if defined(__OS2__) && !defined(_M_I86)
-using std::_use_os2_high_mem;
-using std::_os2lmalloc;
-using std::_os2hmalloc;
+_WCRTLINK extern int _use_os2_high_mem( int __himem );     /* Returns prior setting */
+_WCRTLINK extern void *_os2lmalloc( size_t __size );
+_WCRTLINK extern void *_os2hmalloc( size_t __size );
 #endif
 :endsegment
-#endif
 
 :segment BITS16
 :include far1.sp
