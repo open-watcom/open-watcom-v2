@@ -73,6 +73,8 @@ struct timeval {
     long tv_usec;
 };
 
+:include time_t.sp
+
 :include timespec.sp
 
 :include pshpack4.sp
