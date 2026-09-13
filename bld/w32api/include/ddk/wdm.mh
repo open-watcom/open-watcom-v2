@@ -31,6 +31,8 @@
 
 :include cpluspro.sp
 
+:include wva_list.sp
+
 /* Suppress inclusion of winnt.h. */
 #define NT_INCLUDED
 
@@ -7899,8 +7901,8 @@ NTSYSAPI VOID           NTAPI RtlClearBit( PRTL_BITMAP, ULONG );
 NTSYSAPI WCHAR          NTAPI RtlDowncaseUnicodeChar( WCHAR );
 NTSYSAPI VOID           NTAPI RtlSetBit( PRTL_BITMAP, ULONG );
 NTSYSAPI BOOLEAN        NTAPI RtlTestBit( PRTL_BITMAP, ULONG );
-NTSYSAPI ULONG          NTAPI vDbgPrintEx( ULONG, ULONG, PCCH, va_list );
-NTSYSAPI ULONG          NTAPI vDbgPrintExWithPrefix( PCCH, ULONG, ULONG, PCCH, va_list );
+NTSYSAPI ULONG          NTAPI vDbgPrintEx( ULONG, ULONG, PCCH, _VA_LIST );
+NTSYSAPI ULONG          NTAPI vDbgPrintExWithPrefix( PCCH, ULONG, ULONG, PCCH, _VA_LIST );
 #endif
 #if (NTDDI_VERSION >= 0x05020000)
 NTSYSAPI NTSTATUS       NTAPI ZwOpenEvent( PHANDLE, ACCESS_MASK, POBJECT_ATTRIBUTES );
@@ -8370,7 +8372,7 @@ NTKERNELAPI VOID        NTAPI MmUnmapReservedMapping( PVOID, ULONG, PMDLX );
 NTKERNELAPI NTSTATUS    NTAPI WmiQueryTraceInformation( TRACE_INFORMATION_CLASS, PVOID, ULONG, PULONG, PVOID );
 #ifdef RUN_WPP
 NTKERNELAPI NTSTATUS    __cdecl WmiTraceMessage( TRACEHANDLE, ULONG, LPGUID, USHORT, ... );
-NTKERNELAPI NTSTATUS    NTAPI WmiTraceMessageVa( TRACEHANDLE, ULONG, LPGUID, USHORT, va_list );
+NTKERNELAPI NTSTATUS    NTAPI WmiTraceMessageVa( TRACEHANDLE, ULONG, LPGUID, USHORT, _VA_LIST );
 #endif
 #endif
 #if (NTDDI_VERSION >= 0x05010100)

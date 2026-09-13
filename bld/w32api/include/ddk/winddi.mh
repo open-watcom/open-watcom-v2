@@ -13,6 +13,8 @@
 
 :include cpluspro.sp
 
+:include wva_list.sp
+
 /* Macro to specify graphics engine functions */
 #define ENGAPI  DECLSPEC_IMPORT
 
@@ -1519,7 +1521,7 @@ ENGAPI PATHOBJ      * APIENTRY EngCreatePath();
 ENGAPI HSEMAPHORE   APIENTRY EngCreateSemaphore( VOID );
 ENGAPI WNDOBJ       * APIENTRY EngCreateWnd( SURFOBJ *, HWND, WNDOBJCHANGEPROC, FLONG, int );
 ENGAPI VOID         APIENTRY EngDebugBreak( VOID );
-ENGAPI VOID         APIENTRY EngDebugPrint( PCHAR, PCHAR, va_list );
+ENGAPI VOID         APIENTRY EngDebugPrint( PCHAR, PCHAR, _VA_LIST );
 ENGAPI VOID         APIENTRY EngDeleteClip( CLIPOBJ * );
 ENGAPI BOOL         APIENTRY EngDeleteDriverObj( HDRVOBJ, BOOL, BOOL );
 ENGAPI BOOL         APIENTRY EngDeleteEvent( PEVENT );

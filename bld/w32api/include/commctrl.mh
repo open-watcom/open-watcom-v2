@@ -25,6 +25,8 @@
 
 :include sndmsg.sp
 
+:include wsize_t.sp
+
 /* Handle data types */
 typedef struct _IMAGELIST   *HIMAGELIST;
 typedef struct _TREEITEM    *HTREEITEM;
@@ -5739,7 +5741,7 @@ typedef struct tagMCGRIDINFO {
     SYSTEMTIME  stEnd;
     RECT        rc;
     PWSTR       pszName;
-    size_t      cchName;
+    _SIZE_T     cchName;
 } MCGRIDINFO;
 typedef MCGRIDINFO  *PMCGRIDINFO;
 #endif

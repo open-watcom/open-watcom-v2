@@ -19,6 +19,8 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
 /* Calling convention for RPC functions with variable argument lists */
 #define RPC_VAR_ENTRY   __cdecl
 
@@ -158,7 +160,7 @@ typedef struct _MIDL_STUB_MESSAGE {
     ULONG_PTR                           MaxCount;
     unsigned long                       Offset;
     unsigned long                       ActualCount;
-    void                                *(RPC_ENTRY *pfnAllocate)( size_t );
+    void                                *(RPC_ENTRY *pfnAllocate)( _SIZE_T );
     void                                (RPC_ENTRY *pfnFree)( void * );
     unsigned char                       *StackTop;
     unsigned char                       *pPresentedType;
@@ -281,7 +283,7 @@ typedef struct _USER_MARSHAL_CB {
 
 /* Allocate/free structure */
 typedef struct _MALLOC_FREE_STRUCT {
-    void    *(RPC_ENTRY *pfnAllocate)( size_t );
+    void    *(RPC_ENTRY *pfnAllocate)( _SIZE_T );
     void    (RPC_ENTRY *pfnFree)( void * );
 } MALLOC_FREE_STRUCT;
 
@@ -328,7 +330,7 @@ typedef struct _NDR_EXPR_DESC {
 /* MIDL stub description */
 typedef struct _MIDL_STUB_DESC {
     void                                    *RpcInterfaceInformation;
-    void                                    *(RPC_ENTRY *pfnAllocate)( size_t );
+    void                                    *(RPC_ENTRY *pfnAllocate)( _SIZE_T );
     void                                    (RPC_ENTRY *pfnFree)( void * );
     union {
         handle_t                *pAutoHandle;
@@ -443,14 +445,14 @@ typedef enum {
 } PROXY_PHASE;
 
 /* RPC client memory allocation callbacks */
-typedef void * RPC_ENTRY    RPC_CLIENT_ALLOC( size_t );
+typedef void * RPC_ENTRY    RPC_CLIENT_ALLOC( _SIZE_T );
 typedef void RPC_ENTRY      RPC_CLIENT_FREE( void * );
 
 /* NDR user marshal information (level 1) */
 typedef struct _NDR_USER_MARSHAL_INFO_LEVEL1 {
     void                        *Buffer;
     unsigned long               BufferSize;
-    void                        *(RPC_ENTRY *pfnAllocate)( size_t );
+    void                        *(RPC_ENTRY *pfnAllocate)( _SIZE_T );
     void                        (RPC_ENTRY *pfnFree)( void * );
     struct IRpcChannelBuffer    *pRpcChannelBuffer;
     ULONG_PTR                   Reserved[5];
@@ -474,7 +476,7 @@ RPCRTAPI void RPC_ENTRY                 NDRSContextMarshallEx( RPC_BINDING_HANDL
 RPCRTAPI NDR_SCONTEXT RPC_ENTRY         NDRSContextUnmarshall( void *, unsigned long );
 RPCRTAPI NDR_SCONTEXT RPC_ENTRY         NDRSContextUnmarshall2( RPC_BINDING_HANDLE, void *, unsigned long, void *, unsigned long );
 RPCRTAPI NDR_SCONTEXT RPC_ENTRY         NDRSContextUnmarshallEx( RPC_BINDING_HANDLE, void *, unsigned long );
-RPCRTAPI void * RPC_ENTRY               NdrAllocate( PMIDL_STUB_MESSAGE, size_t );
+RPCRTAPI void * RPC_ENTRY               NdrAllocate( PMIDL_STUB_MESSAGE, _SIZE_T );
 RPCRTAPI CLIENT_CALL_RETURN RPC_VAR_ENTRY   NdrAsyncClientCall( PMIDL_STUB_DESC, PFORMAT_STRING, ... );
 RPCRTAPI void RPC_ENTRY                 NdrAsyncServerCall( PRPC_MESSAGE );
 RPCRTAPI long RPC_ENTRY                 NdrAsyncStubCall( struct IRpcStubBuffer *, struct IRpcChannelBuffer *, PRPC_MESSAGE, unsigned long * );
@@ -566,7 +568,7 @@ RPCRTAPI unsigned long RPC_ENTRY        NdrNonEncapsulatedUnionMemorySize( PMIDL
 RPCRTAPI unsigned char * RPC_ENTRY      NdrNonEncapsulatedUnionUnmarshall( PMIDL_STUB_MESSAGE, unsigned char **, PFORMAT_STRING, unsigned char );
 RPCRTAPI unsigned char * RPC_ENTRY      NdrNsGetBuffer( PMIDL_STUB_MESSAGE, unsigned long, RPC_BINDING_HANDLE );
 RPCRTAPI unsigned char * RPC_ENTRY      NdrNsSendReceive( PMIDL_STUB_MESSAGE, unsigned char *, RPC_BINDING_HANDLE * );
-RPCRTAPI void * RPC_ENTRY               NdrOleAllocate( size_t );
+RPCRTAPI void * RPC_ENTRY               NdrOleAllocate( _SIZE_T );
 RPCRTAPI void RPC_ENTRY                 NdrOleFree( void * );
 RPCRTAPI void RPC_ENTRY                 NdrPartialIgnoreClientBufferSize( PMIDL_STUB_MESSAGE, void * );
 RPCRTAPI void RPC_ENTRY                 NdrPartialIgnoreClientMarshall( PMIDL_STUB_MESSAGE, void * );
@@ -578,10 +580,10 @@ RPCRTAPI unsigned char * RPC_ENTRY      NdrPointerMarshall( PMIDL_STUB_MESSAGE, 
 RPCRTAPI unsigned long RPC_ENTRY        NdrPointerMemorySize( PMIDL_STUB_MESSAGE, PFORMAT_STRING );
 RPCRTAPI unsigned char * RPC_ENTRY      NdrPointerUnmarshall( PMIDL_STUB_MESSAGE, unsigned char **, PFORMAT_STRING, unsigned char );
 RPCRTAPI unsigned char * RPC_ENTRY      NdrRangeUnmarshall( PMIDL_STUB_MESSAGE, unsigned char **, PFORMAT_STRING, unsigned char );
-RPCRTAPI void * RPC_ENTRY               NdrRpcSmClientAllocate( size_t );
+RPCRTAPI void * RPC_ENTRY               NdrRpcSmClientAllocate( _SIZE_T );
 RPCRTAPI void RPC_ENTRY                 NdrRpcSmClientFree( void * );
 RPCRTAPI void RPC_ENTRY                 NdrRpcSmSetClientToOsf( PMIDL_STUB_MESSAGE );
-RPCRTAPI void * RPC_ENTRY               NdrRpcSsDefaultAllocate( size_t );
+RPCRTAPI void * RPC_ENTRY               NdrRpcSsDefaultAllocate( _SIZE_T );
 RPCRTAPI void RPC_ENTRY                 NdrRpcSsDefaultFree( void * );
 RPCRTAPI void RPC_ENTRY                 NdrRpcSsDisableAllocate( PMIDL_STUB_MESSAGE );
 RPCRTAPI void RPC_ENTRY                 NdrRpcSsEnableAllocate( PMIDL_STUB_MESSAGE );
@@ -624,7 +626,7 @@ RPCRTAPI void RPC_ENTRY                 NdrXmitOrRepAsFree( PMIDL_STUB_MESSAGE, 
 RPCRTAPI unsigned char * RPC_ENTRY      NdrXmitOrRepAsMarshall( PMIDL_STUB_MESSAGE, unsigned char *, PFORMAT_STRING );
 RPCRTAPI unsigned long RPC_ENTRY        NdrXmitOrRepAsMemorySize( PMIDL_STUB_MESSAGE, PFORMAT_STRING );
 RPCRTAPI unsigned char * RPC_ENTRY      NdrXmitOrRepAsUnmarshall( PMIDL_STUB_MESSAGE, unsigned char **, PFORMAT_STRING, unsigned char );
-RPCRTAPI void * RPC_ENTRY               RpcSmAllocate( size_t, RPC_STATUS * );
+RPCRTAPI void * RPC_ENTRY               RpcSmAllocate( _SIZE_T, RPC_STATUS * );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmClientFree( void * );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmDestroyClientContext( void ** );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmDisableAllocate( void );
@@ -634,7 +636,7 @@ RPCRTAPI RPC_SS_THREAD_HANDLE RPC_ENTRY RpcSmGetThreadHandle( RPC_STATUS * );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmSetClientAllocFree( RPC_CLIENT_ALLOC *, RPC_CLIENT_FREE * );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmSetThreadHandle( RPC_SS_THREAD_HANDLE );
 RPCRTAPI RPC_STATUS RPC_ENTRY           RpcSmSwapClientAllocFree( RPC_CLIENT_ALLOC *, RPC_CLIENT_FREE *, RPC_CLIENT_ALLOC **, RPC_CLIENT_FREE ** );
-RPCRTAPI void * RPC_ENTRY               RpcSsAllocate( size_t );
+RPCRTAPI void * RPC_ENTRY               RpcSsAllocate( _SIZE_T );
 RPCRTAPI void RPC_ENTRY                 RpcSsDestroyClientContext( void ** );
 RPCRTAPI void RPC_ENTRY                 RpcSsDisableAllocate( void );
 RPCRTAPI void RPC_ENTRY                 RpcSsEnableAllocate( void );

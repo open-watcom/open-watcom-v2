@@ -15,6 +15,8 @@
 
 :include cpluspro.sp
 
+:include wtime_t.sp
+
 /* Lengths */
 #define MAX_ADAPTER_DESCRIPTION_LENGTH  128
 #define MAX_ADAPTER_NAME_LENGTH         256
@@ -100,8 +102,8 @@ typedef struct _IP_ADAPTER_INFO {
     BOOL                    HaveWins;
     IP_ADDR_STRING          PrimaryWinsServer;
     IP_ADDR_STRING          SecondaryWinsServer;
-    time_t                  LeaseObtained;
-    time_t                  LeaseExpires;
+    _TIME_T                 LeaseObtained;
+    _TIME_T                 LeaseExpires;
 } IP_ADAPTER_INFO;
 typedef IP_ADAPTER_INFO *PIP_ADAPTER_INFO;
 

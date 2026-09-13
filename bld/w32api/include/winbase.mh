@@ -13,6 +13,8 @@
 
 :include cpluspro.sp
 
+:include wva_list.sp
+
 /* Macros to specify kernel and advanced functions */
 #define WINBASEAPI  DECLSPEC_IMPORT
 #define WINADVAPI   DECLSPEC_IMPORT
@@ -2145,8 +2147,8 @@ WINBASEAPI BOOL     WINAPI FlsSetValue( DWORD, PVOID );
 WINBASEAPI BOOL     WINAPI FlushFileBuffers( HANDLE );
 WINBASEAPI BOOL     WINAPI FlushInstructionCache( HANDLE, LPCVOID, SIZE_T );
 WINBASEAPI BOOL     WINAPI FlushViewOfFile( LPCVOID, SIZE_T );
-WINBASEAPI DWORD    WINAPI FormatMessageA( DWORD, LPCVOID, DWORD, DWORD, LPSTR, DWORD, va_list * );
-WINBASEAPI DWORD    WINAPI FormatMessageW( DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, va_list * );
+WINBASEAPI DWORD    WINAPI FormatMessageA( DWORD, LPCVOID, DWORD, DWORD, LPSTR, DWORD, _VA_LIST * );
+WINBASEAPI DWORD    WINAPI FormatMessageW( DWORD, LPCVOID, DWORD, DWORD, LPWSTR, DWORD, _VA_LIST * );
 WINBASEAPI BOOL     WINAPI FreeEnvironmentStringsA( LPCH );
 WINBASEAPI BOOL     WINAPI FreeEnvironmentStringsW( LPWCH );
 WINBASEAPI BOOL     WINAPI FreeLibrary( HMODULE );

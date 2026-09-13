@@ -13,6 +13,8 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
 /* Windows Sockets service provider calling convention */
 #define WSPAPI  WSAAPI
 
@@ -279,11 +281,11 @@ INT WSAAPI  WSAAdvertiseProvider( const GUID *, const LPCNSPV2_ROUTINE );
 INT WSAAPI  WSAProviderCompleteAsyncCall( HANDLE, INT );
 INT WSAAPI  WSAUnadvertiseProvider( const GUID * );
 int WSPAPI  WSCGetApplicationCategory( LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD *, LPINT );
-int WSPAPI  WSCGetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, size_t *, DWORD, LPINT );
+int WSPAPI  WSCGetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, _SIZE_T *, DWORD, LPINT );
 INT WSPAPI  WSCInstallNameSpaceEx( LPWSTR, LPWSTR, DWORD, DWORD, LPGUID, LPBLOB );
 int WSPAPI  WSCInstallProviderAndChains( LPGUID, const LPWSTR, const LPWSTR, DWORD, LPWSAPROTOCOL_INFOW, DWORD, LPDWORD, LPINT );
 int WSPAPI  WSCSetApplicationCategory( LPCWSTR, DWORD, LPCWSTR, DWORD, DWORD, DWORD *, LPINT );
-int WSPAPI  WSCSetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, size_t, DWORD, LPINT );
+int WSPAPI  WSCSetProviderInfo( LPGUID, WSC_PROVIDER_INFO_TYPE, PBYTE, _SIZE_T, DWORD, LPINT );
 #endif
 
 /* Functions in QOSNAME.DLL */

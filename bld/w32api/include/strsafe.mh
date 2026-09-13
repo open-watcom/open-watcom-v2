@@ -16,6 +16,10 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
+:include wva_list.sp
+
 /* Safe string maximum length */
 #ifndef STRSAFE_MAX_CCH
     #define STRSAFE_MAX_CCH 2147483647
@@ -109,10 +113,10 @@
     #define StringCchVPrintfEx  StringCchVPrintfExA
 #endif
 
-__inline HRESULT StringCchCatA( LPSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCatA( LPSTR lpszDestination, _SIZE_T cchDestination,
                                 LPCSTR lpszSource )
 {
-    size_t cchInit;
+    _SIZE_T cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -127,10 +131,10 @@ __inline HRESULT StringCchCatA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCatW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCatW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                 LPCWSTR lpszSource )
 {
-    size_t cchInit;
+    _SIZE_T cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -145,12 +149,12 @@ __inline HRESULT StringCchCatW( LPWSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCatExA( LPSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCatExA( LPSTR lpszDestination, _SIZE_T cchDestination,
                                   LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
-                                  size_t *pcchRemaining, DWORD dwFlags )
+                                  _SIZE_T *pcchRemaining, DWORD dwFlags )
 {
-    size_t cchInit;
-    size_t cchSource;
+    _SIZE_T cchInit;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -189,12 +193,12 @@ __inline HRESULT StringCchCatExA( LPSTR lpszDestination, size_t cchDestination,
     return( S_OK );
 }
 
-__inline HRESULT StringCchCatExW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCatExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                   LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
-                                  size_t *pcchRemaining, DWORD dwFlags )
+                                  _SIZE_T *pcchRemaining, DWORD dwFlags )
 {
-    size_t cchInit;
-    size_t cchSource;
+    _SIZE_T cchInit;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -233,10 +237,10 @@ __inline HRESULT StringCchCatExW( LPWSTR lpszDestination, size_t cchDestination,
     return( S_OK );
 }
 
-__inline HRESULT StringCchCatNA( LPSTR lpszDestination, size_t cchDestination,
-                                 LPCSTR lpszSource, size_t cchMaxAppend )
+__inline HRESULT StringCchCatNA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                 LPCSTR lpszSource, _SIZE_T cchMaxAppend )
 {
-    size_t cchInit;
+    _SIZE_T cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -252,10 +256,10 @@ __inline HRESULT StringCchCatNA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCatNW( LPWSTR lpszDestination, size_t cchDestination,
-                                 LPCWSTR lpszSource, size_t cchMaxAppend )
+__inline HRESULT StringCchCatNW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                 LPCWSTR lpszSource, _SIZE_T cchMaxAppend )
 {
-    size_t cchInit;
+    _SIZE_T cchInit;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -271,13 +275,13 @@ __inline HRESULT StringCchCatNW( LPWSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCatNExA( LPSTR lpszDestination, size_t cchDestination,
-                                   LPCSTR lpszSource, size_t cchMaxAppend,
-                                   LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchCatNExA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                   LPCSTR lpszSource, _SIZE_T cchMaxAppend,
+                                   LPSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                    DWORD dwFlags )
 {
-    size_t cchInit;
-    size_t cchSource;
+    _SIZE_T cchInit;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -317,13 +321,13 @@ __inline HRESULT StringCchCatNExA( LPSTR lpszDestination, size_t cchDestination,
     return( S_OK );
 }
 
-__inline HRESULT StringCchCatNExW( LPWSTR lpszDestination, size_t cchDestination,
-                                   LPCWSTR lpszSource, size_t cchMaxAppend,
-                                   LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchCatNExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                   LPCWSTR lpszSource, _SIZE_T cchMaxAppend,
+                                   LPWSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                    DWORD dwFlags )
 {
-    size_t cchInit;
-    size_t cchSource;
+    _SIZE_T cchInit;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -363,7 +367,7 @@ __inline HRESULT StringCchCatNExW( LPWSTR lpszDestination, size_t cchDestination
     return( S_OK );
 }
 
-__inline HRESULT StringCchCopyA( LPSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCopyA( LPSTR lpszDestination, _SIZE_T cchDestination,
                                  LPCSTR lpszSource )
 {
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -378,7 +382,7 @@ __inline HRESULT StringCchCopyA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCopyW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCopyW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                  LPCWSTR lpszSource )
 {
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -393,11 +397,11 @@ __inline HRESULT StringCchCopyW( LPWSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCopyExA( LPSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCopyExA( LPSTR lpszDestination, _SIZE_T cchDestination,
                                    LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
-                                   size_t *pcchRemaining, DWORD dwFlags )
+                                   _SIZE_T *pcchRemaining, DWORD dwFlags )
 {
-    size_t cchSource;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -432,11 +436,11 @@ __inline HRESULT StringCchCopyExA( LPSTR lpszDestination, size_t cchDestination,
     return( S_OK );
 }
 
-__inline HRESULT StringCchCopyExW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchCopyExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                    LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
-                                   size_t *pcchRemaining, DWORD dwFlags )
+                                   _SIZE_T *pcchRemaining, DWORD dwFlags )
 {
-    size_t cchSource;
+    _SIZE_T cchSource;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -471,10 +475,10 @@ __inline HRESULT StringCchCopyExW( LPWSTR lpszDestination, size_t cchDestination
     return( S_OK );
 }
 
-__inline HRESULT StringCchCopyNA( LPSTR lpszDestination, size_t cchDestination,
-                                  LPCSTR lpszSource, size_t cchSource )
+__inline HRESULT StringCchCopyNA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                  LPCSTR lpszSource, _SIZE_T cchSource )
 {
-    size_t len;
+    _SIZE_T len;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -488,10 +492,10 @@ __inline HRESULT StringCchCopyNA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCopyNW( LPWSTR lpszDestination, size_t cchDestination,
-                                  LPCWSTR lpszSource, size_t cchSource )
+__inline HRESULT StringCchCopyNW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                  LPCWSTR lpszSource, _SIZE_T cchSource )
 {
-    size_t len;
+    _SIZE_T len;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -505,9 +509,9 @@ __inline HRESULT StringCchCopyNW( LPWSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchCopyNExA( LPSTR lpszDestination, size_t cchDestination,
-                                    LPCSTR lpszSource, size_t cchSource,
-                                    LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchCopyNExA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                    LPCSTR lpszSource, _SIZE_T cchSource,
+                                    LPSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                     DWORD dwFlags )
 {
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -543,9 +547,9 @@ __inline HRESULT StringCchCopyNExA( LPSTR lpszDestination, size_t cchDestination
     return( S_OK );
 }
 
-__inline HRESULT StringCchCopyNExW( LPWSTR lpszDestination, size_t cchDestination,
-                                    LPCWSTR lpszSource, size_t cchSource,
-                                    LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchCopyNExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                    LPCWSTR lpszSource, _SIZE_T cchSource,
+                                    LPWSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                     DWORD dwFlags )
 {
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -581,10 +585,10 @@ __inline HRESULT StringCchCopyNExW( LPWSTR lpszDestination, size_t cchDestinatio
     return( S_OK );
 }
 
-__inline HRESULT StringCchGetsA( LPSTR lpszDestination, size_t cchDestination )
+__inline HRESULT StringCchGetsA( LPSTR lpszDestination, _SIZE_T cchDestination )
 {
     int ch;
-    size_t i;
+    _SIZE_T i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -604,10 +608,10 @@ __inline HRESULT StringCchGetsA( LPSTR lpszDestination, size_t cchDestination )
     return( STRSAFE_E_INSUFFICIENT_BUFFER );
 }
 
-__inline HRESULT StringCchGetsW( LPWSTR lpszDestination, size_t cchDestination )
+__inline HRESULT StringCchGetsW( LPWSTR lpszDestination, _SIZE_T cchDestination )
 {
     wint_t  ch;
-    size_t  i;
+    _SIZE_T  i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -627,12 +631,12 @@ __inline HRESULT StringCchGetsW( LPWSTR lpszDestination, size_t cchDestination )
     return( STRSAFE_E_INSUFFICIENT_BUFFER );
 }
 
-__inline HRESULT StringCchGetsExA( LPSTR lpszDestination, size_t cchDestination,
-                                   LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchGetsExA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                   LPSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                    DWORD dwFlags )
 {
     int ch;
-    size_t i;
+    _SIZE_T i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -678,12 +682,12 @@ __inline HRESULT StringCchGetsExA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchGetsExW( LPWSTR lpszDestination, size_t cchDestination,
-                                   LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchGetsExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                   LPWSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                    DWORD dwFlags )
 {
     wint_t  ch;
-    size_t  i;
+    _SIZE_T  i;
     if( cchDestination > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
     }
@@ -729,7 +733,7 @@ __inline HRESULT StringCchGetsExW( LPWSTR lpszDestination, size_t cchDestination
     }
 }
 
-__inline HRESULT StringCchLengthA( LPCSTR lpsz, size_t cchMax, size_t *pcch )
+__inline HRESULT StringCchLengthA( LPCSTR lpsz, _SIZE_T cchMax, _SIZE_T *pcch )
 {
     if( lpsz == NULL || cchMax > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
@@ -742,7 +746,7 @@ __inline HRESULT StringCchLengthA( LPCSTR lpsz, size_t cchMax, size_t *pcch )
     }
 }
 
-__inline HRESULT StringCchLengthW( LPCWSTR lpsz, size_t cchMax, size_t *pcch )
+__inline HRESULT StringCchLengthW( LPCWSTR lpsz, _SIZE_T cchMax, _SIZE_T *pcch )
 {
     if( lpsz == NULL || cchMax > STRSAFE_MAX_CCH ) {
         return( STRSAFE_E_INVALID_PARAMETER );
@@ -755,10 +759,10 @@ __inline HRESULT StringCchLengthW( LPCWSTR lpsz, size_t cchMax, size_t *pcch )
     }
 }
 
-__inline HRESULT StringCchPrintfA( LPSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchPrintfA( LPSTR lpszDestination, _SIZE_T cchDestination,
                                    LPCSTR lpszFormat, ... )
 {
-    va_list   args;
+    _VA_LIST  args;
     int       cchResult;
     va_start( args, lpszFormat );
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -774,10 +778,10 @@ __inline HRESULT StringCchPrintfA( LPSTR lpszDestination, size_t cchDestination,
     }
 }
 
-__inline HRESULT StringCchPrintfW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchPrintfW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                    LPCWSTR lpszFormat, ... )
 {
-    va_list   args;
+    _VA_LIST  args;
     int       cchResult;
     va_start( args, lpszFormat );
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -793,11 +797,11 @@ __inline HRESULT StringCchPrintfW( LPWSTR lpszDestination, size_t cchDestination
     }
 }
 
-__inline HRESULT StringCchPrintfExA( LPSTR lpszDestination, size_t cchDestination,
-                                     LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchPrintfExA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                     LPSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                      DWORD dwFlags, LPCSTR lpszFormat, ... )
 {
-    va_list   args;
+    _VA_LIST  args;
     int       cchResult;
     va_start( args, lpszFormat );
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -835,11 +839,11 @@ __inline HRESULT StringCchPrintfExA( LPSTR lpszDestination, size_t cchDestinatio
     return( S_OK );
 }
 
-__inline HRESULT StringCchPrintfExW( LPWSTR lpszDestination, size_t cchDestination,
-                                     LPWSTR *lplpszDestinationEnd, size_t *pcchRemaining,
+__inline HRESULT StringCchPrintfExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                     LPWSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
                                      DWORD dwFlags, LPCWSTR lpszFormat, ... )
 {
-    va_list   args;
+    _VA_LIST  args;
     int       cchResult;
     va_start( args, lpszFormat );
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -879,8 +883,8 @@ __inline HRESULT StringCchPrintfExW( LPWSTR lpszDestination, size_t cchDestinati
     return( S_OK );
 }
 
-__inline HRESULT StringCchVPrintfA( LPSTR lpszDestination, size_t cchDestination,
-                                    LPCSTR lpszFormat, va_list args )
+__inline HRESULT StringCchVPrintfA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                    LPCSTR lpszFormat, _VA_LIST args )
 {
     int     cchResult;
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -894,8 +898,8 @@ __inline HRESULT StringCchVPrintfA( LPSTR lpszDestination, size_t cchDestination
     }
 }
 
-__inline HRESULT StringCchVPrintfW( LPWSTR lpszDestination, size_t cchDestination,
-                                    LPCWSTR lpszFormat, va_list args )
+__inline HRESULT StringCchVPrintfW( LPWSTR lpszDestination, _SIZE_T cchDestination,
+                                    LPCWSTR lpszFormat, _VA_LIST args )
 {
     int     cchResult;
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -909,9 +913,9 @@ __inline HRESULT StringCchVPrintfW( LPWSTR lpszDestination, size_t cchDestinatio
     }
 }
 
-__inline HRESULT StringCchVPrintfExA( LPSTR lpszDestination, size_t cchDestination,
-                                      LPSTR *lplpszDestinationEnd, size_t *pcchRemaining,
-                                      DWORD dwFlags, LPCSTR lpszFormat, va_list args )
+__inline HRESULT StringCchVPrintfExA( LPSTR lpszDestination, _SIZE_T cchDestination,
+                                      LPSTR *lplpszDestinationEnd, _SIZE_T *pcchRemaining,
+                                      DWORD dwFlags, LPCSTR lpszFormat, _VA_LIST args )
 {
     int     cchResult;
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -947,10 +951,10 @@ __inline HRESULT StringCchVPrintfExA( LPSTR lpszDestination, size_t cchDestinati
     return( S_OK );
 }
 
-__inline HRESULT StringCchVPrintfExW( LPWSTR lpszDestination, size_t cchDestination,
+__inline HRESULT StringCchVPrintfExW( LPWSTR lpszDestination, _SIZE_T cchDestination,
                                       LPWSTR *lplpszDestinationEnd,
-                                      size_t *pcchRemaining, DWORD dwFlags,
-                                      LPCWSTR lpszFormat, va_list args )
+                                      _SIZE_T *pcchRemaining, DWORD dwFlags,
+                                      LPCWSTR lpszFormat, _VA_LIST args )
 {
     int     cchResult;
     if( cchDestination > STRSAFE_MAX_CCH ) {
@@ -988,23 +992,23 @@ __inline HRESULT StringCchVPrintfExW( LPWSTR lpszDestination, size_t cchDestinat
     return( S_OK );
 }
 
-__inline HRESULT StringCbCatA( LPSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCatA( LPSTR lpszDestination, _SIZE_T cbDestination,
                                LPCSTR lpszSource )
 {
     return( StringCchCatA( lpszDestination, cbDestination / sizeof( char ),
                            lpszSource ) );
 }
 
-__inline HRESULT StringCbCatW( LPWSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCatW( LPWSTR lpszDestination, _SIZE_T cbDestination,
                                LPCWSTR lpszSource )
 {
     return( StringCchCatW( lpszDestination, cbDestination / sizeof( wchar_t ),
                            lpszSource ) );
 }
 
-__inline HRESULT StringCbCatExA( LPSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCatExA( LPSTR lpszDestination, _SIZE_T cbDestination,
                                  LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
-                                 size_t *pcbRemaining, DWORD dwFlags )
+                                 _SIZE_T *pcbRemaining, DWORD dwFlags )
 {
     HRESULT ret;
     ret = StringCchCatExA( lpszDestination, cbDestination / sizeof( char ), lpszSource,
@@ -1015,9 +1019,9 @@ __inline HRESULT StringCbCatExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCatExW( LPWSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCatExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
                                  LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
-                                 size_t *pcbRemaining, DWORD dwFlags )
+                                 _SIZE_T *pcbRemaining, DWORD dwFlags )
 {
     HRESULT ret;
     ret = StringCchCatExW( lpszDestination, cbDestination / sizeof( wchar_t ),
@@ -1028,23 +1032,23 @@ __inline HRESULT StringCbCatExW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCatNA( LPSTR lpszDestination, size_t cbDestination,
-                                LPCSTR lpszSource, size_t cbMaxAppend )
+__inline HRESULT StringCbCatNA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                LPCSTR lpszSource, _SIZE_T cbMaxAppend )
 {
     return( StringCchCatNA( lpszDestination, cbDestination / sizeof( char ), lpszSource,
                             cbMaxAppend / sizeof( char ) ) );
 }
 
-__inline HRESULT StringCbCatNW( LPWSTR lpszDestination, size_t cbDestination,
-                                LPCWSTR lpszSource, size_t cbMaxAppend )
+__inline HRESULT StringCbCatNW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                LPCWSTR lpszSource, _SIZE_T cbMaxAppend )
 {
     return( StringCchCatNW( lpszDestination, cbDestination / sizeof( wchar_t ),
                             lpszSource, cbMaxAppend / sizeof( wchar_t ) ) );
 }
 
-__inline HRESULT StringCbCatNExA( LPSTR lpszDestination, size_t cbDestination,
-                                  LPCSTR lpszSource, size_t cbMaxAppend,
-                                  LPSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbCatNExA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                  LPCSTR lpszSource, _SIZE_T cbMaxAppend,
+                                  LPSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                   DWORD dwFlags )
 {
     HRESULT ret;
@@ -1057,9 +1061,9 @@ __inline HRESULT StringCbCatNExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCatNExW( LPWSTR lpszDestination, size_t cbDestination,
-                                  LPCWSTR lpszSource, size_t cbMaxAppend,
-                                  LPWSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbCatNExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                  LPCWSTR lpszSource, _SIZE_T cbMaxAppend,
+                                  LPWSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                   DWORD dwFlags )
 {
     HRESULT ret;
@@ -1072,23 +1076,23 @@ __inline HRESULT StringCbCatNExW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCopyA( LPSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCopyA( LPSTR lpszDestination, _SIZE_T cbDestination,
                                 LPCSTR lpszSource )
 {
     return( StringCchCopyA( lpszDestination, cbDestination / sizeof( char ),
                             lpszSource ) );
 }
 
-__inline HRESULT StringCbCopyW( LPWSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCopyW( LPWSTR lpszDestination, _SIZE_T cbDestination,
                                 LPCWSTR lpszSource )
 {
     return( StringCchCopyW( lpszDestination, cbDestination / sizeof( wchar_t ),
                             lpszSource ) );
 }
 
-__inline HRESULT StringCbCopyExA( LPSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCopyExA( LPSTR lpszDestination, _SIZE_T cbDestination,
                                   LPCSTR lpszSource, LPSTR *lplpszDestinationEnd,
-                                  size_t *pcbRemaining, DWORD dwFlags )
+                                  _SIZE_T *pcbRemaining, DWORD dwFlags )
 {
     HRESULT ret;
     ret = StringCchCopyExA( lpszDestination, cbDestination / sizeof( char ), lpszSource,
@@ -1099,9 +1103,9 @@ __inline HRESULT StringCbCopyExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCopyExW( LPWSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbCopyExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
                                   LPCWSTR lpszSource, LPWSTR *lplpszDestinationEnd,
-                                  size_t *pcbRemaining, DWORD dwFlags )
+                                  _SIZE_T *pcbRemaining, DWORD dwFlags )
 {
     HRESULT ret;
     ret = StringCchCopyExW( lpszDestination, cbDestination / sizeof( wchar_t ),
@@ -1112,23 +1116,23 @@ __inline HRESULT StringCbCopyExW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCopyNA( LPSTR lpszDestination, size_t cbDestination,
-                                 LPCSTR lpszSource, size_t cbSource )
+__inline HRESULT StringCbCopyNA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                 LPCSTR lpszSource, _SIZE_T cbSource )
 {
     return( StringCchCopyNA( lpszDestination, cbDestination / sizeof( char ),
                              lpszSource, cbSource / sizeof( char ) ) );
 }
 
-__inline HRESULT StringCbCopyNW( LPWSTR lpszDestination, size_t cbDestination,
-                                 LPCWSTR lpszSource, size_t cbSource )
+__inline HRESULT StringCbCopyNW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                 LPCWSTR lpszSource, _SIZE_T cbSource )
 {
     return( StringCchCopyNW( lpszDestination, cbDestination / sizeof( wchar_t ),
                              lpszSource, cbSource / sizeof( wchar_t ) ) );
 }
 
-__inline HRESULT StringCbCopyNExA( LPSTR lpszDestination, size_t cbDestination,
-                                   LPCSTR lpszSource, size_t cbSource,
-                                   LPSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbCopyNExA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                   LPCSTR lpszSource, _SIZE_T cbSource,
+                                   LPSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                    DWORD dwFlags )
 {
     HRESULT ret;
@@ -1141,9 +1145,9 @@ __inline HRESULT StringCbCopyNExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbCopyNExW( LPWSTR lpszDestination, size_t cbDestination,
-                                   LPCWSTR lpszSource, size_t cbSource,
-                                   LPWSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbCopyNExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                   LPCWSTR lpszSource, _SIZE_T cbSource,
+                                   LPWSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                    DWORD dwFlags )
 {
     HRESULT ret;
@@ -1156,18 +1160,18 @@ __inline HRESULT StringCbCopyNExW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbGetsA( LPSTR lpszDestination, size_t cbDestination )
+__inline HRESULT StringCbGetsA( LPSTR lpszDestination, _SIZE_T cbDestination )
 {
     return( StringCchGetsA( lpszDestination, cbDestination / sizeof( char ) ) );
 }
 
-__inline HRESULT StringCbGetsW( LPWSTR lpszDestination, size_t cbDestination )
+__inline HRESULT StringCbGetsW( LPWSTR lpszDestination, _SIZE_T cbDestination )
 {
     return( StringCchGetsW( lpszDestination, cbDestination / sizeof( wchar_t ) ) );
 }
 
-__inline HRESULT StringCbGetsExA( LPSTR lpszDestination, size_t cbDestination,
-                                  LPSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbGetsExA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                  LPSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                   DWORD dwFlags )
 {
     HRESULT ret;
@@ -1179,8 +1183,8 @@ __inline HRESULT StringCbGetsExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbGetsExW( LPWSTR lpszDestination, size_t cbDestination,
-                                  LPWSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbGetsExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                  LPWSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                   DWORD dwFlags )
 {
     HRESULT ret;
@@ -1192,7 +1196,7 @@ __inline HRESULT StringCbGetsExW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbLengthA( LPCSTR lpsz, size_t cbMax, size_t *pcb )
+__inline HRESULT StringCbLengthA( LPCSTR lpsz, _SIZE_T cbMax, _SIZE_T *pcb )
 {
     HRESULT ret;
     ret = StringCchLengthA( lpsz, cbMax / sizeof( char ), pcb );
@@ -1202,7 +1206,7 @@ __inline HRESULT StringCbLengthA( LPCSTR lpsz, size_t cbMax, size_t *pcb )
     return( ret );
 }
 
-__inline HRESULT StringCbLengthW( LPCWSTR lpsz, size_t cbMax, size_t *pcb )
+__inline HRESULT StringCbLengthW( LPCWSTR lpsz, _SIZE_T cbMax, _SIZE_T *pcb )
 {
     HRESULT ret;
     ret = StringCchLengthW( lpsz, cbMax / sizeof( wchar_t ), pcb );
@@ -1212,11 +1216,11 @@ __inline HRESULT StringCbLengthW( LPCWSTR lpsz, size_t cbMax, size_t *pcb )
     return( ret );
 }
 
-__inline HRESULT StringCbPrintfA( LPSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbPrintfA( LPSTR lpszDestination, _SIZE_T cbDestination,
                                   LPCSTR lpszFormat, ... )
 {
     HRESULT   ret;
-    va_list   args;
+    _VA_LIST  args;
     va_start( args, lpszFormat );
     ret = StringCchVPrintfA( lpszDestination, cbDestination / sizeof( char ),
                              lpszFormat, args );
@@ -1224,11 +1228,11 @@ __inline HRESULT StringCbPrintfA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbPrintfW( LPWSTR lpszDestination, size_t cbDestination,
+__inline HRESULT StringCbPrintfW( LPWSTR lpszDestination, _SIZE_T cbDestination,
                                   LPCWSTR lpszFormat, ... )
 {
     HRESULT   ret;
-    va_list   args;
+    _VA_LIST  args;
     va_start( args, lpszFormat );
     ret = StringCchVPrintfW( lpszDestination, cbDestination / sizeof( wchar_t ),
                              lpszFormat, args );
@@ -1236,12 +1240,12 @@ __inline HRESULT StringCbPrintfW( LPWSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbPrintfExA( LPSTR lpszDestination, size_t cbDestination,
-                                    LPSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbPrintfExA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                    LPSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                     DWORD dwFlags, LPCSTR lpszFormat, ... )
 {
     HRESULT   ret;
-    va_list   args;
+    _VA_LIST  args;
     va_start( args, lpszFormat );
     ret = StringCchVPrintfExA( lpszDestination, cbDestination / sizeof( char ),
                                lplpszDestinationEnd, pcbRemaining, dwFlags, lpszFormat,
@@ -1253,12 +1257,12 @@ __inline HRESULT StringCbPrintfExA( LPSTR lpszDestination, size_t cbDestination,
     return( ret );
 }
 
-__inline HRESULT StringCbPrintfExW( LPWSTR lpszDestination, size_t cbDestination,
-                                    LPWSTR *lplpszDestinationEnd, size_t *pcbRemaining,
+__inline HRESULT StringCbPrintfExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                    LPWSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
                                     DWORD dwFlags, LPCWSTR lpszFormat, ... )
 {
     HRESULT   ret;
-    va_list   args;
+    _VA_LIST  args;
     va_start( args, lpszFormat );
     ret = StringCchVPrintfExW( lpszDestination, cbDestination / sizeof( wchar_t ),
                                lplpszDestinationEnd, pcbRemaining, dwFlags, lpszFormat,
@@ -1270,23 +1274,23 @@ __inline HRESULT StringCbPrintfExW( LPWSTR lpszDestination, size_t cbDestination
     return( ret );
 }
 
-__inline HRESULT StringCbVPrintfA( LPSTR lpszDestination, size_t cbDestination,
-                                   LPCSTR lpszFormat, va_list args )
+__inline HRESULT StringCbVPrintfA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                   LPCSTR lpszFormat, _VA_LIST args )
 {
     return( StringCchVPrintfA( lpszDestination, cbDestination / sizeof( char ),
                                lpszFormat, args ) );
 }
 
-__inline HRESULT StringCbVPrintfW( LPWSTR lpszDestination, size_t cbDestination,
-                                   LPCWSTR lpszFormat, va_list args )
+__inline HRESULT StringCbVPrintfW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                   LPCWSTR lpszFormat, _VA_LIST args )
 {
     return( StringCchVPrintfW( lpszDestination, cbDestination / sizeof( wchar_t ),
                                lpszFormat, args ) );
 }
 
-__inline HRESULT StringCbVPrintfExA( LPSTR lpszDestination, size_t cbDestination,
-                                     LPSTR *lplpszDestinationEnd, size_t *pcbRemaining,
-                                     DWORD dwFlags, LPCSTR lpszFormat, va_list args )
+__inline HRESULT StringCbVPrintfExA( LPSTR lpszDestination, _SIZE_T cbDestination,
+                                     LPSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
+                                     DWORD dwFlags, LPCSTR lpszFormat, _VA_LIST args )
 {
     HRESULT ret;
     ret = StringCchVPrintfExA( lpszDestination, cbDestination / sizeof( char ),
@@ -1298,9 +1302,9 @@ __inline HRESULT StringCbVPrintfExA( LPSTR lpszDestination, size_t cbDestination
     return( ret );
 }
 
-__inline HRESULT StringCbVPrintfExW( LPWSTR lpszDestination, size_t cbDestination,
-                                     LPWSTR *lplpszDestinationEnd, size_t *pcbRemaining,
-                                     DWORD dwFlags, LPCWSTR lpszFormat, va_list args )
+__inline HRESULT StringCbVPrintfExW( LPWSTR lpszDestination, _SIZE_T cbDestination,
+                                     LPWSTR *lplpszDestinationEnd, _SIZE_T *pcbRemaining,
+                                     DWORD dwFlags, LPCWSTR lpszFormat, _VA_LIST args )
 {
     HRESULT ret;
     ret = StringCchVPrintfExW( lpszDestination, cbDestination / sizeof( wchar_t ),

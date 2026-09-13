@@ -11,6 +11,8 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
 /* Macros to specify cryptographic functions */
 #define WINCRYPT32API       DECLSPEC_IMPORT
 #define WINCRYPT32STRINGAPI DECLSPEC_IMPORT
@@ -3508,7 +3510,7 @@ typedef struct _CRYPT_CSP_PROVIDER {
 typedef CRYPT_CSP_PROVIDER  *PCRYPT_CSP_PROVIDER;
 
 /* Cryptographic memory management callbacks */
-typedef LPVOID (WINAPI *PFN_CRYPT_ALLOC)( size_t );
+typedef LPVOID (WINAPI *PFN_CRYPT_ALLOC)( _SIZE_T );
 typedef VOID (WINAPI *PFN_CRYPT_FREE)( LPVOID );
 
 /* CryptEncodeObjectEx() parameters */
@@ -4661,7 +4663,7 @@ typedef struct _CMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA {
 typedef CMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA   *PCMSG_CTRL_DEL_SIGNER_UNAUTH_ATTR_PARA;
 
 /* Cryptographic message memory allocation callbacks */
-typedef void *(WINAPI *PFN_CMSG_ALLOC)( size_t );
+typedef void *(WINAPI *PFN_CMSG_ALLOC)( _SIZE_T );
 typedef void (WINAPI *PFN_CMSG_FREE)( void * );
 
 /* Cryptographic message content encryption information */

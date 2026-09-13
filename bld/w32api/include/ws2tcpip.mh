@@ -14,6 +14,8 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
 /* Windows Sockets TCP/IP primitive data types */
 typedef int socklen_t;
 
@@ -82,9 +84,9 @@ WINSOCK_API_LINKAGE INT WSAAPI      GetAddrInfoW( PCWSTR, PCWSTR, const ADDRINFO
 WINSOCK_API_LINKAGE INT WSAAPI      GetNameInfoW( const SOCKADDR *, socklen_t, PWCHAR, DWORD, PWCHAR, DWORD, INT );
 #endif
 #if (NTDDI_VERSION >= 0x06000000)
-WINSOCK_API_LINKAGE PCWSTR WSAAPI   InetNtopW( INT, PVOID, PWSTR, size_t );
+WINSOCK_API_LINKAGE PCWSTR WSAAPI   InetNtopW( INT, PVOID, PWSTR, _SIZE_T );
 WINSOCK_API_LINKAGE INT WSAAPI      InetPtonW( INT, PCWSTR, PVOID );
-WINSOCK_API_LINKAGE PCSTR WSAAPI    inet_ntop( INT, PVOID, PSTR, size_t );
+WINSOCK_API_LINKAGE PCSTR WSAAPI    inet_ntop( INT, PVOID, PSTR, _SIZE_T );
 WINSOCK_API_LINKAGE INT WSAAPI      inet_pton( INT, PCSTR, PVOID );
 #endif
 

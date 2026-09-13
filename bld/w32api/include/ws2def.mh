@@ -13,6 +13,8 @@
 
 :include cpluspro.sp
 
+:include wsize_t.sp
+
 /* Address family data type */
 typedef USHORT  ADDRESS_FAMILY;
 
@@ -530,7 +532,7 @@ typedef struct addrinfo {
     int             ai_family;
     int             ai_socktype;
     int             ai_protocol;
-    size_t          ai_addrlen;
+    _SIZE_T         ai_addrlen;
     char            *ai_canonname;
     struct sockaddr *ai_addr;
     struct addrinfo *ai_next;
@@ -541,7 +543,7 @@ typedef struct addrinfoW {
     int                 ai_family;
     int                 ai_socktype;
     int                 ai_protocol;
-    size_t              ai_addrlen;
+    _SIZE_T             ai_addrlen;
     PWSTR               ai_canonname;
     struct sockaddr     *ai_addr;
     struct addrinfoW    *ai_next;
@@ -555,11 +557,11 @@ typedef struct addrinfoexA {
     int                 ai_family;
     int                 ai_socktype;
     int                 ai_protocol;
-    size_t              ai_addrlen;
+    _SIZE_T             ai_addrlen;
     char                *ai_canonname;
     struct sockaddr     *ai_addr;
     void                *ai_blob;
-    size_t              ai_bloblen;
+    _SIZE_T             ai_bloblen;
     LPGUID              ai_provider;
     struct addrinfoexA  *ai_next;
 } ADDRINFOEXA;
@@ -570,11 +572,11 @@ typedef struct addrinfoexW {
     int                 ai_family;
     int                 ai_socktype;
     int                 ai_protocol;
-    size_t              ai_addrlen;
+    _SIZE_T             ai_addrlen;
     PWSTR               ai_canonname;
     struct sockaddr     *ai_addr;
     void                *ai_blob;
-    size_t              ai_bloblen;
+    _SIZE_T             ai_bloblen;
     LPGUID              ai_provider;
     struct addrinfoexW  *ai_next;
 } ADDRINFOEXW;

@@ -14,6 +14,8 @@
 
 :include cpluspro.sp
 
+:include wva_list.sp
+
 /* Macros to specify shell lightweight functions */
 #define LWSTDAPI        EXTERN_C DECLSPEC_IMPORT HRESULT STDAPICALLTYPE
 #define LWSTDAPI_( x )  EXTERN_C DECLSPEC_IMPORT x STDAPICALLTYPE
@@ -888,8 +890,8 @@ LWSTDAPI                UrlUnescapeA( LPSTR, LPSTR, LPDWORD, DWORD );
 LWSTDAPI                UrlUnescapeW( LPWSTR, LPWSTR, LPDWORD, DWORD );
 LWSTDAPIV_( int )       wnsprintfA( LPSTR, int, LPCSTR, ... );
 LWSTDAPIV_( int )       wnsprintfW( LPWSTR, int, LPCWSTR, ... );
-LWSTDAPI_( int )        wvnsprintfA( LPSTR, int, LPCSTR, va_list );
-LWSTDAPI_( int )        wvnsprintfW( LPWSTR, int, LPCWSTR, va_list );
+LWSTDAPI_( int )        wvnsprintfA( LPSTR, int, LPCSTR, _VA_LIST );
+LWSTDAPI_( int )        wvnsprintfW( LPWSTR, int, LPCWSTR, _VA_LIST );
 #if (_WIN32_IE >= 0x0500)
 LWSTDAPI_( COLORREF )   ColorAdjustLuma( COLORREF, int, BOOL );
 LWSTDAPI_( COLORREF )   ColorHLSToRGB( WORD, WORD, WORD );
