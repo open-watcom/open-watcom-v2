@@ -12,7 +12,7 @@
 
 :include cpluspro.sp
 
-:include _valist.sp
+:include va_list.sp
 
 _WCRTLINK extern char *cgets(char *__buf);
 _WCRTLINK extern int cputs(const char *__buf);
@@ -44,8 +44,8 @@ _WCRTLINK extern int _kbhit(void);
 :endsegment
 _WCRTLINK extern int putch(int __c);
 _WCRTLINK extern int ungetch(int __c);
-_WCRTLINK extern int vcprintf( const char *__format, __va_list __arg );
-_WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
+_WCRTLINK extern int vcprintf( const char *__format, __w_va_list __arg );
+_WCRTLINK extern int vcscanf( const char *__format, __w_va_list __arg );
 
 :segment !INTEL_ONLY
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)

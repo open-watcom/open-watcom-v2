@@ -42,3 +42,45 @@
  #endif
 :endsegment
 #endif
+
+:segment CNAME
+#ifndef _STDVA_LIST_DEFINED
+#define _STDVA_LIST_DEFINED
+ namespace std {
+  typedef __va_list va_list;
+ }
+ typedef std::va_list __w_va_list;
+#endif
+:elsesegment
+:segment !CONLY
+:segment !CPPONLY
+#ifdef __cplusplus
+:endsegment
+ #ifndef _STDVA_LIST_DEFINED
+ #define _STDVA_LIST_DEFINED
+  namespace std {
+   typedef __va_list va_list;
+  }
+  typedef std::va_list __w_va_list;
+ #endif
+ #ifndef _VA_LIST_DEFINED
+ #define _VA_LIST_DEFINED
+  #define _VA_LIST_DEFINED_
+  using std::va_list;
+ #endif
+:segment !CPPONLY
+#else  /* __cplusplus not defined */
+:endsegment
+:endsegment
+:segment !CPPONLY
+ #ifndef _VA_LIST_DEFINED
+ #define _VA_LIST_DEFINED
+  #define _VA_LIST_DEFINED_
+  typedef __va_list va_list;
+  typedef va_list __w_va_list;
+ #endif
+:segment !CONLY
+#endif /* __cplusplus not defined */
+:endsegment
+:endsegment
+:endsegment

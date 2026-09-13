@@ -252,7 +252,7 @@ using std::wscanf;
 
 :include ssize_t.sp
 
-:include _valist.sp
+:include va_list.sp
 
 :keep DECLARE_STRUCT
 :include file.sp
@@ -362,17 +362,17 @@ _WCRTLINK extern int        sscanf( const char *__s, const char *__format, ... )
 _WCRTLINK extern FILE       *tmpfile( void );
 :include tmpnam.sp
 _WCRTLINK extern int        ungetc( int __c, FILE *__fp );
-_WCRTLINK extern int        vfprintf( FILE *__fp, const char *__format, __va_list __arg );
-_WCRTLINK extern int        vprintf( const char *__format, __va_list __arg );
-_WCRTLINK extern int        vsprintf( char *__s, const char *__format, __va_list __arg );
+_WCRTLINK extern int        vfprintf( FILE *__fp, const char *__format, va_list __arg );
+_WCRTLINK extern int        vprintf( const char *__format, va_list __arg );
+_WCRTLINK extern int        vsprintf( char *__s, const char *__format, va_list __arg );
 
 :: C99 functions in stdio.h that are currently considered extensions.
 :include extc99.sp
 _WCRTLINK extern int        snprintf( char *__buf, size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int        vfscanf( FILE *__fp, const char *__format, __va_list __arg );
-_WCRTLINK extern int        vscanf( const char *__format, __va_list __arg );
-_WCRTLINK extern int        vsnprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int        vsscanf( const char *__s, const char *__format, __va_list __arg );
+_WCRTLINK extern int        vfscanf( FILE *__fp, const char *__format, va_list __arg );
+_WCRTLINK extern int        vscanf( const char *__format, va_list __arg );
+_WCRTLINK extern int        vsnprintf( char *__s, size_t __bufsize, const char *__format, va_list __arg );
+_WCRTLINK extern int        vsscanf( const char *__s, const char *__format, va_list __arg );
 :include extepi.sp
 :include nsstdepi.sp
 
@@ -407,12 +407,12 @@ _WCRTLINK extern wint_t     putwchar( wint_t );
 _WCRTLINK extern int        swprintf( wchar_t *, size_t, const wchar_t *, ... );
 _WCRTLINK extern int        swscanf( const wchar_t *, const wchar_t *, ... );
 _WCRTLINK extern wint_t     ungetwc( wint_t, FILE * );
-_WCRTLINK extern int        vfwprintf( FILE *, const wchar_t *, __va_list );
-_WCRTLINK extern int        vfwscanf( FILE *, const wchar_t *, __va_list );
-_WCRTLINK extern int        vswprintf( wchar_t *, size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int        vswscanf( const wchar_t *, const wchar_t *, __va_list );
-_WCRTLINK extern int        vwprintf( const wchar_t *, __va_list );
-_WCRTLINK extern int        vwscanf( const wchar_t *, __va_list );
+_WCRTLINK extern int        vfwprintf( FILE *, const wchar_t *, va_list );
+_WCRTLINK extern int        vfwscanf( FILE *, const wchar_t *, va_list );
+_WCRTLINK extern int        vswprintf( wchar_t *, size_t, const wchar_t *, va_list );
+_WCRTLINK extern int        vswscanf( const wchar_t *, const wchar_t *, va_list );
+_WCRTLINK extern int        vwprintf( const wchar_t *, va_list );
+_WCRTLINK extern int        vwscanf( const wchar_t *, va_list );
 _WCRTLINK extern int        wprintf( const wchar_t *, ... );
 _WCRTLINK extern int        wscanf( const wchar_t *, ... );
 :include nsstdepi.sp
@@ -442,8 +442,8 @@ _WCRTLINK extern int        _fputchar( int __c );
 _WCRTLINK extern __w_FILE   *_fsopen( const char *__filename, const char *__mode, int __shflag );
 _WCRTLINK extern int        _grow_handles( int __new_count );
 _WCRTLINK extern int        _snprintf( char *__buf, __w_size_t __bufsize, const char *__fmt, ... );
-_WCRTLINK extern int        _vbprintf( char *__s, __w_size_t __bufsize, const char *__format, __va_list __arg );
-_WCRTLINK extern int        _vsnprintf( char *__s, __w_size_t __bufsize, const char *__format, __va_list __arg );
+_WCRTLINK extern int        _vbprintf( char *__s, __w_size_t __bufsize, const char *__format, __w_va_list __arg );
+_WCRTLINK extern int        _vsnprintf( char *__s, __w_size_t __bufsize, const char *__format, __w_va_list __arg );
 _WCRTLINK extern int        fcloseall( void );
 _WCRTLINK extern int        fgetchar( void );
 _WCRTLINK extern int        fileno( __w_FILE * );
@@ -465,10 +465,10 @@ _WCRTLINK extern __w_FILE   *_wfreopen( const wchar_t *, const wchar_t *, __w_FI
 _WCRTLINK extern __w_FILE   *_wfsopen( const wchar_t *__filename, const wchar_t *__mode, int __shflag );
 _WCRTLINK extern void       _wperror( const wchar_t * );
 _WCRTLINK extern __w_FILE   *_wpopen( const wchar_t *__command, const wchar_t *__mode );
-_WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __va_list );
-_WCRTLINK extern int        _vswprintf( wchar_t *, const wchar_t *, __va_list );
+_WCRTLINK extern int        _vbwprintf( wchar_t *, __w_size_t, const wchar_t *, __w_va_list );
+_WCRTLINK extern int        _vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __w_va_list );
+_WCRTLINK extern int        vsnwprintf( wchar_t *, __w_size_t, const wchar_t *, __w_va_list );
+_WCRTLINK extern int        _vswprintf( wchar_t *, const wchar_t *, __w_va_list );
 _WCRTLINK extern __w_wint_t fgetwchar( void );
 _WCRTLINK extern __w_wint_t fputwchar( __w_wint_t );
 _WCRTLINK extern wchar_t    *getws( wchar_t * );
@@ -568,13 +568,13 @@ _WCRTLINK extern int      scanf_s( const char * __restrict __format, ... );
 _WCRTLINK extern int      snprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, ... );
 _WCRTLINK extern int      sprintf_s( char * __restrict s, rsize_t __n, const char * __restrict __format, ... );
 _WCRTLINK extern int      sscanf_s( const char * __restrict __s, const char * __restrict __format, ... );
-_WCRTLINK extern int      vfprintf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vfscanf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vprintf_s( const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vscanf_s( const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsnprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsscanf_s( const char * __restrict __s, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vfprintf_s( FILE * __restrict __stream, const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vfscanf_s( FILE * __restrict __stream, const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vprintf_s( const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vscanf_s( const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vsnprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vsprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, va_list __arg );
+_WCRTLINK extern int      vsscanf_s( const char * __restrict __s, const char * __restrict __format, va_list __arg );
 _WCRTLINK extern errno_t  fopen_s( FILE * __restrict * __restrict __streamptr, const char * __restrict __filename,
                                    const char * __restrict __mode);
 _WCRTLINK extern errno_t  freopen_s( FILE * __restrict * __restrict __newstreamptr, const char * __restrict __filename,

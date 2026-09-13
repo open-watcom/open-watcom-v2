@@ -38,16 +38,14 @@ using std::va_list;
 :include cpluspro.sp
 
 :endsegment
-:include _valist.sp
-
-:include valist.sp
+:include va_list.sp
 
 :segment !INTEL_ONLY
 #ifdef __AXP__
  #define _AXP_WORD_SIZE     8
  #define _AXP_FLOAT_SIZE    8
  #define _AXP_FLOAT_REGS    6
- extern void *__builtin_va_start(__va_list*, ...);
+ extern void *__builtin_va_start(__w_va_list*, ...);
  #pragma intrinsic(__builtin_va_start)
  #define va_start(__ap,__pn)    (__builtin_va_start(&__ap,__pn,1))
  #define va_arg(__ap,__type)    ((__ap).__offset+=\
@@ -63,12 +61,12 @@ using std::va_list;
  #ifdef __NT__
   #define _INTSIZEOF(__n)       ((sizeof(__n) + sizeof(int) - 1) & ~(sizeof(int) - 1))
   #define _ALIGNIT(__ap,__t)    ((((int)(__ap))+(sizeof(__t)<8?3:7)) & (sizeof(__t)<8?~3:~7))
-  #define va_start(__ap,__v)    (__ap = (__va_list)&__v + _INTSIZEOF(__v))
+  #define va_start(__ap,__v)    (__ap = (__w_va_list)&__v + _INTSIZEOF(__v))
   #define va_arg(__ap,__t)      (*(__t *)((__ap = (char *)(_ALIGNIT(__ap,__t) + _INTSIZEOF(__t))) - _INTSIZEOF(__t)))
-  #define va_end(__ap)          (__ap = (__va_list)0)
+  #define va_end(__ap)          (__ap = (__w_va_list)0)
  #else
 :endsegment
-  extern void *__builtin_va_start( __va_list *, ...);
+  extern void *__builtin_va_start( __w_va_list *, ...);
   #pragma intrinsic(__builtin_va_start)
   #define va_start(__ap,__pn)   (__builtin_va_start(&__ap,__pn,1))
   #define va_arg(__ap,__type)   (__builtin_va_arg(&__ap,__type))
@@ -77,7 +75,7 @@ using std::va_list;
 :endsegment
 #elif defined(__MIPS__)
  #define _MIPS_WORD_SIZE     4
- extern void *__builtin_va_start(__va_list*, ...);
+ extern void *__builtin_va_start(__w_va_list*, ...);
  #pragma intrinsic(__builtin_va_start)
  #define va_start(__ap,__pn)    (__builtin_va_start(&__ap,__pn,1))
  #define va_arg(__ap,__type)    ((__ap).__offset+=\
