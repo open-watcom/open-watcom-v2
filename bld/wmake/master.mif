@@ -21,14 +21,14 @@ wmake_wreslib_incl = 1
 exetarg_res        = $(proj_name).res
 !endif
 
-# DOS code will not fit in 64k with /d2
-#!ifeq host_os dos
-#!ifeq host_cpu i86
-#wmake_debug = 0
-#!endif
-#!endif
-
 additional_clean = *.gh *.grc
+
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
 
 !include idedlls.mif
 !include cproj.mif

@@ -18,6 +18,13 @@ wasm_qnx_usage = 1
 # Extra files to delete on clean
 additional_clean = *.gh *.grh *.grc *.gc
 
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
