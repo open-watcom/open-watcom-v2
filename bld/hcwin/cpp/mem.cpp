@@ -98,7 +98,7 @@ void *my_realloc( void *p, size_t size )
 Memory::Memory()
 {
     TrHdl = _trmem_open( my_malloc, my_free, my_realloc, _TRMEM_NO_STRDUP,
-            NULL, PrintLine, _TRMEM_ALL );
+            NULL, PrintLine, _TRMEM_DEF );
 }
 
 #else /* __WATCOMC__ != 1290 */
@@ -106,7 +106,7 @@ Memory::Memory()
 Memory::Memory()
 {
     TrHdl = _trmem_open( std::malloc, std::free, std::realloc, _TRMEM_NO_STRDUP,
-            NULL, PrintLine, _TRMEM_ALL );
+            NULL, PrintLine, _TRMEM_DEF );
 }
 
 #endif /* __WATCOMC__ == 1290 */
