@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "errmsg.h"
 #include "rcstr.grh"
 #include "wresdefn.h"
+#include "memfuncs.h"
 
 
 #define NEWPROJ_INF_FILE    "newproj.inf"
@@ -57,14 +58,14 @@ static bool createProjectDir( char *dir )
     char *ptr;
     char ch;
 
-    dircopy = strdup( dir );
+    dircopy = MemStrdup( dir );
     ptr = dircopy;
     while( *ptr != '\0' ) {
         if( *ptr == '/' || (*ptr == '\\' && ptr != dircopy && *(ptr - 1) != ':') ) {
             ch = *ptr;
             *ptr = '\0';
             if( MKDIR( dircopy ) ) {
-                free( dircopy );
+                MemFree( dircopy );
                 ShowError( APPWIZ_MKDIR_FAILED );
                 return( false );
             }
@@ -73,11 +74,11 @@ static bool createProjectDir( char *dir )
         ptr++;
     }
     if( MKDIR( dircopy ) ) {
-        free( dircopy );
+        MemFree( dircopy );
         ShowError( APPWIZ_MKDIR_FAILED );
         return( false );
     }
-    free( dircopy );
+    MemFree( dircopy );
     return( true );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +39,7 @@
 #include "projtype.h"
 #include "rcstr.grh"
 #include "iopath.h"
+#include "memfuncs.h"
 
 
 #define PROJTYPE_CONFIG_FILE    "projtype.cfg"
@@ -102,10 +103,10 @@ static void addProjectType( char *typename, char *friendlyname )
 /**************************************************************/
 {
     if( lastProjectType == NULL ) {
-        projectTypes = (project_type *)malloc( sizeof( project_type ) );
+        projectTypes = (project_type *)MemAlloc( sizeof( project_type ) );
         lastProjectType = projectTypes;
     } else {
-        lastProjectType->next = (project_type *)malloc( sizeof( project_type ) );
+        lastProjectType->next = (project_type *)MemAlloc( sizeof( project_type ) );
         lastProjectType = lastProjectType->next;
     }
     strcpy( lastProjectType->typename, typename );
@@ -157,7 +158,7 @@ void FreeProjectTypes()
     while( next_type != NULL ) {
         this_type = next_type;
         next_type = this_type->next;
-        free( this_type );
+        MemFree( this_type );
     }
     projectTypes = NULL;
     lastProjectType = NULL;

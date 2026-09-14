@@ -11,9 +11,9 @@ appwiz_ntmanif = ../h
 #
 # cflags
 #
-.c : ../c
+.c : ../c;$(trmem_dir)
 
-inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs)
+inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs) -I"$(trmem_dir)"
 
 # explicit rules
 #################
@@ -22,7 +22,7 @@ inc_dirs = -I. -I"../h" $(cli_gui_inc_dirs)
 # EXE
 #
 exetarg_prebuild_objs = rcstr.grh
-exetarg_objs          = appwiz.obj errmsg.obj projtype.obj
+exetarg_objs          = appwiz.obj errmsg.obj projtype.obj guimem.obj
 exetarg_libs          = $(cli_gui_libs)
 exetarg_res           = $(proj_name).res
 !include exetarg.mif
