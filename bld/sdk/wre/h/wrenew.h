@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +39,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define DEF_MEMFLAGS (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
+#define MEMFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* type definitions                                                         */

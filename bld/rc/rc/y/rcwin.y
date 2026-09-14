@@ -594,12 +594,11 @@ resource-type
 user-defined-resource
     : name-id comma-opt user-defined-type-id user-defined-data
         {
-            SemAddResourceAndFree( $1, $3,
-                    MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $4 );
+            SemAddResourceAndFree( $1, $3, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $4 );
         }
     | name-id comma-opt user-defined-type-id resource-options user-defined-data
         {
-            SemWINCheckResFlags( &($4), MEMFLAG_NONE, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($4), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, $3, $4.flags, $5 );
         }
     ;
@@ -651,12 +650,11 @@ raw-data-item
 rcdata-resource
     : name-id Y_RCDATA opt-resource-info-stmts user-defined-data
         {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ),
-                    MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $4 );
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $4 );
         }
     | name-id Y_RCDATA resource-options opt-resource-info-stmts user-defined-data
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.flags, $5 );
         }
     ;
@@ -664,12 +662,11 @@ rcdata-resource
 string-table-resource
     : Y_STRINGTABLE opt-resource-info-stmts string-section
         {
-            SemWINMergeStrTable( $3,
-                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE );
+            SemWINMergeStrTable( $3, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE );
         }
     | Y_STRINGTABLE resource-options opt-resource-info-stmts string-section
         {
-            SemWINCheckResFlags( &($2), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINMergeStrTable( $4, $2.flags );
         }
     ;
@@ -677,12 +674,12 @@ string-table-resource
 toolbar-resource
     : name-id Y_TOOLBAR resource-options constant-expression comma-opt constant-expression toolbar-block
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3.flags );
         }
     | name-id Y_TOOLBAR constant-expression comma-opt constant-expression toolbar-block
         {
-            SemWINWriteToolBar( $1, $6, $3.Value, $5.Value, MEMFLAG_PURE | MEMFLAG_MOVEABLE );
+            SemWINWriteToolBar( $1, $6, $3.Value, $5.Value, RESFLAG_PURE | RESFLAG_MOVEABLE );
         }
     ;
 
@@ -732,12 +729,11 @@ message-table-resource
 error-table-resource
     : Y_ERRTABLE opt-resource-info-stmts string-section
         {
-            SemWINMergeErrTable( $3,
-                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE );
+            SemWINMergeErrTable( $3, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE );
         }
     | Y_ERRTABLE resource-options opt-resource-info-stmts string-section
         {
-            SemWINCheckResFlags( &($2), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINMergeErrTable( $4, $2.flags );
         }
     ;
@@ -777,12 +773,11 @@ string-id
 accelerators-resource
     : name-id Y_ACCELERATORS opt-resource-info-stmts acc-section
         {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE, $4 );
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), RESFLAG_PURE | RESFLAG_MOVEABLE, $4 );
         }
     | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3.flags, $5 );
         }
     ;
@@ -869,22 +864,20 @@ acc-item-option
 
 menuex-resource
     : name-id Y_MENU_EX menu-section
-        { SemWINWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                    $3, Y_MENU_EX ); }
+        { SemWINWriteMenu( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3, Y_MENU_EX ); }
     | name-id Y_MENU_EX resource-options menu-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteMenu( $1, $3.flags, $4, Y_MENU_EX );
         }
     ;
 
 menu-resource
     : name-id Y_MENU opt-resource-info-stmts menu-section
-        { SemWINWriteMenu( $1, MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                    $4, Y_MENU ); }
+        { SemWINWriteMenu( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $4, Y_MENU ); }
     | name-id Y_MENU resource-options opt-resource-info-stmts menu-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteMenu( $1, $3.flags, $5, Y_MENU );
         }
     ;
@@ -1183,52 +1176,44 @@ dlg-resource
     : name-id dialog-or-dialogEx size-info helpId-opt diag-options-section
               diag-control-section
         {
-            SemWINWriteDialogBox( $1,
-               MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-               $3, $5, $6, $4, $2 );
+            SemWINWriteDialogBox( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3, $5, $6, $4, $2 );
         }
     | name-id dialog-or-dialogEx size-info helpId-opt diag-control-section
         {
-            SemWINWriteDialogBox( $1,
-               MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-               $3, NULL, $5, $4, $2 );
+            SemWINWriteDialogBox( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3, NULL, $5, $4, $2 );
         }
     | name-id dialog-or-dialogEx exstyle-equal-stmt size-info helpId-opt
               diag-options-section diag-control-section
         {
-            SemWINWriteDialogBox( $1,
-               MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-               $4, SemWINDiagOptions( $6, &($3) ), $7, $5, $2 );
+            SemWINWriteDialogBox( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $4, SemWINDiagOptions( $6, &($3) ), $7, $5, $2 );
         }
     | name-id dialog-or-dialogEx exstyle-equal-stmt size-info helpId-opt
               diag-control-section
         {
-            SemWINWriteDialogBox( $1,
-                MEMFLAG_PURE|MEMFLAG_MOVEABLE|MEMFLAG_DISCARDABLE,
-                $4, SemWINNewDiagOptions( &($3) ), $6, $5, $2 );
+            SemWINWriteDialogBox( $1, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $4, SemWINNewDiagOptions( &($3) ), $6, $5, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                diag-options-section diag-control-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $5, $7, $8, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
                 diag-control-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $5, NULL, $7, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
                 size-info helpId-opt diag-options-section diag-control-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $6, SemWINDiagOptions( $8, &($5) ) , $9, $7, $2 );
         }
     | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
               size-info helpId-opt diag-control-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.flags, $6, SemWINNewDiagOptions( &($5) ), $8, $7, $2 );
         }
     ;
@@ -1709,11 +1694,11 @@ cntl-text
 version-info-resource
     : name-id Y_VERSIONINFO fixed-ver-section variable-ver-section
         {
-            SemWINWriteVerInfo( $1, MEMFLAG_MOVEABLE | MEMFLAG_PURE, $3, $4 );
+            SemWINWriteVerInfo( $1, RESFLAG_MOVEABLE | RESFLAG_PURE, $3, $4 );
         }
     | name-id Y_VERSIONINFO resource-options fixed-ver-section variable-ver-section
         {
-            SemWINCheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemWINWriteVerInfo( $1, $3.flags, $4, $5 );
         }
     ;

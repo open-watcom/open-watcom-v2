@@ -260,7 +260,7 @@ bool WRAPI WRCreateDLGInclude( WResDir *dir, const char *include )
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
-        ok = !WResAddResource( type, res, MEMFLAG_DISCARDABLE, 0, len, *dir, &lang, NULL );
+        ok = !WResAddResource( type, res, RESFLAG_DISCARDABLE, 0, len, *dir, &lang, NULL );
     }
 
     if( ok ) {

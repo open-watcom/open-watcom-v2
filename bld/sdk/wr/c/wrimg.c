@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define DEF_MEMFLAGS (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
+#define MEMFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -170,7 +170,7 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rihsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, rihsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -259,7 +259,7 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rchsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, rchsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {

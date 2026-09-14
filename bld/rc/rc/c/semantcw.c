@@ -106,31 +106,31 @@ FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YYTOKENTYPE token )
 {
     switch( token ) {
     case Y_PRELOAD:
-        currflags.flags |= MEMFLAG_PRELOAD;
+        currflags.flags |= RESFLAG_PRELOAD;
         currflags.loadOptGiven = true;
         break;
     case Y_LOADONCALL:
-        currflags.flags &= ~MEMFLAG_PRELOAD;
+        currflags.flags &= ~RESFLAG_PRELOAD;
         currflags.loadOptGiven = true;
         break;
     case Y_FIXED:
-        currflags.flags &= ~MEMFLAG_MOVEABLE;
+        currflags.flags &= ~RESFLAG_MOVEABLE;
         currflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
-        currflags.flags |= MEMFLAG_MOVEABLE;
+        currflags.flags |= RESFLAG_MOVEABLE;
         currflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
-        currflags.flags |= MEMFLAG_DISCARDABLE;
+        currflags.flags |= RESFLAG_DISCARDABLE;
         currflags.memOptGiven = true;
         break;
     case Y_PURE:
-        currflags.flags |= MEMFLAG_PURE;
+        currflags.flags |= RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
-        currflags.flags &= ~MEMFLAG_PURE;
+        currflags.flags &= ~RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     }
@@ -159,8 +159,8 @@ void SemWINCheckResFlags( FullMemFlags *currflags, ResMemFlags loadopts,
      */
     if( currflags->purityOptGiven
       && !currflags->memOptGiven ) {
-        if( !(currflags->flags & MEMFLAG_PURE) ) {
-            currflags->flags &= ~MEMFLAG_DISCARDABLE;
+        if( !(currflags->flags & RESFLAG_PURE) ) {
+            currflags->flags &= ~RESFLAG_DISCARDABLE;
         }
     }
 }

@@ -65,8 +65,8 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
-                flagsMDP = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
-                flagsMP  = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
+                flagsMDP = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+                flagsMP  = RESFLAG_MOVEABLE | RESFLAG_PURE;
                 switch( type ) {
                 case Y_DEFAULTICON:
                     /*
@@ -80,7 +80,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                 case Y_POINTER:
                 case Y_ICON:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_NONE );
+                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_NONE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMDP;
@@ -111,7 +111,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_BITMAP:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMP;
@@ -121,7 +121,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMDP;
@@ -377,7 +377,7 @@ static void FreeFontDir( FullFontDir *olddir )
  * name and memory flags of the font directory resource
  */
 #define FONT_DIR_NAME   "FONTDIR"
-#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE|MEMFLAG_PRELOAD   /* not PURE */
+#define FONT_DIR_FLAGS  (RESFLAG_MOVEABLE | RESFLAG_PRELOAD)    /* not PURE */
 
 void SemOS2WriteFontDir( void )
 /*****************************/

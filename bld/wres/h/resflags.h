@@ -34,12 +34,12 @@
 #define RESFLAGS_INCLUDED
 
 typedef enum ResMemFlags {
-    MEMFLAG_NONE        = 0x0000,
-    MEMFLAG_MOVEABLE    = 0x0010,
-    MEMFLAG_PURE        = 0x0020,
-    MEMFLAG_PRELOAD     = 0x0040,
-    MEMFLAG_DISCARDABLE = 0x1000,
-    MEMFLAG_SEGALIGN    = 0x8000,
+    RESFLAG_NONE        = 0x0000,
+    RESFLAG_MOVEABLE    = 0x0010,
+    RESFLAG_PURE        = 0x0020,
+    RESFLAG_PRELOAD     = 0x0040,
+    RESFLAG_DISCARDABLE = 0x1000,
+    RESFLAG_SEGALIGN    = 0x8000,
 } ResMemFlags;
 
 #endif

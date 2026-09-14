@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,19 +104,19 @@ void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
     if( info != NULL ) {
         SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
 
-        if( info->mflags & MEMFLAG_MOVEABLE ) {
+        if( info->mflags & RESFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, BST_CHECKED );
         }
 
-        if( info->mflags & MEMFLAG_DISCARDABLE ) {
+        if( info->mflags & RESFLAG_DISCARDABLE ) {
             CheckDlgButton( hDlg, IDM_MFDSC, BST_CHECKED );
         }
 
-        if( info->mflags & MEMFLAG_PURE ) {
+        if( info->mflags & RESFLAG_PURE ) {
             CheckDlgButton( hDlg, IDM_MFPUR, BST_CHECKED );
         }
 
-        if( info->mflags & MEMFLAG_PRELOAD ) {
+        if( info->mflags & RESFLAG_PRELOAD ) {
             CheckDlgButton( hDlg, IDM_MFPRE, BST_CHECKED );
         } else {
             CheckDlgButton( hDlg, IDM_MFLOC, BST_CHECKED );
@@ -128,22 +128,22 @@ void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
 {
     if( info != NULL ) {
         info->mflags = info->mflags &
-            ~(MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_PRELOAD);
+            ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_PRELOAD);
 
         if( IsDlgButtonChecked( hDlg, IDM_MFMV ) ) {
-            info->mflags |= MEMFLAG_MOVEABLE;
+            info->mflags |= RESFLAG_MOVEABLE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFDSC ) ) {
-            info->mflags |= MEMFLAG_DISCARDABLE;
+            info->mflags |= RESFLAG_DISCARDABLE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFPUR ) ) {
-            info->mflags |= MEMFLAG_PURE;
+            info->mflags |= RESFLAG_PURE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFPRE ) ) {
-            info->mflags |= MEMFLAG_PRELOAD;
+            info->mflags |= RESFLAG_PRELOAD;
         }
     }
 }

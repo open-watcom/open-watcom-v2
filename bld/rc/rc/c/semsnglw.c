@@ -56,7 +56,7 @@ static void AddFontResources( WResID *res_id, ResMemFlags, const char *filename 
  * version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources
  * still have the same purity
  */
-#define CUR_ICON_PURITY_30      MEMFLAG_PURE
+#define CUR_ICON_PURITY_30      RESFLAG_PURE
 #define CUR_ICON_PURITY_31      0           /* impure */
 
 void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
@@ -66,8 +66,7 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
 
     if( CmdLineParms.iswin32 ) {
         start = SemCopyRawFile( filename->string );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ),
-                            MEMFLAG_MOVEABLE | MEMFLAG_PURE, start );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ), RESFLAG_MOVEABLE | RESFLAG_PURE, start );
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = true;
@@ -110,43 +109,43 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     switch( type ) {
     case Y_ICON:
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, purity_option );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
             flags = fullflags->flags;
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
-            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
+            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
+            group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
         AddIconResource( res_id, flags, group_flags, full_filename );
         break;
     case Y_CURSOR:
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, purity_option );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
             flags = fullflags->flags;
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
-            group_flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
+            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
+            group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
         AddCursorResource( res_id, flags, group_flags, full_filename );
         break;
     case Y_BITMAP:
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
+            flags = RESFLAG_MOVEABLE | RESFLAG_PURE;
         }
         AddBitmapResource( res_id, flags, full_filename );
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             flags = fullflags->flags;
         } else {
-            flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;
+            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
         AddFontResources( res_id, flags, full_filename );
         break;
@@ -1477,7 +1476,7 @@ static void FreeFontDir( FullFontDir *olddir )
  * name and memory flags of the font directory resource
  */
 #define FONT_DIR_NAME   "FONTDIR"
-#define FONT_DIR_FLAGS  MEMFLAG_MOVEABLE | MEMFLAG_PRELOAD  /* not PURE */
+#define FONT_DIR_FLAGS  (RESFLAG_MOVEABLE | RESFLAG_PRELOAD)    /* not PURE */
 
 void SemWINWriteFontDir( void )
 /*****************************/

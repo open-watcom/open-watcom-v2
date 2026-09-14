@@ -441,19 +441,19 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
     tlen = 0;
     *text = NULL;
 
-    if( flags & MEMFLAG_PRELOAD ) {
+    if( flags & RESFLAG_PRELOAD ) {
         tlen += 8; // size of the string PRELOAD and a space
     }
 
-    if( !(flags & MEMFLAG_MOVEABLE) ) {
+    if( !(flags & RESFLAG_MOVEABLE) ) {
         tlen += 6; // size of the string FIXED and a space
     }
 
-    if( flags & MEMFLAG_DISCARDABLE ) {
+    if( flags & RESFLAG_DISCARDABLE ) {
         tlen += 12; // size of the string DISCARDABLE and a space
     }
 
-    if( !(flags & MEMFLAG_PURE) ) {
+    if( !(flags & RESFLAG_PURE) ) {
         tlen += 7; // size of the string IMPURE and a space
     }
 
@@ -464,19 +464,19 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
     (*text)[0] = '\0';
 
     if( tlen > 0 ) {
-        if( flags & MEMFLAG_PRELOAD ) {
+        if( flags & RESFLAG_PRELOAD ) {
             strcat( *text, "PRELOAD " );
         }
 
-        if( !(flags & MEMFLAG_MOVEABLE) ) {
+        if( !(flags & RESFLAG_MOVEABLE) ) {
             strcat( *text, "FIXED " );
         }
 
-        if( flags & MEMFLAG_DISCARDABLE ) {
+        if( flags & RESFLAG_DISCARDABLE ) {
             strcat( *text, "DISCARDABLE " );
         }
 
-        if( !(flags & MEMFLAG_PURE) ) {
+        if( !(flags & RESFLAG_PURE) ) {
             strcat( *text, "IMPURE " );
         }
     }

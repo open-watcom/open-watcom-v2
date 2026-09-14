@@ -593,12 +593,11 @@ resource-type
 user-defined-resource
     : Y_RESOURCE type-id comma-opt name-id user-defined-data
         {
-            SemAddResourceAndFree( $4, $2,
-                    MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE, $5 );
+            SemAddResourceAndFree( $4, $2, RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE, $5 );
         }
     | Y_RESOURCE type-id comma-opt name-id resource-options user-defined-data
         {
-            SemOS2CheckResFlags( &($5), MEMFLAG_NONE, MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($5), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemAddResourceAndFree( $4, $2, $5.flags, $6 );
         }
     ;
@@ -697,12 +696,11 @@ rc-data
 rcdata-resource
     : Y_RCDATA name-id rc-data
         {
-            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ),
-                    MEMFLAG_PURE | MEMFLAG_MOVEABLE, $3 );
+            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), RESFLAG_PURE | RESFLAG_MOVEABLE, $3 );
         }
     | Y_RCDATA name-id resource-options rc-data
         {
-            SemOS2CheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.flags, $4 );
         }
     ;
@@ -733,13 +731,11 @@ presparam-name
 string-table-resource
     : Y_STRINGTABLE string-section
         {
-            SemOS2MergeStrTable( $2,
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                SemOS2DefaultCodepage() );
+            SemOS2MergeStrTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, SemOS2DefaultCodepage() );
         }
     | Y_STRINGTABLE resource-options string-section
         {
-            SemOS2CheckResFlags( &($2), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemOS2MergeStrTable( $3, $2.flags, $2.codePage );
         }
     ;
@@ -747,12 +743,11 @@ string-table-resource
 message-table-resource
     : Y_MESSAGETABLE string-section
         {
-            SemOS2MergeMsgTable( $2,
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE );
+            SemOS2MergeMsgTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE );
         }
     | Y_MESSAGETABLE resource-options string-section
         {
-            SemOS2CheckResFlags( &($2), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemOS2MergeMsgTable( $3, $2.flags );
         }
     ;
@@ -797,8 +792,7 @@ id-value
 help-table-resource
     : Y_HELPTABLE name-id help-table-section
         {
-            SemOS2WriteHelpTable( $2,
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $3 );
+            SemOS2WriteHelpTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3 );
         }
     ;
 
@@ -826,13 +820,11 @@ help-item
 help-subtable-resource
     : Y_HELPSUBTABLE name-id help-subtable-section
         {
-            SemOS2WriteHelpSubTable( $2, 2,
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $3 );
+            SemOS2WriteHelpSubTable( $2, 2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3 );
         }
     | Y_HELPSUBTABLE name-id Y_SUBITEMSIZE constant-expression help-subtable-section
         {
-            SemOS2WriteHelpSubTable( $2, $4.Value,
-                MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $5 );
+            SemOS2WriteHelpSubTable( $2, $4.Value, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $5 );
         }
     ;
 
@@ -860,12 +852,11 @@ help-subitem
 accel-table-resource
     : Y_ACCELTABLE name-id acc-section
         {
-            SemOS2WriteAccelTable( $2, MEMFLAG_PURE | MEMFLAG_MOVEABLE,
-                SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteAccelTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE, SemOS2DefaultCodepage(), $3 );
         }
     | Y_ACCELTABLE name-id resource-options acc-section
         {
-            SemOS2CheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
             SemOS2WriteAccelTable( $2, $3.flags, $3.codePage, $4 );
         }
     ;
@@ -946,11 +937,10 @@ acc-item-option
 
 menu-resource
     : Y_MENU name-id menu-section
-        { SemOS2WriteMenu( $2, MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                    $3, Y_MENU, SemOS2DefaultCodepage() ); }
+        { SemOS2WriteMenu( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3, Y_MENU, SemOS2DefaultCodepage() ); }
     | Y_MENU name-id resource-options menu-section
         {
-            SemOS2CheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemOS2WriteMenu( $2, $3.flags, $4, Y_MENU, $3.codePage );
         }
     ;
@@ -1105,13 +1095,12 @@ dialogtemplate
 dlg-template
     : dialogtemplate name-id diag-control-section
         {
-            SemOS2WriteDialogTemplate( $2,
-               MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
+            SemOS2WriteDialogTemplate( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE,
                SemOS2DefaultCodepage(), $3 );
         }
     | dialogtemplate name-id resource-options diag-control-section
         {
-            SemOS2CheckResFlags( &($3), MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+            SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemOS2WriteDialogTemplate( $2, $3.flags, $3.codePage, $4 );
         }
     ;

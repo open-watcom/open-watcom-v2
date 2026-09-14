@@ -282,13 +282,13 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         dst_seg->size    = entry->seg_length;
         dst_seg->min     = entry->seg_length;
         dst_seg->info    = SEG_DATA | SEG_READ_ONLY | SEG_PMODE_DPL_3;
-        if( entry->mem_flags & MEMFLAG_MOVEABLE )
+        if( entry->mem_flags & RESFLAG_MOVEABLE )
             dst_seg->info |= SEG_MOVABLE;
-        if( entry->mem_flags & MEMFLAG_PURE )
+        if( entry->mem_flags & RESFLAG_PURE )
             dst_seg->info |= SEG_PURE;
-        if( entry->mem_flags & MEMFLAG_PRELOAD )
+        if( entry->mem_flags & RESFLAG_PRELOAD )
             dst_seg->info |= SEG_PRELOAD;
-        if( entry->mem_flags & MEMFLAG_DISCARDABLE )
+        if( entry->mem_flags & RESFLAG_DISCARDABLE )
             dst_seg->info |= SEG_DISCARD;
         /*
          * For non-last segment of a resource, there's nothing to copy

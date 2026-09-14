@@ -109,19 +109,19 @@ static void WRESetPropName( HWND hDlg, WREProperyInfo *info )
 
 static void WRESetPropMemoryFlags( HWND hDlg, uint_16 mflags )
 {
-    if( mflags & MEMFLAG_MOVEABLE ) {
+    if( mflags & RESFLAG_MOVEABLE ) {
         CheckDlgButton( hDlg, IDM_PROP_MV, BST_CHECKED );
     }
 
-    if( mflags & MEMFLAG_DISCARDABLE ) {
+    if( mflags & RESFLAG_DISCARDABLE ) {
         CheckDlgButton( hDlg, IDM_PROP_DSC, BST_CHECKED );
     }
 
-    if( mflags & MEMFLAG_PURE ) {
+    if( mflags & RESFLAG_PURE ) {
         CheckDlgButton( hDlg, IDM_PROP_PUR, BST_CHECKED );
     }
 
-    if( mflags & MEMFLAG_PRELOAD ) {
+    if( mflags & RESFLAG_PRELOAD ) {
         CheckDlgButton( hDlg, IDM_PROP_PRE, BST_CHECKED );
     } else {
         CheckDlgButton( hDlg, IDM_PROP_LOC, BST_CHECKED );
@@ -134,22 +134,22 @@ static void WREGetPropMemoryFlags( HWND hDlg, uint_16 *mflags )
         return;
     }
 
-    *mflags &= ~(MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_PRELOAD);
+    *mflags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_PRELOAD);
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_MV ) ) {
-        *mflags |= MEMFLAG_MOVEABLE;
+        *mflags |= RESFLAG_MOVEABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_DSC ) ) {
-        *mflags |= MEMFLAG_DISCARDABLE;
+        *mflags |= RESFLAG_DISCARDABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_PUR ) ) {
-        *mflags |= MEMFLAG_PURE;
+        *mflags |= RESFLAG_PURE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_PRE ) ) {
-        *mflags |= MEMFLAG_PRELOAD;
+        *mflags |= RESFLAG_PRELOAD;
     }
 }
 

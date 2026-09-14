@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -76,37 +76,37 @@ FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token
 {
     switch( token ) {
     case Y_PRELOAD:
-        currflags.flags |= MEMFLAG_PRELOAD | MEMFLAG_PURE;
+        currflags.flags |= RESFLAG_PRELOAD | RESFLAG_PURE;
         currflags.loadOptGiven = true;
         break;
     case Y_LOADONCALL:
-        currflags.flags &= ~MEMFLAG_PRELOAD;
-        currflags.flags |= MEMFLAG_PURE;
+        currflags.flags &= ~RESFLAG_PRELOAD;
+        currflags.flags |= RESFLAG_PURE;
         currflags.loadOptGiven = true;
         break;
     case Y_FIXED:
-        currflags.flags &= ~MEMFLAG_MOVEABLE;
-        currflags.flags |= MEMFLAG_PURE;
+        currflags.flags &= ~RESFLAG_MOVEABLE;
+        currflags.flags |= RESFLAG_PURE;
         currflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
-        currflags.flags |= MEMFLAG_MOVEABLE | MEMFLAG_PURE;
+        currflags.flags |= RESFLAG_MOVEABLE | RESFLAG_PURE;
         currflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
-        currflags.flags |= MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE;
+        currflags.flags |= RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE;
         currflags.memOptGiven = true;
         break;
     case Y_PURE:
-        currflags.flags |= MEMFLAG_PURE;
+        currflags.flags |= RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
-        currflags.flags &= ~MEMFLAG_PURE;
+        currflags.flags &= ~RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     case Y_SEGALIGN:    // This one is OS/2 2.x specific
-        currflags.flags |= MEMFLAG_SEGALIGN;
+        currflags.flags |= RESFLAG_SEGALIGN;
         break;
     case Y_INTEGER:    // Is this OS/2 2.x specific too?
         currflags.codePage = value;
@@ -136,8 +136,8 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
      */
     if( currflags->purityOptGiven
       && !currflags->memOptGiven ) {
-        if( !(currflags->flags & MEMFLAG_PURE) ) {
-            currflags->flags &= ~MEMFLAG_DISCARDABLE;
+        if( !(currflags->flags & RESFLAG_PURE) ) {
+            currflags->flags &= ~RESFLAG_DISCARDABLE;
         }
     }
 }

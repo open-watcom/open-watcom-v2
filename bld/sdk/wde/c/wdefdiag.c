@@ -95,7 +95,7 @@
 /* following is DBCS text in Japanese "�l�r ����" */
 #define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
-#define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
+#define MEMFLAGS_DEF            (RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE)
 
 #define pick_ACTS(o) \
     pick_ACTION_MOVE(o,pick) \
@@ -680,7 +680,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
 #else
     OBJ_DISPATCHER_SET( new, WdeDialogDispatcher );
 #endif
-    new->mem_flags = DEFAULT_MEMFLAGS;
+    new->mem_flags = MEMFLAGS_DEF;
 
     resize_dialog_height = false;
     resize_dialog_width = false;
@@ -3185,37 +3185,37 @@ void WdeDialogGetDialogMemFlags( HWND hDlg, uint_16 *flags )
     *flags = 0;
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_MOVEABLE ) ) {
-        *flags |= MEMFLAG_MOVEABLE;
+        *flags |= RESFLAG_MOVEABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_DISCARDABLE ) ) {
-        *flags |= MEMFLAG_DISCARDABLE;
+        *flags |= RESFLAG_DISCARDABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_PURE ) ) {
-        *flags |= MEMFLAG_PURE;
+        *flags |= RESFLAG_PURE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_LOAD_PRELOAD ) ) {
-        *flags |= MEMFLAG_PRELOAD;
+        *flags |= RESFLAG_PRELOAD;
     }
 }
 
 void WdeDialogSetDialogMemFlags( HWND hDlg, uint_16 flags )
 {
-    if( flags & MEMFLAG_MOVEABLE ) {
+    if( flags & RESFLAG_MOVEABLE ) {
         CheckDlgButton( hDlg, IDB_MEM_MOVEABLE, BST_CHECKED );
     }
 
-    if( flags & MEMFLAG_DISCARDABLE ) {
+    if( flags & RESFLAG_DISCARDABLE ) {
         CheckDlgButton( hDlg, IDB_MEM_DISCARDABLE, BST_CHECKED );
     }
 
-    if( flags & MEMFLAG_PURE ) {
+    if( flags & RESFLAG_PURE ) {
         CheckDlgButton( hDlg, IDB_MEM_PURE, BST_CHECKED );
     }
 
-    if( flags & MEMFLAG_PRELOAD ) {
+    if( flags & RESFLAG_PRELOAD ) {
         CheckDlgButton( hDlg, IDB_LOAD_PRELOAD, BST_CHECKED );
     }
 }

@@ -197,7 +197,7 @@ bool WSaveObjectAs( bool prompt_name, WMenuEditInfo *einfo )
             idata2.data = einfo->info->symbol_file;
             idata2.lang = einfo->info->lang;
             idata2.size = (uint_32)( strlen( einfo->info->symbol_file ) + 1 );
-            idata2.MemFlags = MEMFLAG_DISCARDABLE;
+            idata2.MemFlags = RESFLAG_DISCARDABLE;
         }
     }
 
