@@ -80,7 +80,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                 case Y_POINTER:
                 case Y_ICON:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, 0 );
+                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_NONE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMDP;
@@ -111,7 +111,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_BITMAP:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMP;
@@ -121,7 +121,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, 0, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
+                        SemOS2CheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
                         flags = fullflags->flags;
                     } else {
                         flags = flagsMDP;

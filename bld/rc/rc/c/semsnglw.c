@@ -110,13 +110,9 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     switch( type ) {
     case Y_ICON:
         if( fullflags != NULL ) {
-            SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                                purity_option );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, purity_option );
             flags = fullflags->flags;
-            SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                                MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
             flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
@@ -126,13 +122,9 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
         break;
     case Y_CURSOR:
         if( fullflags != NULL ) {
-            SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                                purity_option );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, purity_option );
             flags = fullflags->flags;
-            SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                                MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
             group_flags = fullflags->flags;
         } else {
             flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | purity_option;
@@ -142,7 +134,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
         break;
     case Y_BITMAP:
         if( fullflags != NULL ) {
-            SemWINCheckMemFlags( fullflags, 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
             flags = MEMFLAG_MOVEABLE | MEMFLAG_PURE;
@@ -151,9 +143,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
-            SemWINCheckMemFlags( fullflags, 0,
-                                MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE,
-                                MEMFLAG_PURE );
+            SemWINCheckResFlags( fullflags, MEMFLAG_NONE, MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, MEMFLAG_PURE );
             flags = fullflags->flags;
         } else {
             flags = MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE | MEMFLAG_PURE;

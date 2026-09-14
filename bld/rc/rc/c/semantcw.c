@@ -138,7 +138,7 @@ FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YYTOKENTYPE token )
     return( currflags );
 }
 
-void SemWINCheckMemFlags( FullMemFlags *currflags, ResMemFlags loadopts,
+void SemWINCheckResFlags( FullMemFlags *currflags, ResMemFlags loadopts,
             ResMemFlags memopts, ResMemFlags pureopts )
 /********************************************************************/
 {
