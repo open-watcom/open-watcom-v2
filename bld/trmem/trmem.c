@@ -578,7 +578,7 @@ int _trmem_validate( void *mem, _trmem_who who, _trmem_hdl hdl )
 void _trmem_free( void *mem, _trmem_who who, _trmem_hdl hdl )
 /***********************************************************/
 {
-    entry_ptr   tr;
+    entry_ptr       tr;
     NSSTD( size_t ) size;
 
     if( mem == NULL ) {
@@ -602,10 +602,10 @@ void _trmem_free( void *mem, _trmem_who who, _trmem_hdl hdl )
 }
 
 void *_trmem_realloc( void *old, NSSTD( size_t ) size, _trmem_who who, _trmem_hdl hdl )
-/**************************************************************************************/
+/*************************************************************************************/
 {
-    entry_ptr   tr;
-    void *      new_block;
+    entry_ptr       tr;
+    void            *new_block;
     NSSTD( size_t ) old_size;
 
     if( hdl->realloc == NULL ) {
@@ -697,8 +697,8 @@ char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl )
 /********************************************************************/
 {
     NSSTD( size_t ) size;
-    void        *mem;
-    entry_ptr   tr;
+    void            *mem;
+    entry_ptr       tr;
 
     hdl->alloc_no += 1;
     if( hdl->strdup == NULL ) {
@@ -771,8 +771,8 @@ void _trmem_prt_usage( _trmem_hdl hdl )
 unsigned _trmem_prt_list_ex( _trmem_hdl hdl, unsigned max_items )
 /***************************************************************/
 {
-    entry_ptr   tr;
-    unsigned    chunks;
+    entry_ptr       tr;
+    unsigned        chunks;
     NSSTD( size_t ) size;
 
     tr = hdl->alloc_list;
