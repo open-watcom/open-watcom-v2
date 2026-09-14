@@ -58,7 +58,7 @@ static _trmem_hdl TrHdl = _TRMEM_HDL_NONE;
 //  PrintLine   -- output function used by the memory tracker.
 //
 
-void PrintLine( void *parm, const char *buf, size_t len )
+void PrintLine( void *parm, const char *buf, std::size_t len )
 {
     /* unused parameters */ (void)parm; (void)len;
 
@@ -78,7 +78,7 @@ void PrintLine( void *parm, const char *buf, size_t len )
 
 extern "C" {
 
-void *my_malloc( size_t size )
+void *my_malloc( std::size_t size )
 {
     return( std::malloc( size ) );
 }
@@ -88,7 +88,7 @@ void my_free( void *p )
     return( std::free( p ) );
 }
 
-void *my_realloc( void *p, size_t size )
+void *my_realloc( void *p, std::size_t size )
 {
     return( std::realloc( p, size ) );
 }
