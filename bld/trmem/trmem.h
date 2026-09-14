@@ -36,7 +36,12 @@
 
 #if defined( TRMEM )
 
-#include <stddef.h>
+#ifdef __cplusplus
+    #include <cstddef>
+#else
+    #include <stddef.h>
+#endif
+#include "nsstd.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,7 +65,7 @@ typedef void (*_trmem_who)( void );  /* generic pointer to code */
 #define _TRMEM_NO_ROUTINE   ((_trmem_who)0)
 
 /* generic pointer to code with realloc signature */
-typedef void *(*_trmem_realloc_who)(void *, size_t);
+typedef void *(*_trmem_realloc_who)(void *, NSSTD( size_t ));
 #define _TRMEM_NO_REALLOC   ((_trmem_realloc_who)0)
 
 /* generic pointer to code with strdup signature */
@@ -128,12 +133,12 @@ enum {
     sure they are initialized before calling _trmem_open.
 */
 extern _trmem_hdl _trmem_open(
-    void *(*__alloc)(size_t),
-    void (*__free)(void*),
-    void * (*__realloc)(void*,size_t),
-    char * (*__strdup)(const char*),
+    void *(*__alloc)(NSSTD( size_t )),
+    void (*__free)(void *),
+    void * (*__realloc)(void *, NSSTD( size_t )),
+    char * (*__strdup)(const char *),
     void *__prt_parm,
-    void (*__prt_line)(void *__prt_parm, const char *__buf, size_t __len),
+    void (*__prt_line)(void *prt_parm, const char *buf, NSSTD( size_t )len),
     unsigned __flags
 );
 
@@ -152,11 +157,11 @@ extern unsigned _trmem_close( _trmem_hdl );
     with
         ptr = _trmem_alloc( size, _trmem_guess_who(), hdl );
 */
-extern void *_trmem_alloc( size_t, _trmem_who, _trmem_hdl );
+extern void *_trmem_alloc( NSSTD( size_t ), _trmem_who, _trmem_hdl );
 extern void _trmem_free( void *, _trmem_who, _trmem_hdl );
-extern void *_trmem_realloc( void *, size_t, _trmem_who, _trmem_hdl );
+extern void *_trmem_realloc( void *, NSSTD( size_t ), _trmem_who, _trmem_hdl );
 extern char *_trmem_strdup( const char *str, _trmem_who who, _trmem_hdl hdl );
-extern size_t _trmem_msize( void *, _trmem_hdl );
+extern NSSTD( size_t ) _trmem_msize( void *, _trmem_hdl );
 
 
 /*
@@ -178,7 +183,7 @@ extern memsize _trmem_get_peak_usage( _trmem_hdl );
     _trmem_set_min_alloc sets a minimum allocation size.  If an allocation is
     done which is smaller than this minimum, trmem will print a warning.
 */
-extern void _trmem_set_min_alloc( size_t, _trmem_hdl );
+extern void _trmem_set_min_alloc( NSSTD( size_t ), _trmem_hdl );
 
 /*
     _trmem_validate does some consitancy checks on an allocated chunk.
@@ -187,7 +192,7 @@ extern void _trmem_set_min_alloc( size_t, _trmem_hdl );
 */
 extern int _trmem_validate( void *__ptr, _trmem_who, _trmem_hdl );
 extern int _trmem_validate_all( _trmem_hdl );
-extern int _trmem_chk_range( void *__start, size_t __len, _trmem_who, _trmem_hdl );
+extern int _trmem_chk_range( void *__start, NSSTD( size_t )__len, _trmem_who, _trmem_hdl );
 
 /*
     _trmem_prt_use_seg_num changes whether the memory tracker (for windows
@@ -202,28 +207,37 @@ extern int _trmem_prt_use_seg_num( _trmem_hdl, int use_set_num );
 
 
 /*
-    !!!! WARNING !!!! WARNING !!!!
-
-    _trmem_guess_who is a pragma that determines the caller of the current
-    function.  The pragma makes the following assumptions:
-
-        The current function was compiled with the /of option.
-        The current function does not have a __near or __far keyword.
-
-    You may not want your entire application compiled with /of; be careful.
-    (i.e., /of generates fatter prologs than are necessary for most apps.)
-
-    Actually, _trmem_guess_who doesn't really have to "guess" now that /of
-    exists.
-
-    _trmem_whoami returns the CS:eIP of an address within itself.  There are
-    no restrictions on a module using _trmem_whoami (i.e., no need for /of).
-*/
+ *  !!!! WARNING !!!! WARNING !!!!
+ *
+ * _trmem_guess_who is a directive (pragma) that identifies the caller
+ * of the current function. This directive relies on the following
+ * assumptions:
+ *
+ *   The current function does not contain the __near or __far keyword.
+ *   The current function was compiled with the -of option or an equivalent method.
+ *
+ * You might not want to compile the entire application with the -of option,
+ * as it generates larger function prologues than most applications require.
+ * In OW 2.0, you can selectively use #pragma aux <function name> __frame for
+ * each function that requires this.
+ * Using the directive '#pragma aux <function name> __frame' or the preprocessor
+ * operator form '_Pragma( "aux <function name> __frame" )' ensures that
+ * _trmem_guess_who function works correctly. The header trmem.h defines
+ * a TRMEMAPI(x) macro that performs this action for a specified function name.
+ * You can use this macro for any function that calls _trmem_guess_who,
+ * eliminating the need to use the -of option when compiling the source code
+ * of the callers.
+ *
+ * _trmem_whoami returns the CS:eIP address from within itself. There are no
+ * restrictions for modules using _trmem_whoami function (i.e., the -of option
+ * or '#pragma aux <function name> __frame' is not required.
+ *
+ */
 extern _trmem_who  _trmem_guess_who( void );
 extern _trmem_who  _trmem_whoami( void );
 
 #ifdef __WATCOMC__
-#if defined( _M_I86SM ) || defined( _M_I86CM )
+  #if defined( _M_I86SM ) || defined( _M_I86CM )
     #pragma aux _trmem_guess_who = \
             "mov ax,[bp+2]"     \
         __parm              [] \
@@ -237,7 +251,7 @@ extern _trmem_who  _trmem_whoami( void );
         __value             [__ax] \
         __modify __exact    [__ax]
 
-#elif defined( _M_I86LM ) || defined( _M_I86MM ) || defined( _M_I86HM )
+  #elif defined( _M_I86LM ) || defined( _M_I86MM ) || defined( _M_I86HM )
     #pragma aux _trmem_guess_who = \
             "mov dx,[bp+4]"     \
             "mov ax,[bp+2]"     \
@@ -253,7 +267,7 @@ extern _trmem_who  _trmem_whoami( void );
         __value             [__dx __ax] \
         __modify __exact    [__ax __dx]
 
-#elif defined( _M_IX86 )
+  #elif defined( _M_IX86 )
     #pragma aux _trmem_guess_who = \
             "mov eax,[ebp+4]"   \
         __parm              [] \
@@ -266,7 +280,7 @@ extern _trmem_who  _trmem_whoami( void );
         __parm              [] \
         __value             [__eax] \
         __modify __exact    [__eax]
-#endif
+  #endif
 #endif
 
 #ifdef __cplusplus
