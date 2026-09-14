@@ -15,10 +15,10 @@
 
 #include <afxv_w32.h>
 
-#include <errno.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cerrno>
 #include <tchar.h>
 
 // WM_CTLCOLOR is included in Win16, but not Win32.

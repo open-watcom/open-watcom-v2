@@ -92,7 +92,7 @@ void __cdecl AfxTrace( LPCTSTR lpszFormat, ... )
 /**********************************************/
 {
 #ifdef _DEBUG
-    va_list args;
+    std::va_list args;
     TCHAR   szBuff[1024];
     va_start( args, lpszFormat );
     _vstprintf( szBuff, lpszFormat, args );

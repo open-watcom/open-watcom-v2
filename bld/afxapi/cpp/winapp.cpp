@@ -90,10 +90,10 @@ CWinApp::CWinApp( LPCTSTR lpszAppName )
     ASSERT( pModuleState != NULL );
     ASSERT( pModuleState->m_pCurrentWinApp == NULL );
     pModuleState->m_pCurrentWinApp = this;
-    
+
     m_hThread = ::GetCurrentThread();
     m_nThreadID = ::GetCurrentThreadId();
-    
+
     m_hInstance = NULL;
     m_lpCmdLine = NULL;
     m_nCmdShow = 0;
@@ -123,7 +123,7 @@ CWinApp::~CWinApp()
 {
     // Don't close the thread handle in the CWinThread destructor.
     m_hThread = NULL;
-    
+
     if( m_pszAppName != NULL ) {
         free( (void *)m_pszAppName );
     }
@@ -433,7 +433,7 @@ BOOL CWinApp::GetPrinterDeviceDefaults( PRINTDLG *pPrintDlg )
     pPrintDlg->hDevNames = m_hDevNames;
     return( TRUE );
 }
-        
+
 UINT CWinApp::GetProfileInt( LPCTSTR lpszSection, LPCTSTR lpszEntry, int nDefault )
 /*********************************************************************************/
 {

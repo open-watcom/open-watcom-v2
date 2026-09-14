@@ -265,16 +265,16 @@ int CString::Find( TCHAR ch, int iStart ) const
     }
 }
 
-void CString::FormatMessageV( PCTSTR pszFormat, va_list *pargs )
-/**************************************************************/
+void CString::FormatMessageV( PCTSTR pszFormat, std::va_list *pargs )
+/*******************************************************************/
 {
     TCHAR   szBuff[1024];
     ::FormatMessage( FORMAT_MESSAGE_FROM_STRING, pszFormat, 0L, 0L, szBuff, 1024, pargs );
     SetString( szBuff );
 }
 
-void CString::FormatV( PCTSTR pszFormat, va_list args )
-/*****************************************************/
+void CString::FormatV( PCTSTR pszFormat, std::va_list args )
+/**********************************************************/
 {
     TCHAR   szBuff[1024];
     _vstprintf( szBuff, pszFormat, args );
@@ -587,10 +587,10 @@ CString &CString::operator=( wchar_t ch )
 void __cdecl CString::AppendFormat( UINT nFormatID, ... )
 /*******************************************************/
 {
-    va_list     args;
-    TCHAR       szFormat[1024];
-    TCHAR       szBuff[1024];
-    HINSTANCE   hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
+    std::va_list    args;
+    TCHAR           szFormat[1024];
+    TCHAR           szBuff[1024];
+    HINSTANCE       hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
     va_start( args, nFormatID );
     ::LoadString( hInstance, nFormatID, szFormat, 1024 );
     _vstprintf( szBuff, szFormat, args );
@@ -601,8 +601,8 @@ void __cdecl CString::AppendFormat( UINT nFormatID, ... )
 void __cdecl CString::AppendFormat( PCTSTR pszFormat, ... )
 /*********************************************************/
 {
-    va_list args;
-    TCHAR   szBuff[1024];
+    std::va_list    args;
+    TCHAR           szBuff[1024];
     va_start( args, pszFormat );
     _vstprintf( szBuff, pszFormat, args );
     Append( szBuff );
@@ -612,9 +612,9 @@ void __cdecl CString::AppendFormat( PCTSTR pszFormat, ... )
 void __cdecl CString::Format( UINT nFormatID, ... )
 /*************************************************/
 {
-    va_list     args;
-    TCHAR       szFormat[1024];
-    HINSTANCE   hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
+    std::va_list    args;
+    TCHAR           szFormat[1024];
+    HINSTANCE       hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
     va_start( args, nFormatID );
     ::LoadString( hInstance, nFormatID, szFormat, 1024 );
     FormatV( szFormat, args );
@@ -624,7 +624,7 @@ void __cdecl CString::Format( UINT nFormatID, ... )
 void __cdecl CString::Format( PCTSTR pszFormat, ... )
 /***************************************************/
 {
-    va_list args;
+    std::va_list    args;
     va_start( args, pszFormat );
     FormatV( pszFormat, args );
     va_end( args );
@@ -633,9 +633,9 @@ void __cdecl CString::Format( PCTSTR pszFormat, ... )
 void __cdecl CString::FormatMessage( UINT nFormatID, ... )
 /********************************************************/
 {
-    va_list     args;
-    TCHAR       szFormat[1024];
-    HINSTANCE   hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
+    std::va_list    args;
+    TCHAR           szFormat[1024];
+    HINSTANCE       hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nFormatID ), RT_STRING );
     va_start( args, nFormatID );
     ::LoadString( hInstance, nFormatID, szFormat, 1024 );
     FormatMessageV( szFormat, &args );
@@ -645,7 +645,7 @@ void __cdecl CString::FormatMessage( UINT nFormatID, ... )
 void __cdecl CString::FormatMessage( PCTSTR pszFormat, ... )
 /**********************************************************/
 {
-    va_list args;
+    std::va_list    args;
     va_start( args, pszFormat );
     FormatMessageV( pszFormat, &args );
     va_end( args );

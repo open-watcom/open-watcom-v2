@@ -35,7 +35,7 @@
 CHandleMap::CHandleMap( CRuntimeClass *pClass,
                         void (PASCAL *pfnConstructObject)( CObject *pObject ),
                         void (PASCAL *pfnDestructObject)( CObject *pObject ),
-                        size_t nOffset, int nHandles )
+                        std::size_t nOffset, int nHandles )
 /****************************************************/
 {
     ASSERT( pClass != NULL );

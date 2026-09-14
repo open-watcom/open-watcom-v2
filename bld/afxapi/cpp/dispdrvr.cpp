@@ -116,7 +116,7 @@ LPDISPATCH COleDispatchDriver::DetachDispatch()
 
 void COleDispatchDriver::InvokeHelperV( DISPID dwDispID, WORD wFlags, VARTYPE vtRet,
                                         void *pvRet, const BYTE *pbParamInfo,
-                                        va_list args )
+                                        std::va_list args )
 /*******************************************************/
 {
     int         cParams = strlen( (const char *)pbParamInfo );
@@ -386,7 +386,7 @@ void AFX_CDECL COleDispatchDriver::InvokeHelper( DISPID dwDispID, WORD wFlags, V
                                                  void *pvRet, const BYTE *pbParamInfo, ... )
 /******************************************************************************************/
 {
-    va_list args;
+    std::va_list args;
     va_start( args, pbParamInfo );
     InvokeHelperV( dwDispID, wFlags, vtRet, pvRet, pbParamInfo, args );
     va_end( args );
@@ -406,7 +406,7 @@ void AFX_CDECL COleDispatchDriver::SetProperty( DISPID dwDispID, VARTYPE vtProp,
         bParamInfo[0] = VT_BSTRA;
     }
 #endif
-    va_list args;
+    std::va_list args;
     va_start( args, vtProp );
     if( vtProp == VT_DISPATCH ) {
         InvokeHelperV( dwDispID, DISPATCH_PROPERTYPUTREF, VT_EMPTY, NULL, bParamInfo, args );

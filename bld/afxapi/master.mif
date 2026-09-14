@@ -42,8 +42,6 @@ crwatpro_gsp = crwatpro.gsp
 
 mh_dir = ../include
 
-!include ../deps.mif
-
 inc_dirs = -I"../$(host_os)" -I"../h"
 
 rc_inc_dirs = -I"../$(host_os)" -I"../h"
@@ -346,6 +344,8 @@ all : $($(what_to_build)) .SYMBOLIC
     @%make echo_wsplice
     $(noecho)*wsplice $(wsplice_opts) tmp.tmp $@
     @rm -f tmp.tmp
+
+!include ../deps.mif
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
     @%make echo_lib

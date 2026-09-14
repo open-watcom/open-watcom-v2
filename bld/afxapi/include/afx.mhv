@@ -642,13 +642,13 @@ public:
 
 class _AFXLINK CStdioFile : public CFile {
 public:
-    FILE    *m_pStream;
+    std::FILE   *m_pStream;
 
     DECLARE_DYNAMIC( CStdioFile )
 
 public:
     CStdioFile();
-    CStdioFile( FILE *pOpenStream );
+    CStdioFile( std::FILE *pOpenStream );
     CStdioFile( LPCTSTR lpszFileName, UINT nOpenFlags );
 
     virtual LPTSTR  ReadString( LPTSTR lpsz, UINT nMax );

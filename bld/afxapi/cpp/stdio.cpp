@@ -41,8 +41,8 @@ CStdioFile::CStdioFile()
     m_pStream = NULL;
 }
 
-CStdioFile::CStdioFile( FILE *pOpenStream )
-/*****************************************/
+CStdioFile::CStdioFile( std::FILE *pOpenStream )
+/**********************************************/
 {
     m_pStream = pOpenStream;
 }
@@ -56,7 +56,7 @@ CStdioFile::CStdioFile( LPCTSTR lpszFileName, UINT nOpenFlags )
 LPTSTR CStdioFile::ReadString( LPTSTR lpsz, UINT nMax )
 /*****************************************************/
 {
-    if( _fgetts( lpsz, nMax, m_pStream ) == NULL && !feof( m_pStream ) ) {
+    if( _fgetts( lpsz, nMax, m_pStream ) == NULL && !std::feof( m_pStream ) ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
     return( lpsz );
@@ -68,11 +68,11 @@ BOOL CStdioFile::ReadString( CString &rString )
     TCHAR   szBuff[128];
     TCHAR   *pchNL = NULL;
     rString.Empty();
-    if( feof( m_pStream ) ) {
+    if( std::feof( m_pStream ) ) {
         return( FALSE );
     }
-    while( pchNL == NULL && !feof( m_pStream ) ) {
-        if( _fgetts( szBuff, 128, m_pStream ) == NULL && !feof( m_pStream ) ) {
+    while( pchNL == NULL && !std::feof( m_pStream ) ) {
+        if( _fgetts( szBuff, 128, m_pStream ) == NULL && !std::feof( m_pStream ) ) {
             CFileException::ThrowErrno( errno, m_strFileName );
         }
         pchNL = _tcschr( szBuff, _T('\n') );
@@ -95,7 +95,7 @@ void CStdioFile::WriteString( LPCTSTR lpsz )
 void CStdioFile::Abort()
 /**********************/
 {
-    fclose( m_pStream );
+    std::fclose( m_pStream );
     m_hFile = INVALID_HANDLE_VALUE;
     m_bCloseOnDelete = FALSE;
     m_pStream = NULL;
@@ -106,7 +106,7 @@ void CStdioFile::Close()
 {
     int nRet = 0;
     if( m_pStream != NULL ) {
-        nRet = fclose( m_pStream );
+        nRet = std::fclose( m_pStream );
     }
     m_hFile = INVALID_HANDLE_VALUE;
     m_bCloseOnDelete = FALSE;
@@ -125,7 +125,7 @@ CFile *CStdioFile::Duplicate() const
 void CStdioFile::Flush()
 /**********************/
 {
-    if( fflush( m_pStream ) != 0 ) {
+    if( std::fflush( m_pStream ) != 0 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
 }
@@ -135,16 +135,16 @@ ULONGLONG CStdioFile::GetLength() const
 {
     long    lOldPos;
     long    lSize;
-    if( (lOldPos = ftell( m_pStream )) == -1 ) {
+    if( (lOldPos = std::ftell( m_pStream )) == -1 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
-    if( fseek( m_pStream, 0, SEEK_END ) != 0 ) {
+    if( std::fseek( m_pStream, 0, SEEK_END ) != 0 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
-    if( (lSize = ftell( m_pStream )) == -1 ) {
+    if( (lSize = std::ftell( m_pStream )) == -1 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
-    if( fseek( m_pStream, lOldPos, SEEK_SET ) != 0 ) {
+    if( std::fseek( m_pStream, lOldPos, SEEK_SET ) != 0 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
     return( lSize );
@@ -154,7 +154,7 @@ ULONGLONG CStdioFile::GetPosition() const
 /***************************************/
 {
     long    lPos;
-    if( (lPos = ftell( m_pStream )) == -1 ) {
+    if( (lPos = std::ftell( m_pStream )) == -1 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
     return( lPos );
@@ -224,8 +224,8 @@ BOOL CStdioFile::Open( LPCTSTR lpszFileName, UINT nOpenFlags, CFileException *pE
 UINT CStdioFile::Read( void *lpBuf, UINT nCount )
 /***********************************************/
 {
-    int nRet = fread( lpBuf, 1, nCount, m_pStream );
-    if( ferror( m_pStream ) ) {
+    int nRet = std::fread( lpBuf, 1, nCount, m_pStream );
+    if( std::ferror( m_pStream ) ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
     return( nRet );
@@ -246,7 +246,7 @@ ULONGLONG CStdioFile::Seek( LONGLONG lOff, UINT nFrom )
         where = SEEK_CUR;
         break;
     }
-    if( fseek( m_pStream, (long)lOff, where ) != 0 ) {
+    if( std::fseek( m_pStream, (long)lOff, where ) != 0 ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
     return( lOff );
@@ -263,8 +263,8 @@ void CStdioFile::UnlockRange( ULONGLONG dwPos, ULONGLONG dwCount )
 void CStdioFile::Write( const void *lpBuf, UINT nCount )
 /******************************************************/
 {
-    fwrite( lpBuf, 1, nCount, m_pStream );
-    if( ferror( m_pStream ) ) {
+    std::fwrite( lpBuf, 1, nCount, m_pStream );
+    if( std::ferror( m_pStream ) ) {
         CFileException::ThrowErrno( errno, m_strFileName );
     }
 }

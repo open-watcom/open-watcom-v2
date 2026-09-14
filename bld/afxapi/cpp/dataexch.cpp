@@ -127,7 +127,7 @@ void AFXAPI DDV_MinMaxDateTime( CDataExchange *pDX, CTime &refValue,
             return;
         }
     }
-    
+
     HWND hWnd = ::GetDlgItem( pDX->m_pDlgWnd->m_hWnd, pDX->m_idLastControl );
     ASSERT( hWnd != NULL );
 
@@ -271,7 +271,7 @@ void AFXAPI DDV_MinMaxMonth( CDataExchange *pDX, CTime &refValue,
             return;
         }
     }
-    
+
     HWND hWnd = ::GetDlgItem( pDX->m_pDlgWnd->m_hWnd, pDX->m_idLastControl );
     ASSERT( hWnd != NULL );
 
@@ -317,7 +317,7 @@ void AFXAPI DDV_MinMaxSlider( CDataExchange *pDX, DWORD value,
     if( !pDX->m_bSaveAndValidate && (value < minVal || value > maxVal) ) {
         return;
     }
-    
+
     HWND hWnd = ::GetDlgItem( pDX->m_pDlgWnd->m_hWnd, pDX->m_idLastControl );
     ASSERT( hWnd != NULL );
 
