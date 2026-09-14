@@ -268,7 +268,7 @@ h/string.h        : $(string_deps)
 h/string.hpp      : $(mh_dir)/string.mhp $(owhdr) ../cpponly.sp
 h/strings.h       : $(mh_dir)/strings.mh $(owhdr) $(cplus) ../size_t.sp
 h/strstrea.h      : $(strstrea_deps)
-h/tchar.h         : $(mh_dir)/tchar.mh $(owhdr) ../null.sp $(cplus) ../ext.sp ../extepi.sp
+h/tchar.h         : $(mh_dir)/tchar.mh $(owhdr) ../null.sp $(cplus) ../ext.sp ../extepi.sp ../_nsstd.sp
 h/time.h          : $(time_deps)
 h/typeinfo.h      : $(typeinfo_deps)
 h/unistd.h        : $(mh_dir)/unistd.mh $(unistd_deps)

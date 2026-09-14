@@ -36,6 +36,8 @@
 
 :include null.sp
 
+:include _nsstd.sp
+
 #if defined(_UNICODE) || defined(__UNICODE__)
 // **************************** UNICODE **************************************
 
@@ -73,39 +75,39 @@ typedef wchar_t TCHAR;
 
 /* Formatted i/o */
 
-#define _tprintf        wprintf
-#define _ftprintf       fwprintf
+#define _tprintf        __NSSTD(wprintf)
+#define _ftprintf       __NSSTD(fwprintf)
 #define _sntprintf      _snwprintf
-#define _vtprintf       vwprintf
-#define _vftprintf      vfwprintf
-#define _tscanf         wscanf
-#define _ftscanf        fwscanf
-#define _stscanf        swscanf
+#define _vtprintf       __NSSTD(vwprintf)
+#define _vftprintf      __NSSTD(vfwprintf)
+#define _tscanf         __NSSTD(wscanf)
+#define _ftscanf        __NSSTD(fwscanf)
+#define _stscanf        __NSSTD(swscanf)
 #define _vsntprintf     _vsnwprintf
 #define _vstprintf      _vswprintf
 #define _stprintf       _swprintf
 
 /* Unformatted i/o */
 
-#define _fgettc         fgetwc
+#define _fgettc         __NSSTD(fgetwc)
 #define _fgettchar      _fgetwchar
-#define _fgetts         fgetws
-#define _fputtc         fputwc
+#define _fgetts         __NSSTD(fgetws)
+#define _fputtc         __NSSTD(fputwc)
 #define _fputtchar      _fputwchar
-#define _fputts         fputws
-#define _gettc          getwc
-#define _gettchar       getwchar
+#define _fputts         __NSSTD(fputws)
+#define _gettc          __NSSTD(getwc)
+#define _gettchar       __NSSTD(getwchar)
 #define _getts          _getws
-#define _puttc          putwc
-#define _puttchar       putwchar
+#define _puttc          __NSSTD(putwc)
+#define _puttchar       __NSSTD(putwchar)
 #define _putts          _putws
-#define _ungettc        ungetwc
+#define _ungettc        __NSSTD(ungetwc)
 
 /* String conversion functions */
 
-#define _tcstod         wcstod
-#define _tcstol         wcstol
-#define _tcstoul        wcstoul
+#define _tcstod         __NSSTD(wcstod)
+#define _tcstol         __NSSTD(wcstol)
+#define _tcstoul        __NSSTD(wcstoul)
 
 #define _itot           _itow
 #define _ltot           _ltow
@@ -115,23 +117,23 @@ typedef wchar_t TCHAR;
 
 /* String functions */
 
-#define _tcscat         wcscat
-#define _tcschr         wcschr
-#define _tcscpy         wcscpy
-#define _tcscspn        wcscspn
-#define _tcslen         wcslen
-#define _tcsncat        wcsncat
-#define _tcsncpy        wcsncpy
-#define _tcspbrk        wcspbrk
-#define _tcsrchr        wcsrchr
-#define _tcsspn         wcsspn
-#define _tcsstr         wcsstr
+#define _tcscat         __NSSTD(wcscat)
+#define _tcschr         __NSSTD(wcschr)
+#define _tcscpy         __NSSTD(wcscpy)
+#define _tcscspn        __NSSTD(wcscspn)
+#define _tcslen         __NSSTD(wcslen)
+#define _tcsncat        __NSSTD(wcsncat)
+#define _tcsncpy        __NSSTD(wcsncpy)
+#define _tcspbrk        __NSSTD(wcspbrk)
+#define _tcsrchr        __NSSTD(wcsrchr)
+#define _tcsspn         __NSSTD(wcsspn)
+#define _tcsstr         __NSSTD(wcsstr)
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
 inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
-    return( wcstok( __p1, __p2, NULL ) );
+    return( __NSSTD(wcstok)( __p1, __p2, NULL ) );
 }
 #else
-#define _tcstok(__p1,__p2)      wcstok((__p1),(__p2),NULL)
+#define _tcstok(__p1,__p2)      __NSSTD(wcstok)((__p1),(__p2),NULL)
 #endif
 
 #define _tcserror       _wcserror
@@ -142,14 +144,14 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tcsrev         _wcsrev
 #define _tcsset         _wcsset
 
-#define _tcscmp         wcscmp
+#define _tcscmp         __NSSTD(wcscmp)
 #define _tcsicmp        _wcsicmp
-#define _tcsnccmp       wcsncmp
-#define _tcsncmp        wcsncmp
+#define _tcsnccmp       __NSSTD(wcsncmp)
+#define _tcsncmp        __NSSTD(wcsncmp)
 #define _tcsncicmp      _wcsnicmp
 #define _tcsnicmp       _wcsnicmp
 
-#define _tcscoll        wcscoll
+#define _tcscoll        __NSSTD(wcscoll)
 #define _tcsicoll       _wcsicoll
 #define _tcsnccoll      _wcsncoll
 #define _tcsncoll       _wcsncoll
@@ -185,7 +187,7 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tstrdate       _wstrdate
 #define _tstrtime       _wstrtime
 #define _tutime         _wutime
-#define _tcsftime       wcsftime
+#define _tcsftime       __NSSTD(wcsftime)
 
 /* Directory functions */
 
@@ -253,9 +255,9 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 
 /* Redundant "logical-character" mappings */
 
-#define _tcsclen        wcslen
-#define _tcsnccat       wcsncat
-#define _tcsnccpy       wcsncpy
+#define _tcsclen        __NSSTD(wcslen)
+#define _tcsnccat       __NSSTD(wcsncat)
+#define _tcsnccpy       __NSSTD(wcsncpy)
 #define _tcsncset       _wcsnset
 
 #define _tcsdec         _wcsdec
@@ -268,7 +270,7 @@ inline wchar_t *_tcstok( wchar_t *__p1, const wchar_t *__p2 ) {
 
 #define _tcslwr         _wcslwr
 #define _tcsupr         _wcsupr
-#define _tcsxfrm        wcsxfrm
+#define _tcsxfrm        __NSSTD(wcsxfrm)
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
 inline size_t _tclen( const wchar_t * ) {
@@ -288,21 +290,21 @@ inline int _tccmp( const wchar_t *__p1, const wchar_t *__p2 ) {
 
 /* ctype functions */
 
-#define _istalnum       iswalnum
-#define _istalpha       iswalpha
-#define _istascii       iswascii
-#define _istcntrl       iswcntrl
-#define _istdigit       iswdigit
-#define _istgraph       iswgraph
-#define _istlower       iswlower
-#define _istprint       iswprint
-#define _istpunct       iswpunct
-#define _istspace       iswspace
-#define _istupper       iswupper
-#define _istxdigit      iswxdigit
+#define _istalnum       __NSSTD(iswalnum)
+#define _istalpha       __NSSTD(iswalpha)
+#define _istascii       __NSSTD(iswascii)
+#define _istcntrl       __NSSTD(iswcntrl)
+#define _istdigit       __NSSTD(iswdigit)
+#define _istgraph       __NSSTD(iswgraph)
+#define _istlower       __NSSTD(iswlower)
+#define _istprint       __NSSTD(iswprint)
+#define _istpunct       __NSSTD(iswpunct)
+#define _istspace       __NSSTD(iswspace)
+#define _istupper       __NSSTD(iswupper)
+#define _istxdigit      __NSSTD(iswxdigit)
 
-#define _totupper       towupper
-#define _totlower       towlower
+#define _totupper       __NSSTD(towupper)
+#define _totlower       __NSSTD(towlower)
 
 #define _istlegal(__c)      (1)
 #define _istlead(__c)       (0)
@@ -323,20 +325,20 @@ inline wchar_t *_wcsninc( const wchar_t *__p, size_t __l ) {
 }
 inline size_t _wcsncnt( const wchar_t *__p, size_t __l ) {
     size_t __i;
-    __i = wcslen(__p);
+    __i = __NSSTD(wcslen)(__p);
     return( (__i>__l) ? __l : __i );
 }
 inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
-    return( (*(__p1 += wcsspn(__p1,__p2))!='\0') ? (wchar_t*)__p1 : NULL );
+    return( (*(__p1 += __NSSTD(wcsspn)(__p1,__p2))!='\0') ? (wchar_t*)__p1 : NULL );
 }
 #else
 #define _wcsdec(__p1, __p2)     ((__p2)-1)
 #define _wcsinc(__p)            ((__p)+1)
 #define _wcsnextc(__p)          ((unsigned int) *(__p))
 #define _wcsninc(__p, __l)      (((__p)+(__l)))
-#define _wcsncnt(__p, __l)      ((wcslen(__p)>__l) ? __l : wcslen(__p))
-#define _wcsspnp(__p1, __p2)    ((*((__p1)+wcsspn(__p1,__p2))) ? \
-                                  ((__p1)+wcsspn(__p1,__p2)) : NULL)
+#define _wcsncnt(__p, __l)      ((__NSSTD(wcslen)(__p)>__l) ? __l : __NSSTD(wcslen)(__p))
+#define _wcsspnp(__p1, __p2)    ((*((__p1)+__NSSTD(wcsspn)(__p1,__p2))) ? \
+                                  ((__p1)+__NSSTD(wcsspn)(__p1,__p2)) : NULL)
 #endif
 
 #else
@@ -358,55 +360,55 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 
 /* Formatted i/o */
 
-#define _tprintf        printf
-#define _ftprintf       fprintf
-#define _stprintf       sprintf
+#define _tprintf        __NSSTD(printf)
+#define _ftprintf       __NSSTD(fprintf)
+#define _stprintf       __NSSTD(sprintf)
 #define _sntprintf      _snprintf
-#define _vtprintf       vprintf
-#define _vftprintf      vfprintf
-#define _vstprintf      vsprintf
+#define _vtprintf       __NSSTD(vprintf)
+#define _vftprintf      __NSSTD(vfprintf)
+#define _vstprintf      __NSSTD(vsprintf)
 #define _vsntprintf     _vsnprintf
-#define _tscanf         scanf
-#define _ftscanf        fscanf
-#define _stscanf        sscanf
+#define _tscanf         __NSSTD(scanf)
+#define _ftscanf        __NSSTD(fscanf)
+#define _stscanf        __NSSTD(sscanf)
 
 /* Unformatted i/o */
 
-#define _fgettc         fgetc
+#define _fgettc         __NSSTD(fgetc)
 #define _fgettchar      _fgetchar
-#define _fgetts         fgets
-#define _fputtc         fputc
+#define _fgetts         __NSSTD(fgets)
+#define _fputtc         __NSSTD(fputc)
 #define _fputtchar      _fputchar
-#define _fputts         fputs
-#define _gettc          getc
-#define _gettchar       getchar
-#define _getts          gets
-#define _puttc          putc
-#define _puttchar       putchar
-#define _putts          puts
-#define _ungettc        ungetc
+#define _fputts         __NSSTD(fputs)
+#define _gettc          __NSSTD(getc)
+#define _gettchar       __NSSTD(getchar)
+#define _getts          __NSSTD(gets)
+#define _puttc          __NSSTD(putc)
+#define _puttchar       __NSSTD(putchar)
+#define _putts          __NSSTD(puts)
+#define _ungettc        __NSSTD(ungetc)
 
 /* String conversion functions */
 
-#define _tcstod         strtod
-#define _tcstol         strtol
-#define _tcstoul        strtoul
+#define _tcstod         __NSSTD(strtod)
+#define _tcstol         __NSSTD(strtol)
+#define _tcstoul        __NSSTD(strtoul)
 
 #define _itot           itoa
 #define _ltot           ltoa
 #define _ultot          ultoa
-#define _ttoi           atoi
-#define _ttol           atol
+#define _ttoi           __NSSTD(atoi)
+#define _ttol           __NSSTD(atol)
 
 /* String functions */
 
-#define _tcscat         strcat
-#define _tcscpy         strcpy
-#define _tcslen         strlen
-#define _tcsxfrm        strxfrm
+#define _tcscat         __NSSTD(strcat)
+#define _tcscpy         __NSSTD(strcpy)
+#define _tcslen         __NSSTD(strlen)
+#define _tcsxfrm        __NSSTD(strxfrm)
 #define _tcsdup         _strdup
 
-#define _tcserror       strerror
+#define _tcserror       __NSSTD(strerror)
 #define __tcserror      _strerror
 
 /* Execute functions */
@@ -429,16 +431,16 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 #define _tspawnvp       spawnvp
 #define _tspawnvpe      spawnvpe
 
-#define _tsystem        system
+#define _tsystem        __NSSTD(system)
 
 /* Time functions */
 
-#define _tasctime       asctime
-#define _tctime         ctime
+#define _tasctime       __NSSTD(asctime)
+#define _tctime         __NSSTD(ctime)
 #define _tstrdate       _strdate
 #define _tstrtime       strtime
 #define _tutime         utime
-#define _tcsftime       strftime
+#define _tcsftime       __NSSTD(strftime)
 
 /* Directory functions */
 
@@ -468,7 +470,7 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 /* Environment/Path functions */
 
 #define _tfullpath      _fullpath
-#define _tgetenv        getenv
+#define _tgetenv        __NSSTD(getenv)
 #define _tmakepath      _makepath
 #define _tputenv        putenv
 #define _tsearchenv     _searchenv
@@ -478,12 +480,12 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 
 #define _tfdopen        fdopen
 #define _tfsopen        _fsopen
-#define _tfopen         fopen
-#define _tfreopen       freopen
+#define _tfopen         __NSSTD(fopen)
+#define _tfreopen       __NSSTD(freopen)
 :: ISO
-#define _tperror        perror
+#define _tperror        __NSSTD(perror)
 :: ISO
-#define _ttmpnam        tmpnam
+#define _ttmpnam        __NSSTD(tmpnam)
 :: POSIX
 #define _ttempnam       tempnam
 
@@ -506,9 +508,9 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 :: POSIX
 #define _topen          open
 :: ISO
-#define _tremove        remove
+#define _tremove        __NSSTD(remove)
 :: ISO
-#define _trename        rename
+#define _trename        __NSSTD(rename)
 :: MS
 #define _tsopen         _sopen
 :: POSIX
@@ -532,7 +534,7 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 
 /* Setlocale functions */
 
-#define _tsetlocale     setlocale
+#define _tsetlocale     __NSSTD(setlocale)
 
 
 #ifdef _MBCS
@@ -884,28 +886,28 @@ typedef char            TCHAR;
 
 /* String functions */
 
-#define _tcschr         strchr
-#define _tcscspn        strcspn
-#define _tcsncat        strncat
-#define _tcsncpy        strncpy
-#define _tcspbrk        strpbrk
-#define _tcsrchr        strrchr
-#define _tcsspn         strspn
-#define _tcsstr         strstr
-#define _tcstok         strtok
+#define _tcschr         __NSSTD(strchr)
+#define _tcscspn        __NSSTD(strcspn)
+#define _tcsncat        __NSSTD(strncat)
+#define _tcsncpy        __NSSTD(strncpy)
+#define _tcspbrk        __NSSTD(strpbrk)
+#define _tcsrchr        __NSSTD(strrchr)
+#define _tcsspn         __NSSTD(strspn)
+#define _tcsstr         __NSSTD(strstr)
+#define _tcstok         __NSSTD(strtok)
 
 #define _tcsnset        _strnset
 #define _tcsrev         _strrev
 #define _tcsset         _strset
 
-#define _tcscmp         strcmp
+#define _tcscmp         __NSSTD(strcmp)
 #define _tcsicmp        _stricmp
-#define _tcsnccmp       strncmp
-#define _tcsncmp        strncmp
+#define _tcsnccmp       __NSSTD(strncmp)
+#define _tcsncmp        __NSSTD(strncmp)
 #define _tcsncicmp      _strnicmp
 #define _tcsnicmp       _strnicmp
 
-#define _tcscoll        strcoll
+#define _tcscoll        __NSSTD(strcoll)
 #define _tcsicoll       _stricoll
 #define _tcsnccoll      _strncoll
 #define _tcsncoll       _strncoll
@@ -914,9 +916,9 @@ typedef char            TCHAR;
 
 /* "logical-character" mappings */
 
-#define _tcsclen        strlen
-#define _tcsnccat       strncat
-#define _tcsnccpy       strncpy
+#define _tcsclen        __NSSTD(strlen)
+#define _tcsnccat       __NSSTD(strncat)
+#define _tcsnccpy       __NSSTD(strncpy)
 #define _tcsncset       _strnset
 
 #define _tcsdec         _strdec
@@ -929,7 +931,7 @@ typedef char            TCHAR;
 
 #define _tcslwr         _strlwr
 #define _tcsupr         _strupr
-#define _tcsxfrm        strxfrm
+#define _tcsxfrm        __NSSTD(strxfrm)
 
 #if defined(__cplusplus) && defined(__INLINE_FUNCTIONS__)
 inline size_t _tclen( const char * ) {
@@ -949,6 +951,20 @@ inline int _tccmp( const char *__p1, const char *__p2 ) {
 
 /* ctype functions */
 
+#ifdef __FUNCTION_DATA_ACCESS
+
+#define _istalnum       __NSSTD(isalnum)
+#define _istalpha       __NSSTD(isalpha)
+#define _istdigit       __NSSTD(isdigit)
+#define _istgraph       __NSSTD(isgraph)
+#define _istlower       __NSSTD(islower)
+#define _istprint       __NSSTD(isprint)
+#define _istpunct       __NSSTD(ispunct)
+#define _istspace       __NSSTD(isspace)
+#define _istupper       __NSSTD(isupper)
+
+#else
+
 #define _istalnum       isalnum
 #define _istalpha       isalpha
 #define _istdigit       isdigit
@@ -959,8 +975,10 @@ inline int _tccmp( const char *__p1, const char *__p2 ) {
 #define _istspace       isspace
 #define _istupper       isupper
 
-#define _totupper       toupper
-#define _totlower       tolower
+#endif
+
+#define _totupper       __NSSTD(toupper)
+#define _totlower       __NSSTD(tolower)
 
 #define _istlegal(__c)      (1)
 #define _istlead(__c)       (0)
@@ -981,20 +999,20 @@ inline char *_strninc( const char *__p, size_t __l ) {
 }
 inline size_t _strncnt( const char *__p, size_t __l ) {
     size_t __i;
-    __i = strlen(__p);
+    __i = __NSSTD(strlen)(__p);
     return( (__i>__l) ? __l : __i );
 }
 inline char *_strspnp( const char *__p1, const char *__p2 ) {
-    return( (*(__p1 += strspn(__p1,__p2))!='\0') ? (char*)__p1 : NULL );
+    return( (*(__p1 += __NSSTD(strspn)(__p1,__p2))!='\0') ? (char*)__p1 : NULL );
 }
 #else
 #define _strdec(__p1, __p2)  ((__p2)-1)
 #define _strinc(__p)         ((__p)+1)
 #define _strnextc(__p)       ((unsigned int) *(__p))
 #define _strninc(__p, __l)   (((__p)+(__l)))
-#define _strncnt(__p, __l)   ((strlen(__p)>__l) ? __l : strlen(__p))
-#define _strspnp(__p1, __p2) ((*((__p1)+strspn(__p1,__p2))) ? \
-                                ((__p1)+strspn(__p1,__p2)) : NULL)
+#define _strncnt(__p, __l)   ((__NSSTD(strlen)(__p)>__l) ? __l : __NSSTD(strlen)(__p))
+#define _strspnp(__p1, __p2) ((*((__p1)+__NSSTD(strspn)(__p1,__p2))) ? \
+                                ((__p1)+__NSSTD(strspn)(__p1,__p2)) : NULL)
 #endif
 
 #endif
