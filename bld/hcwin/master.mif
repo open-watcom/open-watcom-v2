@@ -25,7 +25,9 @@ extra_cxx_flags = -xs
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
+!  if $(__WATCOM_TOOLS__) < 1300
 extra_c_flags_f_mem = -of+
+!  endif
 ! endif
 !endif
 
@@ -35,7 +37,7 @@ extra_c_flags_f_mem = -of+
 #
 # EXE
 #
-exetarg_objs = &
+objs = &
     whc.obj &
     hpjread.obj &
     hlpdir.obj &
@@ -55,7 +57,8 @@ exetarg_objs = &
     phrase.obj &
     bmx.obj &
     compress.obj &
-    parsing.obj $(trmem_objs)
+    parsing.obj
+exetarg_objs = $(objs) $(trmem_objs)
 !include exetarg.mif
 
 #

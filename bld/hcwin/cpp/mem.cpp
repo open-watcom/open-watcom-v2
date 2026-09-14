@@ -39,9 +39,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "hcmem.h"
-#ifdef TRMEM
-    #include "trmem.h"
-#endif
+#include "trmem.h"
 
 
 #ifdef TRMEM
@@ -50,9 +48,11 @@
 #pragma initialize 40;
 #endif
 
-static _trmem_hdl TrHdl = _TRMEM_HDL_NONE;
-
 static Memory bogus;    // just need to get the ctors called
+
+extern "C" {
+
+static _trmem_hdl TrHdl = _TRMEM_HDL_NONE;
 
 //
 //  PrintLine   -- output function used by the memory tracker.
@@ -62,7 +62,9 @@ void PrintLine( void *parm, const char *buf, size_t len )
 {
     /* unused parameters */ (void)parm; (void)len;
 
-    fprintf( stdout, "%s\n", buf );
+    std::fprintf( stdout, "%s\n", buf );
+}
+
 }
 
 //
@@ -74,19 +76,23 @@ void PrintLine( void *parm, const char *buf, size_t len )
 
 // temporary fix for bug in OW 1.9 C++ compiler
 
+extern "C" {
+
 void *my_malloc( size_t size )
 {
-    return( malloc( size ) );
+    return( std::malloc( size ) );
 }
 
 void my_free( void *p )
 {
-    return( free( p ) );
+    return( std::free( p ) );
 }
 
 void *my_realloc( void *p, size_t size )
 {
-    return( realloc( p, size ) );
+    return( std::realloc( p, size ) );
+}
+
 }
 
 Memory::Memory()
@@ -99,7 +105,7 @@ Memory::Memory()
 
 Memory::Memory()
 {
-    TrHdl = _trmem_open( malloc, free, realloc, _TRMEM_NO_STRDUP,
+    TrHdl = _trmem_open( std::malloc, std::free, std::realloc, _TRMEM_NO_STRDUP,
             NULL, PrintLine, _TRMEM_ALL );
 }
 
