@@ -28,6 +28,8 @@ inc_dirs = -I"../h" $(cli_aui_inc_dirs) -I"$(trmem_dir)"
 extra_c_flags = -DGUI_IS_GUI
 !endif
 
+extra_c_flags_wini86 = -zW
+
 # explicit rules
 #################
 
@@ -36,7 +38,7 @@ extra_c_flags = -DGUI_IS_GUI
 #
 exetarg_objs = wndmem.obj app.obj util.obj window1.obj window2.obj &
     window3.obj window4.obj window5.obj window6.obj window7.obj window8.obj &
-    menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
+    menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj $(trmem_obj)
 exetarg_libs = $(cli_aui_libs)
 exetarg_res = app.res
 #exetarg_res = appj.res
