@@ -99,9 +99,9 @@ extern void             WResFreeDir( WResDir );
 extern bool             WResWriteDir( FILE *fp, WResDir );
 extern bool             WResReadDir( FILE *fp, WResDir *dir, bool * );
 extern bool             WResReadDir2( FILE *fp, WResDir *dir, bool *dup_discarded, void *fileinfo );
-extern bool             WResAddResource( const WResID *type_id, const WResID *res_id, uint_16 memflags, long offset,
+extern bool             WResAddResource( const WResID *type_id, const WResID *res_id, ResMemFlags memflags, long offset,
                                 uint_32 length, WResDir dir, const WResLangType *lang, bool *duplicate );
-extern bool             WResAddResource2( const WResID *type_id, const WResID *res_id, uint_16 memflags, long offset,
+extern bool             WResAddResource2( const WResID *type_id, const WResID *res_id, ResMemFlags memflags, long offset,
                                 uint_32 length, WResDir dir, const WResLangType *lang, WResDirWindow *wind_dup,
                                 void *fileinfo );
 extern WResDirWindow    WResFindResource( const WResID *type_id, const WResID *res_id, WResDir, const WResLangType *lang );

@@ -25,27 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Resource flag definitions.
 *
 ****************************************************************************/
 
 
-#ifndef MRES_INCLUDED
-#define MRES_INCLUDED
+#ifndef RESFLAGS_INCLUDED
+#define RESFLAGS_INCLUDED
 
-#include "resfmt.h"
-
-typedef struct MResResourceHeader {
-    ResNameOrOrdinal    *Type;
-    ResNameOrOrdinal    *Name;
-    uint_32             Size;
-    ResMemFlags         MemoryFlags;
-    uint_16             LanguageId;
-    uint_32             Version;
-    uint_32             DataVersion;
-    uint_32             Characteristics;
-    uint_32             HdrSize;
-} MResResourceHeader;
+typedef enum ResMemFlags {
+    MEMFLAG_NONE        = 0x0000,
+    MEMFLAG_MOVEABLE    = 0x0010,
+    MEMFLAG_PURE        = 0x0020,
+    MEMFLAG_PRELOAD     = 0x0040,
+    MEMFLAG_DISCARDABLE = 0x1000,
+    MEMFLAG_SEGALIGN    = 0x8000,
+} ResMemFlags;
 
 #endif

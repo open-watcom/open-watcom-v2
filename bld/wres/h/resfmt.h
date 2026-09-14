@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +45,6 @@
 #include "resbitmp.h"
 #include "resfont.h"
 #include "resver.h"
-
-typedef uint_16 ResMemFlags;
-#define MEMFLAG_MOVEABLE            0x0010
-#define MEMFLAG_PURE                0x0020
-#define MEMFLAG_PRELOAD             0x0040
-#define MEMFLAG_DISCARDABLE         0x1000
-#define MEMFLAG_SEGALIGN            0x8000
+#include "resflags.h"
 
 #endif

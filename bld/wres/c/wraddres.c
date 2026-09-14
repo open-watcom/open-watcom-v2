@@ -70,7 +70,7 @@ static WResTypeNode *newTypeNode( const WResID *type_id )
     return( typenode );
 }
 
-static WResLangNode *newLangNode( uint_16 memflags, uint_32 offset,
+static WResLangNode *newLangNode( ResMemFlags memflags, uint_32 offset,
                                   uint_32 length, const WResLangType *lang,
                                   void *fileinfo )
 {
@@ -126,7 +126,7 @@ static WResResNode *newResNode( const WResID *res_id )
  *                   occured (including duplicate entry)
  */
 bool WResAddResource( const WResID *type_id, const WResID *res_id,
-                    uint_16 memflags, long offset, uint_32 length,
+                    ResMemFlags memflags, long offset, uint_32 length,
                     WResDir dir, const WResLangType *lang,
                     bool *duplicate )
 /************************************************************/
@@ -143,7 +143,7 @@ bool WResAddResource( const WResID *type_id, const WResID *res_id,
 }
 
 bool WResAddResource2( const WResID *type_id, const WResID *res_id,
-                    uint_16 memflags, long offset, uint_32 length,
+                    ResMemFlags memflags, long offset, uint_32 length,
                     WResDir dir, const WResLangType *lang,
                     WResDirWindow *wind_dup, void *fileinfo )
 /************************************************************/
