@@ -71,7 +71,9 @@ extra_c_flags_f_demangle = -I"$(lib_misc_dir)/h"
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
-#extra_c_flags_f_brmem = -of+
+!  if $(__WATCOM_TOOLS__) < 1300
+extra_c_flags_f_brmem = -of+
+!  endif
 ! endif
 !endif
 

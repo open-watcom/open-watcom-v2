@@ -22,9 +22,9 @@ inc_dirs = -I"../h" -I"$(browser_dir)/h" $(cli_dwarfr_inc_dirs) -I"$(posix_dir)/
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
-#!  if $(__WATCOM_TOOLS__) < 1300
+!  if $(__WATCOM_TOOLS__) < 1300
 extra_c_flags_f_brmem = -of+
-#!  endif
+!  endif
 ! endif
 !endif
 
@@ -48,9 +48,9 @@ extra_l_flags_ntaxp = op undefsok
 # EXE
 #
 !ifeq debug 2
-exetarg_objs_debug = debuglog.obj
+debug_objs = debuglog.obj
 !endif
-exetarg_objs = &
+objs = &
     blip.obj     &
     dietree.obj  &
     dwmerger.obj &
@@ -77,7 +77,7 @@ exetarg_objs = &
     mempool.obj  &
     util.obj     &
     wtime.obj    &
-    brmem.obj $(trmem_objs) &
-    $(exetarg_objs_debug)
+    brmem.obj
+exetarg_objs = $(objs) $(trmem_objs) $(debug_objs)
 exetarg_name = wbrg
 !include exetarg.mif
