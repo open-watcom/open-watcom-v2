@@ -21,6 +21,13 @@ memory_model_i86 = l
 
 additional_clean = *.gh *.grh *.grc
 
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -45,7 +52,7 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags     = -fh
 
-extra_c_flags_win = -zW-zc
+extra_c_flags_win = -zW
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_f_preproc = -zm -fh=preproc.pch
@@ -57,7 +64,7 @@ extra_c_flags_f_ppmacro = -zm -fh=preproc.pch
 # lflags
 #
 extra_l_flags_nt = op heap=16k commit heap=8k
-extra_l_flags_win  = op stack=32k, rwr library commdlg, ddeml
+extra_l_flags_win = op stack=32k, rwr library commdlg, ddeml
 
 # explicit rules
 #################
