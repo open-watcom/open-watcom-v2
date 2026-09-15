@@ -52,8 +52,8 @@ typedef struct WREPropertyInfo {
     char        *symbol;
     char        *new_symbol;
     WRHashTable *symbol_table;
-    uint_16     mflags;
-    uint_16     new_mflags;
+    ResMemFlags mflags;
+    ResMemFlags new_mflags;
 } WREPropertyInfo;
 
 /****************************************************************************/
@@ -107,7 +107,7 @@ static void WRESetPropName( HWND hDlg, WREProperyInfo *info )
     }
 }
 
-static void WRESetPropMemoryFlags( HWND hDlg, uint_16 mflags )
+static void WRESetPropMemoryFlags( HWND hDlg, ResMemFlags mflags )
 {
     if( mflags & RESFLAG_MOVEABLE ) {
         CheckDlgButton( hDlg, IDM_PROP_MV, BST_CHECKED );
@@ -128,7 +128,7 @@ static void WRESetPropMemoryFlags( HWND hDlg, uint_16 mflags )
     }
 }
 
-static void WREGetPropMemoryFlags( HWND hDlg, uint_16 *mflags )
+static void WREGetPropMemoryFlags( HWND hDlg, ResMemFlags *mflags )
 {
     if( mflags == NULL ) {
         return;
@@ -180,7 +180,7 @@ BOOL WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 
         case IDOK:
             info = (WREProperyInfo *)GET_DLGDATA( hDlg );
-            WREGetPropMemoryFlags( hDlg, info->new_mflags );
+            WREGetPropMemoryFlags( hDlg, &info->new_mflags );
             EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;
