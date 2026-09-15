@@ -93,7 +93,7 @@ FullMemFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
 {
     FullMemFlags    newflags;
 
-    newflags.flags = 0;
+    newflags.flags = RESFLAG_NONE;
     newflags.loadOptGiven = false;
     newflags.memOptGiven = false;
     newflags.purityOptGiven = false;

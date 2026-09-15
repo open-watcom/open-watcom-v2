@@ -1095,8 +1095,7 @@ dialogtemplate
 dlg-template
     : dialogtemplate name-id diag-control-section
         {
-            SemOS2WriteDialogTemplate( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE,
-               SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteDialogTemplate( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, SemOS2DefaultCodepage(), $3 );
         }
     | dialogtemplate name-id resource-options diag-control-section
         {
