@@ -545,7 +545,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, char *data, uint_32 dsize 
                 new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir, ctype ) == NULL );
             }
         }
-        ok = WRENewResource( &curr, ctype, cname, DEF_MEMFLAGS, 0,
+        ok = WRENewResource( &curr, ctype, cname, RESFLAGS_DEF, 0,
                              dsize, &lang, &dup, RESOURCE2INT( RT_BITMAP ),
                              new_type ) && !dup;
     }

@@ -179,7 +179,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
             rname = WRECreateAccTitle();
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
+                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
                                      &lang, &dup, RESOURCE2INT( RT_ACCELERATOR ),
                                      tname_alloc );
                 if( !ok && dup ) {

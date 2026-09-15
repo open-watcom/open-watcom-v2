@@ -150,7 +150,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
             rname = WResIDFromNum( 0 );
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
+                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
                                      &lang, &dup, RESOURCE2INT( RT_STRING ), tname_alloc );
                 if( !ok && dup ) {
                     ok = true;

@@ -418,7 +418,7 @@ bool WREGetAndAddCursorImage( char *data, WResDir dir, CURSORDIRENTRY *cd, uint_
     }
 
     if( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0,
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0,
                                size, dir, &lang, &dup );
     }
 
@@ -477,7 +477,7 @@ bool WREGetAndAddIconImage( char *data, WResDir dir, ICONDIRENTRY *id, uint_16 o
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0,
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0,
                                id->dwBytesInRes, dir, &lang, &dup );
     }
 

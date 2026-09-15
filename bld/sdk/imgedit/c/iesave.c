@@ -53,7 +53,7 @@
 #include "clibext.h"
 
 
-#define MEMFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
+#define RESFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
 
@@ -791,7 +791,7 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
     }
 
     if( ok ) {
-        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, 0,
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, 0,
                                node->wrinfo->dir, &lang, &dup ) && !dup;
     }
 

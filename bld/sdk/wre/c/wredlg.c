@@ -184,7 +184,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
             rname = WRECreateDialogTitle();
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
+                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
                                      &lang, &dup, RESOURCE2INT( RT_DIALOG ), tname_alloc );
                 if( !ok && dup ) {
                     ok = true;

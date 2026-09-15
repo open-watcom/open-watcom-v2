@@ -48,7 +48,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define MEMFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
+#define RESFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -170,7 +170,7 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, rihsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, rihsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -259,7 +259,7 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, rchsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, rchsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {

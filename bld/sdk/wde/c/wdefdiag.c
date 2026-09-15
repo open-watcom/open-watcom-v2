@@ -95,7 +95,7 @@
 /* following is DBCS text in Japanese "�l�r ����" */
 #define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
-#define MEMFLAGS_DEF            (RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE)
+#define RESFLAGS_DEF            (RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE)
 
 #define pick_ACTS(o) \
     pick_ACTION_MOVE(o,pick) \
@@ -680,7 +680,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
 #else
     OBJ_DISPATCHER_SET( new, WdeDialogDispatcher );
 #endif
-    new->mem_flags = MEMFLAGS_DEF;
+    new->mem_flags = RESFLAGS_DEF;
 
     resize_dialog_height = false;
     resize_dialog_width = false;

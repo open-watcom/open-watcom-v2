@@ -38,7 +38,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define MEMFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
+#define RESFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -299,7 +299,7 @@ bool WRAPI WRGetAndAddCursorImage( char *data, WResDir dir, CURSORDIRENTRY *cd, 
     }
 
     if( ok ) {
-        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, size, dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, size, dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -357,7 +357,7 @@ bool WRAPI WRGetAndAddIconImage( char *data, WResDir dir, ICONDIRENTRY *id, uint
     }
 
     if( ok ) {
-        ok = !WResAddResource( tname, rname, MEMFLAGS_DEF, 0, id->dwBytesInRes, dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, id->dwBytesInRes, dir, &lang, &dup );
     }
 
     if( ok ) {
