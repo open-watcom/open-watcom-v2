@@ -38,7 +38,7 @@ extra_c_flags_wini86 = -zW
 #
 exetarg_objs = wndmem.obj app.obj util.obj window1.obj window2.obj &
     window3.obj window4.obj window5.obj window6.obj window7.obj window8.obj &
-    menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj $(trmem_obj)
+    menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj $(trmem_objs)
 exetarg_libs = $(cli_aui_libs)
 exetarg_res = app.res
 #exetarg_res = appj.res

@@ -76,7 +76,7 @@ void    GUIMemOpen( void )
     if( TrHdl == _TRMEM_HDL_NONE ) {
         TrFile = stderr;
         TrHdl = _trmem_open( malloc, free, realloc, strdup,
-            NULL, GUIMemPrintLine, _TRMEM_DEF );
+            NULL, MemPrintLine, _TRMEM_DEF );
 
         tmpdir = getenv( "TRMEMFILE" );
         if( tmpdir != NULL ) {
