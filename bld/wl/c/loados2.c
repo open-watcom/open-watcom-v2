@@ -473,7 +473,7 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
         }
         res = WResGetResInfo( wind );
         addExeResRecord( outRes, exe_type, &(res->ResName),
-                        (unsigned_16)langinfo->res_flags, outRes_off,
+                        (unsigned_16)langinfo->MemoryFlags, outRes_off,
                         (langinfo->Length + align - 1) >> shift_count );
         QSeek( FP2POSIX( res_fp ), langinfo->Offset, FmtData.resource );
         CopyResData( res_fp, langinfo->Length );
