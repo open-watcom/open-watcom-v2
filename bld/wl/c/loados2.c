@@ -31,6 +31,10 @@
 ****************************************************************************/
 
 
+#include "wlinkcfg.h"
+
+#ifdef _OS2
+
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -40,9 +44,9 @@
 #include "pcobj.h"
 #include "newmem.h"
 #include "reloc.h"
-#include "exeflat.h"
-#include "exepe.h"
 #include "exedos.h"
+#include "exeos2.h"
+#include "pass2l1.h"
 #include "loadfile.h"
 #include "specials.h"
 #include "virtmem.h"
@@ -57,8 +61,6 @@
 #include "permdata.h"
 #include "loadpe.h"
 #include "impexp.h"
-#include "wres.h"
-#include "rcstrblk.h"
 #include "rcstr.h"
 #include "dosstub.h"
 #include "loados2.h"
@@ -67,40 +69,9 @@
 #include "clibext.h"
 
 
-#ifdef _OS2
-
 #define NE_ORDID    0x8000
 
 #define STUB_ALIGN  16U
-
-typedef struct FullResourceRecord {
-    struct FullResourceRecord   *Next;
-    struct FullResourceRecord   *Prev;
-    resource_record             Info;
-} FullResourceRecord;
-
-typedef struct FullTypeRecord {
-    struct FullTypeRecord   *Next;
-    struct FullTypeRecord   *Prev;
-    FullResourceRecord      *Head;
-    FullResourceRecord      *Tail;
-    resource_type_record    Info;
-} FullTypeRecord;
-
-typedef struct {
-    unsigned_16         ResShiftCount;
-    unsigned_16         NumTypes;
-    unsigned_16         NumResources;
-    unsigned_16         TableSize;
-    FullTypeRecord      *Head;
-    FullTypeRecord      *Tail;
-} ExeResDir;
-
-typedef struct {
-    ExeResDir       Dir;
-    StringsBlock    Str;
-} ResTable;
-
 
 static void ReadNameTable( f_handle the_file )
 /*********************************************
@@ -381,7 +352,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 }
 
 static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
-                            WResID *name, unsigned_16 mem_flags,
+                            WResID *name, unsigned_16 flags,
                       unsigned_16 exe_offset, unsigned_16 exe_length )
 /********************************************************************/
 {
@@ -390,7 +361,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res = MemAllocSafe( sizeof( FullResourceRecord ) );
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
-    exe_res->Info.flags = mem_flags;
+    exe_res->Info.flags = flags;
     exe_res->Info.reserved = 0;
     exe_res->Info.name = findResOrTypeName( restab, name );
     exe_res->Next = NULL;
@@ -487,7 +458,7 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
     WResDirWindow       wind;
     FullTypeRecord      *exe_type;
     WResResInfo         *res;
-    WResLangInfo        *lang;
+    WResLangInfo        *langinfo;
 
     if( inRes == NULL )
         return;
@@ -496,19 +467,18 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
     exe_type = NULL;
     wind = WResFirstResource( inRes );
     while( !WResIsEmptyWindow( wind ) ) {
-        lang = WResGetLangInfo( wind );
-
+        langinfo = WResGetLangInfo( wind );
         if( WResIsFirstResOfType( wind ) ) {
             exe_type = findExeTypeRecord( outRes, WResGetTypeInfo( wind ) );
         }
         res = WResGetResInfo( wind );
         addExeResRecord( outRes, exe_type, &(res->ResName),
-                        lang->MemoryFlags, outRes_off,
-                        (lang->Length + align - 1) >> shift_count );
-        QSeek( FP2POSIX( res_fp ), lang->Offset, FmtData.resource );
-        CopyResData( res_fp, lang->Length );
+                        (unsigned_16)langinfo->res_flags, outRes_off,
+                        (langinfo->Length + align - 1) >> shift_count );
+        QSeek( FP2POSIX( res_fp ), langinfo->Offset, FmtData.resource );
+        CopyResData( res_fp, langinfo->Length );
         NullAlign( align );
-        outRes_off += (lang->Length + align - 1) >> shift_count;
+        outRes_off += (langinfo->Length + align - 1) >> shift_count;
 
         wind = WResNextResource( wind, inRes );
     }
@@ -1321,4 +1291,4 @@ unsigned_32 WriteStubFile( unsigned_32 stub_align )
     return( stub_len );
 }
 
-#endif
+#endif /* _OS2 */
