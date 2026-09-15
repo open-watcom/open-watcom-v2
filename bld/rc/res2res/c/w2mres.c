@@ -78,7 +78,7 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     langinfo = WResGetLangInfo( wind );
     msheader.Type = ConvertIDToNameOrOrdinal( &(typeinfo->TypeName) );
     msheader.Name = ConvertIDToNameOrOrdinal( &(resinfo->ResName) );
-    msheader.MemoryFlags = langinfo->MemoryFlags;
+    msheader.res_flags = langinfo->res_flags;
     msheader.Size = langinfo->Length;
 
     //FIXME! The last argument should be true for Win32 resources

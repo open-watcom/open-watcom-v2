@@ -440,7 +440,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
     memset( node, 0, sizeof( WStringNode ) );
 
     node->lang = curr->lang->Info.lang;
-    node->MemFlags = curr->lang->Info.MemoryFlags;
+    node->MemFlags = curr->lang->Info.res_flags;
     node->block_name = WRECopyWResID( &curr->res->Info.ResName );
     node->data_size = curr->lang->Info.Length;
     node->data = WREGetCopyResData( curr );

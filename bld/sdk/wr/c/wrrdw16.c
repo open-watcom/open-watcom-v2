@@ -333,7 +333,7 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
     lnode->Next = NULL;
     lnode->Prev = NULL;
     lnode->data = NULL;
-    lnode->Info.MemoryFlags = name_info.flags;
+    lnode->Info.res_flags = name_info.flags;
     offset_32 = (uint_32)name_info.offset;
     length_32 = (uint_32)name_info.length;
     lnode->Info.Offset = (uint_32)(offset_32 << align);

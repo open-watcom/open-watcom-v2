@@ -55,7 +55,7 @@ static bool readLangInfo( WResLangInfo *linfo, FILE *fp )
     bool        error;
 
     error = false;
-    linfo->MemoryFlags = ResReadUint16( &error, fp );
+    linfo->res_flags = ResReadUint16( &error, fp );
     if( error )
         return( true );
     linfo->Offset = ResReadUint32( &error, fp );
@@ -122,7 +122,7 @@ static bool readResList( FILE *fp, WResTypeNode *typenode, uint_16 ver, void *fi
                 return( WRES_ERROR( WRS_MALLOC_FAILED ) );
             langnode->data = NULL;
             langnode->fileInfo = fileinfo;
-            langnode->Info.MemoryFlags = v1_linfo.MemoryFlags;
+            langnode->Info.res_flags = v1_linfo.res_flags;
             langnode->Info.Offset = v1_linfo.Offset;
             langnode->Info.Length = v1_linfo.Length;
             langnode->Info.lang.lang = DEF_LANG;
@@ -211,7 +211,7 @@ static bool readMResDir( FILE *fp, WResDir dir, bool *dup_discarded,
         if( !error ) {
             if( type_id->IsName
               || type_id->ID.Num != (uint_16)RESOURCE2INT( RT_NAMETABLE ) ) {
-                error = WResAddResource2( type_id, res_id, msheader->MemoryFlags,
+                error = WResAddResource2( type_id, res_id, msheader->res_flags,
                             WRESTELL( fp ), msheader->Size, dir, NULL,
                             &wind_dup, fileinfo );
                 if( error

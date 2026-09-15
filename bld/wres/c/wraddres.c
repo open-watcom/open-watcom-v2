@@ -84,7 +84,7 @@ static WResLangNode *newLangNode( ResMemFlags memflags, uint_32 offset,
         langnode->Prev = NULL;
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
-        langnode->Info.MemoryFlags = memflags;
+        langnode->Info.res_flags = memflags;
         langnode->Info.Offset = offset;
         langnode->Info.Length = length;
         if( lang == NULL ) {

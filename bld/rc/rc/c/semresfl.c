@@ -62,7 +62,7 @@ static bool copyAResource( FILE *fp, WResDirWindow *wind,
     loc.start = SemStartResource();
     /* rc = */ CopyData( langinfo->Offset, langinfo->Length, fp, buffer, BUFFER_SIZE, &err_code );
     loc.len = SemEndResource( loc.start );
-    SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->MemoryFlags, loc, filename );
+    SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->res_flags, loc, filename );
     return( false );
 }
 

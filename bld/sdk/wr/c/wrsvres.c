@@ -88,7 +88,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
         lang = lnode->Info.lang;
         if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
-                             lnode->Info.MemoryFlags, offset,
+                             lnode->Info.res_flags, offset,
                              lnode->Info.Length, new_dir,
                              &lang, &dup ) || dup ) {
             if( dup ) {
@@ -164,7 +164,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
     ok = true;
     for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->Next ) {
         msheader.Size = lnode->Info.Length;
-        msheader.MemoryFlags = lnode->Info.MemoryFlags;
+        msheader.res_flags = lnode->Info.res_flags;
         msheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
         msheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (msheader.Type != NULL && msheader.Name != NULL);

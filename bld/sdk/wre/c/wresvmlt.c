@@ -231,7 +231,7 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
     idata->name = &curr->res->Info.ResName;
     idata->lang = curr->lang->Info.lang;
     idata->size = curr->lang->Info.Length;
-    idata->MemFlags = curr->lang->Info.MemoryFlags;
+    idata->MemFlags = curr->lang->Info.res_flags;
     idata->data = WREGetCopyResData( curr );
 
     if( idata->data == NULL ) {

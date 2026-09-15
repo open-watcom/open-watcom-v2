@@ -579,7 +579,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info.lang = curr->lang->Info.lang;
-    session->info.MemFlags = curr->lang->Info.MemoryFlags;
+    session->info.MemFlags = curr->lang->Info.res_flags;
     session->info.is32bit = curr->info->is32bit;
 
     session->type = curr->info->current_type;

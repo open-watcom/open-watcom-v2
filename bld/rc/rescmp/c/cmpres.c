@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -85,7 +86,7 @@ static int CompareOneResource( FILE *fp1, WResDirWindow wind1,
     lang1 = WResGetLangInfo( wind1 );
     lang2 = WResGetLangInfo( wind2 );
 
-    if (lang1->MemoryFlags != lang2->MemoryFlags) {
+    if (lang1->res_flags != lang2->res_flags) {
         if (!CmdLineParms.Quiet) {
             resname1 = WResIDToStr( &(res1->ResName) );
             printf( "Error: memory flags for resource %s are not the same\n", resname1 );

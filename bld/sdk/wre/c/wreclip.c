@@ -746,7 +746,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         cdata->data_size = rdata_size;
         cdata->data_offset = cdata_size - rdata_size;
         cdata->type_id = type_id;
-        cdata->memflags = curr->lang->Info.MemoryFlags;
+        cdata->memflags = curr->lang->Info.res_flags;
         cdata->is32bit = curr->info->is32bit;
         memcpy( &cdata->name[0], name, name_size );
         memcpy( &cdata->name[name_size], rdata, rdata_size );

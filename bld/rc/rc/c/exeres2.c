@@ -89,7 +89,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         entry->res_type   = type_id;
         entry->res_name   = name_id;
         entry->wind       = wind;
-        entry->mem_flags  = langinfo->MemoryFlags;
+        entry->mem_flags  = langinfo->res_flags;
         entry->seg_length = 0;  /* Zero means 64K */
         entry->first_part = true;
 
@@ -98,7 +98,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
             entry->res_type   = type_id;
             entry->res_name   = name_id;
             entry->wind       = wind;
-            entry->mem_flags  = langinfo->MemoryFlags;
+            entry->mem_flags  = langinfo->res_flags;
             entry->seg_length = 0;
             entry->first_part = false;
         }

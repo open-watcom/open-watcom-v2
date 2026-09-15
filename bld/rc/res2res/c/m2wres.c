@@ -77,7 +77,7 @@ static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
         /* requested that name tables be copied */
         if( type_id->IsName || type_id->ID.Num != RESOURCE2INT( RT_NAMETABLE ) ||
                         CmdLineParms.KeepNameTable ) {
-            error = WResAddResource( type_id, res_id, msheader->MemoryFlags, offset,
+            error = WResAddResource( type_id, res_id, msheader->res_flags, offset,
                         msheader->Size, outdir, NULL, &duplicate );
             if( duplicate ) {
                 /* print message and continue */

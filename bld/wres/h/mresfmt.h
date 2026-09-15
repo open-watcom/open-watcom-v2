@@ -40,7 +40,7 @@ typedef struct MResResourceHeader {
     ResNameOrOrdinal    *Type;
     ResNameOrOrdinal    *Name;
     uint_32             Size;
-    ResMemFlags         MemoryFlags;
+    ResMemFlags         res_flags;
     uint_16             LanguageId;
     uint_32             Version;
     uint_32             DataVersion;

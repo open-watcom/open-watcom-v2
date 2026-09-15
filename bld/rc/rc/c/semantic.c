@@ -123,7 +123,7 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags flags,
      */
     msheader.Type = WResIDToNameOrOrdinal( type_id );
     msheader.Name = WResIDToNameOrOrdinal( res_id );
-    msheader.MemoryFlags = flags;
+    msheader.res_flags = flags;
     msheader.Size = loc.len;
     msheader.LanguageId = MAKELANGID( lang->lang, lang->sublang );
     msheader.Version = 0L; /* Currently Unsupported */

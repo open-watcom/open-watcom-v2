@@ -179,7 +179,7 @@ bool WdeInfoToData( WdeResInfo *info )
                 ditem->lnode->data = data;
                 ditem->lnode->Info.Length = dsize;
                 ditem->lnode->Info.Offset = 0;
-                ditem->lnode->Info.MemoryFlags = ditem->dialog_info->MemoryFlags;
+                ditem->lnode->Info.res_flags = ditem->dialog_info->MemoryFlags;
             }
         } else {
             rnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
@@ -386,7 +386,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
         lnode->Prev = NULL;
         lnode->data = data;
         lnode->Info.lang = *lang;
-        lnode->Info.MemoryFlags = memflags;
+        lnode->Info.res_flags = memflags;
         lnode->Info.Offset = offset;
         lnode->Info.Length = dsize;
     }

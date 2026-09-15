@@ -250,7 +250,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( ret == RS_OK ) {
-        addExeResRecord( restab, type, &(resinfo->ResName), langinfo->MemoryFlags,
+        addExeResRecord( restab, type, &(resinfo->ResName), langinfo->res_flags,
                 dst_offset >> shift_count, (langinfo->Length + align_amount) >> shift_count );
     }
 
@@ -295,7 +295,7 @@ RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask
          * if the bits are equal and this is section 2   --> copy segment
          * otherwise                                     --> do nothing
          */
-        if( ARE_BITS_EQUAL( sect2mask, sect2bits, langinfo->MemoryFlags ) == sect2 ) {
+        if( ARE_BITS_EQUAL( sect2mask, sect2bits, langinfo->res_flags ) == sect2 ) {
             ret = copyOneResource( restab, exe_type, langinfo, resinfo, res->fp,
                                     dst->fp, restab->Dir.ResShiftCount, &err_code );
         }

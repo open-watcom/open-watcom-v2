@@ -187,7 +187,7 @@ static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )
 
     fprintf( stdout, "%-20.20s  %-15.15s  0x%04X 0x%02X  ", typename,
                 resname, (int)lang->lang.lang, (int)lang->lang.sublang );
-    PrintUint16Flags( lang->MemoryFlags, MemFlagsOnList, MemFlagsOffList, 53 );
+    PrintUint16Flags( lang->res_flags, MemFlagsOnList, MemFlagsOffList, 53 );
 
     if( CmdLineParms.DumpContents ) {
         error = DumpContents( type, res, lang, fp, res_os );

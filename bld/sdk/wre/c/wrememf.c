@@ -85,7 +85,7 @@ bool WREChangeMemFlags( void )
     }
 
     if( ok ) {
-        mflags = curr.lang->Info.MemoryFlags;
+        mflags = curr.lang->Info.res_flags;
 #ifdef __WINDOWS__
         {
             HELPFUNC hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
@@ -95,7 +95,7 @@ bool WREChangeMemFlags( void )
 #else
         ok = WRChangeMemFlags( parent, type_name, &mflags, WREHelpRoutine );
 #endif
-        curr.lang->Info.MemoryFlags = mflags;
+        curr.lang->Info.res_flags = mflags;
     }
 
     if( type_name != NULL ) {

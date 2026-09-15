@@ -464,7 +464,7 @@ WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
     session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info.lang = curr->lang->Info.lang;
-    session->info.MemFlags = curr->lang->Info.MemoryFlags;
+    session->info.MemFlags = curr->lang->Info.res_flags;
     session->info.data_size = curr->lang->Info.Length;
     session->info.data = curr->lang->data;
     session->info.is32bit = is32bit;

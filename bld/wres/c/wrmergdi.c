@@ -57,7 +57,7 @@ bool WResMergeDirs( WResDir dstdir, WResDir srcdir, WResMergeError **errs )
         langinfo = WResGetLangInfo( wind );
         fileinfo = WResGetFileInfo( wind );
         WResAddResource2( &typeinfo->TypeName, &resinfo->ResName,
-                        langinfo->MemoryFlags, langinfo->Offset,
+                        langinfo->res_flags, langinfo->Offset,
                         langinfo->Length, dstdir, &langinfo->lang,
                         &wind_dup, fileinfo );
         if( !WResIsEmptyWindow( wind_dup ) && errs != NULL ) {

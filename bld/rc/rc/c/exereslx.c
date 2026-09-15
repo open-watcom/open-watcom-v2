@@ -91,7 +91,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
     new_entry = &res->resources[res->res_count - 1];
 
     new_entry->wind = wind;
-    new_entry->mem_flags = langinfo->MemoryFlags;
+    new_entry->mem_flags = langinfo->res_flags;
     new_entry->assigned = false;
     new_entry->resource.res_size = langinfo->Length;
 

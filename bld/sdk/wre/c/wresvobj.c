@@ -143,7 +143,7 @@ bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
         idata.data = rdata;
         idata.lang = curr->lang->Info.lang;
         idata.size = size;
-        idata.MemFlags = curr->lang->Info.MemoryFlags;
+        idata.MemFlags = curr->lang->Info.res_flags;
         ok = WRSaveObjectAs( fname, ftype, &idata );
     }
 
@@ -186,7 +186,7 @@ bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
         idata.data = rdata;
         idata.lang = curr->lang->Info.lang;
         idata.size = size;
-        idata.MemFlags = curr->lang->Info.MemoryFlags;
+        idata.MemFlags = curr->lang->Info.res_flags;
         ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
     }
 

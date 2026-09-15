@@ -188,7 +188,7 @@ bool WResWriteLangRecord( const WResLangInfo *info, FILE *fp )
         return( true );
     if( ResWriteUint8( fp, info->lang.sublang ) )
         return( true );
-    if( ResWriteUint16( fp, info->MemoryFlags ) )
+    if( ResWriteUint16( fp, info->res_flags ) )
         return( true );
     if( ResWriteUint32( fp, info->Offset ) )
         return( true );
@@ -358,7 +358,7 @@ bool MResWriteResourceHeader( MResResourceHeader *msheader, bool iswin32, FILE *
             return( true );
         if( ResWriteUint32( fp, msheader->DataVersion ) )
             return( true );
-        if( ResWriteUint16( fp, msheader->MemoryFlags ) )
+        if( ResWriteUint16( fp, msheader->res_flags ) )
             return( true );
         if( ResWriteUint16( fp, msheader->LanguageId ) )
             return( true );
@@ -370,7 +370,7 @@ bool MResWriteResourceHeader( MResResourceHeader *msheader, bool iswin32, FILE *
             return( true );
         if( ResWriteNameOrOrdinal( msheader->Name, false, fp ) )
             return( true );
-        if( ResWriteUint16( fp, msheader->MemoryFlags ) )
+        if( ResWriteUint16( fp, msheader->res_flags ) )
             return( true );
         return( ResWriteUint32( fp, msheader->Size ) );
     }

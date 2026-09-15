@@ -71,7 +71,7 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
             msheader->DataVersion = ResReadUint32( &error, fp );
         }
         if( !error ) {
-            msheader->MemoryFlags = ResReadUint16( &error, fp );
+            msheader->res_flags = ResReadUint16( &error, fp );
         }
         if( !error ) {
             msheader->LanguageId = ResReadUint16( &error, fp );
@@ -90,7 +90,7 @@ MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
             error = ( msheader->Name == NULL );
         }
         if( !error ) {
-            msheader->MemoryFlags = ResReadUint16( &error, fp );
+            msheader->res_flags = ResReadUint16( &error, fp );
         }
         if( !error ) {
             msheader->Size = ResReadUint32( &error, fp );

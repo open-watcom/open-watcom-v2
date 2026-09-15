@@ -308,7 +308,7 @@ WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )
     session->info->file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info->res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info->lang = curr->lang->Info.lang;
-    session->info->MemFlags = curr->lang->Info.MemoryFlags;
+    session->info->MemFlags = curr->lang->Info.res_flags;
     session->info->data_size = curr->lang->Info.Length;
     session->info->data = curr->lang->data;
     session->info->is32bit = curr->info->is32bit;
@@ -364,7 +364,7 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
         session->lnode->data = session->info->data;
         session->lnode->Info.lang = session->info->lang;
         session->lnode->Info.Length = session->info->data_size;
-        session->lnode->Info.MemoryFlags = session->info->MemFlags;
+        session->lnode->Info.res_flags = session->info->MemFlags;
         session->lnode->Info.Offset = 0;
         session->info->data = NULL;
         session->info->data_size = 0;
