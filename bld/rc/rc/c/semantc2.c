@@ -57,7 +57,7 @@ FullOptFlagsOS2 SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
 {
     FullOptFlagsOS2     newflags;
 
-    newflags.flags = 0;
+    newflags.res_flags = 0;
     newflags.codePage = curCodepage;
     newflags.loadOptGiven   = false;
     newflags.memOptGiven    = false;
@@ -76,37 +76,37 @@ FullOptFlagsOS2 SemOS2AddResOption( FullOptFlagsOS2 currflags, YYTOKENTYPE token
 {
     switch( token ) {
     case Y_PRELOAD:
-        currflags.flags |= RESFLAG_PRELOAD | RESFLAG_PURE;
+        currflags.res_flags |= RESFLAG_PRELOAD | RESFLAG_PURE;
         currflags.loadOptGiven = true;
         break;
     case Y_LOADONCALL:
-        currflags.flags &= ~RESFLAG_PRELOAD;
-        currflags.flags |= RESFLAG_PURE;
+        currflags.res_flags &= ~RESFLAG_PRELOAD;
+        currflags.res_flags |= RESFLAG_PURE;
         currflags.loadOptGiven = true;
         break;
     case Y_FIXED:
-        currflags.flags &= ~RESFLAG_MOVEABLE;
-        currflags.flags |= RESFLAG_PURE;
+        currflags.res_flags &= ~RESFLAG_MOVEABLE;
+        currflags.res_flags |= RESFLAG_PURE;
         currflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
-        currflags.flags |= RESFLAG_MOVEABLE | RESFLAG_PURE;
+        currflags.res_flags |= RESFLAG_MOVEABLE | RESFLAG_PURE;
         currflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
-        currflags.flags |= RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE;
+        currflags.res_flags |= RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE;
         currflags.memOptGiven = true;
         break;
     case Y_PURE:
-        currflags.flags |= RESFLAG_PURE;
+        currflags.res_flags |= RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
-        currflags.flags &= ~RESFLAG_PURE;
+        currflags.res_flags &= ~RESFLAG_PURE;
         currflags.purityOptGiven = true;
         break;
     case Y_SEGALIGN:    // This one is OS/2 2.x specific
-        currflags.flags |= RESFLAG_SEGALIGN;
+        currflags.res_flags |= RESFLAG_SEGALIGN;
         break;
     case Y_INTEGER:    // Is this OS/2 2.x specific too?
         currflags.codePage = value;
@@ -122,13 +122,13 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
 /*************************************************************************/
 {
     if( !currflags->loadOptGiven ) {
-        currflags->flags |= loadopts;
+        currflags->res_flags |= loadopts;
     }
     if( !currflags->memOptGiven ) {
-        currflags->flags |= memopts;
+        currflags->res_flags |= memopts;
     }
     if( !currflags->purityOptGiven ) {
-        currflags->flags |= pureopts;
+        currflags->res_flags |= pureopts;
     }
     /*
      * If the user set the resource to be IMPURE but doesn't give a mem option
@@ -136,8 +136,8 @@ void SemOS2CheckResFlags( FullOptFlagsOS2 *currflags, ResMemFlags loadopts,
      */
     if( currflags->purityOptGiven
       && !currflags->memOptGiven ) {
-        if( !(currflags->flags & RESFLAG_PURE) ) {
-            currflags->flags &= ~RESFLAG_DISCARDABLE;
+        if( !(currflags->res_flags & RESFLAG_PURE) ) {
+            currflags->res_flags &= ~RESFLAG_DISCARDABLE;
         }
     }
 }

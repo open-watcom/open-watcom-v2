@@ -110,9 +110,9 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     case Y_ICON:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
-            flags = fullflags->flags;
+            flags = fullflags->res_flags;
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            group_flags = fullflags->flags;
+            group_flags = fullflags->res_flags;
         } else {
             flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
             group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
@@ -122,9 +122,9 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     case Y_CURSOR:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
-            flags = fullflags->flags;
+            flags = fullflags->res_flags;
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            group_flags = fullflags->flags;
+            group_flags = fullflags->res_flags;
         } else {
             flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
             group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
@@ -134,7 +134,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     case Y_BITMAP:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
-            flags = fullflags->flags;
+            flags = fullflags->res_flags;
         } else {
             flags = RESFLAG_MOVEABLE | RESFLAG_PURE;
         }
@@ -143,7 +143,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags
     case Y_FONT:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            flags = fullflags->flags;
+            flags = fullflags->res_flags;
         } else {
             flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }

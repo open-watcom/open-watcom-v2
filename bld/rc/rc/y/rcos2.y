@@ -598,7 +598,7 @@ user-defined-resource
     | Y_RESOURCE type-id comma-opt name-id resource-options user-defined-data
         {
             SemOS2CheckResFlags( &($5), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
-            SemAddResourceAndFree( $4, $2, $5.flags, $6 );
+            SemAddResourceAndFree( $4, $2, $5.res_flags, $6 );
         }
     ;
 
@@ -701,7 +701,7 @@ rcdata-resource
     | Y_RCDATA name-id resource-options rc-data
         {
             SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
-            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.flags, $4 );
+            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.res_flags, $4 );
         }
     ;
 
@@ -736,7 +736,7 @@ string-table-resource
     | Y_STRINGTABLE resource-options string-section
         {
             SemOS2CheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            SemOS2MergeStrTable( $3, $2.flags, $2.codePage );
+            SemOS2MergeStrTable( $3, $2.res_flags, $2.codePage );
         }
     ;
 
@@ -748,7 +748,7 @@ message-table-resource
     | Y_MESSAGETABLE resource-options string-section
         {
             SemOS2CheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            SemOS2MergeMsgTable( $3, $2.flags );
+            SemOS2MergeMsgTable( $3, $2.res_flags );
         }
     ;
 
@@ -857,7 +857,7 @@ accel-table-resource
     | Y_ACCELTABLE name-id resource-options acc-section
         {
             SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
-            SemOS2WriteAccelTable( $2, $3.flags, $3.codePage, $4 );
+            SemOS2WriteAccelTable( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;
 
@@ -941,7 +941,7 @@ menu-resource
     | Y_MENU name-id resource-options menu-section
         {
             SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            SemOS2WriteMenu( $2, $3.flags, $4, Y_MENU, $3.codePage );
+            SemOS2WriteMenu( $2, $3.res_flags, $4, Y_MENU, $3.codePage );
         }
     ;
 
@@ -1100,7 +1100,7 @@ dlg-template
     | dialogtemplate name-id resource-options diag-control-section
         {
             SemOS2CheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            SemOS2WriteDialogTemplate( $2, $3.flags, $3.codePage, $4 );
+            SemOS2WriteDialogTemplate( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;
 

@@ -37,14 +37,14 @@
 
 /**** Semantic structures ****/
 typedef struct FullMemFlags {
-    ResMemFlags         flags;
+    ResMemFlags         res_flags;
     boolbit             loadOptGiven        : 1;
     boolbit             memOptGiven         : 1;
     boolbit             purityOptGiven      : 1;
 } FullMemFlags;
 
 typedef struct FullOptFlagsOS2 {
-    ResMemFlags         flags;
+    ResMemFlags         res_flags;
     uint_32             codePage;
     boolbit             loadOptGiven        : 1;
     boolbit             memOptGiven         : 1;
