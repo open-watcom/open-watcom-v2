@@ -47,19 +47,19 @@ static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
     WResDirWindow   wind2;
     WResTypeInfo    *type1;
     WResResInfo     *res1;
-    WResLangInfo    *lang1;
+    WResLangInfo    *langinfo1;
     char            *resname1;
 
     type1 = WResGetTypeInfo( wind1 );
     res1 = WResGetResInfo( wind1 );
-    lang1 = WResGetLangInfo( wind1 );
+    langinfo1 = WResGetLangInfo( wind1 );
 
-    wind2 = WResFindResource( &(type1->TypeName), &(res1->ResName), dir2, &(lang1->lang) );
+    wind2 = WResFindResource( &(type1->TypeName), &(res1->ResName), dir2, &(langinfo1->lang) );
     if (WResIsEmptyWindow( wind2 ) && !CmdLineParms.Quiet) {
         resname1 = WResIDToStr( &(res1->ResName) );
         printf( "Error: Resource %s (lang 0x%X SubLang 0x%X) not in file %s\n",
-                        resname1, (int)lang1->lang.lang,
-                        (int)lang1->lang.sublang,
+                        resname1, (int)langinfo1->lang.lang,
+                        (int)langinfo1->lang.sublang,
                         CmdLineParms.FileName2 );
         RESFREE( resname1 );
     }
@@ -75,18 +75,18 @@ static int CompareOneResource( FILE *fp1, WResDirWindow wind1,
     int             oldretcode;
     WResResInfo     *res1;
     WResResInfo     *res2;
-    WResLangInfo    *lang1;
-    WResLangInfo    *lang2;
+    WResLangInfo    *langinfo1;
+    WResLangInfo    *langinfo2;
     char *          resname1;
 
     oldretcode = 0;
 
     res1 = WResGetResInfo( wind1 );
     res2 = WResGetResInfo( wind2 );
-    lang1 = WResGetLangInfo( wind1 );
-    lang2 = WResGetLangInfo( wind2 );
+    langinfo1 = WResGetLangInfo( wind1 );
+    langinfo2 = WResGetLangInfo( wind2 );
 
-    if (lang1->res_flags != lang2->res_flags) {
+    if (langinfo1->res_flags != langinfo2->res_flags) {
         if (!CmdLineParms.Quiet) {
             resname1 = WResIDToStr( &(res1->ResName) );
             printf( "Error: memory flags for resource %s are not the same\n", resname1 );
@@ -94,7 +94,7 @@ static int CompareOneResource( FILE *fp1, WResDirWindow wind1,
         }
         oldretcode = 1;
     }
-    if (lang1->Length != lang2->Length) {
+    if (langinfo1->Length != langinfo2->Length) {
         if (!CmdLineParms.Quiet) {
             resname1 = WResIDToStr( &(res1->ResName) );
             printf( "Error: resource %s does not have the same length\n", resname1 );
@@ -102,7 +102,7 @@ static int CompareOneResource( FILE *fp1, WResDirWindow wind1,
         }
         oldretcode = 1;
     } else {
-        retcode = BinaryCompare( fp1, lang1->Offset, fp2, lang2->Offset, lang1->Length );
+        retcode = BinaryCompare( fp1, langinfo1->Offset, fp2, langinfo2->Offset, langinfo1->Length );
         switch (retcode) {
         case 1:
             if (!CmdLineParms.Quiet) {

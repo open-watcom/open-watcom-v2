@@ -165,11 +165,11 @@ static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )
     char            typename[20];
     WResTypeInfo    *type;
     WResResInfo     *res;
-    WResLangInfo    *lang;
+    WResLangInfo    *langinfo;
 
     type = WResGetTypeInfo( wind );
     res = WResGetResInfo( wind );
-    lang = WResGetLangInfo( wind );
+    langinfo = WResGetLangInfo( wind );
 
     if( CmdLineParms.Type != NULL ) {
         if( !WResIDCmp( CmdLineParms.Type, &(type->TypeName) ) ) {
@@ -186,11 +186,11 @@ static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )
     ConvertTypeIDToStr( &(type->TypeName), typename, 20 );
 
     fprintf( stdout, "%-20.20s  %-15.15s  0x%04X 0x%02X  ", typename,
-                resname, (int)lang->lang.lang, (int)lang->lang.sublang );
-    PrintUint16Flags( lang->res_flags, MemFlagsOnList, MemFlagsOffList, 53 );
+                resname, (int)langinfo->lang.lang, (int)langinfo->lang.sublang );
+    PrintUint16Flags( langinfo->res_flags, MemFlagsOnList, MemFlagsOffList, 53 );
 
     if( CmdLineParms.DumpContents ) {
-        error = DumpContents( type, res, lang, fp, res_os );
+        error = DumpContents( type, res, langinfo, fp, res_os );
         if( error ) {
             return( true );
         }

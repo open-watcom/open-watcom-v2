@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 #ifndef DMPCONT_INCLUDED
 #define DMPCONT_INCLUDED
 
-extern bool DumpContents( WResTypeInfo *type, WResResInfo *res, WResLangInfo *lang, FILE *, WResTargetOS res_os );
+extern bool DumpContents( WResTypeInfo *type, WResResInfo *res, WResLangInfo *langinfo, FILE *fp, WResTargetOS res_os );
 
 #endif
