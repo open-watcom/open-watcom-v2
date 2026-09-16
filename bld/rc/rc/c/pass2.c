@@ -134,21 +134,25 @@ static void checkShiftCount( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *re
 
 static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
 {
-    uint_16             sect2mask = 0;
-    uint_16             sect2bits = 0;
+    ResMemFlags         res2mask;
+    ResMemFlags         res2bits;
+    uint_16             sect2mask;
+    uint_16             sect2bits;
     uint_16             shift_count;
     long                gangloadstart;
     long                gangloadlen;
     CpSegRc             copy_segs_ret;
     bool                use_gangload = false;
 
+    res2mask = RESFLAG_NONE;
+    res2bits = RESFLAG_NONE;
+    sect2mask = 0;
+    sect2bits = 0;
     switch( CmdLineParms.SegmentSorting ) {
     case SEG_SORT_NONE:
         /*
          * all segments in section 2
          */
-        sect2mask = 0;
-        sect2bits = 0;
         use_gangload = false;
         dst->u.NEInfo.WinHead.align = src->u.NEInfo.WinHead.align;
         dst->u.NEInfo.Res.Dir.ResShiftCount = computeShiftCount( src, dst, res );
@@ -157,8 +161,8 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         /*
          * all load on call segments in section 2
          */
+        res2mask = RESFLAG_PRELOAD;
         sect2mask = SEG_PRELOAD;
-        sect2bits = 0;
         use_gangload = true;
         checkShiftCount( src, dst, res );
         break;
@@ -166,6 +170,8 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         /*
          * only load on call, discardable, code segments in section 2
          */
+        res2mask = RESFLAG_PRELOAD | RESFLAG_DISCARDABLE;
+        res2bits = RESFLAG_DISCARDABLE;
         sect2mask = SEG_DATA | SEG_PRELOAD | SEG_DISCARD;
         sect2bits = SEG_DISCARD;
         /*
@@ -205,7 +211,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         break;
     }
     if( ! CmdLineParms.NoResFile ) {
-        if( CopyWINResources( dst, res, sect2mask, sect2bits, false ) != RS_OK ) {
+        if( CopyWINResources( dst, res, res2mask, res2bits, false ) != RS_OK ) {
             return( true );
         }
     }
@@ -218,7 +224,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         return( true );
     }
     if( !CmdLineParms.NoResFile ) {
-        if( CopyWINResources( dst, res, sect2mask, sect2bits, true ) != RS_OK ) {
+        if( CopyWINResources( dst, res, res2mask, res2bits, true ) != RS_OK ) {
             return( true );
         }
     }

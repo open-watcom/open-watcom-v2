@@ -35,7 +35,7 @@
 
 extern void     InitWINResTable( ExeFileInfo *dst, ResFileInfo *res );
 extern uint_32  ComputeWINResourceSize( WResDir dir );
-extern RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 );
+extern RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, ResMemFlags res2mask, ResMemFlags res2bits, bool sect2 );
 extern RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code );
 extern RcStatus InitOS2ResTable( ExeFileInfo *dst, ResFileInfo *res, int *err_code );
 extern uint_32  ComputeOS2ResSegCount( WResDir dir );

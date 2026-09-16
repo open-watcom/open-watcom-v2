@@ -257,11 +257,11 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     return( ret );
 } /* copyOneResource */
 
-RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
-/****************************************************************************************************************
+RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, ResMemFlags res2mask, ResMemFlags res2bits, bool sect2 )
+/**********************************************************************************************************************
  * Note: sect2 must be either 1 (do section 2) or 0 (do section 1)
  * CopyWINResources should be called twice, once with sect2 false, and once with
- * it true. The values of sect2mask and sect2bits should be the same for both
+ * it true. The values of res2mask and res2bits should be the same for both
  * calls. The resource table for the temporary file will not be properly
  * filled in until after the second call
  */
@@ -295,7 +295,7 @@ RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, uint_16 sect2mask
          * if the bits are equal and this is section 2   --> copy segment
          * otherwise                                     --> do nothing
          */
-        if( ARE_BITS_EQUAL( sect2mask, sect2bits, langinfo->res_flags ) == sect2 ) {
+        if( ARE_BITS_EQUAL( res2mask, res2bits, langinfo->res_flags ) == sect2 ) {
             ret = copyOneResource( restab, exe_type, langinfo, resinfo, res->fp,
                                     dst->fp, restab->Dir.ResShiftCount, &err_code );
         }
