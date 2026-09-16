@@ -121,40 +121,40 @@ static void ConvertTypeIDToStr( WResID *type_id, char *str, int maxlen )
 
 static char * MemFlagsOnList[16] = {
     NULL,               /* 0x0001 */
-    NULL,
-    NULL,
-    NULL,
+    NULL,               /* 0x0002 */
+    NULL,               /* 0x0004 */
+    NULL,               /* 0x0008 */
     "MOVEABLE",         /* 0x0010 */
     "PURE",             /* 0x0020 */
     "PRELOAD",          /* 0x0040 */
-    NULL,
+    NULL,               /* 0x0080 */
     NULL,               /* 0x0100 */
-    NULL,
-    NULL,
-    NULL,
+    NULL,               /* 0x0200 */
+    NULL,               /* 0x0400 */
+    NULL,               /* 0x0800 */
     "DISCARDABLE",      /* 0x1000 */
-    NULL,
-    NULL,
-    NULL
+    NULL,               /* 0x2000 */
+    NULL,               /* 0x4000 */
+    "SEGALIGN"          /* 0x8000 */
 };
 
 static char * MemFlagsOffList[16] = {
     NULL,               /* 0x0001 */
-    NULL,
-    NULL,
-    NULL,
+    NULL,               /* 0x0002 */
+    NULL,               /* 0x0004 */
+    NULL,               /* 0x0008 */
     "FIXED",            /* 0x0010 */
     "IMPURE",           /* 0x0020 */
     "LOADONCALL",       /* 0x0040 */
-    NULL,
+    NULL,               /* 0x0080 */
     NULL,               /* 0x0100 */
-    NULL,
-    NULL,
-    NULL,
+    NULL,               /* 0x0200 */
+    NULL,               /* 0x0400 */
+    NULL,               /* 0x0800 */
     NULL,               /* 0x1000 */
-    NULL,
-    NULL,
-    NULL
+    NULL,               /* 0x2000 */
+    NULL,               /* 0x4000 */
+    "no SEGALIGN"       /* 0x8000 */
 };
 
 static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )

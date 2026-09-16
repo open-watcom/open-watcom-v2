@@ -138,7 +138,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
     newblock->iswin32 = false;
-    newblock->Flags = 0;
+    newblock->res_flags = RESFLAG_NONE;
     newblock->codePage = 850;
     ResInitStringTableBlock( &(newblock->Block) );
 
@@ -221,7 +221,7 @@ static void semMergeStringTables( FullStringTable *currtable,
              * if oldblock in not in currtable move it there from oldtable
              */
             ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
-            oldblock->Flags = res_flags;
+            oldblock->res_flags = res_flags;
             oldblock->codePage = codepage;
             ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
@@ -243,7 +243,7 @@ static void setStringTableFlags( FullStringTable *currtable,
 
     for( currblock = currtable->Head; currblock != NULL;
                 currblock = currblock->Next ) {
-        currblock->Flags = res_flags;
+        currblock->res_flags = res_flags;
         currblock->codePage = codepage;
     }
 }
@@ -324,7 +324,7 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type_id )
              * +1 because WResID's can't be 0
              */
             res_id = WResIDFromNum( currblock->BlockNum + 1 );
-            SemAddResource( res_id, type_id, currblock->Flags, loc );
+            SemAddResource( res_id, type_id, currblock->res_flags, loc );
             MemFree( res_id );
         }
         SemOS2FreeStringTable( currtable );

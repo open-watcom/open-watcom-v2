@@ -95,7 +95,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
     newblock->iswin32 = CmdLineParms.iswin32;
-    newblock->Flags = 0;
+    newblock->res_flags = RESFLAG_NONE;
     ResInitStringTableBlock( &(newblock->Block) );
 
     return( newblock );
@@ -176,7 +176,7 @@ static void semMergeStringTables( FullStringTable *currtable,
              * if oldblock in not in currtable move it there from oldtable
              */
             ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
-            oldblock->Flags = res_flags;
+            oldblock->res_flags = res_flags;
             ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
             /*
@@ -196,7 +196,7 @@ static void setStringTableMemFlags( FullStringTable *currtable,
     FullStringTableBlock    *currblock;
 
     for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
-        currblock->Flags = res_flags;
+        currblock->res_flags = res_flags;
     }
 }
 
@@ -296,7 +296,7 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
              */
             res_id = WResIDFromNum( currblock->BlockNum + 1 );
             SemWINSetResourceLanguage( &currtable->lang, false );
-            SemAddResource( res_id, type_id, currblock->Flags, loc );
+            SemAddResource( res_id, type_id, currblock->res_flags, loc );
             MemFree( res_id );
         }
         semFreeStringTable( currtable );

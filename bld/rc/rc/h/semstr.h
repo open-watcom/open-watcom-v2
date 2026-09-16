@@ -39,7 +39,7 @@ typedef struct FullStringTableBlock {
     struct FullStringTableBlock     *Prev;
     uint_16                         BlockNum;
     bool                            iswin32;
-    ResMemFlags                     Flags;
+    ResMemFlags                     res_flags;
     uint_32                         codePage;   // for OS/2
     StringTableBlock                Block;
 } FullStringTableBlock;

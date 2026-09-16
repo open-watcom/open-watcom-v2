@@ -46,7 +46,7 @@
  * otherwise returns 0 (false)
  * note: if mask is 0 it always returns 1 (true)
  */
-#define ARE_BITS_EQUAL( mask, v1, v2 ) (!((mask) & ((v1)^(v2))))
+#define ARE_BITS_EQUAL( mask, v1, v2 ) (((mask) & ((v1)^(v2))) == 0)
 
 /*
  * CopyExeData function is used by resource compiler to write data to executable

@@ -192,7 +192,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
         break;
     }
     /*
-     * third arg to Copy???? is false --> copy section one
+     * fifth arg to CopyWIN.... is false --> copy section one
      */
     gangloadstart = RESTELL( dst->fp );
     gangloadstart += AlignAmount( gangloadstart, dst->u.NEInfo.Res.Dir.ResShiftCount );
@@ -217,7 +217,7 @@ static bool copyWINBody( ExeFileInfo *src, ExeFileInfo *dst, ResFileInfo *res )
     }
     gangloadlen = RESTELL( dst->fp ) - gangloadstart;
     /*
-     * third arg to Copy???? is true  --> copy section two
+     * fifth arg to CopyWIN.... is true --> copy section two
      */
     copy_segs_ret = CopyWINSegments( src, dst, sect2mask, sect2bits, true );
     if( copy_segs_ret == CPSEG_ERROR ) {

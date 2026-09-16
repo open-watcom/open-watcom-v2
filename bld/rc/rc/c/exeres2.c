@@ -89,7 +89,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         entry->res_type   = type_id;
         entry->res_name   = name_id;
         entry->wind       = wind;
-        entry->mem_flags  = langinfo->res_flags;
+        entry->res_flags  = langinfo->res_flags;
         entry->seg_length = 0;  /* Zero means 64K */
         entry->first_part = true;
 
@@ -98,7 +98,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
             entry->res_type   = type_id;
             entry->res_name   = name_id;
             entry->wind       = wind;
-            entry->mem_flags  = langinfo->res_flags;
+            entry->res_flags  = langinfo->res_flags;
             entry->seg_length = 0;
             entry->first_part = false;
         }
@@ -282,13 +282,13 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         dst_seg->size    = entry->seg_length;
         dst_seg->min     = entry->seg_length;
         dst_seg->info    = SEG_DATA | SEG_READ_ONLY | SEG_PMODE_DPL_3;
-        if( entry->mem_flags & RESFLAG_MOVEABLE )
+        if( entry->res_flags & RESFLAG_MOVEABLE )
             dst_seg->info |= SEG_MOVABLE;
-        if( entry->mem_flags & RESFLAG_PURE )
+        if( entry->res_flags & RESFLAG_PURE )
             dst_seg->info |= SEG_PURE;
-        if( entry->mem_flags & RESFLAG_PRELOAD )
+        if( entry->res_flags & RESFLAG_PRELOAD )
             dst_seg->info |= SEG_PRELOAD;
-        if( entry->mem_flags & RESFLAG_DISCARDABLE )
+        if( entry->res_flags & RESFLAG_DISCARDABLE )
             dst_seg->info |= SEG_DISCARD;
         /*
          * For non-last segment of a resource, there's nothing to copy

@@ -84,7 +84,7 @@ typedef struct OS2ResEntry {
     WResDirWindow   wind;       /* window into the current WResDir */
     bool            first_part; /* true unless non-first bit of > 64K resource */
     uint_16         seg_length; /* length of resource segment */
-    uint_16         mem_flags;  /* resource flags */
+    ResMemFlags     res_flags;  /* resource flags */
 } OS2ResEntry;
 
 typedef struct OS2ResTable {
