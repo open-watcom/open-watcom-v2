@@ -105,6 +105,7 @@ typedef struct RCParams {
 #endif
 } RCParams;
 
+#define VERSION_00_STAMP 0x0000     /* no version for WIN32 and OS/2 targets */
 #define VERSION_10_STAMP 0x0100
 #define VERSION_20_STAMP 0x0200
 #define VERSION_30_STAMP 0x0300

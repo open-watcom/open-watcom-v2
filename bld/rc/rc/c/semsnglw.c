@@ -51,14 +51,6 @@ static void AddCursorResource( WResID *res_id, ResMemFlags flags, ResMemFlags gr
 static void AddBitmapResource( WResID *res_id, ResMemFlags, const char *filename );
 static void AddFontResources( WResID *res_id, ResMemFlags, const char *filename );
 
-/*
- * MS changed the default purity for ICON and CURSOR resources from rc
- * version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources
- * still have the same purity
- */
-#define CUR_ICON_PURITY_30      RESFLAG_PURE
-#define CUR_ICON_PURITY_31      0           /* impure */
-
 void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
 /****************************************************************/
 {
@@ -89,14 +81,6 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
         MemFree( filename );
         return;
     }
-    switch( CmdLineParms.Win16VerStamp ) {
-    case VERSION_31_STAMP:
-        purity_option = CUR_ICON_PURITY_31;
-        break;
-    default:
-        purity_option = CUR_ICON_PURITY_30;
-        break;
-    }
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
@@ -108,6 +92,19 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
 
     switch( type ) {
     case Y_ICON:
+        /*
+         * MS changed the default purity for ICON and CURSOR resources from rc
+         * version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources
+         * still have the same purity
+         */
+        switch( CmdLineParms.Win16VerStamp ) {
+        case VERSION_31_STAMP:
+            purity_option = MEMFLAG_NONE;
+            break;
+        default:
+            purity_option = MEMFLAG_PURE;
+            break;
+        }
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
             flags = fullflags->res_flags;
@@ -120,6 +117,19 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
         AddIconResource( res_id, flags, group_flags, full_filename );
         break;
     case Y_CURSOR:
+        /*
+         * MS changed the default purity for CURSOR resource from rc
+         * version 30 to 31. Note: the CURSOR_GROUP resource
+         * still have the same purity
+         */
+        switch( CmdLineParms.Win16VerStamp ) {
+        case VERSION_31_STAMP:
+            purity_option = MEMFLAG_NONE;
+            break;
+        default:
+            purity_option = MEMFLAG_PURE;
+            break;
+        }
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
             flags = fullflags->res_flags;

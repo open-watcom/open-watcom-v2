@@ -946,6 +946,9 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
         DbgNever();
         break;
     }
+    if( CmdLineParms.TargetOS != RC_TARGET_OS_WIN16 ) {
+        CmdLineParms.Win16VerStamp = VERSION_00_STAMP;
+    }
     if( data->c ) {
         SetStringOption( &CmdLineParms.CodePageFile, &(data->c_value) );
     }
