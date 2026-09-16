@@ -76,7 +76,7 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
     MemFree( filename );
 }
 
-void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags *fullflags, char *filename )
+void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags *fullflags, char *filename )
 /***********************************************************************************************************/
 {
     ResMemFlags flags;

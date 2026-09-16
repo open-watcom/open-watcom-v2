@@ -57,18 +57,15 @@ typedef struct StringItem {
 } StringItem;
 
 extern void             SemWINWriteStringTable( FullStringTable *, WResID *type_id );
-extern void             SemWINAddStrToStringTable( FullStringTable *currtable,
-                            uint_16 stringid, char *string );
-extern void             SemWINMergeStrTable( FullStringTable *, ResMemFlags newflags );
-extern void             SemWINMergeErrTable( FullStringTable *, ResMemFlags newflags );
+extern void             SemWINAddStrToStringTable( FullStringTable *currtable, uint_16 stringid, char *string );
+extern void             SemWINMergeStrTable( FullStringTable *, ResMemFlags res_flags );
+extern void             SemWINMergeErrTable( FullStringTable *, ResMemFlags res_flags );
 extern FullStringTable  *SemWINNewStringTable( void );
 
 extern void             SemOS2WriteStringTable( FullStringTable *, WResID *type_id );
-extern void             SemOS2AddStrToStringTable( FullStringTable *currtable,
-                            uint_16 stringid, char *string );
-extern void             SemOS2MergeStrTable( FullStringTable *, ResMemFlags newflags,
-                            uint_32 codepage );
-extern void             SemOS2MergeMsgTable( FullStringTable *, ResMemFlags newflags );
+extern void             SemOS2AddStrToStringTable( FullStringTable *currtable, uint_16 stringid, char *string );
+extern void             SemOS2MergeStrTable( FullStringTable *, ResMemFlags res_flags, uint_32 codepage );
+extern void             SemOS2MergeMsgTable( FullStringTable *, ResMemFlags res_flags );
 extern FullStringTable  *SemOS2NewStringTable( void );
 
 #endif

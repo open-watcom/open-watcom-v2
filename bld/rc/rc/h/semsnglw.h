@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,7 @@
 #ifndef SEMSNGLW_H_INCLUDED
 #define SEMSNGLW_H_INCLUDED
 
-extern void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullMemFlags *fullflags, char *filename );
+extern void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags *fullflags, char *filename );
 extern void SemWINAddMessageTable( WResID *res_id, ScanString *filename );
 
 #endif

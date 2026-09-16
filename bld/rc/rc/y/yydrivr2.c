@@ -82,7 +82,7 @@ typedef union {
     FullHelpEntryOS2            helpfullentry;
     FullHelpSubTableOS2         *helpsubtable;
     ResLocation                 resloc;
-    FullOptFlagsOS2             fullresflags;
+    FullResFlags                fullresflags;
     MenuFlags                   menuflags;
     FullMenuPtrOS2              menuptr;
     FullMenuItemOS2             menufull;

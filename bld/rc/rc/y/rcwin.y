@@ -186,7 +186,7 @@
 %type <resloc>          acc-section
 %type <integral>        id-value
 %type <accevent>        event
-%type <fullmemflags>    resource-options
+%type <fullresflags>    resource-options
 %type <token>           resource-option
 %type <string>          file-name
 %type <resbyte>         fontitalic

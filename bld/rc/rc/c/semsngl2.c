@@ -49,7 +49,7 @@ static void AddFontResources( WResID *font_id, ResMemFlags, const char *filename
 
 
 void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
-                       FullOptFlagsOS2 *fullflags, char *filename )
+                       FullResFlags *fullflags, char *filename )
 /*****************************************************************/
 {
     ResLocation     start;

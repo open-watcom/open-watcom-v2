@@ -36,21 +36,14 @@
 #include "wresall.h"
 
 /**** Semantic structures ****/
-typedef struct FullMemFlags {
-    ResMemFlags         res_flags;
-    boolbit             loadOptGiven        : 1;
-    boolbit             memOptGiven         : 1;
-    boolbit             purityOptGiven      : 1;
-} FullMemFlags;
-
-typedef struct FullOptFlagsOS2 {
+typedef struct FullResFlags {
     ResMemFlags         res_flags;
     uint_32             codePage;
     boolbit             loadOptGiven        : 1;
     boolbit             memOptGiven         : 1;
     boolbit             purityOptGiven      : 1;
     boolbit             cpOptGiven          : 1;
-} FullOptFlagsOS2;
+} FullResFlags;
 
 typedef uint_32 SemOffset;
 typedef uint_32 SemLength;

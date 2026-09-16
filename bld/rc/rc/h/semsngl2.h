@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 #ifndef SEMSNGL2_H_INCLUDED
 #define SEMSNGL2_H_INCLUDED
 
-extern void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullOptFlagsOS2 *fullflags, char *filename );
+extern void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags *fullflags, char *filename );
 
 #endif

@@ -88,68 +88,70 @@ void SemWINUnsupported( YYTOKENTYPE token )
     RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
-FullMemFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
+FullResFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
 /*******************************************************/
 {
-    FullMemFlags    newflags;
+    FullResFlags    fullflags;
 
-    newflags.res_flags = RESFLAG_NONE;
-    newflags.loadOptGiven = false;
-    newflags.memOptGiven = false;
-    newflags.purityOptGiven = false;
+    fullflags.res_flags      = RESFLAG_NONE;
+    fullflags.codePage       = 0;
+    fullflags.loadOptGiven   = false;
+    fullflags.memOptGiven    = false;
+    fullflags.purityOptGiven = false;
+    fullflags.cpOptGiven     = false;
 
-    return( SemWINAddMemOption( newflags, token ) );
+    return( SemWINAddMemOption( fullflags, token ) );
 }
 
-FullMemFlags SemWINAddMemOption( FullMemFlags currflags, YYTOKENTYPE token )
+FullResFlags SemWINAddMemOption( FullResFlags fullflags, YYTOKENTYPE token )
 /**************************************************************************/
 {
     switch( token ) {
     case Y_PRELOAD:
-        currflags.res_flags |= RESFLAG_PRELOAD;
-        currflags.loadOptGiven = true;
+        fullflags.res_flags |= RESFLAG_PRELOAD;
+        fullflags.loadOptGiven = true;
         break;
     case Y_LOADONCALL:
-        currflags.res_flags &= ~RESFLAG_PRELOAD;
-        currflags.loadOptGiven = true;
+        fullflags.res_flags &= ~RESFLAG_PRELOAD;
+        fullflags.loadOptGiven = true;
         break;
     case Y_FIXED:
-        currflags.res_flags &= ~RESFLAG_MOVEABLE;
-        currflags.memOptGiven = true;
+        fullflags.res_flags &= ~RESFLAG_MOVEABLE;
+        fullflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
-        currflags.res_flags |= RESFLAG_MOVEABLE;
-        currflags.memOptGiven = true;
+        fullflags.res_flags |= RESFLAG_MOVEABLE;
+        fullflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
-        currflags.res_flags |= RESFLAG_DISCARDABLE;
-        currflags.memOptGiven = true;
+        fullflags.res_flags |= RESFLAG_DISCARDABLE;
+        fullflags.memOptGiven = true;
         break;
     case Y_PURE:
-        currflags.res_flags |= RESFLAG_PURE;
-        currflags.purityOptGiven = true;
+        fullflags.res_flags |= RESFLAG_PURE;
+        fullflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
-        currflags.res_flags &= ~RESFLAG_PURE;
-        currflags.purityOptGiven = true;
+        fullflags.res_flags &= ~RESFLAG_PURE;
+        fullflags.purityOptGiven = true;
         break;
     }
 
-    return( currflags );
+    return( fullflags );
 }
 
-void SemWINCheckResFlags( FullMemFlags *currflags, ResMemFlags loadopts,
+void SemWINCheckResFlags( FullResFlags *fullflags, ResMemFlags loadopts,
             ResMemFlags memopts, ResMemFlags pureopts )
 /********************************************************************/
 {
-    if( !currflags->loadOptGiven ) {
-        currflags->res_flags |= loadopts;
+    if( !fullflags->loadOptGiven ) {
+        fullflags->res_flags |= loadopts;
     }
-    if( !currflags->memOptGiven ) {
-        currflags->res_flags |= memopts;
+    if( !fullflags->memOptGiven ) {
+        fullflags->res_flags |= memopts;
     }
-    if( !currflags->purityOptGiven ) {
-        currflags->res_flags |= pureopts;
+    if( !fullflags->purityOptGiven ) {
+        fullflags->res_flags |= pureopts;
     }
     /*
      * If the user set the resource to be IMPURE but doesn't give a mem option
@@ -157,10 +159,10 @@ void SemWINCheckResFlags( FullMemFlags *currflags, ResMemFlags loadopts,
      * This seems to be what Microsoft is doing (test this with the sample
      * program clock).
      */
-    if( currflags->purityOptGiven
-      && !currflags->memOptGiven ) {
-        if( !(currflags->res_flags & RESFLAG_PURE) ) {
-            currflags->res_flags &= ~RESFLAG_DISCARDABLE;
+    if( fullflags->purityOptGiven
+      && !fullflags->memOptGiven ) {
+        if( !(fullflags->res_flags & RESFLAG_PURE) ) {
+            fullflags->res_flags &= ~RESFLAG_DISCARDABLE;
         }
     }
 }
