@@ -690,7 +690,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
     }
 }
 
-void SemWINWriteDialogBox( WResID *res_id, ResMemFlags flags,
+void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
                     DialogSizeInfo sizeinfo, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
                     YYTOKENTYPE tokentype )
@@ -766,7 +766,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags flags,
         }
         if( !error ) {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), res_flags, loc );
         }
     } else {
         MemFree( res_id );

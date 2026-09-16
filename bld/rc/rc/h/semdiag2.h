@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,7 +79,7 @@ extern PresParamListOS2         *SemOS2NewPresParamList( PresParamsOS2 presparam
 extern PresParamListOS2         *SemOS2AppendPresParam( PresParamListOS2 *list,
                                     PresParamsOS2 presparam );
 
-extern void                     SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags,
+extern void                     SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags res_flags,
                                     uint_32, FullDiagCtrlListOS2 * );
 extern void                     SemOS2AddDlgincResource( WResID *res_id, char *filename );
 

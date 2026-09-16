@@ -265,9 +265,9 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
     }
 }
 
-void SemOS2WriteMenu( WResID *res_id, ResMemFlags flags, FullMenuOS2 *menu,
+void SemOS2WriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuOS2 *menu,
                    YYTOKENTYPE tokentype, uint_32 codepage )
-/***********************************************************************/
+/*****************************************************************************/
 {
     ResLocation     loc;
     bool            error;
@@ -284,7 +284,7 @@ void SemOS2WriteMenu( WResID *res_id, ResMemFlags flags, FullMenuOS2 *menu,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_MENU ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_MENU ), res_flags, loc );
         }
     } else {
         MemFree( res_id );

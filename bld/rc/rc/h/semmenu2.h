@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,6 @@ extern MenuFlags    SemOS2AddFirstMenuOption( YYTOKENTYPE token );
 extern MenuFlags    SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token );
 extern FullMenuOS2  *SemOS2NewMenu( FullMenuItemOS2 firstitem );
 extern FullMenuOS2  *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem );
-extern void         SemOS2WriteMenu( WResID *res_id, ResMemFlags flags, FullMenuOS2 *menu, YYTOKENTYPE, uint_32 codepage );
+extern void         SemOS2WriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuOS2 *menu, YYTOKENTYPE, uint_32 codepage );
 
 #endif

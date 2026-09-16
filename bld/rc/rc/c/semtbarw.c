@@ -87,7 +87,7 @@ static void semFreeToolBar( ToolBar *toolbar )
 
 void SemWINWriteToolBar( WResID *res_id, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
-                      ResMemFlags flags )
+                      ResMemFlags res_flags )
 {
     ResLocation         loc;
     unsigned            cnt;
@@ -102,7 +102,7 @@ void SemWINWriteToolBar( WResID *res_id, ToolBar *toolbar,
             ResWriteToolBarItems( CurrResFile.fp, cur->items, cur->cnt );
         }
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), res_flags, loc );
     }
     semFreeToolBar( toolbar );
 }

@@ -552,9 +552,9 @@ single-line-resource
 
 resource-options
     : resource-option
-        { $$ = SemWINAddFirstMemOption( $1 ); }
+        { $$ = SemWINAddFirstResOption( $1 ); }
     | resource-options resource-option
-        { $$ = SemWINAddMemOption( $1, $2 ); }
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 resource-option

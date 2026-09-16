@@ -196,7 +196,7 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
 } /* mergeStringTableBlocks */
 
 static void semMergeStringTables( FullStringTable *currtable,
-            FullStringTable *oldtable, ResMemFlags newblockflags,
+            FullStringTable *oldtable, ResMemFlags res_flags,
             uint_32 codepage )
 /****************************************************************
  * merge oldtable into currtable and free oldtable when done
@@ -221,7 +221,7 @@ static void semMergeStringTables( FullStringTable *currtable,
              * if oldblock in not in currtable move it there from oldtable
              */
             ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
-            oldblock->Flags = newblockflags;
+            oldblock->Flags = res_flags;
             oldblock->codePage = codepage;
             ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
@@ -236,14 +236,14 @@ static void semMergeStringTables( FullStringTable *currtable,
 } /* semMergeStringTables */
 
 static void setStringTableFlags( FullStringTable *currtable,
-                                ResMemFlags flags, uint_32 codepage )
-/*******************************************************************/
+                                ResMemFlags res_flags, uint_32 codepage )
+/***********************************************************************/
 {
     FullStringTableBlock    *currblock;
 
     for( currblock = currtable->Head; currblock != NULL;
                 currblock = currblock->Next ) {
-        currblock->Flags = flags;
+        currblock->Flags = res_flags;
         currblock->codePage = codepage;
     }
 }
@@ -264,31 +264,31 @@ static FullStringTable *findTable( FullStringTable *tables )
     return( tables );
 }
 
-void SemOS2MergeStrTable( FullStringTable *currtable, ResMemFlags flags, uint_32 codepage )
-/*****************************************************************************************/
+void SemOS2MergeStrTable( FullStringTable *currtable, ResMemFlags res_flags, uint_32 codepage )
+/*********************************************************************************************/
 {
     FullStringTable     *table;
 
     table = findTable( CurrResFile.StringTable );
     if( table == NULL ) {
-        setStringTableFlags( currtable, flags, codepage );
+        setStringTableFlags( currtable, res_flags, codepage );
         addTable( &CurrResFile.StringTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, flags, codepage );
+        semMergeStringTables( table, currtable, res_flags, codepage );
     }
 }
 
-void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags flags )
-/***********************************************************************/
+void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags res_flags )
+/***************************************************************************/
 {
     FullStringTable     *table;
 
     table = findTable( CurrResFile.ErrorTable );
     if( table == NULL ) {
-        setStringTableFlags( currtable, flags, SemOS2DefaultCodepage() );
+        setStringTableFlags( currtable, res_flags, SemOS2DefaultCodepage() );
         addTable( &CurrResFile.ErrorTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, flags, SemOS2DefaultCodepage() );
+        semMergeStringTables( table, currtable, res_flags, SemOS2DefaultCodepage() );
     }
 }
 

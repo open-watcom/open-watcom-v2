@@ -684,7 +684,7 @@ static char *SemOS2DumpTemplateItemsData( char *base, char *ptr,
  * resource (the size must be < 64K) and then dump the entire resource
  * into the file - which certainly shouldn't hurt performance either.
  */
-void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags flags,
+void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags res_flags,
                                        uint_32 codepage,
                                        FullDiagCtrlListOS2 *ctrls )
 /*********************************************************************/
@@ -724,7 +724,7 @@ void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags flags,
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DIALOG ), res_flags, loc );
     }
     MemFree( tmpl );
     SemOS2FreeDiagCtrlList( ctrls );

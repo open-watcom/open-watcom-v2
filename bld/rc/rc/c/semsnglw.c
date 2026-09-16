@@ -46,10 +46,10 @@
 
 
 /**** forward references ****/
-static void AddIconResource( WResID *res_id, ResMemFlags flags, ResMemFlags group_flags, const char *filename );
-static void AddCursorResource( WResID *res_id, ResMemFlags flags, ResMemFlags group_flags, const char *filename );
-static void AddBitmapResource( WResID *res_id, ResMemFlags, const char *filename );
-static void AddFontResources( WResID *res_id, ResMemFlags, const char *filename );
+static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags res_flags_group, const char *filename );
+static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags res_flags_group, const char *filename );
+static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char *filename );
+static void AddFontResources( WResID *res_id, ResMemFlags res_flags, const char *filename );
 
 void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
 /****************************************************************/
@@ -71,10 +71,11 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
 void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags *fullflags, char *filename )
 /***********************************************************************************************************/
 {
-    ResMemFlags flags;
-    ResMemFlags group_flags;
-    ResMemFlags purity_option;      /* used for icon and cursor resoures */
     char        full_filename[_MAX_PATH];
+    ResMemFlags res_flags;
+    /* used for icon and cursor resoures */
+    ResMemFlags res_flags_group;
+    ResMemFlags purity_flags;
 
     if( ErrorHasOccured ) {
         MemFree( res_id );
@@ -99,65 +100,65 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          */
         switch( CmdLineParms.Win16VerStamp ) {
         case VERSION_31_STAMP:
-            purity_option = MEMFLAG_NONE;
+            purity_flags = RESFLAG_NONE;
             break;
         default:
-            purity_option = MEMFLAG_PURE;
+            purity_flags = RESFLAG_PURE;
             break;
         }
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
-            flags = fullflags->res_flags;
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
+            res_flags = fullflags->res_flags;
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            group_flags = fullflags->res_flags;
+            res_flags_group = fullflags->res_flags;
         } else {
-            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
-            group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
+            res_flags_group = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
-        AddIconResource( res_id, flags, group_flags, full_filename );
+        AddIconResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_CURSOR:
         /*
-         * MS changed the default purity for CURSOR resource from rc
-         * version 30 to 31. Note: the CURSOR_GROUP resource
+         * MS changed the default purity for ICON and CURSOR resources from rc
+         * version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources
          * still have the same purity
          */
         switch( CmdLineParms.Win16VerStamp ) {
         case VERSION_31_STAMP:
-            purity_option = MEMFLAG_NONE;
+            purity_flags = RESFLAG_NONE;
             break;
         default:
-            purity_option = MEMFLAG_PURE;
+            purity_flags = RESFLAG_PURE;
             break;
         }
         if( fullflags != NULL ) {
-            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_option );
-            flags = fullflags->res_flags;
+            SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
+            res_flags = fullflags->res_flags;
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            group_flags = fullflags->res_flags;
+            res_flags_group = fullflags->res_flags;
         } else {
-            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_option;
-            group_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
+            res_flags_group = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
-        AddCursorResource( res_id, flags, group_flags, full_filename );
+        AddCursorResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_BITMAP:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
-            flags = fullflags->res_flags;
+            res_flags = fullflags->res_flags;
         } else {
-            flags = RESFLAG_MOVEABLE | RESFLAG_PURE;
+            res_flags = RESFLAG_MOVEABLE | RESFLAG_PURE;
         }
-        AddBitmapResource( res_id, flags, full_filename );
+        AddBitmapResource( res_id, res_flags, full_filename );
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
             SemWINCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-            flags = fullflags->res_flags;
+            res_flags = fullflags->res_flags;
         } else {
-            flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
         }
-        AddFontResources( res_id, flags, full_filename );
+        AddFontResources( res_id, res_flags, full_filename );
         break;
     default:
         MemFree( res_id );
@@ -289,8 +290,8 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, FILE *fp,
 
 #define BUFFER_SIZE     1024
 
-static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *err_code )
-/***************************************************************************************/
+static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags res_flags, int *err_code )
+/*******************************************************************************************/
 {
     RcStatus            ret;
     char                *buffer;
@@ -318,7 +319,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags flags, int *e
          * add the icon to the RES file directory
          */
         SemAddResourceAndFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
-                WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
+                WResIDFromNum( RESOURCE2INT( RT_ICON ) ), res_flags, loc );
         /*
          * change the reference in the ICON directory
          */
@@ -346,8 +347,8 @@ static void FreeIconDir( FullIconDir *dir )
     }
 } /* FreeIconDir */
 
-static bool writeIconDir( FullIconDir *dir, WResID *res_id, ResMemFlags flags, int *err_code )
-/********************************************************************************************/
+static bool writeIconDir( FullIconDir *dir, WResID *res_id, ResMemFlags res_flags, int *err_code )
+/************************************************************************************************/
 {
     bool                error;
     FullIconDirEntry    *entry;
@@ -362,7 +363,7 @@ static bool writeIconDir( FullIconDir *dir, WResID *res_id, ResMemFlags flags, i
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) ), res_flags, loc );
     }
 
     return( error );
@@ -505,8 +506,8 @@ static bool CopyTranslateIcoWin2x( FullIconDirEntry *entry, FILE *fp )
     return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Res.Info.Width, entry->Entry.Res.Info.Height, entry->Entry.Res.Info.BitCount, fp);
 }
 
-static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *res_id, ResMemFlags flags, int *err_code, FILE *fp )
-/********************************************************************************************/
+static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *res_id, ResMemFlags res_flags, int *err_code, FILE *fp )
+/**************************************************************************************************************************/
 {
     bool                error;
     ResLocation         loc;
@@ -519,7 +520,7 @@ static bool writeTheWindows2xIcon( FullIconDirEntry *entry, WResID *res_id, ResM
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_ICON ) ), res_flags, loc );
     }
 
     return( error );
@@ -549,8 +550,8 @@ static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir )
     return( NULL );
 }
 
-static void AddIconResource( WResID *res_id, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
-/*************************************************************************************************************/
+static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags res_flags_group, const char *filename )
+/*********************************************************************************************************************/
 {
     FILE            *fp;
     RcStatus        ret;
@@ -632,14 +633,14 @@ static void AddIconResource( WResID *res_id, ResMemFlags flags, ResMemFlags grou
             }
         }
 
-        error = writeTheWindows2xIcon( entry, res_id, group_flags, &err_code, fp );
+        error = writeTheWindows2xIcon( entry, res_id, res_flags_group, &err_code, fp );
       } break;
     default:
-        ret = copyIcons( &dir, fp, flags, &err_code );
+        ret = copyIcons( &dir, fp, res_flags, &err_code );
         if( ret != RS_OK )
             goto COPY_ICONS_ERROR;
 
-        error = writeIconDir( &dir, res_id, group_flags, &err_code );
+        error = writeIconDir( &dir, res_id, res_flags_group, &err_code );
         if( error ) {
             goto WRITE_DIR_ERROR;
         }
@@ -686,9 +687,9 @@ COPY_ICONS_ERROR:
     return;
 } /* AddIconResource */
 
-static bool writeCurDir( FullCurDir *dir, WResID *res_id, ResMemFlags flags,
+static bool writeCurDir( FullCurDir *dir, WResID *res_id, ResMemFlags res_flags,
                         int *err_code )
-/****************************************************************************/
+/******************************************************************************/
 {
     bool                error;
     FullCurDirEntry     *entry;
@@ -703,7 +704,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *res_id, ResMemFlags flags,
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) ), res_flags, loc );
     }
 
     return( error );
@@ -750,8 +751,8 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, FILE *fp,
 }
 
 
-static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *err_code )
-/*****************************************************************************************
+static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags res_flags, int *err_code )
+/*********************************************************************************************
  * This function uses the same size of buffers to copy info as for icons
  */
 {
@@ -791,7 +792,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags flags, int *
          * add the cursor to the RES file directory
          */
         SemAddResourceAndFree( WResIDFromNum( CurrResFile.NextCurOrIcon ),
-                WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
+                WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), res_flags, loc );
         /*
          * change the reference in the cursor directory
          */
@@ -879,8 +880,8 @@ static bool CopyTranslateCursorWin2x( FullCurDirEntry *entry, FILE *fp )
     return CopyTranslateBitmapAndMaskWin2x( entry->Entry.Cur.Width, entry->Entry.Cur.Height, entry->Entry.Cur.ColourCount/*BitCount see hack below*/, fp);
 }
 
-static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *res_id, ResMemFlags flags, int *err_code, FILE *fp )
-/********************************************************************************************/
+static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *res_id, ResMemFlags res_flags, int *err_code, FILE *fp )
+/***************************************************************************************************************************/
 {
     bool                error;
     CurDirEntry         Res;
@@ -907,7 +908,7 @@ static bool writeTheWindows2xCursor( FullCurDirEntry *entry, WResID *res_id, Res
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_CURSOR ) ), res_flags, loc );
     }
 
     return( error );
@@ -937,8 +938,8 @@ static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir )
     return( NULL );
 }
 
-static void AddCursorResource( WResID *res_id, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
-/***************************************************************************************************************/
+static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags res_flags_group, const char *filename )
+/***********************************************************************************************************************/
 {
     FILE            *fp;
     RcStatus        ret;
@@ -1030,14 +1031,14 @@ static void AddCursorResource( WResID *res_id, ResMemFlags flags, ResMemFlags gr
             }
         }
 
-        error = writeTheWindows2xCursor( entry, res_id, group_flags, &err_code, fp );
+        error = writeTheWindows2xCursor( entry, res_id, res_flags_group, &err_code, fp );
       } break;
     default:
-        ret = copyCursors( &dir, fp, flags, &err_code );
+        ret = copyCursors( &dir, fp, res_flags, &err_code );
         if( ret != RS_OK )
             goto COPY_CURSORS_ERROR;
 
-        error = writeCurDir( &dir, res_id, group_flags, &err_code );
+        error = writeCurDir( &dir, res_id, res_flags_group, &err_code );
         if( error ) {
             goto WRITE_DIR_ERROR;
         }
@@ -1100,8 +1101,8 @@ static RcStatus readBitmapFileHeader( FILE *fp, BitmapFileHeader *head, int *err
 #define BITMAP_BUFFER_SIZE  0x1000
 
 static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
-                            WResID *res_id, ResMemFlags flags, int *err_code )
-/****************************************************************************/
+                            WResID *res_id, ResMemFlags res_flags, int *err_code )
+/********************************************************************************/
 {
     RcStatus            ret;
     char                *buffer;
@@ -1125,14 +1126,14 @@ static RcStatus copyBitmap( BitmapFileHeader *head, FILE *fp,
     /*
      * add the bitmap to the RES file directory
      */
-    SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+    SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), res_flags, loc );
 
     return( ret );
 } /* copyBitmap */
 
 static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *res_id,
-                        ResMemFlags flags, int *err_code, FILE *fp, bool invert )
-/*******************************************************************************/
+                        ResMemFlags res_flags, int *err_code, FILE *fp, bool invert )
+/***********************************************************************************/
 {
     bool                error;
     ResLocation         loc;
@@ -1145,15 +1146,15 @@ static bool writeTheWindows2xBitmap( BitmapInfoHeader *dibhead, WResID *res_id,
         *err_code = LastWresErr();
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), flags, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_BITMAP ) ), res_flags, loc );
     }
 
     return( error );
 } /* writeTheWindows2xIcon */
 
 
-static void AddBitmapResource( WResID *res_id, ResMemFlags flags, const char *filename )
-/**************************************************************************************/
+static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char *filename )
+/******************************************************************************************/
 {
     BitmapFileHeader    head;
     FILE                *fp;
@@ -1212,10 +1213,10 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags flags, const char *fi
         if( RESSEEK( fp, head.Offset, SEEK_SET ) )
             goto COPY_BITMAP_ERROR;
 
-        ret = writeTheWindows2xBitmap( &dibhead, res_id, flags, &err_code, fp, monoinvert );
+        ret = writeTheWindows2xBitmap( &dibhead, res_id, res_flags, &err_code, fp, monoinvert );
       } break;
     default:
-        ret = copyBitmap( &head, fp, res_id, flags, &err_code );
+        ret = copyBitmap( &head, fp, res_id, res_flags, &err_code );
         if( ret != RS_OK ) {
             goto COPY_BITMAP_ERROR;
         }
@@ -1270,8 +1271,8 @@ static RcStatus readFontInfo( FILE *fp, FontInfo *info, int *err_code )
 #define FONT_BUFFER_SIZE  0x1000
 
 static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *font_id,
-                                ResMemFlags flags, int *err_code )
-/****************************************************************/
+                                ResMemFlags res_flags, int *err_code )
+/********************************************************************/
 {
     RcStatus            ret;
     ResLocation         loc;
@@ -1296,7 +1297,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *font_id,
     /*
      * add the font to the RES file directory
      */
-    SemAddResourceAndFree( font_id, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), flags, loc );
+    SemAddResourceAndFree( font_id, WResIDFromNum( RESOURCE2INT( RT_FONT ) ), res_flags, loc );
 
     return( ret );
 } /* copyFont */
@@ -1396,8 +1397,8 @@ static void AddFontToDir( FontInfo *info, char *devicename, char *facename, WRes
     CurrResFile.FontDir->NumOfFonts += 1;
 }
 
-static void AddFontResources( WResID *font_id, ResMemFlags flags, const char *filename )
-/**************************************************************************************/
+static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char *filename )
+/******************************************************************************************/
 {
     FontInfo            info;
     char                *devicename;
@@ -1420,7 +1421,7 @@ static void AddFontResources( WResID *font_id, ResMemFlags flags, const char *fi
     if( ret != RS_OK)
         goto READ_HEADER_ERROR;
 
-    ret = copyFont( &info, fp, font_id, flags, &err_code );
+    ret = copyFont( &info, fp, font_id, res_flags, &err_code );
     if( ret != RS_OK )
         goto COPY_FONT_ERROR;
 

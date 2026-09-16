@@ -102,17 +102,17 @@ SemLength SemEndResource( SemOffset start )
     return( len );
 }
 
-void SemAddResourceAndFree( WResID *res_id, WResID *type_id, ResMemFlags flags, ResLocation loc )
-/******************************************************************************************/
+void SemAddResourceAndFree( WResID *res_id, WResID *type_id, ResMemFlags res_flags, ResLocation loc )
+/***************************************************************************************************/
 {
-    SemAddResource2( res_id, type_id, flags, loc, NULL );
+    SemAddResource2( res_id, type_id, res_flags, loc, NULL );
     MemFree( res_id );
     MemFree( type_id );
 }
 
-static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags flags,
+static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
                 ResLocation loc, const WResLangType *lang, bool iswin32 )
-/*************************************************************************/
+/**********************************************************************************/
 {
     MResResourceHeader  msheader;
     bool                error;
@@ -123,7 +123,7 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags flags,
      */
     msheader.Type = WResIDToNameOrOrdinal( type_id );
     msheader.Name = WResIDToNameOrOrdinal( res_id );
-    msheader.res_flags = flags;
+    msheader.res_flags = res_flags;
     msheader.Size = loc.len;
     msheader.LanguageId = MAKELANGID( lang->lang, lang->sublang );
     msheader.Version = 0L; /* Currently Unsupported */
@@ -162,15 +162,15 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags flags,
     }
 }
 
-void SemAddResource( WResID *res_id, WResID *type_id, ResMemFlags flags, ResLocation loc )
-/****************************************************************************************/
+void SemAddResource( WResID *res_id, WResID *type_id, ResMemFlags res_flags, ResLocation loc )
+/********************************************************************************************/
 {
-    SemAddResource2( res_id, type_id, flags, loc, NULL );
+    SemAddResource2( res_id, type_id, res_flags, loc, NULL );
 }
 
-void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags flags,
+void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
                 ResLocation loc, const char *filename )
-/******************************************************************/
+/***************************************************************************/
 {
     bool                error;
     bool                duplicate;
@@ -196,7 +196,7 @@ void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags flags,
             MemFree( namestr );
         }
     }
-    error = WResAddResource( type_id, res_id, flags, loc.start, loc.len, CurrResFile.dir, lang, &duplicate );
+    error = WResAddResource( type_id, res_id, res_flags, loc.start, loc.len, CurrResFile.dir, lang, &duplicate );
 
     if( duplicate ) {
         if( filename == NULL ) {
@@ -217,7 +217,7 @@ void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags flags,
 
     if( !CurrResFile.IsWatcomRes ) {
         if( !duplicate ) {
-            copyMSFormatRes( res_id, type_id, flags, loc, lang, CmdLineParms.iswin32 );
+            copyMSFormatRes( res_id, type_id, res_flags, loc, lang, CmdLineParms.iswin32 );
         }
         /*
          * erase the temporary RES file

@@ -152,8 +152,8 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
 } /* mergeStringTableBlocks */
 
 static void semMergeStringTables( FullStringTable *currtable,
-            FullStringTable *oldtable, ResMemFlags newblockflags )
-/*****************************************************************
+            FullStringTable *oldtable, ResMemFlags res_flags )
+/*************************************************************
  * merge oldtable into currtable and free oldtable when done
  * returns TRUE if there was one or more duplicate entries
  */
@@ -176,7 +176,7 @@ static void semMergeStringTables( FullStringTable *currtable,
              * if oldblock in not in currtable move it there from oldtable
              */
             ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
-            oldblock->Flags = newblockflags;
+            oldblock->Flags = res_flags;
             ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
             /*
@@ -190,13 +190,13 @@ static void semMergeStringTables( FullStringTable *currtable,
 } /* semMergeStringTables */
 
 static void setStringTableMemFlags( FullStringTable *currtable,
-                                    ResMemFlags flags )
+                                    ResMemFlags res_flags )
 /*************************************************************/
 {
     FullStringTableBlock    *currblock;
 
     for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
-        currblock->Flags = flags;
+        currblock->Flags = res_flags;
     }
 }
 
@@ -224,8 +224,8 @@ static FullStringTable *findTableFromLang( FullStringTable *tables,
     return( cur );
 }
 
-void SemWINMergeStrTable( FullStringTable *currtable, ResMemFlags flags )
-/***********************************************************************/
+void SemWINMergeStrTable( FullStringTable *currtable, ResMemFlags res_flags )
+/***************************************************************************/
 {
     FullStringTable     *table;
     const WResLangType  *lang;
@@ -234,15 +234,15 @@ void SemWINMergeStrTable( FullStringTable *currtable, ResMemFlags flags )
     currtable->lang = *lang;
     table = findTableFromLang( CurrResFile.StringTable, lang );
     if( table == NULL ) {
-        setStringTableMemFlags( currtable, flags );
+        setStringTableMemFlags( currtable, res_flags );
         addTable( &CurrResFile.StringTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, flags );
+        semMergeStringTables( table, currtable, res_flags );
     }
 }
 
-void SemWINMergeErrTable( FullStringTable *currtable, ResMemFlags flags )
-/***********************************************************************/
+void SemWINMergeErrTable( FullStringTable *currtable, ResMemFlags res_flags )
+/***************************************************************************/
 {
     FullStringTable     *table;
     const WResLangType  *lang;
@@ -252,10 +252,10 @@ void SemWINMergeErrTable( FullStringTable *currtable, ResMemFlags flags )
     table = findTableFromLang( CurrResFile.ErrorTable, lang );
 
     if( table == NULL ) {
-        setStringTableMemFlags( currtable, flags );
+        setStringTableMemFlags( currtable, res_flags );
         addTable( &CurrResFile.ErrorTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, flags );
+        semMergeStringTables( table, currtable, res_flags );
     }
 }
 

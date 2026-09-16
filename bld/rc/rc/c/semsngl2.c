@@ -45,7 +45,7 @@
 
 
 /***** forward references *****/
-static void AddFontResources( WResID *font_id, ResMemFlags, const char *filename );
+static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char *filename );
 
 
 void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
@@ -53,7 +53,9 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
 /*****************************************************************/
 {
     ResLocation     start;
-    ResMemFlags     flags, flagsMDP, flagsMP;
+    ResMemFlags     res_flags;
+    ResMemFlags     res_flags_MDP;
+    ResMemFlags     res_flags_MP;
     char            full_filename[_MAX_PATH];
     static bool     firstIcon = true;
     bool            error;
@@ -65,8 +67,8 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
-                flagsMDP = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
-                flagsMP  = RESFLAG_MOVEABLE | RESFLAG_PURE;
+                res_flags_MDP = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+                res_flags_MP  = RESFLAG_MOVEABLE | RESFLAG_PURE;
                 switch( type ) {
                 case Y_DEFAULTICON:
                     /*
@@ -81,9 +83,9 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                 case Y_ICON:
                     if( fullflags != NULL ) {
                         SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_NONE );
-                        flags = fullflags->res_flags;
+                        res_flags = fullflags->res_flags;
                     } else {
-                        flags = flagsMDP;
+                        res_flags = res_flags_MDP;
                     }
                     /*
                      * Duplicate the first icon encountered as the default icon IFF it
@@ -100,33 +102,33 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                         id->IsName = false;
                         id->ID.Num = OS2_RT_DEFAULTICON;
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
 
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), flagsMDP, start );
+                        SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), res_flags_MDP, start );
                     } else {
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), flags, start );
+                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
                     }
                     break;
                 case Y_BITMAP:
                     if( fullflags != NULL ) {
                         SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
-                        flags = fullflags->res_flags;
+                        res_flags = fullflags->res_flags;
                     } else {
-                        flags = flagsMP;
+                        res_flags = res_flags_MP;
                     }
                     start = SemCopyRawFileOnly( full_filename );
-                    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_BITMAP ), flags, start );
+                    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_BITMAP ), res_flags, start );
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
                         SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
-                        flags = fullflags->res_flags;
+                        res_flags = fullflags->res_flags;
                     } else {
-                        flags = flagsMDP;
+                        res_flags = res_flags_MDP;
                     }
-                    AddFontResources( res_id, flags, full_filename );
+                    AddFontResources( res_id, res_flags, full_filename );
                     break;
                 default:
                     MemFree( res_id );
@@ -159,7 +161,7 @@ static RcStatus readFontInfo( FILE *fp, FontInfo *info, int *err_code )
 #define FONT_BUFFER_SIZE  0x1000
 
 static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *res_id,
-                                ResMemFlags flags, int *err_code )
+                                ResMemFlags res_flags, int *err_code )
 /*********************************************************************/
 {
     RcStatus            ret;
@@ -185,7 +187,7 @@ static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *res_id,
     /*
      * add the font to the RES file directory
      */
-    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_FONT ), flags, loc );
+    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_FONT ), res_flags, loc );
 
     return( ret );
 } /* copyFont */
@@ -286,8 +288,8 @@ static void AddFontToDir( FontInfo *info, char *devicename, char *facename, WRes
     CurrResFile.FontDir->NumOfFonts += 1;
 }
 
-static void AddFontResources( WResID *font_id, ResMemFlags flags, const char *filename )
-/**************************************************************************************/
+static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char *filename )
+/******************************************************************************************/
 {
     FontInfo            info;
     char                *devicename;
@@ -310,7 +312,7 @@ static void AddFontResources( WResID *font_id, ResMemFlags flags, const char *fi
     if( ret != RS_OK)
         goto READ_HEADER_ERROR;
 
-    ret = copyFont( &info, fp, font_id, flags, &err_code );
+    ret = copyFont( &info, fp, font_id, res_flags, &err_code );
     if( ret != RS_OK )
         goto COPY_FONT_ERROR;
 

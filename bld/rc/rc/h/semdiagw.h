@@ -59,7 +59,7 @@ extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader *head, FullD
 extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList * );
 extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList *list, FullDialogBoxControl *ctrl, DataElemList * );
 extern FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions opts );
-extern void                 SemWINWriteDialogBox( WResID *res_id, ResMemFlags, DialogSizeInfo, FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId, YYTOKENTYPE );
+extern void                 SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags, DialogSizeInfo, FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId, YYTOKENTYPE );
 extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
 extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *res_id, ResNameOrOrdinal *, uint_32, DlgHelpId * );
 

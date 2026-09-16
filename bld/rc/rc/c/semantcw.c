@@ -88,7 +88,7 @@ void SemWINUnsupported( YYTOKENTYPE token )
     RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
-FullResFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
+FullResFlags SemWINAddFirstResOption( YYTOKENTYPE token )
 /*******************************************************/
 {
     FullResFlags    fullflags;
@@ -100,10 +100,10 @@ FullResFlags SemWINAddFirstMemOption( YYTOKENTYPE token )
     fullflags.purityOptGiven = false;
     fullflags.cpOptGiven     = false;
 
-    return( SemWINAddMemOption( fullflags, token ) );
+    return( SemWINAddResOption( fullflags, token ) );
 }
 
-FullResFlags SemWINAddMemOption( FullResFlags fullflags, YYTOKENTYPE token )
+FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )
 /**************************************************************************/
 {
     switch( token ) {

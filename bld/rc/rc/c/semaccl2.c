@@ -210,9 +210,9 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
     return( error );
 }
 
-void SemOS2WriteAccelTable( WResID *res_id, ResMemFlags flags, uint_32 codepage,
+void SemOS2WriteAccelTable( WResID *res_id, ResMemFlags res_flags, uint_32 codepage,
                                                 FullAccelTableOS2 *acctable )
-/****************************************************************************/
+/**********************************************************************************/
 {
     ResLocation     loc;
     bool            error;
@@ -227,7 +227,7 @@ void SemOS2WriteAccelTable( WResID *res_id, ResMemFlags flags, uint_32 codepage,
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
-            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
+            SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_ACCELTABLE ), res_flags, loc );
         }
     } else {
         MemFree( res_id );
