@@ -47,11 +47,11 @@ typedef struct _KBDKEYINFO {
 }KBDKEYINFO, FAR *PKBDKEYINFO;
 
 typedef struct _KBDHWID {
-    USHORT length;
-    USHORT kbd_id;
+    USHORT cb;
+    USHORT idKbd;
     USHORT reserved1;
     USHORT reserved2;
-}KBDHWID, FAR *PKBDHWID;
+} KBDHWID, FAR *PKBDHWID;
 
 typedef struct _KBDINFO {
     USHORT cb;
