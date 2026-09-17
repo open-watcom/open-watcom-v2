@@ -154,7 +154,7 @@ static char * MemFlagsOffList[16] = {
     NULL,               /* 0x1000 */
     NULL,               /* 0x2000 */
     NULL,               /* 0x4000 */
-    "no SEGALIGN"       /* 0x8000 */
+    NULL                /* 0x8000 */
 };
 
 static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )
@@ -185,8 +185,8 @@ static bool DumpResource( WResDirWindow wind, FILE *fp, WResTargetOS res_os )
     ConvertIDToStr( &(res->ResName), resname, 15 );
     ConvertTypeIDToStr( &(type->TypeName), typename, 20 );
 
-    fprintf( stdout, "%-20.20s  %-15.15s  0x%04X 0x%02X  ", typename,
-                resname, (int)langinfo->lang.lang, (int)langinfo->lang.sublang );
+    fprintf( stdout, "%-20.20s  %-15.15s  0x%04X 0x%02X  0x%04X ", typename,
+                resname, (int)langinfo->lang.lang, (int)langinfo->lang.sublang, langinfo->res_flags );
     PrintUint16Flags( langinfo->res_flags, MemFlagsOnList, MemFlagsOffList, 53 );
 
     if( CmdLineParms.DumpContents ) {
