@@ -23,13 +23,6 @@ exetarg_res        = $(proj_name).res
 
 additional_clean = *.gh *.grc
 
-!ifeq host_cpu i86
-!ifneq debug 0
-# this configuration overflow 64 kB _TEXT segment limit
-skip: .SYMBOLIC
-!endif
-!endif
-
 !include idedlls.mif
 !include cproj.mif
 !include defrule.mif
@@ -38,6 +31,13 @@ skip: .SYMBOLIC
 !include $(orl_dir)/client.mif
 
 !include ../wmkobjs.mif                     #   get our objs macro
+
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
 
 #
 # cflags

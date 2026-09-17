@@ -13,13 +13,6 @@ sys_windowed = 1
 
 additional_clean = *.gh *.grh *.grc
 
-!ifeq host_cpu i86
-!ifneq debug 0
-# this configuration overflow 64 kB _TEXT segment limit
-skip: .SYMBOLIC
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -32,6 +25,13 @@ dig_arch = $(host_cpu)
 !include $(dig_dir)/client.mif
 !include $(dip_dir)/client.mif
 !include $(mad_dir)/client.mif
+
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
 
 common_dir = ../../common
 

@@ -20,13 +20,6 @@ memory_model_i86 = l
 
 additional_clean = *.gh *.grh *.grc
 
-!ifeq host_cpu i86
-!ifneq debug 0
-# this configuration overflow 64 kB _TEXT segment limit
-skip: .SYMBOLIC
-!endif
-!endif
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -35,6 +28,13 @@ skip: .SYMBOLIC
 !include $(wpi_dir)/client.mif
 !include $(wr_dir)/client.mif
 !include $(cpp_dir)/client.mif
+
+!ifeq host_cpu i86
+!ifneq debug 0
+# this configuration overflow 64 kB _TEXT segment limit
+skip: .SYMBOLIC
+!endif
+!endif
 
 #
 # cflags
