@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,13 +71,13 @@ extern unsigned short __dos87emucall;
 
 void _WCI86NEAR __dos_emu_fldcw( stk_ptr );
 #pragma aux __dos_emu_fldcw "*" = \
-        "mov    ax,3" \
+        "mov    ax,4" \
         "call   __dos87emucall" \
     __parm [__bx]
 
 void _WCI86NEAR __dos_emu_fstcw( stk_ptr );
 #pragma aux __dos_emu_fstcw "*" = \
-        "mov    ax,4" \
+        "mov    ax,3" \
         "call   __dos87emucall" \
     __parm [__bx]
 
