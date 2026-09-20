@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -124,7 +124,7 @@ size_t ReadMemory( pid_t pid, addr_off offv, void *data, size_t size )
     if( size > 16 ) {
         char    procpidmem[6+20+4+1];
         int     fd;
-        loff_t  res;
+        off64_t res;
 
         snprintf( procpidmem, sizeof( procpidmem ), "/proc/%d/mem", pid );
         fd = open( procpidmem, O_RDONLY );
