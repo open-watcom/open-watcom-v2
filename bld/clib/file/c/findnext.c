@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,21 +47,12 @@
     #include <dos.h>
 #endif
 #include "find.h"
+#include "filei64.h"
 
 
-#ifdef __WIDECHAR__
- #ifdef __INT64__
-  _WCRTLINK int _wfindnexti64( intptr_t osffh, struct _wfinddatai64_t *fileinfo )
- #else
-  _WCRTLINK int _wfindnext( intptr_t osffh, struct _wfinddata_t *fileinfo )
- #endif
-#else
- #ifdef __INT64__
-  _WCRTLINK int _findnexti64( intptr_t osffh, struct _finddatai64_t *fileinfo )
- #else
-  _WCRTLINK int _findnext( intptr_t osffh, struct _finddata_t *fileinfo )
- #endif
-#endif
+_WCRTLINK int __64_NAME(__F_NAME(_findnext,_wfindnext),__F_NAME(_findnexti64,_wfindnexti64))(
+    intptr_t osffh,
+    struct __64_NAME(__F_NAME(_finddata_t,_wfinddata_t),__F_NAME(_finddatai64_t,_wfinddatai64_t)) *fileinfo )
 {
 #ifdef __NT__
     WIN32_FIND_DATA ffd;
@@ -74,11 +65,7 @@
         return( __set_errno_dos( ERROR_FILE_NOT_FOUND ) );
     }
     /*** Got one! ***/
-  #ifdef __INT64__
-    __F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt)( &ffd, fileinfo );
-  #else
-    __F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt)( &ffd, fileinfo );
-  #endif
+    __64_NAME(__F_NAME(__nt_finddata_cvt,__nt_wfinddata_cvt),__F_NAME(__nt_finddatai64_cvt,__nt_wfinddatai64_cvt))( &ffd, fileinfo );
 #elif defined( __OS2__ )
     APIRET          rc;
     FF_BUFFER       ffb;
@@ -89,11 +76,7 @@
         return( __set_errno_dos( rc ) );
     }
     /*** Got one! ***/
-  #ifdef __INT64__
-    __F_NAME(__os2_finddatai64_cvt,__os2_wfinddatai64_cvt)( &ffb, fileinfo );
-  #else
-    __F_NAME(__os2_finddata_cvt,__os2_wfinddata_cvt)( &ffb, fileinfo );
-  #endif
+    __64_NAME(__F_NAME(__os2_finddata_cvt,__os2_wfinddata_cvt),__F_NAME(__os2_finddatai64_cvt,__os2_wfinddatai64_cvt))( &ffb, fileinfo );
 
 #elif defined( __RDOS__ )
     RDOSFINDTYPE    *findbuf;
@@ -110,11 +93,7 @@
     if( __F_NAME(_dos_findnext,_wdos_findnext)( (DOSFINDTYPE *)osffh ) ) {
         return( -1 );
     }
-  #ifdef __INT64__
-    __F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt)( (DOSFINDTYPE *)osffh, fileinfo );
-  #else
-    __F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt)( (DOSFINDTYPE *)osffh, fileinfo );
-  #endif
+    __64_NAME(__F_NAME(__dos_finddata_cvt,__dos_wfinddata_cvt),__F_NAME(__dos_finddatai64_cvt,__dos_wfinddatai64_cvt))( (DOSFINDTYPE *)osffh, fileinfo );
 #endif
     return( 0 );
 }

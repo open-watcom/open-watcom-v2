@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,21 +33,11 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include "filei64.h"
 #include "lseek.h"
 
 
-#ifdef __INT64__
-
-_WCRTLINK __int64 _telli64( int handle )
+_WCRTLINK __64_NAME(off_t,__int64) __64_NAME(_tell,_telli64)( int handle )
 {
-    return( __lseeki64( handle, 0LL, SEEK_CUR ) );
+    return( __64_NAME(__lseek,__lseeki64)( handle, 0, SEEK_CUR ) );
 }
-
-#else
-
-_WCRTLINK off_t _tell( int handle )
-{
-    return( __lseek( handle, 0L, SEEK_CUR ) );
-}
-
-#endif

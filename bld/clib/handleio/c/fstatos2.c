@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +45,7 @@
 #include "rtcheck.h"
 #include "d2timet.h"
 #include "thread.h"
+#include "filei64.h"
 
 
 #if defined( _M_I86 )
@@ -78,11 +79,8 @@ static unsigned short _WCNEAR attr2mode( OS_UINT attr )
 }
 
 
-#ifdef __INT64__
-_WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
-#else
-_WCRTLINK int fstat( int handle, struct stat *buf )
-#endif
+_WCRTLINK int __64_NAME(fstat,_fstati64)( int handle,
+        struct __64_NAME(stat,_stati64) *buf )
 {
     APIRET          rc;
     OS_UINT         hand_type;

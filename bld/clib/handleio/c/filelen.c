@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,26 +44,26 @@
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"
+#include "filei64.h"
 
 
-#if defined(__INT64__)
-
-_WCRTLINK __int64 _filelengthi64( int handle )
+_WCRTLINK __64_NAME(long,__int64) __64_NAME(_filelength,_filelengthi64)( int handle )
 {
-#if defined(__NT__) || defined(__OS2_32BIT__) || defined( __LINUX__ )
-    __int64         file_len;
-    __int64         current_posn;
+#if !defined( __INT64__ ) || defined( __NT__ ) || defined( __OS2_32BIT__ ) || defined( __LINUX__ )
+    __64_NAME(long,__int64) file_len;
+    __64_NAME(long,__int64) current_posn;
 
     __handle_check( handle, -1 );
     _AccessFileH( handle );
 
-    current_posn = __lseeki64( handle, 0, SEEK_CUR );
-    if( current_posn == -1LL ) {
+    current_posn = __64_NAME(__lseek,__lseeki64)( handle, 0, SEEK_CUR );
+    if( current_posn == -1 ) {
         _ReleaseFileH( handle );
-        return( -1LL );
+        return( -1 );
     }
-    file_len = __lseeki64( handle, 0, SEEK_END );
-    __lseeki64( handle, current_posn, SEEK_SET );
+
+    file_len = __64_NAME(__lseek,__lseeki64)( handle, 0, SEEK_END );
+    __64_NAME(__lseek,__lseeki64)( handle, current_posn, SEEK_SET );
 
     _ReleaseFileH( handle );
     return( file_len );
@@ -71,34 +71,9 @@ _WCRTLINK __int64 _filelengthi64( int handle )
     long            file_len;
 
     file_len = _filelength( handle );
-    if( file_len == -1L ) {
-        return( -1LL );
+    if( file_len == -1 ) {
+        return( -1 );
     }
     return( (unsigned long)file_len );
 #endif
 }
-
-#else
-
-_WCRTLINK long _filelength( int handle )
-{
-    long            current_posn;
-    long            file_len;
-
-    __handle_check( handle, -1 );
-    _AccessFileH( handle );
-
-    current_posn = __lseek( handle, 0L, SEEK_CUR );
-    if( current_posn == -1L )
-    {
-        _ReleaseFileH( handle );
-        return( -1L );
-    }
-    file_len = __lseek( handle, 0L, SEEK_END );
-    __lseek( handle, current_posn, SEEK_SET );
-
-    _ReleaseFileH( handle );
-    return( file_len );
-}
-
-#endif

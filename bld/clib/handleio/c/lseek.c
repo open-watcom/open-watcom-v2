@@ -43,11 +43,11 @@
 #include "rtcheck.h"
 #include "lseek.h"
 #include "thread.h"
+#include "filei64.h"
 
 
-#ifdef __INT64__
-
-_WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
+_WCRTLINK __64_NAME(off_t,__int64) __64_NAME(lseek,_lseeki64)( int handle,
+        __64_NAME(off_t,__int64) offset, int origin )
 {
 #if !defined( __LINUX__ ) && !defined( __RDOS__ ) && !defined( __RDOSDEV__ ) && !defined( __QNX__ ) && !defined( __NETWARE__ )
     unsigned        iomode_flags;
@@ -57,30 +57,9 @@ _WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
     /*** Set the _FILEEXT iomode_flags bit if positive offset ***/
     iomode_flags = __GetIOMode( handle );
 
-    if( offset >= 0 && (iomode_flags & _APPEND) == 0 ) {
+    if( offset > 0 && (iomode_flags & _APPEND) == 0 ) {
         __SetIOMode( handle, iomode_flags | _FILEEXT );
     }
 #endif
-    return( __lseeki64( handle, offset, origin ) );
+    return( __64_NAME(__lseek,__lseeki64)( handle, offset, origin ) );
 }
-
-#else
-
-_WCRTLINK off_t lseek( int handle, off_t offset, int origin )
-{
-#if !defined( __LINUX__ )
-    unsigned            iomode_flags;
-
-    __handle_check( handle, -1 );
-
-    /*** Set the _FILEEXT iomode_flags bit if positive offset ***/
-    iomode_flags = __GetIOMode( handle );
-
-    if( offset > 0 && (iomode_flags & _APPEND) == 0 )
-        __SetIOMode( handle, iomode_flags | _FILEEXT );
-
-#endif
-    return( __lseek( handle, offset, origin ) );
-}
-
-#endif

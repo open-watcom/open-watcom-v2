@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,6 +54,7 @@
 #include "thread.h"
 #include "pathmac.h"
 #include "libi64.h"
+#include "filei64.h"
 
 
 static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
@@ -142,11 +143,8 @@ static DWORD _WCNEAR at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *ori
 }
 
 
- #ifdef __INT64__
-  _WCRTLINK int __F_NAME(_stati64,_wstati64)( const CHAR_TYPE *path, struct _stati64 *buf )
- #else
-  _WCRTLINK int __F_NAME(stat,_wstat)( const CHAR_TYPE *path, struct stat *buf )
- #endif
+_WCRTLINK int __64_NAME(__F_NAME(stat,_wstat),__F_NAME(_stati64,_wstati64))(
+        const CHAR_TYPE *path, struct __64_NAME(stat,_stati64) *buf )
 {
     WIN32_FIND_DATA     ffd;
     const CHAR_TYPE     *ptr;

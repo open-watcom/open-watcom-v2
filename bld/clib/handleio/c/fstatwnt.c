@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,6 +46,7 @@
 #include "rtcheck.h"
 #include "thread.h"
 #include "libi64.h"
+#include "filei64.h"
 
 
 /*
@@ -55,11 +56,7 @@
     );
  */
 
-#ifdef __INT64__
- _WCRTLINK int _fstati64( int handle, struct _stati64 *buf )
-#else
- _WCRTLINK int fstat( int handle, struct stat *buf )
-#endif
+_WCRTLINK int __64_NAME(fstat,_fstati64)( int handle, struct __64_NAME(stat,_stati64) *buf )
 {
     DWORD                       size;
 #ifdef __INT64__
@@ -127,8 +124,7 @@
         if( buf->st_mode & S_IFDIR ) {
             buf->st_size = 0;
         } else {
-#ifdef __INT64__
-            size = GetFileSize( osfh, &highorder );
+            size = GetFileSize( osfh, __64_NAME(NULL,&highorder) );
             if( size == INVALID_FILE_SIZE ) {
                 DWORD   error;
 
@@ -138,19 +134,10 @@
                     return( __set_errno_dos( error ) );
                 }
             }
+#ifdef __INT64__
             LIB_LODWORD( buf->st_size ) = size;
             LIB_HIDWORD( buf->st_size ) = highorder;
 #else
-            size = GetFileSize( osfh, NULL );
-            if( size == INVALID_FILE_SIZE ) {
-                DWORD   error;
-
-                error = GetLastError();
-                if( error != NO_ERROR ) {
-                    _ReleaseFileH( handle );
-                    return( __set_errno_dos( error ) );
-                }
-            }
             buf->st_size = size;
 #endif
         }

@@ -157,10 +157,10 @@ _WCRTLINK void endhostent( void )
 static void __hostent_fini( void )
 {
     if( line_buf != NULL ) {
-    	free( line_buf );
+        free( line_buf );
     }
     if( _RWD_host_aliases != NULL ) {
-    	free( _RWD_host_aliases );
+        free( _RWD_host_aliases );
     }
 }
 

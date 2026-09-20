@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,6 +56,7 @@
 #include "thread.h"
 #include "find.h"
 #include "pathmac.h"
+#include "filei64.h"
 
 
 static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
@@ -84,11 +85,8 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
 }
 
 
-#ifdef __INT64__
- _WCRTLINK int __F_NAME(_stati64,_wstati64)( CHAR_TYPE const *path, struct _stati64 *buf )
-#else
- _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct stat *buf )
-#endif
+_WCRTLINK int __64_NAME(__F_NAME(stat,_wstat),__F_NAME(_stati64,_wstati64))(
+        CHAR_TYPE const *path, struct __64_NAME(stat,_stati64) *buf )
 {
     CHAR_TYPE const     *ptr;
     ULONG               drvmap;
@@ -173,11 +171,7 @@ static unsigned short _WCNEAR at2mode( OS_UINT attr, char *fname ) {
                 return( -1 );
             }
             errno_num = 0;
-#ifdef __INT64__
-            if( _fstati64( handle, buf ) == -1 ) {
-#else
-            if( fstat( handle, buf ) == -1 ) {
-#endif
+            if( __64_NAME(fstat,_fstati64)( handle, buf ) == -1 ) {
                 errno_num = lib_get_errno();
             }
             close( handle );
