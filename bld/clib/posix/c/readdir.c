@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation for readdir() for Linux.
+* Description:  Implementation for readdir(64) for Linux.
 *
 ****************************************************************************/
 
@@ -35,27 +35,28 @@
 #include <string.h>
 #include <dirent.h>
 #include <stdio.h>
-
 #include "linuxsys.h"
 #include "dirstrea.h"
+#include "filei64.h"
 
-_WCRTLINK struct dirent *readdir( DIR *dirp )
+
+_WCRTLINK struct __64_NAME(dirent,dirent64) *__64_NAME(readdir,readdir64)( DIR *dirp )
 {
-    struct dirent   *dirent;
-    long            rc;
+    struct __64_NAME(dirent,dirent64)   *dir;
+    long                                rc;
 
-    dirent = (struct dirent *)(&dirp->dirent_buf[dirp->bufofs]);
+    dir = (struct __64_NAME(dirent,dirent64) *)(&dirp->dirent_buf[dirp->bufofs]);
     if( dirp->bufofs == 0 ) {
-        rc = sys_getdents( dirp->fd, dirent, sizeof( struct dirent ) * _DIRBUF );
+        rc = __64_NAME(sys_getdents,sys_getdents64)( dirp->fd, (void *)dirp->dirent_buf, sizeof( dirp->dirent_buf ) );
         if( rc == 0 || rc == -1 ) {
             return( NULL );
         }
         dirp->bufsize = rc;
     }
 
-    dirp->bufofs += dirent->d_reclen;
+    dirp->bufofs += dir->d_reclen;
     if( dirp->bufofs >= dirp->bufsize )
         dirp->bufofs = 0;
 
-    return( dirent );
+    return( dir );
 }

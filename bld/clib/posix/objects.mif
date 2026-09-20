@@ -62,6 +62,7 @@
 !inject ptrwlock.obj                                                                l32 lpc lmp
 !inject ptsched.obj                                                                 l32 lpc lmp
 !inject ptself.obj                                                                  l32 lpc lmp
+!inject readdi64.obj                                                                l32 lpc lmp
 !inject readdir.obj                                                                 l32 lpc lmp
 !inject recv.obj                                                                    l32 lpc lmp rdu
 !inject recvfrom.obj                                                                l32 lpc lmp rdu

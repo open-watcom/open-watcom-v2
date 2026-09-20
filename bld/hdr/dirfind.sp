@@ -14,4 +14,9 @@ _WCRTLINK extern DIR        *opendir( const char * );
 _WCRTLINK extern struct dirent *readdir( DIR * );
 _WCRTLINK extern void       rewinddir( DIR * );
 _WCRTLINK extern int        closedir( DIR * );
+:segment LINUX
+:include ext.sp
+_WCRTLINK extern struct dirent64 *readdir64( DIR * );
+:include extepi.sp
+:endsegment
 :endsegment

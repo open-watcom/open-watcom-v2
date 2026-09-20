@@ -4,21 +4,10 @@
 #ifndef _INO_T_DEFINED_
  #define _INO_T_DEFINED_
 :segment LINUX
-:segment ARCHI386
- typedef unsigned long  ino_t;  /* Used for file serial numbers     */
-:elsesegment ARCHMIPS
- typedef unsigned long  ino_t;  /* Used for file serial numbers     */
-:elsesegment ARCHPPC
- typedef unsigned long  ino_t;  /* Used for file serial numbers     */
-:elsesegment
- #ifdef __386__
-  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
- #elif defined(__MIPS__)
-  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
- #elif defined(__PPC__)
-  typedef unsigned long  ino_t;  /* Used for file serial numbers     */
- #endif
-:endsegment
+ typedef unsigned long       ino_t;   /* Used for file serial numbers     */
+:include ext.sp
+ typedef unsigned long long  ino64_t; /* Used for file serial numbers     */
+:include extepi.sp
 :elsesegment QNX
  typedef long           ino_t;  /* Used for file serial numbers     */
 :elsesegment

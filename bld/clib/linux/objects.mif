@@ -30,6 +30,7 @@
 !inject fsync.obj                                                                           l32 lpc lmp
 !inject ftrunc.obj                                                                          l32 lpc lmp
 !inject ftrunc64.obj                                                                        l32 lpc lmp
+!inject getden64.obj                                                                        l32 lpc lmp
 !inject getdents.obj                                                                        l32 lpc lmp
 !inject getegid.obj                                                                         l32 lpc lmp
 !inject geteuid.obj                                                                         l32 lpc lmp

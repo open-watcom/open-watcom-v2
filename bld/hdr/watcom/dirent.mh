@@ -38,6 +38,17 @@ struct dirent {
     unsigned short  d_reclen;
     char            d_name[NAME_MAX+1];
 };
+
+:include ext.sp
+struct dirent64 {
+    ino64_t         d_ino;
+    off64_t         d_off;
+    unsigned short  d_reclen;
+    unsigned char   d_type;
+    char            d_name[NAME_MAX+1];
+};
+:include extepi.sp
+
 #define d_fileno    d_ino       /* Backwards compatibility.  */
 #define d_offset    d_off       /* Backwards compatibility.  */
 #define d_namlen    d_reclen    /* Backwards compatibility.  */

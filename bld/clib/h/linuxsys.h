@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -67,6 +68,7 @@
 extern long    sys_brk( u_long brk );
 extern long    sys_open( const char * filename, int flags, int mode );
 extern long    sys_getdents( u_int fd, struct dirent *dirp, u_int count );
+extern long    sys_getdents64( u_int fd, struct dirent64 *dirp, u_int count );
 extern long    __socketcall( int call, u_long *args );
 
 #endif
