@@ -38,8 +38,9 @@
 #define O_EXCL      000200  /*  Exclusive open          */
 #define O_NOCTTY    000400  /*  Don't assign a controlling terminal */
 #define O_TRUNC     001000  /*  Open with truncation        */
-
+:include ext.sp
 #define O_LARGEFILE 0100000 /*  support files > 2G, allow _llseek() */
+:include extepi.sp
 #define O_DIRECTORY 0200000 /* must be a directory */
 #define O_NOFOLLOW  0400000 /* don't follow links */
 #define O_NOATIME   01000000
