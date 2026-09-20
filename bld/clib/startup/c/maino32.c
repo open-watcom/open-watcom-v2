@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -84,6 +84,20 @@ void    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 
 #if defined(_M_IX86)
+
+/*
+ *  On 32-bit OS/2, GDT selector 0x150B points to the TIB (Thread
+ * Information Block). The FS register is by default loaded with this
+ * selector.
+ *  TIB offset 4 contains the address of the bottom of the thread's stack,
+ * while offset 8 contains the address of the stack top. That is how
+ * GetThreadStack() obtains the stack limit.
+ *  At offset 12 (0xC) of the TIB is a pointer to a system specific TIB2
+ * block. The first dword in TIB2 contains the thread ID (process local,
+ * counting from 1). GetTIDp() returns a pointer to the thread ID (which
+ * is also the pointer to the start of TIB2).
+ *  See also the TIB and TIB2 structs in bsedos.h.
+ */
 extern  unsigned short  GetCS( void );
 #pragma aux GetCS = "mov ax,cs" __value [__ax] __modify __exact [__ax]
 extern  unsigned short  GetFS( void );
@@ -92,6 +106,7 @@ extern  int     *GetTIDp( void );
 #pragma aux GetTIDp = "mov eax,fs:[12]" __value [__eax] __modify __exact [__eax]
 extern  unsigned GetThreadStack(void);
 #pragma aux GetThreadStack = "mov eax,fs:[4]" __value [__eax] __modify __exact [__eax]
+
 #endif
 
 unsigned __threadstack( void )
@@ -156,9 +171,9 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     __hmodule = hmod;
     __OS2Init( FALSE, tdata );
     /*
-      initializers must be executed before signals initialized since
-      __sig_init_rtn may get set by an initializer
-    */
+     * initializers must be executed before signals initialized since
+     * __sig_init_rtn may get set by an initializer
+     */
     __InitRtns( INIT_PRIORITY_LIBRARY );
     __XCPTHANDLER = xcpt;
     __sig_init_rtn();
@@ -168,8 +183,10 @@ void __OS2MainInit( EXCEPTIONREGISTRATIONRECORD *xcpt, void *ptr,
     __InitRtns( 255 );
 }
 
-// this definition needs to occur after __OS2MainInit() so that
-// the #undef of _STACKLOW doesn't break things
+/*
+ * this definition needs to occur after __OS2MainInit() so that
+ * the #undef of _STACKLOW doesn't break things
+ */
 void __OS2Init( int is_dll, thread_data *tdata )
 /**********************************************/
 {
@@ -192,9 +209,11 @@ void __OS2Init( int is_dll, thread_data *tdata )
 void __OS2Fini( void )
 /********************/
 {
-    // Thread data is either freed by the module that allocated it (for DLLs)
-    // or not at all (for executables - allocated from stack). Here we just
-    // make sure the pointer gets invalidated.
+    /*
+     * Thread data is either freed by the module that allocated it (for DLLs)
+     * or not at all (for executables - allocated from stack). Here we just
+     * make sure the pointer gets invalidated.
+     */
     __FirstThreadData = NULL;
 }
 
