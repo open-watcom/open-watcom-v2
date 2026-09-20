@@ -73,8 +73,6 @@ typedef long long       quad_t;
 typedef quad_t          *qaddr_t;
 typedef int             key_t;
 :include ext.sp
-:include loff_t.sp
-:include off64_t.sp
 :include fstypes.sp
 :include extepi.sp
 

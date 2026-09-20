@@ -42,9 +42,6 @@
 /*
  *  LINUX types
  */
-:include ext.sp
-:include loff_t.sp
-:include extepi.sp
 
 #include _ARCH_INCLUDE(fcntl.h)
 
