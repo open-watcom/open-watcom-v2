@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,5 +29,10 @@
 *
 ****************************************************************************/
 
+
+/*
+ * this file should remain an indirected file
+ * it is done this way to support the reuse of the source file
+ */
 #define __INT64__
 #include "readdir.c"
