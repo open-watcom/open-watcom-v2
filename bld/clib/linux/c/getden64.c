@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Linux SYS_getdents system call.
+* Description:  Linux SYS_getdents64 system call.
 *
 ****************************************************************************/
 
@@ -37,8 +37,8 @@
 #include "linuxsys.h"
 
 
-long sys_getdents( u_int handle, struct dirent *dir, u_int count )
+long sys_getdents64( u_int handle, struct dirent64 *dir, u_int count )
 {
-    syscall_res res = sys_call3( SYS_getdents, handle, (u_long)dir, count );
+    syscall_res res = sys_call3( SYS_getdents64, handle, (u_long)dir, count );
     __syscall_return( int, res );
 }
