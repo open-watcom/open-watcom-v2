@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -349,6 +349,7 @@ typedef unsigned long long      syscall_res;
 #define SYS_request_key             4281
 #define SYS_keyctl                  4282
 #define SYS_set_thread_area         4283
+#define SYS_prlimit64               4338
 
 /*
  * internal sub-numbers for SYS_socketcall

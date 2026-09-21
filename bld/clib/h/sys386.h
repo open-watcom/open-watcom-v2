@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -331,6 +331,7 @@ typedef unsigned long       syscall_res;
 #define SYS_statfs64            268
 #define SYS_fstatfs64           269
 #define SYS_tgkill              270
+#define SYS_prlimit64           340
 
 /*
  * internal sub-numbers for SYS_socketcall

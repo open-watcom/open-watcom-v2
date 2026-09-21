@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -37,6 +37,6 @@
 
 _WCRTLINK int setrlimit( int resource, const struct rlimit *rlim )
 {
-    syscall_res res = sys_call2( SYS_setrlimit, (u_long)resource, (u_long)rlim );
+    syscall_res res = sys_call4( SYS_prlimit64, 0, (u_long)resource, (u_long)rlim, 0 );
     __syscall_return( int, res );
 }

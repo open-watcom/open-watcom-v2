@@ -59,21 +59,12 @@
 /*
  * SuS says limits have to be unsigned.
  * Which makes a ton more sense anyway.
- *
- * Some architectures override this (for compatibility reasons):
  */
-#ifndef RLIM_INFINITY
-# define RLIM_INFINITY  (~0UL)
-#endif
+#define RLIM_INFINITY  (~0ULL)
+#define RLIM_SAVED_MAX RLIM_INFINITY
+#define RLIM_SAVED_CUR RLIM_INFINITY
 
-#ifndef RLIM_SAVED_MAX
-# define RLIM_SAVED_MAX RLIM_INFINITY
-#endif
-#ifndef RLIM_SAVED_CUR
-# define RLIM_SAVED_CUR RLIM_INFINITY
-#endif
-
-typedef unsigned long   rlim_t;
+:include rlim_t.sp
 
 struct rlimit {
     rlim_t  rlim_cur;
