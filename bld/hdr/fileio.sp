@@ -74,6 +74,8 @@ _WCRTLINK extern int        close( int __fildes );
 :: ANSI name version
 _WCRTLINK extern off_t      _lseek( int __handle, off_t __offset, int __origin );
 _WCRTLINK extern long long  _lseeki64( int __fildes, long long __offset, int __whence );
+:: OW extension
+_WCRTLINK extern off64_t    lseek64( int __handle, off64_t __offset, int __origin );
 :elsesegment
 :: POSIX
 _WCRTLINK extern off_t      lseek( int __handle, off_t __offset, int __origin );
