@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,8 @@
     #include "tinyio.h"
 #elif defined( __NETWARE__ )
     #include "nw_lib.h"
+#elif defined( __LINUX__ )
+    #include "syslinux.h"
 #endif
 #include "libi64.h"
 #include "iomode.h"
@@ -76,8 +78,8 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
                 return( lib_set_EINVAL() );
             }
             pos = (unsigned long)__lseek( handle, offset, origin );
-            if( (long)pos == -1L ) {
-                return( -1LL );
+            if( (long)pos == -1 ) {
+                return( -1 );
             }
         }
     }
@@ -100,8 +102,14 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
         LIB_HIDWORD( pos ) = pos_hi;
     }
   #elif defined( __LINUX__ )
-    if( _llseek( handle, LIB_LODWORD( offset ), LIB_HIDWORD( offset ), &pos, origin ) ) {
-        pos = -1LL;
+    {
+        syscall_res res;
+
+        res = sys_call5( SYS__llseek, handle, LIB_HIDWORD( offset ), LIB_LODWORD( offset ), (u_long)&pos, origin );
+        __syscall_retcode( int, res );
+        if( res ) {
+            pos = -1;
+        }
     }
   #endif
     return( pos );
@@ -112,8 +120,8 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
         return( lib_set_EINVAL() );
     }
     pos = __lseek( handle, offset, origin );
-    if( pos == -1L ) {
-        return( -1LL );
+    if( pos == -1 ) {
+        return( -1 );
     }
     return( (unsigned long)pos );
 #endif

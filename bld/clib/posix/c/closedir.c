@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +34,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>
-
 #include "dirstrea.h"
 
-_WCRTLINK int closedir( DIR *__dirp )
+
+_WCRTLINK int closedir( DIR *dirp )
 {
-    int ret = close( __dirp->fd );
-    free( __dirp );
+    int ret = close( dirp->fd );
+    free( dirp );
     return( ret );
 }
 

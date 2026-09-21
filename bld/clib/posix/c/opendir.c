@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,16 +38,15 @@
 #include "dirstrea.h"
 
 
-_WCRTLINK DIR *opendir( const char *__dirname )
+_WCRTLINK DIR *opendir( const char *dirname )
 {
-    DIR *dir = lib_malloc( sizeof( *dir ) );
+    DIR *dirp = lib_malloc( sizeof( *dirp ) );
 
-    dir->fd = open( __dirname, O_RDONLY | O_NONBLOCK | O_DIRECTORY );
-    if( dir->fd == -1 ) {
-        lib_free( dir );
+    dirp->fd = open( dirname, O_RDONLY | O_NONBLOCK | O_DIRECTORY );
+    if( dirp->fd == -1 ) {
+        lib_free( dirp );
         return( NULL );
     }
-    dir->bufofs = 0;
-
-    return( dir );
+    dirp->bufofs = 0;
+    return( dirp );
 }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,13 +30,10 @@
 ****************************************************************************/
 
 
-#define _DIRBUF  8  /*  Max number of dir entries buffered  */
-
 struct __dirstream
 {
     int             fd;
     size_t          bufofs;
     size_t          bufsize;
-    struct dirent   dirent;
-    char            dirent_buf[_DIRBUF * sizeof( struct dirent )];
+    char            dirent_buf[4096];
 };
