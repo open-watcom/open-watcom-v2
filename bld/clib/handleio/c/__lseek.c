@@ -105,8 +105,8 @@ __int64 _WCNEAR __lseeki64( int handle, __int64 offset, int origin )
     {
         syscall_res res;
 
-        res = sys_call5( SYS__llseek, handle, LIB_HIDWORD( offset ), LIB_LODWORD( offset ), (u_long)&pos, origin );
-        __syscall_retcode( int, res );
+        res = sys_call5( SYS__llseek, (u_long)handle, LIB_HIDWORD( offset ), LIB_LODWORD( offset ), (u_long)&pos, (u_long)origin );
+        __syscall_retcode( res, -1 );
         if( res ) {
             pos = -1;
         }
