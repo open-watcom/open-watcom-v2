@@ -70,7 +70,7 @@ static WResTypeNode *newTypeNode( const WResID *type_id )
     return( typenode );
 }
 
-static WResLangNode *newLangNode( ResMemFlags memflags, uint_32 offset,
+static WResLangNode *newLangNode( ResMemFlags res_flags, uint_32 offset,
                                   uint_32 length, const WResLangType *lang,
                                   void *fileinfo )
 {
@@ -84,7 +84,7 @@ static WResLangNode *newLangNode( ResMemFlags memflags, uint_32 offset,
         langnode->Prev = NULL;
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
-        langnode->Info.res_flags = memflags;
+        langnode->Info.res_flags = res_flags;
         langnode->Info.Offset = offset;
         langnode->Info.Length = length;
         if( lang == NULL ) {
@@ -126,7 +126,7 @@ static WResResNode *newResNode( const WResID *res_id )
  *                   occured (including duplicate entry)
  */
 bool WResAddResource( const WResID *type_id, const WResID *res_id,
-                    ResMemFlags memflags, long offset, uint_32 length,
+                    ResMemFlags res_flags, long offset, uint_32 length,
                     WResDir dir, const WResLangType *lang,
                     bool *duplicate )
 /************************************************************/
@@ -134,7 +134,7 @@ bool WResAddResource( const WResID *type_id, const WResID *res_id,
     bool                rc;
     WResDirWindow       wind_dup;
 
-    rc = WResAddResource2( type_id, res_id, memflags, offset, length, dir,
+    rc = WResAddResource2( type_id, res_id, res_flags, offset, length, dir,
                              lang, &wind_dup, NULL );
     if( duplicate != NULL ) {
         *duplicate = !WResIsEmptyWindow( wind_dup );
@@ -143,7 +143,7 @@ bool WResAddResource( const WResID *type_id, const WResID *res_id,
 }
 
 bool WResAddResource2( const WResID *type_id, const WResID *res_id,
-                    ResMemFlags memflags, long offset, uint_32 length,
+                    ResMemFlags res_flags, long offset, uint_32 length,
                     WResDir dir, const WResLangType *lang,
                     WResDirWindow *wind_dup, void *fileinfo )
 /************************************************************/
@@ -194,7 +194,7 @@ bool WResAddResource2( const WResID *type_id, const WResID *res_id,
         typenode->Info.NumResources += 1;
         dir->NumResources += 1;
     }
-    langnode = newLangNode( memflags, offset, length, lang, fileinfo );
+    langnode = newLangNode( res_flags, offset, length, lang, fileinfo );
     if( langnode == NULL ) {
         return( true );
     }
