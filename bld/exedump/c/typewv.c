@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -561,7 +562,7 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 break;
             case EXT_PARMS:
                 Wdputslc( "EXT_PARMS\n" );
-                param_type_index( (unsigned_8)buff[0]-2, ptr );
+                param_type_index( (unsigned_8)buff[0] - 2, ptr );
                 break;
             case CHAR_BYTE:
                 StartType( "CHAR_BYTE", ++curr_index);
@@ -611,7 +612,7 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 break;
             }
             coff += buff[0];
-            if( coff >= (offs[i+1] - offs[i]) ) {
+            if( coff >= (offs[i + 1] - offs[i]) ) {
                 break;
             }
         }

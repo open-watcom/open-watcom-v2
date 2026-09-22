@@ -707,7 +707,7 @@ bool Dmp_machlib_head( void )
         if( Elf_off + LIB_HEADER_SIZE >= filesize ) break;
         Wread( &hdr, LIB_HEADER_SIZE );
         Elf_off += LIB_HEADER_SIZE;
-        hdr.lib_date[0]='\0';
+        hdr.lib_date[0] = '\0';
         Wdputs( "lib name = " );
         Wdputs( hdr.lib_name );
         Wdputslc( "\n" );

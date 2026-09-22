@@ -43,13 +43,6 @@
 
 #define SCOPE_GUESS     0x50
 
-#define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
-
-#define NUM_TAGS            ARRAY_SIZE( readableTAGs )
-#define NUM_FORMS           ARRAY_SIZE( readableFORMs )
-#define NUM_ATS             ARRAY_SIZE( readableATs )
-#define NUM_REFERENCE_OPS   ARRAY_SIZE( readableReferenceOps )
-
 typedef struct {
     const unsigned_8    *p;
     const unsigned_8    *abbrev;
@@ -158,9 +151,9 @@ static void sort_tables( void )
 
     if( !done ) {
         done = 1;
-        qsort( readableTAGs, NUM_TAGS, sizeof( readable_name ), compare_table );
-        qsort( readableFORMs, NUM_FORMS, sizeof( readable_name ), compare_table );
-        qsort( readableATs, NUM_ATS, sizeof( readable_name ), compare_table );
+        qsort( readableTAGs, ARRAY_SIZE( readableTAGs ), sizeof( readable_name ), compare_table );
+        qsort( readableFORMs, ARRAY_SIZE( readableFORMs ), sizeof( readable_name ), compare_table );
+        qsort( readableATs, ARRAY_SIZE( readableATs ), sizeof( readable_name ), compare_table );
     }
 }
 
@@ -185,7 +178,7 @@ static void getTAG( unsigned_32 value )
     const char  *result;
     size_t      i;
 
-    result = Getname( value, readableTAGs, NUM_TAGS );
+    result = Getname( value, readableTAGs, ARRAY_SIZE( readableTAGs ) );
     if( result == NULL ) {
         Wdputs( "TAG_" );
         Puthex( value, 8 );
@@ -205,7 +198,7 @@ static void getFORM( unsigned_32 value )
     const char  *result;
     size_t      i;
 
-    result = Getname( value, readableFORMs, NUM_FORMS );
+    result = Getname( value, readableFORMs, ARRAY_SIZE( readableFORMs ) );
     if( result == NULL ) {
         Wdputs( "FORM_" );
         Puthex( value, 8 );
@@ -225,7 +218,7 @@ static void getAT( unsigned_32 value )
     const char  *result;
     size_t      i;
 
-    result = Getname( value, readableATs, NUM_ATS );
+    result = Getname( value, readableATs, ARRAY_SIZE( readableATs ) );
     if( result == NULL ) {
         Wdputs( "AT_" );
         Puthex( value, 8 );
@@ -1013,7 +1006,7 @@ static void get_reference_op( unsigned_8 value )
     const char  *result;
     size_t      i;
 
-    result = Getname( value, readableReferenceOps, NUM_REFERENCE_OPS );
+    result = Getname( value, readableReferenceOps, ARRAY_SIZE( readableReferenceOps ) );
     if( result == NULL ) {
         Wdputs( "REF_" );
         Puthex( value, 2 );

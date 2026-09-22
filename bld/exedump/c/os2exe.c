@@ -390,7 +390,7 @@ static void dmp_obj_page( object_record obj )
             Puthex( map.lx.flags, 2 );
             Wdputs( "H " );
             Wdputs( map_flgs[ map.lx.flags ] );
-            if( map.lx.flags < sizeof( map_flgs ) / sizeof( map_flgs[0] ) ) {
+            if( map.lx.flags < ARRAY_SIZE( map_flgs ) ) {
                 Wdputs( map_flgs[map.lx.flags] );
             } else {
                 Wdputs( "Unknown" );

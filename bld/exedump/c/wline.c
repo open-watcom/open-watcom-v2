@@ -39,9 +39,6 @@
 #include "wdfunc.h"
 
 
-#define NUM_STANDARD_OPS \
-    ( sizeof( readableStandardOps ) / sizeof( readableStandardOps[0] ) )
-
 typedef struct {
     unsigned_32         address;
     unsigned            file;
@@ -114,7 +111,7 @@ static void get_standard_op( unsigned_8 value )
     const char      *result;
     size_t          i;
 
-    result = Getname( value, readableStandardOps, NUM_STANDARD_OPS );
+    result = Getname( value, readableStandardOps, ARRAY_SIZE( readableStandardOps ) );
     if( result == NULL ) {
         Wdputs( "OP_" );
         Puthex( value, 2 );

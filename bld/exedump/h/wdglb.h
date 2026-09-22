@@ -80,6 +80,8 @@
 
 #define FORCE_SEEK      ((unsigned_16)-1)
 
+#define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
+
 typedef enum {
     FORM_NE,
     FORM_LE,
