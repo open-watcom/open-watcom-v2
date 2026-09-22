@@ -124,9 +124,9 @@ static void dmp_resrc_flag( unsigned_16 flag )
         Wdputs( "FIXED" );
     }
     if( flag & SEG_PURE ) {
-        Wdputs( "|SHARE" );
+        Wdputs( "|PURE" );
     } else {
-        Wdputs( "|NOSHARE" );
+        Wdputs( "|IMPURE" );
     }
     if( flag & SEG_PRELOAD ) {
         Wdputs( "|PRELOAD" );
@@ -293,10 +293,11 @@ void Dmp_resrc_tab( void )
     }
     Banner( "Resource Table" );
     Wlseek( New_exe_off + Os2_head.resource_off );
-    if( Os2_head.target == TARGET_OS2 )
+    if( Os2_head.target == TARGET_OS2 ) {
         dmp_resrc_tab_os2();
-    else
+    } else {
         dmp_resrc_tab_win();
+    }
 }
 
 /*
