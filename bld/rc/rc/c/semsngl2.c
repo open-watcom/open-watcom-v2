@@ -82,7 +82,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                 case Y_POINTER:
                 case Y_ICON:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_NONE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_NONE );
                         res_flags = fullflags->res_flags;
                     } else {
                         res_flags = res_flags_MDP;
@@ -113,7 +113,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_BITMAP:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
                         res_flags = fullflags->res_flags;
                     } else {
                         res_flags = res_flags_MP;
@@ -123,7 +123,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
-                        SemOS2CheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
                         res_flags = fullflags->res_flags;
                     } else {
                         res_flags = res_flags_MDP;
