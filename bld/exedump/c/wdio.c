@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -54,7 +54,8 @@ bool Weof( void )
     if( cur_posn == -1L )
         return( true );
     eof_posn = lseek( Handle, 0, SEEK_END );
-    if( lseek( Handle, cur_posn, SEEK_SET ) == -1L || eof_posn == -1L )
+    if( lseek( Handle, cur_posn, SEEK_SET ) == -1L
+      || eof_posn == -1L )
         return( true );
     return( cur_posn == eof_posn );
 }
@@ -216,7 +217,8 @@ unsigned Align_name( unsigned_8 len, unsigned_8 align )
 {
     unsigned_8  pad = 0;
 
-    if( align && (len & ( align - 1 )) ) {
+    if( align
+      && (len & ( align - 1 )) ) {
         pad = align - (len & ( align - 1 ));
         if( pad ) {
             lseek( Handle, pad, SEEK_CUR );

@@ -166,7 +166,8 @@ static void dmp_reloc_info( unsigned_32 reloc_off )
     Wdputslc( "\n  === ==== ====" );
     for( reloc = reloc_tab; num_relocs-- != 0; ++reloc ) {
         Wdputslc( "\n  " );
-        if( (reloc->addr_type > REL_SEGMENT_OFFSET + 2) || reloc->addr_type == 0  ) {
+        if( (reloc->addr_type > REL_SEGMENT_OFFSET + 2)
+          || reloc->addr_type == 0  ) {
             Wdputc( '?' );
             Puthex( reloc->addr_type, 2 );
         } else {
@@ -255,7 +256,8 @@ void Dmp_le_page_seg( void )
 {
     unsigned_32     offset;
 
-    if( Segspec == 0 || Segspec == Data_count ) {
+    if( Segspec == 0
+      || Segspec == Data_count ) {
         Wdputslc( "\n" );
         offset = ( Data_count - 1 ) * Os2_386_head.page_size;
         offset += Os2_386_head.page_off;
@@ -286,7 +288,8 @@ void Dmp_lx_page_seg( map_entry map )
 {
     unsigned_32     offset;
 
-    if( Segspec == 0 || Segspec == Data_count ) {
+    if( Segspec == 0
+      || Segspec == Data_count ) {
         Wdputslc( "\n" );
         offset = map.lx.page_offset << Os2_386_head.l.page_shift;
         offset += Os2_386_head.page_off;

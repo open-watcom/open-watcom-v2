@@ -556,7 +556,7 @@ static void set_dwarf( unsigned_32 start )
         swap_shdr( &elf_sec );
         if( elf_sec.sh_type == SHT_PROGBITS ) {
             sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
-            if ( sect < DW_DEBUG_MAX ) {
+            if( sect < DW_DEBUG_MAX ) {
                 sections[sect] = elf_sec.sh_offset + start;
                 sectsizes[sect] = elf_sec.sh_size;
             }
@@ -682,7 +682,8 @@ static void dmp_prog_sec( unsigned_32 start )
             Dump_header( &elf_prog, elf_prog_msg, 4 );
             dmp_prog_flgs( elf_prog.p_flags );
             if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
-                if( Segspec == 0 || Segspec == Data_count ) {
+                if( Segspec == 0
+                  || Segspec == Data_count ) {
                     Dmp_seg_data( elf_prog.p_offset + start, elf_prog.p_filesz );
                 }
             } else if( elf_prog.p_type == PT_NOTE ) {
@@ -716,7 +717,8 @@ static void dmp_prog_sec( unsigned_32 start )
             Dump_header( &elf_sec.sh_name, elf_sec_msg, 4 );
             dmp_sec_flgs( elf_sec.sh_flags );
             if( Options_dmp & FIX_DMP ) {
-                if( elf_sec.sh_type==SHT_REL || elf_sec.sh_type==SHT_RELA ) {
+                if( elf_sec.sh_type == SHT_REL
+                  || elf_sec.sh_type == SHT_RELA ) {
                     Elf32_Shdr      rel_sec;
                     Elf32_Rela      elf_rela;
                     unsigned long   loc;
@@ -780,7 +782,8 @@ static void dmp_prog_sec( unsigned_32 start )
                                   elf_sec.sh_size );
                 }
             } else if( Options_dmp & OS2_SEG_DMP ) {
-                if( elf_sec.sh_size && elf_sec.sh_type != SHT_NOBITS ) {
+                if( elf_sec.sh_size
+                  && elf_sec.sh_type != SHT_NOBITS ) {
                     Wdputslc( "Section dump:\n" );
                     Dmp_seg_data( elf_sec.sh_offset + start, elf_sec.sh_size );
                 }
@@ -825,9 +828,9 @@ bool Dmp_lib_head( void )
         hdr.lib_fmag[0] = '\0';
         size = strtoul( hdr.lib_size, NULL, 10 );
         if( !Dmp_elf_header( Elf_off ) ) {
-            if( strcmp( hdr.lib_name, LIB_SYMTAB_NAME ) &&
-                strcmp( hdr.lib_name, LIB_LFTAB_NAME ) &&
-                strcmp( hdr.lib_name, LIB_FFTAB_NAME ) ) {
+            if( strcmp( hdr.lib_name, LIB_SYMTAB_NAME )
+              && strcmp( hdr.lib_name, LIB_LFTAB_NAME )
+              && strcmp( hdr.lib_name, LIB_FFTAB_NAME ) ) {
                 Wdputslc( "archive entry not identified\n" );
             }
             Dmp_seg_data( Elf_off, size );

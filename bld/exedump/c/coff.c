@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -299,8 +299,8 @@ bool Dmp_ar_head( void )
         Wdputslc( "\n" );
         hdr.header_ident[0] = '\0';
         size = strtoul( hdr.size, NULL, 10 );
-        if( strcmp( hdr.name, "/               " ) == 0 ||
-                        strcmp( hdr.name, "//              " ) == 0 ) {
+        if( strcmp( hdr.name, "/               " ) == 0
+          || strcmp( hdr.name, "//              " ) == 0 ) {
             Dmp_seg_data( Coff_off, size );
         } else if( !Dmp_coff_head() ) {
             // then try and see if it's ELF

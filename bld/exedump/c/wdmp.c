@@ -271,8 +271,8 @@ static bool parse_options( int argc, char * const *argv )
     Hexoff = 0;
 
     for( ;; ) {
-        while(optind < argc &&
-              (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
+        while(optind < argc
+          && (c = getopt( argc, argv, ":aA:bB:dD:efipqrsS:x" )) != -1 ) {
             switch( c ) {
             case 'A':
                 Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
@@ -296,7 +296,8 @@ static bool parse_options( int argc, char * const *argv )
             case 'D':
                 Debug_options = 0;
                 arg = optarg;
-                while( islower( *arg ) || isupper( *arg ) ) {
+                while( islower( *arg )
+                  || isupper( *arg ) ) {
                     debug_opts( *arg++ );
                 }
                 /* fall through */
@@ -387,7 +388,8 @@ int main( int argc, char * const *argv )
     if( !(Options_dmp & QUIET) ) {
         wbanner();
     }
-    if( Name == NULL || *Name == '\0' ) {
+    if( Name == NULL
+      || *Name == '\0' ) {
         usage();
         return( 1 );
     }

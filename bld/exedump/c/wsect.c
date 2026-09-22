@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -369,7 +369,8 @@ static void DmpLoc( unsigned_8 const *p, unsigned length, unsigned_16 addr_size 
 
         Wdputs( OpName[op] );
         opr = LocOpr[op];
-        if( opr == DW_LOP_REG1 || opr == DW_LOP_BRG1 ) {
+        if( opr == DW_LOP_REG1
+          || opr == DW_LOP_BRG1 ) {
             Wdputs( "/" );
         } else {
             Wdputs( " " );
@@ -481,7 +482,8 @@ static void DmpLocList( unsigned_32 start, unsigned_16 addr_size )
     for( p += start; p < stop; p += len ) {
         p = GetInt( p, &low, addr_size );
         p = GetInt( p, &high, addr_size );
-        if( low == high && low == 0 ) {
+        if( low == high
+          && low == 0 ) {
             Wdputslc( "        <end>\n" );
             return;
         }
@@ -518,15 +520,15 @@ static bool dump_tag( info_state *info )
         Wdputs( "        " );
         getAT( attr );
         if( attr == DW_AT_location
-         || attr == DW_AT_segment
-         || attr == DW_AT_return_addr
-         || attr == DW_AT_frame_base
-         || attr == DW_AT_static_link
-         || attr == DW_AT_data_member_location
-         || attr == DW_AT_string_length
-         || attr == DW_AT_vtable_elem_location
-         || attr == DW_AT_WATCOM_parm_entry
-         || attr == DW_AT_use_location ) {
+          || attr == DW_AT_segment
+          || attr == DW_AT_return_addr
+          || attr == DW_AT_frame_base
+          || attr == DW_AT_static_link
+          || attr == DW_AT_data_member_location
+          || attr == DW_AT_string_length
+          || attr == DW_AT_vtable_elem_location
+          || attr == DW_AT_WATCOM_parm_entry
+          || attr == DW_AT_use_location ) {
             is_loc = true;
        } else {
             is_loc = false;
@@ -765,15 +767,16 @@ static bool skip_tag( info_state *info )
     for( ;; ) {
         attr = ReadULEB128( abbrev );
         form = ReadULEB128( abbrev );
-        if( attr == 0 ) break;
+        if( attr == 0 )
+            break;
         if( attr == DW_AT_location
-         || attr == DW_AT_segment
-         || attr == DW_AT_return_addr
-         || attr == DW_AT_frame_base
-         || attr == DW_AT_static_link
-         || attr == DW_AT_data_member_location
-         || attr == DW_AT_string_length
-         || attr == DW_AT_use_location ) {
+          || attr == DW_AT_segment
+          || attr == DW_AT_return_addr
+          || attr == DW_AT_frame_base
+          || attr == DW_AT_static_link
+          || attr == DW_AT_data_member_location
+          || attr == DW_AT_string_length
+          || attr == DW_AT_use_location ) {
             is_loc = true;
        } else {
             is_loc = false;
@@ -986,7 +989,8 @@ void dump_abbrevs( const unsigned_8 *input, unsigned length )
             if( p > input + length )
                 break;
             tmp = ReadULEB128( p );
-            if( attr == 0 && tmp == 0 ) {
+            if( attr == 0
+              && tmp == 0 ) {
                 Wdputslc( "        End_form\n" );
                 break;
             }
@@ -1194,8 +1198,11 @@ static void dump_aranges( const unsigned_8 *p, unsigned length )
             p = GetInt( p, &addr, addr_size );
             p = GetInt( p, &seg, seg_size );
             p = GetInt( p, &len, addr_size );
-            if( addr == 0 && seg == 0 && len == 0 )
+            if( addr == 0
+              && seg == 0
+              && len == 0 ) {
                 break;
+            }
             Wdputs( "    " );
             if( seg_size != 0 ) {
                 Puthex( seg, seg_size * 2 );

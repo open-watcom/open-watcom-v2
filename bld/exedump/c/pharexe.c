@@ -242,7 +242,8 @@ static void dmp_reloc_tbl( void )
     unsigned_16     segment;
     unsigned_32     i;
 
-    if( (Options_dmp & FIX_DMP) && Phar_ext_head.reloc_size ) {
+    if( (Options_dmp & FIX_DMP)
+      && Phar_ext_head.reloc_size ) {
         Wlseek( Phar_ext_head.reloc_offset );
         Banner( "Program Relocation Table" );
         for( i = 0; i < Phar_ext_head.reloc_size; i += sizeof( offset ) + sizeof( segment ) ) {
@@ -364,7 +365,8 @@ bool Dmp_phar_head( void )
         Dump_header( (char *)&Phar_head.mod_size, phar_exe_msg, 4 );
         dmp_rex_reloc();
     }
-    if( Phar_head.signature == SIMPLE_SIGNATURE || Phar_head.signature == EXESIGN_REX ) {
+    if( Phar_head.signature == SIMPLE_SIGNATURE
+      || Phar_head.signature == EXESIGN_REX ) {
         if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
             offset = Phar_head.hdr_size * 16;
             Wdputslc( "\n" );

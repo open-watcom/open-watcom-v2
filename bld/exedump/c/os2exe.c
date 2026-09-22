@@ -165,7 +165,8 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
     } else {
         Wdputs( "PROGRAM" );
     }
-    if( target != TARGET_OS2 && flag & OS2_IS_DLL ) {
+    if( target != TARGET_OS2
+      && (flag & OS2_IS_DLL) ) {
         if( flag & WIN_PRIVATE_DLL ) {
             Wdputs( " | PRIVATEDLL" );
         }
@@ -187,34 +188,43 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
     if( flag & OS2_NEEDS_MATH_CO ) {
         Wdputs( " | NEEDFPU" );
     }
-    if( target == TARGET_OS2 && flag & OS2_NEEDS_80386 ) {
+    if( target == TARGET_OS2
+      && flag & OS2_NEEDS_80386 ) {
         Wdputs( " | NEED386" );
     }
-    if( target != TARGET_OS2 && flag & WIN_EMS_GLOBAL_MEM ) {
+    if( target != TARGET_OS2
+      && flag & WIN_EMS_GLOBAL_MEM ) {
         Wdputs( " | EMSGLOBAL" );
     }
-    if( target == TARGET_OS2 && flag & OS2_NEEDS_80286 ) {
+    if( target == TARGET_OS2
+      && flag & OS2_NEEDS_80286 ) {
         Wdputs( " | NEED286" );
     }
-    if( target != TARGET_OS2 && flag & WIN_EMS_BANK_INSTANCE ) {
+    if( target != TARGET_OS2
+      && flag & WIN_EMS_BANK_INSTANCE ) {
         Wdputs( " | EMSBANK" );
     }
-    if( target == TARGET_OS2 && flag & WIN_USES_EMS_DIRECT ) {
+    if( target == TARGET_OS2
+      && flag & WIN_USES_EMS_DIRECT ) {
         Wdputs( " | NONCONFORMING" );
     }
-    if( target != TARGET_OS2 && flag & WIN_USES_EMS_DIRECT ) {
+    if( target != TARGET_OS2
+      && flag & WIN_USES_EMS_DIRECT ) {
         Wdputs( " | EMSDIRECT" );
     }
     if( flag & OS2_PROT_MODE_ONLY ) {
         Wdputs( " | PROTMODEONLY" );
     }
-    if( target == TARGET_OS2 && flag & OS2_INIT_INSTANCE ) {
+    if( target == TARGET_OS2
+      && flag & OS2_INIT_INSTANCE ) {
         Wdputs( " | INITINSTANCE" );
     }
-    if( target != TARGET_OS2 && flag & OS2_INIT_INSTANCE ) {
+    if( target != TARGET_OS2
+      && flag & OS2_INIT_INSTANCE ) {
         Wdputs( " | REALMODE" );
     }
-    if( target == TARGET_OS2 && flag & OS2_IS_DLL ) {
+    if( target == TARGET_OS2
+      && flag & OS2_IS_DLL ) {
         if( flag & WIN_PRIVATE_DLL ) {
             Wdputs( " | PRIVATEDLL" );
         }
@@ -300,7 +310,8 @@ bool Dmp_os2_head( void )
     if( Os2_head.signature != EXESIGN_NE ) {
         return( false );
     }
-    if( IS_OLD_NE( Os2_head ) || Os2_head.align == 0 ) {
+    if( IS_OLD_NE( Os2_head )
+      || Os2_head.align == 0 ) {
         Os2_head.align = 9;
     }
     Banner( "New EXE Header (OS/2 or Windows)" );
@@ -494,7 +505,7 @@ bool Dmp_386_head( void )
     if( signature == EXESIGN_LE ) {
         Form = FORM_LE;
         Banner( "Linear EXE Header (OS/2 V2.x) - LE" );
-    } else if ( signature == EXESIGN_LX ) {
+    } else if( signature == EXESIGN_LX ) {
         Form = FORM_LX;
         Banner( "Linear EXE Header (OS/2 V2.x) - LX" );
     } else {

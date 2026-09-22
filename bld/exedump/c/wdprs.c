@@ -132,8 +132,10 @@ static void DecBZRecurse( unsigned_32 num, unsigned_16 len, char minus )
             Wdputc( ' ' );
         }
     } else {
-        if( num < 10 && minus )
+        if( num < 10
+          && minus ) {
             Wdputc( '-' );
+        }
         Wdputc( num % 10 + '0' );
     }
 }
@@ -172,8 +174,10 @@ static void DecBZRecurse64( long long num, unsigned_16 len, char minus )
             Wdputc( ' ' );
         }
     } else {
-        if( num < 10 && minus )
+        if( num < 10
+          && minus ) {
             Wdputc( '-' );
+        }
         Wdputc( num % 10 + '0' );
     }
 }

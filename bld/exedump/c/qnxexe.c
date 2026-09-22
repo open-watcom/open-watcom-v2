@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -244,7 +245,8 @@ static void dmp_data( unsigned_16 size, unsigned_32 offset )
     Wdputslc( "H\n" );
     offset += sizeof( lmf_data );
     if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
-        if( Segspec == 0 || Segspec == Data_count ) {
+        if( Segspec == 0
+          || Segspec == Data_count ) {
             Dmp_seg_data( offset, size );
         }
     }

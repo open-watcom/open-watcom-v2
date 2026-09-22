@@ -435,13 +435,14 @@ static unsigned_8 *put_name( unsigned_8 *p)
 static unsigned_8 *put_name2( unsigned_8 *p)
 {
     unsigned_16 len;
+
     len = *p++;
     if( len & 0x80 ) {
         len = ((len & 0x7f) << 8) | *p;
         p++;
-    }
-    else
+    } else {
       len &= 0x7f;
+    }
     fprintf( stdout, "%.*s", len, p );
     return p + len;
 }
@@ -492,14 +493,12 @@ static void dump_hll_sstSymbols( unsigned_32 base, unsigned_32 offset,
 
         // Read encoded length and check overflows
         if( rec_len & 0x80 ) {
-          rec_len &= 0x7f;
-          rec_len <<= 8;
-          Wread( &rec_len, sizeof( unsigned_8 ) );
-          read += 2;
-        }
-        else {
-          rec_len &= 0x7f;
-          read++;
+            rec_len = (rec_len & 0x7f) << 8;
+            Wread( &rec_len, sizeof( unsigned_8 ) );
+            read += 2;
+        } else {
+            rec_len &= 0x7f;
+            read++;
         }
 
         Wdputs( "  " );

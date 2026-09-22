@@ -110,8 +110,8 @@ static bool os2_debug( void )
     }
     // MZ stub is optional
     Wread( &Os2_386_head, sizeof( Os2_386_head ) );
-    if( Os2_386_head.signature == EXESIGN_LE ||
-        Os2_386_head.signature == EXESIGN_LX ) {
+    if( Os2_386_head.signature == EXESIGN_LE
+      || Os2_386_head.signature == EXESIGN_LX ) {
         if( Os2_386_head.debug_len ) {
             Wlseek( Os2_386_head.debug_off );
             return( Dmp_elf_header( Os2_386_head.debug_off ) );
@@ -189,7 +189,8 @@ bool Dmp_mdbg_head( void )
     } else {
         Wlseek( 0 );
         // Handle ELF and NE/LX executables without TIS signature
-        if( Dmp_elf_header( 0 ) || os2_debug() ) {
+        if( Dmp_elf_header( 0 )
+          || os2_debug() ) {
             return( true );    // Don't dump debug data twice
         }
         for( ;; ) {
