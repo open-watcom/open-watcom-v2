@@ -173,12 +173,9 @@ typedef struct dos16m_exe_header_ex {
 
 extern struct section_data      Sections[DR_DEBUG_NUM_SECTS];
 extern int                      Handle;         /* the file handle         */
-extern int                      Lhandle;        /* the listfile handle     */
 extern unsigned_16              Sizeleft;       /* size left from BSIZE    */
-extern unsigned_16              WSize;          /* size left from BSIZE    */
 extern unsigned_16              Num_buff;       /* number of BSIZE buffer  */
 extern char                     Read_buff[BSIZE];       /* BSIZE buffer    */
-extern char                     Write_buff[BSIZE];      /* BSIZE buffer    */
 extern char                     *Wbuff;         /* buffer          */
 extern char                     *Lang_lst;      /* buffer          */
 extern unsigned                 Num_read;       /* number of bytes read    */

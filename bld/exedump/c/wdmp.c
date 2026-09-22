@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -145,9 +145,6 @@ static void dmp_exe( void )
             Wdputslc( "\n" );
             Dmp_seg_data( Hexoff, len );
         }
-    }
-    if( WSize ) {
-        write( Lhandle, Write_buff, WSize );
     }
 }
 
@@ -384,8 +381,6 @@ int main( int argc, char * const *argv )
 {
     bool    found_file;
 
-    WSize = 0;
-    Write_buff[WSize] = '\0';
     if( parse_options( argc, argv ) ) {
         return( 1 );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +36,9 @@
 
 
 int                     Handle;
-int                     Lhandle;
 unsigned_16             Sizeleft;
-unsigned_16             WSize;
 unsigned_16             Num_buff;
 char                    Read_buff[BSIZE];
-char                    Write_buff[BSIZE];
 char                    *Wbuff;
 char                    *Lang_lst;
 unsigned                Num_read;
