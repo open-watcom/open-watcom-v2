@@ -254,19 +254,19 @@ static void dmp_resrc_tab_os2( void )
 /***********************************/
 {
     unsigned_16             i;
-    unsigned_16             type;
+    unsigned_16             type_id;
     resource_table_record   res_tab;
 
-    type = 30;              /* if type > 22 a name won't be printed out */
+    type_id = 30;           /* if type_id > 22 a name won't be printed out */
     Wdputslc( "    seg#   type id   name id\n" );
     Wdputslc( "    ====   =======   =======\n" );
     for( i = 0; i < Os2_head.resource; i++ ) {
         Wread( &res_tab, sizeof( res_tab ) );
-        if( res_tab.type != type ) {
-            type = res_tab.type;
-            if( type < 23 ) {
+        if( res_tab.type != type_id ) {
+            type_id = res_tab.type;
+            if( type_id < 23 ) {
                 Wdputs( "type:  " );
-                Wdputslc( resource_type_os2[type] );
+                Wdputslc( resource_type_os2[type_id] );
             }
         }
         Wdputs( "    " );
@@ -307,7 +307,7 @@ void Dmp_resrc2_tab( void )
 /*************************/
 {
     unsigned_16     i;
-    unsigned_16     id;
+    unsigned_16     type_id;
     flat_res_table  res_tab;
 
     if( Os2_386_head.num_rsrcs == 0 ) {
@@ -315,16 +315,16 @@ void Dmp_resrc2_tab( void )
     }
     Banner( "Resource Table" );
     Wlseek( New_exe_off + Os2_386_head.rsrc_off );
-    id = 20;                /* if id > 15 a name won't be printed out */
+    type_id = 20;           /* if type_id > 15 a name won't be printed out */
     Wdputslc( "     type id   name id    res size     object     offset\n" );
     Wdputslc( "     =======   =======    ========     ======     ======\n" );
     for( i = 0; i < Os2_386_head.num_rsrcs; i++ ) {
         Wread( &res_tab, sizeof( flat_res_table ) );
-        if( res_tab.type_id != id ) {
-            id = res_tab.type_id;
-            if( id < 16 ) {
+        if( res_tab.type_id != type_id ) {
+            type_id = res_tab.type_id;
+            if( type_id < 16 ) {
                 Wdputs( "type:  " );
-                Wdputslc( resource_type_os2[ res_tab.type_id ] );
+                Wdputslc( resource_type_os2[res_tab.type_id] );
             }
         }
         Wdputs( "      " );
