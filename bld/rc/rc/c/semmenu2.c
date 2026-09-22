@@ -92,7 +92,7 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
         error = ResWriteUint16( fp, curritem->ItemCmd );
     }
     if( !error ) {
-        if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR)
+        if( (curritem->ItemStyle & OS2_MIS_SEPARATOR) == 0
           && curritem->ItemText != NULL ) {
             error = ResWriteString( curritem->ItemText, false, fp );
         }
@@ -179,7 +179,7 @@ static size_t SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, unsigned *count )
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) {
         *count += 1;
         size += 3 * sizeof( uint_16 );
-        if( !(curritem->item.ItemStyle & OS2_MIS_SEPARATOR)
+        if( (curritem->item.ItemStyle & OS2_MIS_SEPARATOR) == 0
           && curritem->item.ItemText != NULL )
             size += strlen( curritem->item.ItemText ) + 1;
         if( curritem->item.ItemStyle & OS2_MIS_SUBMENU ) {

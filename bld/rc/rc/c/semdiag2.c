@@ -405,7 +405,7 @@ static size_t SemOS2CountPresParams( PresParamListOS2 *list )
         size_t  parmsize;
 
         bytes += 4; // Presparam ID or name length
-        if( !(presparams->Name->ord.fFlag == 0xFF) )         // Presparam has name
+        if( presparams->Name->ord.fFlag != 0xFF )         // Presparam has name
             bytes += strlen( presparams->Name->name ) + 1 + 8;
 
         bytes += 4; // Size of presparams data that follow
@@ -447,7 +447,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
 
     for( presparams = list->head; presparams != NULL; presparams = presparams->next ) {
         // Presparam ID or name length
-        if( !(presparams->Name->ord.fFlag == 0xFF) ) {       // Presparam has name
+        if( presparams->Name->ord.fFlag != 0xFF ) {       // Presparam has name
             len     = strlen( presparams->Name->name ) + 1;
             MPUT_32_UN( ptr, 0 );           // First ULONG is 0 to indicate this isn't numeric ID
             ptr += 4;

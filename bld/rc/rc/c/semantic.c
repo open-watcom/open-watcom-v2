@@ -255,7 +255,7 @@ void SemCheckResFlags( FullResFlags *fullflags, ResMemFlags loadopts,
      */
     if( fullflags->purityOptGiven
       && !fullflags->memOptGiven ) {
-        if( !(fullflags->res_flags & RESFLAG_PURE) ) {
+        if( (fullflags->res_flags & RESFLAG_PURE) == 0 ) {
             fullflags->res_flags &= ~RESFLAG_DISCARDABLE;
         }
     }

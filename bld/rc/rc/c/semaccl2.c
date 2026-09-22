@@ -89,11 +89,11 @@ static void CheckAccelFlags( uint_16 *flags, unsigned long idval )
     /*
      * CHAR is the default
      */
-    if( !( *flags & OS2_ACCEL_VIRTUALKEY )
-      && !( *flags & OS2_ACCEL_CHAR ) )
+    if( (*flags & OS2_ACCEL_VIRTUALKEY) == 0
+      && (*flags & OS2_ACCEL_CHAR) == 0 )
         *flags |= OS2_ACCEL_CHAR;
 #if 0
-    if( !( *flags & OS2_ACCEL_VIRTUALKEY ) ) {
+    if( (*flags & OS2_ACCEL_VIRTUALKEY) == 0 ) {
         if( *flags & OS2_ACCEL_SHIFT ) {
             *flags &= ~OS2_ACCEL_SHIFT;
             RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );

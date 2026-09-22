@@ -69,7 +69,7 @@ int SemWINStrToAccelEvent( char *string )
 static void CheckAccelFlags( AccelFlags *flags, unsigned long idval )
 /*******************************************************************/
 {
-    if( !( *flags & ACCEL_VIRTKEY ) ) {
+    if( (*flags & ACCEL_VIRTKEY) == 0 ) {
         if( *flags & ACCEL_SHIFT ) {
             *flags &= ~ACCEL_SHIFT;
             RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
