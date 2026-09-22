@@ -233,3 +233,30 @@ void SemanticInitStatics( void )
     save_name = NULL;
     tmpResFile = NULL;
 }
+
+void SemCheckResFlags( FullResFlags *fullflags, ResMemFlags loadopts,
+            ResMemFlags memopts, ResMemFlags pureopts )
+/********************************************************************/
+{
+    if( !fullflags->loadOptGiven ) {
+        fullflags->res_flags |= loadopts;
+    }
+    if( !fullflags->memOptGiven ) {
+        fullflags->res_flags |= memopts;
+    }
+    if( !fullflags->purityOptGiven ) {
+        fullflags->res_flags |= pureopts;
+    }
+    /*
+     * If the user set the resource to be IMPURE but doesn't give a mem option
+     * set the resource to be non-discardable.
+     * This seems to be what Microsoft is doing (test this with the sample
+     * program clock).
+     */
+    if( fullflags->purityOptGiven
+      && !fullflags->memOptGiven ) {
+        if( !(fullflags->res_flags & RESFLAG_PURE) ) {
+            fullflags->res_flags &= ~RESFLAG_DISCARDABLE;
+        }
+    }
+}

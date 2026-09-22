@@ -43,7 +43,6 @@
 
 extern FullResFlags     SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value );
 extern FullResFlags     SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint_32 value );
-extern void             SemOS2CheckResFlags( FullResFlags *fullflags, ResMemFlags loadopts, ResMemFlags memopts, ResMemFlags pureopts );
 extern char             *SemOS2TokenToString( YYTOKENTYPE token );
 extern uint_32          SemOS2DefaultCodepage( void );
 extern void             SemOS2SetCodepage( uint_32 codepage );

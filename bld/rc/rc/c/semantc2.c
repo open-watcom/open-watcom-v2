@@ -117,31 +117,6 @@ FullResFlags SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint
     return( fullflags );
 }
 
-void SemOS2CheckResFlags( FullResFlags *fullflags, ResMemFlags loadopts,
-            ResMemFlags memopts, ResMemFlags pureopts )
-/**********************************************************************/
-{
-    if( !fullflags->loadOptGiven ) {
-        fullflags->res_flags |= loadopts;
-    }
-    if( !fullflags->memOptGiven ) {
-        fullflags->res_flags |= memopts;
-    }
-    if( !fullflags->purityOptGiven ) {
-        fullflags->res_flags |= pureopts;
-    }
-    /*
-     * If the user set the resource to be IMPURE but doesn't give a mem option
-     * set the resource to be non-discardable.
-     */
-    if( fullflags->purityOptGiven
-      && !fullflags->memOptGiven ) {
-        if( !(fullflags->res_flags & RESFLAG_PURE) ) {
-            fullflags->res_flags &= ~RESFLAG_DISCARDABLE;
-        }
-    }
-}
-
 char *SemOS2TokenToString( YYTOKENTYPE token )
 /********************************************/
 {
