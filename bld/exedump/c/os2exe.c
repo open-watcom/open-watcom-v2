@@ -156,24 +156,24 @@ static  const_string_table map_flgs[] = {
 /*
  * dump the NE module flags word
  */
-static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
-/****************************************************************/
+static void dmp_mod_flags_ne( unsigned_16 flags, unsigned_8 target )
+/*****************************************************************/
 {
-    if( flag & OS2_IS_DLL ) {
+    if( flags & OS2_IS_DLL ) {
         Wdputs( "LIBRARY" );
     } else {
         Wdputs( "PROGRAM" );
     }
     if( target != TARGET_OS2
-      && (flag & OS2_IS_DLL) ) {
-        if( flag & WIN_PRIVATE_DLL ) {
+      && (flags & OS2_IS_DLL) ) {
+        if( flags & WIN_PRIVATE_DLL ) {
             Wdputs( " | PRIVATEDLL" );
         }
     }
-    if( flag & OS2_LINK_ERROR ) {
+    if( flags & OS2_LINK_ERROR ) {
         Wdputs( " | LINKERRORSDETECTED" );
     }
-    switch( flag & OS2_COMPATIBILITY_MASK ) {
+    switch( flags & OS2_COMPATIBILITY_MASK ) {
     case OS2_NOT_PM_COMPATIBLE:
         Wdputs( " | NOTWINDOWCOMPAT" );
         break;
@@ -184,54 +184,54 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
         Wdputs( " | WINDOWAPI" );
         break;
     }
-    if( flag & OS2_NEEDS_MATH_CO ) {
+    if( flags & OS2_NEEDS_MATH_CO ) {
         Wdputs( " | NEEDFPU" );
     }
     if( target == TARGET_OS2
-      && flag & OS2_NEEDS_80386 ) {
+      && flags & OS2_NEEDS_80386 ) {
         Wdputs( " | NEED386" );
     }
     if( target != TARGET_OS2
-      && flag & WIN_EMS_GLOBAL_MEM ) {
+      && flags & WIN_EMS_GLOBAL_MEM ) {
         Wdputs( " | EMSGLOBAL" );
     }
     if( target == TARGET_OS2
-      && flag & OS2_NEEDS_80286 ) {
+      && flags & OS2_NEEDS_80286 ) {
         Wdputs( " | NEED286" );
     }
     if( target != TARGET_OS2
-      && flag & WIN_EMS_BANK_INSTANCE ) {
+      && flags & WIN_EMS_BANK_INSTANCE ) {
         Wdputs( " | EMSBANK" );
     }
     if( target == TARGET_OS2
-      && flag & WIN_USES_EMS_DIRECT ) {
+      && flags & WIN_USES_EMS_DIRECT ) {
         Wdputs( " | NONCONFORMING" );
     }
     if( target != TARGET_OS2
-      && flag & WIN_USES_EMS_DIRECT ) {
+      && flags & WIN_USES_EMS_DIRECT ) {
         Wdputs( " | EMSDIRECT" );
     }
-    if( flag & OS2_PROT_MODE_ONLY ) {
+    if( flags & OS2_PROT_MODE_ONLY ) {
         Wdputs( " | PROTMODEONLY" );
     }
     if( target == TARGET_OS2
-      && flag & OS2_INIT_INSTANCE ) {
+      && flags & OS2_INIT_INSTANCE ) {
         Wdputs( " | INITINSTANCE" );
     }
     if( target != TARGET_OS2
-      && flag & OS2_INIT_INSTANCE ) {
+      && flags & OS2_INIT_INSTANCE ) {
         Wdputs( " | REALMODE" );
     }
     if( target == TARGET_OS2
-      && flag & OS2_IS_DLL ) {
-        if( flag & WIN_PRIVATE_DLL ) {
+      && flags & OS2_IS_DLL ) {
+        if( flags & WIN_PRIVATE_DLL ) {
             Wdputs( " | PRIVATEDLL" );
         }
     }
-    if( flag & OS2_MULT_AUTO ) {
+    if( flags & OS2_MULT_AUTO ) {
         Wdputs( " | MULTIPLEDATA" );
     }
-    if( flag & OS2_SINGLE_AUTO ) {
+    if( flags & OS2_SINGLE_AUTO ) {
         Wdputs( " | SINGLEDATA" );
     }
     Wdputslc( "\n" );
@@ -242,42 +242,42 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
 /*
  * dump the LE/LX module flags word
  */
-static void dmp_mod_flag_lx( unsigned_32 flag, unsigned_16 ostype )
-/*****************************************************************/
+static void dmp_mod_flags_lx( unsigned_32 flags, unsigned_16 ostype )
+/********************************************************************/
 {
     /* unused parameters */ (void)ostype;
 
-    if( (flag & OSF_MODTYPE_MASK) == OSF_VIRT_DEVICE ) {
+    if( (flags & OSF_MODTYPE_MASK) == OSF_VIRT_DEVICE ) {
         Wdputs( "VIRTDEVICE" );
-    } else if( (flag & OSF_MODTYPE_MASK) == OSF_PHYS_DEVICE ) {
+    } else if( (flags & OSF_MODTYPE_MASK) == OSF_PHYS_DEVICE ) {
         Wdputs( "PHYSDEVICE" );
-    } else if( (flag & OSF_MODTYPE_MASK) == OSF_IS_DLL ) {
+    } else if( (flags & OSF_MODTYPE_MASK) == OSF_IS_DLL ) {
         Wdputs( "LIBRARY" );
     } else {
         Wdputs( "PROGRAM" );
     }
-    if( flag & OSF_SINGLE_DATA ) {
+    if( flags & OSF_SINGLE_DATA ) {
         Wdputs( " | SINGLEDATA" );
     }
-    if( flag & OSF_INIT_INSTANCE ) {
+    if( flags & OSF_INIT_INSTANCE ) {
         Wdputs( " | INITINSTANCE" );
     }
-    if( flag & OSF_TERM_INSTANCE ) {
+    if( flags & OSF_TERM_INSTANCE ) {
         Wdputs( " | TERMINSTANCE" );
     }
-    if( flag & OSF_IS_PROT_DLL ) {
+    if( flags & OSF_IS_PROT_DLL ) {
         Wdputs( " | PROTDLL" );
     }
-    if( flag & OSF_INTERNAL_FIXUPS_DONE ) {
+    if( flags & OSF_INTERNAL_FIXUPS_DONE ) {
         Wdputs( " | NO_INT_FIXUPS" );
     }
-    if( flag & OSF_EXTERNAL_FIXUPS_DONE ) {
+    if( flags & OSF_EXTERNAL_FIXUPS_DONE ) {
         Wdputs( " | NO_EXT_FIXUPS" );
     }
-    if( flag & OSF_LINK_ERROR ) {
+    if( flags & OSF_LINK_ERROR ) {
         Wdputs( " | LINKERRORSDETECTED" );
     }
-    switch( flag & OS2_COMPATIBILITY_MASK ) {
+    switch( flags & OS2_COMPATIBILITY_MASK ) {
     case OSF_NOT_PM_COMPATIBLE:
         Wdputs( " | NOTWINDOWCOMPAT" );
         break;
@@ -288,7 +288,7 @@ static void dmp_mod_flag_lx( unsigned_32 flag, unsigned_16 ostype )
         Wdputs( " | WINDOWAPI" );
         break;
     }
-    if( flag & 0x80000 ) {
+    if( flags & 0x80000 ) {
         Wdputs( " | MPUNSAFE" );
     }
     Wdputslc( "\n" );
@@ -323,7 +323,7 @@ bool Dmp_os2_head( void )
     Wdputs( "Module flags = " );
     Puthex( Os2_head.info, 4 );
     Wdputslc( ": " );
-    dmp_mod_flag_ne( Os2_head.info, Os2_head.target );
+    dmp_mod_flags_ne( Os2_head.info, Os2_head.target );
     Wdputslc( "\n" );
     Dmp_seg_tab();
     Dmp_resrc_tab();
@@ -406,7 +406,7 @@ static void dmp_obj_page( object_record obj )
 }
 
 /*
- * dump the object flag word
+ * dump the object flags word
  */
 static void dmp_obj_flags( unsigned_32 flags )
 /********************************************/
@@ -523,7 +523,7 @@ bool Dmp_386_head( void )
     Wdputs( "Module flags = " );
     Puthex( Os2_386_head.flags, 8 );
     Wdputslc( ": " );
-    dmp_mod_flag_lx( Os2_386_head.flags, Os2_386_head.os_type );
+    dmp_mod_flags_lx( Os2_386_head.flags, Os2_386_head.os_type );
     Wdputslc( "\n" );
     dmp_obj_table();
     Dmp_resrc2_tab();

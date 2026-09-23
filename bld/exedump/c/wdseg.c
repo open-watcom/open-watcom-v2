@@ -38,72 +38,66 @@
 #include "wdfunc.h"
 
 /*
- * Dump Segment Flag word
+ * Dump Segment flags word
  */
-static void dmp_seg_flag( unsigned_16 flag )
-/******************************************/
+static void dmp_seg_flags( unsigned_16 flags )
+/********************************************/
 {
-    if( flag & SEG_DATA ) {
+    if( flags & SEG_DATA ) {
         Wdputs( "  DATA" );
     } else {
         Wdputs( "  CODE" );
     }
-    if( flag & SEG_FLAG_1 ) {
+    if( flags & SEG_FLAG_1 ) {
         Wdputs( "|BIT1" );
     }
-    if( flag & SEG_FLAG_2 ) {
+    if( flags & SEG_FLAG_2 ) {
         Wdputs( "|BIT2" );
     }
-    if( flag & SEG_FLAG_1 ) {
-        Wdputs( "|BIT3" );
-    }
-    if( flag & SEG_FLAG_2 ) {
-        Wdputs( "|BIT4" );
-    }
-    if( flag & SEG_ITERATED ) {
+    if( flags & SEG_ITERATED ) {
         Wdputs( "|ITER" );
     }
-    if( flag & SEG_MOVABLE ) {
+    if( flags & SEG_MOVABLE ) {
         Wdputs( "|MOVABLE" );
     } else {
         Wdputs( "|FIXED" );
     }
-    if( flag & SEG_PURE ) {
+    if( flags & SEG_PURE ) {
         Wdputs( "|SHARE" );
     } else {
         Wdputs( "|NOSHARE" );
     }
-    if( flag & SEG_PRELOAD ) {
+    if( flags & SEG_PRELOAD ) {
         Wdputs( "|PRELOAD" );
     } else {
         Wdputs( "|LOADONCALL" );
     }
-    if( flag & SEG_DATA ) {
-        if( flag & SEG_READ_ONLY ) {
+    if( flags & SEG_DATA ) {
+        if( flags & SEG_READ_ONLY ) {
             Wdputs( "|READONLY" );
         } else {
             Wdputs( "|READWRITE" );
         }
     } else {
-        if( flag & SEG_READ_ONLY ) {
+        if( flags & SEG_READ_ONLY ) {
             Wdputs( "|EXECONLY" );
         } else {
             Wdputs( "|EXECREAD" );
         }
     }
-    if( flag & SEG_RELOC ) {
+    if( flags & SEG_RELOC ) {
         Wdputs( "|RELOCS" );
     }
-    if( flag & SEG_CONFORMING ) {
+    if( flags & SEG_CONFORMING ) {
         Wdputs( "|DEBUG" );
     }
-    if( flag & SEG_DISCARD ) {
+    if( flags & SEG_DISCARD ) {
         Wdputs( "|DISCARDABLE" );
     }
-    if( flag & SEG_32_BIT ) {
+    if( flags & SEG_32_BIT ) {
         Wdputs( "|32 BIT SEG" );
     }
-    if( flag & SEG_HUGE ) {
+    if( flags & SEG_HUGE ) {
         Wdputs( "|PART OF HUGE" );
     }
 }
@@ -129,7 +123,7 @@ static void dmp_seg_ent( segment_record *seg_ent )
     Wdputc( ' ' );
     Puthex( seg_ent->info, 4 );
     Wdputslc( "\n" );
-    dmp_seg_flag( seg_ent->info );
+    dmp_seg_flags( seg_ent->info );
     Wdputslc( "\n" );
 }
 
@@ -155,7 +149,7 @@ void Dmp_seg_tab( void )
     segtab = Int_seg_tab;
     Wread( segtab, segtabsize );
     ++num_segs;
-    Wdputslc( "seg  fileoff  len  alloc prior priv flag\n" );
+    Wdputslc( "seg  fileoff  len  alloc prior priv flags\n" );
     Wdputslc( "==== ======== ==== ====  ====  ==== ====\n" );
     for( segnum = 1; segnum != num_segs; segnum++ ) {
         Puthex( segnum, 4 );
