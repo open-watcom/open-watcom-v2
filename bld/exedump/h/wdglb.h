@@ -100,7 +100,7 @@ typedef struct {
 typedef struct int_entry_pnt {
     struct int_entry_pnt    *next;
     unsigned_16             ordinal;
-    unsigned_8              ent_flag;
+    unsigned_8              flags;
     unsigned_16             seg_num;
     unsigned_16             offset;
 } int_entry_pnt;
