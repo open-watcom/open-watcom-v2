@@ -52,8 +52,8 @@ static  const_string_table reloc_addr_type[] = {
 /*
  * Dump a segment
  */
-static void dmp_segment( struct segment_record *seg, bool prt_hdr )
-/*****************************************************************/
+static void dmp_segment( segment_record *seg, bool prt_hdr )
+/**********************************************************/
 {
     unsigned_32           file_off;
     unsigned_32           iter;
@@ -92,8 +92,8 @@ static void dmp_segment( struct segment_record *seg, bool prt_hdr )
 /*
  * Dump a relocation item
  */
-static void dmp_reloc_item( struct relocation_item *reloc )
-/*********************************************************/
+static void dmp_reloc_item( relocation_item *reloc )
+/**************************************************/
 {
     unsigned_16             seg_num;
     unsigned_16             ord_off;
@@ -152,14 +152,14 @@ static void dmp_reloc_item( struct relocation_item *reloc )
 static void dmp_reloc_info( unsigned_32 reloc_off )
 /*************************************************/
 {
-    unsigned_16                     num_relocs;
-    struct relocation_item          *reloc_tab;
-    struct relocation_item          *reloc;
-    unsigned_16                     size_reloc_tab;
+    unsigned_16     num_relocs;
+    relocation_item *reloc_tab;
+    relocation_item *reloc;
+    unsigned_16     size_reloc_tab;
 
     Wlseek( reloc_off );
     Wread( &num_relocs, sizeof( unsigned_16 ) );
-    size_reloc_tab = num_relocs * sizeof( struct relocation_item );
+    size_reloc_tab = num_relocs * sizeof( relocation_item );
     Wdputslc( "\nNumber of relocations: " );
     Putdec( num_relocs );
     Wdputs( "     Total size of relocations: " );
@@ -196,10 +196,10 @@ static void dmp_reloc_info( unsigned_32 reloc_off )
 void Dmp_relocs( void )
 /*********************/
 {
-    struct segment_record   *seg;
-    unsigned_16             segnum;
-    unsigned_16             num_segs;
-    unsigned_32             reloc_off;
+    segment_record  *seg;
+    unsigned_16     segnum;
+    unsigned_16     num_segs;
+    unsigned_32     reloc_off;
 
     if( !(Options_dmp & FIX_DMP) ) {
         return;
@@ -226,7 +226,7 @@ void Dmp_relocs( void )
 void Dmp_one_seg_data( unsigned_16 seg_spec )
 /*******************************************/
 {
-    struct segment_record   *seg;
+    segment_record  *seg;
 
     if( seg_spec > Os2_head.segments ) {
         Wdputslc( "segment specified was too large\n" );
@@ -243,9 +243,9 @@ void Dmp_one_seg_data( unsigned_16 seg_spec )
 void Dmp_segments( void )
 /***********************/
 {
-    struct segment_record   *seg;
-    unsigned_16             segnum;
-    unsigned_16             num_segs;
+    segment_record  *seg;
+    unsigned_16     segnum;
+    unsigned_16     num_segs;
 
     Wdputslc( "\n" );
     Banner( "The Segments" );

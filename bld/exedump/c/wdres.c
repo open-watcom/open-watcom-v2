@@ -186,8 +186,8 @@ static void dmp_resrc_flag( unsigned_16 flag )
 /*
  * dump a resource description
  */
-static void dmp_resrc_desc( struct resource_record *res_ent, unsigned_16 res_type )
-/*********************************************************************************/
+static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
+/**************************************************************************/
 {
     unsigned_32         res_off;
     unsigned_32         res_len;
@@ -229,15 +229,15 @@ static void dmp_resrc_desc( struct resource_record *res_ent, unsigned_16 res_typ
 static void dmp_resrc_ent( unsigned_16 num_resources, unsigned_16 res_type )
 /**************************************************************************/
 {
-    struct resource_record      *res_ent_tab;
-    struct resource_record      *res_ent;
-    unsigned_16                 res_group_size;
-    unsigned_16                 res_num;
+    resource_record *res_ent_tab;
+    resource_record *res_ent;
+    unsigned_16     res_group_size;
+    unsigned_16     res_num;
 
     if( num_resources == 0 ) {
         return;
     }
-    res_group_size = num_resources * sizeof( struct resource_record );
+    res_group_size = num_resources * sizeof( resource_record );
     res_ent = res_ent_tab = Wmalloc( res_group_size );
     Wread( res_ent_tab, res_group_size );
     for( res_num = 0; res_num != num_resources; res_num++ ) {
@@ -278,9 +278,9 @@ static void dmp_resrc_type_name( unsigned_16 res_type )
 static void dmp_resrc_tab_win( void )
 /***********************************/
 {
-    unsigned_16                     res_type;
-    struct resource_type_record     res_group;
-    unsigned_32                     offset;
+    unsigned_16             res_type;
+    resource_type_record    res_group;
+    unsigned_32             offset;
 
     Resrc_end = 0ul;
     Wread( &Resrc_shift_cnt, sizeof( unsigned_16 ) );
@@ -317,7 +317,7 @@ static void dmp_resrc_tab_os2( void )
     unsigned_16     res_group_size;
     os2_res_entry   *res_tab;
 
-    res_group_size = Os2_head.resource * sizeof( struct os2_res_entry );
+    res_group_size = Os2_head.resource * sizeof( os2_res_entry );
     res_tab = Wmalloc( res_group_size );
     Wread( res_tab, res_group_size );
 
@@ -347,8 +347,8 @@ static void dmp_resrc_tab_os2( void )
             Dmp_one_seg_data( seg_no );
         }
         if( Options_dmp & RSRC_FILE_DMP ) {
-            char                    ext[8];
-            struct segment_record   *seg;
+            char            ext[8];
+            segment_record  *seg;
 
             if( res_tab->type_id < ARRAY_SIZE( resource_type_os2 ) ) {
                 strcpy( ext, resource_type_os2[res_tab->type_id][1] );

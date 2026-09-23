@@ -52,7 +52,7 @@ static  const_string_table mdh_msg[] = {
     NULL
 };
 
-typedef struct {
+typedef struct debug_header {
     char        signature[4];
     unsigned_32 vendor_id;
     unsigned_32 info_type;

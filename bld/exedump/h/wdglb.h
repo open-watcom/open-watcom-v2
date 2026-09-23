@@ -96,41 +96,41 @@ typedef struct {
     char        *rname;
 } res_name;
 
-struct int_entry_pnt {
-        struct int_entry_pnt *  next;
-        unsigned_16             ordinal;
-        unsigned_8              ent_flag;
-        unsigned_16             seg_num;
-        unsigned_16             offset;
-};
+typedef struct int_entry_pnt {
+    struct int_entry_pnt    *next;
+    unsigned_16             ordinal;
+    unsigned_8              ent_flag;
+    unsigned_16             seg_num;
+    unsigned_16             offset;
+} int_entry_pnt;
 
-struct relocation_item {
-        unsigned_8      addr_type;          /* see below                     */
-        unsigned_8      reloc_type;         /* see below                     */
-        unsigned_16     reloc_offset;       /* where to put addr in curr seg */
-        union externalneeded {              /* where,how to get xtrnl addr   */
-            struct internalreference {      /*   in this module              */
-                unsigned_8      seg_num;    /*      segment number           */
-                unsigned_8      rsrvd;      /*      == 0                     */
-                unsigned_16     ord_off;    /*      xtrnl offset in that seg */
-            }               internal;
-            struct importedordinal {        /*   by ordinal                  */
-                unsigned_16     modref_idx; /*      in 'module_name'.dll     */
-                unsigned_16     ord_num;    /*      entry point index        */
-            }               ordinal;
-            struct importedname {           /*   by name                     */
-                unsigned_16     modref_idx; /*      in 'module_name'.dll     */
-                unsigned_16     impnam_off; /*      with res_name table      */
-            }               name;
-            unsigned_32 data;
-        }               xtrnl;
-};
+typedef struct relocation_item {
+    unsigned_8      addr_type;          /* see below                     */
+    unsigned_8      reloc_type;         /* see below                     */
+    unsigned_16     reloc_offset;       /* where to put addr in curr seg */
+    union externalneeded {              /* where,how to get xtrnl addr   */
+        struct internalreference {      /*   in this module              */
+            unsigned_8      seg_num;    /*      segment number           */
+            unsigned_8      rsrvd;      /*      == 0                     */
+            unsigned_16     ord_off;    /*      xtrnl offset in that seg */
+        }               internal;
+        struct importedordinal {        /*   by ordinal                  */
+            unsigned_16     modref_idx; /*      in 'module_name'.dll     */
+            unsigned_16     ord_num;    /*      entry point index        */
+        }               ordinal;
+        struct importedname {           /*   by name                     */
+            unsigned_16     modref_idx; /*      in 'module_name'.dll     */
+            unsigned_16     impnam_off; /*      with res_name table      */
+        }               name;
+        unsigned_32 data;
+    }               xtrnl;
+} relocation_item;
 
-struct section_data {
+typedef struct section_data {
     unsigned    cur_offset;
     unsigned    max_offset;
     unsigned_8  *data;
-};
+} section_data;
 
 typedef struct {
     unsigned_32 value;
@@ -165,8 +165,8 @@ typedef enum {
 } dr_section;
 
 typedef struct dos_exe_header_ex {
-    dos_exe_header  hdr;
-    unsigned_32     load_len;
+    dos_exe_header      hdr;
+    unsigned_32         load_len;
 } dos_exe_header_ex;
 
 typedef struct dos16m_exe_header_ex {
@@ -174,7 +174,7 @@ typedef struct dos16m_exe_header_ex {
     unsigned_32         load_len;
 } dos16m_exe_header_ex;
 
-extern struct section_data      Sections[DR_DEBUG_NUM_SECTS];
+extern section_data             Sections[DR_DEBUG_NUM_SECTS];
 extern int                      Handle;         /* the file handle         */
 extern unsigned_16              Sizeleft;       /* size left from BSIZE    */
 extern unsigned_16              Num_buff;       /* number of BSIZE buffer  */
@@ -191,8 +191,8 @@ extern unsigned_32              Imp_off;        /* offset   */
 extern unsigned_32              Fix_off;        /* offset   */
 extern unsigned_32              Res_off;        /* offset   */
 extern unsigned_32              Data_off;       /* offset   */
-extern struct segment_record *  Int_seg_tab;    /* internal segment table  */
-extern char **                  Int_mod_ref_tab;/* internal mod_ref table  */
+extern segment_record           *Int_seg_tab;   /* internal segment table  */
+extern char                     **Int_mod_ref_tab;/* internal mod_ref table  */
 extern unsigned_16              Segspec;        /* spec seg # for dmp_seg  */
 extern unsigned long            Hexoff;         /* offset for binary dump  */
 extern Elfxx_Ehdr               Elf_head;       /* the elf_header          */
@@ -202,8 +202,8 @@ extern simple_header            Phar_head;      /* the phar_header         */
 extern extended_nlm_header      Nlm_ext_head;   /* the nlm_extended_header */
 extern nlm_header               Nlm_head;       /* the nlm_header          */
 extern pe_exe_header            Pe_head;        /* the pe_exe_header       */
-extern struct os2_flat_header   Os2_386_head;   /* the new_header (V2.0)   */
-extern struct os2_exe_header    Os2_head;       /* the new_header          */
+extern os2_flat_header          Os2_386_head;   /* the new_header (V2.0)   */
+extern os2_exe_header           Os2_head;       /* the new_header          */
 extern dos_exe_header_ex        Dos_head;       /* the old_header          */
 extern unsigned_16              Resrc_shift_cnt;/* the restab shift        */
 extern unsigned_16              Options_dmp;

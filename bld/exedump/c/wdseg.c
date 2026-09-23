@@ -111,8 +111,8 @@ static void dmp_seg_flag( unsigned_16 flag )
 /*
  * Dump Segment Table Entry
  */
-static void dmp_seg_ent( struct segment_record *seg_ent )
-/*******************************************************/
+static void dmp_seg_ent( segment_record *seg_ent )
+/************************************************/
 {
     Wdputc( ' ' );
     Puthex( (unsigned_32)seg_ent->address << Os2_head.align, 8 );
@@ -139,10 +139,10 @@ static void dmp_seg_ent( struct segment_record *seg_ent )
 void Dmp_seg_tab( void )
 /**********************/
 {
-    unsigned_16                     num_segs;
-    struct segment_record           *segtab;
-    unsigned_16                     segtabsize;
-    unsigned_16                     segnum;
+    unsigned_16     num_segs;
+    segment_record  *segtab;
+    unsigned_16     segtabsize;
+    unsigned_16     segnum;
 
     Banner( "Segment Table" );
     num_segs = Os2_head.segments;
@@ -150,7 +150,7 @@ void Dmp_seg_tab( void )
         return;
     }
     Wlseek( New_exe_off + Os2_head.segment_off );
-    segtabsize = sizeof( struct segment_record ) * num_segs;
+    segtabsize = sizeof( segment_record ) * num_segs;
     Int_seg_tab = Wmalloc( segtabsize );
     segtab = Int_seg_tab;
     Wread( segtab, segtabsize );

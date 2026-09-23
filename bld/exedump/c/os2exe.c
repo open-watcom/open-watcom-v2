@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -306,7 +306,7 @@ bool Dmp_os2_head( void )
 /***********************/
 {
     Wlseek( New_exe_off );
-    Wread( &Os2_head, sizeof( struct os2_exe_header ) );
+    Wread( &Os2_head, sizeof( os2_exe_header ) );
     if( Os2_head.signature != EXESIGN_NE ) {
         return( false );
     }

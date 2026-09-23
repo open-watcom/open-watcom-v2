@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,7 +38,7 @@
 #include "wdfunc.h"
 
 
-struct  int_entry_pnt     *Entry_pnts = NULL;
+int_entry_pnt       *Entry_pnts = NULL;
 
 static  char    *bund_types[] = {
     "EMPTY", "ENTRY16", "GATE16", "ENTRY32",
@@ -333,12 +333,12 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
 /*
  * allocate a new int_entry_pnt structure
  */
-static struct int_entry_pnt *new_ent_pnt( void )
-/**********************************************/
+static int_entry_pnt *new_ent_pnt( void )
+/***************************************/
 {
-    struct int_entry_pnt    *new_ent;
+    int_entry_pnt   *new_ent;
 
-    new_ent = Wmalloc( sizeof( struct int_entry_pnt ) );
+    new_ent = Wmalloc( sizeof( int_entry_pnt ) );
     new_ent->next = Entry_pnts;
     Entry_pnts = new_ent;
     return( new_ent );
@@ -348,8 +348,8 @@ static void *dmp_fixed_seg_ent_pnts( unsigned_16 num_ent_pnts,
         void *ent_pnts, unsigned_16 ent_pnt_index, unsigned_16 seg_num )
 /**********************************************************************/
 {
-    struct fixed_record             *fix_ent;
-    struct int_entry_pnt            *new;
+    fixed_record    *fix_ent;
+    int_entry_pnt   *new;
 
     fix_ent = ent_pnts;
     for( ; num_ent_pnts != 0; num_ent_pnts-- ) {
@@ -367,8 +367,8 @@ static void *dmp_movable_seg_ent_pnts( unsigned_16 num_ent_pnts,
                         void *ent_pnts, unsigned_16 ent_pnt_index )
 /*****************************************************************/
 {
-    struct movable_record           *mov_ent;
-    struct int_entry_pnt            *new;
+    movable_record  *mov_ent;
+    int_entry_pnt   *new;
 
     mov_ent = ent_pnts;
     for( ; num_ent_pnts != 0; num_ent_pnts-- ) {
@@ -421,8 +421,8 @@ static void prs_ent_tab( unsigned_32 ent_tab, unsigned_16 ent_tab_len )
     free( init_ent_bund );
 }
 
-static void dmp_an_ord( struct int_entry_pnt *find )
-/**************************************************/
+static void dmp_an_ord( int_entry_pnt *find )
+/*******************************************/
 {
     unsigned_16     flag;
 
@@ -449,7 +449,7 @@ static void dmp_an_ord( struct int_entry_pnt *find )
 void Dmp_ordinal( unsigned_16 ordinal )
 /*************************************/
 {
-    struct int_entry_pnt    *find;
+    int_entry_pnt   *find;
 
     for( find = Entry_pnts; find != NULL; find = find->next ) {
         if( find->ordinal == ordinal ) {
@@ -467,7 +467,7 @@ void Dmp_ordinal( unsigned_16 ordinal )
 static void dmp_entry_tab( void )
 /*******************************/
 {
-    struct int_entry_pnt    *find;
+    int_entry_pnt   *find;
 
     if( Entry_pnts == NULL ) {
         return;
