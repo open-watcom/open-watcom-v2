@@ -267,13 +267,13 @@ static bool parse_options( int argc, char * const *argv )
     int     c;
     char    *arg;
 
-    Options_dmp = EXE_INFO;
+    Options_dmp = EXE_INFO | ZERO_BITS;
     Segspec = 0;
     Hexoff = 0;
 
     for( ;; ) {
         while(optind < argc
-          && (c = getopt( argc, argv, ":aA:bB:dD:efipqrRsS:x" )) != -1 ) {
+          && (c = getopt( argc, argv, ":aA:bB:dD:efipqrRsS:tx" )) != -1 ) {
             switch( c ) {
             case 'A':
                 Options_dmp |= FIX_DMP | PAGE_DMP | RESRC_DMP | EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
@@ -341,6 +341,9 @@ static bool parse_options( int argc, char * const *argv )
                 break;
             case 's':
                 Options_dmp |= EXE_INFO | DOS_SEG_DMP | OS2_SEG_DMP;
+                break;
+            case 't':
+                Options_dmp &= ~ZERO_BITS;
                 break;
             case 'x':
                 Options_dmp |= IMPORT_DEF;
