@@ -336,11 +336,17 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
 static int_entry_pnt *new_ent_pnt( void )
 /***************************************/
 {
-    int_entry_pnt   *new_ent;
+    int_entry_pnt           *new_ent;
+    static int_entry_pnt    *tail = NULL;
 
     new_ent = Wmalloc( sizeof( int_entry_pnt ) );
-    new_ent->next = Entry_pnts;
-    Entry_pnts = new_ent;
+    new_ent->next = NULL;
+    if( tail == NULL ) {
+        Entry_pnts = new_ent;
+    } else {
+        tail->next = new_ent;
+    }
+    tail = new_ent;
     return( new_ent );
 }
 
@@ -352,7 +358,7 @@ static void *dmp_fixed_seg_ent_pnts( unsigned_16 num_ent_pnts,
     int_entry_pnt   *new;
 
     fix_ent = ent_pnts;
-    for( ; num_ent_pnts != 0; num_ent_pnts-- ) {
+    while( num_ent_pnts-- > 0 ) {
         new = new_ent_pnt();
         new->ordinal = ent_pnt_index++;
         new->seg_num = seg_num;
@@ -371,7 +377,7 @@ static void *dmp_movable_seg_ent_pnts( unsigned_16 num_ent_pnts,
     int_entry_pnt   *new;
 
     mov_ent = ent_pnts;
-    for( ; num_ent_pnts != 0; num_ent_pnts-- ) {
+    while( num_ent_pnts-- > 0 ) {
         new = new_ent_pnt();
         new->ordinal = ent_pnt_index++;
         new->ent_flag = mov_ent->info;
