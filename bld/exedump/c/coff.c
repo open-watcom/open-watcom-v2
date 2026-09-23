@@ -293,7 +293,8 @@ bool Dmp_ar_head( void )
     filesize = WFileSize();
     Coff_off = AR_IDENT_LEN;
     for(;;) {
-        if( Coff_off + sizeof(ar_header) >= filesize ) break;
+        if( Coff_off + sizeof(ar_header) >= filesize )
+            break;
         Wread( &hdr, sizeof(ar_header) );
         Coff_off += sizeof(ar_header);
         hdr.date[0]='\0';

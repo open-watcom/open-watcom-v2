@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -422,7 +423,7 @@ static unsigned_8 *put_name( unsigned_8 *p)
     len = *p;
     p++;
     fprintf( stdout, "%.*s", len, p );
-    return p + len;
+    return( p + len );
 }
 
 /*
@@ -444,7 +445,7 @@ static unsigned_8 *put_name2( unsigned_8 *p)
       len &= 0x7f;
     }
     fprintf( stdout, "%.*s", len, p );
-    return p + len;
+    return( p + len );
 }
 
 /*

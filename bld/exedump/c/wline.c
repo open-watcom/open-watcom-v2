@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -209,7 +209,8 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
         Puthex( (unsigned_32)( p - input ), 8 );
         Wdputslc( "\n" );
 
-        if( p - input >= length ) return;
+        if( p - input >= length )
+            return;
 
         Wdputslc( "include directories\n" );
         file_index = 0;
@@ -222,7 +223,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             Wdputs( ": '" );
             Wdputs( (char *)name );
             Wdputslc( "'\n" );
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                return;
+            }
         }
         p++;
         Wdputslc( "file names\n" );
@@ -245,7 +248,9 @@ void Dump_lines( const unsigned_8 *input, unsigned length )
             Wdputs( " length " );
                 Puthex( file_length, 8 );
             Wdputslc( "\n" );
-            if( p - input >= length ) return;
+            if( p - input >= length ) {
+                return;
+            }
         }
         p++;
         init_state( &state, default_is_stmt );

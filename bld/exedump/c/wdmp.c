@@ -79,7 +79,7 @@ static void dmp_exe( void )
             } else {
                 Wdputslc( "No protected mode executable found\n" );
             }
-        } else if( !dos_dmp ) {
+        } else if( dos_dmp == 0 ) {
             if( Dmp_os2_head() ) {
                 /* done */
             } else if( Dmp_386_head() ) {
@@ -393,7 +393,7 @@ int main( int argc, char * const *argv )
     if( parse_options( argc, argv ) ) {
         return( 1 );
     }
-    if( !(Options_dmp & QUIET) ) {
+    if( (Options_dmp & QUIET) == 0 ) {
         wbanner();
     }
     if( Name == NULL

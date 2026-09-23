@@ -204,7 +204,7 @@ void Dmp_relocs( void )
     unsigned_16     num_segs;
     unsigned_32     reloc_off;
 
-    if( !(Options_dmp & FIX_DMP) ) {
+    if( (Options_dmp & FIX_DMP) == 0 ) {
         return;
     }
     Wdputslc( "\n" );

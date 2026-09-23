@@ -101,7 +101,7 @@ static void dmp_seg( unsigned_16 size )
     unsigned_16     i;
     unsigned_32     seg;
 
-    if( !size ) {
+    if( size == 0 ) {
         return;
     }
     Wdputslc( "segments = type:size\n" );

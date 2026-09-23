@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,11 +105,11 @@ void Dmp_fixups( void )
         Wlseek( offset );
         Wread( &pe_fixup, sizeof( pe_fixup_header ) );
         offset += pe_fixup.block_size;
-        if( pe_fixup.block_size == 0 ) break;
+        if( pe_fixup.block_size == 0 )
+            break;
         Dump_header( (char *)&pe_fixup.page_rva, pe_fixup_msg, 4 );
         if( Options_dmp & FIX_DMP ) {
-            dmp_type_offset( ( pe_fixup.block_size -
-                            sizeof( pe_fixup_header ) ) / 2 );
+            dmp_type_offset( ( pe_fixup.block_size - sizeof( pe_fixup_header ) ) / 2 );
         }
         Wdputslc( "\n" );
     }
@@ -197,7 +198,8 @@ static void dmp_res_name_id( unsigned_16 count, bool is_name )
     resource_dir_entry      pe_res_dir;
     res_name                name;
 
-    if( count == 0 ) return;
+    if( count == 0 )
+        return;
     offset = Res_off + sizeof( resource_dir_header );
     for( i = 0; i < count; i++ ) {
         Wlseek( offset );
@@ -255,7 +257,8 @@ static void dmp_res_dir( void )
     for( ;; ) {
         Wread( &res_head, sizeof( resource_dir_header ) );
         count = res_head.num_name_entries + res_head.num_id_entries;
-        if( count == 0 ) break;
+        if( count == 0 )
+            break;
         Wdputs( "    " );
         Puthex( res_head.num_id_entries, 4 );
         Wdputs( "         " );
@@ -289,7 +292,8 @@ static void dmp_res_data( void )
     Wlseek( Data_off );
     for( i = 0; ; i++ ) {
         Wread( &res_data, sizeof( resource_entry ) );
-        if( res_data.rsvd != 0 ) break;
+        if( res_data.rsvd != 0 )
+            break;
         Putdecl( i, 3 );
         Wdputs( ":   " );
         Puthex( res_data.data_rva, 8 );

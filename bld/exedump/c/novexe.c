@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -311,8 +312,7 @@ bool Dmp_nlm_head( void )
     if( memcmp( Nlm_head.signature, NLM_SIGNATURE, NLM_SIGNATURE_LENGTH ) ) {
         return( false );
     }
-    Wread( (char *)&Nlm_head + sizeof( Nlm_head.signature ),
-        sizeof( nlm_header ) - sizeof( Nlm_head.signature ) );
+    Wread( (char *)&Nlm_head + sizeof( Nlm_head.signature ), sizeof( nlm_header ) - sizeof( Nlm_head.signature ) );
     Banner( "Novell EXE Header" );
     Wdputs( "version number                            = " );
     Puthex( Nlm_head.version, 8 );
@@ -325,13 +325,13 @@ bool Dmp_nlm_head( void )
     offset += sizeof( nlm_header );
     Wlseek( offset );
     Wread( &nlm_head3, sizeof( nlm_header_3 ) );
-    if( !memcmp( nlm_head3.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH ) ) {
+    if( memcmp( nlm_head3.versionSignature, VERSION_SIGNATURE, VERSION_SIGNATURE_LENGTH ) == 0 ) {
         Dump_header( (char *)&nlm_head3.majorVersion, nlm_date_msg, 4 );
         offset += sizeof( nlm_header_3 );
     }
     Wlseek( offset );
     Wread( &nlm_head4, sizeof( nlm_header_4 ) );
-    if( !memcmp( nlm_head4.copyrightSignature, COPYRIGHT_SIGNATURE, COPYRIGHT_SIGNATURE_LENGTH ) ) {
+    if( memcmp( nlm_head4.copyrightSignature, COPYRIGHT_SIGNATURE, COPYRIGHT_SIGNATURE_LENGTH ) == 0 ) {
         Wdputs( "copy right string                    = " );
         Wdputs( nlm_head4.copyrightString );
         Wdputslc( "\n" );
@@ -341,7 +341,7 @@ bool Dmp_nlm_head( void )
     Wlseek( offset );
     extend = false;
     Wread( &Nlm_ext_head, sizeof( extended_nlm_header ) );
-    if( !memcmp( Nlm_ext_head.stamp, EXTENDED_NLM_SIGNATURE, EXTENDED_NLM_SIGNATURE_LENGTH ) ) {
+    if( memcmp( Nlm_ext_head.stamp, EXTENDED_NLM_SIGNATURE, EXTENDED_NLM_SIGNATURE_LENGTH ) == 0 ) {
         Dump_header( (char *)&Nlm_ext_head.languageID, nlm_ext_msg, 4 );
         extend = true;
     }

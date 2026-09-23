@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -246,7 +246,7 @@ void Dmp_fixrec_tab( unsigned_32 fix_off )
     unsigned_8      flags;
     unsigned_8      i;
 
-    if( !(Options_dmp & FIX_DMP) ) {
+    if( (Options_dmp & FIX_DMP) == 0 ) {
         return;
     }
     Wdputslc( "\n" );

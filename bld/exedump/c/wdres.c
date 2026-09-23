@@ -161,8 +161,8 @@ static void dmp_resrc_type( unsigned_16 res_type )
 /*
  * Dump a Resource flags Word
  */
-static void dmp_resrc_flags( unsigned_16 flag )
-/*********************************************/
+static void dmp_resrc_flags( unsigned_16 flags )
+/**********************************************/
 {
     if( flags & SEG_MOVABLE ) {
         Wdputs( "MOVABLE" );

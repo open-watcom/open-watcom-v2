@@ -147,10 +147,10 @@ static int compare_table( const void *pa, const void *pb )
 static void sort_tables( void )
 /*****************************/
 {
-    static int  done = 0;
+    static bool  done = false;
 
     if( !done ) {
-        done = 1;
+        done = true;
         qsort( readableTAGs, ARRAY_SIZE( readableTAGs ), sizeof( readable_name ), compare_table );
         qsort( readableFORMs, ARRAY_SIZE( readableFORMs ), sizeof( readable_name ), compare_table );
         qsort( readableATs, ARRAY_SIZE( readableATs ), sizeof( readable_name ), compare_table );
@@ -509,7 +509,8 @@ static bool dump_tag( info_state *info )
     for( ;; ) {
         attr = ReadULEB128( abbrev );
         form = ReadULEB128( abbrev );
-        if( attr == 0 ) break;
+        if( attr == 0 )
+            break;
         Wdputs( "        " );
         getAT( attr );
         if( attr == DW_AT_location
@@ -895,7 +896,8 @@ static void dump_info_headers( const char *input, unsigned length )
         while( p - unit_base < unit_length ) {
             tag_offset = p - input;
             abbrev_code = ReadULEB128( p );
-            if( abbrev_code == 0 ) continue;
+            if( abbrev_code == 0 )
+                continue;
             abbrev = find_abbrev( abbrev_offset, abbrev_code );
             if( abbrev == NULL ) {
                 Wdputs( "can't find abbreviation " );
@@ -903,7 +905,8 @@ static void dump_info_headers( const char *input, unsigned length )
                 Wdputslc( "\n" );
                 break;
             }
-            if( p >= input + length ) break;
+            if( p >= input + length )
+                break;
             tag = ReadULEB128( abbrev );
             abbrev++;
             state.abbrev = abbrev;
@@ -920,13 +923,17 @@ static void dump_info_headers( const char *input, unsigned length )
                 Wdputs( "        " );
                 getTAG( tag );
                 Wdputslc( "\n" );
-               if( !dump_tag( &state ) )break;
+                if( !dump_tag( &state ) ) {
+                    break;
+                }
             } else {
                 skip_tag( &state );
             }
             p = state.p;
         }
-        if( found )break;
+        if( found ) {
+            break;
+        }
     }
 }
 #endif
@@ -1042,7 +1049,7 @@ static unsigned_32 ScopePop( scope_stack *stack )
     }
 
     stack->free -= 1;
-    return stack->stack[stack->free];
+    return( stack->stack[stack->free] );
 }
 
 static void PutRefRegisters( ref_info *registers )
@@ -1323,7 +1330,7 @@ unsigned Lookup_section_name( const char *name )
 
     for( sect = 0 ; sect < DW_DEBUG_MAX ; sect++ ) {
         if( stricmp( sectionNames[sect], name ) == 0 ) {
-            return sect;
+            return( sect );
         }
     }
     return( sect );

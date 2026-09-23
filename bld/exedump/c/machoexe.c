@@ -420,7 +420,7 @@ static void set_dwarf( unsigned_32 start )
     unsigned_32     sections[DR_DEBUG_NUM_SECTS];
 
     // grab the string table, if it exists
-    if( !Elf_head.elf32.e_shstrndx ) {
+    if( Elf_head.elf32.e_shstrndx == 0 ) {
         return; // no strings no dwarf
     }
     if( Elf_head.elf32.e_shnum == 0 ) {
@@ -428,8 +428,7 @@ static void set_dwarf( unsigned_32 start )
     }
     memset( sections, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
     memset( sectsizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned_32 ) );
-    offset = Elf_head.elf32.e_shoff
-           + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
+    offset = Elf_head.elf32.e_shoff + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
     Wlseek( offset );
     Wread( &elf_sec, sizeof( Elf32_Shdr ) );
     swap_shdr( &elf_sec );
@@ -535,8 +534,7 @@ static void dmp_prog_sec( unsigned_32 start )
         set_dwarf( start );
     }
     if( Elf_head.elf32.e_shstrndx ) {
-        offset = Elf_head.elf32.e_shoff
-               + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
+        offset = Elf_head.elf32.e_shoff + Elf_head.elf32.e_shstrndx * Elf_head.elf32.e_shentsize+start;
         Wlseek( offset );
         Wread( &elf_sec, sizeof( Elf32_Shdr ) );
         swap_shdr( &elf_sec );
@@ -704,7 +702,8 @@ bool Dmp_machlib_head( void )
     Elf_off = LIBMAG_LEN + LIB_CLASS_LEN + LIB_DATA_LEN;
     Wlseek( Elf_off );
     for( ;; ) {
-        if( Elf_off + LIB_HEADER_SIZE >= filesize ) break;
+        if( Elf_off + LIB_HEADER_SIZE >= filesize )
+            break;
         Wread( &hdr, LIB_HEADER_SIZE );
         Elf_off += LIB_HEADER_SIZE;
         hdr.lib_date[0] = '\0';

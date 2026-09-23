@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2024      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2024-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -151,10 +151,9 @@ unsigned_8 *Get_type_index( unsigned_8 *ptr, unsigned_16 *index )
         idx += *(ptr + 1);
         *index = idx;
         return( ptr + 2 );
-    } else {
-        *index = *ptr;
-        return( ptr + 1 );
     }
+    *index = *ptr;
+    return( ptr + 1 );
 
 } /* Get_type_index */
 
@@ -447,6 +446,7 @@ unsigned_8 *Dump_location_expression( unsigned_8 *buff, char *spacing )
         buff = dump_single_location_entry( buff );
     }
     return( buff );
+
 } /* Dump_location_expression */
 
 /*

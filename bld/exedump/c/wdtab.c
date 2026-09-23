@@ -306,7 +306,7 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
 
     Wlseek( ent_tab );
     Wread( &ent_bund_pfx, sizeof( ent_bund_pfx ) );
-    if( !ent_bund_pfx.b32_cnt ) {
+    if( ent_bund_pfx.b32_cnt == 0 ) {
         return;
     }
     Wdputslc( "\n" );
