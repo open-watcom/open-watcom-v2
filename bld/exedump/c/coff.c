@@ -155,7 +155,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     } else {
         strtab = NULL;
     }
-    Wdputs( "Idx  Value    Sec  Type Class # Aux Name\n" );
+    Wdputslc( "Idx  Value    Sec  Type Class # Aux Name\n" );
     for( symidx = 0; symidx < num_syms; symidx++ ) {
         Puthex( symidx + 1, 4 );
         Wdputs( " " );

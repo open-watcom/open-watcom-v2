@@ -270,7 +270,7 @@ static void dump_hex( const unsigned_8 *input, unsigned length )
         Wdputs( " <" );
         Wdputs( printable );
         Wdputslc( ">\n" );
-//      Wdputs( "%08lx:%-49s <%s>\n", old_offset, hex, printable );
+//        Wdputslc( "%08lx:%-49s <%s>\n", old_offset, hex, printable );
         p = printable;
         i = 0;
         if( offset == length ) {

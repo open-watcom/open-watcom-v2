@@ -312,7 +312,7 @@ static void dmp_ent_tab( unsigned_32 ent_tab )
     Wdputslc( "\n" );
     Banner( "Entry Point Table" );
     for( ; ent_bund_pfx.b32_cnt != 0; ) {
-        Wdputs( "\nnumber of entries in bundle = " );
+        Wdputslc( "\nnumber of entries in bundle = " );
         Puthex( ent_bund_pfx.b32_cnt, 2 );
         Wdputslc( "\ntype = " );
         Puthex( ent_bund_pfx.b32_type, 2 );
@@ -366,7 +366,7 @@ static void *dmp_fixed_seg_ent_pnts( unsigned_16 num_ent_pnts,
         new->ordinal = ent_pnt_index++;
         new->seg_num = seg_num;
         new->offset = fix_ent->entry;
-        new->ent_flag = fix_ent->info;
+        new->flags = fix_ent->info;
         ++fix_ent;
     }
     return( fix_ent );
@@ -383,7 +383,7 @@ static void *dmp_movable_seg_ent_pnts( unsigned_16 num_ent_pnts,
     while( num_ent_pnts-- > 0 ) {
         new = new_ent_pnt();
         new->ordinal = ent_pnt_index++;
-        new->ent_flag = mov_ent->info;
+        new->flags = mov_ent->info;
         new->seg_num = mov_ent->entrynum;
         new->offset = mov_ent->entry;
         ++mov_ent;
@@ -433,7 +433,7 @@ static void prs_ent_tab( unsigned_32 ent_tab, unsigned_16 ent_tab_len )
 static void dmp_an_ord( int_entry_pnt *find )
 /*******************************************/
 {
-    unsigned_16     flag;
+    unsigned_16     flags;
 
     Wdputc( '.' );
     Putdec( find->ordinal );
@@ -442,12 +442,12 @@ static void dmp_an_ord( int_entry_pnt *find )
     Wdputs( " off " );
     Puthex( find->offset, 4 );
     Wdputs( " parm " );
-    flag = find->ent_flag;
-    Puthex( flag >> 3, 2 );
-    if( flag & ENTRY_EXPORTED ) {
+    flags = find->flags;
+    Puthex( flags >> 3, 2 );
+    if( flags & ENTRY_EXPORTED ) {
         Wdputs( " EXPORTED" );
     }
-    if( flag & ENTRY_SHARED ) {
+    if( flags & ENTRY_SHARED ) {
         Wdputs( "|SHAREDATA" );
     }
 }

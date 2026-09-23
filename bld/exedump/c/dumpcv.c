@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -409,7 +410,7 @@ static void dump_cv4_sstSegMap( unsigned_32 base, unsigned_32 offset,
         Puthex( seg_map->segdesc[seg].frame, 4 );
         Wdputs( "  " );
         Puthex( seg_map->segdesc[seg].iClassName, 4 );
-        Wdputs( "\n" );
+        Wdputslc( "\n" );
     }
     Wdputslc( "\n" );
     free( seg_map );

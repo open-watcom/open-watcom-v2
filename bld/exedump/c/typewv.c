@@ -469,7 +469,7 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 break;
             case PTR_FAR386_DEREF:
                 StartType( "FAR386_DEREF PTR", ++curr_index);
-                Wdputs( "\n       " );
+                Wdputslc( "\n       " );
                 base_type_index( ptr );
                 break;
             case CLIST:

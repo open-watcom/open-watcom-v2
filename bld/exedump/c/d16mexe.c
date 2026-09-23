@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -170,9 +170,9 @@ static unsigned_16 get_selector_count( dos16m_exe_header_ex *d16m_head )
 static unsigned_16 put_reloc( reloc *r, unsigned_16 idx )
 {
     Puthex( r->sel, 4 );
-    Wdputslc( ":" );
+    Wdputs( ":" );
     Puthex( r->off, 4 );
-    Wdputslc( " " );
+    Wdputs( " " );
     ++idx;
     if( idx % 4 == 0 ) {
         Wdputslc( "\n" );
@@ -286,7 +286,7 @@ static void dmp_dos16m_head_info( dos16m_exe_header_ex *d16m_head )
         }
         sel = d16m_head->hdr.first_selector;
         for( i = 0; i < last_sel; ++i ) {
-            Wdputslc( "Load selector = " );
+            Wdputs( "Load selector = " );
             Puthex( sel, 4 );
             Wdputslc( "\n\n" );
             Dmp_seg_data( segs_info[i].file_off, segs_info[i].size );

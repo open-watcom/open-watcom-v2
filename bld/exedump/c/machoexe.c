@@ -135,7 +135,7 @@ static void dmp_sec_strtab( unsigned_32 offset, unsigned_32 size )
     for( ptr = string_table; ptr < (string_table + size); ) {
         if( *ptr ) {
             Puthex( (unsigned_32)( ptr - string_table ), 8 );
-            Wdputslc( ": " );
+            Wdputs( ": " );
             Wdputs( ptr );
             Wdputslc( "\n" );
             ptr += strlen( ptr );
@@ -755,9 +755,9 @@ static void dmp_cmd_list( unsigned_32 start, int n )
             Dump_header( &seg, m_segment_msg, 4 );
             break;
         default:
-            Wdputs( "\ncmd       = " );
+            Wdputslc( "\ncmd       = " );
             Puthex( cmd, 8 );
-            Wdputs( "H\ncmdsize   = " );
+            Wdputslc( "H\ncmdsize   = " );
             Puthex( cmdsize, 8 );
             Wdputs( "H" );
         }
@@ -798,11 +798,11 @@ bool Dmp_macho_header( unsigned long start )
     }
     Wdputs( "magic                                       = " );
     Puthex( mhead.magic, 8 );
-    Wdputs( "\ncputype                                     = " );
+    Wdputslc( "\ncputype                                     = " );
     Puthex( mhead.cputype, 8 );
-    Wdputs( "H\ncpusubtype                                  = " );
+    Wdputslc( "H\ncpusubtype                                  = " );
     Puthex( mhead.cpusubtype, 8 );
-    Wdputs( "H\nfiletype                                    = " );
+    Wdputslc( "H\nfiletype                                    = " );
     Puthex( mhead.filetype, 8 );
     Wdputslc( "H\nncmds                                       = " );
     Puthex( mhead.ncmds, 8 );

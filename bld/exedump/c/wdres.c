@@ -159,28 +159,28 @@ static void dmp_resrc_type( unsigned_16 res_type )
 }
 
 /*
- * Dump a Resource Flag Word
+ * Dump a Resource flags Word
  */
-static void dmp_resrc_flag( unsigned_16 flag )
-/********************************************/
+static void dmp_resrc_flags( unsigned_16 flag )
+/*********************************************/
 {
-    if( flag & SEG_MOVABLE ) {
+    if( flags & SEG_MOVABLE ) {
         Wdputs( "MOVABLE" );
     } else {
         Wdputs( "FIXED" );
     }
-    if( flag & SEG_PURE ) {
+    if( flags & SEG_PURE ) {
         Wdputs( "|PURE" );
     } else {
         Wdputs( "|IMPURE" );
     }
-    if( flag & SEG_PRELOAD ) {
+    if( flags & SEG_PRELOAD ) {
         Wdputs( "|PRELOAD" );
     } else {
         Wdputs( "|LOADONCALL" );
     }
     Wdputs( " Prior " );
-    Putdec( GET_SEG_DISCARD_PRIORITY( flag ) );
+    Putdec( GET_SEG_DISCARD_PRIORITY( flags ) );
 }
 
 /*
@@ -200,8 +200,8 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     Wdputs( "H len " );
     res_len = (unsigned_32)res_ent->length << Resrc_shift_cnt;
     Puthex( res_len, 8 );
-    Wdputs( " flag " );
-    dmp_resrc_flag( res_ent->flags );
+    Wdputs( " flags " );
+    dmp_resrc_flags( res_ent->flags );
     Wdputslc( "\n" );
     if( Options_dmp & RESRC_DMP ) {
         Wdputslc( "    data =\n" );

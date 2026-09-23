@@ -322,7 +322,7 @@ bool Dmp_os2_head( void )
     Wdputslc( "\n" );
     Wdputs( "Module flags = " );
     Puthex( Os2_head.info, 4 );
-    Wdputslc( ": " );
+    Wdputs( ": " );
     dmp_mod_flags_ne( Os2_head.info, Os2_head.target );
     Wdputslc( "\n" );
     Dmp_seg_tab();
@@ -522,7 +522,7 @@ bool Dmp_386_head( void )
     Wdputslc( "\n" );
     Wdputs( "Module flags = " );
     Puthex( Os2_386_head.flags, 8 );
-    Wdputslc( ": " );
+    Wdputs( ": " );
     dmp_mod_flags_lx( Os2_386_head.flags, Os2_386_head.os_type );
     Wdputslc( "\n" );
     dmp_obj_table();

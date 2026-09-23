@@ -160,7 +160,7 @@ static void dmp_sec_strtab( unsigned_32 offset, unsigned_32 size )
     for( ptr = string_table; ptr < (string_table + size); ) {
         if( *ptr ) {
             Puthex( (unsigned_32)( ptr - string_table ), 8 );
-            Wdputslc( ": " );
+            Wdputs( ": " );
             Wdputs( ptr );
             Wdputslc( "\n" );
             ptr += strlen( ptr );

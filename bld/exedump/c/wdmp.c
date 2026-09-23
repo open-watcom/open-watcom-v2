@@ -370,7 +370,7 @@ static bool parse_options( int argc, char * const *argv )
             if( Name == NULL ) {
                 Name = argv[optind++];
             } else {
-                Wdputs( "wdump: multiple pathnames not accepted\n" );
+                Wdputslc( "wdump: multiple pathnames not accepted\n" );
                 return( true );
             }
         } else {
