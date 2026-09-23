@@ -226,6 +226,7 @@ static void usage( void )
         "    -R dump NE resources to files\n"
         "    -s causes segments' data to be dumped" "\n"
         "    -S<segnum> like -s but only applies to segment <segnum>" "\n"
+        "    -t show only active bits" "\n"
         "    -x dump export information for NE/LX DLLs in .DEF format" "\n"
     );
 }
