@@ -133,7 +133,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     unsigned_32     strsize;
     unsigned_32     symidx;
     unsigned        num_aux;
-    int             i;
+    unsigned        i;
 
     if( num_syms == 0 ) {
         Wdputslc( "No symbols in object file\n" );

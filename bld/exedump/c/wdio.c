@@ -232,7 +232,7 @@ void Dump_header( const void *data_ptr, const_string_table *msg, int max_width )
 /******************************************************************************/
 {
     unsigned_8  *data = (unsigned_8 *)data_ptr;
-    int         skip;
+    size_t      skip;
     bool        print_h;
     static const char *spaces = "                ";
 

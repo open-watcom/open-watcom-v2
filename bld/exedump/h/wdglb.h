@@ -70,6 +70,7 @@
 #define BINARY_DMP      0x0200
 #define PAGE_DMP        0x0400  /* dump the page maps       */
 #define IMPORT_DEF      0x0800
+#define RSRC_FILE_DMP   0x1000  /* dump resources to files  */
 
 #define MODULE_INFO     0x01
 #define GLOBAL_INFO     0x02

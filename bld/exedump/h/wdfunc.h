@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,6 +127,7 @@ extern void         Dmp_resources( void );
 /*
  * wdseg.c
  */
+extern void         Dmp_one_seg_data( unsigned_16 );
 extern void         Dmp_seg_tab( void );
 
 /*
