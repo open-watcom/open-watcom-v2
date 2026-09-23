@@ -1308,7 +1308,7 @@ static ordinal_t ChkOS2IntEntry( group_entry *group, segdata *seg,
     // segments do not need that and references between IOPL
     // segments don't either.
     if( GET_SEG_PMODE_DPL( group->segflags ) != GET_SEG_PMODE_DPL( seg->u.leader->group->segflags ) ) {
-        if( GET_SEG_PMODE_DPL( group->segflags ) == SEG_PMODE_DPL_2
+        if( GET_SEG_PMODE_DPL( group->segflags ) == 2
           && !(group->segflags & SEG_CONFORMING) ) {
 
             // The target has to be in the entry table, otherwise we can't

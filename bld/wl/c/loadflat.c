@@ -141,7 +141,7 @@ static unsigned WriteObjectTables( os2_flat_header *header, unsigned long loc )
         } else { //if( group->u.os2flags & OS2_SEG_16_ALIAS ) {
             objrec.flags |= OBJ_ALIAS_REQUIRED;
         }
-        if( GET_SEG_PMODE_DPL( group->segflags ) != SEG_PMODE_DPL_3 ) {
+        if( GET_SEG_PMODE_DPL( group->segflags ) != 3 ) {
             objrec.flags |= OBJ_IOPL;
         }
         if( group->segflags & SEG_DATA ) {

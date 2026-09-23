@@ -255,7 +255,8 @@ static void InitGroup( group_entry *group )
     SET_ADDR_UNDEFINED( group->addr );
     group->totalsize = 0;
     group->size = 0;
-    group->segflags = DEFAULT_GRP_FLAGS;
+    group->segflags = SEG_READ_ONLY;
+    SET_SEG_PMODE_DPL( group->segflags, 3 );
     group->u.os2flags = 0;
     group->isfree = false;
     group->isautogrp = false;

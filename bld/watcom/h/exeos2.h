@@ -182,29 +182,28 @@ typedef struct segment_record {
 #define SEG_SHIFT_DISCARD_PRIORITY  12
 
 typedef enum seg_flags_type {
-    SEG_NONE        = 0x0000,
-    SEG_DATA        = 0x0001,
-    SEG_FLAG_1      = 0x0002,
-    SEG_FLAG_2      = 0x0004,
-    SEG_ITERATED    = 0x0008,
-    SEG_MOVABLE     = 0x0010,
-    SEG_PURE        = 0x0020,       /* i.e. segment is sharable. */
-    SEG_PRELOAD     = 0x0040,
-    SEG_READ_ONLY   = 0x0080,
-    SEG_RELOC       = 0x0100,
-    SEG_CONFORMING  = 0x0200,       /* was SEG_DEBUG */
-    SEG_PMODE_DPL_1 = (1 << SEG_SHIFT_PMODE_DPL),
-    SEG_PMODE_DPL_2 = (2 << SEG_SHIFT_PMODE_DPL),
-    SEG_PMODE_DPL_3 = (3 << SEG_SHIFT_PMODE_DPL),
-    SEG_DISCARD     = 0x1000,
-    SEG_32_BIT      = 0x2000,
-    SEG_HUGE        = 0x4000,
-    SEG_RESRC_HIGH  = 0x8000,
+    SEG_NONE          = 0x0000,
+    SEG_DATA          = 0x0001,
+    SEG_FLAG_1        = 0x0002,
+    SEG_FLAG_2        = 0x0004,
+    SEG_ITERATED      = 0x0008,
+    SEG_MOVABLE       = 0x0010,
+    SEG_PURE          = 0x0020,       /* i.e. segment is sharable. */
+    SEG_PRELOAD       = 0x0040,
+    SEG_READ_ONLY     = 0x0080,
+    SEG_RELOC         = 0x0100,
+    SEG_CONFORMING    = 0x0200,       /* was SEG_DEBUG */
+    SEG_PMODE_DPL     = 0x0400 | 0x0800,
+    SEG_DISCARD_PRIOR = 0x1000 | 0x2000 | 0x3000 | 0x4000,
+    SEG_DISCARD       = 0x1000,
+    SEG_32_BIT        = 0x2000,
+    SEG_HUGE          = 0x4000,
+    SEG_RESRC_HIGH    = 0x8000,
 } seg_flags_type;
 
-#define GET_SEG_DISCARD_PRIORITY(x) ((x) >> SEG_SHIFT_DISCARD_PRIORITY)
-#define GET_SEG_PMODE_DPL(x)        ((x) & (3 << SEG_SHIFT_PMODE_DPL))
-#define SET_SEG_PMODE_DPL(x,v)      (x) = (((x) & ~(3 << SEG_SHIFT_PMODE_DPL)) | (v))
+#define GET_SEG_DISCARD_PRIORITY(x) (((x) & SEG_DISCARD_PRIOR) >> SEG_SHIFT_DISCARD_PRIORITY)
+#define GET_SEG_PMODE_DPL(x)        (((x) & SEG_PMODE_DPL) >> SEG_SHIFT_PMODE_DPL)
+#define SET_SEG_PMODE_DPL(x,v)      (x) = (((x) & ~SEG_PMODE_DPL) | (((v) & 3) << SEG_SHIFT_PMODE_DPL))
 
 #define MOVABLE_ENTRY_PNT   0xff
 

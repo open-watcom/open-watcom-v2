@@ -457,8 +457,6 @@ typedef struct group_entry {
     unsigned            num;
 } group_entry;
 
-#define DEFAULT_GRP_FLAGS (SEG_PMODE_DPL_3 | SEG_READ_ONLY)
-
 // flags used under OS/2 to indicate special information about a segment
 
 #define OS2_SEG_16_ALIAS    1

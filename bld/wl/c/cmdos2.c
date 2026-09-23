@@ -694,7 +694,7 @@ static bool ProcIopl( void )
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
         LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
-    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, SEG_PMODE_DPL_2 );
+    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, 2 );
     FmtData.u.os2fam.seg_flags->specified |= SEG_IOPL_SPECD;
     return( true );
 }
@@ -705,7 +705,7 @@ static bool ProcNoIopl( void )
     if( FmtData.u.os2fam.seg_flags->specified & SEG_IOPL_SPECD ) {
         LnkMsg( WRN+LOC+LINE+MSG_SEG_FLAG_MULT_DEFD, NULL );
     }
-    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, SEG_PMODE_DPL_3 );
+    SET_SEG_PMODE_DPL( FmtData.u.os2fam.seg_flags->flags, 3 );
     FmtData.u.os2fam.seg_flags->specified |= SEG_IOPL_SPECD;
     return( true );
 }

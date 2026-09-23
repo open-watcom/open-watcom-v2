@@ -281,7 +281,8 @@ RcStatus CopyOS2Resources( ExeFileInfo *dst, ResFileInfo *res )
         dst_seg->address = seg_offset >> shift_count;
         dst_seg->size    = entry->seg_length;
         dst_seg->min     = entry->seg_length;
-        dst_seg->info    = SEG_DATA | SEG_READ_ONLY | SEG_PMODE_DPL_3;
+        dst_seg->info    = SEG_DATA | SEG_READ_ONLY;
+        SET_SEG_PMODE_DPL( dst_seg->info, 3 );
         if( entry->res_flags & RESFLAG_MOVEABLE )
             dst_seg->info |= SEG_MOVABLE;
         if( entry->res_flags & RESFLAG_PURE )
