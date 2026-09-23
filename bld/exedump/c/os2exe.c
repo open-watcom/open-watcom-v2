@@ -47,7 +47,7 @@ static  const_string_table os2_exe_msg[] = {
     "2offset of entry table                                = ",
     "2length of entry table                                = ",
     "432-bit chksum                                        = ",
-    "2module flag                                          = ",
+    "2module flags                                         = ",
     "2segment number of auto data segment                  = ",
     "2initial size of local heap added to auto data seg    = ",
     "2initial size of stack to be added to auto data seg   = ",
@@ -154,12 +154,11 @@ static  const_string_table map_flgs[] = {
 
 
 /*
- * dump the NE module flag word
+ * dump the NE module flags word
  */
 static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
 /****************************************************************/
 {
-    Wdputs( "Module Flag Word = " );
     if( flag & OS2_IS_DLL ) {
         Wdputs( "LIBRARY" );
     } else {
@@ -236,20 +235,18 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
         Wdputs( " | SINGLEDATA" );
     }
     Wdputslc( "\n" );
-    Wdputslc( "\n" );
 }
 
 
 #define OSF_MODTYPE_MASK    0x38000UL
 /*
- * dump the LE/LX module flag word
+ * dump the LE/LX module flags word
  */
 static void dmp_mod_flag_lx( unsigned_32 flag, unsigned_16 ostype )
 /*****************************************************************/
 {
     /* unused parameters */ (void)ostype;
 
-    Wdputs( "Module Flags = " );
     if( (flag & OSF_MODTYPE_MASK) == OSF_VIRT_DEVICE ) {
         Wdputs( "VIRTDEVICE" );
     } else if( (flag & OSF_MODTYPE_MASK) == OSF_PHYS_DEVICE ) {
@@ -295,7 +292,6 @@ static void dmp_mod_flag_lx( unsigned_32 flag, unsigned_16 ostype )
         Wdputs( " | MPUNSAFE" );
     }
     Wdputslc( "\n" );
-    Wdputslc( "\n" );
 }
 
 
@@ -323,7 +319,12 @@ bool Dmp_os2_head( void )
     if( !IS_OLD_NE( Os2_head ) ) {
         Dump_header( (char *)&Os2_head.align, os2_exe_msg_new, 4 );
     }
+    Wdputslc( "\n" );
+    Wdputs( "Module flags = " );
+    Puthex( Os2_head.info, 4 );
+    Wdputslc( ": " );
     dmp_mod_flag_ne( Os2_head.info, Os2_head.target );
+    Wdputslc( "\n" );
     Dmp_seg_tab();
     Dmp_resrc_tab();
     Dmp_ne_tbls();
@@ -518,7 +519,12 @@ bool Dmp_386_head( void )
     Wdputslc( "H\n" );
     Wdputslc( "\n" );
     Dump_header( (char *)&Os2_386_head.byte_order, os2_386_msg, 4 );
+    Wdputslc( "\n" );
+    Wdputs( "Module flags = " );
+    Puthex( Os2_386_head.flags, 8 );
+    Wdputslc( ": " );
     dmp_mod_flag_lx( Os2_386_head.flags, Os2_386_head.os_type );
+    Wdputslc( "\n" );
     dmp_obj_table();
     Dmp_resrc2_tab();
     Dmp_le_lx_tbls();

@@ -244,7 +244,6 @@ bool Dmp_pe_head( void )
         Dump_header( data, pe_exe_msg3,   8 );
         data += 40;
         Dump_header( data, pe64_exe_msg4, 8 );
-        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE64( Pe_head ).table;
         num_tables = PE64( Pe_head ).num_tables;
     } else {
@@ -261,7 +260,6 @@ bool Dmp_pe_head( void )
         Dump_header( data, pe_exe_msg3,   4 );
         data += 40;
         Dump_header( data, pe32_exe_msg4, 4 );
-        DumpCoffHdrFlags( Pe_head.fheader.flags );
         tbl_entry = PE32( Pe_head ).table;
         num_tables = PE32( Pe_head ).num_tables;
     }
@@ -298,6 +296,11 @@ bool Dmp_pe_head( void )
         tbl_entry++;
     }
     Wdputslc( "\n" );
+    Wdputslc( "\n" );
+    Wdputs( "Module flags = " );
+    Puthex( Pe_head.fheader.flags, 4 );
+    Wdputs( ": " );
+    DumpCoffHdrFlags( Pe_head.fheader.flags );
     offset = New_exe_off + PE_SIZE( Pe_head );
     Wlseek( offset );
     dmp_objects( Pe_head.fheader.num_objects );
@@ -442,6 +445,9 @@ void dmp_objects( unsigned num_objects )
         }
         Wdputslc( "\n" );
         Dump_header( (char *)&pe_obj->virtual_size, pe_obj_msg, 4 );
+        Wdputs( "          flags = " );
+        Puthex( pe_obj->flags, 8 );
+        Wdputs( ": " );
         DumpPEObjFlags( pe_obj->flags );
         Wdputslc( "\n" );
         if( Options_dmp & (OS2_SEG_DMP|FIX_DMP) ) {

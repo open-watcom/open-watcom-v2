@@ -135,7 +135,7 @@ extern void         Dmp_seg_tab( void );
  */
 extern void         Dmp_ne_tbls( void );
 extern void         Dmp_le_lx_tbls( void );
-extern void         Dmp_ordinal( unsigned_16 );
+extern bool         Dmp_ordinal( unsigned_16 );
 extern bool         Dmp_os2_exports( void );
 
 /*

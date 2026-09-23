@@ -115,7 +115,10 @@ static void dmp_reloc_item( relocation_item *reloc )
             }
         } else {
             Wdputs( "movable " );
-            Dmp_ordinal( ord_off );
+            if( Dmp_ordinal( ord_off ) ) {
+                Wdputs( " unknown ordinal " );
+                Puthex( ord_off, 2 * sizeof( ord_off ) );
+            }
         }
         break;
     case REL_IMPORTED_ORDINAL :

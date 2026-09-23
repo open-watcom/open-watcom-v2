@@ -264,6 +264,9 @@ bool Dmp_coff_head( void )
         }
         Dump_header( (char *)&header, templ, 4 );
         Dump_header( (char *)&header + 2, coff_hdr_msg, 4 );
+        Wdputs( "          flags = " );
+        Puthex( header.o.flags, 4 );
+        Wdputs( ": " );
         DumpCoffHdrFlags( header.o.flags );
         load_string_table( &header.o );
         Wlseek( Coff_off + sizeof(coff_file_header) + header.o.opt_hdr_size );

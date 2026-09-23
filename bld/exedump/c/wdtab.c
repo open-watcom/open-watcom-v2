@@ -76,7 +76,10 @@ static unsigned_16 dmp_res_nonres_name( void )
     if( len ) {
         if( Form == FORM_NE ) {
             Wdputs( name );
-            Dmp_ordinal( entry_index );
+            if( Dmp_ordinal( entry_index ) ) {
+                Wdputs( " unknown ordinal " );
+                Puthex( entry_index, 2 * sizeof( entry_index ) );
+            }
         } else {
             Wdputs( "ordinal " );
             Puthex( entry_index, 2 * sizeof( entry_index ) );
@@ -452,7 +455,7 @@ static void dmp_an_ord( int_entry_pnt *find )
 /*
  * dump an ordinal entry point
  */
-void Dmp_ordinal( unsigned_16 ordinal )
+bool Dmp_ordinal( unsigned_16 ordinal )
 /*************************************/
 {
     int_entry_pnt   *find;
@@ -460,11 +463,10 @@ void Dmp_ordinal( unsigned_16 ordinal )
     for( find = Entry_pnts; find != NULL; find = find->next ) {
         if( find->ordinal == ordinal ) {
             dmp_an_ord( find );
-            return;
+            return( false );
         }
     }
-    Wdputs( " unknown ordinal " );
-    Puthex( ordinal, 2 * sizeof( ordinal ) );
+    return( true );
 }
 
 /*

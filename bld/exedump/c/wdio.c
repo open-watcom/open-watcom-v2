@@ -303,9 +303,6 @@ void DumpFlags( unsigned_32 flags, unsigned_32 ignore, const_string_table *msg, 
     unsigned_32     mask;
     size_t          len;
 
-    Wdputs( "          flags = " );
-    Puthex( flags, 8 );
-    Wdputs( " :  " );
     flags &= ~ignore;
     mask = 1;
     currpos = name;
