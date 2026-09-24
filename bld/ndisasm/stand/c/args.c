@@ -50,10 +50,10 @@
 
 
 #if defined( __UNIX__ )
-    #define OBJ_FILE_EXTENSION  "o"
+    #define FEXT_OBJ            "o"
     #define IS_OPT_DELIM( c )   ((c) == '-')
 #else
-    #define OBJ_FILE_EXTENSION  "obj"
+    #define FEXT_OBJ            "obj"
     #define IS_OPT_DELIM( c )   ((c)=='-' || (c) == '/')
 #endif
 
@@ -210,10 +210,10 @@ static void composeFileNames( bool list_file )
     // check extension
     _splitpath2( ObjFileName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
-        length = strlen( ObjFileName ) + 1 + strlen( OBJ_FILE_EXTENSION ) + 1;
+        length = strlen( ObjFileName ) + 1 + strlen( FEXT_OBJ ) + 1;
         MemFree( ObjFileName );
         ObjFileName = MemAlloc( length );
-        _makepath( ObjFileName, pg.drive, pg.dir, pg.fname, OBJ_FILE_EXTENSION );
+        _makepath( ObjFileName, pg.drive, pg.dir, pg.fname, FEXT_OBJ );
     }
     if( list_file ) {
         if( ListFileName == NULL ) {
