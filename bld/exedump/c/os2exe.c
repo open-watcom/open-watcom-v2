@@ -426,49 +426,49 @@ static void dmp_obj_flags( unsigned_32 flags )
     char            *p;
 
     p = buffer;
-    if( flags & OBJ_READABLE ) {
+    if( flags & OSF_OBJ_READABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "READABLE" );
     }
-    if( flags & OBJ_WRITEABLE ) {
+    if( flags & OSF_OBJ_WRITEABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "WRITABLE" );
     }
-    if( flags & OBJ_EXECUTABLE ) {
+    if( flags & OSF_OBJ_EXECUTABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "EXECUTABLE" );
     }
-    if( flags & OBJ_RESOURCE ) {
+    if( flags & OSF_OBJ_RESOURCE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "RESOURCE" );
     }
-    if( flags & OBJ_DISCARDABLE ) {
+    if( flags & OSF_OBJ_DISCARDABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "DISCARDABLE" );
     }
-    if( flags & OBJ_SHARABLE ) {
+    if( flags & OSF_OBJ_SHARABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "SHARED" );
     }
-    if( flags & OBJ_HAS_PRELOAD ) {
+    if( flags & OSF_OBJ_HAS_PRELOAD ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "PRELOAD" );
     }
-    if( flags & OBJ_HAS_INVALID ) {
+    if( flags & OSF_OBJ_HAS_INVALID ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "INVALID" );
     }
-    if( flags & OBJ_PERM_SWAPPABLE ) {
+    if( flags & OSF_OBJ_PERM_SWAPPABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "SWAPPABLE" );
     }
-    if( flags & OBJ_PERM_RESIDENT ) {
+    if( flags & OSF_OBJ_PERM_RESIDENT ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "RESIDENT" );
     }
-    if( flags & OBJ_PERM_LOCKABLE ) {
+    if( flags & OSF_OBJ_PERM_LOCKABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "PERM_LOCKABLE" );
     }
-    if( flags & OBJ_ALIAS_REQUIRED ) {
+    if( flags & OSF_OBJ_ALIAS_REQUIRED ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "16:16_ALIAS" );
     }
-    if( flags & OBJ_BIG ) {
+    if( flags & OSF_OBJ_BIG ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "BIG" );
     }
-    if( flags & OBJ_CONFORMING ) {
+    if( flags & OSF_OBJ_CONFORMING ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "CONFORMING" );
     }
-    if( flags & OBJ_IOPL ) {
+    if( flags & OSF_OBJ_IOPL ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "IOPL" );
     }
     *p = '\0';
@@ -486,8 +486,7 @@ static void dmp_obj_table( void )
 
     Banner( "Object Table" );
     for( i = 0; i < Os2_386_head.num_objects; i++ ) {
-        Wlseek( New_exe_off + Os2_386_head.objtab_off
-                            + i * sizeof( object_record ) );
+        Wlseek( New_exe_off + Os2_386_head.objtab_off + i * sizeof( object_record ) );
         Wread( &os_obj, sizeof( object_record ) );
         Wdputs( "object " );
         Putdecbz( i + 1, 2 );

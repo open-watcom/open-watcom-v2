@@ -96,7 +96,7 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
         /*
          * Simply skip any existing resource objects
          */
-        if( (src_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
+        if( (src_obj[obj_index].flags & OSF_OBJ_RESOURCE) == 0 ) {
             ++src_num_objects;
             src_num_pages += src_obj[obj_index].mapsize;
         }
@@ -140,7 +140,7 @@ static int copyObjectAndPageTable( ExeFileInfo *src, ExeFileInfo *dst )
      * Copy object and page records from src executable to dst
      */
     for( obj_index = 0; obj_index < src->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
-        if( (src_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
+        if( (src_obj[obj_index].flags & OSF_OBJ_RESOURCE) == 0 ) {
             dst_obj[obj_index] = src_obj[src_obj_index];
             dst_obj[obj_index].mapidx = page_index + 1;
             for( i = 0; i < src_obj[src_obj_index].mapsize; ++i ) {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -432,8 +432,8 @@ static void AddModHandle( const char *name, epsp_t *epsp )
         mod->ObjInfo[i].new_base = new_base;
         new_base += __ROUND_UP_SIZE_4K( obj.size );
         if( NumModHandles == 1 ) {      // main executable
-            if( obj.flags & OBJ_BIG ) {
-                if( obj.flags & OBJ_EXECUTABLE ) {
+            if( obj.flags & OSF_OBJ_BIG ) {
+                if( obj.flags & OSF_OBJ_EXECUTABLE ) {
                     if( flatCode == FLAT_SEL ) {
                         flatCode = ( mod->epsp->SegBase + i * 8 ) | 3;
                     }
@@ -555,8 +555,8 @@ trap_retval TRAP_CORE( Map_addr )( void )
         }
         --seg;
         // convert segment index to selector
-        if( mod->ObjInfo[seg].flags & OBJ_BIG ) {
-            ret->out_addr.segment = ( mod->ObjInfo[seg].flags & OBJ_EXECUTABLE ) ? flatCode : flatData ;
+        if( mod->ObjInfo[seg].flags & OSF_OBJ_BIG ) {
+            ret->out_addr.segment = ( mod->ObjInfo[seg].flags & OSF_OBJ_EXECUTABLE ) ? flatCode : flatData ;
         } else {
             ret->out_addr.segment = ( mod->epsp->SegBase + seg * 8 ) | 3;
         }

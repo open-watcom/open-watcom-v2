@@ -279,11 +279,11 @@ static dip_status DoPermInfo( imp_image_handle *iih )
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header[offsetof( master_dbg_header, obj_major_ver )] != OBJ_MAJOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, obj_major_ver )] != MAJOR_OBJ_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header[offsetof( master_dbg_header, obj_minor_ver )] > OBJ_MINOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, obj_minor_ver )] > MINOR_OBJ_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -468,8 +468,8 @@ static dip_status FindHLLInLXImage( imp_image_handle *iih, unsigned long ne_head
                 if( DCRead( iih->sym_fp, &buf.obj, sizeof( buf.obj ) ) != sizeof( buf.obj )) {
                     return( DS_ERR | DS_FREAD_FAILED );
                 }
-                iih->segments[i].is_executable = !!( buf.obj.flags & OBJ_EXECUTABLE );
-                iih->segments[i].is_16bit = !( buf.obj.flags & OBJ_BIG );
+                iih->segments[i].is_executable = !!( buf.obj.flags & OSF_OBJ_EXECUTABLE );
+                iih->segments[i].is_16bit = !( buf.obj.flags & OSF_OBJ_BIG );
                 iih->segments[i].ovl = 0;
                 iih->segments[i].map.offset = 0;
                 iih->segments[i].map.segment = i + 1;

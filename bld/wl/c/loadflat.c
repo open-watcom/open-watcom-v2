@@ -137,39 +137,39 @@ static unsigned WriteObjectTables( os2_flat_header *header, unsigned long loc )
          */
         leader = Ring2First( group->leaders );
         if( leader->info & SEGINF_USE_32 ) {
-            objrec.flags |= OBJ_BIG;
+            objrec.flags |= OSF_OBJ_BIG;
         } else { //if( group->u.os2flags & OS2_SEG_16_ALIAS ) {
-            objrec.flags |= OBJ_ALIAS_REQUIRED;
+            objrec.flags |= OSF_OBJ_ALIAS_REQUIRED;
         }
         if( GET_SEG_PMODE_DPL( group->segflags ) != 3 ) {
-            objrec.flags |= OBJ_IOPL;
+            objrec.flags |= OSF_OBJ_IOPL;
         }
         if( group->segflags & SEG_DATA ) {
-            objrec.flags |= OBJ_READABLE;
+            objrec.flags |= OSF_OBJ_READABLE;
             if( (group->segflags & SEG_READ_ONLY) == 0 ) {
-                objrec.flags |= OBJ_WRITEABLE;
+                objrec.flags |= OSF_OBJ_WRITEABLE;
             }
         } else {
-            objrec.flags |= OBJ_EXECUTABLE;
+            objrec.flags |= OSF_OBJ_EXECUTABLE;
             if( (group->segflags & SEG_READ_ONLY) == 0 ) {
-                objrec.flags |= OBJ_READABLE;
+                objrec.flags |= OSF_OBJ_READABLE;
             }
         }
         if( group->segflags & SEG_DISCARD ) {
-            objrec.flags |= OBJ_DISCARDABLE;
+            objrec.flags |= OSF_OBJ_DISCARDABLE;
         }
         if( (group->segflags & SEG_PURE)
           || (group == DataGroup && (FmtData.u.os2fam.flags & SINGLE_AUTO_DATA)) ) {
-            objrec.flags |= OBJ_SHARABLE;
+            objrec.flags |= OSF_OBJ_SHARABLE;
         }
         if( group->segflags & SEG_PRELOAD ) {
-            objrec.flags |= OBJ_HAS_PRELOAD;
+            objrec.flags |= OSF_OBJ_HAS_PRELOAD;
         }
         if( group->segflags & SEG_CONFORMING ) {
-            objrec.flags |= OBJ_CONFORMING;
+            objrec.flags |= OSF_OBJ_CONFORMING;
         }
         if( group->segflags & SEG_INVALID ) {
-            objrec.flags |= OBJ_HAS_INVALID;
+            objrec.flags |= OSF_OBJ_HAS_INVALID;
         }
         objrec.flags |= (group->segflags & SEG_RESIDENT_MASK) << SEG_RESIDENT_SHIFT;
         objrec.mapidx = numpages + 1;

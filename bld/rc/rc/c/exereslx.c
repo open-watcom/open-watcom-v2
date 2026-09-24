@@ -194,8 +194,8 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *dst, ResFileInfo *res )
             object = &dst->u.LXInfo.Objects[dst->u.LXInfo.FirstResObj + obj_index];
             object->size     = 0;
             object->addr     = 0;
-            object->flags    = OBJ_READABLE | OBJ_RESOURCE | OBJ_DISCARDABLE
-                             | OBJ_BIG | OBJ_SHARABLE;
+            object->flags    = OSF_OBJ_READABLE | OSF_OBJ_RESOURCE | OSF_OBJ_DISCARDABLE
+                             | OSF_OBJ_BIG | OSF_OBJ_SHARABLE;
             object->mapidx   = page_index + 1;
             object->mapsize  = 1;
             object->reserved = 0;

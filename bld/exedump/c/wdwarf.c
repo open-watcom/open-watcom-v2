@@ -181,8 +181,8 @@ bool Dmp_mdbg_head( void )
     if( MGET_LE_U16( mdh + offsetof( master_dbg_header, signature ) ) == WAT_DBG_SIGNATURE
       && (int)mdh[offsetof( master_dbg_header, exe_major_ver )] == EXE_MAJOR_VERSION
       && (int)mdh[offsetof( master_dbg_header, exe_minor_ver )] <= EXE_MINOR_VERSION
-      && (int)mdh[offsetof( master_dbg_header, obj_major_ver )] == OBJ_MAJOR_VERSION
-      && (int)mdh[offsetof( master_dbg_header, obj_minor_ver )] <= OBJ_MINOR_VERSION ) {
+      && (int)mdh[offsetof( master_dbg_header, obj_major_ver )] == MAJOR_OBJ_VERSION
+      && (int)mdh[offsetof( master_dbg_header, obj_minor_ver )] <= MINOR_OBJ_VERSION ) {
         dmp_master( mdh );
         Dump_section();
         return( true );

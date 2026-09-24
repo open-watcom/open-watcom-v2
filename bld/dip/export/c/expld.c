@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -390,8 +390,8 @@ static dip_status TryLX( FILE *fp, imp_image_handle *iih, unsigned_32 ne_header_
         if( BRead( fp, &seg, sizeof( seg ) ) != sizeof( seg ) ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
-        if( (seg.flags & OBJ_RESOURCE) == 0 ) {
-            ds = AddBlock( iih, i + 1, 0, seg.size, (seg.flags&OBJ_EXECUTABLE)!=0 );
+        if( (seg.flags & OSF_OBJ_RESOURCE) == 0 ) {
+            ds = AddBlock( iih, i + 1, 0, seg.size, (seg.flags & OSF_OBJ_EXECUTABLE) != 0 );
             if( ds != DS_OK ) {
                 return( ds );
             }

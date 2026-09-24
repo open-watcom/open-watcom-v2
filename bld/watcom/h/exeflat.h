@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -201,23 +201,23 @@ typedef struct object_record {
  *
  *****************************************************************************/
 
-#define OBJ_READABLE        0x0001
-#define OBJ_WRITEABLE       0x0002
-#define OBJ_EXECUTABLE      0x0004
-#define OBJ_RESOURCE        0x0008
-#define OBJ_DISCARDABLE     0x0010
-#define OBJ_SHARABLE        0x0020
-#define OBJ_HAS_PRELOAD     0x0040
-#define OBJ_HAS_INVALID     0x0080
-#define OBJ_PERM_SWAPPABLE  0x0100  /* LE */
-#define OBJ_HAS_ZERO_FILL   0x0100  /* LX */
-#define OBJ_PERM_RESIDENT   0x0200
-#define OBJ_PERM_CONTIGUOUS 0x0300  /* LX */
-#define OBJ_PERM_LOCKABLE   0x0400
-#define OBJ_ALIAS_REQUIRED  0x1000
-#define OBJ_BIG             0x2000
-#define OBJ_CONFORMING      0x4000
-#define OBJ_IOPL            0x8000
+#define OSF_OBJ_READABLE        0x0001
+#define OSF_OBJ_WRITEABLE       0x0002
+#define OSF_OBJ_EXECUTABLE      0x0004
+#define OSF_OBJ_RESOURCE        0x0008
+#define OSF_OBJ_DISCARDABLE     0x0010
+#define OSF_OBJ_SHARABLE        0x0020
+#define OSF_OBJ_HAS_PRELOAD     0x0040
+#define OSF_OBJ_HAS_INVALID     0x0080
+#define OSF_OBJ_PERM_SWAPPABLE  0x0100  /* LE */
+#define OSF_OBJ_HAS_ZERO_FILL   0x0100  /* LX */
+#define OSF_OBJ_PERM_RESIDENT   0x0200
+#define OSF_OBJ_PERM_CONTIGUOUS 0x0300  /* LX */
+#define OSF_OBJ_PERM_LOCKABLE   0x0400
+#define OSF_OBJ_ALIAS_REQUIRED  0x1000
+#define OSF_OBJ_BIG             0x2000
+#define OSF_OBJ_CONFORMING      0x4000
+#define OSF_OBJ_IOPL            0x8000
 
 typedef struct le_map_entry {  /* LE */
     unsigned_8  page_num[3];    /* 24-bit page number in .exe file */
