@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -230,24 +230,24 @@ void    SetBaseName( const char *src )
     _splitpath2( wigOpts.infile, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
 
     if( !( Options & OPT_LIBRARY_NAME_SET ) ) {
-        _makepath( wigOpts.libname, pg.drive, pg.dir, fname, DLL_EXT );
+        _makepath( wigOpts.libname, pg.drive, pg.dir, fname, FEXT_DLL );
     }
     if( !( Options & OPT_HEADER_FILE_SET ) ) {
-        _makepath( wigOpts.headerfile, pg.drive, pg.dir, fname, HPP_EXT );
+        _makepath( wigOpts.headerfile, pg.drive, pg.dir, fname, FEXT_HPP );
     }
     if( !( Options & OPT_ERROR_FILE_SET ) ) {
-        _makepath( wigOpts.errfile, pg.drive, pg.dir, fname, ERR_EXT );
+        _makepath( wigOpts.errfile, pg.drive, pg.dir, fname, FEXT_ERR );
     }
     if( !( Options & OPT_CODE_FILE_SET ) ) {
         if( Options & OPT_GEN_C_CODE ) {
-            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, C_EXT );
+            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, FEXT_C );
         } else {
-            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, CPP_EXT );
+            _makepath( wigOpts.codefile, pg.drive, pg.dir, fname, FEXT_CPP );
         }
     }
     if( !( Options & OPT_COVER_FILE_SET ) ) {
         getFname( src, 'c', fname );
-        _makepath( wigOpts.coverfile, pg.drive, pg.dir, fname, CPP_EXT );
+        _makepath( wigOpts.coverfile, pg.drive, pg.dir, fname, FEXT_CPP );
     }
 }
 
@@ -260,11 +260,11 @@ void PostProcessOptions( void )
     if( Options & OPT_PARENT_SET ) {
         if( (Options & OPT_PARENT_HEADER_SET) == 0 ) {
             getFname( wigOpts.parentclass, 0, fname );
-            _makepath( wigOpts.parentheader, NULL, NULL, fname, HPP_EXT );
+            _makepath( wigOpts.parentheader, NULL, NULL, fname, FEXT_HPP );
         }
     }
     _splitpath2( wigOpts.infile, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
-    _makepath( wigOpts.lmainfile, pg.drive, pg.dir, LIBMAIN_FNAME, CPP_EXT );
+    _makepath( wigOpts.lmainfile, pg.drive, pg.dir, LIBMAIN_FNAME, FEXT_CPP );
 }
 
 static void showUsage( void ) {

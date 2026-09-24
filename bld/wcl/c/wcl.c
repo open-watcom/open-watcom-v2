@@ -116,7 +116,7 @@
   #define _TARGET_      "x86 32-bit"
 #endif
 
-#define TEMPFILE        "__wcl__" TOOL_LNK_EXT  /* temporary linker directive file 8.3 */
+#define TEMPFILE        "__wcl__" TOOL_FEXT_LNK  /* temporary linker directive file 8.3 */
 
 #ifdef __UNIX__
 #define IS_OPT(x)       ((x)=='-')
@@ -126,9 +126,9 @@
 
 #define IS_WS(x)        ((x)==' ' || (x)=='\t')
 
-#define IS_ASM(x)       (x[0] == '.' && fname_cmp(x + 1, ASM_EXT) == 0)
-#define IS_LIB(x)       HasFileExtension(x, LIB_EXT)
-#define IS_RES(x)       HasFileExtension(x, RES_EXT)
+#define IS_ASM(x)       (x[0] == '.' && fname_cmp(x + 1, FEXT_ASM) == 0)
+#define IS_LIB(x)       HasFileExtension(x, FEXT_LIB)
+#define IS_RES(x)       HasFileExtension(x, FEXT_RES)
 
 #define SKIP_SPACES(x)  while( IS_WS( *x ) ) ++x
 
@@ -161,13 +161,13 @@ static const char EngUsageText[] = {
 
 
 static etool tools[TYPE_MAX] = {
-    { LINK, LINK TOOL_EXE_EXT,   NULL },
-    { PACK, PACK TOOL_EXE_EXT,   NULL },
-    { DIS,  DIS  TOOL_EXE_EXT,   NULL },
-    { AS,   AS   TOOL_EXE_EXT,   NULL },
-    { CC,   CC   TOOL_EXE_EXT,   NULL },
-    { CPP,  CPP  TOOL_EXE_EXT,   NULL },
-    { FC,   FC   TOOL_EXE_EXT,   NULL }
+    { LINK, LINK TOOL_FEXT_EXE,   NULL },
+    { PACK, PACK TOOL_FEXT_EXE,   NULL },
+    { DIS,  DIS  TOOL_FEXT_EXE,   NULL },
+    { AS,   AS   TOOL_FEXT_EXE,   NULL },
+    { CC,   CC   TOOL_FEXT_EXE,   NULL },
+    { CPP,  CPP  TOOL_FEXT_EXE,   NULL },
+    { FC,   FC   TOOL_FEXT_EXE,   NULL }
 };
 
 
@@ -526,7 +526,7 @@ static int Parse( const char *cmd )
                     }
                     end = ScanFName( end, Word + len );
                     NormalizeFName( Word, MAX_CMD, Word );
-                    MakeName( Word, TOOL_LNK_EXT );
+                    MakeName( Word, TOOL_FEXT_LNK );
                     errno = 0;
                     if( (atfp = fopen( Word, "r" )) == NULL ) {
                         PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
@@ -568,7 +568,7 @@ static int Parse( const char *cmd )
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
-                            MakeName( Word, TOOL_LNK_EXT );  /* add extension */
+                            MakeName( Word, TOOL_FEXT_LNK );  /* add extension */
                             Link_Name = MemAlloc( strlen( Word ) + 1 );
                             strcpy( Link_Name, Word );
                         } else {
@@ -867,7 +867,7 @@ static tool_type SrcName( char *name )
             if( access( name, F_OK ) != 0 ) {
                 strcpy( pg.ext, ".cc" );
                 if( access( name, F_OK ) != 0 ) {
-                    strcpy( pg.ext, "." ASM_EXT );
+                    strcpy( pg.ext, "." FEXT_ASM );
                     if( access( name, F_OK ) != 0 ) {
                         strcpy( pg.ext, ".c" );
                     }
@@ -961,7 +961,7 @@ static FILE *OpenWlinkTmpFile( char *name )
     int     fh;
 
     for( i = 0; i < 100; i++ ) {
-        sprintf( name + 1 + 6, "%2.2d" TOOL_LNK_EXT, i );
+        sprintf( name + 1 + 6, "%2.2d" TOOL_FEXT_LNK, i );
         fh = open( name + 1, O_RDWR | O_CREAT | O_EXCL | O_BINARY, PMODE_RW );
         if( fh != -1 ) {
             close( fh );

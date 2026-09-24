@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -57,7 +57,7 @@
  */
 #define AS_LOCK             "alock_"
 #define AS_FILE             "asave_"
-#define AS_FILE_EXT         ".fil"
+#define FEXT_FIL            "fil"
 #ifdef __UNIX__
     #define EXTRA_EXT       "0000_"
     #define EXTRA_EXT_OFF   6
@@ -74,9 +74,9 @@
 
 static bool     noEraseFileList;
 static char     currTmpName[TMP_NAME_LEN];
-static char     checkFileName[] = AS_FILE EXTRA_EXT "a" AS_FILE_EXT;
-static char     checkFileTmpName[] = AS_FILE EXTRA_EXT "at" EXTRA_EXT AS_FILE_EXT;
-static char     lockFileName[] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT AS_FILE_EXT;
+static char     checkFileName[] = AS_FILE EXTRA_EXT "a." FEXT_FIL;
+static char     checkFileTmpName[] = AS_FILE EXTRA_EXT "at" EXTRA_EXT "." FEXT_FIL;
+static char     lockFileName[] = AS_LOCK EXTRA_EXT "a" EXTRA_EXT "." FEXT_FIL;
 static int      lockFileHandle = -1;
 
 /*

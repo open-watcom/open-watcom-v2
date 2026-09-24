@@ -88,14 +88,14 @@
 #define LAST_LINE           (UINT_MAX - 1)
 
 /* default filename extensions */
-#define DEF_EXT             "def"
-#define ERR_EXT             "err"
-#define GML_EXT             "gml"
-#define LAY_EXT             "lay"
-#define OPT_EXT             "opt"
-#define COP_EXT             "cop"
-#define PCD_EXT             "pcd"
-#define FON_EXT             "fon"
+#define FEXT_DEF            "def"
+#define FEXT_ERR            "err"
+#define FEXT_GML            "gml"
+#define FEXT_LAY            "lay"
+#define FEXT_OPT            "opt"
+#define FEXT_COP            "cop"
+#define FEXT_PCD            "pcd"
+#define FEXT_FON            "fon"
 
 #define CONT_CHAR_DEFAULT   0x03        // cont character
 #define GML_CHAR_DEFAULT    ':'         // start of GML tag

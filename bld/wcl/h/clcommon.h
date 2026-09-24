@@ -52,25 +52,24 @@
 #endif
 
 #ifdef __UNIX__
-#define OBJ_EXT             "o"
-#define OBJ_EXT_SECONDARY   "obj"
-#define TOOL_EXE_EXT        ""
+#define FEXT_OBJ            "o"
+#define FEXT_OBJ_SECONDARY  "obj"
+#define TOOL_FEXT_EXE       ""
 #else
-#define OBJ_EXT             "obj"
-#define OBJ_EXT_SECONDARY   "o"
-#define TOOL_EXE_EXT        ".exe"
+#define FEXT_OBJ            "obj"
+#define FEXT_OBJ_SECONDARY  "o"
+#define TOOL_FEXT_EXE       ".exe"
 #endif
-#define LIB_EXT             "lib"
-#define LIB_EXT_SECONDARY   "a"
+#define FEXT_LIB            "lib"
+#define FEXT_LIB_SECONDARY  "a"
 
-#define ASM_EXT             "asm"
-#define ASMS_EXT            "s"
+#define FEXT_ASM            "asm"
+#define FEXT_ASMS           "s"
 
-#define RES_EXT             "res"
+#define FEXT_RES            "res"
 
-#define TOOL_LNK_EXT        ".lnk"
-
-#define IS_OBJ(x)           (HasFileExtension( x, OBJ_EXT ) || HasFileExtension( x, OBJ_EXT_SECONDARY ))
+#define TOOL_FEXT_LNK       ".lnk"
+#define IS_OBJ(x)           (HasFileExtension( x, FEXT_OBJ ) || HasFileExtension( x, FEXT_OBJ_SECONDARY ))
 
 typedef enum tool_type {
     TYPE_LINK,

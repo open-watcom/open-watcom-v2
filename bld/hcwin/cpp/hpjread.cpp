@@ -402,7 +402,7 @@ void HPJReader::parseFile()
 
         _fullpath( full_path, _scanner.name(), _MAX_PATH );
         _splitpath2( full_path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
-        _makepath( full_path, pg.drive, pg.dir, pg.fname, PH_EXT );
+        _makepath( full_path, pg.drive, pg.dir, pg.fname, FEXT_PH );
 
         if( !_oldPhrases || !_theFiles->_phrFile->oldTable( full_path ) ) {
             _theFiles->_phrFile->readPhrases();

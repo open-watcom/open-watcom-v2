@@ -56,7 +56,7 @@ void SetHelpFileDefExt( const char *name, char *buff )
 
     _splitpath2( name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' )
-        pg.ext = DEF_EXT;
+        pg.ext = FEXT_DEF;
     _makepath( buff, pg.drive, pg.dir, pg.fname, pg.ext );
 }
 

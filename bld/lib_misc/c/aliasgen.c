@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,8 +41,17 @@
 #define _MAX_PATH PATH_MAX
 #endif
 
-#define ASM_FILE_EXT    ".gas"
-#define OBJ_FILE_EXT    ".obj"
+#define FEXT_ASM    "gas"
+#define FEXT_OBJ    "obj"
+
+#define AXP_ASM_FMT     "%s_a%6s." FEXT_ASM
+#define MIPS_ASM_FMT    "%s_m%6s." FEXT_ASM
+#define PPC_ASM_FMT     "%s_p%6s." FEXT_ASM
+#define X86_ASM_FMT     "%s_i%6s." FEXT_ASM
+#define AXP_OBJ_FMT     "_a%6s." FEXT_OBJ
+#define MIPS_OBJ_FMT    "_m%6s." FEXT_OBJ
+#define PPC_OBJ_FMT     "_p%6s." FEXT_OBJ
+#define X86_OBJ_FMT     "_i%6s." FEXT_OBJ
 
 struct SysElem {
     char *              system;
@@ -277,7 +286,7 @@ static void make_asm_axp( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_a%6s" ASM_FILE_EXT, outdir, alias->filename );
+    sprintf( filename, AXP_ASM_FMT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -293,7 +302,7 @@ static void make_asm_axp( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_a%6s" OBJ_FILE_EXT, alias->filename );
+    sprintf( filename, AXP_OBJ_FMT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -308,7 +317,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_i%6s" ASM_FILE_EXT, outdir, alias->filename );
+    sprintf( filename, X86_ASM_FMT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -324,7 +333,7 @@ static void make_asm_ix86( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_i%6s" OBJ_FILE_EXT, alias->filename );
+    sprintf( filename, X86_OBJ_FMT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -339,7 +348,7 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_p%6s" ASM_FILE_EXT, outdir, alias->filename );
+    sprintf( filename, PPC_ASM_FMT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -355,7 +364,7 @@ static void make_asm_ppc( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_p%6s" OBJ_FILE_EXT, alias->filename );
+    sprintf( filename, PPC_OBJ_FMT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 
@@ -370,7 +379,7 @@ static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
     FILE *              asmfile;
 
     /*** Open the assembler file ***/
-    sprintf( filename, "%s_m%6s" ASM_FILE_EXT, outdir, alias->filename );
+    sprintf( filename, MIPS_ASM_FMT, outdir, alias->filename );
     asmfile = fopen( filename, "wt" );
     if( asmfile == NULL ) {
         FatalError( "Cannot create '%s'.", filename );
@@ -386,7 +395,7 @@ static void make_asm_mips( FILE *miffile, struct Alias *alias, char *outdir )
     }
     fclose( asmfile );
 
-    sprintf( filename, "_m%6s" OBJ_FILE_EXT, alias->filename );
+    sprintf( filename, MIPS_OBJ_FMT, alias->filename );
     update_mif_file( miffile, filename, alias );
 }
 

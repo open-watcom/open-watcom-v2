@@ -314,7 +314,7 @@ void  AddNameObj( const char *name )
         /* construct full name of object file from Obj_Name information */
         _splitpath2( Obj_Name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, &pg1.ext );
         if( pg1.ext[0] == '\0' )
-            pg1.ext = OBJ_EXT;
+            pg1.ext = FEXT_OBJ;
         if( pg1.fname[0] == '\0' || pg1.fname[0] == '*' ) {
             /* there's no usable basename in the -fo= pattern, but there drive and directory
              * and extension should still be applied.

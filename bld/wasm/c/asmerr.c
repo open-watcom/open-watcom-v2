@@ -184,7 +184,7 @@ static void PrtMsg1( char *prefix, unsigned msgnum, va_list args1, va_list args2
     PrintBanner();
     if( AsmFiles.fp[ERR] == NULL ) {
         if( AsmFiles.fname[ERR] != NULL ) {
-            AsmFiles.fp[ERR] = fopen( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ), "w" );
+            AsmFiles.fp[ERR] = fopen( CreateFileName( AsmFiles.fname[ERR], FEXT_ERR, false ), "w" );
         }
     }
     PutMsg( stderr, prefix, msgnum, args1 );
@@ -199,7 +199,7 @@ void DelErrFile( void )
 /*********************/
 {
     // fixme if( CompFlags.errout_redirected ) return;
-    remove( CreateFileName( AsmFiles.fname[ERR], ERR_EXT, false ) );
+    remove( CreateFileName( AsmFiles.fname[ERR], FEXT_ERR, false ) );
 }
 
 void LstMsg( const char *format, ... )
@@ -218,7 +218,7 @@ void OpenLstFile( void )
 /**********************/
 {
     if( AsmFiles.fname[LST] != NULL && Options.write_listing ) {
-        AsmFiles.fp[LST] = fopen( CreateFileName( AsmFiles.fname[LST], LST_EXT, false ), "w" );
+        AsmFiles.fp[LST] = fopen( CreateFileName( AsmFiles.fname[LST], FEXT_LST, false ), "w" );
     }
 }
 

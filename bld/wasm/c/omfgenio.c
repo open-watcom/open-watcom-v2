@@ -158,7 +158,7 @@ void ObjWriteOpen( void )
 */
     char    *obj_name;
 
-    obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
+    obj_name = CreateFileName( AsmFiles.fname[OBJ], FEXT_OBJ, false );
     AsmFiles.fp[OBJ] = fopen( obj_name, "wb" );
     if( AsmFiles.fp[OBJ] == NULL ) {
         Fatal( CANNOT_OPEN_FILE, obj_name );
@@ -177,7 +177,7 @@ void ObjWriteClose( bool del )
     if( pobjState->in_rec ) {
         ObjWEndRec();
     }
-    obj_name = CreateFileName( AsmFiles.fname[OBJ], OBJ_EXT, false );
+    obj_name = CreateFileName( AsmFiles.fname[OBJ], FEXT_OBJ, false );
     CloseAsmFile( OBJ );
     MemFree( pobjState );
     pobjState = NULL;

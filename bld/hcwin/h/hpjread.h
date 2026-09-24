@@ -47,10 +47,10 @@
 
 
 // Extension of a files.
-#define HPJ_EXT     "hpj"
-#define HLP_EXT     "hlp"
-#define RTF_EXT     "rtf"
-#define PH_EXT      "ph"
+#define FEXT_HPJ    "hpj"
+#define FEXT_HLP    "hlp"
+#define FEXT_RTF    "rtf"
+#define FEXT_PH     "ph"
 
 #define CMPFEXT(e,c)    (e[0] == '.' && stricmp(e + 1, c) == 0)
 

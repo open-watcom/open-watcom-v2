@@ -96,23 +96,23 @@
 #define WHP_FONTTYPE            (char)'\x9D'  // 157
 
 /**** various file extensions ****/
-#define EXT_INPUT_FILE          ".whp"
-#define EXT_OUTRTF_FILE         ".rtf"
-#define EXT_OUTIPF_FILE         ".ipf"
-#define EXT_OUTHTML_FILE        ".htm"
+#define FEXT_WHP                ".whp"
+#define FEXT_RTF                ".rtf"
+#define FEXT_IPF                ".ipf"
+#define FEXT_HTM                ".htm"
 #ifdef __DOS__
- #define EXT_OUTWIKI_FILE       ".wik"
+ #define FEXT_WIKI              ".wik"
 #else
- #define EXT_OUTWIKI_FILE       ".wiki"
+ #define FEXT_WIKI              ".wiki"
 #endif
-#define EXT_OUTIB_FILE          ".ib"
-#define EXT_IDX_FILE            ".idx"
-#define EXT_KW_FILE             ".kw"
-#define EXT_BLIST_FILE          ".blt"
-#define EXT_DEF_FILE            ".h"
-#define EXT_HDEF_FILE           ".hh"
-#define EXT_HLP_FILE            ".hlp"
-#define EXT_TBL_FILE            ".tbl"
+#define FEXT_IB                 ".ib"
+#define FEXT_IDX                ".idx"
+#define FEXT_KW                 ".kw"
+#define FEXT_BLT                ".blt"
+#define FEXT_H                  ".h"
+#define FEXT_HH                 ".hh"
+#define FEXT_HLP                ".hlp"
+#define FEXT_TBL                ".tbl"
 
 /**** misc. stuff ****/
 #define INDENT_INC              360 // for RTF only

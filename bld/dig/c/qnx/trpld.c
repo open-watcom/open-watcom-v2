@@ -42,7 +42,7 @@
 #include "roundmac.h"
 
 
-#define DEFEXT      ".trp"
+#define FEXT_DEF    ".trp"
 //#define MODINIT     "TrapLoad"
 #define MODSIGN     TRAPSIGN
 
@@ -100,7 +100,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         }
         len++;
     }
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, FEXT_DEF, filename, sizeof( filename ) ) == 0 ) {
         return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );

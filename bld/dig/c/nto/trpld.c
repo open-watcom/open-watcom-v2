@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -83,13 +83,13 @@ const static trap_callbacks TrapCallbacks = {
 
 #ifdef REX
 
-#define DEFEXT      ".trp"
+#define FEXT_DEF    ".trp"
 #define MODSIGN     TRAPSIGN
 #include "ldrrex.c"     /* PharLap REX format loader */
 
 #else
 
-#define DEFEXT      ".trp"
+#define FEXT_DEF    ".trp"
 #define MODINIT     "TrapLoad_"
 #include "ldrpe.c"      /* PE DLL format loader */
 
@@ -97,7 +97,7 @@ const static trap_callbacks TrapCallbacks = {
 
 #else
 
-#define DEFEXT      ".so"
+#define FEXT_DEF    ".so"
 #define MODINIT     "TrapLoad"
 #include "ldrso.c"      /* Shared library format loader */
 
@@ -151,7 +151,7 @@ digld_error LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 #endif
     }
 #if !defined( BUILTIN_TRAP_FILE )
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, len, FEXT_DEF, filename, sizeof( filename ) ) == 0 ) {
         return( DIGS_ERR_CANT_FIND_MODULE );
     }
     fp = DIGLoader( Open )( filename );

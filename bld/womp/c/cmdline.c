@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -108,8 +108,8 @@
 #define SWCHAR          '/'
 #define INCCHAR         '@'
 #define CMTCHAR         '#'
-#define WMP_EXTENSION   "WMP"
-#define OBJ_EXTENSION   "OBJ"
+#define FEXT_WMP        "WMP"
+#define FEXT_OBJ        "OBJ"
 #define WILD_CARDS      "*?"    /* wild cards that may appear in filenames */
 
 /*
@@ -446,7 +446,7 @@ STATIC int openIncludeFile( const char * file_name )
     int         fh;
 
     _splitpath2( file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( path, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? WMP_EXTENSION : pg.ext );
+    _makepath( path, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? FEXT_WMP : pg.ext );
     fh = open( path, O_RDONLY | O_TEXT );
     if( fh == -1 ) {
         Fatal( MSG_UNABLE_TO_OPEN_FILE, path );
@@ -752,7 +752,7 @@ void ActionInfile( cmdline_t *cmd, char *buf, uint file_num ) {
 /**/myassert( cmd->action != NULL );
 /**/myassert( file_num < cmd->action->num_files );
     _splitpath2( cmd->action->files[ file_num ], pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
-    _makepath( buf, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? OBJ_EXTENSION : pg.ext );
+    _makepath( buf, pg.drive, pg.dir, pg.fname, ( pg.ext[0] == '\0' ) ? FEXT_OBJ : pg.ext );
 }
 
 void ActionOutfile( cmdline_t *cmd, char *buf, uint file_num ) {
@@ -818,7 +818,7 @@ void ActionRename( cmdline_t *cmd, const char *in, const char *out,
     if( pg1.ext[0] == '\0' )
         pg1.ext = pg2.ext;          /* get extension from input */
     if( pg1.ext[0] == '\0' ) {      /* use default extension if necessary */
-        pg1.ext = OBJ_EXTENSION;
+        pg1.ext = FEXT_OBJ;
     }
     _makepath( buf, pg1.drive, pg1.dir, pg1.fname, pg1.ext );
     if( make_lib ) {

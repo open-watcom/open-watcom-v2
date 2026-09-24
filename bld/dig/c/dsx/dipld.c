@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,7 +41,7 @@
 #include "roundmac.h"
 
 
-#define DEFEXT      ".dip"
+#define FEXT_DEF    ".dip"
 //#define MODINIT     "DIPLOAD"
 #define MODSIGN     DIPSIGN
 
@@ -65,7 +65,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     digld_error         err;
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, FEXT_DEF, filename, sizeof( filename ) ) == 0 ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     fp = DIGLoader( Open )( filename );

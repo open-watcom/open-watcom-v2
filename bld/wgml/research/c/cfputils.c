@@ -69,7 +69,7 @@
 #define BAD_MATCH  3
 #define GOOD_MATCH 4
 
-#define COP_EXT         "cop"
+#define FEXT_COP        "cop"
 
 /*  Local variables. */
 
@@ -572,7 +572,7 @@ int verify_device( char * in_path, char * in_name )
 
     /* Build the file name. */
 
-    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, FEXT_COP );
 
     /* Open the file. */
 
@@ -811,7 +811,7 @@ int verify_driver( char * in_path, char * in_name )
 
     /* Build the file name. */
 
-    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, FEXT_COP );
 
     /* Open the file. */
 
@@ -950,7 +950,7 @@ int verify_font( char * in_path, char * in_name )
 
     /* Build the file name. */
 
-    _makepath( member_name, NULL, in_path, in_name, COP_EXT );
+    _makepath( member_name, NULL, in_path, in_name, FEXT_COP );
 
     /* Open the file. */
 

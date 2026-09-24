@@ -54,18 +54,18 @@
 #if defined(__UNIX__)
  #define C_PATH         "../c/"
  #define H_PATH         "../h/"
- #define OBJ_EXT        "o"
+ #define FEXT_OBJ       "o"
 #else
  #define C_PATH         "..\\c\\"
  #define H_PATH         "..\\h\\"
- #define OBJ_EXT        "obj"
+ #define FEXT_OBJ       "obj"
 #endif
-#define DEF_EXT         "def"
-#define ERR_EXT         "err"
-#define MBR_EXT         "mbr"
-#define C_EXT           "c"
-#define CPP_EXT         "i"
-#define DEP_EXT         "d"
+#define FEXT_DEF        "def"
+#define FEXT_ERR        "err"
+#define FEXT_MBR        "mbr"
+#define FEXT_C          "c"
+#define FEXT_CPP        "i"
+#define FEXT_DEP        "d"
 
 #ifdef __UNIX__
 #define NULLDEV         "/dev/null"
@@ -253,7 +253,7 @@ static void DumpDepFile( void )
     if( DepFile != NULL ) {
         curr = NextDependency( NULL );
         if( curr != NULL ) {
-            fprintf( DepFile, "%s :", ForceSlash( createFileName( DependTarget, OBJ_EXT, false ), DependForceSlash ) );
+            fprintf( DepFile, "%s :", ForceSlash( createFileName( DependTarget, FEXT_OBJ, false ), DependForceSlash ) );
             fprintf( DepFile, " %s", ForceSlash( GetSourceDepName(), DependForceSlash ) );
             for( curr = NextDependency( curr ); curr != NULL; curr = NextDependency( curr ) ) {
                 fprintf( DepFile, " %s", ForceSlash( curr->name, DependForceSlash ) );
@@ -373,8 +373,8 @@ static void MakePgmName( void )
         _splitpath2( WholeFName, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
         if( pg.ext[0] == '\0' ) { // no extension
             len = strlen( WholeFName );
-            WholeFName = CMemRealloc( WholeFName, len + 1 + ( sizeof( C_EXT ) - 1 ) + 1 );
-            strcat( WholeFName + len, "." C_EXT );
+            WholeFName = CMemRealloc( WholeFName, len + 1 + ( sizeof( FEXT_C ) - 1 ) + 1 );
+            strcat( WholeFName + len, "." FEXT_C );
         }
     }
     SrcFName = CMemStrdup( pg.fname );
@@ -510,24 +510,24 @@ char *GetSourceDepName( void )
 
 char *ObjFileName( void )
 {
-    return( createFileName( ObjectFileName, OBJ_EXT, false ) );
+    return( createFileName( ObjectFileName, FEXT_OBJ, false ) );
 }
 
 char *CppFileName( void )
 {
-    return( createFileName( ObjectFileName, CPP_EXT, false ) );
+    return( createFileName( ObjectFileName, FEXT_CPP, false ) );
 }
 
 char *DepFileName( void )
 {
-    return( createFileName( DependFileName, DEP_EXT, false ) );
+    return( createFileName( DependFileName, FEXT_DEP, false ) );
 }
 
 char *ErrFileName( void )
 {
     if( ErrorFileName == NULL )
         return( NULL );
-    return( createFileName( ErrorFileName, ERR_EXT, false ) );
+    return( createFileName( ErrorFileName, FEXT_ERR, false ) );
 }
 
 void CppPrtChar( int c )
@@ -544,7 +544,7 @@ void OpenDefFile( void )
 
     if( DefFName == NULL ) {
         _splitpath2( SrcFName, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( name, NULL, NULL, pg.fname, DEF_EXT );
+        _makepath( name, NULL, NULL, pg.fname, FEXT_DEF );
         DefFile = fopen( name, "w" );
     } else {
         DefFile = fopen( DefFName, "w" );
@@ -561,10 +561,10 @@ FILE *OpenBrowseFile( void )
     FILE        *mbr_file;
 
     if( CompFlags.cpp_output_to_file ) {
-        strcpy( name, createFileName( ObjectFileName, MBR_EXT, true ) );
+        strcpy( name, createFileName( ObjectFileName, FEXT_MBR, true ) );
     } else {
         _splitpath2( SrcFName, pg.buffer, NULL, NULL, &pg.fname, NULL );
-        _makepath( name, NULL, NULL, pg.fname, MBR_EXT );
+        _makepath( name, NULL, NULL, pg.fname, FEXT_MBR );
     }
     mbr_file = fopen( name, "wb" );
     if( mbr_file == NULL ) {

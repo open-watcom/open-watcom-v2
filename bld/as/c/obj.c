@@ -41,11 +41,11 @@
 
 
 #if defined( __UNIX__ )
-#define OBJ_EXT         "o"
+#define FEXT_OBJ        "o"
 #else
-#define OBJ_EXT         "obj"
+#define FEXT_OBJ        "obj"
 #endif
-#define ERR_EXT         "err"
+#define FEXT_ERR        "err"
 
 extern int              ExitStatus;
 
@@ -136,11 +136,11 @@ bool ObjInit( const char *fname, const char *err_file )
     SectionInit();
     _splitpath2( fname, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
     if( !objectDefined ) {
-        _makepath( objName, NULL, NULL, pg1.fname, OBJ_EXT );
+        _makepath( objName, NULL, NULL, pg1.fname, FEXT_OBJ );
     } else {
         _splitpath2( objName, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
         if( pg2.ext[0] == '\0' )
-            pg2.ext = OBJ_EXT;
+            pg2.ext = FEXT_OBJ;
         if( pg2.fname[0] == '\0' )
             pg2.fname = pg1.fname;
         _makepath( objName, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
@@ -163,14 +163,14 @@ bool ObjInit( const char *fname, const char *err_file )
             pg2.drive = NULL;
             pg2.dir = NULL;
             pg2.fname = pg1.fname;
-            pg2.ext = ERR_EXT;
+            pg2.ext = FEXT_ERR;
         } else {
             _splitpath2( err_file, pg2.buffer, &pg2.drive, &pg2.dir, &pg2.fname, &pg2.ext );
             if( pg2.fname[0] == '\0' || strcmp( pg2.fname, "*" ) == 0 ) {
                 pg2.fname = pg1.fname;
             }
             if( pg2.ext[0] == '\0' ) {
-                pg2.ext = ERR_EXT;
+                pg2.ext = FEXT_ERR;
             }
         }
         _makepath( errorFilename, pg2.drive, pg2.dir, pg2.fname, pg2.ext );

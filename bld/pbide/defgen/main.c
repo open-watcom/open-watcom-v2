@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,9 +42,9 @@
 #include "clibext.h"
 
 
-#define DEF_EXT     "def"
-#define PBF_EXT     "pbf"
-#define SRU_EXT     "sru"
+#define FEXT_DEF    "def"
+#define FEXT_PBF    "pbf"
+#define FEXT_SRU    "sru"
 
 CmdLineInfo     Config;
 bool            ErrorHasOccured;
@@ -72,7 +72,7 @@ static bool FillParms( void )
         Config.dll_name = "noname.dll";
     }
     if( Config.out_file == NULL ) {
-        SetExtension( outName, Config.dll_name, PBF_EXT );
+        SetExtension( outName, Config.dll_name, FEXT_PBF );
         Config.out_file = outName;
     }
     if( Config.nu_name == NULL && Config.nuo_file != NULL ) {
@@ -81,7 +81,7 @@ static bool FillParms( void )
         Config.nu_name = nuoName;
     } else if( Config.nuo_file == NULL && Config.nu_name != NULL ) {
         strcpy( pg.buffer, Config.nu_name );
-        SetExtension( nuoName, pg.buffer, SRU_EXT );
+        SetExtension( nuoName, pg.buffer, FEXT_SRU );
         Config.nuo_file = nuoName;
     }
     return( false );
@@ -163,7 +163,7 @@ int main( int argc, char *argv[] )
     if( !ScanParms( argc, argv ) ) {
         def_file = malloc( _MAX_PATH );
         for( i = 0; i < Config.def_cnt; i++ ) {
-            SetExtension( def_file, Config.def_file[i], DEF_EXT );
+            SetExtension( def_file, Config.def_file[i], FEXT_DEF );
             if( !ScanInit( def_file ) ) {
                 yyparse();
                 ScanFini();

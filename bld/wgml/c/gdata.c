@@ -74,7 +74,7 @@ void init_global_vars( void )
 
     alt_ext             = MemAllocSafe( 5 );   // alternate extension   .xxx
     *alt_ext            = '\0';
-    def_ext             = MemStrdupSafe( GML_EXT );
+    def_ext             = MemStrdupSafe( FEXT_GML );
     ampchar             = '&';
 
     gotarget[0]         = '\0';         // no .go to target yet

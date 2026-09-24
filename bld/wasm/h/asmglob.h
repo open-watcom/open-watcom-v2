@@ -128,14 +128,14 @@ typedef struct {
 extern File_Info        AsmFiles;   // files information
 extern char             *ModuleName;
 
-#define ASM_EXT "asm"
-#define ERR_EXT "err"
-#define LST_EXT "lst"
+#define FEXT_ASM    "asm"
+#define FEXT_ERR    "err"
+#define FEXT_LST    "lst"
 
 #ifdef __UNIX__
-#define OBJ_EXT "o"
+#define FEXT_OBJ    "o"
 #else
-#define OBJ_EXT "obj"
+#define FEXT_OBJ    "obj"
 #endif
 
 typedef enum smode {

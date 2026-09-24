@@ -211,11 +211,11 @@ static const char *Help_info[] = {
     "     - Each option must be on a separate line",
     "  Default <in_file> extension is .whp",
     "  Default <out_file> extension is",
-    "     for RTF:           " EXT_OUTRTF_FILE,
-    "     for OS/2 IPF:      " EXT_OUTIPF_FILE,
-    "     for Dos Infobench: " EXT_OUTIB_FILE,
-    "     for HTML:          " EXT_OUTHTML_FILE,
-    "     for wiki:          " EXT_OUTWIKI_FILE,
+    "     for RTF:           " FEXT_RTF,
+    "     for OS/2 IPF:      " FEXT_IPF,
+    "     for Dos Infobench: " FEXT_IB,
+    "     for HTML:          " FEXT_HTM,
+    "     for wiki:          " FEXT_WIKI,
     NULL
 };
 
@@ -2319,7 +2319,7 @@ int main( int argc, char *argv[] )
             error_quit();
         }
 
-        file = normalize_fname( file, argv[start_arg], EXT_INPUT_FILE );
+        file = normalize_fname( file, argv[start_arg], FEXT_WHP );
 
         Line_num = 0;
         In_file = fopen( file, "r" );
@@ -2331,13 +2331,13 @@ int main( int argc, char *argv[] )
          * this is for the RTF 'Up' button support
          */
         if( Output_type == OUT_RTF ) {
-            Help_File = MemAlloc( strlen( file ) + sizeof( EXT_HLP_FILE ) );
+            Help_File = MemAlloc( strlen( file ) + sizeof( FEXT_HLP ) );
             strcpy( Help_File, file );
-            strcpy( strrchr( Help_File, '.' ), EXT_HLP_FILE );
+            strcpy( strrchr( Help_File, '.' ), FEXT_HLP );
         }
 
         if( Do_index ) {
-            strcpy( strrchr( file, '.' ), EXT_IDX_FILE );
+            strcpy( strrchr( file, '.' ), FEXT_IDX );
             Idx_file = fopen( file, "w" );
             if( Idx_file == NULL ) {
                 printf( "Could not open index file: %s\n", file );
@@ -2346,7 +2346,7 @@ int main( int argc, char *argv[] )
         }
 
         if( Do_keywords ) {
-            strcpy( strrchr( file, '.' ), EXT_KW_FILE );
+            strcpy( strrchr( file, '.' ), FEXT_KW );
             KW_file = fopen( file, "w" );
             if( KW_file == NULL ) {
                 printf( "Could not open index file: %s\n", file );
@@ -2355,7 +2355,7 @@ int main( int argc, char *argv[] )
         }
 
         if( Do_blist ) {
-            strcpy( strrchr( file, '.' ), EXT_BLIST_FILE );
+            strcpy( strrchr( file, '.' ), FEXT_BLT );
             Blist_file = fopen( file, "w" );
             if( Blist_file == NULL ) {
                 printf( "Could not open browse list file: %s\n", file );
@@ -2364,7 +2364,7 @@ int main( int argc, char *argv[] )
         }
 
         if( Do_contents ) {
-            strcpy( strrchr( file, '.' ), EXT_TBL_FILE );
+            strcpy( strrchr( file, '.' ), FEXT_TBL );
             Contents_file = fopen( file, "w" );
             if( Contents_file == NULL ) {
                 printf( "Could not open table of contents file: %s\n", file );
@@ -2374,19 +2374,19 @@ int main( int argc, char *argv[] )
 
         switch( Output_type ) {
         case OUT_RTF:
-            strcpy( Output_file_ext, EXT_OUTRTF_FILE );
+            strcpy( Output_file_ext, FEXT_RTF );
             break;
         case OUT_IPF:
-            strcpy( Output_file_ext, EXT_OUTIPF_FILE );
+            strcpy( Output_file_ext, FEXT_IPF );
             break;
         case OUT_IB:
-            strcpy( Output_file_ext, EXT_OUTIB_FILE );
+            strcpy( Output_file_ext, FEXT_IB );
             break;
         case OUT_HTML:
-            strcpy( Output_file_ext, EXT_OUTHTML_FILE );
+            strcpy( Output_file_ext, FEXT_HTM );
             break;
         case OUT_WIKI:
-            strcpy( Output_file_ext, EXT_OUTWIKI_FILE );
+            strcpy( Output_file_ext, FEXT_WIKI );
             break;
         }
 
@@ -2414,7 +2414,7 @@ int main( int argc, char *argv[] )
             if( h_file_name != NULL ) {
                 In_file = fopen( h_file_name, "r" );
             } else {
-                strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+                strcpy( strrchr( file, '.' ), FEXT_H );
                 In_file = fopen( file, "r" );
             }
             if( In_file != NULL ) {
@@ -2433,7 +2433,7 @@ int main( int argc, char *argv[] )
                     error_quit();
                 }
             } else {
-                strcpy( strrchr( file, '.' ), EXT_DEF_FILE );
+                strcpy( strrchr( file, '.' ), FEXT_H );
                 Def_file = fopen( file, "w" );
                 if( Def_file == NULL ) {
                     printf( "Could not open define file: %s\n", file );
@@ -2443,7 +2443,7 @@ int main( int argc, char *argv[] )
         }
 
         if( Do_hdef ) {
-            strcpy( strrchr( file, '.' ), EXT_HDEF_FILE );
+            strcpy( strrchr( file, '.' ), FEXT_HH );
             Hdef_file = fopen( file, "w" );
             if( Hdef_file == NULL ) {
                 printf( "Could not open help define file: %s\n", file );

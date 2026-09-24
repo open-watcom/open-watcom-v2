@@ -356,7 +356,7 @@ static void srcFileName( const char *token )
     }
     _splitpath2( token, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     if( pg.ext[0] == '\0' ) {
-        pg.ext = ASM_EXT;
+        pg.ext = FEXT_ASM;
     }
     SrcFName = MemStrdupSafe( pg.fname );
     SrcModuleName = MemStrdupSafe( pg.fname );

@@ -138,17 +138,17 @@ int main( int argc, char *argv[] )
     _fullpath( path, pfilename, _MAX_PATH );
     _splitpath2( path, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    if( CMPFEXT( pg.ext, PH_EXT ) || CMPFEXT( pg.ext, HLP_EXT ) ) {
+    if( CMPFEXT( pg.ext, FEXT_PH ) || CMPFEXT( pg.ext, FEXT_HLP ) ) {
         delete[] cmd_line;
         HCWarning( BAD_EXT );
         return( -1 );
     }
     if( pg.ext[0] == '\0' ) {
-        _makepath( path, pg.drive, pg.dir, pg.fname, HPJ_EXT );
+        _makepath( path, pg.drive, pg.dir, pg.fname, FEXT_HPJ );
     }
 
     char    destpath[_MAX_PATH];
-    _makepath( destpath, pg.drive, pg.dir, pg.fname, HLP_EXT );
+    _makepath( destpath, pg.drive, pg.dir, pg.fname, FEXT_HLP );
 
     {
         InFile  input( path );
@@ -182,7 +182,7 @@ int main( int argc, char *argv[] )
                                 &bitfiles,
             };
 
-            if( CMPFEXT( pg.ext, RTF_EXT ) ) {
+            if( CMPFEXT( pg.ext, FEXT_RTF ) ) {
                 my_files._topFile = new HFTopic( &helpfile );
                 RTFparser   rtfhandler( &my_files, &input );
                 rtfhandler.Go();

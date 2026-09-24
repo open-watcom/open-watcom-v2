@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,12 +49,12 @@ WATCOM is a trademark of WATCOM International Corp.\n\
 #define HASH_PRIME              257
 
 /* files extensions */
-#define HPP_EXT         "hpp"
-#define CPP_EXT         "cpp"
-#define C_EXT           "c"
-#define DLL_EXT         "dll"
-#define ERR_EXT         "err"
-#define WPJ_EXT         "wpj"
-#define TMP_EXT         "tmp"
+#define FEXT_HPP         "hpp"
+#define FEXT_CPP         "cpp"
+#define FEXT_C           "c"
+#define FEXT_DLL         "dll"
+#define FEXT_ERR         "err"
+#define FEXT_WPJ         "wpj"
+#define FEXT_TMP         "tmp"
 
 #endif

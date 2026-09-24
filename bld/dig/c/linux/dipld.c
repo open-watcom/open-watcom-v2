@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,13 +53,13 @@
 
 #ifdef __WATCOMC__
 
-#define DEFEXT      ".dip"
+#define FEXT_DEF    ".dip"
 #define MODSIGN     DIPSIGN
 #include "ldrrex.c"     /* PharLap REX format loader */
 
 #else
 
-#define DEFEXT      ".so"
+#define FEXT_DEF    ".so"
 #define MODINIT     "DIPLOAD"
 #include "ldrso.c"      /* Shared library format loader */
 
@@ -83,7 +83,7 @@ dip_status DIPSysLoad( const char *base_name, dip_client_routines *cli, dip_imp_
     digld_error         err;
 
     *sys_hdl = NULL_SYSHDL;
-    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, DEFEXT, filename, sizeof( filename ) ) == 0 ) {
+    if( DIGLoader( Find )( DIG_FILETYPE_EXE, base_name, 0, FEXT_DEF, filename, sizeof( filename ) ) == 0 ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     fp = DIGLoader( Open )( filename );

@@ -136,7 +136,7 @@ static FileList *scanDirectory( char *buf, FileList *list )
     if( dirp != NULL ) {
         while( (dire = readdir( dirp )) != NULL ) {
             len = strlen( dire->d_name );
-            if ( len < ( sizeof( "." DEF_EXT ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." DEF_EXT ) - 1 )], "." DEF_EXT ) != 0 ) {
+            if ( len < ( sizeof( "." FEXT_DEF ) - 1 ) || stricmp( &dire->d_name[len - ( sizeof( "." FEXT_DEF ) - 1 )], "." FEXT_DEF ) != 0 ) {
                 continue;
             }
             list->items[list->used] = MemAllocSafe( sizeof( FileInfo ) );
