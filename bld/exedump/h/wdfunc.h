@@ -202,7 +202,6 @@ extern unsigned_8       Dump_name( void );
 extern unsigned         Align_name( unsigned_8 len, unsigned_8 align );
 extern void             Dump_header( const void *, const char * const *, int );
 extern void             Dump_asciiz( unsigned long offset );
-extern void             DumpFlags( unsigned_32, unsigned_32, const char * const *, const char * );
 extern void             *Wmalloc( size_t );
 extern void             Banner( const char * );
 

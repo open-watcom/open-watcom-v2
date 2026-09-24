@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -142,60 +142,6 @@ static  const_string_table pe_obj_msg[] = {
     NULL
 };
 
-static  const_string_table PEHeadFlags[] = {
-    "RELOCS_STRIPPED",
-    "EXECUTABLE",
-    "LINES_STRIPPED",
-    "LOCALS_STRIPPED",
-    "MINIMAL",
-    "UPDATE",
-    "16BIT",
-    "LITTLE_ENDIAN",
-    "32BIT",
-    "DEBUG_STRIPPED",
-    "PATCH",
-    NULL,
-    "SYSTEM",
-    "DLL",
-    NULL,
-    "BIG_ENDIAN"
-};
-
-static  const_string_table PEObjFlags[] = {
-    "DUMMY",
-    "NOLOAD",
-    "GROUPED",
-    "NOPAD",
-    "COPY",
-    "CODE",
-    "INIT_DATA",
-    "UNINIT_DATA",
-    "OTHER",
-    "LINK_INFO",
-    "OVERLAY",
-    "REMOVE",
-    "COMDAT",
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    "DISCARDABLE",
-    "NOT_CACHED",
-    "NOT_PAGED",
-    "SHARED",
-    "EXECUTABLE",
-    "READABLE",
-    "WRITABLE"
-};
-
 /*
  * Dump the NT Executable Header, if any.
  */
@@ -296,11 +242,12 @@ bool Dmp_pe_head( void )
         tbl_entry++;
     }
     Wdputslc( "\n" );
-    Wdputslc( "\n" );
     Wdputs( "Module flags = " );
     Puthex( Pe_head.fheader.flags, 4 );
     Wdputs( ": " );
     DumpCoffHdrFlags( Pe_head.fheader.flags );
+    Wdputslc( "\n" );
+    Wdputslc( "\n" );
     offset = New_exe_off + PE_SIZE( Pe_head );
     Wlseek( offset );
     dmp_objects( Pe_head.fheader.num_objects );
@@ -386,23 +333,131 @@ static void DumpSection( pe_object *hdr )
 void DumpCoffHdrFlags( unsigned_16 flags )
 /****************************************/
 {
-    DumpFlags( flags, 0, PEHeadFlags, "" );
+    char            buffer[256];
+    char            *p;
+
+    p = buffer;
+    if( flags & PE_FLG_RELOCS_STRIPPED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "RELOCS_STRIPPED" );
+    }
+    if( flags & PE_FLG_IS_EXECUTABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "EXECUTABLE" );
+    }
+    if( flags & PE_FLG_LINNUM_STRIPPED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LINES_STRIPPED" );
+    }
+    if( flags & PE_FLG_LOCALS_STRIPPED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LOCALS_STRIPPED" );
+    }
+    if( flags & PE_FLG_MINIMAL_OBJ ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "MINIMAL" );
+    }
+    if( flags & PE_FLG_UPDATE_OBJ ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "UPDATE" );
+    }
+    if( flags & PE_FLG_16BIT_MACHINE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "16BIT" );
+    }
+    if( flags & PE_FLG_REVERSE_BYTE_LO ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LITTLE_ENDIAN" );
+    }
+    if( flags & PE_FLG_32BIT_MACHINE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "32BIT" );
+    }
+    if( flags & PE_FLG_FIXED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "DEBUG_STRIPPED" );
+    }
+    if( flags & PE_FLG_FILE_PATCH ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "PATCH" );
+    }
+    if( flags & PE_FLG_FILE_SYSTEM ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "SYSTEM" );
+    }
+    if( flags & PE_FLG_LIBRARY ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "DLL" );
+    }
+    if( flags & PE_FLG_REVERSE_BYTE_HI ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "BIG_ENDIAN" );
+    }
+    *p = '\0';
+    Wdputs( buffer );
 }
 
 
 static void DumpPEObjFlags( unsigned_32 flags )
 /*********************************************/
 {
-    unsigned    alignval;
-    char        buf[8];
+    unsigned        alignval;
+    char            buffer[256];
+    char            *p;
 
+    p = buffer;
     alignval = (flags & PE_OBJ_ALIGN_MASK) >> PE_OBJ_ALIGN_SHIFT;
-    if( alignval != 0 ) {
-        sprintf( buf, "ALIGN%u", 1 << (alignval - 1) );
-    } else {
-        buf[0] = '\0';
+    if( alignval ) {
+        p += sprintf( p, "ALIGN%u", 1 << (alignval - 1) );
     }
-    DumpFlags( flags, PE_OBJ_ALIGN_MASK, PEObjFlags, buf );
+    if( flags & PE_OBJ_DUMMY ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "DUMMY" );
+    }
+    if( flags & PE_OBJ_NOLOAD ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "NOLOAD" );
+    }
+    if( flags & PE_OBJ_GROUPED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "GROUPED" );
+    }
+    if( flags & PE_OBJ_NOPAD ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "NOPAD" );
+    }
+    if( flags & PE_OBJ_TYPE_COPY ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "COPY" );
+    }
+    if( flags & PE_OBJ_CODE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "CODE" );
+    }
+    if( flags & PE_OBJ_INIT_DATA ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "INIT_DATA" );
+    }
+    if( flags & PE_OBJ_UNINIT_DATA ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "UNINIT_DATA" );
+    }
+    if( flags & PE_OBJ_OTHER ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "OTHER" );
+    }
+    if( flags & PE_OBJ_LINK_INFO ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LINK_INFO" );
+    }
+    if( flags & PE_OBJ_OVERLAY ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "OVERLAY" );
+    }
+    if( flags & PE_OBJ_REMOVE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "REMOVE" );
+    }
+    if( flags & PE_OBJ_COMDAT ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "COMDAT" );
+    }
+    if( flags & PE_OBJ_DISCARDABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "DISCARDABLE" );
+    }
+    if( flags & PE_OBJ_NOT_CACHED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "NOT_CACHED" );
+    }
+    if( flags & PE_OBJ_NOT_PAGABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "NOT_PAGED" );
+    }
+    if( flags & PE_OBJ_SHARED ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "SHARED" );
+    }
+    if( flags & PE_OBJ_EXECUTABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "EXECUTABLE" );
+    }
+    if( flags & PE_OBJ_READABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "READABLE" );
+    }
+    if( flags & PE_OBJ_WRITABLE ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "WRITABLE" );
+    }
+    *p = '\0';
+    Wdputs( buffer );
 }
 
 
@@ -449,6 +504,7 @@ void dmp_objects( unsigned num_objects )
         Puthex( pe_obj->flags, 8 );
         Wdputs( ": " );
         DumpPEObjFlags( pe_obj->flags );
+        Wdputslc( "\n" );
         Wdputslc( "\n" );
         if( Options_dmp & (OS2_SEG_DMP|FIX_DMP) ) {
             DumpSection( pe_obj );

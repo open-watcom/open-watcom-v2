@@ -417,24 +417,21 @@ static void dmp_sec_type( unsigned_32 type )
 static void dmp_prog_flags( unsigned_32 flags )
 /********************************************/
 {
-    char    name[128];
+    char            buffer[128];
+    char            *p;
 
-    name[0] = '\0';
+    p = buffer;
     if( flags & PF_X ) {
-        strcat( name, " EXECUTABLE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "EXECUTABLE" );
     }
     if( flags & PF_W ) {
-        strcat( name, " WRITABLE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "WRITABLE" );
     }
     if( flags & PF_R ) {
-        strcat( name, " READABLE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "READABLE" );
     }
-    if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = '\0';
-    }
-    Wdputs( "flags = " );
-    Wdputs( name );
-    Wdputslc( "\n" );
+    *p = '\0';
+    Wdputs( buffer );
 }
 
 /*
@@ -443,45 +440,42 @@ static void dmp_prog_flags( unsigned_32 flags )
 static void dmp_sec_flags( unsigned_32 flags )
 /********************************************/
 {
-    char    name[128];
+    char            buffer[128];
+    char            *p;
 
-    name[0] = '\0';
+    p = buffer;
     if( flags & SHF_WRITE ) {
-        strcat( name, " WRITABLE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "WRITABLE" );
     }
     if( flags & SHF_ALLOC ) {
-        strcat( name, " ALLOC_SPACE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "ALLOC_SPACE" );
     }
     if( flags & SHF_EXECINSTR ) {
-        strcat( name, " EXEC_INSTR |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "EXEC_INSTR" );
     }
     if( flags & SHF_MERGE ) {
-        strcat( name, " MERGE |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "MERGE" );
     }
     if( flags & SHF_STRINGS ) {
-        strcat( name, " STRINGS |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "STRINGS" );
     }
     if( flags & SHF_INFO_LINK ) {
-        strcat( name, " INFO_LINK |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "INFO_LINK" );
     }
     if( flags & SHF_OS_NONCONFORMING ) {
-        strcat( name, " OS_NONCONFORMING |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "OS_NONCONFORMING" );
     }
     if( flags & SHF_GROUP ) {
-        strcat( name, " GROUP |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "GROUP" );
     }
     if( flags & SHF_TLS ) {
-        strcat( name, " TLS |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "TLS" );
     }
     if( flags & SHF_COMPRESSED ) {
-        strcat( name, " COMPRESSED |" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "COMPRESSED" );
     }
-    if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = '\0';
-    }
-    Wdputs( "flags = " );
-    Wdputs( name );
-    Wdputslc( "\n" );
+    *p = '\0';
+    Wdputs( buffer );
 }
 
 /*
@@ -679,7 +673,9 @@ static void dmp_prog_sec( unsigned_32 start )
             Data_count++;
             dmp_prog_type( elf_prog.p_type );
             Dump_header( &elf_prog, elf_prog_msg, 4 );
+            Wdputs( "flags = " );
             dmp_prog_flags( elf_prog.p_flags );
+            Wdputslc( "\n" );
             if( Options_dmp & (DOS_SEG_DMP | OS2_SEG_DMP) ) {
                 if( Segspec == 0
                   || Segspec == Data_count ) {
@@ -714,7 +710,9 @@ static void dmp_prog_sec( unsigned_32 start )
             }
             dmp_sec_type( elf_sec.sh_type );
             Dump_header( &elf_sec.sh_name, elf_sec_msg, 4 );
+            Wdputs( "flags = " );
             dmp_sec_flags( elf_sec.sh_flags );
+            Wdputslc( "\n" );
             if( Options_dmp & FIX_DMP ) {
                 if( elf_sec.sh_type == SHT_REL
                   || elf_sec.sh_type == SHT_RELA ) {

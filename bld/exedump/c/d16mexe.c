@@ -162,9 +162,8 @@ static unsigned_16 get_selector_count( dos16m_exe_header_ex *d16m_head )
         d16m_head->hdr.first_selector = D16M_USER_SEL;
     if( d16m_head->hdr.last_sel_used ) {
         return( (d16m_head->hdr.last_sel_used - d16m_head->hdr.first_selector) / sizeof( gdt_info ) + 1 );
-    } else {
-        return( (d16m_head->hdr.gdtimage_size + 1) / sizeof( gdt_info ) - 17 );
     }
+    return( (d16m_head->hdr.gdtimage_size + 1) / sizeof( gdt_info ) - 17 );
 }
 
 static unsigned_16 put_reloc( reloc *r, unsigned_16 idx )

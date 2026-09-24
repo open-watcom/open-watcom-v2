@@ -84,6 +84,8 @@
 
 #define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
 
+#define GET_OR_FMT(x)   ((x) ? "%s" : " | %s")
+
 typedef enum {
     FORM_NE,
     FORM_LE,

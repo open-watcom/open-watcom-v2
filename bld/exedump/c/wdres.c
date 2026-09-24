@@ -164,22 +164,28 @@ static void dmp_resrc_type( unsigned_16 res_type )
 static void dmp_resrc_flags( unsigned_16 flags )
 /**********************************************/
 {
+    char            buffer[128];
+    char            *p;
+
+    p = buffer;
     if( flags & SEG_MOVABLE ) {
-        Wdputs( "MOVABLE" );
-    } else {
-        Wdputs( "FIXED" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "MOVABLE" );
+    } else if( Options_dmp & ZERO_BITS ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "FIXED" );
     }
     if( flags & SEG_PURE ) {
-        Wdputs( "|PURE" );
-    } else {
-        Wdputs( "|IMPURE" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "PURE" );
+    } else if( Options_dmp & ZERO_BITS ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "IMPURE" );
     }
     if( flags & SEG_PRELOAD ) {
-        Wdputs( "|PRELOAD" );
-    } else {
-        Wdputs( "|LOADONCALL" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "PRELOAD" );
+    } else if( Options_dmp & ZERO_BITS ) {
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LOADONCALL" );
     }
-    Wdputs( " Prior " );
+    *p = '\0';
+    Wdputs( buffer );
+    Wdputs( "  Prior: " );
     Putdec( GET_SEG_DISCARD_PRIORITY( flags ) );
 }
 
@@ -194,13 +200,13 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     unsigned_32         res_end;
 
     dmp_resrc_type( res_ent->name );
-    Wdputs( " file offset " );
+    Wdputs( " file offset: " );
     res_off = (unsigned_32)res_ent->offset << Resrc_shift_cnt;
     Puthex( res_off, 8 );
-    Wdputs( "H len " );
+    Wdputs( "H  len: " );
     res_len = (unsigned_32)res_ent->length << Resrc_shift_cnt;
     Puthex( res_len, 8 );
-    Wdputs( " flags " );
+    Wdputs( "  flags: " );
     dmp_resrc_flags( res_ent->flags );
     Wdputslc( "\n" );
     if( Options_dmp & RESRC_DMP ) {

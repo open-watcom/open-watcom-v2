@@ -293,56 +293,6 @@ void Dump_header( const void *data_ptr, const_string_table *msg, int max_width )
     }
 }
 
-#define MAX_FLAG_SIZE   256
-
-void DumpFlags( unsigned_32 flags, unsigned_32 ignore, const_string_table *msg, const char *prefix )
-/**************************************************************************************************/
-{
-    char            name[MAX_FLAG_SIZE];
-    char            *currpos;
-    unsigned_32     mask;
-    size_t          len;
-
-    flags &= ~ignore;
-    mask = 1;
-    currpos = name;
-    len = strlen( prefix );
-    if( len > 0 ) {
-        memcpy( currpos, prefix, len );
-        currpos += len;
-        *currpos = '|';
-        currpos++;
-    }
-    while( flags != 0 ) {
-        if( flags & 1 ) {
-            if( *msg == NULL ) {
-                if( currpos - name + 9 > MAX_FLAG_SIZE )
-                    break;
-                currpos += sprintf( currpos, "?%x", mask );
-            } else {
-                len = strlen( *msg );
-                if( currpos - name + len + 1 > MAX_FLAG_SIZE )
-                    break;
-                memcpy( currpos, *msg, len );
-                currpos += len;
-            }
-            *currpos = '|';
-            currpos++;
-        }
-        msg++;
-        flags >>= 1;
-        mask <<= 1;
-    }
-    if( currpos != name ) {
-        currpos--;
-    }
-    *currpos = '\0';
-    Wdputs( name );
-    Wdputslc( "\n" );
-}
-
-#define min_len(a, b) ((a) < (b) ? (a) : (b))
-
 /*
  * dump an arbitrarily long ASCIIZ string starting at specified offset
  */

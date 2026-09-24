@@ -70,26 +70,27 @@ static  const_string_table qnx_data_msg[] = {
 /*
  * Dump the flags.
  */
-static void dmp_flags( unsigned_16 flags )
-/****************************************/
+static void dmp_prog_flags( unsigned_16 flags )
+/*********************************************/
 {
-    if( flags == 0 ) {
-        return;
-    }
-    Wdputs( "flags                                       =" );
+    char            buffer[128];
+    char            *p;
+
+    p = buffer;
     if( flags & _TCF_LONG_LIVED ) {
-        Wdputs( " LONG_LIVED" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "LONG_LIVED" );
     }
     if( flags & _TCF_32BIT ) {
-        Wdputs( " 32BIT" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "32BIT" );
     }
     if( flags & _TCF_PRIV_MASK ) {
-        Wdputs( " PRIV_MASK" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "PRIV_MASK" );
     }
     if( flags & _TCF_FLAT ) {
-        Wdputs( " FLAT" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "FLAT" );
     }
-    Wdputslc( "\n" );
+    *p = '\0';
+    Wdputs( buffer );
 }
 
 /*
@@ -344,7 +345,11 @@ bool Dmp_qnx_head( void )
         }
         Banner( "QNX EXE Header" );
         Dump_header( (char *)&Qnx_head.version, qnx_def_msg, 4 );
-        dmp_flags( Qnx_head.cflags );
+        if( Qnx_head.cflags ) {
+            Wdputs( "flags                                       =" );
+            dmp_prog_flags( Qnx_head.cflags );
+            Wdputslc( "\n" );
+        }
         size = ( qnx_rec.data_nbytes - sizeof( lmf_header ) ) / 4;
         dmp_seg( size );
         offset = qnx_rec.data_nbytes + sizeof( lmf_record );

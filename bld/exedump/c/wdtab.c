@@ -434,6 +434,8 @@ static void dmp_an_ord( int_entry_pnt *find )
 /*******************************************/
 {
     unsigned_16     flags;
+    char            buffer[128];
+    char            *p;
 
     Wdputc( '.' );
     Putdec( find->ordinal );
@@ -444,11 +446,17 @@ static void dmp_an_ord( int_entry_pnt *find )
     Wdputs( " parm " );
     flags = find->flags;
     Puthex( flags >> 3, 2 );
+    p = buffer;
     if( flags & ENTRY_EXPORTED ) {
-        Wdputs( " EXPORTED" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "EXPORTED" );
     }
     if( flags & ENTRY_SHARED ) {
-        Wdputs( "|SHAREDATA" );
+        p += sprintf( p, GET_OR_FMT( p == buffer ), "SHAREDATA" );
+    }
+    *p = '\0';
+    if( *buffer != '\0' ) {
+        Wdputs( "  " );
+        Wdputs( buffer );
     }
 }
 
