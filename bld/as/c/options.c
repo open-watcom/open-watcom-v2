@@ -299,12 +299,12 @@ bool OptionsInit( int argc, char **argv, OPT_STORAGE *data, OPT_STRING **files )
     }
     switch( data->format ) {
     case OPT_ENUM_format_oc:
-        _UnsetOption( OBJ_ELF );
-        _SetOption( OBJ_COFF );
+        _UnsetOption( TARGET_ELF );
+        _SetOption( TARGET_COFF );
         break;
     case OPT_ENUM_format_oe:
-        _SetOption( OBJ_ELF );
-        _UnsetOption( OBJ_COFF );
+        _SetOption( TARGET_ELF );
+        _UnsetOption( TARGET_COFF );
         break;
     case OPT_ENUM_format_default:
     default:

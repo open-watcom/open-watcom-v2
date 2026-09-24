@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +38,8 @@
 
 typedef enum {
     EMPTY               = 0x0000,
-    OBJ_COFF            = 0x0001,
-    OBJ_ELF             = 0x0002,
+    TARGET_COFF         = 0x0001,
+    TARGET_ELF          = 0x0002,
     BE_QUIET            = 0x0004,
     PRINT_HELP          = 0x0008,
     WARNING_ERROR       = 0x0010,

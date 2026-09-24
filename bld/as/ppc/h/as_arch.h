@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,5 +30,5 @@
 ****************************************************************************/
 
 
-#define OBJ_DEF_ALIGNMENT   8
-#define OBJ_OWL_CPU         OWL_CPU_PPC
+#define TARGET_DEF_ALIGNMENT    8
+#define TARGET_OWL_CPU          OWL_CPU_PPC

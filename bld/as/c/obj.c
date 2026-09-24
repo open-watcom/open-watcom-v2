@@ -176,10 +176,10 @@ bool ObjInit( const char *fname, const char *err_file )
         _makepath( errorFilename, pg2.drive, pg2.dir, pg2.fname, pg2.ext );
         ErrorFile = fopen( errorFilename, "wt" );
     }
-    OwlHandle = OWLInit( &funcs, OBJ_OWL_CPU );
-    if( _IsOption( OBJ_COFF ) ) {
+    OwlHandle = OWLInit( &funcs, TARGET_OWL_CPU );
+    if( _IsOption( TARGET_COFF ) ) {
         obj_format = OWL_FORMAT_COFF;
-    } else if( _IsOption( OBJ_ELF ) ) {
+    } else if( _IsOption( TARGET_ELF ) ) {
         obj_format = OWL_FORMAT_ELF;
     } else {
 #if defined( __NT__ )
