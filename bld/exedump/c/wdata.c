@@ -275,7 +275,7 @@ void Dmp_segments( void )
 /*
  * Dump the Segments
  */
-void Dmp_le_page_seg( void )
+void Dmp_page_seg_le( void )
 /**************************/
 {
     unsigned_32     offset;
@@ -307,7 +307,7 @@ void Dmp_le_page_seg( void )
 /*
  * Dump the Segments
  */
-void Dmp_lx_page_seg( map_entry map )
+void Dmp_page_seg_lx( map_entry map )
 /***********************************/
 {
     unsigned_32     offset;

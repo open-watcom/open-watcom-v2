@@ -133,8 +133,8 @@ extern void         Dmp_seg_tab( void );
 /*
  * wdtab.c
  */
-extern void         Dmp_ne_tbls( void );
-extern void         Dmp_le_lx_tbls( void );
+extern void         Dmp_tables_ne( void );
+extern void         Dmp_tables_lelx( void );
 extern bool         Dmp_ordinal( unsigned_16 );
 extern bool         Dmp_os2_exports( void );
 
@@ -149,8 +149,8 @@ extern void         Dmp_fixpage_tab( unsigned_32, unsigned_32 );
  */
 extern void         Dmp_relocs( void );
 extern void         Dmp_segments( void );
-extern void         Dmp_le_page_seg( void );
-extern void         Dmp_lx_page_seg( map_entry );
+extern void         Dmp_page_seg_le( void );
+extern void         Dmp_page_seg_lx( map_entry );
 extern void         Dmp_seg_data( unsigned long, unsigned long );
 extern void         dmp_mult_data_line( char *, unsigned_16, unsigned_16 );
 extern void         dmp_data_line_bytes( char *data, unsigned_16 amount );
@@ -208,8 +208,8 @@ extern void             Banner( const char * );
 /*
  * wdres.c
  */
-extern void         Dmp_resrc_tab( void );
-extern void         Dmp_resrc2_tab( void );
+extern void         Dmp_resrc_tab_ne( void );
+extern void         Dmp_resrc_tab_lelx( void );
 
 /*
  * coff.c

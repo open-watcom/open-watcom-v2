@@ -499,8 +499,8 @@ static void dmp_entry_tab( void )
 /*
  * Dump the tables
  */
-void Dmp_ne_tbls( void )
-/**********************/
+void Dmp_tables_ne( void )
+/************************/
 {
     prs_ent_tab( New_exe_off + Os2_head.entry_off, Os2_head.entry_size );
     Banner( "Resident Names Table" );
@@ -520,8 +520,8 @@ void Dmp_ne_tbls( void )
 /*
  * Dump the tables
  */
-void Dmp_le_lx_tbls( void )
-/*************************/
+void Dmp_tables_lelx( void )
+/**************************/
 {
     unsigned_32     size;
 

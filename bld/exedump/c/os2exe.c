@@ -247,8 +247,8 @@ static void dmp_mod_flags_ne( unsigned_16 flags, unsigned_8 target )
 /*
  * dump the LE/LX module flags word
  */
-static void dmp_mod_flags_lx( unsigned_32 flags, unsigned_16 ostype )
-/*******************************************************************/
+static void dmp_mod_flags_lelx( unsigned_32 flags, unsigned_16 ostype )
+/*********************************************************************/
 {
     char            buffer[512];
     char            *p;
@@ -337,8 +337,8 @@ bool Dmp_os2_head( void )
     Wdputslc( "\n" );
     Wdputslc( "\n" );
     Dmp_seg_tab();
-    Dmp_resrc_tab();
-    Dmp_ne_tbls();
+    Dmp_resrc_tab_ne();
+    Dmp_tables_ne();
     if( Options_dmp & OS2_SEG_DMP ) {
         Dmp_segments();
     }
@@ -360,9 +360,9 @@ static void dmp_obj_page( object_record obj )
     map_entry       map;
 
     if( Form == FORM_LX ) {
-        offset = ( obj.mapidx-1 ) * sizeof( lx_map_entry );
+        offset = ( obj.mapidx - 1 ) * sizeof( lx_map_entry );
     } else {
-        offset = ( obj.mapidx-1 ) * sizeof( le_map_entry );
+        offset = ( obj.mapidx - 1 ) * sizeof( le_map_entry );
     }
     offset += New_exe_off + Os2_386_head.objmap_off;
     for( j = 0; j < obj.mapsize; ++j ) {
@@ -388,7 +388,7 @@ static void dmp_obj_page( object_record obj )
             Wdputs( "H " );
             Wdputs( map_flgs[ map.le.flags ] );
             if( Options_dmp & OS2_SEG_DMP ) {
-                Dmp_le_page_seg();
+                Dmp_page_seg_le();
             }
             break;
         case FORM_LX:
@@ -408,7 +408,7 @@ static void dmp_obj_page( object_record obj )
                 Wdputs( "Unknown" );
             }
             if( Options_dmp & OS2_SEG_DMP ) {
-                Dmp_lx_page_seg( map );
+                Dmp_page_seg_lx( map );
             }
             break;
         }
@@ -535,11 +535,11 @@ bool Dmp_386_head( void )
     Wdputs( "Module flags = " );
     Puthex( Os2_386_head.flags, 8 );
     Wdputs( ": " );
-    dmp_mod_flags_lx( Os2_386_head.flags, Os2_386_head.os_type );
+    dmp_mod_flags_lelx( Os2_386_head.flags, Os2_386_head.os_type );
     Wdputslc( "\n" );
     Wdputslc( "\n" );
     dmp_obj_table();
-    Dmp_resrc2_tab();
-    Dmp_le_lx_tbls();
+    Dmp_resrc_tab_lelx();
+    Dmp_tables_lelx();
     return( true );
 }

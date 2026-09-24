@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -106,7 +107,7 @@ void Putdec64( long long num )
 void Putdecl( unsigned_32 num, unsigned_16 len )
 /**********************************************/
 {
-    Putdecbz( num /10, len - 1 );
+    Putdecbz( num / 10, len - 1 );
     Wdputc( num % 10 + '0' );
 }
 

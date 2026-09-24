@@ -185,8 +185,6 @@ static void dmp_resrc_flags( unsigned_16 flags )
     }
     *p = '\0';
     Wdputs( buffer );
-    Wdputs( "  Prior: " );
-    Putdec( GET_SEG_DISCARD_PRIORITY( flags ) );
 }
 
 /*
@@ -208,6 +206,8 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     Puthex( res_len, 8 );
     Wdputs( "  flags: " );
     dmp_resrc_flags( res_ent->flags );
+    Wdputs( "  prior: " );
+    Putdec( GET_SEG_DISCARD_PRIORITY( res_ent->flags ) );
     Wdputslc( "\n" );
     if( Options_dmp & RESRC_DMP ) {
         Wdputslc( "    data =\n" );
@@ -396,8 +396,8 @@ static void dmp_resrc_tab_os2( void )
 /*
  * Dump The Resource Table for NE module
  */
-void Dmp_resrc_tab( void )
-/************************/
+void Dmp_resrc_tab_ne( void )
+/***************************/
 {
     if( Os2_head.resource_off == Os2_head.resident_off ) {
         return;
@@ -414,8 +414,8 @@ void Dmp_resrc_tab( void )
 /*
  * Dump The Resource Table for OS/2 LX module
  */
-void Dmp_resrc2_tab( void )
-/*************************/
+void Dmp_resrc_tab_lelx( void )
+/*****************************/
 {
     unsigned_16     i;
     unsigned_16     type_id;

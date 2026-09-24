@@ -43,7 +43,7 @@
 static void dmp_seg_flags( unsigned_16 flags )
 /********************************************/
 {
-    char            buffer[512];
+    char            buffer[128];
     char            *p;
 
     p = buffer;
@@ -107,7 +107,6 @@ static void dmp_seg_ent( segment_record *seg_ent )
 {
     unsigned_16     flags;
 
-    Wdputc( ' ' );
     Puthex( (unsigned_32)seg_ent->address << Os2_head.align, 8 );
     Wdputc( ' ' );
     Puthex( seg_ent->size, 4 );
@@ -115,14 +114,13 @@ static void dmp_seg_ent( segment_record *seg_ent )
     Puthex( seg_ent->min, 4 );
     Wdputs( "    " );
     flags = seg_ent->info;
-    Puthex( GET_SEG_DISCARD_PRIORITY( flags ), 2 );
+    Putdecl( GET_SEG_DISCARD_PRIORITY( flags ), 2 );
     Wdputs( "    " );
     Puthex( GET_SEG_PMODE_DPL( flags ), 2 );
     Wdputc( ' ' );
     Puthex( flags, 4 );
     Wdputs( "  " );
     dmp_seg_flags( flags );
-    Wdputslc( "\n" );
 }
 
 /*
@@ -151,7 +149,9 @@ void Dmp_seg_tab( void )
     Wdputslc( "==== ======== ==== ====  ====  ==== ====\n" );
     for( segnum = 1; segnum != num_segs; segnum++ ) {
         Puthex( segnum, 4 );
+        Wdputc( ' ' );
         dmp_seg_ent( segtab++ );
+        Wdputslc( "\n" );
     }
     Wdputslc( "\n" );
 }
