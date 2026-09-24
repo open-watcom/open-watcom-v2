@@ -235,7 +235,7 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
                 }
             }
             CmdScanLineInit( begcmd );
-            p = GetFilenameExt( EXT_CMD );
+            p = GetFilenameExt( FEXT_CMD );
             if( p != NULL ) {
                 getline_data    fd;
 
@@ -263,7 +263,7 @@ void ParseOneLineWlib( const char *cmd, OPT_STORAGE_W *data, bool comment )
             /* fall through */
         default:
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( EXT_LIB );
+                Options.input_name = GetFilenameExt( FEXT_LIB );
             } else {
                 AddCommand( OP_ADD | OP_DELETE );
             }
@@ -369,7 +369,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
     }
     if( data->l ) { // [ = <list_file_name> ]
         Options.list_contents = true;
-        Options.list_file = CopyFilenameExt( data->l_value, EXT_LST );
+        Options.list_file = CopyFilenameExt( data->l_value, FEXT_LST );
         OPT_CLEAN_STRING( &(data->l_value) );
     }
     if( data->m ) { //                       (display C++ mangled names)
@@ -379,7 +379,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
         Options.new_library = true;
     }
     if( data->o ) { // = <out_library_name>
-        Options.output_name = CopyFilenameExt( data->o_value, EXT_LIB );
+        Options.output_name = CopyFilenameExt( data->o_value, FEXT_LIB );
         OPT_CLEAN_STRING( &(data->o_value) );
     }
     switch( data->page_size ) {
@@ -412,7 +412,7 @@ void SetOptionsWlib( OPT_STORAGE_W *data )
             strcpy( cn + sizeof( FILE_TEMPLATE_MASK ) - 1, data->x_value->data );
             Options.explode_ext = MemStrdup( cn );
         } else {
-            Options.explode_ext = CopyFilenameExt( data->x_value, EXT_OBJ );
+            Options.explode_ext = CopyFilenameExt( data->x_value, FEXT_OBJ );
         }
         OPT_CLEAN_STRING( &(data->x_value) );
 #else

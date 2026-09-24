@@ -93,7 +93,7 @@ static void ProcessOneObject( libfile io, const arch_header *arch )
                     if( cmd->fname != NULL ) {
                         ExtractObj( io, cmd->name, arch, cmd->fname );
                     } else {
-                        ExtractObj( io, cmd->name, arch, "." EXT_OBJ );
+                        ExtractObj( io, cmd->name, arch, "." FEXT_OBJ );
                     }
                     cmd->ops |= OP_EXTRACTED;
                 }
@@ -127,9 +127,9 @@ static void DelOneObject( libfile io, const arch_header *arch )
 }
 
 typedef enum {
-    OBJ_SKIP,
-    OBJ_ERROR,
-    OBJ_PROCESS,
+    DO_SKIP,
+    DO_ERROR,
+    DO_PROCESS,
 } objproc;
 
 static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *process )
@@ -189,14 +189,14 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
         if( Options.libtype == WL_LTYPE_NONE ) {
             Options.libtype = WL_LTYPE_OMF;
         }
-    } else if( obj == OBJ_PROCESS ) {
+    } else if( obj == DO_PROCESS ) {
         /*
          * Object
          */
         LibSeek( io, 0, SEEK_SET );
         AddObjectSymbols( io, 0, &arch );
         LibClose( io );
-    } else if( obj == OBJ_ERROR ) {
+    } else if( obj == DO_ERROR ) {
         BadLibrary( io );
     } else {
         LibClose( io );
@@ -206,7 +206,7 @@ static void ProcessLibOrObj( const char *filename, objproc obj, libwalk_fn *proc
 
 static void WalkInputLib( void )
 {
-    ProcessLibOrObj( Options.input_name, OBJ_ERROR, ProcessOneObject );
+    ProcessLibOrObj( Options.input_name, DO_ERROR, ProcessOneObject );
 }
 
 static void AddModules( void )
@@ -221,8 +221,8 @@ static void AddModules( void )
         if( cmd->ops & OP_IMPORT ) {
             ProcessImportWlib( buff );
         } else {
-            DefaultExtension( buff, EXT_OBJ );
-            ProcessLibOrObj( buff, OBJ_PROCESS, AddOneObject );
+            DefaultExtension( buff, FEXT_OBJ );
+            ProcessLibOrObj( buff, DO_PROCESS, AddOneObject );
         }
         Options.modified = true;
         if( Options.ar && Options.verbose ) {
@@ -245,9 +245,9 @@ static void DelModules( void )
         if( (cmd->ops & OP_DELETE) == 0 )
             continue;
         strcpy( buff, cmd->name );
-        DefaultExtension( buff, EXT_OBJ );
-        if( IsExt( buff, EXT_LIB ) ) {
-            ProcessLibOrObj( buff, OBJ_SKIP, DelOneObject );
+        DefaultExtension( buff, FEXT_OBJ );
+        if( IsExt( buff, FEXT_LIB ) ) {
+            ProcessLibOrObj( buff, DO_SKIP, DelOneObject );
             cmd->ops |= OP_DELETED;
         }
         if( (cmd->ops & OP_ADD) == 0 ) {

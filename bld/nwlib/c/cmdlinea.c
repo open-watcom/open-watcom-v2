@@ -80,7 +80,7 @@ void ParseOneLineAr( const char *cmd, OPT_STORAGE_A *data, bool comment )
                 break;
             }
             if( Options.input_name == NULL ) {
-                Options.input_name = GetFilenameExt( EXT_LIB );
+                Options.input_name = GetFilenameExt( FEXT_LIB );
             } else {
                 AddCommand( OP_NONE );
             }

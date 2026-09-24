@@ -219,7 +219,7 @@ char *MakeObjOutputName( const char *src, const char *new )
         }
     } else {
         _splitpath2( src, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-        pg1.ext = EXT_OBJ;
+        pg1.ext = FEXT_OBJ;
     }
     _makepath( path, NULL, Options.output_directory, pg1.fname, pg1.ext );
     return( path );
@@ -228,14 +228,14 @@ char *MakeObjOutputName( const char *src, const char *new )
 char *MakeListName( void )
 {
     _splitpath2( Options.input_name, pg1.buffer, NULL, NULL, &pg1.fname, NULL );
-    _makepath( path, NULL, NULL, pg1.fname, EXT_LST );
+    _makepath( path, NULL, NULL, pg1.fname, FEXT_LST );
     return( path );
 }
 
 char *MakeBakName( void )
 {
     _splitpath2( Options.input_name, pg1.buffer, &pg1.drive, &pg1.dir, &pg1.fname, NULL );
-    _makepath( path, pg1.drive, pg1.dir, pg1.fname, EXT_BAK );
+    _makepath( path, pg1.drive, pg1.dir, pg1.fname, FEXT_BAK );
     return( path );
 }
 
