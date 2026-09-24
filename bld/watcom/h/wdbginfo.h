@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -88,11 +89,11 @@
 /* Watcom debug info signature */
 #define WAT_DBG_SIGNATURE       0x8386
 
-#define OLD_EXE_MAJOR_VERSION   2
-#define EXE_MAJOR_VERSION       3
-#define EXE_MINOR_VERSION       0
-#define OBJ_MAJOR_VERSION       1
-#define OBJ_MINOR_VERSION       3
+#define OLD_MAJOR_EXE_VERSION   2
+#define MAJOR_EXE_VERSION       3
+#define MINOR_EXE_VERSION       0
+#define MAJOR_OBJ_VERSION       1
+#define MINOR_OBJ_VERSION       3
 
 #include "pushpck1.h"
 

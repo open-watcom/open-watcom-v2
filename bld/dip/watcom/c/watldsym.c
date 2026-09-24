@@ -265,17 +265,17 @@ static dip_status DoPermInfo( imp_image_handle *iih )
     if( sign != WAT_DBG_SIGNATURE )
         return( DS_FAIL );
     switch( header[offsetof( master_dbg_header, exe_major_ver )] ) {
-    case EXE_MAJOR_VERSION:
+    case MAJOR_EXE_VERSION:
         v2 = false;
         break;
-    case OLD_EXE_MAJOR_VERSION:
+    case OLD_MAJOR_EXE_VERSION:
         v2 = true;
         break;
     default:
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }
-    if( header[offsetof( master_dbg_header, exe_minor_ver )] > EXE_MINOR_VERSION ) {
+    if( header[offsetof( master_dbg_header, exe_minor_ver )] > MINOR_EXE_VERSION ) {
         DCStatus( DS_ERR | DS_INFO_BAD_VERSION );
         return( DS_ERR | DS_INFO_BAD_VERSION );
     }

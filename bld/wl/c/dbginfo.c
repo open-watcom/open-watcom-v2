@@ -121,8 +121,8 @@ void ODBIInit( section *sect )
 {
     DBISize = sizeof( Master );
     MPUT_LE_16( Master + offsetof( master_dbg_header, signature ), WAT_DBG_SIGNATURE );
-    Master[offsetof( master_dbg_header, exe_major_ver )] = EXE_MAJOR_VERSION;
-    Master[offsetof( master_dbg_header, exe_minor_ver )] = EXE_MINOR_VERSION;
+    Master[offsetof( master_dbg_header, exe_major_ver )] = MAJOR_EXE_VERSION;
+    Master[offsetof( master_dbg_header, exe_minor_ver )] = MINOR_EXE_VERSION;
     Master[offsetof( master_dbg_header, obj_major_ver )] = 0;
     Master[offsetof( master_dbg_header, obj_minor_ver )] = 0;
     DBISourceLang = LangAlloc( sizeof( FE_LANG_C ) - 1, FE_LANG_C );
