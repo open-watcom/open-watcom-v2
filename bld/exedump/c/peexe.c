@@ -383,7 +383,6 @@ void DumpCoffHdrFlags( unsigned_16 flags )
     Wdputs( buffer );
 }
 
-
 static void DumpPEObjFlags( unsigned_32 flags )
 /*********************************************/
 {

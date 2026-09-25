@@ -196,6 +196,7 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     unsigned_32         res_off;
     unsigned_32         res_len;
     unsigned_32         res_end;
+    unsigned_16         flags;
 
     dmp_resrc_type( res_ent->name );
     Wdputs( " file offset: " );
@@ -205,9 +206,12 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     res_len = (unsigned_32)res_ent->length << Resrc_shift_cnt;
     Puthex( res_len, 8 );
     Wdputs( "  flags: " );
-    dmp_resrc_flags( res_ent->flags );
+    flags = res_ent->flags;
+    Puthex( flags, 4 );
+    Wdputs( " " );
+    dmp_resrc_flags( flags );
     Wdputs( "  prior: " );
-    Putdec( GET_SEG_DISCARD_PRIORITY( res_ent->flags ) );
+    Putdec( GET_SEG_DISCARD_PRIORITY( flags ) );
     Wdputslc( "\n" );
     if( Options_dmp & RESRC_DMP ) {
         Wdputslc( "    data =\n" );
