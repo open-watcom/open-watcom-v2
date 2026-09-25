@@ -79,7 +79,7 @@ static unsigned long ProcObj( const file_list *file, unsigned long loc, void (*p
 
     RecNum = 0;
     do {
-        ObjFormat &= ~OBJ_FMT_MS_386;   /* assume not a Microsoft 386 .obj file */
+        ObjFormat &= ~OBJFMT_MS_386;   /* assume not a Microsoft 386 .obj file */
         rec = CacheRead( file, loc, sizeof( omf_record ) );
         if( rec == NULL ) {
             EarlyEOF();
@@ -341,7 +341,7 @@ static void ProcModuleEnd( void )
             break;
         }
         if( hasdisp ) {
-            if( ObjFormat & OBJ_FMT_32BIT_REC ) {
+            if( ObjFormat & OBJFMT_32BIT_REC ) {
                 StartInfo.off = MGET_LE_U32_UN( ObjBuff );
             } else {
                 StartInfo.off = MGET_LE_U16_UN( ObjBuff );
@@ -406,7 +406,7 @@ static void ProcSegDef( void )
         /*
          * in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
          */
-        if( (ObjFormat & OBJ_FMT_32BIT_REC) == 0
+        if( (ObjFormat & OBJFMT_32BIT_REC) == 0
           && (FmtData.type & MK_RAW) == 0 ) {
             sdata->align = OMFAlignTab[ALIGN_PARA];
             /*
@@ -416,7 +416,7 @@ static void ProcSegDef( void )
         }
         break;
     }
-    if( ObjFormat & OBJ_FMT_32BIT_REC ) {
+    if( ObjFormat & OBJFMT_32BIT_REC ) {
         if( acbp & 2 ) {
             BadObject();            /* we can't handle 4 GB segments properly */
             return;
@@ -434,7 +434,7 @@ static void ProcSegDef( void )
     name = FindName( GetIdx() );
     sdata->u.name.u.ptr = name->name;
     clname = FindName( GetIdx() );
-    if( ObjFormat & OBJ_FMT_EASY_OMF ) {
+    if( ObjFormat & OBJFMT_EASY_OMF ) {
         SkipIdx();                          /* skip overlay name index */
         sdata->bits = BITS_32;
         if( ObjBuff < EOObjRec ) {          /* the optional attribute field present */
@@ -532,7 +532,7 @@ static void ProcPubdef( bool static_sym )
         }
         sym_name = (char *)ObjBuff;
         ObjBuff += sym_len;
-        if( ObjFormat & OBJ_FMT_32BIT_REC ) {
+        if( ObjFormat & OBJFMT_32BIT_REC ) {
             off = MGET_LE_U32_UN( ObjBuff );
             ObjBuff += sizeof( unsigned_32 );
         } else {
@@ -731,7 +731,7 @@ static void ProcLinnum( void )
     snode = (segnode *)FindNode( SegNodes, GetIdx() );
     if( snode->info & SEGINF_DEAD )   /* ignore dead segments */
         return;
-    is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
+    is32bit = ( (ObjFormat & OBJFMT_32BIT_REC) != 0 );
     DBIAddLines( snode->entry, ObjBuff, EOObjRec - ObjBuff, is32bit );
 }
 
@@ -776,7 +776,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned iterate )
         buffer += len;
     } else {
         anchor = buffer;
-        if( ObjFormat & OBJ_FMT_MS_386 ) {
+        if( ObjFormat & OBJFMT_MS_386 ) {
             do {
                 buffer = anchor;
                 inner = count;
@@ -811,7 +811,7 @@ static void DoLIData( virt_mem start, byte *data, size_t size )
 
     end_data = data + size;
     while( data < end_data ) {
-        if( ObjFormat & OBJ_FMT_MS_386 ) {
+        if( ObjFormat & OBJFMT_MS_386 ) {
             rep = MGET_LE_U32_UN( data );
             data += sizeof( unsigned_32 );
         } else {
@@ -832,12 +832,12 @@ static void GetObject( segdata *snode, unsigned obj_offset, bool lidata )
 
     if( snode->isdead
       || snode->isabs ) {   /* ignore dead or abs segments */
-        ObjFormat |= OBJ_FMT_IGNORE_FIXUPP; /* and any corresponding fixupps */
+        ObjFormat |= OBJFMT_IGNORE_FIXUPP; /* and any corresponding fixupps */
         return;
     }
-    ObjFormat &= ~(OBJ_FMT_IGNORE_FIXUPP | OBJ_FMT_IS_LIDATA);
+    ObjFormat &= ~(OBJFMT_IGNORE_FIXUPP | OBJFMT_IS_LIDATA);
     if( lidata ) {
-        ObjFormat |= OBJ_FMT_IS_LIDATA;
+        ObjFormat |= OBJFMT_IS_LIDATA;
     }
     if( ObjBuff != EOObjRec ) {
         size = EOObjRec - ObjBuff;
@@ -865,7 +865,7 @@ static void ProcLxdata( bool islidata )
     snode = (segnode *)FindNode( SegNodes, GetIdx() );
     snode->entry->u.leader->info |= SEGINF_LXDATA_SEEN;
     snode->info |= SEGINF_LXDATA_SEEN;
-    if( ObjFormat & OBJ_FMT_32BIT_REC ) {
+    if( ObjFormat & OBJFMT_32BIT_REC ) {
         obj_offset = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
@@ -1011,7 +1011,7 @@ static void LinkDirective( void )
         CurrMod->flags_mod |= MOD_FLATTEN_DBI;
         break;
     case LDIR_OPT_UNSAFE:
-        ObjFormat |= OBJ_FMT_UNSAFE_FIXUPP;
+        ObjFormat |= OBJFMT_UNSAFE_FIXUPP;
         break;
     }
 }
@@ -1073,7 +1073,7 @@ static void Comment( void )
         break;
     case CMT_EASY_OMF:
         if( memcmp( ObjBuff, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
-            ObjFormat |= OBJ_FMT_EASY_OMF;
+            ObjFormat |= OBJFMT_EASY_OMF;
         }
         break;
     case CMT_SOURCE_NAME:
@@ -1112,18 +1112,18 @@ static void Pass1Cmd( byte cmd )
         AddNames();
         break;
     case CMD_SEGD32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_SEGDEF:
         CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcSegDef();
         break;
     case CMD_STATIC_PUBD32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_STATIC_PUBDEF:
         ProcPubdef( true );
         break;
     case CMD_PUBD32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_PUBDEF:
         ProcPubdef( false );
         break;
@@ -1142,7 +1142,7 @@ static void Pass1Cmd( byte cmd )
         DefineGroup();
         break;
     case CMD_LINN32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_LINNUM:
         switch( CurrMod->omfdbg ) {
         case OMF_DBG_CODEVIEW:
@@ -1156,7 +1156,7 @@ static void Pass1Cmd( byte cmd )
         }
         break;
     case CMD_LINS32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_LINSYM:
         ProcLinsym();
         break;
@@ -1167,30 +1167,30 @@ static void Pass1Cmd( byte cmd )
         ProcComdef( isstatic );
         break;
     case CMD_COMD32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_COMDAT:
         CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcComdat();
         break;
     case CMD_LEDA32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_LEDATA:
         ProcLxdata( false );
         break;
     case CMD_LIDA32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_LIDATA:
         ProcLxdata( true );
         break;
     case CMD_FIXU32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_FIXUPP:        /* count the fixups for each seg_leader */
         CurrMod->flags_mod |= MOD_NEED_PASS_2;
         DoRelocs();
-        ObjFormat &= ~OBJ_FMT_UNSAFE_FIXUPP;
+        ObjFormat &= ~OBJFMT_UNSAFE_FIXUPP;
         break;
     case CMD_MODE32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_MODEND:
         ProcModuleEnd();
         break;
@@ -1198,13 +1198,13 @@ static void Pass1Cmd( byte cmd )
         ProcAlias();
         break;
     case CMD_BAKP32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_BAKPAT:
         CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcBakpat();
         break;
     case CMD_NBKP32:
-        ObjFormat |= OBJ_FMT_MS_386;
+        ObjFormat |= OBJFMT_MS_386;
     case CMD_NBKPAT:
         CurrMod->flags_mod |= MOD_NEED_PASS_2;
         ProcNbkpat();

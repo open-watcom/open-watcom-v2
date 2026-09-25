@@ -358,8 +358,8 @@ void Set64BitMode( void )
 {
     LinkState |= LS_FMT_SEEN_64BIT;
     if( !HintFormat( MK_ALLOW_64 ) ) {
-        if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
-            ObjFormat |= OBJ_FMT_TOLD_BITNESS;
+        if( (ObjFormat & OBJFMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= OBJFMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                         CurrMod->u1.source->infile->name.u.ptr, 64 );
         }
@@ -372,8 +372,8 @@ void Set32BitMode( void )
 {
     LinkState |= LS_FMT_SEEN_32BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
-        if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
-            ObjFormat |= OBJ_FMT_TOLD_BITNESS;
+        if( (ObjFormat & OBJFMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= OBJFMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                         CurrMod->u1.source->infile->name.u.ptr, 32 );
         }
@@ -384,8 +384,8 @@ void Set16BitMode( void )
 /***********************/
 {
     if( !HintFormat( MK_ALLOW_16 ) ) {
-        if( (ObjFormat & OBJ_FMT_TOLD_BITNESS) == 0 ) {
-            ObjFormat |= OBJ_FMT_TOLD_BITNESS;
+        if( (ObjFormat & OBJFMT_TOLD_BITNESS) == 0 ) {
+            ObjFormat |= OBJFMT_TOLD_BITNESS;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                     CurrMod->u1.source->infile->name.u.ptr, 16 );
         }

@@ -188,7 +188,7 @@ static byte COMDEF_bits( void )
             return( seg->bits );
         }
     }
-    return( (ObjFormat & OBJ_FMT_32BIT_REC) ? BITS_32 : BITS_16 );
+    return( (ObjFormat & OBJFMT_32BIT_REC) ? BITS_32 : BITS_16 );
 }
 
 void ProcComdef( bool isstatic )
@@ -246,7 +246,7 @@ void ProcLinsym( void )
     }
     if( !IS_SYM_COMDAT( sym ) )
         return;
-    is32bit = ( (ObjFormat & OBJ_FMT_32BIT_REC) != 0 );
+    is32bit = ( (ObjFormat & OBJFMT_32BIT_REC) != 0 );
     if( sym->mod == CurrMod
       && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
@@ -352,7 +352,7 @@ static offset CountIDBlock( unsigned_8 **buffptr )
     unsigned_16 count;
 
     buff = *buffptr;
-    if( ObjFormat & OBJ_FMT_MS_386 ) {
+    if( ObjFormat & OBJFMT_MS_386 ) {
         repeat = MGET_LE_U32_UN( buff );
         buff += sizeof( unsigned_32 );
     } else {
@@ -439,7 +439,7 @@ void ProcComdat( void )
         usealign = false;
         align = OMFAlignTab[align];
     }
-    if( ObjFormat & OBJ_FMT_32BIT_REC ) {
+    if( ObjFormat & OBJFMT_32BIT_REC ) {
         dataoff = MGET_LE_U32_UN( ObjBuff );
         ObjBuff += sizeof( unsigned_32 );
     } else {
@@ -497,7 +497,7 @@ void ProcComdat( void )
         sdata->align = align;
         sdata->u.leader = snode->entry->u.leader;
         sdata->iscode = ( (snode->info & SEGINF_CODE) != 0 );
-        sdata->bits = ( ObjFormat & OBJ_FMT_32BIT_REC ) ? BITS_32 : BITS_16;
+        sdata->bits = ( ObjFormat & OBJFMT_32BIT_REC ) ? BITS_32 : BITS_16;
         info = AllocCDatInfo();
         info->sdata = sdata;
         info->sym = sym;
@@ -534,9 +534,9 @@ void ProcComdat( void )
     }
     if( (info->flags & SYM_DEAD)
       && (LinkFlags & LF_INC_LINK_FLAG) == 0 ) {
-        ObjFormat |= OBJ_FMT_IGNORE_FIXUPP;
+        ObjFormat |= OBJFMT_IGNORE_FIXUPP;
     } else {
-        ObjFormat &= ~(OBJ_FMT_IGNORE_FIXUPP | OBJ_FMT_IS_LIDATA);
+        ObjFormat &= ~(OBJFMT_IGNORE_FIXUPP | OBJFMT_IS_LIDATA);
     }
     SetCurrSeg( info->sdata, dataoff, piece->data );
 }
