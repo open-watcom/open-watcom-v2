@@ -74,24 +74,19 @@ static unsigned_16 dmp_res_nonres_name( void )
 
     len = read_res_nonres_name( name, &entry_index );
     if( len ) {
-        if( Form == FORM_NE ) {
-            Wdputs( name );
+        Putdec( entry_index );
+        Wdputs( ": " );
+        Wdputs( name );
+        if( Form == FORM_NE && entry_index ) {
             if( Dmp_ordinal( entry_index ) ) {
-                Wdputs( " unknown ordinal " );
-                Puthex( entry_index, 2 * sizeof( entry_index ) );
+                Wdputs( " (unknown ordinal)" );
             }
-        } else {
-            Wdputs( "ordinal " );
-            Puthex( entry_index, 2 * sizeof( entry_index ) );
-            Wdputs( ": " );
-            Wdputs( name );
         }
         Wdputslc( "\n" );
         /* Length byte + string + ordinal. */
         return( sizeof( len ) + len + sizeof( entry_index ) );
-    } else {
-        return( 0 );
     }
+    return( 0 );
 }
 
 /*
@@ -342,7 +337,7 @@ static int_entry_pnt *new_ent_pnt( void )
     int_entry_pnt           *new_ent;
     static int_entry_pnt    *tail = NULL;
 
-    new_ent = Wmalloc( sizeof( int_entry_pnt ) );
+    new_ent = Wmalloc( sizeof( *new_ent ) );
     new_ent->next = NULL;
     if( tail == NULL ) {
         Entry_pnts = new_ent;
@@ -579,6 +574,7 @@ bool Dmp_os2_exports( void )
     char            name[256];
     unsigned_16     ordinal;
 
+    New_exe_off = 0;
     /* Check executable format; handle stubless modules */
     Wread( &Dos_head, sizeof( Dos_head.hdr ) );
     if( Dos_head.hdr.signature == EXESIGN_DOS ) {
@@ -587,29 +583,27 @@ bool Dmp_os2_exports( void )
         }
         Wlseek( NE_HEADER_OFFSET );
         Wread( &New_exe_off, sizeof( New_exe_off ) );
-    } else if( Dos_head.hdr.signature == EXESIGN_LX
-      || Dos_head.hdr.signature == EXESIGN_LE
-      || Dos_head.hdr.signature == EXESIGN_NE ) {
-        New_exe_off = 0;
     }
-
-    /* Read appropriate header */
+    /*
+     * Read appropriate header
+     */
     Wlseek( New_exe_off );
     Wread( &Os2_386_head, sizeof( Os2_386_head ) );
-    if( Os2_386_head.signature == EXESIGN_NE ) {
+    switch( Os2_386_head.signature ) {
+    case EXESIGN_LE:
+        Form = FORM_LE;
+        break;
+    case EXESIGN_LX:
+        Form = FORM_LX;
+        break;
+    case EXESIGN_NE:
         Form = FORM_NE;
         Wlseek( New_exe_off );
         Wread( &Os2_head, sizeof( Os2_head ) );
-    } else {
-        if( Os2_386_head.signature == EXESIGN_LE ) {
-            Form = FORM_LE;
-        } else if( Os2_386_head.signature == EXESIGN_LX ) {
-            Form = FORM_LX;
-        } else {
-            return( false );
-        }
+        break;
+    default:
+        return( false );
     }
-
     if( Form == FORM_NE ) {
         res_nam_tab = New_exe_off + Os2_head.resident_off;
     } else {

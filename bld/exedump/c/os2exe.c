@@ -304,7 +304,6 @@ static void dmp_mod_flags_lelx( unsigned_32 flags, unsigned_16 ostype )
     Wdputs( buffer );
 }
 
-
 /*
  * Dump the New Executable Header, if any.
  */
@@ -330,7 +329,7 @@ bool Dmp_os2_head( void )
         Dump_header( (char *)&Os2_head.align, os2_exe_msg_new, 4 );
     }
     Wdputslc( "\n" );
-    Wdputs( "Module flags = " );
+    Wdputs( "Module Flags = " );
     Puthex( Os2_head.info, 4 );
     Wdputs( ": " );
     dmp_mod_flags_ne( Os2_head.info, Os2_head.target );
@@ -531,7 +530,7 @@ bool Dmp_386_head( void )
     Wdputslc( "\n" );
     Dump_header( (char *)&Os2_386_head.byte_order, os2_386_msg, 4 );
     Wdputslc( "\n" );
-    Wdputs( "Module flags = " );
+    Wdputs( "Module Flags = " );
     Puthex( Os2_386_head.flags, 8 );
     Wdputs( ": " );
     dmp_mod_flags_lelx( Os2_386_head.flags, Os2_386_head.os_type );

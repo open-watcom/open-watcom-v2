@@ -242,7 +242,7 @@ bool Dmp_pe_head( void )
         tbl_entry++;
     }
     Wdputslc( "\n" );
-    Wdputs( "Module flags = " );
+    Wdputs( "Module Flags = " );
     Puthex( Pe_head.fheader.flags, 4 );
     Wdputs( ": " );
     DumpCoffHdrFlags( Pe_head.fheader.flags );

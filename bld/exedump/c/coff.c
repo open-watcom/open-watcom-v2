@@ -264,7 +264,7 @@ bool Dmp_coff_head( void )
         }
         Dump_header( (char *)&header, templ, 4 );
         Dump_header( (char *)&header + 2, coff_hdr_msg, 4 );
-        Wdputs( "          flags = " );
+        Wdputs( "Module Flags = " );
         Puthex( header.o.flags, 4 );
         Wdputs( ": " );
         DumpCoffHdrFlags( header.o.flags );
