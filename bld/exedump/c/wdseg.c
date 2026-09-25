@@ -116,8 +116,8 @@ static void dmp_seg_ent( segment_record *seg_ent )
     flags = seg_ent->info;
     Putdecl( GET_SEG_DISCARD_PRIORITY( flags ), 2 );
     Wdputs( "    " );
-    Puthex( GET_SEG_PMODE_DPL( flags ), 2 );
-    Wdputc( ' ' );
+    Putdec( GET_SEG_PMODE_DPL( flags ) );
+    Wdputs( "  " );
     Puthex( flags, 4 );
     Wdputs( "  " );
     dmp_seg_flags( flags );

@@ -44,27 +44,28 @@ typedef struct os2_res_entry {
     unsigned_16         name_id;
 } os2_res_entry;
 
-static  const_string_table resource_type[][2] = {
-    { "Unknown resource type\n",        "000" },
-    { "Cursor\n",                       "cur" },
-    { "Bitmap\n",                       "bmp" },
-    { "Icon\n",                         "ico" },
-    { "Menu template\n",                "mnu" },
-    { "Dialog-box template\n",          "dlg" },
-    { "String table\n",                 "str" },
-    { "Font directory\n",               "fdr" },
-    { "Font\n",                         "fnt" },
-    { "Keyboard-accelerator table\n",   "acc" },
-    { "RC data resource\n",             "rcd" },
-    { "Error message table\n",          "erm" },
-    { "Cursor group header\n",          "cgr" },
-    { "Unkown resource type\n",         "unk" },    /* #13 is not used - unlucky? */
-    { "Icon group header\n",            "igr" },
-    { "Nametable\n"                     "nmt" }
+static  const_string_table resource_type_win[][2] = {
+    { "Unknown resource type (#0)", "000" },
+    { "Cursor",                     "cur" },
+    { "Bitmap",                     "bmp" },
+    { "Icon",                       "ico" },
+    { "Menu template",              "mnu" },
+    { "Dialog-box template",        "dlg" },
+    { "String table",               "str" },
+    { "Font directory",             "fdr" },
+    { "Font",                       "fnt" },
+    { "Keyboard-accelerator table", "acc" },
+    { "RC data resource",           "rcd" },
+    { "Error message table",        "erm" },
+    { "Cursor group header",        "cgr" },
+    { "Unknown resource type (#13)","unk" },    /* #13 is not used - unlucky? */
+    { "Icon group header",          "igr" },
+    { "Nametable",                  "nmt" },
+    { "Version info",               "vri" },
 };
 
 static  const_string_table resource_type_os2[][2] = {
-    { "Unknown resource type\n",                "000" },
+    { "Unknown resource type (#0)\n",           "000" },
     { "Pointer\n",                              "ptr" },
     { "Bitmap\n",                               "bmp" },
     { "Menu template\n",                        "mnu" },
@@ -86,7 +87,7 @@ static  const_string_table resource_type_os2[][2] = {
     { "Help subtable\n",                        "hls" },
     { "DBCS font driver directory\n",           "fdd" },
     { "DBCS font driver\n",                     "fdr" },
-    { "Default icon\n"                          "icd" }
+    { "Default icon\n",                         "icd" },
 };
 
 
@@ -131,30 +132,27 @@ static void resrc_to_file( uint32_t res_off, uint32_t res_len, uint16_t res_id, 
 }
 
 /*
- * get a resource type name
+ * get a id name
  */
-static void dmp_resrc_name( unsigned_16 offset )
-/**********************************************/
+static void dmp_resrc_id_name( unsigned_16 offset )
+/*************************************************/
 {
     Wlseek( New_exe_off + Os2_head.resource_off + offset );
     Dump_name();
 }
 
 /*
- * printout a resource name
+ * printout a resource item id name
  */
-static void dmp_resrc_type( unsigned_16 res_type )
-/***********************************************/
+static void dmp_resrc_name( unsigned_16 res_type )
+/************************************************/
 {
-    Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
         Wdputs( "resource id: " );
         Putdec( res_type );
-        Wdputslc( "\n" );
     } else {
-        dmp_resrc_name( res_type );
-        Wdputslc( "\n" );
+        dmp_resrc_id_name( res_type );
     }
 }
 
@@ -190,15 +188,17 @@ static void dmp_resrc_flags( unsigned_16 flags )
 /*
  * dump a resource description
  */
-static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
-/**************************************************************************/
+static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 res_type )
+/******************************************************************************/
 {
     unsigned_32         res_off;
     unsigned_32         res_len;
     unsigned_32         res_end;
     unsigned_16         flags;
 
-    dmp_resrc_type( res_ent->name );
+    Wdputc( ' ' );
+    dmp_resrc_name( res_ent->name );
+    Wdputslc( "\n" );
     Wdputs( " file offset: " );
     res_off = (unsigned_32)res_ent->offset << Resrc_shift_cnt;
     Puthex( res_off, 8 );
@@ -220,15 +220,15 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
     if( Options_dmp & RSRC_FILE_DMP ) {
         char    ext[8];
 
-        if( res_type < ARRAY_SIZE( resource_type ) ) {
-            strcpy( ext, resource_type[res_type][1] );
+        if( res_type < ARRAY_SIZE( resource_type_win ) ) {
+            strcpy( ext, resource_type_win[res_type][1] );
         } else {
             sprintf( ext, "%X", res_type );
         }
         resrc_to_file( res_off, res_len, res_ent->name, ext );
     }
     res_end = res_off + res_len;
-    if( res_end > Resrc_end ) {
+    if( Resrc_end < res_end ) {
         Resrc_end = res_end;
     }
 }
@@ -236,8 +236,8 @@ static void dmp_resrc_desc( resource_record *res_ent, unsigned_16 res_type )
 /*
  * dump some resource entries
  */
-static void dmp_resrc_ent( unsigned_16 num_resources, unsigned_16 res_type )
-/**************************************************************************/
+static void dmp_resrc_ent_win( unsigned_16 num_resources, unsigned_16 res_type )
+/******************************************************************************/
 {
     resource_record *res_ent_tab;
     resource_record *res_ent;
@@ -253,32 +253,28 @@ static void dmp_resrc_ent( unsigned_16 num_resources, unsigned_16 res_type )
     for( res_num = 0; res_num != num_resources; res_num++ ) {
         Wdputs( " # " );
         Putdec( res_num + 1 );
-        dmp_resrc_desc( res_ent++, res_type );
+        dmp_resrc_desc_win( res_ent++, res_type );
     }
     free( res_ent_tab );
 }
 
 /*
- * printout a resource type name
+ * printout a resource item type name
  */
-static void dmp_resrc_type_name( unsigned_16 res_type )
-/*****************************************************/
+static void dmp_resrc_type( unsigned_16 res_type )
+/************************************************/
 {
     Wdputc( ' ' );
     if( res_type & SEG_RESRC_HIGH ) {
         res_type &= ~SEG_RESRC_HIGH;
-        if( res_type > ARRAY_SIZE( resource_type ) ) {
-//        if( res_type > 15 ) {
-            Wdputs( "Type number: " );
-            Putdec( res_type );
-            Wdputslc( "\n" );
+        if( res_type < ARRAY_SIZE( resource_type_win ) ) {
+            Wdputs( resource_type_win[res_type][0] );
         } else {
-            Wdputslc( resource_type[res_type][0] );
-//            Wdputslc( resource_type[res_type] );
+            Wdputs( "Type id: " );
+            Putdec( res_type );
         }
     } else {
-        dmp_resrc_name( res_type );
-        Wdputslc( "\n" );
+        dmp_resrc_id_name( res_type );
     }
 }
 
@@ -306,9 +302,11 @@ static void dmp_resrc_tab_win( void )
         if( res_type == 0 ) {
             return;
         }
-        dmp_resrc_type_name( res_type );
+        Wdputc( ' ' );
+        dmp_resrc_type( res_type );
+        Wdputslc( "\n" );
         Wlseek( offset );
-        dmp_resrc_ent( res_group.num_resources, res_type );
+        dmp_resrc_ent_win( res_group.num_resources, res_type );
         offset += res_group.num_resources * sizeof( resource_record );
         Wdputslc( "\n" );
     }
@@ -439,7 +437,8 @@ void Dmp_resrc_tab_lelx( void )
             type_id = res_tab.type_id;
             if( type_id < 16 ) {
                 Wdputs( "type:  " );
-                Wdputslc( resource_type_os2[res_tab.type_id][0] );
+                Wdputs( resource_type_os2[res_tab.type_id][0] );
+                Wdputslc( "\n" );
             }
         }
         Wdputs( "      " );
