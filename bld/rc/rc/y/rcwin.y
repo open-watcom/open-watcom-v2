@@ -773,11 +773,11 @@ string-id
 accelerators-resource
     : name-id Y_ACCELERATORS opt-resource-info-stmts acc-section
         {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), ACCELERATORS_DEFAULT_FLAGS, $4 );
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), ACCEL_DEFAULT_FLAGS, $4 );
         }
     | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, ACCELERATORS_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, ACCEL_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3.res_flags, $5 );
         }
     ;

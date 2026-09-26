@@ -852,11 +852,11 @@ help-subitem
 accel-table-resource
     : Y_ACCELTABLE name-id acc-section
         {
-            SemOS2WriteAccelTable( $2, ACCELTABLE_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteAccelTable( $2, ACCEL_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
         }
     | Y_ACCELTABLE name-id resource-options acc-section
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, ACCELTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, ACCEL_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteAccelTable( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;
