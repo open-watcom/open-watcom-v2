@@ -593,11 +593,11 @@ resource-type
 user-defined-resource
     : Y_RESOURCE type-id comma-opt name-id user-defined-data
         {
-            SemAddResourceAndFree( $4, $2, RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE, $5 );
+            SemAddResourceAndFree( $4, $2, RESOURCE_DEFAULT_FLAGS, $5 );
         }
     | Y_RESOURCE type-id comma-opt name-id resource-options user-defined-data
         {
-            SemCheckResFlags( &($5), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($5), RESFLAG_NONE, RESOURCE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $4, $2, $5.res_flags, $6 );
         }
     ;
@@ -696,11 +696,11 @@ rc-data
 rcdata-resource
     : Y_RCDATA name-id rc-data
         {
-            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), RESFLAG_PURE | RESFLAG_MOVEABLE, $3 );
+            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), RCDATA_DEFAULT_FLAGS, $3 );
         }
     | Y_RCDATA name-id resource-options rc-data
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, RCDATA_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.res_flags, $4 );
         }
     ;
@@ -731,11 +731,11 @@ presparam-name
 string-table-resource
     : Y_STRINGTABLE string-section
         {
-            SemOS2MergeStrTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, SemOS2DefaultCodepage() );
+            SemOS2MergeStrTable( $2, STRINGTABLE_DEFAULT_FLAGS, SemOS2DefaultCodepage() );
         }
     | Y_STRINGTABLE resource-options string-section
         {
-            SemCheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($2), RESFLAG_NONE, STRINGTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2MergeStrTable( $3, $2.res_flags, $2.codePage );
         }
     ;
@@ -792,7 +792,7 @@ id-value
 help-table-resource
     : Y_HELPTABLE name-id help-table-section
         {
-            SemOS2WriteHelpTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3 );
+            SemOS2WriteHelpTable( $2, HELPTABLE_DEFAULT_FLAGS, $3 );
         }
     ;
 
@@ -820,11 +820,11 @@ help-item
 help-subtable-resource
     : Y_HELPSUBTABLE name-id help-subtable-section
         {
-            SemOS2WriteHelpSubTable( $2, 2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3 );
+            SemOS2WriteHelpSubTable( $2, 2, HELPTABLE_DEFAULT_FLAGS, $3 );
         }
     | Y_HELPSUBTABLE name-id Y_SUBITEMSIZE constant-expression help-subtable-section
         {
-            SemOS2WriteHelpSubTable( $2, $4.Value, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $5 );
+            SemOS2WriteHelpSubTable( $2, $4.Value, HELPTABLE_DEFAULT_FLAGS, $5 );
         }
     ;
 
@@ -852,11 +852,11 @@ help-subitem
 accel-table-resource
     : Y_ACCELTABLE name-id acc-section
         {
-            SemOS2WriteAccelTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE, SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteAccelTable( $2, ACCELTABLE_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
         }
     | Y_ACCELTABLE name-id resource-options acc-section
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, ACCELTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteAccelTable( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;
@@ -937,10 +937,10 @@ acc-item-option
 
 menu-resource
     : Y_MENU name-id menu-section
-        { SemOS2WriteMenu( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, $3, Y_MENU, SemOS2DefaultCodepage() ); }
+        { SemOS2WriteMenu( $2, MENU_DEFAULT_FLAGS, $3, Y_MENU, SemOS2DefaultCodepage() ); }
     | Y_MENU name-id resource-options menu-section
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, MENU_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteMenu( $2, $3.res_flags, $4, Y_MENU, $3.codePage );
         }
     ;
@@ -1095,11 +1095,11 @@ dialogtemplate
 dlg-template
     : dialogtemplate name-id diag-control-section
         {
-            SemOS2WriteDialogTemplate( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteDialogTemplate( $2, DIALOG_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
         }
     | dialogtemplate name-id resource-options diag-control-section
         {
-            SemCheckResFlags( &($3), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteDialogTemplate( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;

@@ -35,6 +35,24 @@
 
 #include "wresall.h"
 
+
+/*
+ * NOTE: MESSAGETABLE resource uses different definition on OS/2 and on Windows
+ *      need to get information about what is MS standard on Windows and what
+ *      is IBM standard on OS/2
+ */
+#define RESOURCE_DEFAULT_FLAGS      (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define RCDATA_DEFAULT_FLAGS        (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define STRINGTABLE_DEFAULT_FLAGS   (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define ERRTABLE_DEFAULT_FLAGS      (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define MENU_DEFAULT_FLAGS          (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define DIALOG_DEFAULT_FLAGS        (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
+#define HELPTABLE_DEFAULT_FLAGS     (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE) /* OS/2 specific */
+#define ACCELERATORS_DEFAULT_FLAGS  (RESFLAG_PURE | RESFLAG_MOVEABLE)
+#define VERSIONINFO_DEFAULT_FLAGS   (RESFLAG_PURE | RESFLAG_MOVEABLE)
+#define TOOLBAR_DEFAULT_FLAGS       (RESFLAG_PURE | RESFLAG_MOVEABLE)                       /* Windows specific */
+#define ACCELTABLE_DEFAULT_FLAGS    (RESFLAG_PURE | RESFLAG_MOVEABLE)                       /* OS/2 specific */
+
 /**** Semantic structures ****/
 typedef struct FullResFlags {
     ResMemFlags         res_flags;
