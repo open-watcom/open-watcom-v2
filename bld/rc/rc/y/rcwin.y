@@ -187,6 +187,15 @@
 %type <integral>        id-value
 %type <accevent>        event
 %type <fullresflags>    resource-options
+%type <fullresflags>    resource-options-resource
+%type <fullresflags>    resource-options-rcdata
+%type <fullresflags>    resource-options-string-table
+%type <fullresflags>    resource-options-toolbar
+%type <fullresflags>    resource-options-error-table
+%type <fullresflags>    resource-options-accelerators
+%type <fullresflags>    resource-options-menu
+%type <fullresflags>    resource-options-dialog
+%type <fullresflags>    resource-options-version-info
 %type <token>           resource-option
 %type <string>          file-name
 %type <resbyte>         fontitalic
@@ -596,11 +605,18 @@ user-defined-resource
         {
             SemAddResourceAndFree( $1, $3, RESOURCE_DEFAULT_FLAGS, $4 );
         }
-    | name-id comma-opt user-defined-type-id resource-options user-defined-data
+    | name-id comma-opt user-defined-type-id resource-options-resource user-defined-data
         {
             SemCheckResFlags( &($4), RESFLAG_NONE, RESOURCE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, $3, $4.res_flags, $5 );
         }
+    ;
+
+resource-options-resource
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-resource resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 user-defined-type-id
@@ -652,11 +668,18 @@ rcdata-resource
         {
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), RCDATA_DEFAULT_FLAGS, $4 );
         }
-    | name-id Y_RCDATA resource-options opt-resource-info-stmts user-defined-data
+    | name-id Y_RCDATA resource-options-rcdata opt-resource-info-stmts user-defined-data
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, RCDATA_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.res_flags, $5 );
         }
+    ;
+
+resource-options-rcdata
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-rcdata resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 string-table-resource
@@ -664,11 +687,18 @@ string-table-resource
         {
             SemWINMergeStrTable( $3, STRINGTABLE_DEFAULT_FLAGS );
         }
-    | Y_STRINGTABLE resource-options opt-resource-info-stmts string-section
+    | Y_STRINGTABLE resource-options-string-table opt-resource-info-stmts string-section
         {
             SemCheckResFlags( &($2), RESFLAG_NONE, STRINGTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINMergeStrTable( $4, $2.res_flags );
         }
+    ;
+
+resource-options-string-table
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-string-table resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 toolbar-resource
@@ -676,11 +706,18 @@ toolbar-resource
         {
             SemWINWriteToolBar( $1, $6, $3.Value, $5.Value, TOOLBAR_DEFAULT_FLAGS );
         }
-    | name-id Y_TOOLBAR resource-options constant-expression comma-opt constant-expression toolbar-block
+    | name-id Y_TOOLBAR resource-options-toolbar constant-expression comma-opt constant-expression toolbar-block
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, TOOLBAR_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3.res_flags );
         }
+    ;
+
+resource-options-toolbar
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-toolbar resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 toolbar-block
@@ -731,11 +768,18 @@ error-table-resource
         {
             SemWINMergeErrTable( $3, ERRTABLE_DEFAULT_FLAGS );
         }
-    | Y_ERRTABLE resource-options opt-resource-info-stmts string-section
+    | Y_ERRTABLE resource-options-error-table opt-resource-info-stmts string-section
         {
             SemCheckResFlags( &($2), RESFLAG_NONE, ERRTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINMergeErrTable( $4, $2.res_flags );
         }
+    ;
+
+resource-options-error-table
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-error-table resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 string-section
@@ -775,11 +819,18 @@ accelerators-resource
         {
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), ACCEL_DEFAULT_FLAGS, $4 );
         }
-    | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
+    | name-id Y_ACCELERATORS resource-options-accelerators opt-resource-info-stmts acc-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, ACCEL_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3.res_flags, $5 );
         }
+    ;
+
+resource-options-accelerators
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-accelerators resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 acc-section
@@ -865,17 +916,24 @@ acc-item-option
 menuex-resource
     : name-id Y_MENU_EX menu-section
         { SemWINWriteMenu( $1, MENU_DEFAULT_FLAGS, $3, Y_MENU_EX ); }
-    | name-id Y_MENU_EX resource-options menu-section
+    | name-id Y_MENU_EX resource-options-menu menu-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, MENU_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteMenu( $1, $3.res_flags, $4, Y_MENU_EX );
         }
     ;
 
+resource-options-menu
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-menu resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
+    ;
+
 menu-resource
     : name-id Y_MENU opt-resource-info-stmts menu-section
         { SemWINWriteMenu( $1, MENU_DEFAULT_FLAGS, $4, Y_MENU ); }
-    | name-id Y_MENU resource-options opt-resource-info-stmts menu-section
+    | name-id Y_MENU resource-options-menu opt-resource-info-stmts menu-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, MENU_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteMenu( $1, $3.res_flags, $5, Y_MENU );
@@ -1192,30 +1250,37 @@ dlg-resource
         {
             SemWINWriteDialogBox( $1, DIALOG_DEFAULT_FLAGS, $4, SemWINNewDiagOptions( &($3) ), $6, $5, $2 );
         }
-    | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
+    | name-id dialog-or-dialogEx resource-options-dialog comma-opt size-info helpId-opt
                diag-options-section diag-control-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.res_flags, $5, $7, $8, $6, $2 );
         }
-    | name-id dialog-or-dialogEx resource-options comma-opt size-info helpId-opt
+    | name-id dialog-or-dialogEx resource-options-dialog comma-opt size-info helpId-opt
                 diag-control-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.res_flags, $5, NULL, $7, $6, $2 );
         }
-    | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
+    | name-id dialog-or-dialogEx resource-options-dialog comma-opt exstyle-equal-stmt
                 size-info helpId-opt diag-options-section diag-control-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.res_flags, $6, SemWINDiagOptions( $8, &($5) ) , $9, $7, $2 );
         }
-    | name-id dialog-or-dialogEx resource-options comma-opt exstyle-equal-stmt
+    | name-id dialog-or-dialogEx resource-options-dialog comma-opt exstyle-equal-stmt
               size-info helpId-opt diag-control-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteDialogBox( $1, $3.res_flags, $6, SemWINNewDiagOptions( &($5) ), $8, $7, $2 );
         }
+    ;
+
+resource-options-dialog
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-dialog resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 size-info
@@ -1696,11 +1761,18 @@ version-info-resource
         {
             SemWINWriteVerInfo( $1, VERSIONINFO_DEFAULT_FLAGS, $3, $4 );
         }
-    | name-id Y_VERSIONINFO resource-options fixed-ver-section variable-ver-section
+    | name-id Y_VERSIONINFO resource-options-version-info fixed-ver-section variable-ver-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, VERSIONINFO_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteVerInfo( $1, $3.res_flags, $4, $5 );
         }
+    ;
+
+resource-options-version-info
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1 ); }
+    | resource-options-version-info resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 
 fixed-ver-section

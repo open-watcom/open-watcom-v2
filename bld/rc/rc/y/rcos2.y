@@ -182,6 +182,13 @@
 %type <resid>           type-id
 %type <integral>        id-value
 %type <fullresflags>    resource-options
+%type <fullresflags>    resource-options-resource
+%type <fullresflags>    resource-options-rcdata
+%type <fullresflags>    resource-options-string-table
+%type <fullresflags>    resource-options-message-table
+%type <fullresflags>    resource-options-accel-table
+%type <fullresflags>    resource-options-menu
+%type <fullresflags>    resource-options-dialog
 %type <optint>          resource-option
 %type <string>          file-name
 %type <acceltable>      acc-section
@@ -595,11 +602,18 @@ user-defined-resource
         {
             SemAddResourceAndFree( $4, $2, RESOURCE_DEFAULT_FLAGS, $5 );
         }
-    | Y_RESOURCE type-id comma-opt name-id resource-options user-defined-data
+    | Y_RESOURCE type-id comma-opt name-id resource-options-resource user-defined-data
         {
             SemCheckResFlags( &($5), RESFLAG_NONE, RESOURCE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $4, $2, $5.res_flags, $6 );
         }
+    ;
+
+resource-options-resource
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-resource resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 user-defined-data
@@ -698,11 +712,18 @@ rcdata-resource
         {
             SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), RCDATA_DEFAULT_FLAGS, $3 );
         }
-    | Y_RCDATA name-id resource-options rc-data
+    | Y_RCDATA name-id resource-options-rcdata rc-data
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, RCDATA_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.res_flags, $4 );
         }
+    ;
+
+resource-options-rcdata
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-rcdata resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 presparam-list
@@ -733,11 +754,18 @@ string-table-resource
         {
             SemOS2MergeStrTable( $2, STRINGTABLE_DEFAULT_FLAGS, SemOS2DefaultCodepage() );
         }
-    | Y_STRINGTABLE resource-options string-section
+    | Y_STRINGTABLE resource-options-string-table string-section
         {
             SemCheckResFlags( &($2), RESFLAG_NONE, STRINGTABLE_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2MergeStrTable( $3, $2.res_flags, $2.codePage );
         }
+    ;
+
+resource-options-string-table
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-string-table resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 message-table-resource
@@ -745,11 +773,18 @@ message-table-resource
         {
             SemOS2MergeMsgTable( $2, RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE );
         }
-    | Y_MESSAGETABLE resource-options string-section
+    | Y_MESSAGETABLE resource-options-message-table string-section
         {
             SemCheckResFlags( &($2), RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
             SemOS2MergeMsgTable( $3, $2.res_flags );
         }
+    ;
+
+resource-options-message-table
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-message-table resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 string-section
@@ -854,11 +889,18 @@ accel-table-resource
         {
             SemOS2WriteAccelTable( $2, ACCEL_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
         }
-    | Y_ACCELTABLE name-id resource-options acc-section
+    | Y_ACCELTABLE name-id resource-options-accel-table acc-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, ACCEL_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteAccelTable( $2, $3.res_flags, $3.codePage, $4 );
         }
+    ;
+
+resource-options-accel-table
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-accel-table resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 acc-section
@@ -938,11 +980,18 @@ acc-item-option
 menu-resource
     : Y_MENU name-id menu-section
         { SemOS2WriteMenu( $2, MENU_DEFAULT_FLAGS, $3, Y_MENU, SemOS2DefaultCodepage() ); }
-    | Y_MENU name-id resource-options menu-section
+    | Y_MENU name-id resource-options-menu menu-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, MENU_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteMenu( $2, $3.res_flags, $4, Y_MENU, $3.codePage );
         }
+    ;
+
+resource-options-menu
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-menu resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 menu-section
@@ -1097,11 +1146,18 @@ dlg-template
         {
             SemOS2WriteDialogTemplate( $2, DIALOG_DEFAULT_FLAGS, SemOS2DefaultCodepage(), $3 );
         }
-    | dialogtemplate name-id resource-options diag-control-section
+    | dialogtemplate name-id resource-options-dialog diag-control-section
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, DIALOG_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemOS2WriteDialogTemplate( $2, $3.res_flags, $3.codePage, $4 );
         }
+    ;
+
+resource-options-dialog
+    : resource-option
+        { $$ = SemOS2AddFirstResOption( $1.Option, $1.Value ); }
+    | resource-options-dialog resource-option
+        { $$ = SemOS2AddResOption( $1, $2.Option, $2.Value ); }
     ;
 
 size-info

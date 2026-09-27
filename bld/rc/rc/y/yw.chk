@@ -1,8 +1,8 @@
 s/r conflict in state 29 on Y_MINUS:
 	shift to 150
-416 (1a0): shift-exp <- additive-exp (unit production)
+434 (1b2): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 416:
+Sample sentence(s) for reduce of rule 434:
   Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN Y_ICON 
 Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
 Y_INTEGER . Y_MINUS
@@ -134,11 +134,11 @@ Sample sentence(s) for shift to state 126:
 Y_INTEGER $eof 
 ---
 
-s/r conflict in state 248 on Y_MINUS:
+s/r conflict in state 256 on Y_MINUS:
 	shift to 150
-418 (1a2): shift-exp <- shift-exp Y_SHIFTR additive-exp
+436 (1b4): shift-exp <- shift-exp Y_SHIFTR additive-exp
 
-Sample sentence(s) for reduce of rule 418:
+Sample sentence(s) for reduce of rule 436:
   Y_INTEGER Y_SHIFTR Y_INTEGER .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
 Sample sentence(s) for shift to state 150:
@@ -146,11 +146,11 @@ Sample sentence(s) for shift to state 150:
 Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 249 on Y_MINUS:
+s/r conflict in state 257 on Y_MINUS:
 	shift to 150
-417 (1a1): shift-exp <- shift-exp Y_SHIFTL additive-exp
+435 (1b3): shift-exp <- shift-exp Y_SHIFTL additive-exp
 
-Sample sentence(s) for reduce of rule 417:
+Sample sentence(s) for reduce of rule 435:
   Y_INTEGER Y_SHIFTL Y_INTEGER .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
 Sample sentence(s) for shift to state 150:
@@ -158,11 +158,11 @@ Sample sentence(s) for shift to state 150:
 Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 631 on Y_LSQ_BRACKET:
+s/r conflict in state 649 on Y_LSQ_BRACKET:
 	shift to 123
-388 (184): value-item <- value-string-list (unit production)
+406 (196): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 388:
+Sample sentence(s) for reduce of rule 406:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_LSQ_BRACKET Y_STRING Y_STRING Y_RSQ_BRACKET Y_END 
@@ -176,11 +176,11 @@ Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
 ---
 
-s/r conflict in state 631 on Y_STRING:
+s/r conflict in state 649 on Y_STRING:
 	shift to 125
-388 (184): value-item <- value-string-list (unit production)
+406 (196): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 388:
+Sample sentence(s) for reduce of rule 406:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_STRING Y_END 
@@ -194,12 +194,12 @@ Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
 ---
 
-actions combined:                           51
-parser states:                             684
-# states (1 reduce only):                  381
+actions combined:                           69
+parser states:                             702
+# states (1 reduce only):                  399
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                     15
 number of rules not reduced:                 0
-bytes used in tables:                    14179
-states with defaults:                      493
+bytes used in tables:                    13693
+states with defaults:                      511
 states with parents:                       260
