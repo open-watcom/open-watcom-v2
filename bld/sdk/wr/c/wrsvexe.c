@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +173,7 @@ bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
     if( ok ) {
         memset( &CmdLineParms, 0, sizeof( CmdLineParms ) );
         CmdLineParms.Pass2Only = true;
-        CmdLineParms.Win16VerStamp = VERSION_31_STAMP;
+        CmdLineParms.pass2_win16ver = VERSION_31_STAMP;
         if( ttype == WR_WINNTW_RES ) {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
         } else {

@@ -97,7 +97,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * MS changed the default purity for ICON resource for rc version 31.
          * Note: the ICON_GROUP resource still have the same purity
          */
-        switch( CmdLineParms.Win16VerStamp ) {
+        switch( CmdLineParms.pass1_win16ver ) {
         case VERSION_31_STAMP:
             purity_flags = RESFLAG_NONE;
             break;
@@ -121,7 +121,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * MS changed the default purity for CURSOR resource for rc version 31.
          * Note: the CURSOR_GROUP resource still have the same purity
          */
-        switch( CmdLineParms.Win16VerStamp ) {
+        switch( CmdLineParms.pass1_win16ver ) {
         case VERSION_31_STAMP:
             purity_flags = RESFLAG_NONE;
             break;
@@ -568,7 +568,7 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    switch( CmdLineParms.Win16VerStamp ) {
+    switch( CmdLineParms.pass1_win16ver ) {
     case VERSION_10_STAMP:
     case VERSION_20_STAMP:
       {
@@ -956,7 +956,7 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    switch( CmdLineParms.Win16VerStamp ) {
+    switch( CmdLineParms.pass1_win16ver ) {
     case VERSION_10_STAMP:
     case VERSION_20_STAMP:
       {
@@ -1170,7 +1170,7 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    switch( CmdLineParms.Win16VerStamp ) {
+    switch( CmdLineParms.pass1_win16ver ) {
     case VERSION_10_STAMP:
     case VERSION_20_STAMP:
       {

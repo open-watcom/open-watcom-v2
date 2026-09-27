@@ -90,7 +90,8 @@ typedef struct RCParams {
 #endif
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
-    unsigned    Win16VerStamp;
+    unsigned    pass1_win16ver;
+    unsigned_16 pass2_win16ver;
     char        MBCharSupport;          /* which of the zk switches is set */
     char        *InFileName;
     char        *InExeFileName;

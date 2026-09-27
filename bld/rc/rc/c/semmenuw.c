@@ -105,7 +105,7 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         oldflags |= MENU_MENUBREAK;
         break;
     case Y_OWNERDRAW:
-        switch( CmdLineParms.Win16VerStamp ) {
+        switch( CmdLineParms.pass1_win16ver ) {
         case VERSION_10_STAMP:
         case VERSION_20_STAMP:
             break;
@@ -200,7 +200,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            switch( CmdLineParms.Win16VerStamp ) {
+            switch( CmdLineParms.pass1_win16ver ) {
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
@@ -222,7 +222,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            switch( CmdLineParms.Win16VerStamp ) {
+            switch( CmdLineParms.pass1_win16ver ) {
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
@@ -338,7 +338,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            switch( CmdLineParms.Win16VerStamp ) {
+            switch( CmdLineParms.pass1_win16ver ) {
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 /* Windows 2.x menus do not have a header */
@@ -360,7 +360,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu,
         if( error ) {
             err_code = LastWresErr();
         } else {
-            switch( CmdLineParms.Win16VerStamp ) {
+            switch( CmdLineParms.pass1_win16ver ) {
             case VERSION_10_STAMP:
             case VERSION_20_STAMP:
                 SemWarnIfSubmenus( menu );

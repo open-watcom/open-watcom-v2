@@ -928,26 +928,32 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
         SetStringOption( &CmdLineParms.PrependString, &(data->ap_value) );
     }
 #endif
+    CmdLineParms.pass2_win16ver = VERSION_00_STAMP;
     switch( data->win16_ver ) {
     case OPT_ENUM_win16_ver__10:
-        CmdLineParms.Win16VerStamp = VERSION_10_STAMP;
+        CmdLineParms.pass2_win16ver = VERSION_10_STAMP;
         break;
     case OPT_ENUM_win16_ver__20:
-        CmdLineParms.Win16VerStamp = VERSION_20_STAMP;
+        CmdLineParms.pass2_win16ver = VERSION_20_STAMP;
         break;
     case OPT_ENUM_win16_ver__30:
-        CmdLineParms.Win16VerStamp = VERSION_30_STAMP;
+        CmdLineParms.pass2_win16ver = VERSION_30_STAMP;
         break;
     case OPT_ENUM_win16_ver__31:
+        CmdLineParms.pass2_win16ver = VERSION_31_STAMP;
+        break;
     case OPT_ENUM_win16_ver_default:
-        CmdLineParms.Win16VerStamp = VERSION_31_STAMP;
         break;
     default:
         DbgNever();
         break;
     }
     if( CmdLineParms.TargetOS != RC_TARGET_OS_WIN16 ) {
-        CmdLineParms.Win16VerStamp = VERSION_00_STAMP;
+        CmdLineParms.pass1_win16ver = VERSION_00_STAMP;
+    } else if( data->win16_ver == OPT_ENUM_win16_ver_default ) {
+        CmdLineParms.pass1_win16ver = VERSION_31_STAMP;
+    } else {
+        CmdLineParms.pass1_win16ver = CmdLineParms.pass2_win16ver;
     }
     if( data->c ) {
         SetStringOption( &CmdLineParms.CodePageFile, &(data->c_value) );
