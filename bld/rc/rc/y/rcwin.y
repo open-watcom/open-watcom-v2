@@ -672,14 +672,14 @@ string-table-resource
     ;
 
 toolbar-resource
-    : name-id Y_TOOLBAR resource-options constant-expression comma-opt constant-expression toolbar-block
+    : name-id Y_TOOLBAR constant-expression comma-opt constant-expression toolbar-block
+        {
+            SemWINWriteToolBar( $1, $6, $3.Value, $5.Value, TOOLBAR_DEFAULT_FLAGS );
+        }
+    | name-id Y_TOOLBAR resource-options constant-expression comma-opt constant-expression toolbar-block
         {
             SemCheckResFlags( &($3), RESFLAG_NONE, TOOLBAR_DEFAULT_FLAGS & ~RESFLAG_PURE, RESFLAG_PURE );
             SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3.res_flags );
-        }
-    | name-id Y_TOOLBAR constant-expression comma-opt constant-expression toolbar-block
-        {
-            SemWINWriteToolBar( $1, $6, $3.Value, $5.Value, TOOLBAR_DEFAULT_FLAGS );
         }
     ;
 
