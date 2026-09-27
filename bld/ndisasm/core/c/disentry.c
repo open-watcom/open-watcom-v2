@@ -64,7 +64,7 @@ size_t DisGetString( size_t index, char *buff, bool to_upper )
     src = &DisStringTable[index];
     len = *src++ & ~LENGTH_BIT;
     i = len;
-    while( i-- > 0 ) {
+    while( i > 0 ) {
         c = *src++;
         if( !(c & LENGTH_BIT) ) {
             if( to_upper )
