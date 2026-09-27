@@ -97,13 +97,10 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * MS changed the default purity for ICON resource for rc version 31.
          * Note: the ICON_GROUP resource still have the same purity
          */
-        switch( CmdLineParms.pass1_win16ver ) {
-        case VERSION_31_STAMP:
+        if( CmdLineParms.winver == 31 ) {
             purity_flags = RESFLAG_NONE;
-            break;
-        default:
+        } else {
             purity_flags = RESFLAG_PURE;
-            break;
         }
         if( fullflags != NULL ) {
             SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
@@ -121,13 +118,10 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * MS changed the default purity for CURSOR resource for rc version 31.
          * Note: the CURSOR_GROUP resource still have the same purity
          */
-        switch( CmdLineParms.pass1_win16ver ) {
-        case VERSION_31_STAMP:
+        if( CmdLineParms.winver == 31 ) {
             purity_flags = RESFLAG_NONE;
-            break;
-        default:
+        } else {
             purity_flags = RESFLAG_PURE;
-            break;
         }
         if( fullflags != NULL ) {
             SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
@@ -568,10 +562,7 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    switch( CmdLineParms.pass1_win16ver ) {
-    case VERSION_10_STAMP:
-    case VERSION_20_STAMP:
-      {
+    if( CmdLineParms.winver < 30 ) {
         FullIconDirEntry *entry;
         /*
          * More info needed
@@ -632,8 +623,7 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
         }
 
         error = writeTheWindows2xIcon( entry, res_id, res_flags_group, &err_code, fp );
-      } break;
-    default:
+    } else {
         ret = copyIcons( &dir, fp, res_flags, &err_code );
         if( ret != RS_OK )
             goto COPY_ICONS_ERROR;
@@ -642,7 +632,6 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
         if( error ) {
             goto WRITE_DIR_ERROR;
         }
-        break;
     }
 
     FreeIconDir( &dir );
@@ -956,10 +945,7 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    switch( CmdLineParms.pass1_win16ver ) {
-    case VERSION_10_STAMP:
-    case VERSION_20_STAMP:
-      {
+    if( CmdLineParms.winver < 30 ) {
         FullCurDirEntry *entry;
 
         /* More info needed */
@@ -1030,8 +1016,7 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
         }
 
         error = writeTheWindows2xCursor( entry, res_id, res_flags_group, &err_code, fp );
-      } break;
-    default:
+    } else {
         ret = copyCursors( &dir, fp, res_flags, &err_code );
         if( ret != RS_OK )
             goto COPY_CURSORS_ERROR;
@@ -1040,7 +1025,6 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
         if( error ) {
             goto WRITE_DIR_ERROR;
         }
-        break;
     }
 
     FreeCurDir( &dir );
@@ -1170,10 +1154,7 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    switch( CmdLineParms.pass1_win16ver ) {
-    case VERSION_10_STAMP:
-    case VERSION_20_STAMP:
-      {
+    if( CmdLineParms.winver < 30 ) {
         BitmapInfoHeader dibhead;
         bool monoinvert = false;
 
@@ -1212,13 +1193,11 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char
             goto COPY_BITMAP_ERROR;
 
         ret = writeTheWindows2xBitmap( &dibhead, res_id, res_flags, &err_code, fp, monoinvert );
-      } break;
-    default:
+    } else {
         ret = copyBitmap( &head, fp, res_id, res_flags, &err_code );
         if( ret != RS_OK ) {
             goto COPY_BITMAP_ERROR;
         }
-        break;
     }
 
     RcIoCloseInputBin( fp );

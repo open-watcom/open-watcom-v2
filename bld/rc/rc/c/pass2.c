@@ -335,16 +335,7 @@ static RcStatus writeHeadAndTables( ExeFileInfo *src, ExeFileInfo *dst, int *err
     /* |= the next one since the WIN_GANGLOAD_PRESENT flag may be set */
     dst->u.NEInfo.WinHead.otherflags |= src->u.NEInfo.WinHead.otherflags;
     dst->u.NEInfo.WinHead.swaparea = 0;      /* What is this field for? */
-    if( CmdLineParms.pass2_win16ver != VERSION_00_STAMP ) {
-        dst->u.NEInfo.WinHead.expver = CmdLineParms.pass2_win16ver;
-    } else if( src->u.NEInfo.WinHead.expver ) {
-        dst->u.NEInfo.WinHead.expver = src->u.NEInfo.WinHead.expver;
-    } else {
-        /*
-         * if unspecified on command line or not in executable file use default
-         */
-        dst->u.NEInfo.WinHead.expver = VERSION_31_STAMP;
-    }
+    dst->u.NEInfo.WinHead.expver = CmdLineParms.win16stamp;
     /*
      * seek to the start of the os2_exe_header in dst
      */

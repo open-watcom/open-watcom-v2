@@ -105,13 +105,8 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         oldflags |= MENU_MENUBREAK;
         break;
     case Y_OWNERDRAW:
-        switch( CmdLineParms.pass1_win16ver ) {
-        case VERSION_10_STAMP:
-        case VERSION_20_STAMP:
-            break;
-        default:
+        if( CmdLineParms.winver > 20 ) {
             oldflags |= MENU_OWNERDRAWN;
-            break;
         }
         break;
     case Y_HELP:
@@ -200,16 +195,12 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            switch( CmdLineParms.pass1_win16ver ) {
-            case VERSION_10_STAMP:
-            case VERSION_20_STAMP:
+            if( CmdLineParms.winver < 30 ) {
                 error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
                             item->iswin32, CurrResFile.fp );
-                break;
-            default:
+            } else {
                 error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
                             item->iswin32, CurrResFile.fp );
-                break;
             }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
@@ -222,16 +213,12 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
             item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
         }
         if( tokentype == Y_MENU ) {
-            switch( CmdLineParms.pass1_win16ver ) {
-            case VERSION_10_STAMP:
-            case VERSION_20_STAMP:
+            if( CmdLineParms.winver < 30 ) {
                 error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
                             item->iswin32, CurrResFile.fp );
-                break;
-            default:
+            } else {
                 error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
                             item->iswin32, CurrResFile.fp );
-                break;
             }
         } else if( tokentype == Y_MENU_EX ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
@@ -338,14 +325,9 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu,
             head.Version = 0;    /* currently these fields are both 0 */
             head.Size = 0;
             loc.start = SemStartResource();
-            switch( CmdLineParms.pass1_win16ver ) {
-            case VERSION_10_STAMP:
-            case VERSION_20_STAMP:
-                /* Windows 2.x menus do not have a header */
-                break;
-            default:
+            /* Windows 2.x menus do not have a header */
+            if( CmdLineParms.winver > 20 ) {
                 error = ResWriteMenuHeader( &head, CurrResFile.fp );
-                break;
             }
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
@@ -360,13 +342,8 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu,
         if( error ) {
             err_code = LastWresErr();
         } else {
-            switch( CmdLineParms.pass1_win16ver ) {
-            case VERSION_10_STAMP:
-            case VERSION_20_STAMP:
+            if( CmdLineParms.winver < 30 ) {
                 SemWarnIfSubmenus( menu );
-                break;
-            default:
-                break;
             }
             error = SemWriteSubMenu( menu, &err_code, tokentype );
         }

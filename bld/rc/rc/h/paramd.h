@@ -90,8 +90,8 @@ typedef struct RCParams {
 #endif
     unsigned    SegmentSorting  : 2;    /* which segment sorting method to use */
     unsigned    TargetOS        : 2;
-    unsigned    pass1_win16ver;
-    unsigned_16 pass2_win16ver;
+    unsigned    winver;
+    unsigned_16 win16stamp;
     char        MBCharSupport;          /* which of the zk switches is set */
     char        *InFileName;
     char        *InExeFileName;
@@ -105,12 +105,6 @@ typedef struct RCParams {
     FRStrings   *FindReplaceStrings;
 #endif
 } RCParams;
-
-#define VERSION_00_STAMP 0x0000     /* no version for WIN32 and OS/2 targets */
-#define VERSION_10_STAMP 0x0100
-#define VERSION_20_STAMP 0x0200
-#define VERSION_30_STAMP 0x0300
-#define VERSION_31_STAMP 0x030a     /* This is what the MS rc uses */
 
 enum SegmentSortMethods {
     SEG_SORT_NONE,

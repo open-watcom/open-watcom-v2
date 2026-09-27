@@ -158,19 +158,15 @@ static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
         head->ClassName = opt->Opt.Name;
         break;
     case Y_FONT:
-        switch( CmdLineParms.pass1_win16ver ) {
-        case VERSION_10_STAMP:
-        case VERSION_20_STAMP:
+        if( CmdLineParms.winver < 30 ) {
             RcWarning( WARN_DLGFONT_WIN2X );
-            break;
-        default:
+        } else {
             head->Style |= DS_SETFONT;
             head->PointSize = opt->Opt.Font.PointSize;
             if( head->FontName != NULL ) {
                 MemFree( head->FontName );
             }
             head->FontName = opt->Opt.Font.FontName;
-            break;
         }
         break;
     case Y_CAPTION:

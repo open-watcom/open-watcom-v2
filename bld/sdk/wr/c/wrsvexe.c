@@ -173,7 +173,7 @@ bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
     if( ok ) {
         memset( &CmdLineParms, 0, sizeof( CmdLineParms ) );
         CmdLineParms.Pass2Only = true;
-        CmdLineParms.pass2_win16ver = VERSION_31_STAMP;
+        CmdLineParms.win16stamp = 0x030A;
         if( ttype == WR_WINNTW_RES ) {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN32;
         } else {
