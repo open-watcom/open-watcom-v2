@@ -265,7 +265,6 @@
 %type <strtable>        string-section
 %type <rawitem>         raw-data-item
 %type <resloc>          user-defined-data
-%type <token>           resource-type
 %type <verinforoot>     fixed-ver-section
 %type <verfixedoption>  fixed-ver-stmt
 %type <verfixedoption>  fileversion-stmt
@@ -546,10 +545,22 @@ comma-opt
     ;
 
 single-line-resource
-    : name-id resource-type file-name
-        { SemWINAddSingleLineResource( $1, $2, NULL, $3.string ); }
-    | name-id resource-type resource-options file-name
-        { SemWINAddSingleLineResource( $1, $2, &($3), $4.string ); }
+    : name-id Y_CURSOR file-name
+        { SemWINAddSingleLineResource( $1, Y_CURSOR, NULL, $3.string ); }
+    | name-id Y_CURSOR resource-options file-name
+        { SemWINAddSingleLineResource( $1, Y_CURSOR, &($3), $4.string ); }
+    | name-id Y_ICON file-name
+        { SemWINAddSingleLineResource( $1, Y_ICON, NULL, $3.string ); }
+    | name-id Y_ICON resource-options file-name
+        { SemWINAddSingleLineResource( $1, Y_ICON, &($3), $4.string ); }
+    | name-id Y_BITMAP file-name
+        { SemWINAddSingleLineResource( $1, Y_BITMAP, NULL, $3.string ); }
+    | name-id Y_BITMAP resource-options file-name
+        { SemWINAddSingleLineResource( $1, Y_BITMAP, &($3), $4.string ); }
+    | name-id Y_FONT file-name
+        { SemWINAddSingleLineResource( $1, Y_FONT, NULL, $3.string ); }
+    | name-id Y_FONT resource-options file-name
+        { SemWINAddSingleLineResource( $1, Y_FONT, &($3), $4.string ); }
     ;
 
 resource-options
@@ -594,17 +605,6 @@ file-name
     : Y_NAME
     | Y_DOS_FILENAME
     | string-constant
-    ;
-
-resource-type
-    : Y_CURSOR
-        { $$ = Y_CURSOR; }
-    | Y_ICON
-        { $$ = Y_ICON; }
-    | Y_BITMAP
-        { $$ = Y_BITMAP; }
-    | Y_FONT
-        { $$ = Y_FONT; }
     ;
 
 user-defined-resource

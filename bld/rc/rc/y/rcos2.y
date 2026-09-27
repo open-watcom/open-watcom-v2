@@ -269,7 +269,6 @@
 %type <rawitem>         rc-data-item
 %type <resloc>          user-defined-data
 %type <resloc>          rc-data
-%type <token>           resource-type
 %type <dataelem>        control-data-section
 %type <dataelem>        raw-data-section
 %type <dataelem>        raw-data-items
@@ -537,10 +536,22 @@ dlginclude-resource
     ;
 
 single-line-resource
-    : resource-type name-id file-name
-        { SemOS2AddSingleLineResource( $2, $1, NULL, $3.string ); }
-    | resource-type name-id resource-options file-name
-        { SemOS2AddSingleLineResource( $2, $1, &($3), $4.string ); }
+    : Y_BITMAP name-id file-name
+        { SemOS2AddSingleLineResource( $2, Y_BITMAP, NULL, $3.string ); }
+    | Y_BITMAP name-id resource-options file-name
+        { SemOS2AddSingleLineResource( $2, Y_BITMAP, &($3), $4.string ); }
+    | Y_FONT name-id file-name
+        { SemOS2AddSingleLineResource( $2, Y_FONT, NULL, $3.string ); }
+    | Y_FONT name-id resource-options file-name
+        { SemOS2AddSingleLineResource( $2, Y_FONT, &($3), $4.string ); }
+    | Y_ICON name-id file-name
+        { SemOS2AddSingleLineResource( $2, Y_ICON, NULL, $3.string ); }
+    | Y_ICON name-id resource-options file-name
+        { SemOS2AddSingleLineResource( $2, Y_ICON, &($3), $4.string ); }
+    | Y_POINTER name-id file-name
+        { SemOS2AddSingleLineResource( $2, Y_POINTER, NULL, $3.string ); }
+    | Y_POINTER name-id resource-options file-name
+        { SemOS2AddSingleLineResource( $2, Y_POINTER, &($3), $4.string ); }
     | Y_DEFAULTICON file-name
         { SemOS2AddSingleLineResource( NULL, Y_DEFAULTICON, NULL, $2.string ); }
     | Y_DEFAULTICON resource-options file-name
@@ -593,17 +604,6 @@ file-name
     : Y_NAME
     | Y_DOS_FILENAME
     | string-constant
-    ;
-
-resource-type
-    : Y_BITMAP
-        { $$ = Y_BITMAP; }
-    | Y_FONT
-        { $$ = Y_FONT; }
-    | Y_ICON
-        { $$ = Y_ICON; }
-    | Y_POINTER
-        { $$ = Y_POINTER; }
     ;
 
 user-defined-resource
