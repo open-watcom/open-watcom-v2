@@ -656,7 +656,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     libname = GetLibName();
     size = strlen( name ) + strlen( sp ) + strlen( ret ) + strlen( libname );
     size += sizeof( DECL_THIS_VAR ) + sizeof( LIBRARY  ) + sizeof( LEFT_PAREN )
-          + sizeof( RIGHT_PAREN ) + sizeof( "." DLL_EXT ) + sizeof( DQUOTE )
+          + sizeof( RIGHT_PAREN ) + sizeof( "." FEXT_DLL ) + sizeof( DQUOTE )
           + sizeof( DQUOTE ) + OVERHEAD;
 
     finger = func->data.sp.parm_list;
@@ -699,7 +699,7 @@ static statement *insertTypePrototype( statement *func, statement *locale ) {
     strcat( line, LIBRARY );
     strcat( line, DQUOTE );
     strcat( line, libname );
-    strcat( line, "." DLL_EXT );
+    strcat( line, "." FEXT_DLL );
     strcat( line, DQUOTE );
     strcat( line, "\n" );
 

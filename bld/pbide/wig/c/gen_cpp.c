@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -218,7 +218,7 @@ static void genTmpFName( const char *file, char *buf )
     _splitpath2( file, pg.buffer, &pg.drive, &pg.dir, NULL, NULL );
     for( i = 0 ; i < 0x1000; i++ ) {
         sprintf( fname, "tmp%03x", i );
-        _makepath( buf, pg.drive, pg.dir, fname, TMP_EXT );
+        _makepath( buf, pg.drive, pg.dir, fname, FEXT_TMP );
         if( access( buf, F_OK ) ) {
             break;
         }
