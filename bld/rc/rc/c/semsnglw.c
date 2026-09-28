@@ -72,6 +72,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
 /***********************************************************************************************************/
 {
     char        full_filename[_MAX_PATH];
+    ResMemFlags res_flags;
     /* used for icon and cursor resoures */
     ResMemFlags res_flags_group;
 
@@ -89,40 +90,30 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
+    SemCheckResFlags( fullflags );
+    res_flags = fullflags->res_flags;
     switch( type ) {
     case Y_ICON:
-        SemCheckResFlags( fullflags );
         /*
          * MS changed the default purity for ICON resource for rc version 31.
          * Note: the ICON_GROUP resource still have the same purity
          */
-        if( CmdLineParms.winver == 31 ) {
-            res_flags_group = fullflags->res_flags & ~RESFLAG_PURE;
-        } else {
-            res_flags_group = fullflags->res_flags;
-        }
-        AddIconResource( res_id, fullflags->res_flags, res_flags_group, full_filename );
+        res_flags_group = res_flags | RESFLAG_PURE;
+        AddIconResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_CURSOR:
-        SemCheckResFlags( fullflags );
         /*
          * MS changed the default purity for CURSOR resource for rc version 31.
          * Note: the CURSOR_GROUP resource still have the same purity
          */
-        if( CmdLineParms.winver == 31 ) {
-            res_flags_group = fullflags->res_flags & ~RESFLAG_PURE;
-        } else {
-            res_flags_group = fullflags->res_flags;
-        }
-        AddCursorResource( res_id, fullflags->res_flags, res_flags_group, full_filename );
+        res_flags_group = res_flags | RESFLAG_PURE;
+        AddCursorResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_BITMAP:
-        SemCheckResFlags( fullflags );
-        AddBitmapResource( res_id, fullflags->res_flags, full_filename );
+        AddBitmapResource( res_id, res_flags, full_filename );
         break;
     case Y_FONT:
-        SemCheckResFlags( fullflags );
-        AddFontResources( res_id, fullflags->res_flags, full_filename );
+        AddFontResources( res_id, res_flags, full_filename );
         break;
     default:
         MemFree( res_id );
