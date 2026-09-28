@@ -419,9 +419,10 @@ dw_regs RegTransDW( hw_reg_set reg )
 }
 
 
-int RegTransWV( hw_reg_set reg )
-/*******************************
+int RegFindWV( hw_reg_set reg )
+/******************************
  * Translate reg to WATCOM enum name
+ * return -1 if it is not a single register (register pair etc.)
  */
 {
     int         i;
@@ -431,9 +432,21 @@ int RegTransWV( hw_reg_set reg )
             return( RegsTab[i].wv_idx );
         }
     }
-    _Zoiks( ZOIKS_031 );
-//    return( WV_REG_END );
     return( -1 );
+}
+
+int RegTransWV( hw_reg_set reg )
+/*******************************
+ * Translate reg to WATCOM enum name
+ */
+{
+    int         wv_reg;
+
+    wv_reg = RegFindWV( reg );
+    if( wv_reg < 0 ) {
+        _Zoiks( ZOIKS_031 );
+    }
+    return( wv_reg );
 }
 
 

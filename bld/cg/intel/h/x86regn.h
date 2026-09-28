@@ -70,4 +70,5 @@ extern int          CountFPRegs( hw_reg_set regs );
 extern int          FPRegNum( name *reg_name );
 extern reg_idx      RegTrans( hw_reg_set reg );
 extern dw_regs      RegTransDW( hw_reg_set reg );
+extern int          RegFindWV( hw_reg_set reg );
 extern int          RegTransWV( hw_reg_set reg );
