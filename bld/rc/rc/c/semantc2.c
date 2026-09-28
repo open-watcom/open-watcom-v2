@@ -52,19 +52,37 @@ void SemOS2SetCodepage( uint_32 codepage )
     curCodepage = codepage;
 }
 
+static void initFullFlags( FullResFlags *fullflags )
+{
+    fullflags->res_flags      = RESFLAG_NONE;
+    fullflags->codePage       = curCodepage;
+    fullflags->loadOptGiven   = false;
+    fullflags->memOptGiven    = false;
+    fullflags->purityOptGiven = false;
+    fullflags->cpOptGiven     = false;
+
+}
+
 FullResFlags SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
 /**********************************************************************/
 {
     FullResFlags    fullflags;
 
-    fullflags.res_flags      = RESFLAG_NONE;
-    fullflags.codePage       = curCodepage;
-    fullflags.loadOptGiven   = false;
-    fullflags.memOptGiven    = false;
-    fullflags.purityOptGiven = false;
-    fullflags.cpOptGiven     = false;
-
+    initFullFlags( &fullflags );
     return( SemOS2AddResOption( fullflags, token, value ) );
+}
+
+void SemOS2AddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
+                                ResMemFlags res_flags, char *filename )
+/*********************************************************************/
+{
+    FullResFlags    fullflags;
+
+    /* unused parameters */ (void)res_flags;
+
+    initFullFlags( &fullflags );
+//    fullflags.res_flags = res_flags;
+    SemOS2AddSingleLineResource( res_id, type, &fullflags, filename );
 }
 
 FullResFlags SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint_32 value )

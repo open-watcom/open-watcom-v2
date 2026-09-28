@@ -537,23 +537,23 @@ dlginclude-resource
 
 single-line-resource
     : Y_BITMAP name-id file-name
-        { SemOS2AddSingleLineResource( $2, Y_BITMAP, NULL, $3.string ); }
+        { SemOS2AddSingleLineResourceDef( $2, Y_BITMAP, DEFAULT_FLAGS_MP, $3.string ); }
     | Y_BITMAP name-id resource-options file-name
         { SemOS2AddSingleLineResource( $2, Y_BITMAP, &($3), $4.string ); }
     | Y_FONT name-id file-name
-        { SemOS2AddSingleLineResource( $2, Y_FONT, NULL, $3.string ); }
+        { SemOS2AddSingleLineResourceDef( $2, Y_FONT, DEFAULT_FLAGS_MDP, $3.string ); }
     | Y_FONT name-id resource-options file-name
         { SemOS2AddSingleLineResource( $2, Y_FONT, &($3), $4.string ); }
     | Y_ICON name-id file-name
-        { SemOS2AddSingleLineResource( $2, Y_ICON, NULL, $3.string ); }
+        { SemOS2AddSingleLineResourceDef( $2, Y_ICON, DEFAULT_FLAGS_MDP, $3.string ); }
     | Y_ICON name-id resource-options file-name
         { SemOS2AddSingleLineResource( $2, Y_ICON, &($3), $4.string ); }
     | Y_POINTER name-id file-name
-        { SemOS2AddSingleLineResource( $2, Y_POINTER, NULL, $3.string ); }
+        { SemOS2AddSingleLineResourceDef( $2, Y_POINTER, DEFAULT_FLAGS_MDP, $3.string ); }
     | Y_POINTER name-id resource-options file-name
         { SemOS2AddSingleLineResource( $2, Y_POINTER, &($3), $4.string ); }
     | Y_DEFAULTICON file-name
-        { SemOS2AddSingleLineResource( NULL, Y_DEFAULTICON, NULL, $2.string ); }
+        { SemOS2AddSingleLineResourceDef( NULL, Y_DEFAULTICON, DEFAULT_FLAGS_MDP, $2.string ); }
     | Y_DEFAULTICON resource-options file-name
         { SemOS2AddSingleLineResource( NULL, Y_DEFAULTICON, &($2), $3.string ); }
     ;

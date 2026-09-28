@@ -88,19 +88,37 @@ void SemWINUnsupported( YYTOKENTYPE token )
     RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
+static void initFullFlags( FullResFlags *fullflags )
+{
+    fullflags->res_flags      = RESFLAG_NONE;
+    fullflags->codePage       = 0;
+    fullflags->loadOptGiven   = false;
+    fullflags->memOptGiven    = false;
+    fullflags->purityOptGiven = false;
+    fullflags->cpOptGiven     = false;
+
+}
+
 FullResFlags SemWINAddFirstResOption( YYTOKENTYPE token )
 /*******************************************************/
 {
     FullResFlags    fullflags;
 
-    fullflags.res_flags      = RESFLAG_NONE;
-    fullflags.codePage       = 0;
-    fullflags.loadOptGiven   = false;
-    fullflags.memOptGiven    = false;
-    fullflags.purityOptGiven = false;
-    fullflags.cpOptGiven     = false;
-
+    initFullFlags( &fullflags );
     return( SemWINAddResOption( fullflags, token ) );
+}
+
+void SemWINAddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
+                                ResMemFlags res_flags, char *filename )
+/*********************************************************************/
+{
+    FullResFlags    fullflags;
+
+    /* unused parameters */ (void)res_flags;
+
+    initFullFlags( &fullflags );
+//    fullflags.res_flags = res_flags;
+    SemWINAddSingleLineResource( res_id, type, &fullflags, filename );
 }
 
 FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )

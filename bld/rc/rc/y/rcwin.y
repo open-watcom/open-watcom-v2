@@ -546,19 +546,19 @@ comma-opt
 
 single-line-resource
     : name-id Y_CURSOR file-name
-        { SemWINAddSingleLineResource( $1, Y_CURSOR, NULL, $3.string ); }
+        { SemWINAddSingleLineResourceDef( $1, Y_CURSOR, DEFAULT_FLAGS_MDP, $3.string ); }
     | name-id Y_CURSOR resource-options file-name
         { SemWINAddSingleLineResource( $1, Y_CURSOR, &($3), $4.string ); }
     | name-id Y_ICON file-name
-        { SemWINAddSingleLineResource( $1, Y_ICON, NULL, $3.string ); }
+        { SemWINAddSingleLineResourceDef( $1, Y_ICON, DEFAULT_FLAGS_MDP, $3.string ); }
     | name-id Y_ICON resource-options file-name
         { SemWINAddSingleLineResource( $1, Y_ICON, &($3), $4.string ); }
     | name-id Y_BITMAP file-name
-        { SemWINAddSingleLineResource( $1, Y_BITMAP, NULL, $3.string ); }
+        { SemWINAddSingleLineResourceDef( $1, Y_BITMAP, DEFAULT_FLAGS_MP, $3.string ); }
     | name-id Y_BITMAP resource-options file-name
         { SemWINAddSingleLineResource( $1, Y_BITMAP, &($3), $4.string ); }
     | name-id Y_FONT file-name
-        { SemWINAddSingleLineResource( $1, Y_FONT, NULL, $3.string ); }
+        { SemWINAddSingleLineResourceDef( $1, Y_FONT, DEFAULT_FLAGS_MDP, $3.string ); }
     | name-id Y_FONT resource-options file-name
         { SemWINAddSingleLineResource( $1, Y_FONT, &($3), $4.string ); }
     ;

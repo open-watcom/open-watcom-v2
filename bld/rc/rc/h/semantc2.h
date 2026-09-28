@@ -46,5 +46,6 @@ extern FullResFlags     SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE 
 extern char             *SemOS2TokenToString( YYTOKENTYPE token );
 extern uint_32          SemOS2DefaultCodepage( void );
 extern void             SemOS2SetCodepage( uint_32 codepage );
+extern void             SemOS2AddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type, ResMemFlags res_flags, char *filename );
 
 #endif
