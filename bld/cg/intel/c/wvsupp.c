@@ -121,8 +121,8 @@ static  void    DoLocDump( dbg_loc loc )
         }
         break;
     case LOC_REG:
-        reg = RegTransWV( loc->u.be_sym->r.reg );
-        if( reg > 15 ) {
+        reg = RegFindWV( loc->u.be_sym->r.reg );
+        if( reg < 0 || reg > 15 ) { /* register pair or not encodable in nibble */
             patch = BuffLoc();
             BuffByte( 0 );
             BuffPatch( LOC_MULTI_REG | ( MultiReg( &loc->u.be_sym->r ) - 1 ), patch );
@@ -136,8 +136,8 @@ static  void    DoLocDump( dbg_loc loc )
             //       suitable. For now, output a no location.
             BuffByte( 0 );
         } else {
-            reg = RegTransWV( loc->u.be_sym->r.reg );
-            if( reg < 0 ) { /* register not found */
+            reg = RegFindWV( loc->u.be_sym->r.reg );
+            if( reg < 0 ) { /* register pair (far pointer) */
                 BuffByte( loc->class + 1 ); /* assumes ..._FAR is one greater*/
                 MultiReg( &loc->u.be_sym->r );
             } else {
