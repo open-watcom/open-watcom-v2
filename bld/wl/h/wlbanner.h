@@ -32,8 +32,6 @@
 
 #if 0
     #define IDV     "** EXPERIMENTAL ** "
-#elif 1
-    #define IDV     "** EXPERIMENTAL (HLL) ** "
 #elif defined( DEVBUILD )
     #define IDV     "**INTERNAL DEVELOPMENT** "
 #else
