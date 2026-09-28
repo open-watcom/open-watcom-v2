@@ -41,7 +41,7 @@
 #include "semhelp2.h"
 #include "semsngl2.h"
 
-extern FullResFlags     SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value );
+extern FullResFlags     SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value, ResMemFlags res_flags );
 extern FullResFlags     SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint_32 value );
 extern char             *SemOS2TokenToString( YYTOKENTYPE token );
 extern uint_32          SemOS2DefaultCodepage( void );

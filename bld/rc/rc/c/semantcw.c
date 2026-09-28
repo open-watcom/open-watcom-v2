@@ -99,12 +99,13 @@ static void initFullFlags( FullResFlags *fullflags )
 
 }
 
-FullResFlags SemWINAddFirstResOption( YYTOKENTYPE token )
-/*******************************************************/
+FullResFlags SemWINAddFirstResOption( YYTOKENTYPE token, ResMemFlags res_flags )
+/******************************************************************************/
 {
     FullResFlags    fullflags;
 
     initFullFlags( &fullflags );
+    fullflags.res_flags = res_flags;
     return( SemWINAddResOption( fullflags, token ) );
 }
 
@@ -114,10 +115,8 @@ void SemWINAddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
 {
     FullResFlags    fullflags;
 
-    /* unused parameters */ (void)res_flags;
-
     initFullFlags( &fullflags );
-//    fullflags.res_flags = res_flags;
+    fullflags.res_flags = res_flags;
     SemWINAddSingleLineResource( res_id, type, &fullflags, filename );
 }
 

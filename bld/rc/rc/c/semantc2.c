@@ -63,12 +63,13 @@ static void initFullFlags( FullResFlags *fullflags )
 
 }
 
-FullResFlags SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value )
-/**********************************************************************/
+FullResFlags SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value, ResMemFlags res_flags )
+/*********************************************************************************************/
 {
     FullResFlags    fullflags;
 
     initFullFlags( &fullflags );
+    fullflags.res_flags = res_flags;
     return( SemOS2AddResOption( fullflags, token, value ) );
 }
 
@@ -78,10 +79,8 @@ void SemOS2AddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
 {
     FullResFlags    fullflags;
 
-    /* unused parameters */ (void)res_flags;
-
     initFullFlags( &fullflags );
-//    fullflags.res_flags = res_flags;
+    fullflags.res_flags = res_flags;
     SemOS2AddSingleLineResource( res_id, type, &fullflags, filename );
 }
 

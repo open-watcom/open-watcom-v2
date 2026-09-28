@@ -72,10 +72,8 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
 /***********************************************************************************************************/
 {
     char        full_filename[_MAX_PATH];
-    ResMemFlags res_flags;
     /* used for icon and cursor resoures */
     ResMemFlags res_flags_group;
-    ResMemFlags purity_flags;
 
     if( ErrorHasOccured ) {
         MemFree( res_id );
@@ -98,20 +96,11 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * Note: the ICON_GROUP resource still have the same purity
          */
         if( CmdLineParms.winver == 31 ) {
-            purity_flags = RESFLAG_NONE;
+            res_flags_group = fullflags->res_flags & ~RESFLAG_PURE;
         } else {
-            purity_flags = RESFLAG_PURE;
-        }
-        if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
-            res_flags = fullflags->res_flags;
-            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags_group = fullflags->res_flags;
-        } else {
-            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
-            res_flags_group = DEFAULT_FLAGS_MDP;
         }
-        AddIconResource( res_id, res_flags, res_flags_group, full_filename );
+        AddIconResource( res_id, fullflags->res_flags, res_flags_group, full_filename );
         break;
     case Y_CURSOR:
         /*
@@ -119,38 +108,19 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
          * Note: the CURSOR_GROUP resource still have the same purity
          */
         if( CmdLineParms.winver == 31 ) {
-            purity_flags = RESFLAG_NONE;
+            res_flags_group = fullflags->res_flags & ~RESFLAG_PURE;
         } else {
-            purity_flags = RESFLAG_PURE;
-        }
-        if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
-            res_flags = fullflags->res_flags;
-            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags_group = fullflags->res_flags;
-        } else {
-            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
-            res_flags_group = DEFAULT_FLAGS_MDP;
         }
-        AddCursorResource( res_id, res_flags, res_flags_group, full_filename );
+        AddCursorResource( res_id, fullflags->res_flags, res_flags_group, full_filename );
         break;
     case Y_BITMAP:
-        if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MP & ~RESFLAG_PURE, RESFLAG_PURE );
-            res_flags = fullflags->res_flags;
-        } else {
-            res_flags = DEFAULT_FLAGS_MP;
-        }
-        AddBitmapResource( res_id, res_flags, full_filename );
+        SemCheckResFlags( fullflags );
+        AddBitmapResource( res_id, fullflags->res_flags, full_filename );
         break;
     case Y_FONT:
-        if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
-            res_flags = fullflags->res_flags;
-        } else {
-            res_flags = DEFAULT_FLAGS_MDP;
-        }
-        AddFontResources( res_id, res_flags, full_filename );
+        SemCheckResFlags( fullflags );
+        AddFontResources( res_id, fullflags->res_flags, full_filename );
         break;
     default:
         MemFree( res_id );

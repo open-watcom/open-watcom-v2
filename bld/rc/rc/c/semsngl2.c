@@ -53,7 +53,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
 /*****************************************************************/
 {
     ResLocation     start;
-    ResMemFlags     res_flags;
     char            full_filename[_MAX_PATH];
     static bool     firstIcon = true;
     bool            error;
@@ -77,12 +76,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     /* fall through */
                 case Y_POINTER:
                 case Y_ICON:
-                    if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_NONE );
-                        res_flags = fullflags->res_flags;
-                    } else {
-                        res_flags = DEFAULT_FLAGS_MDP;
-                    }
+                    SemCheckResFlags( fullflags );
                     /*
                      * Duplicate the first icon encountered as the default icon IFF it
                      * has resource ID equal to 1
@@ -98,33 +92,23 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                         id->IsName = false;
                         id->ID.Num = OS2_RT_DEFAULTICON;
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
+                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), fullflags->res_flags, start );
 
                         start = SemCopyRawFileOnly( full_filename );
                         SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), DEFAULT_FLAGS_MDP, start );
                     } else {
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
+                        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), fullflags->res_flags, start );
                     }
                     break;
                 case Y_BITMAP:
-                    if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MP & ~RESFLAG_PURE, RESFLAG_PURE );
-                        res_flags = fullflags->res_flags;
-                    } else {
-                        res_flags = DEFAULT_FLAGS_MP;
-                    }
+                    SemCheckResFlags( fullflags );
                     start = SemCopyRawFileOnly( full_filename );
-                    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_BITMAP ), res_flags, start );
+                    SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_BITMAP ), fullflags->res_flags, start );
                     break;
                 case Y_FONT:
-                    if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
-                        res_flags = fullflags->res_flags;
-                    } else {
-                        res_flags = DEFAULT_FLAGS_MDP;
-                    }
-                    AddFontResources( res_id, res_flags, full_filename );
+                    SemCheckResFlags( fullflags );
+                    AddFontResources( res_id, fullflags->res_flags, full_filename );
                     break;
                 default:
                     MemFree( res_id );

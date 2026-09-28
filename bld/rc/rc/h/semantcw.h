@@ -43,7 +43,7 @@
 #include "semsnglw.h"
 #include "semresfl.h"
 
-extern FullResFlags     SemWINAddFirstResOption( YYTOKENTYPE token );
+extern FullResFlags     SemWINAddFirstResOption( YYTOKENTYPE token, ResMemFlags res_flags );
 extern FullResFlags     SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token );
 extern char             *SemWINTokenToString( YYTOKENTYPE token );
 extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
