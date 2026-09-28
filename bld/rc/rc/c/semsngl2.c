@@ -54,8 +54,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
 {
     ResLocation     start;
     ResMemFlags     res_flags;
-    ResMemFlags     res_flags_MDP;
-    ResMemFlags     res_flags_MP;
     char            full_filename[_MAX_PATH];
     static bool     firstIcon = true;
     bool            error;
@@ -67,8 +65,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
-                res_flags_MDP = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
-                res_flags_MP  = RESFLAG_MOVEABLE | RESFLAG_PURE;
                 switch( type ) {
                 case Y_DEFAULTICON:
                     /*
@@ -82,10 +78,10 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                 case Y_POINTER:
                 case Y_ICON:
                     if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_NONE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_NONE );
                         res_flags = fullflags->res_flags;
                     } else {
-                        res_flags = res_flags_MDP;
+                        res_flags = DEFAULT_FLAGS_MDP;
                     }
                     /*
                      * Duplicate the first icon encountered as the default icon IFF it
@@ -105,7 +101,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                         SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
 
                         start = SemCopyRawFileOnly( full_filename );
-                        SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), res_flags_MDP, start );
+                        SemAddResourceAndFree( id, WResIDFromNum( OS2_RT_DEFAULTICON ), DEFAULT_FLAGS_MDP, start );
                     } else {
                         start = SemCopyRawFileOnly( full_filename );
                         SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_POINTER ), res_flags, start );
@@ -113,20 +109,20 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
                     break;
                 case Y_BITMAP:
                     if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MP & ~RESFLAG_PURE, RESFLAG_PURE );
                         res_flags = fullflags->res_flags;
                     } else {
-                        res_flags = res_flags_MP;
+                        res_flags = DEFAULT_FLAGS_MP;
                     }
                     start = SemCopyRawFileOnly( full_filename );
                     SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_BITMAP ), res_flags, start );
                     break;
                 case Y_FONT:
                     if( fullflags != NULL ) {
-                        SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+                        SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
                         res_flags = fullflags->res_flags;
                     } else {
-                        res_flags = res_flags_MDP;
+                        res_flags = DEFAULT_FLAGS_MDP;
                     }
                     AddFontResources( res_id, res_flags, full_filename );
                     break;

@@ -90,7 +90,7 @@ void SemWINUnsupported( YYTOKENTYPE token )
 
 static void initFullFlags( FullResFlags *fullflags )
 {
-    fullflags->res_flags      = RESFLAG_NONE;
+    fullflags->res_flags      = DEFAULT_FLAGS_NONE;
     fullflags->codePage       = 0;
     fullflags->loadOptGiven   = false;
     fullflags->memOptGiven    = false;

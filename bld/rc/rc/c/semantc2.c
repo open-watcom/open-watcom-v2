@@ -54,7 +54,7 @@ void SemOS2SetCodepage( uint_32 codepage )
 
 static void initFullFlags( FullResFlags *fullflags )
 {
-    fullflags->res_flags      = RESFLAG_NONE;
+    fullflags->res_flags      = DEFAULT_FLAGS_NONE;
     fullflags->codePage       = curCodepage;
     fullflags->loadOptGiven   = false;
     fullflags->memOptGiven    = false;

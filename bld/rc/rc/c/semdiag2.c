@@ -837,7 +837,7 @@ void SemOS2AddDlgincResource( WResID *res_id, char *filename )
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
-        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DLGINCLUDE ), RESFLAG_DISCARDABLE | RESFLAG_MOVEABLE | RESFLAG_PURE, loc );
+        SemAddResourceAndFree( res_id, WResIDFromNum( OS2_RT_DLGINCLUDE ), DEFAULT_FLAGS_MDP, loc );
     }
     MemFree( filename );
 }

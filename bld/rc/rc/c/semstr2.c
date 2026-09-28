@@ -138,7 +138,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
     newblock->iswin32 = false;
-    newblock->res_flags = RESFLAG_NONE;
+    newblock->res_flags = DEFAULT_FLAGS_NONE;
     newblock->codePage = 850;
     ResInitStringTableBlock( &(newblock->Block) );
 

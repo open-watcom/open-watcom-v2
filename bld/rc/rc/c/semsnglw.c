@@ -58,7 +58,7 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
 
     if( CmdLineParms.iswin32 ) {
         start = SemCopyRawFile( filename->string );
-        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ), RESFLAG_MOVEABLE | RESFLAG_PURE, start );
+        SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ), DEFAULT_FLAGS_MP, start );
     } else {
         RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = true;
@@ -105,11 +105,11 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
         if( fullflags != NULL ) {
             SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
             res_flags = fullflags->res_flags;
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags_group = fullflags->res_flags;
         } else {
             res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
-            res_flags_group = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags_group = DEFAULT_FLAGS_MDP;
         }
         AddIconResource( res_id, res_flags, res_flags_group, full_filename );
         break;
@@ -126,29 +126,29 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
         if( fullflags != NULL ) {
             SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, purity_flags );
             res_flags = fullflags->res_flags;
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags_group = fullflags->res_flags;
         } else {
             res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | purity_flags;
-            res_flags_group = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags_group = DEFAULT_FLAGS_MDP;
         }
         AddCursorResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_BITMAP:
         if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE, RESFLAG_PURE );
+            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags = fullflags->res_flags;
         } else {
-            res_flags = RESFLAG_MOVEABLE | RESFLAG_PURE;
+            res_flags = DEFAULT_FLAGS_MP;
         }
         AddBitmapResource( res_id, res_flags, full_filename );
         break;
     case Y_FONT:
         if( fullflags != NULL ) {
-            SemCheckResFlags( fullflags, RESFLAG_NONE, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, RESFLAG_PURE );
+            SemCheckResFlags( fullflags, RESFLAG_NONE, DEFAULT_FLAGS_MDP & ~RESFLAG_PURE, RESFLAG_PURE );
             res_flags = fullflags->res_flags;
         } else {
-            res_flags = RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE;
+            res_flags = DEFAULT_FLAGS_MDP;
         }
         AddFontResources( res_id, res_flags, full_filename );
         break;

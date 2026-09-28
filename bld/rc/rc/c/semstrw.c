@@ -95,7 +95,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->Prev = NULL;
     newblock->BlockNum = 0;
     newblock->iswin32 = CmdLineParms.iswin32;
-    newblock->res_flags = RESFLAG_NONE;
+    newblock->res_flags = DEFAULT_FLAGS_NONE;
     ResInitStringTableBlock( &(newblock->Block) );
 
     return( newblock );

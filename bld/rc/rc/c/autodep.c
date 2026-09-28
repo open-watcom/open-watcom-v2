@@ -162,7 +162,7 @@ bool WriteDependencyRes( void )
         loc.len = SemEndResource( loc.start );
         res_id = WResIDFromStr( DEP_LIST_NAME );
         type_id = WResIDFromNum( DEP_LIST_TYPE );
-        SemAddResourceAndFree( res_id, type_id, RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE, loc );
+        SemAddResourceAndFree( res_id, type_id, DEFAULT_FLAGS_MD, loc );
     }
     freeDepList();
     return( false );
