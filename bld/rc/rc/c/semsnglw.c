@@ -91,6 +91,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
 
     switch( type ) {
     case Y_ICON:
+        SemCheckResFlags( fullflags );
         /*
          * MS changed the default purity for ICON resource for rc version 31.
          * Note: the ICON_GROUP resource still have the same purity
@@ -103,6 +104,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
         AddIconResource( res_id, fullflags->res_flags, res_flags_group, full_filename );
         break;
     case Y_CURSOR:
+        SemCheckResFlags( fullflags );
         /*
          * MS changed the default purity for CURSOR resource for rc version 31.
          * Note: the CURSOR_GROUP resource still have the same purity
