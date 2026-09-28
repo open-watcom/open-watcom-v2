@@ -188,6 +188,7 @@
 %type <accevent>        event
 %type <fullresflags>    resource-options
 %type <fullresflags>    resource-options-mdp
+%type <fullresflags>    resource-options-md
 %type <fullresflags>    resource-options-mp
 %type <token>           resource-option
 %type <string>          file-name
@@ -546,12 +547,12 @@ comma-opt
 
 single-line-resource
     : name-id Y_CURSOR file-name
-        { SemWINAddSingleLineResourceDef( $1, Y_CURSOR, DEFAULT_FLAGS_MDP, $3.string ); }
-    | name-id Y_CURSOR resource-options-mdp file-name
+        { SemWINAddSingleLineResourceDef( $1, Y_CURSOR, DEFAULT_FLAGS_MD, $3.string ); }
+    | name-id Y_CURSOR resource-options-md file-name
         { SemWINAddSingleLineResource( $1, Y_CURSOR, &($3), $4.string ); }
     | name-id Y_ICON file-name
-        { SemWINAddSingleLineResourceDef( $1, Y_ICON, DEFAULT_FLAGS_MDP, $3.string ); }
-    | name-id Y_ICON resource-options-mdp file-name
+        { SemWINAddSingleLineResourceDef( $1, Y_ICON, DEFAULT_FLAGS_MD, $3.string ); }
+    | name-id Y_ICON resource-options-md file-name
         { SemWINAddSingleLineResource( $1, Y_ICON, &($3), $4.string ); }
     | name-id Y_BITMAP file-name
         { SemWINAddSingleLineResourceDef( $1, Y_BITMAP, DEFAULT_FLAGS_MP, $3.string ); }
@@ -567,6 +568,13 @@ resource-options-mdp
     : resource-option
         { $$ = SemWINAddFirstResOption( $1, DEFAULT_FLAGS_MDP ); }
     | resource-options-mdp resource-option
+        { $$ = SemWINAddResOption( $1, $2 ); }
+    ;
+
+resource-options-md
+    : resource-option
+        { $$ = SemWINAddFirstResOption( $1, DEFAULT_FLAGS_MD ); }
+    | resource-options-md resource-option
         { $$ = SemWINAddResOption( $1, $2 ); }
     ;
 

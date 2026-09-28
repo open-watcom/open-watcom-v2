@@ -133,7 +133,8 @@ FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )
         fullflags.loadOptGiven = true;
         break;
     case Y_FIXED:
-        fullflags.res_flags &= ~RESFLAG_MOVEABLE;
+        /* not only MOVEABLE=0, but also DISCARDABLE=0 */
+        fullflags.res_flags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE);
         fullflags.memOptGiven = true;
         break;
     case Y_MOVEABLE:
@@ -141,7 +142,8 @@ FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )
         fullflags.memOptGiven = true;
         break;
     case Y_DISCARDABLE:
-        fullflags.res_flags |= RESFLAG_DISCARDABLE;
+        /* not only DISCARDABLE=1, but also MOVEABLE=1 and PURE=1 */
+        fullflags.res_flags |= (RESFLAG_MOVEABLE | RESFLAG_PURE | RESFLAG_DISCARDABLE);
         fullflags.memOptGiven = true;
         break;
     case Y_PURE:
@@ -149,11 +151,11 @@ FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )
         fullflags.purityOptGiven = true;
         break;
     case Y_IMPURE:
-        fullflags.res_flags &= ~RESFLAG_PURE;
+        /* not only PURE=0, but also DISCARDABLE=0 */
+        fullflags.res_flags &= ~(RESFLAG_PURE | RESFLAG_DISCARDABLE);
         fullflags.purityOptGiven = true;
         break;
     }
-
     return( fullflags );
 }
 
