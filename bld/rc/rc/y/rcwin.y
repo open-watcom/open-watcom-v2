@@ -667,9 +667,9 @@ raw-data-item
 rcdata-resource
     : name-id Y_RCDATA opt-resource-info-stmts user-defined-data
         {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), DEFAULT_FLAGS_MDP, $4 );
+            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), DEFAULT_FLAGS_MP, $4 );
         }
-    | name-id Y_RCDATA resource-options-mdp opt-resource-info-stmts user-defined-data
+    | name-id Y_RCDATA resource-options-mp opt-resource-info-stmts user-defined-data
         {
             SemCheckResFlags( &($3) );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.res_flags, $5 );

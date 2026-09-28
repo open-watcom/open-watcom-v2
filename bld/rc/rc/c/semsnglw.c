@@ -94,19 +94,19 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
     res_flags = fullflags->res_flags;
     switch( type ) {
     case Y_ICON:
-        /*
-         * MS changed the default purity for ICON resource for rc version 31.
-         * Note: the ICON_GROUP resource still have the same purity
-         */
-        res_flags_group = res_flags | RESFLAG_PURE;
+        if( res_flags & RESFLAG_PRELOAD ) {
+            res_flags_group = res_flags;
+        } else {
+            res_flags_group = DEFAULT_FLAGS_MDP;
+        }
         AddIconResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_CURSOR:
-        /*
-         * MS changed the default purity for CURSOR resource for rc version 31.
-         * Note: the CURSOR_GROUP resource still have the same purity
-         */
-        res_flags_group = res_flags | RESFLAG_PURE;
+        if( res_flags & RESFLAG_PRELOAD ) {
+            res_flags_group = res_flags;
+        } else {
+            res_flags_group = DEFAULT_FLAGS_MDP;
+        }
         AddCursorResource( res_id, res_flags, res_flags_group, full_filename );
         break;
     case Y_BITMAP:
