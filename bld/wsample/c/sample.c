@@ -492,11 +492,6 @@ static const char *Parse( const char *cmd, char arg[], const char **eoc )
      */
     *eoc = ptr;
     len = 0;
-    arg[0] = 0;
-    if( *ptr != '\0' ) {
-        arg[0] = 1;
-        arg[1] = *ptr++;
-    }
     while( (*ptr != '\0') && (len < 126) ) {
         arg[++len] = *ptr++;
     }
@@ -553,7 +548,7 @@ int sample_main( char *cmd_line )
         ;
     *++tmp_cmd = '\0';
     cmd = Parse( cmd_line, arg, &eoc );    /* will set Ceiling, Margin, TimerMult, cmd, and arg */
-    GetProg( cmd, eoc - cmd_line );
+    GetProg( cmd, eoc - cmd );
 
     AllocSamples( 1 );
 
