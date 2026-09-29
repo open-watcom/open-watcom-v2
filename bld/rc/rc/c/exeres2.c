@@ -86,8 +86,8 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         /*
          * Fill in resource entries
          */
-        entry->res_type   = type_id;
-        entry->res_name   = res_id;
+        entry->type_id    = type_id;
+        entry->res_id     = res_id;
         entry->wind       = wind;
         entry->res_flags  = langinfo->res_flags;
         entry->seg_length = 0;  /* Zero means 64K */
@@ -95,8 +95,8 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
 
         for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
-            entry->res_type   = type_id;
-            entry->res_name   = res_id;
+            entry->type_id    = type_id;
+            entry->res_id     = res_id;
             entry->wind       = wind;
             entry->res_flags  = langinfo->res_flags;
             entry->seg_length = 0;
@@ -324,8 +324,8 @@ RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
 
     ret = RS_OK;
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
-        res_tab.type_id = restab->resources[i].res_type;
-        res_tab.res_id = restab->resources[i].res_name;
+        res_tab.type_id = restab->resources[i].type_id;
+        res_tab.res_id = restab->resources[i].res_id;
         if( RESWRITE( fp, &res_tab, sizeof( res_tab ) ) != sizeof( res_tab ) ) {
             ret = RS_WRITE_ERROR;
         }

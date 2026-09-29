@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -79,8 +79,8 @@ typedef struct ResTable {
 } ResTable;
 
 typedef struct OS2ResEntry {
-    uint_16         res_type;   /* resource type */
-    uint_16         res_name;   /* resource name */
+    uint_16         type_id;    /* resource type */
+    uint_16         res_id;     /* resource name */
     WResDirWindow   wind;       /* window into the current WResDir */
     bool            first_part; /* true unless non-first bit of > 64K resource */
     uint_16         seg_length; /* length of resource segment */
