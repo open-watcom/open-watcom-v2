@@ -647,16 +647,33 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
 
 #if defined( __UNIX__ )
     {
-        struct statvfs      vfs;
+        struct statvfs  vfs;
 
         /* unused parameters */ (void)removable;
 
+#if 0
         if( statvfs( info->root, &vfs ) == 0 ) {
             info->block_size = ( vfs.f_frsize != 0 ) ? vfs.f_frsize : vfs.f_bsize;
             info->free_space = (fsys_size)vfs.f_bfree * (fsys_size)info->block_size;
         } else {
             info->block_size = 1;
         }
+#else
+        int         fd;
+
+        fd = open(info->root, O_RDONLY | O_DIRECTORY);
+        if (fd >= 0) {
+            if (fstatvfs(fd, &vfs) == 0) {
+                info->block_size = ( vfs.f_frsize ) ? vfs.f_frsize : vfs.f_bsize;
+                if (vfs.f_bavail != 0) {
+                    info->free_space = (fsys_size)vfs.f_bavail * info->block_size;
+                } else {
+                    info->free_space = (fsys_size)vfs.f_bfree * info->block_size;
+                }
+            }
+            close(fd);
+        }
+#endif
     }
 #elif defined( __OS2__ )
     {
