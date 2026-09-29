@@ -243,9 +243,7 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 
 WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 {
-    uint_16                 type_id;
     uint_16                 resource_count;
-    uint_32                 reserved;
     resource_type_record    type_info;
     WResTypeNode            *type_node;
     WResResNode             *res_node;
@@ -260,14 +258,14 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
     if( type_node == NULL )
         return( NULL );
 
-    resource_count = type_info.count;
+    resource_count = type_info.num_resources;
     type_node->Next = NULL;
     type_node->Prev = NULL;
     type_node->Head = NULL;
     type_node->Tail = NULL;
     type_node->Info.NumResources = resource_count;
-    type_node->Info.TypeName.IsName = ( (type_id & 0x8000) == 0 );
-    type_node->Info.TypeName.ID.Num = (type_id & 0x7fff);
+    type_node->Info.TypeName.IsName = ( (type_info.type_id & 0x8000) == 0 );
+    type_node->Info.TypeName.ID.Num = (type_info.type_id & 0x7fff);
 
     for( ; resource_count != 0; resource_count-- ) {
         res_node = WRReadWResResNodeFromExe( fp, align_shift );
