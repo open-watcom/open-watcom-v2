@@ -380,7 +380,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
         is32bitEx = (sign0 == 0x0001 && sign1 == 0xFFFF);
 
         dbi->control_list = NULL;
-        dbi->MemoryFlags = 0;
+        dbi->res_flags = DEFAULT_FLAGS_NONE;
         dbi->dialog_header = WdeDialogBoxHeaderFromData( &data, is32bit, is32bitEx );
         ok = (dbi->dialog_header != NULL);
     }

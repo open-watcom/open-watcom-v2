@@ -137,12 +137,12 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     if( ok ) {
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
-        dlg_info->MemoryFlags = 0;
+        dlg_info->res_flags = DEFAULT_FLAGS_NONE;
         ok = ( (fp = ResOpenFileRO( file_name )) != NULL );
     }
 
     if( ok ) {
-        dlg_info->MemoryFlags = lnode->Info.res_flags;
+        dlg_info->res_flags = lnode->Info.res_flags;
         ok = !ResSeek( fp, lnode->Info.Offset, SEEK_SET );
     }
 

@@ -1018,7 +1018,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
         rname = WResIDFromStr( rtext );
         if( rname != NULL ) {
             einfo->info->modified |= WChangeMemFlags( einfo->win,
-                                                      &einfo->current_block->MemFlags,
+                                                      &einfo->current_block->res_flags,
                                                       rname, WGetEditInstance(),
                                                       WStrHelpRoutine );
             MemFree( rname );

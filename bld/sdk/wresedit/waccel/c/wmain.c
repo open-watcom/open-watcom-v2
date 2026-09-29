@@ -878,7 +878,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
         case IDM_ACC_MEM_FLAGS:
             WSetStatusByID( einfo->wsb, W_CHANGEACCELMEMFLAGS, 0 );
-            einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->MemFlags,
+            einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->res_flags,
                                                       einfo->info->res_name,
                                                       WGetEditInstance(),
                                                       WAccHelpRoutine );

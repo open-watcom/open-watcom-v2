@@ -52,8 +52,8 @@ typedef struct WREPropertyInfo {
     char        *symbol;
     char        *new_symbol;
     WRHashTable *symbol_table;
-    ResMemFlags mflags;
-    ResMemFlags new_mflags;
+    ResMemFlags res_flags;
+    ResMemFlags new_res_flags;
 } WREPropertyInfo;
 
 /****************************************************************************/
@@ -65,7 +65,7 @@ WINEXPORT BOOL WREPropertyProc( HWND, UINT, WPARAM, LPARAM );
 /* static variables                                                         */
 /****************************************************************************/
 
-static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
+static bool WREGetPropName( HWND hDlg, WREPropertyInfo *info )
 {
     char        *name;
     HWND        combo;
@@ -100,71 +100,71 @@ static bool WREGetPropName( HWND hDlg, WREProperyInfo *info )
     return( true );
 }
 
-static void WRESetPropName( HWND hDlg, WREProperyInfo *info )
+static void WRESetPropName( HWND hDlg, WREPropertyInfo *info )
 {
     if( info == NULL ) {
         return;
     }
 }
 
-static void WRESetPropMemoryFlags( HWND hDlg, ResMemFlags mflags )
+static void WRESetPropMemoryFlags( HWND hDlg, ResMemFlags res_flags )
 {
-    if( mflags & RESFLAG_MOVEABLE ) {
+    if( res_flags & RESFLAG_MOVEABLE ) {
         CheckDlgButton( hDlg, IDM_PROP_MV, BST_CHECKED );
     }
 
-    if( mflags & RESFLAG_DISCARDABLE ) {
+    if( res_flags & RESFLAG_DISCARDABLE ) {
         CheckDlgButton( hDlg, IDM_PROP_DSC, BST_CHECKED );
     }
 
-    if( mflags & RESFLAG_PURE ) {
+    if( res_flags & RESFLAG_PURE ) {
         CheckDlgButton( hDlg, IDM_PROP_PUR, BST_CHECKED );
     }
 
-    if( mflags & RESFLAG_PRELOAD ) {
+    if( res_flags & RESFLAG_PRELOAD ) {
         CheckDlgButton( hDlg, IDM_PROP_PRE, BST_CHECKED );
     } else {
         CheckDlgButton( hDlg, IDM_PROP_LOC, BST_CHECKED );
     }
 }
 
-static void WREGetPropMemoryFlags( HWND hDlg, ResMemFlags *mflags )
+static void WREGetPropMemoryFlags( HWND hDlg, ResMemFlags *res_flags )
 {
-    if( mflags == NULL ) {
+    if( res_flags == NULL ) {
         return;
     }
 
-    *mflags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_PRELOAD);
+    *res_flags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_PRELOAD);
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_MV ) ) {
-        *mflags |= RESFLAG_MOVEABLE;
+        *res_flags |= RESFLAG_MOVEABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_DSC ) ) {
-        *mflags |= RESFLAG_DISCARDABLE;
+        *res_flags |= RESFLAG_DISCARDABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_PUR ) ) {
-        *mflags |= RESFLAG_PURE;
+        *res_flags |= RESFLAG_PURE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDM_PROP_PRE ) ) {
-        *mflags |= RESFLAG_PRELOAD;
+        *res_flags |= RESFLAG_PRELOAD;
     }
 }
 
 BOOL WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WREProperyInfo      *info;
+    WREPropertyInfo     *info;
     BOOL                ret;
 
     ret = FALSE;
 
     switch( message ) {
     case WM_INITDIALOG:
-        info = (WREProperyInfo *)lParam;
+        info = (WREPropertyInfo *)lParam;
         SET_DLGDATA( hDlg, info );
-        WRESetPropMemoryFlags( hDlg, info->mflags )
+        WRESetPropMemoryFlags( hDlg, info->res_flags )
         ret = TRUE;
         break;
 
@@ -179,8 +179,8 @@ BOOL WREPropertyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
             break;
 
         case IDOK:
-            info = (WREProperyInfo *)GET_DLGDATA( hDlg );
-            WREGetPropMemoryFlags( hDlg, &info->new_mflags );
+            info = (WREPropertyInfo *)GET_DLGDATA( hDlg );
+            WREGetPropMemoryFlags( hDlg, &info->new_res_flags );
             EndDialog( hDlg, TRUE );
             ret = TRUE;
             break;

@@ -69,7 +69,7 @@ typedef struct WREDialogInfo {
     char            *file_name;
     WResID          *res_name;
     WResLangType    lang;
-    uint_16         MemFlags;
+    ResMemFlags     res_flags;
     bool            is32bit;
     size_t          data_size;
     void            *data;
@@ -184,7 +184,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
             rname = WRECreateDialogTitle();
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
+                ok = WRENewResource( curr, tname, rname, DEFAULT_FLAGS_MP, 0, 0,
                                      &lang, &dup, RESOURCE2INT( RT_DIALOG ), tname_alloc );
                 if( !ok && dup ) {
                     ok = true;
@@ -464,7 +464,7 @@ WREDialogSession *WREStartDialogSession( WRECurrentResInfo *curr )
     session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info.lang = curr->lang->Info.lang;
-    session->info.MemFlags = curr->lang->Info.res_flags;
+    session->info.res_flags = curr->lang->Info.res_flags;
     session->info.data_size = curr->lang->Info.Length;
     session->info.data = curr->lang->data;
     session->info.is32bit = is32bit;

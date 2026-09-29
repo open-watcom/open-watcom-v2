@@ -57,7 +57,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
+bool WChangeMemFlags( HWND parent, ResMemFlags *res_flags, WResID *res_name,
                       HINSTANCE inst, HELPFUNC help_callback )
 {
     char            *name;
@@ -67,7 +67,7 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
 
     name = NULL;
 
-    ok = (mflags != NULL && res_name != NULL);
+    ok = (res_flags != NULL && res_name != NULL);
 
     if( ok )  {
         if( res_name != NULL ) {
@@ -79,10 +79,10 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     if( ok ) {
 #ifdef __WINDOWS__
         HELPFUNC hcb = MakeProcInstance_HELP( help_callback, inst );
-        ok = WRChangeMemFlags( parent, name, mflags, hcb );
+        ok = WRChangeMemFlags( parent, name, res_flags, hcb );
         FreeProcInstance_HELP( hcb );
 #else
-        ok = WRChangeMemFlags( parent, name, mflags, help_callback );
+        ok = WRChangeMemFlags( parent, name, res_flags, help_callback );
 #endif
     }
 

@@ -189,7 +189,7 @@ bool WSaveObjectAs( bool prompt_name, WStringEditInfo *einfo, WRSaveIntoData *id
             idata2.data = einfo->info->symbol_file;
             idata2.lang = lang;
             idata2.size = (uint_32)( strlen( einfo->info->symbol_file ) + 1 );
-            idata2.MemFlags = RESFLAG_DISCARDABLE;
+            idata2.res_flags = RESFLAG_DISCARDABLE;
         }
     }
 
@@ -392,7 +392,7 @@ WRSaveIntoData *WInitSaveData( WStringBlock *block, WResID *type, WResLangType *
     idata->size = (uint_32)size;
     idata->type = type;
     idata->lang = *lang;
-    idata->MemFlags = block->MemFlags;
+    idata->res_flags = block->res_flags;
 
     return( idata );
 }

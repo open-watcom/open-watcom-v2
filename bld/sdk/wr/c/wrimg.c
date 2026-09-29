@@ -48,7 +48,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define RESFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -97,7 +96,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     }
 
     if( ok ) {
-        ok = !WResAddResource( type, name, 0, sizeof( BITMAPFILEHEADER ),
+        ok = !WResAddResource( type, name, DEFAULT_FLAGS_NONE, sizeof( BITMAPFILEHEADER ),
                                file_length - sizeof( BITMAPFILEHEADER ),
                                info->dir, &lang, NULL );
     }
@@ -170,7 +169,7 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, rihsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, DEFAULT_FLAGS_MP, 0, rihsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -259,7 +258,7 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, RESFLAGS_DEF, 0, rchsize, info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, DEFAULT_FLAGS_MP, 0, rchsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {

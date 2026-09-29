@@ -85,7 +85,7 @@ typedef struct WREClipData {
     size_t      data_size;
     uint_32     data_offset;
     uint_16     type_id;
-    uint_16     memflags;
+    ResMemFlags res_flags;
     bool        is32bit;
     char        name[1];
 } WREClipData;
@@ -353,7 +353,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
                 new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir, ctype ) == NULL);
             }
         }
-        ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
+        ok = WRENewResource( &curr, ctype, cname, cdata->res_flags, 0,
                              (uint_32)cdata->data_size, &lang, &dup, tn->type,
                              new_type ) && !dup;
     }
@@ -451,7 +451,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
                 new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir, ctype ) == NULL );
             }
         }
-        ok = WRENewResource( &curr, ctype, cname, cdata->memflags, 0,
+        ok = WRENewResource( &curr, ctype, cname, cdata->res_flags, 0,
                              (uint_32)cdata->data_size, &lang, &dup, fmt->type_id,
                              new_type ) && !dup;
     }
@@ -545,7 +545,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, char *data, uint_32 dsize 
                 new_type = (WREFindTypeNodeFromWResID( curr.info->info->dir, ctype ) == NULL );
             }
         }
-        ok = WRENewResource( &curr, ctype, cname, RESFLAGS_DEF, 0,
+        ok = WRENewResource( &curr, ctype, cname, DEFAULT_FLAGS_MP, 0,
                              dsize, &lang, &dup, RESOURCE2INT( RT_BITMAP ),
                              new_type ) && !dup;
     }
@@ -746,7 +746,7 @@ WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
         cdata->data_size = rdata_size;
         cdata->data_offset = cdata_size - rdata_size;
         cdata->type_id = type_id;
-        cdata->memflags = curr->lang->Info.res_flags;
+        cdata->res_flags = curr->lang->Info.res_flags;
         cdata->is32bit = curr->info->is32bit;
         memcpy( &cdata->name[0], name, name_size );
         memcpy( &cdata->name[name_size], rdata, rdata_size );

@@ -39,7 +39,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define RESFLAGS_DEF    (RESFLAG_MOVEABLE | RESFLAG_PURE)
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -48,6 +47,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WRENewResource( WRECurrentResInfo *, WResID *, WResID *, uint_16, uint_32, uint_32, WResLangType *, bool *, uint_16, bool );
+extern bool WRENewResource( WRECurrentResInfo *, WResID *, WResID *, ResMemFlags, uint_32, uint_32, WResLangType *, bool *, uint_16, bool );
 
 #endif

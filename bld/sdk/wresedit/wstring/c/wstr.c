@@ -334,7 +334,7 @@ WStringNode *WMakeStringNodeFromStringBlock( WStringBlock *block )
     }
     memset( node, 0, sizeof( WStringNode ) );
     node->block_name = WResIDFromNum( block->blocknum / 16 + 1 );
-    node->MemFlags = block->MemFlags;
+    node->res_flags = block->res_flags;
     WMakeDataFromStringBlock( block, &node->data, &node->data_size );
     if( node->data == NULL ) {
         WFreeStringNode( node );

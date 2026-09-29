@@ -375,7 +375,7 @@ bool WRHandleWinNTNameEntry( FILE *fp, WResDir *dir, WResID *type,
     if( ok ) {
         if( add_now ) {
             offset = WR_MAP_RES_RVA( res_entry.data_rva );
-            ok = !WResAddResource( type, name, 0, offset, res_entry.size,
+            ok = !WResAddResource( type, name, DEFAULT_FLAGS_NONE, offset, res_entry.size,
                                    *dir, &lang, NULL );
         }
     }
@@ -439,7 +439,7 @@ bool WRHandleWinNTLangIDEntry( FILE *fp, WResDir *dir, WResID *type,
         offset = WR_MAP_DATA_RVA( res_entry.data_rva );
         lang.lang = HIWORD( resdir_entry->id_name );
         lang.sublang = LOBYTE( LOWORD( resdir_entry->id_name ) );
-        ok = !WResAddResource( type, name, 0, offset, res_entry.size, *dir, &lang, NULL );
+        ok = !WResAddResource( type, name, DEFAULT_FLAGS_NONE, offset, res_entry.size, *dir, &lang, NULL );
     }
 
     return( ok );

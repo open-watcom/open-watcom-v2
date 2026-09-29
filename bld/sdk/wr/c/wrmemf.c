@@ -49,7 +49,7 @@
 /****************************************************************************/
 typedef struct WRMFInfo {
     HELPFUNC        help_callback;
-    uint_16         mflags;
+    ResMemFlags     res_flags;
     char            *name;
 } WRMFInfo;
 
@@ -68,19 +68,19 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELPFUNC help_callback )
+bool WRAPI WRChangeMemFlags( HWND parent, char *name, ResMemFlags *res_flags, HELPFUNC help_callback )
 {
     WRMFInfo    info;
     HINSTANCE   inst;
     INT_PTR     modified;
 
-    if( mflags == NULL ) {
+    if( res_flags == NULL ) {
         return( false );
     }
 
     info.help_callback = help_callback;
     info.name = name;
-    info.mflags = *mflags;
+    info.res_flags = *res_flags;
     inst = WRGetInstance();
 #ifdef __WINDOWS__
     {
@@ -93,7 +93,7 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELPFUNC 
 #endif
 
     if( modified == IDOK ) {
-        *mflags = info.mflags;
+        *res_flags = info.res_flags;
     }
 
     return( modified != -1 && modified == IDOK );
@@ -104,19 +104,19 @@ void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
     if( info != NULL ) {
         SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
 
-        if( info->mflags & RESFLAG_MOVEABLE ) {
+        if( info->res_flags & RESFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, BST_CHECKED );
         }
 
-        if( info->mflags & RESFLAG_DISCARDABLE ) {
+        if( info->res_flags & RESFLAG_DISCARDABLE ) {
             CheckDlgButton( hDlg, IDM_MFDSC, BST_CHECKED );
         }
 
-        if( info->mflags & RESFLAG_PURE ) {
+        if( info->res_flags & RESFLAG_PURE ) {
             CheckDlgButton( hDlg, IDM_MFPUR, BST_CHECKED );
         }
 
-        if( info->mflags & RESFLAG_PRELOAD ) {
+        if( info->res_flags & RESFLAG_PRELOAD ) {
             CheckDlgButton( hDlg, IDM_MFPRE, BST_CHECKED );
         } else {
             CheckDlgButton( hDlg, IDM_MFLOC, BST_CHECKED );
@@ -127,23 +127,23 @@ void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
 {
     if( info != NULL ) {
-        info->mflags = info->mflags &
+        info->res_flags = info->res_flags &
             ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_PRELOAD);
 
         if( IsDlgButtonChecked( hDlg, IDM_MFMV ) ) {
-            info->mflags |= RESFLAG_MOVEABLE;
+            info->res_flags |= RESFLAG_MOVEABLE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFDSC ) ) {
-            info->mflags |= RESFLAG_DISCARDABLE;
+            info->res_flags |= RESFLAG_DISCARDABLE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFPUR ) ) {
-            info->mflags |= RESFLAG_PURE;
+            info->res_flags |= RESFLAG_PURE;
         }
 
         if( IsDlgButtonChecked( hDlg, IDM_MFPRE ) ) {
-            info->mflags |= RESFLAG_PRELOAD;
+            info->res_flags |= RESFLAG_PRELOAD;
         }
     }
 }

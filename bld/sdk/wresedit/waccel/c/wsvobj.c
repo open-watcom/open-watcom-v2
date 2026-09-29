@@ -194,7 +194,7 @@ bool WSaveObjectAs( bool prompt_name, WAccelEditInfo *einfo )
             idata2.data = einfo->info->symbol_file;
             idata2.lang = einfo->info->lang;
             idata2.size = (uint_32)( strlen( einfo->info->symbol_file ) + 1 );
-            idata2.MemFlags = RESFLAG_DISCARDABLE;
+            idata2.res_flags = RESFLAG_DISCARDABLE;
         }
     }
 
@@ -261,7 +261,7 @@ bool WSaveObjectAs( bool prompt_name, WAccelEditInfo *einfo )
         idata.data = einfo->info->data;
         idata.lang = einfo->info->lang;
         idata.size = (uint_32)einfo->info->data_size;
-        idata.MemFlags = einfo->info->MemFlags;
+        idata.res_flags = einfo->info->res_flags;
         ok = WRSaveObjectAs( resfile, rtype, &idata );
     }
 
@@ -339,7 +339,7 @@ bool WSaveObjectInto( WAccelEditInfo *einfo )
             idata.data = einfo->info->data;
             idata.lang = einfo->info->lang;
             idata.size = (uint_32)einfo->info->data_size;
-            idata.MemFlags = einfo->info->MemFlags;
+            idata.res_flags = einfo->info->res_flags;
             ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
         }
     }

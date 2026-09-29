@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ typedef struct {
     LIST                *ochildren;
     HFONT               font;
     RECT                nc_size;
-    uint_16             mem_flags;
+    ResMemFlags         res_flags;
     WdeDialogBoxHeader  *dialog_info;
     WdeResInfo          *res_info;
     WdeResDlgItem       *dlg_item;

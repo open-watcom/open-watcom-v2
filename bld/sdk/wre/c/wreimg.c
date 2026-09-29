@@ -70,7 +70,7 @@ typedef struct WREImageInfo {
     char            *file_name;
     WResID          *res_name;
     WResLangType    lang;
-    uint_16         MemFlags;
+    ResMemFlags     res_flags;
     bool            is32bit;
     size_t          data_size;
     void            *data;
@@ -202,7 +202,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
             rname = WRECreateImageTitle( type );
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
+                ok = WRENewResource( curr, tname, rname, DEFAULT_FLAGS_MP, 0, 0,
                                      &lang, &dup, type, tname_alloc );
                 if( !ok && dup ) {
                     ok = true;
@@ -579,7 +579,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
     session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
     session->info.lang = curr->lang->Info.lang;
-    session->info.MemFlags = curr->lang->Info.res_flags;
+    session->info.res_flags = curr->lang->Info.res_flags;
     session->info.is32bit = curr->info->is32bit;
 
     session->type = curr->info->current_type;

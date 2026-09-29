@@ -430,7 +430,7 @@ static bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp
 static bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
 static bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem );
 
-static bool WdeSetMemFlagsText( uint_16 flags, char **text )
+static bool WdeSetMemFlagsText( ResMemFlags res_flags, char **text )
 {
     size_t  tlen;
 
@@ -441,19 +441,19 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
     tlen = 0;
     *text = NULL;
 
-    if( flags & RESFLAG_PRELOAD ) {
+    if( res_flags & RESFLAG_PRELOAD ) {
         tlen += 8; // size of the string PRELOAD and a space
     }
 
-    if( !(flags & RESFLAG_MOVEABLE) ) {
+    if( !(res_flags & RESFLAG_MOVEABLE) ) {
         tlen += 6; // size of the string FIXED and a space
     }
 
-    if( flags & RESFLAG_DISCARDABLE ) {
+    if( res_flags & RESFLAG_DISCARDABLE ) {
         tlen += 12; // size of the string DISCARDABLE and a space
     }
 
-    if( !(flags & RESFLAG_PURE) ) {
+    if( !(res_flags & RESFLAG_PURE) ) {
         tlen += 7; // size of the string IMPURE and a space
     }
 
@@ -464,19 +464,19 @@ static bool WdeSetMemFlagsText( uint_16 flags, char **text )
     (*text)[0] = '\0';
 
     if( tlen > 0 ) {
-        if( flags & RESFLAG_PRELOAD ) {
+        if( res_flags & RESFLAG_PRELOAD ) {
             strcat( *text, "PRELOAD " );
         }
 
-        if( !(flags & RESFLAG_MOVEABLE) ) {
+        if( !(res_flags & RESFLAG_MOVEABLE) ) {
             strcat( *text, "FIXED " );
         }
 
-        if( flags & RESFLAG_DISCARDABLE ) {
+        if( res_flags & RESFLAG_DISCARDABLE ) {
             strcat( *text, "DISCARDABLE " );
         }
 
-        if( !(flags & RESFLAG_PURE) ) {
+        if( !(res_flags & RESFLAG_PURE) ) {
             strcat( *text, "IMPURE " );
         }
     }
@@ -1005,7 +1005,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        ok = WdeSetMemFlagsText( ditem->dialog_info->MemoryFlags, &str );
+        ok = WdeSetMemFlagsText( ditem->dialog_info->res_flags, &str );
     }
 
     if( ok ) {

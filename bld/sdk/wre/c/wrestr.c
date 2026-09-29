@@ -150,7 +150,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
             rname = WResIDFromNum( 0 );
             ok = (rname != NULL);
             if( ok ) {
-                ok = WRENewResource( curr, tname, rname, RESFLAGS_DEF, 0, 0,
+                ok = WRENewResource( curr, tname, rname, DEFAULT_FLAGS_MP, 0, 0,
                                      &lang, &dup, RESOURCE2INT( RT_STRING ), tname_alloc );
                 if( !ok && dup ) {
                     ok = true;
@@ -440,7 +440,7 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
     memset( node, 0, sizeof( WStringNode ) );
 
     node->lang = curr->lang->Info.lang;
-    node->MemFlags = curr->lang->Info.res_flags;
+    node->res_flags = curr->lang->Info.res_flags;
     node->block_name = WRECopyWResID( &curr->res->Info.ResName );
     node->data_size = curr->lang->Info.Length;
     node->data = WREGetCopyResData( curr );
@@ -522,7 +522,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
     tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
     ok = ( tname != NULL );
     for( ; ok && node != NULL; node = node->next ) {
-        ok = !WResAddResource( tname, node->block_name, node->MemFlags, 0,
+        ok = !WResAddResource( tname, node->block_name, node->res_flags, 0,
                                (uint_32)node->data_size, dir, &node->lang, NULL );
         if( ok ) {
             ok = WRFindAndSetData( dir, tname, node->block_name,

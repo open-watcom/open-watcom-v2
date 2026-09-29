@@ -95,7 +95,6 @@
 /* following is DBCS text in Japanese "�l�r ����" */
 #define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
-#define RESFLAGS_DEF            (RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE)
 
 #define pick_ACTS(o) \
     pick_ACTION_MOVE(o,pick) \
@@ -183,8 +182,8 @@ static void     WdeDialogSetDialogStyles( HWND, DialogStyle );
 static void     WdeDialogGetDialogStyles( HWND, DialogStyle * );
 static void     WdeDialogSetDialogEXStyles( HWND, uint_32 );
 static void     WdeDialogGetDialogEXStyles( HWND, uint_32 * );
-static void     WdeDialogSetDialogMemFlags( HWND, uint_16 );
-static void     WdeDialogGetDialogMemFlags( HWND, uint_16 * );
+static void     WdeDialogSetDialogMemFlags( HWND, ResMemFlags );
+static void     WdeDialogGetDialogMemFlags( HWND, ResMemFlags * );
 static void     WdeDialogSetDialogFontInfo( HWND, WdeDialogObject * );
 static void     WdeDialogSetDialogPntInfo( HWND, int );
 static void     WdeFreeDialogObject( WdeDialogObject * );
@@ -303,7 +302,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 
     is32bitEx = false;
 
-    info->MemoryFlags = obj->mem_flags;
+    info->res_flags = obj->res_flags;
     info->dialog_header->symbol = WdeStrdup( obj->symbol );
     info->dialog_header->helpsymbol = WdeStrdup( obj->helpsymbol );
     info->control_list = NULL;
@@ -561,7 +560,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     if( ok ) {
         new->res_info = res_info;
         new->dlg_item = ditem;
-        new->mem_flags = ditem->dialog_info->MemoryFlags;
+        new->res_flags = ditem->dialog_info->res_flags;
         new->dialog_info = WdeCopyDialogBoxHeader( ditem->dialog_info->dialog_header );
         ok = ( new->dialog_info != NULL );
     }
@@ -680,7 +679,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
 #else
     OBJ_DISPATCHER_SET( new, WdeDialogDispatcher );
 #endif
-    new->mem_flags = RESFLAGS_DEF;
+    new->res_flags = DEFAULT_FLAGS_MDP;
 
     resize_dialog_height = false;
     resize_dialog_width = false;
@@ -2380,7 +2379,7 @@ bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR ha
     OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
     (*new)->font = obj->font;
-    (*new)->mem_flags = obj->mem_flags;
+    (*new)->res_flags = obj->res_flags;
     (*new)->resizer = obj->resizer;
     (*new)->nc_size = obj->nc_size;
     (*new)->dialog_info = WdeCopyDialogBoxHeader( obj->dialog_info );
@@ -2813,7 +2812,7 @@ void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 
     /* set the dialog memory and load flags */
-    WdeDialogSetDialogMemFlags( hDlg, obj->mem_flags );
+    WdeDialogSetDialogMemFlags( hDlg, obj->res_flags );
 
     /* set the dialog font and point size combo boxes */
     WdeDialogSetDialogFontInfo( hDlg, obj );
@@ -2863,7 +2862,7 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 
     /* get the dialog memory and load flags */
-    WdeDialogGetDialogMemFlags( hDlg, &obj->mem_flags );
+    WdeDialogGetDialogMemFlags( hDlg, &obj->res_flags );
 
     /* get the dialog caption */
     vp = WdeGetStrFromEdit( hDlg, IDB_TEXT, &mod );
@@ -3180,42 +3179,42 @@ void WdeDialogGetDialogEXStyles( HWND hDlg, uint_32 *ExStyle )
 
 #endif
 
-void WdeDialogGetDialogMemFlags( HWND hDlg, uint_16 *flags )
+void WdeDialogGetDialogMemFlags( HWND hDlg, ResMemFlags *res_flags )
 {
-    *flags = 0;
+    *res_flags = DEFAULT_FLAGS_NONE;
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_MOVEABLE ) ) {
-        *flags |= RESFLAG_MOVEABLE;
+        *res_flags |= RESFLAG_MOVEABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_DISCARDABLE ) ) {
-        *flags |= RESFLAG_DISCARDABLE;
+        *res_flags |= RESFLAG_DISCARDABLE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_MEM_PURE ) ) {
-        *flags |= RESFLAG_PURE;
+        *res_flags |= RESFLAG_PURE;
     }
 
     if( IsDlgButtonChecked( hDlg, IDB_LOAD_PRELOAD ) ) {
-        *flags |= RESFLAG_PRELOAD;
+        *res_flags |= RESFLAG_PRELOAD;
     }
 }
 
-void WdeDialogSetDialogMemFlags( HWND hDlg, uint_16 flags )
+void WdeDialogSetDialogMemFlags( HWND hDlg, ResMemFlags res_flags )
 {
-    if( flags & RESFLAG_MOVEABLE ) {
+    if( res_flags & RESFLAG_MOVEABLE ) {
         CheckDlgButton( hDlg, IDB_MEM_MOVEABLE, BST_CHECKED );
     }
 
-    if( flags & RESFLAG_DISCARDABLE ) {
+    if( res_flags & RESFLAG_DISCARDABLE ) {
         CheckDlgButton( hDlg, IDB_MEM_DISCARDABLE, BST_CHECKED );
     }
 
-    if( flags & RESFLAG_PURE ) {
+    if( res_flags & RESFLAG_PURE ) {
         CheckDlgButton( hDlg, IDB_MEM_PURE, BST_CHECKED );
     }
 
-    if( flags & RESFLAG_PRELOAD ) {
+    if( res_flags & RESFLAG_PRELOAD ) {
         CheckDlgButton( hDlg, IDB_LOAD_PRELOAD, BST_CHECKED );
     }
 }

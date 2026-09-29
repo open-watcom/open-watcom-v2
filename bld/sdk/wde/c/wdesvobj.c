@@ -177,7 +177,7 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         idata.data = rdata;
         idata.lang = *lang;
         idata.size = size;
-        idata.MemFlags = dbi->MemoryFlags;
+        idata.res_flags = dbi->res_flags;
         ok = WRSaveObjectAs( fname, ftype, &idata );
     }
 
@@ -246,7 +246,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             idata.data = data;
             idata.lang = *lang;
             idata.size = size;
-            idata.MemFlags = dbi->MemoryFlags;
+            idata.res_flags = dbi->res_flags;
             ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
         }
     }

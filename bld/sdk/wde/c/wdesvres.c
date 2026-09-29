@@ -58,7 +58,7 @@ static void          WdeFreeInfoData( WdeResInfo * );
 static WResResNode  *WdeRenameWResResNode( WResTypeNode *, WResResNode *, WResID * );
 static bool          WdeAddResToType( WResTypeNode *, WResResNode * );
 static WResTypeNode *WdeAddTypeToDir( WResDir, uint_16 );
-static WResResNode  *WdeCreateWResResNode( uint_16, WResID *, WResLangType *, uint_16, uint_32, uint_32, void * );
+static WResResNode  *WdeCreateWResResNode( uint_16, WResID *, WResLangType *, ResMemFlags, uint_32, uint_32, void * );
 static WResTypeNode *WdeAllocWResTypeNode( uint_16 );
 static WResResNode  *WdeAllocWResResNode( uint_16, WResID * );
 
@@ -179,11 +179,11 @@ bool WdeInfoToData( WdeResInfo *info )
                 ditem->lnode->data = data;
                 ditem->lnode->Info.Length = dsize;
                 ditem->lnode->Info.Offset = 0;
-                ditem->lnode->Info.res_flags = ditem->dialog_info->MemoryFlags;
+                ditem->lnode->Info.res_flags = ditem->dialog_info->res_flags;
             }
         } else {
             rnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
-                                          ditem->dialog_info->MemoryFlags, 0,
+                                          ditem->dialog_info->res_flags, 0,
                                           dsize, data );
             if( rnode != NULL ) {
                 if( info->info->dir == NULL ) {
@@ -370,7 +370,7 @@ WResTypeNode *WdeAllocWResTypeNode( uint_16 type )
     return( tnode );
 }
 
-static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
+static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, ResMemFlags res_flags,
                                     uint_32 offset, uint_32 dsize, char *data )
 {
     WResLangNode *lnode;
@@ -386,7 +386,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
         lnode->Prev = NULL;
         lnode->data = data;
         lnode->Info.lang = *lang;
-        lnode->Info.res_flags = memflags;
+        lnode->Info.res_flags = res_flags;
         lnode->Info.Offset = offset;
         lnode->Info.Length = dsize;
     }
@@ -395,7 +395,7 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, uint_16 memflags,
 }
 
 WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
-                                   WResLangType *lang, uint_16 memflags,
+                                   WResLangType *lang, ResMemFlags res_flags,
                                    uint_32 offset, uint_32 dsize,
                                    void *data )
 {
@@ -403,7 +403,7 @@ WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
     WResLangNode *lnode;
 
     rnode = NULL;
-    lnode = WdeAllocWResLangNode( lang, memflags, offset, dsize, data );
+    lnode = WdeAllocWResLangNode( lang, res_flags, offset, dsize, data );
     if( lnode != NULL ) {
         rnode = WdeAllocWResResNode( num_resources, name );
         if( rnode != NULL ) {

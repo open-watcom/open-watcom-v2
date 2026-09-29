@@ -959,7 +959,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
         case IDM_MENU_MEM_FLAGS:
             WSetStatusByID( einfo->wsb, W_CHANGEMENUMEMFLAGS, 0 );
-            einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->MemFlags,
+            einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->res_flags,
                                                       einfo->info->res_name,
                                                       WGetEditInstance(),
                                                       WMenuHelpRoutine );

@@ -702,7 +702,7 @@ bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
           idata->name != NULL && idata->data != NULL);
 
     if( ok ) {
-        ok = !WResAddResource( idata->type, idata->name, idata->MemFlags, 0,
+        ok = !WResAddResource( idata->type, idata->name, idata->res_flags, 0,
                                idata->size, info->dir, &idata->lang, NULL );
     }
 
@@ -741,7 +741,7 @@ bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
     }
 
     if( ok ) {
-        ok = !WResAddResource( idata->type, idata->name, idata->MemFlags, 0,
+        ok = !WResAddResource( idata->type, idata->name, idata->res_flags, 0,
                                idata->size, info->dir, &idata->lang, NULL );
     }
 
@@ -781,7 +781,7 @@ bool WREDoSaveObjectInto( WRInfo *info, WRSaveIntoData *idata, bool *dup )
     }
 
     if( ok ) {
-        ok = !WResAddResource( idata->type, idata->name, idata->MemFlags, 0,
+        ok = !WResAddResource( idata->type, idata->name, idata->res_flags, 0,
                                idata->size, info->dir, &idata->lang, dup );
         ok = ok && !*dup;
     }
@@ -832,7 +832,7 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
     }
 
     if( ok ) {
-        ok = !WResAddResource( idata->type, idata->name, idata->MemFlags, 0,
+        ok = !WResAddResource( idata->type, idata->name, idata->res_flags, 0,
                                idata->size, info->dir, &idata->lang, dup );
         ok = ok && !*dup;
     }

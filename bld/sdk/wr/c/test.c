@@ -51,7 +51,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     bool                backup;
     WRInfo              *info;
     WRFileType          ftype;
-    uint_16             mflags;
+    ResMemFlags         res_flags;
     WRSelectImageInfo   *siinfo;
 #if 0
     bool                dup;
@@ -123,7 +123,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         ret = TRUE;
     }
 
-    WRChangeMemFlags( HWND_DESKTOP, "test", &mflags, NULL );
+    WRChangeMemFlags( HWND_DESKTOP, "test", &res_flags, NULL );
 
     if( info != NULL ) {
         info->save_name = NULL;

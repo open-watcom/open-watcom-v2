@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -176,7 +176,7 @@ typedef struct WdeDialogBoxControl {
 typedef struct WdeDialogBoxInfoStruct {
     WdeDialogBoxHeader  *dialog_header;
     LIST                *control_list;      /* list of DialogBoxControl's      */
-    uint_16             MemoryFlags;
+    ResMemFlags         res_flags;
 } WdeDialogBoxInfo;
 
 typedef struct WdeResDlgItem {

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,7 +59,7 @@ typedef struct WAccelInfo {
     char                *symbol_file;
     WResID              *res_name;
     WResLangType        lang;
-    uint_16             MemFlags;
+    ResMemFlags         res_flags;
     size_t              data_size;
     char                *data;
     bool                is32bit;
