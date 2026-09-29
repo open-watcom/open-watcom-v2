@@ -765,7 +765,7 @@ int _trmem_chk_range( void *start, NSSTD( size_t ) len, _trmem_who who, _trmem_h
 void _trmem_prt_usage( _trmem_hdl hdl )
 /*************************************/
 {
-    trPrt( hdl, MSG_PRT_USAGE, hdl->mem_used, hdl->max_mem, hdl->alloc_no);
+    trPrt( hdl, MSG_PRT_USAGE, hdl->mem_used, hdl->max_mem, hdl->alloc_no );
 }
 
 unsigned _trmem_prt_list_ex( _trmem_hdl hdl, unsigned max_items )
