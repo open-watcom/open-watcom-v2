@@ -380,7 +380,7 @@ includeres-statement
 
 pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
-      {}
+      { SemWINSetDefaultCodepage( $4.Value ); }
     ;
 
 keyword-name

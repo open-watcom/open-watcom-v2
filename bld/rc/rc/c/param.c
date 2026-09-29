@@ -237,7 +237,7 @@ static size_t NativeDBStringToUnicode( const char *str, size_t len, char *buf, s
 
 #endif
 
-static void LoadCodePageFile( const char *cpfile )
+static void LoadCodepageFile( const char *cpfile )
 {
     RcStatus            ret;
     char                path[_MAX_PATH];
@@ -267,7 +267,7 @@ static void LoadCodePageFile( const char *cpfile )
     }
 }
 
-static void initMBCodePage( void )
+static void initMBCodepage( void )
 /********************************/
 {
     /*
@@ -305,23 +305,23 @@ static void initMBCodePage( void )
     case DB_TRADITIONAL_CHINESE:
         SetMBRange( 0x81, 0xfe, 1 );
         if( CmdLineParms.iswin32 )
-            LoadCodePageFile( "950.uni" );
+            LoadCodepageFile( "950.uni" );
         break;
     case DB_WANSUNG_KOREAN:
         SetMBRange( 0x81, 0xfe, 1 );
         if( CmdLineParms.iswin32 )
-            LoadCodePageFile( "949.uni" );
+            LoadCodepageFile( "949.uni" );
         break;
     case DB_SIMPLIFIED_CHINESE:
         SetMBRange( 0xA1, 0xfe, 1 );
         if( CmdLineParms.iswin32 )
-            LoadCodePageFile( "936.uni" );
+            LoadCodepageFile( "936.uni" );
         break;
     case DB_KANJI:
         SetMBRange( 0x81, 0x9f, 1 );
         SetMBRange( 0xe0, 0xfc, 1 );
         if( CmdLineParms.iswin32 )
-            LoadCodePageFile( "kanji.uni" );
+            LoadCodepageFile( "kanji.uni" );
         break;
     case MB_UTF8:
     case MB_UTF8_KANJI:
@@ -338,8 +338,8 @@ static void initMBCodePage( void )
         }
         break;
     case MB_NONE:
-        if( CmdLineParms.CodePageFile != NULL ) {
-            LoadCodePageFile( CmdLineParms.CodePageFile );
+        if( CmdLineParms.CodepageFile != NULL ) {
+            LoadCodepageFile( CmdLineParms.CodepageFile );
 #ifdef __NT__
         } else {
             SetNativeLeadBytes();
@@ -525,9 +525,9 @@ void ScanParamFini( void )
     CmdLineParms.OutResFileName = NULL;
     MemFree( CmdLineParms.OutExeFileName );
     CmdLineParms.OutExeFileName = NULL;
-    if( CmdLineParms.CodePageFile != NULL ) {
-        MemFree( CmdLineParms.CodePageFile );
-        CmdLineParms.CodePageFile = NULL;
+    if( CmdLineParms.CodepageFile != NULL ) {
+        MemFree( CmdLineParms.CodepageFile );
+        CmdLineParms.CodepageFile = NULL;
     }
 #ifndef NO_REPLACE
     while( (strings = CmdLineParms.FindReplaceStrings) != NULL ) {
@@ -954,7 +954,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
         CmdLineParms.winver = 40; /* WIN32 */
     }
     if( data->c ) {
-        SetStringOption( &CmdLineParms.CodePageFile, &(data->c_value) );
+        SetStringOption( &CmdLineParms.CodepageFile, &(data->c_value) );
     }
     if( data->d ) {
         OPT_STRING *s;
@@ -1196,7 +1196,7 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     /*
      * initialize character input/output encoding
      */
-    initMBCodePage();
+    initMBCodepage();
 
     return( SetParms() );
 

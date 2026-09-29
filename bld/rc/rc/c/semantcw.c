@@ -43,6 +43,20 @@ static WResLangType curLang;
 static bool         resourceHasLang;
 static WResLangType resourceLang;
 
+static uint_32  curCodepage = 0;
+
+uint_32 SemWINGetDefaultCodepage( void )
+/**************************************/
+{
+    return( curCodepage );
+}
+
+void SemWINSetDefaultCodepage( uint_32 codepage )
+/***********************************************/
+{
+    curCodepage = codepage;
+}
+
 void SemSetDefLang( void )
 /************************/
 {
@@ -482,4 +496,5 @@ void SemanticInitStaticsWIN( void )
     memset( &curLang, 0, sizeof( WResLangType ) );
     resourceHasLang = false;
     memset( &resourceLang, 0, sizeof( WResLangType ) );
+    curCodepage = 1252; /* Latin-1 Western Europe */
 }

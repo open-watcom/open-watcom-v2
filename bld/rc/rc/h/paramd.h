@@ -97,7 +97,7 @@ typedef struct RCParams {
     char        *InExeFileName;
     char        *OutResFileName;
     char        *OutExeFileName;
-    char        *CodePageFile;
+    char        *CodepageFile;
     char        *PrependString;
     char        **CPPArgs;    /* temporary until preprocessing done inline */
     ExtraRes    *ExtraResFiles;

@@ -139,7 +139,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->BlockNum = 0;
     newblock->iswin32 = false;
     newblock->res_flags = DEFAULT_FLAGS_NONE;
-    newblock->codePage = 850;
+    newblock->codePage = SemOS2GetDefaultCodepage();
     ResInitStringTableBlock( &(newblock->Block) );
 
     return( newblock );
@@ -285,10 +285,10 @@ void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags res_flags )
 
     table = findTable( CurrResFile.ErrorTable );
     if( table == NULL ) {
-        setStringTableFlags( currtable, res_flags, SemOS2DefaultCodepage() );
+        setStringTableFlags( currtable, res_flags, SemOS2GetDefaultCodepage() );
         addTable( &CurrResFile.ErrorTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, res_flags, SemOS2DefaultCodepage() );
+        semMergeStringTables( table, currtable, res_flags, SemOS2GetDefaultCodepage() );
     }
 }
 

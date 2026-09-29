@@ -38,16 +38,16 @@
 #include "semantc2.h"
 
 
-static uint_32  curCodepage = 850;  // default resource codepage
+static uint_32  curCodepage = 0;
 
-uint_32 SemOS2DefaultCodepage( void )
-/***********************************/
+uint_32 SemOS2GetDefaultCodepage( void )
+/**************************************/
 {
     return( curCodepage );
 }
 
-void SemOS2SetCodepage( uint_32 codepage )
-/****************************************/
+void SemOS2SetDefaultCodepage( uint_32 codepage )
+/***********************************************/
 {
     curCodepage = codepage;
 }
@@ -402,5 +402,5 @@ char *SemOS2TokenToString( YYTOKENTYPE token )
 void SemanticInitStaticsOS2( void )
 /*********************************/
 {
-    curCodepage = 850;
+    curCodepage = 850;  /* Latin-1 Western Europe */
 }

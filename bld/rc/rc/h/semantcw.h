@@ -49,6 +49,8 @@ extern char             *SemWINTokenToString( YYTOKENTYPE token );
 extern void             SemWINSetGlobalLanguage( const WResLangType *newlang );
 extern void             SemWINSetResourceLanguage( const WResLangType *newlang, bool from_parser );
 extern void             SemWINUnsupported( YYTOKENTYPE token );
+extern uint_32          SemWINGetDefaultCodepage( void );
+extern void             SemWINSetDefaultCodepage( uint_32 codepage );
 extern void             SemWINAddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type, ResMemFlags res_flags, char *filename );
 
 #endif

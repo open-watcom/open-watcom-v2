@@ -356,12 +356,12 @@ type-id
 
 pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
-        { SemOS2SetCodepage( $4.Value ); }
+        { SemOS2SetDefaultCodepage( $4.Value ); }
     ;
 
 codepage-statement
     : Y_CODEPAGE constant-expression
-        { SemOS2SetCodepage( $2.Value ); }
+        { SemOS2SetDefaultCodepage( $2.Value ); }
     ;
 
 keyword-name
@@ -740,7 +740,7 @@ presparam-name
 string-table-resource
     : Y_STRINGTABLE string-section
         {
-            SemOS2MergeStrTable( $2, DEFAULT_FLAGS_MDP, SemOS2DefaultCodepage() );
+            SemOS2MergeStrTable( $2, DEFAULT_FLAGS_MDP, SemOS2GetDefaultCodepage() );
         }
     | Y_STRINGTABLE resource-options-mdp string-section
         {
@@ -861,7 +861,7 @@ help-subitem
 accel-table-resource
     : Y_ACCELTABLE name-id acc-section
         {
-            SemOS2WriteAccelTable( $2, DEFAULT_FLAGS_MP, SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteAccelTable( $2, DEFAULT_FLAGS_MP, SemOS2GetDefaultCodepage(), $3 );
         }
     | Y_ACCELTABLE name-id resource-options-mp acc-section
         {
@@ -946,7 +946,7 @@ acc-item-option
 
 menu-resource
     : Y_MENU name-id menu-section
-        { SemOS2WriteMenu( $2, DEFAULT_FLAGS_MDP, $3, Y_MENU, SemOS2DefaultCodepage() ); }
+        { SemOS2WriteMenu( $2, DEFAULT_FLAGS_MDP, $3, Y_MENU, SemOS2GetDefaultCodepage() ); }
     | Y_MENU name-id resource-options-mdp menu-section
         {
             SemCheckResFlags( &($3) );
@@ -1104,7 +1104,7 @@ dialogtemplate
 dlg-template
     : dialogtemplate name-id diag-control-section
         {
-            SemOS2WriteDialogTemplate( $2, DEFAULT_FLAGS_MDP, SemOS2DefaultCodepage(), $3 );
+            SemOS2WriteDialogTemplate( $2, DEFAULT_FLAGS_MDP, SemOS2GetDefaultCodepage(), $3 );
         }
     | dialogtemplate name-id resource-options-mdp diag-control-section
         {
