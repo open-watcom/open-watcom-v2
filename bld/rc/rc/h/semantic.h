@@ -36,11 +36,6 @@
 #include "wresall.h"
 
 
-#define DEFAULT_FLAGS_NONE          (RESFLAG_NONE)
-#define DEFAULT_FLAGS_MDP           (RESFLAG_PURE | RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
-#define DEFAULT_FLAGS_MD            (RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE)
-#define DEFAULT_FLAGS_MP            (RESFLAG_PURE | RESFLAG_MOVEABLE)
-
 /**** Semantic structures ****/
 typedef struct FullResFlags {
     ResMemFlags         res_flags;
