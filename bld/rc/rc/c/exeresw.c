@@ -101,8 +101,8 @@ uint_32 ComputeWINResourceSize( WResDir dir )
 } /* ComputeWINResourceSize */
 
 
-static uint_16 findResOrTypeName( ResTable *restab, WResID *id )
-/**************************************************************/
+static uint_16 findResIdName( ResTable *restab, WResID *id )
+/**********************************************************/
 {
     uint_16     nameid;
     int_32      str_offset;
@@ -118,7 +118,7 @@ static uint_16 findResOrTypeName( ResTable *restab, WResID *id )
     }
 
     return( nameid );
-} /* findResOrTypeName */
+} /* findResIdName */
 
 static FullTypeRecord *addExeTypeRecord( ResTable *restab,
                             WResTypeInfo *typeinfo )
@@ -130,7 +130,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = typeinfo->NumResources;
-    exe_type->Info.type = findResOrTypeName( restab, &(typeinfo->TypeName) );
+    exe_type->Info.type_id = findResIdName( restab, &(typeinfo->TypeName) );
     exe_type->Head = NULL;
     exe_type->Tail = NULL;
     exe_type->Next = NULL;
@@ -152,22 +152,22 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
         if( typeinfo->TypeName.IsName
-          && (exe_type->Info.type & 0x8000) == 0 ) {
+          && (exe_type->Info.type_id & 0x8000) == 0 ) {
             /*
              * if they are both names
              */
             exe_type_name = (StringItem16 *)(restab->Str.StringBlock
-                               + (exe_type->Info.type - restab->Dir.TableSize));
+                               + (exe_type->Info.type_id - restab->Dir.TableSize));
             if( exe_type_name->NumChars == typeinfo->TypeName.ID.Name.NumChars
               && strnicmp( exe_type_name->Name, typeinfo->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
                 break;
             }
         } else if( !(typeinfo->TypeName.IsName)
-          && (exe_type->Info.type & 0x8000) ) {
+          && (exe_type->Info.type_id & 0x8000) ) {
             /*
              * if they are both numbers
              */
-            if( typeinfo->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
+            if( typeinfo->TypeName.ID.Num == (exe_type->Info.type_id & ~0x8000) ) {
                 break;
             }
         }
@@ -196,7 +196,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res->Info.length = exe_length;
     exe_res->Info.flags = mem_flags;
     exe_res->Info.reserved = 0;
-    exe_res->Info.name = findResOrTypeName( restab, res_id );
+    exe_res->Info.res_id = findResIdName( restab, res_id );
     exe_res->Next = NULL;
     exe_res->Prev = NULL;
     /*

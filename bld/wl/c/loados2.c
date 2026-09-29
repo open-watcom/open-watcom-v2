@@ -311,8 +311,8 @@ static void AddLLItemAtEnd( void *head, void *tail, void *item )
     }
 }
 
-static unsigned_16 findResOrTypeName( ResTable *restab, WResID *name )
-/********************************************************************/
+static unsigned_16 findResIdName( ResTable *restab, WResID *name )
+/****************************************************************/
 {
     unsigned_16 name_id;
     signed_32   str_offset;
@@ -340,7 +340,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
     exe_type = MemAllocSafe( sizeof( FullTypeRecord ) );
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = type->NumResources;
-    exe_type->Info.type = findResOrTypeName( restab, &(type->TypeName) );
+    exe_type->Info.type_id = findResIdName( restab, &(type->TypeName) );
     exe_type->Head = NULL;
     exe_type->Tail = NULL;
     exe_type->Next = NULL;
@@ -363,7 +363,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res->Info.length = exe_length;
     exe_res->Info.flags = flags;
     exe_res->Info.reserved = 0;
-    exe_res->Info.name = findResOrTypeName( restab, name );
+    exe_res->Info.res_id = findResIdName( restab, name );
     exe_res->Next = NULL;
     exe_res->Prev = NULL;
     AddLLItemAtEnd( &(type->Head), &(type->Tail), exe_res );
@@ -379,19 +379,19 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     for( exe_type = restab->Dir.Head; exe_type != NULL;
                 exe_type = exe_type->Next ) {
         if( type->TypeName.IsName
-          && (exe_type->Info.type & NE_ORDID) == 0 ) {
+          && (exe_type->Info.type_id & NE_ORDID) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
-                            ( exe_type->Info.type - restab->Dir.TableSize ));
+                            ( exe_type->Info.type_id - restab->Dir.TableSize ));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
               && strnicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
                             exe_type_name->NumChars ) == 0 ) {
                 break;
             }
         } else if( !(type->TypeName.IsName)
-          && (exe_type->Info.type & NE_ORDID) ) {
+          && (exe_type->Info.type_id & NE_ORDID) ) {
             /* if they are both numbers */
-            if( type->TypeName.ID.Num == (exe_type->Info.type & ~NE_ORDID) ) {
+            if( type->TypeName.ID.Num == (exe_type->Info.type_id & ~NE_ORDID) ) {
                 break;
             }
         }

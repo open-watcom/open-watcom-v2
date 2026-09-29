@@ -49,7 +49,7 @@ static int CompareLXResIdName( const void *e1, const void *e2 )
 {
 #define LXE(x) ((const LXResEntry *)(x))
     if( LXE( e1 )->resource.type_id == LXE( e2 )->resource.type_id ) {
-        return( LXE( e1 )->resource.name_id - LXE( e2 )->resource.name_id );
+        return( LXE( e1 )->resource.res_id - LXE( e2 )->resource.res_id );
     } else {
         return( LXE( e1 )->resource.type_id - LXE( e2 )->resource.type_id );
     }
@@ -99,7 +99,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
     assert( !typeinfo->TypeName.IsName );
 
     new_entry->resource.type_id = typeinfo->TypeName.ID.Num;
-    new_entry->resource.name_id = resinfo->ResName.ID.Num;
+    new_entry->resource.res_id = resinfo->ResName.ID.Num;
     new_entry->resource.object = 0;
     new_entry->resource.offset = langinfo->Offset;
 
@@ -304,7 +304,7 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
         }
 
 #ifdef DEVBUILD
-        printf( "    %d.%d (%d bytes)\n", entry->resource.name_id,
+        printf( "    %d.%d (%d bytes)\n", entry->resource.res_id,
             entry->resource.type_id, entry->resource.res_size );
 #endif
         /*

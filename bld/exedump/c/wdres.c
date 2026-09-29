@@ -39,11 +39,6 @@
 #include "wdfunc.h"
 
 
-typedef struct os2_res_entry {
-    unsigned_16         type_id;
-    unsigned_16         name_id;
-} os2_res_entry;
-
 static  const_string_table resource_type_win[][2] = {
     { "Unknown resource type (#0)", "000" },
     { "Cursor",                     "cur" },
@@ -94,7 +89,7 @@ static  const_string_table resource_type_os2[][2] = {
 /*
  * copy out resource to a file
  */
-static void resrc_to_file( uint32_t res_off, uint32_t res_len, uint16_t res_id, char *ext )
+static void resrc_to_file( uint32_t res_off, uint32_t res_len, uint16_t type_id, char *ext )
 {
     char        out_name[16];
     unsigned_8  buf[512];
@@ -102,7 +97,7 @@ static void resrc_to_file( uint32_t res_off, uint32_t res_len, uint16_t res_id, 
     int         nr;
 
     /* form the output file name */
-    sprintf( out_name, "%d", res_id );
+    sprintf( out_name, "%d", type_id );
     strcat( out_name, "." );
     strcat( out_name, ext );
 
@@ -144,15 +139,15 @@ static void dmp_resrc_id_name( unsigned_16 offset )
 /*
  * printout a resource item id name
  */
-static void dmp_resrc_name( unsigned_16 res_type )
-/************************************************/
+static void dmp_resrc_name( unsigned_16 type_id )
+/***********************************************/
 {
-    if( res_type & SEG_RESRC_HIGH ) {
-        res_type &= ~SEG_RESRC_HIGH;
+    if( type_id & SEG_RESRC_HIGH ) {
+        type_id &= ~SEG_RESRC_HIGH;
         Wdputs( "resource id: " );
-        Putdec( res_type );
+        Putdec( type_id );
     } else {
-        dmp_resrc_id_name( res_type );
+        dmp_resrc_id_name( type_id );
     }
 }
 
@@ -188,8 +183,8 @@ static void dmp_resrc_flags( unsigned_16 flags )
 /*
  * dump a resource description
  */
-static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 res_type )
-/******************************************************************************/
+static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 type_id )
+/*****************************************************************************/
 {
     unsigned_32         res_off;
     unsigned_32         res_len;
@@ -197,7 +192,7 @@ static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 res_type )
     unsigned_16         flags;
 
     Wdputc( ' ' );
-    dmp_resrc_name( res_ent->name );
+    dmp_resrc_name( res_ent->res_id );
     Wdputslc( "\n" );
     Wdputs( " file offset: " );
     res_off = (unsigned_32)res_ent->offset << Resrc_shift_cnt;
@@ -220,12 +215,12 @@ static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 res_type )
     if( Options_dmp & RSRC_FILE_DMP ) {
         char    ext[8];
 
-        if( res_type < ARRAY_SIZE( resource_type_win ) ) {
-            strcpy( ext, resource_type_win[res_type][1] );
+        if( type_id < ARRAY_SIZE( resource_type_win ) ) {
+            strcpy( ext, resource_type_win[type_id][1] );
         } else {
-            sprintf( ext, "%X", res_type );
+            sprintf( ext, "%X", type_id );
         }
-        resrc_to_file( res_off, res_len, res_ent->name, ext );
+        resrc_to_file( res_off, res_len, res_ent->res_id, ext );
     }
     res_end = res_off + res_len;
     if( Resrc_end < res_end ) {
@@ -236,8 +231,8 @@ static void dmp_resrc_desc_win( resource_record *res_ent, unsigned_16 res_type )
 /*
  * dump some resource entries
  */
-static void dmp_resrc_ent_win( unsigned_16 num_resources, unsigned_16 res_type )
-/******************************************************************************/
+static void dmp_resrc_ent_win( unsigned_16 num_resources, unsigned_16 type_id )
+/*****************************************************************************/
 {
     resource_record *res_ent_tab;
     resource_record *res_ent;
@@ -253,7 +248,7 @@ static void dmp_resrc_ent_win( unsigned_16 num_resources, unsigned_16 res_type )
     for( res_num = 0; res_num != num_resources; res_num++ ) {
         Wdputs( " # " );
         Putdec( res_num + 1 );
-        dmp_resrc_desc_win( res_ent++, res_type );
+        dmp_resrc_desc_win( res_ent++, type_id );
     }
     free( res_ent_tab );
 }
@@ -261,20 +256,20 @@ static void dmp_resrc_ent_win( unsigned_16 num_resources, unsigned_16 res_type )
 /*
  * printout a resource item type name
  */
-static void dmp_resrc_type( unsigned_16 res_type )
-/************************************************/
+static void dmp_resrc_type( unsigned_16 type_id )
+/***********************************************/
 {
     Wdputc( ' ' );
-    if( res_type & SEG_RESRC_HIGH ) {
-        res_type &= ~SEG_RESRC_HIGH;
-        if( res_type < ARRAY_SIZE( resource_type_win ) ) {
-            Wdputs( resource_type_win[res_type][0] );
+    if( type_id & SEG_RESRC_HIGH ) {
+        type_id &= ~SEG_RESRC_HIGH;
+        if( type_id < ARRAY_SIZE( resource_type_win ) ) {
+            Wdputs( resource_type_win[type_id][0] );
         } else {
             Wdputs( "Type id: " );
-            Putdec( res_type );
+            Putdec( type_id );
         }
     } else {
-        dmp_resrc_id_name( res_type );
+        dmp_resrc_id_name( type_id );
     }
 }
 
@@ -284,7 +279,7 @@ static void dmp_resrc_type( unsigned_16 res_type )
 static void dmp_resrc_tab_win( void )
 /***********************************/
 {
-    unsigned_16             res_type;
+    unsigned_16             type_id;
     resource_type_record    res_group;
     unsigned_32             offset;
 
@@ -298,15 +293,15 @@ static void dmp_resrc_tab_win( void )
         Wlseek( offset );
         Wread( &res_group, sizeof( resource_type_record ) );
         offset += sizeof( resource_type_record );
-        res_type = res_group.type;
-        if( res_type == 0 ) {
+        type_id = res_group.type_id;
+        if( type_id == 0 ) {
             return;
         }
         Wdputc( ' ' );
-        dmp_resrc_type( res_type );
+        dmp_resrc_type( type_id );
         Wdputslc( "\n" );
         Wlseek( offset );
-        dmp_resrc_ent_win( res_group.num_resources, res_type );
+        dmp_resrc_ent_win( res_group.num_resources, type_id );
         offset += res_group.num_resources * sizeof( resource_record );
         Wdputslc( "\n" );
     }
@@ -319,13 +314,13 @@ static void dmp_resrc_tab_win( void )
 static void dmp_resrc_tab_os2( void )
 /***********************************/
 {
-    unsigned_16     i;
-    unsigned_16     type_id;
-    unsigned_16     seg_no;
-    unsigned_16     res_group_size;
-    os2_res_entry   *res_tab;
+    unsigned_16             i;
+    unsigned_16             type_id;
+    unsigned_16             seg_no;
+    unsigned_16             res_group_size;
+    resource_table_record   *res_tab;
 
-    res_group_size = Os2_head.resource * sizeof( os2_res_entry );
+    res_group_size = Os2_head.resource * sizeof( resource_table_record );
     res_tab = Wmalloc( res_group_size );
     Wread( res_tab, res_group_size );
 
@@ -337,7 +332,7 @@ static void dmp_resrc_tab_os2( void )
             type_id = res_tab->type_id;
             if( type_id < ARRAY_SIZE( resource_type_os2 ) ) {
                 Wdputs( "type:  " );
-                Wdputslc( resource_type_os2[res_tab->type_id][0] );
+                Wdputslc( resource_type_os2[type_id][0] );
             }
         }
         Wdputs( "    " );
@@ -346,7 +341,7 @@ static void dmp_resrc_tab_os2( void )
         Wdputs( "   " );
         Puthex( res_tab->type_id, 4 );
         Wdputs( "      " );
-        Puthex( res_tab->name_id, 4 );
+        Puthex( res_tab->res_id, 4 );
         Wdputs( "      " );
         Wdputslc( "\n" );
         if( Options_dmp & RESRC_DMP ) {
@@ -385,7 +380,7 @@ static void dmp_resrc_tab_os2( void )
                     if( seg->info & SEG_ITERATED ) {
                         Wdputslc( "iterated segments NYI!" );
                     } else {
-                        resrc_to_file( res_off, res_len, res_tab->name_id, ext );
+                        resrc_to_file( res_off, res_len, res_tab->res_id, ext );
                     }
                 }
             }
@@ -444,7 +439,7 @@ void Dmp_resrc_tab_lelx( void )
         Wdputs( "      " );
         Puthex( res_tab.type_id, 4 );
         Wdputs( "      " );
-        Puthex( res_tab.name_id, 4 );
+        Puthex( res_tab.res_id, 4 );
         Wdputs( "      " );
         Puthex( res_tab.res_size, 8 );
         Wdputs( "      " );

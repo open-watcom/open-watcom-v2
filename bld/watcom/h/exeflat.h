@@ -291,7 +291,7 @@ typedef struct flat_bundle_entryfwd {
 
 typedef struct flat_res_table {
     unsigned_16    type_id;
-    unsigned_16    name_id;
+    unsigned_16    res_id;
     unsigned_32    res_size;
     unsigned_16    object;
     unsigned_32    offset;

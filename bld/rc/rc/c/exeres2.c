@@ -58,7 +58,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
     WResTypeInfo    *typeinfo;
     WResResInfo     *resinfo;
     uint_16         type_id;
-    uint_16         name_id;
+    uint_16         res_id;
     int_32          length;
 
     /*
@@ -80,14 +80,14 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         if( !typeinfo->TypeName.IsName )
             type_id = typeinfo->TypeName.ID.Num;
 
-        name_id = 0;
+        res_id = 0;
         if( !resinfo->ResName.IsName )
-            name_id = resinfo->ResName.ID.Num;
+            res_id = resinfo->ResName.ID.Num;
         /*
          * Fill in resource entries
          */
         entry->res_type   = type_id;
-        entry->res_name   = name_id;
+        entry->res_name   = res_id;
         entry->wind       = wind;
         entry->res_flags  = langinfo->res_flags;
         entry->seg_length = 0;  /* Zero means 64K */
@@ -96,7 +96,7 @@ static void buildOS2ResTable( OS2ResTable *restab, WResDir dir )
         for( length = langinfo->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
             entry->res_type   = type_id;
-            entry->res_name   = name_id;
+            entry->res_name   = res_id;
             entry->wind       = wind;
             entry->res_flags  = langinfo->res_flags;
             entry->seg_length = 0;
@@ -113,7 +113,7 @@ static int compareOS2ResTypeId( const void *e1, const void *e2 )
 {
 #define LXRE(e) ((LXResEntry *)(e))
     if( LXRE(e1)->resource.type_id == LXRE(e2)->resource.type_id ) {
-        return( LXRE(e1)->resource.name_id - LXRE(e2)->resource.name_id );
+        return( LXRE(e1)->resource.res_id - LXRE(e2)->resource.res_id );
     } else {
         return( LXRE(e1)->resource.type_id - LXRE(e2)->resource.type_id );
     }
@@ -324,8 +324,8 @@ RcStatus WriteOS2ResTable( FILE *fp, OS2ResTable *restab, int *err_code )
 
     ret = RS_OK;
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
-        res_tab.type = restab->resources[i].res_type;
-        res_tab.name = restab->resources[i].res_name;
+        res_tab.type_id = restab->resources[i].res_type;
+        res_tab.res_id = restab->resources[i].res_name;
         if( RESWRITE( fp, &res_tab, sizeof( res_tab ) ) != sizeof( res_tab ) ) {
             ret = RS_WRITE_ERROR;
         }

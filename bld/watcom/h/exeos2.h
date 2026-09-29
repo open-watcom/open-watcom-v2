@@ -238,23 +238,23 @@ typedef struct fixed_record {
 
 /* The resource table entries type */
 typedef struct resource_table_record {
-    unsigned_16         type;           /* resource type */
-    unsigned_16         name;           /* resource name */
+    unsigned_16         type_id;        /* resource type */
+    unsigned_16         res_id;         /* resource name */
 } resource_table_record;
 
-/* repeated for each type */
+/* repeated for each resource type (type_id) */
 typedef struct resource_type_record {
-    unsigned_16         type;           /* see below */
+    unsigned_16         type_id;        /* see below */
     unsigned_16         num_resources;  /* of this type */
     unsigned_32         reserved;
 } resource_type_record;
 
-/* repeated for each instance of this type */
+/* repeated for each instance of resource type (res_id) */
 typedef struct resource_record {
     unsigned_16         offset;         /* after resource shift */
     unsigned_16         length;         /* after resource shift */
     unsigned_16         flags;          /* resource flags */
-    unsigned_16         name;
+    unsigned_16         res_id;
     unsigned_32         reserved;
 } resource_record;
 #include "poppck.h"

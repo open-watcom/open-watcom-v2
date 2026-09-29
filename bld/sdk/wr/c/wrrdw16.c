@@ -51,15 +51,6 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
-typedef struct WRNameInfoStruct {
-    uint_16 offset;
-    uint_16 length;
-    uint_16 flags;
-    uint_16 id;
-    uint_16 handle;
-    uint_16 usage;
-} WRNameInfo;
-
 typedef struct WRNameTableEntry {
     uint_16 length;
     uint_16 type;
@@ -252,30 +243,24 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 
 WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 {
-    uint_16         type_id;
-    uint_16         resource_count;
-    uint_32         reserved;
-    WResTypeNode    *type_node;
-    WResResNode     *res_node;
-    bool            error;
+    uint_16                 type_id;
+    uint_16                 resource_count;
+    uint_32                 reserved;
+    resource_type_record    type_info;
+    WResTypeNode            *type_node;
+    WResResNode             *res_node;
 
-    error = false;
-    type_id = ResReadUint16( &error, fp );
-    if( error
-      || type_id == 0 ) {
+    if( RESREAD( fp, &type_info, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
+        return( NULL );
+    }
+    if( type_info.type_id == 0 ) {
         return( NULL );
     }
     type_node = MemAlloc( sizeof( WResTypeNode ) );
     if( type_node == NULL )
         return( NULL );
 
-    resource_count = ResReadUint16( &error, fp );
-    if( error )
-        return( NULL );
-    reserved = ResReadUint32( &error, fp );
-    if( error )
-        return( NULL );
-
+    resource_count = type_info.count;
     type_node->Next = NULL;
     type_node->Prev = NULL;
     type_node->Head = NULL;
@@ -301,7 +286,7 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 
 WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
 {
-    WRNameInfo      name_info;
+    resource_record res_info;
     uint_32         offset_32;
     uint_32         length_32;
     WResResNode     *rnode;
@@ -318,7 +303,7 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
         return( NULL );
     }
 
-    if( RESREAD( fp, &name_info, sizeof( WRNameInfo ) ) != sizeof( WRNameInfo ) ) {
+    if( RESREAD( fp, &res_info, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
         return( NULL );
     }
 
@@ -327,15 +312,15 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
     rnode->Head = lnode;
     rnode->Tail = lnode;
     rnode->Info.NumResources = 1;
-    rnode->Info.ResName.IsName = ( (name_info.id & 0x8000) == 0 );
-    rnode->Info.ResName.ID.Num = (name_info.id & 0x7fff);
+    rnode->Info.ResName.IsName = ( (res_info.res_id & 0x8000) == 0 );
+    rnode->Info.ResName.ID.Num = (res_info.res_id & 0x7fff);
 
     lnode->Next = NULL;
     lnode->Prev = NULL;
     lnode->data = NULL;
-    lnode->Info.res_flags = name_info.flags;
-    offset_32 = (uint_32)name_info.offset;
-    length_32 = (uint_32)name_info.length;
+    lnode->Info.res_flags = res_info.flags;
+    offset_32 = (uint_32)res_info.offset;
+    length_32 = (uint_32)res_info.length;
     lnode->Info.Offset = (uint_32)(offset_32 << align);
     lnode->Info.Length = (uint_32)(length_32 << align);
     lnode->Info.lang.lang = DEF_LANG;

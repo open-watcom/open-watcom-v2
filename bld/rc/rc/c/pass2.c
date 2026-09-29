@@ -476,7 +476,7 @@ static RcStatus findEndOfResources( ExeFileInfo *src, int *err_code )
         return( RESIOERR( src->fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     end = 0;
-    while( typeinfo.type != 0 ) {
+    while( typeinfo.type_id != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
             numread = RESREAD( src->fp, &nameinfo, sizeof( nameinfo ) );
             if( numread != sizeof( nameinfo ) ) {
