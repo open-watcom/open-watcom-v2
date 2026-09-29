@@ -102,25 +102,25 @@ enum {
 /*
     _trmem_open:
 
-    __alloc must be supplied and behave like malloc() when passed a size of 0.
+    alloc_fn must be supplied and behave like malloc() when passed a size of 0.
 
-    __free must be supplied and behave like free() when passed a NULL ptr.
+    free_fn must be supplied and behave like free() when passed a NULL ptr.
 
-    __realloc may be omitted (use _TRMEM_NO_REALLOC).  __realloc must behave
+    realloc_fn may be omitted (use _TRMEM_NO_REALLOC).  realloc_fn must behave
         like realloc() when passed a NULL pointer or a size of 0.
 
-    __strdup may be omitted (use _TRMEM_NO_ROUTINE). __strdup must behave like
+    strdup_fn may be omitted (use _TRMEM_NO_ROUTINE). strdup_fn must behave like
         strdup() when passed a NULL pointer.
 
-    __prt_parm is passed to __prt_line only.
+    prt_parm is passed to prt_line only.
 
-    __prt_line must be supplied.  It is called to output any messages trmem
+    prt_line must be supplied.  It is called to output any messages trmem
         needs to communicate.
-        __buf is a null-terminated string of length __len.
+        buf is a null-terminated string of length len.
 
-    __flags see enum above for more information.
+    flags see enum above for more information.
 
-    trmem uses __alloc and __free for its own internal structures.  None of
+    trmem uses alloc_fn and free_fn for its own internal structures.  None of
     the internal structures will appear in the memory statistics given by
     _trmem_prt_usage or _trmem_prt_list.
 
@@ -129,22 +129,22 @@ enum {
 
     A NULL return indicates failure, for one of any reason.
 
-    _trmem_open can/will use any of __alloc, __free, or __prt_line; so be
+    _trmem_open can/will use any of alloc_fn, free_fn, or prt_line; so be
     sure they are initialized before calling _trmem_open.
 */
 extern _trmem_hdl _trmem_open(
-    void *(*__alloc)(NSSTD( size_t )),
-    void (*__free)(void *),
-    void * (*__realloc)(void *, NSSTD( size_t )),
-    char * (*__strdup)(const char *),
-    void *__prt_parm,
-    void (*__prt_line)(void *prt_parm, const char *buf, NSSTD( size_t )len),
-    unsigned __flags
+    void *(*alloc_fn)(NSSTD( size_t )),
+    void (*free_fn)(void *),
+    void *(*realloc_fn)(void *, NSSTD( size_t )),
+    char *(*strdup_fn)(const char *),
+    void *prt_parm,
+    void (*prt_line)(void *prt_parm, const char *buf, NSSTD( size_t )len),
+    unsigned flags
 );
 
 
 /*
-    If ( __flags & _TRMEM_CLOSE_CHECK_FREE ) then _trmem_close checks if all
+    If ( flags & _TRMEM_CLOSE_CHECK_FREE ) then _trmem_close checks if all
     allocated chunks were freed before closing the handle.
     Returns number of unfreed chunks.
 */
