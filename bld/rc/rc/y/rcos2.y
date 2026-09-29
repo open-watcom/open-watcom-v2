@@ -181,7 +181,6 @@
 %type <resid>           name-id
 %type <resid>           type-id
 %type <integral>        id-value
-%type <fullresflags>    resource-options
 %type <fullresflags>    resource-options-mdp
 %type <fullresflags>    resource-options-mp
 %type <optint>          resource-option

@@ -186,7 +186,6 @@
 %type <resloc>          acc-section
 %type <integral>        id-value
 %type <accevent>        event
-%type <fullresflags>    resource-options
 %type <fullresflags>    resource-options-mdp
 %type <fullresflags>    resource-options-md
 %type <fullresflags>    resource-options-mp
