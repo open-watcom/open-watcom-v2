@@ -102,75 +102,36 @@ void SemWINUnsupported( YYTOKENTYPE token )
     RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
-static void initFullFlags( FullResFlags *fullflags )
-{
-    fullflags->res_flags      = DEFAULT_FLAGS_NONE;
-    fullflags->codePage       = 0;
-    fullflags->loadOptGiven   = false;
-    fullflags->memOptGiven    = false;
-    fullflags->purityOptGiven = false;
-    fullflags->cpOptGiven     = false;
-
-}
-
-FullResFlags SemWINAddFirstResOption( YYTOKENTYPE token, ResMemFlags res_flags )
-/******************************************************************************/
-{
-    FullResFlags    fullflags;
-
-    initFullFlags( &fullflags );
-    fullflags.res_flags = res_flags;
-    return( SemWINAddResOption( fullflags, token ) );
-}
-
-void SemWINAddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
-                                ResMemFlags res_flags, char *filename )
-/*********************************************************************/
-{
-    FullResFlags    fullflags;
-
-    initFullFlags( &fullflags );
-    fullflags.res_flags = res_flags;
-    SemWINAddSingleLineResource( res_id, type, &fullflags, filename );
-}
-
-FullResFlags SemWINAddResOption( FullResFlags fullflags, YYTOKENTYPE token )
-/**************************************************************************/
+ResMemFlags SemWINAddResOption( ResMemFlags res_flags, YYTOKENTYPE token )
+/************************************************************************/
 {
     switch( token ) {
     case Y_PRELOAD:
-        fullflags.res_flags |= RESFLAG_PRELOAD;
-        fullflags.loadOptGiven = true;
+        res_flags |= RESFLAG_PRELOAD;
         break;
     case Y_LOADONCALL:
-        fullflags.res_flags &= ~RESFLAG_PRELOAD;
-        fullflags.loadOptGiven = true;
+        res_flags &= ~RESFLAG_PRELOAD;
         break;
     case Y_FIXED:
         /* not only MOVEABLE=0, but also DISCARDABLE=0 */
-        fullflags.res_flags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE);
-        fullflags.memOptGiven = true;
+        res_flags &= ~(RESFLAG_MOVEABLE | RESFLAG_DISCARDABLE);
         break;
     case Y_MOVEABLE:
-        fullflags.res_flags |= RESFLAG_MOVEABLE;
-        fullflags.memOptGiven = true;
+        res_flags |= RESFLAG_MOVEABLE;
         break;
     case Y_DISCARDABLE:
         /* not only DISCARDABLE=1, but also MOVEABLE=1 and PURE=1 */
-        fullflags.res_flags |= (RESFLAG_MOVEABLE | RESFLAG_PURE | RESFLAG_DISCARDABLE);
-        fullflags.memOptGiven = true;
+        res_flags |= (RESFLAG_MOVEABLE | RESFLAG_PURE | RESFLAG_DISCARDABLE);
         break;
     case Y_PURE:
-        fullflags.res_flags |= RESFLAG_PURE;
-        fullflags.purityOptGiven = true;
+        res_flags |= RESFLAG_PURE;
         break;
     case Y_IMPURE:
         /* not only PURE=0, but also DISCARDABLE=0 */
-        fullflags.res_flags &= ~(RESFLAG_PURE | RESFLAG_DISCARDABLE);
-        fullflags.purityOptGiven = true;
+        res_flags &= ~(RESFLAG_PURE | RESFLAG_DISCARDABLE);
         break;
     }
-    return( fullflags );
+    return( res_flags );
 }
 
 char *SemWINTokenToString( YYTOKENTYPE token )

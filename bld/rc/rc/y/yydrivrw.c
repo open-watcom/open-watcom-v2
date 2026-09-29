@@ -74,7 +74,7 @@ typedef union {
     FullAccelFlags              accflags;
     AccelEvent                  accevent;
     ResLocation                 resloc;
-    FullResFlags                fullresflags;
+    ResMemFlags                 resmemflags;
     MenuFlags                   menuflags;
     FullMenuPtr                 menuptr;
     FullMenuItem                menuitem;

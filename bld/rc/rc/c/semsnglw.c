@@ -68,11 +68,10 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
     MemFree( filename );
 }
 
-void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags *fullflags, char *filename )
-/***********************************************************************************************************/
+void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, ResMemFlags res_flags, char *filename )
+/*********************************************************************************************************/
 {
     char        full_filename[_MAX_PATH];
-    ResMemFlags res_flags;
     /* used for icon and cursor resoures */
     ResMemFlags res_flags_group;
 
@@ -90,7 +89,6 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
-    res_flags = fullflags->res_flags;
     switch( type ) {
     case Y_ICON:
         if( res_flags & RESFLAG_PRELOAD ) {
