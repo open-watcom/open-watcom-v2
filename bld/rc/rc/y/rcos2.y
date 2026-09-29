@@ -606,7 +606,6 @@ user-defined-resource
         }
     | Y_RESOURCE type-id comma-opt name-id resource-options-mdp user-defined-data
         {
-            SemCheckResFlags( &($5) );
             SemAddResourceAndFree( $4, $2, $5.res_flags, $6 );
         }
     ;
@@ -709,7 +708,6 @@ rcdata-resource
         }
     | Y_RCDATA name-id resource-options-mdp rc-data
         {
-            SemCheckResFlags( &($3) );
             SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3.res_flags, $4 );
         }
     ;
@@ -744,7 +742,6 @@ string-table-resource
         }
     | Y_STRINGTABLE resource-options-mdp string-section
         {
-            SemCheckResFlags( &($2) );
             SemOS2MergeStrTable( $3, $2.res_flags, $2.codePage );
         }
     ;
@@ -756,7 +753,6 @@ message-table-resource
         }
     | Y_MESSAGETABLE resource-options-mdp string-section
         {
-            SemCheckResFlags( &($2) );
             SemOS2MergeMsgTable( $3, $2.res_flags );
         }
     ;
@@ -865,7 +861,6 @@ accel-table-resource
         }
     | Y_ACCELTABLE name-id resource-options-mp acc-section
         {
-            SemCheckResFlags( &($3) );
             SemOS2WriteAccelTable( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;
@@ -949,7 +944,6 @@ menu-resource
         { SemOS2WriteMenu( $2, DEFAULT_FLAGS_MDP, $3, Y_MENU, SemOS2GetDefaultCodepage() ); }
     | Y_MENU name-id resource-options-mdp menu-section
         {
-            SemCheckResFlags( &($3) );
             SemOS2WriteMenu( $2, $3.res_flags, $4, Y_MENU, $3.codePage );
         }
     ;
@@ -1108,7 +1102,6 @@ dlg-template
         }
     | dialogtemplate name-id resource-options-mdp diag-control-section
         {
-            SemCheckResFlags( &($3) );
             SemOS2WriteDialogTemplate( $2, $3.res_flags, $3.codePage, $4 );
         }
     ;

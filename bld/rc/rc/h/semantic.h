@@ -81,6 +81,5 @@ extern void                 SemAddResource2( WResID *res_id, WResID *type_id, Re
 extern void                 SemSetDefLang( void );
 extern const WResLangType   *SemGetResourceLanguage( void );
 extern void                 SemanticInitStatics( void );
-extern void                 SemCheckResFlags( FullResFlags *fullflags );
 
 #endif

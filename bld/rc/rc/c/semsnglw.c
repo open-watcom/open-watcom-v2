@@ -90,7 +90,6 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, FullResFlags
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
-    SemCheckResFlags( fullflags );
     res_flags = fullflags->res_flags;
     switch( type ) {
     case Y_ICON:

@@ -615,7 +615,6 @@ user-defined-resource
         }
     | name-id comma-opt user-defined-type-id resource-options-mdp user-defined-data
         {
-            SemCheckResFlags( &($4) );
             SemAddResourceAndFree( $1, $3, $4.res_flags, $5 );
         }
     ;
@@ -671,7 +670,6 @@ rcdata-resource
         }
     | name-id Y_RCDATA resource-options-mp opt-resource-info-stmts user-defined-data
         {
-            SemCheckResFlags( &($3) );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.res_flags, $5 );
         }
     ;
@@ -683,7 +681,6 @@ string-table-resource
         }
     | Y_STRINGTABLE resource-options-mdp opt-resource-info-stmts string-section
         {
-            SemCheckResFlags( &($2) );
             SemWINMergeStrTable( $4, $2.res_flags );
         }
     ;
@@ -695,7 +692,6 @@ toolbar-resource
         }
     | name-id Y_TOOLBAR resource-options-mp constant-expression comma-opt constant-expression toolbar-block
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3.res_flags );
         }
     ;
@@ -750,7 +746,6 @@ error-table-resource
         }
     | Y_ERRTABLE resource-options-mdp opt-resource-info-stmts string-section
         {
-            SemCheckResFlags( &($2) );
             SemWINMergeErrTable( $4, $2.res_flags );
         }
     ;
@@ -794,7 +789,6 @@ accelerators-resource
         }
     | name-id Y_ACCELERATORS resource-options-mp opt-resource-info-stmts acc-section
         {
-            SemCheckResFlags( &($3) );
             SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3.res_flags, $5 );
         }
     ;
@@ -884,7 +878,6 @@ menuex-resource
         { SemWINWriteMenu( $1, DEFAULT_FLAGS_MDP, $3, Y_MENU_EX ); }
     | name-id Y_MENU_EX resource-options-mdp menu-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteMenu( $1, $3.res_flags, $4, Y_MENU_EX );
         }
     ;
@@ -894,7 +887,6 @@ menu-resource
         { SemWINWriteMenu( $1, DEFAULT_FLAGS_MDP, $4, Y_MENU ); }
     | name-id Y_MENU resource-options-mdp opt-resource-info-stmts menu-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteMenu( $1, $3.res_flags, $5, Y_MENU );
         }
     ;
@@ -1212,25 +1204,21 @@ dlg-resource
     | name-id dialog-or-dialogEx resource-options-mdp comma-opt size-info helpId-opt
                diag-options-section diag-control-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteDialogBox( $1, $3.res_flags, $5, $7, $8, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options-mdp comma-opt size-info helpId-opt
                 diag-control-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteDialogBox( $1, $3.res_flags, $5, NULL, $7, $6, $2 );
         }
     | name-id dialog-or-dialogEx resource-options-mdp comma-opt exstyle-equal-stmt
                 size-info helpId-opt diag-options-section diag-control-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteDialogBox( $1, $3.res_flags, $6, SemWINDiagOptions( $8, &($5) ) , $9, $7, $2 );
         }
     | name-id dialog-or-dialogEx resource-options-mdp comma-opt exstyle-equal-stmt
               size-info helpId-opt diag-control-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteDialogBox( $1, $3.res_flags, $6, SemWINNewDiagOptions( &($5) ), $8, $7, $2 );
         }
     ;
@@ -1715,7 +1703,6 @@ version-info-resource
         }
     | name-id Y_VERSIONINFO resource-options-mp fixed-ver-section variable-ver-section
         {
-            SemCheckResFlags( &($3) );
             SemWINWriteVerInfo( $1, $3.res_flags, $4, $5 );
         }
     ;

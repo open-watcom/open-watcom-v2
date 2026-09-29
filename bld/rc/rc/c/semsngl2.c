@@ -65,7 +65,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
-                SemCheckResFlags( fullflags );
                 res_flags = fullflags->res_flags;
                 switch( type ) {
                 case Y_DEFAULTICON:
