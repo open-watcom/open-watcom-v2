@@ -884,13 +884,6 @@ static char *ReadIndirectFile( const char *fname )
               || ch == '\n' ) {
                 *str = ' ';
             }
-            /*
-             * if DOS end of file (^Z) -> mark end of str
-             */
-            if( ch == DOS_EOF_CHAR ) {
-                *str = '\0';
-                break;
-            }
         }
     }
     return( env );

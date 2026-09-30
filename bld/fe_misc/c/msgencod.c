@@ -1754,10 +1754,6 @@ static char *ReadIndirectFile( char *name )
         fclose( fp );
         // go through characters changing \r, \n etc into ' '
         for( ; (ch = *(unsigned char *)str) != '\0'; str++ ) {
-            if( ch == 0x1A ) {      // if end of file
-                *str = '\0';        // - mark end of str
-                break;
-            }
             if( ch != ' '
               && isspace( ch ) ) {
                 *str = ' ';

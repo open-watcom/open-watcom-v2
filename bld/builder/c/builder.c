@@ -50,8 +50,6 @@
 #define DEF_BACKUP      1
 #define MAX_BACKUP      9
 
-#define DOS_EOF_CHAR    0x1a
-
 typedef struct include_entry {
     struct include_entry    *prev;
     FILE                    *fp;
@@ -455,7 +453,6 @@ static void SubstLine( const char *in, char *out )
             ++in;
             switch( *in ) {
             case '\0':
-            case DOS_EOF_CHAR:          /* Allow DOS EOF in UNIX port */
                 break;
             default:
                 *out++ = *in++;
@@ -476,7 +473,6 @@ static void SubstLine( const char *in, char *out )
             out = SubstOne( &in, out );
             break;
         case '\0':
-        case DOS_EOF_CHAR:              /* Allow DOS EOF in UNIX port */
             *out = '\0';
             return;
         default:

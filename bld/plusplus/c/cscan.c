@@ -46,14 +46,6 @@
 #endif
 
 
-#if defined(__DOS__) || defined(__OS2__) || defined(__NT__)
-    #define SYS_EOF_CHAR    0x1A
-#elif defined(__UNIX__) || defined(__RDOS__)
-    #undef SYS_EOF_CHAR
-#else
-    #error SYS_EOF_CHAR is not set for this system
-#endif
-
 #define prt_char( x )           if( CompFlags.cpp_output ) { PrtChar( x ); }
 
 #define diagnose_lex_error( e ) \
@@ -1525,14 +1517,6 @@ static TOKEN scanInvalid( bool expanding )
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
     TokenLen = 1;
-#if defined( SYS_EOF_CHAR )
-    if( CurrChar == SYS_EOF_CHAR ) {
-        if( SrcFileClose( false ) ) {
-            return( ScanToken( expanding ) );
-        }
-        return( T_EOF );
-    }
-#endif
     if( diagnose_lex_error( expanding ) ) {
         CErr2( WARN_WEIRD_CHARACTER, CurrChar );
     }

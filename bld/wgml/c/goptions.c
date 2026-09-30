@@ -228,9 +228,6 @@ static void read_indirect_file( FILE *fp )
         ch = *str;
         if( ch == '\r' ) {
             *str = ' ';
-        } else if( ch == 0x1A ) {   // if end of file
-            *str = '\0';            // - mark end of str
-            break;
         }
         ++str;
     }

@@ -43,8 +43,6 @@
 #include "clibext.h"
 
 
-#define DOS_EOF_CHAR    0x1A
-
 #if defined( __UNIX__ )
 #define H_DIR   "../h/"
 #else
@@ -537,18 +535,11 @@ static size_t PP_ReadLine( bool *line_generated )
         for( ;; ) {
             for( ;; ) {
                 c = *PPBufPtr;
-                if( c == DOS_EOF_CHAR ) {               // 17-oct-94
-                    c = '\n';
-                    if( line_len != 1 )
-                        break;
-                    c = DOS_EOF_CHAR;
-                } else {
-                    ++PPBufPtr;
-                    if( c != '\0' ) {
-                        break;
-                    }
+                ++PPBufPtr;
+                if( c != '\0' ) {
+                    break;
                 }
-                if( c == DOS_EOF_CHAR || ( PP_ReadBuf( line_len ) == 0 ) ) {
+                if( PP_ReadBuf( line_len ) == 0 ) {
                     // if the last line of a file does not end with a carriage
                     // return then still return what is on that line
                     if( line_len > 1 ) {

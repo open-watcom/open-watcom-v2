@@ -3380,10 +3380,6 @@ static char *ReadIndirectFile( char *name )
          * go through characters changing \r, \n etc into ' '
          */
         for( ; (ch = *str) != '\0'; str++ ) {
-            if( ch == 0x1A ) {      /* if end of file */
-                *str = '\0';        /* - mark end of str */
-                break;
-            }
             if( ch != ' '
               && myisspace( ch ) ) {
                 *str = ' ';

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,5 +62,3 @@
 #define ARRAY_SIZE(x)               (sizeof( x ) / sizeof( *x ))
 
 #define IsHugeData()                ((TargetSwitches & (CGSW_X86_BIG_DATA | CGSW_X86_CHEAP_POINTER)) == CGSW_X86_BIG_DATA)
-
-#define DOS_EOF_CHAR                0x1A

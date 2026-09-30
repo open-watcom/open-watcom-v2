@@ -63,8 +63,6 @@
  * is no further input available in the stream.
  */
 
-#define CTRLZ       0x1a
-
 /*
  * the different stream types
  */
@@ -368,14 +366,6 @@ STRM_T GetCHR( void )
                   && head->data.file.cur[0] == '\n' ) {
                     s = *(unsigned char *)head->data.file.cur;
                     head->data.file.cur++;
-                } else if( Glob.compat_nmake
-                  && s == CTRLZ ) {
-                    /*
-                     * embedded ^Z terminates stream in MS mode
-                     */
-                    s = '\n';
-                    popSENT();
-                    flagEOF = true;
                 } else {
                     PrtMsg( FTL | LOC | BARF_CHARACTER, s );
                     ExitFatal();

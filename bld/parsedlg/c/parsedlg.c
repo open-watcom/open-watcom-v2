@@ -51,8 +51,6 @@
 
 #define MAX_PARM_LEN    45
 
-#define isWSorCtrlZ(x)  (isspace(x)||(x==0x1A))
-
 #define ADD_AFTER   1
 #define ADD_BEFORE  0
 
@@ -119,7 +117,7 @@ static char *my_fgets( char *buf, int max_len, FILE *fp )
     size_t  i;
 
     if( (rc = fgets( buf, max_len, fp )) != NULL ) {
-        for( i = strlen( buf ); i && isWSorCtrlZ( buf[i - 1] ); --i ) {
+        for( i = strlen( buf ); i && isspace( buf[i - 1] ); --i ) {
             buf[i - 1] = '\0';
         }
     }

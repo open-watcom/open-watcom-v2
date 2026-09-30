@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -225,8 +225,7 @@ static void *my_fgets( FILE *fp )
 
     if( feof( fp ) || fgets( buff, sizeof( buff ), fp ) == NULL )
         return( NULL );
-    for( p = buff + strlen( buff ) - 1;
-        p >= buff && ( isspace(*p) || ( *p == 0x1A ) ); --p ) {
+    for( p = buff + strlen( buff ) - 1; p >= buff && isspace( *p ); --p ) {
         *p = '\0';
     }
     return( buff );

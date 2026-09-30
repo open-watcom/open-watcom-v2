@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -116,12 +116,6 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
             if( ch == CHAR_LF )
                 break;
             if( !seen_cr ) {
-                if( ch == CHAR_CTRL_Z ) {
-                    --ptr; // give back char so we don't read past EOF
-                    if( read == 0 )
-                        FSetEof( io );
-                    break;
-                }
                 if( ch == CHAR_CR ) {
                     seen_cr = true;
                 } else if( read < len ) {
@@ -165,9 +159,6 @@ size_t FGetRecText( b_file *io, char *b, size_t len )
                 if( *b == CHAR_LF )
                     return( read );
                 --b;
-            } else if( *b == CHAR_CTRL_Z ) {
-                FSetEof( io );
-                return( read );
             }
 #endif
             ++b;

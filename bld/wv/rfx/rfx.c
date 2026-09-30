@@ -1030,8 +1030,6 @@ static error_handle DoCopy( const char *src_name, const char *dst_name, object_l
             return( errh );
         }
         if( write_len != read_len ) {
-            if( ( write_len == ( read_len - 1 ) ) && ( Buff[write_len] == 0x1A ) )
-                break;
             FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );
         }

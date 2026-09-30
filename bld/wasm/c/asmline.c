@@ -189,15 +189,6 @@ static bool get_asmline( char *ptr, unsigned max, FILE *fp )
              * we have found the end of the line
              */
             return( true );
-        case 0x1A:
-            /*
-             * DOS text files may use Ctrl-Z as an end-of-file marker.
-             * It can appear before the physical end of file (CP/M-era
-             * files), so seek to physical EOF to stop all subsequent
-             * reads from returning data past the logical end.
-             */
-            fseek( fp, 0, SEEK_END );
-            /* fall through */
         case EOF:
             *ptr = '\0';
             return( got_something );

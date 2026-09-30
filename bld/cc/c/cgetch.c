@@ -121,11 +121,7 @@ static bool ReadBuffer( FCB *fcb )
     read_amount = fread( fcb->src_buf + 1, 1, SRC_BUF_SIZE, fcb->fp );
     fcb->src_end += read_amount;            // mark end of buffer
     fcb->src_buf[1 + read_amount] = '\0';
-    if( fcb->src_end[-1] == DOS_EOF_CHAR ) {
-        read_amount--;
-        fcb->src_end--;
-        fcb->src_buf[1 + read_amount] = '\0';
-    } else if( read_amount == SRC_BUF_SIZE ) {
+    if( read_amount == SRC_BUF_SIZE ) {
         /*
          * full buffer was read, no EOL check
          *
