@@ -49,11 +49,10 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
 
 
 void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
-                       FullResFlags *fullflags, char *filename )
+                       ResMemFlags res_flags, char *filename )
 /*****************************************************************/
 {
     ResLocation     start;
-    ResMemFlags     res_flags;
     char            full_filename[_MAX_PATH];
     static bool     firstIcon = true;
     bool            error;
@@ -65,7 +64,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
-                res_flags = fullflags->res_flags;
                 switch( type ) {
                 case Y_DEFAULTICON:
                     /*

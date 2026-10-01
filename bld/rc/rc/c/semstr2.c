@@ -278,17 +278,17 @@ void SemOS2MergeStrTable( FullStringTable *currtable, ResMemFlags res_flags, uin
     }
 }
 
-void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags res_flags )
-/***************************************************************************/
+void SemOS2MergeMsgTable( FullStringTable *currtable, ResMemFlags res_flags, uint_32 codepage )
+/*********************************************************************************************/
 {
     FullStringTable     *table;
 
     table = findTable( CurrResFile.ErrorTable );
     if( table == NULL ) {
-        setStringTableFlags( currtable, res_flags, SemOS2GetDefaultCodepage() );
+        setStringTableFlags( currtable, res_flags, codepage );
         addTable( &CurrResFile.ErrorTable, currtable );
     } else {
-        semMergeStringTables( table, currtable, res_flags, SemOS2GetDefaultCodepage() );
+        semMergeStringTables( table, currtable, res_flags, codepage );
     }
 }
 

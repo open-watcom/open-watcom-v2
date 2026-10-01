@@ -82,7 +82,7 @@ typedef union {
     FullHelpEntryOS2            helpfullentry;
     FullHelpSubTableOS2         *helpsubtable;
     ResLocation                 resloc;
-    FullResFlags                fullresflags;
+    ResMemFlags                 resmemflags;
     MenuFlags                   menuflags;
     FullMenuPtrOS2              menuptr;
     FullMenuItemOS2             menufull;
@@ -105,6 +105,7 @@ typedef union {
     uint_16                     resword;
     uint_16                     residnum;
     uint_16                     ressizenum;
+    uint_16                     codepage;
     uint_8                      resbyte;
 } yystype;
 #define YYSTYPE         yystype

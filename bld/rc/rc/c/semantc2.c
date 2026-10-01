@@ -52,40 +52,8 @@ void SemOS2SetDefaultCodepage( uint_32 codepage )
     curCodepage = codepage;
 }
 
-static void initFullFlags( FullResFlags *fullflags )
-{
-    fullflags->res_flags      = DEFAULT_FLAGS_NONE;
-    fullflags->codePage       = curCodepage;
-    fullflags->loadOptGiven   = false;
-    fullflags->memOptGiven    = false;
-    fullflags->purityOptGiven = false;
-    fullflags->cpOptGiven     = false;
-
-}
-
-FullResFlags SemOS2AddFirstResOption( YYTOKENTYPE token, uint_32 value, ResMemFlags res_flags )
-/*********************************************************************************************/
-{
-    FullResFlags    fullflags;
-
-    initFullFlags( &fullflags );
-    fullflags.res_flags = res_flags;
-    return( SemOS2AddResOption( fullflags, token, value ) );
-}
-
-void SemOS2AddSingleLineResourceDef( WResID *res_id, YYTOKENTYPE type,
-                                ResMemFlags res_flags, char *filename )
-/*********************************************************************/
-{
-    FullResFlags    fullflags;
-
-    initFullFlags( &fullflags );
-    fullflags.res_flags = res_flags;
-    SemOS2AddSingleLineResource( res_id, type, &fullflags, filename );
-}
-
-FullResFlags SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint_32 value )
-/******************************************************************************************
+ResMemFlags SemOS2AddResOption( ResMemFlags res_flags, YYTOKENTYPE token )
+/*************************************************************************
  * IBM's RC has a tendency to add PURE flag when other memory flags
  * are specified. The flag will be ignored by OS but we do the same
  * for compatibility.
@@ -93,45 +61,33 @@ FullResFlags SemOS2AddResOption( FullResFlags fullflags, YYTOKENTYPE token, uint
 {
     switch( token ) {
     case Y_PRELOAD:
-        fullflags.res_flags |= RESFLAG_PRELOAD | RESFLAG_PURE;
-        fullflags.loadOptGiven = true;
+        res_flags |= RESFLAG_PRELOAD | RESFLAG_PURE;
         break;
     case Y_LOADONCALL:
-        fullflags.res_flags &= ~RESFLAG_PRELOAD;
-        fullflags.res_flags |= RESFLAG_PURE;
-        fullflags.loadOptGiven = true;
+        res_flags &= ~RESFLAG_PRELOAD;
+        res_flags |= RESFLAG_PURE;
         break;
     case Y_FIXED:
-        fullflags.res_flags &= ~RESFLAG_MOVEABLE;
-        fullflags.res_flags |= RESFLAG_PURE;
-        fullflags.memOptGiven = true;
+        res_flags &= ~RESFLAG_MOVEABLE;
+        res_flags |= RESFLAG_PURE;
         break;
     case Y_MOVEABLE:
-        fullflags.res_flags |= RESFLAG_MOVEABLE | RESFLAG_PURE;
-        fullflags.memOptGiven = true;
+        res_flags |= RESFLAG_MOVEABLE | RESFLAG_PURE;
         break;
     case Y_DISCARDABLE:
-        fullflags.res_flags |= RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE;
-        fullflags.memOptGiven = true;
+        res_flags |= RESFLAG_DISCARDABLE | RESFLAG_PURE | RESFLAG_MOVEABLE;
         break;
     case Y_PURE:
-        fullflags.res_flags |= RESFLAG_PURE;
-        fullflags.purityOptGiven = true;
+        res_flags |= RESFLAG_PURE;
         break;
     case Y_IMPURE:
-        fullflags.res_flags &= ~RESFLAG_PURE;
-        fullflags.purityOptGiven = true;
+        res_flags &= ~RESFLAG_PURE;
         break;
     case Y_SEGALIGN:    // This one is OS/2 2.x specific
-        fullflags.res_flags |= RESFLAG_SEGALIGN;
-        break;
-    case Y_INTEGER:    // Is this OS/2 2.x specific too?
-        fullflags.codePage = value;
-        fullflags.cpOptGiven = true;
+        res_flags |= RESFLAG_SEGALIGN;
         break;
     }
-
-    return( fullflags );
+    return( res_flags );
 }
 
 char *SemOS2TokenToString( YYTOKENTYPE token )
