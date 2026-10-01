@@ -1,8 +1,8 @@
 s/r conflict in state 29 on Y_MINUS:
 	shift to 149
-422 (1a6): shift-exp <- additive-exp (unit production)
+409 (199): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 422:
+Sample sentence(s) for reduce of rule 409:
   Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN Y_ICON 
 Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
 Y_INTEGER . Y_MINUS
@@ -12,6 +12,90 @@ Sample sentence(s) for shift to state 149:
 Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
 Y_INTEGER .
 Y_MINUS Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_PURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_PURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_PRELOAD Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_PRELOAD Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_MOVEABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_MOVEABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_LOADONCALL Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_LOADONCALL Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_IMPURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_IMPURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_FIXED Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_FIXED Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 46 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_DISCARDABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_INCLUDERES Y_NAME Y_STRINGTABLE .
+Y_DISCARDABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
 ---
 
 s/r conflict in state 74 on Y_NOT:
@@ -74,6 +158,90 @@ Sample sentence(s) for shift to state 126:
 Y_INTEGER Y_COMMA Y_INTEGER $eof 
 ---
 
+s/r conflict in state 91 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_PURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_PURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_PRELOAD Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_PRELOAD Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_MOVEABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_MOVEABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_LOADONCALL Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_LOADONCALL Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_IMPURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_IMPURE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_FIXED Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_FIXED Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 91 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_DISCARDABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_INCLUDERES Y_NAME Y_ERRTABLE .
+Y_DISCARDABLE Y_BEGIN Y_INTEGER Y_STRING Y_END $eof 
+---
+
 s/r conflict in state 108 on Y_NOT:
 	shift to 120
  42 (02a): keyword-name <- Y_CHARACTERISTICS
@@ -134,11 +302,1165 @@ Sample sentence(s) for shift to state 126:
 Y_INTEGER $eof 
 ---
 
-s/r conflict in state 255 on Y_MINUS:
-	shift to 149
-424 (1a8): shift-exp <- shift-exp Y_SHIFTR additive-exp
+s/r conflict in state 131 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
 
-Sample sentence(s) for reduce of rule 424:
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_PURE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_DIALOG .
+Y_PURE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_PRELOAD Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_DIALOG .
+Y_PRELOAD Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_MOVEABLE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_DIALOG .
+Y_MOVEABLE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_LOADONCALL Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_DIALOG .
+Y_LOADONCALL Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_IMPURE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_DIALOG .
+Y_IMPURE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_FIXED Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_DIALOG .
+Y_FIXED Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 131 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_DIALOG .
+Y_DISCARDABLE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_DIALOG .
+Y_DISCARDABLE Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 132 on Y_PURE:
+	shift to 168
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_PURE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_VERSIONINFO .
+Y_PURE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_PRELOAD:
+	shift to 169
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_PRELOAD Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_VERSIONINFO .
+Y_PRELOAD Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_MOVEABLE:
+	shift to 170
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_MOVEABLE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_VERSIONINFO .
+Y_MOVEABLE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_LOADONCALL:
+	shift to 171
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_LOADONCALL Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_VERSIONINFO .
+Y_LOADONCALL Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_IMPURE:
+	shift to 172
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_IMPURE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_VERSIONINFO .
+Y_IMPURE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_FIXED:
+	shift to 173
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_FIXED Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_VERSIONINFO .
+Y_FIXED Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 132 on Y_DISCARDABLE:
+	shift to 174
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_VERSIONINFO .
+Y_DISCARDABLE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_VERSIONINFO .
+Y_DISCARDABLE Y_FILESUBTYPE Y_INTEGER 
+Y_BEGIN Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_END 
+$eof 
+---
+
+s/r conflict in state 133 on Y_PURE:
+	shift to 168
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_PURE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_TOOLBAR .
+Y_PURE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 133 on Y_PRELOAD:
+	shift to 169
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_PRELOAD Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_TOOLBAR .
+Y_PRELOAD Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 133 on Y_MOVEABLE:
+	shift to 170
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_MOVEABLE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_TOOLBAR .
+Y_MOVEABLE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 133 on Y_LOADONCALL:
+	shift to 171
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_LOADONCALL Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END 
+$eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_TOOLBAR .
+Y_LOADONCALL Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END 
+$eof 
+---
+
+s/r conflict in state 133 on Y_IMPURE:
+	shift to 172
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_IMPURE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_TOOLBAR .
+Y_IMPURE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 133 on Y_FIXED:
+	shift to 173
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_FIXED Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_TOOLBAR .
+Y_FIXED Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 133 on Y_DISCARDABLE:
+	shift to 174
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_TOOLBAR .
+Y_DISCARDABLE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END 
+$eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_TOOLBAR .
+Y_DISCARDABLE Y_PURE Y_INTEGER Y_INTEGER Y_BEGIN Y_SEPARATOR Y_END 
+$eof 
+---
+
+s/r conflict in state 134 on Y_PURE:
+	shift to 168
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_PURE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_RCDATA .
+Y_PURE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_PRELOAD:
+	shift to 169
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_PRELOAD Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_RCDATA .
+Y_PRELOAD Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_MOVEABLE:
+	shift to 170
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_RCDATA .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_LOADONCALL:
+	shift to 171
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_RCDATA .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_IMPURE:
+	shift to 172
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_IMPURE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_RCDATA .
+Y_IMPURE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_FIXED:
+	shift to 173
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_FIXED Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_RCDATA .
+Y_FIXED Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 134 on Y_DISCARDABLE:
+	shift to 174
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_RCDATA .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_RCDATA .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_PURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_MENU_EX .
+Y_PURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_PRELOAD Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_MENU_EX .
+Y_PRELOAD Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_MOVEABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_MENU_EX .
+Y_MOVEABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_LOADONCALL Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_MENU_EX .
+Y_LOADONCALL Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_IMPURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_MENU_EX .
+Y_IMPURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_FIXED Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_MENU_EX .
+Y_FIXED Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 136 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU_EX .
+Y_DISCARDABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_MENU_EX .
+Y_DISCARDABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_PURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_MENU .
+Y_PURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_PRELOAD Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_MENU .
+Y_PRELOAD Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_MOVEABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_MENU .
+Y_MOVEABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_LOADONCALL Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_MENU .
+Y_LOADONCALL Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_IMPURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_MENU .
+Y_IMPURE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_FIXED Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_MENU .
+Y_FIXED Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 137 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_MENU .
+Y_DISCARDABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_MENU .
+Y_DISCARDABLE Y_BEGIN Y_MENUITEM Y_SEPARATOR Y_END $eof 
+---
+
+s/r conflict in state 138 on Y_PURE:
+	shift to 168
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_PURE Y_STRING $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_ICON .
+Y_PURE Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_PRELOAD:
+	shift to 169
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_PRELOAD Y_STRING $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_ICON .
+Y_PRELOAD Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_MOVEABLE:
+	shift to 170
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_MOVEABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_ICON .
+Y_MOVEABLE Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_LOADONCALL:
+	shift to 171
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_LOADONCALL Y_STRING $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_ICON .
+Y_LOADONCALL Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_IMPURE:
+	shift to 172
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_IMPURE Y_STRING $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_ICON .
+Y_IMPURE Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_FIXED:
+	shift to 173
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_FIXED Y_STRING $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_ICON .
+Y_FIXED Y_STRING $eof 
+---
+
+s/r conflict in state 138 on Y_DISCARDABLE:
+	shift to 174
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_ICON .
+Y_DISCARDABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_ICON .
+Y_DISCARDABLE Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_PURE Y_STRING $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_FONT .
+Y_PURE Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_PRELOAD Y_STRING $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_FONT .
+Y_PRELOAD Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_MOVEABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_FONT .
+Y_MOVEABLE Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_LOADONCALL Y_STRING $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_FONT .
+Y_LOADONCALL Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_IMPURE Y_STRING $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_FONT .
+Y_IMPURE Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_FIXED Y_STRING $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_FONT .
+Y_FIXED Y_STRING $eof 
+---
+
+s/r conflict in state 139 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_FONT .
+Y_DISCARDABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_FONT .
+Y_DISCARDABLE Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_PURE:
+	shift to 168
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_PURE Y_STRING $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_CURSOR .
+Y_PURE Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_PRELOAD:
+	shift to 169
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_PRELOAD Y_STRING $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_CURSOR .
+Y_PRELOAD Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_MOVEABLE:
+	shift to 170
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_MOVEABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_CURSOR .
+Y_MOVEABLE Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_LOADONCALL:
+	shift to 171
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_LOADONCALL Y_STRING $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_CURSOR .
+Y_LOADONCALL Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_IMPURE:
+	shift to 172
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_IMPURE Y_STRING $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_CURSOR .
+Y_IMPURE Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_FIXED:
+	shift to 173
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_FIXED Y_STRING $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_CURSOR .
+Y_FIXED Y_STRING $eof 
+---
+
+s/r conflict in state 142 on Y_DISCARDABLE:
+	shift to 174
+117 (075): resource-options-md <-
+
+Sample sentence(s) for reduce of rule 117:
+  Y_END Y_CURSOR .
+Y_DISCARDABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_CURSOR .
+Y_DISCARDABLE Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_PURE:
+	shift to 168
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_PURE Y_STRING $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_BITMAP .
+Y_PURE Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_PRELOAD:
+	shift to 169
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_PRELOAD Y_STRING $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_BITMAP .
+Y_PRELOAD Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_MOVEABLE:
+	shift to 170
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_MOVEABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_BITMAP .
+Y_MOVEABLE Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_LOADONCALL:
+	shift to 171
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_LOADONCALL Y_STRING $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_BITMAP .
+Y_LOADONCALL Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_IMPURE:
+	shift to 172
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_IMPURE Y_STRING $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_BITMAP .
+Y_IMPURE Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_FIXED:
+	shift to 173
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_FIXED Y_STRING $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_BITMAP .
+Y_FIXED Y_STRING $eof 
+---
+
+s/r conflict in state 143 on Y_DISCARDABLE:
+	shift to 174
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_BITMAP .
+Y_DISCARDABLE Y_STRING $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_BITMAP .
+Y_DISCARDABLE Y_STRING $eof 
+---
+
+s/r conflict in state 144 on Y_PURE:
+	shift to 168
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_PURE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_ACCELERATORS .
+Y_PURE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_PRELOAD:
+	shift to 169
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_PRELOAD Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_ACCELERATORS .
+Y_PRELOAD Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_MOVEABLE:
+	shift to 170
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_ACCELERATORS .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_LOADONCALL:
+	shift to 171
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_ACCELERATORS .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_IMPURE:
+	shift to 172
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_IMPURE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_ACCELERATORS .
+Y_IMPURE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_FIXED:
+	shift to 173
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_FIXED Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_ACCELERATORS .
+Y_FIXED Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 144 on Y_DISCARDABLE:
+	shift to 174
+120 (078): resource-options-mp <-
+
+Sample sentence(s) for reduce of rule 120:
+  Y_END Y_ACCELERATORS .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_ACCELERATORS .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_PURE:
+	shift to 168
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_PURE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 168:
+  Y_END Y_NAME .
+Y_PURE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_PRELOAD:
+	shift to 169
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_PRELOAD Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 169:
+  Y_END Y_NAME .
+Y_PRELOAD Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_MOVEABLE:
+	shift to 170
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 170:
+  Y_END Y_NAME .
+Y_MOVEABLE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_LOADONCALL:
+	shift to 171
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 171:
+  Y_END Y_NAME .
+Y_LOADONCALL Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_IMPURE:
+	shift to 172
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_IMPURE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 172:
+  Y_END Y_NAME .
+Y_IMPURE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_FIXED:
+	shift to 173
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_FIXED Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 173:
+  Y_END Y_NAME .
+Y_FIXED Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 190 on Y_DISCARDABLE:
+	shift to 174
+114 (072): resource-options-mdp <-
+
+Sample sentence(s) for reduce of rule 114:
+  Y_END Y_NAME .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 174:
+  Y_END Y_NAME .
+Y_DISCARDABLE Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_EXSTYLE:
+	shift to 249
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 249:
+  Y_END Y_DIALOG .
+Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_NOT:
+	shift to 120
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_NOT Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 120:
+  Y_END Y_DIALOG .
+Y_NOT Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_BITNOT:
+	shift to 121
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_BITNOT Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 121:
+  Y_END Y_DIALOG .
+Y_BITNOT Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_MINUS:
+	shift to 122
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_MINUS Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 122:
+  Y_END Y_DIALOG .
+Y_MINUS Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_LPAREN:
+	shift to 124
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_LPAREN Y_INTEGER Y_RPAREN Y_INTEGER Y_INTEGER Y_INTEGER 
+Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 124:
+  Y_END Y_DIALOG .
+Y_LPAREN Y_INTEGER Y_RPAREN Y_INTEGER Y_INTEGER Y_INTEGER 
+Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 195 on Y_INTEGER:
+	shift to 126
+109 (06d): comma-opt <-
+
+Sample sentence(s) for reduce of rule 109:
+  Y_END Y_DIALOG .
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 126:
+  Y_END Y_DIALOG .
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 214 on Y_MINUS:
+	shift to 149
+411 (19b): shift-exp <- shift-exp Y_SHIFTR additive-exp
+
+Sample sentence(s) for reduce of rule 411:
   Y_INTEGER Y_SHIFTR Y_INTEGER .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
 Sample sentence(s) for shift to state 149:
@@ -146,11 +1468,11 @@ Sample sentence(s) for shift to state 149:
 Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 256 on Y_MINUS:
+s/r conflict in state 215 on Y_MINUS:
 	shift to 149
-423 (1a7): shift-exp <- shift-exp Y_SHIFTL additive-exp
+410 (19a): shift-exp <- shift-exp Y_SHIFTL additive-exp
 
-Sample sentence(s) for reduce of rule 423:
+Sample sentence(s) for reduce of rule 410:
   Y_INTEGER Y_SHIFTL Y_INTEGER .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
 Sample sentence(s) for shift to state 149:
@@ -158,11 +1480,551 @@ Sample sentence(s) for shift to state 149:
 Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 643 on Y_LSQ_BRACKET:
+s/r conflict in state 296 on Y_VERSION:
+	shift to 42
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 42:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_STYLE:
+	shift to 355
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 355:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_MENU:
+	shift to 356
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 356:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_LANGUAGE:
+	shift to 235
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 235:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_FONT:
+	shift to 357
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 357:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_EXSTYLE:
+	shift to 358
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 358:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_CLASS:
+	shift to 359
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 359:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_CHARACTERISTICS:
+	shift to 236
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 236:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 296 on Y_CAPTION:
+	shift to 360
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 360:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_VERSION:
+	shift to 42
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 42:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_STYLE:
+	shift to 355
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 355:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_MENU:
+	shift to 356
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 356:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_LANGUAGE:
+	shift to 235
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 235:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_FONT:
+	shift to 357
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 357:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_EXSTYLE:
+	shift to 358
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 358:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_CLASS:
+	shift to 359
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 359:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_CHARACTERISTICS:
+	shift to 236
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 236:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 338 on Y_CAPTION:
+	shift to 360
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 360:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_VERSION:
+	shift to 42
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 42:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_STYLE:
+	shift to 355
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 355:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_MENU:
+	shift to 356
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 356:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_LANGUAGE:
+	shift to 235
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 235:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_FONT:
+	shift to 357
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 357:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_EXSTYLE:
+	shift to 358
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 358:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_CLASS:
+	shift to 359
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 359:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_CHARACTERISTICS:
+	shift to 236
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 236:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 339 on Y_CAPTION:
+	shift to 360
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 360:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_VERSION:
+	shift to 42
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 42:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_VERSION Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_STYLE:
+	shift to 355
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 355:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_STYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_MENU:
+	shift to 356
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 356:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_MENU Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_LANGUAGE:
+	shift to 235
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 235:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_LANGUAGE Y_INTEGER Y_COMMA Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_FONT:
+	shift to 357
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 357:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_FONT Y_INTEGER Y_STRING Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_EXSTYLE:
+	shift to 358
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 358:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_EXSTYLE Y_INTEGER Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_CLASS:
+	shift to 359
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 359:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CLASS Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_CHARACTERISTICS:
+	shift to 236
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 236:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CHARACTERISTICS Y_INTEGER Y_VERSION Y_INTEGER 
+Y_CHARACTERISTICS Y_INTEGER Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 394 on Y_CAPTION:
+	shift to 360
+241 (0f1): diag-options-section <-
+
+Sample sentence(s) for reduce of rule 241:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+Sample sentence(s) for shift to state 360:
+  Y_END Y_DIALOG Y_EXSTYLE Y_SINGLE_EQ Y_INTEGER 
+Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
+Y_CAPTION Y_STRING Y_VERSION Y_INTEGER Y_CHARACTERISTICS Y_INTEGER 
+Y_BEGIN Y_END $eof 
+---
+
+s/r conflict in state 605 on Y_LSQ_BRACKET:
 	shift to 123
-394 (18a): value-item <- value-string-list (unit production)
+381 (17d): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 394:
+Sample sentence(s) for reduce of rule 381:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_LSQ_BRACKET Y_STRING Y_STRING Y_RSQ_BRACKET Y_END 
@@ -176,11 +2038,11 @@ Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
 ---
 
-s/r conflict in state 643 on Y_STRING:
+s/r conflict in state 605 on Y_STRING:
 	shift to 125
-394 (18a): value-item <- value-string-list (unit production)
+381 (17d): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 394:
+Sample sentence(s) for reduce of rule 381:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_STRING Y_END 
@@ -195,11 +2057,11 @@ Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END
 ---
 
 actions combined:                           49
-parser states:                             696
-# states (1 reduce only):                  387
+parser states:                             670
+# states (1 reduce only):                  370
 reduce/reduce conflicts:                     0
-shift/reduce conflicts:                     15
+shift/reduce conflicts:                    155
 number of rules not reduced:                 0
-bytes used in tables:                    14801
-states with defaults:                      499
-states with parents:                       266
+bytes used in tables:                    15658
+states with defaults:                      493
+states with parents:                       254

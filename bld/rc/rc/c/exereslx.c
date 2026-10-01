@@ -77,9 +77,6 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
      */
     res->res_count++;
     if( sizeof( LXResEntry ) * res->res_count > res->table_size ) {
-        LXResEntry      *curr_table;
-
-        curr_table = res->resources;
         res->resources = MemReallocSafe( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
     }
 
