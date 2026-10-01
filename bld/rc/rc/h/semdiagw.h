@@ -54,7 +54,6 @@ typedef struct FullDialogOptions {
     } Opt;
 } FullDialogOptions;
 
-extern FullDialogBoxHeader  *SemWINNewDiagOptions( FullDialogOptions *opt );
 extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader *head, FullDialogOptions *opt );
 extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList * );
 extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList *list, FullDialogBoxControl *ctrl, DataElemList * );

@@ -128,16 +128,6 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
     return( newheader );
 } /* NewDialogBoxHeader */
 
-FullDialogBoxHeader *SemWINNewDiagOptions( FullDialogOptions *opt )
-/*****************************************************************/
-{
-    FullDialogBoxHeader *newheader;
-
-    newheader = NewDialogBoxHeader();
-
-    return( SemWINDiagOptions( newheader, opt ) );
-} /* SemWINNewDiagOptions */
-
 static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
 /************************************************************************/
 {
@@ -234,6 +224,9 @@ static void AddDiagOption32( DlgHeader32 *head, FullDialogOptions *opt )
 FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head, FullDialogOptions *opt )
 /*****************************************************************************************/
 {
+    if( head == NULL ) {
+        head = NewDialogBoxHeader();
+    }
     if( head->iswin32 ) {
         AddDiagOption32( &head->u.Head32, opt );
     } else {
