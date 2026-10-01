@@ -103,12 +103,6 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
 
 static void SemOS2FreeSubMenu( FullMenuOS2 *submenu );
 
-MenuFlags SemOS2AddFirstMenuOption( YYTOKENTYPE token )
-/*****************************************************/
-{
-    return( SemOS2AddMenuOption( 0, token ) );
-}
-
 MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
 /********************************************************************/
 {

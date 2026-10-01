@@ -288,9 +288,9 @@ Y_DISCARDABLE Y_STRING $eof
 
 s/r conflict in state 39 on Y_STRING:
 	shift to 173
-328 (148): string-constant <- string-group (unit production)
+331 (14b): string-constant <- string-group (unit production)
 
-Sample sentence(s) for reduce of rule 328:
+Sample sentence(s) for reduce of rule 331:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_STRING . Y_STRING
   Will never shift token 'Y_STRING' in this context
@@ -430,9 +430,9 @@ $eof
 
 s/r conflict in state 46 on Y_MINUS:
 	shift to 178
-353 (161): shift-exp <- additive-exp (unit production)
+356 (164): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 353:
+Sample sentence(s) for reduce of rule 356:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_ICON Y_MLE Y_INTEGER Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
@@ -1116,9 +1116,9 @@ Y_DISCARDABLE Y_BEGIN Y_STRING Y_INTEGER Y_END $eof
 
 s/r conflict in state 212 on Y_HELPITEM:
 	shift to 261
-176 (0b0): help-items <-
+179 (0b3): help-items <-
 
-Sample sentence(s) for reduce of rule 176:
+Sample sentence(s) for reduce of rule 179:
   Y_HELPTABLE Y_MLE Y_BEGIN .
 Y_HELPITEM Y_INTEGER Y_INTEGER Y_INTEGER Y_END $eof 
 Sample sentence(s) for shift to state 261:
@@ -1128,9 +1128,9 @@ Y_HELPITEM Y_INTEGER Y_INTEGER Y_INTEGER Y_END $eof
 
 s/r conflict in state 213 on Y_HELPITEM:
 	shift to 261
-176 (0b0): help-items <-
+179 (0b3): help-items <-
 
-Sample sentence(s) for reduce of rule 176:
+Sample sentence(s) for reduce of rule 179:
   Y_HELPTABLE Y_MLE Y_LBRACE .
 Y_HELPITEM Y_INTEGER Y_INTEGER Y_INTEGER Y_RBRACE $eof 
 Sample sentence(s) for shift to state 261:
@@ -1140,9 +1140,9 @@ Y_HELPITEM Y_INTEGER Y_INTEGER Y_INTEGER Y_RBRACE $eof
 
 s/r conflict in state 216 on Y_HELPSUBITEM:
 	shift to 266
-184 (0b8): help-subitems <-
+187 (0bb): help-subitems <-
 
-Sample sentence(s) for reduce of rule 184:
+Sample sentence(s) for reduce of rule 187:
   Y_HELPSUBTABLE Y_MLE Y_SUBITEMSIZE Y_INTEGER Y_BEGIN .
 Y_HELPSUBITEM Y_INTEGER Y_END $eof 
 Sample sentence(s) for shift to state 266:
@@ -1152,9 +1152,9 @@ Y_HELPSUBITEM Y_INTEGER Y_END $eof
 
 s/r conflict in state 217 on Y_HELPSUBITEM:
 	shift to 266
-184 (0b8): help-subitems <-
+187 (0bb): help-subitems <-
 
-Sample sentence(s) for reduce of rule 184:
+Sample sentence(s) for reduce of rule 187:
   Y_HELPSUBTABLE Y_MLE Y_SUBITEMSIZE Y_INTEGER Y_LBRACE .
 Y_HELPSUBITEM Y_INTEGER Y_RBRACE $eof 
 Sample sentence(s) for shift to state 266:
@@ -1164,9 +1164,9 @@ Y_HELPSUBITEM Y_INTEGER Y_RBRACE $eof
 
 s/r conflict in state 233 on Y_MINUS:
 	shift to 178
-355 (163): shift-exp <- shift-exp Y_SHIFTR additive-exp
+358 (166): shift-exp <- shift-exp Y_SHIFTR additive-exp
 
-Sample sentence(s) for reduce of rule 355:
+Sample sentence(s) for reduce of rule 358:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTR Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
 Sample sentence(s) for shift to state 178:
@@ -1178,9 +1178,9 @@ $eof
 
 s/r conflict in state 234 on Y_MINUS:
 	shift to 178
-354 (162): shift-exp <- shift-exp Y_SHIFTL additive-exp
+357 (165): shift-exp <- shift-exp Y_SHIFTL additive-exp
 
-Sample sentence(s) for reduce of rule 354:
+Sample sentence(s) for reduce of rule 357:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTL Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
 Sample sentence(s) for shift to state 178:
@@ -1288,9 +1288,9 @@ Y_DISCARDABLE Y_BEGIN Y_STRING Y_END $eof
 
 s/r conflict in state 290 on Y_SUBMENU:
 	shift to 377
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN .
 Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_END $eof 
 Sample sentence(s) for shift to state 377:
@@ -1300,9 +1300,9 @@ Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_END $eof
 
 s/r conflict in state 290 on Y_MENUITEM:
 	shift to 378
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN .
 Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_END $eof 
 Sample sentence(s) for shift to state 378:
@@ -1312,9 +1312,9 @@ Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_END $eof
 
 s/r conflict in state 291 on Y_SUBMENU:
 	shift to 377
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_LBRACE .
 Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_RBRACE $eof 
 Sample sentence(s) for shift to state 377:
@@ -1324,9 +1324,9 @@ Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_RBRACE $eof
 
 s/r conflict in state 291 on Y_MENUITEM:
 	shift to 378
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_LBRACE .
 Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_RBRACE $eof 
 Sample sentence(s) for shift to state 378:
@@ -1336,9 +1336,9 @@ Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_RBRACE $eof
 
 s/r conflict in state 394 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_FRAME 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1350,9 +1350,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 401 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_VALUESET 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1364,9 +1364,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 402 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_SPINBUTTON 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1378,9 +1378,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 403 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_SLIDER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1392,9 +1392,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 404 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_RTEXT 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1406,9 +1406,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 405 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_RADIOBUTTON 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1420,9 +1420,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 406 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_PUSHBUTTON 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1434,9 +1434,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 407 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_NOTEBOOK 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1448,9 +1448,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 408 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_MLE 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1462,9 +1462,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 409 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_LTEXT 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1476,9 +1476,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 410 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_LISTBOX 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1490,9 +1490,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 413 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_GROUPBOX 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1504,9 +1504,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 414 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_ENTRYFIELD 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1518,9 +1518,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 415 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_EDITTEXT 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1532,9 +1532,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 416 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_DEFPUSHBUTTON 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1546,9 +1546,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 417 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CTEXT 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1560,9 +1560,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 419 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTAINER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1574,9 +1574,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 420 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_COMBOBOX 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1588,9 +1588,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 421 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CHECKBOX 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1602,9 +1602,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 422 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_AUTORADIOBUTTON 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1616,9 +1616,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 423 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_AUTOCHECKBOX 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1630,9 +1630,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 496 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_FRAME 
 Y_STRING Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_COMMA 
 Y_INTEGER .
@@ -1660,9 +1660,9 @@ Y_COMMA Y_END $eof
 
 s/r conflict in state 518 on Y_SUBMENU:
 	shift to 377
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_COMMA 
 Y_INTEGER Y_COMMA Y_INTEGER Y_BEGIN .
 Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_END 
@@ -1678,9 +1678,9 @@ Y_MENUITEM Y_SEPARATOR Y_MENUITEM Y_SEPARATOR Y_MENUITEM Y_STRING
 
 s/r conflict in state 518 on Y_MENUITEM:
 	shift to 378
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_COMMA 
 Y_INTEGER Y_COMMA Y_INTEGER Y_BEGIN .
 Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_END 
@@ -1696,9 +1696,9 @@ Y_MENUITEM Y_SEPARATOR Y_MENUITEM Y_SEPARATOR Y_SUBMENU Y_STRING
 
 s/r conflict in state 520 on Y_SUBMENU:
 	shift to 377
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_COMMA 
 Y_INTEGER Y_COMMA Y_INTEGER Y_LBRACE .
 Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_BEGIN Y_END Y_RBRACE Y_END 
@@ -1712,9 +1712,9 @@ $eof
 
 s/r conflict in state 520 on Y_MENUITEM:
 	shift to 378
-212 (0d4): menu-items <-
+215 (0d7): menu-items <-
 
-Sample sentence(s) for reduce of rule 212:
+Sample sentence(s) for reduce of rule 215:
   Y_MENU Y_MLE Y_BEGIN Y_SUBMENU Y_STRING Y_COMMA Y_INTEGER Y_COMMA 
 Y_INTEGER Y_COMMA Y_INTEGER Y_LBRACE .
 Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_RBRACE Y_END $eof 
@@ -1726,9 +1726,9 @@ Y_MENUITEM Y_STRING Y_COMMA Y_INTEGER Y_RBRACE Y_END $eof
 
 s/r conflict in state 564 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_WINDOW Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_LISTBOX .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1740,9 +1740,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 574 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_LISTBOX .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1754,9 +1754,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 586 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_WINDOW Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_LISTBOX Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1768,9 +1768,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 591 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_LISTBOX Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof 
@@ -1782,9 +1782,9 @@ Y_PRESPARAMS Y_MLE Y_STRING Y_END $eof
 
 s/r conflict in state 599 on Y_PRESPARAMS:
 	shift to 455
-159 (09f): presparam-list <-
+162 (0a2): presparam-list <-
 
-Sample sentence(s) for reduce of rule 159:
+Sample sentence(s) for reduce of rule 162:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_WINDOW Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_LISTBOX Y_INTEGER Y_INTEGER .
 Y_PRESPARAMS Y_MLE Y_STRING Y_PRESPARAMS Y_MLE Y_STRING 
@@ -1798,20 +1798,23 @@ Y_BEGIN Y_SLIDER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_END
 Y_END $eof 
 ---
 
-actions combined:                           50
+actions combined:                           51
 parser states:                             609
 # states (1 reduce only):                  291
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                    140
-number of rules not reduced:                 8
-230 (0e6): menu-item-options <- menu-item-option
-231 (0e7): menu-item-options <- menu-item-options comma-opt menu-item-option
-232 (0e8): menu-item-option <- Y_BITMAP
-233 (0e9): menu-item-option <- Y_HELP
-242 (0f2): diag-options-stmt <- menu-stmt (unit production)
-243 (0f3): diag-options-stmt <- font-stmt (unit production)
-244 (0f4): menu-stmt <- Y_MENU name-id
-252 (0fc): font-stmt <- Y_FONT comma-opt
-bytes used in tables:                    13349
+number of rules not reduced:                11
+122 (07a): resource-options-p <-
+123 (07b): resource-options-p <- resource-option
+124 (07c): resource-options-p <- resource-options-p resource-option
+233 (0e9): menu-item-options <- menu-item-option
+234 (0ea): menu-item-options <- menu-item-options comma-opt menu-item-option
+235 (0eb): menu-item-option <- Y_BITMAP
+236 (0ec): menu-item-option <- Y_HELP
+245 (0f5): diag-options-stmt <- menu-stmt (unit production)
+246 (0f6): diag-options-stmt <- font-stmt (unit production)
+247 (0f7): menu-stmt <- Y_MENU name-id
+255 (0ff): font-stmt <- Y_FONT comma-opt
+bytes used in tables:                    13310
 states with defaults:                      444
 states with parents:                       508

@@ -1063,7 +1063,7 @@ menu-text
 
 menu-item-options
     : menu-item-option
-        { $$ = SemOS2AddFirstMenuOption( $1 ); }
+        { $$ = SemOS2AddMenuOption( 0, $1 ); }
     | menu-item-options comma-opt menu-item-option
         { $$ = SemOS2AddMenuOption( $1, $3 ); }
     ;

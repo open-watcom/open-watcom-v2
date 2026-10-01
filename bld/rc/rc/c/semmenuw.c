@@ -73,12 +73,6 @@ struct PopupMenuExItem {
 
 static void SemFreeSubMenu( FullMenu *submenu );
 
-MenuFlags SemWINAddFirstMenuOption( YYTOKENTYPE token )
-/*****************************************************/
-{
-    return( SemWINAddMenuOption( 0, token ) );
-}
-
 MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
 /********************************************************************/
 {

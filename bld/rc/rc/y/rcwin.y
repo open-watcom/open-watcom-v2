@@ -1071,7 +1071,7 @@ menu-result
 
 menu-item-options
     : menu-item-option
-        { $$ = SemWINAddFirstMenuOption( $1 ); }
+        { $$ = SemWINAddMenuOption( 0, $1 ); }
     | menu-item-options comma-opt menu-item-option
         { $$ = SemWINAddMenuOption( $1, $3 ); }
     ;
