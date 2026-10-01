@@ -183,6 +183,7 @@
 %type <integral>        id-value
 %type <resmemflags>     resource-options-mdp
 %type <resmemflags>     resource-options-mp
+%type <resmemflags>     resource-options-p
 %type <codepage>        resource-codepage
 %type <token>           resource-option
 %type <string>          file-name
@@ -570,6 +571,15 @@ resource-options-mp
     | resource-option
         { $$ = SemOS2AddResOption( DEFAULT_FLAGS_MP, $1 ); }
     | resource-options-mp resource-option
+        { $$ = SemOS2AddResOption( $1, $2 ); }
+    ;
+
+resource-options-p
+    : /* nothing */
+        { $$ = DEFAULT_FLAGS_P; }
+    | resource-option
+        { $$ = SemOS2AddResOption( DEFAULT_FLAGS_P, $1 ); }
+    | resource-options-p resource-option
         { $$ = SemOS2AddResOption( $1, $2 ); }
     ;
 
