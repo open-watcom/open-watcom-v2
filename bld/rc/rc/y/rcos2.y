@@ -36,6 +36,77 @@
  * "documentation". Reverse engineering rules.
  ***************************************************************************/
 
+/*
+ * resource-codepage: design notes
+ * ================================
+ *
+ * Rule: [codepage] is a separate, optional token that follows the
+ * load/memory options. It is never mixed into the options list.
+ *
+ *     STRINGTABLE [load-option] [mem-option] [codepage]
+ *
+ * Why separate: the IBM syntax puts it in a fixed position after the
+ * options. Keeping it a distinct nonterminal makes the semantics
+ * unambiguous: the parser delivers either an explicit codepage or
+ * nothing; no post-hoc search through an options list, no duplicate
+ * checks, and misplaced codepages are reported as syntax errors with
+ * an exact position.
+ *
+ * Sources (IBM):
+ *  - OS/2 Toolkit 4.5 Tools Reference, Resource Compiler chapter
+ *    (statement pages), and the legacy RC16 guide (rc16.inf).
+ *  - RC16 documents the same CODEPAGE statement and the same
+ *    [codepage] slot as the new RC, so one definition serves both.
+ *
+ * Statements with [codepage] in their IBM syntax:
+ *   ACCELTABLE   id [mem-option] [code-page]     (no load-option)
+ *   ASSOCTABLE   id [load] [mem] [code-page]
+ *   BITMAP       id [load] [mem] [codepage] filename
+ *   DLGTEMPLATE  id [load] [mem] [codepage]
+ *   FONT         id [load] [mem] [codepage] filename
+ *   ICON (res.)  id [load] [mem] [codepage] filename
+ *   MENU         id [load] [mem] [codepage]
+ *   MESSAGETABLE     [load] [mem] [codepage]
+ *   POINTER      id [load] [mem] [codepage] filename
+ *   RESOURCE     type-id res-id [load] [mem] [code-page] [filename]
+ *   STRINGTABLE      [load] [mem] [codepage]
+ *
+ * Statements without it: DEFAULTICON, RCDATA, DLGINCLUDE, RCINCLUDE,
+ * HELPTABLE/HELPSUBTABLE/HELPITEM/HELPSUBITEM, DIALOG, CONTROL,
+ * CTLDATA, PRESPARAMS, MENUITEM, SUBMENU, WINDOW, FRAME and the
+ * control statements (CHECKBOX, PUSHBUTTON, ...).
+ *
+ * Semantics: the resource's own codepage, if present, overrides the
+ * default. The default is set by the CODEPAGE statement (valid from
+ * its position to the next CODEPAGE) or by the command line
+ * (-cp / -k, also -cc for country code).
+ * Only text-bearing resources use the value (STRINGTABLE,
+ * MESSAGETABLE, MENU, DLGTEMPLATE, ACCELTABLE, ASSOCTABLE).
+ * For binary resources (ICON, BITMAP, POINTER, FONT, RESOURCE) it is
+ * accepted and ignored.
+ *
+ * Deliberate deviation from the IBM text: the CODEPAGE statement page
+ * says a code page may be placed "in the load-options or
+ * memory-options field of any RC statement". This is NOT implemented
+ * as codepage mixed into the options list. The formal syntax is
+ * identical on every statement page and no example shows mixing, so
+ * the sentence is read as loose wording for the fixed trailing slot.
+ * (Earlier versions of this grammar had options + codepage in one
+ * rule; that forced the semantics to sort the numbers out.)
+ *
+ * Grammar is intentionally more tolerant than IBM syntax in that
+ * all statements share one options rule (load/mem in any order;
+ * ACCELTABLE also accepts load-option).
+ *
+ * Not verified:
+ *  - WINDOWTEMPLATE syntax in the IBM docs (assumed like DLGTEMPLATE).
+ *  - Precedence between -cp and the CODEPAGE statement (assumed:
+ *    -cp is the initial default, CODEPAGE overrides from its place).
+ *  - -cp with DBCS lead-byte pairs (e.g. -cp 140,150) as the default.
+ *  - Whether the original rc.exe accepts codepage inside the options
+ *    list (not documented; if it does, relax here).
+ */
+
 /*** error tokens ***/
 %token Y_SCAN_ERROR
 /*** non-keyword tokens ***/
