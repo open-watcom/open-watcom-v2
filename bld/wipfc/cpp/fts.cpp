@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -150,6 +150,39 @@ void FTSElement::build( OutFile* out )
     }
 }
 
+static void encodeRun( std::vector< byte >& rle, byte value, std::size_t count )
+/******************************************************************************/
+{
+    if( count-- > 0x80 ) {
+        rle.push_back( 0x80 );
+        rle.push_back( value );
+        rle.push_back( static_cast< byte >( count ) );
+        rle.push_back( static_cast< byte >( ( count ) >> 8 ) );
+        return;
+    }
+    rle.push_back( static_cast< byte >( count ) );
+    rle.push_back( value );
+}
+
+static void encodeLiteral( std::vector< byte >& rle, const std::vector< byte >& data )
+/************************************************************************************/
+{
+    std::vector< byte >::const_iterator datab( data.begin() );
+    std::size_t difSize = data.size();
+    while( difSize > 0 ) {
+        std::size_t n = ( difSize > 0x80 ) ? 0x80 : difSize;
+        if( n > 1 ) {
+            rle.push_back( static_cast< byte >( n - 1 ) | 0x80 );
+        } else {
+            rle.push_back( 0 );
+        }
+        for( std::size_t count = 0; count < n; ++count ) {
+            rle.push_back( *datab++ );
+        }
+        difSize -= n;
+    }
+}
+
 void FTSElement::encode( std::vector< byte >& rle )
 /*************************************************/
 //The number of pages can never exceed 65535 because the count is stored in
@@ -160,22 +193,11 @@ void FTSElement::encode( std::vector< byte >& rle )
     ConstPageIter tst( _pages.begin() );
     ConstPageIter itr( _pages.begin() + 1 );
     bool same( *itr == *tst && *( itr + 1 ) == *tst );
-    std::size_t sameCount( 2 );
+    std::size_t sameCount( 1 );
     for( ; itr != _pages.end(); ++itr ) {
         if( same ) {
             if( *itr != *tst ) {
-                --sameCount;
-                if( sameCount < 0x80 ) {
-                    rle.push_back( static_cast< byte >( sameCount ) );
-                    rle.push_back( *tst );
-                } else {
-                    //sameCount will never exceed 65536 because the number of pages
-                    //must be less than 65536 (it's stored in a word)
-                    rle.push_back( 0x80 );
-                    rle.push_back( *tst );
-                    rle.push_back( static_cast< byte >( sameCount ) );
-                    rle.push_back( static_cast< byte >( sameCount >> 8 ) );
-                }
+                encodeRun( rle, *tst, sameCount );
                 tst = itr;
                 same = false;
             } else {
@@ -183,27 +205,8 @@ void FTSElement::encode( std::vector< byte >& rle )
             }
         } else {
             if( *itr == *tst && itr + 1 != _pages.end() && *( itr + 1 ) == *tst ) {
-                std::vector< byte >::const_iterator datab( dif.begin() );
-                std::size_t difSize;
-                byte code = 0xFF;
-                for( difSize = dif.size(); difSize > 128; difSize -= 128 ) {
-                    rle.push_back( code );
-                    for( std::size_t count = 0; count <= 128; ++count ) {
-                        rle.push_back( *datab++ );
-                    }
-                }
-                if( difSize > 0 ) {
-                    if( difSize > 1 ) {
-                        code = static_cast< byte >( difSize - 1 ) | 0x80;
-                    } else {
-                        code = 0;
-                    }
-                    rle.push_back( code );
-                    for( std::size_t count = 0; count < difSize; ++count ) {
-                        rle.push_back( *datab++ );
-                    }
-                    dif.clear();
-                }
+                encodeLiteral( rle, dif );
+                dif.clear();
                 same = true;
                 sameCount = 2;
             } else {
@@ -213,36 +216,10 @@ void FTSElement::encode( std::vector< byte >& rle )
         }
     }
     if( same ) {
-        --sameCount;
-        if( sameCount < 0x80 ) {
-            rle.push_back( static_cast< byte >( sameCount ) );
-            rle.push_back( *tst );
-        } else {
-            rle.push_back( 0x80 );
-            rle.push_back( *tst );
-            rle.push_back( static_cast< byte >( sameCount ) );
-            rle.push_back( static_cast< byte >( sameCount >> 8 ) );
-        }
+        encodeRun( rle, *tst, sameCount );
     } else {
         dif.push_back( *tst );
-        std::vector< byte >::const_iterator datab( dif.begin() );
-        std::size_t difSize;
-        byte code = 0xFF;
-        for( difSize = dif.size(); difSize > 128; difSize -= 128 ) {
-            rle.push_back( code );
-            for( std::size_t count = 0; count <= 128; ++count ) {
-                rle.push_back( *datab++ );
-            }
-        }
-        if( difSize > 1 ) {
-            code = static_cast< byte >( difSize - 1 ) | 0x80;
-        } else {
-            code = 0;
-        }
-        rle.push_back( code );
-        for( std::size_t count = 0; count < difSize; ++count ) {
-            rle.push_back( *datab++ );
-        }
+        encodeLiteral( rle, dif );
     }
 }
 
