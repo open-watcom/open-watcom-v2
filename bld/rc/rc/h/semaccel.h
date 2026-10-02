@@ -83,7 +83,6 @@ extern void                 SemWINWriteAccelEntry( FullAccelEntry entry );
 extern void                 SemWINWriteLastAccelEntry( FullAccelEntry entry );
 
 extern int                  SemOS2StrToAccelEvent( char *string );
-extern FullAccelTableOS2    *SemOS2NewAccelTable( FullAccelEntryOS2 );
 extern FullAccelTableOS2    *SemOS2AddAccelEntry( FullAccelEntryOS2, FullAccelTableOS2 * );
 extern FullAccelEntryOS2    SemOS2MakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlagsOS2 flags );
 extern void                 SemOS2WriteAccelTable( WResID *res_id, ResMemFlags res_flags, uint_32 codepage, FullAccelTableOS2 *acctable );

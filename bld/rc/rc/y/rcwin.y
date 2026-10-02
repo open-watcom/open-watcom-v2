@@ -737,14 +737,12 @@ string-section
 string-items
     : string-item
         {
-            $$ = SemWINNewStringTable();
-            SemWINAddStrToStringTable( $$, $1.ItemID, $1.String );
+            $$ = SemWINAddStrToStringTable( NULL, $1.ItemID, $1.String );
             MemFree( $1.String );
         }
     | string-items string-item
         {
-            SemWINAddStrToStringTable( $1, $2.ItemID, $2.String );
-            $$ = $1;
+            $$ = SemWINAddStrToStringTable( $1, $2.ItemID, $2.String );
             MemFree( $2.String );
         }
     ;
@@ -869,7 +867,7 @@ menu-section
 
 menu-items
     : menu-item
-        { $$ = SemWINNewMenu( $1 ); }
+        { $$ = SemWINAddMenuItem( NULL, $1 ); }
     | menu-items menu-item
         { $$ = SemWINAddMenuItem( $1, $2 ); }
     ;
@@ -1407,7 +1405,7 @@ diag-data-elements
 
 diag-control-stmts
     : diag-control-stmt diag-data-elements
-        { $$ = SemWINNewDiagCtrlList( $1, $2 ); }
+        { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
     | diag-control-stmts diag-control-stmt diag-data-elements
         { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
     ;
@@ -1657,7 +1655,7 @@ version-info-resource
 
 fixed-ver-section
     : fixed-ver-stmt
-        { $$ = SemWINNewVerFixedInfo( $1 ); }
+        { $$ = SemWINAddVerFixedInfo( NULL, $1 ); }
     | fixed-ver-section fixed-ver-stmt
         { $$ = SemWINAddVerFixedInfo( $1, $2 ); }
     ;
@@ -1738,7 +1736,7 @@ variable-ver-section
 
 block-stmts
     : block-stmt
-        { $$ = SemWINNewBlockNest( $1 ); }
+        { $$ = SemWINAddBlockNest( NULL, $1 ); }
     | block-stmts block-stmt
         { $$ = SemWINAddBlockNest( $1, $2 ); }
     ;
@@ -1769,7 +1767,7 @@ block-body
 
 value-stmts
     : value-stmt
-        { $$ = SemWINNewBlockNest( $1 ); }
+        { $$ = SemWINAddBlockNest( NULL, $1 ); }
     | value-stmts value-stmt
         { $$ = SemWINAddBlockNest( $1, $2 ); }
     ;
@@ -1785,7 +1783,7 @@ value-name
 
 value-list
     : value-item
-        { $$ = SemWINNewVerValueList( $1 ); }
+        { $$ = SemWINAddVerValueList( NULL, $1 ); }
     | value-list comma-opt value-item
         { $$ = SemWINAddVerValueList( $1, $3 ); }
     ;

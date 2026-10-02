@@ -40,34 +40,19 @@
 #include "rccore.h"
 
 
-FullStringTable *SemWINNewStringTable( void )
-/*******************************************/
-{
-    FullStringTable     *newtable;
-
-    newtable = MemAllocSafe( sizeof( FullStringTable ) );
-    newtable->Head = NULL;
-    newtable->Tail = NULL;
-    newtable->next = NULL;
-    newtable->lang.lang = DEF_LANG;
-    newtable->lang.sublang = DEF_SUBLANG;
-
-    return( newtable );
-} /* SemWINNewStringTable */
-
-static void semFreeStringTable( FullStringTable *oldtable )
-/*********************************************************/
+static void semFreeStringTable( FullStringTable *table )
+/******************************************************/
 {
     FullStringTableBlock    *currblock;
     FullStringTableBlock    *nextblock;
 
-    for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
+    for( currblock = table->Head; currblock != NULL; currblock = nextblock ) {
         nextblock = currblock->Next;
         ResFreeStringTableBlock( &(currblock->Block) );
         MemFree( currblock );
     }
 
-    MemFree( oldtable );
+    MemFree( table );
 } /* semFreeStringTable */
 
 static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
@@ -101,7 +86,7 @@ static FullStringTableBlock *newStringTableBlock( void )
     return( newblock );
 } /* newStringTableBlock */
 
-void SemWINAddStrToStringTable( FullStringTable *currtable,
+FullStringTable *SemWINAddStrToStringTable( FullStringTable *table,
                             uint_16 stringid, char *string )
 /**********************************************************/
 {
@@ -109,10 +94,19 @@ void SemWINAddStrToStringTable( FullStringTable *currtable,
     uint_16                     blocknum;
     uint_16                     stringnum;
 
+    if( table == NULL ) {
+        table = MemAllocSafe( sizeof( FullStringTable ) );
+        table->Head = NULL;
+        table->Tail = NULL;
+        table->next = NULL;
+        table->lang.lang = DEF_LANG;
+        table->lang.sublang = DEF_SUBLANG;
+    }
+
     blocknum = stringid >> 4;
     stringnum = stringid & 0x000f;
 
-    currblock = findStringTableBlock( currtable, blocknum );
+    currblock = findStringTableBlock( table, blocknum );
     if( currblock != NULL ) {
         if( currblock->Block.String[stringnum] != NULL ) {
             /*
@@ -124,10 +118,11 @@ void SemWINAddStrToStringTable( FullStringTable *currtable,
     } else {
         currblock = newStringTableBlock();
         currblock->BlockNum = blocknum;
-        ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), currblock );
+        ResAddLLItemAtEnd( (void **)&(table->Head), (void **)&(table->Tail), currblock );
     }
-
     currblock->Block.String[stringnum] = WResStringIDNameFromStr( string );
+    return( table );
+
 } /* SemWINAddStrToStringTable */
 
 static void mergeStringTableBlocks( FullStringTableBlock *currblock,
@@ -151,10 +146,10 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
     }
 } /* mergeStringTableBlocks */
 
-static void semMergeStringTables( FullStringTable *currtable,
-            FullStringTable *oldtable, ResMemFlags res_flags )
-/*************************************************************
- * merge oldtable into currtable and free oldtable when done
+static void semMergeStringTables( FullStringTable *table,
+            FullStringTable *old_table, ResMemFlags res_flags )
+/**************************************************************
+ * merge old_table into table and free old_table when done
  * returns TRUE if there was one or more duplicate entries
  */
 {
@@ -163,21 +158,21 @@ static void semMergeStringTables( FullStringTable *currtable,
     FullStringTableBlock        *nextblock;
 
     /*
-     * run through the list of block in oldtable
+     * run through the list of block in old_table
      */
-    for( oldblock = oldtable->Head; oldblock != NULL; oldblock = nextblock ) {
+    for( oldblock = old_table->Head; oldblock != NULL; oldblock = nextblock ) {
         /*
-         * find oldblock in currtable if it is there
+         * find oldblock in table if it is there
          */
         nextblock = oldblock->Next;
-        currblock = findStringTableBlock( currtable, oldblock->BlockNum );
+        currblock = findStringTableBlock( table, oldblock->BlockNum );
         if( currblock == NULL ) {
             /*
-             * if oldblock in not in currtable move it there from oldtable
+             * if oldblock in not in table move it there from old_table
              */
-            ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
+            ResDeleteLLItem( (void **)&(old_table->Head), (void **)&(old_table->Tail), oldblock );
             oldblock->res_flags = res_flags;
-            ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
+            ResAddLLItemAtEnd( (void **)&(table->Head), (void **)&(table->Tail), oldblock );
         } else {
             /*
              * otherwise move the WSemID's to that block
@@ -186,27 +181,27 @@ static void semMergeStringTables( FullStringTable *currtable,
         }
     }
 
-    semFreeStringTable( oldtable );
+    semFreeStringTable( old_table );
 } /* semMergeStringTables */
 
-static void setStringTableMemFlags( FullStringTable *currtable,
+static void setStringTableMemFlags( FullStringTable *table,
                                     ResMemFlags res_flags )
 /*************************************************************/
 {
     FullStringTableBlock    *currblock;
 
-    for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
+    for( currblock = table->Head; currblock != NULL; currblock = currblock->Next ) {
         currblock->res_flags = res_flags;
     }
 }
 
-static void addTable( FullStringTable **tables, FullStringTable *newtable )
-/*************************************************************************/
+static void addTable( FullStringTable **tables, FullStringTable *table )
+/**********************************************************************/
 {
     while( *tables != NULL )
         tables = &( ( *tables )->next );
-    *tables = newtable;
-    newtable->next = NULL;
+    *tables = table;
+    table->next = NULL;
 }
 
 static FullStringTable *findTableFromLang( FullStringTable *tables,
@@ -224,44 +219,43 @@ static FullStringTable *findTableFromLang( FullStringTable *tables,
     return( cur );
 }
 
-void SemWINMergeStrTable( FullStringTable *currtable, ResMemFlags res_flags )
-/***************************************************************************/
+void SemWINMergeStrTable( FullStringTable *table, ResMemFlags res_flags )
+/***********************************************************************/
 {
-    FullStringTable     *table;
+    FullStringTable     *old_table;
     const WResLangType  *lang;
 
     lang = SemGetResourceLanguage();
-    currtable->lang = *lang;
-    table = findTableFromLang( CurrResFile.StringTable, lang );
-    if( table == NULL ) {
-        setStringTableMemFlags( currtable, res_flags );
-        addTable( &CurrResFile.StringTable, currtable );
+    table->lang = *lang;
+    old_table = findTableFromLang( CurrResFile.StringTable, lang );
+    if( old_table == NULL ) {
+        setStringTableMemFlags( table, res_flags );
+        addTable( &CurrResFile.StringTable, table );
     } else {
-        semMergeStringTables( table, currtable, res_flags );
+        semMergeStringTables( old_table, table, res_flags );
     }
 }
 
-void SemWINMergeErrTable( FullStringTable *currtable, ResMemFlags res_flags )
-/***************************************************************************/
+void SemWINMergeErrTable( FullStringTable *table, ResMemFlags res_flags )
+/***********************************************************************/
 {
-    FullStringTable     *table;
+    FullStringTable     *old_table;
     const WResLangType  *lang;
 
     lang = SemGetResourceLanguage();
-    currtable->lang = *lang;
-    table = findTableFromLang( CurrResFile.ErrorTable, lang );
-
-    if( table == NULL ) {
-        setStringTableMemFlags( currtable, res_flags );
-        addTable( &CurrResFile.ErrorTable, currtable );
+    table->lang = *lang;
+    old_table = findTableFromLang( CurrResFile.ErrorTable, lang );
+    if( old_table == NULL ) {
+        setStringTableMemFlags( table, res_flags );
+        addTable( &CurrResFile.ErrorTable, table );
     } else {
-        semMergeStringTables( table, currtable, res_flags );
+        semMergeStringTables( old_table, table, res_flags );
     }
 }
 
-void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
-/*************************************************************************
- * write the table identified by currtable as a table of type type and then
+void SemWINWriteStringTable( FullStringTable *table, WResID *type_id )
+/*********************************************************************
+ * write the table identified by table as a table of type type and then
  * free the memory that it occupied
  */
 {
@@ -271,9 +265,9 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
     bool                    error;
     ResLocation             loc;
 
-    for( ; currtable != NULL; currtable = nexttable ) {
-        nexttable = currtable->next;
-        for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
+    for( ; table != NULL; table = nexttable ) {
+        nexttable = table->next;
+        for( currblock = table->Head; currblock != NULL; currblock = currblock->Next ) {
             loc.start = SemStartResource();
 
             error = ResWriteStringTableBlock( &(currblock->Block), currblock->iswin32, CurrResFile.fp );
@@ -285,7 +279,7 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
             if( error ) {
                 RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 ErrorHasOccured = true;
-                semFreeStringTable( currtable );
+                semFreeStringTable( table );
                 return;
             }
 
@@ -295,12 +289,11 @@ void SemWINWriteStringTable( FullStringTable *currtable, WResID *type_id )
              * ( see Microsoft Internal Res Docs )
              */
             res_id = WResIDFromNum( currblock->BlockNum + 1 );
-            SemWINSetResourceLanguage( &currtable->lang, false );
+            SemWINSetResourceLanguage( &table->lang, false );
             SemAddResource( res_id, type_id, currblock->res_flags, loc );
             MemFree( res_id );
         }
-        semFreeStringTable( currtable );
+        semFreeStringTable( table );
     }
     MemFree( type_id );
-    return;
 }

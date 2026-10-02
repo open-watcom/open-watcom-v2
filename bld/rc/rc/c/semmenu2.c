@@ -115,28 +115,16 @@ MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
     return( oldflags );
 }
 
-FullMenuOS2 *SemOS2NewMenu( FullMenuItemOS2 firstitem )
-/*****************************************************/
-{
-    FullMenuOS2       *newmenu;
-    FullMenuItemOS2   *newitem;
-
-    newmenu = MemAllocSafe( sizeof( FullMenuOS2 ) );
-    newitem = MemAllocSafe( sizeof( FullMenuItemOS2 ) );
-
-    *newitem = firstitem;
-    newmenu->head = NULL;
-    newmenu->tail = NULL;
-
-    ResAddLLItemAtEnd( (void **)&(newmenu->head), (void **)&(newmenu->tail), newitem );
-
-    return( newmenu );
-}
-
 FullMenuOS2 *SemOS2AddMenuItem( FullMenuOS2 *currmenu, FullMenuItemOS2 curritem )
 /*******************************************************************************/
 {
     FullMenuItemOS2     *newitem;
+
+    if( currmenu == NULL ) {
+        currmenu = MemAllocSafe( sizeof( FullMenuOS2 ) );
+        currmenu->head = NULL;
+        currmenu->tail = NULL;
+    }
 
     newitem = MemAllocSafe( sizeof( FullMenuItemOS2 ) );
 

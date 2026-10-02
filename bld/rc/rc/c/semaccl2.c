@@ -135,36 +135,24 @@ FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval,
     return( entry );
 }
 
-FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
-/***************************************************************/
-{
-    FullAccelTableOS2   *newtable;
-    FullAccelEntryOS2   *newentry;
-
-    newtable = MemAllocSafe( sizeof( FullAccelTableOS2 ) );
-    newentry = MemAllocSafe( sizeof( FullAccelEntryOS2 ) );
-
-    *newentry = firstentry;
-    newtable->head = NULL;
-    newtable->tail = NULL;
-
-    ResAddLLItemAtEnd( (void **)&(newtable->head), (void **)&(newtable->tail), newentry );
-
-    return( newtable );
-}
-
-FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTableOS2 *currtable )
-/*************************************************************************************************/
+FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTableOS2 *table )
+/*********************************************************************************************/
 {
     FullAccelEntryOS2     *newentry;
+
+    if( table == NULL ) {
+        table = MemAllocSafe( sizeof( FullAccelTableOS2 ) );
+        table->head = NULL;
+        table->tail = NULL;
+    }
 
     newentry = MemAllocSafe( sizeof( FullAccelEntryOS2 ) );
 
     *newentry = currentry;
 
-    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(table->head), (void **)&(table->tail), newentry );
 
-    return( currtable );
+    return( table );
 }
 
 static void SemOS2FreeAccelTable( FullAccelTableOS2 *acctable )

@@ -715,7 +715,7 @@ rcdata-resource
 
 presparam-list
     : presparam-stmt
-        { $$ = SemOS2NewPresParamList( $1 ); }
+        { $$ = SemOS2AppendPresParam( NULL, $1 ); }
     | presparam-list presparam-stmt
         { $$ = SemOS2AppendPresParam( $1, $2 ); }
     | /* nothing */
@@ -760,14 +760,12 @@ string-section
 string-items
     : string-item
         {
-            $$ = SemOS2NewStringTable();
-            SemOS2AddStrToStringTable( $$, $1.ItemID, $1.String );
+            $$ = SemOS2AddStrToStringTable( NULL, $1.ItemID, $1.String );
             MemFree( $1.String );
         }
     | string-items string-item
         {
-            SemOS2AddStrToStringTable( $1, $2.ItemID, $2.String );
-            $$ = $1;
+            $$ = SemOS2AddStrToStringTable( $1, $2.ItemID, $2.String );
             MemFree( $2.String );
         }
     ;
@@ -803,7 +801,7 @@ help-table-section
 
 help-items
     : help-item
-        { $$ = SemOS2NewHelpTable( $1 ); }
+        { $$ = SemOS2AddHelpItem( $1, NULL ); }
     | help-items help-item
         { $$ = SemOS2AddHelpItem( $2, $1 ); }
     | /* nothing */
@@ -835,7 +833,7 @@ help-subtable-section
 
 help-subitems
     : help-subitem
-        { $$ = SemOS2NewHelpSubTable( $1 ); }
+        { $$ = SemOS2AddHelpSubItem( $1, NULL ); }
     | help-subitems help-subitem
         { $$ = SemOS2AddHelpSubItem( $2, $1 ); }
     | /* nothing */
@@ -863,7 +861,7 @@ acc-section
 
 acc-items
     : acc-item
-        { $$ = SemOS2NewAccelTable( $1 ); }
+        { $$ = SemOS2AddAccelEntry( $1, NULL ); }
     | acc-items acc-item
         { $$ = SemOS2AddAccelEntry( $2, $1 ); }
     ;
@@ -944,7 +942,7 @@ menu-section
 
 menu-items
     : menu-item
-        { $$ = SemOS2NewMenu( $1 ); }
+        { $$ = SemOS2AddMenuItem( NULL, $1 ); }
     | menu-items menu-item
         { $$ = SemOS2AddMenuItem( $1, $2 ); }
     | /* nothing */
@@ -1179,7 +1177,7 @@ diag-data-elements
 
 diag-control-stmts
     : diag-control-stmt diag-data-elements
-        { $$ = SemOS2NewDiagCtrlList( $1, $2, NULL ); }
+        { $$ = SemOS2AddDiagCtrlList( NULL, $1, $2, NULL ); }
     | diag-control-stmts diag-control-stmt diag-data-elements
         { $$ = SemOS2AddDiagCtrlList( $1, $2, $3, NULL ); }
     ;

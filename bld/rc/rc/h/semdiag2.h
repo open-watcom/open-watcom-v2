@@ -60,8 +60,6 @@ typedef struct FullDialogOptions {
     } Opt;
 } FullDialogOptions;
 
-extern FullDiagCtrlListOS2      *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
-                                    DataElemList *, PresParamListOS2 * );
 extern FullDiagCtrlListOS2      *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
                                     FullDialogBoxControlOS2 *ctrl, DataElemList *,
                                     PresParamListOS2 * );
@@ -75,7 +73,6 @@ extern FullDialogBoxControlOS2  *SemOS2SetWindowData( FullDiagCtrlOptionsOS2, In
 extern FullDialogBoxControlOS2  *SemOS2SetControlData( ResNameOrOrdinal *name, uint_16 id,
                                     DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclass,
                                     IntMask style, FullDiagCtrlListOS2 *, PresParamListOS2 * );
-extern PresParamListOS2         *SemOS2NewPresParamList( PresParamsOS2 presparam );
 extern PresParamListOS2         *SemOS2AppendPresParam( PresParamListOS2 *list,
                                     PresParamsOS2 presparam );
 

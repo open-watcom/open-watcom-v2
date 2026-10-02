@@ -111,29 +111,16 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
     return( oldflags );
 }
 
-FullMenu *SemWINNewMenu( FullMenuItem firstitem )
-/***********************************************/
-{
-    FullMenu       *newmenu;
-    FullMenuItem   *newitem;
-
-    newmenu = MemAllocSafe( sizeof( FullMenu ) );
-    newitem = MemAllocSafe( sizeof( FullMenuItem ) );
-
-    *newitem = firstitem;
-    newmenu->head = NULL;
-    newmenu->tail = NULL;
-
-    ResAddLLItemAtEnd( (void **)&(newmenu->head), (void **)&(newmenu->tail), newitem );
-
-    return( newmenu );
-}
-
 FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
 /**********************************************************************/
 {
     FullMenuItem     *newitem;
 
+    if( currmenu == NULL ) {
+        currmenu = MemAllocSafe( sizeof( FullMenu ) );
+        currmenu->head = NULL;
+        currmenu->tail = NULL;
+    }
 
     newitem = MemAllocSafe( sizeof( FullMenuItem ) );
 

@@ -251,19 +251,13 @@ FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
     return( newlist );
 }
 
-FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList *list )
-/***************************************************************************************/
-{
-    FullDiagCtrlList    *newlist;
-
-    newlist = SemWINEmptyDiagCtrlList();
-    return( SemWINAddDiagCtrlList( newlist, ctrl, list ) );
-} /* SemWINNewDiagCtrlList */
-
 FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
                     FullDialogBoxControl *ctrl, DataElemList *dataList )
 /**********************************************************************/
 {
+    if( list == NULL ) {
+        list = SemWINEmptyDiagCtrlList();
+    }
     if( ctrl != NULL ) {
         ctrl->dataListHead = dataList;
         ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), ctrl );

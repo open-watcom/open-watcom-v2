@@ -136,16 +136,6 @@ static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
     return( newlist );
 }
 
-FullDiagCtrlListOS2 *SemOS2NewDiagCtrlList( FullDialogBoxControlOS2 *ctrl,
-                               DataElemList *list, PresParamListOS2 *presparams )
-/*******************************************************************************/
-{
-    FullDiagCtrlListOS2     *newlist;
-
-    newlist = SemOS2EmptyDiagCtrlList();
-    return( SemOS2AddDiagCtrlList( newlist, ctrl, list, presparams ) );
-}
-
 FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
                     FullDialogBoxControlOS2 *ctrl, DataElemList *dataList,
                     PresParamListOS2 *presparams )
@@ -153,6 +143,9 @@ FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
 {
     /* unused parameters */ (void)presparams;
 
+    if( list == NULL ) {
+        list = SemOS2EmptyDiagCtrlList();
+    }
     if( ctrl != NULL ) {
         ctrl->dataListHead = dataList;
 //        ctrl->presParams   = presparams;
@@ -842,22 +835,16 @@ void SemOS2AddDlgincResource( WResID *res_id, char *filename )
     MemFree( filename );
 }
 
-PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparams )
-/******************************************************************/
-{
-    PresParamListOS2    *newlist;
-
-    newlist = MemAllocSafe( sizeof( PresParamListOS2 ) );
-    newlist->head = NULL;
-    newlist->tail = NULL;
-    return( SemOS2AppendPresParam( newlist, presparams ) );
-}
-
 PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list, PresParamsOS2 presparams )
 /*****************************************************************************************/
 {
     PresParamsOS2       *params;
 
+    if( list == NULL ) {
+        list = MemAllocSafe( sizeof( PresParamListOS2 ) );
+        list->head = NULL;
+        list->tail = NULL;
+    }
     params = MemAllocSafe( sizeof( PresParamsOS2 ) );
     *params = presparams;
     ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), params );

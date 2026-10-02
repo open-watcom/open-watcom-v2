@@ -34,7 +34,6 @@
 #define SEMMENUW_INCLUDED
 
 extern MenuFlags    SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token );
-extern FullMenu     *SemWINNewMenu( FullMenuItem firstitem );
 extern FullMenu     *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem );
 extern void         SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu, YYTOKENTYPE );
 

@@ -72,37 +72,25 @@ FullHelpEntryOS2 SemOS2MakeHelpItem( unsigned long winId, unsigned long subId,
     return( entry );
 }
 
-FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
-/***************************************************************/
-{
-    FullHelpTableOS2   *newtable;
-    FullHelpEntryOS2   *newentry;
-
-    newtable = MemAllocSafe( sizeof( FullHelpTableOS2 ) );
-    newentry = MemAllocSafe( sizeof( FullHelpEntryOS2 ) );
-
-    *newentry = firstentry;
-    newtable->head = NULL;
-    newtable->tail = NULL;
-
-    ResAddLLItemAtEnd( (void **)&(newtable->head), (void **)&(newtable->tail), newentry );
-
-    return( newtable );
-}
-
 FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
-                                    FullHelpTableOS2 *currtable )
+                                    FullHelpTableOS2 *table )
 /***************************************************************/
 {
     FullHelpEntryOS2     *newentry;
+
+    if( table == NULL ) {
+        table = MemAllocSafe( sizeof( FullHelpTableOS2 ) );
+        table->head = NULL;
+        table->tail = NULL;
+    }
 
     newentry = MemAllocSafe( sizeof( FullHelpEntryOS2 ) );
 
     *newentry = currentry;
 
-    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(table->head), (void **)&(table->tail), newentry );
 
-    return( currtable );
+    return( table );
 }
 
 static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
@@ -164,37 +152,25 @@ void SemOS2WriteHelpTable( WResID *res_id, ResMemFlags res_flags,
 }
 
 
-FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
-/**************************************************************/
-{
-    FullHelpSubTableOS2   *newtable;
-    FullHelpSubEntryOS2   *newentry;
-
-    newtable = MemAllocSafe( sizeof( FullHelpSubTableOS2 ) );
-    newentry = MemAllocSafe( sizeof( FullHelpSubEntryOS2 ) );
-
-    newentry->dataListHead = data;
-    newtable->head = NULL;
-    newtable->tail = NULL;
-
-    ResAddLLItemAtEnd( (void **)&(newtable->head), (void **)&(newtable->tail), newentry );
-
-    return( newtable );
-}
-
 FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList *data,
-                            FullHelpSubTableOS2 *currtable )
+                            FullHelpSubTableOS2 *table )
 /************************************************************/
 {
     FullHelpSubEntryOS2     *newentry;
 
+    if( table == NULL ) {
+        table = MemAllocSafe( sizeof( FullHelpSubTableOS2 ) );
+        table->head = NULL;
+        table->tail = NULL;
+    }
+
     newentry = MemAllocSafe( sizeof( FullHelpSubEntryOS2 ) );
 
     newentry->dataListHead = data;
 
-    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(table->head), (void **)&(table->tail), newentry );
 
-    return( currtable );
+    return( table );
 }
 
 static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )

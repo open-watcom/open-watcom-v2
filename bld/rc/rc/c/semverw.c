@@ -51,6 +51,11 @@ static void FreeVerBlockNest( FullVerBlockNest *nest );
 FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem item )
 /**********************************************************************************/
 {
+    if( list == NULL ) {
+        list = MemAllocSafe( sizeof( FullVerValueList ) );
+        list->NumItems = 0;
+        list->Item = NULL;
+    }
     if( CmdLineParms.iswin32 ) {
         item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
     }                                   // instead of using the full string.
@@ -60,18 +65,6 @@ FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem it
     list->Item[list->NumItems - 1] = item;
 
     return( list );
-}
-
-FullVerValueList *SemWINNewVerValueList( VerValueItem item )
-/**********************************************************/
-{
-    FullVerValueList    *list;
-
-    list = MemAllocSafe( sizeof( FullVerValueList ) );
-    list->NumItems = 0;
-    list->Item = NULL;
-
-    return( SemWINAddVerValueList( list, item ) );
 }
 
 static void FreeValItem( VerValueItem *item )
@@ -217,21 +210,14 @@ static void FreeVerBlock( FullVerBlock *block )
     MemFree( block );
 }
 
-FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
-/*********************************************************/
-{
-    FullVerBlockNest    *parent;
-
-    parent = MemAllocSafe( sizeof( FullVerBlockNest ) );
-    parent->Head = NULL;
-    parent->Tail = NULL;
-
-    return( SemWINAddBlockNest( parent, child ) );
-}
-
 FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *parent, FullVerBlock *child )
 /***********************************************************************************/
 {
+    if( parent == NULL ) {
+        parent = MemAllocSafe( sizeof( FullVerBlockNest ) );
+        parent->Head = NULL;
+        parent->Tail = NULL;
+    }
     ResAddLLItemAtEnd( (void **)&(parent->Head), (void **)&(parent->Tail), child );
     return( parent );
 }
@@ -293,24 +279,16 @@ static bool SemWriteVerBlockNest( FullVerBlockNest *nest, FILE *fp, int *err_cod
 }
 
 
-VerFixedInfo *SemWINNewVerFixedInfo( VerFixedOption option )
-/**********************************************************/
-{
-    VerFixedInfo    *info;
-
-    info = MemAllocSafe( sizeof( VerFixedInfo ) );
-    memset( info, 0, sizeof( VerFixedInfo ) );
-
-    return( SemWINAddVerFixedInfo( info, option ) );
-}
-
-
 #define MakeVersion( verp ) ((uint_32)(verp).LowWord | \
                             ((uint_32)(verp).HighWord << 16 ))
 
 VerFixedInfo *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption option )
 /******************************************************************************/
 {
+    if( info == NULL ) {
+        info = MemAllocSafe( sizeof( VerFixedInfo ) );
+        memset( info, 0, sizeof( VerFixedInfo ) );
+    }
     switch( option.token ) {
     case Y_FILEFLAGS:
         info->FileFlags = option.u.Option;

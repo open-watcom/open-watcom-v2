@@ -70,14 +70,11 @@ typedef struct FullVerBlock {
     FullVerBlockNest        *Nest;
 } FullVerBlock;
 
-extern FullVerValueList *SemWINNewVerValueList( VerValueItem item );
 extern FullVerValueList *SemWINAddVerValueList( FullVerValueList *, VerValueItem);
 extern FullVerBlock     *SemWINNewBlockVal( char *name, FullVerValueList *list );
 extern FullVerBlock     *SemWINNameVerBlock( char *name, FullVerBlockNest *nest );
-extern FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child );
 extern FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *, FullVerBlock * );
 extern FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNest *nest2 );
-extern VerFixedInfo     *SemWINNewVerFixedInfo( VerFixedOption option );
 extern VerFixedInfo     *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption );
 extern void             SemWINWriteVerInfo( WResID *res_id, ResMemFlags res_flags, VerFixedInfo *info, FullVerBlockNest *nest );
 
