@@ -558,8 +558,6 @@ single-line-resource
 resource-options-mdp
     : /* nothing */
         { $$ = DEFAULT_FLAGS_MDP; }
-    | resource-option
-        { $$ = SemWINAddResOption( DEFAULT_FLAGS_MDP, $1 ); }
     | resource-options-mdp resource-option
         { $$ = SemWINAddResOption( $1, $2 ); }
     ;
@@ -567,8 +565,6 @@ resource-options-mdp
 resource-options-md
     : /* nothing */
         { $$ = DEFAULT_FLAGS_MD; }
-    | resource-option
-        { $$ = SemWINAddResOption( DEFAULT_FLAGS_MD, $1 ); }
     | resource-options-md resource-option
         { $$ = SemWINAddResOption( $1, $2 ); }
     ;
@@ -576,8 +572,6 @@ resource-options-md
 resource-options-mp
     : /* nothing */
         { $$ = DEFAULT_FLAGS_MP; }
-    | resource-option
-        { $$ = SemWINAddResOption( DEFAULT_FLAGS_MP, $1 ); }
     | resource-options-mp resource-option
         { $$ = SemWINAddResOption( $1, $2 ); }
     ;
@@ -1149,27 +1143,18 @@ helpId-opt
     ;
 
 dlg-resource
-    : name-id dialog-or-dialogEx resource-options-mdp size-info helpId-opt diag-options-section
-              diag-control-section
-        {
-            SemWINWriteDialogBox( $1, $3, $4, $6, $7, $5, $2 );
-        }
-    | name-id dialog-or-dialogEx resource-options-mdp exstyle-equal-stmt size-info helpId-opt
-              diag-options-section diag-control-section
-        {
-            SemWINWriteDialogBox( $1, $3, $5, SemWINDiagOptions( $7, &($4) ), $8, $6, $2 );
-        }
-    | name-id dialog-or-dialogEx resource-options-mdp comma-opt size-info helpId-opt
-               diag-options-section diag-control-section
-        {
-            SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, $2 );
-        }
-    | name-id dialog-or-dialogEx resource-options-mdp comma-opt exstyle-equal-stmt
-                size-info helpId-opt diag-options-section diag-control-section
-        {
-            SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ) , $9, $7, $2 );
-        }
-    ;
+	: name-id dialog-or-dialogEx resource-options-mdp comma-opt
+			size-info helpId-opt diag-options-section diag-control-section
+		{
+			SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, $2 );
+		}
+	| name-id dialog-or-dialogEx resource-options-mdp comma-opt
+			exstyle-equal-stmt size-info helpId-opt
+			diag-options-section diag-control-section
+		{
+			SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, $2 );
+		}
+	;
 
 size-info
     : size-x comma-opt size-y comma-opt size-w comma-opt size-h
@@ -1199,8 +1184,6 @@ size-h
 diag-options-section
     : /* nothing */
         { $$ = NULL; }
-    | diag-options-stmt
-        { $$ = SemWINDiagOptions( NULL, &($1) ); }
     | diag-options-section diag-options-stmt
         { $$ = SemWINDiagOptions( $1, &($2) ); }
     ;

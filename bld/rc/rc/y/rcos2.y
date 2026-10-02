@@ -630,8 +630,6 @@ resource-codepage
 resource-options-mdp
     : /* nothing */
         { $$ = DEFAULT_FLAGS_MDP; }
-    | resource-option
-        { $$ = SemOS2AddResOption( DEFAULT_FLAGS_MDP, $1 ); }
     | resource-options-mdp resource-option
         { $$ = SemOS2AddResOption( $1, $2 ); }
     ;
@@ -639,8 +637,6 @@ resource-options-mdp
 resource-options-mp
     : /* nothing */
         { $$ = DEFAULT_FLAGS_MP; }
-    | resource-option
-        { $$ = SemOS2AddResOption( DEFAULT_FLAGS_MP, $1 ); }
     | resource-options-mp resource-option
         { $$ = SemOS2AddResOption( $1, $2 ); }
     ;
@@ -648,8 +644,6 @@ resource-options-mp
 resource-options-p
     : /* nothing */
         { $$ = DEFAULT_FLAGS_P; }
-    | resource-option
-        { $$ = SemOS2AddResOption( DEFAULT_FLAGS_P, $1 ); }
     | resource-options-p resource-option
         { $$ = SemOS2AddResOption( $1, $2 ); }
     ;
@@ -785,12 +779,10 @@ rcdata-resource
     ;
 
 presparam-list
-    : presparam-stmt
-        { $$ = SemOS2AppendPresParam( NULL, $1 ); }
+    : /* nothing */
+        { $$ = NULL; }
     | presparam-list presparam-stmt
         { $$ = SemOS2AppendPresParam( $1, $2 ); }
-    | /* nothing */
-        { $$ = NULL; }
     ;
 
 presparam-stmt
@@ -871,12 +863,10 @@ help-table-section
     ;
 
 help-items
-    : help-item
-        { $$ = SemOS2AddHelpItem( $1, NULL ); }
+    : /* nothing */
+        { $$ = NULL; }
     | help-items help-item
         { $$ = SemOS2AddHelpItem( $2, $1 ); }
-    | /* nothing */
-        { $$ = NULL; }
     ;
 
 help-item
@@ -903,12 +893,10 @@ help-subtable-section
     ;
 
 help-subitems
-    : help-subitem
-        { $$ = SemOS2AddHelpSubItem( $1, NULL ); }
+    : /* nothing */
+        { $$ = NULL; }
     | help-subitems help-subitem
         { $$ = SemOS2AddHelpSubItem( $2, $1 ); }
-    | /* nothing */
-        { $$ = NULL; }
     ;
 
 help-subitem
@@ -1012,12 +1000,10 @@ menu-section
     ;
 
 menu-items
-    : menu-item
-        { $$ = SemOS2AddMenuItem( NULL, $1 ); }
+    : /* nothing */
+        { $$ = NULL; }
     | menu-items menu-item
         { $$ = SemOS2AddMenuItem( $1, $2 ); }
-    | /* nothing */
-        { $$ = NULL; }
     ;
 
 menu-id
