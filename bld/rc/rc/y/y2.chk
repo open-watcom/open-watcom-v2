@@ -1798,7 +1798,7 @@ Y_BEGIN Y_SLIDER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_END
 Y_END $eof 
 ---
 
-actions combined:                           51
+actions combined:                           50
 parser states:                             609
 # states (1 reduce only):                  291
 reduce/reduce conflicts:                     0
