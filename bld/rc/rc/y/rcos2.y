@@ -425,7 +425,7 @@ keyword-name
     | Y_FKALONG
         { $$ = Y_FKALONG; }
     | Y_FKAROW
-        { $$ = Y_FKASHORT; }
+        { $$ = Y_FKAROW; }
     | Y_FKASHORT
         { $$ = Y_FKASHORT; }
     | Y_FONT
