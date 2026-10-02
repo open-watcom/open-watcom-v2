@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2009-2018 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2009-2026 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -72,7 +72,7 @@ private:
         byte            sortKey     :1;     // bit 7 set: sort key
     };
 
-    struct IndexFlags {
+    union IndexFlags {
         _IndexFlags     s;
         byte            data;
     };
