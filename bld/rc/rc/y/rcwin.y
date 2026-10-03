@@ -1314,9 +1314,6 @@ fontweight
 
 fontitalic
     : constant-expression
-        /*
-         * the value stored is boolean and must be 1 or 0 
-         */
         { $$ = (uint_8)( $1.Value != 0 ); }
     ;
 
