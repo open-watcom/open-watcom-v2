@@ -372,14 +372,12 @@ type-id
 
 includeres-statement
     : Y_INCLUDERES file-name
-        {
-            SemWINAddResFile( $2.string );
-        }
+        { SemWINAddResFile( $2.string ); }
     ;
 
 pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
-      { SemWINSetDefaultCodepage( $4.Value ); }
+        { SemWINSetDefaultCodepage( $4.Value ); }
     ;
 
 keyword-name
@@ -601,9 +599,7 @@ file-name
 
 user-defined-resource
     : name-id comma-opt user-defined-type-id resource-options-mdp user-defined-data
-        {
-            SemAddResourceAndFree( $1, $3, $4, $5 );
-        }
+        { SemAddResourceAndFree( $1, $3, $4, $5 ); }
     ;
 
 user-defined-type-id
@@ -622,9 +618,9 @@ user-defined-data
 
 raw-data-section
     : Y_BEGIN raw-data-items Y_END
-       { $$ = $2; }
+        { $$ = $2; }
     | Y_LBRACE raw-data-items Y_RBRACE
-       { $$ = $2; }
+        { $$ = $2; }
     ;
 
 raw-data-items
@@ -652,34 +648,24 @@ raw-data-item
 
 rcdata-resource
     : name-id Y_RCDATA resource-options-mp opt-resource-info-stmts user-defined-data
-        {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3, $5 );
-        }
+        { SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3, $5 ); }
     ;
 
 string-table-resource
     : Y_STRINGTABLE resource-options-mdp opt-resource-info-stmts string-section
-        {
-            SemWINMergeStrTable( $4, $2 );
-        }
+        { SemWINMergeStrTable( $4, $2 ); }
     ;
 
 toolbar-resource
     : name-id Y_TOOLBAR resource-options-mp constant-expression comma-opt constant-expression toolbar-block
-        {
-            SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3 );
-        }
+        { SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3 ); }
     ;
 
 toolbar-block
     : Y_BEGIN toolbar-items Y_END
-        {
-            $$ = $2;
-        }
+        { $$ = $2; }
     | Y_LBRACE toolbar-items Y_RBRACE
-        {
-            $$ = $2;
-        }
+        { $$ = $2; }
     ;
 
 toolbar-items
@@ -697,28 +683,20 @@ toolbar-items
 
 toolbar-item
     : Y_BUTTON constant-expression
-        {
-            $$ = (uint_16)$2.Value;
-        }
+        { $$ = (uint_16)$2.Value; }
     | Y_SEPARATOR
-        {
-            $$ = 0;
-        }
+        { $$ = 0; }
     ;
 
 message-table-resource
     : name-id Y_MESSAGETABLE file-name
-        {
-            SemWINAddMessageTable( $1, &$3 );
-        }
+        { SemWINAddMessageTable( $1, &$3 ); }
     ;
 
 
 error-table-resource
     : Y_ERRTABLE resource-options-mdp opt-resource-info-stmts string-section
-        {
-            SemWINMergeErrTable( $4, $2 );
-        }
+        { SemWINMergeErrTable( $4, $2 ); }
     ;
 
 string-section
@@ -753,9 +731,7 @@ string-id
 
 accelerators-resource
     : name-id Y_ACCELERATORS resource-options-mp opt-resource-info-stmts acc-section
-        {
-            SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3, $5 );
-        }
+        { SemAddResourceAndFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ), $3, $5 ); }
     ;
 
 acc-section
@@ -840,16 +816,12 @@ acc-item-option
 
 menuex-resource
     : name-id Y_MENU_EX resource-options-mdp menu-section
-        {
-            SemWINWriteMenu( $1, $3, $4, Y_MENU_EX );
-        }
+        { SemWINWriteMenu( $1, $3, $4, Y_MENU_EX ); }
     ;
 
 menu-resource
     : name-id Y_MENU resource-options-mdp opt-resource-info-stmts menu-section
-        {
-            SemWINWriteMenu( $1, $3, $5, Y_MENU );
-        }
+        { SemWINWriteMenu( $1, $3, $5, Y_MENU ); }
     ;
 
 menu-section
@@ -868,22 +840,22 @@ menu-items
 
 menuId
     : constant-expression
-      { $$ = (uint_16)$1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 menuType
     : constant-expression
-      { $$ = $1.Value; }
+        { $$ = $1.Value; }
     ;
 
 menuState
     : constant-expression
-      { $$ = $1.Value; }
+        { $$ = $1.Value; }
     ;
 
 helpId
     : constant-expression
-      { $$ = $1.Value; }
+        { $$ = $1.Value; }
     ;
 
 menu-item
@@ -1089,9 +1061,7 @@ menu-item-option
 
 language-resource
     : language-stmt
-        {
-            SemWINSetGlobalLanguage( &$1 );
-        }
+        { SemWINSetGlobalLanguage( &$1 ); }
     ;
 
 opt-resource-info-stmts
@@ -1106,9 +1076,7 @@ resource-info-stmts
 
 resource-info-stmt
     : language-stmt
-        {
-            SemWINSetResourceLanguage( &$1, true );
-        }
+        { SemWINSetResourceLanguage( &$1, true ); }
     | characteristics-stmt
     | version-stmt
     ;
@@ -1143,18 +1111,14 @@ helpId-opt
     ;
 
 dlg-resource
-	: name-id dialog-or-dialogEx resource-options-mdp comma-opt
-			size-info helpId-opt diag-options-section diag-control-section
-		{
-			SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, $2 );
-		}
-	| name-id dialog-or-dialogEx resource-options-mdp comma-opt
-			exstyle-equal-stmt size-info helpId-opt
-			diag-options-section diag-control-section
-		{
-			SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, $2 );
-		}
-	;
+    : name-id dialog-or-dialogEx resource-options-mdp comma-opt
+            size-info helpId-opt diag-options-section diag-control-section
+        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, $2 ); }
+    | name-id dialog-or-dialogEx resource-options-mdp comma-opt
+            exstyle-equal-stmt size-info helpId-opt
+            diag-options-section diag-control-section
+        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, $2 ); }
+    ;
 
 size-info
     : size-x comma-opt size-y comma-opt size-w comma-opt size-h
@@ -1340,22 +1304,20 @@ font-stmt
 
 fontcharset
     : constant-expression
-      { $$ = $1.Value & 0xFF; }
+        { $$ = $1.Value & 0xFF; }
     ;
 
 fontweight
     : constant-expression
-      { $$ = (uint_16)$1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 fontitalic
     : constant-expression
-      {
-          /*
-           * the value stored is boolean and must be 1 or 0 
-           */
-          $$ = (uint_8)( $1.Value != 0 );
-      }
+        /*
+         * the value stored is boolean and must be 1 or 0 
+         */
+        { $$ = (uint_8)( $1.Value != 0 ); }
     ;
 
 point-size
@@ -1369,9 +1331,7 @@ typeface
 
 diag-control-section
     : Y_BEGIN diag-control-stmts Y_END
-        {
-            $$ = $2;
-        }
+        { $$ = $2; }
     | Y_LBRACE diag-control-stmts Y_RBRACE
         { $$ = $2; }
     | Y_BEGIN Y_END
@@ -1383,7 +1343,7 @@ diag-control-section
 diag-data-elements
     : raw-data-section
     | /* Nothing */
-      { $$ = NULL; }
+        { $$ = NULL; }
     ;
 
 diag-control-stmts
@@ -1614,15 +1574,11 @@ scrollbar-stmt
 control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
-        {
-            $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL );
-        }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL ); }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info comma-opt exstyle helpId-opt
-        {
-            $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) );
-        }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) ); }
     ;
 
 cntl-text
@@ -1631,9 +1587,7 @@ cntl-text
 
 version-info-resource
     : name-id Y_VERSIONINFO resource-options-mp fixed-ver-section variable-ver-section
-        {
-            SemWINWriteVerInfo( $1, $3, $4, $5 );
-        }
+        { SemWINWriteVerInfo( $1, $3, $4, $5 ); }
     ;
 
 fixed-ver-section
@@ -1799,9 +1753,7 @@ value-string-list
 string-constant
     : Y_STRING
     | Y_LSQ_BRACKET string-group Y_RSQ_BRACKET
-        {
-            $$ = $2;
-        }
+        { $$ = $2; }
     ;
 
 string-group

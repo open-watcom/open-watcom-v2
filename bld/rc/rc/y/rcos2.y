@@ -675,9 +675,7 @@ file-name
 
 user-defined-resource
     : Y_RESOURCE type-id comma-opt name-id resource-options-mdp resource-codepage user-defined-data
-        {
-            SemAddResourceAndFree( $4, $2, $5, $7 );
-        }
+        { SemAddResourceAndFree( $4, $2, $5, $7 ); }
     ;
 
 user-defined-data
@@ -773,9 +771,7 @@ rc-data
 
 rcdata-resource
     : Y_RCDATA name-id resource-options-mdp resource-codepage rc-data
-        {
-            SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3, $5 );
-        }
+        { SemAddResourceAndFree( $2, WResIDFromNum( OS2_RT_RCDATA ), $3, $5 ); }
     ;
 
 presparam-list
@@ -801,16 +797,12 @@ presparam-name
 
 string-table-resource
     : Y_STRINGTABLE resource-options-mdp resource-codepage string-section
-        {
-            SemOS2MergeStrTable( $4, $2, $3 );
-        }
+        { SemOS2MergeStrTable( $4, $2, $3 ); }
     ;
 
 message-table-resource
     : Y_MESSAGETABLE resource-options-mdp resource-codepage string-section
-        {
-            SemOS2MergeMsgTable( $4, $2, $3 );
-        }
+        { SemOS2MergeMsgTable( $4, $2, $3 ); }
     ;
 
 string-section
@@ -850,9 +842,7 @@ id-value
 
 help-table-resource
     : Y_HELPTABLE name-id help-table-section
-        {
-            SemOS2WriteHelpTable( $2, DEFAULT_FLAGS_MDP, $3 );
-        }
+        { SemOS2WriteHelpTable( $2, DEFAULT_FLAGS_MDP, $3 ); }
     ;
 
 help-table-section
@@ -876,13 +866,9 @@ help-item
 
 help-subtable-resource
     : Y_HELPSUBTABLE name-id help-subtable-section
-        {
-            SemOS2WriteHelpSubTable( $2, 2, DEFAULT_FLAGS_MDP, $3 );
-        }
+        { SemOS2WriteHelpSubTable( $2, 2, DEFAULT_FLAGS_MDP, $3 ); }
     | Y_HELPSUBTABLE name-id Y_SUBITEMSIZE constant-expression help-subtable-section
-        {
-            SemOS2WriteHelpSubTable( $2, $4.Value, DEFAULT_FLAGS_MDP, $5 );
-        }
+        { SemOS2WriteHelpSubTable( $2, $4.Value, DEFAULT_FLAGS_MDP, $5 ); }
     ;
 
 help-subtable-section
@@ -906,9 +892,7 @@ help-subitem
 
 accel-table-resource
     : Y_ACCELTABLE name-id resource-options-mp resource-codepage acc-section
-        {
-            SemOS2WriteAccelTable( $2, $3, $4, $5 );
-        }
+        { SemOS2WriteAccelTable( $2, $3, $4, $5 ); }
     ;
 
 acc-section
@@ -987,9 +971,7 @@ acc-item-option
 
 menu-resource
     : Y_MENU name-id resource-options-mdp resource-codepage menu-section
-        {
-            SemOS2WriteMenu( $2, $3, $5, Y_MENU, $4 );
-        }
+        { SemOS2WriteMenu( $2, $3, $5, Y_MENU, $4 ); }
     ;
 
 menu-section
@@ -1008,17 +990,17 @@ menu-items
 
 menu-id
     : constant-expression
-      { $$ = (uint_16)$1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 menuitem-style
     : constant-expression
-      { $$ = (uint_16)$1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 menuitem-attrib
     : constant-expression
-      { $$ = (uint_16)$1.Value; }
+        { $$ = (uint_16)$1.Value; }
     ;
 
 menu-item
@@ -1139,9 +1121,7 @@ dialogtemplate
 
 dlg-template
     : dialogtemplate name-id resource-options-mdp resource-codepage diag-control-section
-        {
-            SemOS2WriteDialogTemplate( $2, $3, $4, $5 );
-        }
+        { SemOS2WriteDialogTemplate( $2, $3, $4, $5 ); }
     ;
 
 size-info
@@ -1229,7 +1209,7 @@ diag-control-section
 diag-data-elements
     : control-data-section
     | /* Nothing */
-      { $$ = NULL; }
+        { $$ = NULL; }
     ;
 
 diag-control-stmts
@@ -1294,12 +1274,12 @@ cntl-options
 
 cntl-style
     : constant-expression
-      { $$ = $1; }
+        { $$ = $1; }
     ;
 
 frame-style
     : constant-expression
-      { $$ = $1; }
+        { $$ = $1; }
     ;
 
 cntl-id
@@ -1513,26 +1493,20 @@ dialog-stmt
             $$ = SemOS2SetWindowData( $2, mask, $3, NULL, $1 );
         }
     | dialog-or-frame cntl-text-options Y_COMMA frame-style presparam-list
-        {
-            $$ = SemOS2SetWindowData( $2, $4, $5, NULL, $1 );
-        }
+        { $$ = SemOS2SetWindowData( $2, $4, $5, NULL, $1 ); }
     | dialog-or-frame cntl-text-options presparam-list diag-control-section
         {
             IntMask mask = {0};
             $$ = SemOS2SetWindowData( $2, mask, $3, $4, $1 );
         }
     | dialog-or-frame cntl-text-options Y_COMMA frame-style presparam-list diag-control-section
-        {
-            $$ = SemOS2SetWindowData( $2, $4, $5, $6, $1 );
-        }
+        { $$ = SemOS2SetWindowData( $2, $4, $5, $6, $1 ); }
     ;
 
 string-constant
     : string-group
     | Y_LSQ_BRACKET string-group Y_RSQ_BRACKET
-        {
-            $$ = $2;
-        }
+        { $$ = $2; }
     ;
 
 string-group
