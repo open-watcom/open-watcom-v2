@@ -122,19 +122,6 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
 
 } /* SemOS2AddSingleLineResource */
 
-static RcStatus readFontInfo( FILE *fp, FontInfo *info, int *err_code )
-/*********************************************************************/
-{
-    size_t      numread;
-
-    numread = RESREAD( fp, info, sizeof( *info ) );
-    if( numread != sizeof( *info ) ) {
-        *err_code = errno;
-        return( RESIOERR( fp, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
-    }
-    return( RS_OK );
-}
-
 #define FONT_BUFFER_SIZE  0x1000
 
 static RcStatus copyFont( FontInfo *info, FILE *fp, WResID *res_id,
@@ -239,12 +226,6 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
     entry->Entry.Info = *info;
     memcpy( &(entry->Entry.DevAndFaceName[0]), devicename, devicelen );
     memcpy( &(entry->Entry.DevAndFaceName[devicelen]), facename, facelen );
-    /*
-     * set dfDevice and dfFace to be the offset of the strings from the start
-     * of the FontInfo structure (entry->Entry.Info)
-     */
-    entry->Entry.Info.dfDevice = sizeof( FontInfo );
-    entry->Entry.Info.dfFace = sizeof( FontInfo ) + devicelen;
 
     return( entry );
 }
@@ -285,9 +266,11 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
     if( fp == NULL)
         goto FILE_OPEN_ERROR;
 
-    ret = readFontInfo( fp, &info, &err_code );
-    if( ret != RS_OK)
+    if( ResReadFontInfo( &info, fp ) ) {
+        ret = LastWresStatus();
+        err_code = LastWresErr();
         goto READ_HEADER_ERROR;
+    }
 
     ret = copyFont( &info, fp, font_id, res_flags, &err_code );
     if( ret != RS_OK )

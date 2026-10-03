@@ -31,42 +31,17 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "layer0.h"
-#include "resfont.h"
+#include "filefmt.h"
 #include "reserr.h"
+#include "resraw.h"
 #include "wresrtns.h"
 
 
-bool ResReadFontInfo( FontInfo *info, FILE *fp )
-/**********************************************/
+bool ResWrite( const void *buffer, size_t len, FILE *fp )
+/*******************************************************/
 {
-    size_t      numread;
-
-    if( (numread = WRESREAD( fp, info, sizeof( FontInfo ) )) != sizeof( FontInfo ) )
-        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
-    return( false );
-}
-
-bool ResWriteFontInfo( FontInfo *info, FILE *fp )
-/***********************************************/
-{
-    if( WRESWRITE( fp, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
-    return( false );
-}
-
-bool ResWriteFontDirEntry( FontDirEntry *entry, FILE *fp )
-/********************************************************/
-{
-    /*
-     * set dfDevice and dfFace to be the offset of the strings from the start
-     * of the FontInfo structure (entry->Entry.Info)
-     */
-    entry->Info.dfDevice = sizeof( FontInfo );
-    entry->Info.dfFace = entry->Info.dfDevice + strlen( entry->DevAndFaceName ) + 1;
-
-    if( WRESWRITE( fp, &(entry->Info), entry->StructSize ) != entry->StructSize )
+    if( WRESWRITE( fp, buffer, len ) != len )
         return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -78,6 +79,7 @@ typedef struct FontDirEntry {
 /* DevAndFaceName to be output. It should be set to size of the FonDirEntry */
 /* including the char in DevAndFaceName but not StrucSize */
 
+extern bool ResReadFontInfo( FontInfo *info, FILE *fp );
 extern bool ResWriteFontInfo( FontInfo * info, FILE *fp );
 extern bool ResWriteFontDirEntry( FontDirEntry * entry, FILE *fp );
 /* this funtion expects the StructSize field to be set */

@@ -56,7 +56,8 @@ wres_more_objs = &
     resrmenu.obj &
     reswmenu.obj &
     resnamor.obj &
-    resraw.obj &
+    resrawr.obj &
+    resraww.obj &
     resstr.obj &
     restbar.obj &
     restell.obj &

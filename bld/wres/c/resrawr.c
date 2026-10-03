@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,13 @@
 #include "resraw.h"
 #include "wresrtns.h"
 
-bool ResWrite( const void *buffer, size_t len, FILE *fp )
-/*******************************************************/
+
+bool ResRead( void *buffer, size_t len, FILE *fp )
+/************************************************/
 {
-    if( WRESWRITE( fp, buffer, len ) != len )
-        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    size_t          numread;
+
+    if( (numread = WRESREAD( fp, buffer, len )) != len )
+        return( WRES_ERROR( WRESIOERR( fp, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
