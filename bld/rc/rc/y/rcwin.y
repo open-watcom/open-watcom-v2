@@ -670,15 +670,9 @@ toolbar-block
 
 toolbar-items
     : toolbar-item
-        {
-            $$ = SemWINCreateToolBar();
-            SemWINAddToolBarItem( $$, $1 );
-        }
+        { $$ = SemWINAddToolBarItem( NULL, $1 ); }
     | toolbar-items toolbar-item
-        {
-            $$ = $1;
-            SemWINAddToolBarItem( $$, $2 );
-        }
+        { $$ = SemWINAddToolBarItem( $1, $2 ); }
     ;
 
 toolbar-item
