@@ -75,6 +75,7 @@ typedef struct os2_exe_header {
     unsigned_16         swaparea;
     unsigned_16         expver;
 } os2_exe_header;
+#include "poppck.h"
 
 #define RAT_SIGNATURE_WORD          EXESIGN_LE
 #define OS2_SIGNATURE_WORD          EXESIGN_NE
@@ -216,6 +217,7 @@ typedef struct bundle_prefix {
                                         /*        segment nn                */
 } bundle_prefix;
 
+#include "pushpck1.h"
 typedef struct movable_record {
     unsigned_8          info;           /* flags: 1 = exported entry        */
                                         /*    2 = uses shared data segment  */
@@ -223,16 +225,19 @@ typedef struct movable_record {
     unsigned_8          entrynum;       /* segment # containing entry point */
     unsigned_16         entry;          /* offset of entry point            */
 } movable_record;
+#include "poppck.h"
 
 #define ENTRY_EXPORTED  0x01
 #define ENTRY_SHARED    0x02
 #define IOPL_WORD_SHIFT 3
 
+#include "pushpck1.h"
 typedef struct fixed_record {
     unsigned_8          info;           /* flags: 1 = exported entry        */
                                         /*    2 = uses shared data segment  */
     unsigned_16         entry;          /* offset of entry point            */
 } fixed_record;
+#include "poppck.h"
 
 #define OS2_DEF_SEGMENT_SHIFT  9
 
@@ -257,7 +262,6 @@ typedef struct resource_record {
     unsigned_16         res_id;
     unsigned_32         reserved;
 } resource_record;
-#include "poppck.h"
 
 /* resource flags are any combination of SEG_MOVABLE, SEG_PURE, SEG_PRELOAD, */
 /* and SEG_DISCARD */
