@@ -352,7 +352,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 }
 
 static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
-                            WResID *name, unsigned_16 flags,
+                            WResID *name, ResMemFlags res_flags,
                       unsigned_16 exe_offset, unsigned_16 exe_length )
 /********************************************************************/
 {
@@ -361,7 +361,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res = MemAllocSafe( sizeof( FullResourceRecord ) );
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
-    exe_res->Info.flags = flags;
+    exe_res->Info.flags = (unsigned_16)res_flags;
     exe_res->Info.reserved = 0;
     exe_res->Info.res_id = findResIdName( restab, name );
     exe_res->Next = NULL;
@@ -473,7 +473,7 @@ static void WriteOS2Resources( FILE *res_fp, WResDir inRes, ResTable *outRes )
         }
         res = WResGetResInfo( wind );
         addExeResRecord( outRes, exe_type, &(res->ResName),
-                        (unsigned_16)langinfo->res_flags, outRes_off,
+                        langinfo->res_flags, outRes_off,
                         (langinfo->Length + align - 1) >> shift_count );
         QSeek( FP2POSIX( res_fp ), langinfo->Offset, FmtData.resource );
         CopyResData( res_fp, langinfo->Length );
