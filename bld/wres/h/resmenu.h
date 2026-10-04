@@ -34,23 +34,47 @@
 #ifndef RESMENU_INCLUDED
 #define RESMENU_INCLUDED
 
-typedef uint_16             MenuFlags;
-#define MENU_GRAYED         0x0001
-#define MENU_INACTIVE       0x0002
-#define MENU_BITMAP         0x0004
-#define MENU_CHECKED        0x0008
-#define MENU_POPUP          0x0010
-#define MENU_MENUBARBREAK   0x0020
-#define MENU_MENUBREAK      0x0040
-#define MENU_ENDMENU        0x0080
-#define MENU_OWNERDRAWN     0x0100
-#define MENU_SEPARATOR      0x0800
-#define MENU_HELP           0x4000
-
-#define MENUEX_POPUP        0x0001
-#define MENUEX_SEPARATOR    0x0800
 
 #define MENUEX_VERSION_SIG  0x0001
+
+#define MENU_LAST_ITEM      0x80
+
+typedef enum MenuFlags {
+    MENU_GRAYED         = 0x0001,
+    MENU_INACTIVE       = 0x0002,
+    MENU_BITMAP         = 0x0004,
+    MENU_CHECKED        = 0x0008,
+    MENU_POPUP          = 0x0010,
+    MENU_MENUBARBREAK   = 0x0020,
+    MENU_MENUBREAK      = 0x0040,
+    MENU_OWNERDRAWN     = 0x0100,
+    MENU_SEPARATOR      = 0x0800,
+    MENU_HELP           = 0x4000,
+} MenuFlags;
+
+typedef enum MenuExFlags {
+    MENUEX_POPUP        = 0x0001,
+} MenuExFlags;
+
+typedef enum MenuExTypeFlags {
+    MENUEX_TYPE_STRING          = 0x00000000,
+    MENUEX_TYPE_BITMAP          = 0x00000004,
+    MENUEX_TYPE_MENUBARBREAK    = 0x00000020,
+    MENUEX_TYPE_MENUBREAK       = 0x00000040,
+    MENUEX_TYPE_OWNERDRAW       = 0x00000100,
+    MENUEX_TYPE_RADIOCHECK      = 0x00000200,
+    MENUEX_TYPE_SEPARATOR       = 0x00000800,
+    MENUEX_TYPE_RIGHTORDER      = 0x00002000,
+    MENUEX_TYPE_RIGHTJUSTIFY    = 0x00004000
+} MenuExTypeFlags;
+
+typedef enum MenuExStateFlags {
+    MENUEX_STATE_GRAYED     = 0x00000003,
+    MENUEX_STATE_DISABLED   = 0x00000003,
+    MENUEX_STATE_CHECKED    = 0x00000008,
+    MENUEX_STATE_HILITE     = 0x00000080,
+    MENUEX_STATE_DEFAULT    = 0x00001000
+} MenuExStateFlags;
 
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */

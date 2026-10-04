@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -129,12 +130,12 @@ bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
             if( item->IsPopup ) {
                 depth++;
                 PrintPopupItem( &(item->Item.Popup) );
-                if (item->Item.Popup.ItemFlags & MENU_ENDMENU) {
+                if (item->Item.Popup.ItemFlags & MENU_LAST_ITEM) {
                     depth--;
                 }
             } else {
                 PrintNormalItem( &(item->Item.Normal) );
-                if (item->Item.Normal.ItemFlags & MENU_ENDMENU) {
+                if (item->Item.Normal.ItemFlags & MENU_LAST_ITEM) {
                     depth--;
                 }
             }

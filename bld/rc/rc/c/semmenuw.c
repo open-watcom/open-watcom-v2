@@ -173,7 +173,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
     if( item->IsPopup ) {
         SemCheckMenuItemPopup( item, tokentype );
         if( islastitem ) {
-            item->item.popup.item.menuData.ItemFlags |= MENU_ENDMENU;
+            item->item.popup.item.menuData.ItemFlags |= MENU_LAST_ITEM;
         }
         if( tokentype == Y_MENU ) {
             if( CmdLineParms.winver < 30 ) {
@@ -191,7 +191,7 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
     } else {
         SemCheckMenuItemNormal( item, tokentype );
         if( islastitem ) {
-            item->item.normal.menuData.ItemFlags |= MENU_ENDMENU;
+            item->item.normal.menuData.ItemFlags |= MENU_LAST_ITEM;
         }
         if( tokentype == Y_MENU ) {
             if( CmdLineParms.winver < 30 ) {

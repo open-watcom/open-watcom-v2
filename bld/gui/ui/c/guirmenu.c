@@ -139,7 +139,7 @@ static bool WMakeMenuEntry( GUIRMenuEntry *parent, GUIRMenuEntry **entry )
             if( (*current)->item->IsPopup ) {
                 ok = WMakeMenuEntry( *current, &((*current)->child) );
             }
-            if( (*current)->item->Item.Normal.ItemFlags & MENU_ENDMENU ) {
+            if( (*current)->item->Item.Normal.ItemFlags & MENU_LAST_ITEM ) {
                 break;
             }
             prev = *current;

@@ -953,7 +953,7 @@ menu-entry-defn
             $$.menuData.ItemText = NULL;
             $$.menuData.ItemID = 0;
             $$.menuData.ItemFlags = 0;
-            $$.menuExData.ItemType = MENUEX_SEPARATOR;
+            $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
         }
     | menu-text comma-opt

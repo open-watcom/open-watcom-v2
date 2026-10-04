@@ -317,7 +317,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
             ok = symbol && stricmp( entry->symbol, symbol );
             if( !ok ) {
                 iflags = entry->item->Item.Popup.ItemFlags;
-                iflags &= ~MENU_ENDMENU;
+                iflags &= ~MENU_LAST_ITEM;
                 ok = (iflags != flags);
                 if( !ok ) {
                     if( flags & MENU_POPUP ) {
