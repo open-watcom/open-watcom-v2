@@ -150,7 +150,7 @@ int WRAPI WRMemValidate( void *ptr, _trmem_who who )
     if( TrHdl != _TRMEM_HDL_NONE ) {
         return( _trmem_validate( ptr, who, TrHdl ) );
     } else {
-        return( TRUE );
+        return( 1 );
     }
 }
 
@@ -159,7 +159,7 @@ int WRAPI WRMemChkRange( void *start, size_t len, _trmem_who who )
     if( TrHdl != _TRMEM_HDL_NONE ) {
         return( _trmem_chk_range( start, len, who, TrHdl ) );
     } else {
-        return( TRUE );
+        return( 1 );
     }
 }
 

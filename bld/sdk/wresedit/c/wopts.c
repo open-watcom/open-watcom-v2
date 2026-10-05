@@ -175,7 +175,7 @@ bool WWriteRectOpt( char *entry, RECT *r )
     char    *str;
     bool    ret;
 
-    ret = FALSE;
+    ret = false;
     str = WRectToStr( r );
     if( str != NULL ) {
         ret = WritePrivateProfileString( WSectionName, entry, str, WProfileName ) != 0;
@@ -194,9 +194,9 @@ bool WGetRectOpt( char *entry, RECT *r )
                                    str, 40, WProfileName ) != 0;
     if( ret && strcmp( "0, 0, 0, 0", str ) ) {
         WStrToRect( str, r );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

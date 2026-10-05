@@ -67,7 +67,7 @@ bool WInsertNew( WMenuEditInfo *einfo )
 {
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     if( einfo != NULL && einfo->edit_dlg != (HWND)NULL ) {
         if( IsDlgButtonChecked( einfo->edit_dlg, IDM_MENUEDPOPUP ) ) {
@@ -123,7 +123,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
 
     entry = NULL;
     parent = NULL;
-    is_popup = FALSE;
+    is_popup = false;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && new != NULL);
 
@@ -132,7 +132,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
         insert_subitems = insert_before || einfo->insert_subitems;
         new_kids = WCountMenuChildren( new->child );
         if( new_kids == 0 ) {
-            reset_lbox = FALSE;
+            reset_lbox = false;
         }
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
         ok = (lbox != NULL);
@@ -156,7 +156,7 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
         if( entry != NULL ) {
             pos += 1;
             if( entry->item->IsPopup ) {
-                insert_subitems = TRUE;
+                insert_subitems = true;
             }
             if( !insert_subitems ) {
                 pos += WCountMenuChildren( entry->child );

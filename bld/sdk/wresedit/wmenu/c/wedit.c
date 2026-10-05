@@ -263,10 +263,10 @@ static bool WQueryNukePopup( WMenuEditInfo *einfo )
     }
 
     if( ret == IDYES ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
@@ -285,7 +285,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     symbol = NULL;
 
     if( reset ) {
-        *reset = FALSE;
+        *reset = false;
     }
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
@@ -348,7 +348,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         if( entry->item->IsPopup ) {
             if( (flags & MENU_POPUP) == 0 ) {
                 if( reset ) {
-                    *reset = TRUE;
+                    *reset = true;
                 }
                 entry->preview_popup = (HMENU)NULL;
                 if( entry->child != NULL ) {
@@ -364,7 +364,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
             // or separator then reset the preview
             if( (flags & MENU_POPUP) != 0 || (flags & MENU_SEPARATOR) != 0 ) {
                 if( reset ) {
-                    *reset = TRUE;
+                    *reset = true;
                 }
                 entry->preview_popup = (HMENU)NULL;
             }
@@ -807,10 +807,10 @@ static bool WQueryChangeEntry( WMenuEditInfo *einfo )
     }
 
     if( ret == IDYES ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
@@ -825,7 +825,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
         return;
     }
 
-    reinit = FALSE;
+    reinit = false;
 
     lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
     if( lbox == (HWND)NULL ) {
@@ -897,7 +897,7 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     bool        entry_removed;
     bool        ok;
 
-    entry_removed = FALSE;
+    entry_removed = false;
 
     ok = ( einfo != NULL && einfo->edit_dlg != NULL );
 
@@ -921,7 +921,7 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
         prev = entry->prev;
         ok = WRemoveMenuEntry( einfo->menu, entry );
         if( ok ) {
-            entry_removed = TRUE;
+            entry_removed = true;
         }
     }
 

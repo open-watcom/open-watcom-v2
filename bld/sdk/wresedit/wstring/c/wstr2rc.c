@@ -78,18 +78,18 @@ static bool WWriteStringBlock( WStringBlock *block, FILE *fp )
     int         i;
 
     if( block == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
         if( block->block.String[i] != NULL ) {
             if( !WWriteStringEntry( block, (block->blocknum & 0xfff0) + i, fp ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WWriteStringToRC( WStringEditInfo *einfo, char *file, bool append )

@@ -636,7 +636,7 @@ bool WCreateEditWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 
     SetFocus( einfo->edit_dlg );
 
-    return( TRUE );
+    return( true );
 }
 
 WMenuEditInfo *WGetCurrentEditInfo( void )
@@ -1105,11 +1105,11 @@ bool WQuerySaveRes( WMenuEditInfo *einfo, bool force_exit )
                 SendMessage( einfo->info->parent, MENU_PLEASE_SAVEME, 0, (LPARAM)einfo->hndl );
             }
         } else if( ret == IDCANCEL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
@@ -1120,11 +1120,11 @@ bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
     char        *text;
 
     if( einfo == NULL || !einfo->info->stand_alone ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !WRIsHashTableDirty( einfo->info->symbol_table ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( force_exit ) {
@@ -1155,10 +1155,10 @@ bool WQuerySaveSym( WMenuEditInfo *einfo, bool force_exit )
         }
         return( WSaveSymbols( einfo->win, einfo->info->symbol_table, &einfo->info->symbol_file, false ) );
     } else if( ret == IDCANCEL ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WHandleWM_CLOSE( WMenuEditInfo *einfo, bool force_exit )
@@ -1210,11 +1210,11 @@ static bool WQueryClearRes( WMenuEditInfo *einfo )
             FreeRCString( title );
         }
         if( ret == IDYES ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WHandleClear( WMenuEditInfo *einfo )

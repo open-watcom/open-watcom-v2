@@ -176,7 +176,7 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     /* unused parameters */ (void)inst;
 
     if( symbol_table == NULL || *symbol_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
     flags = WR_HASHENTRY_ALL;
 #ifdef __WINDOWS__

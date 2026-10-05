@@ -61,7 +61,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
     size_t      tlen;
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tlen = 0;
@@ -75,13 +75,13 @@ static bool WSetFlagsText( uint_16 flags, char **text )
 
     *text = MemAlloc( tlen + 1 );
     if( *text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     (*text)[0] = '\0';
 
     if( tlen == 0 ) {
-        return( TRUE );
+        return( true );
     }
 
     for( i = 0; FlagItems[i].flagtext != NULL; i++ ) {
@@ -91,7 +91,7 @@ static bool WSetFlagsText( uint_16 flags, char **text )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
@@ -158,7 +158,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
 static bool WWriteDummyItem( FILE *fp, int depth )
 {
     if( fp == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( depth != 0 ) {
@@ -172,7 +172,7 @@ static bool WWriteDummyItem( FILE *fp, int depth )
     }
     fwrite( "END\n", sizeof( char ), 4, fp );
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -136,7 +136,7 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     char        *title;
 
     if( einfo == NULL || einfo->edit_dlg == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDTESTPOS );
@@ -159,7 +159,7 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
     }
 
     if( einfo->preview_window == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hsysmenu = GetSystemMenu( einfo->preview_window, FALSE );
@@ -172,7 +172,7 @@ bool WCreatePrevWindow( HINSTANCE inst, WMenuEditInfo *einfo )
 
     SendMessage( einfo->preview_window, WM_NCACTIVATE, TRUE, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
 void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
@@ -236,7 +236,7 @@ WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam,
     bool                pass_to_def;
     WMenuEditInfo       *einfo;
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     einfo = (WMenuEditInfo *)GET_WNDLONGPTR( hWnd, 0 );
 
@@ -246,7 +246,7 @@ WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam,
             //SetFocus( einfo->win );
             SendMessage( einfo->win, WM_NCACTIVATE, TRUE, 0 );
         }
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_MENUSELECT:
@@ -260,7 +260,7 @@ WINEXPORT LRESULT CALLBACK WPrevWndProc( HWND hWnd, UINT message, WPARAM wParam,
 
     case WM_CLOSE:
         ret = TRUE;
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
     }
 

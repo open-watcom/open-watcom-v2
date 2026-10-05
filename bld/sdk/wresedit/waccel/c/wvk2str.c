@@ -312,12 +312,12 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
 
     if( ok ) {
         *key = 0;
-        *force_ascii = FALSE;
+        *force_ascii = false;
         tkey = WGetVKeyFromStr( text );
         if( tkey != 0 ) {
             *flags |= ACCEL_VIRTKEY;
             *key = tkey;
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -326,14 +326,14 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
         if( text[i] == '"' ) {
             i++;
         }
-        is_cntl = FALSE;
+        is_cntl = false;
         if( text[i] == '^' ) {
             i++;
-            is_cntl = TRUE;
+            is_cntl = true;
         }
         tkey = text[i];
         if( is_cntl ) {
-            *force_ascii = TRUE;
+            *force_ascii = true;
             tkey = toupper( tkey );
             if( tkey >= '@' && tkey <= '_' ) {
                 tkey -= '@';
@@ -342,7 +342,7 @@ bool WGetKeyFromText( char *text, uint_16 *key, uint_16 *flags, bool *force_asci
             }
         } else {
             if( !isalnum( tkey ) ) {
-                *force_ascii = TRUE;
+                *force_ascii = true;
             } else {
                 if( (*flags & ACCEL_VIRTKEY) && islower( tkey ) ) {
                     tkey = toupper( tkey );

@@ -456,12 +456,12 @@ bool WGetFirstStringInBlock( WStringBlock *block, uint_16 *first )
         for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
             if( block->block.String[i] != NULL ) {
                 *first = (block->blocknum & 0xfff0) + i;
-                return( TRUE );
+                return( true );
             }
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static WStringBlock *WFindLargestBlock( WStringTable *tbl )
@@ -504,14 +504,14 @@ bool WResolveStringTable( WStringEditInfo *einfo )
     WStringBlock *block;
 
     if( einfo == NULL || einfo->tbl == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( block = einfo->tbl->first_block; block != NULL; block = block->next ) {
         WResolveStringTableBlock( block, einfo->info->symbol_table );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
@@ -520,7 +520,7 @@ bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
     int                 i;
 
     if( block == NULL || symbol_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
@@ -540,7 +540,7 @@ bool WResolveStringTableBlock( WStringBlock *block, WRHashTable *symbol_table )
         WRValueListFree( vlist );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock *block,
@@ -552,7 +552,7 @@ static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
     char        *text;
 
     if( symbol_table == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < STRTABLE_STRS_PER_BLOCK; i++ ) {
@@ -575,7 +575,7 @@ static bool WResolveStringTableBlockSymIDs( WStringEditInfo *einfo, WStringBlock
         MemFree( text );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
@@ -587,12 +587,12 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     HWND                lbox;
 
     if( einfo == NULL || einfo->tbl == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     new_tbl = WAllocStringTable( einfo->tbl->is32bit );
     if( new_tbl == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     old_tbl = einfo->tbl;
@@ -605,7 +605,7 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
     if( new_tbl->first_block == NULL ) {
         WFreeStringTable( new_tbl );
         einfo->tbl = old_tbl;
-        return( FALSE );
+        return( false );
     }
 
     WFreeStringTable( old_tbl );
@@ -630,5 +630,5 @@ bool WResolveStringTableSymIDs( WStringEditInfo *einfo )
 
     SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
 
-    return( TRUE );
+    return( true );
 }

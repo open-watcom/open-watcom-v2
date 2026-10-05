@@ -676,10 +676,10 @@ static bool WQueryChangeEntry( WStringEditInfo *einfo )
     }
 
     if( ret == IDYES ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
@@ -695,7 +695,7 @@ void WDoHandleSelChange( WStringEditInfo *einfo, bool change, bool reset )
     bool                bdel;
     bool                replace;
 
-    mod = FALSE;
+    mod = false;
     block = NULL;
     text = NULL;
     symbol = NULL;

@@ -190,9 +190,9 @@ char *WGetStrFromEdit( HWND edit, bool *mod )
     if( mod != NULL ) {
         /* find out if the edit field has changed */
         if( SendMessage( edit, EM_GETMODIFY, 0, 0 ) ) {
-            *mod = TRUE;
+            *mod = true;
         } else {
-            *mod = FALSE;
+            *mod = false;
         }
     }
 
@@ -264,7 +264,7 @@ int_32 WGetSINT32FromEdit( HWND edit, bool *mod )
         val = (int_32)strtol( cp, &ep, 0 );
         if( *ep != '\0' ) {
             if( mod != NULL ) {
-                *mod = FALSE;
+                *mod = false;
             }
             val = 0;
         }

@@ -171,7 +171,7 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
         return;
     }
 
-    is_virt = TRUE;
+    is_virt = true;
     key = einfo->key_info.key;
     skey = WMapShiftedKeyToKey( key );
     GetKeyboardState( kbstate );
@@ -196,7 +196,7 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
                     }
                 }
                 str = WGetASCIIKeyText( key );
-                is_virt = FALSE;
+                is_virt = false;
             }
         } else if( isdigit( key ) ) {
             if( alt || cntl ) {
@@ -206,7 +206,7 @@ void WSetKey( WAccelEditInfo *einfo, BYTE scan_code )
                     key = WMapKeyToShiftedKey( key );
                 }
                 str = WGetASCIIKeyText( key );
-                is_virt = FALSE;
+                is_virt = false;
             }
         } else if( isdigit( skey ) ) {
             str = WGetASCIIVKText( skey );

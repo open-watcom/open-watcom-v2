@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -161,7 +161,7 @@ bool WCreateRibbon( WAccelEditInfo *einfo )
     WToolBarInfo        *rinfo;
 
     if( einfo == NULL || einfo->win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     rinfo = WRibbonInfo;
@@ -170,7 +170,7 @@ bool WCreateRibbon( WAccelEditInfo *einfo )
     }
 
     if( rinfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( einfo->win, &r );
@@ -181,9 +181,9 @@ bool WCreateRibbon( WAccelEditInfo *einfo )
 
     if( einfo->ribbon != NULL ) {
         einfo->show_ribbon = TRUE;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -191,13 +191,13 @@ bool WResizeRibbon( WAccelEditInfo *einfo, RECT *prect )
 {
     if( einfo == NULL || einfo->ribbon == NULL || !einfo->show_ribbon || prect == NULL ||
         einfo->ribbon->win == (HWND)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     MoveWindow( einfo->ribbon->win, 0, 0, prect->right - prect->left,
                 WRibbonHeight, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 void WShowRibbon( WAccelEditInfo *einfo, HMENU hmenu )
@@ -283,7 +283,7 @@ bool WInitRibbons( HINSTANCE inst )
     WSORibbonInfo = WAllocToolBarInfo( NUM_SOTOOLS );
 
     if( WRibbonInfo == NULL || WSORibbonInfo == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < NUM_TOOLS; i++ ) {
@@ -356,5 +356,5 @@ bool WInitRibbons( HINSTANCE inst )
     WRibbonInfo->dinfo.area.bottom = WRibbonHeight;
     WSORibbonInfo->dinfo.area.bottom = WRibbonHeight;
 
-    return( TRUE );
+    return( true );
 }
