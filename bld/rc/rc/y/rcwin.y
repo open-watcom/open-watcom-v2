@@ -810,12 +810,12 @@ acc-item-option
 
 menuex-resource
     : name-id Y_MENU_EX resource-options-mdp menu-section
-        { SemWINWriteMenu( $1, $3, $4, Y_MENU_EX ); }
+        { SemWINWriteMenu( $1, $3, $4, true ); }
     ;
 
 menu-resource
     : name-id Y_MENU resource-options-mdp opt-resource-info-stmts menu-section
-        { SemWINWriteMenu( $1, $3, $5, Y_MENU ); }
+        { SemWINWriteMenu( $1, $3, $5, false ); }
     ;
 
 menu-section

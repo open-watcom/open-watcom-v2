@@ -104,14 +104,6 @@ typedef struct MenuExItemNormal {
     uint_32         ItemState;
 } MenuExItemNormal;
 
-typedef struct MenuItem {
-    uint_8          IsPopup;
-    union {
-        MenuItemNormal  Normal;
-        MenuItemPopup   Popup;
-    } Item;
-} MenuItem;
-
 typedef struct MenuExItemNormalData {
     MenuItemNormal      Normal;
     MenuExItemNormal    ExData;
@@ -122,13 +114,16 @@ typedef struct MenuExItemPopupData {
     MenuExItemPopup     ExData;
 } MenuExItemPopupData;
 
-typedef struct MenuExItem {
-    uint_8        IsPopup;
+typedef struct MenuItem {
+    uint_8          IsEx    :1;
+    uint_8          IsPopup :1;
     union {
+        MenuItemNormal          Normal;
+        MenuItemPopup           Popup;
         MenuExItemNormalData    ExNormal;
         MenuExItemPopupData     ExPopup;
     } Item;
-} MenuExItem;
+} MenuItem;
 
 /* reswmenu.c */
 
@@ -148,7 +143,7 @@ extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExIt
 extern bool     ResReadMenuHeader( MenuHeader *head, FILE *fp );
 extern bool     ResReadMenuItem( MenuItem *item, FILE *fp );
 extern bool     ResReadMenuItem32( MenuItem *item, FILE *fp );
-extern bool     ResReadMenuExItem( MenuExItem *item, FILE *fp );
+extern bool     ResReadMenuExItem( MenuItem *item, FILE *fp );
 extern bool     ResReadMenuExtraBytes( MenuHeader *header, char *buf, FILE *fp );
 extern bool     ResIsMenuEx( FILE *fp );
 extern bool     ResIsHeaderMenuEx( MenuHeader *hdr );

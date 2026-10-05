@@ -93,8 +93,8 @@ bool ResIsHeaderMenuEx( MenuHeader *hdr )
     return( hdr->Version == MENUEX_VERSION_SIG );
 }
 
-bool ResReadMenuExItem( MenuExItem *item, FILE *fp )
-/**************************************************/
+bool ResReadMenuExItem( MenuItem *item, FILE *fp )
+/************************************************/
 {
     bool               error;
     uint_32            type;
