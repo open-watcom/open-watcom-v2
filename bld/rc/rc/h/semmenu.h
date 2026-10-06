@@ -37,9 +37,6 @@
 
 /**** Constant Definitions ****/
 
-#define RES_HEADER_VERSION     1
-#define RES_HEADER_SIZE        4
-
 /**** Semantic structures ****/
 
 typedef enum MenuItemType {

@@ -297,25 +297,19 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu, boo
     ResLocation     loc;
     bool            error;
     int             err_code;
-    uint_8          headerdata[RES_HEADER_SIZE];
 
     error = false;
     if( !ErrorHasOccured ) {
+        memset( &head, 0, sizeof( head ) );
         if( is_menuex ) {
-            head.Version = RES_HEADER_VERSION;
-            head.Size = RES_HEADER_SIZE;
-            memset( headerdata, 0, head.Size );
+            head.Version = MENUEX_VERSION_SIG;
+            head.Size = sizeof( head.ExHelpID );
             ResWritePadDWord( CurrResFile.fp );
-            loc.start = SemStartResource();
-            error = ResWriteMenuExHeader( &head, headerdata, CurrResFile.fp );
-        } else {
-            head.Version = 0;    /* currently these fields are both 0 */
-            head.Size = 0;
-            loc.start = SemStartResource();
-            /* Windows 2.x menus do not have a header */
-            if( CmdLineParms.winver > 20 ) {
-                error = ResWriteMenuHeader( &head, CurrResFile.fp );
-            }
+        }
+        loc.start = SemStartResource();
+        /* Windows 2.x menus do not have a header */
+        if( CmdLineParms.winver > 20 ) {
+            error = ResWriteMenuHeader( &head, CurrResFile.fp );
         }
         if( error ) {
             err_code = LastWresErr();
@@ -342,3 +336,4 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu, boo
     }
     SemFreeSubMenu( menu );
 }
+

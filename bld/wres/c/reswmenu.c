@@ -40,6 +40,7 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
+
 bool ResWriteMenuHeader( MenuHeader *head, FILE *fp )
 /*******************************************************/
 {
@@ -47,16 +48,10 @@ bool ResWriteMenuHeader( MenuHeader *head, FILE *fp )
         return( true );
     if( ResWriteUint16( fp, head->Size ) )
         return( true );
-    return( false );
-}
-
-bool ResWriteMenuExHeader( MenuHeader *head, uint_8 *headerdata, FILE *fp )
-/*************************************************************************/
-{
-    if( ResWriteMenuHeader( head, fp ) )
-        return( true );
-    if( headerdata != NULL ) {
-        return( ResWrite( headerdata, head->Size, fp ) );
+    if( IS_MENUEX( *head ) ) {
+        if( ResWriteUint32( fp, head->ExHelpID ) ) {
+            return( true );
+        }
     }
     return( false );
 }

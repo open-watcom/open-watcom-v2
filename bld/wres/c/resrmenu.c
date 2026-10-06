@@ -44,53 +44,28 @@ bool ResReadMenuHeader( MenuHeader *head, FILE *fp )
 /**************************************************/
 {
     bool            error;
+    long            offset;
 
     error = false;
     head->Version = ResReadUint16( &error, fp );
-    if( !error )
-        head->Size = ResReadUint16( &error, fp );
-    return( error );
-}
-
-bool ResReadMenuExtraBytes( MenuHeader *header, char *buf, FILE *fp )
-/*******************************************************************/
-{
-    unsigned        size;
-
-    size = header->Size;
-    if( buf != NULL ) {
-        if( WRESREAD( fp, buf, size ) != size ) {
+    if( error )
+        return( true );
+    offset = head->Size = ResReadUint16( &error, fp );
+    if( error )
+        return( true );
+    if( IS_MENUEX( *head ) ) {
+        head->ExHelpID = ResReadUint32( &error, fp );
+        if( error ) {
             return( true );
         }
-    } else {
-        WRESSEEK( fp, size, SEEK_CUR );
+        offset -= sizeof( uint_32 );
     }
-    return( false );
-}
-
-// NB: Anyone using this function will have to manually seek back after
-// calling ResIsMenuEx() (just as in ResIsDialogBoxEx()).
-// If you've already read the header, just call ResIsHeaderMenuEx().
-bool ResIsMenuEx( FILE *fp )
-/**************************/
-{
-    MenuHeader               header;
-    bool                     ret;
-
-    ret = ResReadMenuHeader( &header, fp );
-    if( !ret ) {
-        if( header.Version == MENUEX_VERSION_SIG ) {
+    if( offset ) {
+        if( WRESSEEK( fp, offset, SEEK_CUR ) ) {
             return( true );
         }
     }
-
     return( false );
-}
-
-bool ResIsHeaderMenuEx( MenuHeader *hdr )
-/***************************************/
-{
-    return( hdr->Version == MENUEX_VERSION_SIG );
 }
 
 bool ResReadMenuExItem( MenuItem *item, FILE *fp )
@@ -200,8 +175,8 @@ bool ResReadMenuItem32( MenuItem *item, FILE *fp )
     return( error );
 }
 
-MenuItem * ResNewMenuItem( void )
-/*******************************/
+MenuItem *ResNewMenuItem( void )
+/******************************/
 {
     MenuItem        *menuitem;
 
@@ -209,12 +184,8 @@ MenuItem * ResNewMenuItem( void )
     if( menuitem == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        menuitem->IsPopup = false;
-        menuitem->Item.Normal.ItemFlags = 0;
-        menuitem->Item.Normal.ItemID = 0;
-        menuitem->Item.Normal.ItemText = NULL;
+        memset( menuitem, 0, sizeof( MenuItem ) );
     }
-
     return( menuitem );
 }
 
@@ -233,3 +204,4 @@ void ResFreeMenuItem( MenuItem *menuitem )
 
     WRESFREE( menuitem );
 }
+
