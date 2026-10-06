@@ -59,28 +59,28 @@ typedef struct MenuItemPopupData {
     MenuExItemPopup         menuExData;
 } MenuItemPopupData;
 
-typedef struct FullMenu {
-    struct FullMenuItem     *head;
-    struct FullMenuItem     *tail;
-} FullMenu;
+typedef struct FullMenuWIN {
+    struct FullMenuItemWIN  *head;
+    struct FullMenuItemWIN  *tail;
+} FullMenuWIN;
 
-typedef FullMenu    *FullMenuPtr;
+typedef FullMenuWIN     *FullMenuPtrWIN;
 
 typedef struct FullMenuItemPopup {
     MenuItemPopupData       item;
-    FullMenuPtr             submenu;
+    FullMenuPtrWIN          submenu;
 } FullMenuItemPopup;
 
-typedef struct FullMenuItem {
-    struct FullMenuItem     *next;
-    struct FullMenuItem     *prev;
+typedef struct FullMenuItemWIN {
+    struct FullMenuItemWIN  *next;
+    struct FullMenuItemWIN  *prev;
     bool                    iswin32;
     bool                    IsPopup;
     union {
         FullMenuItemPopup   popup;
         MenuItemNormalData  normal;
     } item;
-} FullMenuItem;
+} FullMenuItemWIN;
 
 typedef struct FullMenuOS2 {
     struct FullMenuItemOS2  *head;

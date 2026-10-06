@@ -71,7 +71,7 @@ struct PopupMenuExItem {
 #include "rccore.h"
 
 
-static void SemFreeSubMenu( FullMenu *submenu );
+static void SemFreeSubMenu( FullMenuWIN *submenu );
 
 MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
 /********************************************************************/
@@ -111,18 +111,18 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
     return( oldflags );
 }
 
-FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
-/**********************************************************************/
+FullMenuWIN *SemWINAddMenuItem( FullMenuWIN *currmenu, FullMenuItemWIN curritem )
+/*******************************************************************************/
 {
-    FullMenuItem     *newitem;
+    FullMenuItemWIN *newitem;
 
     if( currmenu == NULL ) {
-        currmenu = MemAllocSafe( sizeof( FullMenu ) );
+        currmenu = MemAllocSafe( sizeof( FullMenuWIN ) );
         currmenu->head = NULL;
         currmenu->tail = NULL;
     }
 
-    newitem = MemAllocSafe( sizeof( FullMenuItem ) );
+    newitem = MemAllocSafe( sizeof( FullMenuItemWIN ) );
 
     *newitem = curritem;
 
@@ -131,8 +131,8 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     return( currmenu );
 }
 
-static void SemCheckMenuItemPopup( FullMenuItem *item, bool is_menuex )
-/*********************************************************************/
+static void SemCheckMenuItemPopup( FullMenuItemWIN *item, bool is_menuex )
+/************************************************************************/
 {
     if( is_menuex ) {
         item->item.popup.item.menuData.ItemFlags = MENUEX_POPUP;
@@ -146,8 +146,8 @@ static void SemCheckMenuItemPopup( FullMenuItem *item, bool is_menuex )
     }
 }
 
-static void SemCheckMenuItemNormal( FullMenuItem *item, bool is_menuex )
-/**********************************************************************/
+static void SemCheckMenuItemNormal( FullMenuItemWIN *item, bool is_menuex )
+/*************************************************************************/
 {
     if( is_menuex ) {
         if( item->item.normal.type == MT_MENU ) {
@@ -163,9 +163,9 @@ static void SemCheckMenuItemNormal( FullMenuItem *item, bool is_menuex )
     }
 }
 
-static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
+static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
                           int *err_code, bool is_menuex )
-/**************************************************************/
+/******************************************************************/
 {
     bool    error;
 
@@ -211,12 +211,12 @@ static bool SemWriteMenuItem( FullMenuItem *item, int islastitem,
     return( error );
 }
 
-static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, bool is_menuex )
-/*****************************************************************************/
+static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex )
+/********************************************************************************/
 {
     bool            error;
     int             islastitem;
-    FullMenuItem    *curritem;
+    FullMenuItemWIN *curritem;
 
     error = false;
 
@@ -241,14 +241,14 @@ static bool SemWriteSubMenu( FullMenu *submenu, int *err_code, bool is_menuex )
     return( error );
 }
 
-static void SemWarnIfSubmenus( FullMenu *submenu )
-/*************************************************
+static void SemWarnIfSubmenus( FullMenuWIN *submenu )
+/****************************************************
  * Windows 2.x does not support submenus, though submenus are parsed
  * correctly.  So it is valid to have top level MF_POPUP, but MF_POPUP
  * within the menus is ignored.
  */
 {
-    FullMenuItem *curritem,*currsubitem;
+    FullMenuItemWIN *curritem,*currsubitem;
 
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
         if( curritem->IsPopup ) {
@@ -261,8 +261,8 @@ static void SemWarnIfSubmenus( FullMenu *submenu )
     }
 }
 
-static void SemFreeMenuItem( FullMenuItem *curritem )
-/****************************************************/
+static void SemFreeMenuItem( FullMenuItemWIN *curritem )
+/******************************************************/
 {
     if( curritem->IsPopup ) {
         SemFreeSubMenu( curritem->item.popup.submenu );
@@ -276,11 +276,11 @@ static void SemFreeMenuItem( FullMenuItem *curritem )
     }
 }
 
-static void SemFreeSubMenu( FullMenu *submenu )
-/**********************************************/
+static void SemFreeSubMenu( FullMenuWIN *submenu )
+/************************************************/
 {
-    FullMenuItem   *curritem;
-    FullMenuItem   *nextitem;
+    FullMenuItemWIN *curritem;
+    FullMenuItemWIN *nextitem;
 
     for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
         nextitem = curritem->next;
@@ -290,8 +290,8 @@ static void SemFreeSubMenu( FullMenu *submenu )
     MemFree( submenu );
 }
 
-void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenu *menu, bool is_menuex )
-/*******************************************************************************************/
+void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, bool is_menuex )
+/**********************************************************************************************/
 {
     MenuHeader      head;
     ResLocation     loc;
