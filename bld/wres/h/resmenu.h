@@ -51,10 +51,12 @@ typedef enum MenuFlags {
     MENU_OWNERDRAWN     = 0x0100,
     MENU_SEPARATOR      = 0x0800,
     MENU_HELP           = 0x4000,
+    MENU_max_value      = 0xFFFFU
 } MenuFlags;
 
 typedef enum MenuExFlags {
     MENUEX_POPUP        = 0x0001,
+    MENUEX_max_value    = 0xFFFFU
 } MenuExFlags;
 
 typedef enum MenuExTypeFlags {
@@ -66,7 +68,8 @@ typedef enum MenuExTypeFlags {
     MENUEX_TYPE_RADIOCHECK      = 0x00000200,
     MENUEX_TYPE_SEPARATOR       = 0x00000800,
     MENUEX_TYPE_RIGHTORDER      = 0x00002000,
-    MENUEX_TYPE_RIGHTJUSTIFY    = 0x00004000
+    MENUEX_TYPE_RIGHTJUSTIFY    = 0x00004000,
+    MENUEX_TYPE_max_value       = 0xFFFFFFFFU
 } MenuExTypeFlags;
 
 typedef enum MenuExStateFlags {
@@ -74,13 +77,14 @@ typedef enum MenuExStateFlags {
     MENUEX_STATE_DISABLED   = 0x00000003,
     MENUEX_STATE_CHECKED    = 0x00000008,
     MENUEX_STATE_HILITE     = 0x00000080,
-    MENUEX_STATE_DEFAULT    = 0x00001000
+    MENUEX_STATE_DEFAULT    = 0x00001000,
+    MENUEX_STATE_max_value  = 0xFFFFFFFFU
 } MenuExStateFlags;
 
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */
     uint_16         Size;           /* currently 0 */
-    uint_32         ExHelpID;
+    unsigned        ExHelpID;
 } MenuHeader;
 
 typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */
@@ -89,21 +93,21 @@ typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */
 } MenuItemPopup;
 
 typedef struct MenuExItemPopup {
-    uint_32         ItemId;
-    uint_32         ItemType;
-    uint_32         ItemState;
-    uint_32         HelpId;
+    unsigned        ItemId;
+    unsigned        ItemType;
+    unsigned        ItemState;
+    unsigned        HelpId;
 } MenuExItemPopup;
 
 typedef struct MenuItemNormal {     /* if !(ItemFlags & MENU_POPUP) */
     MenuFlags       ItemFlags;
-    uint_32         ItemID;         /* Note! This was changed from uint_16!! */
+    unsigned        ItemID;         /* Note! This was changed from uint_16!! */
     char            *ItemText;
 } MenuItemNormal;
 
 typedef struct MenuExItemNormal {
-    uint_32         ItemType;
-    uint_32         ItemState;
+    unsigned        ItemType;
+    unsigned        ItemState;
 } MenuExItemNormal;
 
 typedef struct MenuExItemNormalData {
@@ -117,8 +121,9 @@ typedef struct MenuExItemPopupData {
 } MenuExItemPopupData;
 
 typedef struct MenuItem {
-    uint_8              IsEx    :1;
-    uint_8              IsPopup :1;
+    unsigned            IsEx     :1;
+    unsigned            IsPopup  :1;
+    unsigned            IsOldWin :1;
     union {
         MenuItemNormal          Normal;
         MenuItemPopup           Popup;
@@ -126,12 +131,12 @@ typedef struct MenuItem {
         MenuExItemPopupData     ExPopup;
     } Item;
     MenuFlags           flags;
-    uint_32             id;
+    unsigned            id;
     char                *text;
     MenuExTypeFlags     ExType;
     MenuExStateFlags    ExState;
     MenuExFlags         ExFlags;
-    uint_32             ExHelpID;
+    unsigned            ExHelpID;
 } MenuItem;
 
 /* reswmenu.c */
