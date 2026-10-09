@@ -225,7 +225,6 @@
 %type <diagopts>        diag-options-stmt
 %type <diagopts>        diag-version-stmt
 %type <diagopts>        diag-characteristics-stmt
-%type <token>           dialog-or-dialogEx
 %type <dataelem>        diag-data-elements
 %type <nameorord>       class-name
 %type <nameorord>       ctl-class-name
@@ -877,11 +876,11 @@ menu-popup-stmt
             $$.item.type = MT_EITHER;
             $$.item.menuData.ItemFlags = MENU_POPUP;
             $$.item.menuData.ItemText = $2.string;
-            $$.submenu = $4;
             $$.item.menuExData.ItemId = 0;
             $$.item.menuExData.ItemType = 0L;
             $$.item.menuExData.ItemState = 0L;
             $$.item.menuExData.HelpId = 0L;
+            $$.submenu = $4;
         }
 
     | Y_POPUP menu-text comma-opt menuId comma-opt menu-section comma-opt
@@ -889,11 +888,11 @@ menu-popup-stmt
             $$.item.type = MT_MENUEX;
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
-            $$.submenu = $6;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = 0L;
             $$.item.menuExData.ItemState = 0L;
             $$.item.menuExData.HelpId = 0L;
+            $$.submenu = $6;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
               menu-section comma-opt
@@ -901,11 +900,11 @@ menu-popup-stmt
             $$.item.type = MT_MENUEX;
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
-            $$.submenu = $8;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
             $$.item.menuExData.ItemState = 0L;
             $$.item.menuExData.HelpId = 0L;
+            $$.submenu = $8;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
               menuState comma-opt menu-section comma-opt
@@ -913,11 +912,11 @@ menu-popup-stmt
             $$.item.type = MT_MENUEX;
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
-            $$.submenu = $10;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
             $$.item.menuExData.ItemState = $8;
             $$.item.menuExData.HelpId = 0L;
+            $$.submenu = $10;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
               menuState comma-opt helpId comma-opt menu-section comma-opt
@@ -925,11 +924,11 @@ menu-popup-stmt
             $$.item.type = MT_MENUEX;
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
-            $$.submenu = $12;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
             $$.item.menuExData.ItemState = $8;
             $$.item.menuExData.HelpId = $10;
+            $$.submenu = $12;
         }
 
     | Y_POPUP menu-text comma-opt menu-item-options comma-opt menu-section comma-opt
@@ -1090,13 +1089,6 @@ version-stmt
         { SemWINUnsupported( Y_VERSION ); }
     ;
 
-dialog-or-dialogEx
-    : Y_DIALOG
-        { $$ = Y_DIALOG; }
-    | Y_DIALOG_EX
-        { $$ = Y_DIALOG_EX; }
-    ;
-
 helpId-opt
     : comma-opt constant-expression
        { $$.HelpId = $2.Value; $$.HelpIdDefined = true; }
@@ -1105,13 +1097,20 @@ helpId-opt
     ;
 
 dlg-resource
-    : name-id dialog-or-dialogEx resource-options-mdp comma-opt
+    : name-id Y_DIALOG resource-options-mdp comma-opt
             size-info helpId-opt diag-options-section diag-control-section
-        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, $2 ); }
-    | name-id dialog-or-dialogEx resource-options-mdp comma-opt
+        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, false ); }
+    | name-id Y_DIALOG resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
             diag-options-section diag-control-section
-        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, $2 ); }
+        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, false ); }
+    | name-id Y_DIALOG_EX resource-options-mdp comma-opt
+            size-info helpId-opt diag-options-section diag-control-section
+        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
+    | name-id Y_DIALOG_EX resource-options-mdp comma-opt
+            exstyle-equal-stmt size-info helpId-opt
+            diag-options-section diag-control-section
+        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, true ); }
     ;
 
 size-info
