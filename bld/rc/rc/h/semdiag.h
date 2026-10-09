@@ -70,13 +70,13 @@ typedef struct FullDialogBoxControl {
     DataElemList                    *dataListHead;
 } FullDialogBoxControl;
 
-typedef struct FullDiagCtrlList {
+typedef struct FullDialogCtrlList {
     FullDialogBoxControl            *head;
     FullDialogBoxControl            *tail;
     uint_16                         numctrls; /* Win16 only support upto 255 controls. */
-} FullDiagCtrlList;
+} FullDialogCtrlList;
 
-typedef struct FullDiagCtrlOptions {
+typedef struct FullDialogCtrlOptions {
     DialogSizeInfo          SizeInfo;
     IntMask                 Style;
     uint_16                 ID;
@@ -84,7 +84,7 @@ typedef struct FullDiagCtrlOptions {
     uint_32                 ExtendedStyle;
     uint_32                 HelpId;
     bool                    HelpIdDefined;
-} FullDiagCtrlOptions;
+} FullDialogCtrlOptions;
 
 typedef struct DlgHelpId {
     uint_32     HelpId;
@@ -111,22 +111,22 @@ typedef struct FullDialogBoxControlOS2 {
     DialogBoxControl                ctrl;
     DataElemList                    *dataListHead;
     PresParamListOS2                *presParams;
-    struct FullDiagCtrlListOS2      *children;
+    struct FullDialogCtrlListOS2      *children;
     DialogTemplateItemOS2           *tmpl;
     uint_32                         framectl;
 } FullDialogBoxControlOS2;
 
-typedef struct FullDiagCtrlListOS2 {
+typedef struct FullDialogCtrlListOS2 {
     FullDialogBoxControlOS2         *head;
     FullDialogBoxControlOS2         *tail;
     uint_8                          numctrls;
-} FullDiagCtrlListOS2;
+} FullDialogCtrlListOS2;
 
-typedef struct FullDiagCtrlOptionsOS2 {
+typedef struct FullDialogCtrlOptionsOS2 {
     DialogSizeInfo          SizeInfo;
     IntMask                 Style;
     uint_16                 ID;
     ResNameOrOrdinal        *Text;
-} FullDiagCtrlOptionsOS2;
+} FullDialogCtrlOptionsOS2;
 
 #endif
