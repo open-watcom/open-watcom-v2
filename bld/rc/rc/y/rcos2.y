@@ -1214,9 +1214,9 @@ diag-data-elements
 
 diag-control-stmts
     : diag-control-stmt diag-data-elements
-        { $$ = SemOS2AddDiagCtrlList( NULL, $1, $2, NULL ); }
+        { $$ = SemOS2AddDialogCtrlList( NULL, $1, $2, NULL ); }
     | diag-control-stmts diag-control-stmt diag-data-elements
-        { $$ = SemOS2AddDiagCtrlList( $1, $2, $3, NULL ); }
+        { $$ = SemOS2AddDialogCtrlList( $1, $2, $3, NULL ); }
     ;
 
 diag-control-stmt
@@ -1289,104 +1289,104 @@ cntl-id
 
 autocheckbox-stmt
     : Y_AUTOCHECKBOX cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_AUTOCHECKBOX, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_AUTOCHECKBOX, $2, $3 ); }
     ;
 
 autoradiobutton-stmt
     : Y_AUTORADIOBUTTON cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_AUTORADIOBUTTON, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_AUTORADIOBUTTON, $2, $3 ); }
     ;
 
 checkbox-stmt
     : Y_CHECKBOX cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_CHECKBOX, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_CHECKBOX, $2, $3 ); }
     ;
 
 combobox-stmt
     : Y_COMBOBOX cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_COMBOBOX, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_COMBOBOX, $2, $3 ); }
     ;
 
 container-stmt
     : Y_CONTAINER cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_CONTAINER, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_CONTAINER, $2, $3 ); }
     ;
 
 ctext-stmt
     : Y_CTEXT cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_CTEXT, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_CTEXT, $2, $3 ); }
     ;
 
 defpushbutton-stmt
     : Y_DEFPUSHBUTTON cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_DEFPUSHBUTTON, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_DEFPUSHBUTTON, $2, $3 ); }
     ;
 
 edittext-stmt
     : Y_EDITTEXT cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_EDITTEXT, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_EDITTEXT, $2, $3 ); }
     | Y_ENTRYFIELD cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_EDITTEXT, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_EDITTEXT, $2, $3 ); }
     ;
 
 groupbox-stmt
     : Y_GROUPBOX cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_GROUPBOX, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_GROUPBOX, $2, $3 ); }
     ;
 
 listbox-stmt
     : Y_LISTBOX cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_LISTBOX, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_LISTBOX, $2, $3 ); }
     ;
 
 ltext-stmt
     : Y_LTEXT cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_LTEXT, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_LTEXT, $2, $3 ); }
     ;
 
 mle-stmt
     : Y_MLE cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_MLE, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_MLE, $2, $3 ); }
     ;
 
 notebook-stmt
     : Y_NOTEBOOK cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_NOTEBOOK, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_NOTEBOOK, $2, $3 ); }
     ;
 
 pushbutton-stmt
     : Y_PUSHBUTTON cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_PUSHBUTTON, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_PUSHBUTTON, $2, $3 ); }
     ;
 
 radiobutton-stmt
     : Y_RADIOBUTTON cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_RADIOBUTTON, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_RADIOBUTTON, $2, $3 ); }
     ;
 
 rtext-stmt
     : Y_RTEXT cntl-text-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_RTEXT, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_RTEXT, $2, $3 ); }
     ;
 
 slider-stmt
     : Y_SLIDER cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_SLIDER, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_SLIDER, $2, $3 ); }
     ;
 
 spinbutton-stmt
     : Y_SPINBUTTON cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_SPINBUTTON, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_SPINBUTTON, $2, $3 ); }
     ;
 
 valueset-stmt
     : Y_VALUESET cntl-options presparam-list
-        { $$ = SemOS2NewDiagCtrl( Y_VALUESET, $2, $3 ); }
+        { $$ = SemOS2NewDialogCtrl( Y_VALUESET, $2, $3 ); }
     ;
 
 icon-stmt
     : Y_ICON control-name comma-opt cntl-id comma-opt icon-parms
-        { $6.Text = $2; $6.ID = $4; $$ = SemOS2NewDiagCtrl( Y_ICON, $6, NULL ); }
+        { $6.Text = $2; $6.ID = $4; $$ = SemOS2NewDialogCtrl( Y_ICON, $6, NULL ); }
     ;
 
 icon-parms

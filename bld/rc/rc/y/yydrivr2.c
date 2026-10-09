@@ -92,8 +92,8 @@ typedef union {
     ResNameOrOrdinal            *nameorord;
     FullDialogBoxHeader         *diaghead;
     FullDialogBoxControlOS2     *diagctrl;
-    FullDiagCtrlListOS2         *diagctrllist;
-    FullDiagCtrlOptionsOS2      diagctrlopts;
+    FullDialogCtrlListOS2       *diagctrllist;
+    FullDialogCtrlOptionsOS2    diagctrlopts;
     PresParamsOS2               presparams;
     PresParamListOS2            *presparamlist;
     StringItem                  stritem;

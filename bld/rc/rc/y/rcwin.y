@@ -1128,7 +1128,7 @@ dialog-resource
     | name-id Y_DIALOG resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
             dialog-options-section dialog-control-section
-        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, false ); }
+        { SemWINWriteDialogBox( $1, $3, $6, SemWINDialogOptions( $8, &($5) ), $9, $7, false ); }
     ;
 
 dialogex-resource
@@ -1138,7 +1138,7 @@ dialogex-resource
     | name-id Y_DIALOG_EX resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
             dialog-options-section dialogex-control-section
-        { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, true ); }
+        { SemWINWriteDialogBox( $1, $3, $6, SemWINDialogOptions( $8, &($5) ), $9, $7, true ); }
     ;
 
 size-info
@@ -1170,7 +1170,7 @@ dialog-options-section
     : /* nothing */
         { $$ = NULL; }
     | dialog-options-section dialog-options-stmt
-        { $$ = SemWINDiagOptions( $1, &($2) ); }
+        { $$ = SemWINDialogOptions( $1, &($2) ); }
     ;
 
 dialog-options-stmt
@@ -1353,9 +1353,9 @@ dialogex-control-section
     | Y_LBRACE dialogex-control-stmts Y_RBRACE
         { $$ = $2; }
     | Y_BEGIN Y_END
-        { $$ = SemWINEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDialogCtrlList(); }
     | Y_LBRACE Y_RBRACE
-        { $$ = SemWINEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDialogCtrlList(); }
     ;
 
 dialog-control-section
@@ -1364,9 +1364,9 @@ dialog-control-section
     | Y_LBRACE dialog-control-stmts Y_RBRACE
         { $$ = $2; }
     | Y_BEGIN Y_END
-        { $$ = SemWINEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDialogCtrlList(); }
     | Y_LBRACE Y_RBRACE
-        { $$ = SemWINEmptyDiagCtrlList(); }
+        { $$ = SemWINEmptyDialogCtrlList(); }
     ;
 
 dialog-data-elements
@@ -1377,16 +1377,16 @@ dialog-data-elements
 
 dialogex-control-stmts
     : dialogex-control-stmt dialog-data-elements
-        { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
+        { $$ = SemWINAddDialogCtrlList( NULL, $1, $2 ); }
     | dialogex-control-stmts dialogex-control-stmt dialog-data-elements
-        { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
+        { $$ = SemWINAddDialogCtrlList( $1, $2, $3 ); }
     ;
 
 dialog-control-stmts
     : dialog-control-stmt dialog-data-elements
-        { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
+        { $$ = SemWINAddDialogCtrlList( NULL, $1, $2 ); }
     | dialog-control-stmts dialog-control-stmt dialog-data-elements
-        { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
+        { $$ = SemWINAddDialogCtrlList( $1, $2, $3 ); }
     ;
 
 dialogex-control-stmt
@@ -1544,162 +1544,162 @@ cntl-id
 
 ltext-stmt-ex
     : Y_LTEXT cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_LTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_LTEXT, $2 ); }
     ;
 
 ltext-stmt
     : Y_LTEXT cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_LTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_LTEXT, $2 ); }
     ;
 
 rtext-stmt-ex
     : Y_RTEXT cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_RTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_RTEXT, $2 ); }
     ;
 
 rtext-stmt
     : Y_RTEXT cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_RTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_RTEXT, $2 ); }
     ;
 
 ctext-stmt-ex
     : Y_CTEXT cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_CTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_CTEXT, $2 ); }
     ;
 
 ctext-stmt
     : Y_CTEXT cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_CTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_CTEXT, $2 ); }
     ;
 
 autocheckbox-stmt-ex
     : Y_AUTOCHECKBOX cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTOCHECKBOX, $2 ); }
     ;
 
 autocheckbox-stmt
     : Y_AUTOCHECKBOX cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTOCHECKBOX, $2 ); }
     ;
 
 autoradiobutton-stmt-ex
     : Y_AUTORADIOBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTORADIOBUTTON, $2 ); }
     ;
 
 autoradiobutton-stmt
     : Y_AUTORADIOBUTTON cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTORADIOBUTTON, $2 ); }
     ;
 
 auto3state-stmt-ex
     : Y_AUTO3STATE cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_AUTO3STATE, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTO3STATE, $2 ); }
     ;
 
 auto3state-stmt
     : Y_AUTO3STATE cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_AUTO3STATE, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_AUTO3STATE, $2 ); }
     ;
 
 checkbox-stmt-ex
     : Y_CHECKBOX cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_CHECKBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_CHECKBOX, $2 ); }
     ;
 
 checkbox-stmt
     : Y_CHECKBOX cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_CHECKBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_CHECKBOX, $2 ); }
     ;
 
 pushbutton-stmt-ex
     : Y_PUSHBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_PUSHBUTTON, $2 ); }
     ;
 
 pushbutton-stmt
     : Y_PUSHBUTTON cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_PUSHBUTTON, $2 ); }
     ;
 
 listbox-stmt-ex
     : Y_LISTBOX cntl-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_LISTBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_LISTBOX, $2 ); }
     ;
 
 listbox-stmt
     : Y_LISTBOX cntl-options
-        { $$ = SemWINNewDiagCtrl( Y_LISTBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_LISTBOX, $2 ); }
     ;
 
 groupbox-stmt-ex
     : Y_GROUPBOX cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_GROUPBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_GROUPBOX, $2 ); }
     ;
 
 groupbox-stmt
     : Y_GROUPBOX cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_GROUPBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_GROUPBOX, $2 ); }
     ;
 
 defpushbutton-stmt-ex
     : Y_DEFPUSHBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_DEFPUSHBUTTON, $2 ); }
     ;
 
 defpushbutton-stmt
     : Y_DEFPUSHBUTTON cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_DEFPUSHBUTTON, $2 ); }
     ;
 
 radiobutton-stmt-ex
     : Y_RADIOBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_RADIOBUTTON, $2 ); }
     ;
 
 radiobutton-stmt
     : Y_RADIOBUTTON cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_RADIOBUTTON, $2 ); }
     ;
 
 edittext-stmt-ex
     : Y_EDITTEXT cntl-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_EDITTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_EDITTEXT, $2 ); }
     ;
 
 edittext-stmt
     : Y_EDITTEXT cntl-options
-        { $$ = SemWINNewDiagCtrl( Y_EDITTEXT, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_EDITTEXT, $2 ); }
     ;
 
 combobox-stmt-ex
     : Y_COMBOBOX cntl-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_COMBOBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_COMBOBOX, $2 ); }
     ;
 
 combobox-stmt
     : Y_COMBOBOX cntl-options
-        { $$ = SemWINNewDiagCtrl( Y_COMBOBOX, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_COMBOBOX, $2 ); }
     ;
 
 icon-stmt-ex
     : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms-ex
-        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDiagCtrl( Y_ICON, $6 ); }
+        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDialogCtrl( Y_ICON, $6 ); }
     ;
 
 icon-stmt
     : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms
-        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDiagCtrl( Y_ICON, $6 ); }
+        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDialogCtrl( Y_ICON, $6 ); }
     ;
 
 state3-stmt-ex
     : Y_STATE3 cntl-text-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_STATE3, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_STATE3, $2 ); }
     ;
 
 state3-stmt
     : Y_STATE3 cntl-text-options
-        { $$ = SemWINNewDiagCtrl( Y_STATE3, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_STATE3, $2 ); }
     ;
 
 icon-name
@@ -1807,12 +1807,12 @@ icon-parms
 
 scrollbar-stmt-ex
     : Y_SCROLLBAR cntl-options-ex
-        { $$ = SemWINNewDiagCtrl( Y_SCROLLBAR, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_SCROLLBAR, $2 ); }
     ;
 
 scrollbar-stmt
     : Y_SCROLLBAR cntl-options
-        { $$ = SemWINNewDiagCtrl( Y_SCROLLBAR, $2 ); }
+        { $$ = SemWINNewDialogCtrl( Y_SCROLLBAR, $2 ); }
     ;
 
 control-stmt-ex
