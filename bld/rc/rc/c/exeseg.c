@@ -237,20 +237,20 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
         }
 
         if( !error ) {
-            RcStatus    ret;
+            RcStatus    rcstat;
 
             if( src_seg->size == 0 ) {
                 seg_len = 0x10000L;
             } else {
                 seg_len = src_seg->size;
             }
-            ret = CopyExeData( src->fp, dst->fp, seg_len );
-            if( ret == RS_READ_ERROR ) {
-                ret = RS_READ_ERROR_EXE;
-//            } else if( ret == RS_WRITE_ERROR ) {
-//                ret = RS_WRITE_ERROR_RES;
+            rcstat = CopyExeData( src->fp, dst->fp, seg_len );
+            if( rcstat == RS_READ_ERROR ) {
+                rcstat = RS_READ_ERROR_EXE;
+//            } else if( rcstat == RS_WRITE_ERROR ) {
+//                rcstat = RS_WRITE_ERROR_RES;
             }
-            error = RcIOError( ret, src->name, dst->name, errno );
+            error = RcIOError( rcstat, src->name, dst->name, errno );
         }
 
         if( (src_seg->info & SEG_RELOC)
@@ -276,15 +276,15 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
              * copy the relocation information
              */
             if( !error ) {
-                RcStatus    ret;
+                RcStatus    rcstat;
 
-                ret = CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE );
-                if( ret == RS_READ_ERROR ) {
-                    ret = RS_READ_ERROR_EXE;
-//                } else if( ret == RS_WRITE_ERROR ) {
-//                    ret = RS_WRITE_ERROR_RES;
+                rcstat = CopyExeData( src->fp, dst->fp, numrelocs * OS_RELOC_ITEM_SIZE );
+                if( rcstat == RS_READ_ERROR ) {
+                    rcstat = RS_READ_ERROR_EXE;
+//                } else if( rcstat == RS_WRITE_ERROR ) {
+//                    rcstat = RS_WRITE_ERROR_RES;
                 }
-                error = RcIOError( ret, src->name, dst->name, errno );
+                error = RcIOError( rcstat, src->name, dst->name, errno );
             }
             if( numrelocs * OS_RELOC_ITEM_SIZE + seg_len > 0x10000L ) {
                 ret = CPSEG_SEG_TOO_BIG;
