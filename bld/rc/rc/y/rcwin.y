@@ -326,7 +326,8 @@ normal-resource
     | accelerators-resource
     | menu-resource
     | menuex-resource
-    | dlg-resource
+    | dialog-resource
+    | dialogex-resource
     | version-info-resource
     | language-resource
     | characteristics-stmt
@@ -1096,7 +1097,7 @@ helpId-opt
        { $$.HelpId = 0; $$.HelpIdDefined = false; }
     ;
 
-dlg-resource
+dialog-resource
     : name-id Y_DIALOG resource-options-mdp comma-opt
             size-info helpId-opt diag-options-section diag-control-section
         { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, false ); }
@@ -1104,7 +1105,10 @@ dlg-resource
             exstyle-equal-stmt size-info helpId-opt
             diag-options-section diag-control-section
         { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, false ); }
-    | name-id Y_DIALOG_EX resource-options-mdp comma-opt
+    ;
+
+dialogex-resource
+    : name-id Y_DIALOG_EX resource-options-mdp comma-opt
             size-info helpId-opt diag-options-section diag-control-section
         { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
     | name-id Y_DIALOG_EX resource-options-mdp comma-opt
