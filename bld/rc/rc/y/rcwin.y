@@ -221,19 +221,19 @@
 %type <diagopts>        menu-stmt
 %type <diagopts>        class-stmt
 %type <diagopts>        font-stmt
-%type <diagopts>        diag-lang-stmt
-%type <diagopts>        diag-options-stmt
-%type <diagopts>        diag-version-stmt
-%type <diagopts>        diag-characteristics-stmt
-%type <dataelem>        diag-data-elements
+%type <diagopts>        dialog-lang-stmt
+%type <diagopts>        dialog-options-stmt
+%type <diagopts>        dialog-version-stmt
+%type <diagopts>        dialog-characteristics-stmt
+%type <dataelem>        dialog-data-elements
 %type <nameorord>       class-name
 %type <nameorord>       ctl-class-name
 %type <ressizenum>      point-size
 %type <string>          typeface
-%type <diaghead>        diag-options-section
-%type <diagctrllist>    diag-control-section
-%type <diagctrllist>    diag-control-stmts
-%type <diagctrl>        diag-control-stmt
+%type <diaghead>        dialog-options-section
+%type <diagctrllist>    dialog-control-section
+%type <diagctrllist>    dialog-control-stmts
+%type <diagctrl>        dialog-control-stmt
 %type <diagctrlopts>    cntl-text-options
 %type <diagctrlopts>    cntl-options
 %type <diagctrl>        ltext-stmt
@@ -1099,21 +1099,21 @@ helpId-opt
 
 dialog-resource
     : name-id Y_DIALOG resource-options-mdp comma-opt
-            size-info helpId-opt diag-options-section diag-control-section
+            size-info helpId-opt dialog-options-section dialog-control-section
         { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, false ); }
     | name-id Y_DIALOG resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
-            diag-options-section diag-control-section
+            dialog-options-section dialog-control-section
         { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, false ); }
     ;
 
 dialogex-resource
     : name-id Y_DIALOG_EX resource-options-mdp comma-opt
-            size-info helpId-opt diag-options-section diag-control-section
+            size-info helpId-opt dialog-options-section dialog-control-section
         { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
     | name-id Y_DIALOG_EX resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
-            diag-options-section diag-control-section
+            dialog-options-section dialog-control-section
         { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, true ); }
     ;
 
@@ -1142,36 +1142,36 @@ size-h
         { $$ = (uint_16)$1.Value; }
     ;
 
-diag-options-section
+dialog-options-section
     : /* nothing */
         { $$ = NULL; }
-    | diag-options-section diag-options-stmt
+    | dialog-options-section dialog-options-stmt
         { $$ = SemWINDiagOptions( $1, &($2) ); }
     ;
 
-diag-options-stmt
+dialog-options-stmt
     : style-stmt
     | exstyle-stmt
     | caption-stmt
     | menu-stmt
     | class-stmt
     | font-stmt
-    | diag-lang-stmt
-    | diag-version-stmt
-    | diag-characteristics-stmt
+    | dialog-lang-stmt
+    | dialog-version-stmt
+    | dialog-characteristics-stmt
     ;
 
-diag-lang-stmt
+dialog-lang-stmt
     : language-stmt
         { $$.token = Y_LANGUAGE; $$.Opt.lang = $1; }
     ;
 
-diag-version-stmt
+dialog-version-stmt
     : version-stmt
         { $$.token = Y_VERSION; }
     ;
 
-diag-characteristics-stmt
+dialog-characteristics-stmt
     : characteristics-stmt
         { $$.token = Y_CHARACTERISTICS; }
     ;
@@ -1323,10 +1323,10 @@ typeface
     : string-constant
     ;
 
-diag-control-section
-    : Y_BEGIN diag-control-stmts Y_END
+dialog-control-section
+    : Y_BEGIN dialog-control-stmts Y_END
         { $$ = $2; }
-    | Y_LBRACE diag-control-stmts Y_RBRACE
+    | Y_LBRACE dialog-control-stmts Y_RBRACE
         { $$ = $2; }
     | Y_BEGIN Y_END
         { $$ = SemWINEmptyDiagCtrlList(); }
@@ -1334,20 +1334,20 @@ diag-control-section
         { $$ = SemWINEmptyDiagCtrlList(); }
     ;
 
-diag-data-elements
+dialog-data-elements
     : raw-data-section
     | /* Nothing */
         { $$ = NULL; }
     ;
 
-diag-control-stmts
-    : diag-control-stmt diag-data-elements
+dialog-control-stmts
+    : dialog-control-stmt dialog-data-elements
         { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
-    | diag-control-stmts diag-control-stmt diag-data-elements
+    | dialog-control-stmts dialog-control-stmt dialog-data-elements
         { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
     ;
 
-diag-control-stmt
+dialog-control-stmt
     : ltext-stmt
     | rtext-stmt
     | ctext-stmt
