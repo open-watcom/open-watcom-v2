@@ -1,174 +1,174 @@
-s/r conflict in state 29 on Y_MINUS:
-	shift to 148
-403 (193): shift-exp <- additive-exp (unit production)
+s/r conflict in state 30 on Y_MINUS:
+	shift to 149
+457 (1c9): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 403:
-  Y_END Y_DIALOG_EX Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN 
-Y_ICON Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
-Y_INTEGER Y_INTEGER . Y_MINUS
+Sample sentence(s) for reduce of rule 457:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN Y_ICON 
+Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
+Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
-Sample sentence(s) for shift to state 148:
-  Y_END Y_DIALOG_EX Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN 
-Y_ICON Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
-Y_INTEGER Y_INTEGER .
+Sample sentence(s) for shift to state 149:
+  Y_END Y_DIALOG Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_BEGIN Y_ICON 
+Y_END Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER 
+Y_INTEGER .
 Y_MINUS Y_INTEGER Y_END $eof 
 ---
 
-s/r conflict in state 74 on Y_NOT:
-	shift to 120
- 75 (04b): keyword-name <- Y_LANGUAGE
+s/r conflict in state 75 on Y_NOT:
+	shift to 121
+ 76 (04c): keyword-name <- Y_LANGUAGE
 
-Sample sentence(s) for reduce of rule 75:
+Sample sentence(s) for reduce of rule 76:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_NOT Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 120:
+Sample sentence(s) for shift to state 121:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_NOT Y_INTEGER Y_COMMA Y_INTEGER $eof 
 ---
 
-s/r conflict in state 74 on Y_BITNOT:
-	shift to 121
- 75 (04b): keyword-name <- Y_LANGUAGE
+s/r conflict in state 75 on Y_BITNOT:
+	shift to 122
+ 76 (04c): keyword-name <- Y_LANGUAGE
 
-Sample sentence(s) for reduce of rule 75:
+Sample sentence(s) for reduce of rule 76:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_BITNOT Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 121:
+Sample sentence(s) for shift to state 122:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_BITNOT Y_INTEGER Y_COMMA Y_INTEGER $eof 
 ---
 
-s/r conflict in state 74 on Y_MINUS:
-	shift to 122
- 75 (04b): keyword-name <- Y_LANGUAGE
+s/r conflict in state 75 on Y_MINUS:
+	shift to 123
+ 76 (04c): keyword-name <- Y_LANGUAGE
 
-Sample sentence(s) for reduce of rule 75:
+Sample sentence(s) for reduce of rule 76:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 122:
+Sample sentence(s) for shift to state 123:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_MINUS Y_INTEGER Y_COMMA Y_INTEGER $eof 
 ---
 
-s/r conflict in state 74 on Y_LPAREN:
-	shift to 124
- 75 (04b): keyword-name <- Y_LANGUAGE
+s/r conflict in state 75 on Y_LPAREN:
+	shift to 125
+ 76 (04c): keyword-name <- Y_LANGUAGE
 
-Sample sentence(s) for reduce of rule 75:
+Sample sentence(s) for reduce of rule 76:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_LPAREN Y_INTEGER Y_RPAREN Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 124:
+Sample sentence(s) for shift to state 125:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_LPAREN Y_INTEGER Y_RPAREN Y_COMMA Y_INTEGER $eof 
 ---
 
-s/r conflict in state 74 on Y_INTEGER:
-	shift to 126
- 75 (04b): keyword-name <- Y_LANGUAGE
+s/r conflict in state 75 on Y_INTEGER:
+	shift to 127
+ 76 (04c): keyword-name <- Y_LANGUAGE
 
-Sample sentence(s) for reduce of rule 75:
+Sample sentence(s) for reduce of rule 76:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 126:
+Sample sentence(s) for shift to state 127:
   Y_INCLUDERES Y_NAME Y_LANGUAGE .
 Y_INTEGER Y_COMMA Y_INTEGER $eof 
 ---
 
-s/r conflict in state 108 on Y_NOT:
-	shift to 120
- 42 (02a): keyword-name <- Y_CHARACTERISTICS
+s/r conflict in state 109 on Y_NOT:
+	shift to 121
+ 43 (02b): keyword-name <- Y_CHARACTERISTICS
 
-Sample sentence(s) for reduce of rule 42:
+Sample sentence(s) for reduce of rule 43:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_NOT Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 120:
+Sample sentence(s) for shift to state 121:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_NOT Y_INTEGER $eof 
 ---
 
-s/r conflict in state 108 on Y_BITNOT:
-	shift to 121
- 42 (02a): keyword-name <- Y_CHARACTERISTICS
+s/r conflict in state 109 on Y_BITNOT:
+	shift to 122
+ 43 (02b): keyword-name <- Y_CHARACTERISTICS
 
-Sample sentence(s) for reduce of rule 42:
+Sample sentence(s) for reduce of rule 43:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_BITNOT Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 121:
+Sample sentence(s) for shift to state 122:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_BITNOT Y_INTEGER $eof 
 ---
 
-s/r conflict in state 108 on Y_MINUS:
-	shift to 122
- 42 (02a): keyword-name <- Y_CHARACTERISTICS
+s/r conflict in state 109 on Y_MINUS:
+	shift to 123
+ 43 (02b): keyword-name <- Y_CHARACTERISTICS
 
-Sample sentence(s) for reduce of rule 42:
+Sample sentence(s) for reduce of rule 43:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 122:
+Sample sentence(s) for shift to state 123:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_MINUS Y_INTEGER $eof 
 ---
 
-s/r conflict in state 108 on Y_LPAREN:
-	shift to 124
- 42 (02a): keyword-name <- Y_CHARACTERISTICS
+s/r conflict in state 109 on Y_LPAREN:
+	shift to 125
+ 43 (02b): keyword-name <- Y_CHARACTERISTICS
 
-Sample sentence(s) for reduce of rule 42:
+Sample sentence(s) for reduce of rule 43:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_LPAREN Y_INTEGER Y_RPAREN Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 124:
+Sample sentence(s) for shift to state 125:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_LPAREN Y_INTEGER Y_RPAREN $eof 
 ---
 
-s/r conflict in state 108 on Y_INTEGER:
-	shift to 126
- 42 (02a): keyword-name <- Y_CHARACTERISTICS
+s/r conflict in state 109 on Y_INTEGER:
+	shift to 127
+ 43 (02b): keyword-name <- Y_CHARACTERISTICS
 
-Sample sentence(s) for reduce of rule 42:
+Sample sentence(s) for reduce of rule 43:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 126:
+Sample sentence(s) for shift to state 127:
   Y_INCLUDERES Y_NAME Y_CHARACTERISTICS .
 Y_INTEGER $eof 
 ---
 
-s/r conflict in state 204 on Y_MINUS:
-	shift to 148
-405 (195): shift-exp <- shift-exp Y_SHIFTR additive-exp
-
-Sample sentence(s) for reduce of rule 405:
-  Y_INTEGER Y_SHIFTR Y_INTEGER .
-Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 148:
-  Y_INTEGER Y_SHIFTR Y_INTEGER .
-Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
----
-
 s/r conflict in state 205 on Y_MINUS:
-	shift to 148
-404 (194): shift-exp <- shift-exp Y_SHIFTL additive-exp
+	shift to 149
+459 (1cb): shift-exp <- shift-exp Y_SHIFTR additive-exp
 
-Sample sentence(s) for reduce of rule 404:
+Sample sentence(s) for reduce of rule 459:
+  Y_INTEGER Y_SHIFTR Y_INTEGER .
+Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
+Sample sentence(s) for shift to state 149:
+  Y_INTEGER Y_SHIFTR Y_INTEGER .
+Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
+---
+
+s/r conflict in state 206 on Y_MINUS:
+	shift to 149
+458 (1ca): shift-exp <- shift-exp Y_SHIFTL additive-exp
+
+Sample sentence(s) for reduce of rule 458:
   Y_INTEGER Y_SHIFTL Y_INTEGER .
 Y_MINUS Y_INTEGER Y_BEGIN Y_STRING Y_END $eof 
-Sample sentence(s) for shift to state 148:
+Sample sentence(s) for shift to state 149:
   Y_INTEGER Y_SHIFTL Y_INTEGER .
 Y_MINUS Y_INTEGER Y_STRING Y_BEGIN Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 592 on Y_LSQ_BRACKET:
-	shift to 123
-375 (177): value-item <- value-string-list (unit production)
+s/r conflict in state 665 on Y_LSQ_BRACKET:
+	shift to 124
+429 (1ad): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 375:
+Sample sentence(s) for reduce of rule 429:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_LSQ_BRACKET Y_STRING Y_STRING Y_RSQ_BRACKET Y_END 
 Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK 
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
-Sample sentence(s) for shift to state 123:
+Sample sentence(s) for shift to state 124:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_LSQ_BRACKET Y_STRING Y_STRING Y_RSQ_BRACKET Y_END 
@@ -176,17 +176,17 @@ Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
 ---
 
-s/r conflict in state 592 on Y_STRING:
-	shift to 125
-375 (177): value-item <- value-string-list (unit production)
+s/r conflict in state 665 on Y_STRING:
+	shift to 126
+429 (1ad): value-item <- value-string-list (unit production)
 
-Sample sentence(s) for reduce of rule 375:
+Sample sentence(s) for reduce of rule 429:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_STRING Y_END 
 Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK 
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
-Sample sentence(s) for shift to state 125:
+Sample sentence(s) for shift to state 126:
   Y_END Y_VERSIONINFO Y_FILEOS Y_INTEGER Y_BEGIN Y_BLOCK Y_STRING 
 Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_STRING .
 Y_STRING Y_END 
@@ -194,12 +194,12 @@ Y_BLOCK Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END Y_BLOCK
 Y_STRING Y_BEGIN Y_VALUE Y_STRING Y_STRING Y_END 
 ---
 
-actions combined:                           48
-parser states:                             667
-# states (1 reduce only):                  364
+actions combined:                           83
+parser states:                             773
+# states (1 reduce only):                  411
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                     15
 number of rules not reduced:                 0
-bytes used in tables:                    14140
-states with defaults:                      490
-states with parents:                       259
+bytes used in tables:                    15810
+states with defaults:                      561
+states with parents:                       299

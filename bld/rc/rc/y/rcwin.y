@@ -231,30 +231,54 @@
 %type <ressizenum>      point-size
 %type <string>          typeface
 %type <diaghead>        dialog-options-section
+%type <diagctrllist>    dialogex-control-section
 %type <diagctrllist>    dialog-control-section
+%type <diagctrllist>    dialogex-control-stmts
 %type <diagctrllist>    dialog-control-stmts
+%type <diagctrl>        dialogex-control-stmt
 %type <diagctrl>        dialog-control-stmt
+%type <diagctrlopts>    cntl-text-options-ex
 %type <diagctrlopts>    cntl-text-options
+%type <diagctrlopts>    cntl-options-ex
 %type <diagctrlopts>    cntl-options
+%type <diagctrl>        ltext-stmt-ex
 %type <diagctrl>        ltext-stmt
+%type <diagctrl>        rtext-stmt-ex
 %type <diagctrl>        rtext-stmt
+%type <diagctrl>        ctext-stmt-ex
 %type <diagctrl>        ctext-stmt
+%type <diagctrl>        autocheckbox-stmt-ex
 %type <diagctrl>        autocheckbox-stmt
+%type <diagctrl>        autoradiobutton-stmt-ex
 %type <diagctrl>        autoradiobutton-stmt
+%type <diagctrl>        auto3state-stmt-ex
 %type <diagctrl>        auto3state-stmt
+%type <diagctrl>        checkbox-stmt-ex
 %type <diagctrl>        checkbox-stmt
+%type <diagctrl>        pushbutton-stmt-ex
 %type <diagctrl>        pushbutton-stmt
+%type <diagctrl>        listbox-stmt-ex
 %type <diagctrl>        listbox-stmt
+%type <diagctrl>        groupbox-stmt-ex
 %type <diagctrl>        groupbox-stmt
+%type <diagctrl>        defpushbutton-stmt-ex
 %type <diagctrl>        defpushbutton-stmt
+%type <diagctrl>        radiobutton-stmt-ex
 %type <diagctrl>        radiobutton-stmt
+%type <diagctrl>        edittext-stmt-ex
 %type <diagctrl>        edittext-stmt
+%type <diagctrl>        combobox-stmt-ex
 %type <diagctrl>        combobox-stmt
+%type <diagctrl>        icon-stmt-ex
 %type <diagctrl>        icon-stmt
+%type <diagctrl>        scrollbar-stmt-ex
 %type <diagctrl>        scrollbar-stmt
+%type <diagctrl>        control-stmt-ex
 %type <diagctrl>        control-stmt
+%type <diagctrl>        state3-stmt-ex
 %type <diagctrl>        state3-stmt
 %type <nameorord>       icon-name
+%type <diagctrlopts>    icon-parms-ex
 %type <diagctrlopts>    icon-parms
 %type <residnum>        cntl-id
 %type <resid>           cntl-text
@@ -1109,11 +1133,11 @@ dialog-resource
 
 dialogex-resource
     : name-id Y_DIALOG_EX resource-options-mdp comma-opt
-            size-info helpId-opt dialog-options-section dialog-control-section
+            size-info helpId-opt dialog-options-section dialogex-control-section
         { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
     | name-id Y_DIALOG_EX resource-options-mdp comma-opt
             exstyle-equal-stmt size-info helpId-opt
-            dialog-options-section dialog-control-section
+            dialog-options-section dialogex-control-section
         { SemWINWriteDialogBox( $1, $3, $6, SemWINDiagOptions( $8, &($5) ), $9, $7, true ); }
     ;
 
@@ -1323,6 +1347,17 @@ typeface
     : string-constant
     ;
 
+dialogex-control-section
+    : Y_BEGIN dialogex-control-stmts Y_END
+        { $$ = $2; }
+    | Y_LBRACE dialogex-control-stmts Y_RBRACE
+        { $$ = $2; }
+    | Y_BEGIN Y_END
+        { $$ = SemWINEmptyDiagCtrlList(); }
+    | Y_LBRACE Y_RBRACE
+        { $$ = SemWINEmptyDiagCtrlList(); }
+    ;
+
 dialog-control-section
     : Y_BEGIN dialog-control-stmts Y_END
         { $$ = $2; }
@@ -1340,11 +1375,39 @@ dialog-data-elements
         { $$ = NULL; }
     ;
 
+dialogex-control-stmts
+    : dialogex-control-stmt dialog-data-elements
+        { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
+    | dialogex-control-stmts dialogex-control-stmt dialog-data-elements
+        { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
+    ;
+
 dialog-control-stmts
     : dialog-control-stmt dialog-data-elements
         { $$ = SemWINAddDiagCtrlList( NULL, $1, $2 ); }
     | dialog-control-stmts dialog-control-stmt dialog-data-elements
         { $$ = SemWINAddDiagCtrlList( $1, $2, $3 ); }
+    ;
+
+dialogex-control-stmt
+    : ltext-stmt-ex
+    | rtext-stmt-ex
+    | ctext-stmt-ex
+    | autocheckbox-stmt-ex
+    | autoradiobutton-stmt-ex
+    | auto3state-stmt-ex
+    | checkbox-stmt-ex
+    | pushbutton-stmt-ex
+    | listbox-stmt-ex
+    | groupbox-stmt-ex
+    | defpushbutton-stmt-ex
+    | radiobutton-stmt-ex
+    | edittext-stmt-ex
+    | combobox-stmt-ex
+    | icon-stmt-ex
+    | scrollbar-stmt-ex
+    | state3-stmt-ex
+    | control-stmt-ex
     ;
 
 dialog-control-stmt
@@ -1368,12 +1431,65 @@ dialog-control-stmt
     | control-stmt
     ;
 
+cntl-text-options-ex
+    : string-constant cntl-options-ex
+        {
+            $2.Text = ResStrToNameOrOrdinal( $1.string );
+            MemFree( $1.string );
+            $$ = $2;
+        }
+    ;
+
 cntl-text-options
     : string-constant cntl-options
         {
             $2.Text = ResStrToNameOrOrdinal( $1.string );
             MemFree( $1.string );
             $$ = $2;
+        }
+    ;
+
+cntl-options-ex
+    : comma-opt cntl-id comma-opt size-info
+        {
+            $$.ID = $2;
+            $$.SizeInfo = $4;
+            $$.Style.Mask = 0;
+            $$.Text = NULL;
+            $$.ExtendedStyle = 0L;
+            $$.HelpId = 0L;
+            $$.HelpIdDefined = false;
+        }
+    | comma-opt cntl-id comma-opt size-info comma-opt style
+        {
+            $$.ID = $2;
+            $$.SizeInfo = $4;
+            $$.Style = $6;
+            $$.Text = NULL;
+            $$.ExtendedStyle = 0L;
+            $$.HelpId = 0L;
+            $$.HelpIdDefined = false;
+        }
+    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
+        {
+            $$.ID = $2;
+            $$.SizeInfo = $4;
+            $$.Style = $6;
+            $$.Text = NULL;
+            $$.ExtendedStyle = $8.Value;
+            $$.HelpId = 0L;
+            $$.HelpIdDefined = false;
+        }
+    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
+           exstyle comma-opt helpId
+        {
+            $$.ID = $2;
+            $$.SizeInfo = $4;
+            $$.Style = $6;
+            $$.Text = NULL;
+            $$.ExtendedStyle = $8.Value;
+            $$.HelpId = $10;
+            $$.HelpIdDefined = true;
         }
     ;
 
@@ -1426,9 +1542,19 @@ cntl-id
         { $$ = (uint_16)$1.Value; }
     ;
 
+ltext-stmt-ex
+    : Y_LTEXT cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_LTEXT, $2 ); }
+    ;
+
 ltext-stmt
     : Y_LTEXT cntl-text-options
         { $$ = SemWINNewDiagCtrl( Y_LTEXT, $2 ); }
+    ;
+
+rtext-stmt-ex
+    : Y_RTEXT cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_RTEXT, $2 ); }
     ;
 
 rtext-stmt
@@ -1436,9 +1562,19 @@ rtext-stmt
         { $$ = SemWINNewDiagCtrl( Y_RTEXT, $2 ); }
     ;
 
+ctext-stmt-ex
+    : Y_CTEXT cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_CTEXT, $2 ); }
+    ;
+
 ctext-stmt
     : Y_CTEXT cntl-text-options
         { $$ = SemWINNewDiagCtrl( Y_CTEXT, $2 ); }
+    ;
+
+autocheckbox-stmt-ex
+    : Y_AUTOCHECKBOX cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
     ;
 
 autocheckbox-stmt
@@ -1446,9 +1582,19 @@ autocheckbox-stmt
         { $$ = SemWINNewDiagCtrl( Y_AUTOCHECKBOX, $2 ); }
     ;
 
+autoradiobutton-stmt-ex
+    : Y_AUTORADIOBUTTON cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
+    ;
+
 autoradiobutton-stmt
     : Y_AUTORADIOBUTTON cntl-text-options
         { $$ = SemWINNewDiagCtrl( Y_AUTORADIOBUTTON, $2 ); }
+    ;
+
+auto3state-stmt-ex
+    : Y_AUTO3STATE cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_AUTO3STATE, $2 ); }
     ;
 
 auto3state-stmt
@@ -1456,9 +1602,19 @@ auto3state-stmt
         { $$ = SemWINNewDiagCtrl( Y_AUTO3STATE, $2 ); }
     ;
 
+checkbox-stmt-ex
+    : Y_CHECKBOX cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_CHECKBOX, $2 ); }
+    ;
+
 checkbox-stmt
     : Y_CHECKBOX cntl-text-options
         { $$ = SemWINNewDiagCtrl( Y_CHECKBOX, $2 ); }
+    ;
+
+pushbutton-stmt-ex
+    : Y_PUSHBUTTON cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
     ;
 
 pushbutton-stmt
@@ -1466,9 +1622,19 @@ pushbutton-stmt
         { $$ = SemWINNewDiagCtrl( Y_PUSHBUTTON, $2 ); }
     ;
 
+listbox-stmt-ex
+    : Y_LISTBOX cntl-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_LISTBOX, $2 ); }
+    ;
+
 listbox-stmt
     : Y_LISTBOX cntl-options
         { $$ = SemWINNewDiagCtrl( Y_LISTBOX, $2 ); }
+    ;
+
+groupbox-stmt-ex
+    : Y_GROUPBOX cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_GROUPBOX, $2 ); }
     ;
 
 groupbox-stmt
@@ -1476,9 +1642,19 @@ groupbox-stmt
         { $$ = SemWINNewDiagCtrl( Y_GROUPBOX, $2 ); }
     ;
 
+defpushbutton-stmt-ex
+    : Y_DEFPUSHBUTTON cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
+    ;
+
 defpushbutton-stmt
     : Y_DEFPUSHBUTTON cntl-text-options
         { $$ = SemWINNewDiagCtrl( Y_DEFPUSHBUTTON, $2 ); }
+    ;
+
+radiobutton-stmt-ex
+    : Y_RADIOBUTTON cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
     ;
 
 radiobutton-stmt
@@ -1486,9 +1662,19 @@ radiobutton-stmt
         { $$ = SemWINNewDiagCtrl( Y_RADIOBUTTON, $2 ); }
     ;
 
+edittext-stmt-ex
+    : Y_EDITTEXT cntl-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_EDITTEXT, $2 ); }
+    ;
+
 edittext-stmt
     : Y_EDITTEXT cntl-options
         { $$ = SemWINNewDiagCtrl( Y_EDITTEXT, $2 ); }
+    ;
+
+combobox-stmt-ex
+    : Y_COMBOBOX cntl-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_COMBOBOX, $2 ); }
     ;
 
 combobox-stmt
@@ -1496,9 +1682,19 @@ combobox-stmt
         { $$ = SemWINNewDiagCtrl( Y_COMBOBOX, $2 ); }
     ;
 
+icon-stmt-ex
+    : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms-ex
+        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDiagCtrl( Y_ICON, $6 ); }
+    ;
+
 icon-stmt
     : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms
         { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDiagCtrl( Y_ICON, $6 ); }
+    ;
+
+state3-stmt-ex
+    : Y_STATE3 cntl-text-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_STATE3, $2 ); }
     ;
 
 state3-stmt
@@ -1509,6 +1705,55 @@ state3-stmt
 icon-name
     : name-id
         { $$ = WResIDToNameOrOrdinal( $1 ); MemFree( $1 ); }
+    ;
+
+icon-parms-ex
+    : size-x comma-opt size-y
+        {
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = 0;          /* ignore width, height, style */
+            $$.SizeInfo.height = 0;
+            $$.Style.Mask = 0;
+            $$.ExtendedStyle = 0L;
+        }
+    | size-x comma-opt size-y comma-opt style
+        {
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = 0;          /* ignore width, height */
+            $$.SizeInfo.height = 0;
+            $$.Style = $5;
+            $$.ExtendedStyle = 0L;
+        }
+    | size-x comma-opt size-y comma-opt size-w comma-opt size-h
+        {
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;         /* ignore style */
+            $$.SizeInfo.height = $7;
+            $$.Style.Mask = 0;
+            $$.ExtendedStyle = 0L;
+        }
+    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
+        {
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
+            $$.Style = $9;
+            $$.ExtendedStyle = 0L;
+        }
+    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
+             comma-opt exstyle
+        {
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
+            $$.Style = $9;
+            $$.ExtendedStyle = $11.Value;
+        }
     ;
 
 icon-parms
@@ -1560,9 +1805,24 @@ icon-parms
         }
     ;
 
+scrollbar-stmt-ex
+    : Y_SCROLLBAR cntl-options-ex
+        { $$ = SemWINNewDiagCtrl( Y_SCROLLBAR, $2 ); }
+    ;
+
 scrollbar-stmt
     : Y_SCROLLBAR cntl-options
         { $$ = SemWINNewDiagCtrl( Y_SCROLLBAR, $2 ); }
+    ;
+
+control-stmt-ex
+    : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
+                    style comma-opt size-info
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL ); }
+
+    | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
+                    style comma-opt size-info comma-opt exstyle helpId-opt
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) ); }
     ;
 
 control-stmt
