@@ -112,15 +112,24 @@ typedef struct MenuExItemNormal {
 
 typedef struct MenuExItemNormalData {
     MenuItemNormal      Normal;
-    MenuExItemNormal    ExNormal;
+    MenuExItemNormal    ExData;
 } MenuExItemNormalData;
 
 typedef struct MenuExItemPopupData {
     MenuItemPopup       Popup;
-    MenuExItemPopup     ExPopup;
+    MenuExItemPopup     ExData;
 } MenuExItemPopupData;
 
 typedef struct MenuItem {
+    char                *ItemText;
+    unsigned            ItemId;
+    unsigned            ExHelpId;
+    union {
+        MenuFlags       ItemFlags;
+        MenuExFlags     ExFlags;
+    } u;
+    MenuExTypeFlags     ExType;
+    MenuExStateFlags    ExState;
     unsigned            IsEx     :1;
     unsigned            IsPopup  :1;
     unsigned            IsOldWin :1;
@@ -130,13 +139,6 @@ typedef struct MenuItem {
         MenuExItemNormalData    ExNormal;
         MenuExItemPopupData     ExPopup;
     } Item;
-    MenuFlags           flags;
-    unsigned            id;
-    char                *text;
-    MenuExTypeFlags     ExType;
-    MenuExStateFlags    ExState;
-    MenuExFlags         ExFlags;
-    unsigned            ExHelpID;
 } MenuItem;
 
 /* reswmenu.c */

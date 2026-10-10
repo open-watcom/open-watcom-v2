@@ -49,12 +49,14 @@ typedef enum MenuItemType {
 
 typedef struct MenuItemNormalData {
     MenuItemType            type;
-    MenuExItemNormalData    item;
+    MenuItemNormal          menuData;
+    MenuExItemNormal        menuExData;
 } MenuItemNormalData;
 
 typedef struct MenuItemPopupData {
     MenuItemType            type;
-    MenuExItemPopupData     item;
+    MenuItemPopup           menuData;
+    MenuExItemPopup         menuExData;
 } MenuItemPopupData;
 
 typedef struct FullMenuWIN {
