@@ -815,19 +815,19 @@ string-section
 string-items
     : string-item
         {
-            $$ = SemOS2AddStrToStringTable( NULL, $1.ItemID, $1.String );
+            $$ = SemOS2AddStrToStringTable( NULL, $1.ItemId, $1.String );
             MemFree( $1.String );
         }
     | string-items string-item
         {
-            $$ = SemOS2AddStrToStringTable( $1, $2.ItemID, $2.String );
+            $$ = SemOS2AddStrToStringTable( $1, $2.ItemId, $2.String );
             MemFree( $2.String );
         }
     ;
 
 string-item
     : string-id comma-opt string-constant
-        { $$.ItemID = $1; $$.String = $3.string; }
+        { $$.ItemId = $1; $$.String = $3.string; }
     ;
 
 string-id

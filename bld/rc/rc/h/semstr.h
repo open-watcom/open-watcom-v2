@@ -52,7 +52,7 @@ typedef struct FullStringTable {
 } FullStringTable;
 
 typedef struct StringItem {
-    uint_16         ItemID;
+    uint_16         ItemId;
     char            *String;
 } StringItem;
 

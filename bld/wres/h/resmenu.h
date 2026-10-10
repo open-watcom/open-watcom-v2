@@ -101,7 +101,7 @@ typedef struct MenuExItemPopup {
 
 typedef struct MenuItemNormal {     /* if !(ItemFlags & MENU_POPUP) */
     MenuFlags       ItemFlags;
-    unsigned        ItemID;         /* Note! This was changed from uint_16!! */
+    unsigned        ItemId;         /* Note! This was changed from uint_16!! */
     char            *ItemText;
 } MenuItemNormal;
 
@@ -112,12 +112,12 @@ typedef struct MenuExItemNormal {
 
 typedef struct MenuExItemNormalData {
     MenuItemNormal      Normal;
-    MenuExItemNormal    ExData;
+    MenuExItemNormal    ExNormal;
 } MenuExItemNormalData;
 
 typedef struct MenuExItemPopupData {
     MenuItemPopup       Popup;
-    MenuExItemPopup     ExData;
+    MenuExItemPopup     ExPopup;
 } MenuExItemPopupData;
 
 typedef struct MenuItem {

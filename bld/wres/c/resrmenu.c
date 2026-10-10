@@ -113,7 +113,7 @@ bool ResReadMenuExItem( MenuItem *item, FILE *fp )
     } else {
         item->IsPopup = false;
         item->Item.ExNormal.Normal.ItemFlags = resInfo;
-        item->Item.ExNormal.Normal.ItemID = id;
+        item->Item.ExNormal.Normal.ItemId = id;
         item->Item.ExNormal.Normal.ItemText = ResRead32String( fp, NULL );
 
         // Careful! The string is DWORD aligned.
@@ -139,7 +139,7 @@ bool ResReadMenuItem( MenuItem *item, FILE *fp )
             error = (item->Item.Popup.ItemText == NULL);
         } else {
             item->IsPopup = false;
-            item->Item.Normal.ItemID = ResReadUint16( &error, fp );
+            item->Item.Normal.ItemId = ResReadUint16( &error, fp );
             if( !error ) {
                 item->Item.Normal.ItemText = ResReadString( fp, NULL );
                 error = (item->Item.Normal.ItemText == NULL);
@@ -164,7 +164,7 @@ bool ResReadMenuItem32( MenuItem *item, FILE *fp )
             error = (item->Item.Popup.ItemText == NULL);
         } else {
             item->IsPopup = false;
-            item->Item.Normal.ItemID = ResReadUint16( &error, fp );
+            item->Item.Normal.ItemId = ResReadUint16( &error, fp );
             if( !error ) {
                 item->Item.Normal.ItemText = ResRead32String( fp, NULL );
                 error = (item->Item.Normal.ItemText == NULL);

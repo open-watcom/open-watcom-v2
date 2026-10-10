@@ -118,7 +118,7 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *item, bool use_unicode, FILE 
         return( WRES_ERROR( WRS_BAD_PARAMETER ) );
     error = ResWriteUint16( fp, item->ItemFlags );
     if( !error )
-        error = ResWriteUint16( fp, (uint_16)item->ItemID );
+        error = ResWriteUint16( fp, (uint_16)item->ItemId );
     if( !error )
         error = ResWriteString( item->ItemText, use_unicode, fp );
     return( error );
@@ -133,7 +133,7 @@ bool ResWriteMenuItemNormalOldWin( const MenuItemNormal *item, bool use_unicode,
         return( WRES_ERROR( WRS_BAD_PARAMETER ) );
     error = ResWriteUint8( fp, item->ItemFlags );
     if( !error )
-        error = ResWriteUint16( fp, (uint_16)item->ItemID );
+        error = ResWriteUint16( fp, (uint_16)item->ItemId );
     if( !error )
         error = ResWriteString( item->ItemText, use_unicode, fp );
     return( error );
@@ -152,7 +152,7 @@ bool ResWriteMenuExItemNormal( const MenuItemNormal *item, const MenuExItemNorma
         error = ResWriteUint32( fp, exdata->ItemState );
     }
     if( !error ) {
-        error = ResWriteUint32( fp, item->ItemID );
+        error = ResWriteUint32( fp, item->ItemId );
     }
     if( !error ) {
         error = ResWriteUint16( fp, item->ItemFlags );

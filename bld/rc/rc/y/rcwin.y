@@ -733,19 +733,19 @@ string-section
 string-items
     : string-item
         {
-            $$ = SemWINAddStrToStringTable( NULL, $1.ItemID, $1.String );
+            $$ = SemWINAddStrToStringTable( NULL, $1.ItemId, $1.String );
             MemFree( $1.String );
         }
     | string-items string-item
         {
-            $$ = SemWINAddStrToStringTable( $1, $2.ItemID, $2.String );
+            $$ = SemWINAddStrToStringTable( $1, $2.ItemId, $2.String );
             MemFree( $2.String );
         }
     ;
 
 string-item
     : string-id comma-opt string-constant
-        { $$.ItemID = $1; $$.String = $3.string; }
+        { $$.ItemId = $1; $$.String = $3.string; }
     ;
 
 string-id
@@ -1088,7 +1088,7 @@ menuex-entry-defn
         {
             $$.type = MT_SEPARATOR;
             $$.menuData.ItemText = NULL;
-            $$.menuData.ItemID = 0;
+            $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
@@ -1097,7 +1097,7 @@ menuex-entry-defn
         {
             $$.type = MT_MENUEX_NO_ID;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = 0;
+            $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = 0L;
             $$.menuExData.ItemState = 0L;
@@ -1107,7 +1107,7 @@ menuex-entry-defn
         {
             $$.type = MT_EITHER;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = 0L;
             $$.menuExData.ItemState = 0L;
@@ -1116,7 +1116,7 @@ menuex-entry-defn
         {
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = 0L;
@@ -1127,7 +1127,7 @@ menuex-entry-defn
         {
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = $7;
@@ -1137,7 +1137,7 @@ menuex-entry-defn
         {
             $$.type = MT_MENU;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = $5;
         }
     ;
@@ -1147,7 +1147,7 @@ menu-entry-defn
         {
             $$.type = MT_SEPARATOR;
             $$.menuData.ItemText = NULL;
-            $$.menuData.ItemID = 0;
+            $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
@@ -1156,7 +1156,7 @@ menu-entry-defn
         {
             $$.type = MT_MENUEX_NO_ID;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = 0;
+            $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = 0L;
             $$.menuExData.ItemState = 0L;
@@ -1166,7 +1166,7 @@ menu-entry-defn
         {
             $$.type = MT_EITHER;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = 0L;
             $$.menuExData.ItemState = 0L;
@@ -1175,7 +1175,7 @@ menu-entry-defn
         {
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = 0L;
@@ -1186,7 +1186,7 @@ menu-entry-defn
         {
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = $7;
@@ -1196,7 +1196,7 @@ menu-entry-defn
         {
             $$.type = MT_MENU;
             $$.menuData.ItemText = $1.string;
-            $$.menuData.ItemID = $3;
+            $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = $5;
         }
     ;
