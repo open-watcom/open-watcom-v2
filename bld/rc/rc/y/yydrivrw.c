@@ -84,9 +84,9 @@ typedef union {
     FullDialogOptions           diagopts;
     ResNameOrOrdinal            *nameorord;
     FullDialogBoxHeader         *diaghead;
-    FullDialogBoxControl        *diagctrl;
-    FullDialogCtrlList          *diagctrllist;
-    FullDialogCtrlOptions       diagctrlopts;
+    FullDialogBoxControlWIN     *diagctrl;
+    FullDialogCtrlListWIN       *diagctrllist;
+    FullDialogCtrlOptionsWIN    diagctrlopts;
     StringItem                  stritem;
     FullStringTable             *strtable;
     RawDataItem                 rawitem;

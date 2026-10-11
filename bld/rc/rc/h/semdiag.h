@@ -57,26 +57,26 @@ typedef struct DlgControl32 {
     uint_16             ExtraBytes;         /* should be 0 */
     uint_32             HelpId;             /* only used for Dialogex */
     bool                HelpIdDefined;      /* only used for Dialogex */
-}DlgControl32;
+} DlgControl32;
 
-typedef struct FullDialogBoxControl {
-    struct FullDialogBoxControl     *next;
-    struct FullDialogBoxControl     *prev;
+typedef struct FullDialogBoxControlWIN {
+    struct FullDialogBoxControlWIN  *next;
+    struct FullDialogBoxControlWIN  *prev;
     bool                            iswin32;
     union {
         DialogBoxControl            ctrl;
         DlgControl32                ctrl32;
     } u;
     DataElemList                    *dataListHead;
-} FullDialogBoxControl;
+} FullDialogBoxControlWIN;
 
-typedef struct FullDialogCtrlList {
-    FullDialogBoxControl            *head;
-    FullDialogBoxControl            *tail;
+typedef struct FullDialogCtrlListWIN {
+    FullDialogBoxControlWIN         *head;
+    FullDialogBoxControlWIN         *tail;
     uint_16                         numctrls; /* Win16 only support upto 255 controls. */
-} FullDialogCtrlList;
+} FullDialogCtrlListWIN;
 
-typedef struct FullDialogCtrlOptions {
+typedef struct FullDialogCtrlOptionsWIN {
     DialogSizeInfo          SizeInfo;
     IntMask                 Style;
     uint_16                 ID;
@@ -84,7 +84,7 @@ typedef struct FullDialogCtrlOptions {
     uint_32                 ExtendedStyle;
     uint_32                 HelpId;
     bool                    HelpIdDefined;
-} FullDialogCtrlOptions;
+} FullDialogCtrlOptionsWIN;
 
 typedef struct DlgHelpId {
     uint_32     HelpId;

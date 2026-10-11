@@ -239,20 +239,20 @@ FullDialogBoxHeader *SemWINDialogOptions( FullDialogBoxHeader *head, FullDialogO
     return( head );
 }
 
-FullDialogCtrlList *SemWINEmptyDialogCtrlList( void )
-/***************************************************/
+FullDialogCtrlListWIN *SemWINEmptyDialogCtrlList( void )
+/******************************************************/
 {
-    FullDialogCtrlList  *newlist;
+    FullDialogCtrlListWIN   *newlist;
 
-    newlist = MemAllocSafe( sizeof( FullDialogCtrlList ) );
+    newlist = MemAllocSafe( sizeof( FullDialogCtrlListWIN ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     newlist->numctrls = 0;
     return( newlist );
 }
 
-FullDialogCtrlList *SemWINAddDialogCtrlList( FullDialogCtrlList *list,
-                    FullDialogBoxControl *ctrl, DataElemList *dataList )
+FullDialogCtrlListWIN *SemWINAddDialogCtrlList( FullDialogCtrlListWIN *list,
+                    FullDialogBoxControlWIN *ctrl, DataElemList *dataList )
 /**********************************************************************/
 {
     if( list == NULL ) {
@@ -266,12 +266,12 @@ FullDialogCtrlList *SemWINAddDialogCtrlList( FullDialogCtrlList *list,
     return( list );
 } /* SemWINAddDialogCtrlList */
 
-static FullDialogBoxControl *semInitDialogCtrl( void )
-/****************************************************/
+static FullDialogBoxControlWIN *semInitDialogCtrl( void )
+/*******************************************************/
 {
-    FullDialogBoxControl        *newctrl;
+    FullDialogBoxControlWIN     *newctrl;
 
-    newctrl = MemAllocSafe( sizeof( FullDialogBoxControl ) );
+    newctrl = MemAllocSafe( sizeof( FullDialogBoxControlWIN ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
     newctrl->iswin32 = CmdLineParms.iswin32;
@@ -326,10 +326,10 @@ static FullDialogBoxControl *semInitDialogCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-FullDialogBoxControl *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOptions opts )
-/****************************************************************************************/
+FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOptionsWIN opts )
+/**********************************************************************************************/
 {
-    FullDialogBoxControl    *newctrl;
+    FullDialogBoxControlWIN *newctrl;
     uint_32                 style_mask; /* for the style of the control */
     uint_32                 style_value;
     uint_32                 defstyle_hi = 0;
@@ -508,11 +508,11 @@ FullDialogBoxControl *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOpti
 } /* SemWINNewDialogCtrl */
 
 
-static void SemFreeDialogCtrlList( FullDialogCtrlList *list )
-/***********************************************************/
+static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
+/**************************************************************/
 {
-    FullDialogBoxControl        *ctrl;
-    FullDialogBoxControl        *next;
+    FullDialogBoxControlWIN     *ctrl;
+    FullDialogBoxControlWIN     *next;
 
     for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
         next = ctrl->next;
@@ -574,11 +574,11 @@ static void SemFreeDialogHeader( FullDialogBoxHeader *head )
     MemFree( head );
 } /* SemFreeDialogHeader */
 
-static bool SemWriteDialogCtrlList( FullDialogCtrlList *list, int *err_code, bool is_dialogex )
-/*********************************************************************************************/
+static bool SemWriteDialogCtrlList( FullDialogCtrlListWIN *list, int *err_code, bool is_dialogex )
+/************************************************************************************************/
 {
     bool                        error;
-    FullDialogBoxControl        *ctrl;
+    FullDialogBoxControlWIN     *ctrl;
     DialogBoxExControl32        controlex;
     DialogBoxControl32          control;
 
@@ -637,10 +637,10 @@ static size_t SemCountBytes( DataElemList *list )
 }
 
 static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
-                               DlgHelpId dlghelp, FullDialogCtrlList *ctrls )
-/***************************************************************************/
+                               DlgHelpId dlghelp, FullDialogCtrlListWIN *ctrls )
+/******************************************************************************/
 {
-    FullDialogBoxControl    *travptr;
+    FullDialogBoxControlWIN *travptr;
 
     if( head->iswin32 ) {
         if( is_dialogex ) {
@@ -675,14 +675,14 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
 
 void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
                     DialogSizeInfo sizeinfo, FullDialogBoxHeader *head,
-                    FullDialogCtrlList *ctrls, DlgHelpId dlghelp,
+                    FullDialogCtrlListWIN *ctrls, DlgHelpId dlghelp,
                     bool is_dialogex )
 /******************************************************************/
 {
     ResLocation              loc;
     int                      err_code = 0;
     int                      error;
-    FullDialogBoxControl     *travptr;
+    FullDialogBoxControlWIN  *travptr;
 
     error = 0;
     if( head == NULL ) {
@@ -769,15 +769,15 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
 } /* SemWINWriteDialogBox */
 
 
-FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
+FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
          uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext_id,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
 /*************************************************************************/
 {
-    FullDialogBoxControl   *control;
-    uint_32                mask;
-    uint_32                value;
-    uint_32                style;
+    FullDialogBoxControlWIN *control;
+    uint_32                 mask;
+    uint_32                 value;
+    uint_32                 style;
 
     mask = ctrlstyle.Mask;
     value = ctrlstyle.Value;
