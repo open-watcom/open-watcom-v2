@@ -63,7 +63,6 @@ global locflags     rs_loc;             // restricted location
 
 global char         *alt_ext;           // alternate extension
 global char         *def_ext;           // default extension
-global char         ampchar;            // symbol substitution/attribute/function marker
 
 global char         *master_fname;      // Primary input file name
 global char         *master_fname_attr; // Primary input file name attributes
@@ -89,10 +88,10 @@ global line_number  gotargetno;         // .go to line no
 global int          err_count;          // Overall Errorcount
 global int          wng_count;          // Overall warning count
 
-global char         CONT_char;          // CONTINUE char (normally 0x03)
-global char         GML_char;           // GML Keywword start char (normally ":")
-global char         SCR_char;           // SCRIPT keywword start char (normally ".")
-global char         cw_sep_char;        // Control Word separator char (normally ";")
+global int          CONT_char;          // CONTINUE char (normally 0x03)
+global int          GML_char;           // GML Keywword start char (normally ":")
+global int          SCR_char;           // SCRIPT keywword start char (normally ".")
+global int          cw_sep_char;        // Control Word separator char (normally ";")
 
 global int          CPI;                // chars per inch
 global space_units  CPI_units;          // unit for chars per inch

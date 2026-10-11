@@ -193,7 +193,7 @@ void ProcConfigFile( void )
     ReqEOC();
     for( inp = InpStack; inp != NULL; inp = inp->link ) {
         if( inp->type & INP_CMD_FILE ) {
-            inv = inp->handle;
+            inv = (invokes *)( inp->handle );
             SetLastCfg( inv->name );
             break;
         }

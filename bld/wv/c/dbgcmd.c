@@ -55,7 +55,7 @@ static bool DoneCmd( inp_data_handle handle, inp_rtn_action action )
     case INP_RTN_EOL:
         return( false );
     case INP_RTN_FINI:
-        MemFree( buff );
+//        MemFree( buff );
         return( true );
     }
     return( false ); // silence compiler

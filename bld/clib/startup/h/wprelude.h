@@ -33,13 +33,12 @@
 
 extern void __WATCOM_Prelude( void );
 
-#if defined(_THIN_LIB_DLL)
+#if defined( __SW_BD ) || !defined(_THIN_LIB)
 extern long _Prelude( void *, void *, unsigned char *, unsigned char *, long, long, long __cdecl (*)(), long, long );
 extern void _Stop( void );
-#elif !defined(_THIN_LIB)
+#endif
+#if !defined(_THIN_LIB)
 extern int  _cstart_( void );
-extern long _Prelude( void *, void *, unsigned char *, unsigned char *, long, long, long __cdecl (*)(), long, long );
-extern void _Stop( void );
 extern void __VersionEnforcement( void );
 #endif
 

@@ -32,6 +32,7 @@
 
 #ifndef REGEXP_INCLUDED
 #define REGEXP_INCLUDED
+
 #ifdef __cplusplus
 extern "C" {
 #endif

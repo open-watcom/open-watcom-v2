@@ -449,11 +449,24 @@ static void dmp_obj_flags( unsigned_32 flags )
     if( flags & OSF_OBJ_HAS_INVALID ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "INVALID" );
     }
-    if( flags & OSF_OBJ_PERM_SWAPPABLE ) {
-        p += sprintf( p, GET_OR_FMT( p == buffer ), "SWAPPABLE" );
-    }
-    if( flags & OSF_OBJ_PERM_RESIDENT ) {
-        p += sprintf( p, GET_OR_FMT( p == buffer ), "RESIDENT" );
+    if( Form == FORM_LE ) {
+        if( flags & OSF_OBJ_PERM_SWAPPABLE ) {
+            p += sprintf( p, GET_OR_FMT( p == buffer ), "SWAPPABLE" );
+        }
+        if( flags & OSF_OBJ_PERM_RESIDENT ) {
+            p += sprintf( p, GET_OR_FMT( p == buffer ), "RESIDENT" );
+        }
+    } else { /* LX */
+        if( (flags & (OSF_OBJ_HAS_ZERO_FILL | OSF_OBJ_PERM_RESIDENT)) == (OSF_OBJ_HAS_ZERO_FILL | OSF_OBJ_PERM_RESIDENT) ) {
+            p += sprintf( p, GET_OR_FMT( p == buffer ), "CONTIGUOUS" );
+        } else {
+            if( flags & OSF_OBJ_HAS_ZERO_FILL ) {
+                p += sprintf( p, GET_OR_FMT( p == buffer ), "ZERO_FILL" );
+            }
+            if( flags & OSF_OBJ_PERM_RESIDENT ) {
+                p += sprintf( p, GET_OR_FMT( p == buffer ), "RESIDENT" );
+            }
+        }
     }
     if( flags & OSF_OBJ_PERM_LOCKABLE ) {
         p += sprintf( p, GET_OR_FMT( p == buffer ), "PERM_LOCKABLE" );

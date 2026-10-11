@@ -147,12 +147,62 @@ static f_handle openTempFile( char **fname )
     return( QOpenRW( *fname ) );
 }
 
+static char *GetModuleName( const char *name, size_t *plen, char *newname, void *(*fn)(size_t) )
+{
+    size_t          vxdlen;
+    size_t          newlen;
+    size_t          i;
+
+    /*
+     * for NE format (16-bit OS/2 and Windows 3.x)
+     * - get base file name only (8 characters max)
+     * - uppercase name
+     * for LE Windows VxD
+     * - get base file name only + spaces (exactly 8 characters length)
+     * - uppercase name
+     * for LE and LX format
+     * - get base file name with extension
+     * - uppercase name
+     * for PE format
+     * - get base file name with extension
+     * - preserves the case of name
+     */
+    if( FmtData.type & MK_WIN_VXD ) {
+        vxdlen = *plen;
+        if( vxdlen > 8 ) {
+            vxdlen = 8;
+        }
+        newlen = 8;
+    } else if( FmtData.type & (MK_OS2_NE | MK_WIN_NE) ) {
+        newlen = *plen;
+        if( newlen > 8 ) {
+            newlen = 8;
+        }
+    } else {
+        newlen = strlen( name );
+    }
+    *plen = newlen;
+    if( fn != NULL ) {
+        newname = MemAllocSafe( newlen );
+    }
+    if( FmtData.type & MK_WIN_VXD ) {
+        for( i = 0; i < newlen; i++ ) {
+            newname[i] = ( i < vxdlen ) ? toupper( (unsigned char)name[i] ) : ' ';
+        }
+    } else if( FmtData.type & (MK_OS2 | MK_WIN_NE) ) {
+        for( i = 0; i < newlen; i++ ) {
+            newname[i] = toupper( (unsigned char)name[i] );
+        }
+    } else {
+        memcpy( newname, name, newlen );
+    }
+    return( newname );
+}
+
 static void SetupImpLib( void )
 /*****************************/
 {
     const char  *fname;
-    size_t      namelen;
-    unsigned    i;
 
     ImpLib.bufsize = 0;
     ImpLib.handle = NIL_FHANDLE;
@@ -168,40 +218,8 @@ static void SetupImpLib( void )
         }
         if( ImpLib.handle != NIL_FHANDLE ) {
             ImpLib.buffer = MemAllocSafe( IMPLIB_BUFSIZE );
-            /*
-             * for NE format (16-bit OS/2 and Windows 3.x)
-             * - get base file name only
-             * - uppercase name
-             * for LE and LX format (OS/2 + Windows VxD + 32-bit DOS)
-             * - get base file name with extension
-             * - uppercase name
-             * for PE format
-             * - get base file name with extension
-             * - preserves the case of name
-             */
-            fname = GetBaseName( Root->outfile->fname, 0, &namelen );
-            if( FmtData.type & MK_NE ) {
-                if( namelen > 8 ) {
-                    namelen = 8;
-                }
-            } else {
-                /*
-                 * use base name + extension
-                 */
-                namelen = strlen( fname );
-            }
-            ImpLib.module_name_len = namelen;
-            ImpLib.module_name = MemAllocSafe( namelen );
-            if( FmtData.type & (MK_NE | MK_OS2_FLAT | MK_WIN_VXD) ) {
-                /*
-                 * upper-case module name
-                 */
-                for( i = 0; i < namelen; i++ ) {
-                    ImpLib.module_name[i] = toupper( ((unsigned char *)fname)[i] );
-                }
-            } else { /* FmtData.type & MK_PE */
-                memcpy( ImpLib.module_name, fname, namelen );
-            }
+            fname = GetBaseName( Root->outfile->fname, 0, &ImpLib.module_name_len );
+            ImpLib.module_name = GetModuleName( fname, &ImpLib.module_name_len, NULL, MemAllocSafe );
         }
     }
 }

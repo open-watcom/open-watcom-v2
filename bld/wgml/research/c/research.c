@@ -219,7 +219,7 @@ void display_hex_line( char * out_chars, char * in_chars )
 int parse_cmdline( char * cmdline )
 {
     char *      end;
-    char        opt;
+    int         opt;
     ptrdiff_t   len;
 
     /* Find the parameter -- there should only be one. */
@@ -235,7 +235,7 @@ int parse_cmdline( char * cmdline )
 
     /* Verify that parameter is not adorned. */
 
-    opt = *cmdline;
+    opt = *(unsigned char *)cmdline;
     if( CmdScanSwitchChar( opt ) || opt == '@' ) {
         print_usage();
         return( FAILURE );

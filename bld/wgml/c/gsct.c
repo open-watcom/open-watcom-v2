@@ -74,21 +74,24 @@
 void    scr_ct( void )
 {
     char        *   p;
+    int             c;
 
     p = g_scandata.s;                     // next char after .ct
-    if( is_space_tab_char( *p ) && (*p != '\0') && is_space_tab_char( *(p + 1) ) ) {
+    c = *(unsigned char *)p;
+    if( is_space_tab_char( c ) && is_space_tab_char( *(unsigned char *)(p + 1) ) ) {
         ProcFlags.fsp = true;           // keep post_space
         if( post_space == 0 ) {         // ensure it has a non-zero value
             post_space = wgml_fonts[g_curr_font].spc_width;
         }
     }
-    if( *p != '\0' ) {                  // line operand specified
+    if( c != '\0' ) {                  // line operand specified
         if( ProcFlags.concat ) {
             SkipSpaces( p );
         } else {
             p++;                        // over blank after control word
         }
-        if( *p != '\0' ) {
+        c = *(unsigned char *)p;
+        if( c != '\0' ) {
             if( !ProcFlags.fsp ) {                  // not forced space
                 if( is_ip_tag( nest_cb->gtag ) ) { // in inline phrase
                     if( is_ip_tag( nest_cb->prev->gtag ) ) { // in 2nd inline phrase
@@ -103,8 +106,8 @@ void    scr_ct( void )
                 }
             }
             ProcFlags.ct = true;
-            if( (*p == SCR_char) ||     // script control word follows
-                (*p == GML_char) ) {    // GML tag follows
+            if( (c == SCR_char) ||     // script control word follows
+                (c == GML_char) ) {    // GML tag follows
                 split_input( g_scandata.s, p, input_cbs->fmflags );   // fixes problem with macro
                 input_cbs->hidden_head->fm_symbol = input_cbs->fm_symbol;
                 input_cbs->hidden_head->sym_space = input_cbs->sym_space;
@@ -117,4 +120,3 @@ void    scr_ct( void )
     scan_restart = g_scandata.e;
     return;
 }
-

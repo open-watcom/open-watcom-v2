@@ -486,12 +486,12 @@ static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
     0
 };
 
-bool DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
-/***************************************************************************
+bool DRENTRY DRWalkArraySibs( drmem_hdl arrhdl, const DRWLKBLK *wlks, void *d )
+/******************************************************************************
  * wlks[0] == subrange [1] = enumerator , 0 = Null
  */
 {
-    return( DR_WalkSiblings( mod, ArrayTag, wlks, d ) );
+    return( DR_WalkSiblings( arrhdl, ArrayTag, wlks, d ) );
 }
 
 static const dw_tagnum EnumTag[DR_WLKBLK_ENUMS] = {

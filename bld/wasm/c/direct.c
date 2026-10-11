@@ -793,10 +793,9 @@ void dir_fini( dir_node_handle dir )
     case SYM_GRP:
         {
             seg_list    *segcurr;
-            seg_list    *segnext;
 
-            for( segcurr = dir->e.grpinfo->seglist; segcurr != NULL; segcurr = segnext ) {
-                segnext = segcurr->next;
+            while( (segcurr = dir->e.grpinfo->seglist) != NULL ) {
+                dir->e.grpinfo->seglist = segcurr->next;
                 MemFree( segcurr );
             }
             MemFree( dir->e.grpinfo );
@@ -839,26 +838,24 @@ void dir_fini( dir_node_handle dir )
     case SYM_PROC:
         {
             label_list  *labelcurr;
-            label_list  *labelnext;
             regs_list   *regcurr;
-            regs_list   *regnext;
 
-            for( labelcurr = dir->e.procinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
-                labelnext = labelcurr->next;
+            while( (labelcurr = dir->e.procinfo->params.head) != NULL ) {
+                dir->e.procinfo->params.head = labelcurr->next;
                 MemFree( labelcurr->label );
                 MemFree( labelcurr->replace );
                 MemFree( labelcurr );
             }
 
-            for( labelcurr = dir->e.procinfo->locals.head; labelcurr != NULL; labelcurr = labelnext ) {
-                labelnext = labelcurr->next;
+            while( (labelcurr = dir->e.procinfo->locals.head) != NULL ) {
+                dir->e.procinfo->locals.head = labelcurr->next;
                 MemFree( labelcurr->label );
                 MemFree( labelcurr->replace );
                 MemFree( labelcurr );
             }
 
-            for( labelcurr = dir->e.procinfo->labels.head; labelcurr != NULL; labelcurr = labelnext ) {
-                labelnext = labelcurr->next;
+            while( (labelcurr = dir->e.procinfo->labels.head) != NULL ) {
+                dir->e.procinfo->labels.head = labelcurr->next;
                 MemFree( labelcurr->label );
                 MemFree( labelcurr->replace );
                 if( labelcurr->sym != NULL )
@@ -866,8 +863,8 @@ void dir_fini( dir_node_handle dir )
                 MemFree( labelcurr );
             }
 
-            for( regcurr = dir->e.procinfo->regslist; regcurr != NULL; regcurr = regnext ) {
-                regnext = regcurr->next;
+            while( (regcurr = dir->e.procinfo->regslist) != NULL ) {
+                dir->e.procinfo->regslist = regcurr->next;
                 MemFree( regcurr->reg );
                 MemFree( regcurr );
             }
@@ -877,17 +874,14 @@ void dir_fini( dir_node_handle dir )
     case SYM_MACRO:
         {
             parm_list       *labelcurr;
-            parm_list       *labelnext;
             asmline         *linecurr;
-            asmline         *linenext;
             local_label     *localcurr;
-            local_label     *localnext;
 
             /*
              * free the parm list
              */
-            for( labelcurr = dir->e.macroinfo->params.head; labelcurr != NULL; labelcurr = labelnext ) {
-                labelnext = labelcurr->next;
+            while( (labelcurr = dir->e.macroinfo->params.head) != NULL ) {
+                dir->e.macroinfo->params.head = labelcurr->next;
                 MemFree( labelcurr->label );
                 if( labelcurr->replace != NULL ) {
                     MemFree( labelcurr->replace );
@@ -900,16 +894,16 @@ void dir_fini( dir_node_handle dir )
             /*
              * free the labels list
              */
-            for( localcurr = dir->e.macroinfo->labels.head; localcurr != NULL; localcurr = localnext ) {
-                localnext = localcurr->next;
+            while( (localcurr = dir->e.macroinfo->labels.head) != NULL ) {
+                dir->e.macroinfo->labels.head = localcurr->next;
                 MemFree( localcurr->local );
                 MemFree( localcurr );
             }
             /*
              * free the lines list
              */
-            for( linecurr = dir->e.macroinfo->lines.head; linecurr != NULL; linecurr = linenext ) {
-                linenext = linecurr->next;
+            while( (linecurr = dir->e.macroinfo->lines.head) != NULL ) {
+                dir->e.macroinfo->lines.head = linecurr->next;
                 MemFree( linecurr->line );
                 MemFree( linecurr );
             }
@@ -920,10 +914,9 @@ void dir_fini( dir_node_handle dir )
     case SYM_STRUCT:
         {
             field_list      *ptr;
-            field_list      *next;
 
-            for( ptr = dir->e.structinfo->fields.head; ptr != NULL; ptr = next ) {
-                next = ptr->next;
+            while( (ptr = dir->e.structinfo->fields.head) != NULL ) {
+                dir->e.structinfo->fields.head = ptr->next;
                 MemFree( ptr->initializer );
                 MemFree( ptr->value );
                 if( ptr->sym != NULL )

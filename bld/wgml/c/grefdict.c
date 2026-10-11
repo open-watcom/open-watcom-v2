@@ -52,7 +52,7 @@ char    *get_refid_value( char *p, att_val_type *attr_val, char *refid )
     if( len > REFID_LEN )
         len = REFID_LEN;
     for( i = 0; i < len; i++ ) {
-        refid[i] = my_tolower( attr_val->tok.s[i] );
+        refid[i] = tolower( ((unsigned char *)attr_val->tok.s)[i] );
     }
     refid[i] = '\0';
     if( attr_val->tok.l > 7 ) {                 // wgml 4 warning level

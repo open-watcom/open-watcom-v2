@@ -35,18 +35,18 @@
 
 //#define UI_DEBUG
 #if defined UI_DEBUG
-extern void UIDebugPrintf( const char *f, ... );
-#define UIDebugPrintf0( f )                 UIDebugPrintf( f )
-#define UIDebugPrintf1( f, a )              UIDebugPrintf( f, a )
-#define UIDebugPrintf2( f, a, b )           UIDebugPrintf( f, a, b )
-#define UIDebugPrintf3( f, a, b, c )        UIDebugPrintf( f, a, b, c )
-#define UIDebugPrintf4( f, a, b, c, d )     UIDebugPrintf( f, a, b, c, d )
+    extern void UIDebugPrintf( const char *f, ... );
+    #define UIDebugPrintf0( f )                 UIDebugPrintf( f )
+    #define UIDebugPrintf1( f, a )              UIDebugPrintf( f, a )
+    #define UIDebugPrintf2( f, a, b )           UIDebugPrintf( f, a, b )
+    #define UIDebugPrintf3( f, a, b, c )        UIDebugPrintf( f, a, b, c )
+    #define UIDebugPrintf4( f, a, b, c, d )     UIDebugPrintf( f, a, b, c, d )
 #else
-#define UIDebugPrintf0( f )
-#define UIDebugPrintf1( f, a )
-#define UIDebugPrintf2( f, a, b)
-#define UIDebugPrintf3( f, a, b, c )
-#define UIDebugPrintf4( f, a, b, c, d )
+    #define UIDebugPrintf0( f )
+    #define UIDebugPrintf1( f, a )
+    #define UIDebugPrintf2( f, a, b)
+    #define UIDebugPrintf3( f, a, b, c )
+    #define UIDebugPrintf4( f, a, b, c, d )
 
-#define UIDebugPrintf DONT USE THIS DIRECTLY
+    #define UIDebugPrintf DONT USE THIS DIRECTLY
 #endif

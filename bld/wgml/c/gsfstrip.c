@@ -69,7 +69,7 @@ condcode    scr_strip( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         if( parmcount > 1 ) {
             tok_type type = parms[1].arg;       // evalute type
             if( unquote_arg( &type ) > 0 ) {
-                typechar = my_toupper( *type.s );
+                typechar = toupper( *(unsigned char *)type.s );
             }
             switch( typechar ) {
             case 'B':

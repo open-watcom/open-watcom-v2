@@ -224,7 +224,7 @@ bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
             text = entry->item->Item.Popup.ItemText;
         } else {
             flags = entry->item->Item.Normal.ItemFlags;
-            id = entry->item->Item.Normal.ItemID;
+            id = entry->item->Item.Normal.ItemId;
             text = entry->item->Item.Normal.ItemText;
         }
         ok = WSetEditWindowText( einfo->edit_dlg, flags, text );
@@ -325,7 +325,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                     } else if( flags & MENU_SEPARATOR ) {
                         ok = false;
                     } else {
-                        ok = ( entry->item->Item.Normal.ItemID != id ||
+                        ok = ( entry->item->Item.Normal.ItemId != id ||
                               strcmp( entry->item->Item.Normal.ItemText, text ) != 0 );
                     }
                 }
@@ -387,7 +387,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
                 id = DEFAULT_MENU_ID;
             }
             entry->item->Item.Normal.ItemText = text;
-            entry->item->Item.Normal.ItemID = id;
+            entry->item->Item.Normal.ItemId = id;
             entry->item->Item.Normal.ItemFlags = flags;
         }
         entry->symbol = symbol;
@@ -868,7 +868,7 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
                 flags = entry->item->Item.Popup.ItemFlags;
             } else {
                 flags = entry->item->Item.Normal.ItemFlags;
-                id = entry->item->Item.Normal.ItemID;
+                id = entry->item->Item.Normal.ItemId;
             }
             pop_sep = (entry->item->IsPopup || (flags & MENU_SEPARATOR));
             WSetEditWindowID( einfo->edit_dlg, id, pop_sep, entry->symbol );

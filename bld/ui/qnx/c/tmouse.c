@@ -96,7 +96,11 @@ static  void tm_error( void )
 /* Parse a QNX Windows/Photon mouse event. */
 static void QW_parse( void )
 {
-    int func, mrow, mcol, mbut, mclick;
+    int func;
+    int mrow;
+    int mcol;
+    int mbut;
+    int mclick;
     char *p = buf;
 
     mclick = 1;

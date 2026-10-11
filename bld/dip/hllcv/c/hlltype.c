@@ -163,7 +163,7 @@ static virt_mem TypeIndexVM( imp_image_handle *iih, unsigned idx )
 
 dip_status hllTypeIndexFillIn( imp_image_handle *iih, unsigned idx, imp_type_handle *ith )
 {
-    ith->array_dim = 0;
+    ith->array.dims = 0;
     ith->idx = idx;
     if( idx < CV_FIRST_USER_TYPE ) {
         ith->handle = 0;
@@ -986,7 +986,7 @@ dip_status hllTypeSymGetType( imp_image_handle *iih, imp_sym_handle *ish,
     case LF_ENUMERATE:
         ith->handle = ish->containing_type;
         ith->idx = UNKNOWN_TYPE_IDX;
-        ith->array_dim = 0;
+        ith->array.dims = 0;
         return( DS_OK );
     default:
         /*
@@ -994,7 +994,7 @@ dip_status hllTypeSymGetType( imp_image_handle *iih, imp_sym_handle *ish,
          */
         ith->handle = ish->handle;
         ith->idx = UNKNOWN_TYPE_IDX;
-        ith->array_dim = 0;
+        ith->array.dims = 0;
         return( DS_OK );
     }
     return( hllTypeIndexFillIn( iih, idx, ith ) );
@@ -1452,7 +1452,7 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih,
             if( array_p == NULL ) {
                 wr = WR_FAIL;
             } else {
-                ith->array_dim = 0;
+                ith->array.dims = 0;
                 ith->idx = CV_FIRST_USER_TYPE;
                 for( count = *array_p; count > 0; count-- ) {
                     array_vm += sizeof( *array_p );
@@ -1618,7 +1618,7 @@ dip_status hllTypeInfo( imp_image_handle *iih, imp_type_handle *ith,
             return( ds );
         if( ai.column_major && ai.dims > 1 ) {
             real = *ith;
-            real.array_dim += ai.dims - 1;
+            real.array.dims += ai.dims - 1;
             ds = hllTypeArrayInfo( iih, ith, lc, &ai, NULL );
             if( ds != DS_OK ) {
                 return( ds );
@@ -1707,8 +1707,8 @@ dip_status hllTypeBase( imp_image_handle *iih, imp_type_handle *ith, imp_type_ha
         p = VMBlock( iih, dim_ith.handle, sizeof( *p ) );
         if( p == NULL )
             return( DS_ERR | DS_FAIL );
-        base_ith->array_dim++;
-        if( base_ith->array_dim < p->dimconu.f.rank ) {
+        base_ith->array.dims++;
+        if( base_ith->array.dims < p->dimconu.f.rank ) {
             return( DS_OK );
         }
         return( hllTypeIndexFillIn( iih, save_idx, base_ith ) );
@@ -1946,7 +1946,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
         idx = p->dimconu.f.index;
         code = p->common.code;
         dim_hdl = real.handle;
-        ai->dims = p->dimconu.f.rank - array_ith->array_dim;
+        ai->dims = p->dimconu.f.rank - array_ith->array.dims;
         if( ai->column_major ) {
             ds = hllTypeIndexFillIn( iih, utype, &real );
             if( ds != DS_OK )
@@ -1955,7 +1955,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
             if( ds != DS_OK )
                 return( ds );
             ai->stride = ti.size;
-            for( i = 0; i < array_ith->array_dim; ++i ) {
+            for( i = 0; i < array_ith->array.dims; ++i ) {
                 ds = GetArrayRange( iih, lc, code, dim_hdl, idx, i, ai );
                 if( ds != DS_OK )
                     return( ds );
@@ -1970,7 +1970,7 @@ static dip_status hllTypeArrayInfo( imp_image_handle *iih,
                 return( ds );
             ai->stride = ti.size;
         }
-        ds = GetArrayRange( iih, lc, code, dim_hdl, idx, array_ith->array_dim, ai );
+        ds = GetArrayRange( iih, lc, code, dim_hdl, idx, array_ith->array.dims, ai );
         if( ds != DS_OK )
             return( ds );
         break;

@@ -25,8 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of getch() for DOS and Windows 3.x (16/32-bit)
 *
 ****************************************************************************/
 

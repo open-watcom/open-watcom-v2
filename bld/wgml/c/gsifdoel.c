@@ -137,8 +137,8 @@ static condcode gargrelop( relop * r )
     } else {
         char    c2;
 
-        c2 = my_tolower( *(g_tok_start + 1) );    // second char of relation operator
-        switch( my_tolower( *g_tok_start ) ) {    // relop is 2 chars
+        c2 = tolower( *(unsigned char *)(g_tok_start + 1) );    // second char of relation operator
+        switch( tolower( *(unsigned char *)g_tok_start ) ) {    // relop is 2 chars
         case '^'  :
             if( c2 == '=' ) {
                 *r = NE;
@@ -412,7 +412,7 @@ void    scr_if( void )
 
     process_late_subst(g_scandata.s);
 
-    if( *(p + strlen(p) - 1) == CONT_char ) {  // remove trailing continue character
+    if( *(unsigned char *)(p + strlen(p) - 1) == CONT_char ) {  // remove trailing continue character
         *(p + strlen(p) - 1) = '\0';
     }
 
@@ -478,7 +478,7 @@ void    scr_if( void )
  *                   ^^
  */
         if( *g_scandata.s != '\0' ) {
-            if( *g_scandata.s == SCR_char ) {
+            if( *(unsigned char *)g_scandata.s == SCR_char ) {
                 break;                  // .xx can't be logical operator
             }
             if( *(g_scandata.s + 1) == ' ' ) {// single char + blank

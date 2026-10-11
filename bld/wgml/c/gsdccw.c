@@ -318,7 +318,7 @@ static char *get_word_ucase( const char *p, char *word, unsigned maxlen )
     i = 0;
     while( *p != ' ' && *p != '\0' ) {
         if( i < maxlen ) {
-            word[i++] = my_toupper( *p );
+            word[i++] = toupper( *(unsigned char *)p );
         }
         p++;
     }
@@ -328,7 +328,6 @@ static char *get_word_ucase( const char *p, char *word, unsigned maxlen )
 
 void    scr_dc( void )
 {
-    char            c;                  // character provided (or 0x00)
     char            *opt_beg;           // option start point
     char            *p;
     char            *val_beg;           // value start point
@@ -362,9 +361,9 @@ void    scr_dc( void )
             xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
         } else if( strcmp( "CW", option ) == 0 ) {
             if( val_len == 0 ) {
-                c = ';';                // default is ;
+                cw_sep_char = ';';                // default is ;
             } else if( val_len == 1 ) {
-                c = *val_beg;
+                cw_sep_char = *(unsigned char *)val_beg;
             } else if( val_len == 2 ) {
                 int     x;
 
@@ -373,14 +372,13 @@ void    scr_dc( void )
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
                 }
-                c = x;
+                cw_sep_char = x;
             } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
-                c = '\0';               // OFF is 0
+                cw_sep_char = '\0';               // OFF is 0
             } else {
                 xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
                 /* never return */
             }
-            cw_sep_char = c;
             add_to_sysdir( "$cw", cw_sep_char );
         } else if( strcmp( "LB", option ) == 0 ) {
             xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
@@ -392,9 +390,9 @@ void    scr_dc( void )
             xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );
         } else if( strcmp( "TB", option ) == 0 ) {
             if( val_len == 0 ) {
-                c = '\t';               // default is '\t'
+                tab_char = '\t';               // default is '\t'
             } else if( val_len == 1 ) {
-                c = *val_beg;
+                tab_char = *(unsigned char *)val_beg;
             } else if( val_len == 2 ) {
                 int     x;
 
@@ -403,14 +401,13 @@ void    scr_dc( void )
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
                 }
-                c = x;
+                tab_char = x;
             } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
-                c = '\t';               // OFF is '\t'
+                tab_char = '\t';               // OFF is '\t'
             } else {
                 xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
                 /* never return */
             }
-            tab_char = c;
 //            char2string[0] = c;
 //            char2string[1] = '\0';
             add_to_sysdir( "$tb", tab_char );
@@ -424,9 +421,9 @@ void    scr_dc( void )
     } else if( opt_len == 3 ) {           // GML IXB IXI IXJ MCS PIX SUB SUP
         if( strcmp( "GML", option ) == 0 ) {
             if( val_len == 0 ) {
-                c = ' ';                        // default is blank
+                GML_char = ' ';                        // default is blank
             } else if( val_len == 1 ) {
-                c = *val_beg;
+                GML_char = *(unsigned char *)val_beg;
             } else if( val_len == 2 ) {
                 int     x;
 
@@ -435,15 +432,14 @@ void    scr_dc( void )
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
                 }
-                c = x;
+                GML_char = x;
             } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
-                c = ' ';                // OFF is blank
+                GML_char = ' ';                // OFF is blank
             } else {
                 xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
                 /* never return */
             }
-            GML_char = c;
-            char2string[0] = c;
+            char2string[0] = GML_char;
             char2string[1] = '\0';
             add_symvar( global_dict, "gml", char2string, 1, SI_no_subscript, SF_predefined );
             add_to_sysdir( "$gml", GML_char );
@@ -468,9 +464,9 @@ void    scr_dc( void )
     } else if( opt_len == 4 ) {           // CONT HYPH HYTR LINB PUNC STOP WORD
         if( strcmp( "CONT", option ) == 0 ) {
             if( val_len == 0 ) {
-                c = ' ';                        // default is blank
+                CONT_char = ' ';                        // default is blank
             } else if( val_len == 1 ) {
-                c = *val_beg;
+                CONT_char = *(unsigned char *)val_beg;
             } else if( val_len == 2 ) {
                 int     x;
 
@@ -479,14 +475,13 @@ void    scr_dc( void )
                     xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );    // only OFF is valid
                     /* never return */
                 }
-                c = x;
+                CONT_char = x;
             } else if( val_len == 3 && strcmp( "OFF", value ) == 0 ) {
-                c = ' ';                // OFF is blank
+                CONT_char = ' ';                // OFF is blank
             } else {
                 xx_line_err_exit_ci( ERR_DC_NOT_OFF, val_beg, val_len );        // only OFF is valid
                 /* never return */
             }
-            CONT_char = c;
             add_to_sysdir( "$cont", CONT_char );
         } else if( strcmp( "HYPH", option ) == 0 ) {
             xx_line_warn_cc( WNG_DC_OPT, opt_beg, opt_beg );

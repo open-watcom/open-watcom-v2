@@ -866,7 +866,7 @@ static brkp *BadPoint( memory_expr def_seg )
     /* unused parameters */ (void)def_seg;
 
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
-    return( NULL );
+//    return( NULL );
 }
 
 
@@ -1276,7 +1276,7 @@ static brkp *TogglePoint( memory_expr def_seg )
     bp = PointBreak( def_seg, &addr );
     if( IS_NIL_ADDR( addr ) ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_SUCH_POINT ) );
-        return( NULL );
+//        return( NULL );
     }
     ToggleBreak( addr );
     return( bp );
