@@ -2153,13 +2153,13 @@ void process_text( char * text, font_number font )
     pword = p;                          // remember word start
     while( *p != '\0' ) {
         typn = TXT_norm;
-        if( (p[0] == FUNC_escape)
+        if( (((unsigned char *)p)[0] == FUNC_escape)
           && (p == pword)
-          && (p[1] >= FUNC_end)
-          && (p[1] <= FUNC_superscript_end) ) {// set text_chars type if not TXT_norm
-            if( p[1] == FUNC_subscript_beg ) {
+          && (((unsigned char *)p)[1] >= FUNC_end)
+          && (((unsigned char *)p)[1] <= FUNC_superscript_end) ) {// set text_chars type if not TXT_norm
+            if( ((unsigned char *)p)[1] == FUNC_subscript_beg ) {
                 typn |= TXT_sub;
-            } else if( p[1] == FUNC_superscript_beg ) {
+            } else if( ((unsigned char *)p)[1] == FUNC_superscript_beg ) {
                 typn |= TXT_sup;
             }
             typ = typn;
@@ -2180,7 +2180,7 @@ void process_text( char * text, font_number font )
               && (*p == '\t') ) {    // concat on & keyboard tab
                 *p = ' ';           // replace with space
             }
-            if( *p != FUNC_escape ) {   // FUNC_escape ends word, even with CO OFF
+            if( ((unsigned char *)p)[0] != FUNC_escape ) {   // FUNC_escape ends word, even with CO OFF
                 if( *p != ' ' ) {       // no space no word end
                     continue;
                 }

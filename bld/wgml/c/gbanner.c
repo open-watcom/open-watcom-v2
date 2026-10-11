@@ -649,9 +649,9 @@ static text_chars * split_text_chars( text_chars * in_chars )
         o_count = c_chars->count;
         p = c_chars->text;
         while( *p != '\0' ) {
-            if( (*p == FUNC_escape) && (*(p + 1) >= FUNC_end) &&
-                                           (*(p + 1) <= FUNC_superscript_end) ) {
-                if( *(p + 2) != '\0' ) {    // only split if text follows
+            if( (((unsigned char *)p)[0] == FUNC_escape) && (((unsigned char *)p)[1] >= FUNC_end) &&
+                                           (((unsigned char *)p)[1] <= FUNC_superscript_end) ) {
+                if( ((unsigned char *)p)[2] != '\0' ) {    // only split if text follows
                     /* Reset c_chars to include text up to split */
                     c_chars->count = p - c_chars->text;
                     c_chars->width = cop_text_width( c_chars->text, c_chars->count,
@@ -665,9 +665,9 @@ static text_chars * split_text_chars( text_chars * in_chars )
                     /* Finish configuring the post-split text_chars */
                     c_chars->width = cop_text_width( c_chars->text, c_chars->count, c_chars->font );
                     c_chars->x_address = c_chars->prev->x_address + c_chars->prev->width;
-                    if( *(p + 1) == FUNC_subscript_beg ) {
+                    if( ((unsigned char *)p)[1] == FUNC_subscript_beg ) {
                         c_chars->type |= TXT_sub;
-                    } else if( *(p + 1) == FUNC_superscript_beg ) {
+                    } else if( ((unsigned char *)p)[1] == FUNC_superscript_beg ) {
                         c_chars->type |= TXT_sup;
                     }
 
