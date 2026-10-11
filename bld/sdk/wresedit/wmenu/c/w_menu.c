@@ -72,7 +72,7 @@ void WInitDummyMenuEntry( void )
     memset( WDummyMenuEntry, 0, sizeof( WMenuEntry ) );
     WDummyMenuEntry->item = ResNewMenuItem();
     WDummyMenuEntry->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
-    WDummyMenuEntry->item->Item.Normal.ItemId = 101;
+    WDummyMenuEntry->item->Item.Normal.ItemID = 101;
 }
 
 void WFiniDummyMenuEntry( void )
@@ -160,7 +160,7 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
             if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
                 VALU16( data ) = 0;
             } else {
-                VALU16( data ) = entry->item->Item.Normal.ItemId;
+                VALU16( data ) = entry->item->Item.Normal.ItemID;
             }
             INCU16( data );
             item_text = entry->item->Item.Normal.ItemText;
@@ -263,7 +263,7 @@ static bool WMakeMenuItemFromData( const char **pdata, size_t *dsize, MenuItem *
         if( (item_flags & ~MENU_LAST_ITEM) == 0 && item_id == 0 ) {
             item_flags |= MENU_SEPARATOR;
         }
-        item->Item.Normal.ItemId = item_id;
+        item->Item.Normal.ItemID = item_id;
     }
     item->Item.Normal.ItemFlags = item_flags;
     itext = WRStringFromData( &data, is32bit );
@@ -916,7 +916,7 @@ bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
         if( flags & MENU_SEPARATOR ) {
             return( true );
         }
-        id = entry->item->Item.Normal.ItemId;
+        id = entry->item->Item.Normal.ItemID;
         vlist = WRLookupValue( symbol_table, id );
         ok = (vlist != NULL && vlist->next == NULL);
     }
@@ -985,7 +985,7 @@ bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
     }
 
     if( ok ) {
-        entry->item->Item.Normal.ItemId = (uint_16)hv;
+        entry->item->Item.Normal.ItemID = (uint_16)hv;
     }
 
     return( ok );

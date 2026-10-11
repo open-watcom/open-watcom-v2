@@ -258,7 +258,7 @@ static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *icueh )
 
     wlk.fno = fno;
     cont = DRWalkLines( stmts, SEG_CODE, TheFirstCue, &wlk );
-    if( !cont ) {
+    if( cont == false ) {
         icueh->fno = wlk.first.file;
         icueh->line = wlk.first.line;
 //        icueh->col = wlk.first.col;
@@ -285,6 +285,7 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 /******************************************************/
 {
     file_walk_cue   *fc = _fc;
+    bool            cont;
     imp_cue_handle  *icueh;
     dr_dbg_handle   saved;
 
@@ -299,7 +300,12 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
     saved = DRGetDebug();
     fc->wr = fc->wk( fc->iih, icueh, fc->d );
     DRSetDebug( saved );
-    return( fc->wr == WR_CONTINUE  );
+    if( fc->wr == WR_CONTINUE ) {
+        cont = true;
+    } else {
+        cont = false;
+    }
+    return( cont  );
 }
 
 

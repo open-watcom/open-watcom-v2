@@ -230,7 +230,7 @@ void scr_ix( void )
             p = g_tok_start;
             for( k = 0; k < arg_flen; k++ ) {
                 if( (*p == ' ')
-                  || !isdigit( *(unsigned char *)p ) ) {
+                  || !my_isdigit( *p ) ) {
                     break;
                 }
                 p++;
@@ -257,7 +257,7 @@ void scr_ix( void )
 
             /* Check for '.' (the control word indicator) */
 
-            if( *(unsigned char *)g_tok_start == SCR_char
+            if( *g_tok_start == SCR_char
               && arg_flen == 1  ) {
 
                 cc = getarg();                  // get next operand
@@ -300,7 +300,7 @@ void scr_ix( void )
 
         /* Process a reference preceded by SCR_char */
 
-        if( *(unsigned char *)g_tok_start == SCR_char
+        if( *g_tok_start == SCR_char
           && arg_flen == 1  ) {    // identify reference
             cc = getarg();                                  // get next operand
             if( (cc == CC_pos)
@@ -317,7 +317,7 @@ void scr_ix( void )
     }
 
     if( lvl == 3 ) {                                        // check for reference
-        if( *(unsigned char *)g_tok_start == SCR_char
+        if( *g_tok_start == SCR_char
           && arg_flen == 1  ) {    // skip reference indicator
             cc = getarg();                                  // get next operand
         }

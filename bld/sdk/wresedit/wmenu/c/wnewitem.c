@@ -313,7 +313,7 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
             if( sep ) {
                 new->item->Item.Normal.ItemFlags = MENU_SEPARATOR;
             } else {
-                new->item->Item.Normal.ItemId = id;
+                new->item->Item.Normal.ItemID = id;
                 new->item->Item.Normal.ItemFlags = flags;
                 if( text != NULL ) {
                     new->item->Item.Normal.ItemText = WStrdup( text );

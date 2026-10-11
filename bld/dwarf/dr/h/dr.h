@@ -412,7 +412,7 @@ extern bool             DRENTRY DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *inf
 extern drmem_hdl        DRENTRY DRGetTypeAT( drmem_hdl entry );
 extern drmem_hdl        DRENTRY DRSkipTypeChain( drmem_hdl entry );
 extern bool             DRENTRY DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d );
-extern bool             DRENTRY DRWalkArraySibs( drmem_hdl arrhdl, const DRWLKBLK *wlks, void *d );
+extern bool             DRENTRY DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d );
 extern bool             DRENTRY DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d );
 extern bool             DRENTRY DRConstValAT( drmem_hdl var, uint_32 *ret );
 extern dr_array_stat    DRENTRY DRGetArrayInfo( drmem_hdl array, dr_array_info *info );

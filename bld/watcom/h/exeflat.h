@@ -201,34 +201,6 @@ typedef struct object_record {
  *
  *****************************************************************************/
 
-/*
- *  LX/LE Object Attributes � General vs. VDD/PDD-specific
- *
- * Hex     Bit mask        General OS/2 LX/LE meaning               VDD/PDD-specific meaning
- * 0x0001  OBJ_READABLE    Object is readable                       Same
- * 0x0002  OBJ_WRITABLE    Object is writable                       Same
- * 0x0004  OBJ_EXECUTABLE  Object contains executable code          Same
- * 0x0008  OBJ_RESOURCE    Object contains resources                Same
- * 0x0010  OBJ_DISCARDABLE Object can be discarded from memory      Same
- * 0x0020  OBJ_SHARED      Object can be shared between processes   Same
- * 0x0040  OBJ_PRELOAD     Object should be preloaded at startup    Same
- * 0x0080  OBJ_DEMAND      Object is demand-loaded                  Same
- * 0x0100  OBJ_FIXED       object has a fixed memory address        -
- * 0x0100  OBJ_ZERO_FILL   -                                        segment is initialized with zeros, not loaded from file
- * 0x0200  OBJ_RESIDENT    Resident � cannot be swapped out         Resident � valid only for VDD/PDD
- * 0x0400  OBJ_CONTIGUOUS  Object must be contiguous in memory      Used only in combination with resident objects
- * 0x0800  OBJ_RESERVED1   Reserved1                                Reserved1
- * 0x1000  OBJ_LONGNAME    Object has a long name in the name table Same
- * 0x2000  OBJ_RESERVED2   Reserved2                                Reserved2
- * 0x4000  OBJ_PROTECTED   Object is write-protected                Same
- * 0x8000  OBJ_SYSTEM      System object (kernel use)               Same
- *
- *  Special combinations for VDD/PDD
- *
- * 0x0300  OBJ_ZERO_FILL + OBJ_RESIDENT                     segment is resident, contiguous, and zero-filled
- * 0x0500  OBJ_ZERO_FILL + OBJ_CONTIGUOUS                   less common, used in some PDDs
- * 0x0700  OBJ_ZERO_FILL + OBJ_RESIDENT + OBJ_CONTIGUOUS    Fully resident, contiguous, and zero-filled segment
- */
 #define OSF_OBJ_READABLE        0x0001
 #define OSF_OBJ_WRITEABLE       0x0002
 #define OSF_OBJ_EXECUTABLE      0x0004
@@ -247,28 +219,16 @@ typedef struct object_record {
 #define OSF_OBJ_CONFORMING      0x4000
 #define OSF_OBJ_IOPL            0x8000
 
-/*
- *  Special combinations for VDD/PDD
- */
-#define OBJ_ZEROFILL        0x0100  /* Zero-filled pages */
-#define OBJ_RESIDENT        0x0200  /* Resident in memory */
-#define OBJ_CONTIGUOUS      0x0400  /* Physically contiguous memory */
-
-/* Common driver-specific combinations */
-#define OBJ_ZFILL_RES       0x0300  /* Zero-filled + Resident (allocated contiguous by loader) */
-#define OBJ_ZFILL_CONTIG    0x0500  /* Zero-filled + Contiguous */
-#define OBJ_RES_CONTIG      0x0600  /* Resident + Contiguous */
-#define OBJ_ZFILL_RES_CONT  0x0700  /* Zero-filled + Resident + Contiguous */
-
-typedef struct le_map_entry {   /* LE */
+typedef struct le_map_entry {  /* LE */
     unsigned_8  page_num[3];    /* 24-bit page number in .exe file */
     unsigned_8  flags;
 } le_map_entry;
 
-typedef struct lx_map_entry {   /* LX */
-    unsigned_32 page_offset;    /* offset from Preload page start shifted by page_shift in hdr */
-    unsigned_16 data_size;      /* # bytes in this page */
-    unsigned_16 flags;
+typedef struct lx_map_entry { /* LX */
+    unsigned_32     page_offset;        /* offset from Preload page start
+                                            shifted by page_shift in hdr */
+    unsigned_16     data_size;          /* # bytes in this page */
+    unsigned_16     flags;
 } lx_map_entry;
 
 typedef union {

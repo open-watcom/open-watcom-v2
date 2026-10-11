@@ -98,9 +98,9 @@ static char *find_end_of_parm( const char *pchar, const char *pend )
     char    quotechar[MAX_PAREN];
     bool    instring[MAX_PAREN];
     int     paren_level;
-    int    c;
-    int     cm1;
-    int     cm2;
+    char    c;
+    char    cm1;
+    char    cm2;
     bool    finished;
     bool    test_for_quote;             // only at first char after ( or ,
 
@@ -115,8 +115,8 @@ static char *find_end_of_parm( const char *pchar, const char *pend )
     for( ; *pchar != '\0' ; ) {
         cm2 = cm1;
         cm1 = c;
-        c = *(unsigned char *)pchar;
-        if( cm1 == CHAR_amp ) {
+        c = *pchar;
+        if( cm1 == ampchar ) {
             if( c == '\'' ) {
                 multiletter_function = true;    // parm contains a function
             } else {
@@ -136,9 +136,9 @@ static char *find_end_of_parm( const char *pchar, const char *pend )
             } else {
                 if( test_for_quote
                   && is_quote_char( c ) ) {
-                    if( (cm1 == CHAR_amp)        // &' sequence
-                      || ((cm2 == CHAR_amp)
-                      && isalpha( cm1 )) ) { // &X' sequence
+                    if( (cm1 == ampchar)        // &' sequence
+                      || ((cm2 == ampchar)
+                      && my_isalpha( cm1 )) ) { // &X' sequence
                         /* no instring change */
                     } else {
                         instring[paren_level] = true;

@@ -119,7 +119,7 @@ static void mfill( BUFFER *bptr, ORD row, ORD col, ATTR attr, char ch, uisize le
     area.col = col;
     area.width = len;
     area.height = height;
-    while( height-- > 0 ) {
+    for( ; height > 0; height-- ) {
         bfill( bptr, row, col, attr, ch, len );
         ++row;
     }
@@ -302,18 +302,13 @@ void UIAPI uidisplaymenuitem( UIMENUITEM *menuitem, DESCMENU *desc, int item, bo
 
 void uidrawmenu( UIMENUITEM *menuitems, DESCMENU *desc, int curritem )
 {
-    int             i;
-    uisize          height;
+    int         i;
 
     forbid_refresh();
-    height = desc->area.height;
-    if( height > 0 ) {
+    if( desc->area.height > 0 ) {
         drawbox( &UIData->screen, desc->area, SBOX_CHARS(), UIData->attrs[ATTR_MENU], false );
-        if( height > 2 ) {
-            height -= 2;
-            for( i = 0; i < height; i++ ) {
-                uidisplaymenuitem( &menuitems[i], desc, i, ( i == curritem ) );
-            }
+        for( i = 0; i < desc->area.height - 2; i++ ) {
+            uidisplaymenuitem( &menuitems[i], desc, i, ( i == curritem ) );
         }
     }
     permit_refresh();
@@ -627,9 +622,9 @@ ui_event uigeteventfrompos( ORD row, ORD col )
     if( row < uimenuheight() ) {
         for( i = 0; i < NumMenus; i++ ) {
             desc = &Describe[i];
-            if( ( MENU_GET_ROW( desc ) == row )
-              && ( desc->titlecol <= col )
-              && ( col < desc->titlecol + desc->titlewidth + 2 ) ) {
+            if( ( MENU_GET_ROW( desc ) == row ) &&
+                ( desc->titlecol <= col ) &&
+                ( col < desc->titlecol + desc->titlewidth + 2 ) ) {
                 return( Menu->event );
             }
         }

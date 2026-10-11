@@ -90,11 +90,11 @@ bool QnxWCheck( void )
 static bool setupscrnbuff( void )
 /*******************************/
 {
-    int             rows;
-    int             cols;
-    LP_PIXEL        scrn;
-    unsigned        size;
-    unsigned        i;
+    int                 rows;
+    int                 cols;
+    LP_PIXEL            scrn;
+    unsigned            size;
+    unsigned            i;
 
     if( console_size( UIConCtrl, UIConsole, 0, 0, &rows, &cols ) != 0 ) {
         return( false );
@@ -145,9 +145,9 @@ static void state_handler( int signo )
 static ui_event cd_sizeevent( void )
 /**********************************/
 {
-    SAREA           area;
-    unsigned        state;
-    unsigned        arm;
+    SAREA       area;
+    unsigned    state;
+    unsigned    arm;
 
     if( !StatePending )
         return( EV_NO_EVENT );
@@ -181,7 +181,7 @@ static ui_event cd_sizeevent( void )
 static bool initmonitor( void )
 /*****************************/
 {
-    struct _osinfo  info;
+    struct _osinfo      info;
 
     if( UIConCtrl == NULL )
         return( false );
@@ -223,9 +223,9 @@ static bool initmonitor( void )
 static void my_console_write(
     struct _console_ctrl    *cc,
     int                     console,
-    uisize                  offset,
+    unsigned short          offset,
     LP_STRING               buf,
-    uisize                  nbytes,
+    unsigned short          nbytes,
     CURSORORD               crow,
     CURSORORD               ccol,
     int                     type )
@@ -258,7 +258,7 @@ static void my_console_write(
 static bool cd_init( void )
 /*************************/
 {
-    int             initialized;
+    int         initialized;
 
     initialized = false;
     if( UIData == NULL ) {
@@ -292,14 +292,12 @@ static bool cd_fini( void )
 static int cd_update( SAREA *area )
 /*********************************/
 {
-    uisize          offset; /* pixel offset into buffer to begin update at */
-    uisize          count;  /* number of pixels to update */
+    unsigned short  offset; /* pixel offset into buffer to begin update at */
+    unsigned short  count;  /* number of pixels to update */
     CURSORORD       crow;
     CURSORORD       ccol;
     int             type;
     int             i;
-    uisize          height;
-    uisize          incr;
 
     crow = UIData->cursor_row;
     ccol = UIData->cursor_col;
@@ -310,16 +308,15 @@ static int cd_update( SAREA *area )
     }
     if( area == NULL ) {
         my_console_write( UIConCtrl, UIConsole, 0,
-            (LP_STRING)UIData->screen.origin, 0, crow, ccol, type );
+                        (LP_STRING)UIData->screen.origin, 0,
+                        crow, ccol, type );
     } else {
-        count = area->width * sizeof( *UIData->screen.origin );
-        incr = UIData->width * sizeof( *UIData->screen.origin );
-        offset = area->row * incr + area->col * sizeof( *UIData->screen.origin );
-        height = area->height;
-        while( height-- > 0 ) {
+        count = sizeof( *UIData->screen.origin ) * area->width;
+        for( i = area->row; i < ( area->row + area->height ); i++ ) {
+            offset = sizeof( *UIData->screen.origin ) * ( i * UIData->width + area->col );
             my_console_write( UIConCtrl, UIConsole, offset,
-                (LP_STRING)UIData->screen.origin + offset, count, crow, ccol, type );
-            offset += incr;
+                            (LP_STRING)UIData->screen.origin + offset, count,
+                            crow, ccol, type );
         }
     }
     return( 0 );
@@ -348,9 +345,9 @@ static int UIHOOK cd_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, 
 {
     /* unused parameters */ (void)cattr;
 
-    if( ( ctype != UIData->cursor_type )
-      || ( crow != UIData->cursor_row )
-      || ( ccol != UIData->cursor_col ) ) {
+    if( ( ctype != UIData->cursor_type ) ||
+        ( crow != UIData->cursor_row ) ||
+        ( ccol != UIData->cursor_col ) ) {
         UIData->cursor_type = ctype;
         UIData->cursor_row = crow;
         UIData->cursor_col = ccol;
@@ -362,7 +359,7 @@ static int UIHOOK cd_setcur( CURSORORD crow, CURSORORD ccol, CURSOR_TYPE ctype, 
 
 static ui_event cd_event( void )
 {
-    ui_event        ui_ev;
+    ui_event    ui_ev;
 
     ui_ev = cd_sizeevent();
     if( ui_ev > EV_NO_EVENT )

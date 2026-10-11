@@ -63,14 +63,10 @@ struct imp_sym_handle {
 
 };
 
-struct imp_array {
-    unsigned short      dims;
-};
-
 struct imp_type_handle {
     virt_mem            handle;
     unsigned short      idx;
-    imp_array           array;
+    unsigned short      array_dim;
 };
 
 typedef enum {

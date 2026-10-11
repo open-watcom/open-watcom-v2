@@ -381,7 +381,7 @@ int find_symvar_sym( symvar *sym, sub_index subscript, symsub **symsubval )
     }
 
     p = sym->name;                           // see if symbol name consists entirely of digits
-    while( isdigit( *(unsigned char *)p ) ) {
+    while( my_isdigit( *p ) ) {
         p++;
     }
 

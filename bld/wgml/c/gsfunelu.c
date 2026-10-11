@@ -178,13 +178,13 @@ static char *scr_single_func_u( char *args, char *end, char **result )
         if( rc == 2 ) {
             sym_valid = true;           // variable found
             for( pval = symsubval->value; *pval != '\0'; pval++ ) {
-                *(*result)++ = toupper( *(unsigned char *)pval );
+                *(*result)++ = my_toupper( *pval );
             }
         }
     }
     if( !sym_valid ) {                  // string or invalid symbol
         for( pchar = args; *pchar != ' ' && *pchar != '.' && pchar != end; pchar++ ) {
-            *(*result)++ = toupper( *(unsigned char *)pchar );
+            *(*result)++ = my_toupper( *pchar );
         }
     }
     **result = '\0';

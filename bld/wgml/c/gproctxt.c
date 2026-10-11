@@ -108,7 +108,10 @@ static void puncadj( text_line * line, int * delta0, int rem,
             ch = tw->text[tw->count - 1];
             switch( loop_cnt ) {
             case 3:                   // test full stop
-                if( is_stop_char( ch ) ) {
+                if( ch == '.'
+                  || ch == '!'
+                  || ch == '?'
+                  || ch == ':' ) {
                     spacew = space;
                     if( remw > 0 ) {
                         spacew++;
@@ -1783,7 +1786,7 @@ text_chars * process_word( const char *pword, unsigned count, font_number font, 
       && !ProcFlags.concat
       && !ProcFlags.cont_char
       && ((input_cbs->hidden_head == NULL)
-      || (((unsigned char *)input_cbs->hidden_head->value)[0] != GML_char))
+      || (input_cbs->hidden_head->value[0] != GML_char))
       && (input_cbs->hidden_head == NULL) ) {
         if( (*(p - 1) == ' ')
           || (*(p - 1) == '\t') ) {
@@ -1971,8 +1974,8 @@ void process_text( char * text, font_number font )
                     spaces_at_start = true;                         // catch text next time
                 }
             } else if( (tab_space > 0)
-              && (((unsigned char *)p)[0] == CONT_char)
-              && (((unsigned char *)p)[1] == '\0') ) {  // continue char at entd
+              && (p[0] == CONT_char)
+              && (p[1] == '\0') ) {  // continue char at entd
                 if( input_cbs->hidden_head != NULL ) {              // something follows (not EOL)
                     spaces_at_start = true;                         // catch text next time
                 }
@@ -2006,15 +2009,15 @@ void process_text( char * text, font_number font )
             kbtab_count += tab_space;          // increment kbtab_count for any inital spaces/keyboard tabs
             post_space = tab_space * wgml_fonts[font].spc_width;
             ProcFlags.zsp = false;              // keep tab_space value
-            if( ((unsigned char *)p)[0] == '\0' ) {
+            if( p[0] == '\0' ) {
                 if( input_cbs->hidden_head == NULL ) {  // no text follows
                     g_blank_text_lines++;
                     return;
                 }
                 ProcFlags.cont_char = false;
-            } else if( ((unsigned char *)p)[0] == CONT_char
-              && ((unsigned char *)p)[1] == '\0' ) {
-                ((unsigned char *)p)[0] = '\0';
+            } else if( p[0] == CONT_char
+              && p[1] == '\0' ) {
+                p[0] = '\0';
                 ProcFlags.cont_char = true;
             }
             if( *p == '\0' ) {
@@ -2150,13 +2153,13 @@ void process_text( char * text, font_number font )
     pword = p;                          // remember word start
     while( *p != '\0' ) {
         typn = TXT_norm;
-        if( ( ((unsigned char *)p)[0] == FUNC_escape )
+        if( (p[0] == FUNC_escape)
           && (p == pword)
-          && (((unsigned char *)p)[1] >= FUNC_end)
-          && (((unsigned char *)p)[1] <= FUNC_superscript_end) ) {// set text_chars type if not TXT_norm
-            if( ((unsigned char *)p)[1] == FUNC_subscript_beg ) {
+          && (p[1] >= FUNC_end)
+          && (p[1] <= FUNC_superscript_end) ) {// set text_chars type if not TXT_norm
+            if( p[1] == FUNC_subscript_beg ) {
                 typn |= TXT_sub;
-            } else if( ((unsigned char *)p)[1] == FUNC_superscript_beg ) {
+            } else if( p[1] == FUNC_superscript_beg ) {
                 typn |= TXT_sup;
             }
             typ = typn;
@@ -2164,8 +2167,8 @@ void process_text( char * text, font_number font )
             pword = p;
         } else {
             /* Set flag for continue character at end of line */
-            if( (((unsigned char *)p)[0] == CONT_char)
-              && (((unsigned char *)p)[1] == '\0') ) {
+            if( (p[0] == CONT_char)
+              && (p[1] == '\0') ) {
                 ProcFlags.cont_char = true;
                 *p = '\0';
             } else {
@@ -2174,17 +2177,17 @@ void process_text( char * text, font_number font )
         }
         if( *p != '\0' ) {          // process last word inside loop
             if( ProcFlags.concat
-              && (*(unsigned char *)p == '\t') ) {    // concat on & keyboard tab
+              && (*p == '\t') ) {    // concat on & keyboard tab
                 *p = ' ';           // replace with space
             }
-            if( *(unsigned char *)p != FUNC_escape ) {   // FUNC_escape ends word, even with CO OFF
-                if( *(unsigned char *)p != ' ' ) {       // no space no word end
+            if( *p != FUNC_escape ) {   // FUNC_escape ends word, even with CO OFF
+                if( *p != ' ' ) {       // no space no word end
                     continue;
                 }
                 if( ProcFlags.in_trans
-                  && (((unsigned char *)p)[-1] == in_esc) ) {
+                  && (p[-1] == in_esc) ) {
                     if( ((p - 2) >= pword)
-                      && (((unsigned char *)p)[-2] == in_esc) ) {
+                      && (p[-2] == in_esc) ) {
                         // two in_esc in a row do not guard a space
                     } else {
                         continue;           // guarded space no word end
@@ -2686,7 +2689,7 @@ void process_text( char * text, font_number font )
             if( (input_cbs->fmflags & II_macro)
               && (input_cbs->prev != NULL)
               && (input_cbs->prev->hidden_head != NULL)
-              && (((unsigned char *)input_cbs->prev->hidden_head->value)[0] == CONT_char)
+              && (input_cbs->prev->hidden_head->value[0] == CONT_char)
               && (input_cbs->prev->hidden_head->value[1] == '\0')  ) {
                 inp_line    *pline;
 

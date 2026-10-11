@@ -67,15 +67,14 @@ static DRWLKBLK ArrayWlkNext[DR_WLKBLK_ARRSIB] = {
     NULL
 };
 
-static drmem_hdl GetArrayDim( drmem_hdl index, int skip )
+static drmem_hdl GetArrayDim( drmem_hdl index, int skip ) {
 // Get current or next dim handle
-{
     array_wlk_skip df;
 
     df.skip = skip;
     if( !DRWalkArraySibs( index, ArrayWlkNext, &df ) ) {
         index = df.curr;
-    } else {
+    }else{
         index = DRMEM_HDL_NULL;
     }
     return( index );
@@ -84,9 +83,8 @@ static drmem_hdl GetArrayDim( drmem_hdl index, int skip )
 static bool GetStrLen( imp_image_handle *iih,
                         drmem_hdl dr_sym,
                         location_context *lc,
-                        dr_typeinfo  *ret )
+                        dr_typeinfo  *ret ) {
 //  Find value of scalar
-{
     addr_seg        seg;
     location_list   src;
     location_list   dst;
@@ -106,7 +104,7 @@ static bool GetStrLen( imp_image_handle *iih,
     modinfo = IMH2MODI( iih, imh );
     if( modinfo->is_segment == false ) {
         seg = SEG_DATA; // if flat hoke segment
-    } else {
+    }else{
         EvalSeg( iih, dr_sym, &seg );
     }
     if( EvalLocation( iih, lc, dr_sym, seg, &src ) != DS_OK ) {
@@ -144,7 +142,7 @@ typedef struct {
     imp_type_handle     *ith;
     location_context    *lc;
     uint_32             num_elems;
-    unsigned            dims;
+    int                 dim;
     bool                cont;
 } array_wlk_wlk;
 
@@ -159,10 +157,9 @@ static DRWLKBLK ArrayWlk[DR_WLKBLK_ARRSIB] = {
 
 static void GetArraySize( imp_image_handle *iih,
                           imp_type_handle  *ith,
-                          location_context *lc )
+                          location_context *lc ) {
 //Calculate size of array starting at ith->array.index;
-{
-    drmem_hdl     dim_hdl;
+    drmem_hdl     dim;
     array_wlk_wlk df;
     uint_32       base_stride;
     uint_32       n_el;
@@ -171,17 +168,17 @@ static void GetArraySize( imp_image_handle *iih,
     df.ith = ith;
     df.lc = lc;
     df.count = 1;
-    df.dims = 0;
+    df.dim = 0;
     df.cont = false;
     DRWalkArraySibs( ith->array.index, ArrayWlk, &df );
     ith->array.num_elems = df.count;
     ith->array.low = df.low;
     df.cont = true;
-    dim_hdl = GetArrayDim( ith->array.index, 1 );
-    if( dim_hdl != DRMEM_HDL_NULL ) {
-        DRWalkArraySibs( dim_hdl, ArrayWlk, &df );
+    dim = GetArrayDim( ith->array.index, 1 );
+    if( dim != DRMEM_HDL_NULL ) {
+        DRWalkArraySibs( dim, ArrayWlk, &df );
     }
-    ith->array.dims = df.dims;
+    ith->array.dims = df.dim;
     ith->typeinfo.size = df.count * ith->array.base_stride;
     if( !ith->array.column_major ) {
         base_stride = ith->typeinfo.size;
@@ -195,9 +192,8 @@ static void GetArraySize( imp_image_handle *iih,
 
 static void GetArraySubSize( imp_image_handle *iih,
                           imp_type_handle  *ith,
-                          location_context *lc )
+                          location_context *lc ) {
 // Calc array size one in from previous dim
-{
     array_wlk_wlk df;
     uint_32         new_size;
     uint_32         base_stride;
@@ -207,7 +203,7 @@ static void GetArraySubSize( imp_image_handle *iih,
     df.ith = ith;
     df.lc = lc;
     df.count = 1;
-    df.dims = 0;
+    df.dim = 0;
     df.cont = false;
     DRWalkArraySibs( ith->array.index, ArrayWlk, &df );
     new_size = ith->typeinfo.size;
@@ -256,7 +252,7 @@ static void InitTypeHandle( imp_image_handle *iih,
                 stat = DRGetArrayInfo( btype, &info );
                 if( stat & DR_ARRAY_STRIDE_SIZE ) {
                     base_stride = info.stride_size/8;
-                } else {
+                }else{
                     btype = DRGetTypeAT( btype );    /* get base type */
                     sub_ith.type = btype;
                     sub_ith.imh = ith->imh;
@@ -270,7 +266,7 @@ static void InitTypeHandle( imp_image_handle *iih,
                     if( info.ordering == DW_ORD_col_major ) {
                         ith->array.column_major = 1;
                     }
-                } else if( IMH2MODI( iih, ith->imh )->lang == DR_LANG_FORTRAN ) {
+                }else if( IMH2MODI( iih, ith->imh )->lang == DR_LANG_FORTRAN ) {
                     ith->array.column_major = 1;
                 }
                 if( info.child == DRMEM_HDL_NULL ) { // set info now
@@ -283,7 +279,7 @@ static void InitTypeHandle( imp_image_handle *iih,
                         }
                         ith->typeinfo.size = info.count * ith->array.base_stride;
                         ith->array.num_elems= info.count;
-                    } else {
+                    }else{
                         ith->typeinfo.size = ith->array.base_stride;
                     }
                     if( !ith->array.column_major ) {
@@ -295,13 +291,13 @@ static void InitTypeHandle( imp_image_handle *iih,
                     ith->array.is_set = true;
                     ith->array.is_based = false;
                     ith->sub_array = false;
-                } else {
+                }else{
                     ith->sub_array = true;
                     ith->array.is_set = false;
                     ith->array.index = GetArrayDim( info.child, 0 );
                 }
             }
-        } else if( ith->typeinfo.kind == DR_TYPEK_STRING ) {
+        }else if( ith->typeinfo.kind == DR_TYPEK_STRING ) {
             if( DRStringLengthAT( ith->type ) ) {
                 if( !GetStrLen( iih, ith->type, lc, &ith->typeinfo ) ) {
                     ith->typeinfo.size = 1;
@@ -312,7 +308,7 @@ static void InitTypeHandle( imp_image_handle *iih,
     if( ith->typeinfo.kind == DR_TYPEK_ARRAY ) {
         if( !ith->array.is_set ) {
             GetArraySize( iih, ith, lc );
-        } else if( ith->array.is_based ) {
+        }else if( ith->array.is_based ) {
             GetArraySubSize( iih, ith, lc );
         }
     }
@@ -331,11 +327,13 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
 /**************************************************************************/
 {
     struct mod_type *typ_wlk = _typ_wlk;
+    bool            ret;
     imp_type_handle *ith;
     dr_dbg_handle   saved;
 
     /* unused parameters */ (void)cont;
 
+    ret = true;
     ith = typ_wlk->ith;
     ith->imh = typ_wlk->imh;
     ith->state = DF_NOT;
@@ -343,7 +341,10 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
     saved = DRGetDebug();
     typ_wlk->wr = typ_wlk->wk( typ_wlk->iih, ith, typ_wlk->d );
     DRSetDebug( saved );
-    return( typ_wlk->wr == WR_CONTINUE );
+    if( typ_wlk->wr != WR_CONTINUE ) {
+        ret = false;
+    }
+    return( ret );
 }
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *iih, imp_mod_handle imh,
@@ -581,7 +582,7 @@ static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
     count = de.high - de.low + 1;
     df->count *= count;
 
-    df->dims++;
+    df->dim++;
     return( df->cont );
 }
 
@@ -610,7 +611,7 @@ static bool GetSymVal( imp_image_handle *iih,
     }
     if( IMH2MODI( iih, imh )->is_segment == false ) {
         seg = SEG_DATA; // if flat hoke segment
-    } else {
+    }else{
         EvalSeg( iih, dr_sym, &seg );
     }
     if( EvalLocation( iih, lc, dr_sym, seg, &src ) != DS_OK ) {
@@ -677,7 +678,7 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     }
     df->low = low;
     df->count *= count;
-    df->dims++;
+    df->dim++;
     return( df->cont );
 }
 
@@ -717,7 +718,7 @@ dip_status DIPIMPENTRY( TypeArrayInfo )( imp_image_handle *iih,
             index_ith->typeinfo.size = 0;
             index_ith->typeinfo.kind = DR_TYPEK_NONE;
             index_ith->typeinfo.mclass = DR_MOD_NONE;
-        } else {
+        }else{
             index_ith->state = DF_NOT;
             index_ith->type = array_ith->array.index;
         }
@@ -749,7 +750,7 @@ static bool AParm( drmem_hdl var, int index, void *_df )
     if( df->count == df->last ) {
         df->var = var;
         return( false );
-    } else {
+    }else{
         return( true );
     }
 }
@@ -767,7 +768,7 @@ drmem_hdl GetParmN( imp_image_handle *iih, drmem_hdl proc, int count )
     DRSetDebug( iih->dwarf->handle ); /* must do at each call into dwarf */
     if( DRWalkBlock( proc, DR_SRCH_parm, AParm, (void *)&df ) ) {
         ret = DRMEM_HDL_NULL;
-    } else {
+    }else{
         ret = df.var;
     }
     return( ret );
@@ -807,7 +808,7 @@ dip_status DIPIMPENTRY( TypeProcInfo )( imp_image_handle *iih,
         parm_ith->type = parm_type;
         parm_ith->imh = proc_ith->imh;
         ds = DS_OK;
-    } else {
+    }else{
         ds = DS_FAIL;
     }
     return( ds );
@@ -941,7 +942,7 @@ static void SetSymHandle( type_wlk *d, imp_sym_handle *ish )
     ish->state = DF_NOT;
     if( d->com.sclass == SYM_ENUM ) {
         ish->f.einfo = d->com.einfo;
-    } else {
+    }else{
         ish->f.minfo.root = d->com.root;
         ish->f.minfo.inh = d->com.inh;
     }
@@ -951,9 +952,11 @@ static bool AMem( drmem_hdl var, int index, void *_d )
 /****************************************************/
 {
     type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *ish;
     dr_dbg_handle   saved;
 
+    cont = true;
     ish = d->ish;
     SetSymHandle( (type_wlk *)d, ish );
     ish->sym = var;
@@ -967,9 +970,9 @@ static bool AMem( drmem_hdl var, int index, void *_d )
     case 3:
         if( DRGetVirtuality( var ) == DR_VIRTUALITY_VIRTUAL  ) {
             ish->sclass = SYM_VIRTF;   // virtual func
-        } else if( !DRIsSymDefined( var ) ) {
+        }else if( !DRIsSymDefined( var ) ) {
             ish->sclass = SYM_MEMF;    // memfunc decl
-        } else {
+        }else{
             ish->sclass = SYM_MEMVAR;   // inlined defn treat like a var
         }
         break;
@@ -977,7 +980,10 @@ static bool AMem( drmem_hdl var, int index, void *_d )
     saved = DRGetDebug();
     d->wr = d->wk( d->com.iih, SWI_SYMBOL, ish, d->com.d );
     DRSetDebug( saved );
-    return( d->wr == WR_CONTINUE );
+    if( d->wr != WR_CONTINUE ) {
+        cont = false;
+    }
+    return( cont );
 }
 
 static bool AInherit( drmem_hdl inh, int index, void *_d )
@@ -1112,18 +1118,23 @@ static bool AEnumMem( drmem_hdl var, int index, void *_d )
 /********************************************************/
 {
     type_wlk_wlk    *d = _d;
+    bool            cont;
     imp_sym_handle  *ish;
     dr_dbg_handle   saved;
 
     /* unused parameters */ (void)index;
 
+    cont = true;
     ish = d->ish;
     SetSymHandle( (type_wlk *)d, ish );
     ish->sym = var;
     saved = DRGetDebug();
     d->wr = d->wk( d->com.iih, SWI_SYMBOL, ish, d->com.d );
     DRSetDebug( saved );
-    return( d->wr == WR_CONTINUE );
+    if( d->wr != WR_CONTINUE ) {
+        cont = false;
+    }
+    return( cont );
 }
 
 static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )

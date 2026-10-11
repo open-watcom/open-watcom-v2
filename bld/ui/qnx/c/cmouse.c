@@ -58,8 +58,8 @@ static int                  ScaledCol;
 static MOUSESTAT            MyStatus;
 static timer_t              MouseTimer;
 
-static bool cm_check( MOUSESTAT *status, MOUSEORD *mrow, MOUSEORD *mcol, MOUSETIME *time )
-/****************************************************************************************/
+static bool cm_check( MOUSESTAT *status, MOUSEORD *row, MOUSEORD *col, MOUSETIME *time )
+/**************************************************************************************/
 {
     struct  mouse_event    event;
     struct  itimerspec     timer;
@@ -102,10 +102,10 @@ static bool cm_check( MOUSESTAT *status, MOUSEORD *mrow, MOUSEORD *mcol, MOUSETI
         reltimer( MouseTimer, &timer, NULL );
         *status = MyStatus;
         *time = uiclock();
-        *mrow = ScaledRow / MOUSE_SCALE;
-        *mcol = ScaledCol / MOUSE_SCALE;
+        *row = ScaledRow / MOUSE_SCALE;
+        *col = ScaledCol / MOUSE_SCALE;
     }
-    uisetmouse( *mrow, *mcol );
+    uisetmouse( *row, *col );
     return( false );
 }
 
@@ -132,8 +132,8 @@ static bool cm_init( init_mode install )
 {
     struct itimercb     timercb;
     struct _osinfo      osinfo;
-    MOUSEORD            mrow;
-    MOUSEORD            mcol;
+    MOUSEORD            row;
+    MOUSEORD            col;
 
     MouseInstalled = false;
     if( install != INIT_MOUSELESS ) {
@@ -152,9 +152,9 @@ static bool cm_init( init_mode install )
                 UIData->mouse_xscale = 1;
                 UIData->mouse_yscale = 1;
 
-                checkmouse( &MouseStatus, &mrow, &mcol, &MouseTime );
-                MouseRow = mrow;
-                MouseCol = mcol;
+                checkmouse( &MouseStatus, &row, &col, &MouseTime );
+                MouseRow = row;
+                MouseCol = col;
                 _stopmouse();
             }
         }

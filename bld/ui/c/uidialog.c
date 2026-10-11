@@ -828,10 +828,10 @@ bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
     if( new_area->col < 1 ) {
         new_area->col = 1;
     }
-    if( new_area->row >= UIData->height - vs->area.height ) {
+    if( new_area->row + vs->area.height >= UIData->height ) {
         new_area->row = UIData->height - vs->area.height - 1;
     }
-    if( new_area->col >= UIData->width - vs->area.width ) {
+    if( new_area->col + vs->area.width >= UIData->width ) {
         new_area->col = UIData->width - vs->area.width - 1;
     }
     row_diff = new_area->row - vs->area.row;

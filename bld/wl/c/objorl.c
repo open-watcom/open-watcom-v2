@@ -540,7 +540,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
 }
 
 static segnode *FindSegNode( orl_sec_handle sechdl )
-/**************************************************/
+/***************************************************/
 {
     orl_table_index     idx;
 
@@ -946,7 +946,7 @@ static orl_return ProcSegments( orl_sec_handle hdl )
 }
 
 static orl_return ProcSymbols( orl_sec_handle hdl )
-/*************************************************/
+/*********************************************/
 {
     return( (SymbolJumpTable[ORLSecGetType( hdl )])( hdl ) );
 }

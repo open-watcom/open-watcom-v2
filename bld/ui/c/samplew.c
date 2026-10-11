@@ -243,8 +243,8 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
     an_event_string     *ptr;
     ORD                 evrow = TOP_ROW;
     BOOL                fixup = false;
-    int                 mrow;
-    int                 mcol;
+    int                 mrow, mcol;
+    int                 diff;
 
     hInstance = hInstance;
     hPrevInstance = hPrevInstance;
@@ -361,12 +361,14 @@ int PASCAL WinMain( HANDLE hInstance, HANDLE hPrevInstance,
                     case EV_MOUSE_DRAG:
                         if( BandOn ) {
                             uimousepos( NULL, &mrow, &mcol );
-                            BandArea.width = 0;
-                            if( mcol > BandArea.col )
-                                BandArea.width = mcol - BandArea.col
-                            BandArea.height = 0;
-                            if( mrow > BandArea.row )
-                                BandArea.height = mrow - BandArea.row;
+                            diff = mcol - BandArea.col;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.width = diff;
+                            diff = mrow - BandArea.row;
+                            if( diff < 0 )
+                                diff = 0;
+                            BandArea.height = diff;
                             uibandmove( BandArea );
                         }
                         break;

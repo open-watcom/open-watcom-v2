@@ -73,7 +73,7 @@ seg_entry *AddMapSeg( seg_list *list, seg_ctl *ctl, addr_seg seg )
     rem = list->count % SEG_PER_BLK;
     if( rem == 0 ) {
         blk_count = SEG_PER_BLK;
-    } else {
+    }else{
         blk_count = rem;
     }
     for( blk = list->head; blk != NULL; blk = blk->next ) {

@@ -85,17 +85,11 @@
 
 /* IMPORTANT: must have ^$\\ FIRST */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-typedef struct reg_node {
+typedef struct {
     char            opcode;
     signed char     hi_offs;
     unsigned char   lo_offs;
 } reg_node;
-#ifdef __cplusplus
-}
-#endif
 
 #ifdef __WATCOMC__
 char __near META[] = "^$\\.[()|?+*~@";

@@ -72,7 +72,7 @@
 
 static void             WndBadCmd( a_window );
 
-const char *WndGadgetHint[] =
+char *WndGadgetHint[] =
 {
     #define pick( a,b,c,d,e,f ) f,
         GADGETS
@@ -457,7 +457,7 @@ void FiniGadget( void )
     int                 i;
 
     for( i = 0; i < WndGadgetHintSize; ++i ) {
-        MemFree( (void *)WndGadgetHint[i] );
+        MemFree( WndGadgetHint[i] );
         WndGadgetHint[i] = NULL;
     }
 }

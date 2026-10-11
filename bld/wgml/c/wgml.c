@@ -306,9 +306,9 @@ static void remove_indentation( void )
     ProcFlags.indented_text = false;
 
     p = buff2;
-    while( ((buff2_lg > 1) && (*(unsigned char *)p == SCR_char) && (is_space_tab_char(*(unsigned char *)(p + 1)))) ||
-            ((buff2_lg > 2) && (*(unsigned char *)p == SCR_char) && (((*(unsigned char *)(p + 1) == '\'') && (*(unsigned char *)(p + 2) == ' ')) ||
-            (*(unsigned char *)(p + 1) == cw_sep_char))) ) {
+    while( ((buff2_lg > 1) && (*p == SCR_char) && (is_space_tab_char(*(p + 1)))) ||
+            ((buff2_lg > 2) && (*p == SCR_char) && (((*(p + 1) == '\'') && (*(p + 2) == ' ')) ||
+            (*(p + 1) == cw_sep_char))) ) {
         p++;                                        // over SCR_char
         if( *p == ' ' ) {
             ProcFlags.cw_force_sep = true;
@@ -316,13 +316,13 @@ static void remove_indentation( void )
             p++;                                    // over ' or ;
         }
         SkipSpaces( p );                            // skip blanks
-        if( *(unsigned char *)p == cw_sep_char ) {
+        if( *p == cw_sep_char ) {
             if( ProcFlags.cw_force_sep && (cw_sep_char != '\0') ) { // only if valid
                 p++;                                // skip cw_sep_char
             }
-        } else if( (*(unsigned char *)p == SCR_char) && (*(unsigned char *)(p + 1) == GML_char) ) {
+        } else if( (*p == SCR_char) && (*(p + 1) == GML_char) ) {
             p++;                                    // skip SCR_char
-        } else if( !ProcFlags.cw_force_sep && (*(unsigned char *)p != GML_char) ) {
+        } else if( !ProcFlags.cw_force_sep && (*p != GML_char) ) {
             ProcFlags.indented_text = true;         // .  text
         }
         if( p != buff2 ) {                          // skipped indent now copy buffer
@@ -362,14 +362,14 @@ static bool test_macro_xxxx( char const * beginend )
     char        c;
     char    *   p;
 
-    if( *(unsigned char *)buff2 == SCR_char ) {// only test script control words
+    if( *buff2 == SCR_char ) {// only test script control words
 
         p = buff2 + 1;
-        if( (*(unsigned char *)p == SCR_char)  || (*(unsigned char *)p == '\'') ) {
+        if( (*p == SCR_char)  || (*p == '\'') ) {
             p++;
         }
-        cw[0] = tolower( *(unsigned char *)p++ );
-        cw[1] = tolower( *(unsigned char *)p++ );
+        cw[0] = my_tolower( *p++ );
+        cw[1] = my_tolower( *p++ );
         c = *p++;
 
         cw[2] = '\0';
@@ -396,7 +396,7 @@ static  bool    test_comment( void )
 {
     char    tagname[TAG_NAME_LENGTH + 1];
 
-    if( *(unsigned char *)buff2 == SCR_char ) {        // test for .*
+    if( buff2[0] == SCR_char ) {        // test for .*
         // todo: This logic is imperfect, does not detect ..* .'* and similar
         if( buff2[1] == '*' ) {
            return( true );

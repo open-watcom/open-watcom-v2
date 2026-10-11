@@ -464,7 +464,7 @@ static void     scan_script( void )
         return;
     }
 
-    if( ((unsigned char *)p)[0] == SCR_char && ((unsigned char *)p)[1] == SCR_char ) {
+    if( p[0] == SCR_char && p[1] == SCR_char ) {
         pt = macname;
         *pt++ = SCR_char;               // special for ...label
         *pt++ = SCR_char;
@@ -472,7 +472,7 @@ static void     scan_script( void )
         me = NULL;
         g_scandata.s++;
     } else {
-        if( *(unsigned char *)p == SCR_char ) {          // ..
+        if( *p == SCR_char ) {          // ..
             p++;
             ProcFlags.macro_ignore = true;
             me = NULL;
@@ -769,9 +769,9 @@ void set_if_then_do( ifcb * cb )
     char            macname[MAC_NAME_LENGTH + 1];
 
     p = buff2;
-    if( *(unsigned char *)p == SCR_char ) {              // only test script control words
+    if( *p == SCR_char ) {              // only test script control words
         p++;
-        if( (*(unsigned char *)p == SCR_char)  || (*p == '\'') ) {
+        if( (*p == SCR_char)  || (*p == '\'') ) {
             p++;                       // over ".." or ".'"
         }
         p = get_macro_name( p, macname );

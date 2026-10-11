@@ -279,10 +279,10 @@ static bool GetNovSymbolImportExport( bool import )
     prefix = NULL;
     prefixlen = 0;
     /*
-     * We need to trap import/export prefixes here. Unfortunately, the prefix context
-     * is not followed by a valid separator, so the GetToken() call in ProcArgList
-     * at the end of the do...while loop terminates the loop after we return from
-     * this call (and, of course, from WildCard, where we were called).
+     *  we need to trap import/export prefixes here. Unfortunately the prefix context
+     *  is not followed by a valid seperator so the GetToken() call in ProcArgList
+     *  at the end of the do...while loop terminates the loop after we return from
+     *  this call (and WildCard from where we were called of course
      */
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         result = SetCurrentPrefix( Token.this, Token.len );

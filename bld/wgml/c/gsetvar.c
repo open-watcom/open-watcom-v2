@@ -43,7 +43,7 @@ static char *get_symbol_name( const char *p, char *symname, bool splittable )
     int     i;
 
     i = 0;
-    while( is_symbol_char( *(unsigned char *)p ) ) {
+    while( is_symbol_char( *p ) ) {
         if( i == SYM_NAME_LENGTH
           && splittable )
             /* break */;
@@ -55,7 +55,7 @@ static char *get_symbol_name( const char *p, char *symname, bool splittable )
                 symname[0] = '$';   // create sys shortcut $
                 i = 1;
             }
-            symname[i++] = tolower( *(unsigned char *)p );
+            symname[i++] = my_tolower( *p );
         }
         p++;
     }
@@ -88,9 +88,9 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
     *subscript = SI_no_subscript;       // not subscripted
 
     SkipSpaces( p );                    // skip over spaces
-    if( *p == CHAR_dq
-      || *p == CHAR_sq
-      || *p == CHAR_bq ) {
+    if( *p == d_q
+      || *p == s_q
+      || *p == l_q ) {
         quote = *p++;                   // skip over start quote
     } else {
         quote = '\0';
@@ -102,7 +102,7 @@ char *scan_sym( char *p, symvar *sym, sub_index *subscript, char **result, bool 
     sym_start = p;
     p = get_symbol_name( p, sym->name, splittable );
     if( p == sym_start ) {              // special for &*
-        if( *(unsigned char *)p != CHAR_amp ) {           // not &*&xx construct
+        if( *p != ampchar ) {           // not &*&xx construct
             if( (sym->flags & SF_local_var)
               && (input_cbs->fmflags & II_tag_mac) ) {
                 strcpy( sym->name, MAC_STAR_NAME );

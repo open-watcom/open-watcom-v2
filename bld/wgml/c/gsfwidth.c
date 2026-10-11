@@ -79,7 +79,7 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], unsigned parmcount, char **res
         if( parmcount > 1 ) {               // evalute typechar
             tok_type type  = parms[1].arg;
             if( unquote_arg( &type ) > 0 ) {
-                typechar = toupper( *(unsigned char *)type.s );
+                typechar = my_toupper( *type.s );
             }
         }
         switch( typechar ) {

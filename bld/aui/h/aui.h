@@ -578,7 +578,7 @@ extern int                  WndMaxDirtyRects;
 
 extern gui_resource         WndGadgetArray[];
 extern int                  WndGadgetArraySize;
-extern const char           *WndGadgetHint[];
+extern char                 *WndGadgetHint[];
 extern wnd_attr             WndGadgetAttr;
 extern wnd_gadget_type      WndGadgetSecondary;
 

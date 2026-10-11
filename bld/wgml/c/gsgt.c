@@ -266,7 +266,7 @@ static  condcode    scan_tag_options( gtflags * tag_flags )
             break;
         }
         p = g_tok_start;
-        switch( tolower( *(unsigned char *)p ) ) {
+        switch( my_tolower( *p ) ) {
         case 'a' :
             if( (arg_flen > 2)
               && (arg_flen < 12)
@@ -413,7 +413,7 @@ void    scr_gt( void )
 
     p = g_tok_start;
     function = 0;
-    switch( tolower( *(unsigned char *)p ) ) {
+    switch( my_tolower( *p ) ) {
     case 'a':
         if( strnicmp( "ADD ", p, 4 ) == 0 ) {
             function = f_add;

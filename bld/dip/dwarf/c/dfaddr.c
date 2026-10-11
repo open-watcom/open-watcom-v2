@@ -194,12 +194,12 @@ static long BlkOffSearch( off_cmp *cmp )
 //             }
 //             break;
 //         }
-//         if( diff < 0 ) {                   // key < mid
+//         if( diff < 0 ) {                 // key < mid
 //             hi = mid;
-//         } else if( diff < curr->len ) {    // key == mid
+//         }else if( diff < curr->len ) {   // key == mid
 //             diff = 0;
 //             break;
-//         } else {                           // key > mid
+//         }else{                           // key > mid
 //             lo = mid;
 //         }
 //     }
@@ -460,7 +460,7 @@ off_info *FindMapAddr( seg_list *addr_map, address *a )
 //  ctl = FindRealSeg( addr_map, a->mach.segment );
 //  if( ctl != NULL ) {
 //      info = SearchBlkList( ctl, a->mach.offset );
-//  } else {
+//  }else{
         wlk_seg_offsets d;
         d.a = a;
         d.info = NULL;

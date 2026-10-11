@@ -77,7 +77,7 @@ size_t DisGetString( size_t index, char *buff, bool to_upper )
     return( len );
 }
 
-dis_return DisInit( dis_cpu cpu, dis_handle *h, bool big_endian )
+dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
 // Perform all setup required
 {
     h->cpu = cpu;
@@ -122,11 +122,7 @@ dis_return DisInit( dis_cpu cpu, dis_handle *h, bool big_endian )
     }
     if( h->d->range == NULL )
         return( DR_FAIL );
-#ifdef __BIG_ENDIAN__
-    h->need_bswap = !big_endian;
-#else
-    h->need_bswap = big_endian;
-#endif
+    h->need_bswap = swap_bytes;
     return( DR_OK );
 }
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,7 +53,7 @@
 #define WSETMENUITEMFLAGS( item, flags ) \
     ((item)->Item.Normal.ItemFlags = (flags))
 #define WGETMENUITEMID( item ) \
-    ((item)->IsPopup ? -1 : (item)->Item.Normal.ItemId)
+    ((item)->IsPopup ? -1 : (item)->Item.Normal.ItemID)
 
 /****************************************************************************/
 /* data types                                                               */

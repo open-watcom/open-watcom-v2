@@ -401,17 +401,16 @@ static cfloat   *CFCnvLongToF( cfhandle h, signed_32 data, bool is_signed )
         result = CFCopy( h, (cfloat *)&MaxNegI32 );
         return( result );
     }
+    sign = 1;
     if( data < 0
       && is_signed ) {
+        data = -data;
         sign = -1;
-        dividend = -(unsigned_32)data;  /* prevent UB */
-    } else {
-        sign = 1;
-        dividend = data;
     }
     len = 0;
     digit = &mant[I32DIGITS];
     *digit = NULLCHAR;
+    dividend = data;
     while( dividend != 0 ) {
         *--digit = (char)U32ModDiv( &dividend, 10 ) + '0';
         ++len;
