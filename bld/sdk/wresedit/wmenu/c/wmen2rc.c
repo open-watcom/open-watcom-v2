@@ -139,7 +139,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
                 fprintf( fp, "MENUITEM \"%s\"\t%s%s\n", text, entry->symbol, flagtext );
             } else {
                 fprintf( fp, "MENUITEM \"%s\"\t%u%s\n", text,
-                         entry->item->Item.Normal.ItemID, flagtext );
+                         entry->item->Item.Normal.ItemId, flagtext );
             }
         }
     }
