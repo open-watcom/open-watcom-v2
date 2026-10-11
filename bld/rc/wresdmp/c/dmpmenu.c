@@ -92,7 +92,7 @@ static void PrintPopupItem( MenuItemPopup * item )
 static void PrintNormalItem( MenuItemNormal * item )
 /**************************************************/
 {
-    printf( "\tNormal item.   Id: %5d  Flags: ", item->ItemID );
+    printf( "\tNormal item.   Id: %5d  Flags: ", item->ItemId );
     PrintUint16Flags( item->ItemFlags, MenuOnFlags, MenuOffFlags, 43 );
     printf( "\t    Text: %s\n", item->ItemText );
 }
