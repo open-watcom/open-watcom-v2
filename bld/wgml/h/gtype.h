@@ -813,12 +813,12 @@ typedef enum ju_enum {                  // for .ju(stify)
 /****************************************************************************/
 
 typedef enum functs {
-    FUNC_escape          = '\xfd',
-    FUNC_end             = '\x01',
-    FUNC_subscript_beg   = '\x02',
-    FUNC_subscript_end   = '\x03',
-    FUNC_superscript_beg = '\x04',
-    FUNC_superscript_end = '\x05',
+    FUNC_escape          = 0xfd,
+    FUNC_end             = 0x01,
+    FUNC_subscript_beg   = 0x02,
+    FUNC_subscript_end   = 0x03,
+    FUNC_superscript_beg = 0x04,
+    FUNC_superscript_end = 0x05,
 } functs;
 
 /***************************************************************************/
