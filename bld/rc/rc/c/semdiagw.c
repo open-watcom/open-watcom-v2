@@ -89,8 +89,8 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 
     newheader->iswin32 = CmdLineParms.iswin32;
     if( CmdLineParms.iswin32 ) {
-        newheader->u.Head32.Head.Style = 0L;
-        newheader->u.Head32.Head.ExtendedStyle = 0L;
+        newheader->u.Head32.Head.Style = 0;
+        newheader->u.Head32.Head.ExtendedStyle = 0;
         newheader->u.Head32.Head.NumOfItems = 0;
         newheader->u.Head32.Head.SizeInfo.x = 0;
         newheader->u.Head32.Head.SizeInfo.y = 0;
@@ -105,12 +105,12 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head32.ExHead.FontWeight = 0;
         newheader->u.Head32.ExHead.FontItalic = 0;
         newheader->u.Head32.ExHead.FontCharset = DEFAULT_CHARSET;
-        newheader->u.Head32.ExHead.HelpId = 0L;
+        newheader->u.Head32.ExHead.HelpId = 0;
         newheader->u.Head32.ExHead.FontWeightDefined = false;
         newheader->u.Head32.ExHead.FontItalicDefined = false;
         newheader->u.Head32.ExHead.FontCharsetDefined = false;
     } else {
-        newheader->u.Head.Style = 0L;
+        newheader->u.Head.Style = 0;
         newheader->u.Head.NumOfItems = 0;
         newheader->u.Head.SizeInfo.x = 0;
         newheader->u.Head.SizeInfo.y = 0;

@@ -941,9 +941,9 @@ menuex-popup-stmt
             $$.item.menuData.ItemFlags = MENU_POPUP;
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = 0;
-            $$.item.menuExData.ItemType = 0L;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemType = 0;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $4;
         }
 
@@ -953,9 +953,9 @@ menuex-popup-stmt
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = 0L;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemType = 0;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $6;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -966,8 +966,8 @@ menuex-popup-stmt
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $8;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -979,7 +979,7 @@ menuex-popup-stmt
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
             $$.item.menuExData.ItemState = $8;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $10;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -1010,9 +1010,9 @@ menu-popup-stmt
             $$.item.menuData.ItemFlags = MENU_POPUP;
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = 0;
-            $$.item.menuExData.ItemType = 0L;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemType = 0;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $4;
         }
 
@@ -1022,9 +1022,9 @@ menu-popup-stmt
             $$.item.menuData.ItemFlags = MENUEX_POPUP;
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = 0L;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemType = 0;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $6;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -1035,8 +1035,8 @@ menu-popup-stmt
             $$.item.menuData.ItemText = $2.string;
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
-            $$.item.menuExData.ItemState = 0L;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.ItemState = 0;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $8;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -1048,7 +1048,7 @@ menu-popup-stmt
             $$.item.menuExData.ItemId = $4;
             $$.item.menuExData.ItemType = $6;
             $$.item.menuExData.ItemState = $8;
-            $$.item.menuExData.HelpId = 0L;
+            $$.item.menuExData.HelpId = 0;
             $$.submenu = $10;
         }
     | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
@@ -1099,8 +1099,8 @@ menuex-entry-defn
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
-            $$.menuExData.ItemType = 0L;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
         }
 
     | menu-text comma-opt menu-result comma-opt
@@ -1109,8 +1109,8 @@ menuex-entry-defn
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
-            $$.menuExData.ItemType = 0L;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
         }
     | menu-text comma-opt menu-result comma-opt menuType comma-opt
         {
@@ -1119,7 +1119,7 @@ menuex-entry-defn
             $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemState = 00000000000000000000000;
         }
 
     | menu-text comma-opt menu-result comma-opt menuType comma-opt
@@ -1158,8 +1158,8 @@ menu-entry-defn
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = 0;
             $$.menuData.ItemFlags = 0;
-            $$.menuExData.ItemType = 0L;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
         }
 
     | menu-text comma-opt menu-result comma-opt
@@ -1168,8 +1168,8 @@ menu-entry-defn
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
-            $$.menuExData.ItemType = 0L;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
         }
     | menu-text comma-opt menu-result comma-opt menuType comma-opt
         {
@@ -1178,7 +1178,7 @@ menu-entry-defn
             $$.menuData.ItemId = $3;
             $$.menuData.ItemFlags = 0;
             $$.menuExData.ItemType = $5;
-            $$.menuExData.ItemState = 0L;
+            $$.menuExData.ItemState = 0;
         }
 
     | menu-text comma-opt menu-result comma-opt menuType comma-opt
@@ -1628,8 +1628,8 @@ cntl-options-ex
             $$.SizeInfo = $4;
             $$.Style.Mask = 0;
             $$.Text = NULL;
-            $$.ExtendedStyle = 0L;
-            $$.HelpId = 0L;
+            $$.ExtendedStyle = 0;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style
@@ -1638,8 +1638,8 @@ cntl-options-ex
             $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
-            $$.ExtendedStyle = 0L;
-            $$.HelpId = 0L;
+            $$.ExtendedStyle = 0;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
@@ -1649,7 +1649,7 @@ cntl-options-ex
             $$.Style = $6;
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
-            $$.HelpId = 0L;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
@@ -1672,8 +1672,8 @@ cntl-options
             $$.SizeInfo = $4;
             $$.Style.Mask = 0;
             $$.Text = NULL;
-            $$.ExtendedStyle = 0L;
-            $$.HelpId = 0L;
+            $$.ExtendedStyle = 0;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style
@@ -1682,8 +1682,8 @@ cntl-options
             $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
-            $$.ExtendedStyle = 0L;
-            $$.HelpId = 0L;
+            $$.ExtendedStyle = 0;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
@@ -1693,7 +1693,7 @@ cntl-options
             $$.Style = $6;
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
-            $$.HelpId = 0L;
+            $$.HelpId = 0;
             $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
@@ -1887,7 +1887,7 @@ icon-parms-ex
             $$.SizeInfo.width = 0;          /* ignore width, height, style */
             $$.SizeInfo.height = 0;
             $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt style
         {
@@ -1896,7 +1896,7 @@ icon-parms-ex
             $$.SizeInfo.width = 0;          /* ignore width, height */
             $$.SizeInfo.height = 0;
             $$.Style = $5;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h
         {
@@ -1905,7 +1905,7 @@ icon-parms-ex
             $$.SizeInfo.width = $5;         /* ignore style */
             $$.SizeInfo.height = $7;
             $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
         {
@@ -1914,7 +1914,7 @@ icon-parms-ex
             $$.SizeInfo.width = $5;
             $$.SizeInfo.height = $7;
             $$.Style = $9;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
              comma-opt exstyle
@@ -1936,7 +1936,7 @@ icon-parms
             $$.SizeInfo.width = 0;          /* ignore width, height, style */
             $$.SizeInfo.height = 0;
             $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt style
         {
@@ -1945,7 +1945,7 @@ icon-parms
             $$.SizeInfo.width = 0;          /* ignore width, height */
             $$.SizeInfo.height = 0;
             $$.Style = $5;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h
         {
@@ -1954,7 +1954,7 @@ icon-parms
             $$.SizeInfo.width = $5;         /* ignore style */
             $$.SizeInfo.height = $7;
             $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
         {
@@ -1963,7 +1963,7 @@ icon-parms
             $$.SizeInfo.width = $5;
             $$.SizeInfo.height = $7;
             $$.Style = $9;
-            $$.ExtendedStyle = 0L;
+            $$.ExtendedStyle = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
              comma-opt exstyle
@@ -1990,7 +1990,7 @@ scrollbar-stmt
 control-stmt-ex
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL ); }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, NULL ); }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info comma-opt exstyle helpId-opt
@@ -2000,7 +2000,7 @@ control-stmt-ex
 control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0L, NULL ); }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, NULL ); }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info comma-opt exstyle helpId-opt

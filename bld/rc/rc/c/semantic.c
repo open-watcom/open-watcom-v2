@@ -126,9 +126,9 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_fl
     msheader.res_flags = res_flags;
     msheader.Size = loc.len;
     msheader.LanguageId = MAKELANGID( lang->lang, lang->sublang );
-    msheader.Version = 0L; /* Currently Unsupported */
-    msheader.DataVersion = 0L;
-    msheader.Characteristics = 0L; /* Currently Unsupported */
+    msheader.Version = 0; /* Currently Unsupported */
+    msheader.DataVersion = 0;
+    msheader.Characteristics = 0; /* Currently Unsupported */
     /*
      * OS/2 resource header happens to be identical to Win16
      */

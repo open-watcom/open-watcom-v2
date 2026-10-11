@@ -63,7 +63,7 @@ BOOL RegisterMenuClass( void )
     WNDCLASS    wc;
 
     /* fixed window */
-    wc.style = 0L;
+    wc.style = 0;
     wc.lpfnWndProc = MenuWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 4;
