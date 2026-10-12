@@ -259,7 +259,7 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
                 }
             } else {
                 menuitem->label = MemStrdup( rmenu->item->Item.Normal.ItemText );
-                menuitem->id = rmenu->item->Item.Normal.ItemID;
+                menuitem->id = rmenu->item->Item.Normal.ItemId;
                 menuitem->style = GetGUIMenuStyles( rmenu->item->Item.Normal.ItemFlags );
             }
             menuitem++;
