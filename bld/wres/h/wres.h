@@ -37,6 +37,7 @@
 #include "bool.h"
 #include "filefmt.h"
 #include "wressetr.h"
+#include "mem2.h"
 
 /***** Private Types *****/
 

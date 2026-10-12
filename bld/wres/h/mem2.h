@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 
 #ifndef MEM2_INCLUDED
 #define MEM2_INCLUDED
+
+#define LL_ITEM(typex)      typex *next; typex *prev
 
 extern void ResAddLLItemAtEnd( void **head, void **tail, void *item );
 extern void ResInsertLLItemAfter( void **head, void **tail, void *who, void *item );

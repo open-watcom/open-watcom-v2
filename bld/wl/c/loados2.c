@@ -289,28 +289,6 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
     }
 }
 
-static void AddLLItemAtEnd( void *head, void *tail, void *item )
-/**************************************************************/
-{
-    struct dllist {
-        struct dllist *next;
-        struct dllist *prev;
-        // SomeDataType some_data;
-    } **h, **t, *i;
-
-    h = head; t = tail; i = item;
-
-    i->next = NULL;
-    if( *h == NULL ) {
-        *h = *t = i;
-        i->next = NULL; // prev ptr
-    } else {
-        i->prev = *t; // prev ptr
-        (*t)->next = i;  // next ptr
-        *t = i;
-    }
-}
-
 static unsigned_16 findResIdName( ResTable *restab, WResID *name )
 /****************************************************************/
 {
@@ -343,10 +321,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
     exe_type->Info.type_id = findResIdName( restab, &(type->TypeName) );
     exe_type->Head = NULL;
     exe_type->Tail = NULL;
-    exe_type->Next = NULL;
-    exe_type->Prev = NULL;
 
-    AddLLItemAtEnd( &(restab->Dir.Head), &(restab->Dir.Tail), exe_type );
+    ResAddLLItemAtEnd( (void **)&(restab->Dir.Head), (void **)&(restab->Dir.Tail), exe_type );
 
     return( exe_type );
 }
@@ -364,9 +340,8 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res->Info.flags = (unsigned_16)res_flags;
     exe_res->Info.reserved = 0;
     exe_res->Info.res_id = findResIdName( restab, name );
-    exe_res->Next = NULL;
-    exe_res->Prev = NULL;
-    AddLLItemAtEnd( &(type->Head), &(type->Tail), exe_res );
+
+    ResAddLLItemAtEnd( (void **)&(type->Head), (void **)&(type->Tail), exe_res );
 }
 
 static FullTypeRecord *findExeTypeRecord( ResTable *restab,
@@ -578,7 +553,7 @@ unsigned long ResNonResNameTable( bool dores )
             len = strlen( name );
         } else {
             name = GetBaseName( Root->outfile->fname, 0, &len );
-            if( FmtData.type & (MK_OS2_LE | MK_OS2_LX) ) {
+            if( FmtData.type & MK_OS2_FLAT ) {
                 /*
                  * use base name + extension
                  */
@@ -627,7 +602,12 @@ unsigned long ResNonResNameTable( bool dores )
     if( dores
       || len > 0 ) {
         size += WriteLoadU8Name( name, len, dores );
-        WriteLoadU16( 0 );  /* first item in table - ordinal 0 */
+        /*
+         * write ordinal 0
+         * this value is reserved for module name and description
+         * in name tables
+         */
+        WriteLoadU16( 0 );  
         size += 2;
     }
     for( exp = FmtData.u.os2fam.exports; exp != NULL; exp = exp->next ) {
@@ -635,9 +615,9 @@ unsigned long ResNonResNameTable( bool dores )
             continue;
         if( exp->isanonymous )
             continue;
-        if( exp->isresident && !dores )
+        if( dores && !exp->isresident )
             continue;
-        if( !exp->isresident && dores )
+        if( !dores && exp->isresident )
             continue;
         /*
          * get external name for export

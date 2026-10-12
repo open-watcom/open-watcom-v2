@@ -57,7 +57,7 @@
 #include "mem2.h"
 
 typedef struct ss {
-struct ss *next,*prev;
+    LL_ITEM( struct ss );
 } ss;
 
 
