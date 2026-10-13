@@ -72,14 +72,14 @@ bool SaveMultObjects( bool save_into )
     WRESetWaitCursor( true );
 
     curr.info = NULL;
-    curr.type = NULL;
+    curr.typenode = NULL;
 
     WREGetCurrentResource( &curr );
 
-    ok = (curr.info != NULL && curr.type != NULL);
+    ok = (curr.info != NULL && curr.typenode != NULL);
 
     if( ok ) {
-        if( curr.lang == NULL ) {
+        if( curr.langnode == NULL ) {
             idata = WRECreateSaveData( &curr );
         } else {
             idata = WREMakeSaveIntoNode( &curr );
@@ -179,8 +179,8 @@ bool SaveObjectsInto( WRECurrentResInfo *curr, WRSaveIntoData *idata )
 WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
 {
     WRECurrentResInfo   tcurr;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WRSaveIntoData      *idata;
     WRSaveIntoData      *idata2;
 
@@ -190,10 +190,10 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
 
     idata = NULL;
     tcurr = *curr;
-    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->next ) {
-        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-            tcurr.res = rnode;
-            tcurr.lang = lnode;
+    for( resnode = curr->typenode->Head; resnode != NULL; resnode = resnode->next ) {
+        for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+            tcurr.resnode = resnode;
+            tcurr.langnode = langnode;
             idata2 = WREMakeSaveIntoNode( &tcurr );
             if( idata2 == NULL ) {
                 WREFreeSaveIntoData( idata );
@@ -219,7 +219,7 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
         return( NULL );
     }
 
-    if( curr->lang->Info.Length == 0 ) {
+    if( curr->langnode->Info.Length == 0 ) {
         WREDisplayErrorMsg( WRE_UPDATEBEFORESAVE1 );
         return( NULL );
     }
@@ -227,11 +227,11 @@ WRSaveIntoData *WREMakeSaveIntoNode( WRECurrentResInfo *curr )
     idata = WREAllocSaveIntoData();
 
     idata->info = curr->info->info;
-    idata->type = &curr->type->Info.TypeName;
-    idata->name = &curr->res->Info.ResName;
-    idata->lang = curr->lang->Info.lang;
-    idata->size = curr->lang->Info.Length;
-    idata->res_flags = curr->lang->Info.res_flags;
+    idata->type = &curr->typenode->Info.TypeName;
+    idata->name = &curr->resnode->Info.ResName;
+    idata->lang = curr->langnode->Info.lang;
+    idata->size = curr->langnode->Info.Length;
+    idata->res_flags = curr->langnode->Info.res_flags;
     idata->data = WREGetCopyResData( curr );
 
     if( idata->data == NULL ) {

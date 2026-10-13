@@ -36,18 +36,18 @@
 
 void WRAPI WRCleanDir( WResDir dir )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
 
     if( dir == NULL ) {
         return;
     }
 
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-                lnode->data = NULL;
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+            for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+                langnode->data = NULL;
             }
         }
     }

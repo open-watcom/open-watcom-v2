@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,7 +51,7 @@ extern bool WRECommitDialogSession( HCONV server, HCONV client );
 extern bool WREEndEditDialogResource( HCONV conv );
 extern bool WREDumpPendingDialogSession( void );
 extern bool WREEndAllDialogSessions( bool fatal_exit );
-extern void WREEndLangDialogSession( WResLangNode *lnode );
+extern void WREEndLangDialogSession( WResLangNode *langnode );
 extern void WREEndResDialogSessions( WREResInfo *rinfo );
 extern bool WREGetDlgSessionFileName( HCONV server, char **data, size_t *size );
 extern bool WREGetDlgSessionResName( HCONV server, char **data, size_t *size );

@@ -82,9 +82,9 @@ typedef struct WREImageSession {
     uint_16         type;
     bool            new;
     WREImageInfo    info;
-    WResTypeNode    *tnode;
-    WResResNode     *rnode;
-    WResLangNode    *lnode;
+    WResTypeNode    *typenode;
+    WResResNode     *resnode;
+    WResLangNode    *langnode;
     WREResInfo      *rinfo;
 } WREImageSession;
 
@@ -95,7 +95,7 @@ static WREImageSession  *WREStartImageSession( WRESPT service, WRECurrentResInfo
 static WREImageSession  *WREAllocImageSession( void );
 static WREImageSession  *WREFindImageSession( HCONV conv );
 static WREImageSession  *WREFindResImageSession( WREResInfo *rinfo );
-static WREImageSession  *WREFindLangImageSession( WResLangNode *lnode );
+static WREImageSession  *WREFindLangImageSession( WResLangNode *langnode );
 static void             WRERemoveImageEditSession( WREImageSession *session );
 static void             WREFreeEditSession( WREImageSession *session );
 static void             WREDisconnectSession( WREImageSession *session );
@@ -117,11 +117,11 @@ static void DumpEmptyResource( WREImageSession *session )
 {
     WRECurrentResInfo   curr;
 
-    if( session->lnode->Info.Length == 0 ) {
+    if( session->langnode->Info.Length == 0 ) {
         curr.info = session->rinfo;
-        curr.type = session->tnode;
-        curr.res = session->rnode;
-        curr.lang = session->lnode;
+        curr.typenode = session->typenode;
+        curr.resnode = session->resnode;
+        curr.langnode = session->langnode;
         WRERemoveEmptyResource( &curr );
         WRESetStatusByID( 0, WRE_EMPTYREMOVED );
     }
@@ -184,7 +184,7 @@ bool WREAddImageToDir( WRECurrentResInfo *curr, uint_16 type )
 
     if( ok ) {
         if( curr->info->current_type == type ) {
-            tname = &curr->type->Info.TypeName;
+            tname = &curr->typenode->Info.TypeName;
         } else {
             tname = WResIDFromNum( type );
             tname_alloc = (tname != NULL);
@@ -400,7 +400,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hData )
                 if( name == NULL ) {
                     ok = false;
                 } else {
-                    ok = WRERenameWResResNode( session->tnode, &session->rnode, name );
+                    ok = WRERenameWResResNode( session->typenode, &session->resnode, name );
                     if( ok ) {
                         WRESetResNamesFromType( session->rinfo, session->type, true, name, 0 );
                     }
@@ -422,11 +422,11 @@ static bool WRESetBitmapSessionResData( WREImageSession *session, char *data, si
 
     if( ok ) {
         WRStripBitmapFileHeader( &data, &size );
-        if( session->lnode->data != NULL ) {
-            MemFree( session->lnode->data );
+        if( session->langnode->data != NULL ) {
+            MemFree( session->langnode->data );
         }
-        session->lnode->data = data;
-        session->lnode->Info.Length = size;
+        session->langnode->data = data;
+        session->langnode->Info.Length = size;
         session->rinfo->modified = true;
     }
 
@@ -442,9 +442,9 @@ static bool WRESetCursorSessionResData( WREImageSession *session, char *data, si
 
     if( ok ) {
         curr.info = session->rinfo;
-        curr.type = session->tnode;
-        curr.res = session->rnode;
-        curr.lang = session->lnode;
+        curr.typenode = session->typenode;
+        curr.resnode = session->resnode;
+        curr.langnode = session->langnode;
         if( !session->new ) {
             ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_CURSOR ) );
         }
@@ -467,9 +467,9 @@ static bool WRESetIconSessionResData( WREImageSession *session, char *data, size
 
     if( ok ) {
         curr.info = session->rinfo;
-        curr.type = session->tnode;
-        curr.res = session->rnode;
-        curr.lang = session->lnode;
+        curr.typenode = session->typenode;
+        curr.resnode = session->resnode;
+        curr.langnode = session->langnode;
         if( !session->new ) {
             ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_ICON ) );
         }
@@ -560,8 +560,8 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
         break;
     case BitmapService:
         if( !new ) {
-            session->info.data_size = curr->lang->Info.Length;
-            session->info.data = curr->lang->data;
+            session->info.data_size = curr->langnode->Info.Length;
+            session->info.data = curr->langnode->data;
         }
         break;
     case NoServicePending:
@@ -577,15 +577,15 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     }
 
     session->info.file_name = WREStrdup( WREGetQueryName( curr->info ) );
-    session->info.res_name = WRECopyWResID( &curr->res->Info.ResName );
-    session->info.lang = curr->lang->Info.lang;
-    session->info.res_flags = curr->lang->Info.res_flags;
+    session->info.res_name = WRECopyWResID( &curr->resnode->Info.ResName );
+    session->info.lang = curr->langnode->Info.lang;
+    session->info.res_flags = curr->langnode->Info.res_flags;
     session->info.is32bit = curr->info->is32bit;
 
     session->type = curr->info->current_type;
-    session->tnode = curr->type;
-    session->rnode = curr->res;
-    session->lnode = curr->lang;
+    session->typenode = curr->typenode;
+    session->resnode = curr->resnode;
+    session->langnode = curr->langnode;
     session->rinfo = curr->info;
 
     WRESetPendingService( service );
@@ -608,10 +608,10 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
     WRESPT              service;
     bool                ok;
 
-    ok = (curr != NULL && curr->lang != NULL);
+    ok = (curr != NULL && curr->langnode != NULL);
 
     if( ok ) {
-        session = WREFindLangImageSession( curr->lang );
+        session = WREFindLangImageSession( curr->langnode );
         if( session == NULL ) {
             if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
                 service = BitmapService;
@@ -623,16 +623,16 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
                 ok = false;
             }
             if( ok ) {
-                if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-                    curr->lang->data = WREGetCopyResData( curr );
-                    if( curr->lang->data == NULL ) {
+                if( curr->langnode->data == NULL && curr->langnode->Info.Length != 0 ) {
+                    curr->langnode->data = WREGetCopyResData( curr );
+                    if( curr->langnode->data == NULL ) {
                         ok = false;
                     } else {
                         if( WREStartImageSession( service, curr, false ) == NULL ) {
                             ok = false;
                         }
-//                        curr->lang->data = NULL;
-//                        MemFree( curr->lang->data );
+//                        curr->langnode->data = NULL;
+//                        MemFree( curr->langnode->data );
                     }
                 } else {
                     if( WREStartImageSession( service, curr, false ) == NULL ) {
@@ -675,11 +675,11 @@ bool WREEndAllImageSessions( bool fatal_exit )
     return( ok );
 }
 
-void WREEndLangImageSession( WResLangNode *lnode )
+void WREEndLangImageSession( WResLangNode *langnode )
 {
     WREImageSession     *session;
 
-    while( (session = WREFindLangImageSession( lnode )) != NULL ) {
+    while( (session = WREFindLangImageSession( langnode )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveImageEditSession( session );
     }
@@ -738,14 +738,14 @@ WREImageSession *WREFindResImageSession( WREResInfo *rinfo )
     return( NULL );
 }
 
-WREImageSession *WREFindLangImageSession( WResLangNode *lnode )
+WREImageSession *WREFindLangImageSession( WResLangNode *langnode )
 {
     WREImageSession     *session;
     LIST                *slist;
 
     for( slist = WREImageSessions; slist != NULL; slist = ListNext( slist ) ) {
         session = (WREImageSession *)ListElement( slist );
-        if( session->lnode == lnode ) {
+        if( session->langnode == langnode ) {
             return( session );
         }
     }

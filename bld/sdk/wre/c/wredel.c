@@ -103,23 +103,23 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     bool                ok;
     LRESULT             index;
     HWND                res_lbox;
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
 
     type_name = NULL;
-    lnode = NULL;
+    langnode = NULL;
     type_id = 0;
 
     if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
         return( WREDeleteStringResources( curr, false ) );
     }
 
-    ok = (curr->info != NULL && curr->res != NULL && curr->lang != NULL);
+    ok = (curr->info != NULL && curr->resnode != NULL && curr->langnode != NULL);
 
     if( ok )  {
-        if( !curr->type->Info.TypeName.IsName ) {
-            type_id = curr->type->Info.TypeName.ID.Num;
+        if( !curr->typenode->Info.TypeName.IsName ) {
+            type_id = curr->typenode->Info.TypeName.ID.Num;
         }
-        type_name = WREGetResName( curr->res, type_id );
+        type_name = WREGetResName( curr->resnode, type_id );
         ok = ( type_name != NULL );
     }
 
@@ -129,19 +129,19 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 
     // nuke any edit sessions on this resource
     if( ok ) {
-        lnode = curr->lang;
+        langnode = curr->langnode;
         switch( type_id ) {
         case RESOURCE2INT( RT_MENU ):
-            WREEndLangMenuSession( lnode );
+            WREEndLangMenuSession( langnode );
             break;
         case RESOURCE2INT( RT_STRING ):
             WREEndResStringSessions( curr->info );
             break;
         case RESOURCE2INT( RT_ACCELERATOR ):
-            WREEndLangAccelSession( lnode );
+            WREEndLangAccelSession( langnode );
             break;
         case RESOURCE2INT( RT_DIALOG ):
-            WREEndLangDialogSession( lnode );
+            WREEndLangDialogSession( langnode );
             break;
         case RESOURCE2INT( RT_GROUP_CURSOR ):
         case RESOURCE2INT( RT_GROUP_ICON ):
@@ -149,20 +149,20 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
             /* fall through */
         case RESOURCE2INT( RT_BITMAP ):
             if( ok ) {
-                WREEndLangImageSession( lnode );
+                WREEndLangImageSession( langnode );
             }
             break;
         }
     }
 
     if( ok ) {
-        ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->type,
-                                      &curr->res, &curr->lang );
+        ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->typenode,
+                                      &curr->resnode, &curr->langnode );
         curr->info->modified = true;
     }
 
     if( ok ) {
-        if( !curr->type ) {
+        if( !curr->typenode ) {
             curr->info->current_type = 0;
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
@@ -189,7 +189,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 
 bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
 {
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     char                *text;
     bool                ok;
 
@@ -204,19 +204,19 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
     }
 
     if( ok ) {
-        tnode = curr->type;
-        if( tnode == NULL ) {
-            tnode = WRFindTypeNode( curr->info->info->dir, RESOURCE2INT( RT_STRING ), NULL );
+        typenode = curr->typenode;
+        if( typenode == NULL ) {
+            typenode = WRFindTypeNode( curr->info->info->dir, RESOURCE2INT( RT_STRING ), NULL );
         }
-        if( tnode != NULL ) {
+        if( typenode != NULL ) {
             curr->info->modified = true;
-            ok = WRRemoveTypeNodeFromDir( curr->info->info->dir, tnode );
+            ok = WRRemoveTypeNodeFromDir( curr->info->info->dir, typenode );
         }
     }
 
     // nuke any edit sessions on these string resources
     if( ok ) {
-        curr->type = NULL;
+        curr->typenode = NULL;
         if( !removing ) {
             WREEndResStringSessions( curr->info );
         }
@@ -240,21 +240,21 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
     type_id = 0;
 
     if( ok )  {
-        if( !curr->type->Info.TypeName.IsName ) {
-            type_id = curr->type->Info.TypeName.ID.Num;
+        if( !curr->typenode->Info.TypeName.IsName ) {
+            type_id = curr->typenode->Info.TypeName.ID.Num;
         }
-        type_name = WREGetResName( curr->res, type_id );
+        type_name = WREGetResName( curr->resnode, type_id );
         ok = ( type_name != NULL );
     }
 
     if( ok ) {
-        ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->type,
-                                      &curr->res, &curr->lang );
+        ok = WRRemoveLangNodeFromDir( curr->info->info->dir, &curr->typenode,
+                                      &curr->resnode, &curr->langnode );
         curr->info->modified = true;
     }
 
     if( ok ) {
-        if( !curr->type ) {
+        if( !curr->typenode ) {
             curr->info->current_type = 0;
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {

@@ -877,7 +877,7 @@ bool WREHandleResEdit( void )
 
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
-        ok = ( curr.info != NULL && curr.type != NULL &&
+        ok = ( curr.info != NULL && curr.typenode != NULL &&
               curr.info->current_type == RESOURCE2INT( RT_STRING ) );
     }
 

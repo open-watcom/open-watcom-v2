@@ -425,8 +425,8 @@ WdeResInfo *WdeCreateNewResource( char *title )
 
 bool WdeAddDlgItems( WdeResInfo *res_info )
 {
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WdeResDlgItem       *dlg_item;
 
     if( res_info == NULL ) {
@@ -434,15 +434,15 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
     }
 
     if( res_info->dlg_entry != NULL ) {
-        for( rnode = res_info->dlg_entry->Head; rnode != NULL; rnode = rnode->next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
+        for( resnode = res_info->dlg_entry->Head; resnode != NULL; resnode = resnode->next ) {
+            for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
                 dlg_item = WdeAllocResDlgItem();
                 if( dlg_item == NULL ) {
                     return( false );
                 }
                 dlg_item->is32bit = res_info->is32bit;
-                dlg_item->rnode = rnode;
-                dlg_item->lnode = lnode;
+                dlg_item->resnode = resnode;
+                dlg_item->langnode = langnode;
                 WdeAddResDlgItemToResInfo( res_info, dlg_item );
             }
         }
@@ -1026,8 +1026,8 @@ bool WdeRemoveResource( WdeResInfo *res_info )
 bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
                                  bool destroy_object )
 {
-    WResResNode   *rnode;
-    WResLangNode  *lnode;
+    WResResNode   *resnode;
+    WResLangNode  *langnode;
 
     if( res_info == NULL || ditem == NULL ) {
         return( false );
@@ -1035,14 +1035,14 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
 
     res_info->modified = true;
 
-    rnode = ditem->rnode;
-    lnode = ditem->lnode;
+    resnode = ditem->resnode;
+    langnode = ditem->langnode;
 
     ListRemoveElt( &res_info->dlg_item_list, (OBJPTR)ditem );
     WdeFreeResDlgItem( &ditem, destroy_object );
 
-    if( rnode != NULL || lnode != NULL ) {
-        return( WRRemoveLangNodeFromDir( res_info->info->dir, &res_info->dlg_entry, &rnode, &lnode ) );
+    if( resnode != NULL || langnode != NULL ) {
+        return( WRRemoveLangNodeFromDir( res_info->info->dir, &res_info->dlg_entry, &resnode, &langnode ) );
     }
 
     return( true );

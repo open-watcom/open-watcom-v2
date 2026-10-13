@@ -184,8 +184,8 @@ typedef struct WdeResDlgItem {
     OBJPTR              object;
     WResID              *dialog_name;
     bool                modified;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     bool                is32bit;
 } WdeResDlgItem;
 

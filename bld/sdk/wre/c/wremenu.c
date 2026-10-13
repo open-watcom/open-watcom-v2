@@ -66,9 +66,9 @@
 typedef struct WREMenuSession {
     WMenuHandle         hndl;
     WMenuInfo           *info;
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WREResInfo          *rinfo;
 } WREMenuSession;
 
@@ -83,7 +83,7 @@ static bool             WREAddMenuToDir( WRECurrentResInfo * );
 static bool             WREGetMenuSessionData( WREMenuSession *, bool );
 static void             WRERemoveMenuEditSession( WREMenuSession * );
 static WREMenuSession   *WREFindResMenuSession( WREResInfo *rinfo );
-static WREMenuSession   *WREFindLangMenuSession( WResLangNode *lnode );
+static WREMenuSession   *WREFindLangMenuSession( WResLangNode *langnode );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -97,11 +97,11 @@ static void DumpEmptyResource( WREMenuSession *session )
 {
     WRECurrentResInfo   curr;
 
-    if( !session->lnode->Info.Length ) {
+    if( !session->langnode->Info.Length ) {
         curr.info = session->rinfo;
-        curr.type = session->tnode;
-        curr.res = session->rnode;
-        curr.lang = session->lnode;
+        curr.typenode = session->typenode;
+        curr.resnode = session->resnode;
+        curr.langnode = session->langnode;
         WRERemoveEmptyResource( &curr );
         WRESetStatusByID( 0, WRE_EMPTYREMOVED );
     }
@@ -162,7 +162,7 @@ bool WREAddMenuToDir( WRECurrentResInfo *curr )
 
     if( ok ) {
         if( curr->info->current_type == RESOURCE2INT( RT_MENU ) ) {
-            tname = &curr->type->Info.TypeName;
+            tname = &curr->typenode->Info.TypeName;
         } else {
             tname = WResIDFromNum( RESOURCE2INT( RT_MENU ) );
             tname_alloc = true;
@@ -225,21 +225,21 @@ bool WREEditMenuResource( WRECurrentResInfo *curr )
     bool                ok;
     WREMenuSession      *session;
 
-    ok = (curr != NULL && curr->lang != NULL);
+    ok = (curr != NULL && curr->langnode != NULL);
 
     if( ok ) {
-        session = WREFindLangMenuSession( curr->lang );
+        session = WREFindLangMenuSession( curr->langnode );
         if( session == NULL ) {
-            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-                curr->lang->data = WREGetCopyResData( curr );
-                if( curr->lang->data == NULL ) {
+            if( curr->langnode->data == NULL && curr->langnode->Info.Length != 0 ) {
+                curr->langnode->data = WREGetCopyResData( curr );
+                if( curr->langnode->data == NULL ) {
                     ok = false;
                 } else {
                     if( WREStartMenuSession( curr ) == NULL ) {
                         ok = false;
                     }
-                    MemFree( curr->lang->data );
-                    curr->lang->data = NULL;
+                    MemFree( curr->langnode->data );
+                    curr->langnode->data = NULL;
                 }
             } else {
                 if( WREStartMenuSession( curr ) == NULL ) {
@@ -305,20 +305,20 @@ WREMenuSession *WREStartMenuSession( WRECurrentResInfo *curr )
     session->info->parent = WREGetMainWindowHandle();
     session->info->inst = WREGetAppInstance();
     session->info->file_name = WREStrdup( WREGetQueryName( curr->info ) );
-    session->info->res_name = WRECopyWResID( &curr->res->Info.ResName );
-    session->info->lang = curr->lang->Info.lang;
-    session->info->res_flags = curr->lang->Info.res_flags;
-    session->info->data_size = curr->lang->Info.Length;
-    session->info->data = curr->lang->data;
+    session->info->res_name = WRECopyWResID( &curr->resnode->Info.ResName );
+    session->info->lang = curr->langnode->Info.lang;
+    session->info->res_flags = curr->langnode->Info.res_flags;
+    session->info->data_size = curr->langnode->Info.Length;
+    session->info->data = curr->langnode->data;
     session->info->is32bit = curr->info->is32bit;
 
     session->info->stand_alone = WRENoInterface;
     session->info->symbol_table = curr->info->symbol_table;
     session->info->symbol_file = curr->info->symbol_file;
 
-    session->tnode = curr->type;
-    session->rnode = curr->res;
-    session->lnode = curr->lang;
+    session->typenode = curr->typenode;
+    session->resnode = curr->resnode;
+    session->langnode = curr->langnode;
     session->rinfo = curr->info;
 
     session->hndl = WMenuStartEdit( session->info );
@@ -338,7 +338,7 @@ bool WREGetMenuSessionData( WREMenuSession *session, bool close )
 {
     bool ok;
 
-    ok = (session != NULL && session->hndl != 0 && session->lnode != NULL);
+    ok = (session != NULL && session->hndl != 0 && session->langnode != NULL);
 
     if( ok ) {
         if( close ) {
@@ -350,21 +350,21 @@ bool WREGetMenuSessionData( WREMenuSession *session, bool close )
     }
 
     if( ok && session->info->modified ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode,
+        ok = WRERenameWResResNode( session->typenode, &session->resnode,
                                    session->info->res_name );
         WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_MENU ), true,
                                 session->info->res_name, 0 );
     }
 
     if( ok && session->info->modified ) {
-        if( session->lnode->data != NULL ) {
-            MemFree( session->lnode->data );
+        if( session->langnode->data != NULL ) {
+            MemFree( session->langnode->data );
         }
-        session->lnode->data = session->info->data;
-        session->lnode->Info.lang = session->info->lang;
-        session->lnode->Info.Length = (uint_32)session->info->data_size;
-        session->lnode->Info.res_flags = session->info->res_flags;
-        session->lnode->Info.Offset = 0;
+        session->langnode->data = session->info->data;
+        session->langnode->Info.lang = session->info->lang;
+        session->langnode->Info.Length = (uint_32)session->info->data_size;
+        session->langnode->Info.res_flags = session->info->res_flags;
+        session->langnode->Info.Offset = 0;
         session->info->data = NULL;
         session->info->data_size = 0;
         session->info->modified = false;
@@ -398,11 +398,11 @@ bool WREEndAllMenuSessions( bool fatal_exit )
     return( ok );
 }
 
-void WREEndLangMenuSession( WResLangNode *lnode )
+void WREEndLangMenuSession( WResLangNode *langnode )
 {
     WREMenuSession      *session;
 
-    while( (session = WREFindLangMenuSession( lnode )) != NULL ) {
+    while( (session = WREFindLangMenuSession( langnode )) != NULL ) {
         session->info = WMenuEndEdit( session->hndl );
         WRERemoveMenuEditSession( session );
     }
@@ -448,14 +448,14 @@ WREMenuSession *WREFindResMenuSession( WREResInfo *rinfo )
     return( NULL );
 }
 
-WREMenuSession *WREFindLangMenuSession( WResLangNode *lnode )
+WREMenuSession *WREFindLangMenuSession( WResLangNode *langnode )
 {
     WREMenuSession      *session;
     LIST                *slist;
 
     for( slist = WREMenuSessions; slist != NULL; slist = ListNext( slist ) ) {
         session = (WREMenuSession *)ListElement( slist );
-        if( session->lnode == lnode ) {
+        if( session->langnode == langnode ) {
             return( session );
         }
     }

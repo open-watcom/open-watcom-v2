@@ -1170,8 +1170,8 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
         }
         obj->dlg_item->dialog_info = dbi;
 
-        if( obj->dlg_item->lnode != NULL ) {
-            lang = obj->dlg_item->lnode->Info.lang;
+        if( obj->dlg_item->langnode != NULL ) {
+            lang = obj->dlg_item->langnode->Info.lang;
         } else {
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;

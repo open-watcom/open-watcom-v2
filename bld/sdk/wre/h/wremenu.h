@@ -49,7 +49,7 @@ extern bool WREEditMenuResource( WRECurrentResInfo * );
 extern bool WRESaveEditMenuResource( WMenuHandle );
 extern bool WREEndEditMenuResource( WMenuHandle );
 extern bool WREEndAllMenuSessions( bool );
-extern void WREEndLangMenuSession( WResLangNode *lnode );
+extern void WREEndLangMenuSession( WResLangNode *langnode );
 extern void WREEndResMenuSessions( WREResInfo *rinfo );
 
 #endif

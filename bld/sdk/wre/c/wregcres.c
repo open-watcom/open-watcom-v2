@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -68,43 +68,42 @@ char *WREGetCopyResData( WRECurrentResInfo *curr )
     char       *rdata;
 
     rdata = NULL;
-    if( curr != NULL && curr->info != NULL && curr->lang != NULL ) {
-        rdata = WRAllocCopyResData( curr->info->info, curr->lang );
+    if( curr != NULL && curr->info != NULL && curr->langnode != NULL ) {
+        rdata = WRAllocCopyResData( curr->info->info, curr->langnode );
     }
 
     return( rdata );
 }
 
-bool WREGetCurrentResource( WRECurrentResInfo *current )
+bool WREGetCurrentResource( WRECurrentResInfo *curr )
 {
     WRETypeName *tn;
     bool        ok;
     HWND        resLbox;
     LRESULT     pos;
 
-    ok = (current != NULL);
+    ok = (curr != NULL);
 
     if( ok ) {
-        current->type = NULL;
-        current->res = NULL;
-        current->lang = NULL;
-        current->info = WREGetCurrentRes();
-        ok = (current->info != NULL && current->info->info != NULL &&
-              current->info->info->dir != NULL);
+        curr->typenode = NULL;
+        curr->resnode = NULL;
+        curr->langnode = NULL;
+        curr->info = WREGetCurrentRes();
+        ok = (curr->info != NULL && curr->info->info != NULL && curr->info->info->dir != NULL);
     }
 
     if( ok ) {
-        tn = WREGetTypeNameFromRT( current->info->current_type );
+        tn = WREGetTypeNameFromRT( curr->info->current_type );
         ok = (tn != NULL);
     }
 
     if( ok ) {
-        current->type = WREFindTypeNode( current->info->info->dir, tn->type, NULL );
-        ok = (current->type != NULL);
+        curr->typenode = WREFindTypeNode( curr->info->info->dir, tn->type, NULL );
+        ok = (curr->typenode != NULL);
     }
 
     if( ok ) {
-        resLbox = GetDlgItem( current->info->info_win, IDM_RNRES );
+        resLbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
         ok = (resLbox != (HWND)NULL);
     }
 
@@ -114,13 +113,13 @@ bool WREGetCurrentResource( WRECurrentResInfo *current )
     }
 
     if( ok ) {
-        current->lang = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
-        ok = (current->lang != NULL);
+        curr->langnode = (WResLangNode *)SendMessage( resLbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        ok = (curr->langnode != NULL);
     }
 
     if( ok ) {
-        current->res = WREFindResNodeFromLangNode( current->type, current->lang );
-        ok = (current->res != NULL);
+        curr->resnode = WREFindResNodeFromLangNode( curr->typenode, curr->langnode );
+        ok = (curr->resnode != NULL);
     }
 
     return( ok );

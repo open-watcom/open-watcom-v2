@@ -112,20 +112,20 @@ void WRAPI WRFreeWRInfo( WRInfo *info )
 
 void WRAPI WRFreeWResDirData( WResDir dir )
 {
-    WResTypeNode  *tnode;
-    WResResNode   *rnode;
-    WResLangNode  *lnode;
+    WResTypeNode  *typenode;
+    WResResNode   *resnode;
+    WResLangNode  *langnode;
 
     if( dir == NULL ) {
         return;
     }
 
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-                if( lnode->data != NULL ) {
-                    MemFree( lnode->data );
-                    lnode->data = NULL;
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+            for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+                if( langnode->data != NULL ) {
+                    MemFree( langnode->data );
+                    langnode->data = NULL;
                 }
             }
         }
@@ -134,9 +134,9 @@ void WRAPI WRFreeWResDirData( WResDir dir )
 
 int WRAPI WRCountZeroLengthResources( WResDir dir )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     int                 count;
 
     if( dir == NULL ) {
@@ -144,10 +144,10 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     }
 
     count = 0;
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-                if( lnode->Info.Length == 0 ) {
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+            for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+                if( langnode->Info.Length == 0 ) {
                     count++;
                 }
             }
@@ -160,12 +160,12 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
 static bool WRRelinkDir( WResDir dest, WResDir src )
 {
     WResLangType    lang;
-    WResTypeNode    *dtnode;
-    WResResNode     *drnode;
-    WResLangNode    *dlnode;
-    WResTypeNode    *stnode;
-    WResResNode     *srnode;
-    WResLangNode    *slnode;
+    WResTypeNode    *dtypenode;
+    WResResNode     *dresnode;
+    WResLangNode    *dlangnode;
+    WResTypeNode    *stypenode;
+    WResResNode     *sresnode;
+    WResLangNode    *slangnode;
 
     if( dest == NULL || src == NULL ) {
         return( false );
@@ -175,39 +175,39 @@ static bool WRRelinkDir( WResDir dest, WResDir src )
         return( false );
     }
 
-    dtnode = dest->Head;
-    if( dtnode != NULL ) {
-        stnode = WRFindTypeNodeFromWResID( src, &dtnode->Info.TypeName );
+    dtypenode = dest->Head;
+    if( dtypenode != NULL ) {
+        stypenode = WRFindTypeNodeFromWResID( src, &dtypenode->Info.TypeName );
     }
-    while( dtnode != NULL && stnode != NULL ) {
-        drnode = dtnode->Head;
-        if( drnode != NULL ) {
-            srnode = WRFindResNodeFromWResID( stnode, &drnode->Info.ResName );
+    while( dtypenode != NULL && stypenode != NULL ) {
+        dresnode = dtypenode->Head;
+        if( dresnode != NULL ) {
+            sresnode = WRFindResNodeFromWResID( stypenode, &dresnode->Info.ResName );
         }
-        while( drnode != NULL && srnode != NULL ) {
-            dlnode = drnode->Head;
-            if( dlnode != NULL ) {
-                lang = dlnode->Info.lang;
-                slnode = WRFindLangNodeFromLangType( srnode, &lang );
+        while( dresnode != NULL && sresnode != NULL ) {
+            dlangnode = dresnode->Head;
+            if( dlangnode != NULL ) {
+                lang = dlangnode->Info.lang;
+                slangnode = WRFindLangNodeFromLangType( sresnode, &lang );
             }
-            while( dlnode != NULL && slnode != NULL ) {
-                if( dlnode->data == NULL ) {
-                    dlnode->Info.Offset = slnode->Info.Offset;
+            while( dlangnode != NULL && slangnode != NULL ) {
+                if( dlangnode->data == NULL ) {
+                    dlangnode->Info.Offset = slangnode->Info.Offset;
                 }
-                dlnode = dlnode->next;
-                if( dlnode != NULL ) {
-                    lang = dlnode->Info.lang;
-                    slnode = WRFindLangNodeFromLangType( srnode, &lang );
+                dlangnode = dlangnode->next;
+                if( dlangnode != NULL ) {
+                    lang = dlangnode->Info.lang;
+                    slangnode = WRFindLangNodeFromLangType( sresnode, &lang );
                 }
             }
-            drnode = drnode->next;
-            if( drnode != NULL ) {
-                srnode = WRFindResNodeFromWResID( stnode, &drnode->Info.ResName );
+            dresnode = dresnode->next;
+            if( dresnode != NULL ) {
+                sresnode = WRFindResNodeFromWResID( stypenode, &dresnode->Info.ResName );
             }
         }
-        dtnode = dtnode->next;
-        if( dtnode != NULL ) {
-            stnode = WRFindTypeNodeFromWResID( src, &dtnode->Info.TypeName );
+        dtypenode = dtypenode->next;
+        if( dtypenode != NULL ) {
+            stypenode = WRFindTypeNodeFromWResID( src, &dtypenode->Info.TypeName );
         }
     }
 

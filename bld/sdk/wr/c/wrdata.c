@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,44 +93,44 @@ bool WRWriteResData( FILE *fp, char *data, size_t length )
     return( ok );
 }
 
-static char *WRAllocCopyExistingData( WResLangNode *lnode )
+static char *WRAllocCopyExistingData( WResLangNode *langnode )
 {
     char       *rdata;
 
-    if( lnode == NULL ) {
+    if( langnode == NULL ) {
         return( NULL );
     }
 
-    rdata = MemAlloc( lnode->Info.Length );
+    rdata = MemAlloc( langnode->Info.Length );
     if( rdata != NULL ) {
-        memcpy( rdata, lnode->data, lnode->Info.Length );
+        memcpy( rdata, langnode->data, langnode->Info.Length );
     }
 
     return( rdata );
 }
 
-char * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *lnode )
+char * WRAPI WRAllocCopyResData( WRInfo *info, WResLangNode *langnode )
 {
     void        *rdata;
     bool        ok;
 
     rdata = NULL;
 
-    ok = ( info != NULL && lnode != NULL );
+    ok = ( info != NULL && langnode != NULL );
 
-    if( ok && lnode->data != NULL ) {
-        return( WRAllocCopyExistingData( lnode ) );
+    if( ok && langnode->data != NULL ) {
+        return( WRAllocCopyExistingData( langnode ) );
     }
 
     if( ok ) {
-        ok = ( lnode->Info.Length < UINT_MAX );
+        ok = ( langnode->Info.Length < UINT_MAX );
         if( !ok ) {
             WRDisplayErrorMsg( WR_RESTOOLARGE );
         }
     }
 
     if( ok ) {
-        rdata = WRAllocLoadResData( info->tmp_file, lnode->Info.Offset, lnode->Info.Length );
+        rdata = WRAllocLoadResData( info->tmp_file, langnode->Info.Offset, langnode->Info.Length );
         ok = ( rdata != NULL );
     }
 

@@ -795,8 +795,8 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
     }
 
     if( ok ) {
-        node->lnode = WRFindLangNode( node->wrinfo->dir, tname, rname, &lang );
-        ok = (node->lnode != NULL);
+        node->langnode = WRFindLangNode( node->wrinfo->dir, tname, rname, &lang );
+        ok = (node->langnode != NULL);
     }
 
     if( tname != NULL ) {
@@ -860,7 +860,7 @@ static bool saveResourceFile( img_node *node )
             ok = createNewImageLNODE( node, type );
         }
         if( ok ) {
-            ok = ( node->lnode != NULL );
+            ok = ( node->langnode != NULL );
         }
     }
 
@@ -893,15 +893,15 @@ static bool saveResourceFile( img_node *node )
     // get rid of the old image resources for icons or cursors
     if( ok ) {
         if( type != RESOURCE2INT( RT_BITMAP ) ) {
-            ok = WRDeleteGroupImages( node->wrinfo, node->lnode, type );
+            ok = WRDeleteGroupImages( node->wrinfo, node->langnode, type );
         }
     }
 
     if( ok ) {
         // delete the data image of the resource
-        if( node->lnode->data != NULL ) {
-            MemFree( node->lnode->data );
-            node->lnode->data = NULL;
+        if( node->langnode->data != NULL ) {
+            MemFree( node->langnode->data );
+            node->langnode->data = NULL;
         }
         // create the data for this resource
         switch( node->imgtype ) {
@@ -924,15 +924,15 @@ static bool saveResourceFile( img_node *node )
         case BITMAP_IMG:
             ok = WRStripBitmapFileHeader( &data, &size );
             if( ok ) {
-                node->lnode->data = data;
-                node->lnode->Info.Length = size;
+                node->langnode->data = data;
+                node->langnode->Info.Length = size;
             }
             break;
         case ICON_IMG:
-            ok = WRCreateIconEntries( node->wrinfo, node->lnode, data, size );
+            ok = WRCreateIconEntries( node->wrinfo, node->langnode, data, size );
             break;
         case CURSOR_IMG:
-            ok = WRCreateCursorEntries( node->wrinfo, node->lnode, data, size );
+            ok = WRCreateCursorEntries( node->wrinfo, node->langnode, data, size );
             break;
         default:
             ok = false;

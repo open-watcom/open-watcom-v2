@@ -52,7 +52,7 @@ extern bool     WRECommitImageSession( HCONV server, HCONV client );
 extern bool     WREEndEditImageResource( HCONV conv );
 extern bool     WREDumpPendingImageSession( void );
 extern bool     WREEndAllImageSessions( bool fatal_exit );
-extern void     WREEndLangImageSession( WResLangNode *lnode );
+extern void     WREEndLangImageSession( WResLangNode *langnode );
 extern void     WREEndResImageSessions( WREResInfo *rinfo );
 extern bool     WREGetImageSessionFileName( HCONV server, char **data, size_t *size );
 extern bool     WREGetImageSessionResName( HCONV server, char **data, size_t *size );

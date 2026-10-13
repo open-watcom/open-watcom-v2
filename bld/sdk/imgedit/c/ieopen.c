@@ -99,7 +99,7 @@ void SetupMenuAfterOpen( void )
 /*
  * doReadInBitmapFile
  */
-static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname, WRInfo *info, WResLangNode *lnode )
+static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname, WRInfo *info, WResLangNode *langnode )
 {
     HBITMAP             old_hbitmap1;
     HBITMAP             old_hbitmap2;
@@ -163,7 +163,7 @@ static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *f
         PrintHintTextByID( WIE_OPENEDTEXT, filename );
 
         node.wrinfo = info;
-        node.lnode = lnode;
+        node.langnode = langnode;
 
         MakeBitmap( &node, false );
         CreateNewDrawPad( &node );
@@ -208,7 +208,7 @@ static bool readInBitmapFile( const char *fullname )
 /*
  * ReadBitmapFromData
  */
-bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode )
+bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *langnode )
 {
     bitmap_info         bmi;
     HBITMAP             hbitmap;
@@ -223,7 +223,7 @@ bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLan
         return( false );
     }
 
-    ok = doReadInBitmapFile( hbitmap, &bmi, fullname, info, lnode );
+    ok = doReadInBitmapFile( hbitmap, &bmi, fullname, info, langnode );
 
     if( ok ) {
         SetupMenuAfterOpen();
@@ -331,7 +331,7 @@ static bool readInIconFile( const char *fname )
         node[i].num_of_images = num_of_images;
         node[i].viewhwnd = NULL;
         node[i].wrinfo = NULL;
-        node[i].lnode = NULL;
+        node[i].langnode = NULL;
         if( i > 0 ) {
             node[i - 1].nexticon = &node[i];
         }
@@ -357,7 +357,7 @@ static bool readInIconFile( const char *fname )
 /*
  * ReadIconFromData - read the icon data and set up structures
  */
-bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode )
+bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *langnode )
 {
     unsigned            pos;
     an_img_file         *iconfile;
@@ -421,10 +421,10 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
             node[i - 1].nexticon = &node[i];
         }
         node[i].wrinfo = NULL;
-        node[i].lnode = NULL;
+        node[i].langnode = NULL;
         if( i == 0 ) {
             node[i].wrinfo = info;
-            node[i].lnode = lnode;
+            node[i].langnode = langnode;
         }
         node[i].issaved = true;
         node[i].next = NULL;
@@ -450,7 +450,7 @@ bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode
 /*
  * doReadCursor
  */
-static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor, WRInfo *info, WResLangNode *lnode )
+static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor, WRInfo *info, WResLangNode *langnode )
 {
     img_node            node;
     HDC                 hdc;
@@ -476,7 +476,7 @@ static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cu
     node.next = NULL;
     node.nexticon = NULL;
     node.wrinfo = info;
-    node.lnode = lnode;
+    node.langnode = langnode;
 
     hdc = GetDC( NULL );
     node.and_hbitmap = ImgToAndBitmap( hdc, cursor );
@@ -526,7 +526,7 @@ static bool readInCursorFile( const char *fname )
 /*
  * ReadCursorFromData - read the cursor data and set up structures
  */
-bool ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode )
+bool ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *langnode )
 {
     unsigned            pos;
     an_img_file         *cursorfile;
@@ -541,7 +541,7 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNo
     }
     cursor = ImgResourceToImgData( (BYTE *)data, &pos, cursorfile, 0 );
 
-    ok = doReadCursor( fname, cursorfile, cursor, info, lnode );
+    ok = doReadCursor( fname, cursorfile, cursor, info, langnode );
 
     if( ok ) {
         SetupMenuAfterOpen();
@@ -685,14 +685,14 @@ static bool readInResourceFile( const char *fullname )
 #else
         siinfo = WRSelectImage( HMainWindow, info, IEHelpCallBack );
 #endif
-        ok = (siinfo != NULL && siinfo->lnode != NULL);
+        ok = (siinfo != NULL && siinfo->langnode != NULL);
     }
 
     if( ok ) {
         if( siinfo->type == RESOURCE2INT( RT_BITMAP ) ) {
             imgType = BITMAP_IMG;
-            data = WRAllocCopyResData( info, siinfo->lnode );
-            dsize = siinfo->lnode->Info.Length;
+            data = WRAllocCopyResData( info, siinfo->langnode );
+            dsize = siinfo->langnode->Info.Length;
             if( data == NULL ) {
                 ok = false;
             } else {
@@ -700,10 +700,10 @@ static bool readInResourceFile( const char *fullname )
             }
         } else if( siinfo->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             imgType = CURSOR_IMG;
-            ok = WRCreateCursorData( info, siinfo->lnode, &data, &dsize );
+            ok = WRCreateCursorData( info, siinfo->langnode, &data, &dsize );
         } else if( siinfo->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             imgType = ICON_IMG;
-            ok = WRCreateIconData( info, siinfo->lnode, &data, &dsize );
+            ok = WRCreateIconData( info, siinfo->langnode, &data, &dsize );
         } else {
             imgType = UNDEF_IMG;
             ok = false;
@@ -712,11 +712,11 @@ static bool readInResourceFile( const char *fullname )
 
     if( ok ) {
         if( siinfo->type == RESOURCE2INT( RT_BITMAP ) ) {
-            ok = ReadBitmapFromData( data, fullname, info, siinfo->lnode );
+            ok = ReadBitmapFromData( data, fullname, info, siinfo->langnode );
         } else if( siinfo->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-            ok = ReadCursorFromData( data, fullname, info, siinfo->lnode );
+            ok = ReadCursorFromData( data, fullname, info, siinfo->langnode );
         } else if( siinfo->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
-            ok = ReadIconFromData( data, fullname, info, siinfo->lnode );
+            ok = ReadIconFromData( data, fullname, info, siinfo->langnode );
         }
     }
 

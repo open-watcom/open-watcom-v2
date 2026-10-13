@@ -83,9 +83,9 @@ WRETypeName WRETypeNames[] = {
     { 0,                               0,                      false,   NULL }
 };
 
-static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *typenode )
 {
-    return( WRSetResNamesFromTypeNode( lbox, tnode ) );
+    return( WRSetResNamesFromTypeNode( lbox, typenode ) );
 }
 
 static void WREResetListbox( HWND lbox )
@@ -95,9 +95,9 @@ static void WREResetListbox( HWND lbox )
     }
 }
 
-static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type_id, WResTypeNode **typeNode )
+static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type_id, WResTypeNode **ptypenode )
 {
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     LRESULT             count;
     int                 i;
     bool                ok;
@@ -111,11 +111,11 @@ static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type_id, WResTypeNode **
 
     if( ok ) {
         for( i = 0; i < (int)count; i++ ) {
-            tnode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, i, 0 );
-            if( tnode != NULL ) {
-                if( (uint_16)tnode->Info.TypeName.ID.Num == type_id ) {
-                    if( typeNode != NULL ) {
-                        *typeNode = tnode;
+            typenode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, i, 0 );
+            if( typenode != NULL ) {
+                if( (uint_16)typenode->Info.TypeName.ID.Num == type_id ) {
+                    if( ptypenode != NULL ) {
+                        *ptypenode = typenode;
                     }
                     return( i );
                 }
@@ -126,12 +126,12 @@ static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type_id, WResTypeNode **
     return( LB_ERR );
 }
 
-char *WREGetResName( WResResNode *rnode, uint_16 type_id )
+char *WREGetResName( WResResNode *resnode, uint_16 type_id )
 {
-    return( WRGetResName( rnode, type_id ) );
+    return( WRGetResName( resnode, type_id ) );
 }
 
-bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
+bool WREAddToTypeListBox( HWND lbox, WResTypeNode *typenode )
 {
     char                *text;
     WRETypeName         *tn;
@@ -139,13 +139,13 @@ bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 
     text = NULL;
 
-    ok = (tnode != NULL && lbox != (HWND)NULL);
+    ok = (typenode != NULL && lbox != (HWND)NULL);
 
     if( ok ) {
-        if( tnode->Info.TypeName.IsName ) {
-            text = WResIDToStr( &tnode->Info.TypeName );
+        if( typenode->Info.TypeName.IsName ) {
+            text = WResIDToStr( &typenode->Info.TypeName );
         } else {
-            tn = WREGetTypeNameFromRT( (uint_16)tnode->Info.TypeName.ID.Num );
+            tn = WREGetTypeNameFromRT( (uint_16)typenode->Info.TypeName.ID.Num );
             if( tn != NULL && tn->name != -1 && !tn->exclude ) {
                 text = tn->typeName;
             }
@@ -154,10 +154,10 @@ bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
     }
 
     if( ok ) {
-        ok = WRESetLBoxWithStr( lbox, text, tnode );
+        ok = WRESetLBoxWithStr( lbox, text, typenode );
     }
 
-    if( text != NULL && tnode->Info.TypeName.IsName ) {
+    if( text != NULL && typenode->Info.TypeName.IsName ) {
         MemFree( text );
     }
 
@@ -170,7 +170,7 @@ bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
 
 static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 {
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     HWND                lbox;
     int                 count;
     bool                ok;
@@ -194,9 +194,9 @@ static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 
     ok = true;
     count = 0;
-    for( tnode = dir->Head; tnode != NULL && ok; tnode = tnode->next ) {
-        if( !tnode->Info.TypeName.IsName ) {
-            WREAddToTypeListBox( lbox, tnode );
+    for( typenode = dir->Head; typenode != NULL && ok; typenode = typenode->next ) {
+        if( !typenode->Info.TypeName.IsName ) {
+            WREAddToTypeListBox( lbox, typenode );
             count++;
         }
     }
@@ -229,11 +229,11 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
     HWND                typeLbox;
     LRESULT             typeIndex;
     LRESULT             count;
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     char                *str;
     bool                ok;
 
-    tnode = NULL;
+    typenode = NULL;
 
     ok = (info != NULL);
 
@@ -250,12 +250,12 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
     if( ok ) {
         WREResetListbox( resLbox );
         if( type != 0 ) {
-            typeIndex = WREFindTypeLBoxIndex( typeLbox, type, &tnode );
+            typeIndex = WREFindTypeLBoxIndex( typeLbox, type, &typenode );
         } else {
             typeIndex = 0;
             count = SendMessage( typeLbox, LB_GETCOUNT, 0, 0 );
             if( count != 0 && count != LB_ERR ) {
-                tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)typeIndex, 0 );
+                typenode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)typeIndex, 0 );
             }
         }
         if( typeIndex == LB_ERR ) {
@@ -266,9 +266,9 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
     }
 
     if( ok ) {
-        if( tnode != NULL ) {
-            info->current_type = tnode->Info.TypeName.ID.Num;
-            ok = WRESetResNamesFromTypeNode( resLbox, tnode );
+        if( typenode != NULL ) {
+            info->current_type = typenode->Info.TypeName.ID.Num;
+            ok = WRESetResNamesFromTypeNode( resLbox, typenode );
         } else {
             info->current_type = 0;
         }
@@ -306,7 +306,7 @@ bool WREAddResNames( WREResInfo *info )
 {
     HWND                resLbox;
     HWND                typeLbox;
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     bool                redrawOff;
     LRESULT             pos;
     bool                ok;
@@ -330,13 +330,13 @@ bool WREAddResNames( WREResInfo *info )
     }
 
     if( ok ) {
-        tnode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
-        ok = (tnode != NULL);
+        typenode = (WResTypeNode *)SendMessage( typeLbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        ok = (typenode != NULL);
     }
 
     if( ok ) {
-        info->current_type = tnode->Info.TypeName.ID.Num;
-        ok = WRESetResNamesFromTypeNode( resLbox, tnode );
+        info->current_type = typenode->Info.TypeName.ID.Num;
+        ok = WRESetResNamesFromTypeNode( resLbox, typenode );
     }
 
     if( redrawOff ) {

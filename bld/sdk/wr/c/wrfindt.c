@@ -42,13 +42,13 @@ static bool WRIsCorrectNode( WResID *node, uint_16 id, const char *name );
 
 bool WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
 {
-    WResTypeNode        *type_node;
-    WResResNode         *res_node;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
 
-    type_node = WRFindTypeNodeFromWResID( dir, type );
-    if( type_node != NULL ) {
-        res_node = WRFindResNodeFromWResID( type_node, res );
-        if( res_node != NULL ) {
+    typenode = WRFindTypeNodeFromWResID( dir, type );
+    if( typenode != NULL ) {
+        resnode = WRFindResNodeFromWResID( typenode, res );
+        if( resnode != NULL ) {
             return( true );
         }
     }
@@ -58,59 +58,59 @@ bool WRAPI WRDoesNameExist( WResDir dir, WResID *type, WResID *res )
 
 WResTypeNode * WRAPI WRFindTypeNodeFromWResID( WResDir dir, WResID *type )
 {
-    WResTypeNode *type_node;
+    WResTypeNode *typenode;
     char         *type_name;
 
-    type_node = NULL;
+    typenode = NULL;
 
     if( dir != NULL && type != NULL ) {
         if( type->IsName ) {
             type_name = WResIDToStr( type );
             if( type_name != NULL ) {
-                type_node = WRFindTypeNode( dir, 0, type_name );
+                typenode = WRFindTypeNode( dir, 0, type_name );
                 MemFree( type_name );
             }
         } else {
-            type_node = WRFindTypeNode( dir, type->ID.Num, NULL );
+            typenode = WRFindTypeNode( dir, type->ID.Num, NULL );
         }
     }
 
-    return( type_node );
+    return( typenode );
 }
 
-WResResNode * WRAPI WRFindResNodeFromWResID( WResTypeNode *type, WResID *res )
+WResResNode * WRAPI WRFindResNodeFromWResID( WResTypeNode *typenode, WResID *res )
 {
-    WResResNode *res_node;
+    WResResNode *resnode;
     char        *res_name;
 
-    res_node = NULL;
+    resnode = NULL;
 
-    if( type != NULL && res != NULL ) {
+    if( typenode != NULL && res != NULL ) {
         if( res->IsName ) {
             res_name = WResIDToStr( res );
             if( res_name != NULL ) {
-                res_node = WRFindResNode( type, 0, res_name );
+                resnode = WRFindResNode( typenode, 0, res_name );
                 MemFree( res_name );
             }
         } else {
-            res_node = WRFindResNode( type, res->ID.Num, NULL );
+            resnode = WRFindResNode( typenode, res->ID.Num, NULL );
         }
     }
 
-    return( res_node );
+    return( resnode );
 }
 
-WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType *lang )
+WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *resnode, WResLangType *lang )
 {
-    WResLangNode *lnode;
+    WResLangNode *langnode;
 
-    if( rnode != NULL && lang != NULL ) {
-        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-            if( lnode->Info.lang.lang == lang->lang  &&
-                lnode->Info.lang.sublang == lang->sublang ) {
-                return( lnode );
+    if( resnode != NULL && lang != NULL ) {
+        for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+            if( langnode->Info.lang.lang == lang->lang  &&
+                langnode->Info.lang.sublang == lang->sublang ) {
+                return( langnode );
             }
-            if( lnode == rnode->Tail ) {
+            if( langnode == resnode->Tail ) {
                 break;
             }
         }
@@ -121,17 +121,17 @@ WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType
 
 WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, const char *type_name )
 {
-    WResTypeNode *type_node;
+    WResTypeNode *typenode;
 
     if( dir == NULL ) {
         return( NULL );
     }
 
-    for( type_node = dir->Head; type_node != NULL; type_node = type_node->next ) {
-        if( WRIsCorrectNode( &type_node->Info.TypeName, type, type_name ) ) {
-            return( type_node );
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        if( WRIsCorrectNode( &typenode->Info.TypeName, type, type_name ) ) {
+            return( typenode );
         }
-        if( type_node == dir->Tail ) {
+        if( typenode == dir->Tail ) {
             break;
         }
     }
@@ -140,19 +140,19 @@ WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, const char *type
 
 }
 
-WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, const char *res_name )
+WResResNode * WRAPI WRFindResNode( WResTypeNode *typenode, uint_16 res, const char *res_name )
 {
-    WResResNode *res_node;
+    WResResNode *resnode;
 
-    if( type == NULL ) {
+    if( typenode == NULL ) {
         return( NULL );
     }
 
-    for( res_node = type->Head; res_node != NULL; res_node = res_node->next ) {
-        if( WRIsCorrectNode( &res_node->Info.ResName, res, res_name ) ) {
-            return( res_node );
+    for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+        if( WRIsCorrectNode( &resnode->Info.ResName, res, res_name ) ) {
+            return( resnode );
         }
-        if( res_node == type->Tail ) {
+        if( resnode == typenode->Tail ) {
             break;
         }
     }

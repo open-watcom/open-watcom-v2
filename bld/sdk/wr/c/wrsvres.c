@@ -69,12 +69,12 @@ static void displayDupMsg( WResID *typeName, WResID *resName )
     }
 }
 
-static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
+static bool WRWriteResourceToWRES( WResTypeNode *typenode, WResResNode *resnode,
                                   WResDir new_dir, FILE *src_fp,
                                   FILE *dst_fp, bool is32bit )
 {
     WResLangType    lang;
-    WResLangNode    *lnode;
+    WResLangNode    *langnode;
     uint_32         offset;
     bool            dup;
 
@@ -85,65 +85,65 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     }
 
     offset = RESTELL( dst_fp );
-    for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
-        lang = lnode->Info.lang;
-        if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
-                             lnode->Info.res_flags, offset,
-                             lnode->Info.Length, new_dir,
+    for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
+        lang = langnode->Info.lang;
+        if( WResAddResource( &typenode->Info.TypeName, &resnode->Info.ResName,
+                             langnode->Info.res_flags, offset,
+                             langnode->Info.Length, new_dir,
                              &lang, &dup ) || dup ) {
             if( dup ) {
-                displayDupMsg( &tnode->Info.TypeName, &rnode->Info.ResName );
+                displayDupMsg( &typenode->Info.TypeName, &resnode->Info.ResName );
             }
             return( false );
         }
 
-        if( lnode->data != NULL ) {
-            if( !WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst_fp ) ) {
+        if( langnode->data != NULL ) {
+            if( !WRCopyResFromDataToFile( langnode->data, langnode->Info.Length, dst_fp ) ) {
                 return( false );
             }
         } else {
-            if( !WRCopyResFromFileToFile( src_fp, lnode->Info.Offset, lnode->Info.Length, dst_fp ) ) {
+            if( !WRCopyResFromFileToFile( src_fp, langnode->Info.Offset, langnode->Info.Length, dst_fp ) ) {
                 return( false );
             }
         }
-        if( lnode == rnode->Tail ) {
+        if( langnode == resnode->Tail ) {
             break;
         }
-        offset += lnode->Info.Length;
+        offset += langnode->Info.Length;
     }
 
     return( true );
 }
 
-static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *lnode )
+static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *resnode, WResLangNode *langnode )
 {
     ResNameOrOrdinal    *name;
     char                *str;
     int                 len;
 
-    if( rnode == NULL || lnode == NULL ) {
+    if( resnode == NULL || langnode == NULL ) {
         return( NULL );
     }
 
-    if( !lnode->Info.lang.lang && !lnode->Info.lang.sublang ) {
-        name = WResIDToNameOrOrdinal( &rnode->Info.ResName );
+    if( !langnode->Info.lang.lang && !langnode->Info.lang.sublang ) {
+        name = WResIDToNameOrOrdinal( &resnode->Info.ResName );
     } else {
-        if( rnode->Info.ResName.IsName ) {
-            len = rnode->Info.ResName.ID.Name.NumChars;
+        if( resnode->Info.ResName.IsName ) {
+            len = resnode->Info.ResName.ID.Name.NumChars;
             str = MemAlloc( len + ( 1 + UINT16STRLEN ) * 2 + 1 );
             if( str == NULL ) {
                 return( NULL );
             }
-            memcpy( str, rnode->Info.ResName.ID.Name.Name, len );
+            memcpy( str, resnode->Info.ResName.ID.Name.Name, len );
             sprintf( str + len, "_%u_%u",
-                        lnode->Info.lang.lang, lnode->Info.lang.sublang );
+                        langnode->Info.lang.lang, langnode->Info.lang.sublang );
         } else {
             str = MemAlloc( UINT16STRLEN + ( 1 + UINT16STRLEN ) * 2 + 1 );
             if( str == NULL ) {
                 return( NULL );
             }
-            sprintf( str, "%u_%u_%u", rnode->Info.ResName.ID.Num,
-                        lnode->Info.lang.lang, lnode->Info.lang.sublang );
+            sprintf( str, "%u_%u_%u", resnode->Info.ResName.ID.Num,
+                        langnode->Info.lang.lang, langnode->Info.lang.sublang );
         }
         name = ResStrToNameOrOrdinal( str );
         MemFree( str );
@@ -152,30 +152,30 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
     return( name );
 }
 
-static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
+static bool WRWriteResourceToMRES( WResTypeNode *typenode, WResResNode *resnode,
                                   FILE *src_fp, FILE *dst_fp )
 {
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
     MResResourceHeader  msheader;
     bool                ok;
     bool                iswin32;
 
     iswin32 = false;
     ok = true;
-    for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->next ) {
-        msheader.Size = lnode->Info.Length;
-        msheader.res_flags = lnode->Info.res_flags;
-        msheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
-        msheader.Name = WRCreateMRESResName( rnode, lnode );
+    for( langnode = resnode->Head; langnode != NULL && ok; langnode = langnode->next ) {
+        msheader.Size = langnode->Info.Length;
+        msheader.res_flags = langnode->Info.res_flags;
+        msheader.Type = WResIDToNameOrOrdinal( &typenode->Info.TypeName );
+        msheader.Name = WRCreateMRESResName( resnode, langnode );
         ok = (msheader.Type != NULL && msheader.Name != NULL);
         if( ok ) {
             ok = !MResWriteResourceHeader( &msheader, iswin32, dst_fp );
         }
         if( ok ) {
-            if( lnode->data != NULL ) {
-                ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst_fp );
+            if( langnode->data != NULL ) {
+                ok = WRCopyResFromDataToFile( langnode->data, langnode->Info.Length, dst_fp );
             } else {
-                ok = WRCopyResFromFileToFile( src_fp, lnode->Info.Offset, lnode->Info.Length, dst_fp );
+                ok = WRCopyResFromFileToFile( src_fp, langnode->Info.Offset, langnode->Info.Length, dst_fp );
             }
         }
         if( msheader.Type != NULL ) {
@@ -184,7 +184,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
         if( msheader.Name != NULL ) {
             MemFree( msheader.Name );
         }
-        if( lnode == rnode->Tail ) {
+        if( langnode == resnode->Tail ) {
             break;
         }
     }
@@ -195,26 +195,26 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
 static bool WRWriteResourcesToMRES( WRInfo *info, FILE *src_fp, FILE *dst_fp )
 {
     WResDir             old_dir;
-    WResTypeNode        *type_node;
-    WResResNode         *res_node;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
 
     old_dir = info->dir;
 
     if( old_dir == NULL ) {
-        type_node = NULL;
+        typenode = NULL;
     } else {
-        type_node = old_dir->Head;
+        typenode = old_dir->Head;
     }
-    for( ; type_node != NULL; type_node = type_node->next ) {
-        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->next ) {
-            if( !WRWriteResourceToMRES( type_node, res_node, src_fp, dst_fp ) ) {
+    for( ; typenode != NULL; typenode = typenode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+            if( !WRWriteResourceToMRES( typenode, resnode, src_fp, dst_fp ) ) {
                 return( false );
             }
-            if( res_node == type_node->Tail ) {
+            if( resnode == typenode->Tail ) {
                 break;
             }
         }
-        if( type_node == old_dir->Tail ) {
+        if( typenode == old_dir->Tail ) {
             break;
         }
     }
@@ -226,26 +226,26 @@ static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
                                    FILE *src_fp, FILE *dst_fp, bool is32bit )
 {
     WResDir         old_dir;
-    WResTypeNode    *type_node;
-    WResResNode     *res_node;
+    WResTypeNode    *typenode;
+    WResResNode     *resnode;
 
     old_dir = info->dir;
 
     if( old_dir == NULL ) {
-        type_node = NULL;
+        typenode = NULL;
     } else {
-        type_node = old_dir->Head;
+        typenode = old_dir->Head;
     }
-    for( ; type_node != NULL; type_node = type_node->next ) {
-        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->next ) {
-            if( !WRWriteResourceToWRES( type_node, res_node, new_dir, src_fp, dst_fp, is32bit ) ) {
+    for( ; typenode != NULL; typenode = typenode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+            if( !WRWriteResourceToWRES( typenode, resnode, new_dir, src_fp, dst_fp, is32bit ) ) {
                 return( false );
             }
-            if( res_node == type_node->Tail ) {
+            if( resnode == typenode->Tail ) {
                 break;
             }
         }
-        if( type_node == old_dir->Tail ) {
+        if( typenode == old_dir->Tail ) {
             break;
         }
     }

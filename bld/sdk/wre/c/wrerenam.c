@@ -93,9 +93,9 @@ bool WRERenameResource( void )
     }
 
     if( ok ) {
-        info.old_name = &curr.res->Info.ResName;
+        info.old_name = &curr.resnode->Info.ResName;
         if( WREGetNewName( &info ) && info.new_name != NULL ) {
-            ok = WRERenameWResResNode( curr.type, &curr.res, info.new_name );
+            ok = WRERenameWResResNode( curr.typenode, &curr.resnode, info.new_name );
             curr.info->modified = true;
             if( ok ) {
                 WRESetResNamesFromType( curr.info, curr.info->current_type,
@@ -111,16 +111,16 @@ bool WRERenameResource( void )
     return( ok );
 }
 
-bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WResID *name )
+bool WRERenameWResResNode( WResTypeNode *typenode, WResResNode **resnode, WResID *name )
 {
     WResResNode *rn, *r;
 
-    if( type_node == NULL || res_node == NULL || *res_node == NULL || name == NULL ) {
+    if( typenode == NULL || resnode == NULL || *resnode == NULL || name == NULL ) {
         return( false );
     }
 
     // check if the names are already the same
-    if( WResIDCmp( &(*res_node)->Info.ResName, name ) ) {
+    if( WResIDCmp( &(*resnode)->Info.ResName, name ) ) {
         return( true );
     }
 
@@ -128,44 +128,44 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
         return( false );
     }
 
-    r = WREFindResNodeFromWResID( type_node, &rn->Info.ResName );
-    if( r != NULL && r != *res_node ) {
+    r = WREFindResNodeFromWResID( typenode, &rn->Info.ResName );
+    if( r != NULL && r != *resnode ) {
         WREDisplayErrorMsg( WRE_DUPRESNAME );
         MemFree( rn );
         return( false );
     }
 
-    if( type_node->Head == *res_node ) {
-        type_node->Head = rn;
+    if( typenode->Head == *resnode ) {
+        typenode->Head = rn;
     }
 
-    if( type_node->Tail == *res_node ) {
-        type_node->Tail = rn;
+    if( typenode->Tail == *resnode ) {
+        typenode->Tail = rn;
     }
 
-    rn->Head = (*res_node)->Head;
-    rn->Tail = (*res_node)->Tail;
-    rn->next = (*res_node)->next;
-    rn->prev = (*res_node)->prev;
-    rn->Info.NumResources = (*res_node)->Info.NumResources;
+    rn->Head = (*resnode)->Head;
+    rn->Tail = (*resnode)->Tail;
+    rn->next = (*resnode)->next;
+    rn->prev = (*resnode)->prev;
+    rn->Info.NumResources = (*resnode)->Info.NumResources;
 
-    if( (*res_node)->prev != NULL ) {
-        (*res_node)->prev->next = rn;
+    if( (*resnode)->prev != NULL ) {
+        (*resnode)->prev->next = rn;
     }
-    if( (*res_node)->next != NULL ) {
-        (*res_node)->next->prev = rn;
+    if( (*resnode)->next != NULL ) {
+        (*resnode)->next->prev = rn;
     }
 
-    MemFree( *res_node );
+    MemFree( *resnode );
 
-    *res_node = rn;
+    *resnode = rn;
 
     return( true );
 }
 
 WResResNode *WREAllocResNodeFromWResID( WResID *id )
 {
-    WResResNode *rnode;
+    WResResNode *resnode;
     size_t      len, id_len;
 
     if( id == NULL ) {
@@ -180,14 +180,14 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
         len += id->ID.Name.NumChars - 1;
     }
 
-    rnode = MemAlloc( len );
+    resnode = MemAlloc( len );
 
-    if( rnode != NULL ) {
-        memset( rnode, 0, len - id_len );
-        memcpy( &rnode->Info.ResName, id, id_len );
+    if( resnode != NULL ) {
+        memset( resnode, 0, len - id_len );
+        memcpy( &resnode->Info.ResName, id, id_len );
     }
 
-    return( rnode );
+    return( resnode );
 }
 
 bool WREGetNewName( WREResRenameInfo *info )

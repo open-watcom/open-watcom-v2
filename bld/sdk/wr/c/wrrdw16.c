@@ -156,7 +156,7 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
     long            ne_header_off;
     uint_16         align_shift;
     uint_32         name_offset;
-    WResTypeNode    *type_node;
+    WResTypeNode    *typenode;
     uint_8          *name_table;
     uint_8          *leftover;
     uint_32         name_table_len;
@@ -203,18 +203,18 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 
     if( ok ) {
         (*dir)->NumResources = 0;
-        for( type_node = WRReadWResTypeNodeFromExe( fp, align_shift ); type_node != NULL; type_node = WRReadWResTypeNodeFromExe ( fp, align_shift ) ) {
-            type_node->next = NULL;
-            type_node->prev = (*dir)->Tail;
+        for( typenode = WRReadWResTypeNodeFromExe( fp, align_shift ); typenode != NULL; typenode = WRReadWResTypeNodeFromExe ( fp, align_shift ) ) {
+            typenode->next = NULL;
+            typenode->prev = (*dir)->Tail;
             if( (*dir)->Tail != NULL ) {
-                (*dir)->Tail->next = type_node;
+                (*dir)->Tail->next = typenode;
             }
             if( (*dir)->Head == NULL ) {
-                (*dir)->Head = type_node;
+                (*dir)->Head = typenode;
             }
-            (*dir)->Tail = type_node;
+            (*dir)->Tail = typenode;
             (*dir)->NumTypes++;
-            (*dir)->NumResources += type_node->Info.NumResources;
+            (*dir)->NumResources += typenode->Info.NumResources;
         }
         name_offset = RESTELL( fp ) - ne_header_off - nehdr.resource_off;
         ok = WRReadResourceNames( *dir, fp, name_offset );
@@ -245,7 +245,7 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 {
     uint_16                 resource_count;
     resource_type_record    type_info;
-    WResTypeNode            *type_node;
+    WResTypeNode            *typenode;
     WResResNode             *resnode;
 
     if( RESREAD( fp, &type_info, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
@@ -254,32 +254,32 @@ WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
     if( type_info.type_id == 0 ) {
         return( NULL );
     }
-    type_node = MemAlloc( sizeof( WResTypeNode ) );
-    if( type_node == NULL )
+    typenode = MemAlloc( sizeof( WResTypeNode ) );
+    if( typenode == NULL )
         return( NULL );
 
     resource_count = type_info.num_resources;
-    type_node->next = NULL;
-    type_node->prev = NULL;
-    type_node->Head = NULL;
-    type_node->Tail = NULL;
-    type_node->Info.NumResources = resource_count;
-    type_node->Info.TypeName.IsName = ( (type_info.type_id & 0x8000) == 0 );
-    type_node->Info.TypeName.ID.Num = (type_info.type_id & 0x7fff);
+    typenode->next = NULL;
+    typenode->prev = NULL;
+    typenode->Head = NULL;
+    typenode->Tail = NULL;
+    typenode->Info.NumResources = resource_count;
+    typenode->Info.TypeName.IsName = ( (type_info.type_id & 0x8000) == 0 );
+    typenode->Info.TypeName.ID.Num = (type_info.type_id & 0x7fff);
 
     for( ; resource_count != 0; resource_count-- ) {
         resnode = WRReadWResResNodeFromExe( fp, align_shift );
-        if( type_node->Head == NULL ) {
-            type_node->Head = resnode;
+        if( typenode->Head == NULL ) {
+            typenode->Head = resnode;
         }
-        if( type_node->Tail != NULL ) {
-            type_node->Tail->next = resnode;
+        if( typenode->Tail != NULL ) {
+            typenode->Tail->next = resnode;
         }
-        resnode->prev = type_node->Tail;
-        type_node->Tail = resnode;
+        resnode->prev = typenode->Tail;
+        typenode->Tail = resnode;
     }
 
-    return( type_node );
+    return( typenode );
 }
 
 WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
@@ -287,17 +287,17 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
     resource_record res_info;
     uint_32         offset_32;
     uint_32         length_32;
-    WResResNode     *rnode;
-    WResLangNode    *lnode;
+    WResResNode     *resnode;
+    WResLangNode    *langnode;
 
-    rnode = MemAlloc( sizeof( WResResNode ) );
-    if( rnode == NULL ) {
+    resnode = MemAlloc( sizeof( WResResNode ) );
+    if( resnode == NULL ) {
         return( NULL );
     }
 
-    lnode = MemAlloc( sizeof( WResLangNode ) );
-    if( lnode == NULL ) {
-        MemFree( rnode );
+    langnode = MemAlloc( sizeof( WResLangNode ) );
+    if( langnode == NULL ) {
+        MemFree( resnode );
         return( NULL );
     }
 
@@ -305,26 +305,26 @@ WResResNode *WRReadWResResNodeFromExe( FILE *fp, uint_16 align )
         return( NULL );
     }
 
-    rnode->next = NULL;
-    rnode->prev = NULL;
-    rnode->Head = lnode;
-    rnode->Tail = lnode;
-    rnode->Info.NumResources = 1;
-    rnode->Info.ResName.IsName = ( (res_info.res_id & 0x8000) == 0 );
-    rnode->Info.ResName.ID.Num = (res_info.res_id & 0x7fff);
+    resnode->next = NULL;
+    resnode->prev = NULL;
+    resnode->Head = langnode;
+    resnode->Tail = langnode;
+    resnode->Info.NumResources = 1;
+    resnode->Info.ResName.IsName = ( (res_info.res_id & 0x8000) == 0 );
+    resnode->Info.ResName.ID.Num = (res_info.res_id & 0x7fff);
 
-    lnode->next = NULL;
-    lnode->prev = NULL;
-    lnode->data = NULL;
-    lnode->Info.res_flags = res_info.flags;
+    langnode->next = NULL;
+    langnode->prev = NULL;
+    langnode->data = NULL;
+    langnode->Info.res_flags = res_info.flags;
     offset_32 = (uint_32)res_info.offset;
     length_32 = (uint_32)res_info.length;
-    lnode->Info.Offset = (uint_32)(offset_32 << align);
-    lnode->Info.Length = (uint_32)(length_32 << align);
-    lnode->Info.lang.lang = DEF_LANG;
-    lnode->Info.lang.sublang = DEF_SUBLANG;
+    langnode->Info.Offset = (uint_32)(offset_32 << align);
+    langnode->Info.Length = (uint_32)(length_32 << align);
+    langnode->Info.lang.lang = DEF_LANG;
+    langnode->Info.lang.sublang = DEF_SUBLANG;
 
-    return( rnode );
+    return( resnode );
 }
 
 bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
@@ -372,34 +372,34 @@ bool WRReadResourceNames( WResDir dir, FILE *fp, uint_32 name_offset )
 
 bool WRSetResName( WResDir dir, uint_32 offset, const char *name )
 {
-    WResTypeNode *type_node;
+    WResTypeNode *typenode;
     WResResNode  *resnode;
     bool         found_one;
 
     found_one = false;
-    for( type_node = dir->Head; type_node != NULL; type_node = type_node->next ) {
-        if( type_node->Info.TypeName.IsName && type_node->Info.TypeName.ID.Num == offset ) {
-            type_node = WRRenameWResTypeNode( dir, type_node, name );
-            if( type_node == NULL ) {
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        if( typenode->Info.TypeName.IsName && typenode->Info.TypeName.ID.Num == offset ) {
+            typenode = WRRenameWResTypeNode( dir, typenode, name );
+            if( typenode == NULL ) {
                 return( false );
             } else {
                 found_one = true;
             }
         }
-        for( resnode = type_node->Head; resnode != NULL; resnode = resnode->next ) {
+        for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
             if( resnode->Info.ResName.IsName && resnode->Info.ResName.ID.Num == offset ) {
-                resnode = WRRenameWResResNode( type_node, resnode, name );
+                resnode = WRRenameWResResNode( typenode, resnode, name );
                 if( resnode == NULL ) {
                     return( false );
                 } else {
                     found_one = true;
                 }
             }
-            if( resnode == type_node->Tail ) {
+            if( resnode == typenode->Tail ) {
                 break;
             }
         }
-        if( type_node == dir->Tail ) {
+        if( typenode == dir->Tail ) {
             break;
         }
     }
@@ -407,44 +407,44 @@ bool WRSetResName( WResDir dir, uint_32 offset, const char *name )
     return( found_one );
 }
 
-WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *type_node, const char *name )
+WResTypeNode *WRRenameWResTypeNode( WResDir dir, WResTypeNode *typenode, const char *name )
 {
-    WResTypeNode    *new_type_node;
+    WResTypeNode    *new_typenode;
     size_t          len;
 
     len = strlen( name );
-    new_type_node = MemAlloc( sizeof( WResTypeNode ) + len - 1 );
-    if( new_type_node == NULL ) {
+    new_typenode = MemAlloc( sizeof( WResTypeNode ) + len - 1 );
+    if( new_typenode == NULL ) {
         return( NULL );
     }
-    if( dir->Head == type_node ) {
-        dir->Head = new_type_node;
+    if( dir->Head == typenode ) {
+        dir->Head = new_typenode;
     }
-    if( dir->Tail == type_node ) {
-        dir->Tail = new_type_node;
+    if( dir->Tail == typenode ) {
+        dir->Tail = new_typenode;
     }
-    new_type_node->next = type_node->next;
-    new_type_node->prev = type_node->prev;
-    new_type_node->Head = type_node->Head;
-    new_type_node->Tail = type_node->Tail;
-    new_type_node->Info.NumResources = type_node->Info.NumResources;
-    new_type_node->Info.TypeName.IsName = true;
-    new_type_node->Info.TypeName.ID.Name.NumChars = len;
-    memcpy( new_type_node->Info.TypeName.ID.Name.Name, name, len );
-    if( type_node->prev != NULL ) {
-        type_node->prev->next = new_type_node;
+    new_typenode->next = typenode->next;
+    new_typenode->prev = typenode->prev;
+    new_typenode->Head = typenode->Head;
+    new_typenode->Tail = typenode->Tail;
+    new_typenode->Info.NumResources = typenode->Info.NumResources;
+    new_typenode->Info.TypeName.IsName = true;
+    new_typenode->Info.TypeName.ID.Name.NumChars = len;
+    memcpy( new_typenode->Info.TypeName.ID.Name.Name, name, len );
+    if( typenode->prev != NULL ) {
+        typenode->prev->next = new_typenode;
     }
-    if( type_node->next != NULL ) {
-        type_node->next->prev = new_type_node;
+    if( typenode->next != NULL ) {
+        typenode->next->prev = new_typenode;
     }
-    MemFree( type_node );
-    return( new_type_node );
+    MemFree( typenode );
+    return( new_typenode );
 }
 
-WResResNode *WRRenameWResResNode( WResTypeNode *type_node,
-                                  WResResNode *res_node, const char *name )
+WResResNode *WRRenameWResResNode( WResTypeNode *typenode,
+                                  WResResNode *resnode, const char *name )
 {
-    WResResNode *new_res_node;
+    WResResNode *new_resnode;
     size_t      len;
     size_t      len1;
 
@@ -452,52 +452,52 @@ WResResNode *WRRenameWResResNode( WResTypeNode *type_node,
     len1 = len - 1;
     if( len == 0 )
         len1 = 0;
-    new_res_node = MemAlloc( sizeof( WResResNode ) + len1 );
-    if( new_res_node == NULL ) {
+    new_resnode = MemAlloc( sizeof( WResResNode ) + len1 );
+    if( new_resnode == NULL ) {
         return( NULL );
     }
-    if( type_node->Head == res_node ) {
-        type_node->Head = new_res_node;
+    if( typenode->Head == resnode ) {
+        typenode->Head = new_resnode;
     }
-    if( type_node->Tail == res_node ) {
-        type_node->Tail = new_res_node;
+    if( typenode->Tail == resnode ) {
+        typenode->Tail = new_resnode;
     }
-    new_res_node->Head = res_node->Head;
-    new_res_node->Tail = res_node->Tail;
-    new_res_node->next = res_node->next;
-    new_res_node->prev = res_node->prev;
-    new_res_node->Info.ResName.IsName = true;
-    new_res_node->Info.ResName.ID.Name.NumChars = len;
-    memcpy( new_res_node->Info.ResName.ID.Name.Name, name, len );
-    if( res_node->prev != NULL ) {
-        res_node->prev->next = new_res_node;
+    new_resnode->Head = resnode->Head;
+    new_resnode->Tail = resnode->Tail;
+    new_resnode->next = resnode->next;
+    new_resnode->prev = resnode->prev;
+    new_resnode->Info.ResName.IsName = true;
+    new_resnode->Info.ResName.ID.Name.NumChars = len;
+    memcpy( new_resnode->Info.ResName.ID.Name.Name, name, len );
+    if( resnode->prev != NULL ) {
+        resnode->prev->next = new_resnode;
     }
-    if( res_node->next != NULL ) {
-        res_node->next->prev = new_res_node;
+    if( resnode->next != NULL ) {
+        resnode->next->prev = new_resnode;
     }
-    MemFree( res_node );
-    return( new_res_node );
+    MemFree( resnode );
+    return( new_resnode );
 }
 
 uint_32 WRReadNameTable( WResDir dir, FILE *fp, uint_8 **name_table,
                          uint_32 num_leftover, uint_8 *leftover )
 {
-    static WResTypeNode *type_node;
-    static WResResNode  *res_node;
+    static WResTypeNode *typenode;
+    static WResResNode  *resnode;
     static uint_32      res_len;
     static uint_32      res_offset;
     static uint_32      num_read;
     uint_32             len;
 
     if( dir != NULL ) {
-        type_node = WRFindTypeNode( dir, RESOURCE2INT( RT_NAMETABLE ), NULL );
-        if( type_node != NULL ) {
-            res_node = type_node->Head;
+        typenode = WRFindTypeNode( dir, RESOURCE2INT( RT_NAMETABLE ), NULL );
+        if( typenode != NULL ) {
+            resnode = typenode->Head;
             /*
              * if there are two name tables we ignore all but the first
              */
-            res_len = res_node->Head->Info.Length;
-            res_offset = res_node->Head->Info.Offset;
+            res_len = resnode->Head->Info.Length;
+            res_offset = resnode->Head->Info.Offset;
             if( RESSEEK( fp, res_offset, SEEK_SET ) ) {
                 return( 0 );
             }
@@ -581,25 +581,25 @@ uint_32 WRUseNameTable( WResDir dir, uint_8 *name_table, uint_32 len, uint_8 **l
 
 bool WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
 {
-    WResTypeNode *type_node;
-    WResResNode  *res_node;
+    WResTypeNode *typenode;
+    WResResNode  *resnode;
 
-    for( type_node = dir->Head; type_node != NULL; type_node = type_node->next ) {
-        if( !type_node->Info.TypeName.IsName && type_node->Info.TypeName.ID.Num == entry->type ) {
-            for( res_node = type_node->Head; res_node != NULL; res_node = res_node->next ) {
-                if( !res_node->Info.ResName.IsName && res_node->Info.ResName.ID.Num == (entry->id & 0x7fff) ) {
-                    if( WRRenameWResResNode( type_node, res_node, entry->name ) == NULL ) {
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
+        if( !typenode->Info.TypeName.IsName && typenode->Info.TypeName.ID.Num == entry->type ) {
+            for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+                if( !resnode->Info.ResName.IsName && resnode->Info.ResName.ID.Num == (entry->id & 0x7fff) ) {
+                    if( WRRenameWResResNode( typenode, resnode, entry->name ) == NULL ) {
                         return( false );
                     } else {
                         return( true );
                     }
                 }
-                if( res_node == type_node->Tail ) {
+                if( resnode == typenode->Tail ) {
                     break;
                 }
             }
         }
-        if( type_node == dir->Tail ) {
+        if( typenode == dir->Tail ) {
             break;
         }
     }

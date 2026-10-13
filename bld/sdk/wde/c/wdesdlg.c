@@ -286,8 +286,8 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
             } else if( ditem->dialog_name != NULL ) {
                 id = ditem->dialog_name;
             }
-        } else if( ditem->rnode != NULL ) {
-            id = &ditem->rnode->Info.ResName;
+        } else if( ditem->resnode != NULL ) {
+            id = &ditem->resnode->Info.ResName;
         }
 
         if( id == NULL ) {
@@ -348,18 +348,18 @@ bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool mak
         return( TRUE );
     }
 
-    if( (ditem->rnode == NULL || ditem->lnode == NULL) &&
+    if( (ditem->resnode == NULL || ditem->langnode == NULL) &&
         (ditem->dialog_info == NULL || ditem->dialog_name == NULL) ) {
         return( FALSE );
     }
 
     if( ditem->dialog_info == NULL ) {
-        ditem->dialog_info = WdeLoadDialogFromRes( res_info, ditem->lnode, ditem->is32bit );
+        ditem->dialog_info = WdeLoadDialogFromRes( res_info, ditem->langnode, ditem->is32bit );
         ditem->modified = false;
     }
 
     if( ditem->dialog_name == NULL ) {
-        ditem->dialog_name = WdeCopyWResID( &ditem->rnode->Info.ResName );
+        ditem->dialog_name = WdeCopyWResID( &ditem->resnode->Info.ResName );
         if( ditem->dialog_name == NULL ) {
             return( FALSE );
         }

@@ -55,19 +55,19 @@ static bool WREResNodeContainsLangNode( WResResNode *, WResLangNode * );
 /* static variables                                                         */
 /****************************************************************************/
 
-WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnode )
+WResResNode *WREFindResNodeFromLangNode( WResTypeNode *typenode, WResLangNode *langnode )
 {
-    WResResNode *rnode;
+    WResResNode *resnode;
 
-    if( tnode == NULL || lnode == NULL ) {
+    if( typenode == NULL || langnode == NULL ) {
         return( NULL );
     }
 
-    for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
-        if( WREResNodeContainsLangNode( rnode, lnode ) ) {
-            return( rnode );
+    for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
+        if( WREResNodeContainsLangNode( resnode, langnode ) ) {
+            return( resnode );
         }
-        if( rnode == tnode->Tail ) {
+        if( resnode == typenode->Tail ) {
             break;
         }
     }
@@ -75,16 +75,16 @@ WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnod
     return( NULL );
 }
 
-bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
+bool WREResNodeContainsLangNode( WResResNode *resnode, WResLangNode *langnode )
 {
-    WResLangNode *lnode2;
+    WResLangNode *langnode2;
 
-    if( rnode == NULL || lnode == NULL ) {
+    if( resnode == NULL || langnode == NULL ) {
         return( false );
     }
 
-    for( lnode2 = rnode->Head; lnode2 != NULL; lnode2 = lnode2->next ) {
-        if( lnode2 == lnode ) {
+    for( langnode2 = resnode->Head; langnode2 != NULL; langnode2 = langnode2->next ) {
+        if( langnode2 == langnode ) {
             return( true );
         }
     }

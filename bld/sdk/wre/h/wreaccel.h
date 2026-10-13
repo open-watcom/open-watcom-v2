@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,7 @@ extern bool WREEditAccelResource( WRECurrentResInfo * );
 extern bool WRESaveEditAccelResource( WAccelHandle );
 extern bool WREEndEditAccelResource( WAccelHandle );
 extern bool WREEndAllAccelSessions( bool );
-extern void WREEndLangAccelSession( WResLangNode *lnode );
+extern void WREEndLangAccelSession( WResLangNode *langnode );
 extern void WREEndResAccelSessions( WREResInfo *rinfo );
 
 #endif

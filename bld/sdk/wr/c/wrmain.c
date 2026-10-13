@@ -645,19 +645,19 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
 bool WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
                                 WResLangType *lang, void *data )
 {
-    WResLangNode    *lnode;
+    WResLangNode    *langnode;
     bool            ok;
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL && data != NULL);
 
-    lnode = NULL;
+    langnode = NULL;
     if( ok ) {
-        lnode = WRFindLangNode( dir, type, name, lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNode( dir, type, name, lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
-        lnode->data = data;
+        langnode->data = data;
     }
 
     return( ok );
@@ -666,32 +666,32 @@ bool WRAPI WRFindAndSetData( WResDir dir, WResID *type, WResID *name,
 WResLangNode *WRAPI WRFindLangNode( WResDir dir, WResID *type,
                                          WResID *name, WResLangType *lang )
 {
-    WResTypeNode    *tnode;
-    WResResNode     *rnode;
-    WResLangNode    *lnode;
+    WResTypeNode    *typenode;
+    WResResNode     *resnode;
+    WResLangNode    *langnode;
     bool            ok;
 
     ok = (dir != NULL && type != NULL && name != NULL && lang != NULL);
 
-    tnode = NULL;
+    typenode = NULL;
     if( ok ) {
-        tnode = WRFindTypeNodeFromWResID( dir, type );
-        ok = (tnode != NULL);
+        typenode = WRFindTypeNodeFromWResID( dir, type );
+        ok = (typenode != NULL);
     }
 
-    rnode = NULL;
+    resnode = NULL;
     if( ok ) {
-        rnode = WRFindResNodeFromWResID( tnode, name );
-        ok = (rnode != NULL);
+        resnode = WRFindResNodeFromWResID( typenode, name );
+        ok = (resnode != NULL);
     }
 
-    lnode = NULL;
+    langnode = NULL;
     if( ok ) {
-        lnode = WRFindLangNodeFromLangType( rnode, lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNodeFromLangType( resnode, lang );
+        ok = (langnode != NULL);
     }
 
-    return( lnode );
+    return( langnode );
 }
 
 bool WREDoSaveObjectAs( WRInfo *info, WRSaveIntoData *idata )
@@ -719,24 +719,24 @@ bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
     bool                ok;
     char                *data;
     size_t              size;
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
 
     data = NULL;
     ok = (info != NULL && info->dir != NULL && idata != NULL && idata->type != NULL &&
           idata->name != NULL && idata->data != NULL && idata->info != NULL);
 
-    lnode = NULL;
+    langnode = NULL;
     if( ok ) {
-        lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
+        ok = (langnode != NULL);
     }
 
     size = 0;
     if( ok ) {
         if( is_icon ) {
-            ok = WRCreateIconData( idata->info, lnode, &data, &size );
+            ok = WRCreateIconData( idata->info, langnode, &data, &size );
         } else {
-            ok = WRCreateCursorData( idata->info, lnode, &data, &size );
+            ok = WRCreateCursorData( idata->info, langnode, &data, &size );
         }
     }
 
@@ -746,15 +746,15 @@ bool WREDoSaveImageAs( WRInfo *info, WRSaveIntoData *idata, bool is_icon )
     }
 
     if( ok ) {
-        lnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
         if( is_icon ) {
-            ok = WRCreateIconEntries( info, lnode, data, size );
+            ok = WRCreateIconEntries( info, langnode, data, size );
         } else {
-            ok = WRCreateCursorEntries( info, lnode, data, size );
+            ok = WRCreateCursorEntries( info, langnode, data, size );
         }
     }
 
@@ -802,7 +802,7 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
 {
     char                *data;
     size_t              size;
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
     bool                replace_nixed;
     bool                ok;
 
@@ -816,18 +816,18 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
         replace_nixed = !ok;
     }
 
-    lnode = NULL;
+    langnode = NULL;
     if( ok ) {
-        lnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNode( idata->info->dir, idata->type, idata->name, &idata->lang );
+        ok = (langnode != NULL);
     }
 
     size = 0;
     if( ok ) {
         if( is_icon ) {
-            ok = WRCreateIconData( idata->info, lnode, &data, &size );
+            ok = WRCreateIconData( idata->info, langnode, &data, &size );
         } else {
-            ok = WRCreateCursorData( idata->info, lnode, &data, &size );
+            ok = WRCreateCursorData( idata->info, langnode, &data, &size );
         }
     }
 
@@ -838,15 +838,15 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
     }
 
     if( ok ) {
-        lnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNode( info->dir, idata->type, idata->name, &idata->lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
         if( is_icon ) {
-            ok = WRCreateIconEntries( info, lnode, data, size );
+            ok = WRCreateIconEntries( info, langnode, data, size );
         } else {
-            ok = WRCreateCursorEntries( info, lnode, data, size );
+            ok = WRCreateCursorEntries( info, langnode, data, size );
         }
     }
 
@@ -928,9 +928,9 @@ bool WQueryMergeStrings( WResID *rname )
 // this function returns true if the save into may continue
 bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 {
-    WResTypeNode    *tnode;
-    WResResNode     *rnode;
-    WResLangNode    *lnode;
+    WResTypeNode    *typenode;
+    WResResNode     *resnode;
+    WResLangNode    *langnode;
     long            type;
     char            *data;
     uint_32         size;
@@ -945,18 +945,18 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     strings = ( type == RESOURCE2INT( RT_STRING ) );
 
-    tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
-    if( tnode == NULL ) {
+    typenode = WRFindTypeNodeFromWResID( info->dir, idata->type );
+    if( typenode == NULL ) {
         return( true );
     }
 
-    rnode = WRFindResNodeFromWResID( tnode, idata->name );
-    if( rnode == NULL ) {
+    resnode = WRFindResNodeFromWResID( typenode, idata->name );
+    if( resnode == NULL ) {
         return( true );
     }
 
-    lnode = WRFindLangNodeFromLangType( rnode, &idata->lang );
-    if( lnode == NULL ) {
+    langnode = WRFindLangNodeFromLangType( resnode, &idata->lang );
+    if( langnode == NULL ) {
         return( true );
     }
 
@@ -964,8 +964,8 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         if( !WQueryMergeStrings( idata->name ) ) {
             return( false );
         }
-        data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
-        size = lnode->Info.Length;
+        data = WRAllocLoadResData( info->file_name, langnode->Info.Offset, langnode->Info.Length );
+        size = langnode->Info.Length;
         if( !WRMergeStringData( &data, &size, idata->data, idata->size, WRIs32Bit( info->save_type ), true ) ) {
             if( data != NULL ) {
                 MemFree( data );
@@ -984,12 +984,12 @@ bool WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
     }
 
     if( type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
-        if( !WRDeleteGroupImages( info, lnode, type ) ) {
+        if( !WRDeleteGroupImages( info, langnode, type ) ) {
             return( false );
         }
     }
 
-    if( !WRRemoveLangNodeFromDir( info->dir, &tnode, &rnode, &lnode ) ) {
+    if( !WRRemoveLangNodeFromDir( info->dir, &typenode, &resnode, &langnode ) ) {
         return( false );
     }
 

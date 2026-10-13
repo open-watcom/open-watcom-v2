@@ -80,7 +80,7 @@ bool SaveObject( bool save_into )
     ok = WREGetCurrentResource( &curr );
 
     if( ok ) {
-        ok = (curr.lang->Info.Length != 0);
+        ok = (curr.langnode->Info.Length != 0);
         if( !ok ) {
             WREDisplayErrorMsg( WRE_UPDATEBEFORESAVE1 );
         }
@@ -135,15 +135,15 @@ bool SaveObjectAs( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( ok ) {
-        size = curr->lang->Info.Length;
+        size = curr->langnode->Info.Length;
         idata.info = curr->info->info;
         idata.next = NULL;
-        idata.type = &curr->type->Info.TypeName;
-        idata.name = &curr->res->Info.ResName;
+        idata.type = &curr->typenode->Info.TypeName;
+        idata.name = &curr->resnode->Info.ResName;
         idata.data = rdata;
-        idata.lang = curr->lang->Info.lang;
+        idata.lang = curr->langnode->Info.lang;
         idata.size = size;
-        idata.res_flags = curr->lang->Info.res_flags;
+        idata.res_flags = curr->langnode->Info.res_flags;
         ok = WRSaveObjectAs( fname, ftype, &idata );
     }
 
@@ -178,15 +178,15 @@ bool SaveObjectInto( WRECurrentResInfo *curr, void *rdata )
     }
 
     if( ok ) {
-        size = curr->lang->Info.Length;
+        size = curr->langnode->Info.Length;
         idata.next = NULL;
         idata.info = curr->info->info;
-        idata.type = &curr->type->Info.TypeName;
-        idata.name = &curr->res->Info.ResName;
+        idata.type = &curr->typenode->Info.TypeName;
+        idata.name = &curr->resnode->Info.ResName;
         idata.data = rdata;
-        idata.lang = curr->lang->Info.lang;
+        idata.lang = curr->langnode->Info.lang;
         idata.size = size;
-        idata.res_flags = curr->lang->Info.res_flags;
+        idata.res_flags = curr->langnode->Info.res_flags;
         ok = WRSaveObjectInto( fname, &idata, &dup ) && !dup;
     }
 

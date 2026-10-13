@@ -77,15 +77,15 @@ bool WREChangeMemFlags( void )
     ok = WREGetCurrentResource( &curr );
 
     if( ok )  {
-        if( !curr.type->Info.TypeName.IsName ) {
-            type_id = curr.type->Info.TypeName.ID.Num;
+        if( !curr.typenode->Info.TypeName.IsName ) {
+            type_id = curr.typenode->Info.TypeName.ID.Num;
         }
-        type_name = WREGetResName( curr.res, type_id );
+        type_name = WREGetResName( curr.resnode, type_id );
         parent = WREGetMainWindowHandle();
     }
 
     if( ok ) {
-        res_flags = curr.lang->Info.res_flags;
+        res_flags = curr.langnode->Info.res_flags;
 #ifdef __WINDOWS__
         {
             HELPFUNC hcb = MakeProcInstance_HELP( WREHelpRoutine, WREGetAppInstance() );
@@ -95,7 +95,7 @@ bool WREChangeMemFlags( void )
 #else
         ok = WRChangeMemFlags( parent, type_name, &res_flags, WREHelpRoutine );
 #endif
-        curr.lang->Info.res_flags = res_flags;
+        curr.langnode->Info.res_flags = res_flags;
     }
 
     if( type_name != NULL ) {

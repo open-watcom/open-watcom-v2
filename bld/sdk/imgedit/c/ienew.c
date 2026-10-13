@@ -416,7 +416,7 @@ bool NewImage( image_type img_type, const char *filename )
 
     if( ok ) {
         node.wrinfo = NULL;
-        node.lnode = NULL;
+        node.langnode = NULL;
 
         CreateNewDrawPad( &node );
 

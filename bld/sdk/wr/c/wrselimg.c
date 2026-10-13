@@ -113,7 +113,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *info, HELPFUNC hel
 void WRSetEntries( HWND hdlg, WRSelectImageInfo *siinfo )
 {
     HWND                lbox;
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     char                *empty_str;
 
     if( siinfo == NULL || siinfo->info == NULL || hdlg == (HWND)NULL ) {
@@ -126,8 +126,8 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *siinfo )
     }
     SendMessage( lbox, LB_RESETCONTENT, 0, 0 );
 
-    tnode = WRFindTypeNode( siinfo->info->dir, siinfo->type, NULL );
-    if( tnode == NULL ) {
+    typenode = WRFindTypeNode( siinfo->info->dir, siinfo->type, NULL );
+    if( typenode == NULL ) {
         empty_str = WRAllocRCString( WR_EMPTY );
         if( empty_str != NULL ) {
             WRSetLBoxWithStr( lbox, empty_str, NULL );
@@ -136,13 +136,13 @@ void WRSetEntries( HWND hdlg, WRSelectImageInfo *siinfo )
         return;
     }
 
-    WRSetResNamesFromTypeNode( lbox, tnode );
+    WRSetResNamesFromTypeNode( lbox, typenode );
     SendMessage( lbox, LB_SETCURSEL, 0, 0 );
 }
 
 static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
 {
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     bool                lbox_set;
 
     if( siinfo == NULL || hdlg == (HWND)NULL ) {
@@ -151,8 +151,8 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
 
     lbox_set = false;
 
-    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
-    if( tnode != NULL ) {
+    typenode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
+    if( typenode != NULL ) {
         CheckDlgButton( hdlg, IDM_SELIMGBMP, BST_CHECKED );
         siinfo->type = RESOURCE2INT( RT_BITMAP );
         WRSetEntries( hdlg, siinfo );
@@ -161,8 +161,8 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGBMP ), FALSE );
     }
 
-    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
-    if( tnode != NULL ) {
+    typenode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
+    if( typenode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGCUR, BST_CHECKED );
             siinfo->type = RESOURCE2INT( RT_GROUP_CURSOR );
@@ -173,8 +173,8 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGCUR ), FALSE );
     }
 
-    tnode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
-    if( tnode != NULL ) {
+    typenode = WRFindTypeNode( siinfo->info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
+    if( typenode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGICO, BST_CHECKED );
             siinfo->type = RESOURCE2INT( RT_GROUP_ICON );
@@ -211,8 +211,8 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *siinfo )
         return( false );
     }
 
-    siinfo->lnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
-    if( siinfo->lnode == NULL ) {
+    siinfo->langnode = (WResLangNode *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
+    if( siinfo->langnode == NULL ) {
         return( false );
     }
 

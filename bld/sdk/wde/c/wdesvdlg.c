@@ -1218,12 +1218,12 @@ bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem )
             return( FALSE );
         }
     } else if( ditem->dialog_info == NULL ) {
-        ditem->dialog_info = WdeLoadDialogFromRes( rinfo, ditem->lnode, ditem->is32bit );
+        ditem->dialog_info = WdeLoadDialogFromRes( rinfo, ditem->langnode, ditem->is32bit );
         if( ditem->dialog_info == NULL ) {
             return( FALSE );
         }
         if( ditem->dialog_name == NULL ) {
-            ditem->dialog_name = WdeCopyWResID( &ditem->rnode->Info.ResName );
+            ditem->dialog_name = WdeCopyWResID( &ditem->resnode->Info.ResName );
             if( ditem->dialog_name == NULL ) {
                 return( FALSE );
             }

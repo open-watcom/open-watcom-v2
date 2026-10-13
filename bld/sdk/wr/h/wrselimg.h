@@ -42,7 +42,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
     uint_16             type;
     WRInfo              *info;
     HELPFUNC            help_callback;

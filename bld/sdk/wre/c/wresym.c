@@ -140,9 +140,9 @@ static void Add_PP_Symbols( WRHashTable *table )
 
 static char *WREFindDLGInclude( WRInfo *info )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WResLangType        lang;
     char                *include;
     bool                ok;
@@ -151,24 +151,24 @@ static char *WREFindDLGInclude( WRInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
-        ok = (tnode != NULL);
+        typenode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        ok = (typenode != NULL);
     }
 
     if( ok ) {
-        rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = (rnode != NULL);
+        resnode = WRFindResNode( typenode, 0, "DLGINCLUDE" );
+        ok = (resnode != NULL);
     }
 
     if( ok ) {
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNodeFromLangType( resnode, &lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
-        include = WRAllocCopyResData( info, lnode );
+        include = WRAllocCopyResData( info, langnode );
     }
 
     return( include );

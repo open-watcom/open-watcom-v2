@@ -141,8 +141,8 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
 
 bool WdeInfoToData( WdeResInfo *info )
 {
-    WResTypeNode        *dnode;
-    WResResNode         *rnode;
+    WResTypeNode        *dtypenode;
+    WResResNode         *resnode;
     LIST                *dlist;
     WdeResDlgItem       *ditem;
     char                *data;
@@ -156,7 +156,7 @@ bool WdeInfoToData( WdeResInfo *info )
 
     lang.lang = DEF_SUBLANG;
     lang.sublang = DEF_SUBLANG;
-    dnode = info->dlg_entry;
+    dtypenode = info->dlg_entry;
     for( dlist = info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         data = NULL;
@@ -168,38 +168,38 @@ bool WdeInfoToData( WdeResInfo *info )
             }
         }
 
-        if( ditem->rnode != NULL && ditem->lnode != NULL ) {
+        if( ditem->resnode != NULL && ditem->langnode != NULL ) {
             if( data != NULL ) {
-                rnode = WdeRenameWResResNode( dnode, ditem->rnode, ditem->dialog_name );
-                if( rnode == NULL ) {
+                resnode = WdeRenameWResResNode( dtypenode, ditem->resnode, ditem->dialog_name );
+                if( resnode == NULL ) {
                     MemFree( data );
                     return( false );
                 }
-                ditem->rnode = rnode;
-                ditem->lnode->data = data;
-                ditem->lnode->Info.Length = dsize;
-                ditem->lnode->Info.Offset = 0;
-                ditem->lnode->Info.res_flags = ditem->dialog_info->res_flags;
+                ditem->resnode = resnode;
+                ditem->langnode->data = data;
+                ditem->langnode->Info.Length = dsize;
+                ditem->langnode->Info.Offset = 0;
+                ditem->langnode->Info.res_flags = ditem->dialog_info->res_flags;
             }
         } else {
-            rnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
+            resnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
                                           ditem->dialog_info->res_flags, 0,
                                           dsize, data );
-            if( rnode != NULL ) {
+            if( resnode != NULL ) {
                 if( info->info->dir == NULL ) {
                     info->info->dir = WResInitDir();
                 }
-                if( dnode == NULL ) {
-                    dnode = WdeAddTypeToDir( info->info->dir, RESOURCE2INT( RT_DIALOG ) );
-                    info->dlg_entry = dnode;
+                if( dtypenode == NULL ) {
+                    dtypenode = WdeAddTypeToDir( info->info->dir, RESOURCE2INT( RT_DIALOG ) );
+                    info->dlg_entry = dtypenode;
                 }
-                if( info->info->dir != NULL && dnode != NULL ) {
-                    WdeAddResToType( dnode, rnode );
-                    ditem->rnode = rnode;
-                    ditem->lnode = rnode->Head;
+                if( info->info->dir != NULL && dtypenode != NULL ) {
+                    WdeAddResToType( dtypenode, resnode );
+                    ditem->resnode = resnode;
+                    ditem->langnode = resnode->Head;
                 } else {
-                    MemFree( rnode->Head );
-                    MemFree( rnode );
+                    MemFree( resnode->Head );
+                    MemFree( resnode );
                     MemFree( data );
                     return( false );
                 }
@@ -272,126 +272,126 @@ bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
     return( WdeAllocDataFromDBI( dbi, data, dsize ) );
 }
 
-WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WResID *name )
+WResResNode *WdeRenameWResResNode( WResTypeNode *typenode, WResResNode *resnode, WResID *name )
 {
-    WResResNode *new_rnode;
+    WResResNode *new_resnode;
 
-    if( tnode == NULL || rnode == NULL || name == NULL ) {
+    if( typenode == NULL || resnode == NULL || name == NULL ) {
         return( NULL );
     }
 
     // check if the names are already the same
-    if( WResIDCmp( &rnode->Info.ResName, name ) ) {
-        return( rnode );
+    if( WResIDCmp( &resnode->Info.ResName, name ) ) {
+        return( resnode );
     }
 
-    new_rnode = WdeAllocWResResNode( rnode->Info.NumResources, name );
+    new_resnode = WdeAllocWResResNode( resnode->Info.NumResources, name );
 
-    if( new_rnode != NULL ) {
-        if( tnode->Head == rnode ) {
-            tnode->Head = new_rnode;
+    if( new_resnode != NULL ) {
+        if( typenode->Head == resnode ) {
+            typenode->Head = new_resnode;
         }
-        if( tnode->Tail == rnode ) {
-            tnode->Tail = new_rnode;
+        if( typenode->Tail == resnode ) {
+            typenode->Tail = new_resnode;
         }
-        new_rnode->Head = rnode->Head;
-        new_rnode->Tail = rnode->Tail;
-        new_rnode->next = rnode->next;
-        new_rnode->prev = rnode->prev;
-        if( rnode->prev != NULL ) {
-            rnode->prev->next = new_rnode;
+        new_resnode->Head = resnode->Head;
+        new_resnode->Tail = resnode->Tail;
+        new_resnode->next = resnode->next;
+        new_resnode->prev = resnode->prev;
+        if( resnode->prev != NULL ) {
+            resnode->prev->next = new_resnode;
         }
-        if( rnode->next != NULL ) {
-            rnode->next->prev = new_rnode;
+        if( resnode->next != NULL ) {
+            resnode->next->prev = new_resnode;
         }
-        MemFree( rnode );
+        MemFree( resnode );
     }
 
-    return( new_rnode );
+    return( new_resnode );
 }
 
-bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
+bool WdeAddResToType( WResTypeNode *typenode, WResResNode *resnode )
 {
-    if( tnode == NULL || rnode == NULL ) {
+    if( typenode == NULL || resnode == NULL ) {
         return( FALSE );
     }
+    resnode->next = NULL;
+    resnode->prev = typenode->Tail;
+    if( typenode->Head == NULL ) {
+        typenode->Head = resnode;
+    }
+    if( typenode->Tail != NULL ) {
+        typenode->Tail->next = resnode;
+    }
+    typenode->Tail = resnode;
 
-    rnode->next = NULL;
-    rnode->prev = tnode->Tail;
-    if( tnode->Head == NULL ) {
-        tnode->Head = rnode;
-    }
-    if( tnode->Tail != NULL ) {
-        tnode->Tail->next = rnode;
-    }
-    tnode->Tail = rnode;
-    tnode->Info.NumResources++;
+    typenode->Info.NumResources++;
 
     return( TRUE );
 }
 
 WResTypeNode *WdeAddTypeToDir( WResDir dir, uint_16 type )
 {
-    WResTypeNode *tnode;
+    WResTypeNode *typenode;
 
     if( dir == NULL ) {
         return( NULL );
     }
+    typenode = WdeAllocWResTypeNode( type );
 
-    tnode = WdeAllocWResTypeNode( type );
-
-    if( tnode != NULL ) {
-        tnode->next = NULL;
-        tnode->prev = dir->Tail;
+    if( typenode != NULL ) {
+        typenode->next = NULL;
+        typenode->prev = dir->Tail;
         if( dir->Head == NULL ) {
-            dir->Head = tnode;
+            dir->Head = typenode;
         }
         if( dir->Tail != NULL ) {
-            dir->Tail->next = tnode;
+            dir->Tail->next = typenode;
         }
-        dir->Tail = tnode;
+        dir->Tail = typenode;
+
         dir->NumTypes++;
     }
 
-    return( tnode );
+    return( typenode );
 }
 
 WResTypeNode *WdeAllocWResTypeNode( uint_16 type )
 {
-    WResTypeNode *tnode;
+    WResTypeNode *typenode;
 
-    tnode = MemAlloc( sizeof( WResTypeNode ) );
+    typenode = MemAlloc( sizeof( WResTypeNode ) );
 
-    if( tnode != NULL ) {
-        memset( tnode, 0, sizeof( WResTypeNode ) );
-        tnode->Info.TypeName.ID.Num = type;
+    if( typenode != NULL ) {
+        memset( typenode, 0, sizeof( WResTypeNode ) );
+        typenode->Info.TypeName.ID.Num = type;
     }
 
-    return( tnode );
+    return( typenode );
 }
 
 static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, ResMemFlags res_flags,
                                     uint_32 offset, uint_32 dsize, char *data )
 {
-    WResLangNode *lnode;
+    WResLangNode *langnode;
 
     if( lang == NULL ) {
         return( NULL );
     }
 
-    lnode = MemAlloc( sizeof( WResLangNode ) );
+    langnode = MemAlloc( sizeof( WResLangNode ) );
 
-    if( lnode != NULL ) {
-        lnode->next = NULL;
-        lnode->prev = NULL;
-        lnode->data = data;
-        lnode->Info.lang = *lang;
-        lnode->Info.res_flags = res_flags;
-        lnode->Info.Offset = offset;
-        lnode->Info.Length = dsize;
+    if( langnode != NULL ) {
+        langnode->next = NULL;
+        langnode->prev = NULL;
+        langnode->data = data;
+        langnode->Info.lang = *lang;
+        langnode->Info.res_flags = res_flags;
+        langnode->Info.Offset = offset;
+        langnode->Info.Length = dsize;
     }
 
-    return( lnode );
+    return( langnode );
 }
 
 WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
@@ -399,27 +399,27 @@ WResResNode *WdeCreateWResResNode( uint_16 num_resources, WResID *name,
                                    uint_32 offset, uint_32 dsize,
                                    void *data )
 {
-    WResResNode  *rnode;
-    WResLangNode *lnode;
+    WResResNode  *resnode;
+    WResLangNode *langnode;
 
-    rnode = NULL;
-    lnode = WdeAllocWResLangNode( lang, res_flags, offset, dsize, data );
-    if( lnode != NULL ) {
-        rnode = WdeAllocWResResNode( num_resources, name );
-        if( rnode != NULL ) {
-            rnode->Head = lnode;
-            rnode->Tail = lnode;
+    resnode = NULL;
+    langnode = WdeAllocWResLangNode( lang, res_flags, offset, dsize, data );
+    if( langnode != NULL ) {
+        resnode = WdeAllocWResResNode( num_resources, name );
+        if( resnode != NULL ) {
+            resnode->Head = langnode;
+            resnode->Tail = langnode;
         } else {
-            MemFree( lnode );
+            MemFree( langnode );
         }
     }
 
-    return( rnode );
+    return( resnode );
 }
 
 WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
 {
-    WResResNode *new_rnode;
+    WResResNode *new_resnode;
     size_t      len;
 
     if( name == NULL ) {
@@ -432,16 +432,16 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
             len += name->ID.Name.NumChars - 1;
         }
     }
-    new_rnode = MemAlloc( len );
-    if( new_rnode != NULL ) {
-        new_rnode->Head = NULL;
-        new_rnode->Tail = NULL;
-        new_rnode->next = NULL;
-        new_rnode->prev = NULL;
-        new_rnode->Info.NumResources = num_resources;
+    new_resnode = MemAlloc( len );
+    if( new_resnode != NULL ) {
+        new_resnode->Head = NULL;
+        new_resnode->Tail = NULL;
+        new_resnode->next = NULL;
+        new_resnode->prev = NULL;
+        new_resnode->Info.NumResources = num_resources;
         len -= sizeof( WResResNode ) - sizeof( WResID );
-        memcpy( &new_rnode->Info.ResName, name, len );
+        memcpy( &new_resnode->Info.ResName, name, len );
     }
 
-    return( new_rnode );
+    return( new_resnode );
 }

@@ -76,19 +76,19 @@ bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
     return( ok );
 }
 
-static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
-                                  WResLangNode *lnode, uint_16 type_id )
+static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *resnode,
+                                  WResLangNode *langnode, uint_16 type_id )
 {
     bool        ok;
     char        *cp;
 
     cp = NULL;
 
-    ok = (lbox != (HWND)NULL && rnode != NULL && lnode != NULL);
+    ok = (lbox != (HWND)NULL && resnode != NULL && langnode != NULL);
 
-    ok = ok && ((cp = WRGetResName( rnode, type_id )) != NULL);
+    ok = ok && ((cp = WRGetResName( resnode, type_id )) != NULL);
 
-    ok = ok && WRSetLBoxWithStr( lbox, cp, lnode );
+    ok = ok && WRSetLBoxWithStr( lbox, cp, langnode );
 
     if( cp != NULL ) {
         MemFree( cp );
@@ -97,16 +97,16 @@ static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
     return( ok );
 }
 
-static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, uint_16 type_id )
+static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *resnode, uint_16 type_id )
 {
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
     bool                ok;
 
-    ok = (lbox != (HWND)NULL && rnode != NULL);
+    ok = (lbox != (HWND)NULL && resnode != NULL);
     if( ok ) {
-        for( lnode = rnode->Head; ok && lnode != NULL; lnode = lnode->next ) {
-            ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type_id );
-            if( lnode == rnode->Tail ) {
+        for( langnode = resnode->Head; ok && langnode != NULL; langnode = langnode->next ) {
+            ok = WRSetLBoxWithLangNode( lbox, resnode, langnode, type_id );
+            if( langnode == resnode->Tail ) {
                 break;
             }
         }
@@ -115,19 +115,19 @@ static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, uint_16 type_id
     return( ok );
 }
 
-bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
+bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *typenode )
 {
-    WResResNode *rnode;
+    WResResNode *resnode;
     char        *str;
     bool        ok;
     uint_16     type_id;
 
     type_id = 0;
-    ok = (lbox != (HWND)NULL && tnode != NULL);
+    ok = (lbox != (HWND)NULL && typenode != NULL);
 
     if( ok ) {
-        if( !tnode->Info.TypeName.IsName ) {
-            type_id = tnode->Info.TypeName.ID.Num;
+        if( !typenode->Info.TypeName.IsName ) {
+            type_id = typenode->Info.TypeName.ID.Num;
         }
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         if( ok && type_id == RESOURCE2INT( RT_STRING ) ) {
@@ -139,9 +139,9 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
                 ok = false;
             }
         } else {
-            for( rnode = tnode->Head; ok && rnode != NULL; rnode = rnode->next ) {
-                ok = WRSetLBoxWithResNode( lbox, rnode, type_id );
-                if( rnode == tnode->Tail ) {
+            for( resnode = typenode->Head; ok && resnode != NULL; resnode = resnode->next ) {
+                ok = WRSetLBoxWithResNode( lbox, resnode, type_id );
+                if( resnode == typenode->Tail ) {
                     break;
                 }
             }
@@ -157,7 +157,7 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
     return( ok );
 }
 
-char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type_id )
+char * WRAPI WRGetResName( WResResNode *resnode, uint_16 type_id )
 {
     WResID  *id;
     int     num;
@@ -167,8 +167,8 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type_id )
 
     cp = NULL;
 
-    if( rnode != NULL ) {
-        id = &rnode->Info.ResName;
+    if( resnode != NULL ) {
+        id = &resnode->Info.ResName;
         if( type_id == RESOURCE2INT( RT_STRING ) ) {
             num = id->ID.Num;
             if( num != 0 ) {

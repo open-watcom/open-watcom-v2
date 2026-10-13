@@ -332,33 +332,33 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
 
 bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WResLangType        lang;
     bool                ok;
 
     ok = (rinfo != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
-        ok = (tnode != NULL);
+        typenode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        ok = (typenode != NULL);
     }
 
     if( ok ) {
-        rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = (rnode != NULL);
+        resnode = WRFindResNode( typenode, 0, "DLGINCLUDE" );
+        ok = (resnode != NULL);
     }
 
     if( ok ) {
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNodeFromLangType( resnode, &lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
-        ok = WRRemoveLangNodeFromDir( rinfo->info->dir, &tnode, &rnode, &lnode );
+        ok = WRRemoveLangNodeFromDir( rinfo->info->dir, &typenode, &resnode, &langnode );
     }
 
     return( ok );
@@ -366,9 +366,9 @@ bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
 
 static char *WdeFindDLGInclude( WdeResInfo *rinfo )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WResLangType        lang;
     char                *include;
     bool                ok;
@@ -377,24 +377,24 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     ok = (rinfo != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
-        ok = (tnode != NULL);
+        typenode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        ok = (typenode != NULL);
     }
 
     if( ok ) {
-        rnode = WRFindResNode( tnode, 0, "DLGINCLUDE" );
-        ok = (rnode != NULL);
+        resnode = WRFindResNode( typenode, 0, "DLGINCLUDE" );
+        ok = (resnode != NULL);
     }
 
     if( ok ) {
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-        lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = (lnode != NULL);
+        langnode = WRFindLangNodeFromLangType( resnode, &lang );
+        ok = (langnode != NULL);
     }
 
     if( ok ) {
-        include = WRAllocCopyResData( rinfo->info, lnode );
+        include = WRAllocCopyResData( rinfo->info, langnode );
     }
 
     return( include );

@@ -92,7 +92,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 }
 
 
-WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnode, bool is32bit )
+WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *langnode, bool is32bit )
 {
     DialogBoxExHeader32short    h32ex;
     DialogBoxHeader32           h32;
@@ -121,7 +121,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     memset( &h32, 0, sizeof( h32 ) );
     memset( &h16, 0, sizeof( h16 ) );
 
-    ok = ( res_info != NULL && lnode != NULL );
+    ok = ( res_info != NULL && langnode != NULL );
 
     if( ok ) {
         file_name = res_info->info->tmp_file;
@@ -142,15 +142,15 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     }
 
     if( ok ) {
-        dlg_info->res_flags = lnode->Info.res_flags;
-        ok = !ResSeek( fp, lnode->Info.Offset, SEEK_SET );
+        dlg_info->res_flags = langnode->Info.res_flags;
+        ok = !ResSeek( fp, langnode->Info.Offset, SEEK_SET );
     }
 
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
             dlg_info->dialog_header->is32bitEx = ResIsDialogBoxEx( fp );
-            ResSeek( fp, lnode->Info.Offset, SEEK_SET );
+            ResSeek( fp, langnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
                 ok = !ResReadDialogBoxExHeader32( &h32, &h32ex, fp );

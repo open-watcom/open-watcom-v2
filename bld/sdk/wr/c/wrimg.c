@@ -294,19 +294,19 @@ bool WRLoadCursorFile( WRInfo *info )
     return( ok );
 }
 
-static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
+static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *typenode, bool backup )
 {
     FILE                *src_fp;
     FILE                *dst_fp;
     bool                ok;
     bool                use_rename;
-    WResLangNode        *lnode;
+    WResLangNode        *langnode;
 
     src_fp = NULL;
     dst_fp = NULL;
-    lnode = NULL;
+    langnode = NULL;
 
-    ok = ( info != NULL && tnode != NULL );
+    ok = ( info != NULL && typenode != NULL );
 
     if( ok ) {
         if( backup && WRFileExists( info->save_name ) ) {
@@ -326,17 +326,17 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     }
 
     if( ok ) {
-        if( tnode->Head != NULL && tnode->Head->Head != NULL ) {
-            lnode = tnode->Head->Head;
+        if( typenode->Head != NULL && typenode->Head->Head != NULL ) {
+            langnode = typenode->Head->Head;
         }
-        ok = ( lnode != NULL );
+        ok = ( langnode != NULL );
     }
 
     if( ok ) {
-        if( lnode->data != NULL ) {
-            ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst_fp );
+        if( langnode->data != NULL ) {
+            ok = WRCopyResFromDataToFile( langnode->data, langnode->Info.Length, dst_fp );
         } else {
-            ok = WRCopyResFromFileToFile( src_fp, lnode->Info.Offset, lnode->Info.Length, dst_fp );
+            ok = WRCopyResFromFileToFile( src_fp, langnode->Info.Offset, langnode->Info.Length, dst_fp );
         }
     }
 
@@ -360,16 +360,16 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 bool WRSaveBitmapResource( WRInfo *info, bool backup )
 {
     bool                ok;
-    WResTypeNode        *tnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResLangNode        *langnode;
     char                *data;
     size_t              dsize;
 
     ok = ( info != NULL && info->dir != NULL );
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
-        ok = ( tnode != NULL );
+        typenode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
+        ok = ( typenode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOBMP );
         }
@@ -383,41 +383,41 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        lnode = NULL;
-        if( tnode->Head != NULL && tnode->Head->Head != NULL ) {
-            lnode = tnode->Head->Head;
+        langnode = NULL;
+        if( typenode->Head != NULL && typenode->Head->Head != NULL ) {
+            langnode = typenode->Head->Head;
         }
-        ok = ( lnode != NULL );
+        ok = ( langnode != NULL );
     }
 
     if( ok ) {
-        if( lnode->data == NULL ) {
-            lnode->data = WRAllocLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
+        if( langnode->data == NULL ) {
+            langnode->data = WRAllocLoadResData( info->file_name, langnode->Info.Offset, langnode->Info.Length );
         }
-        ok = ( lnode->data != NULL && lnode->Info.Length != 0 );
+        ok = ( langnode->data != NULL && langnode->Info.Length != 0 );
     }
 
     if( ok ) {
-        data = lnode->data;
-        dsize = lnode->Info.Length;
+        data = langnode->data;
+        dsize = langnode->Info.Length;
         ok = WRAddBitmapFileHeader( &data, &dsize );
     }
 
     if( ok ) {
-        lnode->data = data;
-        lnode->Info.Length = dsize;
-        ok = WRSaveImageToFile( info, tnode, backup );
+        langnode->data = data;
+        langnode->Info.Length = dsize;
+        ok = WRSaveImageToFile( info, typenode, backup );
     }
 
     if( ok ) {
-        data = lnode->data;
-        dsize = lnode->Info.Length;
+        data = langnode->data;
+        dsize = langnode->Info.Length;
         ok = WRStripBitmapFileHeader( &data, &dsize );
     }
 
     if( ok ) {
-        lnode->data = data;
-        lnode->Info.Length = dsize;
+        langnode->data = data;
+        langnode->Info.Length = dsize;
     }
 
     return( ok );
@@ -425,9 +425,9 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
 
 bool WRSaveCursorResource( WRInfo *info, bool backup )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WResLangType        lang;
     char                *data;
     size_t              size;
@@ -448,25 +448,25 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
-        ok = ( tnode != NULL );
+        typenode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
+        ok = ( typenode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOCUR );
         }
     }
 
     if( ok ) {
-        rnode = tnode->Head;
-        ok = ( rnode != NULL );
+        resnode = typenode->Head;
+        ok = ( resnode != NULL );
     }
 
     if( ok ) {
-        lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        langnode = WRFindLangNodeFromLangType( resnode, &lang );
+        ok = ( langnode != NULL );
     }
 
     if( ok ) {
-        ok = WRCreateCursorData( info, lnode, &data, &size );
+        ok = WRCreateCursorData( info, langnode, &data, &size );
     }
 
     if( ok ) {
@@ -482,9 +482,9 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
 
 bool WRSaveIconResource( WRInfo *info, bool backup )
 {
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WResLangType        lang;
     char                *data;
     size_t              size;
@@ -505,25 +505,25 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
-        ok = ( tnode != NULL );
+        typenode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
+        ok = ( typenode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOICON );
         }
     }
 
     if( ok ) {
-        rnode = tnode->Head;
-        ok = ( rnode != NULL );
+        resnode = typenode->Head;
+        ok = ( resnode != NULL );
     }
 
     if( ok ) {
-        lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = ( lnode != NULL );
+        langnode = WRFindLangNodeFromLangType( resnode, &lang );
+        ok = ( langnode != NULL );
     }
 
     if( ok ) {
-        ok = WRCreateIconData( info, lnode, &data, &size );
+        ok = WRCreateIconData( info, langnode, &data, &size );
     }
 
     if( ok ) {

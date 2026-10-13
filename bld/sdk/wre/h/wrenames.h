@@ -64,6 +64,6 @@ extern void WREFiniTypeNames( void );
 
 extern void WREFiniTotalText( void );
 extern bool WREInitTotalText( void );
-extern bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode );
+extern bool WREAddToTypeListBox( HWND lbox, WResTypeNode *typenode );
 
 #endif

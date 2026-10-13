@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,14 +60,14 @@ WResTypeNode *WREFindTypeNodeFromWResID( WResDir dir, WResID *type )
     return( WRFindTypeNodeFromWResID( dir, type ) );
 }
 
-WResResNode *WREFindResNodeFromWResID( WResTypeNode *type, WResID *res )
+WResResNode *WREFindResNodeFromWResID( WResTypeNode *typenode, WResID *res )
 {
-    return( WRFindResNodeFromWResID( type,  res ) );
+    return( WRFindResNodeFromWResID( typenode,  res ) );
 }
 
-WResLangNode *WREFindLangNodeFromLangType( WResResNode *rnode, WResLangType *lang )
+WResLangNode *WREFindLangNodeFromLangType( WResResNode *resnode, WResLangType *lang )
 {
-    return( WRFindLangNodeFromLangType( rnode, lang ) );
+    return( WRFindLangNodeFromLangType( resnode, lang ) );
 }
 
 WResTypeNode *WREFindTypeNode( WResDir dir, uint_16 type, char *type_name )
@@ -74,7 +75,7 @@ WResTypeNode *WREFindTypeNode( WResDir dir, uint_16 type, char *type_name )
     return( WRFindTypeNode( dir, type, type_name ) );
 }
 
-WResResNode *WREFindResNode( WResTypeNode *type, uint_16 res, char *res_name )
+WResResNode *WREFindResNode( WResTypeNode *typenode, uint_16 res, char *res_name )
 {
-    return( WRFindResNode( type, res, res_name ) );
+    return( WRFindResNode( typenode, res, res_name ) );
 }

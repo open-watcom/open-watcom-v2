@@ -66,9 +66,9 @@
 typedef struct WREAccelSession {
     WAccelHandle        hndl;
     WAccelInfo          *info;
-    WResTypeNode        *tnode;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResTypeNode        *typenode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WREResInfo          *rinfo;
 } WREAccelSession;
 
@@ -83,7 +83,7 @@ static bool             WREAddAccelToDir( WRECurrentResInfo * );
 static bool             WREGetAccelSessionData( WREAccelSession *, bool );
 static void             WRERemoveAccelEditSession( WREAccelSession * );
 static WREAccelSession  *WREFindResAccelSession( WREResInfo *rinfo );
-static WREAccelSession  *WREFindLangAccelSession( WResLangNode *lnode );
+static WREAccelSession  *WREFindLangAccelSession( WResLangNode *langnode );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -97,11 +97,11 @@ static void DumpEmptyResource( WREAccelSession *session )
 {
     WRECurrentResInfo   curr;
 
-    if( session->lnode->Info.Length == 0 ) {
+    if( session->langnode->Info.Length == 0 ) {
         curr.info = session->rinfo;
-        curr.type = session->tnode;
-        curr.res = session->rnode;
-        curr.lang = session->lnode;
+        curr.typenode = session->typenode;
+        curr.resnode = session->resnode;
+        curr.langnode = session->langnode;
         WRERemoveEmptyResource( &curr );
         WRESetStatusByID( 0, WRE_EMPTYREMOVED );
     }
@@ -162,7 +162,7 @@ bool WREAddAccelToDir( WRECurrentResInfo *curr )
 
     if( ok ) {
         if( curr->info->current_type == RESOURCE2INT( RT_ACCELERATOR ) ) {
-            tname = &curr->type->Info.TypeName;
+            tname = &curr->typenode->Info.TypeName;
         } else {
             tname = WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) );
             tname_alloc = true;
@@ -226,21 +226,21 @@ bool WREEditAccelResource( WRECurrentResInfo *curr )
     bool                ok;
     WREAccelSession     *session;
 
-    ok = (curr != NULL && curr->lang != NULL);
+    ok = (curr != NULL && curr->langnode != NULL);
 
     if( ok ) {
-        session = WREFindLangAccelSession( curr->lang );
+        session = WREFindLangAccelSession( curr->langnode );
         if( session == NULL ) {
-            if( curr->lang->data == NULL && curr->lang->Info.Length != 0 ) {
-                curr->lang->data = WREGetCopyResData( curr );
-                if( curr->lang->data == NULL ) {
+            if( curr->langnode->data == NULL && curr->langnode->Info.Length != 0 ) {
+                curr->langnode->data = WREGetCopyResData( curr );
+                if( curr->langnode->data == NULL ) {
                     ok = false;
                 } else {
                     if( WREStartAccelSession( curr ) == NULL ) {
                         ok = false;
                     }
-                    MemFree( curr->lang->data );
-                    curr->lang->data = NULL;
+                    MemFree( curr->langnode->data );
+                    curr->langnode->data = NULL;
                 }
             } else {
                 if( WREStartAccelSession( curr ) == NULL ) {
@@ -306,20 +306,20 @@ WREAccelSession *WREStartAccelSession( WRECurrentResInfo *curr )
     session->info->parent = WREGetMainWindowHandle();
     session->info->inst = WREGetAppInstance();
     session->info->file_name = WREStrdup( WREGetQueryName( curr->info ) );
-    session->info->res_name = WRECopyWResID( &curr->res->Info.ResName );
-    session->info->lang = curr->lang->Info.lang;
-    session->info->res_flags = curr->lang->Info.res_flags;
-    session->info->data_size = curr->lang->Info.Length;
-    session->info->data = curr->lang->data;
+    session->info->res_name = WRECopyWResID( &curr->resnode->Info.ResName );
+    session->info->lang = curr->langnode->Info.lang;
+    session->info->res_flags = curr->langnode->Info.res_flags;
+    session->info->data_size = curr->langnode->Info.Length;
+    session->info->data = curr->langnode->data;
     session->info->is32bit = curr->info->is32bit;
 
     session->info->stand_alone = WRENoInterface;
     session->info->symbol_table = curr->info->symbol_table;
     session->info->symbol_file = curr->info->symbol_file;
 
-    session->tnode = curr->type;
-    session->rnode = curr->res;
-    session->lnode = curr->lang;
+    session->typenode = curr->typenode;
+    session->resnode = curr->resnode;
+    session->langnode = curr->langnode;
     session->rinfo = curr->info;
 
     session->hndl = WAccelStartEdit( session->info );
@@ -339,7 +339,7 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
 {
     bool ok;
 
-    ok = (session != NULL && session->hndl != 0 && session->lnode != NULL);
+    ok = (session != NULL && session->hndl != 0 && session->langnode != NULL);
 
     if( ok ) {
         if( close ) {
@@ -351,21 +351,21 @@ bool WREGetAccelSessionData( WREAccelSession *session, bool close )
     }
 
     if( ok && session->info->modified ) {
-        ok = WRERenameWResResNode( session->tnode, &session->rnode,
+        ok = WRERenameWResResNode( session->typenode, &session->resnode,
                                    session->info->res_name );
         WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_ACCELERATOR ), true,
                                 session->info->res_name, 0 );
     }
 
     if( ok && session->info->modified ) {
-        if( session->lnode->data != NULL ) {
-            MemFree( session->lnode->data );
+        if( session->langnode->data != NULL ) {
+            MemFree( session->langnode->data );
         }
-        session->lnode->data = session->info->data;
-        session->lnode->Info.lang = session->info->lang;
-        session->lnode->Info.Length = session->info->data_size;
-        session->lnode->Info.res_flags = session->info->res_flags;
-        session->lnode->Info.Offset = 0;
+        session->langnode->data = session->info->data;
+        session->langnode->Info.lang = session->info->lang;
+        session->langnode->Info.Length = session->info->data_size;
+        session->langnode->Info.res_flags = session->info->res_flags;
+        session->langnode->Info.Offset = 0;
         session->info->data = NULL;
         session->info->data_size = 0;
         session->info->modified = false;
@@ -399,11 +399,11 @@ bool WREEndAllAccelSessions( bool fatal_exit )
     return( ok );
 }
 
-void WREEndLangAccelSession( WResLangNode *lnode )
+void WREEndLangAccelSession( WResLangNode *langnode )
 {
     WREAccelSession     *session;
 
-    while( (session = WREFindLangAccelSession( lnode )) != NULL ) {
+    while( (session = WREFindLangAccelSession( langnode )) != NULL ) {
         session->info = WAccelEndEdit( session->hndl );
         WRERemoveAccelEditSession( session );
     }
@@ -449,14 +449,14 @@ WREAccelSession *WREFindResAccelSession( WREResInfo *rinfo )
     return( NULL );
 }
 
-WREAccelSession *WREFindLangAccelSession( WResLangNode *lnode )
+WREAccelSession *WREFindLangAccelSession( WResLangNode *langnode )
 {
     WREAccelSession *session;
     LIST            *slist;
 
     for( slist = WREAccSessions; slist != NULL; slist = ListNext( slist ) ) {
         session = (WREAccelSession *)ListElement( slist );
-        if( session->lnode == lnode ) {
+        if( session->langnode == langnode ) {
             return( session );
         }
     }

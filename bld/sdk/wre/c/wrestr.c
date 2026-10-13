@@ -68,7 +68,7 @@
 typedef struct WREStringSession {
     WStringHandle       hndl;
     WStringInfo         *info;
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     WREResInfo          *rinfo;
 } WREStringSession;
 
@@ -133,7 +133,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
 
     if( ok ) {
         if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
-            tname = &curr->type->Info.TypeName;
+            tname = &curr->typenode->Info.TypeName;
         } else {
             tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
             tname_alloc = true;
@@ -197,7 +197,7 @@ bool WREEditStringResource( WRECurrentResInfo *curr )
     bool                ok;
     WREStringSession    *session;
 
-    ok = (curr != NULL && curr->info != NULL && curr->type != NULL);
+    ok = (curr != NULL && curr->info != NULL && curr->typenode != NULL);
 
     if( ok ) {
         session = WREFindResStringSession( curr->info );
@@ -230,11 +230,11 @@ bool WREEndEditStringResource( WStringHandle hndl )
 
     if( session != NULL ) {
         ret = true;
-        if( session->tnode == NULL || session->tnode->Head->Head->Info.Length == 0 ) {
+        if( session->typenode == NULL || session->typenode->Head->Head->Info.Length == 0 ) {
             curr.info = session->rinfo;
-            curr.type = session->tnode;
-            curr.res = NULL;
-            curr.lang = NULL;
+            curr.typenode = session->typenode;
+            curr.resnode = NULL;
+            curr.langnode = NULL;
             ret = WREDeleteStringResources( &curr, true );
             WRESetStatusByID( 0, WRE_EMPTYREMOVED );
         }
@@ -284,7 +284,7 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
     session->info->symbol_table = curr->info->symbol_table;
     session->info->symbol_file = curr->info->symbol_file;
 
-    session->tnode = curr->type;
+    session->typenode = curr->typenode;
     session->rinfo = curr->info;
 
     session->hndl = WStringStartEdit( session->info );
@@ -306,7 +306,7 @@ WREStringSession *WREStartStringSession( WRECurrentResInfo *curr, WStringNode *n
 
 bool WREGetStringSessionData( WREStringSession *session, bool close )
 {
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     uint_16             type;
     bool                ok;
 
@@ -322,23 +322,23 @@ bool WREGetStringSessionData( WREStringSession *session, bool close )
     }
 
     if( ok ) {
-        tnode = WREFindTypeNode( session->rinfo->info->dir, RESOURCE2INT( RT_STRING ), NULL );
+        typenode = WREFindTypeNode( session->rinfo->info->dir, RESOURCE2INT( RT_STRING ), NULL );
     }
 
-    if( ok && tnode != NULL && session->info->modified ) {
-        ok = WRRemoveTypeNodeFromDir( session->rinfo->info->dir, tnode );
-        tnode = NULL;
+    if( ok && typenode != NULL && session->info->modified ) {
+        ok = WRRemoveTypeNodeFromDir( session->rinfo->info->dir, typenode );
+        typenode = NULL;
     }
 
     if( ok && session->info->modified ) {
-        tnode = WREUseStringNodes( session->rinfo->info->dir, session->info->tables );
+        typenode = WREUseStringNodes( session->rinfo->info->dir, session->info->tables );
         type = 0;
-        if( tnode != NULL ) {
+        if( typenode != NULL ) {
             type = RESOURCE2INT( RT_STRING );
         }
         session->rinfo->current_type = 0;
         ok = WREInitResourceWindow( session->rinfo, type );
-        session->tnode = tnode;
+        session->typenode = typenode;
         WREFreeStringNode( session->info->tables );
         session->info->tables = NULL;
         session->info->modified = false;
@@ -439,10 +439,10 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
     }
     memset( node, 0, sizeof( WStringNode ) );
 
-    node->lang = curr->lang->Info.lang;
-    node->res_flags = curr->lang->Info.res_flags;
-    node->block_name = WRECopyWResID( &curr->res->Info.ResName );
-    node->data_size = curr->lang->Info.Length;
+    node->lang = curr->langnode->Info.lang;
+    node->res_flags = curr->langnode->Info.res_flags;
+    node->block_name = WRECopyWResID( &curr->resnode->Info.ResName );
+    node->data_size = curr->langnode->Info.Length;
     node->data = WREGetCopyResData( curr );
 
     if( node->data == NULL ) {
@@ -456,8 +456,8 @@ WStringNode *WREMakeNode( WRECurrentResInfo *curr )
 WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 {
     WRECurrentResInfo   tcurr;
-    WResResNode         *rnode;
-    WResLangNode        *lnode;
+    WResResNode         *resnode;
+    WResLangNode        *langnode;
     WStringNode         *nodes;
     WStringNode         *new;
     WResLangType        lang;
@@ -468,16 +468,16 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 
     nodes = NULL;
     tcurr = *curr;
-    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->next ) {
-        lnode = rnode->Head;
-        if( lnode != NULL ) {
-            lang = lnode->Info.lang;
+    for( resnode = curr->typenode->Head; resnode != NULL; resnode = resnode->next ) {
+        langnode = resnode->Head;
+        if( langnode != NULL ) {
+            lang = langnode->Info.lang;
         }
-        for( ; lnode != NULL; lnode = lnode->next ) {
-            if( lnode->Info.lang.lang == lang.lang &&
-                lnode->Info.lang.sublang == lang.sublang ) {
-                tcurr.res = rnode;
-                tcurr.lang = lnode;
+        for( ; langnode != NULL; langnode = langnode->next ) {
+            if( langnode->Info.lang.lang == lang.lang &&
+                langnode->Info.lang.sublang == lang.sublang ) {
+                tcurr.resnode = resnode;
+                tcurr.langnode = langnode;
                 new = WREMakeNode( &tcurr );
                 if( new == NULL ) {
                     WREFreeStringNode( nodes );
@@ -515,10 +515,10 @@ void WREFreeStringNode( WStringNode *node )
 WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 {
     WResID              *tname;
-    WResTypeNode        *tnode;
+    WResTypeNode        *typenode;
     bool                ok;
 
-    tnode = NULL;
+    typenode = NULL;
     tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
     ok = ( tname != NULL );
     for( ; ok && node != NULL; node = node->next ) {
@@ -536,8 +536,8 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
     }
 
     if( ok ) {
-        tnode = WREFindTypeNode( dir, RESOURCE2INT( RT_STRING ), NULL );
+        typenode = WREFindTypeNode( dir, RESOURCE2INT( RT_STRING ), NULL );
     }
 
-    return( tnode );
+    return( typenode );
 }

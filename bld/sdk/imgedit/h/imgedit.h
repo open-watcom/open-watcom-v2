@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -125,7 +125,7 @@ typedef struct list_element {
     struct list_element         *nexticon;
 #ifndef __OS2_PM__
     WRInfo                      *wrinfo;
-    WResLangNode                *lnode;
+    WResLangNode                *langnode;
 #endif
 } img_node;
 
@@ -270,9 +270,9 @@ bool    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
 void    OpenFileOnStart( const char *fname );
-bool    ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode );
-bool    ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode  );
-bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode );
+bool    ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *langnode );
+bool    ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *langnode  );
+bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *langnode );
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */

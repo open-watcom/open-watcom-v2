@@ -46,9 +46,9 @@
 /****************************************************************************/
 typedef struct WRECurrentResInfo {
     WREResInfo      *info;
-    WResTypeNode    *type;
-    WResResNode     *res;
-    WResLangNode    *lang;
+    WResTypeNode    *typenode;
+    WResResNode     *resnode;
+    WResLangNode    *langnode;
 } WRECurrentResInfo;
 
 /****************************************************************************/
