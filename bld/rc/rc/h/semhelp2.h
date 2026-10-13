@@ -38,8 +38,7 @@
 /**** Semantic structures ****/
 
 typedef struct FullHelpEntryOS2 {
-    struct FullHelpEntryOS2     *next;
-    struct FullHelpEntryOS2     *prev;
+    LL_ITEM( struct FullHelpEntryOS2 );
     HelpTableEntryOS2           entry;
 } FullHelpEntryOS2;
 
@@ -49,8 +48,7 @@ typedef struct FullHelpTableOS2 {
 } FullHelpTableOS2;
 
 typedef struct FullHelpSubEntryOS2 {
-    struct FullHelpSubEntryOS2  *next;
-    struct FullHelpSubEntryOS2  *prev;
+    LL_ITEM( struct FullHelpSubEntryOS2 );
     DataElemList                *dataListHead;
 } FullHelpSubEntryOS2;
 

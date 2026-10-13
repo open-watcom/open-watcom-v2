@@ -35,8 +35,7 @@
 #define SEMSTR_INCLUDED
 
 typedef struct FullStringTableBlock {
-    struct FullStringTableBlock     *Next;
-    struct FullStringTableBlock     *Prev;
+    LL_ITEM( struct FullStringTableBlock );
     uint_16                         BlockNum;
     bool                            iswin32;
     ResMemFlags                     res_flags;

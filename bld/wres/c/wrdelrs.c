@@ -43,15 +43,15 @@
 static void delAResource( WResDir dir, WResTypeNode *typenode,
                            WResResNode *resnode )
 {
-    if( resnode->Next != NULL ) {
-        resnode->Next->Prev = resnode->Prev;
+    if( resnode->next != NULL ) {
+        resnode->next->prev = resnode->prev;
     } else {
-        typenode->Tail = resnode->Prev;
+        typenode->Tail = resnode->prev;
     }
-    if( resnode->Prev != NULL ) {
-        resnode->Prev->Next = resnode->Next;
+    if( resnode->prev != NULL ) {
+        resnode->prev->next = resnode->next;
     } else {
-        typenode->Head = resnode->Next;
+        typenode->Head = resnode->next;
     }
     typenode->Info.NumResources --;
     dir->NumResources --;
@@ -64,15 +64,15 @@ static void delAResource( WResDir dir, WResTypeNode *typenode,
  */
 static void delAType( WResDir dir, WResTypeNode *typenode ) {
 
-    if( typenode->Next != NULL ) {
-        typenode->Next->Prev = typenode->Prev;
+    if( typenode->next != NULL ) {
+        typenode->next->prev = typenode->prev;
     } else {
-        dir->Tail = typenode->Prev;
+        dir->Tail = typenode->prev;
     }
-    if( typenode->Prev != NULL ) {
-        typenode->Prev->Next = typenode->Next;
+    if( typenode->prev != NULL ) {
+        typenode->prev->next = typenode->next;
     } else {
-        dir->Head = typenode->Next;
+        dir->Head = typenode->next;
     }
     dir->NumTypes --;
     WRESFREE( typenode );
@@ -119,13 +119,13 @@ static void delALang( WResResNode *resnode, const WResLangType *lang )
 
     langnode = __FindLang( lang, resnode );
     if( langnode == NULL ) return;
-    if( langnode->Next != NULL ) {
-        langnode->Next->Prev = langnode->Prev;
+    if( langnode->next != NULL ) {
+        langnode->next->prev = langnode->prev;
     } else {
-        resnode->Tail = langnode->Prev;
+        resnode->Tail = langnode->prev;
     }
-    if( langnode->Prev != NULL ) {
-        langnode->Prev->Next = langnode->Next;
+    if( langnode->prev != NULL ) {
+        langnode->prev->next = langnode->next;
     } else {
         resnode->Head = langnode->Head;
     }

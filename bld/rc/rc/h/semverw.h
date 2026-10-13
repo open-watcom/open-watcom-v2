@@ -62,8 +62,7 @@ typedef struct FullVerBlockNest {
 } FullVerBlockNest;
 
 typedef struct FullVerBlock {
-    struct FullVerBlock     *Next;
-    struct FullVerBlock     *Prev;
+    LL_ITEM( struct FullVerBlock );
     bool                    iswin32;
     VerBlockHeader          Head;
     FullVerValueList        *Values;

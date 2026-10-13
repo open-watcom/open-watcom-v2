@@ -60,8 +60,7 @@ typedef struct DlgControl32 {
 } DlgControl32;
 
 typedef struct FullDialogBoxControlWIN {
-    struct FullDialogBoxControlWIN  *next;
-    struct FullDialogBoxControlWIN  *prev;
+    LL_ITEM( struct FullDialogBoxControlWIN );
     bool                            iswin32;
     union {
         DialogBoxControl            ctrl;
@@ -92,8 +91,7 @@ typedef struct DlgHelpId {
 } DlgHelpId;
 
 typedef struct PresParamsOS2 {
-    struct PresParamsOS2    *next;
-    struct PresParamsOS2    *prev;
+    LL_ITEM( struct PresParamsOS2 );
     ResNameOrOrdinal        *Name;
     DataElemList            *dataList;
     uint_32                 size;
@@ -106,8 +104,7 @@ typedef struct PresParamListOS2 {
 } PresParamListOS2;
 
 typedef struct FullDialogBoxControlOS2 {
-    struct FullDialogBoxControlOS2  *next;
-    struct FullDialogBoxControlOS2  *prev;
+    LL_ITEM( struct FullDialogBoxControlOS2 );
     DialogBoxControl                ctrl;
     DataElemList                    *dataListHead;
     PresParamListOS2                *presParams;

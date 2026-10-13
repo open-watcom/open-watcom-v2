@@ -88,10 +88,9 @@ static void SemOS2FreeStringTable( FullStringTable *table )
 /*********************************************************/
 {
     FullStringTableBlock        *currblock;
-    FullStringTableBlock        *nextblock;
 
-    for( currblock = table->Head; currblock != NULL; currblock = nextblock ) {
-        nextblock = currblock->Next;
+    while( (currblock = table->Head) != NULL ) {
+        table->Head = currblock->next;
         ResFreeStringTableBlock( &(currblock->Block) );
         MemFree( currblock );
     }
@@ -104,7 +103,7 @@ static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
 {
     FullStringTableBlock        *currblock;
 
-    for( currblock = table->Head; currblock != NULL; currblock = currblock->Next ) {
+    for( currblock = table->Head; currblock != NULL; currblock = currblock->next ) {
         if( currblock->BlockNum == blocknum ) {
             break;
         }
@@ -119,8 +118,8 @@ static FullStringTableBlock *newStringTableBlock( void )
     FullStringTableBlock        *newblock;
 
     newblock = MemAllocSafe( sizeof( FullStringTableBlock ) );
-    newblock->Next = NULL;
-    newblock->Prev = NULL;
+    newblock->next = NULL;
+    newblock->prev = NULL;
     newblock->BlockNum = 0;
     newblock->iswin32 = false;
     newblock->res_flags = DEFAULT_FLAGS_NONE;
@@ -209,7 +208,7 @@ static void semMergeStringTables( FullStringTable *table,
         /*
          * find oldblock in table if it is there
          */
-        nextblock = oldblock->Next;
+        nextblock = oldblock->next;
         currblock = findStringTableBlock( table, oldblock->BlockNum );
         if( currblock == NULL ) {
             /*
@@ -236,8 +235,7 @@ static void setStringTableFlags( FullStringTable *table,
 {
     FullStringTableBlock    *currblock;
 
-    for( currblock = table->Head; currblock != NULL;
-                currblock = currblock->Next ) {
+    for( currblock = table->Head; currblock != NULL; currblock = currblock->next ) {
         currblock->res_flags = res_flags;
         currblock->codePage = codepage;
     }
@@ -301,7 +299,7 @@ void SemOS2WriteStringTable( FullStringTable *table, WResID *type_id )
 
     for( ; table != NULL; table = nexttable ) {
         nexttable = table->next;
-        for( currblock = table->Head; currblock != NULL; currblock = currblock->Next ) {
+        for( currblock = table->Head; currblock != NULL; currblock = currblock->next ) {
             loc.start = SemStartResource();
 
             error = ResOS2WriteStringTableBlock( &(currblock->Block),

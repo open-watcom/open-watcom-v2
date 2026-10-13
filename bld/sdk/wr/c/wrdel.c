@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -71,48 +71,48 @@ bool WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
                 dir->Tail = NULL;
             } else {
                 if( dir->Head == *tnode ) {
-                    dir->Head = (*tnode)->Next;
+                    dir->Head = (*tnode)->next;
                 }
                 if( dir->Tail == *tnode ) {
-                    dir->Tail = (*tnode)->Prev;
+                    dir->Tail = (*tnode)->prev;
                 }
-                if( (*tnode)->Prev != NULL ) {
-                    (*tnode)->Prev->Next = (*tnode)->Next;
+                if( (*tnode)->prev != NULL ) {
+                    (*tnode)->prev->next = (*tnode)->next;
                 }
-                if( (*tnode)->Next != NULL ) {
-                    (*tnode)->Next->Prev = (*tnode)->Prev;
+                if( (*tnode)->next != NULL ) {
+                    (*tnode)->next->prev = (*tnode)->prev;
                 }
             }
             MemFree( *tnode );
             *tnode = NULL;
         } else {
             if( (*tnode)->Head == *rnode ) {
-                (*tnode)->Head = (*rnode)->Next;
+                (*tnode)->Head = (*rnode)->next;
             }
             if( (*tnode)->Tail == *rnode ) {
-                (*tnode)->Tail = (*rnode)->Prev;
+                (*tnode)->Tail = (*rnode)->prev;
             }
-            if( (*rnode)->Prev != NULL ) {
-                (*rnode)->Prev->Next = (*rnode)->Next;
+            if( (*rnode)->prev != NULL ) {
+                (*rnode)->prev->next = (*rnode)->next;
             }
-            if( (*rnode)->Next != NULL ) {
-                (*rnode)->Next->Prev = (*rnode)->Prev;
+            if( (*rnode)->next != NULL ) {
+                (*rnode)->next->prev = (*rnode)->prev;
             }
         }
         MemFree( *rnode );
         *rnode = NULL;
     } else {
         if( (*rnode)->Head == *lnode ) {
-            (*rnode)->Head = (*lnode)->Next;
+            (*rnode)->Head = (*lnode)->next;
         }
         if( (*rnode)->Tail == *lnode ) {
-            (*rnode)->Tail = (*lnode)->Prev;
+            (*rnode)->Tail = (*lnode)->prev;
         }
-        if( (*lnode)->Prev != NULL ) {
-            (*lnode)->Prev->Next = (*lnode)->Next;
+        if( (*lnode)->prev != NULL ) {
+            (*lnode)->prev->next = (*lnode)->next;
         }
-        if( (*lnode)->Next != NULL ) {
-            (*lnode)->Next->Prev = (*lnode)->Prev;
+        if( (*lnode)->next != NULL ) {
+            (*lnode)->next->prev = (*lnode)->prev;
         }
     }
 
@@ -141,16 +141,16 @@ bool WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
     }
 
     if( dir->Head == tnode ) {
-        dir->Head = dir->Head->Next;
+        dir->Head = dir->Head->next;
     }
     if( dir->Tail == tnode ) {
-        dir->Tail = dir->Tail->Prev;
+        dir->Tail = dir->Tail->prev;
     }
-    if( tnode->Next != NULL ) {
-        tnode->Next->Prev = tnode->Prev;
+    if( tnode->next != NULL ) {
+        tnode->next->prev = tnode->prev;
     }
-    if( tnode->Prev != NULL ) {
-        tnode->Prev->Next = tnode->Next;
+    if( tnode->prev != NULL ) {
+        tnode->prev->next = tnode->next;
     }
 
     dir->NumResources -= WRFreeResNodes( tnode );
@@ -169,7 +169,7 @@ int WRFreeResNodes( WResTypeNode *tnode )
 
     count = 0;
     while( (rnode = tnode->Head) != NULL ) {
-        tnode->Head = rnode->Next;
+        tnode->Head = rnode->next;
         WRFreeLangNodes( rnode );
         MemFree( rnode );
         count++;
@@ -186,7 +186,7 @@ int WRFreeLangNodes( WResResNode *rnode )
 
     count = 0;
     while( (lnode = rnode->Head) != NULL ) {
-        rnode->Head = lnode->Next;
+        rnode->Head = lnode->next;
         MemFree( lnode );
         count++;
     }

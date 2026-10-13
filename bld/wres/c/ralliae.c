@@ -73,13 +73,12 @@ void ResAddLLItemAtEnd( void **head, void **tail, void *item )
     tailptr = (ss **)tail;
     itemptr = (ss *)item;
 
+    itemptr->next = NULL;
     if( *headptr == NULL ) {
         *headptr = *tailptr = itemptr;
-        itemptr->next = NULL;
         itemptr->prev = NULL;
     } else {
         itemptr->prev = *tailptr;
-        itemptr->next = NULL;
         (*tailptr)->next = itemptr;
         *tailptr = itemptr;
     } /* if */

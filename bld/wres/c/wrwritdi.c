@@ -43,7 +43,7 @@ static bool writeLangList( FILE *fp, WResLangNode *langnode )
     bool        error;
 
     error = false;
-    for( ; langnode != NULL && !error; langnode = langnode->Next ) {
+    for( ; langnode != NULL && !error; langnode = langnode->next ) {
         error = WResWriteLangRecord( &(langnode->Info), fp );
     }
     return( error );
@@ -54,7 +54,7 @@ static bool writeResList( FILE *fp, WResResNode *resnode )
     bool        error;
 
     error = false;
-    for( ; resnode != NULL && !error; resnode = resnode->Next ) {
+    for( ; resnode != NULL && !error; resnode = resnode->next ) {
         error = WResWriteResRecord( &(resnode->Info), fp );
         if( !error ) {
             error = writeLangList( fp, resnode->Head );
@@ -69,7 +69,7 @@ static bool writeTypeList( FILE *fp, WResTypeNode *typenode )
     bool        error;
 
     error = false;
-    for( ; typenode != NULL && !error; typenode = typenode->Next ) {
+    for( ; typenode != NULL && !error; typenode = typenode->next ) {
         error = WResWriteTypeRecord( &(typenode->Info), fp );
         if( !error ) {
             error = writeResList( fp, typenode->Head );

@@ -187,8 +187,8 @@ static RcStatus readIcoFileDir( FILE *fp, FullIconDir *dir, int *err_code )
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
         entry = MemAllocSafe( sizeof( FullIconDirEntry ) );
-        entry->Next = NULL;
-        entry->Prev = NULL;
+        entry->next = NULL;
+        entry->prev = NULL;
         entry->IsIcoFileEntry = true;
         ret = readIcoFileDirEntry( &(entry->Entry.Ico), fp, err_code );
         if( ret != RS_OK ) {
@@ -254,7 +254,7 @@ static RcStatus copyIcons( FullIconDir *dir, FILE *fp, ResMemFlags res_flags, in
     ret = RS_OK;
     buffer = MemAllocSafe( BUFFER_SIZE );
 
-    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; entry != NULL; entry = entry->next ) {
         /*
          * copy the icon
          */
@@ -291,10 +291,9 @@ static void FreeIconDir( FullIconDir *dir )
 /*****************************************/
 {
     FullIconDirEntry    *currentry;
-    FullIconDirEntry    *nextentry;
 
-    for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
-        nextentry = currentry->Next;
+    while( (currentry = dir->Head) != NULL ) {
+        dir->Head = currentry->next;
         MemFree( currentry );
     }
 } /* FreeIconDir */
@@ -308,7 +307,7 @@ static bool writeIconDir( FullIconDir *dir, WResID *res_id, ResMemFlags res_flag
 
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fp );
-    for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; !error && entry != NULL; entry = entry->next ) {
         error = ResWriteIconDirEntry( &(entry->Entry.Res), CurrResFile.fp );
     }
     if( error ) {
@@ -493,7 +492,7 @@ static FullIconDirEntry *FindWindows2xCompatibleIcon( FullIconDir *dir )
 {
     FullIconDirEntry    *entry;
 
-    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; entry != NULL; entry = entry->next ) {
         if( IconIsWin2xCompatible( entry ) ) {
             return( entry );
         }
@@ -527,7 +526,7 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
         /*
          * More info needed
          */
-        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+        for( entry = dir.Head; entry != NULL; entry = entry->next ) {
             BitmapInfoHeader dibhead;
 
             if( RESSEEK( fp, entry->Entry.Ico.Offset, SEEK_SET ) )
@@ -644,7 +643,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *res_id, ResMemFlags res_flags,
 
     loc.start = SemStartResource();
     error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fp );
-    for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; !error && entry != NULL; entry = entry->next ) {
         error = ResWriteCurDirEntry( &(entry->Entry.Res), CurrResFile.fp );
     }
     if( error ) {
@@ -713,7 +712,7 @@ static RcStatus copyCursors( FullCurDir *dir, FILE *fp, ResMemFlags res_flags, i
 
     buffer = MemAllocSafe( BUFFER_SIZE );
 
-    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; entry != NULL; entry = entry->next ) {
         /*
          * copy the cursor
          */
@@ -796,8 +795,8 @@ static RcStatus readCurFileDir( FILE *fp, FullCurDir *dir, int *err_code )
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
         entry = MemAllocSafe( sizeof( FullCurDirEntry ) );
-        entry->Next = NULL;
-        entry->Prev = NULL;
+        entry->next = NULL;
+        entry->prev = NULL;
         entry->IsCurFileEntry = true;
         ret = readCurFileDirEntry( &(entry->Entry.Cur), fp, err_code );
         if( ret != RS_OK ) {
@@ -814,10 +813,9 @@ static void FreeCurDir( FullCurDir *dir )
 /***************************************/
 {
     FullCurDirEntry     *currentry;
-    FullCurDirEntry     *nextentry;
 
-    for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
-        nextentry = currentry->Next;
+    while( (currentry = dir->Head) != NULL ) {
+        dir->Head = currentry->next;
         MemFree( currentry );
     }
 } /* FreeCurDir */
@@ -876,7 +874,7 @@ static FullCurDirEntry *FindWindows2xCompatibleCursor( FullCurDir *dir )
 {
     FullCurDirEntry    *entry;
 
-    for( entry = dir->Head; entry != NULL; entry = entry->Next ) {
+    for( entry = dir->Head; entry != NULL; entry = entry->next ) {
         if( CursorIsWin2xCompatible( entry ) ) {
             return( entry );
         }
@@ -909,7 +907,7 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
         FullCurDirEntry *entry;
 
         /* More info needed */
-        for( entry = dir.Head; entry != NULL; entry = entry->Next ) {
+        for( entry = dir.Head; entry != NULL; entry = entry->next ) {
             BitmapInfoHeader dibhead;
 
             if( RESSEEK( fp, entry->Entry.Cur.Offset, SEEK_SET ) )
@@ -1285,8 +1283,8 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
      * -1 for the 1 char in the struct already
      */
     entry = MemAllocSafe( sizeof( FullFontDirEntry ) - 1 + structextra );
-    entry->Next = NULL;
-    entry->Prev = NULL;
+    entry->next = NULL;
+    entry->prev = NULL;
     /*
      * -1 for the 1 char in the struct already
      */
@@ -1394,10 +1392,9 @@ static void FreeFontDir( FullFontDir *olddir )
 /********************************************/
 {
     FullFontDirEntry    *currentry;
-    FullFontDirEntry    *nextentry;
 
-    for( currentry = olddir->Head; currentry != NULL; currentry = nextentry ) {
-        nextentry = currentry->Next;
+    while( (currentry = olddir->Head) != NULL ) {
+        olddir->Head = currentry->next;
         MemFree( currentry );
     }
     MemFree( olddir );
@@ -1419,7 +1416,7 @@ void SemWINWriteFontDir( void )
     if( CurrResFile.FontDir != NULL ) {
         loc.start = SemStartResource();
         error = ResWriteUint16( CurrResFile.fp, CurrResFile.FontDir->NumOfFonts );
-        for( currentry = CurrResFile.FontDir->Head; !error && currentry != NULL; currentry = currentry->Next ) {
+        for( currentry = CurrResFile.FontDir->Head; !error && currentry != NULL; currentry = currentry->next ) {
             error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         }
         if( error ) {

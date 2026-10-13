@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,9 +44,9 @@ void WRAPI WRCleanDir( WResDir dir )
         return;
     }
 
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
                 lnode->data = NULL;
             }
         }

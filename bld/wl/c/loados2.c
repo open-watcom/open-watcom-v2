@@ -351,8 +351,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL;
-                exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->next ) {
         if( type->TypeName.IsName
           && (exe_type->Info.type_id & NE_ORDID) == 0 ) {
             /* if they are both names */
@@ -384,9 +383,9 @@ static void FreeResTable( ResTable *restab )
     FullResourceRecord          *res;
 
     while( (type = restab->Dir.Head) != NULL ) {
-        restab->Dir.Head = type->Next;
+        restab->Dir.Head = type->next;
         while( (res = type->Head) != NULL ) {
-            type->Head = res->Next;
+            type->Head = res->next;
             MemFree( res );
         }
         MemFree( type );
@@ -401,9 +400,9 @@ static void WriteResTable( ResTable *restab )
     FullResourceRecord  *exe_res;
 
     WriteLoadU16( FmtData.u.os2fam.segment_shift );
-    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->next ) {
         WriteLoad( &(exe_type->Info), sizeof( resource_type_record ) );
-        for( exe_res = exe_type->Head; exe_res != NULL; exe_res = exe_res->Next ) {
+        for( exe_res = exe_type->Head; exe_res != NULL; exe_res = exe_res->next ) {
             WriteLoad( &(exe_res->Info), sizeof( resource_record ) );
         }
     }

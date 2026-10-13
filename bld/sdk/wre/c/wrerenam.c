@@ -145,15 +145,15 @@ bool WRERenameWResResNode( WResTypeNode *type_node, WResResNode **res_node, WRes
 
     rn->Head = (*res_node)->Head;
     rn->Tail = (*res_node)->Tail;
-    rn->Next = (*res_node)->Next;
-    rn->Prev = (*res_node)->Prev;
+    rn->next = (*res_node)->next;
+    rn->prev = (*res_node)->prev;
     rn->Info.NumResources = (*res_node)->Info.NumResources;
 
-    if( (*res_node)->Prev != NULL ) {
-        (*res_node)->Prev->Next = rn;
+    if( (*res_node)->prev != NULL ) {
+        (*res_node)->prev->next = rn;
     }
-    if( (*res_node)->Next != NULL ) {
-        (*res_node)->Next->Prev = rn;
+    if( (*res_node)->next != NULL ) {
+        (*res_node)->next->prev = rn;
     }
 
     MemFree( *res_node );

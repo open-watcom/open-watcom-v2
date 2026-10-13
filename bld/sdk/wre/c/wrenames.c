@@ -194,7 +194,7 @@ static bool WREInitTypeListBox( HWND hDlg, WResDir dir )
 
     ok = true;
     count = 0;
-    for( tnode = dir->Head; tnode != NULL && ok; tnode = tnode->Next ) {
+    for( tnode = dir->Head; tnode != NULL && ok; tnode = tnode->next ) {
         if( !tnode->Info.TypeName.IsName ) {
             WREAddToTypeListBox( lbox, tnode );
             count++;

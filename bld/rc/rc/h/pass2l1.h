@@ -51,14 +51,12 @@ typedef enum {
 } ExeType;
 
 typedef struct FullResourceRecord {
-    struct FullResourceRecord   *Next;
-    struct FullResourceRecord   *Prev;
+    LL_ITEM( struct FullResourceRecord );
     resource_record             Info;
 } FullResourceRecord;
 
 typedef struct FullTypeRecord {
-    struct FullTypeRecord   *Next;
-    struct FullTypeRecord   *Prev;
+    LL_ITEM( struct FullTypeRecord );
     FullResourceRecord      *Head;
     FullResourceRecord      *Tail;
     resource_type_record    Info;

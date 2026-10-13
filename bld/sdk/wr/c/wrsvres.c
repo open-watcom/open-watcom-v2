@@ -85,7 +85,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     }
 
     offset = RESTELL( dst_fp );
-    for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+    for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
         lang = lnode->Info.lang;
         if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
                              lnode->Info.res_flags, offset,
@@ -162,7 +162,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
 
     iswin32 = false;
     ok = true;
-    for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->Next ) {
+    for( lnode = rnode->Head; lnode != NULL && ok; lnode = lnode->next ) {
         msheader.Size = lnode->Info.Length;
         msheader.res_flags = lnode->Info.res_flags;
         msheader.Type = WResIDToNameOrOrdinal( &tnode->Info.TypeName );
@@ -205,8 +205,8 @@ static bool WRWriteResourcesToMRES( WRInfo *info, FILE *src_fp, FILE *dst_fp )
     } else {
         type_node = old_dir->Head;
     }
-    for( ; type_node != NULL; type_node = type_node->Next ) {
-        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
+    for( ; type_node != NULL; type_node = type_node->next ) {
+        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->next ) {
             if( !WRWriteResourceToMRES( type_node, res_node, src_fp, dst_fp ) ) {
                 return( false );
             }
@@ -236,8 +236,8 @@ static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
     } else {
         type_node = old_dir->Head;
     }
-    for( ; type_node != NULL; type_node = type_node->Next ) {
-        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
+    for( ; type_node != NULL; type_node = type_node->next ) {
+        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->next ) {
             if( !WRWriteResourceToWRES( type_node, res_node, new_dir, src_fp, dst_fp, is32bit ) ) {
                 return( false );
             }

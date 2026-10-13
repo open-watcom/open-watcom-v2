@@ -39,13 +39,11 @@ void __FreeLangList( WResResNode *resnode )
 /*****************************************/
 {
     WResLangNode        *langnode;
-    WResLangNode        *nextlangnode;
 
-    for( langnode = resnode->Head; langnode != NULL; langnode = nextlangnode ) {
-        nextlangnode = langnode->Next;
+    while( (langnode = resnode->Head) != NULL ) {
+        resnode->Head = langnode->next;
         WRESFREE( langnode );
     }
-    resnode->Head = NULL;
     resnode->Tail = NULL;
 }
 
@@ -53,15 +51,12 @@ void __FreeResList( WResTypeNode *typenode )
 /******************************************/
 {
     WResResNode         *resnode;
-    WResResNode         *nextresnode;
 
-    for( resnode = typenode->Head; resnode != NULL; resnode = nextresnode ) {
-        nextresnode = resnode->Next;
+    while( (resnode = typenode->Head) != NULL ) {
+        typenode->Head = resnode->next;
         __FreeLangList( resnode );
         WRESFREE( resnode );
     }
-
-    typenode->Head = NULL;
     typenode->Tail = NULL;
 }
 
@@ -69,15 +64,12 @@ void __FreeTypeList( WResDir dir )
 /********************************/
 {
     WResTypeNode        *typenode;
-    WResTypeNode        *nexttypenode;
 
-    for( typenode = dir->Head; typenode != NULL; typenode = nexttypenode ) {
-        nexttypenode = typenode->Next;
+    while( (typenode = dir->Head) != NULL ) {
+        dir->Head = typenode->next;
         __FreeResList( typenode );
         WRESFREE( typenode );
     }
-
-    dir->Head = NULL;
     dir->Tail = NULL;
 }
 

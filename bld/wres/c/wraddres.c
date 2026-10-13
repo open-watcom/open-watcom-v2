@@ -58,8 +58,8 @@ static WResTypeNode *newTypeNode( const WResID *type_id )
     id_size = WResIDSize( type_id );
     typenode = WRESALLOC( offsetof( WResTypeNode, Info.TypeName ) + id_size );
     if( typenode != NULL ) {
-        typenode->Next = NULL;
-        typenode->Prev = NULL;
+        typenode->next = NULL;
+        typenode->prev = NULL;
         typenode->Head = NULL;
         typenode->Tail = NULL;
         typenode->Info.NumResources = 0;
@@ -80,8 +80,8 @@ static WResLangNode *newLangNode( ResMemFlags res_flags, uint_32 offset,
     if( langnode == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        langnode->Next = NULL;
-        langnode->Prev = NULL;
+        langnode->next = NULL;
+        langnode->prev = NULL;
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
         langnode->Info.res_flags = res_flags;
@@ -107,8 +107,8 @@ static WResResNode *newResNode( const WResID *res_id )
     if( resnode == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        resnode->Next = NULL;
-        resnode->Prev = NULL;
+        resnode->next = NULL;
+        resnode->prev = NULL;
         resnode->Head = NULL;
         resnode->Tail = NULL;
         resnode->Info.NumResources = 0;

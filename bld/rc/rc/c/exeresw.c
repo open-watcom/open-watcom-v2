@@ -133,8 +133,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
     exe_type->Info.type_id = findResIdName( restab, &(typeinfo->TypeName) );
     exe_type->Head = NULL;
     exe_type->Tail = NULL;
-    exe_type->Next = NULL;
-    exe_type->Prev = NULL;
+    exe_type->next = NULL;
+    exe_type->prev = NULL;
     /*
      * use the general purpose linked list routines from WRes
      */
@@ -150,7 +150,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->next ) {
         if( typeinfo->TypeName.IsName
           && (exe_type->Info.type_id & 0x8000) == 0 ) {
             /*
@@ -197,8 +197,8 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
     exe_res->Info.flags = mem_flags;
     exe_res->Info.reserved = 0;
     exe_res->Info.res_id = findResIdName( restab, res_id );
-    exe_res->Next = NULL;
-    exe_res->Prev = NULL;
+    exe_res->next = NULL;
+    exe_res->prev = NULL;
     /*
      * use the general purpose linked list routines from WRes
      */
@@ -347,9 +347,9 @@ static void freeResTable( ResTable *restab )
     FullResourceRecord          *next_res;
 
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = next_type ) {
-        next_type = exe_type->Next;
+        next_type = exe_type->next;
         for( exe_res = exe_type->Head; exe_res != NULL; exe_res = next_res ) {
-            next_res = exe_res->Next;
+            next_res = exe_res->next;
             MemFree( exe_res );
         }
         MemFree( exe_type );
@@ -388,12 +388,10 @@ RcStatus WriteWINResTable( FILE *fp, ResTable *restab, int *err_code )
         ret = RS_WRITE_ERROR;
     }
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL && ret == RS_OK;
-            exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL && ret == RS_OK; exe_type = exe_type->next ) {
         ret = writeTypeRecord( fp, &(exe_type->Info) );
 
-        for( exe_res = exe_type->Head; exe_res != NULL && ret == RS_OK;
-                exe_res = exe_res->Next ) {
+        for( exe_res = exe_type->Head; exe_res != NULL && ret == RS_OK; exe_res = exe_res->next ) {
             ret = writeResRecord( fp, &(exe_res->Info) );
         }
     }

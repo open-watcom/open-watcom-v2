@@ -190,8 +190,8 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
 
     idata = NULL;
     tcurr = *curr;
-    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->Next ) {
-        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->next ) {
+        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
             tcurr.res = rnode;
             tcurr.lang = lnode;
             idata2 = WREMakeSaveIntoNode( &tcurr );

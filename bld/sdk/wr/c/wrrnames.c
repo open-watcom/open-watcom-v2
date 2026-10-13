@@ -104,7 +104,7 @@ static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, uint_16 type_id
 
     ok = (lbox != (HWND)NULL && rnode != NULL);
     if( ok ) {
-        for( lnode = rnode->Head; ok && lnode != NULL; lnode = lnode->Next ) {
+        for( lnode = rnode->Head; ok && lnode != NULL; lnode = lnode->next ) {
             ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type_id );
             if( lnode == rnode->Tail ) {
                 break;
@@ -139,7 +139,7 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
                 ok = false;
             }
         } else {
-            for( rnode = tnode->Head; ok && rnode != NULL; rnode = rnode->Next ) {
+            for( rnode = tnode->Head; ok && rnode != NULL; rnode = rnode->next ) {
                 ok = WRSetLBoxWithResNode( lbox, rnode, type_id );
                 if( rnode == tnode->Tail ) {
                     break;

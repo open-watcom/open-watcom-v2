@@ -44,24 +44,21 @@
 typedef uint_16             WResLen;
 
 typedef struct WResLangNode {
-    struct WResLangNode     *Next;
-    struct WResLangNode     *Prev;
+    LL_ITEM( struct WResLangNode );
     char                    *data; /* pointer for use by resource editors */
     WResLangInfo            Info;
     void                    *fileInfo;
 } WResLangNode;
 
 typedef struct WResResNode {        /* linked list of WResResInfo's */
-    struct WResResNode      *Next;
-    struct WResResNode      *Prev;
+    LL_ITEM( struct WResResNode );
     WResLangNode            *Head;  /* list of resources of this type */
     WResLangNode            *Tail;  /* and name */
     WResResInfo             Info;
 } WResResNode;
 
 typedef struct WResTypeNode {       /* linked list of WResTypeInfo's */
-    struct WResTypeNode     *Next;
-    struct WResTypeNode     *Prev;
+    LL_ITEM( struct WResTypeNode );
     WResResNode             *Head;   /* list of resources of this type */
     WResResNode             *Tail;
     WResTypeInfo            Info;

@@ -41,13 +41,13 @@ WResDirWindow WResNextResource( WResDirWindow wind, WResDir dir )
     /* unused parameters */ (void)dir;
 
     if( !WResIsEmptyWindow( wind ) ) {
-        if( wind.CurrLang->Next != NULL ) {
-            wind.CurrLang = wind.CurrLang->Next;
-        } else if( wind.CurrRes->Next != NULL ) {
-            wind.CurrRes = wind.CurrRes->Next;
+        if( wind.CurrLang->next != NULL ) {
+            wind.CurrLang = wind.CurrLang->next;
+        } else if( wind.CurrRes->next != NULL ) {
+            wind.CurrRes = wind.CurrRes->next;
             wind.CurrLang = wind.CurrRes->Head;
         } else {
-            wind.CurrType = wind.CurrType->Next;
+            wind.CurrType = wind.CurrType->next;
             if( wind.CurrType == NULL ) {
                 wind.CurrLang = NULL;
                 wind.CurrRes = NULL;

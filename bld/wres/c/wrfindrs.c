@@ -40,7 +40,7 @@ WResTypeNode *__FindType( const WResID *type_id, WResDir dir )
 {
     WResTypeNode        *typenode;
 
-    for( typenode = dir->Head; typenode != NULL; typenode = typenode->Next ) {
+    for( typenode = dir->Head; typenode != NULL; typenode = typenode->next ) {
         if( WResIDCmp( type_id, &(typenode->Info.TypeName) ) ) {
             break;
         }
@@ -53,7 +53,7 @@ WResResNode *__FindRes( const WResID *res_id, WResTypeNode *typenode )
 {
     WResResNode         *resnode;
 
-    for( resnode = typenode->Head; resnode != NULL; resnode = resnode->Next ) {
+    for( resnode = typenode->Head; resnode != NULL; resnode = resnode->next ) {
         if( WResIDCmp( res_id, &( resnode->Info.ResName ) ) ) {
             break;
         }
@@ -73,11 +73,11 @@ WResLangNode *__FindLang( const WResLangType *lang, WResResNode *resnode )
         deflang.sublang = DEF_SUBLANG;
         lang = &deflang;
     }
-    langnode = resnode->Head;
-    while( langnode != NULL ) {
+    for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
         if( langnode->Info.lang.lang == lang->lang
-            && langnode->Info.lang.sublang == lang->sublang ) break;
-        langnode = langnode->Next;
+          && langnode->Info.lang.sublang == lang->sublang ) {
+            break;
+        }
     }
     return( langnode );
 }

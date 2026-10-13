@@ -62,8 +62,7 @@ typedef struct FullAccelFlagsOS2 {
 } FullAccelFlagsOS2;
 
 typedef struct FullAccelEntryOS2 {
-    struct FullAccelEntryOS2    *next;
-    struct FullAccelEntryOS2    *prev;
+    LL_ITEM( struct FullAccelEntryOS2 );
     AccelTableEntryOS2          entry;
 } FullAccelEntryOS2;
 

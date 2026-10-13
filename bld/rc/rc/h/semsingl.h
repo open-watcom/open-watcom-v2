@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,8 +43,7 @@ typedef struct IcoFileDirEntry {
 #include "poppck.h"
 
 typedef struct FullIconDirEntry {
-    struct FullIconDirEntry *Next;
-    struct FullIconDirEntry *Prev;
+    LL_ITEM( struct FullIconDirEntry );
     bool                    IsIcoFileEntry;
     union {
         IcoFileDirEntry     Ico;
@@ -71,8 +71,7 @@ typedef struct CurFileDirEntry {
 #include "poppck.h"
 
 typedef struct FullCurDirEntry {
-    struct FullCurDirEntry  *Next;
-    struct FullCurDirEntry  *Prev;
+    LL_ITEM( struct FullCurDirEntry );
     bool                    IsCurFileEntry;
     union {
         CurFileDirEntry     Cur;        /* cursor file */

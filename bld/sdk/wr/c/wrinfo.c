@@ -120,9 +120,9 @@ void WRAPI WRFreeWResDirData( WResDir dir )
         return;
     }
 
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
                 if( lnode->data != NULL ) {
                     MemFree( lnode->data );
                     lnode->data = NULL;
@@ -144,9 +144,9 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     }
 
     count = 0;
-    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
-        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
-            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
                 if( lnode->Info.Length == 0 ) {
                     count++;
                 }
@@ -194,18 +194,18 @@ static bool WRRelinkDir( WResDir dest, WResDir src )
                 if( dlnode->data == NULL ) {
                     dlnode->Info.Offset = slnode->Info.Offset;
                 }
-                dlnode = dlnode->Next;
+                dlnode = dlnode->next;
                 if( dlnode != NULL ) {
                     lang = dlnode->Info.lang;
                     slnode = WRFindLangNodeFromLangType( srnode, &lang );
                 }
             }
-            drnode = drnode->Next;
+            drnode = drnode->next;
             if( drnode != NULL ) {
                 srnode = WRFindResNodeFromWResID( stnode, &drnode->Info.ResName );
             }
         }
-        dtnode = dtnode->Next;
+        dtnode = dtnode->next;
         if( dtnode != NULL ) {
             stnode = WRFindTypeNodeFromWResID( src, &dtnode->Info.TypeName );
         }

@@ -216,8 +216,8 @@ static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char
      * -1 for the 1 char in the struct already
      */
     entry = MemAllocSafe( sizeof( FullFontDirEntry ) + structextra - 1 );
-    entry->Next = NULL;
-    entry->Prev = NULL;
+    entry->next = NULL;
+    entry->prev = NULL;
     /*
      * -1 for the 1 char in the struct already
      */
@@ -325,13 +325,11 @@ static void FreeFontDir( FullFontDir *olddir )
 /********************************************/
 {
     FullFontDirEntry    *currentry;
-    FullFontDirEntry    *nextentry;
 
-    for( currentry = olddir->Head; currentry != NULL; currentry = nextentry ) {
-        nextentry = currentry->Next;
+    while( (currentry = olddir->Head) != NULL ) {
+        olddir->Head = currentry->next;
         MemFree( currentry );
     }
-
     MemFree( olddir );
 }
 
@@ -358,7 +356,7 @@ void SemOS2WriteFontDir( void )
     if( error)
         goto OUTPUT_WRITE_ERROR;
 
-    for( currentry = CurrResFile.FontDir->Head; currentry != NULL; currentry = currentry->Next ) {
+    for( currentry = CurrResFile.FontDir->Head; currentry != NULL; currentry = currentry->next ) {
         error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         if( error ) {
             goto OUTPUT_WRITE_ERROR;

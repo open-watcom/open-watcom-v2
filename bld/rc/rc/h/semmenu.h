@@ -72,8 +72,7 @@ typedef struct FullMenuItemPopup {
 } FullMenuItemPopup;
 
 typedef struct FullMenuItemWIN {
-    struct FullMenuItemWIN  *next;
-    struct FullMenuItemWIN  *prev;
+    LL_ITEM( struct FullMenuItemWIN );
     bool                    iswin32;
     bool                    IsPopup;
     union {
@@ -90,8 +89,7 @@ typedef struct FullMenuOS2 {
 typedef FullMenuOS2     *FullMenuPtrOS2;
 
 typedef struct FullMenuItemOS2 {
-    struct FullMenuItemOS2  *next;
-    struct FullMenuItemOS2  *prev;
+    LL_ITEM( struct FullMenuItemOS2 );
     MenuItemType            type;
     MenuItemOS2             item;
     FullMenuPtrOS2          submenu;

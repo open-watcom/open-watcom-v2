@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2021 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -105,7 +105,7 @@ WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType
     WResLangNode *lnode;
 
     if( rnode != NULL && lang != NULL ) {
-        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->next ) {
             if( lnode->Info.lang.lang == lang->lang  &&
                 lnode->Info.lang.sublang == lang->sublang ) {
                 return( lnode );
@@ -127,7 +127,7 @@ WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, const char *type
         return( NULL );
     }
 
-    for( type_node = dir->Head; type_node != NULL; type_node = type_node->Next ) {
+    for( type_node = dir->Head; type_node != NULL; type_node = type_node->next ) {
         if( WRIsCorrectNode( &type_node->Info.TypeName, type, type_name ) ) {
             return( type_node );
         }
@@ -148,7 +148,7 @@ WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, const char *
         return( NULL );
     }
 
-    for( res_node = type->Head; res_node != NULL; res_node = res_node->Next ) {
+    for( res_node = type->Head; res_node != NULL; res_node = res_node->next ) {
         if( WRIsCorrectNode( &res_node->Info.ResName, res, res_name ) ) {
             return( res_node );
         }

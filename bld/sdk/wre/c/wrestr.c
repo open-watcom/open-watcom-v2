@@ -468,12 +468,12 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 
     nodes = NULL;
     tcurr = *curr;
-    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->Next ) {
+    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->next ) {
         lnode = rnode->Head;
         if( lnode != NULL ) {
             lang = lnode->Info.lang;
         }
-        for( ; lnode != NULL; lnode = lnode->Next ) {
+        for( ; lnode != NULL; lnode = lnode->next ) {
             if( lnode->Info.lang.lang == lang.lang &&
                 lnode->Info.lang.sublang == lang.sublang ) {
                 tcurr.res = rnode;

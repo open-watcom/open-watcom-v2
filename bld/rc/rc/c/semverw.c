@@ -108,8 +108,8 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     FullVerBlock    *block;
 
     block = MemAllocSafe( sizeof( FullVerBlock ) );
-    block->Next = NULL;
-    block->Prev = NULL;
+    block->next = NULL;
+    block->prev = NULL;
     block->Head.Key = name;
     block->iswin32 = CmdLineParms.iswin32;
     block->Values = list;
@@ -124,8 +124,8 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     FullVerBlock    *block;
 
     block = MemAllocSafe( sizeof( FullVerBlock ) );
-    block->Next = NULL;
-    block->Prev = NULL;
+    block->next = NULL;
+    block->prev = NULL;
     block->Head.Key = name;
     block->iswin32 = CmdLineParms.iswin32;
     block->Values = NULL;
@@ -227,7 +227,7 @@ FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNes
 {
     FullVerBlock    *block;
 
-    for( block = nest2->Head; block != NULL; block = block->Next ) {
+    for( block = nest2->Head; block != NULL; block = block->next ) {
         ResAddLLItemAtEnd( (void **)&nest1->Head, (void **)&nest1->Tail, block );
     }
 
@@ -243,7 +243,7 @@ static uint_16 CalcNestSize( FullVerBlockNest *nest )
     uint_16         size;
 
     size = 0;
-    for( block = nest->Head; block != NULL; block = block->Next ) {
+    for( block = nest->Head; block != NULL; block = block->next ) {
         size += CalcBlockSize( block );
     }
 
@@ -254,13 +254,11 @@ static void FreeVerBlockNest( FullVerBlockNest *nest )
 /****************************************************/
 {
     FullVerBlock    *block;
-    FullVerBlock    *nextblock;
 
-    for( block = nest->Head; block != NULL; block = nextblock ) {
-        nextblock = block->Next;
+    while( (block = nest->Head) != NULL ) {
+        nest->Head = block->next;
         FreeVerBlock( block );
     }
-
     MemFree( nest );
 }
 
@@ -271,7 +269,7 @@ static bool SemWriteVerBlockNest( FullVerBlockNest *nest, FILE *fp, int *err_cod
     FullVerBlock    *block;
 
     error = false;
-    for( block = nest->Head; block != NULL && !error; block = block->Next ) {
+    for( block = nest->Head; block != NULL && !error; block = block->next ) {
         error = SemWriteVerBlock( block, fp, err_code );
     }
 

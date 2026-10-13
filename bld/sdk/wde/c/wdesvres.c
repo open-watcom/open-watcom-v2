@@ -296,13 +296,13 @@ WResResNode *WdeRenameWResResNode( WResTypeNode *tnode, WResResNode *rnode, WRes
         }
         new_rnode->Head = rnode->Head;
         new_rnode->Tail = rnode->Tail;
-        new_rnode->Next = rnode->Next;
-        new_rnode->Prev = rnode->Prev;
-        if( rnode->Prev != NULL ) {
-            rnode->Prev->Next = new_rnode;
+        new_rnode->next = rnode->next;
+        new_rnode->prev = rnode->prev;
+        if( rnode->prev != NULL ) {
+            rnode->prev->next = new_rnode;
         }
-        if( rnode->Next != NULL ) {
-            rnode->Next->Prev = new_rnode;
+        if( rnode->next != NULL ) {
+            rnode->next->prev = new_rnode;
         }
         MemFree( rnode );
     }
@@ -316,13 +316,13 @@ bool WdeAddResToType( WResTypeNode *tnode, WResResNode *rnode )
         return( FALSE );
     }
 
-    rnode->Next = NULL;
-    rnode->Prev = tnode->Tail;
+    rnode->next = NULL;
+    rnode->prev = tnode->Tail;
     if( tnode->Head == NULL ) {
         tnode->Head = rnode;
     }
     if( tnode->Tail != NULL ) {
-        tnode->Tail->Next = rnode;
+        tnode->Tail->next = rnode;
     }
     tnode->Tail = rnode;
     tnode->Info.NumResources++;
@@ -341,13 +341,13 @@ WResTypeNode *WdeAddTypeToDir( WResDir dir, uint_16 type )
     tnode = WdeAllocWResTypeNode( type );
 
     if( tnode != NULL ) {
-        tnode->Next = NULL;
-        tnode->Prev = dir->Tail;
+        tnode->next = NULL;
+        tnode->prev = dir->Tail;
         if( dir->Head == NULL ) {
             dir->Head = tnode;
         }
         if( dir->Tail != NULL ) {
-            dir->Tail->Next = tnode;
+            dir->Tail->next = tnode;
         }
         dir->Tail = tnode;
         dir->NumTypes++;
@@ -382,8 +382,8 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, ResMemFlags res_f
     lnode = MemAlloc( sizeof( WResLangNode ) );
 
     if( lnode != NULL ) {
-        lnode->Next = NULL;
-        lnode->Prev = NULL;
+        lnode->next = NULL;
+        lnode->prev = NULL;
         lnode->data = data;
         lnode->Info.lang = *lang;
         lnode->Info.res_flags = res_flags;
@@ -436,8 +436,8 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
     if( new_rnode != NULL ) {
         new_rnode->Head = NULL;
         new_rnode->Tail = NULL;
-        new_rnode->Next = NULL;
-        new_rnode->Prev = NULL;
+        new_rnode->next = NULL;
+        new_rnode->prev = NULL;
         new_rnode->Info.NumResources = num_resources;
         len -= sizeof( WResResNode ) - sizeof( WResID );
         memcpy( &new_rnode->Info.ResName, name, len );
