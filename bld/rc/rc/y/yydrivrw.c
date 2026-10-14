@@ -77,8 +77,8 @@ typedef union {
     ResMemFlags                 resmemflags;
     MenuFlags                   menuflags;
     FullMenuWIN                 *menuptr;
-    FullMenuItemWIN             menuitem;
-    FullMenuItemPopup           popupmenuitem;
+    FullMenuItemWIN             menufull;
+    MenuItemPopupData           popupmenuitem;
     MenuItemNormalData          normalmenuitem;
     DialogSizeInfo              sizeinfo;
     FullDialogOptions           diagopts;

@@ -200,10 +200,10 @@
 %type <menuptr>         menu-section
 %type <menuptr>         menuex-items
 %type <menuptr>         menu-items
-%type <menuitem>        menuex-item
-%type <menuitem>        menu-item
-%type <popupmenuitem>   menuex-popup-stmt
-%type <popupmenuitem>   menu-popup-stmt
+%type <menufull>        menuex-item
+%type <menufull>        menu-item
+%type <menufull>        menuex-popup-stmt
+%type <menufull>        menu-popup-stmt
 %type <popupmenuitem>   menuex-popup-defn
 %type <popupmenuitem>   menu-popup-defn
 %type <normalmenuitem>  menuex-entry-stmt
@@ -908,14 +908,7 @@ menuex-item
             $$.item.normal = $1;
         }
     | menuex-popup-stmt
-        {
-            $$.next = NULL;
-            $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
-            $$.IsPopup = true;
-            $$.item.popup = $1;
-            $$.item.popup.item.menuData.u.ExFlags = MENUEX_POPUP;
-        }
+        { $$ = $1; }
     ;
 
 menu-item
@@ -928,84 +921,84 @@ menu-item
             $$.item.normal = $1;
         }
     | menu-popup-stmt
+        { $$ = $1; }
+    ;
+
+menuex-popup-stmt
+    : Y_POPUP menu-text menuex-popup-defn menuex-section comma-opt
         {
             $$.next = NULL;
             $$.prev = NULL;
             $$.iswin32 = CmdLineParms.iswin32;
             $$.IsPopup = true;
-            $$.item.popup = $1;
-            $$.item.popup.item.menuData.u.ItemFlags |= MENU_POPUP;
-            $$.item.popup.item.menuExData.ItemId = 0;
-            $$.item.popup.item.menuExData.ItemType = 0;
-            $$.item.popup.item.menuExData.ItemState = 0;
-            $$.item.popup.item.menuExData.HelpId = 0;
-        }
-    ;
-
-menuex-popup-stmt
-    : Y_POPUP menu-text comma-opt menuex-section comma-opt
-        {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuExData.ItemId = 0;
-            $$.item.menuExData.ItemType = 0;
-            $$.item.menuExData.ItemState = 0;
-            $$.item.menuExData.HelpId = 0;
+            $$.item.popup = $3;
+            $$.item.popup.menuData.ItemText = $2.string;
+            $$.item.popup.menuData.u.ExFlags = MENUEX_POPUP;
             $$.submenu = $4;
-        }
-    | Y_POPUP menu-text comma-opt menuId comma-opt menuex-section comma-opt
-        {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = 0;
-            $$.item.menuExData.ItemState = 0;
-            $$.item.menuExData.HelpId = 0;
-            $$.submenu = $6;
-        }
-    | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
-              menuex-section comma-opt
-        {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = $6;
-            $$.item.menuExData.ItemState = 0;
-            $$.item.menuExData.HelpId = 0;
-            $$.submenu = $8;
-        }
-    | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
-              menuState comma-opt menuex-section comma-opt
-        {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = $6;
-            $$.item.menuExData.ItemState = $8;
-            $$.item.menuExData.HelpId = 0;
-            $$.submenu = $10;
-        }
-    | Y_POPUP menu-text comma-opt menuId comma-opt menuType comma-opt
-              menuState comma-opt helpId comma-opt menuex-section comma-opt
-        {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuExData.ItemId = $4;
-            $$.item.menuExData.ItemType = $6;
-            $$.item.menuExData.ItemState = $8;
-            $$.item.menuExData.HelpId = $10;
-            $$.submenu = $12;
         }
     ;
 
 menu-popup-stmt
-    : Y_POPUP menu-text comma-opt menu-section comma-opt
+    : Y_POPUP menu-text menu-popup-defn menu-section comma-opt
         {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuData.u.ItemFlags = 0;
+            $$.next = NULL;
+            $$.prev = NULL;
+            $$.iswin32 = CmdLineParms.iswin32;
+            $$.IsPopup = true;
+            $$.item.popup = $3;
+            $$.item.popup.menuData.ItemText = $2.string;
+            $$.item.popup.menuData.u.ItemFlags |= MENU_POPUP;
+            $$.item.popup.menuExData.ItemId = 0;
+            $$.item.popup.menuExData.ItemType = 0;
+            $$.item.popup.menuExData.ItemState = 0;
+            $$.item.popup.menuExData.HelpId = 0;
             $$.submenu = $4;
         }
-    | Y_POPUP menu-text comma-opt menu-item-options comma-opt menu-section comma-opt
+    ;
+
+menuex-popup-defn
+    : /* nothing */
         {
-            $$.item.menuData.ItemText = $2.string;
-            $$.item.menuData.u.ItemFlags = $4;
-            $$.submenu = $6;
+            $$.menuExData.ItemId = 0;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
+            $$.menuExData.HelpId = 0;
         }
+    | comma-opt menuId
+        {
+            $$.menuExData.ItemId = $2;
+            $$.menuExData.ItemType = 0;
+            $$.menuExData.ItemState = 0;
+            $$.menuExData.HelpId = 0;
+        }
+    | comma-opt menuId comma-opt menuType
+        {
+            $$.menuExData.ItemId = $2;
+            $$.menuExData.ItemType = $4;
+            $$.menuExData.ItemState = 0;
+            $$.menuExData.HelpId = 0;
+        }
+    | comma-opt menuId comma-opt menuType comma-opt menuState
+        {
+            $$.menuExData.ItemId = $2;
+            $$.menuExData.ItemType = $4;
+            $$.menuExData.ItemState = $6;
+            $$.menuExData.HelpId = 0;
+        }
+    | comma-opt menuId comma-opt menuType comma-opt menuState comma-opt helpId
+        {
+            $$.menuExData.ItemId = $2;
+            $$.menuExData.ItemType = $4;
+            $$.menuExData.ItemState = $6;
+            $$.menuExData.HelpId = $8;
+        }
+    ;
+
+menu-popup-defn
+    : /* nothing */
+        { $$.menuData.u.ItemFlags = 0; }
+    | comma-opt menu-item-options
+        { $$.menuData.u.ItemFlags = $2; }
     ;
 
 menuex-entry-stmt
@@ -1073,13 +1066,9 @@ menuex-entry-defn
 
 menu-entry-defn
     : /* nothing */
-        {
-            $$.menuData.u.ItemFlags = 0;
-        }
+        { $$.menuData.u.ItemFlags = 0; }
     | comma-opt menu-item-options
-        {
-            $$.menuData.u.ItemFlags = $2;
-        }
+        { $$.menuData.u.ItemFlags = $2; }
     ;
 
 menu-text
@@ -1278,10 +1267,7 @@ style
 
 caption-stmt
     : Y_CAPTION string-constant
-        {
-            $$.token = Y_CAPTION;
-            $$.Opt.Str = $2.string;
-        }
+        { $$.token = Y_CAPTION; $$.Opt.Str = $2.string; }
     ;
 
 menu-stmt

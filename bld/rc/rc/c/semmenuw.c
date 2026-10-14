@@ -141,9 +141,9 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
     if( islastitem ) {
         if( item->IsPopup ) {
             if( is_menuex ) {
-                item->item.popup.item.menuData.u.ExFlags |= MENU_LAST_ITEM;
+                item->item.popup.menuData.u.ExFlags |= MENU_LAST_ITEM;
             } else {
-                item->item.popup.item.menuData.u.ItemFlags |= MENU_LAST_ITEM;
+                item->item.popup.menuData.u.ItemFlags |= MENU_LAST_ITEM;
             }
         } else {
             if( is_menuex ) {
@@ -155,15 +155,15 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
     }
     if( item->IsPopup ) {
         if( is_menuex ) {
-            error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
-                      &(item->item.popup.item.menuExData), item->iswin32,
+            error = ResWriteMenuExItemPopup( &(item->item.popup.menuData),
+                      &(item->item.popup.menuExData), item->iswin32,
                       CurrResFile.fp );
         } else {
             if( CmdLineParms.winver < 30 ) {
-                error = ResWriteMenuItemPopupOldWin( &(item->item.popup.item.menuData),
+                error = ResWriteMenuItemPopupOldWin( &(item->item.popup.menuData),
                             item->iswin32, CurrResFile.fp );
             } else {
-                error = ResWriteMenuItemPopup( &(item->item.popup.item.menuData),
+                error = ResWriteMenuItemPopup( &(item->item.popup.menuData),
                             item->iswin32, CurrResFile.fp );
             }
         }
@@ -203,7 +203,7 @@ static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex
             error = SemWriteMenuItem( curritem, ( curritem == submenu->tail ), err_code, is_menuex );
             if( !error
               && curritem->IsPopup ) {
-                error = SemWriteSubMenu( curritem->item.popup.submenu, err_code, is_menuex );
+                error = SemWriteSubMenu( curritem->submenu, err_code, is_menuex );
             }
         }
     }
@@ -225,7 +225,7 @@ static void SemWarnIfSubmenus( FullMenuWIN *submenu )
 
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
         if( curritem->IsPopup ) {
-            for( currsubitem = curritem->item.popup.submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
+            for( currsubitem = curritem->submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
                 if( currsubitem->IsPopup ) {
                     RcWarning( WARN_SUBMEN_WIN2X );
                 }
@@ -238,9 +238,9 @@ static void SemFreeMenuItem( FullMenuItemWIN *curritem )
 /******************************************************/
 {
     if( curritem->IsPopup ) {
-        SemFreeSubMenu( curritem->item.popup.submenu );
-        if( curritem->item.popup.item.menuData.ItemText != NULL ) {
-            MemFree( curritem->item.popup.item.menuData.ItemText );
+        SemFreeSubMenu( curritem->submenu );
+        if( curritem->item.popup.menuData.ItemText != NULL ) {
+            MemFree( curritem->item.popup.menuData.ItemText );
         }
     } else {
         if( curritem->item.normal.menuData.ItemText != NULL ) {

@@ -54,19 +54,15 @@ typedef struct FullMenuWIN {
     struct FullMenuItemWIN  *tail;
 } FullMenuWIN;
 
-typedef struct FullMenuItemPopup {
-    MenuItemPopupData       item;
-    FullMenuWIN             *submenu;
-} FullMenuItemPopup;
-
 typedef struct FullMenuItemWIN {
     LL_ITEM( struct FullMenuItemWIN );
     bool                    iswin32;
     bool                    IsPopup;
     union {
-        FullMenuItemPopup   popup;
+        MenuItemPopupData   popup;
         MenuItemNormalData  normal;
     } item;
+    FullMenuWIN             *submenu;
 } FullMenuItemWIN;
 
 typedef struct FullMenuOS2 {
