@@ -113,7 +113,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( ok ) {
-        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
+        if( (entry->item->u.ItemFlags & MENU_SEPARATOR) == 0 ) {
             ok = false;
             itemname = WGETMENUITEMTEXT( entry->item );
             if( itemname != NULL ) {
@@ -124,22 +124,22 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     }
 
     if( ok ) {
-        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
-            ok = WSetFlagsText( entry->item->Item.Normal.ItemFlags, &flagtext );
+        if( (entry->item->u.ItemFlags & MENU_SEPARATOR) == 0 ) {
+            ok = WSetFlagsText( entry->item->u.ItemFlags, &flagtext );
         }
     }
 
     if( ok ) {
-        if( entry->item->Item.Normal.ItemFlags & MENU_POPUP ) {
+        if( entry->item->u.ItemFlags & MENU_POPUP ) {
             fprintf( fp, "POPUP \"%s\"%s\n", text, flagtext );
-        } else if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+        } else if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
             fprintf( fp, "MENUITEM SEPARATOR\n" );
         } else {
             if( entry->symbol != NULL ) {
                 fprintf( fp, "MENUITEM \"%s\"\t%s%s\n", text, entry->symbol, flagtext );
             } else {
                 fprintf( fp, "MENUITEM \"%s\"\t%u%s\n", text,
-                         entry->item->Item.Normal.ItemId, flagtext );
+                         entry->item->ItemId, flagtext );
             }
         }
     }

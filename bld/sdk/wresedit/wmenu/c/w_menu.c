@@ -71,8 +71,8 @@ void WInitDummyMenuEntry( void )
     WDummyMenuEntry = MemAlloc( sizeof( WMenuEntry ) );
     memset( WDummyMenuEntry, 0, sizeof( WMenuEntry ) );
     WDummyMenuEntry->item = ResNewMenuItem();
-    WDummyMenuEntry->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
-    WDummyMenuEntry->item->Item.Normal.ItemId = 101;
+    WDummyMenuEntry->item->ItemText = AllocRCString( W_MENUITEM );
+    WDummyMenuEntry->item->ItemId = 101;
 }
 
 void WFiniDummyMenuEntry( void )
@@ -137,7 +137,7 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
     for( ; entry != NULL; entry = entry->next ) {
         if( entry->item->IsPopup ) {
             /* menu item flags */
-            item_flags = entry->item->Item.Popup.ItemFlags & ~MENU_LAST_ITEM;
+            item_flags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
             if( entry->next == NULL ) {
                 item_flags |= MENU_LAST_ITEM;
             }
@@ -146,10 +146,10 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
             item_text = entry->item->Item.Popup.ItemText;
         } else {
             /* menu item flags */
-            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+            if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
                 item_flags = 0;
             } else {
-                item_flags = (entry->item->Item.Normal.ItemFlags & ~MENU_LAST_ITEM) | MF_STRING;
+                item_flags = (entry->item->u.ItemFlags & ~MENU_LAST_ITEM) | MF_STRING;
             }
             if( entry->next == NULL ) {
                 item_flags |= MENU_LAST_ITEM;
@@ -157,13 +157,13 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
             VALU16( data ) = item_flags;
             INCU16( data );
             /* menu item id */
-            if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+            if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
                 VALU16( data ) = 0;
             } else {
-                VALU16( data ) = entry->item->Item.Normal.ItemId;
+                VALU16( data ) = entry->item->ItemId;
             }
             INCU16( data );
-            item_text = entry->item->Item.Normal.ItemText;
+            item_text = entry->item->ItemText;
         }
 
         /* menu item text */
@@ -205,7 +205,7 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
             }
         } else {
             dsize += SIZEU16 + SIZEU16 + 1;
-            text = entry->item->Item.Normal.ItemText;
+            text = entry->item->ItemText;
         }
         dsize += WRCalcStrlen( text, entry->is32bit );
     }
@@ -263,19 +263,15 @@ static bool WMakeMenuItemFromData( const char **pdata, size_t *dsize, MenuItem *
         if( (item_flags & ~MENU_LAST_ITEM) == 0 && item_id == 0 ) {
             item_flags |= MENU_SEPARATOR;
         }
-        item->Item.Normal.ItemId = item_id;
+        item->ItemId = item_id;
     }
-    item->Item.Normal.ItemFlags = item_flags;
+    item->u.ItemFlags = item_flags;
     itext = WRStringFromData( &data, is32bit );
     if( itext == NULL ) {
         *dsize = 0;
         return( false );
     }
-    if( item->IsPopup ) {
-        item->Item.Popup.ItemText = itext;
-    } else {
-        item->Item.Normal.ItemText = itext;
-    }
+    item->ItemText = itext;
     tlen = data - *pdata;
     *pdata = data;
     if( *dsize >= tlen ) {
@@ -344,7 +340,7 @@ static bool WMakeMenuEntryFromData( const char **data, size_t *dsize, WMenuEntry
             if( (*current)->item->IsPopup ) {
                 ok = WMakeMenuEntryFromData( data, dsize, *current, &(*current)->child, is32bit );
             }
-            if( (*current)->item->Item.Normal.ItemFlags & MENU_LAST_ITEM ) {
+            if( (*current)->item->u.ItemFlags & MENU_LAST_ITEM ) {
                 break;
             }
             prev = *current;
@@ -475,7 +471,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
     ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
-        flags = entry->item->Item.Normal.ItemFlags;
+        flags = entry->item->u.ItemFlags;
         flags &= ~MENU_LAST_ITEM;
         if( flags & MENU_POPUP ) {
             entry->preview_popup = CreatePopupMenu();
@@ -491,7 +487,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
         } else {
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
-                             entry->item->Item.Normal.ItemText ) != 0;
+                             entry->item->ItemText ) != 0;
         }
     }
 
@@ -658,7 +654,7 @@ static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
     ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
-        flags = entry->item->Item.Normal.ItemFlags;
+        flags = entry->item->u.ItemFlags;
         flags &= ~MENU_LAST_ITEM;
         if( flags & MENU_POPUP ) {
             ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
@@ -669,7 +665,7 @@ static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
         } else {
             ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id,
-                             entry->item->Item.Normal.ItemText ) != 0;
+                             entry->item->ItemText ) != 0;
         }
     }
 
@@ -912,11 +908,11 @@ bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
         if( entry->item->IsPopup ) {
             return( true );
         }
-        flags = entry->item->Item.Normal.ItemFlags;
+        flags = entry->item->u.ItemFlags;
         if( flags & MENU_SEPARATOR ) {
             return( true );
         }
-        id = entry->item->Item.Normal.ItemId;
+        id = entry->item->ItemId;
         vlist = WRLookupValue( symbol_table, id );
         ok = (vlist != NULL && vlist->next == NULL);
     }
@@ -977,7 +973,7 @@ bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
         if( entry->item->IsPopup ) {
             return( true );
         }
-        flags = entry->item->Item.Normal.ItemFlags;
+        flags = entry->item->u.ItemFlags;
         if( flags & MENU_SEPARATOR ) {
             return( true );
         }
@@ -985,7 +981,7 @@ bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
     }
 
     if( ok ) {
-        entry->item->Item.Normal.ItemId = (uint_16)hv;
+        entry->item->ItemId = (uint_16)hv;
     }
 
     return( ok );

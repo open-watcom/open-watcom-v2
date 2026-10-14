@@ -232,7 +232,7 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
     }
 
     if ( ok ) {
-        if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+        if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
             text = "SEPARATOR";
             tlen = 14;
         } else {
@@ -249,15 +249,15 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
     if( ok ) {
         memset( lbtext, ' ', depth * DEPTH_MULT );
         lbtext[depth * DEPTH_MULT] = '\0';
-        if( entry->item->Item.Normal.ItemFlags & MENU_POPUP ) {
+        if( entry->item->u.ItemFlags & MENU_POPUP ) {
             strcat( lbtext, "POPUP    \"" );
-        } else if( entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR ) {
+        } else if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
             strcat( lbtext, "MENUITEM    " );
         } else {
             strcat( lbtext, "MENUITEM    \"" );
         }
         strcat( lbtext, text );
-        if( (entry->item->Item.Normal.ItemFlags & MENU_SEPARATOR) == 0 ) {
+        if( (entry->item->u.ItemFlags & MENU_SEPARATOR) == 0 ) {
             strcat( lbtext, "\"" );
         }
         lbtext1 = WConvertStringFrom( lbtext, "\t\x8\"\\", "ta\"\\" );
@@ -303,22 +303,22 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
         new->item = ResNewMenuItem();
         if( popup ) {
             new->item->IsPopup = TRUE;
-            new->item->Item.Popup.ItemFlags = flags | MENU_POPUP;
+            new->item->u.ItemFlags = flags | MENU_POPUP;
             if( text != NULL ) {
-                new->item->Item.Popup.ItemText = WStrdup( text );
+                new->item->ItemText = WStrdup( text );
             } else {
-                new->item->Item.Popup.ItemText = AllocRCString( W_MENUPOPUP );
+                new->item->ItemText = AllocRCString( W_MENUPOPUP );
             }
         } else {
             if( sep ) {
-                new->item->Item.Normal.ItemFlags = MENU_SEPARATOR;
+                new->item->u.ItemFlags = MENU_SEPARATOR;
             } else {
-                new->item->Item.Normal.ItemId = id;
-                new->item->Item.Normal.ItemFlags = flags;
+                new->item->ItemId = id;
+                new->item->u.ItemFlags = flags;
                 if( text != NULL ) {
-                    new->item->Item.Normal.ItemText = WStrdup( text );
+                    new->item->ItemText = WStrdup( text );
                 } else {
-                    new->item->Item.Normal.ItemText = AllocRCString( W_MENUITEM );
+                    new->item->ItemText = AllocRCString( W_MENUITEM );
                 }
             }
         }
