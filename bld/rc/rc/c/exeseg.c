@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  NE segment processing functions.
+* Description:  NE segments processing functions (used by 16-bit code)
 *
 ****************************************************************************/
 

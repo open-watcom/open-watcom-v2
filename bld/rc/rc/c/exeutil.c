@@ -26,6 +26,7 @@
 *  ========================================================================
 *
 * Description:  Resource Compiler executable processing utility functions.
+*                    (used by 16-bit code)
 *
 ****************************************************************************/
 

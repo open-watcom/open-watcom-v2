@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  String resource management.
+* Description:  String resource management.     (used by 16-bit code)
 *
 ****************************************************************************/
 

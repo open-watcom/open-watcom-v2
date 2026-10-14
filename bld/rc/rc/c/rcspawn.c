@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  RCSpawn() and RCSuicide() routines
+* Description:  RCSpawn() and RCSuicide() routines  (used by 16-bit code)
 *
 ****************************************************************************/
 

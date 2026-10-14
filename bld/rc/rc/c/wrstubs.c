@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -27,6 +27,7 @@
 *
 * Description:  Stub routines for GUI resource editors (those only support
 *               Win16 and Win32 resources, not OS/2 resources).
+*                   (used by 16-bit code)
 *
 ****************************************************************************/
 
