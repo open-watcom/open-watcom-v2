@@ -913,7 +913,7 @@ menuex-item
             $$.IsPopup = true;
             $$.item.popup = $1;
             $$.item.popup.item.type = MT_MENUEX;
-            $$.item.popup.item.menuData.ItemFlags = MENUEX_POPUP;
+            $$.item.popup.item.menuData.u.ExFlags = MENUEX_POPUP;
         }
     ;
 
@@ -934,7 +934,7 @@ menu-item
             $$.IsPopup = true;
             $$.item.popup = $1;
             $$.item.popup.item.type = MT_MENU;
-            $$.item.popup.item.menuData.ItemFlags |= MENU_POPUP;
+            $$.item.popup.item.menuData.u.ItemFlags |= MENU_POPUP;
             $$.item.popup.item.menuExData.ItemId = 0;
             $$.item.popup.item.menuExData.ItemType = 0;
             $$.item.popup.item.menuExData.ItemState = 0;
@@ -997,13 +997,13 @@ menu-popup-stmt
     : Y_POPUP menu-text comma-opt menu-section comma-opt
         {
             $$.item.menuData.ItemText = $2.string;
-            $$.item.menuData.ItemFlags = 0;
+            $$.item.menuData.u.ItemFlags = 0;
             $$.submenu = $4;
         }
     | Y_POPUP menu-text comma-opt menu-item-options comma-opt menu-section comma-opt
         {
             $$.item.menuData.ItemText = $2.string;
-            $$.item.menuData.ItemFlags = $4;
+            $$.item.menuData.u.ItemFlags = $4;
             $$.submenu = $6;
         }
     ;
@@ -1024,7 +1024,7 @@ menuex-entry-defn
             $$.type = MT_SEPARATOR;
             $$.menuData.ItemText = NULL;
             $$.menuData.ItemId = 0;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
         }
@@ -1033,7 +1033,7 @@ menuex-entry-defn
             $$.type = MT_MENUEX_NO_ID;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = 0;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = 0;
             $$.menuExData.ItemState = 0;
         }
@@ -1042,7 +1042,7 @@ menuex-entry-defn
             $$.type = MT_EITHER;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = 0;
             $$.menuExData.ItemState = 0;
         }
@@ -1051,7 +1051,7 @@ menuex-entry-defn
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = 0;
         }
@@ -1060,7 +1060,7 @@ menuex-entry-defn
             $$.type = MT_MENUEX;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = $5;
             $$.menuExData.ItemState = $7;
         }
@@ -1072,7 +1072,7 @@ menu-entry-defn
             $$.type = MT_SEPARATOR;
             $$.menuData.ItemText = NULL;
             $$.menuData.ItemId = 0;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ItemFlags = 0;
             $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
         }
@@ -1081,7 +1081,7 @@ menu-entry-defn
             $$.type = MT_MENU;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
-            $$.menuData.ItemFlags = 0;
+            $$.menuData.u.ItemFlags = 0;
             $$.menuExData.ItemType = 0;
             $$.menuExData.ItemState = 0;
         }
@@ -1090,7 +1090,7 @@ menu-entry-defn
             $$.type = MT_MENU;
             $$.menuData.ItemText = $1.string;
             $$.menuData.ItemId = $3;
-            $$.menuData.ItemFlags = $5;
+            $$.menuData.u.ItemFlags = $5;
         }
     ;
 

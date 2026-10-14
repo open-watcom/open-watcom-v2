@@ -135,7 +135,7 @@ static void SemCheckMenuItemPopup( FullMenuItemWIN *item, bool is_menuex )
 /************************************************************************/
 {
     if( is_menuex ) {
-        item->item.popup.item.menuData.ItemFlags = MENUEX_POPUP;
+        item->item.popup.item.menuData.u.ExFlags = MENUEX_POPUP;
         if( item->item.popup.item.type == MT_MENU ) {
             RcError( ERR_MENU_POPUP_OPTIONS );
         }
@@ -173,7 +173,11 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
     if( item->IsPopup ) {
         SemCheckMenuItemPopup( item, is_menuex );
         if( islastitem ) {
-            item->item.popup.item.menuData.ItemFlags |= MENU_LAST_ITEM;
+            if( is_menuex ) {
+                item->item.popup.item.menuData.u.ExFlags |= MENU_LAST_ITEM;
+            } else {
+                item->item.popup.item.menuData.u.ItemFlags |= MENU_LAST_ITEM;
+            }
         }
         if( is_menuex ) {
             error = ResWriteMenuExItemPopup( &(item->item.popup.item.menuData),
@@ -191,7 +195,11 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
     } else {
         SemCheckMenuItemNormal( item, is_menuex );
         if( islastitem ) {
-            item->item.normal.menuData.ItemFlags |= MENU_LAST_ITEM;
+            if( is_menuex ) {
+                item->item.normal.menuData.u.ExFlags |= MENU_LAST_ITEM;
+            } else {
+                item->item.normal.menuData.u.ItemFlags |= MENU_LAST_ITEM;
+            }
         }
         if( is_menuex ) {
             error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),

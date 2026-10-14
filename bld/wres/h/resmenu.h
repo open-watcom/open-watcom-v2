@@ -81,6 +81,11 @@ typedef enum MenuExStateFlags {
     MENUEX_STATE_max_value  = 0xFFFFFFFFU
 } MenuExStateFlags;
 
+typedef union MenuFlagsU {
+    MenuFlags       ItemFlags;
+    MenuExFlags     ExFlags;
+} MenuFlagsU;
+
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */
     uint_16         Size;           /* currently 0 */
@@ -88,7 +93,7 @@ typedef struct MenuHeader {
 } MenuHeader;
 
 typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */
-    MenuFlags       ItemFlags;
+    MenuFlagsU      u;
     char            *ItemText;
 } MenuItemPopup;
 
@@ -100,7 +105,7 @@ typedef struct MenuExItemPopup {
 } MenuExItemPopup;
 
 typedef struct MenuItemNormal {     /* if !(ItemFlags & MENU_POPUP) */
-    MenuFlags       ItemFlags;
+    MenuFlagsU      u;
     unsigned        ItemId;         /* Note! This was changed from uint_16!! */
     char            *ItemText;
 } MenuItemNormal;
@@ -124,10 +129,7 @@ typedef struct MenuItem {
     char                *ItemText;
     unsigned            ItemId;
     unsigned            ExHelpId;
-    union {
-        MenuFlags       ItemFlags;
-        MenuExFlags     ExFlags;
-    } u;
+    MenuFlagsU          u;
     MenuExTypeFlags     ExType;
     MenuExStateFlags    ExState;
     unsigned            IsEx     :1;
