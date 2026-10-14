@@ -84,7 +84,7 @@ typedef union {
     ResLocation                 resloc;
     ResMemFlags                 resmemflags;
     MenuFlags                   menuflags;
-    FullMenuPtrOS2              menuptr;
+    FullMenuOS2                 *menuptr;
     FullMenuItemOS2             menufull;
     MenuItemOS2                 menuitem;
     DialogSizeInfo              sizeinfo;

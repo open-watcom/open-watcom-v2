@@ -64,11 +64,9 @@ typedef struct FullMenuWIN {
     struct FullMenuItemWIN  *tail;
 } FullMenuWIN;
 
-typedef FullMenuWIN     *FullMenuPtrWIN;
-
 typedef struct FullMenuItemPopup {
     MenuItemPopupData       item;
-    FullMenuPtrWIN          submenu;
+    FullMenuWIN             *submenu;
 } FullMenuItemPopup;
 
 typedef struct FullMenuItemWIN {
@@ -86,13 +84,11 @@ typedef struct FullMenuOS2 {
     struct FullMenuItemOS2  *tail;
 } FullMenuOS2;
 
-typedef FullMenuOS2     *FullMenuPtrOS2;
-
 typedef struct FullMenuItemOS2 {
     LL_ITEM( struct FullMenuItemOS2 );
     MenuItemType            type;
     MenuItemOS2             item;
-    FullMenuPtrOS2          submenu;
+    FullMenuOS2             *submenu;
 } FullMenuItemOS2;
 
 #endif
