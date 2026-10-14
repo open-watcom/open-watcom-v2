@@ -906,6 +906,8 @@ menuex-item
             $$.iswin32 = CmdLineParms.iswin32;
             $$.IsPopup = false;
             $$.item.normal = $1;
+            $$.item.normal.menuData.u.ExFlags = 0;
+            $$.submenu = NULL;
         }
     | menuex-popup-stmt
         { $$ = $1; }
@@ -919,6 +921,9 @@ menu-item
             $$.iswin32 = CmdLineParms.iswin32;
             $$.IsPopup = false;
             $$.item.normal = $1;
+            $$.item.normal.menuExData.ItemType = 0;
+            $$.item.normal.menuExData.ItemState = 0;
+            $$.submenu = NULL;
         }
     | menu-popup-stmt
         { $$ = $1; }
@@ -1006,7 +1011,6 @@ menuex-entry-stmt
         {
             $$.menuData.ItemText = NULL;
             $$.menuData.ItemId = 0;
-            $$.menuData.u.ExFlags = 0;
             $$.menuExData.ItemType = MENUEX_TYPE_SEPARATOR;
             $$.menuExData.ItemState = 0;
         }
@@ -1014,7 +1018,6 @@ menuex-entry-stmt
         {
             $$ = $3;
             $$.menuData.ItemText = $2.string;
-            $$.menuData.u.ExFlags = 0;
         }
     ;
 
@@ -1024,16 +1027,12 @@ menu-entry-stmt
             $$.menuData.ItemText = NULL;
             $$.menuData.ItemId = 0;
             $$.menuData.u.ItemFlags = MENU_SEPARATOR;
-            $$.menuExData.ItemType = 0;
-            $$.menuExData.ItemState = 0;
         }
     | Y_MENUITEM menu-text comma-opt menu-result menu-entry-defn
         {
             $$ = $5;
             $$.menuData.ItemText = $2.string;
             $$.menuData.ItemId = $4;
-            $$.menuExData.ItemType = 0;
-            $$.menuExData.ItemState = 0;
         }
     ;
 
