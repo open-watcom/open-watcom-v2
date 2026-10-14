@@ -39,22 +39,12 @@
 
 /**** Semantic structures ****/
 
-typedef enum MenuItemType {
-    MT_SEPARATOR,
-    MT_MENU,
-    MT_MENUEX,
-    MT_MENUEX_NO_ID,
-    MT_EITHER
-} MenuItemType;
-
 typedef struct MenuItemNormalData {
-    MenuItemType            type;
     MenuItemNormal          menuData;
     MenuExItemNormal        menuExData;
 } MenuItemNormalData;
 
 typedef struct MenuItemPopupData {
-    MenuItemType            type;
     MenuItemPopup           menuData;
     MenuExItemPopup         menuExData;
 } MenuItemPopupData;
@@ -86,7 +76,6 @@ typedef struct FullMenuOS2 {
 
 typedef struct FullMenuItemOS2 {
     LL_ITEM( struct FullMenuItemOS2 );
-    MenuItemType            type;
     MenuItemOS2             item;
     FullMenuOS2             *submenu;
 } FullMenuItemOS2;
