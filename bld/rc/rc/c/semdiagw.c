@@ -491,7 +491,6 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
 
         newctrl->u.ctrl32.ExtendedStyle = opts.ExtendedStyle;
         newctrl->u.ctrl32.HelpId = opts.HelpId;
-        newctrl->u.ctrl32.HelpIdDefined = opts.HelpIdDefined;
     } else {
         newctrl->u.ctrl.ID = opts.ID;
         newctrl->u.ctrl.SizeInfo = opts.SizeInfo;
@@ -637,33 +636,16 @@ static size_t SemCountBytes( DataElemList *list )
 }
 
 static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
-                               DlgHelpId dlghelp, FullDialogCtrlListWIN *ctrls )
-/******************************************************************************/
+                               help_id HelpId, FullDialogCtrlListWIN *ctrls )
+/***************************************************************************/
 {
     FullDialogBoxControlWIN *travptr;
 
     if( head->iswin32 ) {
         if( is_dialogex ) {
-            if( dlghelp.HelpIdDefined ) {
-                head->u.Head32.ExHead.HelpId = dlghelp.HelpId;
-            }
+            head->u.Head32.ExHead.HelpId = HelpId;
         } else {
-            if( dlghelp.HelpIdDefined ) {
-                RcError( ERR_DIALOG_HELPID );
-            }
-            if( head->u.Head32.ExHead.FontItalicDefined ) {
-                RcError( ERR_FONT_ITALIC );
-            }
-            if( head->u.Head32.ExHead.FontWeightDefined ) {
-                RcError( ERR_FONT_WEIGHT );
-            }
-            if( head->u.Head32.ExHead.FontCharsetDefined ) {
-                RcError( ERR_FONT_CHARSET );
-            }
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
-                if( travptr->u.ctrl32.HelpIdDefined ) {
-                    RcError( ERR_DIALOG_CONTROL_HELPID );
-                }
                 if( travptr->dataListHead != NULL ) {
                     SemFreeDataElemList( travptr->dataListHead );
                     RcError( ERR_DATA_ELEMENTS );
@@ -675,7 +657,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
 
 void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
                     DialogSizeInfo sizeinfo, FullDialogBoxHeader *head,
-                    FullDialogCtrlListWIN *ctrls, DlgHelpId dlghelp,
+                    FullDialogCtrlListWIN *ctrls, help_id HelpId,
                     bool is_dialogex )
 /******************************************************************/
 {
@@ -688,7 +670,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
     if( head == NULL ) {
         head = NewDialogBoxHeader();
     }
-    SemCheckDialogBox( head, is_dialogex, dlghelp, ctrls );
+    SemCheckDialogBox( head, is_dialogex, HelpId, ctrls );
     if( head->iswin32 ) {
         if( is_dialogex ) {
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
@@ -771,7 +753,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
 
 FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
          uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext_id,
-         ResNameOrOrdinal *ctlclassname, uint_32 exstyle, DlgHelpId *help )
+         ResNameOrOrdinal *ctlclassname, uint_32 exstyle, help_id HelpId )
 /*************************************************************************/
 {
     FullDialogBoxControlWIN *control;
@@ -797,14 +779,8 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
          */
         control->u.ctrl32.ExtraBytes = 0;
         control->u.ctrl32.ExtendedStyle = exstyle;
+        control->u.ctrl32.HelpId = HelpId;
 
-        if( help != NULL ) {
-            control->u.ctrl32.HelpId = help->HelpId;
-            control->u.ctrl32.HelpIdDefined = help->HelpIdDefined;
-        } else {
-            control->u.ctrl32.HelpId = 0;
-            control->u.ctrl32.HelpIdDefined = false;
-        }
         MemFree( ctlclassname );
     } else {
         control->u.ctrl.ID = cntlid;

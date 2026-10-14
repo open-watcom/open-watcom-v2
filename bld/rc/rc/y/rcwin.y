@@ -228,8 +228,10 @@
 %type <diagopts>        caption-stmt
 %type <diagopts>        menu-stmt
 %type <diagopts>        class-stmt
+%type <diagopts>        font-stmt-ex
 %type <diagopts>        font-stmt
 %type <diagopts>        dialog-lang-stmt
+%type <diagopts>        dialogex-options-stmt
 %type <diagopts>        dialog-options-stmt
 %type <diagopts>        dialog-version-stmt
 %type <diagopts>        dialog-characteristics-stmt
@@ -238,6 +240,7 @@
 %type <nameorord>       ctl-class-name
 %type <ressizenum>      point-size
 %type <string>          typeface
+%type <diaghead>        dialogex-options-section
 %type <diaghead>        dialog-options-section
 %type <diagctrllist>    dialogex-control-section
 %type <diagctrllist>    dialog-control-section
@@ -320,10 +323,10 @@
 %type <valueitem>       value-string-list
 %type <dataelem>        raw-data-section
 %type <dataelem>        raw-data-items
-%type <dlghelpid>       helpId-opt
 %type <residnum>        menuId
 %type <integral>        menuType
 %type <integral>        menuState
+%type <integral>        helpId-opt
 %type <integral>        helpId
 %type <toolbar>         toolbar-block
 %type <toolbar>         toolbar-items
@@ -898,6 +901,13 @@ helpId
         { $$ = $1.Value; }
     ;
 
+helpId-opt
+    : /* nothing */
+       { $$ = 0; }
+    | comma-opt helpId
+       { $$ = $2; }
+    ;
+
 menuex-item
     : menuex-entry-stmt
         {
@@ -1155,31 +1165,17 @@ version-stmt
         { SemWINUnsupported( Y_VERSION ); }
     ;
 
-helpId-opt
-    : comma-opt constant-expression
-       { $$.HelpId = $2.Value; $$.HelpIdDefined = true; }
-    | /* nothing */
-       { $$.HelpId = 0; $$.HelpIdDefined = false; }
+dialogex-resource
+    : name-id Y_DIALOG_EX resource-options-mdp comma-opt size-info
+            helpId-opt
+            dialogex-options-section dialogex-control-section
+        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
     ;
 
 dialog-resource
-    : name-id Y_DIALOG resource-options-mdp comma-opt
-            size-info helpId-opt dialog-options-section dialog-control-section
-        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, false ); }
-    | name-id Y_DIALOG resource-options-mdp comma-opt
-            exstyle-equal-stmt size-info helpId-opt
+    : name-id Y_DIALOG resource-options-mdp comma-opt size-info
             dialog-options-section dialog-control-section
-        { SemWINWriteDialogBox( $1, $3, $6, SemWINDialogOptions( $8, &($5) ), $9, $7, false ); }
-    ;
-
-dialogex-resource
-    : name-id Y_DIALOG_EX resource-options-mdp comma-opt
-            size-info helpId-opt dialog-options-section dialogex-control-section
-        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
-    | name-id Y_DIALOG_EX resource-options-mdp comma-opt
-            exstyle-equal-stmt size-info helpId-opt
-            dialog-options-section dialogex-control-section
-        { SemWINWriteDialogBox( $1, $3, $6, SemWINDialogOptions( $8, &($5) ), $9, $7, true ); }
+        { SemWINWriteDialogBox( $1, $3, $5, $6, $7, 0, false ); }
     ;
 
 size-info
@@ -1207,6 +1203,13 @@ size-h
         { $$ = $1.Value; }
     ;
 
+dialogex-options-section
+    : /* nothing */
+        { $$ = NULL; }
+    | dialogex-options-section dialogex-options-stmt
+        { $$ = SemWINDialogOptions( $1, &($2) ); }
+    ;
+
 dialog-options-section
     : /* nothing */
         { $$ = NULL; }
@@ -1214,9 +1217,21 @@ dialog-options-section
         { $$ = SemWINDialogOptions( $1, &($2) ); }
     ;
 
-dialog-options-stmt
+dialogex-options-stmt
     : style-stmt
     | exstyle-stmt
+    | exstyle-equal-stmt
+    | caption-stmt
+    | menu-stmt
+    | class-stmt
+    | font-stmt-ex
+    | dialog-lang-stmt
+    | dialog-version-stmt
+    | dialog-characteristics-stmt
+    ;
+
+dialog-options-stmt
+    : style-stmt
     | caption-stmt
     | menu-stmt
     | class-stmt
@@ -1309,7 +1324,7 @@ ctl-class-name
         { $$ = ResNumToNameOrOrdinal( $1.Value ); }
     ;
 
-font-stmt
+font-stmt-ex
     : Y_FONT point-size comma-opt typeface
         {
             $$.token = Y_FONT;
@@ -1346,8 +1361,7 @@ font-stmt
             $$.Opt.Font.FontItalicDefined = true;
             $$.Opt.Font.FontCharsetDefined = false;
         }
-    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt
-             fontitalic comma-opt fontcharset
+    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt fontitalic comma-opt fontcharset
         {
             $$.token = Y_FONT;
             $$.Opt.Font.PointSize = $2;
@@ -1358,6 +1372,21 @@ font-stmt
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = true;
             $$.Opt.Font.FontCharsetDefined = true;
+        }
+    ;
+
+font-stmt
+    : Y_FONT point-size comma-opt typeface
+        {
+            $$.token = Y_FONT;
+            $$.Opt.Font.PointSize = $2;
+            $$.Opt.Font.FontName = $4.string;
+            $$.Opt.Font.FontWeight = 0;
+            $$.Opt.Font.FontItalic = 0;
+            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
+            $$.Opt.Font.FontWeightDefined = false;
+            $$.Opt.Font.FontItalicDefined = false;
+            $$.Opt.Font.FontCharsetDefined = false;
         }
     ;
 
@@ -1496,7 +1525,6 @@ cntl-options-ex
             $$.Text = NULL;
             $$.ExtendedStyle = 0;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style
         {
@@ -1506,7 +1534,6 @@ cntl-options-ex
             $$.Text = NULL;
             $$.ExtendedStyle = 0;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
         {
@@ -1516,7 +1543,6 @@ cntl-options-ex
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
            exstyle comma-opt helpId
@@ -1527,7 +1553,6 @@ cntl-options-ex
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = $10;
-            $$.HelpIdDefined = true;
         }
     ;
 
@@ -1540,7 +1565,6 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = 0;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style
         {
@@ -1550,7 +1574,6 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = 0;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
         {
@@ -1560,7 +1583,6 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = 0;
-            $$.HelpIdDefined = false;
         }
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
            exstyle comma-opt helpId
@@ -1571,7 +1593,6 @@ cntl-options
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
             $$.HelpId = $10;
-            $$.HelpIdDefined = true;
         }
     ;
 
@@ -1856,21 +1877,21 @@ scrollbar-stmt
 control-stmt-ex
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, NULL ); }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, 0 ); }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info comma-opt exstyle helpId-opt
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) ); }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, $13 ); }
     ;
 
 control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, NULL ); }
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, 0 ); }
 
     | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
-                    style comma-opt size-info comma-opt exstyle helpId-opt
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, &($13) ); }
+                    style comma-opt size-info comma-opt exstyle
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, 0 ); }
     ;
 
 cntl-text

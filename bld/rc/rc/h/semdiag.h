@@ -33,6 +33,8 @@
 #ifndef SEMDIAG_INCLUDED
 #define SEMDIAG_INCLUDED
 
+typedef unsigned long       help_id;
+
 typedef struct DlgHeader32 {
     DialogBoxHeader32           Head;
     DialogBoxExHeader32short    ExHead;
@@ -55,8 +57,7 @@ typedef struct DlgControl32 {
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
     uint_16             ExtraBytes;         /* should be 0 */
-    uint_32             HelpId;             /* only used for Dialogex */
-    bool                HelpIdDefined;      /* only used for Dialogex */
+    help_id             HelpId;             /* only used for Dialogex */
 } DlgControl32;
 
 typedef struct FullDialogBoxControlWIN {
@@ -81,14 +82,8 @@ typedef struct FullDialogCtrlOptionsWIN {
     uint_16                 ID;
     ResNameOrOrdinal        *Text;
     uint_32                 ExtendedStyle;
-    uint_32                 HelpId;
-    bool                    HelpIdDefined;
+    help_id                 HelpId;
 } FullDialogCtrlOptionsWIN;
-
-typedef struct DlgHelpId {
-    uint_32     HelpId;
-    bool        HelpIdDefined;
-} DlgHelpId;
 
 typedef struct PresParamsOS2 {
     LL_ITEM( struct PresParamsOS2 );

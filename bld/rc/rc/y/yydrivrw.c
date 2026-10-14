@@ -99,7 +99,6 @@ typedef union {
     VerFixedInfo                *verinforoot;
     YYTOKENTYPE                 token;
     WResLangType                langinfo;
-    DlgHelpId                   dlghelpid;
     DataElemList                *dataelem;
     ToolBar                     *toolbar;
     uint_16                     residnum;

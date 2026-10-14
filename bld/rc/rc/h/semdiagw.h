@@ -57,8 +57,8 @@ typedef struct FullDialogOptions {
 extern FullDialogBoxHeader      *SemWINDialogOptions( FullDialogBoxHeader *head, FullDialogOptions *opt );
 extern FullDialogCtrlListWIN    *SemWINAddDialogCtrlList( FullDialogCtrlListWIN *list, FullDialogBoxControlWIN *ctrl, DataElemList * );
 extern FullDialogBoxControlWIN  *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOptionsWIN opts );
-extern void                     SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags, DialogSizeInfo, FullDialogBoxHeader *, FullDialogCtrlListWIN *, DlgHelpId, bool is_dialogex );
+extern void                     SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags, DialogSizeInfo, FullDialogBoxHeader *, FullDialogCtrlListWIN *, help_id, bool is_dialogex );
 extern FullDialogCtrlListWIN    *SemWINEmptyDialogCtrlList( void );
-extern FullDialogBoxControlWIN  *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *res_id, ResNameOrOrdinal *, uint_32, DlgHelpId * );
+extern FullDialogBoxControlWIN  *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *res_id, ResNameOrOrdinal *, uint_32, help_id );
 
 #endif
