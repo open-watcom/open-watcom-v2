@@ -709,7 +709,7 @@ toolbar-items
 
 toolbar-item
     : Y_BUTTON constant-expression
-        { $$ = (uint_16)$2.Value; }
+        { $$ = $2.Value; }
     | Y_SEPARATOR
         { $$ = 0; }
     ;
@@ -752,7 +752,7 @@ string-item
 
 string-id
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 accelerators-resource
@@ -880,7 +880,7 @@ menu-items
 
 menuId
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 menuType
@@ -1076,7 +1076,7 @@ menu-text
 
 menu-result
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 /*
@@ -1142,7 +1142,7 @@ resource-info-stmt
 
 language-stmt
     : Y_LANGUAGE constant-expression Y_COMMA constant-expression
-        { $$.lang = (uint_16)$2.Value; $$.sublang = $4.Value; }
+        { $$.lang = $2.Value; $$.sublang = $4.Value; }
     ;
 
 characteristics-stmt
@@ -1189,22 +1189,22 @@ size-info
 
 size-x
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 size-y
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 size-w
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 size-h
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 dialog-options-section
@@ -1287,7 +1287,7 @@ class-name
     : string-constant
         { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( $1.Value ); }
     ;
 
 ctl-class-name
@@ -1306,7 +1306,7 @@ ctl-class-name
     | Y_STATIC
         { $$ = ResStrToNameOrOrdinal( "STATIC" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value ); }
+        { $$ = ResNumToNameOrOrdinal( $1.Value ); }
     ;
 
 font-stmt
@@ -1354,7 +1354,7 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontCharset = (uint_8)$10;
+            $$.Opt.Font.FontCharset = $10;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = true;
             $$.Opt.Font.FontCharsetDefined = true;
@@ -1368,17 +1368,17 @@ fontcharset
 
 fontweight
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 fontitalic
     : constant-expression
-        { $$ = (uint_8)( $1.Value != 0 ); }
+        { $$ = ( $1.Value != 0 ); }
     ;
 
 point-size
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 typeface
@@ -1577,7 +1577,7 @@ cntl-options
 
 cntl-id
     : constant-expression
-        { $$ = (uint_16)$1.Value; }
+        { $$ = $1.Value; }
     ;
 
 ltext-stmt-ex
@@ -1946,14 +1946,14 @@ version
     | version-pair comma-opt constant-expression
         {
             $$.u.Version.High = $1;
-            $$.u.Version.Low.HighWord = (uint_16)$3.Value;
+            $$.u.Version.Low.HighWord = $3.Value;
             $$.u.Version.Low.LowWord = 0;
         }
     ;
 
 version-pair
     : constant-expression comma-opt constant-expression
-        { $$.HighWord = (uint_16)$1.Value; $$.LowWord = (uint_16)$3.Value; }
+        { $$.HighWord = $1.Value; $$.LowWord = $3.Value; }
     ;
 
 variable-ver-section
@@ -2019,7 +2019,7 @@ value-list
 
 value-item
     : constant-expression
-        { $$.IsNum = true; $$.Value.Num = (uint_16)$1.Value; }
+        { $$.IsNum = true; $$.Value.Num = $1.Value; }
     | value-string-list
     ;
 
@@ -2151,7 +2151,7 @@ multiplicative-exp
 unary-exp
     : primary-exp
     | Y_MINUS unary-exp
-        { $$.Value = (uint_32)( -(int_32)$2.Value ); $$.Mask = $2.Mask; }
+        { $$.Value = - $2.Value ); $$.Mask = $2.Mask; }
     | Y_BITNOT unary-exp
         { $$.Value = ~ $2.Value; $$.Mask = $2.Mask; }
     | Y_NOT unary-exp
