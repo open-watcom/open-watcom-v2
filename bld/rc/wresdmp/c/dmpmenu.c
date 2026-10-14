@@ -81,19 +81,15 @@ static char * MenuOffFlags[16] = {
     NULL
 };
 
-static void PrintPopupItem( MenuItemPopup * item )
-/************************************************/
+static void PrintMenuItem( MenuItem *item )
+/*****************************************/
 {
-    printf( "\tPopup item.   Flags: " );
-    PrintUint16Flags( item->ItemFlags, MenuOnFlags, MenuOffFlags, 43 );
-    printf( "\t    Text: %s\n", item->ItemText );
-}
-
-static void PrintNormalItem( MenuItemNormal * item )
-/**************************************************/
-{
-    printf( "\tNormal item.   Id: %5d  Flags: ", item->ItemId );
-    PrintUint16Flags( item->ItemFlags, MenuOnFlags, MenuOffFlags, 43 );
+    if( item->IsPopup ) {
+        printf( "\tPopup item.   Flags: " );
+    } else {
+        printf( "\tNormal item.   Id: %5d  Flags: ", item->ItemId );
+    }
+    PrintUint16Flags( item->u.ItemFlags, MenuOnFlags, MenuOffFlags, 43 );
     printf( "\t    Text: %s\n", item->ItemText );
 }
 
@@ -127,17 +123,11 @@ bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
         item = ResNewMenuItem();
         error = ResReadMenuItem( item, fp );
         if( !error ) {
-            if( item->IsPopup ) {
+            if( item->IsPopup )
                 depth++;
-                PrintPopupItem( &(item->Item.Popup) );
-                if (item->Item.Popup.ItemFlags & MENU_LAST_ITEM) {
-                    depth--;
-                }
-            } else {
-                PrintNormalItem( &(item->Item.Normal) );
-                if (item->Item.Normal.ItemFlags & MENU_LAST_ITEM) {
-                    depth--;
-                }
+            PrintMenuItem( item );
+            if (item->u.ItemFlags & MENU_LAST_ITEM) {
+                depth--;
             }
         }
         ResFreeMenuItem( item );
