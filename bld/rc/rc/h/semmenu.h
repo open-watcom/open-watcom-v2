@@ -47,7 +47,6 @@ typedef struct FullMenuWIN {
 typedef struct FullMenuItemWIN {
     LL_ITEM( struct FullMenuItemWIN );
     bool                    iswin32;
-    bool                    IsPopup;
     MenuItem                item;
     FullMenuWIN             *submenu;
 } FullMenuItemWIN;

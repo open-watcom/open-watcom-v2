@@ -101,8 +101,6 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, FILE *fp )
     return( error );
 }
 
-static void SemOS2FreeSubMenu( FullMenuOS2 *submenu );
-
 MenuFlags SemOS2AddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
 /********************************************************************/
 {
@@ -216,31 +214,18 @@ static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code, uint_32 cod
     return( error );
 }
 
-static void SemOS2FreeMenuItem( FullMenuItemOS2 *curritem )
-/*********************************************************/
-{
-    if( curritem->submenu != NULL ) {
-        SemOS2FreeSubMenu( curritem->submenu );
-        if( curritem->item.ItemText != NULL ) {
-            MemFree( curritem->item.ItemText );
-        }
-    } else {
-        if( curritem->item.ItemText != NULL ) {
-            MemFree( curritem->item.ItemText );
-        }
-    }
-}
-
 static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
 /***************************************************/
 {
     FullMenuItemOS2   *curritem;
-    FullMenuItemOS2   *nextitem;
 
     if( submenu != NULL ) {
-        for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
-            nextitem = curritem->next;
-            SemOS2FreeMenuItem( curritem );
+        while( (curritem = submenu->head) != NULL ) {
+            submenu->head = curritem->next;
+            if( curritem->submenu != NULL )
+                SemOS2FreeSubMenu( curritem->submenu );
+            if( curritem->item.ItemText != NULL )
+                MemFree( curritem->item.ItemText );
             MemFree( curritem );
         }
         MemFree( submenu );

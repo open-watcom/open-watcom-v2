@@ -71,8 +71,6 @@ struct PopupMenuExItem {
 #include "rccore.h"
 
 
-static void SemFreeSubMenu( FullMenuWIN *submenu );
-
 MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
 /********************************************************************/
 {
@@ -88,9 +86,6 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
         break;
     case Y_CHECKED:
         oldflags |= MENU_CHECKED;
-        break;
-    case Y_POPUP:
-        oldflags |= MENU_POPUP;
         break;
     case Y_MENUBARBREAK:
         oldflags |= MENU_MENUBARBREAK;
@@ -139,24 +134,15 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
 
     error = false;
     if( islastitem ) {
-        if( item->IsPopup ) {
-            if( is_menuex ) {
-                item->item.u.ExFlags |= MENU_LAST_ITEM;
-            } else {
-                item->item.u.ItemFlags |= MENU_LAST_ITEM;
-            }
+        if( is_menuex ) {
+            item->item.u.ExFlags |= MENU_LAST_ITEM;
         } else {
-            if( is_menuex ) {
-                item->item.u.ExFlags |= MENU_LAST_ITEM;
-            } else {
-                item->item.u.ItemFlags |= MENU_LAST_ITEM;
-            }
+            item->item.u.ItemFlags |= MENU_LAST_ITEM;
         }
     }
     if( is_menuex ) {
         error = ResWriteMenuItemEx( &(item->item), CurrResFile.fp );
     } else {
-        item->item.IsOldWin = ( CmdLineParms.winver < 30 );
         error = ResWriteMenuItem( &(item->item), item->iswin32, CurrResFile.fp );
     }
     *err_code = LastWresErr();
@@ -179,7 +165,7 @@ static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex
         if( !ErrorHasOccured ) {
             error = SemWriteMenuItem( curritem, ( curritem == submenu->tail ), err_code, is_menuex );
             if( !error
-              && curritem->IsPopup ) {
+              && curritem->submenu != NULL ) {
                 error = SemWriteSubMenu( curritem->submenu, err_code, is_menuex );
             }
         }
@@ -201,27 +187,12 @@ static void SemWarnIfSubmenus( FullMenuWIN *submenu )
     FullMenuItemWIN *curritem,*currsubitem;
 
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
-        if( curritem->IsPopup ) {
+        if( curritem->submenu != NULL ) {
             for( currsubitem = curritem->submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
-                if( currsubitem->IsPopup ) {
+                if( curritem->submenu != NULL ) {
                     RcWarning( WARN_SUBMEN_WIN2X );
                 }
             }
-        }
-    }
-}
-
-static void SemFreeMenuItem( FullMenuItemWIN *curritem )
-/******************************************************/
-{
-    if( curritem->IsPopup ) {
-        SemFreeSubMenu( curritem->submenu );
-        if( curritem->item.ItemText != NULL ) {
-            MemFree( curritem->item.ItemText );
-        }
-    } else {
-        if( curritem->item.ItemText != NULL ) {
-            MemFree( curritem->item.ItemText );
         }
     }
 }
@@ -230,11 +201,13 @@ static void SemFreeSubMenu( FullMenuWIN *submenu )
 /************************************************/
 {
     FullMenuItemWIN *curritem;
-    FullMenuItemWIN *nextitem;
 
-    for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
-        nextitem = curritem->next;
-        SemFreeMenuItem( curritem );
+    while( (curritem = submenu->head) != NULL ) {
+        submenu->head = curritem->next;
+        if( curritem->submenu != NULL )
+            SemFreeSubMenu( curritem->submenu );
+        if( curritem->item.ItemText != NULL )
+            MemFree( curritem->item.ItemText );
         MemFree( curritem );
     }
     MemFree( submenu );

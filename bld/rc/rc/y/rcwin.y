@@ -914,9 +914,9 @@ menuex-item
             $$.next = NULL;
             $$.prev = NULL;
             $$.iswin32 = CmdLineParms.iswin32;
-            $$.IsPopup = false;
             $$.item = $1;
             $$.item.u.ExFlags = 0;
+            $$.item.IsOldWin = false;
             $$.submenu = NULL;
         }
     | menuex-popup-stmt
@@ -929,10 +929,10 @@ menu-item
             $$.next = NULL;
             $$.prev = NULL;
             $$.iswin32 = CmdLineParms.iswin32;
-            $$.IsPopup = false;
             $$.item = $1;
             $$.item.ExType = 0;
             $$.item.ExState = 0;
+            $$.item.IsOldWin = ( CmdLineParms.winver < 30 );
             $$.submenu = NULL;
         }
     | menu-popup-stmt
@@ -945,10 +945,10 @@ menuex-popup-stmt
             $$.next = NULL;
             $$.prev = NULL;
             $$.iswin32 = CmdLineParms.iswin32;
-            $$.IsPopup = true;
             $$.item = $3;
             $$.item.ItemText = $2.string;
             $$.item.u.ExFlags = MENUEX_POPUP;
+            $$.item.IsOldWin = false;
             $$.submenu = $4;
         }
     ;
@@ -959,7 +959,6 @@ menu-popup-stmt
             $$.next = NULL;
             $$.prev = NULL;
             $$.iswin32 = CmdLineParms.iswin32;
-            $$.IsPopup = true;
             $$.item = $3;
             $$.item.ItemText = $2.string;
             $$.item.u.ItemFlags |= MENU_POPUP;
@@ -967,6 +966,7 @@ menu-popup-stmt
             $$.item.ExType = 0;
             $$.item.ExState = 0;
             $$.item.ExHelpId = 0;
+            $$.item.IsOldWin = ( CmdLineParms.winver < 30 );
             $$.submenu = $4;
         }
     ;
