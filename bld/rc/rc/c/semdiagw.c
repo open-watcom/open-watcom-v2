@@ -511,7 +511,6 @@ static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
 /**************************************************************/
 {
     FullDialogBoxControlWIN     *ctrl;
-    FullDialogBoxControlWIN     *next;
 
     while( (ctrl = list->head) != NULL ) {
         list->head = ctrl->next;
