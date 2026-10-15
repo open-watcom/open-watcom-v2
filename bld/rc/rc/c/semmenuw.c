@@ -106,54 +106,53 @@ MenuFlags SemWINAddMenuOption( MenuFlags oldflags, YYTOKENTYPE token )
     return( oldflags );
 }
 
-FullMenuWIN *SemWINAddMenuItem( FullMenuWIN *currmenu, FullMenuItemWIN curritem )
-/*******************************************************************************/
+FullMenuWIN *SemWINAddMenuItem( FullMenuWIN *menu, FullMenuItemWIN menuitem )
+/***************************************************************************/
 {
-    FullMenuItemWIN *newitem;
+    FullMenuItemWIN *new_menuitem;
 
-    if( currmenu == NULL ) {
-        currmenu = MemAllocSafe( sizeof( FullMenuWIN ) );
-        currmenu->head = NULL;
-        currmenu->tail = NULL;
+    if( menu == NULL ) {
+        menu = MemAllocSafe( sizeof( FullMenuWIN ) );
+        menu->head = NULL;
+        menu->tail = NULL;
     }
 
-    newitem = MemAllocSafe( sizeof( FullMenuItemWIN ) );
+    new_menuitem = MemAllocSafe( sizeof( FullMenuItemWIN ) );
 
-    *newitem = curritem;
+    *new_menuitem = menuitem;
 
-    ResAddLLItemAtEnd( (void **)&(currmenu->head), (void **)&(currmenu->tail), newitem );
+    ResAddLLItemAtEnd( (void **)&(menu->head), (void **)&(menu->tail), new_menuitem );
 
-    return( currmenu );
+    return( menu );
 }
 
-static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
-                          int *err_code, bool is_menuex )
-/******************************************************************/
+static bool SemWINWriteMenuItem( FullMenuItemWIN *menuitem, int islastitem, int *err_code, bool is_menuex )
+/*********************************************************************************************************/
 {
     bool    error;
 
     error = false;
     if( islastitem ) {
         if( is_menuex ) {
-            item->item.u.ExFlags |= MENU_LAST_ITEM;
+            menuitem->item.u.ExFlags |= MENU_LAST_ITEM;
         } else {
-            item->item.u.ItemFlags |= MENU_LAST_ITEM;
+            menuitem->item.u.ItemFlags |= MENU_LAST_ITEM;
         }
     }
     if( is_menuex ) {
-        error = ResWriteMenuItemEx( &(item->item), CurrResFile.fp );
+        error = ResWriteMenuItemEx( &(menuitem->item), CurrResFile.fp );
     } else {
-        error = ResWriteMenuItem( &(item->item), item->iswin32, CurrResFile.fp );
+        error = ResWriteMenuItem( &(menuitem->item), menuitem->iswin32, CurrResFile.fp );
     }
     *err_code = LastWresErr();
     return( error );
 }
 
-static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex )
+static bool SemWINWriteSubMenu( FullMenuWIN *menu, int *err_code, bool is_menuex )
 /********************************************************************************/
 {
     bool            error;
-    FullMenuItemWIN *curritem;
+    FullMenuItemWIN *menuitem;
 
     error = false;
 
@@ -161,12 +160,12 @@ static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex
         return( false );
     }
 
-    for( curritem = submenu->head; curritem != NULL && !error; curritem = curritem->next ) {
+    for( menuitem = menu->head; menuitem != NULL && !error; menuitem = menuitem->next ) {
         if( !ErrorHasOccured ) {
-            error = SemWriteMenuItem( curritem, ( curritem == submenu->tail ), err_code, is_menuex );
+            error = SemWINWriteMenuItem( menuitem, ( menuitem == menu->tail ), err_code, is_menuex );
             if( !error
-              && curritem->submenu != NULL ) {
-                error = SemWriteSubMenu( curritem->submenu, err_code, is_menuex );
+              && menuitem->submenu != NULL ) {
+                error = SemWINWriteSubMenu( menuitem->submenu, err_code, is_menuex );
             }
         }
     }
@@ -177,19 +176,20 @@ static bool SemWriteSubMenu( FullMenuWIN *submenu, int *err_code, bool is_menuex
     return( error );
 }
 
-static void SemWarnIfSubmenus( FullMenuWIN *submenu )
-/****************************************************
+static void SemWarnIfSubmenus( FullMenuWIN *menu )
+/*************************************************
  * Windows 2.x does not support submenus, though submenus are parsed
  * correctly.  So it is valid to have top level MF_POPUP, but MF_POPUP
  * within the menus is ignored.
  */
 {
-    FullMenuItemWIN *curritem,*currsubitem;
+    FullMenuItemWIN *menuitem;
+    FullMenuItemWIN *submenuitem;
 
-    for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) { // top level menu bar
-        if( curritem->submenu != NULL ) {
-            for( currsubitem = curritem->submenu->head; currsubitem != NULL; currsubitem = currsubitem->next ) { // menu appearing below menu bar
-                if( curritem->submenu != NULL ) {
+    for( menuitem = menu->head; menuitem != NULL; menuitem = menuitem->next ) { // top level menu bar
+        if( menuitem->submenu != NULL ) {
+            for( submenuitem = menuitem->submenu->head; submenuitem != NULL; submenuitem = submenuitem->next ) { // menu appearing below menu bar
+                if( submenuitem->submenu != NULL ) {
                     RcWarning( WARN_SUBMEN_WIN2X );
                 }
             }
@@ -197,20 +197,20 @@ static void SemWarnIfSubmenus( FullMenuWIN *submenu )
     }
 }
 
-static void SemFreeSubMenu( FullMenuWIN *submenu )
+static void SemWINFreeSubMenu( FullMenuWIN *menu )
 /************************************************/
 {
-    FullMenuItemWIN *curritem;
+    FullMenuItemWIN *menuitem;
 
-    while( (curritem = submenu->head) != NULL ) {
-        submenu->head = curritem->next;
-        if( curritem->submenu != NULL )
-            SemFreeSubMenu( curritem->submenu );
-        if( curritem->item.ItemText != NULL )
-            MemFree( curritem->item.ItemText );
-        MemFree( curritem );
+    while( (menuitem = menu->head) != NULL ) {
+        menu->head = menuitem->next;
+        if( menuitem->submenu != NULL )
+            SemWINFreeSubMenu( menuitem->submenu );
+        if( menuitem->item.ItemText != NULL )
+            MemFree( menuitem->item.ItemText );
+        MemFree( menuitem );
     }
-    MemFree( submenu );
+    MemFree( menu );
 }
 
 void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, bool is_menuex )
@@ -240,7 +240,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, 
             if( CmdLineParms.winver < 30 ) {
                 SemWarnIfSubmenus( menu );
             }
-            error = SemWriteSubMenu( menu, &err_code, is_menuex );
+            error = SemWINWriteSubMenu( menu, &err_code, is_menuex );
         }
         if( !error
           && CmdLineParms.MSResFormat
@@ -257,6 +257,6 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, 
     } else {
         MemFree( res_id );
     }
-    SemFreeSubMenu( menu );
+    SemWINFreeSubMenu( menu );
 }
 
