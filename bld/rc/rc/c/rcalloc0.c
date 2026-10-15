@@ -220,10 +220,9 @@ void RCMemLayer0ShutDown( HeapHandle *heap )
 /******************************************/
 {
     HeapList         *curnode;
-    HeapList         *nextnode;
 
-    for( curnode = heap->list; curnode != NULL; curnode = nextnode ) {
-        nextnode = curnode->next;
+    while( (curnode = heap->list) != NULL ) {
+        heap->list = curnode->next;
 #ifdef RCMEM_DEBUG
         RCMemLayer0CheckUnfreed( heap, (char *)curnode + sizeof( HeapList ) );
 #endif

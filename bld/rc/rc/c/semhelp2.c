@@ -97,11 +97,10 @@ static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
 /************************************************************/
 {
     FullHelpEntryOS2   *currentry;
-    FullHelpEntryOS2   *nextentry;
 
     if( helptable != NULL ) {
-        for( currentry = helptable->head; currentry != NULL; currentry = nextentry ) {
-            nextentry = currentry->next;
+        while( (currentry = helptable->head) != NULL ) {
+            helptable->head = currentry->next;
             MemFree( currentry );
         }
         MemFree( helptable );
@@ -177,11 +176,10 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
 /******************************************************************/
 {
     FullHelpSubEntryOS2   *currentry;
-    FullHelpSubEntryOS2   *nextentry;
 
     if( helptable != NULL ) {
-        for( currentry = helptable->head; currentry != NULL; currentry = nextentry ) {
-            nextentry = currentry->next;
+        while( (currentry = helptable->head) != NULL ) {
+            helptable->head = currentry->next;
             SemFreeDataElemList( currentry->dataListHead );
             MemFree( currentry );
         }

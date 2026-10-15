@@ -72,10 +72,9 @@ ToolBar *SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
 static void semFreeToolBar( ToolBar *toolbar )
 {
     ToolBarItems        *cur;
-    ToolBarItems        *next;
 
-    for( cur = toolbar->first.next; cur != NULL; cur = next ) {
-        next = cur->next;
+    while( (cur = toolbar->first.next) != NULL ) {
+        toolbar->first.next = cur->next;
         MemFree( cur );
     }
     MemFree( toolbar );

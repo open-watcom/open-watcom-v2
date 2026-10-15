@@ -83,10 +83,9 @@ static void QueueEmpty( DirEntryQueue *queue )
 /********************************************/
 {
     QueueNode   *curr;
-    QueueNode   *next;
 
-    for( curr = queue->front; curr != NULL; curr = next ) {
-        next = curr->next;
+    while( (curr = queue->front) != NULL ) {
+        queue->front = curr->next;
         MemFree( curr );
     }
 

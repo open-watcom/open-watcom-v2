@@ -132,10 +132,9 @@ static void writeDepListEOF( void )
 static void freeDepList( void )
 {
     DepNode     *cur;
-    DepNode     *next;
 
-    for( cur = depList; cur != NULL; cur = next ) {
-        next = cur->next;
+    while( (cur = depList) != NULL ) {
+        depList = cur->next;
         MemFree( cur );
     }
 }

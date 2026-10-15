@@ -159,10 +159,9 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 *acctable )
 /*************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    FullAccelEntryOS2   *nextentry;
 
-    for( currentry = acctable->head; currentry != NULL; currentry = nextentry ) {
-        nextentry = currentry->next;
+    while( (currentry = acctable->head) != NULL ) {
+        acctable->head = currentry->next;
         MemFree( currentry );
     }
     MemFree( acctable );

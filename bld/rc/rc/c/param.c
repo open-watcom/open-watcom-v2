@@ -514,7 +514,7 @@ void ScanParamFini( void )
     FreeCharTable();
 
     while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
-        CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
+        CmdLineParms.ExtraResFiles = tmpres->next;
         MemFree( tmpres );
     }
     MemFree( CmdLineParms.InFileName );
@@ -531,7 +531,7 @@ void ScanParamFini( void )
     }
 #ifndef NO_REPLACE
     while( (strings = CmdLineParms.FindReplaceStrings) != NULL ) {
-        CmdLineParms.FindReplaceStrings = CmdLineParms.FindReplaceStrings->next;
+        CmdLineParms.FindReplaceStrings = strings->next;
         MemFree( strings );
     }
     if( CmdLineParms.PrependString != NULL ) {

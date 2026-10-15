@@ -342,20 +342,16 @@ static void freeResTable( ResTable *restab )
 /******************************************/
 {
     FullTypeRecord              *exe_type;
-    FullTypeRecord              *next_type;
     FullResourceRecord          *exe_res;
-    FullResourceRecord          *next_res;
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = next_type ) {
-        next_type = exe_type->next;
-        for( exe_res = exe_type->Head; exe_res != NULL; exe_res = next_res ) {
-            next_res = exe_res->next;
+    while( (exe_type = restab->Dir.Head) != NULL ) {
+        restab->Dir.Head = exe_type->next;
+        while( (exe_res = exe_type->Head) != NULL ) {
+            exe_type->Head = exe_res->next;
             MemFree( exe_res );
         }
         MemFree( exe_type );
     }
-
-    restab->Dir.Head = NULL;
     restab->Dir.Tail = NULL;
 } /* freeResTable */
 

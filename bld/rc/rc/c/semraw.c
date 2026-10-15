@@ -188,7 +188,6 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
 /************************************************************************/
 {
     DataElemList    *curnode;
-    DataElemList    *nextnode;
     ResLocation     resLoc;
     int             i;
 
@@ -198,8 +197,8 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     } else {
         resLoc.start = 0;
     }
-    for( curnode = head; curnode != NULL; curnode = nextnode ) {
-        nextnode = curnode->next;
+    while( (curnode = head) != NULL ) {
+        head = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
@@ -220,11 +219,10 @@ void SemFreeDataElemList( DataElemList *head )
 /********************************************/
 {
     DataElemList    *curnode;
-    DataElemList    *nextnode;
     int             i;
 
-    for( curnode = head; curnode != NULL; curnode = nextnode ) {
-        nextnode = curnode->next;
+    while( (curnode = head) != NULL ) {
+        head = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString ) {
                 MemFree( curnode->data[i].Item.String );

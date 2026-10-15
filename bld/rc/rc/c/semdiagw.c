@@ -513,8 +513,8 @@ static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
     FullDialogBoxControlWIN     *ctrl;
     FullDialogBoxControlWIN     *next;
 
-    for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
-        next = ctrl->next;
+    while( (ctrl = list->head) != NULL ) {
+        list->head = ctrl->next;
         /*
          * free the contents of pointers within the structure
          */
@@ -535,8 +535,8 @@ static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
         }
         MemFree( ctrl );
     }
-
     MemFree( list );
+
 } /* SemFreeDialogCtrlList */
 
 static void SemFreeDialogHeader( FullDialogBoxHeader *head )

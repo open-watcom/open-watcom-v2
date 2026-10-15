@@ -320,13 +320,12 @@ static void SemOS2FreePresParamList( PresParamListOS2 *list )
 /***********************************************************/
 {
     PresParamsOS2       *currparam;
-    PresParamsOS2       *nextparam;
 
     if( list == NULL )
         return;
 
-    for( currparam = list->head; currparam != NULL; currparam = nextparam ) {
-        nextparam = currparam->next;
+    while( (currparam = list->head) != NULL ) {
+        list->head = currparam->next;
         MemFree( currparam->Name );
         SemFreeDataElemList( currparam->dataList );
         MemFree( currparam );
@@ -338,10 +337,9 @@ static void SemOS2FreeDialogCtrlList( FullDialogCtrlListOS2 *list )
 /*****************************************************************/
 {
     FullDialogBoxControlOS2     *ctrl;
-    FullDialogBoxControlOS2     *next;
 
-    for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
-        next = ctrl->next;
+    while( (ctrl = list->head) != NULL ) {
+        list->head = ctrl->next;
         /*
          * free the contents of pointers within the structure
          */
@@ -358,8 +356,8 @@ static void SemOS2FreeDialogCtrlList( FullDialogCtrlListOS2 *list )
         SemOS2FreePresParamList( ctrl->presParams );
         MemFree( ctrl );
     }
-
     MemFree( list );
+
 } /* SemOS2FreeDialogCtrlList */
 
 static size_t SemOS2CountBytes( DataElemList *list )
