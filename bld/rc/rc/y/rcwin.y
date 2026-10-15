@@ -1888,6 +1888,9 @@ control-stmt
     : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
                     style comma-opt size-info
         { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, 0 ); }
+    | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
+                    style comma-opt size-info comma-opt exstyle
+        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, 0 ); }
     ;
 
 cntl-text
