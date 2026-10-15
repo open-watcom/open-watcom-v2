@@ -39,16 +39,6 @@
 
 /**** Semantic structures ****/
 
-typedef struct MenuItemNormalData {
-    MenuItemNormal          menuData;
-    MenuExItemNormal        menuExData;
-} MenuItemNormalData;
-
-typedef struct MenuItemPopupData {
-    MenuItemPopup           menuData;
-    MenuExItemPopup         menuExData;
-} MenuItemPopupData;
-
 typedef struct FullMenuWIN {
     struct FullMenuItemWIN  *head;
     struct FullMenuItemWIN  *tail;
@@ -58,10 +48,7 @@ typedef struct FullMenuItemWIN {
     LL_ITEM( struct FullMenuItemWIN );
     bool                    iswin32;
     bool                    IsPopup;
-    union {
-        MenuItemPopupData   popup;
-        MenuItemNormalData  normal;
-    } item;
+    MenuItem                item;
     FullMenuWIN             *submenu;
 } FullMenuItemWIN;
 

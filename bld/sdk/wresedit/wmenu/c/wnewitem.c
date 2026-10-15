@@ -236,7 +236,7 @@ bool WAddEditWinLBoxEntry( HWND lbox, WMenuEntry *entry, LRESULT pos )
             text = "SEPARATOR";
             tlen = 14;
         } else {
-            text = WGETMENUITEMTEXT( entry->item );
+            text = entry->item->ItemText;
             if( text == NULL ) {
                 text = NULL_STRING;
             }

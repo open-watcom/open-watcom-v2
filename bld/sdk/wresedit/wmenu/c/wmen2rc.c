@@ -115,7 +115,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
     if( ok ) {
         if( (entry->item->u.ItemFlags & MENU_SEPARATOR) == 0 ) {
             ok = false;
-            itemname = WGETMENUITEMTEXT( entry->item );
+            itemname = entry->item->ItemText;
             if( itemname != NULL ) {
                 text = WConvertStringFrom( itemname, "\t\x8\"\\", "ta\"\\" );
                 ok = (text != NULL);

@@ -143,7 +143,7 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
             }
             VALU16( data ) = item_flags;
             INCU16( data );
-            item_text = entry->item->Item.Popup.ItemText;
+            item_text = entry->item->ItemText;
         } else {
             /* menu item flags */
             if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
@@ -196,7 +196,7 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
     for( ; entry != NULL; entry = entry->next ) {
         if( entry->item->IsPopup ) {
             dsize += SIZEU16 + 1;
-            text = entry->item->Item.Popup.ItemText;
+            text = entry->item->ItemText;
             if( entry->child != NULL ) {
                 dsize += WCalcMenuSize( entry->child );
             } else {
@@ -480,7 +480,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
             }
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT)(pointer_uint)entry->preview_popup,
-                             entry->item->Item.Popup.ItemText ) != 0;
+                             entry->item->ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             ok = InsertMenu( hparent, pos, MF_BYPOSITION | flags,
                              entry->preview_id, NULL ) != 0;
@@ -659,7 +659,7 @@ static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
         if( flags & MENU_POPUP ) {
             ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT_PTR)entry->preview_popup,
-                             entry->item->Item.Popup.ItemText ) != 0;
+                             entry->item->ItemText ) != 0;
         } else if( flags & MENU_SEPARATOR ) {
             // do nothing
         } else {

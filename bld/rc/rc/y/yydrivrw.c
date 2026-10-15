@@ -78,8 +78,7 @@ typedef union {
     MenuFlags                   menuflags;
     FullMenuWIN                 *menuptr;
     FullMenuItemWIN             menufull;
-    MenuItemPopupData           popupmenuitem;
-    MenuItemNormalData          normalmenuitem;
+    MenuItem                    menuitem;
     DialogSizeInfo              sizeinfo;
     FullDialogOptions           diagopts;
     ResNameOrOrdinal            *nameorord;

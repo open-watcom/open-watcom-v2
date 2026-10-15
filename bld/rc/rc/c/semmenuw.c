@@ -141,46 +141,23 @@ static bool SemWriteMenuItem( FullMenuItemWIN *item, int islastitem,
     if( islastitem ) {
         if( item->IsPopup ) {
             if( is_menuex ) {
-                item->item.popup.menuData.u.ExFlags |= MENU_LAST_ITEM;
+                item->item.u.ExFlags |= MENU_LAST_ITEM;
             } else {
-                item->item.popup.menuData.u.ItemFlags |= MENU_LAST_ITEM;
+                item->item.u.ItemFlags |= MENU_LAST_ITEM;
             }
         } else {
             if( is_menuex ) {
-                item->item.normal.menuData.u.ExFlags |= MENU_LAST_ITEM;
+                item->item.u.ExFlags |= MENU_LAST_ITEM;
             } else {
-                item->item.normal.menuData.u.ItemFlags |= MENU_LAST_ITEM;
+                item->item.u.ItemFlags |= MENU_LAST_ITEM;
             }
         }
     }
-    if( item->IsPopup ) {
-        if( is_menuex ) {
-            error = ResWriteMenuExItemPopup( &(item->item.popup.menuData),
-                      &(item->item.popup.menuExData), item->iswin32,
-                      CurrResFile.fp );
-        } else {
-            if( CmdLineParms.winver < 30 ) {
-                error = ResWriteMenuItemPopupOldWin( &(item->item.popup.menuData),
-                            item->iswin32, CurrResFile.fp );
-            } else {
-                error = ResWriteMenuItemPopup( &(item->item.popup.menuData),
-                            item->iswin32, CurrResFile.fp );
-            }
-        }
+    if( is_menuex ) {
+        error = ResWriteMenuItemEx( &(item->item), CurrResFile.fp );
     } else {
-        if( is_menuex ) {
-            error = ResWriteMenuExItemNormal( &(item->item.normal.menuData),
-                         &(item->item.normal.menuExData), item->iswin32,
-                         CurrResFile.fp );
-        } else {
-            if( CmdLineParms.winver < 30 ) {
-                error = ResWriteMenuItemNormalOldWin( &(item->item.normal.menuData),
-                            item->iswin32, CurrResFile.fp );
-            } else {
-                error = ResWriteMenuItemNormal( &(item->item.normal.menuData),
-                            item->iswin32, CurrResFile.fp );
-            }
-        }
+        item->item.IsOldWin = ( CmdLineParms.winver < 30 );
+        error = ResWriteMenuItem( &(item->item), item->iswin32, CurrResFile.fp );
     }
     *err_code = LastWresErr();
     return( error );
@@ -239,12 +216,12 @@ static void SemFreeMenuItem( FullMenuItemWIN *curritem )
 {
     if( curritem->IsPopup ) {
         SemFreeSubMenu( curritem->submenu );
-        if( curritem->item.popup.menuData.ItemText != NULL ) {
-            MemFree( curritem->item.popup.menuData.ItemText );
+        if( curritem->item.ItemText != NULL ) {
+            MemFree( curritem->item.ItemText );
         }
     } else {
-        if( curritem->item.normal.menuData.ItemText != NULL ) {
-            MemFree( curritem->item.normal.menuData.ItemText );
+        if( curritem->item.ItemText != NULL ) {
+            MemFree( curritem->item.ItemText );
         }
     }
 }
@@ -276,7 +253,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, 
         memset( &head, 0, sizeof( head ) );
         if( is_menuex ) {
             head.Version = MENUEX_VERSION_SIG;
-            head.Size = sizeof( head.ExHelpID );
+            head.Size = sizeof( head.ExHelpId );
             ResWritePadDWord( CurrResFile.fp );
         }
         loc.start = SemStartResource();

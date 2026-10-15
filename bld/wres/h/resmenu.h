@@ -89,78 +89,33 @@ typedef union MenuFlagsU {
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */
     uint_16         Size;           /* currently 0 */
-    unsigned        ExHelpID;
+    unsigned        ExHelpId;
 } MenuHeader;
 
-typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */
-    MenuFlagsU      u;
-    char            *ItemText;
-} MenuItemPopup;
-
-typedef struct MenuExItemPopup {
-    unsigned        ItemId;
-    unsigned        ItemType;
-    unsigned        ItemState;
-    unsigned        HelpId;
-} MenuExItemPopup;
-
-typedef struct MenuItemNormal {     /* if !(ItemFlags & MENU_POPUP) */
-    MenuFlagsU      u;
-    unsigned        ItemId;         /* Note! This was changed from uint_16!! */
-    char            *ItemText;
-} MenuItemNormal;
-
-typedef struct MenuExItemNormal {
-    unsigned        ItemType;
-    unsigned        ItemState;
-} MenuExItemNormal;
-
-typedef struct MenuExItemNormalData {
-    MenuItemNormal      Normal;
-    MenuExItemNormal    ExData;
-} MenuExItemNormalData;
-
-typedef struct MenuExItemPopupData {
-    MenuItemPopup       Popup;
-    MenuExItemPopup     ExData;
-} MenuExItemPopupData;
 
 typedef struct MenuItem {
     char                *ItemText;
     unsigned            ItemId;
     unsigned            ExHelpId;
-    MenuFlagsU          u;
     MenuExTypeFlags     ExType;
     MenuExStateFlags    ExState;
+    MenuFlagsU          u;
     unsigned            IsEx     :1;
     unsigned            IsPopup  :1;
     unsigned            IsOldWin :1;
-    union {
-        MenuItemNormal          Normal;
-        MenuItemPopup           Popup;
-        MenuExItemNormalData    ExNormal;
-        MenuExItemPopupData     ExPopup;
-    } Item;
 } MenuItem;
 
 /* reswmenu.c */
 
 extern bool     ResWriteMenuHeader( MenuHeader *head, FILE *fp );
-extern bool     ResWriteMenuItemNormal( const MenuItemNormal *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemNormalOldWin( const MenuItemNormal *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemPopup( const MenuItemPopup *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemPopupOldWin( const MenuItemPopup *item, bool use_unicode, FILE *fp );
 extern bool     ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuItemOldWin( const MenuItem *item, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *item, const MenuExItemPopup *exdata, bool use_unicode, FILE *fp );
-extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItemEx( const MenuItem *item, FILE *fp );
 
 /* resrmenu.c */
 
 extern bool     ResReadMenuHeader( MenuHeader *head, FILE *fp );
-extern bool     ResReadMenuItem( MenuItem *item, FILE *fp );
-extern bool     ResReadMenuItem32( MenuItem *item, FILE *fp );
-extern bool     ResReadMenuExItem( MenuItem *item, FILE *fp );
+extern bool     ResReadMenuItem( MenuItem *item, bool use_unicode, FILE *fp );
+extern bool     ResReadMenuItemEx( MenuItem *item, FILE *fp );
 extern MenuItem *ResNewMenuItem( void );
 extern void     ResFreeMenuItem( MenuItem *olditem );
 

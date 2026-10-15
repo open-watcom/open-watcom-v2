@@ -121,7 +121,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
     depth = 1;
     while( depth > 0 && !error ) {
         item = ResNewMenuItem();
-        error = ResReadMenuItem( item, fp );
+        error = ResReadMenuItem( item, false, fp );
         if( !error ) {
             if( item->IsPopup )
                 depth++;

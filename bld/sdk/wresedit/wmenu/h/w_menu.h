@@ -46,14 +46,6 @@
 /****************************************************************************/
 #define FIRST_PREVIEW_ID        0x0001
 #define LAST_PREVIEW_ID         0xffff
-#define WGETMENUITEMTEXT( item ) \
-    ((item)->IsPopup ? (item)->Item.Popup.ItemText : (item)->Item.Normal.ItemText)
-#define WGETMENUITEMFLAGS( item ) \
-    ((item)->Item.Normal.ItemFlags)
-#define WSETMENUITEMFLAGS( item, flags ) \
-    ((item)->Item.Normal.ItemFlags = (flags))
-#define WGETMENUITEMID( item ) \
-    ((item)->IsPopup ? -1 : (item)->Item.Normal.ItemId)
 
 /****************************************************************************/
 /* data types                                                               */
