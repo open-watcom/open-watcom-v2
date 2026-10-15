@@ -155,14 +155,14 @@ bool WInsertMenuEntry( WMenuEditInfo *einfo, WMenuEntry *new, bool reset_lbox )
     if( ok ) {
         if( entry != NULL ) {
             pos += 1;
-            if( entry->item->IsPopup ) {
+            if( IS_MENU_POPUP( entry->item ) ) {
                 insert_subitems = true;
             }
             if( !insert_subitems ) {
                 pos += WCountMenuChildren( entry->child );
             }
             parent = entry->parent;
-            is_popup = (entry->item->IsPopup && insert_subitems);
+            is_popup = (IS_MENU_POPUP( entry->item ) && insert_subitems);
         } else {
             pos = pos + 1;
         }
@@ -205,7 +205,7 @@ bool WAddMenuEntriesToLBox( HWND lbox, WMenuEntry *entry, LRESULT *pos )
     for( ; entry != NULL && ok; entry = entry->next ) {
         ok = WAddEditWinLBoxEntry( lbox, entry, *pos );
         *pos += 1;
-        if( ok && entry->item->IsPopup ) {
+        if( ok && IS_MENU_POPUP( entry->item ) ) {
             ok = WAddMenuEntriesToLBox( lbox, entry->child, pos );
         }
     }
@@ -302,7 +302,6 @@ WMenuEntry *WCreateNewMenuEntry( WMenuEditInfo *einfo, bool popup, bool sep )
         new->is32bit = einfo->menu->is32bit;
         new->item = ResNewMenuItem();
         if( popup ) {
-            new->item->IsPopup = TRUE;
             new->item->u.ItemFlags = flags | MENU_POPUP;
             if( text != NULL ) {
                 new->item->ItemText = WStrdup( text );

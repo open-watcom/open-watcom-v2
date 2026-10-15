@@ -135,9 +135,9 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
     unsigned            item_flags;
 
     for( ; entry != NULL; entry = entry->next ) {
-        if( entry->item->IsPopup ) {
+        item_flags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
+        if( item_flags & MENU_POPUP ) {
             /* menu item flags */
-            item_flags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
             if( entry->next == NULL ) {
                 item_flags |= MENU_LAST_ITEM;
             }
@@ -146,10 +146,10 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
             item_text = entry->item->ItemText;
         } else {
             /* menu item flags */
-            if( entry->item->u.ItemFlags & MENU_SEPARATOR ) {
+            if( item_flags & MENU_SEPARATOR ) {
                 item_flags = 0;
             } else {
-                item_flags = (entry->item->u.ItemFlags & ~MENU_LAST_ITEM) | MF_STRING;
+                item_flags |= MF_STRING;
             }
             if( entry->next == NULL ) {
                 item_flags |= MENU_LAST_ITEM;
@@ -170,7 +170,7 @@ static char *WInitDataFromMenu( WMenuEntry *entry, char *data )
         data += WRDataFromString( item_text, entry->is32bit, data );
 
         /* popup menu childs */
-        if( entry->item->IsPopup ) {
+        if( IS_MENU_POPUP( entry->item ) ) {
             if( entry->child != NULL ) {
                 data = WInitDataFromMenu( entry->child, data );
             } else {
@@ -194,9 +194,9 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
 
     dsize = 0;
     for( ; entry != NULL; entry = entry->next ) {
-        if( entry->item->IsPopup ) {
+        text = entry->item->ItemText;
+        if( IS_MENU_POPUP( entry->item ) ) {
             dsize += SIZEU16 + 1;
-            text = entry->item->ItemText;
             if( entry->child != NULL ) {
                 dsize += WCalcMenuSize( entry->child );
             } else {
@@ -205,7 +205,6 @@ static size_t WCalcMenuSize( WMenuEntry *entry )
             }
         } else {
             dsize += SIZEU16 + SIZEU16 + 1;
-            text = entry->item->ItemText;
         }
         dsize += WRCalcStrlen( text, entry->is32bit );
     }
@@ -256,8 +255,7 @@ static bool WMakeMenuItemFromData( const char **pdata, size_t *dsize, MenuItem *
     data = *pdata;
     item_flags = VALU16( data );
     INCU16( data );
-    item->IsPopup = ( (item_flags & MENU_POPUP) != 0 );
-    if( !item->IsPopup ) {
+    if( (item_flags & MENU_POPUP) == 0 ) {
         item_id = VALU16( data );
         INCU16( data );
         if( (item_flags & ~MENU_LAST_ITEM) == 0 && item_id == 0 ) {
@@ -337,7 +335,7 @@ static bool WMakeMenuEntryFromData( const char **data, size_t *dsize, WMenuEntry
         if( ok ) {
             (*current)->parent = parent;
             (*current)->prev = prev;
-            if( (*current)->item->IsPopup ) {
+            if( IS_MENU_POPUP( (*current)->item ) ) {
                 ok = WMakeMenuEntryFromData( data, dsize, *current, &(*current)->child, is32bit );
             }
             if( (*current)->item->u.ItemFlags & MENU_LAST_ITEM ) {
@@ -471,8 +469,7 @@ static bool WAddItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
     ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
-        flags = entry->item->u.ItemFlags;
-        flags &= ~MENU_LAST_ITEM;
+        flags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
         if( flags & MENU_POPUP ) {
             entry->preview_popup = CreatePopupMenu();
             if( entry->preview_popup == (HMENU)NULL ) {
@@ -654,8 +651,7 @@ static bool WModifyItemAtPos( HMENU hparent, int pos, WMenuEntry *entry )
     ok = (hparent != (HMENU)NULL && entry != NULL);
 
     if( ok ) {
-        flags = entry->item->u.ItemFlags;
-        flags &= ~MENU_LAST_ITEM;
+        flags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
         if( flags & MENU_POPUP ) {
             ok = ModifyMenu( hparent, pos, MF_BYPOSITION | flags,
                              (UINT_PTR)entry->preview_popup,
@@ -682,7 +678,7 @@ static bool WAddToPreviewMenu( HMENU hparent, WMenuEntry *entry )
     pos = 0;
     for( ; ok && entry != NULL; entry = entry->next ) {
         ok = WAddItemAtPos( hparent, pos, entry );
-        if( ok && entry->item->IsPopup ) {
+        if( ok && IS_MENU_POPUP( entry->item ) ) {
             if( entry->child != NULL ) {
                 ok = WAddToPreviewMenu( entry->preview_popup, entry->child );
             }
@@ -896,7 +892,6 @@ bool WResolveEntries( WMenuEntry *entry, WRHashTable *symbol_table )
 bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
 {
     uint_16             id;
-    MenuFlags           flags;
     WRHashValueList     *vlist;
     bool                ok;
 
@@ -905,11 +900,7 @@ bool WResolveEntrySymbol( WMenuEntry *entry, WRHashTable *symbol_table )
     ok = (entry != NULL && symbol_table != NULL);
 
     if( ok ) {
-        if( entry->item->IsPopup ) {
-            return( true );
-        }
-        flags = entry->item->u.ItemFlags;
-        if( flags & MENU_SEPARATOR ) {
+        if( entry->item->u.ItemFlags & (MENU_POPUP | MENU_SEPARATOR) ) {
             return( true );
         }
         id = entry->item->ItemId;
@@ -963,18 +954,13 @@ bool WResolveSymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 
 bool WResolveEntrySymIDs( WMenuEntry *entry, WRHashTable *symbol_table )
 {
-    MenuFlags           flags;
     WRHashValue         hv;
     bool                ok;
 
     ok = (entry != NULL && symbol_table != NULL);
 
     if( ok ) {
-        if( entry->item->IsPopup ) {
-            return( true );
-        }
-        flags = entry->item->u.ItemFlags;
-        if( flags & MENU_SEPARATOR ) {
+        if( entry->item->u.ItemFlags & (MENU_POPUP | MENU_SEPARATOR) ) {
             return( true );
         }
         ok = WRLookupName( symbol_table, entry->symbol, &hv );

@@ -204,7 +204,7 @@ void WSetEditWindowControls( WMenuEditInfo *einfo, WMenuEntry *entry )
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDSHIFTLEFT ), enable );
 
     // can this entry be shifted right
-    enable = (entry != NULL && entry->prev != NULL && entry->prev->item->IsPopup);
+    enable = (entry != NULL && entry->prev != NULL && IS_MENU_POPUP( entry->prev->item ));
     EnableWindow( GetDlgItem( einfo->edit_dlg, IDM_MENUEDSHIFTRIGHT ), enable );
 }
 
@@ -213,20 +213,13 @@ bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
     bool        ok;
     bool        pop_sep;
     MenuFlags   flags;
-    uint_16     id;
     char        *text;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL && entry != NULL);
 
     if( ok ) {
-        if( entry->item->IsPopup ) {
-            flags = entry->item->u.ItemFlags;
-            text = entry->item->ItemText;
-        } else {
-            flags = entry->item->u.ItemFlags;
-            id = entry->item->ItemId;
-            text = entry->item->ItemText;
-        }
+        flags = entry->item->u.ItemFlags;
+        text = entry->item->ItemText;
         ok = WSetEditWindowText( einfo->edit_dlg, flags, text );
     }
 
@@ -235,8 +228,8 @@ bool WSetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry )
     }
 
     if( ok ) {
-        pop_sep = (entry->item->IsPopup || (flags & MENU_SEPARATOR));
-        ok = WSetEditWindowID( einfo->edit_dlg, id, pop_sep, entry->symbol );
+        pop_sep = ( (flags & (MENU_POPUP | MENU_SEPARATOR)) != 0 );
+        ok = WSetEditWindowID( einfo->edit_dlg, entry->item->ItemId, pop_sep, entry->symbol );
     }
 
     return( ok );
@@ -316,8 +309,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         if( !ok ) {
             ok = symbol && stricmp( entry->symbol, symbol );
             if( !ok ) {
-                iflags = entry->item->u.ItemFlags;
-                iflags &= ~MENU_LAST_ITEM;
+                iflags = entry->item->u.ItemFlags & ~MENU_LAST_ITEM;
                 ok = (iflags != flags);
                 if( !ok ) {
                     if( flags & MENU_POPUP ) {
@@ -337,7 +329,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     }
 
     if( ok ) {
-        if( entry->item->IsPopup ) {
+        if( IS_MENU_POPUP( entry->item ) ) {
             if( entry->child != NULL && (flags & MENU_POPUP) == 0 ) {
                 ok = WQueryNukePopup( einfo );
             }
@@ -345,7 +337,7 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     }
 
     if( ok ) {
-        if( entry->item->IsPopup ) {
+        if( IS_MENU_POPUP( entry->item ) ) {
             if( (flags & MENU_POPUP) == 0 ) {
                 if( reset ) {
                     *reset = true;
@@ -375,20 +367,16 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
         if( entry->symbol != NULL ) {
             MemFree( entry->symbol );
         }
-        entry->item->IsPopup = ((flags & MENU_POPUP) != 0);
-        if( entry->item->IsPopup ) {
-            entry->item->ItemText = text;
-            entry->item->u.ItemFlags = flags;
-        } else {
+        entry->item->ItemText = text;
+        entry->item->u.ItemFlags = flags;
+        if( (flags & MENU_POPUP) == 0 ) {
             // if the flags are zero - indicating a normal item - and the
             // id is also zero then change it to the default
             // flag == id == 0 indicates a separator
             if( flags == 0 && id == 0 ) {
                 id = DEFAULT_MENU_ID;
             }
-            entry->item->ItemText = text;
             entry->item->ItemId = id;
-            entry->item->u.ItemFlags = flags;
         }
         entry->symbol = symbol;
     } else {
@@ -861,17 +849,10 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
         if( !change || reinit ) {
             WSetEditWindowMenuEntry( einfo, entry );
         } else {
-            uint_16     id;
             bool        pop_sep;
-            MenuFlags   flags;
-            if( entry->item->IsPopup ) {
-                flags = entry->item->u.ItemFlags;
-            } else {
-                flags = entry->item->u.ItemFlags;
-                id = entry->item->ItemId;
-            }
-            pop_sep = (entry->item->IsPopup || (flags & MENU_SEPARATOR));
-            WSetEditWindowID( einfo->edit_dlg, id, pop_sep, entry->symbol );
+
+            pop_sep = ( (entry->item->u.ItemFlags & (MENU_POPUP | MENU_SEPARATOR)) != 0 );
+            WSetEditWindowID( einfo->edit_dlg, entry->item->ItemId, pop_sep, entry->symbol );
         }
     }
 

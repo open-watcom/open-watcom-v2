@@ -136,7 +136,7 @@ static bool WMakeMenuEntry( GUIRMenuEntry *parent, GUIRMenuEntry **entry )
         if( ok ) {
             (*current)->parent = parent;
             (*current)->prev = prev;
-            if( (*current)->item->IsPopup ) {
+            if( IS_MENU_POPUP( (*current)->item ) ) {
                 ok = WMakeMenuEntry( *current, &((*current)->child) );
             }
             if( (*current)->item->u.ItemFlags & MENU_LAST_ITEM ) {
@@ -248,19 +248,17 @@ static bool MakeGUIMenuStruct( GUIRMenuEntry *rmenu, gui_menu_items *menus )
         for( ; rmenu != NULL; rmenu = rmenu->next ) {
             menuitem->hinttext = NULL;
             menuitem->child = NoMenu;
-            if( rmenu->item->IsPopup ) {
-                menuitem->label = MemStrdup( rmenu->item->ItemText );
+            menuitem->label = MemStrdup( rmenu->item->ItemText );
+            menuitem->style = GetGUIMenuStyles( rmenu->item->u.ItemFlags );
+            if( IS_MENU_POPUP( rmenu->item ) ) {
                 menuitem->id = 0;
-                menuitem->style = GetGUIMenuStyles( rmenu->item->u.ItemFlags );
                 ok = MakeGUIMenuStruct( rmenu->child, &menuitem->child );
                 if( !ok ) {
                     MemFree( menu );
                     return( ok );
                 }
             } else {
-                menuitem->label = MemStrdup( rmenu->item->ItemText );
                 menuitem->id = rmenu->item->ItemId;
-                menuitem->style = GetGUIMenuStyles( rmenu->item->u.ItemFlags );
             }
             menuitem++;
         }

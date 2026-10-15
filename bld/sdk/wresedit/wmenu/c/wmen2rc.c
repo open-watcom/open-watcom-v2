@@ -197,7 +197,7 @@ static bool WWriteMenuPopupItem( WMenuEntry *entry, FILE *fp )
     if( ok ) {
         while( entry != NULL && ok ) {
             ok = WWriteMenuEntryItem( entry, fp, depth );
-            if( ok && entry->item->IsPopup ) {
+            if( ok && IS_MENU_POPUP( entry->item ) ) {
                 if( entry->child != NULL ) {
                     ok = WWriteMenuPopupItem( entry->child, fp );
                 } else {
