@@ -126,7 +126,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
             if( IS_MENU_POPUP( item ) )
                 depth++;
             PrintMenuItem( item );
-            if (item->u.ItemFlags & MENU_LAST_ITEM) {
+            if( item->u.ItemFlags & MENU_LAST_ITEM ) {
                 depth--;
             }
         }

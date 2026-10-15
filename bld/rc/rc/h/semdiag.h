@@ -103,7 +103,7 @@ typedef struct FullDialogBoxControlOS2 {
     DialogBoxControl                ctrl;
     DataElemList                    *dataListHead;
     PresParamListOS2                *presParams;
-    struct FullDialogCtrlListOS2      *children;
+    struct FullDialogCtrlListOS2    *children;
     DialogTemplateItemOS2           *tmpl;
     uint_32                         framectl;
 } FullDialogBoxControlOS2;

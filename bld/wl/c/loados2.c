@@ -309,9 +309,8 @@ static unsigned_16 findResIdName( ResTable *restab, WResID *name )
     return( name_id );
 }
 
-static FullTypeRecord *addExeTypeRecord( ResTable *restab,
-                            WResTypeInfo *type )
-/**********************************************************/
+static FullTypeRecord *addExeTypeRecord( ResTable *restab, WResTypeInfo *type )
+/*****************************************************************************/
 {
     FullTypeRecord      *exe_type;
 

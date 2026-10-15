@@ -69,7 +69,7 @@ typedef struct FullVerBlock {
     FullVerBlockNest        *Nest;
 } FullVerBlock;
 
-extern FullVerValueList *SemWINAddVerValueList( FullVerValueList *, VerValueItem);
+extern FullVerValueList *SemWINAddVerValueList( FullVerValueList *, VerValueItem );
 extern FullVerBlock     *SemWINNewBlockVal( char *name, FullVerValueList *list );
 extern FullVerBlock     *SemWINNameVerBlock( char *name, FullVerBlockNest *nest );
 extern FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *, FullVerBlock * );

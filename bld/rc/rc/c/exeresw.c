@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  NE resource manipulation routines, Windows version.
+* Description:  NE format manipulation routines (used by 16-bit code)
 *
 ****************************************************************************/
 
@@ -143,9 +143,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
     return( exe_type );
 } /* addExeTypeRecord */
 
-static FullTypeRecord *findExeTypeRecord( ResTable *restab,
-                            WResTypeInfo *typeinfo )
-/*********************************************************/
+static FullTypeRecord *findExeTypeRecord( ResTable *restab, WResTypeInfo *typeinfo )
+/**********************************************************************************/
 {
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
