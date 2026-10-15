@@ -94,7 +94,6 @@ typedef struct MenuHeader {
     unsigned        ExHelpId;
 } MenuHeader;
 
-
 typedef struct MenuItem {
     char                *ItemText;
     unsigned            ItemId;

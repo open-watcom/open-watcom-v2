@@ -39,6 +39,7 @@
 #include "wressetr.h"
 #include "mem2.h"
 
+
 /***** Private Types *****/
 
 typedef uint_16             WResLen;

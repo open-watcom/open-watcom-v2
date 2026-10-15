@@ -88,7 +88,7 @@ bool ResReadMenuItemEx( MenuItem *item, FILE *fp )
     if( error )
         return( true );
     item->ItemText = ResRead32String( fp, NULL );
-    if( error )
+    if( item->ItemText == NULL )
         return( true );
     if( ResReadPadDWord( fp ) )
         return( true );
