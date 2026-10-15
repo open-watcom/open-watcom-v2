@@ -68,7 +68,7 @@ bool ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp )
             return( true );
         }
     }
-    if( (item->u.ItemFlags & MENU_POPUP) == 0 ) {
+    if( !IS_MENU_POPUP( item ) ) {
         if( ResWriteUint16( fp, item->ItemId ) ) {
             return( true );
         }
@@ -91,7 +91,7 @@ bool ResWriteMenuItemEx( const MenuItem *item, FILE *fp )
         return( true );
     if( ResWritePadDWord( fp ) )
         return( true );
-    if( item->u.ExFlags & MENUEX_POPUP ) {
+    if( IS_MENUEX_POPUP( item ) ) {
         if( ResWriteUint32( fp, item->ExHelpId ) ) {
             return( true );
         }

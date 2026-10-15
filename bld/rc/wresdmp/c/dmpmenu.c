@@ -84,7 +84,7 @@ static char * MenuOffFlags[16] = {
 static void PrintMenuItem( MenuItem *item )
 /*****************************************/
 {
-    if( item->IsPopup ) {
+    if( IS_MENU_POPUP( item ) ) {
         printf( "\tPopup item.   Flags: " );
     } else {
         printf( "\tNormal item.   Id: %5d  Flags: ", item->ItemId );
@@ -123,7 +123,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, FILE *fp )
         item = ResNewMenuItem();
         error = ResReadMenuItem( item, false, fp );
         if( !error ) {
-            if( item->IsPopup )
+            if( IS_MENU_POPUP( item ) )
                 depth++;
             PrintMenuItem( item );
             if (item->u.ItemFlags & MENU_LAST_ITEM) {

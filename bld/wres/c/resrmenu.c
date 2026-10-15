@@ -92,7 +92,7 @@ bool ResReadMenuItemEx( MenuItem *item, FILE *fp )
         return( true );
     if( ResReadPadDWord( fp ) )
         return( true );
-    if( item->u.ExFlags & MENUEX_POPUP ) {
+    if( IS_MENUEX_POPUP( item ) ) {
         item->ExHelpId = ResReadUint32( &error, fp );
         if( error ) {
             return( true );
@@ -114,7 +114,7 @@ bool ResReadMenuItem( MenuItem *item, bool use_unicode, FILE *fp )
     }
     if( error )
         return( true );
-    if( (item->u.ItemFlags & MENU_POPUP) == 0 ) {
+    if( !IS_MENU_POPUP( item ) ) {
         item->ItemId = ResReadUint16( &error, fp );
     }
     if( use_unicode ) {
@@ -142,16 +142,8 @@ MenuItem *ResNewMenuItem( void )
 void ResFreeMenuItem( MenuItem *menuitem )
 /****************************************/
 {
-    if( menuitem->IsPopup ) {
-        if( menuitem->ItemText != NULL ) {
-            WRESFREE( menuitem->ItemText );
-        }
-    } else {
-        if( menuitem->ItemText != NULL ) {
-            WRESFREE( menuitem->ItemText );
-        }
-    }
-
+    if( menuitem->ItemText != NULL )
+        WRESFREE( menuitem->ItemText );
     WRESFREE( menuitem );
 }
 

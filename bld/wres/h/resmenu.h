@@ -37,6 +37,8 @@
 
 #define MENUEX_VERSION_SIG  0x0001
 #define IS_MENUEX(x)        ((x).Version == MENUEX_VERSION_SIG)
+#define IS_MENUEX_POPUP(x)  (((x)->u.ExFlags & MENUEX_POPUP) != 0)
+#define IS_MENU_POPUP(x)    (((x)->u.ItemFlags & MENU_POPUP) != 0)
 
 #define MENU_LAST_ITEM      0x80
 
@@ -100,8 +102,6 @@ typedef struct MenuItem {
     MenuExTypeFlags     ExType;
     MenuExStateFlags    ExState;
     MenuFlagsU          u;
-    unsigned            IsEx     :1;
-    unsigned            IsPopup  :1;
     unsigned            IsOldWin :1;
 } MenuItem;
 
