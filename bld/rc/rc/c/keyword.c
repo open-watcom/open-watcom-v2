@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2019 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,8 +31,9 @@
 
 #include <string.h>
 #include <ctype.h>
-#include "yydrivr2.h"
-#include "weights2.gh"
+#include "rcgram.h"
+#include GHFILE( yydrivr, h )
+#include GHFILE( weights, gh )
 #include "kwhashic.h"
 
 #include "clibext.h"
@@ -132,12 +133,12 @@ typedef struct HashEntry {
  */
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
-    #include "keyword2.gh"
+    #include GHFILE( keyword, gh )
     #undef pick
 };
 
-YYTOKENTYPE LookupKeywordOS2( ScanString newstring )
-/**************************************************/
+YYTOKENTYPE GNAME( LookupKeyword )( ScanString newstring )
+/********************************************************/
 {
     int     hash;
 
