@@ -89,7 +89,7 @@ common_objs = &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &
     $(_subdir_)keywordw.obj &
-    $(_subdir_)keyword2.obj &
+    $(_subdir_)keyword.obj &
     $(_subdir_)rcerrors.obj &
     $(_subdir_)exeobj.obj &
     $(_subdir_)exeresw.obj &
@@ -112,7 +112,7 @@ common_objs = &
     $(_subdir_)rcstr.obj &
     $(_subdir_)pprcenv.obj &
     $(_subdir_)scanw.obj &
-    $(_subdir_)scan2.obj &
+    $(_subdir_)scan.obj &
     $(_subdir_)semacclw.obj &
     $(_subdir_)semantic.obj &
     $(_subdir_)semantcw.obj &
@@ -221,7 +221,7 @@ $(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
 # comment out the next line during testing of grammar changes
     diff yw.out ../y/yw.chk
 
-$(os2_yacc_file).c : ../y/rcos2.y ../y/yydrivr2.c
+$(os2_yacc_file).c : ../y/rcos2.y ../y/yydriver.c
     @%make echo_yacc
     $(noecho)$(yacc) $(os2_yacc_options) $< >y2.out
 # comment out the next line during testing of grammar changes
