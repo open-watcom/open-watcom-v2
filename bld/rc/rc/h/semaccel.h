@@ -37,19 +37,19 @@
 #include "os2res.h"
 
 /**** Semantic structures ****/
-typedef struct FullAccelEntry {
+typedef struct FullAccelEntryWIN {
     bool                iswin32;
     union {
         AccelTableEntry     entry;
         AccelTableEntry32   entry32;
     } u;
     uint_32             startoftable;
-} FullAccelEntry;
+} FullAccelEntryWIN;
 
-typedef struct FullAccelFlags {
+typedef struct FullAccelFlagsWIN {
     AccelFlags          flags;
     bool                typegiven;
-} FullAccelFlags;
+} FullAccelFlagsWIN;
 
 typedef struct AccelEvent {
     int                 event;
@@ -72,14 +72,14 @@ typedef struct FullAccelTableOS2 {
 } FullAccelTableOS2;
 
 /**** Semantic variables ****/
-extern const FullAccelFlags     DefaultAccelFlags;
+extern const FullAccelFlagsWIN  DefaultAccelFlagsWIN;
 extern const FullAccelFlagsOS2  DefaultAccelFlagsOS2;
 
 /**** Semantic routines ****/
 extern int                  SemWINStrToAccelEvent( char *string );
-extern FullAccelEntry       SemWINMakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlags flags );
-extern void                 SemWINWriteAccelEntry( FullAccelEntry entry );
-extern void                 SemWINWriteLastAccelEntry( FullAccelEntry entry );
+extern FullAccelEntryWIN    SemWINMakeAccItem( AccelEvent event, unsigned long idval, FullAccelFlagsWIN flags );
+extern void                 SemWINWriteAccelEntry( FullAccelEntryWIN entry );
+extern void                 SemWINWriteLastAccelEntry( FullAccelEntryWIN entry );
 
 extern int                  SemOS2StrToAccelEvent( char *string );
 extern FullAccelTableOS2    *SemOS2AddAccelEntry( FullAccelEntryOS2, FullAccelTableOS2 * );

@@ -37,7 +37,7 @@
 #include "rccore.h"
 
 
-const FullAccelFlags DefaultAccelFlags = { 0, false };
+const FullAccelFlagsWIN	DefaultAccelFlagsWIN = { 0, false };
 
 int SemWINStrToAccelEvent( char *string )
 /***************************************/
@@ -81,11 +81,11 @@ static void CheckAccelFlags( AccelFlags *flags, unsigned long idval )
     }
 }
 
-FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
-                    FullAccelFlags flags )
+FullAccelEntryWIN SemWINMakeAccItem( AccelEvent event, unsigned long idval,
+                    FullAccelFlagsWIN flags )
 /***********************************************************************/
 {
-    FullAccelEntry      entry;
+    FullAccelEntryWIN	entry;
 
     entry.iswin32 = CmdLineParms.iswin32;
     entry.startoftable = 0;
@@ -113,8 +113,8 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
     return( entry );
 }
 
-void SemWINWriteAccelEntry( FullAccelEntry entry )
-/************************************************/
+void SemWINWriteAccelEntry( FullAccelEntryWIN entry )
+/***************************************************/
 {
     bool    error;
 
@@ -131,8 +131,8 @@ void SemWINWriteAccelEntry( FullAccelEntry entry )
     }
 }
 
-void SemWINWriteLastAccelEntry( FullAccelEntry entry )
-/****************************************************/
+void SemWINWriteLastAccelEntry( FullAccelEntryWIN entry )
+/*******************************************************/
 {
     if( entry.iswin32 ) {
         entry.u.entry32.Flags |= ACCEL_LAST;

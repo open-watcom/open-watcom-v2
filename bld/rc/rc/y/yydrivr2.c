@@ -74,13 +74,10 @@ typedef union {
     IntMask                     maskint;
     ScanString                  string;
     WResID                      *resid;
+    AccelEvent                  accevent;
     FullAccelEntryOS2           accelfullentry;
     FullAccelFlagsOS2           accflags;
     FullAccelTableOS2           *acceltable;
-    AccelEvent                  accevent;
-    FullHelpTableOS2            *helptable;
-    FullHelpEntryOS2            helpfullentry;
-    FullHelpSubTableOS2         *helpsubtable;
     ResLocation                 resloc;
     ResMemFlags                 resmemflags;
     MenuFlags                   menuflags;
@@ -94,6 +91,9 @@ typedef union {
     FullDialogBoxControlOS2     *diagctrl;
     FullDialogCtrlListOS2       *diagctrllist;
     FullDialogCtrlOptionsOS2    diagctrlopts;
+    FullHelpTableOS2            *helptable;
+    FullHelpEntryOS2            helpfullentry;
+    FullHelpSubTableOS2         *helpsubtable;
     PresParamsOS2               presparams;
     PresParamListOS2            *presparamlist;
     StringItem                  stritem;

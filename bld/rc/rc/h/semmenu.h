@@ -39,6 +39,8 @@
 
 /**** Semantic structures ****/
 
+#define MenuItemWIN         MenuItem
+
 typedef struct FullMenuWIN {
     struct FullMenuItemWIN  *head;
     struct FullMenuItemWIN  *tail;
@@ -47,7 +49,7 @@ typedef struct FullMenuWIN {
 typedef struct FullMenuItemWIN {
     LL_ITEM( struct FullMenuItemWIN );
     bool                    iswin32;
-    MenuItem                item;
+    MenuItemWIN             item;
     FullMenuWIN             *submenu;
 } FullMenuItemWIN;
 

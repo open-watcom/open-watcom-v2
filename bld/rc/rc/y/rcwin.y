@@ -793,7 +793,7 @@ acc-item
     : event comma-opt id-value comma-opt acc-item-options
         { $$ = SemWINMakeAccItem( $1, $3, $5 ); }
     | event comma-opt id-value
-        { $$ = SemWINMakeAccItem( $1, $3, DefaultAccelFlags ); }
+        { $$ = SemWINMakeAccItem( $1, $3, DefaultAccelFlagsWIN ); }
     ;
 
 event
