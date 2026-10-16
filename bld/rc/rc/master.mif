@@ -65,6 +65,8 @@ extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG
 !endif
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_winytab  = -DGRAMMAR_WIN
+extra_cpp_flags_f_os2ytab  = -DGRAMMAR_OS2
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
@@ -215,7 +217,7 @@ wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
-$(win_yacc_file).c : ../y/rcwin.y ../y/yydrivrw.c
+$(win_yacc_file).c : ../y/rcwin.y ../y/yydriver.c
     @%make echo_yacc
     $(noecho)$(yacc) $(win_yacc_options) $< >yw.out
 # comment out the next line during testing of grammar changes

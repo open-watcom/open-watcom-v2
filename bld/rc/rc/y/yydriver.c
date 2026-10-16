@@ -31,15 +31,17 @@
 
 
 #include <stdio.h>
+#include "rcgram.h"
 #include "global.h"
 #include "yydriver.h"
 #include "semantic.h"
-#include "semantc2.h"
+#include GHFILE( semantc, h )
 #include "rcmem.h"
 #include "rcerrors.h"
 #include "errprt.h"
 #include "rccore.h"
 #include "memfuncs.h"
+#include "wresdefn.h"
 
 
 #define YYCHKTYPE       uint_16
@@ -63,50 +65,58 @@ typedef enum {
  */
 
 
-typedef struct IntOpt {
-    YYTOKENTYPE Option;
-    uint_32     Value;
-} IntOpt;
-
 typedef union {
-    ScanInt                     intinfo;
-    unsigned long               integral;
-    IntMask                     maskint;
-    ScanString                  string;
-    WResID                      *resid;
-    AccelEvent                  accevent;
-    FullAccelEntryOS2           accelfullentry;
-    FullAccelFlagsOS2           accflags;
-    FullAccelTableOS2           *acceltable;
-    ResLocation                 resloc;
-    ResMemFlags                 resmemflags;
-    MenuFlags                   menuflags;
-    FullMenuOS2                 *menuptr;
-    FullMenuItemOS2             menufull;
-    MenuItemOS2                 menuitem;
-    DialogSizeInfo              sizeinfo;
-    FullDialogOptions           diagopts;
-    ResNameOrOrdinal            *nameorord;
-    FullDialogBoxHeader         *diaghead;
-    FullDialogBoxControlOS2     *diagctrl;
-    FullDialogCtrlListOS2       *diagctrllist;
-    FullDialogCtrlOptionsOS2    diagctrlopts;
-    FullHelpTableOS2            *helptable;
-    FullHelpEntryOS2            helpfullentry;
-    FullHelpSubTableOS2         *helpsubtable;
-    PresParamsOS2               presparams;
-    PresParamListOS2            *presparamlist;
-    StringItem                  stritem;
-    FullStringTable             *strtable;
-    RawDataItem                 rawitem;
-    YYTOKENTYPE                 token;
-    DataElemList                *dataelem;
-    IntOpt                      optint;
-    uint_16                     resword;
-    uint_16                     residnum;
-    uint_16                     ressizenum;
-    uint_16                     codepage;
-    uint_8                      resbyte;
+    ScanInt                         intinfo;
+    unsigned long                   integral;
+    IntMask                         maskint;
+    ScanString                      string;
+    WResID                          *resid;
+    AccelEvent                      accevent;
+    GNAME( FullAccelEntry )         accelfullentry;
+    GNAME( FullAccelFlags )         accflags;
+#if defined( GRAMMAR_OS2 )
+    FullAccelTableOS2               *acceltable;
+#endif
+    ResLocation                     resloc;
+    ResMemFlags                     resmemflags;
+    MenuFlags                       menuflags;
+    GNAME( FullMenu )               *menuptr;
+    GNAME( FullMenuItem )           menufull;
+    GNAME( MenuItem )               menuitem;
+    DialogSizeInfo                  sizeinfo;
+    FullDialogOptions               diagopts;
+    ResNameOrOrdinal                *nameorord;
+    FullDialogBoxHeader             *diaghead;
+    GNAME( FullDialogBoxControl )   *diagctrl;
+    GNAME( FullDialogCtrlList )     *diagctrllist;
+    GNAME( FullDialogCtrlOptions )  diagctrlopts;
+    StringItem                      stritem;
+    FullStringTable                 *strtable;
+    RawDataItem                     rawitem;
+    YYTOKENTYPE                     token;
+    DataElemList                    *dataelem;
+    uint_16                         residnum;
+    uint_16                         ressizenum;
+    uint_8                          resbyte;
+#if defined( GRAMMAR_OS2 )
+    FullHelpTableOS2                *helptable;
+    FullHelpEntryOS2                helpfullentry;
+    FullHelpSubTableOS2             *helpsubtable;
+    PresParamsOS2                   presparams;
+    PresParamListOS2                *presparamlist;
+    uint_16                         resword;
+    uint_16                         codepage;
+#elif defined( GRAMMAR_WIN )
+    VersionPair                     verpair;
+    VerFixedOption                  verfixedoption;
+    FullVerValueList                *valuelist;
+    VerValueItem                    valueitem;
+    FullVerBlockNest                *verblocknest;
+    FullVerBlock                    *verblock;
+    VerFixedInfo                    *verinforoot;
+    WResLangType                    langinfo;
+    ToolBar                         *toolbar;
+#endif
 } yystype;
 #define YYSTYPE         yystype
 
@@ -163,13 +173,13 @@ static void puts_far( const char YYFAR *string )
 
 #endif
 
-static YYTOKENTYPE yylexOS2( void )
-/*********************************/
+static YYTOKENTYPE yylex( void )
+/******************************/
 {
     YYTOKENTYPE curtoken;
     ScanValue   value;
 
-    curtoken = ScanOS2( &value );
+    curtoken = GNAME( Scan )( &value );
 
     while( RcIoIsCOrHFile() ) {
         switch( curtoken ) {
@@ -190,7 +200,7 @@ static YYTOKENTYPE yylexOS2( void )
             break;
         }
 
-        curtoken = ScanOS2( &value );
+        curtoken = GNAME( Scan )( &value );
     }
     END_LOOP:
 
@@ -281,15 +291,15 @@ static p_action doAction( YYTOKENTYPE yytoken, parse_stack *state )
     }
 }
 
-void ParseInitOS2( void )
-/***********************/
+void GNAME( ParseInit )( void )
+/*****************************/
 {
     SemSetDefLang();
-    ScanInitOS2();
+    GNAME( ScanInit )();
 }
 
-void ParseFiniOS2( void )
-/***********************/
+void GNAME( ParseFini )( void )
+/*****************************/
 {
 }
 
@@ -340,7 +350,11 @@ static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_sta
         case Y_SCAN_ERROR:
             break;
         default:
+#if defined( GRAMMAR_OS2 )
             RcError( ERR_SYNTAX_STR, SemOS2TokenToString( yytoken ) );
+#elif defined( GRAMMAR_WIN )
+            RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
+#endif
             break;
         }
     }
@@ -353,12 +367,12 @@ static p_action doParse( parse_stack *resource_state )
     p_action    what;
     bool        error_state;
     YYTOKENTYPE yytoken;
-    int         token_count = 0;
+    int         token_count;
 
     error_state = false;
-
+    token_count = 0;
     do {
-        yytoken = yylexOS2();
+        yytoken = yylex();
         if( error_state ) {
             token_count++;
             if( token_count >= YYERRORTHRESHOLD ) {
@@ -383,8 +397,8 @@ static p_action doParse( parse_stack *resource_state )
     return( what );
 }
 
-bool ParseOS2( void )
-/*******************/
+bool GNAME( Parse )( void )
+/*************************/
 {
     parse_stack resource_state;
     p_action    what;
@@ -399,7 +413,7 @@ bool ParseOS2( void )
     return( what != P_ACCEPT );
 }
 
-void ParseInitStaticsOS2( void )
+void GNAME( ParseInitStatics )( void )
 /******************************/
 {
     memset( &yylval, 0, sizeof( YYSTYPE ) );
