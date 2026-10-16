@@ -32,8 +32,9 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "rcgram.h"
 #include "yydriver.h"
-#include "yydrivr2.h"
+#include GHFILE( yydrivr, h )
 #include "rcerrors.h"
 #include "depend.h"
 #include "errprt.h"
@@ -103,7 +104,7 @@ static void CharInit( void )
 #define change_state(s)     goto s
 #define enter_start_state() CharInit()
 
-static void     AddDigitToInt( long *value, int base, int newchar )
+static void AddDigitToInt( long *value, int base, int newchar )
 {
     int     newdigit;
 
@@ -192,8 +193,8 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     return( token );
 } /* scanCPPDirective */
 
-void    ScanInitOS2( void )
-/*************************/
+void    GNAME( ScanInit )( void )
+/*******************************/
 {
     enter_start_state();
 }
@@ -754,7 +755,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_HEX):
+    state( S_HEX ):
         VarStringAddChar( varstr, LookAhead );
         if( isxdigit( LookAhead ) ) {
             AddDigitToInt( &newint, 16, LookAhead );
@@ -775,7 +776,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             return( Y_INTEGER );
         }
 
-    state(S_NAME):
+    state( S_NAME ):
         if( isalnum( LookAhead )
           || LookAhead == '_' ) {
             VarStringAddChar( varstr, LookAhead );
@@ -788,7 +789,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         } else {
             value->string.string = VarStringEnd( varstr, &(value->string.length) );
             DEBUGPUTS( value->string.string );
-            token = LookupKeywordOS2( value->string );
+            token = GNAME( LookupKeyword )( value->string );
             if( token != Y_NAME ) {
                 /*
                  * release the string if it is a keyword
@@ -806,7 +807,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             return( token );
         }
 
-    state(S_DOS_FILENAME):
+    state( S_DOS_FILENAME ):
         if( isalnum( LookAhead )
           || LookAhead == ':'
           || LookAhead == '\\'
@@ -821,8 +822,8 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         }
 } /* scanDFA */
 
-YYTOKENTYPE ScanOS2( ScanValue *value )
-/*************************************/
+YYTOKENTYPE GNAME( Scan )( ScanValue *value )
+/*******************************************/
 {
     YYTOKENTYPE token;
 
@@ -834,7 +835,7 @@ YYTOKENTYPE ScanOS2( ScanValue *value )
     return( token );
 }
 
-void ScanInitStaticsOS2( void )
+void GNAME( ScanInitStatics )( void )
 /*****************************/
 {
     _next = 0;

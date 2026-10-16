@@ -112,7 +112,7 @@ common_objs = &
     $(_subdir_)rcstr.obj &
     $(_subdir_)pprcenv.obj &
     $(_subdir_)scanw.obj &
-    $(_subdir_)scan.obj &
+    $(_subdir_)scan2.obj &
     $(_subdir_)semacclw.obj &
     $(_subdir_)semantic.obj &
     $(_subdir_)semantcw.obj &
