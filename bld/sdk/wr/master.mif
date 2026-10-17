@@ -19,10 +19,12 @@ sys_windowed = 1
 sys_dll = 1
 #suppress_bd = 1
 
+w16_yacc_prefix = w16y
 win_yacc_prefix = winy
+w16_yacc_file   = $(w16_yacc_prefix)tab
 win_yacc_file   = $(win_yacc_prefix)tab
 
-additional_clean = *.grh *.grc $(win_yacc_file).h $(win_yacc_file).c
+additional_clean = *.grh *.grc $(w16_yacc_file).* $(win_yacc_file).*
 
 !include cproj.mif
 !include defrule.mif
@@ -64,7 +66,7 @@ extra_l_flags_dll_win = op rwr, stack=16k export WEP RESIDENT lib ddeml.lib &
 #
 # DLL
 #
-dlltarg_prebuild_objs = $(win_yacc_file).h rcmsg.grh wrmsg.grh
+dlltarg_prebuild_objs = $(w16_yacc_file).h $(win_yacc_file).h rcmsg.grh wrmsg.grh
 dlltarg_objs_rc = &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio_2.obj &
@@ -110,6 +112,15 @@ wrmsg.grh: ../res/wr.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-$(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
+yacc_rc_driver = $(wrc_dir)/y/yydriver.c
+yacc_rc_grammar = $(wrc_dir)/y/rcwin.y
+
+$(w16_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
+    wsplice -u -kWIN16  $[@ yrcw16.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
+    $(noecho)$(yacc) -b $(w16_yacc_prefix) -d -db -dd yrcw16.tmp $(yacc_rc_driver) >$(nulldevice)
+
+$(win_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
+    wsplice -u -kWIN32  $[@ yrcwin.tmp
+    @%make echo_yacc
+    $(noecho)$(yacc) -b $(win_yacc_prefix) -d -db -dd yrcwin.tmp $(yacc_rc_driver) >$(nulldevice)
