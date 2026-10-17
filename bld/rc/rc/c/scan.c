@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "yydriver.h"
 #if defined( GRAMMAR_OS2 )
     #include "yydrivr2.h"
 #elif defined( GRAMMAR_W16 )
@@ -201,6 +202,11 @@ void    GNAME( ScanInit )( void )
 /*******************************/
 {
     enter_start_state();
+}
+
+void    GNAME( ScanFini )( void )
+/*******************************/
+{
 }
 
 static YYTOKENTYPE scanDFA( ScanValue *value )

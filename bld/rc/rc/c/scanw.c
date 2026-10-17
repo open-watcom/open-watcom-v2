@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner, Windows RC version.
+* Description:  Lexical scanner, WIN32 RC version.
 *
 ****************************************************************************/
 

@@ -33,6 +33,7 @@
 #include <stdio.h>      /* remove call for MS format stuff */
 #include "global.h"
 #include "rcerrors.h"
+#include "yydriver.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "rcrtns.h"

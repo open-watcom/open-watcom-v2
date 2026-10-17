@@ -34,6 +34,7 @@
 #include "global.h"
 #include "rcerrors.h"
 #include "rcmem.h"
+#include "yydriver.h"
 #include "semantic.h"
 #include "semantc2.h"
 

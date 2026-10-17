@@ -326,6 +326,7 @@ void GNAME( ParseInit )( void )
 void GNAME( ParseFini )( void )
 /*****************************/
 {
+    GNAME( ScanFini )();
 }
 
 static void initParseStack( parse_stack *stack )

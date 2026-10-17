@@ -227,13 +227,19 @@ w16_yacc_options = -b $(w16_yacc_prefix) -d -dd -db -de
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
-$(w16_yacc_file).c : ../y/rcwin.y ../y/yydriver.c
+yrcw16.tmp : ../y/rcwin.y
+    wsplice -u -kWIN16  $[@ $@
+
+yrcwin.tmp : ../y/rcwin.y
+    wsplice -u -kWIN32  $[@ $@
+
+$(w16_yacc_file).c : yrcw16.tmp ../y/yydriver.c
     @%make echo_yacc
     $(noecho)$(yacc) $(w16_yacc_options) $< >y6.out
 # comment out the next line during testing of grammar changes
     diff y6.out ../y/y6.chk
 
-$(win_yacc_file).c : ../y/rcwin.y ../y/yydriver.c
+$(win_yacc_file).c : yrcwin.tmp ../y/yydriver.c
     @%make echo_yacc
     $(noecho)$(yacc) $(win_yacc_options) $< >yw.out
 # comment out the next line during testing of grammar changes
@@ -245,11 +251,17 @@ $(os2_yacc_file).c : ../y/rcos2.y ../y/yydriver.c
 # comment out the next line during testing of grammar changes
     diff y2.out ../y/y2.chk
 
-keyword6.gh : ../hash/rcwin.key
+kwrcw16.tmp :  ../hash/rcwin.key
+    wsplice -u -kWIN16  $[@ $@
+
+kwrcwin.tmp :  ../hash/rcwin.key
+    wsplice -u -kWIN32  $[@ $@
+
+keyword6.gh : kwrcw16.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s 6 -m $<
 
-keywordw.gh : ../hash/rcwin.key
+keywordw.gh : kwrcwin.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s w -m $<
 

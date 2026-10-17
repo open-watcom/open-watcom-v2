@@ -45,16 +45,19 @@ extern void ScanInitStaticsW16( void );
 extern void ParseInitStaticsW16( void );
 
 extern void ScanInitOS2( void );
+extern void ScanFiniOS2( void );
 extern void ParseInitOS2( void );
 extern void ParseFiniOS2( void );
 extern bool ParseOS2( void );
 
 extern void ScanInitWIN( void );
+extern void ScanFiniWIN( void );
 extern void ParseInitWIN( void );
 extern void ParseFiniWIN( void );
 extern bool ParseWIN( void );
 
 extern void ScanInitW16( void );
+extern void ScanFiniW16( void );
 extern void ParseInitW16( void );
 extern void ParseFiniW16( void );
 extern bool ParseW16( void );
