@@ -37,6 +37,14 @@
 
 #define MAX_DATA_NODES     100
 
+typedef uint_32 SemOffset;
+typedef uint_32 SemLength;
+
+typedef struct ResLocation {
+    SemOffset   start;
+    SemLength   len;
+} ResLocation;
+
 typedef struct RawDataItem {
     union {
         char    *String;

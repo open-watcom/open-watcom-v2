@@ -41,6 +41,7 @@ extern void SemanticInitStaticsWIN( void );
 extern void ScanInitStaticsWIN( void );
 extern void ParseInitStaticsWIN( void );
 
+//extern void SemanticInitStaticsW16( void );
 extern void ScanInitStaticsW16( void );
 extern void ParseInitStaticsW16( void );
 

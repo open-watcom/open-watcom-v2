@@ -25,7 +25,8 @@
 *
 *  ========================================================================
 *
-* Description:  Semantic actions interface for WIN32 grammar (used by yydriver).
+* Description:  Semantic actions interface for WIN16 and WIN32 grammar
+*                                       (used by yydriver)
 *
 ****************************************************************************/
 

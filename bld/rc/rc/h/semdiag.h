@@ -35,6 +35,13 @@
 
 typedef unsigned long       help_id;
 
+typedef struct IntMask {
+    uint_32     Mask;
+    uint_32     Value;
+    boolbit     longVal :1;
+    boolbit     unsgVal :1;
+} IntMask;
+
 typedef struct DlgHeader32 {
     DialogBoxHeader32           Head;
     DialogBoxExHeader32short    ExHead;

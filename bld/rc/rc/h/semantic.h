@@ -34,6 +34,13 @@
 #define SEMSTRUCT_INCLUDED
 
 #include "wresall.h"
+#include "semaccel.h"
+#include "semmenu.h"
+#include "semraw.h"
+#include "semdiag.h"
+#include "semsingl.h"
+#include "semresfl.h"
+#include "semutil.h"
 
 
 /**** Semantic structures ****/
@@ -45,32 +52,6 @@ typedef struct FullResFlags {
     boolbit             purityOptGiven      : 1;
     boolbit             cpOptGiven          : 1;
 } FullResFlags;
-
-typedef uint_32 SemOffset;
-typedef uint_32 SemLength;
-
-typedef struct ResLocation {
-    SemOffset   start;
-    SemLength   len;
-} ResLocation;
-
-typedef struct IntMask {
-    uint_32     Mask;
-    uint_32     Value;
-    boolbit     longVal :1;
-    boolbit     unsgVal :1;
-} IntMask;
-
-/**** include all the semantic structures and routine prototypes for each ****/
-/**** type of structure ****/
-
-#include "semaccel.h"
-#include "semmenu.h"
-#include "semraw.h"
-#include "semdiag.h"
-#include "semsingl.h"
-#include "semresfl.h"
-#include "semutil.h"
 
 /**** Semantic global routines ****/
 extern SemOffset            SemStartResource( void );

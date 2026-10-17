@@ -227,47 +227,45 @@ w16_yacc_options = -b $(w16_yacc_prefix) -d -dd -db -de
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
-yrcw16.tmp : ../y/rcwin.y
-    wsplice -u -kWIN16  $[@ $@
+# define debug_grammar macro for testing of grammar changes
+!ifdef debug_grammar
+debug_yacc_out = -
+!endif
 
-yrcwin.tmp : ../y/rcwin.y
-    wsplice -u -kWIN32  $[@ $@
+yacc_rc_driver = ../y/yydriver.c
 
-$(w16_yacc_file).c : yrcw16.tmp ../y/yydriver.c
+$(w16_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
+    $(noecho)*wsplice -u -kWIN16  $[@ yrcw16.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(w16_yacc_options) $< >y6.out
-# comment out the next line during testing of grammar changes
-    diff y6.out ../y/y6.chk
+    $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp $(yacc_rc_driver) >y6.out
+    $(debug_yacc_out)diff y6.out ../y/y6.chk
 
-$(win_yacc_file).c : yrcwin.tmp ../y/yydriver.c
+$(win_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
+    $(noecho)*wsplice -u -kWIN32  $[@ yrcwin.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(win_yacc_options) $< >yw.out
-# comment out the next line during testing of grammar changes
-    diff yw.out ../y/yw.chk
+    $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp $(yacc_rc_driver) >yw.out
+    $(debug_yacc_out)diff yw.out ../y/yw.chk
 
-$(os2_yacc_file).c : ../y/rcos2.y ../y/yydriver.c
+$(os2_yacc_file).c : ../y/rcos2.y $(yacc_rc_driver)
+    $(noecho)*wsplice -u -kOS2  $[@ yrcos2.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(os2_yacc_options) $< >y2.out
-# comment out the next line during testing of grammar changes
-    diff y2.out ../y/y2.chk
+    $(noecho)$(yacc) $(os2_yacc_options) yrcos2.tmp $(yacc_rc_driver) >y2.out
+    $(debug_yacc_out)diff y2.out ../y/y2.chk
 
-kwrcw16.tmp :  ../hash/rcwin.key
-    wsplice -u -kWIN16  $[@ $@
-
-kwrcwin.tmp :  ../hash/rcwin.key
-    wsplice -u -kWIN32  $[@ $@
-
-keyword6.gh : kwrcw16.tmp
+keyword6.gh : ../hash/rcwin.key
+    $(noecho)*wsplice -u -kWIN16  $[@ kwrcw16.tmp
     @%make echo_findhash
-    $(noecho)findhash -q -s 6 -m $<
+    $(noecho)findhash -q -s 6 -m kwrcw16.tmp
 
-keywordw.gh : kwrcwin.tmp
+keywordw.gh : ../hash/rcwin.key
+    $(noecho)*wsplice -u -kWIN32  $[@ kwrcwin.tmp
     @%make echo_findhash
-    $(noecho)findhash -q -s w -m $<
+    $(noecho)findhash -q -s w -m kwrcwin.tmp
 
 keyword2.gh : ../hash/rcos2.key
+    $(noecho)*wsplice -u -kOS2  $[@ kwrcos2.tmp
     @%make echo_findhash
-    $(noecho)findhash -q -s 2 -m $<
+    $(noecho)findhash -q -s 2 -m kwrcos2.tmp
 
 rcmsg.grh : ../h/rc.msg
     @%make echo_awk
