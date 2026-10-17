@@ -446,7 +446,13 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
             ptr += 4;
             strcpy( ptr, presparams->Name->name );
             ptr += len;
-            MPUT_32_UN( ptr, 0xffffffff );  // Not sure what this is
+            /*
+             * A named presentation parameter is stored as a name prefix
+             * followed by the normal PARAM structure.  PARAM.id is
+             * initialized to -1; the preceding name is converted to a
+             * string atom when the dialog template is loaded.
+             */
+            MPUT_32_UN( ptr, -1 );
             ptr    += 4;
             bytes  += len + 12;
         } else {
