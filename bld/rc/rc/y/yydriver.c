@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "grammart.h"
 #include "global.h"
 #include "yydriver.h"
 #if defined( GRAMMAR_OS2 )
@@ -378,7 +379,9 @@ static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_sta
         default:
 #if defined( GRAMMAR_OS2 )
             RcError( ERR_SYNTAX_STR, SemOS2TokenToString( yytoken ) );
-#else
+#elif defined( GRAMMAR_W16 )
+            RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
+#elif defined( GRAMMAR_WIN )
             RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
 #endif
             break;

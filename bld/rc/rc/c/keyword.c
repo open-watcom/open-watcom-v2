@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include "grammart.h"
 #if defined( GRAMMAR_OS2 )
     #include "yydrivr2.h"
     #include "weights2.gh"

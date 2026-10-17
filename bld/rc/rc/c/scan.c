@@ -31,6 +31,7 @@
 
 
 #include <stdio.h>
+#include "grammart.h"
 #include "global.h"
 #include "yydriver.h"
 #if defined( GRAMMAR_OS2 )
