@@ -120,12 +120,9 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
                 text = WConvertStringFrom( itemname, "\t\x8\"\\", "ta\"\\" );
                 ok = (text != NULL);
             }
-        }
-    }
-
-    if( ok ) {
-        if( (entry->item->u.ItemFlags & MENU_SEPARATOR) == 0 ) {
-            ok = WSetFlagsText( entry->item->u.ItemFlags, &flagtext );
+            if( ok ) {
+                ok = WSetFlagsText( entry->item->u.ItemFlags, &flagtext );
+            }
         }
     }
 
@@ -138,8 +135,7 @@ static bool WWriteMenuEntryItem( WMenuEntry *entry, FILE *fp, int depth )
             if( entry->symbol != NULL ) {
                 fprintf( fp, "MENUITEM \"%s\"\t%s%s\n", text, entry->symbol, flagtext );
             } else {
-                fprintf( fp, "MENUITEM \"%s\"\t%u%s\n", text,
-                         entry->item->ItemId, flagtext );
+                fprintf( fp, "MENUITEM \"%s\"\t%u%s\n", text, entry->item->ItemId, flagtext );
             }
         }
     }
@@ -246,7 +242,7 @@ bool WWriteMenuToRC( WMenuEditInfo *einfo, char *file, bool append )
     }
 
     if( ok ) {
-        ok = WWriteMenuPopupItem( einfo->menu->first_entry, fp );
+        ok = WWriteMenuPopupItem( einfo->menu->head, fp );
     }
 
     if( rname != NULL ) {

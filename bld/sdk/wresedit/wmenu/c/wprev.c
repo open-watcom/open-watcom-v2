@@ -184,7 +184,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     WORD        id;
     LRESULT     pos;
 
-    if( einfo == NULL || einfo->menu == NULL || einfo->menu->first_entry == NULL ) {
+    if( einfo == NULL || einfo->menu == NULL || einfo->menu->head == NULL ) {
         return;
     }
 
@@ -208,10 +208,10 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
 #else
             hpopup = (HMENU)(pointer_uint)GET_WM_MENUSELECT_ITEM( wParam, lParam );
 #endif
-            entry = WFindEntryFromPreviewPopup( einfo->menu->first_entry, hpopup );
+            entry = WFindEntryFromPreviewPopup( einfo->menu->head, hpopup );
         } else {
             id = GET_WM_MENUSELECT_ITEM( wParam, lParam );
-            entry = WFindEntryFromPreviewID( einfo->menu->first_entry, id );
+            entry = WFindEntryFromPreviewID( einfo->menu->head, id );
         }
     }
 
@@ -220,7 +220,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     }
 
     pos = 0;
-    if( WFindEntryLBPos( einfo->menu->first_entry, entry, &pos ) ) {
+    if( WFindEntryLBPos( einfo->menu->head, entry, &pos ) ) {
         pos--;
         einfo->current_entry = NULL;
         einfo->current_pos = LB_ERR;

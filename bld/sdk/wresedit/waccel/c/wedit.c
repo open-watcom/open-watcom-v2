@@ -583,7 +583,7 @@ bool WInitEditWindowListBox( WAccelEditInfo *einfo )
         lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         SendMessage( lbox, LB_RESETCONTENT, 0, 0 );
-        for( entry = einfo->tbl->first_entry; entry != NULL; entry = entry->next ) {
+        for( entry = einfo->tbl->head; entry != NULL; entry = entry->next ) {
             ok = WAddEditWinLBoxEntry( einfo, entry, LB_ERR );
             if( !ok ) {
                  break;
@@ -611,12 +611,12 @@ static bool WInitEditWindow( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        if( einfo->tbl->first_entry != NULL ) {
-            ok = WSetEditWindowKeyEntry( einfo, einfo->tbl->first_entry );
+        if( einfo->tbl->head != NULL ) {
+            ok = WSetEditWindowKeyEntry( einfo, einfo->tbl->head );
             if( ok ) {
                 lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
                 ok = (SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR);
-                einfo->current_entry = einfo->tbl->first_entry;
+                einfo->current_entry = einfo->tbl->head;
                 einfo->current_pos = 0;
             }
         }

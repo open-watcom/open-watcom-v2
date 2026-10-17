@@ -1094,8 +1094,8 @@ void WHandleClear( WAccelEditInfo *einfo )
         if( WQueryClearRes( einfo ) ) {
             WResetEditWindow( einfo );
             SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDLIST, LB_RESETCONTENT, 0, 0 );
-            WFreeAccelTableEntries( einfo->tbl->first_entry );
-            einfo->tbl->first_entry = NULL;
+            WFreeAccelTableEntries( einfo->tbl->head );
+            einfo->tbl->head = NULL;
             einfo->tbl->num = 0;
             einfo->current_entry = NULL;
             einfo->current_pos = LB_ERR;

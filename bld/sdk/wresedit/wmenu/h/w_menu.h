@@ -64,7 +64,7 @@ typedef struct WMenuEntry {
 
 typedef struct WMenu {
     bool        is32bit;
-    WMenuEntry  *first_entry;
+    WMenuEntry  *head;
 } WMenu;
 
 typedef struct WMenuEditInfo {

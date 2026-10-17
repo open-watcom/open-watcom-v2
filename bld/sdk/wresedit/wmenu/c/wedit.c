@@ -647,7 +647,7 @@ bool WInitEditWindowListBox( WMenuEditInfo *einfo )
     if( ok ) {
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         SendMessage( lbox, LB_RESETCONTENT, FALSE, 0 );
-        ok = WAddMenuEntriesToLBox( lbox, einfo->menu->first_entry, &pos );
+        ok = WAddMenuEntriesToLBox( lbox, einfo->menu->head, &pos );
         SendMessage( lbox, WM_SETREDRAW, TRUE, 0 );
         InvalidateRect( lbox, NULL, TRUE );
     }
@@ -675,13 +675,13 @@ static bool WInitEditWindow( WMenuEditInfo *einfo )
     }
 
     if( ok ) {
-        WSetEditWindowControls( einfo, einfo->menu->first_entry );
-        if( einfo->menu->first_entry != NULL ) {
-            ok = WSetEditWindowMenuEntry( einfo, einfo->menu->first_entry );
+        WSetEditWindowControls( einfo, einfo->menu->head );
+        if( einfo->menu->head != NULL ) {
+            ok = WSetEditWindowMenuEntry( einfo, einfo->menu->head );
             if( ok ) {
                 lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
                 ok = ( SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR );
-                einfo->current_entry = einfo->menu->first_entry;
+                einfo->current_entry = einfo->menu->head;
                 einfo->current_pos = 0;
             }
         } else {
@@ -1071,7 +1071,7 @@ WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND hDlg, UINT message, WPARAM wPa
             }
             break;
         case IDM_MENUEDSETMENU:
-            if( einfo->menu != NULL && einfo->menu->first_entry != NULL ) {
+            if( einfo->menu != NULL && einfo->menu->head != NULL ) {
                 WHandleSelChange( einfo );
             } else {
                 WInsertNew( einfo );

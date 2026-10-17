@@ -1219,14 +1219,14 @@ static bool WQueryClearRes( WMenuEditInfo *einfo )
 
 void WHandleClear( WMenuEditInfo *einfo )
 {
-    if( einfo->menu != NULL && einfo->menu->first_entry != NULL ) {
+    if( einfo->menu != NULL && einfo->menu->head != NULL ) {
         if( WQueryClearRes( einfo ) ) {
             WSetEditWindowText( einfo->edit_dlg, 0, NULL );
             WSetEditWindowID( einfo->edit_dlg, 0, TRUE, NULL );
             WResetEditWindowFlags( einfo->edit_dlg );
             SendDlgItemMessage( einfo->edit_dlg, IDM_MENUEDLIST, LB_RESETCONTENT, 0, 0 );
-            WFreeMenuEntries( einfo->menu->first_entry );
-            einfo->menu->first_entry = NULL;
+            WFreeMenuEntries( einfo->menu->head );
+            einfo->menu->head = NULL;
             einfo->current_entry = NULL;
             einfo->current_pos = LB_ERR;
             einfo->first_preview_id = FIRST_PREVIEW_ID;

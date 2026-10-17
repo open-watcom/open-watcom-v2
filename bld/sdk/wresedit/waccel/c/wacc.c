@@ -88,7 +88,7 @@ void WFreeAccelTableEntries( WAccelEntry *entry )
 static void WFreeAccelTable( WAccelTable *tbl )
 {
     if( tbl != NULL ) {
-        WFreeAccelTableEntries( tbl->first_entry );
+        WFreeAccelTableEntries( tbl->head );
         MemFree( tbl );
     }
 }
@@ -130,13 +130,13 @@ static void WInitDataFromAccelTable( WAccelTable *tbl, char *data )
 
     last = NULL;
     if( tbl->is32bit ) {
-        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
+        for( entry = tbl->head; entry != NULL; entry = entry->next ) {
             last = data;
             data = ResWriteDataAccelTableEntry32( data, &entry->u.entry32 );
         }
         SetAccelTableLastEntry32( last );
     } else {
-        for( entry = tbl->first_entry; entry != NULL; entry = entry->next ) {
+        for( entry = tbl->head; entry != NULL; entry = entry->next ) {
             last = data;
             data = ResWriteDataAccelTableEntry( data, &entry->u.entry );
         }
@@ -199,13 +199,13 @@ static WAccelTable *WAllocAccelTable( size_t num )
 
     tbl->num = num;
     tbl->is32bit = false;
-    tbl->first_entry = NULL;
+    tbl->head = NULL;
     if( num != 0 ) {
         prev = NULL;
         for( i = 0; i < num; i++ ) {
             entry = MemAlloc( sizeof( WAccelEntry ) );
             if( prev == NULL ) {
-                tbl->first_entry = entry;
+                tbl->head = entry;
             } else {
                 prev->next = entry;
             }
@@ -254,7 +254,7 @@ static void WInitAccelTable( WAccelInfo *info, WAccelTable *tbl )
     int                 i;
     bool                last;
 
-    entry = tbl->first_entry;
+    entry = tbl->head;
     if( entry == NULL ) {
         return;
     }
@@ -337,9 +337,9 @@ bool WInsertAccelTableEntry( WAccelTable *tbl, WAccelEntry *after, WAccelEntry *
             entry->prev = after;
             after->next = entry;
         } else {
-            entry->next = tbl->first_entry;
+            entry->next = tbl->head;
             entry->prev = NULL;
-            tbl->first_entry = entry;
+            tbl->head = entry;
         }
         tbl->num++;
     }
@@ -360,8 +360,8 @@ bool WFreeAccelTableEntry( WAccelTable *tbl, WAccelEntry *entry )
         if( entry->prev != NULL ) {
             entry->prev->next = entry->next;
         }
-        if( tbl->first_entry == entry ) {
-            tbl->first_entry = entry->next;
+        if( tbl->head == entry ) {
+            tbl->head = entry->next;
         }
         if( entry->symbol != NULL ) {
             MemFree( entry->symbol );
@@ -433,7 +433,7 @@ bool WResolveAllEntrySymbols( WAccelEditInfo *einfo )
         return( false );
     }
 
-    for( entry = einfo->tbl->first_entry; entry != NULL; entry = entry->next ) {
+    for( entry = einfo->tbl->head; entry != NULL; entry = entry->next ) {
         WResolveEntrySymbol( entry, einfo->info->symbol_table );
     }
 
@@ -506,7 +506,7 @@ bool WResolveAllEntrySymIDs( WAccelEditInfo *einfo )
         return( false );
     }
 
-    for( entry = einfo->tbl->first_entry; entry != NULL; entry = entry->next ) {
+    for( entry = einfo->tbl->head; entry != NULL; entry = entry->next ) {
         WResolveEntrySymIDs( entry, einfo->info->symbol_table );
     }
 

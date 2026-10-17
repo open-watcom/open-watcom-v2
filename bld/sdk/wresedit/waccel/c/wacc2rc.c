@@ -178,7 +178,7 @@ bool WWriteAccToRC( WAccelEditInfo *einfo, char *file, bool append )
     }
 
     if( ok ) {
-        for( entry = einfo->tbl->first_entry; entry != NULL; entry = entry->next ) {
+        for( entry = einfo->tbl->head; entry != NULL; entry = entry->next ) {
             ok = WWriteEntryToRC( einfo, entry, fp );
             if( !ok ) {
                 break;
