@@ -66,12 +66,14 @@ void InitGlobs( void )
     SemanticInitStaticsWIN();
     SemanticInitStaticsOS2();
     SharedIOInitStatics();
+    ScanInitStaticsW16();
     ScanInitStaticsWIN();
     ScanInitStaticsOS2();
     AutoDepInitStatics();
     DbtableInitStatics();
     LoadstrInitStatics();
     WriteInitStatics();
+    ParseInitStaticsW16();
     ParseInitStaticsWIN();
     ParseInitStaticsOS2();
 }
@@ -116,6 +118,9 @@ static bool Pass1( void )
             if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
                 ParseInitOS2();
                 ParseOS2();
+            } else if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
+                ParseInitW16();
+                ParseW16();
             } else {
                 ParseInitWIN();
                 ParseWIN();

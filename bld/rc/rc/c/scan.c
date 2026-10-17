@@ -25,16 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner, OS/2 RC version.
+* Description:  Lexical scanner, all grammar variants.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
 #include "global.h"
-#include "rcgram.h"
-#include "yydriver.h"
-#include GHFILE( yydrivr, h )
+#if defined( GRAMMAR_OS2 )
+    #include "yydrivr2.h"
+#elif defined( GRAMMAR_W16 )
+    #include "yydrivr6.h"
+#elif defined( GRAMMAR_WIN )
+    #include "yydrivrw.h"
+#endif
 #include "rcerrors.h"
 #include "depend.h"
 #include "errprt.h"

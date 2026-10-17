@@ -25,15 +25,22 @@
 *
 *  ========================================================================
 *
-* Description:  Keyword processing, OS/2 variant.
+* Description:  Keyword processing, all grammar variants.
 *
 ****************************************************************************/
 
 #include <string.h>
 #include <ctype.h>
-#include "rcgram.h"
-#include GHFILE( yydrivr, h )
-#include GHFILE( weights, gh )
+#if defined( GRAMMAR_OS2 )
+    #include "yydrivr2.h"
+    #include "weights2.gh"
+#elif defined( GRAMMAR_W16 )
+    #include "yydrivr6.h"
+    #include "weights6.gh"
+#elif defined( GRAMMAR_WIN )
+    #include "yydrivrw.h"
+    #include "weightsw.gh"
+#endif
 #include "kwhashic.h"
 
 #include "clibext.h"
@@ -133,7 +140,13 @@ typedef struct HashEntry {
  */
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
-    #include GHFILE( keyword, gh )
+#if defined( GRAMMAR_OS2 )
+    #include "keyword2.gh"
+#elif defined( GRAMMAR_W16 )
+    #include "keyword6.gh"
+#elif defined( GRAMMAR_WIN )
+    #include "keywordw.gh"
+#endif
     #undef pick
 };
 

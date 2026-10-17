@@ -25,26 +25,11 @@
 *
 *  ========================================================================
 *
-* Description:  Grammar related macros definition.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define XGSTR(s) #s
-#define GSTR(s) XGSTR(s)
-
-#if defined( GRAMMAR_OS2 )
-#define GCONCATH(s1,s2) s1##2.##s2
-#define GSUFFIX(x)      x##OS2
-#elif defined( GRAMMAR_W16 )
-#define GCONCATH(s1,s2) s1##6.##s2
-#define GSUFFIX(x)      x##W16
-#elif defined( GRAMMAR_WIN )
-#define GCONCATH(s1,s2) s1##w.##s2
-#define GSUFFIX(x)      x##WIN
-#else
-#define GCONCATH(s1,s2) s1.s2
-#define GSUFFIX(x)      x
-#endif
-#define GHFILE(x,y)     GSTR( GCONCATH( x, y ) )
-#define GNAME(x)        GSUFFIX( x )
+#define GRAMMAR_W16
+#include "keyword.c"

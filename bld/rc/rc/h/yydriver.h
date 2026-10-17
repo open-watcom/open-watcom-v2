@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,9 @@ extern void SemanticInitStaticsWIN( void );
 extern void ScanInitStaticsWIN( void );
 extern void ParseInitStaticsWIN( void );
 
+extern void ScanInitStaticsW16( void );
+extern void ParseInitStaticsW16( void );
+
 extern void ScanInitOS2( void );
 extern void ParseInitOS2( void );
 extern void ParseFiniOS2( void );
@@ -49,5 +53,10 @@ extern void ScanInitWIN( void );
 extern void ParseInitWIN( void );
 extern void ParseFiniWIN( void );
 extern bool ParseWIN( void );
+
+extern void ScanInitW16( void );
+extern void ParseInitW16( void );
+extern void ParseFiniW16( void );
+extern bool ParseW16( void );
 
 #endif

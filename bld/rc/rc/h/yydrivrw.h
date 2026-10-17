@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,16 +25,24 @@
 *
 *  ========================================================================
 *
-* Description:  Public interface to WIN specific yydriver module.
+* Description:  Public interface to WIN32 specific yydriver module.
 *
 ****************************************************************************/
 
 
-#ifndef _YYDRIVRW_H
-#define _YYDRIVRW_H
+/*
+ * guard is for single header file is included
+ * one of yydrivr2.h, yydrivr6.h, yydrivrw.h
+ * that macro _YYDRIVRX_H is used over these files
+ */
+#ifndef _YYDRIVRX_H
+#define _YYDRIVRX_H
 
 #include "winytab.h"
 #include "scan.h"
+
+#define GSUFFIX(x)      x##WIN
+#define GNAME(x)        GSUFFIX( x )
 
 extern YYTOKENTYPE  LookupKeywordWIN( ScanString newstring );
 extern YYTOKENTYPE  ScanWIN( ScanValue *value );

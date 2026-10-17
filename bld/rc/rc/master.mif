@@ -29,13 +29,16 @@ dlltarg_name = wrcd
 ntverrc_exe = $(exetarg_name)
 ntverrc_dll = $(dlltarg_name)
 
+w16_yacc_prefix = w16y
 win_yacc_prefix = winy
 os2_yacc_prefix = os2y
 
+w16_yacc_file = $(w16_yacc_prefix)tab
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-additional_clean = *.gh *.grh *.grc *.gc $(os2_yacc_file).* $(win_yacc_file).* *.uni yw.out y2.out
+additional_clean = *.gh *.grh *.grc *.gc *.uni yw.out y2.out &
+    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).*
 
 !include cproj.mif
 !include defrule.mif
@@ -65,6 +68,7 @@ extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG
 !endif
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
+extra_cpp_flags_f_w16ytab  = -DGRAMMAR_W16
 extra_cpp_flags_f_winytab  = -DGRAMMAR_WIN
 extra_cpp_flags_f_os2ytab  = -DGRAMMAR_OS2
 
@@ -88,8 +92,10 @@ extra_l_flags_dll_os2 = initinstance terminstance op manyautodata op modname='$(
 #################
 
 common_objs = &
+    $(_subdir_)$(w16_yacc_file).obj &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &
+    $(_subdir_)keyword6.obj &
     $(_subdir_)keywordw.obj &
     $(_subdir_)keyword2.obj &
     $(_subdir_)rcerrors.obj &
@@ -113,6 +119,7 @@ common_objs = &
     $(_subdir_)rcmem.obj &
     $(_subdir_)rcstr.obj &
     $(_subdir_)pprcenv.obj &
+    $(_subdir_)scan6.obj &
     $(_subdir_)scanw.obj &
     $(_subdir_)scan2.obj &
     $(_subdir_)semacclw.obj &
@@ -172,11 +179,13 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 # EXE
 #
 !ifdef bootstrap
-prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh $(os2_yacc_file).c $(win_yacc_file).c &
-    keyword2.gh keywordw.gh to932.uni
+prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
+    $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
+    keyword2.gh keywordw.gh keyword6.gh
 !else
-prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh $(os2_yacc_file).c &
-    $(win_yacc_file).c keyword2.gh keywordw.gh to932.uni
+prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
+    $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
+    keyword2.gh keywordw.gh keyword6.gh
 !endif
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
@@ -214,8 +223,15 @@ wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
+w16_yacc_options = -b $(w16_yacc_prefix) -d -dd -db -de
 win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
+
+$(w16_yacc_file).c : ../y/rcwin.y ../y/yydriver.c
+    @%make echo_yacc
+    $(noecho)$(yacc) $(w16_yacc_options) $< >y6.out
+# comment out the next line during testing of grammar changes
+    diff y6.out ../y/y6.chk
 
 $(win_yacc_file).c : ../y/rcwin.y ../y/yydriver.c
     @%make echo_yacc
@@ -228,6 +244,10 @@ $(os2_yacc_file).c : ../y/rcos2.y ../y/yydriver.c
     $(noecho)$(yacc) $(os2_yacc_options) $< >y2.out
 # comment out the next line during testing of grammar changes
     diff y2.out ../y/y2.chk
+
+keyword6.gh : ../hash/rcwin.key
+    @%make echo_findhash
+    $(noecho)findhash -q -s 6 -m $<
 
 keywordw.gh : ../hash/rcwin.key
     @%make echo_findhash

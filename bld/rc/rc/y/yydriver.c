@@ -25,17 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  YACC driver for OS/2 resource script parser.
+* Description:  YACC driver for resource script parser, all grammar variants.
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include "rcgram.h"
 #include "global.h"
 #include "yydriver.h"
+#if defined( GRAMMAR_OS2 )
+    #include "yydrivr2.h"
+#elif defined( GRAMMAR_W16 )
+    #include "yydrivr6.h"
+#elif defined( GRAMMAR_WIN )
+    #include "yydrivrw.h"
+#endif
 #include "semantic.h"
-#include GHFILE( semantc, h )
+#if defined( GRAMMAR_OS2 )
+    #include "semantc2.h"
+#else
+    #include "semantcw.h"
+#endif
 #include "rcmem.h"
 #include "rcerrors.h"
 #include "errprt.h"
@@ -72,24 +82,39 @@ typedef union {
     ScanString                      string;
     WResID                          *resid;
     AccelEvent                      accevent;
-    GNAME( FullAccelEntry )         accelfullentry;
-    GNAME( FullAccelFlags )         accflags;
 #if defined( GRAMMAR_OS2 )
+    FullAccelEntryOS2               accelfullentry;
+    FullAccelFlagsOS2               accflags;
     FullAccelTableOS2               *acceltable;
+#else
+    FullAccelEntryWIN               accelfullentry;
+    FullAccelFlagsWIN               accflags;
 #endif
     ResLocation                     resloc;
     ResMemFlags                     resmemflags;
     MenuFlags                       menuflags;
-    GNAME( FullMenu )               *menuptr;
-    GNAME( FullMenuItem )           menufull;
-    GNAME( MenuItem )               menuitem;
+#if defined( GRAMMAR_OS2 )
+    FullMenuOS2                     *menuptr;
+    FullMenuItemOS2                 menufull;
+    MenuItemOS2                     menuitem;
+#else
+    FullMenuWIN                     *menuptr;
+    FullMenuItemWIN                 menufull;
+    MenuItemWIN                     menuitem;
+#endif
     DialogSizeInfo                  sizeinfo;
     FullDialogOptions               diagopts;
     ResNameOrOrdinal                *nameorord;
     FullDialogBoxHeader             *diaghead;
-    GNAME( FullDialogBoxControl )   *diagctrl;
-    GNAME( FullDialogCtrlList )     *diagctrllist;
-    GNAME( FullDialogCtrlOptions )  diagctrlopts;
+#if defined( GRAMMAR_OS2 )
+    FullDialogBoxControlOS2         *diagctrl;
+    FullDialogCtrlListOS2           *diagctrllist;
+    FullDialogCtrlOptionsOS2        diagctrlopts;
+#else
+    FullDialogBoxControlWIN         *diagctrl;
+    FullDialogCtrlListWIN           *diagctrllist;
+    FullDialogCtrlOptionsWIN        diagctrlopts;
+#endif
     StringItem                      stritem;
     FullStringTable                 *strtable;
     RawDataItem                     rawitem;
@@ -106,7 +131,7 @@ typedef union {
     PresParamListOS2                *presparamlist;
     uint_16                         resword;
     uint_16                         codepage;
-#elif defined( GRAMMAR_WIN )
+#else
     VersionPair                     verpair;
     VerFixedOption                  verfixedoption;
     FullVerValueList                *valuelist;
@@ -352,7 +377,7 @@ static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_sta
         default:
 #if defined( GRAMMAR_OS2 )
             RcError( ERR_SYNTAX_STR, SemOS2TokenToString( yytoken ) );
-#elif defined( GRAMMAR_WIN )
+#else
             RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
 #endif
             break;

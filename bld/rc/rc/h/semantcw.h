@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Semantic actions interface for WIN grammar (used by yydriver).
+* Description:  Semantic actions interface for WIN32 grammar (used by yydriver).
 *
 ****************************************************************************/
 
@@ -33,9 +33,7 @@
 #ifndef SEMANTCW_H_INCLUDED
 #define SEMANTCW_H_INCLUDED
 
-#include "yydriver.h"
 #include "yydrivrw.h"
-
 #include "semmenuw.h"
 #include "semdiagw.h"
 #include "semtbarw.h"
