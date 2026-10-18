@@ -24,7 +24,7 @@
 #define YYFAR
 #endif
 
-
+%%YACC%%
 
 #ifndef YYSTYPE
 #define YYSTYPE         int
@@ -138,7 +138,7 @@ yyerrlab:
             *++yysp = yyaction;
             ++yyvp;
             switch( yypnum ) {
-
+%%YACC%%
             default:
                 yyval = yyvp[0];
             }

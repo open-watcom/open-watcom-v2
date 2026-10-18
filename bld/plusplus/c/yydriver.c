@@ -213,7 +213,7 @@ static const YYTOKENTYPE globalLookupToken[] = {
 
 static void recordTemplateCtorInitializer( PARSE_STACK * );
 
-
+%%YACC%%
 
 #define LA_SHIFT_TOKEN                  Y_SHIFT_SPECIAL
 #define LA_REDUCE_TOKEN                 Y_REDUCE_SPECIAL
@@ -2146,7 +2146,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
 #endif
         what = P_ERROR;
         switch( rule ) {
-        
+%%YACC%%
         default:
             yyval = yyvp[0];
         }

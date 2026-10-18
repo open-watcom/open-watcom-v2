@@ -37,7 +37,7 @@ static directive_t      *AsCurrDir;
 #define YYFAR
 #endif
 
-
+%%YACC%%
 
 static YYSTYPE yyval;
 
@@ -176,7 +176,7 @@ yyerrlab:
             dump_rule( yypnum );
 #endif
             switch( yypnum ) {
-
+%%YACC%%
             default:
                 yyval = yyvp[0];
             }

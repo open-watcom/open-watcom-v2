@@ -39,7 +39,7 @@ typedef struct packed_action {
 #define _check( packed )        (packed).token
 #define _action( packed)        ((packed).low_action + ((packed).high_action << 8))
 
-
+%%YACC%%
 
 #ifndef YYSTYPE
 #define YYSTYPE         int
@@ -255,7 +255,7 @@ static void actions( unsigned short production, YYSTYPE * yyvp )
     YYSTYPE         yyval;
 
     switch( production ) {
-
+%%YACC%%
     default:
         /*
          * No action required

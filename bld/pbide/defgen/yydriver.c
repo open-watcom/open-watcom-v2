@@ -30,7 +30,7 @@
 #define YYFAR
 #endif
 
-
+%%YACC%%
 
 typedef union {
         int             Token;
@@ -303,7 +303,7 @@ yyerrlab:
             *++yysp = yyaction;
             ++yyvp;
             switch( yypnum ) {
-
+%%YACC%%
             default:
                 yyval = yyvp[0];
             }
