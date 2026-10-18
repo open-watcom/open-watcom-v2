@@ -222,9 +222,27 @@ void dumpstatistic( const char *name, unsigned stat )
 void copy_part( FILE *fi, FILE *fo )
 {
     int             ch;
+    char            marker[] = { "%%YACC%%" };
+    int             i;
+    int             j;
 
-    while( (ch = fgetc( fi )) != '\f' && ch != EOF ) {
-        fputc( ch, fo );
+    i = 0;
+    while( (ch = fgetc( fi )) != EOF ) {
+        if( ch == '\f' ) {
+            break;
+        }
+        if( ch == marker[i] ) {
+            i++;
+            if( i == 8 ) {
+                break;
+            }
+        } else {
+            for( j = 0; j < i; j++ ) {
+                fputc( marker[j], fo );
+            }
+            fputc( ch, fo );
+            i = 0;
+        }
     }
 }
 
