@@ -84,6 +84,7 @@ typedef struct RCParams {
     boolbit     NoPreprocess    : 1;    /* if set won't attemp any preprocessing */
     boolbit     GenAutoDep      : 1;    /* generate autodependency info for wmake */
     boolbit     iswin32         : 1;    /* target is WIN32 */
+    boolbit     StrictWin16     : 1;    /* WIN16 strict mode, don't accept EXSTYLE */
 #ifndef NO_REPLACE
     boolbit     FindAndReplace  : 1;    /* a check to see whether for this option */
     boolbit     Prepend         : 1;

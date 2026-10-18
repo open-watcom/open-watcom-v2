@@ -1116,6 +1116,9 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
     if( data->xc ) {
         CmdLineParms.IgnoreCWD = true;
     }
+    if( data->xs ) {
+        CmdLineParms.StrictWin16 = true;
+    }
     if( data->zm ) {
         CmdLineParms.MSResFormat = true;
     }

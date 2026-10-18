@@ -332,3 +332,6 @@ pick(   RCMSG_CURSOR_WIN2X,
 pick(   RCMSG_BITMAP_WIN2X,
         "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file.",
         "BITMAP resource is incompatible with Windows 2.x. Please provide a compatible BMP file." )
+pick(   RCMSG_EXSTYLE_IN_WIN16,
+        "EXSTYLE is not allowed in strict Win16 syntax.",
+        "EXSTYLE is not allowed in strict Win16 syntax." )
