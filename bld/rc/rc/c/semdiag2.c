@@ -491,7 +491,6 @@ static size_t SemOS2DumpCtlData( char *ptr, DataElemList *list )
 {
     DataElemList        *travptr;
     size_t              bytes;
-    uint_16             *data;
     size_t              len;
     unsigned            i;
 
@@ -504,8 +503,7 @@ static size_t SemOS2DumpCtlData( char *ptr, DataElemList *list )
                 bytes += len;
                 ptr   += len;
             } else {
-                data   = (uint_16*)ptr;
-                *data  = (uint_16)travptr->data[i].Item.Num;
+                MPUT_16_UN( ptr, travptr->data[i].Item.Num );
                 bytes += 2;
                 ptr   += 2;
             }
