@@ -25,28 +25,22 @@
 *
 *  ========================================================================
 *
-:segment OS2
-* Description:  Keyword processing, OS/2 grammar variant.
-:elsesegment WIN16
-* Description:  Keyword processing, WIN16 grammar variant.
-:elsesegment WIN32
-* Description:  Keyword processing, WIN32 grammar variant.
-:endsegment
+* Description:  Keyword processing, all grammar variants.
 *
 ****************************************************************************/
 
 #include <string.h>
 #include <ctype.h>
-:segment OS2
-#include "yydrivr2.gh"
-#include "weights2.gh"
-:elsesegment WIN16
-#include "yydrivr6.gh"
-#include "weights6.gh"
-:elsesegment WIN32
-#include "yydrivrw.gh"
-#include "weightsw.gh"
-:endsegment
+#if defined( GRAMMAR_OS2 )
+    #include "yydrivr2.gh"
+    #include "weights2.gh"
+#elif defined( GRAMMAR_WIN16 )
+    #include "yydrivr6.gh"
+    #include "weights6.gh"
+#elif defined( GRAMMAR_WIN32 )
+    #include "yydrivrw.gh"
+    #include "weightsw.gh"
+#endif
 #include "kwhashic.h"
 
 #include "clibext.h"
@@ -146,23 +140,23 @@ typedef struct HashEntry {
  */
 static const HashEntry HashTable[] = {
     #define pick( a, b, c ) {b, c},
-:segment OS2
+#if defined( GRAMMAR_OS2 )
     #include "keyword2.gh"
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
     #include "keyword6.gh"
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
     #include "keywordw.gh"
-:endsegment
+#endif
     #undef pick
 };
 
-:segment OS2
+#if defined( GRAMMAR_OS2 )
 YYTOKENTYPE LookupKeywordOS2( ScanString newstring )
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
 YYTOKENTYPE LookupKeywordW16( ScanString newstring )
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
 YYTOKENTYPE LookupKeywordWIN( ScanString newstring )
-:endsegment
+#endif
 /********************************************************/
 {
     int     hash;

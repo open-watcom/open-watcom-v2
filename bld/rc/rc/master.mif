@@ -37,18 +37,8 @@ w16_yacc_file = $(w16_yacc_prefix)tab
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
-w16_keyword_file = keyword6
-win_keyword_file = keywordw
-os2_keyword_file = keyword2
-
-w16_scan_file = scan6
-win_scan_file = scanw
-os2_scan_file = scan2
-
 additional_clean = *.gh *.grh *.grc *.gc *.uni yw.out y2.out &
-    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).* &
-    $(w16_keyword_file).* $(win_keyword_file).* $(os2_keyword_file).* &
-    $(w16_scan_file).* $(win_scan_file).* $(os2_scan_file).*
+    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).*
 
 !include cproj.mif
 !include defrule.mif
@@ -102,12 +92,12 @@ common_objs = &
     $(_subdir_)$(w16_yacc_file).obj &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &
-    $(_subdir_)$(w16_keyword_file).obj &
-    $(_subdir_)$(win_keyword_file).obj &
-    $(_subdir_)$(os2_keyword_file).obj &
-    $(_subdir_)$(w16_scan_file).obj &
-    $(_subdir_)$(win_scan_file).obj &
-    $(_subdir_)$(os2_scan_file).obj &
+    $(_subdir_)keyword6.obj &
+    $(_subdir_)keywordw.obj &
+    $(_subdir_)keyword2.obj &
+    $(_subdir_)scan6.obj &
+    $(_subdir_)scanw.obj &
+    $(_subdir_)scan2.obj &
     $(_subdir_)rcerrors.obj &
     $(_subdir_)exeobj.obj &
     $(_subdir_)exeresw.obj &
@@ -291,30 +281,6 @@ keyword2.gh : ../hash/rcos2.key
     $(noecho)*wsplice -u -kOS2  $[@ kwrcos2.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m kwrcos2.tmp
-
-$(w16_keyword_file).c : ../c/keyword.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN16  $[@ $@
-
-$(win_keyword_file).c : ../c/keyword.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN32  $[@ $@
-
-$(os2_keyword_file).c : ../c/keyword.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kOS2  $[@ $@
-
-$(w16_scan_file).c : ../c/scan.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN16  $[@ $@
-
-$(win_scan_file).c : ../c/scan.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN32  $[@ $@
-
-$(os2_scan_file).c : ../c/scan.c
-    @%make echo_wsplice
-    $(noecho)*wsplice -u -kOS2  $[@ $@
 
 rcmsg.grh : ../h/rc.msg
     @%make echo_awk

@@ -25,13 +25,7 @@
 *
 *  ========================================================================
 *
-:segment OS2
-* Description:  Lexical scanner, OS/2 grammar variant.
-:elsesegment WIN16
-* Description:  Lexical scanner, WIN16 grammar variant.
-:elsesegment WIN32
-* Description:  Lexical scanner, WIN32 grammar variant.
-:endsegment
+* Description:  Lexical scanner, all grammar variants.
 *
 ****************************************************************************/
 
@@ -39,13 +33,13 @@
 #include <stdio.h>
 #include "global.h"
 #include "yydriver.h"
-:segment OS2
-#include "yydrivr2.gh"
-:elsesegment WIN16
-#include "yydrivr6.gh"
-:elsesegment WIN32
-#include "yydrivrw.gh"
-:endsegment
+#if defined( GRAMMAR_OS2 )
+    #include "yydrivr2.gh"
+#elif defined( GRAMMAR_WIN16 )
+    #include "yydrivr6.gh"
+#elif defined( GRAMMAR_WIN32 )
+    #include "yydrivrw.gh"
+#endif
 #include "rcerrors.h"
 #include "depend.h"
 #include "errprt.h"
@@ -204,26 +198,26 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     return( token );
 } /* scanCPPDirective */
 
-:segment OS2
+#if defined( GRAMMAR_OS2 )
 void    ScanInitOS2( void )
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
 void    ScanInitW16( void )
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
 void    ScanInitWIN( void )
-:endsegment
-/*******************************/
+#endif
+/*************************/
 {
     enter_start_state();
 }
 
-:segment OS2
+#if defined( GRAMMAR_OS2 )
 void    ScanFiniOS2( void )
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
 void    ScanFiniW16( void )
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
 void    ScanFiniWIN( void )
-:endsegment
-/*******************************/
+#endif
+/*************************/
 {
 }
 
@@ -817,13 +811,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         } else {
             value->string.string = VarStringEnd( varstr, &(value->string.length) );
             DEBUGPUTS( value->string.string );
-:segment OS2
+#if defined( GRAMMAR_OS2 )
             token = LookupKeywordOS2( value->string );
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
             token = LookupKeywordW16( value->string );
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
             token = LookupKeywordWIN( value->string );
-:endsegment
+#endif
             if( token != Y_NAME ) {
                 /*
                  * release the string if it is a keyword
@@ -856,13 +850,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         }
 } /* scanDFA */
 
-:segment OS2
+#if defined( GRAMMAR_OS2 )
 YYTOKENTYPE ScanOS2( ScanValue *value )
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
 YYTOKENTYPE ScanW16( ScanValue *value )
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
 YYTOKENTYPE ScanWIN( ScanValue *value )
-:endsegment
+#endif
 /*************************************/
 {
     YYTOKENTYPE token;
@@ -875,13 +869,13 @@ YYTOKENTYPE ScanWIN( ScanValue *value )
     return( token );
 }
 
-:segment OS2
+#if defined( GRAMMAR_OS2 )
 void ScanInitStaticsOS2( void )
-:elsesegment WIN16
+#elif defined( GRAMMAR_WIN16 )
 void ScanInitStaticsW16( void )
-:elsesegment WIN32
+#elif defined( GRAMMAR_WIN32 )
 void ScanInitStaticsWIN( void )
-:endsegment
+#endif
 /*****************************/
 {
     _next = 0;
