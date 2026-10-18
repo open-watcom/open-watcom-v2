@@ -37,8 +37,18 @@ w16_yacc_file = $(w16_yacc_prefix)tab
 win_yacc_file = $(win_yacc_prefix)tab
 os2_yacc_file = $(os2_yacc_prefix)tab
 
+w16_keyword_file = keyword6
+win_keyword_file = keywordw
+os2_keyword_file = keyword2
+
+w16_scan_file = scan6
+win_scan_file = scanw
+os2_scan_file = scan2
+
 additional_clean = *.gh *.grh *.grc *.gc *.uni yw.out y2.out &
-    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).*
+    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).* &
+    $(w16_keyword_file).* $(win_keyword_file).* $(os2_keyword_file).* &
+    $(w16_scan_file).* $(win_scan_file).* $(os2_scan_file).*
 
 !include cproj.mif
 !include defrule.mif
@@ -68,9 +78,6 @@ extra_cpp_flags_f_rcalloc1 = -DRCMEM_DEBUG
 !endif
 extra_cpp_flags_f_idedrv   = -DSTATIC_LINKAGE
 extra_cpp_flags_f_maindrv  = -DDLL_NAME=$(dlltarg_name)
-extra_cpp_flags_f_w16ytab  = -DGRAMMAR_W16
-extra_cpp_flags_f_winytab  = -DGRAMMAR_WIN
-extra_cpp_flags_f_os2ytab  = -DGRAMMAR_OS2
 
 !ifeq trmem 1
 ! ifdef __WATCOM_TOOLS__
@@ -95,9 +102,12 @@ common_objs = &
     $(_subdir_)$(w16_yacc_file).obj &
     $(_subdir_)$(win_yacc_file).obj &
     $(_subdir_)$(os2_yacc_file).obj &
-    $(_subdir_)keyword6.obj &
-    $(_subdir_)keywordw.obj &
-    $(_subdir_)keyword2.obj &
+    $(_subdir_)$(w16_keyword_file).obj &
+    $(_subdir_)$(win_keyword_file).obj &
+    $(_subdir_)$(os2_keyword_file).obj &
+    $(_subdir_)$(w16_scan_file).obj &
+    $(_subdir_)$(win_scan_file).obj &
+    $(_subdir_)$(os2_scan_file).obj &
     $(_subdir_)rcerrors.obj &
     $(_subdir_)exeobj.obj &
     $(_subdir_)exeresw.obj &
@@ -119,9 +129,6 @@ common_objs = &
     $(_subdir_)rcmem.obj &
     $(_subdir_)rcstr.obj &
     $(_subdir_)pprcenv.obj &
-    $(_subdir_)scan6.obj &
-    $(_subdir_)scanw.obj &
-    $(_subdir_)scan2.obj &
     $(_subdir_)semacclw.obj &
     $(_subdir_)semantic.obj &
     $(_subdir_)semantcw.obj &
@@ -181,11 +188,13 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 !ifdef bootstrap
 prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
     $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
-    keyword2.gh keywordw.gh keyword6.gh
+    keyword2.gh keywordw.gh keyword6.gh &
+    yydrivr2.gh yydrivrw.gh yydrivr6.gh
 !else
 prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
     $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
-    keyword2.gh keywordw.gh keyword6.gh
+    keyword2.gh keywordw.gh keyword6.gh &
+    yydrivr2.gh yydrivrw.gh yydrivr6.gh
 !endif
 !ifdef wrc_dll
 exetarg_prebuild_objs = $(misc_objs) $(dlltarg_name).dll
@@ -228,6 +237,7 @@ win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
 # define debug_grammar macro for testing of grammar changes
+debug_grammar = 1
 !ifdef debug_grammar
 debug_yacc_out = -
 !endif
@@ -236,21 +246,36 @@ yacc_rc_driver = ../y/yydriver.c
 
 $(w16_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
     $(noecho)*wsplice -u -kWIN16  $[@ yrcw16.tmp
+    $(noecho)*wsplice -u -kWIN16  $(yacc_rc_driver) drivrw16.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp $(yacc_rc_driver) >y6.out
+    $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp drivrw16.tmp >y6.out
     $(debug_yacc_out)diff y6.out ../y/y6.chk
 
 $(win_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
     $(noecho)*wsplice -u -kWIN32  $[@ yrcwin.tmp
+    $(noecho)*wsplice -u -kWIN32  $(yacc_rc_driver) drivrwin.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp $(yacc_rc_driver) >yw.out
+    $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp drivrwin.tmp >yw.out
     $(debug_yacc_out)diff yw.out ../y/yw.chk
 
 $(os2_yacc_file).c : ../y/rcos2.y $(yacc_rc_driver)
     $(noecho)*wsplice -u -kOS2  $[@ yrcos2.tmp
+    $(noecho)*wsplice -u -kOS2  $(yacc_rc_driver) drivros2.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) $(os2_yacc_options) yrcos2.tmp $(yacc_rc_driver) >y2.out
+    $(noecho)$(yacc) $(os2_yacc_options) yrcos2.tmp drivros2.tmp >y2.out
     $(debug_yacc_out)diff y2.out ../y/y2.chk
+
+yydrivr6.gh : ../h/yydrivr.h
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN16  $[@ $@
+
+yydrivrw.gh : ../h/yydrivr.h
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN32  $[@ $@
+
+yydrivr2.gh : ../h/yydrivr.h
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kOS2  $[@ $@
 
 keyword6.gh : ../hash/rcwin.key
     $(noecho)*wsplice -u -kWIN16  $[@ kwrcw16.tmp
@@ -266,6 +291,30 @@ keyword2.gh : ../hash/rcos2.key
     $(noecho)*wsplice -u -kOS2  $[@ kwrcos2.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m kwrcos2.tmp
+
+$(w16_keyword_file).c : ../c/keyword.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN16  $[@ $@
+
+$(win_keyword_file).c : ../c/keyword.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN32  $[@ $@
+
+$(os2_keyword_file).c : ../c/keyword.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kOS2  $[@ $@
+
+$(w16_scan_file).c : ../c/scan.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN16  $[@ $@
+
+$(win_scan_file).c : ../c/scan.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kWIN32  $[@ $@
+
+$(os2_scan_file).c : ../c/scan.c
+    @%make echo_wsplice
+    $(noecho)*wsplice -u -kOS2  $[@ $@
 
 rcmsg.grh : ../h/rc.msg
     @%make echo_awk

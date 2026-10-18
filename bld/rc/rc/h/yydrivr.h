@@ -25,7 +25,13 @@
 *
 *  ========================================================================
 *
+:segment OS2
+* Description:  Public interface to OS/2 specific yydriver module.
+:elsesegment WIN16
 * Description:  Public interface to WIN16 specific yydriver module.
+:elsesegment WIN32
+* Description:  Public interface to WIN32 specific yydriver module.
+:endsegment
 *
 ****************************************************************************/
 
@@ -38,13 +44,24 @@
 #ifndef _YYDRIVRX_H
 #define _YYDRIVRX_H
 
+:segment OS2
+#include "os2ytab.h"
+:elsesegment WIN16
 #include "w16ytab.h"
+:elsesegment WIN32
+#include "winytab.h"
+:endsegment
 #include "scan.h"
 
-#define GSUFFIX(x)      x##W16
-#define GNAME(x)        GSUFFIX( x )
-
+:segment OS2
+extern YYTOKENTYPE  LookupKeywordOS2( ScanString newstring );
+extern YYTOKENTYPE  ScanOS2( ScanValue *value );
+:elsesegment WIN16
 extern YYTOKENTYPE  LookupKeywordW16( ScanString newstring );
 extern YYTOKENTYPE  ScanW16( ScanValue *value );
+:elsesegment WIN32
+extern YYTOKENTYPE  LookupKeywordWIN( ScanString newstring );
+extern YYTOKENTYPE  ScanWIN( ScanValue *value );
+:endsegment
 
 #endif

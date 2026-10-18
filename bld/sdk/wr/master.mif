@@ -116,11 +116,13 @@ yacc_rc_driver = $(wrc_dir)/y/yydriver.c
 yacc_rc_grammar = $(wrc_dir)/y/rcwin.y
 
 $(w16_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
-    wsplice -u -kWIN16  $[@ yrcw16.tmp
+    $(noecho)*wsplice -u -kWIN16  $[@ yrcw16.tmp
+    $(noecho)*wsplice -u -kWIN16  $(yacc_rc_driver) drivrw16.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) -b $(w16_yacc_prefix) -d -db -dd yrcw16.tmp $(yacc_rc_driver) >$(nulldevice)
+    $(noecho)$(yacc) -b $(w16_yacc_prefix) -d -db -dd yrcw16.tmp drivrw16.tmp >$(nulldevice)
 
 $(win_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
-    wsplice -u -kWIN32  $[@ yrcwin.tmp
+    $(noecho)*wsplice -u -kWIN32  $[@ yrcwin.tmp
+    $(noecho)*wsplice -u -kWIN32  $(yacc_rc_driver) drivrwin.tmp
     @%make echo_yacc
-    $(noecho)$(yacc) -b $(win_yacc_prefix) -d -db -dd yrcwin.tmp $(yacc_rc_driver) >$(nulldevice)
+    $(noecho)$(yacc) -b $(win_yacc_prefix) -d -db -dd yrcwin.tmp drivrwin.tmp >$(nulldevice)

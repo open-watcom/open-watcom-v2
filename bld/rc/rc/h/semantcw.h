@@ -34,7 +34,7 @@
 #ifndef SEMANTCW_H_INCLUDED
 #define SEMANTCW_H_INCLUDED
 
-#include "yydrivrw.h"
+#include "yydrivrw.gh"
 #include "semmenuw.h"
 #include "semdiagw.h"
 #include "semtbarw.h"

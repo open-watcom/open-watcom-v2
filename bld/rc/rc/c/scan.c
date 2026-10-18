@@ -25,22 +25,27 @@
 *
 *  ========================================================================
 *
-* Description:  Lexical scanner, all grammar variants.
+:segment OS2
+* Description:  Lexical scanner, OS/2 grammar variant.
+:elsesegment WIN16
+* Description:  Lexical scanner, WIN16 grammar variant.
+:elsesegment WIN32
+* Description:  Lexical scanner, WIN32 grammar variant.
+:endsegment
 *
 ****************************************************************************/
 
 
 #include <stdio.h>
-#include "grammart.h"
 #include "global.h"
 #include "yydriver.h"
-#if defined( GRAMMAR_OS2 )
-    #include "yydrivr2.h"
-#elif defined( GRAMMAR_W16 )
-    #include "yydrivr6.h"
-#elif defined( GRAMMAR_WIN )
-    #include "yydrivrw.h"
-#endif
+:segment OS2
+#include "yydrivr2.gh"
+:elsesegment WIN16
+#include "yydrivr6.gh"
+:elsesegment WIN32
+#include "yydrivrw.gh"
+:endsegment
 #include "rcerrors.h"
 #include "depend.h"
 #include "errprt.h"
@@ -199,13 +204,25 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     return( token );
 } /* scanCPPDirective */
 
-void    GNAME( ScanInit )( void )
+:segment OS2
+void    ScanInitOS2( void )
+:elsesegment WIN16
+void    ScanInitW16( void )
+:elsesegment WIN32
+void    ScanInitWIN( void )
+:endsegment
 /*******************************/
 {
     enter_start_state();
 }
 
-void    GNAME( ScanFini )( void )
+:segment OS2
+void    ScanFiniOS2( void )
+:elsesegment WIN16
+void    ScanFiniW16( void )
+:elsesegment WIN32
+void    ScanFiniWIN( void )
+:endsegment
 /*******************************/
 {
 }
@@ -800,7 +817,13 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         } else {
             value->string.string = VarStringEnd( varstr, &(value->string.length) );
             DEBUGPUTS( value->string.string );
-            token = GNAME( LookupKeyword )( value->string );
+:segment OS2
+            token = LookupKeywordOS2( value->string );
+:elsesegment WIN16
+            token = LookupKeywordW16( value->string );
+:elsesegment WIN32
+            token = LookupKeywordWIN( value->string );
+:endsegment
             if( token != Y_NAME ) {
                 /*
                  * release the string if it is a keyword
@@ -833,8 +856,14 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
         }
 } /* scanDFA */
 
-YYTOKENTYPE GNAME( Scan )( ScanValue *value )
-/*******************************************/
+:segment OS2
+YYTOKENTYPE ScanOS2( ScanValue *value )
+:elsesegment WIN16
+YYTOKENTYPE ScanW16( ScanValue *value )
+:elsesegment WIN32
+YYTOKENTYPE ScanWIN( ScanValue *value )
+:endsegment
+/*************************************/
 {
     YYTOKENTYPE token;
 
@@ -846,7 +875,13 @@ YYTOKENTYPE GNAME( Scan )( ScanValue *value )
     return( token );
 }
 
-void GNAME( ScanInitStatics )( void )
+:segment OS2
+void ScanInitStaticsOS2( void )
+:elsesegment WIN16
+void ScanInitStaticsW16( void )
+:elsesegment WIN32
+void ScanInitStaticsWIN( void )
+:endsegment
 /*****************************/
 {
     _next = 0;
