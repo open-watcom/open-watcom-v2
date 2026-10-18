@@ -78,25 +78,25 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     fp = RcIoOpenInputBin( full_filename );
     if( fp == NULL ) {
-        RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
+        RcError( RCMSG_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         error = true;
     } else {
         error = WResReadDir( fp, &dir, &dup_discarded );
         if( error ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:
-                RcError( ERR_INVALID_RES, full_filename );
+                RcError( RCMSG_INVALID_RES, full_filename );
                 break;
             case WRS_BAD_VERSION:
-                RcError( ERR_BAD_RES_VER, full_filename );
+                RcError( RCMSG_BAD_RES_VER, full_filename );
                 break;
             default:
-                RcError( ERR_READING_RES, full_filename, LastWresErrStr() );
+                RcError( RCMSG_READING_RES, full_filename, LastWresErrStr() );
                 break;
             }
         } else {
             if( dir->TargetOS != CurrResFile.dir->TargetOS ) {
-                RcError( ERR_RES_OS_MISMATCH, full_filename );
+                RcError( RCMSG_RES_OS_MISMATCH, full_filename );
                 error = true;
             } else {
                 buffer = MemAllocSafe( BUFFER_SIZE );
@@ -121,7 +121,7 @@ void SemWINAddResFile( char *filename )
     char        full_filename[_MAX_PATH];
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-        RcError( ERR_CANT_FIND_FILE, filename );
+        RcError( RCMSG_CANT_FIND_FILE, filename );
         ErrorHasOccured = true;
     } else if( AddDependency( full_filename ) ) {
         ErrorHasOccured = true;

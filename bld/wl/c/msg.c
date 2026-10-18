@@ -609,34 +609,34 @@ bool RcIOError( RcStatus ret, const char *srcname, const char *dstname, int err 
     case RS_PARAM_ERROR:
         return( false );
     case RS_OPEN_ERROR:
-        RcError( ERR_CANT_OPEN_FILE, srcname, strerror( err ) );
+        RcError( RCMSG_CANT_OPEN_FILE, srcname, strerror( err ) );
         break;
     case RS_BAD_FILE_FMT:
-        RcError( ERR_NOT_VALID_EXE, srcname );
+        RcError( RCMSG_NOT_VALID_EXE, srcname );
         break;
     case RS_READ_ERROR:
-        RcError( ERR_READING_FILE, srcname, strerror( err ) );
+        RcError( RCMSG_READING_FILE, srcname, strerror( err ) );
         break;
     case RS_READ_ERROR_EXE:
-        RcError( ERR_READING_EXE, srcname, strerror( err ) );
+        RcError( RCMSG_READING_EXE, srcname, strerror( err ) );
         break;
     case RS_READ_ERROR_TMP:
-        RcError( ERR_READING_TMP, srcname, strerror( err ) );
+        RcError( RCMSG_READING_TMP, srcname, strerror( err ) );
         break;
     case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, srcname );
+        RcError( RCMSG_UNEXPECTED_EOF, srcname );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_FILE, dstname, strerror( err ) );
         break;
     case RS_WRITE_ERROR_RES:
-        RcError( ERR_WRITTING_RES, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_RES, dstname, strerror( err ) );
         break;
     case RS_WRITE_ERROR_TMP:
-        RcError( ERR_WRITTING_TMP, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_TMP, dstname, strerror( err ) );
         break;
     default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( RCMSG_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
         break;
     }
     return( true );

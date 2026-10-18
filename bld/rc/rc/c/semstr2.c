@@ -155,7 +155,7 @@ FullStringTable *SemOS2AddStrToStringTable( FullStringTable *table,
             /*
              * duplicate stringid
              */
-            RcError( ERR_DUPLICATE_STRING_CONST, stringid );
+            RcError( RCMSG_DUPLICATE_STRING_CONST, stringid );
             ErrorHasOccured = true;
         }
     } else {
@@ -181,7 +181,7 @@ static void mergeStringTableBlocks( FullStringTableBlock *currblock,
             oldblock->Block.String[stringid] = NULL;
         } else {
             if( oldblock->Block.String[stringid] != NULL ) {
-                RcError( ERR_DUPLICATE_STRING_CONST,
+                RcError( RCMSG_DUPLICATE_STRING_CONST,
                             ( currblock->BlockNum << 4 ) + stringid );
                 ErrorHasOccured = true;
             }
@@ -306,7 +306,7 @@ void SemOS2WriteStringTable( FullStringTable *table, WResID *type_id )
                                                  CurrResFile.fp,
                                                  currblock->codePage );
             if( error ) {
-                RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+                RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 ErrorHasOccured = true;
                 SemOS2FreeStringTable( table );
                 return;

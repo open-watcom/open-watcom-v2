@@ -47,13 +47,13 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
         RcError( read_msg, filename, strerror( err_code ) );
         break;
     case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, filename );
+        RcError( RCMSG_UNEXPECTED_EOF, filename );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+        RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
         break;
     default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( RCMSG_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
         break;
     }
 }

@@ -104,7 +104,7 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
                 /*
                  * can't ignore it otherwise the rva's in the file will be off
                  */
-                RcWarning( ERR_OLD_RESOURCE_OBJECT );
+                RcWarning( RCMSG_OLD_RESOURCE_OBJECT );
             }
         }
     }
@@ -133,7 +133,7 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
          * Since this case is rare and the user can relink with a higher
          * object_align we just print an error messages and quit
          */
-        RcError( ERR_PE_HEADER_SIZE_CHANGE );
+        RcError( RCMSG_PE_HEADER_SIZE_CHANGE );
         return( -1 );
     }
 
@@ -145,7 +145,7 @@ static int copyObjectTable( ExeFileInfo *src, ExeFileInfo *dst )
     }
 
     if( dst_num_objects == -1 ) {
-        RcError( ERR_INTERNAL, INTERR_EXE_HAS_MINUS_1_SEGS );
+        RcError( RCMSG_INTERNAL, INTERR_EXE_HAS_MINUS_1_SEGS );
     }
     return( dst_num_objects );
 }

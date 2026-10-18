@@ -392,7 +392,7 @@ name-id
          */
         {
             $$ = WResIDFromNum( 0 );
-            RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
+            RcError( RCMSG_SYMBOL_NOT_DEFINED, $1.string );
             ErrorHasOccured = true;
         }
     | string-constant
@@ -401,7 +401,7 @@ name-id
          */
         {
             $$ = WResIDFromNum( 0 );
-            RcError( ERR_SYNTAX_STR, $1.string );
+            RcError( RCMSG_SYNTAX_STR, $1.string );
             ErrorHasOccured = true;
         }
     | constant-expression
@@ -409,7 +409,7 @@ name-id
             $$ = WResIDFromNum( $1.Value );
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
-                RcError( ERR_BAD_RES_ID, $1.Value );
+                RcError( RCMSG_BAD_RES_ID, $1.Value );
                 ErrorHasOccured = true;
             }
         }
@@ -1439,7 +1439,7 @@ cntl-text
     | Y_NAME
         {
             $$ = ResNumToNameOrOrdinal( 0 );
-            RcError( ERR_SYMBOL_NOT_DEFINED, $1.string );
+            RcError( RCMSG_SYMBOL_NOT_DEFINED, $1.string );
             ErrorHasOccured = true;
         }
     ;
@@ -1612,7 +1612,7 @@ multiplicative-exp
 unary-exp
     : primary-exp
     | Y_MINUS unary-exp
-        { $$.Value = (uint_32)( -(int_32)$2.Value ); $$.Mask = $2.Mask; }
+        { $$.Value = - $2.Value; $$.Mask = $2.Mask; }
     | Y_BITNOT unary-exp
         { $$.Value = ~ $2.Value; $$.Mask = $2.Mask; }
     | Y_NOT unary-exp

@@ -272,7 +272,7 @@ bool BuildLXResourceObjects( ExeFileInfo *dst, ResFileInfo *resfiles,
         return( true );
     }
     if( LXResTableBuild( dir, resfiles->Dir ) ) {
-        RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
+        RcError( RCMSG_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
     /*

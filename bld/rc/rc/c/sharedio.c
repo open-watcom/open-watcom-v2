@@ -90,19 +90,19 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
         resfile->name = resnames->name;
         resfile->fp = ResOpenFileRO( resfile->name );
         if( resfile->fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
+            RcError( RCMSG_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             goto HANDLE_ERROR;
         }
         if( WResReadDir2( resfile->fp, &resfile->Dir, &dup_discarded, resfile ) ) {
             switch( LastWresStatus() ) {
             case WRS_BAD_SIG:
-                RcError( ERR_INVALID_RES, resfile->name );
+                RcError( RCMSG_INVALID_RES, resfile->name );
                 break;
             case WRS_BAD_VERSION:
-                RcError( ERR_BAD_RES_VER, resfile->name );
+                RcError( RCMSG_BAD_RES_VER, resfile->name );
                 break;
             default:
-                RcError( ERR_READING_RES, resfile->name, LastWresErrStr() );
+                RcError( RCMSG_READING_RES, resfile->name, LastWresErrStr() );
                 break;
             }
             goto HANDLE_ERROR;
@@ -124,7 +124,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
         switch( type ) {
         case EXE_TYPE_NE_WIN:
             if( res_os != WRES_OS_WIN16 ) {
-                RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
+                RcError( RCMSG_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
@@ -135,13 +135,13 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
              */
             if( res_os != WRES_OS_WIN16
               && res_os != WRES_OS_OS2 ) {
-                RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
+                RcError( RCMSG_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
         case EXE_TYPE_PE:
             if( res_os != WRES_OS_WIN32 ) {
-                RcError( ERR_NONNT_RES_TO_NT_EXE, resfile->name, exename );
+                RcError( RCMSG_NONNT_RES_TO_NT_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
@@ -151,7 +151,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **presfiles, bool *allopen,
              */
             if( res_os != WRES_OS_OS2
               && res_os != WRES_OS_WIN16 ) {
-                RcError( ERR_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
+                RcError( RCMSG_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
@@ -300,31 +300,31 @@ void ReportDupResource( WResID *res_id, WResID *type_id, const char *file1,
         if( file1 != NULL
           && file2 != NULL ) {
             if( warn ) {
-                RcWarning( ERR_DUPLICATE_STR_TABLE_FILE,
+                RcWarning( RCMSG_DUPLICATE_STR_TABLE_FILE,
                                 strbase, strbase + 15, file1, file2 );
             } else {
-                RcError( ERR_DUPLICATE_STR_TABLE_FILE,
+                RcError( RCMSG_DUPLICATE_STR_TABLE_FILE,
                                 strbase, strbase + 15, file1, file2 );
             }
         } else {
             if( warn ) {
-                RcWarning( ERR_DUPLICATE_STR_TABLE, strbase, strbase + 15 );
+                RcWarning( RCMSG_DUPLICATE_STR_TABLE, strbase, strbase + 15 );
             } else {
-                RcError( ERR_DUPLICATE_STR_TABLE, strbase, strbase + 15 );
+                RcError( RCMSG_DUPLICATE_STR_TABLE, strbase, strbase + 15 );
             }
         }
     } else if( file1 != NULL
       && file2 != NULL ) {
         if( warn ) {
-            RcWarning( ERR_DUPLICATE_RES_FILE, type, name, file1, file2 );
+            RcWarning( RCMSG_DUPLICATE_RES_FILE, type, name, file1, file2 );
         } else {
-            RcError( ERR_DUPLICATE_RES_FILE, type, name, file1, file2 );
+            RcError( RCMSG_DUPLICATE_RES_FILE, type, name, file1, file2 );
         }
     } else {
         if( warn ) {
-            RcWarning( ERR_DUPLICATE_RES, type, name );
+            RcWarning( RCMSG_DUPLICATE_RES, type, name );
         } else {
-            RcError( ERR_DUPLICATE_RES, type, name );
+            RcError( RCMSG_DUPLICATE_RES, type, name );
         }
     }
     if( res_id->IsName ) {

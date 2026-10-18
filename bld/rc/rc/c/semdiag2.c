@@ -715,7 +715,7 @@ void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags res_flags,
     }
     if( error ) {
         err_code = LastWresErr();
-        RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
+        RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );
@@ -828,7 +828,7 @@ void SemOS2AddDlgincResource( WResID *res_id, char *filename )
     error = ResWriteString( filename, false, CurrResFile.fp );
     if( error ) {
         err_code = LastWresErr();
-        RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+        RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
         ErrorHasOccured = true;
     } else {
         loc.len = SemEndResource( loc.start );

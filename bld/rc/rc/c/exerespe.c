@@ -806,7 +806,7 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
         return( true );
     }
     if( PEResDirBuild( pedir, resfiles->Dir ) ) {
-        RcError( ERR_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
+        RcError( RCMSG_INTERNAL, INTERR_ERR_BUILDING_RES_DIR );
         return( true );
     }
     CompleteTree( pedir );
@@ -817,7 +817,7 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
     setDataOffsets( pedir, &curr_rva, resfiles, writebyfile );
     ret = writeDirectory( pedir, dst->fp );
     if( ret != RS_OK ) {
-        RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
+        RcError( RCMSG_WRITTING_FILE, dst->name, strerror( errno ) );
         return( true );
     }
     errres = NULL;
@@ -838,7 +838,7 @@ bool BuildPEResourceObject( ExeFileInfo *dst, ResFileInfo *resfiles,
     pehdr = dst->u.PEInfo.WinHead;
     fillResourceObj( res_obj, pedir, PE( *pehdr, file_align ) );
     if( padObject( pedir, dst, res_obj->physical_size ) ) {
-        RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
+        RcError( RCMSG_WRITTING_FILE, dst->name, strerror( errno ) );
         return( true );
     }
     /*

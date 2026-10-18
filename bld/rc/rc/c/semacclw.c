@@ -72,11 +72,11 @@ static void CheckAccelFlags( AccelFlags *flags, unsigned long idval )
     if( (*flags & ACCEL_VIRTKEY) == 0 ) {
         if( *flags & ACCEL_SHIFT ) {
             *flags &= ~ACCEL_SHIFT;
-            RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
+            RcWarning( RCMSG_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
         }
         if( *flags & ACCEL_CONTROL ) {
             *flags &= ~ACCEL_CONTROL;
-            RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "CONTROL", idval );
+            RcWarning( RCMSG_ACCEL_KEYWORD_IGNORED, "CONTROL", idval );
         }
     }
 }
@@ -103,7 +103,7 @@ FullAccelEntryWIN SemWINMakeAccItem( AccelEvent event, unsigned long idval,
             entry.u.entry.Id = idval;
         }
     } else {
-        RcError( ERR_ACCEL_NO_TYPE, idval );
+        RcError( RCMSG_ACCEL_NO_TYPE, idval );
         ErrorHasOccured = true;
         entry.u.entry.Ascii = 0;
         entry.u.entry.Flags = 0;
@@ -125,7 +125,7 @@ void SemWINWriteAccelEntry( FullAccelEntryWIN entry )
             error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.fp );
         }
         if( error ) {
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         }
     }

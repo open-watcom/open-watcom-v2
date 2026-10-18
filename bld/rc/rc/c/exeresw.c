@@ -305,7 +305,7 @@ RcStatus CopyWINResources( ExeFileInfo *dst, ResFileInfo *res, ResMemFlags res2m
         CheckDebugOffset( dst );
     }
     if( ret == RS_READ_ERROR )
-        ret = ERR_READING_RES;
+        ret = RCMSG_READING_RES;
     RcIOError( ret, CmdLineParms.OutResFileName, dst->name, err_code );
     return( ret );
 } /* CopyWINResources */

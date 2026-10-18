@@ -262,7 +262,7 @@ static YYTOKENTYPE yylex( void )
         yylval.string = value.string;
         break;
     case Y_SCAN_ERROR:
-        RcError( ERR_UNKNOWN_CHAR, value.UnknownChar );
+        RcError( RCMSG_UNKNOWN_CHAR, value.UnknownChar );
         break;
     default:
         break;
@@ -411,22 +411,22 @@ static void handleError( YYTOKENTYPE yytoken, parse_stack *state, bool error_sta
     if( !error_state ) {
         switch( yytoken ) {
         case Y_INTEGER:
-            RcError( ERR_SYNTAX_STR, yylval.intinfo.str );
+            RcError( RCMSG_SYNTAX_STR, yylval.intinfo.str );
             MemFree( yylval.intinfo.str );
             break;
         case Y_NAME:
         case Y_STRING:
         case Y_DOS_FILENAME:
-            RcError( ERR_SYNTAX_STR, yylval.string.string );
+            RcError( RCMSG_SYNTAX_STR, yylval.string.string );
             MemFree( yylval.string.string );
             break;
         case Y_SCAN_ERROR:
             break;
         default:
 :segment OS2
-            RcError( ERR_SYNTAX_STR, SemOS2TokenToString( yytoken ) );
+            RcError( RCMSG_SYNTAX_STR, SemOS2TokenToString( yytoken ) );
 :elsesegment
-            RcError( ERR_SYNTAX_STR, SemWINTokenToString( yytoken ) );
+            RcError( RCMSG_SYNTAX_STR, SemWINTokenToString( yytoken ) );
 :endsegment
             break;
         }
@@ -485,7 +485,7 @@ bool ParseWIN( void )
     newParseStack( &resource_state );
     what = doParse( &resource_state );
     if( what == P_ERROR ) {
-        RcError( ERR_PARSER_INTERNAL );
+        RcError( RCMSG_PARSER_INTERNAL );
         ErrorHasOccured = true;
     }
     deleteStack( &resource_state );

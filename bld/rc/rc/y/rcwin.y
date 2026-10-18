@@ -381,7 +381,7 @@ name-id
             $$ = WResIDFromNum( $1.Value );
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
-                RcError( ERR_BAD_RES_ID, $1.Value );
+                RcError( RCMSG_BAD_RES_ID, $1.Value );
                 ErrorHasOccured = true;
             }
         }
@@ -399,7 +399,7 @@ type-id
             $$ = WResIDFromNum( $1.Value );
             if( $$ == NULL ) {
                 $$ = WResIDFromNum( 0 );
-                RcError( ERR_BAD_RES_TYPE, $1.Value );
+                RcError( RCMSG_BAD_RES_TYPE, $1.Value );
                 ErrorHasOccured = true;
             }
         }

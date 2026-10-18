@@ -71,7 +71,7 @@ void SemWriteRawDataItem( RawDataItem item )
         }
     }
     if( error ) {
-        RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+        RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
         ErrorHasOccured = true;
     }
 }
@@ -93,7 +93,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
     fp = NULL;
     if( !onlyFile ) {
         if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-            RcError( ERR_CANT_FIND_FILE, filename );
+            RcError( RCMSG_CANT_FIND_FILE, filename );
             error = true;
         }
         if( !error ) {
@@ -107,7 +107,7 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
     if( !error ) {
         fp = RcIoOpenInputBin( filename );
         if( fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+            RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
             error = true;
         }
     }
@@ -118,12 +118,12 @@ static ResLocation semCopyRawFile( const char *filename, bool onlyFile )
         loc.start = SemStartResource();
         pos = RESTELL( fp );
         if( pos == -1L ) {
-            RcError( ERR_READING_DATA, filename, strerror( errno ) );
+            RcError( RCMSG_READING_DATA, filename, strerror( errno ) );
             error = true;
         } else {
             ret = CopyDataUntilEOF( pos, fp, CurrResFile.fp, BUFFER_SIZE, &err_code );
             if( ret != RS_OK ) {
-                ReportCopyError( ret, ERR_READING_DATA, filename, err_code );
+                ReportCopyError( ret, RCMSG_READING_DATA, filename, err_code );
                 error = true;
             }
         }

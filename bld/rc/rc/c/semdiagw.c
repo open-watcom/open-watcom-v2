@@ -149,7 +149,7 @@ static void AddDialogOption( DialogBoxHeader *head, FullDialogOptions *opt )
         break;
     case Y_FONT:
         if( CmdLineParms.winver < 30 ) {
-            RcWarning( WARN_DLGFONT_WIN2X );
+            RcWarning( RCMSG_DLGFONT_WIN2X );
         } else {
             head->Style |= DS_SETFONT;
             head->PointSize = opt->Opt.Font.PointSize;
@@ -167,7 +167,7 @@ static void AddDialogOption( DialogBoxHeader *head, FullDialogOptions *opt )
         head->Caption = opt->Opt.Str;
         break;
     case Y_EXSTYLE:
-        RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( opt->token ) );
+        RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( opt->token ) );
         break;
     }
 } /* AddDialogOptions */
@@ -412,7 +412,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
             defstyle_hi = DEF_AUTO3STATE_HI;
             defstyle_lo = DEF_AUTO3STATE_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
+            RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -422,7 +422,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
             defstyle_hi = DEF_AUTOCHECKBOX_HI;
             defstyle_lo = DEF_AUTOCHECKBOX_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
+            RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -432,7 +432,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
             defstyle_hi = DEF_AUTORADIOBUTTON_HI;
             defstyle_lo = DEF_AUTORADIOBUTTON_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
+            RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -447,7 +447,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
             defstyle_hi = DEF_STATE3_HI;
             defstyle_lo = DEF_STATE3_LO;
         } else {
-            RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( token ) );
+            RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( token ) );
             return( NULL );
         }
         break;
@@ -647,7 +647,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
                 if( travptr->dataListHead != NULL ) {
                     SemFreeDataElemList( travptr->dataListHead );
-                    RcError( ERR_DATA_ELEMENTS );
+                    RcError( RCMSG_DATA_ELEMENTS );
                 }
             }
         }
@@ -737,10 +737,10 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
     }
     if( error ) {
         if( error == 2 ) {
-            RcError( ERR_WIN16_TOO_MANY_CONTROLS, ctrls->numctrls );
+            RcError( RCMSG_WIN16_TOO_MANY_CONTROLS, ctrls->numctrls );
         } else {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
         }
         ErrorHasOccured = true;
     }

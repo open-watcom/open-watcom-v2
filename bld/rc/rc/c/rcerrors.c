@@ -59,11 +59,11 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
 #if !defined( INSIDE_WLINK )
     va_copy( args1, args );
     switch( errornum ) {
-    case ERR_CANT_OPEN_FILE:
-    case ERR_UNEXPECTED_EOF:
-    case ERR_READING_FILE:
-    case ERR_WRITTING_FILE:
-    case ERR_WRITTING_RES:
+    case RCMSG_CANT_OPEN_FILE:
+    case RCMSG_UNEXPECTED_EOF:
+    case RCMSG_READING_FILE:
+    case RCMSG_WRITTING_FILE:
+    case RCMSG_WRITTING_RES:
         fname = va_arg( args1, char * );
 #if defined( INSIDE_WR )
         if( strcmp( fname, TMPFILE2 ) == 0 ) {
@@ -73,15 +73,15 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
           || strcmp( fname, TMPFILE2 ) == 0 ) {
 #endif
             switch( errornum ) {
-            case ERR_CANT_OPEN_FILE:
-                errornum = ERR_OPENING_TMP;
+            case RCMSG_CANT_OPEN_FILE:
+                errornum = RCMSG_OPENING_TMP;
                 break;
-            case ERR_UNEXPECTED_EOF:
-            case ERR_READING_FILE:
-                errornum = ERR_READING_TMP;
+            case RCMSG_UNEXPECTED_EOF:
+            case RCMSG_READING_FILE:
+                errornum = RCMSG_READING_TMP;
                 break;
-            case ERR_WRITTING_FILE:
-                errornum = ERR_WRITTING_TMP;
+            case RCMSG_WRITTING_FILE:
+                errornum = RCMSG_WRITTING_TMP;
                 break;
             }
         }
@@ -95,42 +95,42 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
     errinfo.flags |= OUTFLAG_ERRID;
     errinfo.errid = errornum;
     switch( errornum ) {
-    case ERR_CANT_OPEN_FILE:
-    case ERR_READING_TMP:
-    case ERR_WRITTING_TMP:
-    case ERR_OPENING_TMP:
-    case ERR_UNEXPECTED_EOF:
-    case ERR_WRITTING_FILE:
-    case ERR_READING_FILE:
-    case ERR_WRITTING_RES:
-    case ERR_CANT_FIND_FILE:
-    case ERR_FILENAME_NEEDED:
-    case ERR_NO_OPT_SPECIFIED:
-    case ERR_NOT_BITMAP_FILE:
-    case ERR_NOT_CURSOR_FILE:
-    case ERR_NOT_ICON_FILE:
-    case ERR_NOT_VALID_EXE:
-    case ERR_OUT_OF_MEMORY:
-    case ERR_PARSER_INTERNAL:
-    case ERR_RENAMING_TMP_FILE:
-    case ERR_TOO_MANY_FILENAMES:
-    case ERR_UNKNOWN_MULT_OPTION:
-    case ERR_UNKNOWN_OPTION:
-    case ERR_NONNT_RES_TO_NT_EXE:
-    case ERR_NONWIN_RES_TO_WIN_EXE:
-    case ERR_NONOS2_RES_TO_OS2_EXE:
-    case ERR_OLD_RESOURCE_OBJECT:
-    case ERR_READING_EXE:
-    case ERR_READING_ICON:
-    case ERR_READING_CURSOR:
-    case ERR_READING_BITMAP:
-    case ERR_READING_FONT:
-    case ERR_READING_DATA:
-    case ERR_READING_RES:
-    case ERR_BAD_RES_VER:
-    case ERR_INVALID_RES:
-    case ERR_INTERNAL:
-    case ERR_DELETING_FILE:
+    case RCMSG_CANT_OPEN_FILE:
+    case RCMSG_READING_TMP:
+    case RCMSG_WRITTING_TMP:
+    case RCMSG_OPENING_TMP:
+    case RCMSG_UNEXPECTED_EOF:
+    case RCMSG_WRITTING_FILE:
+    case RCMSG_READING_FILE:
+    case RCMSG_WRITTING_RES:
+    case RCMSG_CANT_FIND_FILE:
+    case RCMSG_FILENAME_NEEDED:
+    case RCMSG_NO_OPT_SPECIFIED:
+    case RCMSG_NOT_BITMAP_FILE:
+    case RCMSG_NOT_CURSOR_FILE:
+    case RCMSG_NOT_ICON_FILE:
+    case RCMSG_NOT_VALID_EXE:
+    case RCMSG_OUT_OF_MEMORY:
+    case RCMSG_PARSER_INTERNAL:
+    case RCMSG_RENAMING_TMP_FILE:
+    case RCMSG_TOO_MANY_FILENAMES:
+    case RCMSG_UNKNOWN_MULT_OPTION:
+    case RCMSG_UNKNOWN_OPTION:
+    case RCMSG_NONNT_RES_TO_NT_EXE:
+    case RCMSG_NONWIN_RES_TO_WIN_EXE:
+    case RCMSG_NONOS2_RES_TO_OS2_EXE:
+    case RCMSG_OLD_RESOURCE_OBJECT:
+    case RCMSG_READING_EXE:
+    case RCMSG_READING_ICON:
+    case RCMSG_READING_CURSOR:
+    case RCMSG_READING_BITMAP:
+    case RCMSG_READING_FONT:
+    case RCMSG_READING_DATA:
+    case RCMSG_READING_RES:
+    case RCMSG_BAD_RES_VER:
+    case RCMSG_INVALID_RES:
+    case RCMSG_INTERNAL:
+    case RCMSG_DELETING_FILE:
         /*
          * don't print the filename & line number before these errors
          */
@@ -138,14 +138,14 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list args )
         vsprintf( rcStrBuf, errBuffer, args );
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
-    case ERR_RCSTR_NOT_FOUND:
+    case RCMSG_RCSTR_NOT_FOUND:
         /*
          * this message means the error strings cannot be obtained from
          * the exe so its text is hard coded
          */
         sprintf( errBuffer, "Resource strings not found" );
         break;
-    case ERR_NO_MSG:
+    case RCMSG_NO_MSG:
         /*
          * dont print anything
          */
@@ -194,34 +194,34 @@ bool RcIOError( RcStatus ret, const char *srcname, const char *dstname, int err 
     case RS_PARAM_ERROR:
         return( false );
     case RS_OPEN_ERROR:
-        RcError( ERR_CANT_OPEN_FILE, srcname, strerror( err ) );
+        RcError( RCMSG_CANT_OPEN_FILE, srcname, strerror( err ) );
         break;
     case RS_BAD_FILE_FMT:
-        RcError( ERR_NOT_VALID_EXE, srcname );
+        RcError( RCMSG_NOT_VALID_EXE, srcname );
         break;
     case RS_READ_ERROR:
-        RcError( ERR_READING_FILE, srcname, strerror( err ) );
+        RcError( RCMSG_READING_FILE, srcname, strerror( err ) );
         break;
     case RS_READ_ERROR_EXE:
-        RcError( ERR_READING_EXE, srcname, strerror( err ) );
+        RcError( RCMSG_READING_EXE, srcname, strerror( err ) );
         break;
     case RS_READ_ERROR_TMP:
-        RcError( ERR_READING_TMP, srcname, strerror( err ) );
+        RcError( RCMSG_READING_TMP, srcname, strerror( err ) );
         break;
     case RS_READ_INCMPLT:
-        RcError( ERR_UNEXPECTED_EOF, srcname );
+        RcError( RCMSG_UNEXPECTED_EOF, srcname );
         break;
     case RS_WRITE_ERROR:
-        RcError( ERR_WRITTING_FILE, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_FILE, dstname, strerror( err ) );
         break;
     case RS_WRITE_ERROR_RES:
-        RcError( ERR_WRITTING_RES, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_RES, dstname, strerror( err ) );
         break;
     case RS_WRITE_ERROR_TMP:
-        RcError( ERR_WRITTING_TMP, dstname, strerror( err ) );
+        RcError( RCMSG_WRITTING_TMP, dstname, strerror( err ) );
         break;
     default:
-        RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+        RcError( RCMSG_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
         break;
     }
     return( true );

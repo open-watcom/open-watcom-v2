@@ -56,7 +56,7 @@
 
 #ifdef DEVBUILD
     #define __location " (" __FILE__ "," __xstr(__LINE__) ")"
-    #define DbgNever()  (RcFatalError( ERR_TEXT_FROM_CPP, "should never execute this" __location ))
+    #define DbgNever()  (RcFatalError( RCMSG_TEXT_FROM_CPP, "should never execute this" __location ))
 #else
     #define DbgNever()
 #endif
@@ -150,32 +150,32 @@ static void BadCmdLine( int error_code )
 // BAD CHAR DETECTED
 void BadCmdLineChar( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 // BAD ID DETECTED
 void BadCmdLineId( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 // BAD NUMBER DETECTED
 void BadCmdLineNumber( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 // BAD PATH DETECTED
 void BadCmdLinePath( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 // BAD FILE DETECTED
 void BadCmdLineFile( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 // BAD TEXT DETECTED
 void BadCmdLineOption( void )
 {
-    BadCmdLine( ERR_UNKNOWN_MULT_OPTION );
+    BadCmdLine( RCMSG_UNKNOWN_MULT_OPTION );
 }
 
 static void SetMBRange( unsigned from, unsigned to, char data )
@@ -245,20 +245,20 @@ static void LoadCodepageFile( const char *cpfile )
     ret = LoadCharTable( cpfile, path );
     switch( ret ) {
     case RS_FILE_NOT_FOUND:
-        RcFatalError( ERR_CANT_FIND_CHAR_FILE, cpfile );
+        RcFatalError( RCMSG_CANT_FIND_CHAR_FILE, cpfile );
         /* never return */
     case RS_READ_ERROR:
-        RcFatalError( ERR_READING_CHAR_FILE, path, strerror( errno ) );
+        RcFatalError( RCMSG_READING_CHAR_FILE, path, strerror( errno ) );
         /* never return */
     case RS_READ_INCMPLT:
     case RS_BAD_FILE_FMT:
-        RcFatalError( ERR_BAD_CHAR_FILE, path );
+        RcFatalError( RCMSG_BAD_CHAR_FILE, path );
         /* never return */
     case RS_WRONG_VER:
-        RcFatalError( ERR_WRONG_CHAR_FILE_VER, path );
+        RcFatalError( RCMSG_WRONG_CHAR_FILE_VER, path );
         /* never return */
     case RS_OPEN_ERROR:
-        RcFatalError( ERR_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
+        RcFatalError( RCMSG_CANT_OPEN_CHAR_FILE, path, strerror( errno ) );
         /* never return */
     case RS_OK:
         SetMBChars( GetLeadBytes() );
@@ -418,11 +418,11 @@ static int SetParms( void )
     const char  *defext;
 
     if( nofilenames == 0 ) {
-        RcError( ERR_FILENAME_NEEDED );
+        RcError( RCMSG_FILENAME_NEEDED );
         return( 1 );
     }
     if( nofilenames > 2 ) {
-        RcError( ERR_TOO_MANY_FILENAMES );
+        RcError( RCMSG_TOO_MANY_FILENAMES );
     }
 
     CheckExtension( &CmdLineParms.InFileName, "rc" );
@@ -466,26 +466,26 @@ static int SetParms( void )
     if( !( CmdLineParms.Pass2Only
       && CmdLineParms.NoResFile ) ) {
         if( access( CmdLineParms.InFileName, F_OK ) != 0 ) {
-            RcError( ERR_CANT_FIND_FILE, CmdLineParms.InFileName );
+            RcError( RCMSG_CANT_FIND_FILE, CmdLineParms.InFileName );
             return( 1 );
         }
     }
     if( !CmdLineParms.Pass1Only
       && !CmdLineParms.PreprocessOnly ) {
         if( access( CmdLineParms.InExeFileName, F_OK ) != 0 ) {
-            RcError( ERR_CANT_FIND_FILE, CmdLineParms.InExeFileName );
+            RcError( RCMSG_CANT_FIND_FILE, CmdLineParms.InExeFileName );
             return( 1 );
         }
     }
 
     if( CmdLineParms.GenAutoDep
       && CmdLineParms.MSResFormat ) {
-        RcError( ERR_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
+        RcError( RCMSG_OPT_NOT_VALID_TOGETHER, "-ad", "-zm" );
         return( 1 );
     }
     if( CmdLineParms.PreprocessOnly
       && CmdLineParms.NoPreprocess ) {
-        RcError( ERR_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
+        RcError( RCMSG_OPT_NOT_VALID_TOGETHER, "-o", "-zn" );
         return( 1 );
     }
     return( 0 );
@@ -1009,14 +1009,14 @@ int SetOptions( OPT_STORAGE *data, const char *infile, const char *outfile )
             frStrings->findString = strtok( frStrings->buf, "," );
             if( frStrings->findString == NULL ) {
                 PrintBanner();
-                RcError( ERR_SYNTAX_STR, "-g=" );
+                RcError( RCMSG_SYNTAX_STR, "-g=" );
                 MemFree( frStrings );
                 continue;
             }
             frStrings->replaceString = strtok( NULL, "," );
             if( frStrings->replaceString == NULL ) {
                 PrintBanner();
-                RcError( ERR_SYNTAX_STR, "-g=" );
+                RcError( RCMSG_SYNTAX_STR, "-g=" );
                 MemFree( frStrings );
                 continue;
             }

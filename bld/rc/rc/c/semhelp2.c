@@ -138,7 +138,7 @@ void SemOS2WriteHelpTable( WResID *res_id, ResMemFlags res_flags,
         error = SemOS2WriteHelpTableEntries( helptable, CurrResFile.fp );
         if( error ) {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
@@ -245,7 +245,7 @@ void SemOS2WriteHelpSubTable( WResID *res_id, unsigned numWords,
         error = SemOS2WriteHelpSubTableEntries( helptable, CurrResFile.fp );
         if( error ) {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );

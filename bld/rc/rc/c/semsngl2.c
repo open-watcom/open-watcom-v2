@@ -60,7 +60,7 @@ void SemOS2AddSingleLineResource( WResID *res_id, YYTOKENTYPE type,
     error = true;
     if( !ErrorHasOccured ) {
         if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-            RcError( ERR_CANT_FIND_FILE, filename );
+            RcError( RCMSG_CANT_FIND_FILE, filename );
         } else {
             error = AddDependency( full_filename );
             if( !error ) {
@@ -258,7 +258,7 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
     ReadStrErrInfo      readstr_err;
 
     if( font_id->IsName ) {
-        RcError( ERR_FONT_NAME );
+        RcError( RCMSG_FONT_NAME );
         return;
     }
 
@@ -302,20 +302,20 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
 
 
 FILE_OPEN_ERROR:
-    RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+    RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
     MemFree( font_id );
     return;
 
 READ_HEADER_ERROR:
-    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     MemFree( font_id );
     RcIoCloseInputBin( fp );
     return;
 
 COPY_FONT_ERROR:
-    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RcIoCloseInputBin( fp );
     return;
@@ -375,7 +375,7 @@ void SemOS2WriteFontDir( void )
 
 
 OUTPUT_WRITE_ERROR:
-    RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+    RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
     ErrorHasOccured = true;
     FreeFontDir( CurrResFile.FontDir );
     CurrResFile.FontDir = NULL;

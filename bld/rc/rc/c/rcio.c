@@ -180,14 +180,14 @@ static bool openCurrentFile( void )
     if( InStack.Current->fp == NULL ) {
         InStack.Current->fp = RcIoOpenInputText( InStack.Current->Filename );
         if( InStack.Current->fp == NULL ) {
-            RcError( ERR_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
+            RcError( RCMSG_CANT_OPEN_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
         /*
          * seek to last saved input file position
          */
         if( fseek( InStack.Current->fp, InStack.Current->Offset, SEEK_SET ) == -1 ) {
-            RcError( ERR_READING_FILE, InStack.Current->Filename, strerror( errno ) );
+            RcError( RCMSG_READING_FILE, InStack.Current->Filename, strerror( errno ) );
             return( true );
         }
     }
@@ -291,7 +291,7 @@ static bool RcIoPushTextInputFile( const char *filename )
     bool        error;
 
     if( InStack.Current == InStack.Stack + MAX_INCLUDE_DEPTH - 1 ) {
-        RcError( ERR_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
+        RcError( RCMSG_RCINCLUDE_TOO_DEEP, MAX_INCLUDE_DEPTH );
         return( true );
     }
     /*
@@ -403,7 +403,7 @@ int RcIoGetChar( void )
                 /*
                  * this error is reported in readCurrentFileBuffer so just terminate
                  */
-                RcFatalError( ERR_NO_MSG );
+                RcFatalError( RCMSG_NO_MSG );
                 /* never return */
             }
         }
@@ -422,7 +422,7 @@ int RcIoGetChar( void )
                 /*
                  * this error is reported in readCurrentFileBuffer so just terminate
                  */
-                RcFatalError( ERR_NO_MSG );
+                RcFatalError( RCMSG_NO_MSG );
                 /* never return */
             }
             /*
@@ -489,7 +489,7 @@ static bool Pass1InitRes( void )
     CurrResFile.filename = TMPFILE0;
     CurrResFile.fp = ResOpenFileTmp( NULL );
     if( CurrResFile.fp == NULL ) {
-        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
+        RcError( RCMSG_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         return( true );
     }
     /*
@@ -497,7 +497,7 @@ static bool Pass1InitRes( void )
      */
     CurrResFile.dir = WResInitDir();
     if( CurrResFile.dir == NULL ) {
-        RcError( ERR_OUT_OF_MEMORY );
+        RcError( RCMSG_OUT_OF_MEMORY );
         RCCloseFile( &(CurrResFile.fp) );
         return( true );
     }
@@ -573,7 +573,7 @@ static bool PreprocessInputFile( void )
     }
     rc = PP_FileInit( CmdLineParms.InFileName, ppflags );
     if( rc != 0 ) {
-        RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
+        RcError( RCMSG_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
     }
     return( false );                    // indicate no error
@@ -658,7 +658,7 @@ static void Pass1ResFileShutdown( void )
             if( CurrResFile.IsWatcomRes ) {
                 error = WResWriteDir( CurrResFile.fp, CurrResFile.dir );
                 if( error ) {
-                    RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+                    RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
                 }
             }
             if( !error ) {
@@ -668,7 +668,7 @@ static void Pass1ResFileShutdown( void )
         WResFreeDir( CurrResFile.dir );
         CurrResFile.dir = NULL;
         if( RCCloseFile( &(CurrResFile.fp) ) ) {
-            RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
+            RcError( RCMSG_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
         }
     }
 } /* Pass1ResFileShutdown */

@@ -62,14 +62,14 @@ SemOffset SemStartResource( void )
 /********************************/
 {
     if( StopInvoked ) {
-        RcFatalError( ERR_STOP_REQUESTED );
+        RcFatalError( RCMSG_STOP_REQUESTED );
         /* never return */
     }
     if( !CurrResFile.IsWatcomRes ) {
         tmpResFile = ResOpenFileTmp( NULL );
         if( tmpResFile == NULL ) {
             RCCloseFile( &(CurrResFile.fp) );
-            RcFatalError( ERR_OPENING_TMP, tmpResFileName, LastWresErrStr() );
+            RcFatalError( RCMSG_OPENING_TMP, tmpResFileName, LastWresErrStr() );
             /* never return */
         }
         /*
@@ -137,16 +137,16 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_fl
     MemFree( msheader.Name );
     ErrorHasOccured = true;
     if( error ) {
-        RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+        RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
     } else {
         if( tmpResFile == NULL ) {
-            RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+            RcError( RCMSG_READING_TMP, tmpResFileName, LastWresErrStr() );
         } else {
             /*
              * copy the data from the temporary file to the RES file
              */
             if( ResSeek( tmpResFile, loc.start, SEEK_SET ) ) {
-                RcError( ERR_READING_TMP, tmpResFileName, LastWresErrStr() );
+                RcError( RCMSG_READING_TMP, tmpResFileName, LastWresErrStr() );
             } else {
                 RcStatus    ret;
 
@@ -186,13 +186,13 @@ void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
         if( !type_id->IsName
           && type_id->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( type_id );
-            RcWarning( ERR_TYPE_GT_7FFF, namestr );
+            RcWarning( RCMSG_TYPE_GT_7FFF, namestr );
             MemFree( namestr );
         }
         if( !res_id->IsName
           && res_id->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( res_id );
-            RcWarning( ERR_NAME_GT_7FFF, namestr );
+            RcWarning( RCMSG_NAME_GT_7FFF, namestr );
             MemFree( namestr );
         }
     }
@@ -211,7 +211,7 @@ void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
          * the directory.
          */
     } else if( error ) {
-        RcError( ERR_OUT_OF_MEMORY );
+        RcError( RCMSG_OUT_OF_MEMORY );
         ErrorHasOccured = true;
     }
 

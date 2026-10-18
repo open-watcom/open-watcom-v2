@@ -127,7 +127,7 @@ static void FreeBigListNode( void *mem, bool freemem )
         prevnode = travptr;
     }
     if( travptr == NULL ) {
-        RcFatalError( ERR_INTERNAL, INTERR_MEM_FREE_FAILED );
+        RcFatalError( RCMSG_INTERNAL, INTERR_MEM_FREE_FAILED );
         /* never return */
     }
 }
@@ -162,7 +162,7 @@ void *RCMemLayer1Malloc( size_t size )
         newmem = malloc( size + headersize );
 #endif
         if( newmem == NULL ) {
-            RcFatalError( ERR_OUT_OF_MEMORY );
+            RcFatalError( RCMSG_OUT_OF_MEMORY );
             /* never return */
         }
         newmem->size = size;
@@ -204,7 +204,7 @@ void RCMemLayer1Free( void *mem )
     } else if( idx < NUM_HEAPS ) {
         RCMemLayer0Free( _Layer1to0Ptr( mem ), Heaps[idx] );
     } else {
-        RcFatalError( ERR_INTERNAL, INTERR_MEM_FREE_FAILED );
+        RcFatalError( RCMSG_INTERNAL, INTERR_MEM_FREE_FAILED );
         /* never return */
     }
 }
@@ -256,7 +256,7 @@ void *RCMemLayer1Realloc( void *mem, size_t size )
 #endif
             newmem = (BigMemList *)realloc( reallocptr, reallocsize );
             if( newmem == NULL ) {
-                RcFatalError( ERR_OUT_OF_MEMORY );
+                RcFatalError( RCMSG_OUT_OF_MEMORY );
                 /* never return */
             }
             newmem->size = size;
@@ -283,7 +283,7 @@ void *RCMemLayer1Realloc( void *mem, size_t size )
         RCMemLayer0Size( _Layer1to0Ptr( mem ), _Layer1to0Size( size ) );
 #endif
     } else {
-        RcFatalError( ERR_INTERNAL, INTERR_MEM_REALLOC_FAILED );
+        RcFatalError( RCMSG_INTERNAL, INTERR_MEM_REALLOC_FAILED );
         /* never return */
     }
     return( mem );

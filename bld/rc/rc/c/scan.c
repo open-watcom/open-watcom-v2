@@ -134,7 +134,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
     unsigned    lineno;
 
     if( StopInvoked ) {
-        RcFatalError( ERR_STOP_REQUESTED );
+        RcFatalError( RCMSG_STOP_REQUESTED );
         /* never return */
     }
     /*
@@ -142,7 +142,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
      */
     token = scanDFA( value );
     if( token != Y_NAME ) {
-        RcFatalError( ERR_INVALID_CPP );
+        RcFatalError( RCMSG_INVALID_CPP );
         /* never return */
     }
 
@@ -153,7 +153,7 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
          */
         token = scanDFA( value );
         if( token != Y_INTEGER ) {
-            RcFatalError( ERR_INVALID_CPP_LINE );
+            RcFatalError( RCMSG_INVALID_CPP_LINE );
             /* never return */
         }
         MemFree( value->intinfo.str );
@@ -188,10 +188,10 @@ static YYTOKENTYPE  scanCPPDirective( ScanValue *value )
             GetNextChar();
         }
         buf[i] = '\0';
-        RcFatalError( ERR_TEXT_FROM_CPP, buf );
+        RcFatalError( RCMSG_TEXT_FROM_CPP, buf );
         /* never return */
     } else {
-        RcFatalError( ERR_INVALID_CPP );
+        RcFatalError( RCMSG_INVALID_CPP );
         /* never return */
     }
 
@@ -645,7 +645,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
 #endif
             value->string.lstring = longString;
             if( longString ) {
-                RcWarning( ERR_LSTRING_IGNORED );
+                RcWarning( RCMSG_LSTRING_IGNORED );
                 value->string.lstring = false;
             }
             DEBUGPUTS( value->string.string );
@@ -829,7 +829,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                  * when inline preprocessing is in place take steps here
                  * to make  rcinclude's  look line  #include's
                  */
-                RcFatalError( ERR_NO_RCINCLUDES );
+                RcFatalError( RCMSG_NO_RCINCLUDES );
                 /* never return */
             }
             return( token );

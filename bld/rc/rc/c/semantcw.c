@@ -71,7 +71,7 @@ void SemWINSetGlobalLanguage( const WResLangType *newlang )
     if( CmdLineParms.iswin32 ) {
         curLang = *newlang;
     } else {
-        RcWarning( ERR_NT_KEYWORD, SemWINTokenToString( Y_LANGUAGE ) );
+        RcWarning( RCMSG_NT_KEYWORD, SemWINTokenToString( Y_LANGUAGE ) );
     }
 }
 
@@ -82,7 +82,7 @@ void SemWINSetResourceLanguage( const WResLangType *newlang, bool from_parser )
         resourceHasLang = true;
         resourceLang = *newlang;
     } else if( from_parser ) {
-        RcWarning( ERR_NT_KEYWORD,  SemWINTokenToString( Y_LANGUAGE ) );
+        RcWarning( RCMSG_NT_KEYWORD,  SemWINTokenToString( Y_LANGUAGE ) );
     }
 }
 
@@ -100,7 +100,7 @@ const WResLangType *SemGetResourceLanguage( void )
 void SemWINUnsupported( YYTOKENTYPE token )
 /*****************************************/
 {
-    RcWarning( ERR_UNSUPPORTED, SemWINTokenToString( token ) );
+    RcWarning( RCMSG_UNSUPPORTED, SemWINTokenToString( token ) );
 }
 
 ResMemFlags SemWINAddResOption( ResMemFlags res_flags, YYTOKENTYPE token )

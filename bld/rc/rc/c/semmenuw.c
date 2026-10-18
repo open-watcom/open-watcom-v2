@@ -190,7 +190,7 @@ static void SemWarnIfSubmenus( FullMenuWIN *menu )
         if( menuitem->submenu != NULL ) {
             for( submenuitem = menuitem->submenu->head; submenuitem != NULL; submenuitem = submenuitem->next ) { // menu appearing below menu bar
                 if( submenuitem->submenu != NULL ) {
-                    RcWarning( WARN_SUBMEN_WIN2X );
+                    RcWarning( RCMSG_SUBMEN_WIN2X );
                 }
             }
         }
@@ -248,7 +248,7 @@ void SemWINWriteMenu( WResID *res_id, ResMemFlags res_flags, FullMenuWIN *menu, 
             error = ResWritePadDWord( CurrResFile.fp );
         }
         if( error ) {
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );

@@ -96,11 +96,11 @@ static void CheckAccelFlags( uint_16 *flags, unsigned long idval )
     if( (*flags & OS2_ACCEL_VIRTUALKEY) == 0 ) {
         if( *flags & OS2_ACCEL_SHIFT ) {
             *flags &= ~OS2_ACCEL_SHIFT;
-            RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
+            RcWarning( RCMSG_ACCEL_KEYWORD_IGNORED, "SHIFT", idval );
         }
         if( *flags & OS2_ACCEL_CONTROL ) {
             *flags &= ~OS2_ACCEL_CONTROL;
-            RcWarning( ERR_ACCEL_KEYWORD_IGNORED, "CONTROL", idval );
+            RcWarning( RCMSG_ACCEL_KEYWORD_IGNORED, "CONTROL", idval );
         }
     }
 #endif
@@ -125,7 +125,7 @@ FullAccelEntryOS2 SemOS2MakeAccItem( AccelEvent event, unsigned long idval,
         }
 
 //    } else {
-//        RcError( ERR_ACCEL_NO_TYPE, idval );
+//        RcError( RCMSG_ACCEL_NO_TYPE, idval );
 //        ErrorHasOccured = true;
 //        entry.entry.Ascii = 0;
 //        entry.entry.Flags = 0;
@@ -210,7 +210,7 @@ void SemOS2WriteAccelTable( WResID *res_id, ResMemFlags res_flags, uint_32 codep
         error = writeAccelTableEntries( acctable, CurrResFile.fp, codepage );
         if( error ) {
             err_code = LastWresErr();
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );

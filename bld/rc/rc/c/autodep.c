@@ -151,7 +151,7 @@ bool WriteDependencyRes( void )
         loc.start = SemStartResource();
         for( cur = depList; cur != NULL; cur = cur->next ) {
             if( stat( cur->info.name, &file_info ) == -1 ) {
-                RcError( ERR_READING_FILE, cur->info.name, strerror( errno ) );
+                RcError( RCMSG_READING_FILE, cur->info.name, strerror( errno ) );
                 ErrorHasOccured = true;
             }
             cur->info.time = (uint_32)file_info.st_mtime;

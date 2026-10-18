@@ -94,13 +94,13 @@ bool InitRcMsgs( void )
      */
     hInstance.status = 0;
     if( !OpenRcMsgsFile( &hInstance, imageName ) ) {
-        RcFatalError( ERR_RCSTR_NOT_FOUND );
+        RcFatalError( RCMSG_RCSTR_NOT_FOUND );
         /* never return */
     }
     msgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !GetRcMsg( MSG_USAGE_BASE, testbuf, sizeof( testbuf ) ) ) {
         CloseResFile( &hInstance );
-        RcFatalError( ERR_RCSTR_NOT_FOUND );
+        RcFatalError( RCMSG_RCSTR_NOT_FOUND );
         /* never return */
     }
 #else

@@ -213,13 +213,13 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
         dst_offset = RESTELL( dst->fp );
         if( dst_offset == -1 ) {
             error = true;
-            RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
+            RcError( RCMSG_WRITTING_FILE, dst->name, strerror( errno ) );
         }
         if( !error ) {
             align_amount = AlignAmount( dst_offset, dst_shift_count );
             if( RESSEEK( dst->fp, align_amount, SEEK_CUR ) ) {
                 error = true;
-                RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
+                RcError( RCMSG_WRITTING_FILE, dst->name, strerror( errno ) );
             }
             dst_offset += align_amount;
         }
@@ -232,7 +232,7 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
              */
             if( RESSEEK( src->fp, (long)src_seg->address << src_shift_count, SEEK_SET ) ) {
                 error = true;
-                RcError( ERR_READING_EXE, src->name, strerror( errno ) );
+                RcError( RCMSG_READING_EXE, src->name, strerror( errno ) );
             }
         }
 
@@ -262,14 +262,14 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
             if( numread != sizeof( numrelocs ) ) {
                 error = true;
                 if( RESIOERR( src->fp, numread ) ) {
-                    RcError( ERR_READING_EXE, src->name, strerror( errno ) );
+                    RcError( RCMSG_READING_EXE, src->name, strerror( errno ) );
                 } else {
-                    RcError( ERR_UNEXPECTED_EOF, src->name );
+                    RcError( RCMSG_UNEXPECTED_EOF, src->name );
                 }
             } else {
                 if( RESWRITE( dst->fp, &numrelocs, sizeof( numrelocs ) ) != sizeof( numrelocs ) ) {
                     error = true;
-                    RcError( ERR_WRITTING_FILE, dst->name, strerror( errno ) );
+                    RcError( RCMSG_WRITTING_FILE, dst->name, strerror( errno ) );
                 }
             }
             /*
@@ -303,7 +303,7 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
             }
             if( RESSEEK( dst->fp, align_amount - 1, SEEK_CUR ) ) {
                 error = true;
-                RcError( ERR_WRITTING_FILE, dst->name );
+                RcError( RCMSG_WRITTING_FILE, dst->name );
             } else {
                 /*
                  * write something out so if we have just seeked past the
@@ -312,7 +312,7 @@ static CpSegRc copyOneSegment( const segment_record *src_seg,
                  */
                 if( RESWRITE( dst->fp, &zero, 1 ) != 1 ) {
                     error = true;
-                    RcError( ERR_WRITTING_FILE, dst->name );
+                    RcError( RCMSG_WRITTING_FILE, dst->name );
                 }
             }
         }
@@ -463,7 +463,7 @@ CpSegRc CopyOS2Segments( ExeFileInfo *src, ExeFileInfo *dst )
         }
         if( RESSEEK( src->fp, end_offset, SEEK_SET ) ) {
             ret = CPSEG_ERROR;
-            RcError( ERR_READING_EXE, src->name, strerror( errno ) );
+            RcError( RCMSG_READING_EXE, src->name, strerror( errno ) );
         }
         CheckDebugOffset( src );
     }

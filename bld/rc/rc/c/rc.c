@@ -92,12 +92,12 @@ static bool CreatePreprocFile( void )
     error = false;
     fh = fopen( CmdLineParms.OutResFileName, "wt" );
     if( fh == NULL ) {
-        RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
+        RcError( RCMSG_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = true;
     } else {
         while( (ch = RcIoGetChar()) != EOF ) {
             if( fputc( ch, fh ) == EOF ) {
-                RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
+                RcError( RCMSG_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
                 error = true;
             }
         }
@@ -164,7 +164,7 @@ static bool Pass2( void )
             noerror = MergeResExeLX( &Pass2Info.OldFile, &Pass2Info.TmpFile, Pass2Info.ResFile );
             break;
         default: /* EXE_TYPE_UNKNOWN */
-            RcError( ERR_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
+            RcError( RCMSG_INTERNAL, INTERR_UNKNOWN_RCSTATUS );
             noerror = false;
             break;
         }

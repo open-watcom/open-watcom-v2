@@ -60,7 +60,7 @@ void SemWINAddMessageTable( WResID *res_id, ScanString *filename )
         start = SemCopyRawFile( filename->string );
         SemAddResourceAndFree( res_id, WResIDFromNum( RESOURCE2INT( RT_MESSAGETABLE ) ), DEFAULT_FLAGS_MP, start );
     } else {
-        RcError( ERR_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
+        RcError( RCMSG_NT_KEYWORD, SemWINTokenToString( Y_MESSAGETABLE ) );
         ErrorHasOccured = true;
         MemFree( res_id );
     }
@@ -82,7 +82,7 @@ void SemWINAddSingleLineResource( WResID *res_id, YYTOKENTYPE type, ResMemFlags 
     }
 
     if( RcFindSourceFile( filename, full_filename ) == -1 ) {
-        RcError( ERR_CANT_FIND_FILE, filename );
+        RcError( RCMSG_CANT_FIND_FILE, filename );
         goto HANDLE_ERROR;
     }
 
@@ -548,7 +548,7 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
          */
         entry = FindWindows2xCompatibleIcon( &dir );
         if( !entry ) {
-            RcWarning( WARN_ICON_WIN2X );
+            RcWarning( RCMSG_ICON_WIN2X );
             entry = dir.Head;
             if( !entry )
                 goto COPY_ICONS_ERROR;
@@ -600,16 +600,16 @@ static void AddIconResource( WResID *res_id, ResMemFlags res_flags, ResMemFlags 
 
 
 FILE_OPEN_ERROR:
-    RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+    RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
     MemFree( res_id );
     return;
 
 READ_DIR_ERROR:
     if( ret == RS_INVALID_RESOURCE ) {
-        RcError( ERR_NOT_ICON_FILE, filename );
+        RcError( RCMSG_NOT_ICON_FILE, filename );
     } else {
-        ReportCopyError( ret, ERR_READING_ICON, filename, err_code );
+        ReportCopyError( ret, RCMSG_READING_ICON, filename, err_code );
     }
     ErrorHasOccured = true;
     MemFree( res_id );
@@ -618,14 +618,14 @@ READ_DIR_ERROR:
     return;
 
 WRITE_DIR_ERROR:
-    RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
+    RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     FreeIconDir( &dir );
     RcIoCloseInputBin( fp );
     return;
 
 COPY_ICONS_ERROR:
-    ReportCopyError( ret, ERR_READING_ICON, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_ICON, filename, err_code );
     ErrorHasOccured = true;
     MemFree( res_id );
     FreeIconDir( &dir );
@@ -940,7 +940,7 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
          */
         entry = FindWindows2xCompatibleCursor( &dir );
         if( !entry ) {
-            RcWarning( WARN_CURSOR_WIN2X );
+            RcWarning( RCMSG_CURSOR_WIN2X );
             entry = dir.Head;
             if( !entry )
                 goto COPY_CURSORS_ERROR;
@@ -992,16 +992,16 @@ static void AddCursorResource( WResID *res_id, ResMemFlags res_flags, ResMemFlag
 
 
 FILE_OPEN_ERROR:
-    RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+    RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
     MemFree( res_id );
     return;
 
 READ_DIR_ERROR:
     if( ret == RS_INVALID_RESOURCE ) {
-        RcError( ERR_NOT_CURSOR_FILE, filename );
+        RcError( RCMSG_NOT_CURSOR_FILE, filename );
     } else {
-        ReportCopyError( ret, ERR_READING_CURSOR, filename, err_code );
+        ReportCopyError( ret, RCMSG_READING_CURSOR, filename, err_code );
     }
     ErrorHasOccured = true;
     MemFree( res_id );
@@ -1010,14 +1010,14 @@ READ_DIR_ERROR:
     return;
 
 WRITE_DIR_ERROR:
-    RcError( ERR_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
+    RcError( RCMSG_WRITTING_RES, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     FreeCurDir( &dir );
     RcIoCloseInputBin( fp );
     return;
 
 COPY_CURSORS_ERROR:
-    ReportCopyError( ret, ERR_READING_CURSOR, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_CURSOR, filename, err_code );
     ErrorHasOccured = true;
     MemFree( res_id );
     FreeCurDir( &dir );
@@ -1125,11 +1125,11 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char
          * height bitmaps.
          */
         if( dibhead.Compression != 0 || dibhead.Size < 40 || (int)dibhead.Height <= 0 ) {
-            RcWarning( WARN_BITMAP_WIN2X );
+            RcWarning( RCMSG_BITMAP_WIN2X );
             goto COPY_BITMAP_ERROR;
         }
         if( dibhead.BitCount != 1 || dibhead.Planes != 1 )
-            RcWarning( WARN_BITMAP_WIN2X );
+            RcWarning( RCMSG_BITMAP_WIN2X );
         /*
          * Invert the bits on convert if the BMP image is monochrome but the
          * white color is first (Adobe Photoshop 2.5 insists on writing 1bpp
@@ -1164,27 +1164,27 @@ static void AddBitmapResource( WResID *res_id, ResMemFlags res_flags, const char
 
 
 FILE_OPEN_ERROR:
-    RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+    RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
     MemFree( res_id );
     return;
 
 READ_HEADER_ERROR:
-    ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
     MemFree( res_id );
     RcIoCloseInputBin( fp );
     return;
 
 NOT_BITMAP_ERROR:
-    RcError( ERR_NOT_BITMAP_FILE, filename );
+    RcError( RCMSG_NOT_BITMAP_FILE, filename );
     ErrorHasOccured = true;
     MemFree( res_id );
     RcIoCloseInputBin( fp );
     return;
 
 COPY_BITMAP_ERROR:
-    ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
     RcIoCloseInputBin( fp );
     return;
@@ -1325,7 +1325,7 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
     ReadStrErrInfo      readstr_err;
 
     if( font_id->IsName ) {
-        RcError( ERR_FONT_NAME );
+        RcError( RCMSG_FONT_NAME );
         return;
     }
 
@@ -1369,20 +1369,20 @@ static void AddFontResources( WResID *font_id, ResMemFlags res_flags, const char
 
 
 FILE_OPEN_ERROR:
-    RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+    RcError( RCMSG_CANT_OPEN_FILE, filename, strerror( errno ) );
     ErrorHasOccured = true;
     MemFree( font_id );
     return;
 
 READ_HEADER_ERROR:
-    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     MemFree( font_id );
     RcIoCloseInputBin( fp );
     return;
 
 COPY_FONT_ERROR:
-    ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
+    ReportCopyError( ret, RCMSG_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RcIoCloseInputBin( fp );
     return;
@@ -1420,7 +1420,7 @@ void SemWINWriteFontDir( void )
             error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fp );
         }
         if( error ) {
-            RcError( ERR_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
+            RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         } else {
             loc.len = SemEndResource( loc.start );
