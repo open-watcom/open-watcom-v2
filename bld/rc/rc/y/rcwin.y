@@ -1268,6 +1268,17 @@ exstyle-equal-stmt
 
 exstyle
     : constant-expression
+        {
+            if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16
+              && CmdLineParms.StrictWin16 ) {
+                /*
+                 * EXSTYLE is not allowed in strict Win16 syntax. Report the error,
+                 * but process it normally so parsing can continue.
+                 */
+                RcError( RCMSG_EXSTYLE_IN_WIN16 );
+                ErrorHasOccured = true;
+            }
+        }
     ;
 
 style-stmt
