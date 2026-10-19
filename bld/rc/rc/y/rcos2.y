@@ -371,6 +371,7 @@ resource
     | message-table-resource
     | pragma-statement
     | codepage-statement
+    | rcinclude-statement
     ;
 
 normal-resource
@@ -605,6 +606,14 @@ comma-opt
 dlginclude-resource
     : Y_DLGINCLUDE name-id file-name
         { SemOS2AddDlgincResource( $2, $3.string ); }
+    ;
+
+rcinclude-statement
+    : Y_RCINCLUDE file-name
+        {
+//            PP_RCInclude( $2 );
+            RcFatalError( RCMSG_NO_RCINCLUDES );
+        }
     ;
 
 single-line-resource

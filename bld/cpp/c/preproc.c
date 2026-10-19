@@ -85,26 +85,13 @@ static const char       *PPBufPtr;                      // block buffer pointer
 static char             *PPLineBuf;                     // line buffer
 static size_t           PPLineBufSize;                  // line buffer size
 static unsigned         PPErrorCount = 0;
+static bool             PPIncludeDefinesOnly = false;
 
 static char             *IncludePath1 = NULL;           // include path from cmdl
 static char             *IncludePath2 = NULL;           // include path from env
 
 static char             *macro_buf = NULL;
 static size_t           macro_buf_size = 0;
-
-static bool             PPIncludeDefinesOnly = false;
-
-static char *str_dup( const char *str )
-{
-    size_t  len;
-    char    *p;
-
-    len = strlen( str ) + 1;
-    p = MemAllocSafe( len );
-    if( p != NULL )
-        memcpy( p, str, len );
-    return( p );
-}
 
 static FILE *PP_Open( const char *filename )
 {
@@ -123,7 +110,7 @@ static FILE *PP_Open( const char *filename )
             PP_File->prev_file  = prev_file;
             PP_File->handle     = handle;
             PP_File->prev_bufptr = PPBufPtr;
-            PP_File->filename   = str_dup( filename );
+            PP_File->filename   = MemStrdupSafe( filename );
             PP_File->linenum    = 1;
             PP_File->prev_include_defines_only = PPIncludeDefinesOnly;
             PPBufPtr = PP_File->buffer;
@@ -633,7 +620,7 @@ static void open_include_file( const char *filename, const char *end, incl_type 
          * temporary copy is necessary, because buffer is
          * overwriten by sprintf function
          */
-        buffer = str_dup( filename );
+        buffer = MemStrdupSafe( filename );
         if( PPErrorCallback != NULL ) {
             PPErrorCallback( buffer );
         }
@@ -644,7 +631,7 @@ static void open_include_file( const char *filename, const char *end, incl_type 
     }
 }
 
-static void PP_Include( const char *ptr )
+void PPENTRY PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
@@ -673,7 +660,7 @@ static void PP_Include( const char *ptr )
     open_include_file( filename, ptr, incltype );
 }
 
-static void PP_RCInclude( const char *ptr )
+void PPENTRY PP_RCInclude( const char *ptr )
 {
     const char  *filename;
     bool        quoted = false;

@@ -352,6 +352,7 @@ resource
     | error-table-resource
     | pragma-statement
     | includeres-statement
+    | rcinclude-statement
     ;
 
 normal-resource
@@ -413,6 +414,14 @@ includeres-statement
 pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
         { SemWINSetDefaultCodepage( $4.Value ); }
+    ;
+
+rcinclude-statement
+    : Y_RCINCLUDE file-name
+        {
+//            PP_Include( $2 );
+            RcFatalError( RCMSG_NO_RCINCLUDES );
+        }
     ;
 
 keyword-name

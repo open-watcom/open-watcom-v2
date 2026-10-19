@@ -824,14 +824,6 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
                  */
                 MemFree( value->string.string );
             }
-            if( token == Y_RCINCLUDE ) {
-                /*
-                 * when inline preprocessing is in place take steps here
-                 * to make  rcinclude's  look line  #include's
-                 */
-                RcFatalError( RCMSG_NO_RCINCLUDES );
-                /* never return */
-            }
             return( token );
         }
 

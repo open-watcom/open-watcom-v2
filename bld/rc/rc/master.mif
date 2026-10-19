@@ -227,7 +227,7 @@ win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
 os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
 
 # define debug_grammar macro for testing of grammar changes
-debug_grammar = 1
+#debug_grammar = 1
 !ifdef debug_grammar
 debug_yacc_out = -
 !endif
