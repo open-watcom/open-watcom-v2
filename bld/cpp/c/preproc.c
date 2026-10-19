@@ -65,7 +65,7 @@ FILELIST                *PP_File = NULL;
 unsigned                PPLineNumber;                   // current line number
 pp_flags                PPFlags;                        // pre-processor flags
 const char              *PPNextTokenPtr;                // next character after token end pointer
-const char              *PPTokenPtr;                    // pointer to next char in token
+const char              *PPTokenPtr;                    // process pointer: current scan/parse position (tokenizer, macro, expression evaluator)
 MACRO_TOKEN             *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN             *PPCurToken;                    // pointer to current token
 char                    PPSavedChar;                    // saved char at end of token
@@ -73,6 +73,7 @@ char                    PPSavedChar;                    // saved char at end of 
 void                    (* PPErrorCallback)( const char * ) = NULL;
 
 static pp_callback      *PP_CallBack;                   // mkmk dependency callback function
+static const char       *PPOutPtr;                      // output pointer: next char to be returned by PP_Char()
 
 static CPP_INFO         *PPStack;
 static int              NestLevel;
@@ -90,6 +91,8 @@ static char             *IncludePath2 = NULL;           // include path from env
 
 static char             *macro_buf = NULL;
 static size_t           macro_buf_size = 0;
+
+static bool             PPIncludeDefinesOnly = false;
 
 static char *str_dup( const char *str )
 {
@@ -117,11 +120,12 @@ static FILE *PP_Open( const char *filename )
             handle = NULL;
             PP_File = prev_file;
         } else {
-            PP_File->prev_file = prev_file;
-            PP_File->handle    = handle;
+            PP_File->prev_file  = prev_file;
+            PP_File->handle     = handle;
             PP_File->prev_bufptr = PPBufPtr;
-            PP_File->filename  = str_dup( filename );
-            PP_File->linenum   = 1;
+            PP_File->filename   = str_dup( filename );
+            PP_File->linenum    = 1;
+            PP_File->prev_include_defines_only = PPIncludeDefinesOnly;
             PPBufPtr = PP_File->buffer;
             PP_File->buffer[0] = '\0';      // indicate buffer empty
         }
@@ -137,6 +141,7 @@ static FILELIST *PP_Close( void )
     fclose( this_file->handle );
     PP_File = this_file->prev_file;
     PPBufPtr = this_file->prev_bufptr;
+    PPIncludeDefinesOnly = this_file->prev_include_defines_only;
     MemFree( this_file->filename );
     MemFree( this_file );
     return( PP_File );
@@ -356,12 +361,18 @@ static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltyp
 {
     char        fullfilename[_MAX_PATH];
     int         rc;
+    FILE        *fp;
 
     rc = PP_IncludePathFind( filename, len, fullfilename, incltype, get_parent_filename );
     if( PPFlags & PPFLAG_DEPENDENCIES ) {
         (*PP_CallBack)( filename, len, fullfilename, incltype );
     } else if( rc == 0 ) {
-        return( PP_Open( fullfilename ) );
+        fp = PP_Open( fullfilename );
+        if( fp != NULL
+          && (PPFlags & PPFLAG_INCLUDE_DEFINES_ONLY) ) {
+            PPIncludeDefinesOnly = true;
+        }
+        return( fp );
     }
     return( NULL );
 }
@@ -445,12 +456,14 @@ int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags )
     PPFlags = ppflags;
     NestLevel = 0;
     SkipLevel = 0;
+    PPIncludeDefinesOnly = false;
     handle = PP_Open( filename );
     if( handle == NULL )
         return( -1 );
     PP_GenLine();
     PPSavedChar = '\0';
     PPTokenPtr = PPNextTokenPtr;
+    PPOutPtr = PPNextTokenPtr;      // first output is the generated #line
     return( 0 );
 }
 
@@ -458,7 +471,7 @@ void PP_Dependency_List( pp_callback *callback )
 {
     PP_CallBack = callback;
     for( ; PP_Char() != EOF; ) {
-        PPTokenPtr = "";        // quickly skip over token
+        PPOutPtr = "";          // quickly skip over token
     }
 }
 
@@ -1331,13 +1344,13 @@ int PP_ScanNextToken( ppt_token *token )
     return( 0 );
 }
 
-int PPENTRY PP_Char( void )
+static int PPChar( void )
 {
     MACRO_TOKEN *mtok;
     MACRO_ENTRY *me;
     ppt_token   token;
 
-    if( *PPTokenPtr == '\0' ) {
+    if( *PPOutPtr == '\0' ) {
         for( ; (mtok = PPTokenList) != NULL; ) {
             PPTokenList = mtok->next;
             MemFree( mtok );
@@ -1345,8 +1358,8 @@ int PPENTRY PP_Char( void )
             if( mtok == NULL )
                 break;
             if( !IS_END_OF_MACRO( mtok ) ) {
-                PPTokenPtr = mtok->data;
-                return( *(unsigned char *)PPTokenPtr++ );
+                PPOutPtr = mtok->data;
+                return( *(unsigned char *)PPOutPtr++ );
             }
             DeleteNestedMacro();
         }
@@ -1355,32 +1368,46 @@ int PPENTRY PP_Char( void )
                 return( EOF );
             if( token == PPT_COMMENT && (PPFlags & PPFLAG_KEEP_COMMENTS) == 0 ) {
                 if( PPSavedChar == '\0' ) {
-                    PPTokenPtr = PPNextTokenPtr;
+                    PPOutPtr = PPNextTokenPtr;
                     return( '\n' );
                 } else {
                     // replace comment with a space
-                    PPTokenPtr = PPNextTokenPtr;
+                    PPOutPtr = PPNextTokenPtr;
                     return( ' ' );
                 }
             }
-            if( token != PPT_ID )
+            if( token != PPT_ID ) {
+                PPOutPtr = PPTokenPtr;      // output the token as it is
                 break;
+            }
             me = PP_MacroLookup( PPTokenPtr, strlen( PPTokenPtr ) );
-            if( me == NULL )
+            if( me == NULL ) {
+                PPOutPtr = PPTokenPtr;      // not a macro, output the identifier
                 break;
+            }
             if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0 ) {
                 if( PPSavedChar != '(' ) {
+                    PPOutPtr = PPTokenPtr;  // function-like macro without '(', output the identifier
                     break;
                 }
             }
             DoMacroExpansion( me );
             if( PPTokenList != NULL ) {
-                PPTokenPtr = PPTokenList->data;
+                PPOutPtr = PPTokenList->data;
                 break;
             }
         }
     }
-    return( *(unsigned char *)PPTokenPtr++ );
+    return( *(unsigned char *)PPOutPtr++ );
+}
+
+int PPENTRY PP_Char( void )
+{
+    int         c;
+
+    while( (c = PPChar()) != EOF && PPIncludeDefinesOnly )
+        /* nothing */;
+    return( c );
 }
 
 void PPENTRY PP_Init( char c, unsigned char spec_macros )

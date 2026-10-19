@@ -79,6 +79,7 @@ typedef struct  file_list {
     char                *filename;
     FILE                *handle;
     unsigned            linenum;
+    bool                prev_include_defines_only;
     char                buffer[PPBUFSIZE + 2];
 } FILELIST;
 
