@@ -42,11 +42,14 @@ static long PP_HexNumber( void )
     value = 0;
     for( ;; ) {
         c = PPTokenPtr[0];
-        if( c >= '0' && c <= '9' ) {
+        if( c >= '0'
+          && c <= '9' ) {
             c -= '0';
-        } else if( c >= 'a' && c <= 'f' ) {
+        } else if( c >= 'a'
+          && c <= 'f' ) {
             c = c - 'a' + 10;
-        } else if( c >= 'A' && c <= 'F' ) {
+        } else if( c >= 'A'
+          && c <= 'F' ) {
             c = c - 'A' + 10;
         } else {
             break;
@@ -100,11 +103,13 @@ static void PP_CharConst( PREPROC_VALUE *val )
         case '7':
             value = PPTokenPtr[0] - '0';
             c = PPTokenPtr[1];
-            if( c >= '0' && c <= '7' ) {
+            if( c >= '0'
+              && c <= '7' ) {
                 value = value * 8 + c - '0';
                 ++PPTokenPtr;
                 c = PPTokenPtr[1];
-                if( c >= '0' && c <= '7' ) {
+                if( c >= '0'
+                  && c <= '7' ) {
                     value = value * 8 + c - '0';
                     ++PPTokenPtr;
                 }
@@ -141,7 +146,8 @@ static void PP_Constant( PREPROC_VALUE *val )
     if( c == '0' ) {                            // octal or hex number
         ++PPTokenPtr;
         c = PPTokenPtr[0];
-        if( c == 'x' || c == 'X' ) {          // hex number
+        if( c == 'x'
+          || c == 'X' ) {                       // hex number
             ++PPTokenPtr;
             value = PP_HexNumber();
         } else {                                // octal number
@@ -161,17 +167,21 @@ static void PP_Constant( PREPROC_VALUE *val )
     if( (unsigned long)value > 0x7fffffff )
         val->type = PPTYPE_UNSIGNED;                          // mark as unsigned
     c = PPTokenPtr[0];
-    if( c == 'u' || c == 'U' ) {
+    if( c == 'u'
+      || c == 'U' ) {
         ++PPTokenPtr;
         c = PPTokenPtr[0];
-        if( c == 'l' || c == 'L' ) {
+        if( c == 'l'
+          || c == 'L' ) {
             ++PPTokenPtr;
             val->type = PPTYPE_UNSIGNED;
         }
-    } else if( c == 'l' || c == 'L' ) {
+    } else if( c == 'l'
+      || c == 'L' ) {
         ++PPTokenPtr;
         c = PPTokenPtr[0];
-        if( c == 'u' || c == 'U' ) {
+        if( c == 'u'
+          || c == 'U' ) {
             ++PPTokenPtr;
             val->type = PPTYPE_UNSIGNED;
         }
@@ -191,7 +201,8 @@ static void PP_Identifier( PREPROC_VALUE *val )
     value = 0;
     ptr = PP_ScanName( PPTokenPtr );
     len = ptr - PPTokenPtr;
-    if( len == 7 && strncmp( PPTokenPtr, "defined", 7 ) == 0 ) {
+    if( len == 7
+      && strncmp( PPTokenPtr, "defined", 7 ) == 0 ) {
         PPTokenPtr = PP_SkipWhiteSpace( ptr, &white_space );
         if( PPTokenPtr[0] == '(' ) {
             ++PPTokenPtr;
@@ -378,7 +389,8 @@ static void PP_Expr8( PREPROC_VALUE *val )
 
     PP_Expr9( val );
     for( ;; ) {
-        if( PPTokenPtr[0] == '>' && PPTokenPtr[1] == '>' ) {
+        if( PPTokenPtr[0] == '>'
+          && PPTokenPtr[1] == '>' ) {
             PPTokenPtr += 2;
             PP_Expr9( &val2 );
             val->type |= val2.type;
@@ -387,7 +399,8 @@ static void PP_Expr8( PREPROC_VALUE *val )
             } else {
                 val->val.uvalue >>= val2.val.uvalue;
             }
-        } else if( PPTokenPtr[0] == '<' && PPTokenPtr[1] == '<' ) {
+        } else if( PPTokenPtr[0] == '<'
+          && PPTokenPtr[1] == '<' ) {
             PPTokenPtr += 2;
             PP_Expr9( &val2 );
             val->val.ivalue <<= val2.val.uvalue;
@@ -456,12 +469,14 @@ static void PP_Expr6( PREPROC_VALUE *val )
 
     PP_Expr7( val );
     for( ;; ) {
-        if( PPTokenPtr[0] == '=' && PPTokenPtr[1] == '=' ) {
+        if( PPTokenPtr[0] == '='
+          && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
             val->val.ivalue = ( val->val.ivalue == val2.val.ivalue );
             val->type = PPTYPE_SIGNED;
-        } else if( PPTokenPtr[0] == '!' && PPTokenPtr[1] == '=' ) {
+        } else if( PPTokenPtr[0] == '!'
+          && PPTokenPtr[1] == '=' ) {
             PPTokenPtr += 2;
             PP_Expr7( &val2 );
             val->val.ivalue = ( val->val.ivalue != val2.val.ivalue );

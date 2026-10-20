@@ -142,7 +142,8 @@ void PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list )
     char    *p;
     char    *old_list;
 
-    if( path_list != NULL && *path_list != '\0' ) {
+    if( path_list != NULL
+      && *path_list != '\0' ) {
         switch( incltype ) {
         case PPINCLUDE_SYS:
             new_list = old_list = IncludePath2;
@@ -299,11 +300,15 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
         rc = checkfullpath( fname, fullfilename );
     } else {
         /* rule 2 */
-        if( rc == -1 && incltype != PPINCLUDE_SYS && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
+        if( rc == -1
+          && incltype != PPINCLUDE_SYS
+          && (PPFlags & PPFLAG_IGNORE_CWD) == 0 ) {
             rc = checkfullpath( fname, fullfilename );
         }
         /* rule 3 */
-        if( rc == -1 && incltype == PPINCLUDE_USR && fn != NULL ) {
+        if( rc == -1
+          && incltype == PPINCLUDE_USR
+          && fn != NULL ) {
             pgroup2     pg;
             size_t      len1;
             void        *cookie = NULL;
@@ -325,15 +330,19 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
             }
         }
         /* rule 4 */
-        if( rc == -1 && IncludePath1 != NULL ) {
+        if( rc == -1
+          && IncludePath1 != NULL ) {
             rc = findInclude( IncludePath1, filename, len, fullfilename );
         }
         /* rule 5 */
-        if( rc == -1 && IncludePath2 != NULL ) {
+        if( rc == -1
+          && IncludePath2 != NULL ) {
             rc = findInclude( IncludePath2, filename, len, fullfilename );
         }
         /* rule 6 */
-        if( rc == -1 && incltype == PPINCLUDE_USR && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
+        if( rc == -1
+          && incltype == PPINCLUDE_USR
+          && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
             memcpy( fname, H_DIR, sizeof( H_DIR ) - 1 );
             memcpy( fname + sizeof( H_DIR ) - 1, filename, len );
             fname[sizeof( H_DIR ) - 1 + len] = '\0';
@@ -577,11 +586,14 @@ int PP_Class( char c )
 {
     if( c == '_' )
         return( CC_ALPHA );
-    if( c >= 'a' && c <= 'z' )
+    if( c >= 'a'
+      && c <= 'z' )
         return( CC_ALPHA );
-    if( c >= 'A' && c <= 'Z' )
+    if( c >= 'A'
+      && c <= 'Z' )
         return( CC_ALPHA );
-    if( c >= '0' && c <= '9' )
+    if( c >= '0'
+      && c <= '9' )
         return( CC_DIGIT );
     return( 0 );
 }
@@ -608,7 +620,8 @@ static void open_include_file( const char *filename, const char *end, incl_type 
     if( !ok ) {
         /* check open alias file name */
         ok = ( PP_OpenIncludeAlias( filename, len, incltype ) != NULL );
-        if( !ok && (PPFlags & PPFLAG_TRUNCATE_FILE_NAME) ) {
+        if( !ok
+          && (PPFlags & PPFLAG_TRUNCATE_FILE_NAME) ) {
             /* check truncated file name */
             ok = ( PP_OpenIncludeTruncated( filename, len, incltype ) != NULL );
         }
@@ -715,7 +728,9 @@ static const char *PP_SkipSpace( const char *p, bool *white_space )
 static const char *PP_SkipComment( const char *p, bool *comment )
 {
     *comment = false;           // assume no comment
-    if( *p == '/' && (p[1] == '/' || p[1] == '*') ) {
+    if( *p == '/'
+      && (p[1] == '/'
+      || p[1] == '*') ) {
         *comment = true;        // indicate comment skipped
         if( p[1] == '/' ) {
             p += 2;
@@ -729,7 +744,8 @@ static const char *PP_SkipComment( const char *p, bool *comment )
                     PPFlags |= PPFLAG_SKIP_COMMENT; // continued on next line
                     break;
                 }
-                if( *p == '*' && p[1] == '/' ) {
+                if( *p == '*'
+                  && p[1] == '/' ) {
                     p += 2;
                     break;
                 }
@@ -738,7 +754,8 @@ static const char *PP_SkipComment( const char *p, bool *comment )
         }
     } else {
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
-            if( *p == ';' || *p == '#' ) {
+            if( *p == ';'
+              || *p == '#' ) {
                 *comment = true;
                 do {
                     p++;
@@ -791,7 +808,8 @@ void PPENTRY PP_Define( const char *ptr )
             ptr++;
             for( ;; ) {
                 ptr = PP_SkipWhiteSpace( ptr, &white_space );
-                if( *ptr == '\0' || *ptr == ')' )
+                if( *ptr == '\0'
+                  || *ptr == ')' )
                     break;
                 macro_name = ptr;
                 ptr = PP_ScanName( macro_name );
@@ -823,7 +841,8 @@ void PPENTRY PP_Define( const char *ptr )
             memcpy( p + len, ptr, len1 );
             len += len1;
             ptr = PP_SkipWhiteSpace( p2, &white_space );
-            if( *ptr == '\0' || *ptr == '\n' )
+            if( *ptr == '\0'
+              || *ptr == '\n' )
                 break;
             if( white_space ) {
                 p = resize_macro_buf( p, len + 1 );
@@ -945,7 +964,8 @@ static void PP_Elif( const char *ptr )
 
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
-    if( NestLevel == 0 || PPStack->cpp_type == PP_ELSE ) {
+    if( NestLevel == 0
+      || PPStack->cpp_type == PP_ELSE ) {
         // CErr1( ERR_MISPLACED_ELIF );
     } else {
         if( NestLevel == SkipLevel ) {
@@ -1013,30 +1033,39 @@ static int PP_Sharp( const char *ptr )
     while( *ptr >= 'a' && *ptr <= 'z' )
         ++ptr;
     len = ptr - token;
-    if( len == 7 && strncmp( token, "include", 7 ) == 0 ) {
+    if( len == 7
+      && strncmp( token, "include", 7 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Include( ptr );
             return( 0 );
         }
-    } else if( len == 6 && strncmp( token, "define", 6 ) == 0 ) {
+    } else if( len == 6
+      && strncmp( token, "define", 6 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Define( ptr );
         }
-    } else if( len == 5 && strncmp( token, "undef", 5 ) == 0 ) {
+    } else if( len == 5
+      && strncmp( token, "undef", 5 ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_Undef( ptr );
         }
-    } else if( len == 5 && strncmp( token, "ifdef", 5 ) == 0 ) {
+    } else if( len == 5
+      && strncmp( token, "ifdef", 5 ) == 0 ) {
         PP_Ifdef( ptr );
-    } else if( len == 6 && strncmp( token, "ifndef", 6 ) == 0 ) {
+    } else if( len == 6
+      && strncmp( token, "ifndef", 6 ) == 0 ) {
         PP_Ifndef( ptr );
-    } else if( len == 2 && strncmp( token, "if", 2 ) == 0 ) {
+    } else if( len == 2
+      && strncmp( token, "if", 2 ) == 0 ) {
         PP_If( ptr );
-    } else if( len == 4 && strncmp( token, "elif", 4 ) == 0 ) {
+    } else if( len == 4
+      && strncmp( token, "elif", 4 ) == 0 ) {
         PP_Elif( ptr );
-    } else if( len == 4 && strncmp( token, "else", 4 ) == 0 ) {
+    } else if( len == 4
+      && strncmp( token, "else", 4 ) == 0 ) {
         PP_Else();
-    } else if( len == 5 && strncmp( token, "endif", 5 ) == 0 ) {
+    } else if( len == 5
+      && strncmp( token, "endif", 5 ) == 0 ) {
         PP_Endif();
     } else {
         if( PPFlags & PPFLAG_ASM_COMMENT ) {
@@ -1061,7 +1090,8 @@ static void RCInclude( const char *ptr )
         ++ptr;
     }
     len = ptr - token;
-    if( len == 9 && stricmp( token, "rcinclude" ) == 0 ) {
+    if( len == 9
+      && stricmp( token, "rcinclude" ) == 0 ) {
         if( NestLevel == SkipLevel ) {
             PP_RCInclude( ptr );
         }
@@ -1078,7 +1108,8 @@ static int PP_Read( void )
     if( PP_ReadLine( &line_generated ) == 0 )
         return( 0 );
     // don't look for preprocessor directives inside multi-line comments
-    if( !line_generated && (PPFlags & PPFLAG_SKIP_COMMENT) == 0 ) {
+    if( !line_generated
+      && (PPFlags & PPFLAG_SKIP_COMMENT) == 0 ) {
         p = PP_SkipSpace( PPNextTokenPtr, &white_space );
         if( *p == PPPreProcChar ) {
             if( PP_Sharp( p + 1 ) ) {       // if recognized
@@ -1146,7 +1177,8 @@ static const char *PPScanHexNumber( const char *p )
     for( ;; ) {
         p = PPScanDigits( p );
         c = (char)tolower( *p );
-        if( c < 'a' || c > 'f' )
+        if( c < 'a'
+          || c > 'f' )
             break;
         ++p;
     }
@@ -1160,9 +1192,11 @@ static const char *PPScanNumber( const char *p )
     if( *p == '.' ) {
         p = PPScanDigits( p + 1 );
     }
-    if( *p == 'e' || *p == 'E' ) {
+    if( *p == 'e'
+      || *p == 'E' ) {
         p++;
-        if( *p == '+' || *p == '-' ) {
+        if( *p == '+'
+          || *p == '-' ) {
             ++p;
         }
         p = PPScanDigits( p );
@@ -1198,7 +1232,8 @@ static const char *PPScanOther( const char *p )
             break;
         if( *p == '\n' )
             break;
-        if( *p >= '0' && *p <= '9' )
+        if( *p >= '0'
+          && *p <= '9' )
             break;
         if( isalpha( *p ) )
             break;
@@ -1216,7 +1251,8 @@ const char *PP_ScanToken( const char *p, ppt_token *token )
     if( PPFlags & PPFLAG_SKIP_COMMENT ) {
         *token = PPT_COMMENT;
         for( ; *p != '\0'; ++p ) {
-            if( p[0] == '*' && p[1] == '/' ) {
+            if( p[0] == '*'
+              && p[1] == '/' ) {
                 p += 2;
                 PPFlags &= ~PPFLAG_SKIP_COMMENT;
                 break;
@@ -1243,7 +1279,8 @@ const char *PP_ScanToken( const char *p, ppt_token *token )
         ctoken = PPT_LITERAL;
         break;
     case '.':
-        if( p[1] >= '0' && p[1] <= '9' ) {
+        if( p[1] >= '0'
+          && p[1] <= '9' ) {
             p = PPScanNumber( p );
             ctoken = PPT_NUMBER;
         } else {
@@ -1291,17 +1328,22 @@ const char *PP_ScanToken( const char *p, ppt_token *token )
                 ++p;
                 ctoken = PPT_SHARP;
             }
-        } else if( p[0] >= '0' && p[0] <= '9' ) {
-            if( p[1] == 'x' || p[1] == 'X' ) {
+        } else if( p[0] >= '0'
+          && p[0] <= '9' ) {
+            if( p[1] == 'x'
+              || p[1] == 'X' ) {
                 p = PPScanHexNumber( p );
             } else {
                 p = PPScanNumber( p );
             }
             ctoken = PPT_NUMBER;
-        } else if( p[0] == 'L' && (p[1] == '\'' || p[1] == '\"') ) {
+        } else if( p[0] == 'L'
+          && (p[1] == '\''
+          || p[1] == '\"') ) {
             p = PPScanLiteral( p + 1 );
             ctoken = PPT_LITERAL;
-        } else if( isalpha( p[0] ) || p[0] == '_' ) {
+        } else if( isalpha( p[0] )
+          || p[0] == '_' ) {
             p = PP_ScanName( p );
             ctoken = PPT_ID;
         } else {
@@ -1353,7 +1395,8 @@ static int PPChar( void )
         for( ;; ) {
             if( PP_ScanNextToken( &token ) == EOF )
                 return( EOF );
-            if( token == PPT_COMMENT && (PPFlags & PPFLAG_KEEP_COMMENTS) == 0 ) {
+            if( token == PPT_COMMENT
+              && (PPFlags & PPFLAG_KEEP_COMMENTS) == 0 ) {
                 if( PPSavedChar == '\0' ) {
                     PPOutPtr = PPNextTokenPtr;
                     return( '\n' );
@@ -1372,7 +1415,8 @@ static int PPChar( void )
                 PPOutPtr = PPTokenPtr;      // not a macro, output the identifier
                 break;
             }
-            if( me->parmcount != PP_SPECIAL_MACRO && me->parmcount != 0 ) {
+            if( me->parmcount != PP_SPECIAL_MACRO
+              && me->parmcount != 0 ) {
                 if( PPSavedChar != '(' ) {
                     PPOutPtr = PPTokenPtr;  // function-like macro without '(', output the identifier
                     break;

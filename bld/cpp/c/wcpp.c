@@ -172,21 +172,26 @@ static bool ScanOptionsArg( const char * arg, pp_flags *ppflags )
     case 'z':
         ++arg;
         if( tolower( arg[0] ) == 'k' ) {
-            if( arg[1] == '0' && arg[2] == '\0' ) {
+            if( arg[1] == '0'
+              && arg[2] == '\0' ) {
                 mbcp = MBCP_KANJI;
                 break;
-            } else if( arg[1] == '1' && arg[2] == '\0' ) {
+            } else if( arg[1] == '1'
+              && arg[2] == '\0' ) {
                 mbcp = MBCP_CHINESE;
                 break;
-            } else if( arg[1] == '2' && arg[2] == '\0' ) {
+            } else if( arg[1] == '2'
+              && arg[2] == '\0' ) {
                 mbcp = MBCP_KOREAN;
                 break;
             } else if( tolower( arg[1] ) == 'u' ) {
-                if( arg[2] == '8' && arg[3] == '\0' ) {
+                if( arg[2] == '8'
+                  && arg[3] == '\0' ) {
                     mbcp = MBCP_UTF8;
                     break;
                 }
-                if( arg[2] == '0' && arg[3] == '\0' ) {
+                if( arg[2] == '0'
+                  && arg[3] == '\0' ) {
                     mbcp = MBCP_UTF8;
                     break;
                 }
@@ -416,7 +421,8 @@ int main( int argc, char *argv[] )
     rc = 0;
     memset( MBCharLen, 0, 256 );
     ppflags = PPFLAG_NONE | PPFLAG_TRUNCATE_FILE_NAME;
-    if( doScanParams( argc - 1, argv + 1, &ppflags ) && nofilenames != 0 ) {
+    if( doScanParams( argc - 1, argv + 1, &ppflags )
+      && nofilenames != 0 ) {
         switch( mbcp ) {
         case MBCP_KANJI:
             SetRange( MBCharLen, 0x81, 0x9f, 1 );
@@ -485,7 +491,8 @@ int main( int argc, char *argv[] )
 
     rc = PP_Fini() | rc;
 
-    if( rc == 0 && nofilenames == 0 ) {
+    if( rc == 0
+      && nofilenames == 0 ) {
         wcpp_quit( usageMsg, "No filename specified" );
     }
 
