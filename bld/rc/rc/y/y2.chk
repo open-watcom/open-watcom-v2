@@ -1,89 +1,89 @@
-s/r conflict in state 41 on Y_STRING:
-	shift to 170
-326 (146): string-constant <- string-group (unit production)
+s/r conflict in state 39 on Y_STRING:
+	shift to 163
+323 (143): string-constant <- string-group (unit production)
 
-Sample sentence(s) for reduce of rule 326:
+Sample sentence(s) for reduce of rule 323:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_STRING . Y_STRING
   Will never shift token 'Y_STRING' in this context
-Sample sentence(s) for shift to state 170:
+Sample sentence(s) for shift to state 163:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_STRING .
 Y_STRING Y_END $eof 
 ---
 
-s/r conflict in state 48 on Y_MINUS:
-	shift to 175
-351 (15f): shift-exp <- additive-exp (unit production)
+s/r conflict in state 46 on Y_MINUS:
+	shift to 168
+348 (15c): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 351:
+Sample sentence(s) for reduce of rule 348:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_ICON Y_MLE Y_INTEGER Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
-Sample sentence(s) for shift to state 175:
+Sample sentence(s) for shift to state 168:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_ICON Y_MLE Y_INTEGER Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_MINUS Y_INTEGER Y_END $eof 
 ---
 
-s/r conflict in state 234 on Y_MINUS:
-	shift to 175
-353 (161): shift-exp <- shift-exp Y_SHIFTR additive-exp
+s/r conflict in state 230 on Y_MINUS:
+	shift to 168
+350 (15e): shift-exp <- shift-exp Y_SHIFTR additive-exp
 
-Sample sentence(s) for reduce of rule 353:
+Sample sentence(s) for reduce of rule 350:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTR Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
-Sample sentence(s) for shift to state 175:
+Sample sentence(s) for shift to state 168:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTR Y_INTEGER .
 Y_MINUS Y_INTEGER 
 Y_BEGIN Y_SLIDER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_END 
 $eof 
 ---
 
-s/r conflict in state 235 on Y_MINUS:
-	shift to 175
-352 (160): shift-exp <- shift-exp Y_SHIFTL additive-exp
+s/r conflict in state 231 on Y_MINUS:
+	shift to 168
+349 (15d): shift-exp <- shift-exp Y_SHIFTL additive-exp
 
-Sample sentence(s) for reduce of rule 352:
+Sample sentence(s) for reduce of rule 349:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTL Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
-Sample sentence(s) for shift to state 175:
+Sample sentence(s) for shift to state 168:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTL Y_INTEGER .
 Y_MINUS Y_INTEGER 
 Y_BEGIN Y_SLIDER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_END 
 $eof 
 ---
 
-s/r conflict in state 504 on Y_COMMA:
-	shift to 209
-108 (06c): comma-opt <-
+s/r conflict in state 500 on Y_COMMA:
+	shift to 202
+106 (06a): comma-opt <-
 
-Sample sentence(s) for reduce of rule 108:
+Sample sentence(s) for reduce of rule 106:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_VALUESET Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER . Y_COMMA
   Will never shift token 'Y_COMMA' in this context
-Sample sentence(s) for shift to state 209:
+Sample sentence(s) for shift to state 202:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_VALUESET Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER .
 Y_COMMA Y_END $eof 
 ---
 
 actions combined:                           50
-parser states:                             606
-# states (1 reduce only):                  287
+parser states:                             602
+# states (1 reduce only):                  284
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                      5
 number of rules not reduced:                10
-122 (07a): resource-options-p <-
-123 (07b): resource-options-p <- resource-options-p resource-option
-228 (0e4): menu-item-options <- menu-item-option
-229 (0e5): menu-item-options <- menu-item-options comma-opt menu-item-option
-230 (0e6): menu-item-option <- Y_BITMAP
-231 (0e7): menu-item-option <- Y_HELP
-240 (0f0): diag-options-stmt <- menu-stmt (unit production)
-241 (0f1): diag-options-stmt <- font-stmt (unit production)
-242 (0f2): menu-stmt <- Y_MENU name-id
-250 (0fa): font-stmt <- Y_FONT comma-opt
-bytes used in tables:                    11671
-states with defaults:                      440
-states with parents:                       514
+119 (077): resource-options-p <-
+120 (078): resource-options-p <- resource-options-p resource-option
+225 (0e1): menu-item-options <- menu-item-option
+226 (0e2): menu-item-options <- menu-item-options comma-opt menu-item-option
+227 (0e3): menu-item-option <- Y_BITMAP
+228 (0e4): menu-item-option <- Y_HELP
+237 (0ed): diag-options-stmt <- menu-stmt (unit production)
+238 (0ee): diag-options-stmt <- font-stmt (unit production)
+239 (0ef): menu-stmt <- Y_MENU name-id
+247 (0f7): font-stmt <- Y_FONT comma-opt
+bytes used in tables:                    12346
+states with defaults:                      437
+states with parents:                       510

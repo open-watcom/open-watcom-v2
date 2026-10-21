@@ -320,9 +320,6 @@ char *SemOS2TokenToString( YYTOKENTYPE token )
     case Y_RCDATA:
         return( "RCDATA" );
         break;
-    case Y_RCINCLUDE:
-        return( "RCINCLUDE" );
-        break;
     case Y_RTEXT:
         return( "RTEXT" );
         break;

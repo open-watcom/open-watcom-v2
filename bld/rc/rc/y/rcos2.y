@@ -211,10 +211,6 @@
 %token Y_PUSHBUTTON
 %token Y_RADIOBUTTON
 %token Y_RCDATA
-%token Y_RCINCLUDE          /* This is an old keyword that should no */
-                            /* longer be used, but is used in the sample files*/
-                            /* so may be used in some old .RC files. */
-                            /* It is intercepted by the scanner */
 %token Y_RESOURCE
 %token Y_RTEXT
 %token Y_SCANCODE
@@ -371,7 +367,6 @@ resource
     | message-table-resource
     | pragma-statement
     | codepage-statement
-    | rcinclude-statement
     ;
 
 normal-resource
@@ -558,8 +553,6 @@ keyword-name
         { $$ = Y_RADIOBUTTON; }
     | Y_RCDATA
         { $$ = Y_RCDATA; }
-    | Y_RCINCLUDE
-        { $$ = Y_RCINCLUDE; }
     | Y_RESOURCE
         { $$ = Y_RESOURCE; }
     | Y_RTEXT
@@ -606,14 +599,6 @@ comma-opt
 dlginclude-resource
     : Y_DLGINCLUDE name-id file-name
         { SemOS2AddDlgincResource( $2, $3.string ); }
-    ;
-
-rcinclude-statement
-    : Y_RCINCLUDE file-name
-        {
-//            PP_RCInclude( $2 );
-            RcFatalError( RCMSG_NO_RCINCLUDES );
-        }
     ;
 
 single-line-resource

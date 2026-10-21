@@ -567,9 +567,12 @@ static bool PreprocessInputFile( void )
     pp_flags    ppflags;
     int         rc;
 
-    ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME;
+    ppflags = PPFLAG_EMIT_LINE | PPFLAG_TRUNCATE_FILE_NAME | PPFLAG_USE_RCINCLUDE;
     if( CmdLineParms.IgnoreCWD ) {
         ppflags |= PPFLAG_IGNORE_CWD;
+    }
+    if( CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
+        ppflags |= PPFLAG_INCLUDE_DEFINES_ONLY;
     }
     rc = PP_FileInit( CmdLineParms.InFileName, ppflags );
     if( rc != 0 ) {

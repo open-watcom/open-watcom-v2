@@ -143,10 +143,6 @@
 %token Y_PUSHBUTTON
 %token Y_RADIOBUTTON
 %token Y_RCDATA
-%token Y_RCINCLUDE          /* This is an old keyword that should no */
-                            /* longer be used, but is used in the sample files*/
-                            /* so may be used in some old .RC files. */
-                            /* It is intercepted by the scanner */
 %token Y_RTEXT
 %token Y_SCROLLBAR
 %token Y_SEPARATOR
@@ -352,7 +348,6 @@ resource
     | error-table-resource
     | pragma-statement
     | includeres-statement
-    | rcinclude-statement
     ;
 
 normal-resource
@@ -414,14 +409,6 @@ includeres-statement
 pragma-statement
     : Y_POUND_PRAGMA Y_CODEPAGE  Y_LPAREN constant-expression Y_RPAREN
         { SemWINSetDefaultCodepage( $4.Value ); }
-    ;
-
-rcinclude-statement
-    : Y_RCINCLUDE file-name
-        {
-//            PP_Include( $2 );
-            RcFatalError( RCMSG_NO_RCINCLUDES );
-        }
     ;
 
 keyword-name
@@ -553,8 +540,6 @@ keyword-name
         { $$ = Y_RADIOBUTTON; }
     | Y_RCDATA
         { $$ = Y_RCDATA; }
-    | Y_RCINCLUDE
-        { $$ = Y_RCINCLUDE; }
     | Y_RTEXT
         { $$ = Y_RTEXT; }
     | Y_SCROLLBAR

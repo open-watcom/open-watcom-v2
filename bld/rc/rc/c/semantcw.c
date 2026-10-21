@@ -405,9 +405,6 @@ char *SemWINTokenToString( YYTOKENTYPE token )
     case Y_RCDATA:
         return( "rcdata" );
         break;
-    case Y_RCINCLUDE:
-        return( "rcinclude" );
-        break;
     case Y_RTEXT:
         return( "rtext" );
         break;
