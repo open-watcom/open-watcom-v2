@@ -1,12 +1,20 @@
-#if defined( __OS2__ )
-    #define RC_ITEM(a,b,c)  a b c
+#ifdef __OS2__
 #else
-    #define RC_ITEM(a,b,c)  b a c
     #include <windows.h>
 #endif
 #include "wbrw.rh"
 
-#include "wclass.rc"
+#if defined( __OS2__ )
+    RCINCLUDE "wclass.rc"
+#else
+    #include "wclass.rc"
+#endif
+
+#ifdef __OS2__
+    #define RC_ITEM(a,b,c) a b c
+#else
+    #define RC_ITEM(a,b,c) b a c
+#endif
 
 RC_ITEM( ICON, WBRWIcon,              "wbr.ico" )
 RC_ITEM( ICON, GBList,                "gblist.ico" )

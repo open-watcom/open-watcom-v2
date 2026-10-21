@@ -3,16 +3,25 @@
 #if defined( RESX_GUI )
   #if defined( __OS2__ )
     #include <os2.h>
-    #define RC_ITEM(a,b,c)  a b c
   #else
     #include <windows.h>
-    #define RC_ITEM(a,b,c)  b a c
   #endif
 #endif
 #include "setup.rh"
 
-#include "gui.rc"
+#if defined( __OS2__ )
+    RCINCLUDE "gui.rc"
+#else
+    #include "gui.rc"
+#endif
+
 #if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #define RC_ITEM(a,b,c)  a b c
+  #else
+    #define RC_ITEM(a,b,c)  b a c
+  #endif
+
   #if defined( __OS2__ )
     RC_ITEM( ICON, 1, "setup.ico" )
   #else

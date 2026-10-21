@@ -10,21 +10,31 @@
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
-
-    #include "lnkerror.msg"
-    #include "wlink.msg"
-    #include "rc.msg"
-
+    RCINCLUDE "lnkerror.msg"
+    RCINCLUDE "wlink.msg"
+    RCINCLUDE "rc.msg"
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
-
+    RCINCLUDE "lnkerror.msg"
+    RCINCLUDE "wlink.msg"
+    RCINCLUDE "rc.msg"
+    #undef pick
+#else
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "lnkerror.msg"
     #include "wlink.msg"
     #include "rc.msg"
-
     #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "lnkerror.msg"
+    #include "wlink.msg"
+    #include "rc.msg"
+    #undef pick
+#endif
 END
 
 #if defined( __NT__ ) && defined( RESX_NTVER )

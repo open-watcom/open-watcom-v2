@@ -10,10 +10,21 @@ CLOSEBMP    BITMAP      "closebmp.bmp"
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
+    #define pick(c,e,j) (GUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "gui.msg"
+    #undef pick
+
+    #define pick(c,e,j) (GUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "gui.msg"
+    #undef pick
+#else
     #define pick(c,e,j) (GUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "gui.msg"
     #undef pick
+
     #define pick(c,e,j) (GUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "gui.msg"
     #undef pick
+#endif
 END

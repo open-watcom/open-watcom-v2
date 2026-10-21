@@ -1,25 +1,52 @@
 /* UTF-8 encoding, ¥ */
 
-#include "gui.rc"
+#ifdef __OS2__
+    RCINCLUDE "gui.rc"
+#else
+    #include "gui.rc"
+#endif
 
 #include "auimsgs.grh"
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "aui.msg"
+    #undef pick
+
+    #define pick(c,e,j) (AUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "aui.msg"
+    #undef pick
+#else
     #define pick(c,e,j) (AUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "aui.msg"
     #undef pick
+
     #define pick(c,e,j) (AUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "aui.msg"
     #undef pick
+#endif
 END
 
 #ifdef JAPANESE
-#include "japrx.dlg"
-#include "japsrch.dlg"
-#include "japsrcha.dlg"
+  #ifdef __OS2__
+    RCINCLUDE "japrx.dlg"
+    RCINCLUDE "japsrch.dlg"
+    RCINCLUDE "japsrcha.dlg"
+  #else
+    #include "japrx.dlg"
+    #include "japsrch.dlg"
+    #include "japsrcha.dlg"
+  #endif
 #else
-#include "dlgrx.dlg"
-#include "dlgsrch.dlg"
-#include "dlgsrcha.dlg"
+  #ifdef __OS2__
+    RCINCLUDE "dlgrx.dlg"
+    RCINCLUDE "dlgsrch.dlg"
+    RCINCLUDE "dlgsrcha.dlg"
+  #else
+    #include "dlgrx.dlg"
+    #include "dlgsrch.dlg"
+    #include "dlgsrcha.dlg"
+  #endif
 #endif

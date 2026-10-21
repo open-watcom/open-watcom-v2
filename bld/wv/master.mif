@@ -372,7 +372,6 @@ wv_dialogs = &
 rcfiles = liteng.gh usage.gh usagej.gh
 !else
 rcfiles = liteng.gh litdui.gh litmenu.gh usage.gh usagej.gh &
-    ../../res/dialogs.rc &
     ../../h/dlgamb.rh &
     ../../h/dlgayn.rh &
     ../../h/dlgstk.rh &

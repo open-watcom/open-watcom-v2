@@ -2,10 +2,8 @@
 
 #ifdef RESX_GUI
   #ifdef __OS2__
-    #define RC_ITEM(a,b,c) a b c
     #include <os2.h>
   #else
-    #define RC_ITEM(a,b,c) b a c
     #include <windows.h>
   #endif
 #else
@@ -14,12 +12,13 @@
 #include "gui.rh"
 #include "sample.rh"
 
-#include "gui.rc"
-
-#include "sample.dlg"
 
 #ifdef __OS2__
+    RCINCLUDE "gui.rc"
+    RCINCLUDE "sample.dlg"
 #else
+    #include "gui.rc"
+    #include "sample.dlg"
     #include "sample.men"
 #endif
 
@@ -30,23 +29,27 @@ BEGIN
 END
 
 #ifdef RESX_GUI
+  #ifdef __OS2__
+    #define RC_ITEM(a,b,c) a b c
+  #else
+    #define RC_ITEM(a,b,c) b a c
+  #endif
 
-RC_ITEM( BITMAP, MINIMIZE,      "min.bmp" )
-RC_ITEM( BITMAP, MAXIMIZE,      "max.bmp" )
-RC_ITEM( BITMAP, RESTORE,       "restore.bmp" )
-RC_ITEM( BITMAP, RESIZE,        "resize.bmp" )
-RC_ITEM( BITMAP, CHANGEMENU,    "change.bmp" )
-RC_ITEM( BITMAP, HOT5,          "one.bmp" )
-RC_ITEM( BITMAP, HOT4,          "one.bmp" )
-RC_ITEM( BITMAP, HOT3,          "one.bmp" )
-RC_ITEM( BITMAP, HOT2,          "one.bmp" )
-RC_ITEM( BITMAP, HOT1,          "one.bmp" )
+    RC_ITEM( BITMAP, MINIMIZE,      "min.bmp" )
+    RC_ITEM( BITMAP, MAXIMIZE,      "max.bmp" )
+    RC_ITEM( BITMAP, RESTORE,       "restore.bmp" )
+    RC_ITEM( BITMAP, RESIZE,        "resize.bmp" )
+    RC_ITEM( BITMAP, CHANGEMENU,    "change.bmp" )
+    RC_ITEM( BITMAP, HOT5,          "one.bmp" )
+    RC_ITEM( BITMAP, HOT4,          "one.bmp" )
+    RC_ITEM( BITMAP, HOT3,          "one.bmp" )
+    RC_ITEM( BITMAP, HOT2,          "one.bmp" )
+    RC_ITEM( BITMAP, HOT1,          "one.bmp" )
 
-RC_ITEM( ICON, ApplIcon,        "main.ico" )
-RC_ITEM( ICON, WIN1,            "win1.ico" )
-RC_ITEM( ICON, WIN2,            "win2.ico" )
-RC_ITEM( ICON, WIN3,            "win3.ico" )
-RC_ITEM( ICON, MAIN,            "main.ico" )
-RC_ITEM( ICON, DLG,             "dlg.ico" )
-
+    RC_ITEM( ICON, ApplIcon,        "main.ico" )
+    RC_ITEM( ICON, WIN1,            "win1.ico" )
+    RC_ITEM( ICON, WIN2,            "win2.ico" )
+    RC_ITEM( ICON, WIN3,            "win3.ico" )
+    RC_ITEM( ICON, MAIN,            "main.ico" )
+    RC_ITEM( ICON, DLG,             "dlg.ico" )
 #endif

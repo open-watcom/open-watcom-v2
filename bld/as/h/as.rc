@@ -5,19 +5,27 @@
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
-
-    #include "as.msg"
-    #include "usage.gh"
-
+    RCINCLUDE "as.msg"
+    RCINCLUDE "usage.gh"
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
-
+    RCINCLUDE "as.msg"
+    RCINCLUDE "usage.gh"
+    #undef pick
+#else
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "as.msg"
     #include "usage.gh"
-
     #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "as.msg"
+    #include "usage.gh"
+    #undef pick
+#endif
 END
 
 #if defined( __NT__ ) && defined( RESX_NTVER )

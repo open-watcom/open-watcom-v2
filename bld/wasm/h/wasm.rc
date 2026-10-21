@@ -5,27 +5,39 @@
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
     #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
-
-    #include "wasmc.msg"
+    RCINCLUDE "wasmc.msg"
   #if defined( _STANDALONE_ )
-    #include "wasms.msg"
-
-    #include "usage.gh"
+    RCINCLUDE "wasms.msg"
+    RCINCLUDE "usage.gh"
   #endif
-
     #undef pick
 
     #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
-
+    RCINCLUDE "wasmc.msg"
+  #if defined( _STANDALONE_ )
+    RCINCLUDE "wasms.msg"
+    RCINCLUDE "usage.gh"
+  #endif
+    #undef pick
+#else
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "wasmc.msg"
   #if defined( _STANDALONE_ )
     #include "wasms.msg"
-
     #include "usage.gh"
   #endif
-
     #undef pick
+
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    #include "wasmc.msg"
+  #if defined( _STANDALONE_ )
+    #include "wasms.msg"
+    #include "usage.gh"
+  #endif
+    #undef pick
+#endif
 END
 
 #if defined( __NT__ ) && defined( RESX_NTVER )

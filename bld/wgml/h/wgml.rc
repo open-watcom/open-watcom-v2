@@ -3,17 +3,25 @@
 
 STRINGTABLE
 BEGIN
+#ifdef __OS2__
+    #define pick( code, e_string, j_string )    (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
+    RCINCLUDE "wgmlerr.msg"
+    RCINCLUDE "wgml.msg"
+    #undef pick
 
-    #define pick( code, e_string, j_string )  \
-            (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
+    #define pick( code, e_string, j_string )    (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
+    RCINCLUDE "wgmlerr.msg"
+    RCINCLUDE "wgml.msg"
+    #undef pick
+#else
+    #define pick( code, e_string, j_string )    (code+RLE_ENGLISH*MSG_LANG_SPACING), e_string
     #include "wgmlerr.msg"
     #include "wgml.msg"
     #undef pick
 
-    #define pick( code, e_string, j_string )  \
-            (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
+    #define pick( code, e_string, j_string )    (code+RLE_JAPANESE*MSG_LANG_SPACING), j_string
     #include "wgmlerr.msg"
     #include "wgml.msg"
     #undef pick
-
+#endif
 END

@@ -3,10 +3,8 @@
 #if defined( RESX_ENG )
 #elif defined( RESX_GUI )
   #if defined( __OS2__ )
-    #define RC_ITEM(a,b,c)  a b c
     #include <os2.h>
   #else
-    #define RC_ITEM(a,b,c)  b a c
     #include <windows.h>
   #endif
 #else
@@ -18,12 +16,89 @@
 #if !defined( RESX_ENG )
     #include "litdui.gh"
     #include "litmenu.gh"
+    #include "guipick.rh"
+    #include "dlgamb.rh"
+    #include "dlgayn.rh"
+    #include "dlgbrk.rh"
+    #include "dlgcmd.rh"
+    #include "dlglist.rh"
+    #include "dlgnewp.rh"
+    #include "dlgoptn.rh"
+    #include "dlgvarx.rh"
+    #include "dlgwind.rh"
+    #include "dlgstk.rh"
+    #include "dlgasync.rh"
 #endif
 
 #if !defined( RESX_ENG )
+  #if defined( __OS2__ )
+    RCINCLUDE "aui.rc"
+  #else
     #include "aui.rc"
-    #include "dialogs.rc"
+  #endif
+ #ifdef JAPANESE
+  #if defined( __OS2__ )
+    RCINCLUDE "japayn.dlg"
+    RCINCLUDE "japbrk.dlg"
+    RCINCLUDE "japcmd.dlg"
+    RCINCLUDE "japlist.dlg"
+    RCINCLUDE "japnewp.dlg"
+    RCINCLUDE "japoptn.dlg"
+    RCINCLUDE "japvarx.dlg"
+    RCINCLUDE "japamb.dlg"
+    RCINCLUDE "japwind.dlg"
+    RCINCLUDE "japstk.dlg"
+    RCINCLUDE "japhis.dlg"
+  #else
+    #include "japayn.dlg"
+    #include "japbrk.dlg"
+    #include "japcmd.dlg"
+    #include "japlist.dlg"
+    #include "japnewp.dlg"
+    #include "japoptn.dlg"
+    #include "japvarx.dlg"
+    #include "japamb.dlg"
+    #include "japwind.dlg"
+    #include "japstk.dlg"
+    #include "japhis.dlg"
+  #endif
+ #else
+  #if defined( __OS2__ )
+    RCINCLUDE "dlgayn.dlg"
+    RCINCLUDE "dlgbrk.dlg"
+    RCINCLUDE "dlgcmd.dlg"
+    RCINCLUDE "dlglist.dlg"
+    RCINCLUDE "dlgnewp.dlg"
+    RCINCLUDE "dlgoptn.dlg"
+    RCINCLUDE "dlgvarx.dlg"
+    RCINCLUDE "dlgamb.dlg"
+    RCINCLUDE "dlgwind.dlg"
+    RCINCLUDE "dlgstk.dlg"
+    RCINCLUDE "dlghis.dlg"
+    RCINCLUDE "dlgasync.dlg"
+  #else
+    #include "dlgayn.dlg"
+    #include "dlgbrk.dlg"
+    #include "dlgcmd.dlg"
+    #include "dlglist.dlg"
+    #include "dlgnewp.dlg"
+    #include "dlgoptn.dlg"
+    #include "dlgvarx.dlg"
+    #include "dlgamb.dlg"
+    #include "dlgwind.dlg"
+    #include "dlgstk.dlg"
+    #include "dlghis.dlg"
+    #include "dlgasync.dlg"
+  #endif
+ #endif
+
  #if defined( RESX_GUI )
+  #if defined( __OS2__ )
+    #define RC_ITEM(a,b,c)  a b c
+  #else
+    #define RC_ITEM(a,b,c)  b a c
+  #endif
+
   #if defined( __OS2__ )
     RC_ITEM( ICON, 1,         "zapant.ico" )
   #else
@@ -99,7 +174,7 @@
     RC_ITEM( BITMAP, BITMAP_UP,       "up.bmp" )
     RC_ITEM( BITMAP, BITMAP_DOWN,     "down.bmp" )
     RC_ITEM( BITMAP, BITMAP_HOME,     "home.bmp" )
- #endif
+ #endif /* RESX_GUI */
 #endif
 
 STRINGTABLE
@@ -107,13 +182,33 @@ BEGIN
     /*
      * English strings
      */
+#if defined( __OS2__ )
+    #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "wdeng.gh"
+    #undef pick
+ #if !defined( RESX_ENG )
+    #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "wddui.gh"
+    #undef pick
+
+    #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "wdmenu.gh"
+    #undef pick
+  #if !defined( RESX_GUI )
+    #define pick(c,e,j) (c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
+    RCINCLUDE "usage.gh"
+    #undef pick
+  #endif
+ #endif
+#else
     #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "wdeng.gh"
     #undef pick
-#if !defined( RESX_ENG )
+ #if !defined( RESX_ENG )
     #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "wddui.gh"
     #undef pick
+
     #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_ENGLISH * MSG_LANG_SPACING), [ e ]
     #include "wdmenu.gh"
     #undef pick
@@ -122,17 +217,38 @@ BEGIN
     #include "usage.gh"
     #undef pick
   #endif
+ #endif
 #endif
     /*
      * Japanese strings
      */
+#if defined( __OS2__ )
+    #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "wdeng.gh"
+    #undef pick
+ #if !defined( RESX_ENG )
+    #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "wddui.gh"
+    #undef pick
+
+    #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "wdmenu.gh"
+    #undef pick
+  #if !defined( RESX_GUI )
+    #define pick(c,e,j) (c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
+    RCINCLUDE "usagej.gh"
+    #undef pick
+  #endif
+ #endif
+#else
     #define pick(c,e,j) (DBG_ENG_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "wdeng.gh"
     #undef pick
-#if !defined( RESX_ENG )
+ #if !defined( RESX_ENG )
     #define pick(c,e,j) (DBG_DUI_LITERAL_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "wddui.gh"
     #undef pick
+
     #define pick(c,e,j) (DBG_DUI_MENU_##c + RLE_JAPANESE * MSG_LANG_SPACING), [ j ]
     #include "wdmenu.gh"
     #undef pick
@@ -141,6 +257,7 @@ BEGIN
     #include "usagej.gh"
     #undef pick
   #endif
+ #endif
 #endif
 END
 
