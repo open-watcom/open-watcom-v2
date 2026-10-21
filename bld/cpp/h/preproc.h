@@ -61,7 +61,8 @@ typedef enum {
     PPFLAG_DONT_READ            = 0x0100,
     PPFLAG_UNDEFINED_VAR        = 0x0200,
     PPFLAG_TRUNCATE_FILE_NAME   = 0x0400,
-    PPFLAG_INCLUDE_DEFINES_ONLY = 0x0800
+    PPFLAG_INCLUDE_DEFINES_ONLY = 0x0800,
+    PPFLAG_USE_RCINCLUDE        = 0x1000
 } pp_flags;
 
 #define PP_SPECIAL_MACRO    255
@@ -96,8 +97,6 @@ extern void         PPENTRY PP_IncludePathInit( incl_type incltype );
 extern void         PPENTRY PP_IncludePathFini( incl_type incltype );
 extern void         PPENTRY PP_IncludePathAdd( incl_type incltype, const char *path_list );
 extern int          PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfilename, incl_type incltype, pp_parent_func fn );
-extern void         PPENTRY PP_Include( const char *ptr );
-extern void         PPENTRY PP_RCInclude( const char *ptr );
 extern int          PPENTRY PP_Char( void );
 extern void         PPENTRY PP_Define( const char *ptr );
 extern void         PPENTRY PP_Define_1( const char *ptr );

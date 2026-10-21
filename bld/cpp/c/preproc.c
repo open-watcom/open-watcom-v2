@@ -307,7 +307,7 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
         }
         /* rule 3 */
         if( rc == -1
-          && incltype == PPINCLUDE_USR
+          && incltype != PPINCLUDE_SYS
           && fn != NULL ) {
             pgroup2     pg;
             size_t      len1;
@@ -341,7 +341,7 @@ int PPENTRY PP_IncludePathFind( const char *filename, size_t len, char *fullfile
         }
         /* rule 6 */
         if( rc == -1
-          && incltype == PPINCLUDE_USR
+          && incltype != PPINCLUDE_SYS
           && (PPFlags & PPFLAG_IGNORE_DEFDIRS) == 0 ) {
             memcpy( fname, H_DIR, sizeof( H_DIR ) - 1 );
             memcpy( fname + sizeof( H_DIR ) - 1, filename, len );
@@ -365,7 +365,8 @@ static FILE *PP_OpenInclude( const char *filename, size_t len, incl_type incltyp
     } else if( rc == 0 ) {
         fp = PP_Open( fullfilename );
         if( fp != NULL
-          && (PPFlags & PPFLAG_INCLUDE_DEFINES_ONLY) ) {
+          && (PPFlags & PPFLAG_INCLUDE_DEFINES_ONLY)
+          && incltype != PPINCLUDE_SRC ) {
             PPIncludeDefinesOnly = true;
         }
         return( fp );
@@ -445,6 +446,17 @@ static void PP_GenError( const char *msg )
     PPNextTokenPtr = PPLineBuf + 1;
 }
 
+static void PP_OutputGenerated( void )
+{
+    /*
+     * generated line (#line or #error) is output directly from the line
+     * buffer, scanner sees an empty line behind it
+     */
+    PPSavedChar = '\0';
+    PPTokenPtr = PPNextTokenPtr;
+    PPOutPtr = PPNextTokenPtr;
+}
+
 int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags )
 {
     FILE        *handle;
@@ -457,9 +469,7 @@ int PPENTRY PP_FileInit( const char *filename, pp_flags ppflags )
     if( handle == NULL )
         return( -1 );
     PP_GenLine();
-    PPSavedChar = '\0';
-    PPTokenPtr = PPNextTokenPtr;
-    PPOutPtr = PPNextTokenPtr;      // first output is the generated #line
+    PP_OutputGenerated();           // first output is the generated #line
     return( 0 );
 }
 
@@ -644,7 +654,7 @@ static void open_include_file( const char *filename, const char *end, incl_type 
     }
 }
 
-void PPENTRY PP_Include( const char *ptr )
+static void PP_Include( const char *ptr )
 {
     const char  *filename;
     char        delim;
@@ -673,7 +683,7 @@ void PPENTRY PP_Include( const char *ptr )
     open_include_file( filename, ptr, incltype );
 }
 
-void PPENTRY PP_RCInclude( const char *ptr )
+static void PP_RCInclude( const char *ptr )
 {
     const char  *filename;
     bool        quoted = false;
@@ -684,31 +694,26 @@ void PPENTRY PP_RCInclude( const char *ptr )
         ptr++;
         quoted = true;
     }
-
     filename = ptr;
-    ++ptr;
     if( quoted ) {
-        while( *ptr != '\"' ) {
+        while( *ptr != '\"' && *ptr != '\r' && *ptr != '\n' && *ptr != '\0' ) {
             ptr++;
         }
     } else {
-        for( ;; ) {
-            if( *ptr == ' ' )
-                break;
-            if( *ptr == '\t' )
-                break;
-            if( *ptr == '\r' )
-                break;
-            if( *ptr == '\n' )
-                break;
-            if( *ptr == '\0' )
-                break;
-            if( *ptr == '\"' )
-                break;
+        while( *ptr != ' ' && *ptr != '\t' && *ptr != '\r' && *ptr != '\n'
+          && *ptr != '\0' && *ptr != '\"' ) {
             ++ptr;
         }
     }
-    open_include_file( filename, ptr, PPINCLUDE_USR );
+    if( ptr == filename ) {
+        if( PPErrorCallback != NULL ) {
+            PPErrorCallback( "Unrecognized RCINCLUDE directive" );
+        }
+        PP_GenError( "Unrecognized RCINCLUDE directive" );
+        PPErrorCount++;
+        return;
+    }
+    open_include_file( filename, ptr, (PPFlags & PPFLAG_INCLUDE_DEFINES_ONLY) ? PPINCLUDE_SRC : PPINCLUDE_USR );
 }
 
 static const char *PP_SkipSpace( const char *p, bool *white_space )
@@ -1030,7 +1035,7 @@ static int PP_Sharp( const char *ptr )
     while( *ptr == ' ' || *ptr == '\t' )
         ++ptr;
     token = ptr;
-    while( *ptr >= 'a' && *ptr <= 'z' )
+    while( PP_Class( *ptr ) != 0 )  // whole identifier (letters, digits, '_')
         ++ptr;
     len = ptr - token;
     if( len == 7
@@ -1080,21 +1085,21 @@ static int PP_Sharp( const char *ptr )
     return( 1 );                // indicate recognized
 }
 
-static void RCInclude( const char *ptr )
+static void RCInclude( const char *p )
 {
-    const char  *token;
-    size_t      len;
+    int             i;
+    unsigned char   *c;
 
-    token = ptr;
-    while( (*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z' ) ) {
-        ++ptr;
-    }
-    len = ptr - token;
-    if( len == 9
-      && stricmp( token, "rcinclude" ) == 0 ) {
-        if( NestLevel == SkipLevel ) {
-            PP_RCInclude( ptr );
+    c = (unsigned char *)"rcinclude";
+    for( i = 0; i < 9; i++ ) {
+        if( tolower( *(unsigned char *)p++ ) != *c++ ) {
+            return;
         }
+    }
+    if( PP_Class( *p ) != 0 )   // the identifier continues (letter, digit, '_')
+        return;
+    if( NestLevel == SkipLevel ) {
+        PP_RCInclude( p );
     }
 }
 
@@ -1117,7 +1122,7 @@ static int PP_Read( void )
                 PPLineBuf[1 + 1] = '\0';
                 PPNextTokenPtr = PPLineBuf + 1;
             }
-        } else {
+        } else if( PPFlags & PPFLAG_USE_RCINCLUDE ) {
             RCInclude( p );
         }
     }
