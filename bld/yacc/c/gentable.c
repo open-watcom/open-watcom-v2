@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 #include "yacc.h"
 #include "alloc.h"
@@ -60,6 +61,69 @@ typedef struct a_table {
 static base_n       avail;
 static base_n       used;
 static a_table      *table = NULL;
+
+
+/*
+ * Compare nonterminal symbols for canonical token assignment.
+ *
+ * Ordinary grammar symbols are ordered by name. Internal symbols whose
+ * names begin with '$' are placed after ordinary symbols. Symbol names
+ * are unique, so this defines a total order independent of the order of
+ * %type declarations.
+ */
+static bool nonterminalBefore( const a_sym *left, const a_sym *right )
+{
+    bool        left_internal;
+    bool        right_internal;
+
+    left_internal = left->name[0] == '$';
+    right_internal = right->name[0] == '$';
+
+    if( left_internal != right_internal ) {
+        return( !left_internal );
+    }
+    return( strcmp( left->name, right->name ) < 0 );
+}
+
+/*
+ * Assign token values to nonterminal symbols in canonical order without
+ * changing the order of symtab itself.
+ */
+static token_n assignNonterminalTokens( token_n token )
+{
+    a_sym       **order;
+    a_sym       *current;
+    sym_n       count;
+    sym_n       i;
+    sym_n       j;
+
+    count = nsym - nterm;
+    if( count == 0 ) {
+        return( token );
+    }
+
+    order = MemAllocSafe( count * sizeof( *order ) );
+    for( i = 0; i < count; ++i ) {
+        order[i] = symtab[nterm + i];
+    }
+
+    for( i = 1; i < count; ++i ) {
+        current = order[i];
+        j = i;
+        while( j > 0 && nonterminalBefore( current, order[j - 1] ) ) {
+            order[j] = order[j - 1];
+            --j;
+        }
+        order[j] = current;
+    }
+
+    for( i = 0; i < count; ++i ) {
+        order[i]->token = token++;
+    }
+
+    MemFree( order );
+    return( token );
+}
 
 static void expand_table( base_n new_size )
 {
@@ -224,9 +288,13 @@ void genobj( FILE *fp )
     ntoken = FirstNonTerminalTokenValue();
     dtoken = ntoken++;
     ptoken = ntoken++;
+#if 0
     for( sym_idx = nterm; sym_idx < nsym; ++sym_idx ) {
         symtab[sym_idx]->token = ntoken++;
     }
+#else
+    ntoken = assignNonterminalTokens( ntoken );
+#endif
     actions = MemCAllocSafe( ntoken, sizeof( *actions ) );
     error = nstate + npro;
     for( j = 0; j < ntoken; ++j ) {
