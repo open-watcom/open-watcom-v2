@@ -29,16 +29,17 @@ dlltarg_name = wrcd
 ntverrc_exe = $(exetarg_name)
 ntverrc_dll = $(dlltarg_name)
 
-w16_yacc_prefix = w16y
-win_yacc_prefix = winy
-os2_yacc_prefix = os2y
+w16_yacc_check_file = y6.out
+win_yacc_check_file = yw.out
+os2_yacc_check_file = y2.out
 
-w16_yacc_file = $(w16_yacc_prefix)tab
-win_yacc_file = $(win_yacc_prefix)tab
-os2_yacc_file = $(os2_yacc_prefix)tab
+# define debug_grammar macro for testing of grammar changes
+debug_grammar = 1
+!ifdef debug_grammar
+debug_yacc_out = -
+!endif
 
-additional_clean = *.gh *.grh *.grc *.gc *.uni yw.out y2.out &
-    $(os2_yacc_file).* $(win_yacc_file).* $(w16_yacc_file).*
+additional_clean = *.gh *.grh *.grc *.gc *.uni $(w16_yacc_check_file) $(win_yacc_check_file) $(os2_yacc_check_file)
 
 !include cproj.mif
 !include defrule.mif
@@ -47,6 +48,7 @@ additional_clean = *.gh *.grh *.grc *.gc *.uni yw.out y2.out &
 !include deftarg.mif
 
 !include $(cpp_dir)/client.mif
+!include ../client.mif
 
 #
 # cflags
@@ -221,39 +223,6 @@ wresexe.res : ../rc.rc rcmsg.grh .AUTODEPEND
 wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
     @%make echo_rc
     $(rcu8j) $(ppflags_common) $(ppflags_wreslib) $(rc_cppflags) $(rc_defines) -DRESX_DLL -ad $(rc_flags) $(rc_inc_path) $[@ -fo=$@
-
-w16_yacc_options = -b $(w16_yacc_prefix) -d -dd -db -de
-win_yacc_options = -b $(win_yacc_prefix) -d -dd -db -de
-os2_yacc_options = -b $(os2_yacc_prefix) -d -dd -db -de
-
-# define debug_grammar macro for testing of grammar changes
-#debug_grammar = 1
-!ifdef debug_grammar
-debug_yacc_out = -
-!endif
-
-yacc_rc_driver = ../y/yydriver.c
-
-$(w16_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
-    $(noecho)*wsplice -u -kWIN16  $[@ yrcw16.tmp
-    $(noecho)*wsplice -u -kWIN16  $(yacc_rc_driver) drivrw16.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp drivrw16.tmp >y6.out
-    $(debug_yacc_out)diff y6.out ../y/y6.chk
-
-$(win_yacc_file).c : ../y/rcwin.y $(yacc_rc_driver)
-    $(noecho)*wsplice -u -kWIN32  $[@ yrcwin.tmp
-    $(noecho)*wsplice -u -kWIN32  $(yacc_rc_driver) drivrwin.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp drivrwin.tmp >yw.out
-    $(debug_yacc_out)diff yw.out ../y/yw.chk
-
-$(os2_yacc_file).c : ../y/rcos2.y $(yacc_rc_driver)
-    $(noecho)*wsplice -u -kOS2  $[@ yrcos2.tmp
-    $(noecho)*wsplice -u -kOS2  $(yacc_rc_driver) drivros2.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) $(os2_yacc_options) yrcos2.tmp drivros2.tmp >y2.out
-    $(debug_yacc_out)diff y2.out ../y/y2.chk
 
 yydrivr6.gh : ../h/yydrivr.h
     @%make echo_wsplice

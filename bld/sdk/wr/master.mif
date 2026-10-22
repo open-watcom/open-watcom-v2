@@ -19,12 +19,7 @@ sys_windowed = 1
 sys_dll = 1
 #suppress_bd = 1
 
-w16_yacc_prefix = w16y
-win_yacc_prefix = winy
-w16_yacc_file   = $(w16_yacc_prefix)tab
-win_yacc_file   = $(win_yacc_prefix)tab
-
-additional_clean = *.grh *.grc $(w16_yacc_file).* $(win_yacc_file).*
+additional_clean = *.grh *.grc
 
 !include cproj.mif
 !include defrule.mif
@@ -33,6 +28,7 @@ additional_clean = *.grh *.grc $(w16_yacc_file).* $(win_yacc_file).*
 
 !include $(wr_dir)/client.mif
 !include $(commonui_dir)/client.mif
+!include $(wrc_dir)/client.mif
 
 #
 # cflags
@@ -111,18 +107,3 @@ rcmsg.grh :  $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
 wrmsg.grh: ../res/wr.msg $(__MAKEFILES__)
     @%make echo_awk
     $(noecho)*awk -v base=MSG_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
-
-yacc_rc_driver = $(wrc_dir)/y/yydriver.c
-yacc_rc_grammar = $(wrc_dir)/y/rcwin.y
-
-$(w16_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
-    $(noecho)*wsplice -u -kWIN16  $[@ yrcw16.tmp
-    $(noecho)*wsplice -u -kWIN16  $(yacc_rc_driver) drivrw16.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) -b $(w16_yacc_prefix) -d -db -dd yrcw16.tmp drivrw16.tmp >$(nulldevice)
-
-$(win_yacc_file).h : $(yacc_rc_grammar) $(yacc_rc_driver) $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
-    $(noecho)*wsplice -u -kWIN32  $[@ yrcwin.tmp
-    $(noecho)*wsplice -u -kWIN32  $(yacc_rc_driver) drivrwin.tmp
-    @%make echo_yacc
-    $(noecho)$(yacc) -b $(win_yacc_prefix) -d -db -dd yrcwin.tmp drivrwin.tmp >$(nulldevice)
