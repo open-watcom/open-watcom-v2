@@ -85,7 +85,7 @@ static uniq_case        *caseActions;
 static y_token          *tokens_head = NULL;
 static y_token          *tokens_tail = NULL;
 
-static char             *union_name = NULL;
+static char             *union_data = NULL;
 
 static const xlat_entry xlat[] = {
     { '~',      "TILDE" },
@@ -938,7 +938,7 @@ static char *dupbuf( void )
     return( str );
 }
 
-void dump_header( FILE *fp )
+void dump_tokens( FILE *fp )
 {
     const char      *fmt;
     const char      *ttype;
@@ -970,28 +970,32 @@ void dump_header( FILE *fp )
     fflush( fp );
 }
 
-void close_header( FILE *fp )
+void dump_union( FILE *fp )
 {
-    if( union_name != NULL ) {
+    if( union_data != NULL ) {
         fprintf( fp, "#ifndef YYSTYPE\n" );
-        fprintf( fp, "typedef union %s yystype;\n", union_name );
+        fprintf( fp, "typedef union %s yystype;\n", union_data );
         fprintf( fp, "#define YYSTYPE yystype\n" );
         fprintf( fp, "#endif\n" );
         fflush( fp );
     }
 }
 
-void free_header_data( void )
+void free_tokens_data( void )
 {
     y_token         *tmp;
 
-    if( union_name != NULL ) {
-        MemFree( union_name );
-        union_name = NULL;
-    }
     while( (tmp = tokens_head) != NULL ) {
         tokens_head = tokens_head->next;
         MemFree( tmp );
+    }
+}
+
+void free_union_data( void )
+{
+    if( union_data != NULL ) {
+        MemFree( union_data );
+        union_data = NULL;
     }
 }
 
@@ -1054,9 +1058,9 @@ void defs( FILE *fp, a_token *tok )
             fprintf( fp, "%s yystype;\n", buf );
             fprintf( fp, "#define YYSTYPE yystype\n" );
             fprintf( fp, "#endif\n" );
-            if( union_name == NULL ) {
-                union_name = MemAllocSafe( strlen( buf ) + 1 );
-                strcpy( union_name, buf );
+            if( union_data == NULL ) {
+                union_data = MemAllocSafe( strlen( buf ) + 1 );
+                strcpy( union_data, buf );
             } else {
                 srcinfo_msg( "%union already defined\n" );
                 /* never return */

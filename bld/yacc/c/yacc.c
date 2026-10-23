@@ -219,7 +219,7 @@ void dumpstatistic( const char *name, unsigned stat )
     printf( "%6u\n", stat );
 }
 
-void copy_part( FILE *fi, FILE *fo )
+void copy_part( FILE *fo, FILE *fi )
 {
     int             ch;
     char            marker[] = { "%%YACC%%" };
@@ -367,8 +367,8 @@ int main( int argc, char **argv )
         /* never return */
     }
     defs( temp1, &token );
-    dump_header( tokout );
-    close_header( tokout );
+    dump_tokens( tokout );
+    dump_union( tokout );
     fclose( tokout );
     temp2 = tmpfile();
     if( temp2 == NULL ) {
@@ -430,18 +430,19 @@ int main( int argc, char **argv )
      * copy first part of skeleton
      */
     if( skeleton != NULL ) {
-        copy_part( skeleton, actout );
+        copy_part( actout, skeleton );
     }
     /*
      * copy token defs
      */
-    dump_header( actout );
-    free_header_data();
+    dump_tokens( actout );
+    free_tokens_data();
+    free_union_data();
     rewind( temp1 );
     /*
      * copy defs
      */
-    copy_part( temp1, actout );
+    copy_part( actout, temp1 );
     fclose( temp1 );
     if( fastflag ) {
         genobj_fast( actout );
@@ -452,7 +453,7 @@ int main( int argc, char **argv )
      * copy middle part of skeleton
      */
     if( skeleton != NULL )
-        copy_part( skeleton, actout );
+        copy_part( actout, skeleton );
     rewind( temp2 );
     copy_rest( temp2, actout );
     fclose( temp2 );

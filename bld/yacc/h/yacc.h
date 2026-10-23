@@ -301,9 +301,10 @@ extern void     defs( FILE *fp, a_token *tok );
 extern void     rules( FILE *fp, a_token *tok );
 extern void     parsestats( void );
 extern void     tail( FILE *fp, a_token *tok );
-extern void     dump_header( FILE * );
-extern void     close_header( FILE * );
-extern void     free_header_data( void );
+extern void     dump_tokens( FILE * );
+extern void     dump_union( FILE * );
+extern void     free_tokens_data( void );
+extern void     free_union_data( void );
 extern void     FreeAmbigData( void );
 
 extern void     genobj( FILE * );
