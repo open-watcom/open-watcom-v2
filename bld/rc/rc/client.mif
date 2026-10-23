@@ -20,8 +20,8 @@ yacc_rc_driver = $(wrc_dir)/y/yydriver.c
 w16_wsplice_dep = $(wrc_dir)/y/dialog.sp $(wrc_dir)/y/menu.sp
 
 $(w16_yacc_file).c $(w16_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver) $(w16_wsplice_dep) .EXPLICIT
-    $(noecho)*wsplice -u -kWIN16 -i $(wrc_dir)/y $[@ yrcw16.tmp
-    $(noecho)*wsplice -u -kWIN16 -i $(wrc_dir)/y $(yacc_rc_driver) drivrw16.tmp
+    $(noecho)*wsplice -u -kWIN16 -i$(wrc_dir)/y $[@ yrcw16.tmp
+    $(noecho)*wsplice -u -kWIN16 -i$(wrc_dir)/y $(yacc_rc_driver) drivrw16.tmp
     @%make echo_yacc
 !ifdef w16_yacc_check_file
     $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp drivrw16.tmp >$(w16_yacc_check_file)
@@ -30,11 +30,11 @@ $(w16_yacc_file).c $(w16_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver)
     $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp drivrw16.tmp >$(nulldevice)
 !endif
 
-win_wsplice_dep = $(w16_wsplice_dep) $(wrc_dir)/y/dialogex.sp $(wrc_dir)/y/menuex.sp $(wrc_dir)/y/dlginit.sp $(wrc_dir)/y/toolbar.sp
+win_wsplice_dep = $(w16_wsplice_dep) $(wrc_dir)/y/dialogex.sp $(wrc_dir)/y/menuex.sp $(wrc_dir)/y/mfc.sp
 
 $(win_yacc_file).c $(win_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver) $(win_wsplice_dep) .EXPLICIT
-    $(noecho)*wsplice -u -kWIN32 -i $(wrc_dir)/y $[@ yrcwin.tmp
-    $(noecho)*wsplice -u -kWIN32 -i $(wrc_dir)/y $(yacc_rc_driver) drivrwin.tmp
+    $(noecho)*wsplice -u -kWIN32 -i$(wrc_dir)/y $[@ yrcwin.tmp
+    $(noecho)*wsplice -u -kWIN32 -i$(wrc_dir)/y $(yacc_rc_driver) drivrwin.tmp
     @%make echo_yacc
 !ifdef win_yacc_check_file
     $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp drivrwin.tmp >$(win_yacc_check_file)
@@ -46,8 +46,8 @@ $(win_yacc_file).c $(win_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver)
 os2_wsplice_dep =
 
 $(os2_yacc_file).c $(os2_yacc_file).h : $(os2_yacc_rc_grammar) $(yacc_rc_driver) $(os2_wsplice_dep) .EXPLICIT
-    $(noecho)*wsplice -u -kOS2 -i $(wrc_dir)/y $[@ yrcos2.tmp
-    $(noecho)*wsplice -u -kOS2 -i $(wrc_dir)/y $(yacc_rc_driver) drivros2.tmp
+    $(noecho)*wsplice -u -kOS2 -i$(wrc_dir)/y $[@ yrcos2.tmp
+    $(noecho)*wsplice -u -kOS2 -i$(wrc_dir)/y $(yacc_rc_driver) drivros2.tmp
     @%make echo_yacc
 !ifdef os2_yacc_check_file
     $(noecho)$(yacc) $(os2_yacc_options) yrcos2.tmp drivros2.tmp >$(os2_yacc_check_file)

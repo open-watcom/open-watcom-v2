@@ -36,7 +36,7 @@
     #include "weights2.gh"
 #elif defined( GRAMMAR_WIN16 )
     #include "yydrivr6.gh"
-    #include "weights6.gh"
+    #include "weightsw.gh"
 #elif defined( GRAMMAR_WIN32 )
     #include "yydrivrw.gh"
     #include "weightsw.gh"
@@ -45,6 +45,19 @@
 
 #include "clibext.h"
 
+
+/*
+ * NOTE:
+ *
+ * WIN16 and WIN32 use the same keyword list because keyword
+ * processing is shared and keyword codes must be identical
+ * for both grammars.
+ *
+ * Therefore, both use the same weightsw.gh and keywordw.gh
+ * files. Keywords that are not valid for a particular grammar
+ * are filtered by the appropriate LookupKeyword... function
+ * below.
+ */
 
 /*
  * This array is intended to be accessed by ASCII values of a char
@@ -143,7 +156,7 @@ static const HashEntry HashTable[] = {
 #if defined( GRAMMAR_OS2 )
     #include "keyword2.gh"
 #elif defined( GRAMMAR_WIN16 )
-    #include "keyword6.gh"
+    #include "keywordw.gh"
 #elif defined( GRAMMAR_WIN32 )
     #include "keywordw.gh"
 #endif
@@ -170,6 +183,9 @@ YYTOKENTYPE LookupKeywordWIN( ScanString newstring )
     case Y_DLGINIT:
     case Y_MENU_EX:
     case Y_TOOLBAR:
+    case Y_LANGUAGE:
+    case Y_CHARACTERISTICS:
+    case Y_VERSION:
   #elif defined( GRAMMAR_WIN32 )
     case Y_ERRTABLE:
   #endif

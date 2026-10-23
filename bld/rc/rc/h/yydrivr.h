@@ -37,9 +37,9 @@
 
 
 /*
- * guard is for single header file is included
- * one of yydrivr2.h, yydrivr6.h, yydrivrw.h
- * that macro _YYDRIVRX_H is used over these files
+ * All yydriver interface headers use the same include guard
+ * to ensure that only one of yydrivr2.h, yydrivr6.h, or
+ * yydrivrw.h can be included.
  */
 #ifndef _YYDRIVRX_H
 #define _YYDRIVRX_H
@@ -47,7 +47,7 @@
 :segment OS2
 #include "os2ytab.h"
 :elsesegment WIN16
-#include "w16ytab.h"
+#include "winytab.h"
 :elsesegment WIN32
 #include "winytab.h"
 :endsegment

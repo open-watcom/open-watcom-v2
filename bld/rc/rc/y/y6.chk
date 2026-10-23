@@ -80,6 +80,6 @@ parser states:                             558
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                      5
 number of rules not reduced:                 0
-bytes used in tables:                    12221
+bytes used in tables:                     6673
 states with defaults:                      408
-states with parents:                       205
+states with parents:                       182

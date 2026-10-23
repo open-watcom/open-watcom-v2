@@ -180,12 +180,12 @@ objs_exe = $+$(rc_template)$- $(objs_drv)
 !ifdef bootstrap
 prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
     $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
-    keyword2.gh keywordw.gh keyword6.gh &
+    keyword2.gh keywordw.gh &
     yydrivr2.gh yydrivrw.gh yydrivr6.gh
 !else
 prebuild_objs = usage.gh rcmsg.grh cmdlnprs.gh to932.uni &
     $(os2_yacc_file).c $(win_yacc_file).c $(w16_yacc_file).c &
-    keyword2.gh keywordw.gh keyword6.gh &
+    keyword2.gh keywordw.gh &
     yydrivr2.gh yydrivrw.gh yydrivr6.gh
 !endif
 !ifdef wrc_dll
@@ -226,28 +226,35 @@ wresdll.res : ../rc.rc rcmsg.grh .AUTODEPEND
 
 yydrivr6.gh : ../h/yydrivr.h
     @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN16  $[@ $@
+    $(noecho)*wsplice -u -kWIN16 -i$(wrc_dir)/y $[@ $@
 
 yydrivrw.gh : ../h/yydrivr.h
     @%make echo_wsplice
-    $(noecho)*wsplice -u -kWIN32  $[@ $@
+    $(noecho)*wsplice -u -kWIN32 -i$(wrc_dir)/y $[@ $@
 
 yydrivr2.gh : ../h/yydrivr.h
     @%make echo_wsplice
-    $(noecho)*wsplice -u -kOS2  $[@ $@
+    $(noecho)*wsplice -u -kOS2 -i$(wrc_dir)/y $[@ $@
 
+!if 1
+keywordw.gh : ../hash/rcwin.key
+    $(noecho)*wsplice -u -kWIN16 -kWIN32 -i$(wrc_dir)/y $[@ kwrcwin.tmp
+    @%make echo_findhash
+    $(noecho)findhash -q -s w -m kwrcwin.tmp
+!else
 keyword6.gh : ../hash/rcwin.key
-    $(noecho)*wsplice -u -kWIN16  $[@ kwrcw16.tmp
+    $(noecho)*wsplice -u -kWIN16 -i$(wrc_dir)/y $[@ kwrcw16.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s 6 -m kwrcw16.tmp
 
 keywordw.gh : ../hash/rcwin.key
-    $(noecho)*wsplice -u -kWIN32  $[@ kwrcwin.tmp
+    $(noecho)*wsplice -u -kWIN32 -i$(wrc_dir)/y $[@ kwrcwin.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s w -m kwrcwin.tmp
+!endif
 
 keyword2.gh : ../hash/rcos2.key
-    $(noecho)*wsplice -u -kOS2  $[@ kwrcos2.tmp
+    $(noecho)*wsplice -u -kOS2 -i$(wrc_dir)/y $[@ kwrcos2.tmp
     @%make echo_findhash
     $(noecho)findhash -q -s 2 -m kwrcos2.tmp
 

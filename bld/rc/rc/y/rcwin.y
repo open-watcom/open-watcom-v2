@@ -37,125 +37,7 @@
  *      -5 involving Y_CHARACTERISTICS
  ***************************************************************************/
 
-/*** error tokens ***/
-%token Y_SCAN_ERROR
-/*** non-keyword tokens ***/
-%token <string>     Y_NAME
-%token <intinfo>    Y_INTEGER
-%token <string>     Y_STRING
-%token <string>     Y_DOS_FILENAME
-/*** operator tokens ***/
-%token Y_POUND_SIGN                 /* this token is intercepted by yylex */
-%token Y_LPAREN
-%token Y_RPAREN
-%token Y_LBRACE
-%token Y_RBRACE
-%token Y_LSQ_BRACKET
-%token Y_RSQ_BRACKET
-%token Y_PLUS
-%token Y_MINUS
-%token Y_BITNOT
-%token Y_NOT
-%token Y_TIMES
-%token Y_DIVIDE
-%token Y_MOD
-%token Y_SHIFTL
-%token Y_SHIFTR
-%token Y_GT
-%token Y_LT
-%token Y_GE
-%token Y_LE
-%token Y_EQ
-%token Y_SINGLE_EQ
-%token Y_NE
-%token Y_BITAND
-%token Y_BITXOR
-%token Y_BITOR
-%token Y_AND
-%token Y_OR
-%token Y_QUESTION
-%token Y_COLON
-%token Y_COMMA
-/*** keywords tokens ***/
-%token Y_ACCELERATORS
-%token Y_ALT
-%token Y_ASCII
-%token Y_AUTOCHECKBOX
-%token Y_AUTORADIOBUTTON
-%token Y_AUTO3STATE
-%token Y_BEGIN
-%token Y_BITMAP
-%token Y_BLOCK
-%token Y_BUTTON
-%token Y_CAPTION
-%token Y_CHARACTERISTICS
-%token Y_CHECKBOX
-%token Y_CHECKED
-%token Y_CLASS
-%token Y_CODEPAGE
-%token Y_COMBOBOX
-%token Y_CONTROL
-%token Y_CTEXT
-%token Y_CURSOR
-%token Y_DEFPUSHBUTTON
-%token Y_DIALOG
-%token Y_DIALOG_EX
-%token Y_DISCARDABLE
-%token Y_DLGINIT
-%token Y_EDIT
-%token Y_EDITTEXT
-%token Y_END
-%token Y_ERRTABLE
-%token Y_EXSTYLE
-%token Y_FILEFLAGS
-%token Y_FILEFLAGSMASK
-%token Y_FILEOS
-%token Y_FILESUBTYPE
-%token Y_FILETYPE
-%token Y_FILEVERSION
-%token Y_FIXED
-%token Y_FONT
-%token Y_GRAYED
-%token Y_GROUPBOX
-%token Y_HELP
-%token Y_ICON
-%token Y_IMPURE
-%token Y_INACTIVE
-%token Y_INCLUDERES
-%token Y_LANGUAGE
-%token Y_LISTBOX
-%token Y_LOADONCALL
-%token Y_LTEXT
-%token Y_MENU
-%token Y_MENU_EX
-%token Y_MENUBARBREAK
-%token Y_MENUBREAK
-%token Y_MENUITEM
-%token Y_MESSAGETABLE
-%token Y_MOVEABLE
-%token Y_NOINVERT
-%token Y_OWNERDRAW
-%token Y_POPUP
-%token Y_POUND_PRAGMA
-%token Y_PRELOAD
-%token Y_PRODUCTVERSION
-%token Y_PURE
-%token Y_PUSHBUTTON
-%token Y_RADIOBUTTON
-%token Y_RCDATA
-%token Y_RTEXT
-%token Y_SCROLLBAR
-%token Y_SEPARATOR
-%token Y_SHIFT
-%token Y_STATE3
-%token Y_STATIC
-%token Y_STRINGTABLE
-%token Y_STYLE
-%token Y_TOOLBAR
-%token Y_VALUE
-%token Y_VERSION
-%token Y_VERSIONINFO
-%token Y_VIRTKEY
+:include yytokens.sp
 
 %type <maskint>         constant-expression
 %type <maskint>         conditional-exp
@@ -255,6 +137,7 @@
 %type <diagopts>        exstyle-equal-stmt
 ::
 :keep TYPES
+::
 :include menu.sp
 :include dialog.sp
 ::
@@ -263,12 +146,12 @@
 :include menuex.sp
 :include dialogex.sp
 :: MFC
-:include dlginit.sp
-:include toolbar.sp
+:include mfc.sp
 ::
 %type <integral>        helpId-opt
 %type <integral>        helpId
 :endsegment
+::
 :remove TYPES
 ::
 
@@ -303,12 +186,12 @@ normal-resource
     | menu-resource
     | dialog-resource
     | version-info-resource
-:segment WIN32
-    | language-resource
-:endsegment
     | message-table-resource
     | menuex-resource
     | dialogex-resource
+:segment WIN32
+    | language-resource
+:endsegment
     ;
 
 mfc-private-resource
@@ -383,10 +266,6 @@ keyword-name
         { $$ = Y_BUTTON; }
     | Y_CAPTION
         { $$ = Y_CAPTION; }
-:segment WIN32
-    | Y_CHARACTERISTICS
-        { $$ = Y_CHARACTERISTICS; }
-:endsegment
     | Y_CHECKBOX
         { $$ = Y_CHECKBOX; }
     | Y_CHECKED
@@ -407,26 +286,14 @@ keyword-name
         { $$ = Y_DEFPUSHBUTTON; }
     | Y_DIALOG
         { $$ = Y_DIALOG; }
-:segment WIN32
-    | Y_DIALOG_EX
-        { $$ = Y_DIALOG_EX; }
-:endsegment
     | Y_DISCARDABLE
         { $$ = Y_DISCARDABLE; }
-:segment WIN32
-    | Y_DLGINIT
-        { $$ = Y_DLGINIT; }
-:endsegment
     | Y_EDIT
         { $$ = Y_EDIT; }
     | Y_EDITTEXT
         { $$ = Y_EDITTEXT; }
     | Y_END
         { $$ = Y_END; }
-:segment WIN16
-    | Y_ERRTABLE
-        { $$ = Y_ERRTABLE; }
-:endsegment
     | Y_EXSTYLE
         { $$ = Y_EXSTYLE; }
     | Y_FILEFLAGS
@@ -457,10 +324,6 @@ keyword-name
         { $$ = Y_IMPURE; }
     | Y_INACTIVE
         { $$ = Y_INACTIVE; }
-:segment WIN32
-    | Y_LANGUAGE
-        { $$ = Y_LANGUAGE; }
-:endsegment
     | Y_LISTBOX
         { $$ = Y_LISTBOX; }
     | Y_LOADONCALL
@@ -469,10 +332,6 @@ keyword-name
         { $$ = Y_LTEXT; }
     | Y_MENU
         { $$ = Y_MENU; }
-:segment WIN32
-    | Y_MENU_EX
-        { $$ = Y_MENU_EX; }
-:endsegment
     | Y_MENUBARBREAK
         { $$ = Y_MENUBARBREAK; }
     | Y_MENUBREAK
@@ -517,16 +376,32 @@ keyword-name
         { $$ = Y_STRINGTABLE; }
     | Y_STYLE
         { $$ = Y_STYLE; }
-:segment WIN32
-    | Y_TOOLBAR
-        { $$ = Y_TOOLBAR; }
-:endsegment
     | Y_VALUE
         { $$ = Y_VALUE; }
     | Y_VERSIONINFO
         { $$ = Y_VERSIONINFO; }
     | Y_VIRTKEY
         { $$ = Y_VIRTKEY; }
+:segment WIN16
+    | Y_ERRTABLE
+        { $$ = Y_ERRTABLE; }
+:endsegment
+:segment WIN32
+    | Y_CHARACTERISTICS
+        { $$ = Y_CHARACTERISTICS; }
+    | Y_DIALOG_EX
+        { $$ = Y_DIALOG_EX; }
+    | Y_DLGINIT
+        { $$ = Y_DLGINIT; }
+    | Y_LANGUAGE
+        { $$ = Y_LANGUAGE; }
+    | Y_MENU_EX
+        { $$ = Y_MENU_EX; }
+    | Y_TOOLBAR
+        { $$ = Y_TOOLBAR; }
+    | Y_VERSION
+        { $$ = Y_VERSION; }
+:endsegment
     ;
 
 comma-opt
@@ -1269,9 +1144,7 @@ primary-exp
 :include dialogex.sp
 
 :: MFC
-:include dlginit.sp
-
-:include toolbar.sp
+:include mfc.sp
 :endsegment
 
 %%

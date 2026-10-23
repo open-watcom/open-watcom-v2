@@ -84,6 +84,6 @@ number of rules not reduced:                10
 238 (0ee): diag-options-stmt <- font-stmt (unit production)
 239 (0ef): menu-stmt <- Y_MENU name-id
 247 (0f7): font-stmt <- Y_FONT comma-opt
-bytes used in tables:                    12390
+bytes used in tables:                     7262
 states with defaults:                      437
-states with parents:                       510
+states with parents:                       215
