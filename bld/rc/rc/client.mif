@@ -17,7 +17,7 @@ win_yacc_rc_grammar = $(wrc_dir)/y/rcwin.y
 
 yacc_rc_driver = $(wrc_dir)/y/yydriver.c
 
-#w16_wsplice_dep = $(wrc_dir)/y/dialog.sp $(wrc_dir)/y/menu.sp
+w16_wsplice_dep = $(wrc_dir)/y/dialog.sp $(wrc_dir)/y/menu.sp
 
 $(w16_yacc_file).c $(w16_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver) $(w16_wsplice_dep) .EXPLICIT
     $(noecho)*wsplice -u -kWIN16 -i $(wrc_dir)/y $[@ yrcw16.tmp
@@ -30,7 +30,7 @@ $(w16_yacc_file).c $(w16_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver)
     $(noecho)$(yacc) $(w16_yacc_options) yrcw16.tmp drivrw16.tmp >$(nulldevice)
 !endif
 
-#win_wsplice_dep = $(w16_wsplice_dep) $(wrc_dir)/y/dialogex.sp $(wrc_dir)/y/menuex.sp $(wrc_dir)/y/dlginit.sp $(wrc_dir)/y/toolbar.sp
+win_wsplice_dep = $(w16_wsplice_dep) $(wrc_dir)/y/dialogex.sp $(wrc_dir)/y/menuex.sp $(wrc_dir)/y/dlginit.sp $(wrc_dir)/y/toolbar.sp
 
 $(win_yacc_file).c $(win_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver) $(win_wsplice_dep) .EXPLICIT
     $(noecho)*wsplice -u -kWIN32 -i $(wrc_dir)/y $[@ yrcwin.tmp
@@ -43,7 +43,7 @@ $(win_yacc_file).c $(win_yacc_file).h : $(win_yacc_rc_grammar) $(yacc_rc_driver)
     $(noecho)$(yacc) $(win_yacc_options) yrcwin.tmp drivrwin.tmp >$(nulldevice)
 !endif
 
-#os2_wsplice_dep =
+os2_wsplice_dep =
 
 $(os2_yacc_file).c $(os2_yacc_file).h : $(os2_yacc_rc_grammar) $(yacc_rc_driver) $(os2_wsplice_dep) .EXPLICIT
     $(noecho)*wsplice -u -kOS2 -i $(wrc_dir)/y $[@ yrcos2.tmp

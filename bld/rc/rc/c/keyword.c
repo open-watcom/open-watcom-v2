@@ -159,14 +159,26 @@ YYTOKENTYPE LookupKeywordWIN( ScanString newstring )
 #endif
 /********************************************************/
 {
-    int     hash;
+    int         hash;
+    YYTOKENTYPE token;
 
     hash = keyword_hash( newstring.string, Weights, newstring.length );
-    if( HashTable[hash].token == TC_UNKNOWN ) {
-        return( Y_NAME );
-    } else if( stricmp( newstring.string, HashTable[hash].keyword ) == 0 ) {
-        return( HashTable[hash].token );
-    } else {
-        return( Y_NAME );
+    token = HashTable[hash].token;
+    switch( token ) {
+  #if defined( GRAMMAR_WIN16 )
+    case Y_DIALOG_EX:
+    case Y_DLGINIT:
+    case Y_MENU_EX:
+    case Y_TOOLBAR:
+  #elif defined( GRAMMAR_WIN32 )
+    case Y_ERRTABLE:
+  #endif
+    case TC_UNKNOWN:
+        break;
+    default:
+        if( stricmp( newstring.string, HashTable[hash].keyword ) == 0 ) {
+            return( token );
+        }
     }
+    return( Y_NAME );
 }

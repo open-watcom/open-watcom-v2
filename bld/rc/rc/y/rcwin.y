@@ -187,28 +187,6 @@
 %type <resmemflags>     resource-options-mp
 %type <token>           resource-option
 %type <string>          file-name
-%type <resbyte>         fontitalic
-%type <ressizenum>      fontweight
-%type <resbyte>         fontcharset
-%type <menuflags>       menu-item-options
-%type <token>           menu-item-option
-%type <menuptr>         menuex-section
-%type <menuptr>         menu-section
-%type <menuptr>         menuex-items
-%type <menuptr>         menu-items
-%type <menufull>        menuex-item
-%type <menufull>        menu-item
-%type <menufull>        menuex-popup-stmt
-%type <menufull>        menu-popup-stmt
-%type <menuitem>        menuex-popup-defn
-%type <menuitem>        menu-popup-defn
-%type <menuitem>        menuex-entry-stmt
-%type <menuitem>        menu-entry-stmt
-%type <menuitem>        menuex-entry-defn
-%type <menuitem>        menu-entry-defn
-%type <string>          menu-text
-%type <residnum>        menu-result
-%type <langinfo>        language-stmt
 %type <ressizenum>      size-x
 %type <ressizenum>      size-y
 %type <ressizenum>      size-w
@@ -217,78 +195,7 @@
 %type <string>          string-constant
 %type <string>          string-group
 %type <maskint>         style
-%type <maskint>         exstyle
 %type <diagopts>        style-stmt
-%type <diagopts>        exstyle-stmt
-%type <diagopts>        exstyle-equal-stmt
-%type <diagopts>        caption-stmt
-%type <diagopts>        menu-stmt
-%type <diagopts>        class-stmt
-%type <diagopts>        font-stmt-ex
-%type <diagopts>        font-stmt
-%type <diagopts>        dialog-lang-stmt
-%type <diagopts>        dialogex-options-stmt
-%type <diagopts>        dialog-options-stmt
-%type <diagopts>        dialog-version-stmt
-%type <diagopts>        dialog-characteristics-stmt
-%type <dataelem>        dialog-data-elements
-%type <nameorord>       class-name
-%type <nameorord>       ctl-class-name
-%type <ressizenum>      point-size
-%type <string>          typeface
-%type <diaghead>        dialogex-options-section
-%type <diaghead>        dialog-options-section
-%type <diagctrllist>    dialogex-control-section
-%type <diagctrllist>    dialog-control-section
-%type <diagctrllist>    dialogex-control-stmts
-%type <diagctrllist>    dialog-control-stmts
-%type <diagctrl>        dialogex-control-stmt
-%type <diagctrl>        dialog-control-stmt
-%type <diagctrlopts>    cntl-text-options-ex
-%type <diagctrlopts>    cntl-text-options
-%type <diagctrlopts>    cntl-options-ex
-%type <diagctrlopts>    cntl-options
-%type <diagctrl>        ltext-stmt-ex
-%type <diagctrl>        ltext-stmt
-%type <diagctrl>        rtext-stmt-ex
-%type <diagctrl>        rtext-stmt
-%type <diagctrl>        ctext-stmt-ex
-%type <diagctrl>        ctext-stmt
-%type <diagctrl>        autocheckbox-stmt-ex
-%type <diagctrl>        autocheckbox-stmt
-%type <diagctrl>        autoradiobutton-stmt-ex
-%type <diagctrl>        autoradiobutton-stmt
-%type <diagctrl>        auto3state-stmt-ex
-%type <diagctrl>        auto3state-stmt
-%type <diagctrl>        checkbox-stmt-ex
-%type <diagctrl>        checkbox-stmt
-%type <diagctrl>        pushbutton-stmt-ex
-%type <diagctrl>        pushbutton-stmt
-%type <diagctrl>        listbox-stmt-ex
-%type <diagctrl>        listbox-stmt
-%type <diagctrl>        groupbox-stmt-ex
-%type <diagctrl>        groupbox-stmt
-%type <diagctrl>        defpushbutton-stmt-ex
-%type <diagctrl>        defpushbutton-stmt
-%type <diagctrl>        radiobutton-stmt-ex
-%type <diagctrl>        radiobutton-stmt
-%type <diagctrl>        edittext-stmt-ex
-%type <diagctrl>        edittext-stmt
-%type <diagctrl>        combobox-stmt-ex
-%type <diagctrl>        combobox-stmt
-%type <diagctrl>        icon-stmt-ex
-%type <diagctrl>        icon-stmt
-%type <diagctrl>        scrollbar-stmt-ex
-%type <diagctrl>        scrollbar-stmt
-%type <diagctrl>        control-stmt-ex
-%type <diagctrl>        control-stmt
-%type <diagctrl>        state3-stmt-ex
-%type <diagctrl>        state3-stmt
-%type <nameorord>       icon-name
-%type <diagctrlopts>    icon-parms-ex
-%type <diagctrlopts>    icon-parms
-%type <residnum>        cntl-id
-%type <resid>           cntl-text
 %type <residnum>        string-id
 %type <stritem>         string-item
 %type <strtable>        string-items
@@ -319,14 +226,51 @@
 %type <valueitem>       value-string-list
 %type <dataelem>        raw-data-section
 %type <dataelem>        raw-data-items
-%type <residnum>        menuId
-%type <integral>        menuType
-%type <integral>        menuState
+::
+:: MENU/MENUEX common
+::
+%type <menuflags>       menu-item-options
+%type <token>           menu-item-option
+%type <string>          menu-text
+::
+:: DIALOG/DIALOGEX common
+::
+%type <diagopts>        caption-stmt
+%type <diagopts>        menu-stmt
+%type <diagopts>        class-stmt
+%type <dataelem>        dialog-data-elements
+%type <nameorord>       class-name
+%type <nameorord>       ctl-class-name
+%type <ressizenum>      point-size
+%type <string>          typeface
+%type <nameorord>       icon-name
+%type <residnum>        cntl-id
+%type <resid>           cntl-text
+::
+:: EXSTYLE is used on WIN16 for source compatibility with WIN32
+:: value is ignored
+:: if WIN16 strict syntax is used then reported as error
+%type <maskint>         exstyle
+%type <diagopts>        exstyle-stmt
+%type <diagopts>        exstyle-equal-stmt
+::
+:keep TYPES
+:include menu.sp
+:include dialog.sp
+::
+:segment WIN32
+:include info32.sp
+:include menuex.sp
+:include dialogex.sp
+:: MFC
+:include dlginit.sp
+:include toolbar.sp
+::
 %type <integral>        helpId-opt
 %type <integral>        helpId
-%type <toolbar>         toolbar-block
-%type <toolbar>         toolbar-items
-%type <residnum>        toolbar-item
+:endsegment
+:remove TYPES
+::
 
 %start goal-symbol
 
@@ -346,6 +290,7 @@ resource
     : normal-resource
     | string-table-resource
     | error-table-resource
+    | mfc-private-resource
     | pragma-statement
     | includeres-statement
     ;
@@ -356,14 +301,18 @@ normal-resource
     | user-defined-resource
     | accelerators-resource
     | menu-resource
-    | menuex-resource
     | dialog-resource
-    | dialogex-resource
     | version-info-resource
+:segment WIN32
     | language-resource
-    | characteristics-stmt
-    | version-stmt
+:endsegment
     | message-table-resource
+    | menuex-resource
+    | dialogex-resource
+    ;
+
+mfc-private-resource
+    : dlginit-resource
     | toolbar-resource
     ;
 
@@ -434,8 +383,10 @@ keyword-name
         { $$ = Y_BUTTON; }
     | Y_CAPTION
         { $$ = Y_CAPTION; }
+:segment WIN32
     | Y_CHARACTERISTICS
         { $$ = Y_CHARACTERISTICS; }
+:endsegment
     | Y_CHECKBOX
         { $$ = Y_CHECKBOX; }
     | Y_CHECKED
@@ -456,20 +407,26 @@ keyword-name
         { $$ = Y_DEFPUSHBUTTON; }
     | Y_DIALOG
         { $$ = Y_DIALOG; }
+:segment WIN32
     | Y_DIALOG_EX
         { $$ = Y_DIALOG_EX; }
+:endsegment
     | Y_DISCARDABLE
         { $$ = Y_DISCARDABLE; }
+:segment WIN32
     | Y_DLGINIT
         { $$ = Y_DLGINIT; }
+:endsegment
     | Y_EDIT
         { $$ = Y_EDIT; }
     | Y_EDITTEXT
         { $$ = Y_EDITTEXT; }
     | Y_END
         { $$ = Y_END; }
+:segment WIN16
     | Y_ERRTABLE
         { $$ = Y_ERRTABLE; }
+:endsegment
     | Y_EXSTYLE
         { $$ = Y_EXSTYLE; }
     | Y_FILEFLAGS
@@ -500,8 +457,10 @@ keyword-name
         { $$ = Y_IMPURE; }
     | Y_INACTIVE
         { $$ = Y_INACTIVE; }
+:segment WIN32
     | Y_LANGUAGE
         { $$ = Y_LANGUAGE; }
+:endsegment
     | Y_LISTBOX
         { $$ = Y_LISTBOX; }
     | Y_LOADONCALL
@@ -510,8 +469,10 @@ keyword-name
         { $$ = Y_LTEXT; }
     | Y_MENU
         { $$ = Y_MENU; }
+:segment WIN32
     | Y_MENU_EX
         { $$ = Y_MENU_EX; }
+:endsegment
     | Y_MENUBARBREAK
         { $$ = Y_MENUBARBREAK; }
     | Y_MENUBREAK
@@ -556,8 +517,10 @@ keyword-name
         { $$ = Y_STRINGTABLE; }
     | Y_STYLE
         { $$ = Y_STYLE; }
+:segment WIN32
     | Y_TOOLBAR
         { $$ = Y_TOOLBAR; }
+:endsegment
     | Y_VALUE
         { $$ = Y_VALUE; }
     | Y_VERSIONINFO
@@ -634,8 +597,6 @@ user-defined-resource
 user-defined-type-id
     : type-id
         { $$ = $1; }
-    | Y_DLGINIT
-        { $$ = WResIDFromNum( 0xF0 ); }
     ;
 
 user-defined-data
@@ -683,32 +644,6 @@ rcdata-resource
 string-table-resource
     : Y_STRINGTABLE resource-options-mdp opt-resource-info-stmts string-section
         { SemWINMergeStrTable( $4, $2 ); }
-    ;
-
-toolbar-resource
-    : name-id Y_TOOLBAR resource-options-mp constant-expression comma-opt constant-expression toolbar-block
-        { SemWINWriteToolBar( $1, $7, $4.Value, $6.Value, $3 ); }
-    ;
-
-toolbar-block
-    : Y_BEGIN toolbar-items Y_END
-        { $$ = $2; }
-    | Y_LBRACE toolbar-items Y_RBRACE
-        { $$ = $2; }
-    ;
-
-toolbar-items
-    : toolbar-item
-        { $$ = SemWINAddToolBarItem( NULL, $1 ); }
-    | toolbar-items toolbar-item
-        { $$ = SemWINAddToolBarItem( $1, $2 ); }
-    ;
-
-toolbar-item
-    : Y_BUTTON constant-expression
-        { $$ = $2.Value; }
-    | Y_SEPARATOR
-        { $$ = 0; }
     ;
 
 message-table-resource
@@ -837,252 +772,6 @@ acc-item-option
         { $$.flags = ACCEL_VIRTKEY; $$.typegiven = true; }
     ;
 
-menuex-resource
-    : name-id Y_MENU_EX resource-options-mdp menuex-section
-        { SemWINWriteMenu( $1, $3, $4, true ); }
-    ;
-
-menu-resource
-    : name-id Y_MENU resource-options-mdp opt-resource-info-stmts menu-section
-        { SemWINWriteMenu( $1, $3, $5, false ); }
-    ;
-
-menuex-section
-    : Y_BEGIN menuex-items Y_END
-        { $$ = $2; }
-    | Y_LBRACE menuex-items Y_RBRACE
-        { $$ = $2; }
-    ;
-
-menu-section
-    : Y_BEGIN menu-items Y_END
-        { $$ = $2; }
-    | Y_LBRACE menu-items Y_RBRACE
-        { $$ = $2; }
-    ;
-
-menuex-items
-    : menuex-item
-        { $$ = SemWINAddMenuItem( NULL, $1 ); }
-    | menuex-items menuex-item
-        { $$ = SemWINAddMenuItem( $1, $2 ); }
-    ;
-
-menu-items
-    : menu-item
-        { $$ = SemWINAddMenuItem( NULL, $1 ); }
-    | menu-items menu-item
-        { $$ = SemWINAddMenuItem( $1, $2 ); }
-    ;
-
-menuId
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
-menuType
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
-menuState
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
-helpId
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
-helpId-opt
-    : /* nothing */
-       { $$ = 0; }
-    | comma-opt helpId
-       { $$ = $2; }
-    ;
-
-menuex-item
-    : menuex-entry-stmt
-        {
-            $$.next = NULL;
-            $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
-            $$.item = $1;
-            $$.item.u.ExFlags = 0;
-            $$.item.IsOldWin = false;
-            $$.submenu = NULL;
-        }
-    | menuex-popup-stmt
-        { $$ = $1; }
-    ;
-
-menu-item
-    : menu-entry-stmt
-        {
-            $$.next = NULL;
-            $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
-            $$.item = $1;
-            $$.item.ExType = 0;
-            $$.item.ExState = 0;
-            $$.item.IsOldWin = ( CmdLineParms.winver < 30 );
-            $$.submenu = NULL;
-        }
-    | menu-popup-stmt
-        { $$ = $1; }
-    ;
-
-menuex-popup-stmt
-    : Y_POPUP menu-text menuex-popup-defn menuex-section comma-opt
-        {
-            $$.next = NULL;
-            $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
-            $$.item = $3;
-            $$.item.ItemText = $2.string;
-            $$.item.u.ExFlags = MENUEX_POPUP;
-            $$.item.IsOldWin = false;
-            $$.submenu = $4;
-        }
-    ;
-
-menu-popup-stmt
-    : Y_POPUP menu-text menu-popup-defn menu-section comma-opt
-        {
-            $$.next = NULL;
-            $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
-            $$.item = $3;
-            $$.item.ItemText = $2.string;
-            $$.item.u.ItemFlags |= MENU_POPUP;
-            $$.item.ItemId = 0;
-            $$.item.ExType = 0;
-            $$.item.ExState = 0;
-            $$.item.ExHelpId = 0;
-            $$.item.IsOldWin = ( CmdLineParms.winver < 30 );
-            $$.submenu = $4;
-        }
-    ;
-
-menuex-popup-defn
-    : /* nothing */
-        {
-            $$.ItemId = 0;
-            $$.ExType = 0;
-            $$.ExState = 0;
-            $$.ExHelpId = 0;
-        }
-    | comma-opt menuId
-        {
-            $$.ItemId = $2;
-            $$.ExType = 0;
-            $$.ExState = 0;
-            $$.ExHelpId = 0;
-        }
-    | comma-opt menuId comma-opt menuType
-        {
-            $$.ItemId = $2;
-            $$.ExType = $4;
-            $$.ExState = 0;
-            $$.ExHelpId = 0;
-        }
-    | comma-opt menuId comma-opt menuType comma-opt menuState
-        {
-            $$.ItemId = $2;
-            $$.ExType = $4;
-            $$.ExState = $6;
-            $$.ExHelpId = 0;
-        }
-    | comma-opt menuId comma-opt menuType comma-opt menuState comma-opt helpId
-        {
-            $$.ItemId = $2;
-            $$.ExType = $4;
-            $$.ExState = $6;
-            $$.ExHelpId = $8;
-        }
-    ;
-
-menu-popup-defn
-    : /* nothing */
-        { $$.u.ItemFlags = 0; }
-    | comma-opt menu-item-options
-        { $$.u.ItemFlags = $2; }
-    ;
-
-menuex-entry-stmt
-    : Y_MENUITEM Y_SEPARATOR comma-opt
-        {
-            $$.ItemText = NULL;
-            $$.ItemId = 0;
-            $$.ExType = MENUEX_TYPE_SEPARATOR;
-            $$.ExState = 0;
-        }
-    | Y_MENUITEM menu-text menuex-entry-defn
-        {
-            $$ = $3;
-            $$.ItemText = $2.string;
-        }
-    ;
-
-menu-entry-stmt
-    : Y_MENUITEM Y_SEPARATOR comma-opt
-        {
-            $$.ItemText = NULL;
-            $$.ItemId = 0;
-            $$.u.ItemFlags = MENU_SEPARATOR;
-        }
-    | Y_MENUITEM menu-text comma-opt menu-result menu-entry-defn
-        {
-            $$ = $5;
-            $$.ItemText = $2.string;
-            $$.ItemId = $4;
-        }
-    ;
-
-menuex-entry-defn
-    : /* nothing */
-        {
-            $$.ItemId = 0;
-            $$.ExType = 0;
-            $$.ExState = 0;
-        }
-    | comma-opt menuId
-        {
-            $$.ItemId = $2;
-            $$.ExType = 0;
-            $$.ExState = 0;
-        }
-    | comma-opt menuId comma-opt menuType
-        {
-            $$.ItemId = $2;
-            $$.ExType = $4;
-            $$.ExState = 0;
-        }
-    | comma-opt menuId comma-opt menuType comma-opt menuState
-        {
-            $$.ItemId = $2;
-            $$.ExType = $4;
-            $$.ExState = $6;
-        }
-    ;
-
-menu-entry-defn
-    : /* nothing */
-        { $$.u.ItemFlags = 0; }
-    | comma-opt menu-item-options
-        { $$.u.ItemFlags = $2; }
-    ;
-
-menu-text
-    : string-constant
-    ;
-
-menu-result
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
 /*
  * Note: The way we accept menu options differs from what is specified
  * in the Windows Programmer's Reference. There they say that the Y_HELP
@@ -1121,55 +810,26 @@ menu-item-option
     | Y_HELP
         { $$ = Y_HELP; }
     ;
+:segment WIN32
 
-language-resource
-    : language-stmt
-        { SemWINSetGlobalLanguage( &$1 ); }
+helpId
+    : constant-expression
+        { $$ = $1.Value; }
     ;
+
+helpId-opt
+    : /* nothing */
+       { $$ = 0; }
+    | comma-opt helpId
+       { $$ = $2; }
+    ;
+:endsegment
 
 opt-resource-info-stmts
-    : resource-info-stmts
-    | /* nothing */
-    ;
-
-resource-info-stmts
-    : resource-info-stmt
-    | resource-info-stmts resource-info-stmt
-    ;
-
-resource-info-stmt
-    : language-stmt
-        { SemWINSetResourceLanguage( &$1, true ); }
-    | characteristics-stmt
-    | version-stmt
-    ;
-
-language-stmt
-    : Y_LANGUAGE constant-expression Y_COMMA constant-expression
-        { $$.lang = $2.Value; $$.sublang = $4.Value; }
-    ;
-
-characteristics-stmt
-    : Y_CHARACTERISTICS constant-expression
-        { SemWINUnsupported( Y_CHARACTERISTICS ); }
-    ;
-
-version-stmt
-    : Y_VERSION constant-expression
-        { SemWINUnsupported( Y_VERSION ); }
-    ;
-
-dialogex-resource
-    : name-id Y_DIALOG_EX resource-options-mdp comma-opt size-info
-            helpId-opt
-            dialogex-options-section dialogex-control-section
-        { SemWINWriteDialogBox( $1, $3, $5, $7, $8, $6, true ); }
-    ;
-
-dialog-resource
-    : name-id Y_DIALOG resource-options-mdp comma-opt size-info
-            dialog-options-section dialog-control-section
-        { SemWINWriteDialogBox( $1, $3, $5, $6, $7, 0, false ); }
+    : /* nothing */
+:segment WIN32
+    | resource-info-stmts
+:endsegment
     ;
 
 size-info
@@ -1195,59 +855,6 @@ size-w
 size-h
     : constant-expression
         { $$ = $1.Value; }
-    ;
-
-dialogex-options-section
-    : /* nothing */
-        { $$ = NULL; }
-    | dialogex-options-section dialogex-options-stmt
-        { $$ = SemWINDialogOptions( $1, &($2) ); }
-    ;
-
-dialog-options-section
-    : /* nothing */
-        { $$ = NULL; }
-    | dialog-options-section dialog-options-stmt
-        { $$ = SemWINDialogOptions( $1, &($2) ); }
-    ;
-
-dialogex-options-stmt
-    : style-stmt
-    | exstyle-stmt
-    | exstyle-equal-stmt
-    | caption-stmt
-    | menu-stmt
-    | class-stmt
-    | font-stmt-ex
-    | dialog-lang-stmt
-    | dialog-version-stmt
-    | dialog-characteristics-stmt
-    ;
-
-dialog-options-stmt
-    : style-stmt
-    | caption-stmt
-    | menu-stmt
-    | class-stmt
-    | font-stmt
-    | dialog-lang-stmt
-    | dialog-version-stmt
-    | dialog-characteristics-stmt
-    ;
-
-dialog-lang-stmt
-    : language-stmt
-        { $$.token = Y_LANGUAGE; $$.Opt.lang = $1; }
-    ;
-
-dialog-version-stmt
-    : version-stmt
-        { $$.token = Y_VERSION; }
-    ;
-
-dialog-characteristics-stmt
-    : characteristics-stmt
-        { $$.token = Y_CHARACTERISTICS; }
     ;
 
 exstyle-stmt
@@ -1329,87 +936,6 @@ ctl-class-name
         { $$ = ResNumToNameOrOrdinal( $1.Value ); }
     ;
 
-font-stmt-ex
-    : Y_FONT point-size comma-opt typeface
-        {
-            $$.token = Y_FONT;
-            $$.Opt.Font.PointSize = $2;
-            $$.Opt.Font.FontName = $4.string;
-            $$.Opt.Font.FontWeight = 0;
-            $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
-            $$.Opt.Font.FontWeightDefined = false;
-            $$.Opt.Font.FontItalicDefined = false;
-            $$.Opt.Font.FontCharsetDefined = false;
-        }
-    | Y_FONT point-size comma-opt typeface comma-opt fontweight
-        {
-            $$.token = Y_FONT;
-            $$.Opt.Font.PointSize = $2;
-            $$.Opt.Font.FontName = $4.string;
-            $$.Opt.Font.FontWeight = $6;
-            $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
-            $$.Opt.Font.FontWeightDefined = true;
-            $$.Opt.Font.FontItalicDefined = false;
-            $$.Opt.Font.FontCharsetDefined = false;
-        }
-    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt fontitalic
-        {
-            $$.token = Y_FONT;
-            $$.Opt.Font.PointSize = $2;
-            $$.Opt.Font.FontName = $4.string;
-            $$.Opt.Font.FontWeight = $6;
-            $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
-            $$.Opt.Font.FontWeightDefined = true;
-            $$.Opt.Font.FontItalicDefined = true;
-            $$.Opt.Font.FontCharsetDefined = false;
-        }
-    | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt fontitalic comma-opt fontcharset
-        {
-            $$.token = Y_FONT;
-            $$.Opt.Font.PointSize = $2;
-            $$.Opt.Font.FontName = $4.string;
-            $$.Opt.Font.FontWeight = $6;
-            $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontCharset = $10;
-            $$.Opt.Font.FontWeightDefined = true;
-            $$.Opt.Font.FontItalicDefined = true;
-            $$.Opt.Font.FontCharsetDefined = true;
-        }
-    ;
-
-font-stmt
-    : Y_FONT point-size comma-opt typeface
-        {
-            $$.token = Y_FONT;
-            $$.Opt.Font.PointSize = $2;
-            $$.Opt.Font.FontName = $4.string;
-            $$.Opt.Font.FontWeight = 0;
-            $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
-            $$.Opt.Font.FontWeightDefined = false;
-            $$.Opt.Font.FontItalicDefined = false;
-            $$.Opt.Font.FontCharsetDefined = false;
-        }
-    ;
-
-fontcharset
-    : constant-expression
-        { $$ = $1.Value & 0xFF; }
-    ;
-
-fontweight
-    : constant-expression
-        { $$ = $1.Value; }
-    ;
-
-fontitalic
-    : constant-expression
-        { $$ = ( $1.Value != 0 ); }
-    ;
-
 point-size
     : constant-expression
         { $$ = $1.Value; }
@@ -1419,186 +945,10 @@ typeface
     : string-constant
     ;
 
-dialogex-control-section
-    : Y_BEGIN dialogex-control-stmts Y_END
-        { $$ = $2; }
-    | Y_LBRACE dialogex-control-stmts Y_RBRACE
-        { $$ = $2; }
-    | Y_BEGIN Y_END
-        { $$ = SemWINEmptyDialogCtrlList(); }
-    | Y_LBRACE Y_RBRACE
-        { $$ = SemWINEmptyDialogCtrlList(); }
-    ;
-
-dialog-control-section
-    : Y_BEGIN dialog-control-stmts Y_END
-        { $$ = $2; }
-    | Y_LBRACE dialog-control-stmts Y_RBRACE
-        { $$ = $2; }
-    | Y_BEGIN Y_END
-        { $$ = SemWINEmptyDialogCtrlList(); }
-    | Y_LBRACE Y_RBRACE
-        { $$ = SemWINEmptyDialogCtrlList(); }
-    ;
-
 dialog-data-elements
     : raw-data-section
     | /* Nothing */
         { $$ = NULL; }
-    ;
-
-dialogex-control-stmts
-    : dialogex-control-stmt dialog-data-elements
-        { $$ = SemWINAddDialogCtrlList( NULL, $1, $2 ); }
-    | dialogex-control-stmts dialogex-control-stmt dialog-data-elements
-        { $$ = SemWINAddDialogCtrlList( $1, $2, $3 ); }
-    ;
-
-dialog-control-stmts
-    : dialog-control-stmt dialog-data-elements
-        { $$ = SemWINAddDialogCtrlList( NULL, $1, $2 ); }
-    | dialog-control-stmts dialog-control-stmt dialog-data-elements
-        { $$ = SemWINAddDialogCtrlList( $1, $2, $3 ); }
-    ;
-
-dialogex-control-stmt
-    : ltext-stmt-ex
-    | rtext-stmt-ex
-    | ctext-stmt-ex
-    | autocheckbox-stmt-ex
-    | autoradiobutton-stmt-ex
-    | auto3state-stmt-ex
-    | checkbox-stmt-ex
-    | pushbutton-stmt-ex
-    | listbox-stmt-ex
-    | groupbox-stmt-ex
-    | defpushbutton-stmt-ex
-    | radiobutton-stmt-ex
-    | edittext-stmt-ex
-    | combobox-stmt-ex
-    | icon-stmt-ex
-    | scrollbar-stmt-ex
-    | state3-stmt-ex
-    | control-stmt-ex
-    ;
-
-dialog-control-stmt
-    : ltext-stmt
-    | rtext-stmt
-    | ctext-stmt
-    | autocheckbox-stmt
-    | autoradiobutton-stmt
-    | auto3state-stmt
-    | checkbox-stmt
-    | pushbutton-stmt
-    | listbox-stmt
-    | groupbox-stmt
-    | defpushbutton-stmt
-    | radiobutton-stmt
-    | edittext-stmt
-    | combobox-stmt
-    | icon-stmt
-    | scrollbar-stmt
-    | state3-stmt
-    | control-stmt
-    ;
-
-cntl-text-options-ex
-    : string-constant cntl-options-ex
-        {
-            $2.Text = ResStrToNameOrOrdinal( $1.string );
-            MemFree( $1.string );
-            $$ = $2;
-        }
-    ;
-
-cntl-text-options
-    : string-constant cntl-options
-        {
-            $2.Text = ResStrToNameOrOrdinal( $1.string );
-            MemFree( $1.string );
-            $$ = $2;
-        }
-    ;
-
-cntl-options-ex
-    : comma-opt cntl-id comma-opt size-info
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style.Mask = 0;
-            $$.Text = NULL;
-            $$.ExtendedStyle = 0;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = 0;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = $8.Value;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
-           exstyle comma-opt helpId
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = $8.Value;
-            $$.HelpId = $10;
-        }
-    ;
-
-cntl-options
-    : comma-opt cntl-id comma-opt size-info
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style.Mask = 0;
-            $$.Text = NULL;
-            $$.ExtendedStyle = 0;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = 0;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = $8.Value;
-            $$.HelpId = 0;
-        }
-    | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt
-           exstyle comma-opt helpId
-        {
-            $$.ID = $2;
-            $$.SizeInfo = $4;
-            $$.Style = $6;
-            $$.Text = NULL;
-            $$.ExtendedStyle = $8.Value;
-            $$.HelpId = $10;
-        }
     ;
 
 cntl-id
@@ -1606,296 +956,9 @@ cntl-id
         { $$ = $1.Value; }
     ;
 
-ltext-stmt-ex
-    : Y_LTEXT cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_LTEXT, $2 ); }
-    ;
-
-ltext-stmt
-    : Y_LTEXT cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_LTEXT, $2 ); }
-    ;
-
-rtext-stmt-ex
-    : Y_RTEXT cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_RTEXT, $2 ); }
-    ;
-
-rtext-stmt
-    : Y_RTEXT cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_RTEXT, $2 ); }
-    ;
-
-ctext-stmt-ex
-    : Y_CTEXT cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_CTEXT, $2 ); }
-    ;
-
-ctext-stmt
-    : Y_CTEXT cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_CTEXT, $2 ); }
-    ;
-
-autocheckbox-stmt-ex
-    : Y_AUTOCHECKBOX cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_AUTOCHECKBOX, $2 ); }
-    ;
-
-autocheckbox-stmt
-    : Y_AUTOCHECKBOX cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_AUTOCHECKBOX, $2 ); }
-    ;
-
-autoradiobutton-stmt-ex
-    : Y_AUTORADIOBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_AUTORADIOBUTTON, $2 ); }
-    ;
-
-autoradiobutton-stmt
-    : Y_AUTORADIOBUTTON cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_AUTORADIOBUTTON, $2 ); }
-    ;
-
-auto3state-stmt-ex
-    : Y_AUTO3STATE cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_AUTO3STATE, $2 ); }
-    ;
-
-auto3state-stmt
-    : Y_AUTO3STATE cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_AUTO3STATE, $2 ); }
-    ;
-
-checkbox-stmt-ex
-    : Y_CHECKBOX cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_CHECKBOX, $2 ); }
-    ;
-
-checkbox-stmt
-    : Y_CHECKBOX cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_CHECKBOX, $2 ); }
-    ;
-
-pushbutton-stmt-ex
-    : Y_PUSHBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_PUSHBUTTON, $2 ); }
-    ;
-
-pushbutton-stmt
-    : Y_PUSHBUTTON cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_PUSHBUTTON, $2 ); }
-    ;
-
-listbox-stmt-ex
-    : Y_LISTBOX cntl-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_LISTBOX, $2 ); }
-    ;
-
-listbox-stmt
-    : Y_LISTBOX cntl-options
-        { $$ = SemWINNewDialogCtrl( Y_LISTBOX, $2 ); }
-    ;
-
-groupbox-stmt-ex
-    : Y_GROUPBOX cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_GROUPBOX, $2 ); }
-    ;
-
-groupbox-stmt
-    : Y_GROUPBOX cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_GROUPBOX, $2 ); }
-    ;
-
-defpushbutton-stmt-ex
-    : Y_DEFPUSHBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_DEFPUSHBUTTON, $2 ); }
-    ;
-
-defpushbutton-stmt
-    : Y_DEFPUSHBUTTON cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_DEFPUSHBUTTON, $2 ); }
-    ;
-
-radiobutton-stmt-ex
-    : Y_RADIOBUTTON cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_RADIOBUTTON, $2 ); }
-    ;
-
-radiobutton-stmt
-    : Y_RADIOBUTTON cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_RADIOBUTTON, $2 ); }
-    ;
-
-edittext-stmt-ex
-    : Y_EDITTEXT cntl-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_EDITTEXT, $2 ); }
-    ;
-
-edittext-stmt
-    : Y_EDITTEXT cntl-options
-        { $$ = SemWINNewDialogCtrl( Y_EDITTEXT, $2 ); }
-    ;
-
-combobox-stmt-ex
-    : Y_COMBOBOX cntl-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_COMBOBOX, $2 ); }
-    ;
-
-combobox-stmt
-    : Y_COMBOBOX cntl-options
-        { $$ = SemWINNewDialogCtrl( Y_COMBOBOX, $2 ); }
-    ;
-
-icon-stmt-ex
-    : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms-ex
-        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDialogCtrl( Y_ICON, $6 ); }
-    ;
-
-icon-stmt
-    : Y_ICON icon-name comma-opt cntl-id comma-opt icon-parms
-        { $6.Text = $2; $6.ID = $4; $$ = SemWINNewDialogCtrl( Y_ICON, $6 ); }
-    ;
-
-state3-stmt-ex
-    : Y_STATE3 cntl-text-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_STATE3, $2 ); }
-    ;
-
-state3-stmt
-    : Y_STATE3 cntl-text-options
-        { $$ = SemWINNewDialogCtrl( Y_STATE3, $2 ); }
-    ;
-
 icon-name
     : name-id
         { $$ = WResIDToNameOrOrdinal( $1 ); MemFree( $1 ); }
-    ;
-
-icon-parms-ex
-    : size-x comma-opt size-y
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = 0;          /* ignore width, height, style */
-            $$.SizeInfo.height = 0;
-            $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt style
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = 0;          /* ignore width, height */
-            $$.SizeInfo.height = 0;
-            $$.Style = $5;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;         /* ignore style */
-            $$.SizeInfo.height = $7;
-            $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;
-            $$.SizeInfo.height = $7;
-            $$.Style = $9;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
-             comma-opt exstyle
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;
-            $$.SizeInfo.height = $7;
-            $$.Style = $9;
-            $$.ExtendedStyle = $11.Value;
-        }
-    ;
-
-icon-parms
-    : size-x comma-opt size-y
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = 0;          /* ignore width, height, style */
-            $$.SizeInfo.height = 0;
-            $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt style
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = 0;          /* ignore width, height */
-            $$.SizeInfo.height = 0;
-            $$.Style = $5;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;         /* ignore style */
-            $$.SizeInfo.height = $7;
-            $$.Style.Mask = 0;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;
-            $$.SizeInfo.height = $7;
-            $$.Style = $9;
-            $$.ExtendedStyle = 0;
-        }
-    | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
-             comma-opt exstyle
-        {
-            $$.SizeInfo.x = $1;
-            $$.SizeInfo.y = $3;
-            $$.SizeInfo.width = $5;
-            $$.SizeInfo.height = $7;
-            $$.Style = $9;
-            $$.ExtendedStyle = $11.Value;
-        }
-    ;
-
-scrollbar-stmt-ex
-    : Y_SCROLLBAR cntl-options-ex
-        { $$ = SemWINNewDialogCtrl( Y_SCROLLBAR, $2 ); }
-    ;
-
-scrollbar-stmt
-    : Y_SCROLLBAR cntl-options
-        { $$ = SemWINNewDialogCtrl( Y_SCROLLBAR, $2 ); }
-    ;
-
-control-stmt-ex
-    : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
-                    style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, 0 ); }
-
-    | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
-                    style comma-opt size-info comma-opt exstyle helpId-opt
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, $13 ); }
-    ;
-
-control-stmt
-    : Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
-                    style comma-opt size-info
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, 0, 0 ); }
-    | Y_CONTROL cntl-text comma-opt cntl-id comma-opt ctl-class-name comma-opt
-                    style comma-opt size-info comma-opt exstyle
-        { $$ = SemWINSetControlData( $8, $4, $10, $2, $6, $12.Value, 0 ); }
     ;
 
 cntl-text
@@ -2193,5 +1256,22 @@ primary-exp
     | Y_LPAREN constant-expression Y_RPAREN
         { $$ = $2; }
     ;
+
+:include menu.sp
+
+:include dialog.sp
+:segment WIN32
+
+:include info32.sp
+
+:include menuex.sp
+
+:include dialogex.sp
+
+:: MFC
+:include dlginit.sp
+
+:include toolbar.sp
+:endsegment
 
 %%
