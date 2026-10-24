@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,6 +34,6 @@
 #ifndef M2WRES_INCLUDED
 #define M2WRES_INCLUDED
 
-bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp );
+bool ConvertMSResToWRes( FILE *in_fp, FILE *out_fp );
 
 #endif

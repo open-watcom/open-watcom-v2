@@ -37,13 +37,13 @@
 #include "wresrtns.h"
 
 
-MResResourceHeader *MResReadResourceHeader( FILE *fp, bool iswin32 )
-/******************************************************************/
+MSResResourceHeader *MSResReadResourceHeader( FILE *fp, bool iswin32 )
+/********************************************************************/
 {
-    MResResourceHeader      *msheader;
+    MSResResourceHeader     *msheader;
     bool                    error;
 
-    msheader = WRESALLOC( sizeof( MResResourceHeader ) );
+    msheader = WRESALLOC( sizeof( MSResResourceHeader ) );
     if( msheader == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
         return( NULL );

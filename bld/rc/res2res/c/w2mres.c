@@ -45,8 +45,7 @@ static ResNameOrOrdinal *ConvertIDToNameOrOrdinal( WResID *id )
 
     if (id->IsName) {
         /* inculdes space for the '\0' since WResID's don't have one */
-        name = TRMemAlloc( sizeof(ResNameOrOrdinal) +
-                    id->ID.Name.NumChars );
+        name = TRMemAlloc( sizeof(ResNameOrOrdinal) + id->ID.Name.NumChars );
         if (name != NULL) {
             memcpy( name->name, id->ID.Name.Name, id->ID.Name.NumChars );
             name->name[id->ID.Name.NumChars] = '\0';
@@ -68,7 +67,7 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     WResTypeInfo        *typeinfo;
     WResResInfo         *resinfo;
     WResLangInfo        *langinfo;
-    MResResourceHeader  msheader;
+    MSResResourceHeader msheader;
     bool                error;
     bool                iswin32;
 
@@ -80,9 +79,11 @@ static bool ConvertOneWResource( FILE *in_fp, FILE *out_fp, WResDirWindow wind )
     msheader.Name = ConvertIDToNameOrOrdinal( &(resinfo->ResName) );
     msheader.res_flags = langinfo->res_flags;
     msheader.Size = langinfo->Length;
-
-    //FIXME! The last argument should be true for Win32 resources
-    error = MResWriteResourceHeader( &msheader, iswin32, out_fp );
+    if( iswin32 ) {
+        error = MSResWriteResourceHeader32( &msheader, out_fp );
+    } else {
+        error = MSResWriteResourceHeader( &msheader, out_fp );
+    }
     if( !error ) {
         RESSEEK( in_fp, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( in_fp, out_fp, msheader.Size );
@@ -119,8 +120,8 @@ static bool ConvertWResources( FILE *in_fp, WResDir indir, FILE *out_fp )
     return( error );
 } /* ConvertWResource */
 
-bool ConvertWResToMRes( FILE *in_fp, FILE *out_fp )
-/*************************************************/
+bool ConvertWResToMSRes( FILE *in_fp, FILE *out_fp )
+/**************************************************/
 {
     WResDir             indir;
     bool                error;

@@ -44,8 +44,8 @@
 
 #define TMP_FILENAME "__TMP__.RES"
 
-static bool ConvertFileMResToWRes( FILE *in_fp )
-/**********************************************/
+static bool ConvertFileMSResToWRes( FILE *in_fp )
+/***********************************************/
 {
     FILE            *tmp_fp;
     bool            error;
@@ -61,14 +61,14 @@ static bool ConvertFileMResToWRes( FILE *in_fp )
     if (!CmdLineParms.Quiet) {
         puts( "Converting Microsoft .RES to Open Watcom .RES" );
     }
-    error = ConvertMResToWRes( in_fp, tmp_fp );
+    error = ConvertMSResToWRes( in_fp, tmp_fp );
 
     ResCloseFile( tmp_fp );
 
     return( error );
-} /* ConvertFileMResToWRes */
+} /* ConvertFileMSResToWRes */
 
-static bool ConvertFileWResToMRes( FILE *in_fp )
+static bool ConvertFileWResToMSRes( FILE *in_fp )
 /**********************************************/
 {
     FILE            *tmp_fp;
@@ -84,11 +84,11 @@ static bool ConvertFileWResToMRes( FILE *in_fp )
     if( !CmdLineParms.Quiet ) {
         puts( "Converting Open Watcom .RES to Microsoft .RES" );
     }
-    error = ConvertWResToMRes( in_fp, tmp_fp );
+    error = ConvertWResToMSRes( in_fp, tmp_fp );
 
     ResCloseFile( tmp_fp );
     return( error );
-} /* ConvertFileWResToMRes */
+} /* ConvertFileWResToMSRes */
 
 static bool ChangeTmpToOutFile( void )
 /************************************/
@@ -134,10 +134,10 @@ int ConvertFiles( void )
 
     if( WResIsWResFile( in_fp ) ) {
         /* the input file is in Open Watcom format so convert to MS format */
-        error = ConvertFileWResToMRes( in_fp );
+        error = ConvertFileWResToMSRes( in_fp );
     } else {
         /* the input file is in MS format so convert to Open Watcom format */
-        error = ConvertFileMResToWRes( in_fp );
+        error = ConvertFileMSResToWRes( in_fp );
     }
 
     ResCloseFile( in_fp );

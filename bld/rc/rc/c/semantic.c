@@ -111,10 +111,10 @@ void SemAddResourceAndFree( WResID *res_id, WResID *type_id, ResMemFlags res_fla
 }
 
 static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
-                ResLocation loc, const WResLangType *lang, bool iswin32 )
+                ResLocation loc, const WResLangType *lang )
 /**********************************************************************************/
 {
-    MResResourceHeader  msheader;
+    MSResResourceHeader msheader;
     bool                error;
     char                buffer[512];
 
@@ -132,7 +132,11 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_fl
     /*
      * OS/2 resource header happens to be identical to Win16
      */
-    error = MResWriteResourceHeader( &msheader, iswin32, CurrResFile.fp );
+    if( CmdLineParms.iswin32 ) {
+        error = MSResWriteResourceHeader32( &msheader, CurrResFile.fp );
+    } else {
+        error = MSResWriteResourceHeader( &msheader, CurrResFile.fp );
+    }
     MemFree( msheader.Type );
     MemFree( msheader.Name );
     ErrorHasOccured = true;
@@ -217,7 +221,7 @@ void SemAddResource2( WResID *res_id, WResID *type_id, ResMemFlags res_flags,
 
     if( !CurrResFile.IsWatcomRes ) {
         if( !duplicate ) {
-            copyMSFormatRes( res_id, type_id, res_flags, loc, lang, CmdLineParms.iswin32 );
+            copyMSFormatRes( res_id, type_id, res_flags, loc, lang );
         }
         /*
          * erase the temporary RES file

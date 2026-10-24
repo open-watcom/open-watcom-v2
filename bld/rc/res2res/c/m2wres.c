@@ -51,10 +51,10 @@ static WResID *ConvertNameOrOrdToID( ResNameOrOrdinal *name )
     }
 }
 
-static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
-/************************************************************************/
+static bool ConvertMSResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
+/*************************************************************************/
 {
-    MResResourceHeader  *msheader;
+    MSResResourceHeader *msheader;
     WResID              *res_id;
     WResID              *type_id;
     bool                error;
@@ -64,7 +64,7 @@ static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
     bool                iswin32;
 
     iswin32 = false;
-    msheader = MResReadResourceHeader( in_fp, iswin32 );
+    msheader = MSResReadResourceHeader( in_fp, iswin32 );
     /* assume that any error reading here means end of file */
     lastheader = ( msheader == NULL );
     error = false;
@@ -92,17 +92,17 @@ static bool ConvertMResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
 
         WResIDFree( res_id );
         WResIDFree( type_id );
-        MResFreeResourceHeader( msheader );
+        MSResFreeResourceHeader( msheader );
 
-        msheader = MResReadResourceHeader( in_fp, iswin32 );
+        msheader = MSResReadResourceHeader( in_fp, iswin32 );
         /* assume that any error reading here means end of file */
         lastheader = ( msheader == NULL );
     }
 
     return( error );
-} /* ConvertMResources */
+} /* ConvertMSResources */
 
-bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp )
+bool ConvertMSResToWRes( FILE *in_fp, FILE *out_fp )
 /*************************************************/
 {
     WResDir                 outdir;
@@ -113,7 +113,7 @@ bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp )
         return( true );
     }
 
-    error = ConvertMResources( in_fp, out_fp, outdir );
+    error = ConvertMSResources( in_fp, out_fp, outdir );
 
     if( !error ) {
         error = WResWriteDir( out_fp, outdir );
@@ -122,4 +122,4 @@ bool ConvertMResToWRes( FILE *in_fp, FILE *out_fp )
     WResFreeDir( outdir );
 
     return( error );
-} /* ConvertMResToWres */
+} /* ConvertMSResToWres */

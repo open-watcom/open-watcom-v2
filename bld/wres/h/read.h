@@ -65,6 +65,6 @@ extern uint_8               ResReadUint8( bool *error, FILE *fp );
 extern long                 ResTell( FILE *fp );
 extern bool                 ResSeek( FILE *fp, long offset, int origin );
 extern bool                 ResReadPadDWord( FILE *fp );
-extern MResResourceHeader   *MResReadResourceHeader( FILE *fp, bool iswin32 );
+extern MSResResourceHeader  *MSResReadResourceHeader( FILE *fp, bool iswin32 );
 
 #endif

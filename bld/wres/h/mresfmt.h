@@ -36,7 +36,7 @@
 
 #include "resfmt.h"
 
-typedef struct MResResourceHeader {
+typedef struct MSResResourceHeader {
     ResNameOrOrdinal    *Type;
     ResNameOrOrdinal    *Name;
     uint_32             Size;
@@ -46,6 +46,6 @@ typedef struct MResResourceHeader {
     uint_32             DataVersion;
     uint_32             Characteristics;
     uint_32             HdrSize;
-} MResResourceHeader;
+} MSResResourceHeader;
 
 #endif

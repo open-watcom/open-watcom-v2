@@ -42,8 +42,8 @@
 #include "wresrtns.h"
 
 
-void MResFreeResourceHeader( MResResourceHeader *msheader )
-/*********************************************************/
+void MSResFreeResourceHeader( MSResResourceHeader *msheader )
+/***********************************************************/
 {
     if( msheader->Type != NULL ) {
         WRESFREE( msheader->Type );
@@ -52,4 +52,4 @@ void MResFreeResourceHeader( MResResourceHeader *msheader )
         WRESFREE( msheader->Name );
     }
     WRESFREE( msheader );
-} /* MResFreeResourceHeader */
+} /* MSResFreeResourceHeader */

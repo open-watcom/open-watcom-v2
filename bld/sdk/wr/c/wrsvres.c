@@ -156,7 +156,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *typenode, WResResNode *resnode,
                                   FILE *src_fp, FILE *dst_fp )
 {
     WResLangNode        *langnode;
-    MResResourceHeader  msheader;
+    MSResResourceHeader msheader;
     bool                ok;
     bool                iswin32;
 
@@ -169,7 +169,11 @@ static bool WRWriteResourceToMRES( WResTypeNode *typenode, WResResNode *resnode,
         msheader.Name = WRCreateMRESResName( resnode, langnode );
         ok = (msheader.Type != NULL && msheader.Name != NULL);
         if( ok ) {
-            ok = !MResWriteResourceHeader( &msheader, iswin32, dst_fp );
+            if( iswin32 ) {
+                ok = !MSResWriteResourceHeader32( &msheader, dst_fp );
+            } else {
+                ok = !MSResWriteResourceHeader( &msheader, dst_fp );
+            }
         }
         if( ok ) {
             if( langnode->data != NULL ) {
