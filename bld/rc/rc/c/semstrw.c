@@ -268,8 +268,11 @@ void SemWINWriteStringTable( FullStringTable *table, WResID *type_id )
         nexttable = table->next;
         for( currblock = table->Head; currblock != NULL; currblock = currblock->next ) {
             loc.start = SemStartResource();
-
-            error = ResWriteStringTableBlock( &(currblock->Block), currblock->iswin32, CurrResFile.fp );
+            if( CmdLineParms.iswin32 ) {
+                error = ResWriteStringTableBlock32( &(currblock->Block), CurrResFile.fp );
+            } else {
+                error = ResWriteStringTableBlock( &(currblock->Block), CurrResFile.fp );
+            }
             if( !error
               && CmdLineParms.MSResFormat
               && CmdLineParms.iswin32 ) {

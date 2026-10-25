@@ -107,7 +107,8 @@ typedef struct MenuItem {
 /* reswmenu.c */
 
 extern bool     ResWriteMenuHeader( MenuHeader *head, FILE *fp );
-extern bool     ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp );
+extern bool     ResWriteMenuItem( const MenuItem *item, FILE *fp );
+extern bool     ResWriteMenuItem32( const MenuItem *item, FILE *fp );
 extern bool     ResWriteMenuItemEx( const MenuItem *item, FILE *fp );
 
 /* resrmenu.c */

@@ -141,8 +141,10 @@ static bool SemWINWriteMenuItem( FullMenuItemWIN *menuitem, int islastitem, int 
     }
     if( is_menuex ) {
         error = ResWriteMenuItemEx( &(menuitem->item), CurrResFile.fp );
+    } else if( CmdLineParms.iswin32 ) {
+        error = ResWriteMenuItem32( &(menuitem->item), CurrResFile.fp );
     } else {
-        error = ResWriteMenuItem( &(menuitem->item), menuitem->iswin32, CurrResFile.fp );
+        error = ResWriteMenuItem( &(menuitem->item), CurrResFile.fp );
     }
     *err_code = LastWresErr();
     return( error );

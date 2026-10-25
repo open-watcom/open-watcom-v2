@@ -46,6 +46,7 @@ typedef struct StringTableBlock {
 
 extern void ResInitStringTableBlock( StringTableBlock *block );
 extern void ResFreeStringTableBlock( StringTableBlock *block );
-extern bool ResWriteStringTableBlock( StringTableBlock *block, bool use_unicode, FILE *fp );
+extern bool ResWriteStringTableBlock( StringTableBlock *block, FILE *fp );
+extern bool ResWriteStringTableBlock32( StringTableBlock *block, FILE *fp );
 
 #endif

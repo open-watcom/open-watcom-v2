@@ -74,8 +74,10 @@ typedef struct VerFixedInfo {
 #define VER_FIXED_SIGNATURE     0xfeef04bd
 #define VER_FIXED_STRUCT_VER    0x00010000
 
-extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool iswin32, FILE *fp );
-extern bool     ResWriteVerValueItem( VerValueItem * item, bool iswin32, FILE *fp );
+extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, FILE *fp );
+extern bool     ResWriteVerBlockHeader32( VerBlockHeader * head, FILE *fp );
+extern bool     ResWriteVerValueItem( VerValueItem * item, FILE *fp );
+extern bool     ResWriteVerValueItem32( VerValueItem * item, FILE *fp );
 extern bool     ResWriteVerFixedInfo( VerFixedInfo *, FILE *fp );
 extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool iswin32 );
 extern size_t   ResSizeVerValueItem( VerValueItem * item, bool iswin32 );

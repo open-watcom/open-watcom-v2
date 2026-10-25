@@ -59,13 +59,26 @@ void ResFreeStringTableBlock( StringTableBlock *block )
     }
 } /* ResFreeStringTableBlock */
 
-bool ResWriteStringTableBlock( StringTableBlock *block, bool use_unicode, FILE *fp )
-/**********************************************************************************/
+bool ResWriteStringTableBlock( StringTableBlock *block, FILE *fp )
+/****************************************************************/
 {
     int     stringid;
 
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
-        if( ResWriteWResStringIDName( block->String[stringid], use_unicode, fp ) ) {
+        if( ResWriteWResStringIDName( block->String[stringid], fp ) ) {
+            return( true );
+        }
+    }
+    return( false );
+} /* ResWriteStringTableBlock */
+
+bool ResWriteStringTableBlock32( StringTableBlock *block, FILE *fp )
+/******************************************************************/
+{
+    int     stringid;
+
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
+        if( ResWriteWResStringIDName32( block->String[stringid], fp ) ) {
             return( true );
         }
     }

@@ -119,17 +119,25 @@ bool ResWritePadDWord( FILE *fp )
     return( false );
 }
 
-bool ResWriteWResStringIDName( const WResIDName *name_id, bool use_unicode, FILE *fp )
-/************************************************************************************/
+bool ResWriteWResStringIDName( const WResIDName *name_id, FILE *fp )
+/******************************************************************/
 {
     if( name_id != NULL && name_id->NumChars != 0 ) {
-        return( ResWriteStringLen( name_id->Name, name_id->NumChars, use_unicode, true, fp ) );
-    } else if( use_unicode ) {
-        return( ResWriteUint16( fp, 0 ) );
+        return( ResWriteStringLen( name_id->Name, name_id->NumChars, true, fp ) );
     } else {
         return( ResWriteUint8( fp, 0 ) );
     }
 } /* ResWriteWResStringIDName */
+
+bool ResWriteWResStringIDName32( const WResIDName *name_id, FILE *fp )
+/********************************************************************/
+{
+    if( name_id != NULL && name_id->NumChars != 0 ) {
+        return( ResWriteStringLen32( name_id->Name, name_id->NumChars, true, fp ) );
+    } else {
+        return( ResWriteUint16( fp, 0 ) );
+    }
+} /* ResWriteWResStringIDName32 */
 
 bool WResWriteWResID( const WResID *id, FILE *fp )
 /************************************************/
@@ -225,8 +233,8 @@ bool WResWriteExtHeader( const WResExtHeader *extheader, FILE *fp )
     return( ResWriteUint16( fp, extheader->reserved[3] ) );
 }
 
-bool ResWriteStringLen( const char *str, size_t numchars, bool use_unicode, bool with_len, FILE *fp )
-/***************************************************************************************************/
+bool ResWriteStringLen( const char *str, size_t numchars, bool with_len, FILE *fp )
+/*********************************************************************************/
 {
     char            *buf;
     bool            error;
@@ -239,22 +247,14 @@ bool ResWriteStringLen( const char *str, size_t numchars, bool use_unicode, bool
     } else {
         size = CONV_BUF_SIZE;
     }
-    if( use_unicode ) {
-        size = ConvToUnicode( str, numchars, buf, size );
-    } else {
-        size = ConvToMultiByte( str, numchars, buf, size );
-    }
+    size = ConvToMultiByte( str, numchars, buf, size );
     error = false;
     if( with_len ) {
-        if( use_unicode ) {
-            error = ResWriteUint16( fp, numchars );
-        } else {
-            numchars = size;
-            if( numchars > 255 )
-                numchars = 255;
-            size = numchars;
-            error = ResWriteUint8( fp, numchars );
-        }
+        numchars = size;
+        if( numchars > 255 )
+            numchars = 255;
+        size = numchars;
+        error = ResWriteUint8( fp, numchars );
     }
     if( !error ) {
         error = ResWrite( buf, size, fp );
@@ -265,8 +265,36 @@ bool ResWriteStringLen( const char *str, size_t numchars, bool use_unicode, bool
     return( error );
 }
 
-bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
-/****************************************************************/
+bool ResWriteStringLen32( const char *str, size_t numchars, bool with_len, FILE *fp )
+/***********************************************************************************/
+{
+    char            *buf;
+    bool            error;
+    size_t          size;
+
+    buf = ConvBuffer;
+    size = 2 * numchars;
+    if( size > CONV_BUF_SIZE ) {
+        buf = WRESALLOC( size );
+    } else {
+        size = CONV_BUF_SIZE;
+    }
+    size = ConvToUnicode( str, numchars, buf, size );
+    error = false;
+    if( with_len ) {
+        error = ResWriteUint16( fp, numchars );
+    }
+    if( !error ) {
+        error = ResWrite( buf, size, fp );
+    }
+    if( buf != ConvBuffer ) {
+        WRESFREE( buf );
+    }
+    return( error );
+}
+
+bool ResWriteString( const char *str, FILE *fp )
+/**********************************************/
 {
     size_t  len;
 
@@ -277,33 +305,65 @@ bool ResWriteString( const char *str, bool use_unicode, FILE *fp )
 
     /* the +1 is so we will output the '\0' as well */
     len = strlen( str ) + 1;
-    return( ResWriteStringLen( str, len, use_unicode, false, fp ) );
+    return( ResWriteStringLen( str, len, false, fp ) );
 }
 
-bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, FILE *fp )
-/******************************************************************************/
+bool ResWriteString32( const char *str, FILE *fp )
+/************************************************/
+{
+    size_t  len;
+
+    /* if string is NULL output the null string */
+    if( str == NULL ) {
+        str = "";
+    }
+
+    /* the +1 is so we will output the '\0' as well */
+    len = strlen( str ) + 1;
+    return( ResWriteStringLen32( str, len, false, fp ) );
+}
+
+bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, FILE *fp )
+/************************************************************/
 {
     bool        error;
 
     if( name == NULL ) {
-        error = ResWriteString( "", use_unicode, fp );
+        error = ResWriteString( "", fp );
     } else {
         if( name->ord.fFlag == 0xff ) {
-            if( use_unicode ) {
-                error = ResWriteUint16( fp, 0xffff );
-            } else {
-                error = ResWriteUint8( fp, 0xff );
-            }
+            error = ResWriteUint8( fp, 0xff );
             if( !error ) {
                 error = ResWriteUint16( fp, name->ord.wOrdinalID );
             }
         } else {
-            error = ResWriteString( name->name, use_unicode, fp );
+            error = ResWriteString( name->name, fp );
         }
     }
 
     return( error );
 } /* ResWriteNameOrOrdinal */
+
+bool ResWriteNameOrOrdinal32( ResNameOrOrdinal *name, FILE *fp )
+/**************************************************************/
+{
+    bool        error;
+
+    if( name == NULL ) {
+        error = ResWriteString32( "", fp );
+    } else {
+        if( name->ord.fFlag == 0xff ) {
+            error = ResWriteUint16( fp, 0xffff );
+            if( !error ) {
+                error = ResWriteUint16( fp, name->ord.wOrdinalID );
+            }
+        } else {
+            error = ResWriteString32( name->name, fp );
+        }
+    }
+
+    return( error );
+} /* ResWriteNameOrOrdinal32 */
 
 static size_t MSResFindNameOrOrdSize( ResNameOrOrdinal *name, bool use_unicode )
 /******************************************************************************/
@@ -345,9 +405,9 @@ static size_t MSResFindHeaderSize( MSResResourceHeader *msheader, bool iswin32 )
 bool MSResWriteResourceHeader( MSResResourceHeader *msheader, FILE *fp )
 /**********************************************************************/
 {
-    if( ResWriteNameOrOrdinal( msheader->Type, false, fp ) )
+    if( ResWriteNameOrOrdinal( msheader->Type, fp ) )
         return( true );
-    if( ResWriteNameOrOrdinal( msheader->Name, false, fp ) )
+    if( ResWriteNameOrOrdinal( msheader->Name, fp ) )
         return( true );
     if( ResWriteUint16( fp, msheader->res_flags ) )
         return( true );
@@ -361,9 +421,9 @@ bool MSResWriteResourceHeader32( MSResResourceHeader *msheader, FILE *fp )
         return( true );
     if( ResWriteUint32( fp, MSResFindHeaderSize( msheader, true ) ) )
         return( true );
-    if( ResWriteNameOrOrdinal( msheader->Type, true, fp ) )
+    if( ResWriteNameOrOrdinal32( msheader->Type, fp ) )
         return( true );
-    if( ResWriteNameOrOrdinal( msheader->Name, true, fp ) )
+    if( ResWriteNameOrOrdinal32( msheader->Name, fp ) )
         return( true );
     if( ResWritePadDWord( fp ) )
         return( true );

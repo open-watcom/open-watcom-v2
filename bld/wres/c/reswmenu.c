@@ -56,8 +56,8 @@ bool ResWriteMenuHeader( MenuHeader *head, FILE *fp )
     return( false );
 }
 
-bool ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp )
-/***********************************************************************/
+bool ResWriteMenuItem( const MenuItem *item, FILE *fp )
+/*****************************************************/
 {
     if( item->IsOldWin ) {
         if( ResWriteUint8( fp, item->u.ItemFlags ) ) {
@@ -73,7 +73,21 @@ bool ResWriteMenuItem( const MenuItem *item, bool use_unicode, FILE *fp )
             return( true );
         }
     }
-    return( ResWriteString( item->ItemText, use_unicode, fp ) );
+    return( ResWriteString( item->ItemText, fp ) );
+}
+
+bool ResWriteMenuItem32( const MenuItem *item, FILE *fp )
+/*******************************************************/
+{
+    if( ResWriteUint16( fp, item->u.ItemFlags ) ) {
+        return( true );
+    }
+    if( !IS_MENU_POPUP( item ) ) {
+        if( ResWriteUint16( fp, item->ItemId ) ) {
+            return( true );
+        }
+    }
+    return( ResWriteString32( item->ItemText, fp ) );
 }
 
 bool ResWriteMenuItemEx( const MenuItem *item, FILE *fp )
@@ -87,7 +101,7 @@ bool ResWriteMenuItemEx( const MenuItem *item, FILE *fp )
         return( true );
     if( ResWriteUint16( fp, item->u.ExFlags ) )
         return( true );
-    if( ResWriteString( item->ItemText, true, fp ) )
+    if( ResWriteString32( item->ItemText, fp ) )
         return( true );
     if( ResWritePadDWord( fp ) )
         return( true );

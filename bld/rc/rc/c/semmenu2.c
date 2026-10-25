@@ -94,7 +94,7 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *item, FILE *fp )
     if( !error ) {
         if( (item->ItemStyle & OS2_MIS_SEPARATOR) == 0
           && item->ItemText != NULL ) {
-            error = ResWriteString( item->ItemText, false, fp );
+            error = ResWriteString( item->ItemText, fp );
         }
     }
 

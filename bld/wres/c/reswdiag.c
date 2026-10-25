@@ -70,7 +70,7 @@ static bool WriteControlClass( FILE *fp, ControlClass *class_id )
     /* otherwise it is a string */
     if( class_id->Class & 0x80 )
         return( ResWriteUint8( fp, class_id->Class ) );
-    return( ResWriteString( class_id->ClassName, false, fp ) );
+    return( ResWriteString( class_id->ClassName, fp ) );
 }
 
 static bool WriteControlClass32( FILE *fp, ControlClass *class_id )
@@ -89,7 +89,7 @@ static bool WriteControlClass32( FILE *fp, ControlClass *class_id )
         }
         return( error );
     }
-    return( ResWriteString( class_id->ClassName, true, fp ) );
+    return( ResWriteString32( class_id->ClassName, fp ) );
 }
 
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
@@ -105,19 +105,19 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
         error = ResWriteDialogSizeInfo( &(head->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->MenuName, false, fp );
+        error = ResWriteNameOrOrdinal( head->MenuName, fp );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, false, fp );
+        error = ResWriteNameOrOrdinal( head->ClassName, fp );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, false, fp );
+        error = ResWriteString( head->Caption, fp );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
         error = ResWriteUint16( fp, head->PointSize );
         if( !error ) {
-            error = ResWriteString( head->FontName, false, fp );
+            error = ResWriteString( head->FontName, fp );
         }
     }
     return( error );
@@ -139,19 +139,19 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
         error = ResWriteDialogSizeInfo( &(head->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->MenuName, true, fp );
+        error = ResWriteNameOrOrdinal32( head->MenuName, fp );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, fp );
+        error = ResWriteNameOrOrdinal32( head->ClassName, fp );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, true, fp );
+        error = ResWriteString32( head->Caption, fp );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
         error = ResWriteUint16( fp, head->PointSize );
         if( !error ) {
-            error = ResWriteString( head->FontName, true, fp );
+            error = ResWriteString32( head->FontName, fp );
         }
     }
 
@@ -211,13 +211,13 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
             res_menu = ResStrToNameOrOrdinal( name );
             WRESFREE( name );
         }
-        error = ResWriteNameOrOrdinal( res_menu, true, fp );
+        error = ResWriteNameOrOrdinal32( res_menu, fp );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, fp );
+        error = ResWriteNameOrOrdinal32( head->ClassName, fp );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, true, fp );
+        error = ResWriteString32( head->Caption, fp );
     }
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
@@ -232,7 +232,7 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
             error = ResWriteUint8( fp, exhead->FontCharset );
         }
         if( !error ) {
-            error = ResWriteString( head->FontName, true, fp );
+            error = ResWriteString32( head->FontName, fp );
         }
     }
 
@@ -259,7 +259,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp )
         error = WriteControlClass( fp, control->ClassID );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, false, fp );
+        error = ResWriteNameOrOrdinal( control->Text, fp );
     }
     if( !error ) {
         error = ResWriteUint8( fp, control->ExtraBytes );
@@ -287,7 +287,7 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
         error = WriteControlClass32( fp, control->ClassID );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, true, fp );
+        error = ResWriteNameOrOrdinal32( control->Text, fp );
     }
 
     if( !error ) {
@@ -323,7 +323,7 @@ bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
         error = WriteControlClass32( fp, control->ClassID );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, true, fp );
+        error = ResWriteNameOrOrdinal32( control->Text, fp );
     }
 
     if( !error ) {

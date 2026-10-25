@@ -87,15 +87,21 @@ static void FreeValList( FullVerValueList *list )
     MemFree( list );
 }
 
-static bool semWriteVerValueList( FullVerValueList *list, bool iswin32, FILE *fp, int *err_code )
-/***********************************************************************************************/
+static bool semWriteVerValueList( FullVerValueList *list, FILE *fp, int *err_code )
+/*********************************************************************************/
 {
     bool        error;
     unsigned    i;
 
     error = false;
-    for( i = 0; !error && i < list->NumItems; i++ ) {
-        error = ResWriteVerValueItem( list->Item + i, iswin32, fp );
+    if( CmdLineParms.iswin32 ) {
+        for( i = 0; !error && i < list->NumItems; i++ ) {
+            error = ResWriteVerValueItem32( list->Item + i, fp );
+        }
+    } else {
+        for( i = 0; !error && i < list->NumItems; i++ ) {
+            error = ResWriteVerValueItem( list->Item + i, fp );
+        }
     }
     *err_code = LastWresErr();
     return( error );
@@ -178,11 +184,15 @@ static bool SemWriteVerBlock( FullVerBlock *block, FILE *fp, int *err_code )
 {
     bool            error;
 
-    error = ResWriteVerBlockHeader( &block->Head, block->iswin32, fp );
+    if( CmdLineParms.iswin32 ) {
+        error = ResWriteVerBlockHeader32( &block->Head, fp );
+    } else {
+        error = ResWriteVerBlockHeader( &block->Head, fp );
+    }
     *err_code = LastWresErr();
     if( !error
       && block->Values != NULL ) {
-        error = semWriteVerValueList( block->Values, block->iswin32, fp, err_code );
+        error = semWriteVerValueList( block->Values, fp, err_code );
         if( !error ) {
             error = ResWritePadDWord( fp );
             *err_code = LastWresErr();
@@ -347,7 +357,11 @@ void SemWINWriteVerInfo( WResID *res_id, ResMemFlags res_flags, VerFixedInfo *in
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
-        error = ResWriteVerBlockHeader( &root, CmdLineParms.iswin32, CurrResFile.fp );
+        if( CmdLineParms.iswin32 ) {
+            error = ResWriteVerBlockHeader32( &root, CurrResFile.fp );
+        } else {
+            error = ResWriteVerBlockHeader( &root, CurrResFile.fp );
+        }
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
