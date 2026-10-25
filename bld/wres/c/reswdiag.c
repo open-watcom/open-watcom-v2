@@ -95,37 +95,6 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
     return( error );
 }
 
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, bool add_quotes, FILE *fp )
-/********************************************************************************************/
-{
-    bool    error;
-    size_t  len;
-    char    *name;
-
-    if( add_quotes ) {
-        if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
-            len = strlen( head->MenuName->name );
-            name = WRESALLOC( len + 3 );
-            name[0] = '"';
-            strcpy( name + 1, head->MenuName->name );
-            name[len + 1] = '"';
-            name[len + 2] = '\0';
-            head->MenuName = ResStrToNameOrOrdinal( name );
-            WRESFREE( name );
-        }
-    }
-
-    error = ResWriteNameOrOrdinal( head->MenuName, true, fp );
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, fp );
-    }
-    if( !error ) {
-        error = ResWriteString( head->Caption, true, fp );
-    }
-
-    return( error );
-}
-
 bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 /*****************************************************************/
 {
@@ -142,7 +111,13 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
         error = ResWriteDialogSizeInfo( &(head->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, false, fp );
+        error = ResWriteNameOrOrdinal( head->MenuName, true, fp );
+    }
+    if( !error ) {
+        error = ResWriteNameOrOrdinal( head->ClassName, true, fp );
+    }
+    if( !error ) {
+        error = ResWriteString( head->Caption, true, fp );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
@@ -187,7 +162,34 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
         error = ResWriteDialogSizeInfo( &(head->SizeInfo), fp );
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, true, fp );
+        /*
+         * The original Watcom implementation encloses a named DIALOGEX menu
+         * in quotes before writing it. This is preserved for compatibility;
+         * the reason for this DIALOGEX-specific behavior is currently unknown.
+         */
+        ResNameOrOrdinal    *res_menu;
+
+        res_menu = head->MenuName;
+        if( res_menu != NULL && res_menu->name[0] != '\0' ) {
+            size_t     len;
+            char       *name;
+
+            len = strlen( res_menu->name );
+            name = WRESALLOC( len + 3 );
+            name[0] = '"';
+            strcpy( name + 1, res_menu->name );
+            name[len + 1] = '"';
+            name[len + 2] = '\0';
+            res_menu = ResStrToNameOrOrdinal( name );
+            WRESFREE( name );
+        }
+        error = ResWriteNameOrOrdinal( res_menu, true, fp );
+    }
+    if( !error ) {
+        error = ResWriteNameOrOrdinal( head->ClassName, true, fp );
+    }
+    if( !error ) {
+        error = ResWriteString( head->Caption, true, fp );
     }
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
