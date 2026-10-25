@@ -57,11 +57,11 @@ MSResResourceHeader *MSResReadResourceHeader( FILE *fp, bool iswin32 )
             msheader->HdrSize = ResReadUint32( &error, fp );
         }
         if( !error ) {
-            msheader->Type = ResRead32NameOrOrdinal( fp );
+            msheader->Type = ResReadNameOrOrdinal32( fp );
             error = ( msheader->Type == NULL );
         }
         if( !error ) {
-            msheader->Name = ResRead32NameOrOrdinal( fp );
+            msheader->Name = ResReadNameOrOrdinal32( fp );
             error = ( msheader->Name == NULL );
         }
         if( !error ) {

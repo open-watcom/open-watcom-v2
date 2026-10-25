@@ -87,7 +87,7 @@ bool ResReadMenuItemEx( MenuItem *item, FILE *fp )
     item->u.ExFlags = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    item->ItemText = ResRead32String( fp, NULL );
+    item->ItemText = ResReadString32( fp, NULL );
     if( item->ItemText == NULL )
         return( true );
     if( ResReadPadDWord( fp ) )
@@ -118,7 +118,7 @@ bool ResReadMenuItem( MenuItem *item, bool use_unicode, FILE *fp )
         item->ItemId = ResReadUint16( &error, fp );
     }
     if( use_unicode ) {
-        item->ItemText = ResRead32String( fp, NULL );
+        item->ItemText = ResReadString32( fp, NULL );
     } else {
         item->ItemText = ResReadString( fp, NULL );
     }

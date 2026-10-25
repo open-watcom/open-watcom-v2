@@ -94,7 +94,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( FILE *fp )
     return( name );
 }
 
-ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
+ResNameOrOrdinal *ResReadNameOrOrdinal32( FILE *fp )
 /**************************************************/
 {
     uint_16             flags;
@@ -120,7 +120,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( FILE *fp )
         }
     } else if( flags == 0 ) {
     } else {
-        restofstr = ResRead32String( fp, &stringlen );
+        restofstr = ResReadString32( fp, &stringlen );
         if( restofstr == NULL ) {
             return( NULL );
         }

@@ -120,13 +120,13 @@ bool ResIsDialogBoxEx( FILE *fp )
 
 static bool ResReadDialogHeaderCommon32( DialogBoxHeader32 *head, FILE *fp )
 {
-    head->MenuName = ResRead32NameOrOrdinal( fp );
+    head->MenuName = ResReadNameOrOrdinal32( fp );
     if( head->MenuName == NULL )
         return( true );
-    head->ClassName = ResRead32NameOrOrdinal( fp );
+    head->ClassName = ResReadNameOrOrdinal32( fp );
     if( head->ClassName == NULL )
         return( true );
-    head->Caption = ResRead32String( fp, NULL );
+    head->Caption = ResReadString32( fp, NULL );
     return( head->Caption == NULL );
 }
 
@@ -156,7 +156,7 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
         head->PointSize = ResReadUint16( &error, fp );
         if( error )
             return( true );
-        head->FontName = ResRead32String( fp, NULL );
+        head->FontName = ResReadString32( fp, NULL );
         if( head->FontName == NULL ) {
             return( true );
         }
@@ -206,7 +206,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         exhead->FontCharset = ResReadUint8( &error, fp );
         if( error )
             return( true );
-        head->FontName = ResRead32String( fp, NULL );
+        head->FontName = ResReadString32( fp, NULL );
         if( head->FontName == NULL ) {
             return( true );
         }
@@ -290,7 +290,7 @@ static ControlClass *ReadControlClass32( FILE *fp )
         }
     } else if( flags == 0 ) {
     } else {
-        restofstring = ResRead32String( fp, &stringlen );
+        restofstring = ResReadString32( fp, &stringlen );
         if( restofstring == NULL ) {
             return( NULL );
         }
@@ -350,7 +350,7 @@ static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdi
     *class_id = ReadControlClass32( fp );
     if( *class_id == NULL )
         return( true );
-    *text = ResRead32NameOrOrdinal( fp );
+    *text = ResReadNameOrOrdinal32( fp );
     if( *text == NULL )
         return( true );
     error = false;

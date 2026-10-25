@@ -63,7 +63,7 @@ char *ResReadString( FILE *fp, size_t *len )
     return( str );
 } /* ResReadString */
 
-char *ResRead32String( FILE *fp, size_t *len )
+char *ResReadString32( FILE *fp, size_t *len )
 /********************************************/
 {
     VarString           *varstr;
@@ -87,4 +87,4 @@ char *ResRead32String( FILE *fp, size_t *len )
     }
 
     return( str );
-} /* ResRead32String */
+} /* ResReadString32 */
