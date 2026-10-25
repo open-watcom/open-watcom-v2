@@ -264,7 +264,7 @@ static ControlClass *ReadControlClass( FILE *fp )
     return( class_id );
 }
 
-static ControlClass *Read32ControlClass( FILE *fp )
+static ControlClass *ReadControlClass32( FILE *fp )
 /*************************************************/
 {
     ControlClass    *class_id;
@@ -347,7 +347,7 @@ static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdi
 {
     bool            error;
 
-    *class_id = Read32ControlClass( fp );
+    *class_id = ReadControlClass32( fp );
     if( *class_id == NULL )
         return( true );
     *text = ResRead32NameOrOrdinal( fp );

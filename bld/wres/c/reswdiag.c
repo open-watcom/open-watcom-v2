@@ -64,6 +64,34 @@ static bool ResWriteDialogSizeInfo( DialogSizeInfo *sizeinfo, FILE *fp )
     return( error );
 }
 
+static bool WriteControlClass( FILE *fp, ControlClass *class_id )
+{
+    /* if the ClassID is one of the predefined ones write it out as a byte */
+    /* otherwise it is a string */
+    if( class_id->Class & 0x80 )
+        return( ResWriteUint8( fp, class_id->Class ) );
+    return( ResWriteString( class_id->ClassName, false, fp ) );
+}
+
+static bool WriteControlClass32( FILE *fp, ControlClass *class_id )
+{
+    bool            error;
+
+    /* if the ClassID is one of the predefined ones write it out as a byte */
+    /* otherwise it is a string */
+    if( class_id->Class & 0x80 ) {
+        /*
+         * the class number is prefixed by 0xffff to distinguish it from a string
+         */
+        error = ResWriteUint16( fp, 0xffff );
+        if( !error ) {
+            error = ResWriteUint16( fp, class_id->Class );
+        }
+        return( error );
+    }
+    return( ResWriteString( class_id->ClassName, true, fp ) );
+}
+
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
 /*************************************************************/
 {
@@ -227,52 +255,14 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp )
     if( !error ) {
         error = ResWriteUint32( fp, control->Style );
     }
-
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
     if( !error ) {
-        if( control->ClassID->Class & 0x80 ) {
-            error = ResWriteUint8( fp, control->ClassID->Class );
-        } else {
-            error = ResWriteString( control->ClassID->ClassName, false, fp );
-        }
+        error = WriteControlClass( fp, control->ClassID );
     }
-
     if( !error ) {
         error = ResWriteNameOrOrdinal( control->Text, false, fp );
     }
     if( !error ) {
         error = ResWriteUint8( fp, control->ExtraBytes );
-    }
-
-    return( error );
-}
-
-static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text,
-                                                  uint_16 extra_bytes, FILE *fp )
-/****************************************************************************************/
-{
-    bool      error;
-
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
-    if( class_id->Class & 0x80 ) {
-        /*
-         * the class number is prefixed by 0xffff to distinguish it from a string
-         */
-        error = ResWriteUint16( fp, 0xffff );
-        if( !error ) {
-            error = ResWriteUint16( fp, class_id->Class );
-        }
-    } else {
-        error = ResWriteString( class_id->ClassName, true, fp );
-    }
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( text, true, fp );
-    }
-
-    if( !error ) {
-        error = ResWriteUint16( fp, extra_bytes );
     }
 
     return( error );
@@ -294,7 +284,14 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
         error = ResWriteUint16( fp, control->ID );
     }
     if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, fp );
+        error = WriteControlClass32( fp, control->ClassID );
+    }
+    if( !error ) {
+        error = ResWriteNameOrOrdinal( control->Text, true, fp );
+    }
+
+    if( !error ) {
+        error = ResWriteUint16( fp, control->ExtraBytes );
     }
 
     if( !error ) {
@@ -323,7 +320,14 @@ bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
         error = ResWriteUint32( fp, control->ID );
     }
     if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, fp );
+        error = WriteControlClass32( fp, control->ClassID );
+    }
+    if( !error ) {
+        error = ResWriteNameOrOrdinal( control->Text, true, fp );
+    }
+
+    if( !error ) {
+        error = ResWriteUint16( fp, control->ExtraBytes );
     }
 
     if( !error ) {
