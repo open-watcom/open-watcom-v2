@@ -48,7 +48,6 @@ typedef struct DlgHeader32 {
 } DlgHeader32;
 
 typedef struct FullDialogBoxHeader {
-    bool                iswin32;
     union {
         DialogBoxHeader     Head;
         DlgHeader32         Head32;
@@ -69,7 +68,6 @@ typedef struct DlgControl32 {
 
 typedef struct FullDialogBoxControlWIN {
     LL_ITEM( struct FullDialogBoxControlWIN );
-    bool                            iswin32;
     union {
         DialogBoxControl            ctrl;
         DlgControl32                ctrl32;

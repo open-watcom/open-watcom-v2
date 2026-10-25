@@ -87,23 +87,31 @@ bool ResWriteVerBlockHeader32( VerBlockHeader * head, FILE *fp )
     return( error );
 }
 
-size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool iswin32 )
-/****************************************************************/
+size_t ResSizeVerBlockHeader( VerBlockHeader *head )
+/**************************************************/
 {
     size_t      key_size;
     size_t      padding;
     size_t      fixed_size;
 
     key_size = strlen( head->Key ) + 1;
-    if( iswin32 ) {
-        /* the NT key field begins 2 bytes from a 32 bit boundary */
-        key_size *= 2;
-        padding = RES_PADDING_DWORD( key_size + 2 );
-        fixed_size = 3 * sizeof( uint_16 );
-    } else {
-        padding = RES_PADDING_DWORD( key_size );
-        fixed_size = 2 * sizeof( uint_16 );
-    }
+    padding = RES_PADDING_DWORD( key_size );
+    fixed_size = 2 * sizeof( uint_16 );
+    return( fixed_size + key_size + padding );
+}
+
+size_t ResSizeVerBlockHeader32( VerBlockHeader *head )
+/****************************************************/
+{
+    size_t      key_size;
+    size_t      padding;
+    size_t      fixed_size;
+
+    key_size = strlen( head->Key ) + 1;
+    /* the NT key field begins 2 bytes from a 32 bit boundary */
+    key_size *= 2;
+    padding = RES_PADDING_DWORD( key_size + 2 );
+    fixed_size = 3 * sizeof( uint_16 );
     return( fixed_size + key_size + padding );
 }
 
@@ -143,8 +151,8 @@ bool ResWriteVerValueItem32( VerValueItem *item, FILE *fp )
     return( error );
 }
 
-size_t ResSizeVerValueItem( VerValueItem * item, bool iswin32 )
-/*************************************************************/
+size_t ResSizeVerValueItem( VerValueItem * item )
+/***********************************************/
 {
     size_t  size;
 
@@ -156,11 +164,25 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool iswin32 )
         } else {
             size = item->strlen + 1;
         }
-        if( iswin32 ) {
-            size = ConvToUnicode( item->Value.String, size, NULL, 0 );
+        size = ConvToMultiByte( item->Value.String, size, NULL, 0 );
+    }
+    return( size );
+}
+
+size_t ResSizeVerValueItem32( VerValueItem * item )
+/*************************************************/
+{
+    size_t  size;
+
+    if( item->IsNum ) {
+        size = sizeof( uint_16 );
+    } else {
+        if( item->strlen == VER_CALC_SIZE ) {
+            size = strlen( item->Value.String ) + 1;
         } else {
-            size = ConvToMultiByte( item->Value.String, size, NULL, 0 );
+            size = item->strlen + 1;
         }
+        size = ConvToUnicode( item->Value.String, size, NULL, 0 );
     }
     return( size );
 }

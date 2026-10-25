@@ -37,7 +37,6 @@ menuex-item
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
             $$.item = $1;
             $$.item.u.ExFlags = 0;
             $$.item.IsOldWin = false;
@@ -52,7 +51,6 @@ menuex-popup-stmt
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
             $$.item = $3;
             $$.item.ItemText = $2.string;
             $$.item.u.ExFlags = MENUEX_POPUP;

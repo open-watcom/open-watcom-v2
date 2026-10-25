@@ -365,40 +365,32 @@ bool ResWriteNameOrOrdinal32( ResNameOrOrdinal *name, FILE *fp )
     return( error );
 } /* ResWriteNameOrOrdinal32 */
 
-static size_t MSResFindNameOrOrdSize( ResNameOrOrdinal *name, bool use_unicode )
-/******************************************************************************/
+static size_t MSResFindNameOrOrdSize( ResNameOrOrdinal *name )
+/************************************************************/
 {
     size_t  size;
 
     if( name->ord.fFlag == 0xff ) {
         size = 4;
     } else {
-        if( use_unicode ) {
-            size = 2 * ( strlen( name->name ) + 1 );
-        } else {
-            size = strlen( name->name ) + 1;
-        }
+        size = 2 * ( strlen( name->name ) + 1 );
     }
     return( size );
 }
 
-static size_t MSResFindHeaderSize( MSResResourceHeader *msheader, bool iswin32 )
-/******************************************************************************/
+static size_t MSResFindHeaderSize( MSResResourceHeader *msheader )
+/****************************************************************/
 {
     size_t  headersize;
     size_t  namesize;
     size_t  typesize;
     size_t  padding;
 
-    namesize = MSResFindNameOrOrdSize( msheader->Name, iswin32 );
-    typesize = MSResFindNameOrOrdSize( msheader->Type, iswin32 );
-    if( iswin32 ) {
-        headersize = 2 * sizeof( uint_32 ) + namesize + typesize;
-        padding = RES_PADDING_DWORD( headersize );
-        headersize += padding + 3 * sizeof( uint_32 ) + 2 * sizeof( uint_16 );
-    } else {
-        headersize = namesize + typesize + sizeof( uint_16 ) + sizeof( uint_32 );
-    }
+    namesize = MSResFindNameOrOrdSize( msheader->Name );
+    typesize = MSResFindNameOrOrdSize( msheader->Type );
+    headersize = 2 * sizeof( uint_32 ) + namesize + typesize;
+    padding = RES_PADDING_DWORD( headersize );
+    headersize += padding + 3 * sizeof( uint_32 ) + 2 * sizeof( uint_16 );
     return( headersize );
 }
 
@@ -419,7 +411,7 @@ bool MSResWriteResourceHeader32( MSResResourceHeader *msheader, FILE *fp )
 {
     if( ResWriteUint32( fp, msheader->Size ) )
         return( true );
-    if( ResWriteUint32( fp, MSResFindHeaderSize( msheader, true ) ) )
+    if( ResWriteUint32( fp, MSResFindHeaderSize( msheader ) ) )
         return( true );
     if( ResWriteNameOrOrdinal32( msheader->Type, fp ) )
         return( true );

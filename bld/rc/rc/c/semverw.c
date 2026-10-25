@@ -117,7 +117,6 @@ FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
     block->next = NULL;
     block->prev = NULL;
     block->Head.Key = name;
-    block->iswin32 = CmdLineParms.iswin32;
     block->Values = list;
     block->Nest = NULL;
 
@@ -133,7 +132,6 @@ FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
     block->next = NULL;
     block->prev = NULL;
     block->Head.Key = name;
-    block->iswin32 = CmdLineParms.iswin32;
     block->Values = NULL;
     block->Nest = nest;
 
@@ -148,15 +146,25 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     uint_16         head_size;
     uint_16         nest_size;
 
-    head_size = ResSizeVerBlockHeader( &block->Head, block->iswin32 );
+    if( CmdLineParms.iswin32 ) {
+        head_size = ResSizeVerBlockHeader32( &block->Head );
+    } else {
+        head_size = ResSizeVerBlockHeader( &block->Head );
+    }
     val_size = 0;
     if( block->Values == NULL ) {
         padding = 0;
     } else {
         unsigned    i;
 
-        for( i = 0; i < block->Values->NumItems; i++ ) {
-            val_size += ResSizeVerValueItem( block->Values->Item + i, block->iswin32 );
+        if( CmdLineParms.iswin32 ) {
+            for( i = 0; i < block->Values->NumItems; i++ ) {
+                val_size += ResSizeVerValueItem32( block->Values->Item + i );
+            }
+        } else {
+            for( i = 0; i < block->Values->NumItems; i++ ) {
+                val_size += ResSizeVerValueItem( block->Values->Item + i );
+            }
         }
         padding = RES_PADDING_DWORD( val_size );
     }
@@ -170,8 +178,9 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     if( stricmp( block->Head.Key, "Translation" ) == 0 ) {
         block->Head.Type = 0;
     } else {
-        if( block->iswin32 )
+        if( CmdLineParms.iswin32 ) {
             block->Head.ValSize /= 2;
+        }
         block->Head.Type = 1;
     }
     block->Head.Size = head_size + val_size + padding + nest_size;
@@ -342,8 +351,12 @@ void SemWINWriteVerInfo( WResID *res_id, ResMemFlags res_flags, VerFixedInfo *in
     root.ValSize = sizeof( VerFixedInfo );
     root.Type = 0;
     padding = RES_PADDING_DWORD( root.ValSize );
-    root.Size = ResSizeVerBlockHeader( &root, CmdLineParms.iswin32 )
-                    + root.ValSize + padding + CalcNestSize( nest );
+    if( CmdLineParms.iswin32 ) {
+        root.Size = ResSizeVerBlockHeader32( &root );
+    } else {
+        root.Size = ResSizeVerBlockHeader( &root );
+    }
+    root.Size += root.ValSize + padding + CalcNestSize( nest );
     /*
      * pad the start of the resource so that padding within the resource
      * is easier
@@ -356,7 +369,6 @@ void SemWINWriteVerInfo( WResID *res_id, ResMemFlags res_flags, VerFixedInfo *in
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
-
         if( CmdLineParms.iswin32 ) {
             error = ResWriteVerBlockHeader32( &root, CurrResFile.fp );
         } else {

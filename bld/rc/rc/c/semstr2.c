@@ -121,7 +121,6 @@ static FullStringTableBlock *newStringTableBlock( void )
     newblock->next = NULL;
     newblock->prev = NULL;
     newblock->BlockNum = 0;
-    newblock->iswin32 = false;
     newblock->res_flags = DEFAULT_FLAGS_NONE;
     newblock->codePage = SemOS2GetDefaultCodepage();
     ResInitStringTableBlock( &(newblock->Block) );

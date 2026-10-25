@@ -38,7 +38,6 @@
 
 /**** Semantic structures ****/
 typedef struct FullAccelEntryWIN {
-    bool                iswin32;
     AccelTableEntry     entry;
     uint_32             startoftable;
 } FullAccelEntryWIN;

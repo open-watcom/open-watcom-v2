@@ -87,7 +87,6 @@ FullAccelEntryWIN SemWINMakeAccItem( AccelEvent event, unsigned long idval,
 {
     FullAccelEntryWIN	entry;
 
-    entry.iswin32 = CmdLineParms.iswin32;
     entry.startoftable = 0;
     if( event.strevent
       || flags.typegiven ) {
@@ -114,7 +113,7 @@ void SemWINWriteAccelEntry( FullAccelEntryWIN entry )
     bool    error;
 
     if( !ErrorHasOccured ) {
-        if( entry.iswin32 ) {
+        if( CmdLineParms.iswin32 ) {
             error = ResWriteAccelEntry32( &entry.entry, CurrResFile.fp );
         } else {
             error = ResWriteAccelEntry( &entry.entry, CurrResFile.fp );
@@ -129,7 +128,7 @@ void SemWINWriteAccelEntry( FullAccelEntryWIN entry )
 void SemWINWriteLastAccelEntry( FullAccelEntryWIN entry )
 /*******************************************************/
 {
-    if( entry.iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         entry.entry.Flags |= ACCEL_LAST;
     } else {
         entry.entry.Flags |= ACCEL_LAST;

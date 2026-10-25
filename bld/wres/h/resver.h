@@ -79,7 +79,9 @@ extern bool     ResWriteVerBlockHeader32( VerBlockHeader * head, FILE *fp );
 extern bool     ResWriteVerValueItem( VerValueItem * item, FILE *fp );
 extern bool     ResWriteVerValueItem32( VerValueItem * item, FILE *fp );
 extern bool     ResWriteVerFixedInfo( VerFixedInfo *, FILE *fp );
-extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool iswin32 );
-extern size_t   ResSizeVerValueItem( VerValueItem * item, bool iswin32 );
+extern size_t   ResSizeVerBlockHeader( VerBlockHeader * );
+extern size_t   ResSizeVerBlockHeader32( VerBlockHeader * );
+extern size_t   ResSizeVerValueItem( VerValueItem * item );
+extern size_t   ResSizeVerValueItem32( VerValueItem * item );
 
 #endif

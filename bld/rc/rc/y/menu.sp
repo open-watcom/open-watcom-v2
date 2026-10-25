@@ -35,7 +35,6 @@ menu-item
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
             $$.item = $1;
             $$.item.ExType = 0;
             $$.item.ExState = 0;
@@ -51,7 +50,6 @@ menu-popup-stmt
         {
             $$.next = NULL;
             $$.prev = NULL;
-            $$.iswin32 = CmdLineParms.iswin32;
             $$.item = $3;
             $$.item.ItemText = $2.string;
             $$.item.u.ItemFlags |= MENU_POPUP;

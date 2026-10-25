@@ -37,7 +37,6 @@
 typedef struct FullStringTableBlock {
     LL_ITEM( struct FullStringTableBlock );
     uint_16                         BlockNum;
-    bool                            iswin32;
     ResMemFlags                     res_flags;
     uint_32                         codePage;   // for OS/2
     StringTableBlock                Block;

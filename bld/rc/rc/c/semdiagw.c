@@ -87,7 +87,6 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 
     newheader = MemAllocSafe( sizeof( FullDialogBoxHeader ) );
 
-    newheader->iswin32 = CmdLineParms.iswin32;
     if( CmdLineParms.iswin32 ) {
         newheader->u.Head32.Head.Style = 0;
         newheader->u.Head32.Head.ExtendedStyle = 0;
@@ -227,7 +226,7 @@ FullDialogBoxHeader *SemWINDialogOptions( FullDialogBoxHeader *head, FullDialogO
     if( head == NULL ) {
         head = NewDialogBoxHeader();
     }
-    if( head->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         AddDialogOption32( &head->u.Head32, opt );
     } else {
         AddDialogOption( &head->u.Head, opt );
@@ -274,7 +273,6 @@ static FullDialogBoxControlWIN *semInitDialogCtrl( void )
     newctrl = MemAllocSafe( sizeof( FullDialogBoxControlWIN ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
-    newctrl->iswin32 = CmdLineParms.iswin32;
 
     return( newctrl );
 } /* semInitDialogCtrl */
@@ -477,7 +475,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
      */
     style_hi = (style_mask & style_value) | (~style_mask & defstyle_hi);
 
-    if( newctrl->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         newctrl->u.ctrl32.ID = opts.ID;
         newctrl->u.ctrl32.SizeInfo = opts.SizeInfo;
         newctrl->u.ctrl32.Text = opts.Text;
@@ -517,7 +515,7 @@ static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
         /*
          * free the contents of pointers within the structure
          */
-        if( ctrl->iswin32 ) {
+        if( CmdLineParms.iswin32 ) {
             if( ctrl->u.ctrl32.ClassID != NULL ) {
                 MemFree( ctrl->u.ctrl32.ClassID );
             }
@@ -541,7 +539,7 @@ static void SemFreeDialogCtrlList( FullDialogCtrlListWIN *list )
 static void SemFreeDialogHeader( FullDialogBoxHeader *head )
 /**********************************************************/
 {
-    if( head->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         if( head->u.Head32.Head.MenuName != NULL ) {
             MemFree( head->u.Head32.Head.MenuName );
         }
@@ -582,7 +580,7 @@ static bool SemWriteDialogCtrlList( FullDialogCtrlListWIN *list, int *err_code, 
 
     error = false;
     for( ctrl = list->head; ctrl != NULL && !error; ctrl = ctrl->next ) {
-        if( ctrl->iswin32 ) {
+        if( CmdLineParms.iswin32 ) {
             if( is_dialogex ) {
                 controlex.HelpId = ctrl->u.ctrl32.HelpId;
                 controlex.ExtendedStyle = ctrl->u.ctrl32.ExtendedStyle;
@@ -640,7 +638,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, bool is_dialogex,
 {
     FullDialogBoxControlWIN *travptr;
 
-    if( head->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         if( is_dialogex ) {
             head->u.Head32.ExHead.HelpId = HelpId;
         } else {
@@ -670,7 +668,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
         head = NewDialogBoxHeader();
     }
     SemCheckDialogBox( head, is_dialogex, HelpId, ctrls );
-    if( head->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         if( is_dialogex ) {
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
                 if( travptr->dataListHead != NULL ) {
@@ -709,7 +707,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
     if( !error
       && !ErrorHasOccured ) {
         loc.start = SemStartResource();
-        if( head->iswin32 ) {
+        if( CmdLineParms.iswin32 ) {
             if( is_dialogex ) {
                 if( ResWriteDialogBoxExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fp ) ) {
                     error = 1;
@@ -765,7 +763,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
     style = (mask & value) | (~mask & (WS_CHILD|WS_VISIBLE));
 
     control = semInitDialogCtrl();
-    if( control->iswin32 ) {
+    if( CmdLineParms.iswin32 ) {
         control->u.ctrl32.ID = cntlid;
         control->u.ctrl32.SizeInfo = sizeinfo;
         control->u.ctrl32.Text = WResIDToNameOrOrdinal( cntltext_id );
