@@ -118,18 +118,6 @@ bool ResIsDialogBoxEx( FILE *fp )
     return( sign0 == 0x0001 && sign1 == 0xFFFF );
 }
 
-static bool ResReadDialogHeaderCommon32( DialogBoxHeader32 *head, FILE *fp )
-{
-    head->MenuName = ResReadNameOrOrdinal32( fp );
-    if( head->MenuName == NULL )
-        return( true );
-    head->ClassName = ResReadNameOrOrdinal32( fp );
-    if( head->ClassName == NULL )
-        return( true );
-    head->Caption = ResReadString32( fp, NULL );
-    return( head->Caption == NULL );
-}
-
 bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 /****************************************************************/
 {
@@ -147,7 +135,14 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
         return( true );
     if( ResReadDialogSizeInfo( &(head->SizeInfo), fp ) )
         return( true );
-    if( ResReadDialogHeaderCommon32( head, fp ) )
+    head->MenuName = ResReadNameOrOrdinal32( fp );
+    if( head->MenuName == NULL )
+        return( true );
+    head->ClassName = ResReadNameOrOrdinal32( fp );
+    if( head->ClassName == NULL )
+        return( true );
+    head->Caption = ResReadString32( fp, NULL );
+    if( head->Caption == NULL )
         return( true );
 
     /* if the font was set input the font name and point size */
@@ -188,7 +183,14 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         return( true );
     if( ResReadDialogSizeInfo( &(head->SizeInfo), fp ) )
         return( true );
-    if( ResReadDialogHeaderCommon32( head, fp ) )
+    head->MenuName = ResReadNameOrOrdinal32( fp );
+    if( head->MenuName == NULL )
+        return( true );
+    head->ClassName = ResReadNameOrOrdinal32( fp );
+    if( head->ClassName == NULL )
+        return( true );
+    head->Caption = ResReadString32( fp, NULL );
+    if( head->Caption == NULL )
         return( true );
 
     /* If the font was set, write the font information */
@@ -343,21 +345,6 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
     return( error );
 }
 
-static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdinal **text, uint_16 *extra_bytes, FILE *fp )
-{
-    bool            error;
-
-    *class_id = ReadControlClass32( fp );
-    if( *class_id == NULL )
-        return( true );
-    *text = ResReadNameOrOrdinal32( fp );
-    if( *text == NULL )
-        return( true );
-    error = false;
-    *extra_bytes = ResReadUint16( &error, fp );
-    return( error );
-}
-
 bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
 /*********************************************************************/
 {
@@ -375,8 +362,16 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
     control->ID = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    if( ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), fp ) )
+    control->ClassID = ReadControlClass32( fp );
+    if( control->ClassID == NULL )
         return( true );
+    control->Text = ResReadNameOrOrdinal32( fp );
+    if( control->Text == NULL )
+        return( true );
+    control->ExtraBytes = ResReadUint16( &error, fp );
+    if( error )
+        return( true );
+
     /* seek to dword boundary if necessary */
     return( ResReadPadDWord( fp ) );
 }
@@ -401,7 +396,14 @@ bool ResReadDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
     control->ID = ResReadUint32( &error, fp );
     if( error )
         return( true );
-    if( ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), fp ) )
+    control->ClassID = ReadControlClass32( fp );
+    if( control->ClassID == NULL )
+        return( true );
+    control->Text = ResReadNameOrOrdinal32( fp );
+    if( control->Text == NULL )
+        return( true );
+    control->ExtraBytes = ResReadUint16( &error, fp );
+    if( error )
         return( true );
     /* seek to dword boundary if necessary */
     return( ResReadPadDWord( fp ) );
