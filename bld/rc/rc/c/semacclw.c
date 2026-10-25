@@ -92,22 +92,17 @@ FullAccelEntryWIN SemWINMakeAccItem( AccelEvent event, unsigned long idval,
     if( event.strevent
       || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
-        if( CmdLineParms.iswin32 ) {
-            entry.u.entry32.Ascii = event.event;
-            entry.u.entry32.Flags = flags.flags;
-            entry.u.entry32.Id = idval;
-            entry.u.entry32.Unknown = 0;
-        } else {
-            entry.u.entry.Ascii = event.event;
-            entry.u.entry.Flags = flags.flags;
-            entry.u.entry.Id = idval;
-        }
+        entry.entry.Ascii = event.event;
+        entry.entry.Flags = flags.flags;
+        entry.entry.Id = idval;
+        entry.entry.Unknown = 0;
     } else {
         RcError( RCMSG_ACCEL_NO_TYPE, idval );
         ErrorHasOccured = true;
-        entry.u.entry.Ascii = 0;
-        entry.u.entry.Flags = 0;
-        entry.u.entry.Id = 0;
+        entry.entry.Ascii = 0;
+        entry.entry.Flags = 0;
+        entry.entry.Id = 0;
+        entry.entry.Unknown = 0;
     }
 
     return( entry );
@@ -120,9 +115,9 @@ void SemWINWriteAccelEntry( FullAccelEntryWIN entry )
 
     if( !ErrorHasOccured ) {
         if( entry.iswin32 ) {
-            error = ResWriteAccelEntry32( &entry.u.entry32, CurrResFile.fp );
+            error = ResWriteAccelEntry32( &entry.entry, CurrResFile.fp );
         } else {
-            error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.fp );
+            error = ResWriteAccelEntry( &entry.entry, CurrResFile.fp );
         }
         if( error ) {
             RcError( RCMSG_WRITTING_RES, CurrResFile.filename, LastWresErrStr() );
@@ -135,9 +130,9 @@ void SemWINWriteLastAccelEntry( FullAccelEntryWIN entry )
 /*******************************************************/
 {
     if( entry.iswin32 ) {
-        entry.u.entry32.Flags |= ACCEL_LAST;
+        entry.entry.Flags |= ACCEL_LAST;
     } else {
-        entry.u.entry.Flags |= ACCEL_LAST;
+        entry.entry.Flags |= ACCEL_LAST;
     }
     SemWINWriteAccelEntry( entry );
 }

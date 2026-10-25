@@ -55,8 +55,8 @@ bool ResReadAccelEntry( AccelTableEntry *entry, FILE *fp )
     return( error );
 }
 
-bool ResReadAccelEntry32( AccelTableEntry32 *entry, FILE *fp )
-/************************************************************/
+bool ResReadAccelEntry32( AccelTableEntry *entry, FILE *fp )
+/**********************************************************/
 {
     bool            error;
 

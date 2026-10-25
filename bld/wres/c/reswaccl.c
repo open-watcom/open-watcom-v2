@@ -51,8 +51,8 @@ bool ResWriteAccelEntry( AccelTableEntry *entry, FILE *fp )
     return( false );
 }
 
-bool ResWriteAccelEntry32( AccelTableEntry32 *entry, FILE *fp )
-/*************************************************************/
+bool ResWriteAccelEntry32( AccelTableEntry *entry, FILE *fp )
+/***********************************************************/
 {
     if( ResWriteUint16( fp, entry->Flags ) )
         return( true );

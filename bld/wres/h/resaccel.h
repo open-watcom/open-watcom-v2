@@ -34,21 +34,14 @@
 #ifndef RESACCEL_INCLUDED
 #define RESACCEL_INCLUDED
 
-typedef struct AccelTableEntry32 {
+typedef struct AccelTableEntry {
     uint_16     Flags;
     uint_16     Ascii;
     uint_16     Id;
     uint_16     Unknown;            /* I don't know what this field is for. */
-} AccelTableEntry32;                /* MS makes it 0. (padding?) */
+} AccelTableEntry;                  /* MS makes it 0. (padding?) */
 
 #define RES_SIZE_AccelTableEntry32  (4 * sizeof( uint_16 ))
-
-typedef struct AccelTableEntry {
-    uint_8      Flags;
-    uint_16     Ascii;
-    uint_16     Id;
-} AccelTableEntry;
-
 #define RES_SIZE_AccelTableEntry    (1 + 2 * sizeof( uint_16 ))
 
 typedef uint_8  AccelFlags;
@@ -63,25 +56,25 @@ typedef uint_8  AccelFlags;
 /* reswaccl.c */
 
 extern bool ResWriteAccelEntry( AccelTableEntry *entry, FILE *fp );
-extern bool ResWriteAccelEntry32( AccelTableEntry32 *, FILE *fp );
+extern bool ResWriteAccelEntry32( AccelTableEntry *, FILE *fp );
 
 /* resraccl.c */
 
 extern bool ResReadAccelEntry( AccelTableEntry *entry, FILE *fp );
-extern bool ResReadAccelEntry32( AccelTableEntry32 *, FILE *fp );
+extern bool ResReadAccelEntry32( AccelTableEntry *, FILE *fp );
 
 /* rmwaccl.c */
 
 extern void SetAccelTableLastEntry32( char *data );
 extern void SetAccelTableLastEntry( char *data );
-extern char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry32 *entry );
+extern char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry *entry );
 extern char *ResWriteDataAccelTableEntry( char *data, AccelTableEntry *entry );
 
 /* rmraccl.c */
 
 extern bool IsAccelTableLastEntry32( const char *data );
 extern bool IsAccelTableLastEntry( const char *data );
-extern char *ResReadDataAccelTableEntry32( const char *data, AccelTableEntry32 *entry );
+extern char *ResReadDataAccelTableEntry32( const char *data, AccelTableEntry *entry );
 extern char *ResReadDataAccelTableEntry( const char *data, AccelTableEntry *entry );
 
 #endif

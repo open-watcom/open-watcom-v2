@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,7 +60,7 @@ char *ResWriteDataAccelTableEntry( char *data, AccelTableEntry *entry )
     return( data );
 }
 
-char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry32 *entry )
+char *ResWriteDataAccelTableEntry32( char *data, AccelTableEntry *entry )
 {
     VALU16( data ) = entry->Flags;
     INCU16( data );
