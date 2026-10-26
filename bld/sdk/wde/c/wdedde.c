@@ -344,8 +344,8 @@ static WdeResDlgItem *WdeGetDlgItem( void )
 
     ditem = NULL;
     rinfo = WdeGetCurrentRes();
-    if( rinfo != NULL && rinfo->dlg_item_list != NULL ) {
-        ditem = (WdeResDlgItem *)ListElement( rinfo->dlg_item_list );
+    if( rinfo != NULL && rinfo->ditem_list != NULL ) {
+        ditem = (WdeResDlgItem *)ListElement( rinfo->ditem_list );
     }
 
     return( ditem );

@@ -92,7 +92,7 @@ static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 
 bool WdeResInfoHasDialogs( WdeResInfo *res_info )
 {
-    return( res_info->dlg_item_list != NULL );
+    return( res_info->ditem_list != NULL );
 }
 
 bool WdeSelectDialog( WdeResInfo *res_info )
@@ -103,8 +103,8 @@ bool WdeSelectDialog( WdeResInfo *res_info )
     bool            ok;
     bool            last;
 
-    if( ListCount( res_info->dlg_item_list ) == 1 ) {
-        ok = WdeOpenSelectedDialog( res_info, (WdeResDlgItem *)ListElement( res_info->dlg_item_list ), TRUE );
+    if( ListCount( res_info->ditem_list ) == 1 ) {
+        ok = WdeOpenSelectedDialog( res_info, (WdeResDlgItem *)ListElement( res_info->ditem_list ), TRUE );
         return( ok );
     }
 
@@ -276,7 +276,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
 
     SendMessage( win, WM_SETREDRAW, FALSE, 0 );
     count = 0;
-    for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+    for( dlist = res_info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         id = NULL;
 

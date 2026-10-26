@@ -62,7 +62,7 @@ typedef struct {
     ResMemFlags         res_flags;
     WdeDialogBoxHeader  *dialog_info;
     WdeResInfo          *res_info;
-    WdeResDlgItem       *dlg_item;
+    WdeResDlgItem       *ditem;
     WdeResizeRatio      resizer;
     WResID              *name;
 //  WResHelpID          *helpname;

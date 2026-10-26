@@ -1259,7 +1259,7 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
 #endif
 
     if( ok ) {
-        for( dlist = rinfo->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+        for( dlist = rinfo->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
             ditem = (WdeResDlgItem *)ListElement( dlist );
             ok = WdeCreateItemDBI( rinfo, ditem ) && WdeSaveDlgItemToRC( rinfo, ditem, fp );
             if( !ok ) {

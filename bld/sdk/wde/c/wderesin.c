@@ -57,8 +57,8 @@ bool WdeFreeResInfo( WdeResInfo *res_info )
             WdeSetEditMode( res_info, FALSE );
             CloseFormEdit( res_info->forms_win );
         }
-        if( res_info->dlg_item_list != NULL ) {
-            WdeFreeResItemList( &res_info->dlg_item_list );
+        if( res_info->ditem_list != NULL ) {
+            WdeFreeResItemList( &res_info->ditem_list );
         }
         if( res_info->res_win != (HWND)NULL ) {
             SET_WNDINFO( res_info->res_win, (LONG_PTR)NULL );
@@ -184,7 +184,7 @@ bool WdeIsResModified( WdeResInfo *res_info )
         if( res_info->modified ) {
             return( true );
         }
-        for( ilist = res_info->dlg_item_list; ilist != NULL; ilist = ListNext( ilist ) ) {
+        for( ilist = res_info->ditem_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             item = (WdeResDlgItem *)ListElement( ilist );
             if( item->modified ) {
                 return( true );
@@ -201,7 +201,7 @@ void WdeSetResModified( WdeResInfo *res_info, bool mod )
     WdeResDlgItem *item;
 
     if( res_info != NULL ) {
-        for( ilist = res_info->dlg_item_list; ilist != NULL; ilist = ListNext( ilist ) ) {
+        for( ilist = res_info->ditem_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             item = (WdeResDlgItem *)ListElement( ilist );
             item->modified = mod;
         }

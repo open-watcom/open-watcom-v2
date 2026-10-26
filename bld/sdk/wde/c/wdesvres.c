@@ -157,7 +157,7 @@ bool WdeInfoToData( WdeResInfo *info )
     lang.lang = DEF_SUBLANG;
     lang.sublang = DEF_SUBLANG;
     dtypenode = info->dlg_entry;
-    for( dlist = info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+    for( dlist = info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         data = NULL;
         dsize = 0;

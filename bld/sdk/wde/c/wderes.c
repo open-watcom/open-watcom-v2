@@ -365,7 +365,7 @@ void WdeShowResourceWindows( int show )
 
 void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *item )
 {
-    WdeInsertObject( &info->dlg_item_list, (OBJPTR)item );
+    WdeInsertObject( &info->ditem_list, (OBJPTR)item );
 }
 
 WdeResInfo *WdeCreateNewResource( char *title )
@@ -427,7 +427,7 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
 {
     WResResNode         *resnode;
     WResLangNode        *langnode;
-    WdeResDlgItem       *dlg_item;
+    WdeResDlgItem       *ditem;
 
     if( res_info == NULL ) {
         return( false );
@@ -436,14 +436,14 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
     if( res_info->dlg_entry != NULL ) {
         for( resnode = res_info->dlg_entry->Head; resnode != NULL; resnode = resnode->next ) {
             for( langnode = resnode->Head; langnode != NULL; langnode = langnode->next ) {
-                dlg_item = WdeAllocResDlgItem();
-                if( dlg_item == NULL ) {
+                ditem = WdeAllocResDlgItem();
+                if( ditem == NULL ) {
                     return( false );
                 }
-                dlg_item->is32bit = res_info->is32bit;
-                dlg_item->resnode = resnode;
-                dlg_item->langnode = langnode;
-                WdeAddResDlgItemToResInfo( res_info, dlg_item );
+                ditem->is32bit = res_info->is32bit;
+                ditem->resnode = resnode;
+                ditem->langnode = langnode;
+                WdeAddResDlgItemToResInfo( res_info, ditem );
             }
         }
     }
@@ -637,7 +637,7 @@ bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
     char        *text;
     HWND        frame;
 
-    if( res_info != NULL && res_info->dlg_item_list != NULL && WdeIsResModified( res_info ) ) {
+    if( res_info != NULL && res_info->ditem_list != NULL && WdeIsResModified( res_info ) ) {
         WdeCheckIfActiveWindow();
         if( fatal_exit ) {
             style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
@@ -1038,7 +1038,7 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     resnode = ditem->resnode;
     langnode = ditem->langnode;
 
-    ListRemoveElt( &res_info->dlg_item_list, (OBJPTR)ditem );
+    ListRemoveElt( &res_info->ditem_list, (OBJPTR)ditem );
     WdeFreeResDlgItem( &ditem, destroy_object );
 
     if( resnode != NULL || langnode != NULL ) {

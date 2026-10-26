@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,7 +53,7 @@ WdeResDlgItem *WdeFindDialogInResInfo( WdeResInfo *res_info, int dlg )
     LIST            *dlist;
 
     if( dlg != -1 ) {
-        for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+        for( dlist = res_info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
             if( dlg-- == 0 ) {
                 return( (WdeResDlgItem *)ListElement( dlist ) );
             }
@@ -73,7 +74,7 @@ int WdeFindObjectPosInDialogList( WdeResInfo *res_info, OBJPTR obj )
     }
 
     count = 0;
-    for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+    for( dlist = res_info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         if( ditem->object == obj ) {
             return( count );

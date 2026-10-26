@@ -245,8 +245,8 @@ bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
 
 void WdeSetDialogModified( WdeDialogObject *obj )
 {
-    if( obj != NULL && obj->dlg_item != NULL ) {
-        obj->dlg_item->modified = true;
+    if( obj != NULL && obj->ditem != NULL ) {
+        obj->ditem->modified = true;
     }
 }
 
@@ -260,12 +260,12 @@ bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
         return( false );
     }
 
-    if( obj->dlg_item->dialog_info != NULL ) {
-        WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
+    if( obj->ditem->dialog_info != NULL ) {
+        WdeFreeDialogBoxInfo( obj->ditem->dialog_info );
     }
 
-    obj->dlg_item->dialog_info = vp;
-    obj->dlg_item->object = NULL;
+    obj->ditem->dialog_info = vp;
+    obj->ditem->object = NULL;
 
     return( true );
 }
@@ -484,11 +484,11 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     }
 
     if( ok ) {
-        ok = WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->dlg_item, new->name );
+        ok = WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->ditem, new->name );
     }
 
     if( ok ) {
-        new->dlg_item->is32bit = is32bit;
+        new->ditem->is32bit = is32bit;
         SETHDR_SIZEX( WdeDefaultDialog, WDE_NEW_DIALOG_X );
         SETHDR_SIZEY( WdeDefaultDialog, WDE_NEW_DIALOG_Y );
         SETHDR_SIZEW( WdeDefaultDialog, WDE_NEW_DIALOG_WIDTH );
@@ -559,7 +559,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
 
     if( ok ) {
         new->res_info = res_info;
-        new->dlg_item = ditem;
+        new->ditem = ditem;
         new->res_flags = ditem->dialog_info->res_flags;
         new->dialog_info = WdeCopyDialogBoxHeader( ditem->dialog_info->dialog_header );
         ok = ( new->dialog_info != NULL );
@@ -615,7 +615,7 @@ OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
         return( NULL );
     }
 
-    if( !WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->dlg_item, new->name ) ) {
+    if( !WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->ditem, new->name ) ) {
         WdeWriteTrail( "WdeDialogCreate: WdeSetObjectInfo failed!" );
         Destroy( (OBJPTR)new, false );
         return( NULL );
@@ -1129,12 +1129,12 @@ bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 
     if( WdeIsDialogRestorable( obj ) ) {
         ShowWindow( obj->window_handle, SW_HIDE );
-        if( !WdeOpenDialogFromResInfo( obj->res_info, obj->dlg_item ) ) {
+        if( !WdeOpenDialogFromResInfo( obj->res_info, obj->ditem ) ) {
             ShowWindow( obj->window_handle, SW_SHOW );
-            obj->dlg_item->object = (OBJPTR)obj;
+            obj->ditem->object = (OBJPTR)obj;
             return( false );
         }
-        MakeObjectCurrent( obj->dlg_item->object );
+        MakeObjectCurrent( obj->ditem->object );
         Destroy( (OBJPTR)obj, false );
     } else {
         return( false );
@@ -1145,7 +1145,7 @@ bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 
 bool WdeIsDialogRestorable( WdeDialogObject *obj )
 {
-    return( obj != NULL && obj->res_info != NULL && obj->dlg_item != NULL && obj->dlg_item->dialog_info != NULL );
+    return( obj != NULL && obj->res_info != NULL && obj->ditem != NULL && obj->ditem->dialog_info != NULL );
 }
 
 bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
@@ -1165,13 +1165,13 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 
     dbi = WdeAllocDBIFromObject( obj );
     if( dbi != NULL ) {
-        if( obj->dlg_item->dialog_info != NULL ) {
-            WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
+        if( obj->ditem->dialog_info != NULL ) {
+            WdeFreeDialogBoxInfo( obj->ditem->dialog_info );
         }
-        obj->dlg_item->dialog_info = dbi;
+        obj->ditem->dialog_info = dbi;
 
-        if( obj->dlg_item->langnode != NULL ) {
-            lang = obj->dlg_item->langnode->Info.lang;
+        if( obj->ditem->langnode != NULL ) {
+            lang = obj->ditem->langnode->Info.lang;
         } else {
             lang.lang = DEF_LANG;
             lang.sublang = DEF_SUBLANG;
@@ -2306,7 +2306,7 @@ bool WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     obj->children = NULL;
     obj->ochildren = NULL;
 
-    ok = WdeSetObjectInfo( (OBJPTR)obj, &obj->res_info, &obj->dlg_item, obj->name );
+    ok = WdeSetObjectInfo( (OBJPTR)obj, &obj->res_info, &obj->ditem, obj->name );
     if( !ok ) {
         WdeWriteTrail( "WdeDialogPasteObject: WdeSetObjectInfo failed!" );
     }
@@ -2441,7 +2441,7 @@ bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
     WdeRemoveObject( obj->res_info, (OBJPTR)obj );
 
     obj->res_info = NULL;
-    obj->dlg_item = NULL;
+    obj->ditem = NULL;
 
     if( !RemoveObject( obj->parent, obj->object_handle ) ) {
         WdeWriteTrail( "WdeDialogCutObject: Remove from parent failed!" );

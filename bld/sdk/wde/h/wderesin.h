@@ -113,7 +113,7 @@ typedef struct WdeResInfoStruct {
     WRInfo              *info;
     char                *sym_name;
     WResTypeNode        *dlg_entry;         /* type node for dialogs           */
-    LIST                *dlg_item_list;     /* list of WdeResDlgItem's         */
+    LIST                *ditem_list;        /* list of WdeResDlgItem's         */
     OBJPTR              next_current;
     WRHashTable         *hash_table;
     HWND                res_win;
