@@ -42,43 +42,21 @@ typedef struct IntMask {
     boolbit     unsgVal :1;
 } IntMask;
 
-typedef struct DlgHeader32 {
-    DialogBoxHeader32           Head;
-    DialogBoxExHeader32short    ExHead;
-} DlgHeader32;
-
 typedef struct FullDialogBoxHeader {
-    union {
-        DialogBoxHeader     Head;
-        DlgHeader32         Head32;
-    } u;
-    bool                StyleGiven;
+    DialogBoxHeader         Head;
+    bool                    StyleGiven;
 } FullDialogBoxHeader;
-
-typedef struct DlgControl32 {
-    uint_32             Style;
-    uint_32             ExtendedStyle;
-    DialogSizeInfo      SizeInfo;
-    uint_32             ID;
-    ControlClass        *ClassID;
-    ResNameOrOrdinal    *Text;
-    uint_16             ExtraBytes;         /* should be 0 */
-    help_id             HelpId;             /* only used for Dialogex */
-} DlgControl32;
 
 typedef struct FullDialogBoxControlWIN {
     LL_ITEM( struct FullDialogBoxControlWIN );
-    union {
-        DialogBoxControl            ctrl;
-        DlgControl32                ctrl32;
-    } u;
-    DataElemList                    *dataListHead;
+    DialogBoxControl        ctrl;
+    DataElemList            *dataListHead;
 } FullDialogBoxControlWIN;
 
 typedef struct FullDialogCtrlListWIN {
-    FullDialogBoxControlWIN         *head;
-    FullDialogBoxControlWIN         *tail;
-    uint_16                         numctrls; /* Win16 only support upto 255 controls. */
+    FullDialogBoxControlWIN *head;
+    FullDialogBoxControlWIN *tail;
+    uint_16                 numctrls; /* Win16 only support upto 255 controls. */
 } FullDialogCtrlListWIN;
 
 typedef struct FullDialogCtrlOptionsWIN {

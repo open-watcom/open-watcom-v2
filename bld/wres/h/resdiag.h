@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2016-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2016-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,29 +47,6 @@ typedef struct DialogSizeInfo {
 } DialogSizeInfo;
 
 typedef struct DialogBoxHeader {
-    DialogStyle         Style;
-    uint_8              NumOfItems;
-    DialogSizeInfo      SizeInfo;
-    ResNameOrOrdinal    *MenuName;
-    ResNameOrOrdinal    *ClassName;
-    char                *Caption;       /* '\0' terminated */
-    uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
-    char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} DialogBoxHeader;
-
-typedef struct DialogBoxHeader32 {
-    DialogStyle         Style;
-    DialogExstyle       ExtendedStyle;
-    uint_16             NumOfItems;
-    DialogSizeInfo      SizeInfo;
-    ResNameOrOrdinal    *MenuName;
-    ResNameOrOrdinal    *ClassName;
-    char                *Caption;       /* '\0' terminated */
-    uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
-    char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} DialogBoxHeader32;
-
-typedef struct DialogBoxExHeader32 {
     uint_16             Version;
     uint_16             Signature;
     uint_32             HelpId;
@@ -85,17 +62,10 @@ typedef struct DialogBoxExHeader32 {
     uint_8              FontItalic;     /* only here if (Style & DS_SETFONT) */
     uint_8              FontCharset;    /* only here if (Style & DS_SETFONT) */
     char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} DialogBoxExHeader32;
-
-typedef struct DialogBoxExHeader32short {
-    uint_16             FontWeight;
-    uint_8              FontItalic;
-    uint_8              FontCharset;
-    uint_32             HelpId;
     char                FontWeightDefined;
     char                FontItalicDefined;
     char                FontCharsetDefined;
-} DialogBoxExHeader32short;
+} DialogBoxHeader;
 
 typedef union ControlClass {
     uint_8              Class;          /* if (class & 0x80) */
@@ -103,25 +73,6 @@ typedef union ControlClass {
 } ControlClass;
 
 typedef struct DialogBoxControl {
-    DialogSizeInfo      SizeInfo;
-    uint_16             ID;
-    DialogStyle         Style;
-    ControlClass        *ClassID;
-    ResNameOrOrdinal    *Text;
-    uint_8              ExtraBytes;     /* should be 0 */
-} DialogBoxControl;
-
-typedef struct DialogBoxControl32 {
-    DialogStyle         Style;
-    DialogExstyle       ExtendedStyle;
-    DialogSizeInfo      SizeInfo;
-    uint_16             ID;
-    ControlClass        *ClassID;
-    ResNameOrOrdinal    *Text;
-    uint_16             ExtraBytes;     /* should be 0 */
-} DialogBoxControl32;
-
-typedef struct DialogBoxExControl32 {
     uint_32             HelpId;
     DialogExstyle       ExtendedStyle;
     DialogStyle         Style;
@@ -130,7 +81,7 @@ typedef struct DialogBoxExControl32 {
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
     uint_16             ExtraBytes;
-} DialogBoxExControl32;
+} DialogBoxControl;
 
 /* predefined classes for controls */
 #define CLASS_BUTTON    0x80
@@ -142,25 +93,25 @@ typedef struct DialogBoxExControl32 {
 
 /* reswdiag.c */
 
-extern bool         ResWriteDialogBoxHeader( DialogBoxHeader *, FILE *fp );
-extern bool         ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp );
-extern bool         ResWriteDialogBoxControl( DialogBoxControl *, FILE *fp );
-extern bool         ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp );
-extern bool         ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, FILE *fp );
-extern bool         ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp );
+extern bool         ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
+extern bool         ResWriteDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
+extern bool         ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
+extern bool         ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp );
+extern bool         ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp );
+extern bool         ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp );
 extern ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal * );
 extern ControlClass *ResNumToControlClass( uint_16 classnum );
 
 /* resrdiag.c */
 
 extern bool         ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
-extern bool         ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp );
-extern bool         ResReadDialogBoxExHeader32( DialogBoxHeader32 *, DialogBoxExHeader32short *, FILE *fp );
+extern bool         ResReadDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
+extern bool         ResReadDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
 extern bool         ResReadDialogBoxControl( DialogBoxControl *, FILE *fp );
-extern bool         ResReadDialogBoxControl32( DialogBoxControl32 *, FILE *fp );
-extern bool         ResReadDialogBoxExControl32( DialogBoxExControl32 *, FILE *fp );
+extern bool         ResReadDialogBoxControl32( DialogBoxControl *, FILE *fp );
+extern bool         ResReadDialogBoxExControl( DialogBoxControl *, FILE *fp );
 extern bool         ResIsDialogBoxEx( FILE *fp );
 extern void         ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
-extern void         ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
+extern void         ResFreeDialogBoxHeaderPtrs32( DialogBoxHeader *head );
 
 #endif

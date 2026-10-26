@@ -123,8 +123,8 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
     return( error );
 }
 
-bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
-/*****************************************************************/
+bool ResWriteDialogBoxHeader32( DialogBoxHeader *head, FILE *fp )
+/***************************************************************/
 {
     bool            error;
 
@@ -163,8 +163,8 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
 }
 
 
-bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, FILE *fp )
-/*****************************************************************************************************/
+bool ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *fp )
+/***************************************************************/
 {
     bool            error;
 
@@ -175,7 +175,7 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
         error = ResWriteUint16( fp, 0xffff );
     }
     if( !error ) {
-        error = ResWriteUint32( fp, exhead->HelpId );
+        error = ResWriteUint32( fp, head->HelpId );
     }
     if( !error ) {
         error = ResWriteUint32( fp, head->ExtendedStyle );
@@ -223,13 +223,13 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
     if( !error && (head->Style & DS_SETFONT) ) {
         error = ResWriteUint16( fp, head->PointSize );
         if( !error ) {
-            error = ResWriteUint16( fp, exhead->FontWeight );
+            error = ResWriteUint16( fp, head->FontWeight );
         }
         if( !error ) {
-            error = ResWriteUint8( fp, exhead->FontItalic );
+            error = ResWriteUint8( fp, head->FontItalic );
         }
         if( !error ) {
-            error = ResWriteUint8( fp, exhead->FontCharset );
+            error = ResWriteUint8( fp, head->FontCharset );
         }
         if( !error ) {
             error = ResWriteString32( head->FontName, fp );
@@ -268,8 +268,8 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp )
     return( error );
 }
 
-bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
-/**********************************************************************/
+bool ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp )
+/********************************************************************/
 {
     bool            error;
 
@@ -301,8 +301,8 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
     return( error );
 }
 
-bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
-/**************************************************************************/
+bool ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp )
+/********************************************************************/
 {
     bool            error;
 

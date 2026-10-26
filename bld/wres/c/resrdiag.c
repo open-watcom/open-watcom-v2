@@ -118,8 +118,8 @@ bool ResIsDialogBoxEx( FILE *fp )
     return( sign0 == 0x0001 && sign1 == 0xFFFF );
 }
 
-bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
-/****************************************************************/
+bool ResReadDialogBoxHeader32( DialogBoxHeader *head, FILE *fp )
+/**************************************************************/
 {
     bool            error;
 
@@ -160,8 +160,8 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, FILE *fp )
     return( ResReadPadDWord( fp ) );
 }
 
-bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, FILE *fp )
-/****************************************************************************************************/
+bool ResReadDialogBoxExHeader( DialogBoxHeader *head, FILE *fp )
+/**************************************************************/
 {
     bool            error;
 
@@ -169,7 +169,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
     if( !ResIsDialogBoxEx( fp ) )
         return( true );
     error = false;
-    exhead->HelpId = ResReadUint32( &error, fp );
+    head->HelpId = ResReadUint32( &error, fp );
     if( error )
         return( true );
     head->ExtendedStyle = ResReadUint32( &error, fp );
@@ -199,13 +199,13 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         head->PointSize = ResReadUint16( &error, fp );
         if( error )
             return( true );
-        exhead->FontWeight = ResReadUint16( &error, fp );
+        head->FontWeight = ResReadUint16( &error, fp );
         if( error )
             return( true );
-        exhead->FontItalic = ResReadUint8( &error, fp );
+        head->FontItalic = ResReadUint8( &error, fp );
         if( error )
             return( true );
-        exhead->FontCharset = ResReadUint8( &error, fp );
+        head->FontCharset = ResReadUint8( &error, fp );
         if( error )
             return( true );
         head->FontName = ResReadString32( fp, NULL );
@@ -345,8 +345,8 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp )
     return( error );
 }
 
-bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
-/*********************************************************************/
+bool ResReadDialogBoxControl32( DialogBoxControl *control, FILE *fp )
+/*******************************************************************/
 {
     bool            error;
 
@@ -376,8 +376,8 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, FILE *fp )
     return( ResReadPadDWord( fp ) );
 }
 
-bool ResReadDialogBoxExControl32( DialogBoxExControl32 *control, FILE *fp )
-/*************************************************************************/
+bool ResReadDialogBoxExControl( DialogBoxControl *control, FILE *fp )
+/*******************************************************************/
 {
     bool            error;
 
@@ -426,8 +426,8 @@ void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head )
     }
 }
 
-void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head )
-/**********************************************************/
+void ResFreeDialogBoxHeaderPtrs32( DialogBoxHeader *head )
+/********************************************************/
 {
     if( head->MenuName != NULL ) {
         WRESFREE( head->MenuName );
