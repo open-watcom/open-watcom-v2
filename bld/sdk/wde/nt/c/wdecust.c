@@ -466,13 +466,13 @@ bool WdeSetCurrentControl( HWND win, int which )
 void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
     RECT                trect;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
 
-    sizeinfo.x = 0;
-    sizeinfo.y = 0;
-    sizeinfo.width = *w;
-    sizeinfo.height = *h;
-    WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
+    SizeInfo.x = 0;
+    SizeInfo.y = 0;
+    SizeInfo.width = *w;
+    SizeInfo.height = *h;
+    WdeDialogToScreen( NULL, r, &SizeInfo, &trect );
     *w = trect.right;
     *h = trect.bottom;
 }

@@ -288,22 +288,7 @@ WResResNode *WdeRenameWResResNode( WResTypeNode *typenode, WResResNode *resnode,
     new_resnode = WdeAllocWResResNode( resnode->Info.NumResources, name );
 
     if( new_resnode != NULL ) {
-        if( typenode->Head == resnode ) {
-            typenode->Head = new_resnode;
-        }
-        if( typenode->Tail == resnode ) {
-            typenode->Tail = new_resnode;
-        }
-        new_resnode->Head = resnode->Head;
-        new_resnode->Tail = resnode->Tail;
-        new_resnode->next = resnode->next;
-        new_resnode->prev = resnode->prev;
-        if( resnode->prev != NULL ) {
-            resnode->prev->next = new_resnode;
-        }
-        if( resnode->next != NULL ) {
-            resnode->next->prev = new_resnode;
-        }
+        ResReplaceLLItem( (void **)&(typenode->Head), (void **)&(typenode->Tail), resnode, new_resnode );
         MemFree( resnode );
     }
 
@@ -315,15 +300,7 @@ bool WdeAddResToType( WResTypeNode *typenode, WResResNode *resnode )
     if( typenode == NULL || resnode == NULL ) {
         return( FALSE );
     }
-    resnode->next = NULL;
-    resnode->prev = typenode->Tail;
-    if( typenode->Head == NULL ) {
-        typenode->Head = resnode;
-    }
-    if( typenode->Tail != NULL ) {
-        typenode->Tail->next = resnode;
-    }
-    typenode->Tail = resnode;
+    ResAddLLItemAtEnd( (void**)&(typenode->Head), (void**)&(typenode->Tail), resnode );
 
     typenode->Info.NumResources++;
 
@@ -340,15 +317,7 @@ WResTypeNode *WdeAddTypeToDir( WResDir dir, uint_16 type )
     typenode = WdeAllocWResTypeNode( type );
 
     if( typenode != NULL ) {
-        typenode->next = NULL;
-        typenode->prev = dir->Tail;
-        if( dir->Head == NULL ) {
-            dir->Head = typenode;
-        }
-        if( dir->Tail != NULL ) {
-            dir->Tail->next = typenode;
-        }
-        dir->Tail = typenode;
+        ResAddLLItemAtEnd( (void**)&(dir->Head), (void**)&(dir->Tail), typenode );
 
         dir->NumTypes++;
     }
@@ -382,8 +351,6 @@ static WResLangNode *WdeAllocWResLangNode( WResLangType *lang, ResMemFlags res_f
     langnode = MemAlloc( sizeof( WResLangNode ) );
 
     if( langnode != NULL ) {
-        langnode->next = NULL;
-        langnode->prev = NULL;
         langnode->data = data;
         langnode->Info.lang = *lang;
         langnode->Info.res_flags = res_flags;
@@ -436,8 +403,6 @@ WResResNode *WdeAllocWResResNode( uint_16 num_resources, WResID *name )
     if( new_resnode != NULL ) {
         new_resnode->Head = NULL;
         new_resnode->Tail = NULL;
-        new_resnode->next = NULL;
-        new_resnode->prev = NULL;
         new_resnode->Info.NumResources = num_resources;
         len -= sizeof( WResResNode ) - sizeof( WResID );
         memcpy( &new_resnode->Info.ResName, name, len );

@@ -43,22 +43,22 @@
 #include "wresrtns.h"
 
 
-static bool ResReadDialogSizeInfo( DialogSizeInfo *sizeinfo, FILE *fp )
+static bool ResReadDialogSizeInfo( DialogSizeInfo *SizeInfo, FILE *fp )
 /*********************************************************************/
 {
     bool        error;
 
     error = false;
-    sizeinfo->x = ResReadUint16( &error, fp );
+    SizeInfo->x = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    sizeinfo->y = ResReadUint16( &error, fp );
+    SizeInfo->y = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    sizeinfo->width = ResReadUint16( &error, fp );
+    SizeInfo->width = ResReadUint16( &error, fp );
     if( error )
         return( true );
-    sizeinfo->height = ResReadUint16( &error, fp );
+    SizeInfo->height = ResReadUint16( &error, fp );
     return( error );
 }
 

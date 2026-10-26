@@ -109,13 +109,6 @@
 /* type definitions                                                         */
 /****************************************************************************/
 
-typedef struct {
-    int             x;
-    int             y;
-    int             width;
-    int             height;
-} WdeDialogSizeInfo;
-
 typedef struct WdeResInfoStruct {
     WRInfo              *info;
     char                *sym_name;
@@ -138,7 +131,7 @@ typedef struct WdeDialogBoxHeader {
     uint_32             ExtendedStyle;
     DialogStyle         Style;
     uint_16             NumOfItems;
-    WdeDialogSizeInfo   SizeInfo;
+    DialogSizeInfo      SizeInfo;
     ResNameOrOrdinal    *MenuName;          // NameOrOrdinal
     ResNameOrOrdinal    *ClassName;         // NameOrOrdinal
     char                *Caption;           // String
@@ -163,7 +156,7 @@ typedef struct WdeDialogBoxControl {
     uint_32             HelpId;
     uint_32             ExtendedStyle;
     uint_32             Style;
-    WdeDialogSizeInfo   SizeInfo;
+    DialogSizeInfo      SizeInfo;
     uint_16             ID;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;

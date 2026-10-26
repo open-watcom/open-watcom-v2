@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -60,8 +61,8 @@ extern void     WdeDumpFontList( void );
 extern void     WdeFreeFontList( void );
 extern LIST     *WdeGetFontList( void );
 extern void     WdeSetFontList( HWND );
-extern bool     WdeDialogToScreen( void *, WdeResizeRatio *, WdeDialogSizeInfo *, RECT * );
-extern bool     WdeScreenToDialog( void *, WdeResizeRatio *, RECT *, WdeDialogSizeInfo * );
+extern bool     WdeDialogToScreen( void *, WdeResizeRatio *, DialogSizeInfo *SizeInfo, RECT * );
+extern bool     WdeScreenToDialog( void *, WdeResizeRatio *, RECT *, DialogSizeInfo *SizeInfo );
 extern HFONT    WdeGetFont( char *, int, int );
 extern bool     WdeGetResizerFromFont( WdeResizeRatio *, char *, int );
 

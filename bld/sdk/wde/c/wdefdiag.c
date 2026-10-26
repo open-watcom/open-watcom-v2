@@ -1197,7 +1197,7 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 
 bool WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
 {
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     RECT                r;
 
     /* unused parameters */ (void)p2;
@@ -1205,18 +1205,18 @@ bool WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
     p->x = 1;
     p->y = 1;
 
-    sizeinfo.x = 0;
-    sizeinfo.y = 0;
-    sizeinfo.width = WdeGetOption( WdeOptReqGridX );
-    sizeinfo.height = WdeGetOption( WdeOptReqGridY );
+    SizeInfo.x = 0;
+    SizeInfo.y = 0;
+    SizeInfo.width = WdeGetOption( WdeOptReqGridX );
+    SizeInfo.height = WdeGetOption( WdeOptReqGridY );
 
     if( obj->window_handle != (HWND)NULL ) {
-        SetRect( &r, 0, 0, sizeinfo.width, sizeinfo.height );
+        SetRect( &r, 0, 0, SizeInfo.width, SizeInfo.height );
         MapDialogRect( obj->window_handle, &r );
         p->x = r.right;
         p->y = r.bottom;
     } else {
-        if( WdeDialogToScreen( obj, &obj->resizer, &sizeinfo, &r ) ) {
+        if( WdeDialogToScreen( obj, &obj->resizer, &SizeInfo, &r ) ) {
             p->x = r.right;
             p->y = r.bottom;
         }
@@ -1936,10 +1936,10 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     is.obj_id = DIALOG_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.sizeinfo.x = GETHDR_SIZEX( obj->dialog_info );
-    is.sizeinfo.y = GETHDR_SIZEY( obj->dialog_info );
-    is.sizeinfo.width = GETHDR_SIZEW( obj->dialog_info );
-    is.sizeinfo.height = GETHDR_SIZEH( obj->dialog_info );
+    is.SizeInfo.x = GETHDR_SIZEX( obj->dialog_info );
+    is.SizeInfo.y = GETHDR_SIZEY( obj->dialog_info );
+    is.SizeInfo.width = GETHDR_SIZEW( obj->dialog_info );
+    is.SizeInfo.height = GETHDR_SIZEH( obj->dialog_info );
     is.u.dlg.caption = GETHDR_CAPTION( obj->dialog_info );
     is.u.dlg.name = obj->name;
     is.symbol = WdeStrdup( obj->symbol );
@@ -2092,7 +2092,7 @@ bool WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
 bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
 {
     RECT                size;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
 
     if( new == NULL ) {
         return( false );
@@ -2106,11 +2106,11 @@ bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     size.bottom -= nc_size->bottom;
 
     /* save the old dialog units */
-    sizeinfo = GETHDR_SIZE( obj->dialog_info );
+    SizeInfo = GETHDR_SIZE( obj->dialog_info );
 
     if( !WdeScreenToDialog( obj, &obj->resizer, &size, GETHDR_PSIZE( obj->dialog_info ) ) ) {
         /* restore the old dialog units */
-        SETHDR_SIZE( obj->dialog_info, sizeinfo );
+        SETHDR_SIZE( obj->dialog_info, SizeInfo );
         return( false );
     }
 
@@ -2211,7 +2211,7 @@ bool WdeOffsetDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
 {
     RECT                new_pos;
     RECT                nc;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
 
     if( !nc_size ) {
         nc = obj->nc_size;
@@ -2228,9 +2228,9 @@ bool WdeOffsetDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     new_pos.left += nc.left;
     new_pos.top += nc.top;
 
-    if( WdeScreenToDialog( obj, &obj->resizer, &new_pos, &sizeinfo ) ) {
-        SETHDR_SIZEX( obj->dialog_info, sizeinfo.x );
-        SETHDR_SIZEY( obj->dialog_info, sizeinfo.y );
+    if( WdeScreenToDialog( obj, &obj->resizer, &new_pos, &SizeInfo ) ) {
+        SETHDR_SIZEX( obj->dialog_info, SizeInfo.x );
+        SETHDR_SIZEY( obj->dialog_info, SizeInfo.y );
         return( true );
     }
 

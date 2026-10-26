@@ -978,7 +978,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
 
 bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 {
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     DialogStyle         style;
     ResNameOrOrdinal    *rname;
     char                *name;
@@ -1009,7 +1009,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        sizeinfo = GETHDR_SIZE( dhptr );
+        SizeInfo = GETHDR_SIZE( dhptr );
         /* check if this is a 32 bit extended dialog */
         if( dhptr->is32bitEx ) {
             char *helpsymbol;
@@ -1027,7 +1027,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             }
 
             fprintf( fp, "%s DIALOGEX %s %d, %d, %d, %d", name, str,
-                sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
+                SizeInfo.x, SizeInfo.y, SizeInfo.width, SizeInfo.height );
             MemFree( str );
             str = NULL;
             if( *helpsymbol != '\0' ) {
@@ -1041,7 +1041,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         } else {
             /* standard dialog */
             fprintf( fp, "%s DIALOG %s %d, %d, %d, %d\n", name, str,
-                sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
+                SizeInfo.x, SizeInfo.y, SizeInfo.width, SizeInfo.height );
             MemFree( str );
             str = NULL;
         }

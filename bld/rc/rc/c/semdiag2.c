@@ -728,7 +728,7 @@ void SemOS2WriteDialogTemplate( WResID *res_id, ResMemFlags res_flags,
 
 
 FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
-                    uint_16 id, DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclassname,
+                    uint_16 id, DialogSizeInfo SizeInfo, ResNameOrOrdinal *ctlclassname,
                     IntMask style, FullDialogCtrlListOS2 *childctls,
                     PresParamListOS2 *presparams )
 /**************************************************************************************/
@@ -738,7 +738,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control = SemOS2InitDialogCtrl();
 
     control->ctrl.ID         = id;
-    control->ctrl.SizeInfo   = sizeinfo;
+    control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
     control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
@@ -751,7 +751,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
 }
 
 FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
-                    uint_32 id, DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclassname,
+                    uint_32 id, DialogSizeInfo SizeInfo, ResNameOrOrdinal *ctlclassname,
                     IntMask style, IntMask framectl, PresParamListOS2 *presparams,
                     FullDialogCtrlListOS2 *childctls )
 /**************************************************************************************/
@@ -761,7 +761,7 @@ FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
     control = SemOS2InitDialogCtrl();
 
     control->ctrl.ID         = id;
-    control->ctrl.SizeInfo   = sizeinfo;
+    control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
     control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;

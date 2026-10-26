@@ -94,7 +94,6 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 
 WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *langnode, bool is32bit )
 {
-    DialogBoxExHeader32short    h32ex;
     DialogBoxHeader32           h32;
     DialogBoxHeader             h16;
 

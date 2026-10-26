@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@ typedef struct {
     char                *symbol;
     WdeResInfo          *res_info;
     void                *obj;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     union {
         struct {
             char                *caption;
@@ -66,7 +67,7 @@ extern int  WdeGetInfoWindowDepth( void );
 extern bool WdeCreateInfoWindow( HWND, HINSTANCE );
 extern void WdeResizeInfoWindow( RECT * );
 extern void WdeInfoFini( void );
-extern void WdeWriteObjectDimensions( WdeDialogSizeInfo * );
+extern void WdeWriteObjectDimensions( DialogSizeInfo *SizeInfo );
 extern void WdeWriteInfo( WdeInfoStruct * );
 extern void WdeDestroyInfoWindow( void );
 extern void WdeShowInfoWindow( bool );

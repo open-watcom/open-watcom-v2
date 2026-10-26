@@ -952,30 +952,30 @@ bool WdeSetCurrentControl( HWND win, int which )
 
 void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     RECT                trect;
 
     if( *w >= 0 && *h >= 0 ) {
-        sizeinfo.x = 0;
-        sizeinfo.y = 0;
-        sizeinfo.width = *w;
-        sizeinfo.height = *h;
-        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
+        SizeInfo.x = 0;
+        SizeInfo.y = 0;
+        SizeInfo.width = *w;
+        SizeInfo.height = *h;
+        WdeDialogToScreen( NULL, r, &SizeInfo, &trect );
         *w = trect.right;
         *h = trect.bottom;
     } else if( *w >= 0 ) {
-        sizeinfo.x = 0;
-        sizeinfo.y = 0;
-        sizeinfo.width = *w;
-        sizeinfo.height = 0;
-        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
+        SizeInfo.x = 0;
+        SizeInfo.y = 0;
+        SizeInfo.width = *w;
+        SizeInfo.height = 0;
+        WdeDialogToScreen( NULL, r, &SizeInfo, &trect );
         *w = trect.right;
     } else if( *h >= 0 ) {
-        sizeinfo.x = 0;
-        sizeinfo.y = 0;
-        sizeinfo.width = 0;
-        sizeinfo.height = *h;
-        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
+        SizeInfo.x = 0;
+        SizeInfo.y = 0;
+        SizeInfo.width = 0;
+        SizeInfo.height = *h;
+        WdeDialogToScreen( NULL, r, &SizeInfo, &trect );
         *h = trect.bottom;
     }
     if( *w < 0 ) {

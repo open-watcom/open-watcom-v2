@@ -65,13 +65,13 @@ extern FullDialogCtrlListOS2      *SemOS2AddDialogCtrlList( FullDialogCtrlListOS
                                     PresParamListOS2 * );
 extern FullDialogBoxControlOS2  *SemOS2NewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOptionsOS2 opts,
                                     PresParamListOS2 * );
-extern FullDialogBoxControlOS2  *SemOS2SetWndData( ResNameOrOrdinal *name, uint_32 id, DialogSizeInfo sizeinfo,
+extern FullDialogBoxControlOS2  *SemOS2SetWndData( ResNameOrOrdinal *name, uint_32 id, DialogSizeInfo SizeInfo,
                                     ResNameOrOrdinal *ctlclassname, IntMask style, IntMask framectl,
                                     PresParamListOS2 *presparams, FullDialogCtrlListOS2 *childctls );
 extern FullDialogBoxControlOS2  *SemOS2SetWindowData( FullDialogCtrlOptionsOS2, IntMask,
                                     PresParamListOS2 *, FullDialogCtrlListOS2 *, YYTOKENTYPE );
 extern FullDialogBoxControlOS2  *SemOS2SetControlData( ResNameOrOrdinal *name, uint_16 id,
-                                    DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclass,
+                                    DialogSizeInfo SizeInfo, ResNameOrOrdinal *ctlclass,
                                     IntMask style, FullDialogCtrlListOS2 *, PresParamListOS2 * );
 extern PresParamListOS2         *SemOS2AppendPresParam( PresParamListOS2 *list,
                                     PresParamsOS2 presparam );

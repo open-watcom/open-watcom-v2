@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -107,7 +108,7 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
 bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
 {
     WdeResizeRatio      r;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     RECT                new_size;
     POINT               *dim;
 
@@ -128,12 +129,12 @@ bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
         return( false );
     }
 
-    sizeinfo.x = 0;
-    sizeinfo.y = 0;
-    sizeinfo.width = dim->x;
-    sizeinfo.height = dim->y;
+    SizeInfo.x = 0;
+    SizeInfo.y = 0;
+    SizeInfo.width = dim->x;
+    SizeInfo.height = dim->y;
 
-    if( !WdeDialogToScreen( NULL, &r, &sizeinfo, &new_size ) ) {
+    if( !WdeDialogToScreen( NULL, &r, &SizeInfo, &new_size ) ) {
         return( false );
     }
 

@@ -327,7 +327,7 @@ bool WdeBaseGetScrollRect( WdeBaseObject *obj, RECT *r, void *p2 )
 
 bool WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
 {
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     RECT                r;
 
     /* unused parameters */ (void)p2;
@@ -335,12 +335,12 @@ bool WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
     p->x = 1;
     p->y = 1;
 
-    sizeinfo.x = 0;
-    sizeinfo.y = 0;
-    sizeinfo.width = WdeGetOption( WdeOptReqGridX );
-    sizeinfo.height = WdeGetOption( WdeOptReqGridY );
+    SizeInfo.x = 0;
+    SizeInfo.y = 0;
+    SizeInfo.width = WdeGetOption( WdeOptReqGridX );
+    SizeInfo.height = WdeGetOption( WdeOptReqGridY );
 
-    if( WdeDialogToScreen( obj, &obj->resizer, &sizeinfo, &r ) ) {
+    if( WdeDialogToScreen( obj, &obj->resizer, &SizeInfo, &r ) ) {
         p->x = r.right;
         p->y = r.bottom;
     }

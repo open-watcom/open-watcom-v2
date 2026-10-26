@@ -365,8 +365,8 @@ bool ResWriteNameOrOrdinal32( ResNameOrOrdinal *name, FILE *fp )
     return( error );
 } /* ResWriteNameOrOrdinal32 */
 
-static size_t MSResFindNameOrOrdSize( ResNameOrOrdinal *name )
-/************************************************************/
+static size_t MSResFindNameOrOrdSize32( ResNameOrOrdinal *name )
+/**************************************************************/
 {
     size_t  size;
 
@@ -378,16 +378,16 @@ static size_t MSResFindNameOrOrdSize( ResNameOrOrdinal *name )
     return( size );
 }
 
-static size_t MSResFindHeaderSize( MSResResourceHeader *msheader )
-/****************************************************************/
+static size_t MSResFindHeaderSize32( MSResResourceHeader *msheader )
+/******************************************************************/
 {
     size_t  headersize;
     size_t  namesize;
     size_t  typesize;
     size_t  padding;
 
-    namesize = MSResFindNameOrOrdSize( msheader->Name );
-    typesize = MSResFindNameOrOrdSize( msheader->Type );
+    namesize = MSResFindNameOrOrdSize32( msheader->Name );
+    typesize = MSResFindNameOrOrdSize32( msheader->Type );
     headersize = 2 * sizeof( uint_32 ) + namesize + typesize;
     padding = RES_PADDING_DWORD( headersize );
     headersize += padding + 3 * sizeof( uint_32 ) + 2 * sizeof( uint_16 );
@@ -411,7 +411,7 @@ bool MSResWriteResourceHeader32( MSResResourceHeader *msheader, FILE *fp )
 {
     if( ResWriteUint32( fp, msheader->Size ) )
         return( true );
-    if( ResWriteUint32( fp, MSResFindHeaderSize( msheader ) ) )
+    if( ResWriteUint32( fp, MSResFindHeaderSize32( msheader ) ) )
         return( true );
     if( ResWriteNameOrOrdinal32( msheader->Type, fp ) )
         return( true );

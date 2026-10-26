@@ -1228,7 +1228,7 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
     POINT               pt;
     WdeResizeRatio      resizer;
     WdeResInfo          *info;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
 
     rect = *r;
 
@@ -1283,8 +1283,8 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
         }
     }
 
-    if( WdeScreenToDialog( NULL, &resizer, &rect, &sizeinfo ) ) {
-        WdeWriteObjectDimensions( &sizeinfo );
+    if( WdeScreenToDialog( NULL, &resizer, &rect, &SizeInfo ) ) {
+        WdeWriteObjectDimensions( &SizeInfo );
     }
 
     return( true );
@@ -1303,7 +1303,7 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
     WdeResizeRatio      resizer;
     bool                adjust;
     WdeResInfo          *info;
-    WdeDialogSizeInfo   sizeinfo;
+    DialogSizeInfo      SizeInfo;
     SUBOBJ_REQUEST      req;
 
     rect = *r;
@@ -1363,8 +1363,8 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
         }
     }
 
-    if( WdeScreenToDialog( NULL, &resizer, &rect, &sizeinfo ) ) {
-        WdeWriteObjectDimensions( &sizeinfo );
+    if( WdeScreenToDialog( NULL, &resizer, &rect, &SizeInfo ) ) {
+        WdeWriteObjectDimensions( &SizeInfo );
     }
 
     return( true );

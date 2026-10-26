@@ -634,7 +634,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *diaghead, bool is_dialogex,
 }
 
 void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
-                    DialogSizeInfo sizeinfo, FullDialogBoxHeader *diaghead,
+                    DialogSizeInfo SizeInfo, FullDialogBoxHeader *diaghead,
                     FullDialogCtrlListWIN *ctrls, help_id HelpId,
                     bool is_dialogex )
 /*************************************************************************/
@@ -662,7 +662,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
         }
 
         diaghead->Head.NumOfItems = ctrls->numctrls;
-        diaghead->Head.SizeInfo = sizeinfo;
+        diaghead->Head.SizeInfo = SizeInfo;
         /*
          * pad the start of the resource so that padding within the resource
          * is easier
@@ -682,7 +682,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
             error = 2;
         } else {
             diaghead->Head.NumOfItems = ctrls->numctrls & 0xFF;
-            diaghead->Head.SizeInfo = sizeinfo;
+            diaghead->Head.SizeInfo = SizeInfo;
         }
     }
     if( !error
@@ -728,7 +728,7 @@ void SemWINWriteDialogBox( WResID *res_id, ResMemFlags res_flags,
 
 
 FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
-         uint_16 cntlid, DialogSizeInfo sizeinfo, WResID *cntltext_id,
+         uint_16 cntlid, DialogSizeInfo SizeInfo, WResID *cntltext_id,
          ResNameOrOrdinal *ctlclassname, uint_32 exstyle, help_id HelpId )
 /*************************************************************************/
 {
@@ -744,7 +744,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
     diagctrl = semInitDialogCtrl();
     if( CmdLineParms.iswin32 ) {
         diagctrl->ctrl.ID = cntlid;
-        diagctrl->ctrl.SizeInfo = sizeinfo;
+        diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
         diagctrl->ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
@@ -760,7 +760,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
         MemFree( ctlclassname );
     } else {
         diagctrl->ctrl.ID = cntlid;
-        diagctrl->ctrl.SizeInfo = sizeinfo;
+        diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
         diagctrl->ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );

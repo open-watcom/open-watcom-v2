@@ -46,20 +46,20 @@
 
 #define IS_STR_IGNORE_CASE(s,c) ( WresStrnicmp( s, c, sizeof( c ) ) == 0 )
 
-static bool ResWriteDialogSizeInfo( DialogSizeInfo *sizeinfo, FILE *fp )
+static bool ResWriteDialogSizeInfo( DialogSizeInfo *SizeInfo, FILE *fp )
 /**********************************************************************/
 {
     bool    error;
 
-    error = ResWriteUint16( fp, sizeinfo->x );
+    error = ResWriteUint16( fp, SizeInfo->x );
     if( !error ) {
-        error = ResWriteUint16( fp, sizeinfo->y );
+        error = ResWriteUint16( fp, SizeInfo->y );
     }
     if( !error ) {
-        error = ResWriteUint16( fp, sizeinfo->width );
+        error = ResWriteUint16( fp, SizeInfo->width );
     }
     if( !error ) {
-        error = ResWriteUint16( fp, sizeinfo->height );
+        error = ResWriteUint16( fp, SizeInfo->height );
     }
     return( error );
 }

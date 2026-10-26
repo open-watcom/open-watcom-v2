@@ -332,7 +332,7 @@ void WdeWriteInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        WdeWriteObjectDimensions( &(is->sizeinfo) );
+        WdeWriteObjectDimensions( &(is->SizeInfo) );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
@@ -626,14 +626,14 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     *is = c_is;
 }
 
-void WdeWriteObjectDimensions( WdeDialogSizeInfo *sizeinfo )
+void WdeWriteObjectDimensions( DialogSizeInfo *SizeInfo )
 {
     char str[56];
 
     sprintf( str, "(%d,%d) (%d,%d) %dx%d",
-             sizeinfo->x, sizeinfo->y,
-             sizeinfo->x + sizeinfo->width, sizeinfo->y + sizeinfo->height,
-             sizeinfo->width, sizeinfo->height );
+             SizeInfo->x, SizeInfo->y,
+             SizeInfo->x + SizeInfo->width, SizeInfo->y + SizeInfo->height,
+             SizeInfo->width, SizeInfo->height );
 
     WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_SIZE );
 }
