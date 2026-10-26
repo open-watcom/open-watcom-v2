@@ -103,7 +103,7 @@ static bool ConvertMSResources( FILE *in_fp, FILE *out_fp, WResDir outdir )
 } /* ConvertMSResources */
 
 bool ConvertMSResToWRes( FILE *in_fp, FILE *out_fp )
-/*************************************************/
+/**************************************************/
 {
     WResDir                 outdir;
     bool                    error;

@@ -129,9 +129,6 @@ static void copyMSFormatRes( WResID *res_id, WResID *type_id, ResMemFlags res_fl
     msheader.Version = 0; /* Currently Unsupported */
     msheader.DataVersion = 0;
     msheader.Characteristics = 0; /* Currently Unsupported */
-    /*
-     * OS/2 resource header happens to be identical to Win16
-     */
     if( CmdLineParms.iswin32 ) {
         error = MSResWriteResourceHeader32( &msheader, CurrResFile.fp );
     } else {

@@ -37,7 +37,7 @@
 #include "rccore.h"
 
 
-const FullAccelFlagsWIN	DefaultAccelFlagsWIN = { 0, false };
+const FullAccelFlagsWIN DefaultAccelFlagsWIN = { 0, false };
 
 int SemWINStrToAccelEvent( char *string )
 /***************************************/
@@ -85,7 +85,7 @@ FullAccelEntryWIN SemWINMakeAccItem( AccelEvent event, unsigned long idval,
                     FullAccelFlagsWIN flags )
 /***********************************************************************/
 {
-    FullAccelEntryWIN	entry;
+    FullAccelEntryWIN   entry;
 
     entry.startoftable = 0;
     if( event.strevent
