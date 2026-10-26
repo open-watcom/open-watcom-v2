@@ -83,4 +83,4 @@ bool ResWriteStringTableBlock32( StringTableBlock *block, FILE *fp )
         }
     }
     return( false );
-} /* ResWriteStringTableBlock */
+} /* ResWriteStringTableBlock32 */
