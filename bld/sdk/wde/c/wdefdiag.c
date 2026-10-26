@@ -331,7 +331,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
         control->helpsymbol = WdeStrdup( helpsymbol );
 
         if( obj->dialog_info->is32bit ) {
-            if( control->HelpId != 0 || control->ExtendedStyle != 0 ) {
+            if( control->ctrl.HelpId != 0 || control->ctrl.ExtendedStyle != 0 ) {
                 is32bitEx = true;
             }
         }
@@ -347,7 +347,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 
     dh = info->dialog_header;
     if( obj->dialog_info->is32bit ) {
-        if( dh->HelpId != 0 || dh->ExtendedStyle != 0 || dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
+        if( dh->head.HelpId != 0 || dh->head.ExtendedStyle != 0 || dh->head.FontWeightDefined || dh->head.FontItalicDefined || dh->head.FontCharsetDefined ) {
             is32bitEx = true;
         }
     } else {
@@ -2713,7 +2713,7 @@ INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam,
         if( !ret ) {
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
-                                             o_info->info.d.header->HelpId,
+                                             o_info->info.d.header->head.HelpId,
                                              true );
         }
 

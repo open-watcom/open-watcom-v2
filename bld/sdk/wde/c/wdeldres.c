@@ -94,13 +94,6 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 
 WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *langnode, bool is32bit )
 {
-    DialogBoxHeader32           h32;
-    DialogBoxHeader             h16;
-
-    DialogBoxControl            c16;
-    DialogBoxControl32          c32;
-    DialogBoxExControl32        c32ex;
-
     WdeDialogBoxInfo            *dlg_info;
     FILE                        *fp;
     WdeDialogBoxControl         *control;
@@ -116,9 +109,6 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
     dlg_info = NULL;
     fp = NULL;
     file_name = NULL;
-    memset( &h32ex, 0, sizeof( h32ex ) );
-    memset( &h32, 0, sizeof( h32 ) );
-    memset( &h16, 0, sizeof( h16 ) );
 
     ok = ( res_info != NULL && langnode != NULL );
 
@@ -152,52 +142,16 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
             ResSeek( fp, langnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogBoxExHeader32( &h32, &h32ex, fp );
+                ok = !ResReadDialogBoxExHeader( &dlg_info->dialog_header->head, fp );
             } else {
-                ok = !ResReadDialogBoxHeader32( &h32, fp );
+                ok = !ResReadDialogBoxHeader32( &dlg_info->dialog_header->head, fp );
             }
         } else {
-            ok = !ResReadDialogBoxHeader( &h16, fp );
+            ok = !ResReadDialogBoxHeader( &dlg_info->dialog_header->head, fp );
         }
     }
 
     if( ok ) {
-        if( is32bit ) {
-            if( dlg_info->dialog_header->is32bitEx ) {
-                dlg_info->dialog_header->FontWeight = h32ex.FontWeight;
-                dlg_info->dialog_header->FontItalic = h32ex.FontItalic;
-                dlg_info->dialog_header->FontCharset = h32ex.FontCharset;
-                dlg_info->dialog_header->HelpId = h32ex.HelpId;
-                dlg_info->dialog_header->FontWeightDefined = ( h32ex.FontWeightDefined != 0 );
-                dlg_info->dialog_header->FontItalicDefined = ( h32ex.FontItalicDefined != 0 );
-                dlg_info->dialog_header->FontCharsetDefined = ( h32ex.FontCharsetDefined != 0 );
-            }
-            dlg_info->dialog_header->Style = h32.Style;
-            dlg_info->dialog_header->ExtendedStyle = h32.ExtendedStyle;
-            dlg_info->dialog_header->NumOfItems = h32.NumOfItems;
-            dlg_info->dialog_header->SizeInfo.x = h32.SizeInfo.x;
-            dlg_info->dialog_header->SizeInfo.y = h32.SizeInfo.y;
-            dlg_info->dialog_header->SizeInfo.width = h32.SizeInfo.width;
-            dlg_info->dialog_header->SizeInfo.height = h32.SizeInfo.height;
-            dlg_info->dialog_header->MenuName = h32.MenuName;
-            dlg_info->dialog_header->ClassName = h32.ClassName;
-            dlg_info->dialog_header->Caption = h32.Caption;
-            dlg_info->dialog_header->PointSize = h32.PointSize;
-            dlg_info->dialog_header->FontName = h32.FontName;
-        } else {
-            dlg_info->dialog_header->Style = h16.Style;
-            dlg_info->dialog_header->NumOfItems = h16.NumOfItems;
-            dlg_info->dialog_header->SizeInfo.x = h16.SizeInfo.x;
-            dlg_info->dialog_header->SizeInfo.y = h16.SizeInfo.y;
-            dlg_info->dialog_header->SizeInfo.width = h16.SizeInfo.width;
-            dlg_info->dialog_header->SizeInfo.height = h16.SizeInfo.height;
-            dlg_info->dialog_header->MenuName = h16.MenuName;
-            dlg_info->dialog_header->ClassName = h16.ClassName;
-            dlg_info->dialog_header->Caption = h16.Caption;
-            dlg_info->dialog_header->PointSize = h16.PointSize;
-            dlg_info->dialog_header->FontName = h16.FontName;
-        }
-
         prev_control = NULL;
         for( index = 0; index < GETHDR_NUMITEMS( dlg_info->dialog_header ); index++ ) {
             control = WdeAllocDialogBoxControl();
@@ -211,51 +165,21 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
                  *       whether this an extended dialog or not
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
-                    if( ResReadDialogBoxExControl32( &c32ex, fp ) ) {
+                    if( ResReadDialogBoxExControl( &control->ctrl, fp ) ) {
                         ok = false;
                         break;
                     }
-                    control->HelpId = c32ex.HelpId;
-                    control->ExtendedStyle = c32ex.ExtendedStyle;
-                    control->Style = c32ex.Style;
-                    control->SizeInfo.x = c32ex.SizeInfo.x;
-                    control->SizeInfo.y = c32ex.SizeInfo.y;
-                    control->SizeInfo.width = c32ex.SizeInfo.width;
-                    control->SizeInfo.height = c32ex.SizeInfo.height;
-                    control->ID = (uint_16)c32ex.ID;
-                    control->ClassID = c32ex.ClassID;
-                    control->Text = c32ex.Text;
-                    control->ExtraBytes = c32ex.ExtraBytes;
                 } else {
-                    if( ResReadDialogBoxControl32( &c32, fp ) ) {
+                    if( ResReadDialogBoxControl32( &control->ctrl, fp ) ) {
                         ok = false;
                         break;
                     }
-                    control->Style = c32.Style;
-                    control->ExtendedStyle = c32.ExtendedStyle;
-                    control->SizeInfo.x = c32.SizeInfo.x;
-                    control->SizeInfo.y = c32.SizeInfo.y;
-                    control->SizeInfo.width = c32.SizeInfo.width;
-                    control->SizeInfo.height = c32.SizeInfo.height;
-                    control->ID = c32.ID;
-                    control->ClassID = c32.ClassID;
-                    control->Text = c32.Text;
-                    control->ExtraBytes = c32.ExtraBytes;
                 }
             } else {
-                if( ResReadDialogBoxControl( &c16, fp ) ) {
+                if( ResReadDialogBoxControl( &control->ctrl, fp ) ) {
                     ok = false;
                     break;
                 }
-                control->SizeInfo.x = c16.SizeInfo.x;
-                control->SizeInfo.y = c16.SizeInfo.y;
-                control->SizeInfo.width = c16.SizeInfo.width;
-                control->SizeInfo.height = c16.SizeInfo.height;
-                control->ID = c16.ID;
-                control->Style = c16.Style;
-                control->ClassID = c16.ClassID;
-                control->Text = c16.Text;
-                control->ExtraBytes = c16.ExtraBytes;
             }
             if ( prev_control == NULL ) {
                 ListAddElt( &dlg_info->control_list, (OBJPTR)control );

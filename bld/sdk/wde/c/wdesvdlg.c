@@ -887,8 +887,8 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
                 helpsymbol = WdeStrdup( control->helpsymbol );
             } else {
                 helpsymbol = MemAlloc( 32 );
-                if( control->HelpId > 0 ) {
-                    sprintf( helpsymbol, "%ld", control->HelpId );
+                if( control->ctrl.HelpId > 0 ) {
+                    sprintf( helpsymbol, "%ld", control->ctrl.HelpId );
                 } else {
                     *helpsymbol = '\0';   /* empty help id if 0 */
                 }
@@ -1019,8 +1019,8 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                 helpsymbol = WdeStrdup( dhptr->helpsymbol );
             } else {
                 helpsymbol = MemAlloc( 32 );
-                if( dhptr->HelpId > 0 ) {
-                    sprintf( helpsymbol, "%ld", dhptr->HelpId );
+                if( dhptr->head.HelpId > 0 ) {
+                    sprintf( helpsymbol, "%ld", dhptr->head.HelpId );
                 } else {
                     *helpsymbol = '\0';
                 }
