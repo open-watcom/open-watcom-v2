@@ -190,10 +190,14 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
  * Dump the Resource Id's.
  */
 static void dmp_res_name_id( unsigned_16 count, bool is_name )
-/***********************************************************/
+/************************************************************/
 {
-    unsigned_16             i, j, cnt;
-    unsigned_32             offset, tmp_off;
+    unsigned_16             i;
+    unsigned_16             j;
+    unsigned_16             k;
+    unsigned_16             cnt;
+    unsigned_32             offset;
+    unsigned_32             tmp_off;
     resource_dir_header     pe_res_name;
     resource_dir_entry      pe_res_dir;
     res_name                name;
@@ -220,7 +224,7 @@ static void dmp_res_name_id( unsigned_16 count, bool is_name )
         for( j = 0; j < cnt; j++ ) {
             if( is_name ) {
                 Wdputs( name.rname );
-                for( j = name.len; j <= SLEN; j++ ) {
+                for( k = name.len; k <= SLEN; k++ ) {
                     Wdputc( ' ' );
                 }
             } else {
