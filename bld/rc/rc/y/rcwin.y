@@ -187,9 +187,9 @@ normal-resource
     | dialog-resource
     | version-info-resource
     | message-table-resource
+:segment WIN32
     | menuex-resource
     | dialogex-resource
-:segment WIN32
     | language-resource
 :endsegment
     ;
