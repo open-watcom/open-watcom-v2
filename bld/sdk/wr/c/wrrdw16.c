@@ -243,31 +243,50 @@ bool WRLoadWResDirFromWin16EXE( FILE *fp, WResDir *dir )
 
 WResTypeNode *WRReadWResTypeNodeFromExe( FILE *fp, uint_16 align_shift )
 {
-    uint_16                 resource_count;
-    resource_type_record    type_info;
+    uint_16                 type_id;
+    uint_16                 num_resources;
+    uint_32                 reserved;
     WResTypeNode            *typenode;
     WResResNode             *resnode;
 
-    if( RESREAD( fp, &type_info, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
+    /*
+     * The following structure is used for each resource type:
+     *
+     * struct resource_type_record {
+     *     unsigned_16         type_id;
+     *     unsigned_16         num_resources;
+     *     unsigned_32         reserved;
+     * };
+     *
+     * Read type_id first. If it is non-zero, read the remainder of
+     * the structure. A zero type_id marks the end of the resource
+     * type table.
+     */
+    if( RESREAD( fp, &type_id, sizeof( type_id ) ) != sizeof( type_id ) ) {
         return( NULL );
     }
-    if( type_info.type_id == 0 ) {
+    if( type_id == 0 ) {
+        return( NULL );
+    }
+    if( RESREAD( fp, &num_resources, sizeof( num_resources ) ) != sizeof( num_resources ) ) {
+        return( NULL );
+    }
+    if( RESREAD( fp, &reserved, sizeof( reserved ) ) != sizeof( reserved ) ) {
         return( NULL );
     }
     typenode = MemAlloc( sizeof( WResTypeNode ) );
     if( typenode == NULL )
         return( NULL );
 
-    resource_count = type_info.num_resources;
     typenode->next = NULL;
     typenode->prev = NULL;
     typenode->Head = NULL;
     typenode->Tail = NULL;
-    typenode->Info.NumResources = resource_count;
-    typenode->Info.TypeName.IsName = ( (type_info.type_id & 0x8000) == 0 );
-    typenode->Info.TypeName.ID.Num = (type_info.type_id & 0x7fff);
+    typenode->Info.NumResources = num_resources;
+    typenode->Info.TypeName.IsName = ( (type_id & 0x8000) == 0 );
+    typenode->Info.TypeName.ID.Num = (type_id & 0x7fff);
 
-    for( ; resource_count != 0; resource_count-- ) {
+    for( ; num_resources != 0; num_resources-- ) {
         resnode = WRReadWResResNodeFromExe( fp, align_shift );
         if( typenode->Head == NULL ) {
             typenode->Head = resnode;
