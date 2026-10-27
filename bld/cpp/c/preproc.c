@@ -113,8 +113,8 @@ static FILE *PP_Open( const char *filename )
             PP_File->filename   = MemStrdupSafe( filename );
             PP_File->linenum    = 1;
             PP_File->prev_include_defines_only = PPIncludeDefinesOnly;
-            PPBufPtr = PP_File->buffer;
             PP_File->buffer[0] = '\0';      // indicate buffer empty
+            PPBufPtr = PP_File->buffer;
         }
     }
     return( handle );
