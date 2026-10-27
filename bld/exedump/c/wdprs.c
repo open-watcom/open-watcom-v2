@@ -66,12 +66,16 @@ void Puthex64( long long num, unsigned_16 width )
 /*
  * Put a decimal number
  */
-void Putdec( unsigned_32 num )
-/****************************/
+int Putdec( unsigned_32 num )
+/***************************/
 {
+    int len;
+
+    len = 1;
     if( num >= 10 )
-        Putdec( num / 10 );
+        len += Putdec( num / 10 );
     Wdputc( num % 10 + '0' );
+    return( len );
 }
 
 /*

@@ -53,6 +53,34 @@ static  const_string_table pe_fixup_msg[] = {
         NULL
 };
 
+static  const_string_table resource_type_pe[][2] = {
+    { "Unknown resource type (#0)", "000" },
+    { "Cursor",                     "cur" },
+    { "Bitmap",                     "bmp" },
+    { "Icon",                       "ico" },
+    { "Menu template",              "mnu" },
+    { "Dialog-box template",        "dlg" },
+    { "String table",               "str" },
+    { "Font directory",             "fdr" },
+    { "Font",                       "fnt" },
+    { "Keyboard-accelerator table", "acc" },
+    { "Error message table",        "erm" },
+    { "RC data resource",           "rcd" },
+    { "Cursor group header",        "cgr" },
+    { "Unknown resource type (#13)","unk" },    /* #13 is not used - unlucky? */
+    { "Icon group header",          "igr" },
+    { "Unknown resource type (#15)","unk" },    /* #15 is not used - unlucky? */
+    { "Version info",               "vri" },
+    { "DLGINCLUDE resource",        "dgi" },
+    { "Unknown resource type (#18)","unk" },    /* #18 is not used - unlucky? */
+    { "Plug and Play resource",     "pnp" },
+    { "VXD resource",               "vxd" },
+    { "animated cursor",            "acu" },
+    { "animated icon",              "aic" },
+    { "HTML resource",              "htm" },
+    { "Manifest",                   "mnf" },
+};
+
 /*
  * Dump the type and offsets.
  */
@@ -161,8 +189,10 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
             Wdputc( ' ' );
         }
     } else {
-        Puthex( pe_res_dir.id_name, 8 );
-        Wdputs( "                       " );
+        j = Putdec( pe_res_dir.id_name );
+        while( j++ <= SLEN ) {
+            Wdputc( ' ' );
+        }
     }
     offset = Res_off + (pe_res_dir.entry_rva & PE_RESOURCE_MASK);
     if( pe_res_dir.entry_rva & PE_RESOURCE_MASK_ON ) {
@@ -187,6 +217,20 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
 }
 
 /*
+ * printout a resource item type name
+ */
+static void dmp_resrc_type_pe( unsigned_16 type_id )
+/**************************************************/
+{
+    if( type_id < ARRAY_SIZE( resource_type_pe ) ) {
+        Wdputs( resource_type_pe[type_id][0] );
+    } else {
+        Wdputs( "Type id: " );
+        Putdec( type_id );
+    }
+}
+
+/*
  * Dump the Resource Id's.
  */
 static void dmp_res_name_id( unsigned_16 count, bool is_name )
@@ -194,7 +238,6 @@ static void dmp_res_name_id( unsigned_16 count, bool is_name )
 {
     unsigned_16             i;
     unsigned_16             j;
-    unsigned_16             k;
     unsigned_16             cnt;
     unsigned_32             offset;
     unsigned_32             tmp_off;
@@ -209,28 +252,21 @@ static void dmp_res_name_id( unsigned_16 count, bool is_name )
         Wlseek( offset );
         Wread( &pe_res_dir, sizeof( resource_dir_entry ) );
         offset += sizeof( resource_dir_entry );
-        tmp_off = Res_off +( pe_res_dir.id_name & PE_RESOURCE_MASK );
+        tmp_off = Res_off + ( pe_res_dir.id_name & PE_RESOURCE_MASK );
         if( is_name ) {
             name = get_name( tmp_off );
+            Wdputs( name.rname );
         } else {
-            name.len = 0;
-            name.rname = NULL;
+            dmp_resrc_type_pe( pe_res_dir.id_name );
         }
+        Wdputslc( "\n" );
         tmp_off = Res_off +( pe_res_dir.entry_rva & PE_RESOURCE_MASK );
         Wlseek( tmp_off );
         Wread( &pe_res_name, sizeof( resource_dir_header ) );
         tmp_off += sizeof( resource_dir_header );
         cnt = pe_res_name.num_name_entries + pe_res_name.num_id_entries;
         for( j = 0; j < cnt; j++ ) {
-            if( is_name ) {
-                Wdputs( name.rname );
-                for( k = name.len; k <= SLEN; k++ ) {
-                    Wdputc( ' ' );
-                }
-            } else {
-                Puthex( pe_res_dir.id_name, 8 );
-                Wdputs( "                       " );
-            }
+            Wdputs( "       " );
             if( j >= pe_res_name.num_name_entries ) {
                 dmp_name_id( tmp_off, false );
             } else {
@@ -311,7 +347,6 @@ static void dmp_res_data( void )
     }
 }
 
-
 /*
  * Dump the Resource Table.
  */
@@ -326,8 +361,9 @@ void Dmp_resources( void )
     Banner( "Resource Directory Table" );
     Dump_header( (char *)&pe_res_type.flags, pe_resource_msg, 4 );
     Wdputslc( "\n" );
-    Wdputslc( "type id/string                 name id/string                 language id\n" );
-    Wdputslc( "==============                 ==============                 ===========\n" );
+    Wdputslc( "type   name id/string                 language id\n" );
+    Wdputslc( "=====  ==============                 ===========\n" );
+
     dmp_res_name_id( pe_res_type.num_name_entries, true );
     dmp_res_name_id( pe_res_type.num_id_entries, false );
     if( Options_dmp & RESRC_DMP ) {

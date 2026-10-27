@@ -161,7 +161,7 @@ extern void         dmp_data_line( char *, unsigned_16, unsigned_16 );
  */
 extern void         Puthex( unsigned_32, unsigned_16 );
 extern void         Puthex64( long long, unsigned_16 );
-extern void         Putdec( unsigned_32 );
+extern int          Putdec( unsigned_32 );
 extern void         Putdec64( long long );
 extern void         Putdecs( signed_32 );
 extern void         Putdecl( unsigned_32, unsigned_16 );
