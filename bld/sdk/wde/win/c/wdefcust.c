@@ -74,7 +74,7 @@ typedef struct {
     OBJPTR          object_handle;
     OBJ_ID          object_id;
     OBJPTR          control;
-    WdeCustControl  *cust_info;
+    WdeCustControl  *cust_ctrl;
     UINT            cust_type;
 } WdeCustomObject;
 
@@ -221,14 +221,14 @@ OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( WdeMakeCustom( parent, obj_rect, handle, 1 ) );
 }
 
-static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustControl *cust_info,
+static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustControl *cust_ctrl,
                            UINT cust_type, RECT *obj_rect )
 {
     int                 width;
     int                 height;
     WdeResizeRatio      r;
 
-    if( parent == NULL || cust_info == NULL || obj_rect == NULL ) {
+    if( parent == NULL || cust_ctrl == NULL || obj_rect == NULL ) {
         return( false );
     }
 
@@ -238,12 +238,12 @@ static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustControl *cust_info,
         return( true );
     }
 
-    if( cust_info->ms_lib ) {
-        width = cust_info->control_info.ms.Type[cust_type].wWidth;
-        height = cust_info->control_info.ms.Type[cust_type].wHeight;
+    if( cust_ctrl->ms_lib ) {
+        width = cust_ctrl->control_info.ms.Type[cust_type].wWidth;
+        height = cust_ctrl->control_info.ms.Type[cust_type].wHeight;
     } else {
-        width = cust_info->control_info.bor.Type[cust_type].wWidth;
-        height = cust_info->control_info.bor.Type[cust_type].wHeight;
+        width = cust_ctrl->control_info.bor.Type[cust_type].wWidth;
+        height = cust_ctrl->control_info.bor.Type[cust_type].wHeight;
     }
 
     if( !Forward( parent, GET_RESIZER, &r, NULL ) ) {
@@ -262,41 +262,41 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
 {
     DialogStyle         style;
     OBJPTR              ret;
-    WdeCustControl      *cust_info;
+    WdeCustControl      *cust_ctrl;
     UINT                cust_type;
     char                *class_name;
     WdeDialogBoxControl *control;
     LIST                *info_list;
 
     info_list = NULL;
-    cust_info = NULL;
+    cust_ctrl = NULL;
     cust_type = 0;
 
     if( handle == NULL ) {
-        WdeGetCurrentCustControl( which, &cust_info, &cust_type );
+        WdeGetCurrentCustControl( which, &cust_ctrl, &cust_type );
 
-        if( cust_info == NULL ) {
+        if( cust_ctrl == NULL ) {
             if( !WdeSetCurrentCustControl( which ) ) {
                 WdeWriteTrail( "WdeMakeCustom: WdeSetCurrentCustControl failed!" );
                 return( NULL );
             }
-            WdeGetCurrentCustControl( which, &cust_info, &cust_type );
+            WdeGetCurrentCustControl( which, &cust_ctrl, &cust_type );
         }
 
-        if( cust_info == NULL ) {
+        if( cust_ctrl == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: No custom controls!" );
             return( NULL );
         }
 
-        if( cust_info->ms_lib ) {
-            style = cust_info->control_info.ms.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.ms.szTitle ) );
-            SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_info->control_info.ms.szClass ) );
+        if( cust_ctrl->ms_lib ) {
+            style = cust_ctrl->control_info.ms.Type[cust_type].dwStyle;
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_ctrl->control_info.ms.szTitle ) );
+            SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_ctrl->control_info.ms.szClass ) );
         } else {
-            style = cust_info->control_info.bor.Type[cust_type].dwStyle;
-            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_info->control_info.bor.szTitle ) );
+            style = cust_ctrl->control_info.bor.Type[cust_type].dwStyle;
+            SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_ctrl->control_info.bor.szTitle ) );
             SETCTL_CLASSID( WdeDefaultCustom,
-                            WdeStrToControlClass( cust_info->control_info.bor.szClass ) );
+                            WdeStrToControlClass( cust_ctrl->control_info.bor.szClass ) );
         }
 
         SETCTL_ID( WdeDefaultCustom, WdeGetNextControlID() );
@@ -320,18 +320,18 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
             WdeSetStatusByID( 0, WDE_NOCUSTOMFORCLASS );
             return( NULL );
         }
-        WdeChooseCustControlFromList( info_list, control, &cust_info, &cust_type );
-        if( cust_info == NULL ) {
+        WdeChooseCustControlFromList( info_list, control, &cust_ctrl, &cust_type );
+        if( cust_ctrl == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: No custom control fits this class & style!" );
             WdeSetStatusByID( 0, WDE_CANTFINDCUSTOM );
             return( NULL );
         }
     }
 
-    WdeCheckForSmallRect( parent, cust_info, cust_type, obj_rect );
+    WdeCheckForSmallRect( parent, cust_ctrl, cust_type, obj_rect );
 
     ret = WdeCustomCreater( parent, obj_rect, NULL, CUSTCNTL1_OBJ + which,
-                            control, cust_info, cust_type );
+                            control, cust_ctrl, cust_type );
 
     if( handle == NULL ) {
         MemFree( GETCTL_TEXT( WdeDefaultCustom ) );
@@ -488,7 +488,7 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
 
 OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
                          OBJ_ID id, WdeDialogBoxControl *control,
-                         WdeCustControl *cust_info, UINT cust_type )
+                         WdeCustControl *cust_ctrl, UINT cust_type )
 {
     WdeCustomObject *new;
     char            *class;
@@ -508,13 +508,13 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( cust_info->ms_lib ) {
-        class = cust_info->control_info.ms.szClass;
+    if( cust_ctrl->ms_lib ) {
+        class = cust_ctrl->control_info.ms.szClass;
     } else {
-        class = cust_info->control_info.bor.szClass;
+        class = cust_ctrl->control_info.bor.szClass;
     }
 
-    if( !WdeCustomRegisterClass( class, cust_info->lib->inst, &new->win_class,
+    if( !WdeCustomRegisterClass( class, cust_ctrl->lib->inst, &new->win_class,
                                  &new->win_extra, &new->win_proc ) ) {
         WdeWriteTrail( "WdeCustomCreate: WdeCustomRegisterClass failed!" );
         MemFree( new );
@@ -523,7 +523,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     OBJ_DISPATCHER_SET( new, WdeCustomDispatch );
     new->object_id = id;
-    new->cust_info = cust_info;
+    new->cust_ctrl = cust_ctrl;
     new->cust_type = cust_type;
 
     if( handle == NULL ) {
@@ -663,7 +663,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR ha
     (*new)->win_proc = obj->win_proc;
     (*new)->win_extra = obj->win_extra;
     (*new)->object_id = obj->object_id;
-    (*new)->cust_info = obj->cust_info;
+    (*new)->cust_ctrl = obj->cust_ctrl;
     (*new)->cust_type = obj->cust_type;
 
     (*new)->win_class = WdeStrdup( obj->win_class );
@@ -723,7 +723,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     uint_32                     ctl_size;
     WDECTLSTYLE                 *ctl_data;
     WdeCustStyleProc            proc;
-    WdeDialogBoxControl         *info;
+    WdeDialogBoxControl         *control;
     char                        *text;
     int                         tlen;
     WdeDefineObjectInfo         o_info;
@@ -752,14 +752,14 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
         return( WdeGenericDefine( &o_info ) );
     }
 
-    info = o_info.info.c.control;
+    control = o_info.info.c.control;
 
     dialog_owner = WdeGetMainWindowHandle();
 
     WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_DEFININGCUSTOM, 0 );
 
-    if( obj->cust_info->ms_lib ) {
+    if( obj->cust_ctrl->ms_lib ) {
         ctl_size = sizeof( CTLSTYLE );
     } else {
         ctl_size = sizeof( WDECTLSTYLE );
@@ -778,14 +778,14 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
         return( false );
     }
 
-    ctl_data->wX = GETCTL_SIZEX( info );
-    ctl_data->wY = GETCTL_SIZEY( info );
-    ctl_data->wCx = GETCTL_SIZEW( info );
-    ctl_data->wCy = GETCTL_SIZEH( info );
-    ctl_data->wId = GETCTL_ID( info );
-    ctl_data->dwStyle = GETCTL_STYLE( info );
+    ctl_data->wX = GETCTL_SIZEX( control );
+    ctl_data->wY = GETCTL_SIZEY( control );
+    ctl_data->wCx = GETCTL_SIZEW( control );
+    ctl_data->wCy = GETCTL_SIZEH( control );
+    ctl_data->wId = GETCTL_ID( control );
+    ctl_data->dwStyle = GETCTL_STYLE( control );
 
-    if( (text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( info ), 10 )) != NULL ) {
+    if( (text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( control ), 10 )) != NULL ) {
         tlen = strlen( text );
         if( tlen < CTLCLASS ) {
             strcpy( ctl_data->szTitle, text );
@@ -798,16 +798,16 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
          ctl_data->szTitle[0] = '\0';
     }
 
-    strcpy( ctl_data->szClass, obj->cust_info->control_info.ms.szClass );
+    strcpy( ctl_data->szClass, obj->cust_ctrl->control_info.ms.szClass );
 
-    if( !obj->cust_info->ms_lib ) {
+    if( !obj->cust_ctrl->ms_lib ) {
         ctl_data->CtlDataSize = 0;
         memset( ctl_data->CtlData, 0, CTLDATALENGTH );
     }
 
     GlobalUnlock( ctl_style );
 
-    proc = obj->cust_info->style_proc;
+    proc = obj->cust_ctrl->style_proc;
 
     redraw = ( (*proc)( dialog_owner, ctl_style, (LPFNSTRTOID)WdeStr2ID, (LPFNIDTOSTR)WdeID2Str ) != 0 );
 
@@ -820,17 +820,17 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
             return( false );
         }
 
-        SETCTL_SIZEX( info, ctl_data->wX );
-        SETCTL_SIZEY( info, ctl_data->wY );
-        SETCTL_SIZEW( info, ctl_data->wCx );
-        SETCTL_SIZEH( info, ctl_data->wCy );
-        SETCTL_ID( info, ctl_data->wId );
-        SETCTL_STYLE( info, ctl_data->dwStyle );
+        SETCTL_SIZEX( control, ctl_data->wX );
+        SETCTL_SIZEY( control, ctl_data->wY );
+        SETCTL_SIZEW( control, ctl_data->wCx );
+        SETCTL_SIZEH( control, ctl_data->wCy );
+        SETCTL_ID( control, ctl_data->wId );
+        SETCTL_STYLE( control, ctl_data->dwStyle );
 
-        MemFree( GETCTL_TEXT( info ) );
-        MemFree( GETCTL_CLASSID( info ) );
-        SETCTL_TEXT( info, ResStrToNameOrOrdinal( ctl_data->szTitle ) );
-        SETCTL_CLASSID( info, WdeStrToControlClass( ctl_data->szClass ) );
+        MemFree( GETCTL_TEXT( control ) );
+        MemFree( GETCTL_CLASSID( control ) );
+        SETCTL_TEXT( control, ResStrToNameOrOrdinal( ctl_data->szTitle ) );
+        SETCTL_CLASSID( control, WdeStrToControlClass( ctl_data->szClass ) );
 
         GlobalUnlock( ctl_style );
 

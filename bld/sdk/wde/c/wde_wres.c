@@ -307,37 +307,37 @@ ControlClass *WdeCopyControlClass( ControlClass *src )
     return( dest );
 }
 
-void WdeFreeDialogBoxControl( WdeDialogBoxControl **c )
+void WdeFreeDialogBoxControl( WdeDialogBoxControl **pcontrol )
 {
-    if( c != NULL && *c != NULL ) {
-        if( GETCTL_CLASSID( *c ) ) {
-            MemFree( GETCTL_CLASSID( *c ) );
+    if( pcontrol != NULL && *pcontrol != NULL ) {
+        if( GETCTL_CLASSID( *pcontrol ) ) {
+            MemFree( GETCTL_CLASSID( *pcontrol ) );
         }
-        if( GETCTL_TEXT( *c ) ) {
-            MemFree( GETCTL_TEXT( *c ) );
+        if( GETCTL_TEXT( *pcontrol ) ) {
+            MemFree( GETCTL_TEXT( *pcontrol ) );
         }
-        if( (*c)->symbol ) {
-            MemFree( (*c)->symbol );
+        if( (*pcontrol)->symbol ) {
+            MemFree( (*pcontrol)->symbol );
         }
-        if( (*c)->helpsymbol ) {
-            MemFree( (*c)->helpsymbol );
+        if( (*pcontrol)->helpsymbol ) {
+            MemFree( (*pcontrol)->helpsymbol );
         }
-        MemFree( *c );
-        *c = NULL;
+        MemFree( *pcontrol );
+        *pcontrol = NULL;
     }
 }
 
 WdeDialogBoxControl *WdeAllocDialogBoxControl( void )
 {
-    WdeDialogBoxControl *c;
+    WdeDialogBoxControl *control;
 
-    c = MemAlloc( sizeof( WdeDialogBoxControl ) );
-    if( c == NULL ) {
+    control = MemAlloc( sizeof( WdeDialogBoxControl ) );
+    if( control == NULL ) {
         return( NULL );
     }
-    memset( c, 0, sizeof( WdeDialogBoxControl ) );
+    memset( control, 0, sizeof( WdeDialogBoxControl ) );
 
-    return( c );
+    return( control );
 }
 
 void WdeFreeDialogBoxHeader( WdeDialogBoxHeader **pheader )

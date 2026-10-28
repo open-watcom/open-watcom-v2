@@ -1549,12 +1549,12 @@ bool WdeControlMove( WdeControlObject *obj, POINT *off, bool *forms_called )
     return( ok );
 }
 
-bool WdeControlGetObjectInfo( WdeControlObject *obj, void **_info, void **s )
+bool WdeControlGetObjectInfo( WdeControlObject *obj, void **_pcontrol, void **s )
 {
-    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+    WdeDialogBoxControl **pcontrol = (WdeDialogBoxControl **)_pcontrol;
 
-    if( info != NULL ) {
-        *info = obj->control;
+    if( pcontrol != NULL ) {
+        *pcontrol = obj->control;
     }
 
     if( s != NULL ) {
@@ -1564,9 +1564,9 @@ bool WdeControlGetObjectInfo( WdeControlObject *obj, void **_info, void **s )
     return( true );
 }
 
-bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
+bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_control, void *s )
 {
-    WdeDialogBoxControl *info = _info;
+    WdeDialogBoxControl *control = _control;
     RECT                size;
     POINT               origin;
     WdeResizeRatio      resizer;
@@ -1579,7 +1579,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
     obj->symbol = WdeStrdup( s );
 
 
-    if( info == NULL ) {
+    if( control == NULL ) {
         return( true );
     }
 
@@ -1587,13 +1587,13 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
     if( obj->helpsymbol != NULL ) {
         MemFree( obj->helpsymbol );
     }
-    obj->helpsymbol = WdeStrdup( info->helpsymbol );
+    obj->helpsymbol = WdeStrdup( control->helpsymbol );
 
     if( obj->control != NULL ) {
         WdeFreeDialogBoxControl( &obj->control );
     }
 
-    obj->control = WdeCopyDialogBoxControl( info );
+    obj->control = WdeCopyDialogBoxControl( control );
 
     if( !GETCTL_SIZEX( obj->control ) && !GETCTL_SIZEY( obj->control ) &&
         !GETCTL_SIZEW( obj->control ) && !GETCTL_SIZEH( obj->control ) ) {
@@ -1623,10 +1623,10 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
     return( true );
 }
 
-bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
+bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *control, char *hs )
 {
-//    WdeDialogBoxControl *info = _info;
-    /* unused parameters */ (void)info;
+//    WdeDialogBoxControl *control = _control;
+    /* unused parameters */ (void)control;
 
     if( obj->helpsymbol != NULL ) {
         MemFree( obj->helpsymbol );
@@ -1636,13 +1636,13 @@ bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
     return( true );
 }
 
-bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_info, char **hs )
+bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_pcontrol, char **hs )
 {
-    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+    WdeDialogBoxControl **pcontrol = (WdeDialogBoxControl **)_pcontrol;
 
     // this is redundant
-    if( info != NULL ) {
-        *info = obj->control;
+    if( pcontrol != NULL ) {
+        *pcontrol = obj->control;
     }
 
     // this is needed
