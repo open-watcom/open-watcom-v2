@@ -82,7 +82,7 @@ WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeProg( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeProgressCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeProgressCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeProgSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeProgGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeProgDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
@@ -143,7 +143,7 @@ OBJPTR WdeMakeProg( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
 }
 
 OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                          OBJ_ID id, WdeDialogBoxControl *info )
+                          OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeProgObject *new;
 
@@ -180,7 +180,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeProgCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -386,8 +386,8 @@ void WdeProgSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 void WdeProgGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     // clear the style flags, since there are none for a progress bar
-    SETCTL_STYLE( o_info->info.c.info,
-                  GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000 );
+    SETCTL_STYLE( o_info->info.c.control,
+                  GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000 );
 
     // get the extended control settings
     WdeEXGetDefineInfo ( o_info, hDlg );

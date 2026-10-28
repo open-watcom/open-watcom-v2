@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -127,19 +127,20 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     LIST                *clist;
     bool                is32bit;
     bool                is32bitEx;
-
-    #define h   (info->dialog_header)
-    #define c   ((WdeDialogBoxControl *)ListElement( clist ))
+    WdeDialogBoxHeader  *header;
+    WdeDialogBoxControl *control;
 
     if( info == NULL ) {
         return( 0 );
     }
-    is32bit = h->is32bit;
-    is32bitEx = h->is32bitEx;
-    size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( h ), GETHDR_CLASSNAME( h ),
-                                        GETHDR_CAPTION( h ), GETHDR_FONTFACENAME( h ), is32bit, is32bitEx );
+    header = info->dialog_header;
+    is32bit = header->is32bit;
+    is32bitEx = header->is32bitEx;
+    size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( header ), GETHDR_CLASSNAME( header ),
+                                        GETHDR_CAPTION( header ), GETHDR_FONTFACENAME( header ), is32bit, is32bitEx );
     for( clist = info->control_list; clist != NULL; clist = ListNext( clist ) ) {
-        csize = WdeCalcSizeOfDialogBoxControl( GETCTL_CLASSID( c ), GETCTL_TEXT( c ), is32bit, is32bitEx );
+        control = (WdeDialogBoxControl *)ListElement( clist );
+        csize = WdeCalcSizeOfDialogBoxControl( GETCTL_CLASSID( control ), GETCTL_TEXT( control ), is32bit, is32bitEx );
         if( csize == 0 ) {
             return( 0 );
         }

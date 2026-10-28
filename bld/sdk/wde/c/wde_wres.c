@@ -340,41 +340,41 @@ WdeDialogBoxControl *WdeAllocDialogBoxControl( void )
     return( c );
 }
 
-void WdeFreeDialogBoxHeader( WdeDialogBoxHeader **c )
+void WdeFreeDialogBoxHeader( WdeDialogBoxHeader **pheader )
 {
-    if( c != NULL && *c != NULL ) {
-        if( GETHDR_MENUNAME( *c ) ) {
-            MemFree( GETHDR_MENUNAME( *c ) );
+    if( pheader != NULL && *pheader != NULL ) {
+        if( GETHDR_MENUNAME( *pheader ) ) {
+            MemFree( GETHDR_MENUNAME( *pheader ) );
         }
-        if( GETHDR_CLASSNAME( *c ) ) {
-            MemFree( GETHDR_CLASSNAME( *c ) );
+        if( GETHDR_CLASSNAME( *pheader ) ) {
+            MemFree( GETHDR_CLASSNAME( *pheader ) );
         }
-        if( GETHDR_CAPTION( *c ) ) {
-            MemFree( GETHDR_CAPTION( *c ) );
+        if( GETHDR_CAPTION( *pheader ) ) {
+            MemFree( GETHDR_CAPTION( *pheader ) );
         }
-        if( GETHDR_FONTFACENAME( *c ) ) {
-            MemFree( GETHDR_FONTFACENAME( *c ) );
+        if( GETHDR_FONTFACENAME( *pheader ) ) {
+            MemFree( GETHDR_FONTFACENAME( *pheader ) );
         }
-        if( (*c)->symbol ) {
-            MemFree( (*c)->symbol );
+        if( (*pheader)->symbol ) {
+            MemFree( (*pheader)->symbol );
         }
-        MemFree( *c );
-        *c = NULL;
+        MemFree( *pheader );
+        *pheader = NULL;
     }
 }
 
 WdeDialogBoxHeader *WdeAllocDialogBoxHeader( void )
 {
-    WdeDialogBoxHeader *c;
+    WdeDialogBoxHeader *header;
 
-    c = MemAlloc( sizeof( WdeDialogBoxHeader ) );
-    if( c == NULL ) {
+    header = MemAlloc( sizeof( WdeDialogBoxHeader ) );
+    if( header == NULL ) {
         return( NULL );
     }
 
-    memset( c, 0, sizeof( WdeDialogBoxHeader ) );
+    memset( header, 0, sizeof( WdeDialogBoxHeader ) );
 
-    return( c );
+    return( header );
 }
 
 char *WdeGetClassNameFromClass( uint_8 class )

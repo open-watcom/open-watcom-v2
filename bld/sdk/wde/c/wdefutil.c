@@ -526,7 +526,7 @@ void WdeSetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     char        *cp2;
 
     /* set the control text */
-    cp = WdeResNameOrOrdinalToStr( GETCTL_TEXT( o_info->info.c.info ), 10 );
+    cp = WdeResNameOrOrdinalToStr( GETCTL_TEXT( o_info->info.c.control ), 10 );
     if( cp != NULL ) {
         cp2 = WRConvertStringFrom( cp, "\t\n", "tn" );
         if( cp2 != NULL ) {
@@ -536,7 +536,7 @@ void WdeSetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         MemFree( cp );
     }
 
-    WdeSetWinStyles( hDlg, GETCTL_STYLE( o_info->info.c.info ), o_info->mask );
+    WdeSetWinStyles( hDlg, GETCTL_STYLE( o_info->info.c.control ), o_info->mask );
 
     /* JPK - Help Id stuff is done in here */
     WdeSetDefineObjectSymbolInfo( o_info, hDlg );
@@ -560,10 +560,10 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         cp2 = WRConvertStringTo( cp, "\t\n", "tn" );
         if( cp2 != NULL ) {
             vp = WdeStrToResNameOrOrdinal( cp2 );
-            if( GETCTL_TEXT( o_info->info.c.info ) ) {
-                MemFree( GETCTL_TEXT( o_info->info.c.info ) );
+            if( GETCTL_TEXT( o_info->info.c.control ) ) {
+                MemFree( GETCTL_TEXT( o_info->info.c.control ) );
             }
-            SETCTL_TEXT( o_info->info.c.info, (ResNameOrOrdinal *)vp );
+            SETCTL_TEXT( o_info->info.c.control, (ResNameOrOrdinal *)vp );
             MemFree( cp2 );
         }
         MemFree( cp );
@@ -572,9 +572,9 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeGetDefineObjectSymbolInfo( o_info, hDlg );
     WdeGetDefineObjectHelpSymbolInfo( o_info, hDlg );
 
-    style = GETCTL_STYLE( o_info->info.c.info );
+    style = GETCTL_STYLE( o_info->info.c.control );
     WdeGetWinStyles( hDlg, &style, o_info->mask );
-    SETCTL_STYLE( o_info->info.c.info, style );
+    SETCTL_STYLE( o_info->info.c.control, style );
 
     if( o_info->get_func != NULL ) {
         (*o_info->get_func)( o_info, hDlg );
@@ -646,17 +646,17 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         if( o_info->symbol != NULL ) {
             WdeSetComboWithStr( o_info->symbol, hDlg, IDB_SYMBOL );
         } else {
-            WdeSetEditWithSINT16( (int_16)GETCTL_ID( o_info->info.c.info ),
+            WdeSetEditWithSINT16( (int_16)GETCTL_ID( o_info->info.c.control ),
                                   10, hDlg, IDB_SYMBOL );
         }
 
-        WdeSetEditWithSINT16( (int_16)GETCTL_ID( o_info->info.c.info ),
+        WdeSetEditWithSINT16( (int_16)GETCTL_ID( o_info->info.c.control ),
                               10, hDlg, IDB_ID );
 
         /* JPK - added for help id */
-        helpid = GETCTL_HELPID( o_info->info.c.info );
-        if( o_info->info.c.info->helpsymbol ) {
-            WdeSetComboWithStr( o_info->info.c.info->helpsymbol, hDlg, IDB_HELPSYMBOL );
+        helpid = GETCTL_HELPID( o_info->info.c.control );
+        if( o_info->info.c.control->helpsymbol ) {
+            WdeSetComboWithStr( o_info->info.c.control->helpsymbol, hDlg, IDB_HELPSYMBOL );
         } else {
             if( helpid > 0 ) {
                 WdeSetEditWithSINT32( helpid, 10, hDlg, IDB_HELPSYMBOL );
@@ -742,14 +742,14 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     } else {
 
         if( str_is_ordinal ) {
-            SETCTL_ID( o_info->info.c.info, ord );
+            SETCTL_ID( o_info->info.c.control, ord );
         } else {
             dup = false;
             o_info->symbol = WdeStrdup( str );
             strupr( o_info->symbol );
             entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
             if( entry != NULL ) {
-                SETCTL_ID( o_info->info.c.info, entry->value );
+                SETCTL_ID( o_info->info.c.control, entry->value );
             }
         }
 
@@ -834,20 +834,20 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     } else {
 
         if( str_is_ordinal ) {
-            SETCTL_HELPID( o_info->info.c.info, ord );
+            SETCTL_HELPID( o_info->info.c.control, ord );
         } else {
             dup = false;
             o_info->helpsymbol = WdeStrdup( str );
-            o_info->info.c.info->helpsymbol = WdeStrdup( str );
+            o_info->info.c.control->helpsymbol = WdeStrdup( str );
             strupr( o_info->helpsymbol );
-            ord = GETCTL_HELPID( o_info->info.c.info );
+            ord = GETCTL_HELPID( o_info->info.c.control );
             if( ord > 0 ) {
                 entry = WdeAddHashEntry( o_info->res_info->hash_table, str, ord, &dup );
             } else {
                 entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
             }
             if( entry != NULL ) {
-                SETCTL_HELPID( o_info->info.c.info, entry->value );
+                SETCTL_HELPID( o_info->info.c.control, entry->value );
             }
         }
     }
@@ -945,13 +945,13 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
         return( true );
     }
 
-    if( !Forward( o_info->obj, GET_OBJECT_INFO, &o_info->info.c.info, &symbol ) ) {
+    if( !Forward( o_info->obj, GET_OBJECT_INFO, &o_info->info.c.control, &symbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_INFO failed!" );
         return( false );
     }
 
     /* JPK - added for help id */
-    if( !Forward( o_info->obj, GET_OBJECT_HELPINFO, &o_info->info.c.info, &helpsymbol ) ) {
+    if( !Forward( o_info->obj, GET_OBJECT_HELPINFO, &o_info->info.c.control, &helpsymbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_HELPINFO failed!" );
         return( false );
     }
@@ -1009,11 +1009,11 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
         }
         if( o_info->symbol != NULL ) {
             WdeAddSymbolToObjectHashTable( o_info->res_info, o_info->symbol,
-                                           GETCTL_ID( o_info->info.c.info ) );
+                                           GETCTL_ID( o_info->info.c.control ) );
         }
         if( o_info->helpsymbol != NULL ) {
             WdeAddSymbolToObjectHashTable( o_info->res_info, o_info->helpsymbol,
-                                           GETCTL_HELPID( o_info->info.c.info ) );
+                                           GETCTL_HELPID( o_info->info.c.control ) );
         }
         if( !Forward( o_info->obj, DESTROY_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: DESTROY_WINDOW failed!" );
@@ -1057,14 +1057,14 @@ INT_PTR CALLBACK WdeControlDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam
         if( !ret ) {
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
                                          o_info->res_info->hash_table,
-                                         GETCTL_ID( o_info->info.c.info ), true );
+                                         GETCTL_ID( o_info->info.c.control ), true );
         }
 
         /* added for help id support */
         if( !ret ) {
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
-                                             GETCTL_HELPID( o_info->info.c.info ),
+                                             GETCTL_HELPID( o_info->info.c.control ),
                                              true );
         }
 
@@ -1422,7 +1422,7 @@ void WdeEXSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_LTRREADING ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_RTLREADING ), TRUE );
 
-    mask = GETCTL_EXSTYLE( o_info->info.c.info );
+    mask = GETCTL_EXSTYLE( o_info->info.c.control );
     if( mask & WS_EX_CLIENTEDGE ) {
         CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
     }
@@ -1476,7 +1476,7 @@ void WdeEXGetDefineInfo ( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_WS_EX_RTLREADING ) ) {
         mask |= WS_EX_RTLREADING;
     }
-    SETCTL_EXSTYLE( o_info->info.c.info, mask );
+    SETCTL_EXSTYLE( o_info->info.c.control, mask );
 #else
 
     /* unused parameters */ (void)o_info; (void)hDlg;

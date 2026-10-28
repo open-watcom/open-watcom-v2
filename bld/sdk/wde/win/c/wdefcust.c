@@ -98,10 +98,10 @@ WINEXPORT DWORD     CALLBACK WdeStrToID( LPSTR );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *, WdeCustControl **, UINT * );
-static bool     WdeChooseCustControlType( WdeCustControl *, WdeDialogBoxControl *, WdeCustControl **, UINT *, uint_32 * );
+static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *control, WdeCustControl **, UINT * );
+static bool     WdeChooseCustControlType( WdeCustControl *, WdeDialogBoxControl *control, WdeCustControl **, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
-static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *, WdeCustControl *, UINT );
+static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control, WdeCustControl *, UINT );
 static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
 static LIST     *WdeFindClassInList( char * );
 static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
@@ -487,7 +487,7 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
 }
 
 OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                         OBJ_ID id, WdeDialogBoxControl *info,
+                         OBJ_ID id, WdeDialogBoxControl *control,
                          WdeCustControl *cust_info, UINT cust_type )
 {
     WdeCustomObject *new;
@@ -540,7 +540,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeCustomCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -736,7 +736,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     }
 
     if( !Forward( obj->object_handle, GET_OBJECT_INFO,
-                  &o_info.info.c.info, &o_info.symbol ) ) {
+                  &o_info.info.c.control, &o_info.symbol ) ) {
         WdeWriteTrail( "WdeCustomDefine: GET_OBJECT_INFO failed!" );
         return( false );
     }
@@ -752,7 +752,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
         return( WdeGenericDefine( &o_info ) );
     }
 
-    info = o_info.info.c.info;
+    info = o_info.info.c.control;
 
     dialog_owner = WdeGetMainWindowHandle();
 

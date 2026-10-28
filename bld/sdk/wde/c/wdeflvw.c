@@ -82,7 +82,7 @@ WINEXPORT LRESULT CALLBACK WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeLView( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeLVCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeLVCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeLViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeLViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
@@ -143,7 +143,7 @@ OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle s
 }
 
 OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info )
+                    OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeLViewObject *new;
 
@@ -182,7 +182,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeLViewCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -384,7 +384,7 @@ void WdeLViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     DialogStyle mask;
 
     // set the list view options
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000003;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000003;
     if( mask == LVS_REPORT ) {
         CheckDlgButton( hDlg, IDB_LVS_REPORT, BST_CHECKED );
     } else if( mask == LVS_SMALLICON ) {
@@ -395,7 +395,7 @@ void WdeLViewSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         CheckDlgButton( hDlg, IDB_LVS_ICON, BST_CHECKED );
     }
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000ffff;
 
     if( mask & LVS_SINGLESEL ) {
         CheckDlgButton( hDlg, IDB_LVS_SINGLESEL, BST_CHECKED );
@@ -507,8 +507,8 @@ void WdeLViewGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask |= LVS_NOSORTHEADER;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );

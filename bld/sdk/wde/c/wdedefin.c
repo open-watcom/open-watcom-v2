@@ -195,20 +195,20 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
             WdeFreeRCString( text );
         }
     } else {
-        if( !info->info.c.info ) {
-            if( !Forward ( info->obj, GET_OBJECT_INFO, &info->info.c.info, NULL ) ) {
+        if( !info->info.c.control ) {
+            if( !Forward ( info->obj, GET_OBJECT_INFO, &info->info.c.control, NULL ) ) {
                 WdeWriteTrail( "WdeGenericDefine: GET_OBJECT_INFO failed!" );
                 return( false );
             }
         }
-        style = GETCTL_STYLE( info->info.c.info );
+        style = GETCTL_STYLE( info->info.c.control );
         text = WdeAllocRCString( WDE_GENERICTEXT );
         WdeSetEditWithStr( text, hDlg, IDB_CAPTEXT );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
-        if( GETCTL_TEXT( info->info.c.info ) ) {
-            WdeSetEditWithResNameOr( GETCTL_TEXT( info->info.c.info ), hDlg, IDB_TEXT );
+        if( GETCTL_TEXT( info->info.c.control ) ) {
+            WdeSetEditWithResNameOr( GETCTL_TEXT( info->info.c.control ), hDlg, IDB_TEXT );
         }
     }
 
@@ -254,13 +254,13 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
             SETHDR_CAPTION( info->info.d.header, (char *)vp );
         }
     } else {
-        SETCTL_STYLE( info->info.c.info, style );
+        SETCTL_STYLE( info->info.c.control, style );
         vp = (void *)WdeGetResNameOrFromEdit ( hDlg, IDB_TEXT, &mod );
         if ( mod && vp != NULL ) {
-            if( GETCTL_TEXT( info->info.c.info ) ) {
-                MemFree( GETCTL_TEXT( info->info.c.info ) );
+            if( GETCTL_TEXT( info->info.c.control ) ) {
+                MemFree( GETCTL_TEXT( info->info.c.control ) );
             }
-            SETCTL_TEXT( info->info.c.info, (ResNameOrOrdinal *)vp );
+            SETCTL_TEXT( info->info.c.control, (ResNameOrOrdinal *)vp );
         }
     }
 
@@ -300,7 +300,7 @@ INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam
                 id = info->info.d.id;
                 use_id = info->info.d.use_id;
             } else {
-                id = GETCTL_ID( info->info.c.info );
+                id = GETCTL_ID( info->info.c.control );
                 use_id = true;
             }
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,

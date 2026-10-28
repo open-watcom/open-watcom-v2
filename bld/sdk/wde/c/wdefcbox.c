@@ -144,7 +144,7 @@ OBJPTR WdeMakeCBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 }
 
 OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info )
+                    OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeCBoxObject *new;
 
@@ -183,7 +183,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeCBoxCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -385,7 +385,7 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     id = o_info->obj_id;
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000003;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000003;
 
     /* set the type of combo box */
     if( mask == CBS_SIMPLE ) {
@@ -398,7 +398,7 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         WdeWriteTrail( "WdeCBoxSetDefineInfo: Bad Combo mask!" );
     }
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000fff0;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000fff0;
 
     /* set the combo box options */
     if( mask & CBS_AUTOHSCROLL ) {
@@ -444,9 +444,9 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_LOWERCASE ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_UPPERCASE ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_CBS_BOTHCASE ), TRUE );
-    if( GETCTL_STYLE( o_info->info.c.info ) & CBS_LOWERCASE ) {
+    if( GETCTL_STYLE( o_info->info.c.control ) & CBS_LOWERCASE ) {
         CheckDlgButton( hDlg, IDB_CBS_LOWERCASE, BST_CHECKED );
-    } else if( GETCTL_STYLE( o_info->info.c.info ) & CBS_UPPERCASE ) {
+    } else if( GETCTL_STYLE( o_info->info.c.control ) & CBS_UPPERCASE ) {
         CheckDlgButton( hDlg, IDB_CBS_UPPERCASE, BST_CHECKED );
     } else {
         CheckDlgButton( hDlg, IDB_CBS_BOTHCASE, BST_CHECKED );
@@ -466,7 +466,7 @@ void WdeCBoxSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_LTRREADING ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_RTLREADING ), TRUE );
 
-    mask = GETCTL_EXSTYLE( o_info->info.c.info );
+    mask = GETCTL_EXSTYLE( o_info->info.c.control );
     if( mask & WS_EX_STATICEDGE ) {
         CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
@@ -553,8 +553,8 @@ void WdeCBoxGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 #endif
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
 #if __NT__XX
     // Set the extended mask.
@@ -571,7 +571,7 @@ void WdeCBoxGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_WS_EX_RTLREADING ) ) {
         mask |= WS_EX_RTLREADING;
     }
-    SETCTL_EXSTYLE( o_info->info.c.info, mask );
+    SETCTL_EXSTYLE( o_info->info.c.control, mask );
 #endif
 }
 

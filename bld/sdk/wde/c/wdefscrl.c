@@ -83,7 +83,7 @@ WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM )
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeScroll( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeScrollCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeScrollCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeScrollSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeScrollGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
@@ -158,7 +158,7 @@ OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
     return( new );
 }
 
-OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *info )
+OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeScrollObject *new;
 
@@ -195,7 +195,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeScrollCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -451,7 +451,7 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     id = o_info->obj_id;
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000ffff;
 
     if( id  == HSCROLL_OBJ ) {
         if( mask & SBS_VERT ) {
@@ -503,7 +503,7 @@ void WdeScrollSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_STATICEDGE ), TRUE );
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_NOPARENTNOTIFY ), TRUE );
 
-    mask = GETCTL_EXSTYLE( o_info->info.c.info );
+    mask = GETCTL_EXSTYLE( o_info->info.c.control );
     if( mask & WS_EX_CLIENTEDGE ) {
         CheckDlgButton( hDlg, IDB_WS_EX_CLIENTEDGE, BST_CHECKED );
     }
@@ -565,8 +565,8 @@ void WdeScrollGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         return;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
 #if __NT__XX
     // set the extended mask - same for HScroll,
@@ -581,7 +581,7 @@ void WdeScrollGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_WS_EX_NOPARENTNOTIFY ) ) {
         mask |= WS_EX_NOPARENTNOTIFY;
     }
-    SETCTL_EXSTYLE( o_info->info.c.info, mask );
+    SETCTL_EXSTYLE( o_info->info.c.control, mask );
 #endif
 }
 

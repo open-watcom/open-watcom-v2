@@ -85,7 +85,7 @@ WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM )
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeButton( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeButtonSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
 
@@ -172,7 +172,7 @@ OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle 
 }
 
 OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                        OBJ_ID id, WdeDialogBoxControl *info )
+                        OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeButtonObject *new;
     bool            b;
@@ -222,7 +222,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         }
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -334,7 +334,7 @@ static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     SIZE                size;
     OBJPTR              parent;
     WdeResizeRatio      resizer;
-    WdeDialogBoxControl *info;
+    WdeDialogBoxControl *control;
     WdeOrderMode        mode;
 
     if( Forward( (OBJPTR)obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
@@ -344,9 +344,9 @@ static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     Location( (OBJPTR)obj, &obj_rect );
     GetObjectParent( (OBJPTR)obj, &parent );
 
-    if( Forward( obj->control, GET_OBJECT_INFO, &info, NULL ) && parent != NULL &&
+    if( Forward( obj->control, GET_OBJECT_INFO, &control, NULL ) && parent != NULL &&
         Forward( parent, GET_RESIZER, &resizer, NULL ) ) {
-        if( WdeGetNameOrOrdinalSize( parent, GETCTL_TEXT( info ), &size ) ) {
+        if( WdeGetNameOrOrdinalSize( parent, GETCTL_TEXT( control ), &size ) ) {
             text_rect.left = obj_rect.left + 8;
             text_rect.top = obj_rect.top + (resizer.xmap * 3) / 4;
             text_rect.right = text_rect.left + size.cx;
@@ -475,7 +475,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     id = o_info->obj_id;
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & (0x0000ffff ^ BS_LEFTTEXT);
+    mask = GETCTL_STYLE( o_info->info.c.control ) & (0x0000ffff ^ BS_LEFTTEXT);
 
     check_lefttext = false;
 
@@ -492,7 +492,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_VCENTER ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_MULTILINE ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), TRUE );
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000000f;
         if( mask == BS_OWNERDRAW ) {
             CheckDlgButton( hDlg, IDB_BS_OWNERDRAW, BST_CHECKED );
         } else {
@@ -505,7 +505,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             }
 
             // set any new styles
-            mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
+            mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000f00;
             if( (mask & BS_CENTER) == BS_CENTER ) {
                 CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
             } else if( mask & BS_RIGHT ) {
@@ -526,19 +526,19 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
                 CheckDlgButton( hDlg, IDB_BS_VCENTER, BST_CHECKED );
             }
 
-            if( GETCTL_STYLE( o_info->info.c.info ) & BS_BITMAP ) {
+            if( GETCTL_STYLE( o_info->info.c.control ) & BS_BITMAP ) {
                 CheckDlgButton( hDlg, IDB_BS_BITMAP, BST_CHECKED );
             }
-            if( GETCTL_STYLE( o_info->info.c.info ) & BS_ICON ) {
+            if( GETCTL_STYLE( o_info->info.c.control ) & BS_ICON ) {
                 CheckDlgButton( hDlg, IDB_BS_ICON, BST_CHECKED );
             }
-            if( GETCTL_STYLE( o_info->info.c.info ) & BS_TEXT ) {
+            if( GETCTL_STYLE( o_info->info.c.control ) & BS_TEXT ) {
                 CheckDlgButton( hDlg, IDB_BS_TEXT, BST_CHECKED );
             }
-            if( GETCTL_STYLE( o_info->info.c.info ) & BS_MULTILINE ) {
+            if( GETCTL_STYLE( o_info->info.c.control ) & BS_MULTILINE ) {
                 CheckDlgButton( hDlg, IDB_BS_MULTILINE, BST_CHECKED );
             }
-            if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
+            if( GETCTL_STYLE( o_info->info.c.control ) & BS_NOTIFY ) {
                 CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
             }
         }
@@ -575,7 +575,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_RIGHT ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), TRUE );
 
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000000f;
         if( mask == BS_3STATE ) {
             CheckDlgButton( hDlg, IDB_BS_3STATE, BST_CHECKED );
         } else if( mask == BS_AUTOCHECKBOX ) {
@@ -586,7 +586,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 
         // set the new styles
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
             CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
@@ -595,13 +595,13 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
         }
 
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_NOTIFY ) {
             CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_PUSHLIKE ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_PUSHLIKE ) {
             CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_LEFTTEXT ) {
             CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
         }
 #else
@@ -633,13 +633,13 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_RIGHT ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), TRUE );
 
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000000f;
         if( mask == BS_AUTORADIOBUTTON ) {
             CheckDlgButton( hDlg, IDB_BS_AUTORADIOBUTTON, BST_CHECKED );
         }
 
         // set new styles
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
             CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
@@ -648,13 +648,13 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             CheckDlgButton( hDlg, IDB_BS_LEFT, BST_CHECKED );
         }
 
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_NOTIFY ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_NOTIFY ) {
             CheckDlgButton( hDlg, IDB_BS_NOTIFY, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_LEFTTEXT ) {
             CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & BS_PUSHLIKE ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & BS_PUSHLIKE ) {
             CheckDlgButton( hDlg, IDB_BS_PUSHLIKE, BST_CHECKED );
         }
 #else
@@ -675,7 +675,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_BS_LEFT ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_RIGHT ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_BS_CENTER ), TRUE );
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x00000f00;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x00000f00;
         if( (mask & BS_CENTER) == BS_CENTER ) {
             CheckDlgButton( hDlg, IDB_BS_CENTER, BST_CHECKED );
         } else if( mask & BS_RIGHT ) {
@@ -696,7 +696,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( check_lefttext ) {
-       if( GETCTL_STYLE( o_info->info.c.info ) & BS_LEFTTEXT ) {
+       if( GETCTL_STYLE( o_info->info.c.control ) & BS_LEFTTEXT ) {
            CheckDlgButton( hDlg, IDB_BS_LEFTTEXT, BST_CHECKED );
        }
     }
@@ -875,7 +875,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
     }
 
-    SETCTL_STYLE( o_info->info.c.info, (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control, (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
     // Set the extended mask - same for PushButton, RadioButton
     // CheckBox and GroupBox.

@@ -984,7 +984,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     char                *name;
     char                *str;
     bool                ok;
-    WdeDialogBoxHeader  *dhptr = ditem->dialog_info->dialog_header;
+    WdeDialogBoxHeader  *header = ditem->dialog_info->dialog_header;
     uint_32             ExStyle;
 
     name = NULL;
@@ -1009,18 +1009,18 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        SizeInfo = GETHDR_SIZE( dhptr );
+        SizeInfo = GETHDR_SIZE( header );
         /* check if this is a 32 bit extended dialog */
-        if( dhptr->is32bitEx ) {
+        if( header->is32bitEx ) {
             char *helpsymbol;
 
             /* build a help symbol for the DialogEx line */
-            if( dhptr->helpsymbol != NULL ) {
-                helpsymbol = WdeStrdup( dhptr->helpsymbol );
+            if( header->helpsymbol != NULL ) {
+                helpsymbol = WdeStrdup( header->helpsymbol );
             } else {
                 helpsymbol = MemAlloc( 32 );
-                if( GETHDR_HELPID( dhptr ) > 0 ) {
-                    sprintf( helpsymbol, "%ld", GETHDR_HELPID( dhptr ) );
+                if( GETHDR_HELPID( header ) > 0 ) {
+                    sprintf( helpsymbol, "%ld", GETHDR_HELPID( header ) );
                 } else {
                     *helpsymbol = '\0';
                 }

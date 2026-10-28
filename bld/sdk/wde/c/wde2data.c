@@ -101,86 +101,86 @@ static size_t WdeDataFromNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode
     return( size );
 }
 
-static size_t WdeDataFromDialogBoxHeader( WdeDialogBoxHeader *head, char *data )
+static size_t WdeDataFromDialogBoxHeader( WdeDialogBoxHeader *header, char *data )
 {
     bool                ok;
     size_t              size;
     char                *start;
 
-    ok = (head != NULL && data != NULL);
+    ok = (header != NULL && data != NULL);
     start = NULL;
 
     if( ok ) {
         start = data;
-        if( head->is32bitEx ) {
+        if( header->is32bitEx ) {
             /* copy the miscellaneous two WORDs 0x0001, 0xFFFF */
             VALU16( data ) = 0x0001;
             INCU16( data );
             VALU16( data ) = 0xFFFF;
             INCU16( data );
-            VALU32( data ) = GETHDR_HELPID( head );
+            VALU32( data ) = GETHDR_HELPID( header );
             INCU32( data );
-            VALU32( data ) = GETHDR_EXSTYLE( head );
+            VALU32( data ) = GETHDR_EXSTYLE( header );
             INCU32( data );
-            VALU32( data ) = GETHDR_STYLE( head );
+            VALU32( data ) = GETHDR_STYLE( header );
             INCU32( data );
-        } else if( head->is32bit ) {
-            VALU32( data ) = GETHDR_STYLE( head );
+        } else if( header->is32bit ) {
+            VALU32( data ) = GETHDR_STYLE( header );
             INCU32( data );
-            VALU32( data ) = GETHDR_EXSTYLE( head );
+            VALU32( data ) = GETHDR_EXSTYLE( header );
             INCU32( data );
         } else {
-            VALU32( data ) = GETHDR_STYLE( head );
+            VALU32( data ) = GETHDR_STYLE( header );
             INCU32( data );
         }
-        if( head->is32bit ) {
-            VALU16( data ) = GETHDR_NUMITEMS( head );
+        if( header->is32bit ) {
+            VALU16( data ) = GETHDR_NUMITEMS( header );
             INCU16( data );
         } else {
-            VALU8( data ) = GETHDR_NUMITEMS( head );
+            VALU8( data ) = GETHDR_NUMITEMS( header );
             INCU8( data );
         }
-        VALU16( data ) = GETHDR_SIZEX( head );
+        VALU16( data ) = GETHDR_SIZEX( header );
         INCU16( data );
-        VALU16( data ) = GETHDR_SIZEY( head );
+        VALU16( data ) = GETHDR_SIZEY( header );
         INCU16( data );
-        VALU16( data ) = GETHDR_SIZEW( head );
+        VALU16( data ) = GETHDR_SIZEW( header );
         INCU16( data );
-        VALU16( data ) = GETHDR_SIZEH( head );
+        VALU16( data ) = GETHDR_SIZEH( header );
         INCU16( data );
     }
 
     if( ok ) {
-        size = WdeDataFromNameOrOrdinal( GETHDR_MENUNAME( head ), head->is32bit, data );
+        size = WdeDataFromNameOrOrdinal( GETHDR_MENUNAME( header ), header->is32bit, data );
         data += size;
         ok = (size != 0);
     }
 
     if( ok ) {
-        size = WdeDataFromNameOrOrdinal( GETHDR_CLASSNAME( head ), head->is32bit, data );
+        size = WdeDataFromNameOrOrdinal( GETHDR_CLASSNAME( header ), header->is32bit, data );
         data += size;
         ok = (size != 0);
     }
 
     if( ok ) {
-        size = WRDataFromString( GETHDR_CAPTION( head ), head->is32bit, data );
+        size = WRDataFromString( GETHDR_CAPTION( header ), header->is32bit, data );
         data += size;
         ok = (size != 0);
     }
 
     if( ok ) {
-        if( GETHDR_STYLE( head ) & DS_SETFONT ) {
-            VALU16( data ) = GETHDR_FONTPOINTSIZE( head );
+        if( GETHDR_STYLE( header ) & DS_SETFONT ) {
+            VALU16( data ) = GETHDR_FONTPOINTSIZE( header );
             INCU16( data );
-            if( head->is32bitEx ) {
-                VALU16( data ) = GETHDR_FONTWEIGHT( head );
+            if( header->is32bitEx ) {
+                VALU16( data ) = GETHDR_FONTWEIGHT( header );
                 INCU16( data );
-                VALU8( data ) = GETHDR_FONTITALIC( head );
+                VALU8( data ) = GETHDR_FONTITALIC( header );
                 INCU8( data );
-                VALU8( data ) = GETHDR_FONTCHARSET( head );
+                VALU8( data ) = GETHDR_FONTCHARSET( header );
                 INCU8( data );
             }
-            size = WRDataFromString( GETHDR_FONTFACENAME( head ), head->is32bit, data );
+            size = WRDataFromString( GETHDR_FONTFACENAME( header ), header->is32bit, data );
             data += size;
             ok = (size != 0);
         }
@@ -282,7 +282,7 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
     size_t              size;
     size_t              memsize;
     LIST                *l;
-    WdeDialogBoxControl *ci;
+    WdeDialogBoxControl *control;
     bool                is32bit;
     bool                is32bitEx;
     char                *data;
@@ -310,15 +310,15 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
 
     if( ok ) {
         for( l = info->control_list; l != NULL; l = ListNext( l ) ) {
-            ci = (WdeDialogBoxControl *)ListElement( l );
-            if( ci == NULL ) {
+            control = (WdeDialogBoxControl *)ListElement( l );
+            if( control == NULL ) {
                 ok = false;
                 break;
             }
             if( is32bit ) {
                 PADDING_WRITE( data, start );
             }
-            size = WdeDataFromDialogBoxControl( ci, data, is32bit, is32bitEx );
+            size = WdeDataFromDialogBoxControl( control, data, is32bit, is32bitEx );
             data += size;
             if( size == 0 ) {
                 ok = false;
@@ -422,179 +422,179 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
 
 WdeDialogBoxHeader *WdeDialogBoxHeaderFromData( const char **pdata, bool is32bit, bool is32bitEx )
 {
-    WdeDialogBoxHeader  *dbh;
+    WdeDialogBoxHeader  *header;
     bool                ok;
     const char          *data;
 
-    dbh = NULL;
+    header = NULL;
     data = NULL;
 
     ok = (pdata != NULL && *pdata != NULL);
 
     if( ok ) {
-        dbh = WdeAllocDialogBoxHeader();
-        ok = (dbh != NULL);
+        header = WdeAllocDialogBoxHeader();
+        ok = (header != NULL);
     }
 
     if( ok ) {
         data = *pdata;
-        dbh->symbol = NULL;
-        dbh->helpsymbol = NULL;
-        dbh->is32bit = is32bit;
-        dbh->is32bitEx = is32bitEx;
+        header->symbol = NULL;
+        header->helpsymbol = NULL;
+        header->is32bit = is32bit;
+        header->is32bitEx = is32bitEx;
         if( is32bitEx ) {
             /* skip the miscellaneous two WORDs 0x0001, 0xFFFF */
             INCU32( data );
-            GETHDR_HELPID( dbh ) = VALU32( data );
+            GETHDR_HELPID( header ) = VALU32( data );
             INCU32( data );
-            GETHDR_EXSTYLE( dbh ) = VALU32( data );
+            GETHDR_EXSTYLE( header ) = VALU32( data );
             INCU32( data );
-            GETHDR_STYLE( dbh ) = VALU32( data );
+            GETHDR_STYLE( header ) = VALU32( data );
             INCU32( data );
         } else if( is32bit ) {
-            GETHDR_STYLE( dbh ) = VALU32( data );
+            GETHDR_STYLE( header ) = VALU32( data );
             INCU32( data );
-            GETHDR_EXSTYLE( dbh ) = VALU32( data );
+            GETHDR_EXSTYLE( header ) = VALU32( data );
             INCU32( data );
         } else {
-            GETHDR_STYLE( dbh ) = VALU32( data );
+            GETHDR_STYLE( header ) = VALU32( data );
             INCU32( data );
         }
         if( is32bit ) {
-            GETHDR_NUMITEMS( dbh ) = VALU16( data );
+            GETHDR_NUMITEMS( header ) = VALU16( data );
             INCU16( data );
         } else {
-            GETHDR_NUMITEMS( dbh ) = VALU8( data );
+            GETHDR_NUMITEMS( header ) = VALU8( data );
             INCU8( data );
         }
-        GETHDR_SIZEX( dbh ) = VALU16( data );
+        GETHDR_SIZEX( header ) = VALU16( data );
         INCU16( data );
-        GETHDR_SIZEY( dbh ) = VALU16( data );
+        GETHDR_SIZEY( header ) = VALU16( data );
         INCU16( data );
-        GETHDR_SIZEW( dbh ) = VALU16( data );
+        GETHDR_SIZEW( header ) = VALU16( data );
         INCU16( data );
-        GETHDR_SIZEH( dbh ) = VALU16( data );
+        GETHDR_SIZEH( header ) = VALU16( data );
         INCU16( data );
 
-        SETHDR_MENUNAME( dbh, WdeNameOrOrdinalFromData( &data, is32bit ) );
-        ok = (GETHDR_MENUNAME( dbh ) != NULL);
+        SETHDR_MENUNAME( header, WdeNameOrOrdinalFromData( &data, is32bit ) );
+        ok = (GETHDR_MENUNAME( header ) != NULL);
     }
 
     if( ok ) {
-        SETHDR_CLASSNAME( dbh, WdeNameOrOrdinalFromData( &data, is32bit ) );
-        ok = (GETHDR_CLASSNAME( dbh ) != NULL);
+        SETHDR_CLASSNAME( header, WdeNameOrOrdinalFromData( &data, is32bit ) );
+        ok = (GETHDR_CLASSNAME( header ) != NULL);
     }
 
     if( ok ) {
-        SETHDR_CAPTION( dbh, WRStringFromData( &data, is32bit ) );
-        ok = (GETHDR_CAPTION( dbh ) != NULL);
+        SETHDR_CAPTION( header, WRStringFromData( &data, is32bit ) );
+        ok = (GETHDR_CAPTION( header ) != NULL);
     }
 
     if( ok ) {
-        if( GETHDR_STYLE( dbh ) & DS_SETFONT ) {
-            GETHDR_FONTPOINTSIZE( dbh ) = VALU16( data );
+        if( GETHDR_STYLE( header ) & DS_SETFONT ) {
+            GETHDR_FONTPOINTSIZE( header ) = VALU16( data );
             INCU16( data );
             if( is32bitEx ) {
-                GETHDR_FONTWEIGHT( dbh ) = VALU16( data );
+                GETHDR_FONTWEIGHT( header ) = VALU16( data );
                 INCU16( data );
-                GETHDR_FONTITALIC( dbh ) = VALU8( data );
+                GETHDR_FONTITALIC( header ) = VALU8( data );
                 INCU8( data );
-                GETHDR_FONTCHARSET( dbh ) = VALU8( data );
+                GETHDR_FONTCHARSET( header ) = VALU8( data );
                 INCU8( data );
             }
-            SETHDR_FONTFACENAME( dbh, WRStringFromData( &data, is32bit ) );
-            ok = (GETHDR_FONTFACENAME( dbh ) != NULL);
+            SETHDR_FONTFACENAME( header, WRStringFromData( &data, is32bit ) );
+            ok = (GETHDR_FONTFACENAME( header ) != NULL);
         } else {
-            SETHDR_FONTPOINTSIZE( dbh, 0 );
-            SETHDR_FONTFACENAME( dbh, NULL );
+            SETHDR_FONTPOINTSIZE( header, 0 );
+            SETHDR_FONTFACENAME( header, NULL );
         }
     }
 
-    if( dbh != NULL ) {
+    if( header != NULL ) {
         *pdata = data;
         if( !ok ) {
-            WdeFreeDialogBoxHeader( &dbh );
+            WdeFreeDialogBoxHeader( &header );
         }
     }
-    return( dbh );
+    return( header );
 }
 
 WdeDialogBoxControl *WdeDialogBoxControlFromData( const char **pdata, bool is32bit, bool is32bitEx )
 {
-    WdeDialogBoxControl         *dbc;
+    WdeDialogBoxControl         *control;
     bool                        ok;
     const char                  *data;
 
-    dbc = NULL;
+    control = NULL;
     data = NULL;
 
     ok = (pdata != NULL && *pdata != NULL);
 
     if( ok ) {
-        dbc = WdeAllocDialogBoxControl();
-        ok = (dbc != NULL);
+        control = WdeAllocDialogBoxControl();
+        ok = (control != NULL);
     }
 
     if( ok ) {
         data = *pdata;
         if( is32bitEx ) {
-            GETCTL_HELPID( dbc ) = VALU32( data );
+            GETCTL_HELPID( control ) = VALU32( data );
             INCU32( data );
-            GETCTL_EXSTYLE( dbc ) = VALU32( data );
+            GETCTL_EXSTYLE( control ) = VALU32( data );
             INCU32( data );
-            GETCTL_STYLE( dbc ) = VALU32( data );
+            GETCTL_STYLE( control ) = VALU32( data );
             INCU32( data );
         } else if( is32bit ) {
-            GETCTL_STYLE( dbc ) = VALU32( data );
+            GETCTL_STYLE( control ) = VALU32( data );
             INCU32( data );
-            GETCTL_EXSTYLE( dbc ) = VALU32( data );
+            GETCTL_EXSTYLE( control ) = VALU32( data );
             INCU32( data );
         }
-        GETCTL_SIZEX( dbc ) = VALU16( data );
+        GETCTL_SIZEX( control ) = VALU16( data );
         INCU16( data );
-        GETCTL_SIZEY( dbc ) = VALU16( data );
+        GETCTL_SIZEY( control ) = VALU16( data );
         INCU16( data );
-        GETCTL_SIZEW( dbc ) = VALU16( data );
+        GETCTL_SIZEW( control ) = VALU16( data );
         INCU16( data );
-        GETCTL_SIZEH( dbc ) = VALU16( data );
+        GETCTL_SIZEH( control ) = VALU16( data );
         INCU16( data );
         if( is32bitEx ) {
-            GETCTL_ID( dbc ) = VALU32( data );
+            GETCTL_ID( control ) = VALU32( data );
             INCU32( data );
         } else {
-            GETCTL_ID( dbc ) = VALU16( data );
+            GETCTL_ID( control ) = VALU16( data );
             INCU16( data );
         }
         if( !is32bit ) {
-            GETCTL_STYLE( dbc ) = VALU32( data );
+            GETCTL_STYLE( control ) = VALU32( data );
             INCU32( data );
         }
-        SETCTL_CLASSID( dbc, WdeControlClassFromData( &data, is32bit ) );
-        ok = (GETCTL_CLASSID( dbc ) != NULL);
+        SETCTL_CLASSID( control, WdeControlClassFromData( &data, is32bit ) );
+        ok = (GETCTL_CLASSID( control ) != NULL);
     }
 
     if( ok ) {
-        SETCTL_TEXT( dbc, WdeNameOrOrdinalFromData( &data, is32bit ) );
-        ok = (GETCTL_TEXT( dbc ) != NULL);
+        SETCTL_TEXT( control, WdeNameOrOrdinalFromData( &data, is32bit ) );
+        ok = (GETCTL_TEXT( control ) != NULL);
     }
 
     if( ok ) {
         if( is32bit ) {
-            GETCTL_EXTRABYTES( dbc ) = VALU16( data );
+            GETCTL_EXTRABYTES( control ) = VALU16( data );
             INCU16( data );
         } else {
-            GETCTL_EXTRABYTES( dbc ) = VALU8( data );
+            GETCTL_EXTRABYTES( control ) = VALU8( data );
             INCU8( data );
         }
     }
 
-    if( dbc != NULL ) {
+    if( control != NULL ) {
         *pdata = data;
         if( !ok ) {
-            WdeFreeDialogBoxControl( &dbc );
+            WdeFreeDialogBoxControl( &control );
         }
     }
-    return( dbc );
+    return( control );
 }
 
 

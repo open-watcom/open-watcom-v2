@@ -81,7 +81,7 @@ WINEXPORT bool    CALLBACK WdeStaticDispatcher( ACTION_ID, OBJPTR, void *, void 
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeStatic( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeStatCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeStatCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeStaticSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeStaticGetDefineInfo( WdeDefineObjectInfo *, HWND );
 
@@ -163,7 +163,7 @@ OBJPTR WdeMakeStatic( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 }
 
 OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                      OBJ_ID id, WdeDialogBoxControl *info )
+                      OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeStaticObject *new;
 
@@ -200,7 +200,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeStaticCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -403,7 +403,7 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     id = o_info->obj_id;
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & (0x0000ffff ^ SS_NOPREFIX);
+    mask = GETCTL_STYLE( o_info->info.c.control ) & (0x0000ffff ^ SS_NOPREFIX);
 
     if( id  == FRAME_OBJ ) {
 #if __NT__XX
@@ -434,7 +434,7 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 
 #if __NT__XX
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_SUNKEN ) {
             CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
 #endif
@@ -460,16 +460,16 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             WdeWriteTrail( "WdeStaticSetDefineInfo: Bad Text mask!" );
         }
 
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOPREFIX ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_NOPREFIX ) {
             CheckDlgButton( hDlg, IDB_SS_NOPREFIX, BST_CHECKED );
         }
 #if __NT__XX
         EnableWindow( GetDlgItem( hDlg, IDB_SS_NOTIFY ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_SS_SUNKEN ), TRUE );
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOTIFY ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_NOTIFY ) {
             CheckDlgButton( hDlg, IDB_SS_NOTIFY, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_SUNKEN ) {
             CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
 #else
@@ -489,7 +489,7 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         EnableWindow( GetDlgItem( hDlg, IDB_SS_SUNKEN ), TRUE );
         EnableWindow( GetDlgItem( hDlg, IDB_SS_NOTIFY ), TRUE );
 
-        mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
+        mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000000f;
         if( mask == SS_ICON ) {
             CheckDlgButton( hDlg, IDB_SS_ICON, BST_CHECKED );
         } else if( mask == SS_BITMAP ) {
@@ -499,19 +499,19 @@ void WdeStaticSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         } else {
             WdeWriteTrail( "WdeStaticSetDefineInfo: Bad Image mask!" );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_CENTERIMAGE ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_CENTERIMAGE ) {
             CheckDlgButton( hDlg, IDB_SS_CENTERIMAGE, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_RIGHTJUST ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_RIGHTJUST ) {
             CheckDlgButton( hDlg, IDB_SS_RIGHTJUST, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_REALSIZEIMAGE ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_REALSIZEIMAGE ) {
             CheckDlgButton( hDlg, IDB_SS_REALSIZEIMAGE, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_SUNKEN ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_SUNKEN ) {
             CheckDlgButton( hDlg, IDB_SS_SUNKEN, BST_CHECKED );
         }
-        if( GETCTL_STYLE( o_info->info.c.info ) & SS_NOTIFY ) {
+        if( GETCTL_STYLE( o_info->info.c.control ) & SS_NOTIFY ) {
             CheckDlgButton( hDlg, IDB_SS_NOTIFY, BST_CHECKED );
         }
 #else
@@ -642,8 +642,8 @@ void WdeStaticGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         return;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
     // set the extended mask - same for Frame, Icon (Image) and Text
     WdeEXSetDefineInfo( o_info, hDlg );

@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeEdit( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeEdCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeEdCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
@@ -140,7 +140,7 @@ OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle st
 }
 
 OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info )
+                    OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeEditObject *new;
 
@@ -179,7 +179,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeEditCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -383,7 +383,7 @@ void WdeEditSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     id = o_info->obj_id;
 
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000ffff;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000ffff;
 
     /* set the type of combo box */
     if( !(mask & 0x00000003) ) {
@@ -451,7 +451,7 @@ void WdeEditSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_LTRREADING ), TRUE);
     EnableWindow( GetDlgItem( hDlg, IDB_WS_EX_RTLREADING ), TRUE);
 
-    mask = GETCTL_EXSTYLE( o_info->info.c.info );
+    mask = GETCTL_EXSTYLE( o_info->info.c.control );
     if( mask & WS_EX_STATICEDGE ) {
         CheckDlgButton( hDlg, IDB_WS_EX_STATICEDGE, BST_CHECKED );
     }
@@ -532,8 +532,8 @@ void WdeEditGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask |= ES_NUMBER;
     }
 #endif
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xffff0000) | mask );
 
 #if __NT__XX
     // set the extended mask
@@ -550,7 +550,7 @@ void WdeEditGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_WS_EX_RTLREADING ) ) {
         mask |= WS_EX_RTLREADING;
     }
-    SETCTL_EXSTYLE( o_info->info.c.info, mask );
+    SETCTL_EXSTYLE( o_info->info.c.control, mask );
 #endif
 }
 

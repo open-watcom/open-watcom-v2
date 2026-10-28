@@ -81,9 +81,9 @@ static bool   WdeSetSelectInfo( HWND, WdeDialogSelectInfo * );
 static bool   WdeGetSelectInfo( HWND, WdeDialogSelectInfo * );
 static bool   WdeInitSelectListBox( WdeResInfo *, HWND );
 static char  *WdeResolveDialogName( WdeResInfo *, WResID * );
-static bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *, POINT *, HWND );
+static bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *control, POINT *, HWND );
 static bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo * );
-static OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl * );
+static OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control );
 static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 
 /****************************************************************************/

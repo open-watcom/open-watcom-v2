@@ -82,7 +82,7 @@ WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeHdr( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
-static OBJPTR   WdeHCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
+static OBJPTR   WdeHCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeHdrSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHdrGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
@@ -143,7 +143,7 @@ OBJPTR WdeMakeHdr( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle sty
 }
 
 OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                   OBJ_ID id, WdeDialogBoxControl *info )
+                   OBJ_ID id, WdeDialogBoxControl *control )
 {
     WdeHdrObject *new;
 
@@ -182,7 +182,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, control, NULL ) ) {
         WdeWriteTrail( "WdeHdrCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         MemFree( new );
@@ -384,7 +384,7 @@ void WdeHdrSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     DialogStyle mask;
 
     // set the header control options
-    mask = GETCTL_STYLE( o_info->info.c.info ) & 0x0000000f;
+    mask = GETCTL_STYLE( o_info->info.c.control ) & 0x0000000f;
     if( mask & HDS_BUTTONS ) {
         CheckDlgButton( hDlg, IDB_HDS_BUTTONS, BST_CHECKED );
     }
@@ -407,8 +407,8 @@ void WdeHdrGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( IsDlgButtonChecked( hDlg, IDB_HDS_BUTTONS ) ) {
         mask |= HDS_BUTTONS;
     }
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xfffffff0) | mask );
+    SETCTL_STYLE( o_info->info.c.control,
+                  (GETCTL_STYLE( o_info->info.c.control ) & 0xfffffff0) | mask );
 
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );

@@ -175,7 +175,7 @@ static WdeDialogObject *WdeDialogCreater( OBJPTR, RECT *, OBJPTR );
 static WResID   *WdeCreateDialogTitle( void );
 static bool     WdeOffsetDialogUnits( WdeDialogObject *, RECT *, RECT * );
 static bool     WdeUpdateDialogUnits( WdeDialogObject *, RECT *, RECT * );
-static bool     WdeBuildDialogTemplate( WdeDialogBoxHeader *, TEMPLATE_HANDLE *, size_t * );
+static bool     WdeBuildDialogTemplate( WdeDialogBoxHeader *header, TEMPLATE_HANDLE *, size_t * );
 static void     WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeDialogSetDialogStyles( HWND, DialogStyle );
@@ -281,7 +281,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
     char                *helpsymbol;
 
     bool                is32bitEx;
-    WdeDialogBoxHeader  *dh;
+    WdeDialogBoxHeader  *header;
 
     info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
 
@@ -345,16 +345,16 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
         }
     }
 
-    dh = info->dialog_header;
+    header = info->dialog_header;
     if( obj->dialog_info->is32bit ) {
-        if( GETHDR_HELPID( dh ) != 0 || GETHDR_EXSTYLE( dh ) != 0 || dh->head.FontWeightDefined || dh->head.FontItalicDefined || dh->head.FontCharsetDefined ) {
+        if( GETHDR_HELPID( header ) != 0 || GETHDR_EXSTYLE( header ) != 0 || header->head.FontWeightDefined || header->head.FontItalicDefined || header->head.FontCharsetDefined ) {
             is32bitEx = true;
         }
     } else {
-        dh->is32bit = false;
+        header->is32bit = false;
     }
 
-    dh->is32bitEx = is32bitEx;
+    header->is32bitEx = is32bitEx;
 
     return( info );
 }
