@@ -97,10 +97,10 @@ WINEXPORT bool       CALLBACK WdeCustomDispatcher( ACTION_ID, OBJPTR, void *, vo
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *control, WdeCustLib **, UINT * );
-static bool     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *control, WdeCustLib **, UINT *, uint_32 * );
+static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *control, WdeCustLib **pcust_lib, UINT * );
+static bool     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *control, WdeCustLib **pcust_lib, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
-static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control, WdeCustLib *, UINT );
+static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control, WdeCustLib *cust_lib, UINT );
 static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
 static LIST     *WdeFindClassInList( char * );
 static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
@@ -128,7 +128,7 @@ static DISPATCH_ITEM WdeCustomActions[] = {
 #define MAX_ACTIONS     (sizeof( WdeCustomActions ) / sizeof( DISPATCH_ITEM ))
 
 void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control,
-                                   WdeCustLib **lib, UINT *index )
+                                   WdeCustLib **pcust_lib, UINT *index )
 {
     LIST        *ilist;
     LPCCINFO    lpcci;
@@ -137,7 +137,7 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
     char        temp[5];
 
     min_hd = 32;
-    *lib = NULL;
+    *pcust_lib = NULL;
     *index = 0;
 
     found = false;
@@ -145,7 +145,7 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
     if( info_list != NULL ) {
         for( ilist = info_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             lpcci = (LPCCINFO)ListElement( ilist );
-            found = WdeChooseCustControlType( lpcci, control, lib, index, &min_hd );
+            found = WdeChooseCustControlType( lpcci, control, pcust_lib, index, &min_hd );
             if( found ) {
                 break;
             }
@@ -161,7 +161,7 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
 }
 
 bool WdeChooseCustControlType( LPCCINFO lpcci, WdeDialogBoxControl *control,
-                               WdeCustLib **lib, UINT *index, uint_32 *min_hd )
+                               WdeCustLib **pcust_lib, UINT *index, uint_32 *min_hd )
 {
     bool    found;
     uint_32 s1;
@@ -176,11 +176,11 @@ bool WdeChooseCustControlType( LPCCINFO lpcci, WdeDialogBoxControl *control,
     s2 = GETCTL_STYLE( control ) & 0x0000ffff;
 
     if( s1 == s2 ) {
-        found = WdeFindLibIndexFromInfo( lpcci, lib, index );
+        found = WdeFindLibIndexFromInfo( lpcci, pcust_lib, index );
     } else {
         new_min = WdeHammingDistance( s1, s2 );
         if( new_min < *min_hd ) {
-            WdeFindLibIndexFromInfo( lpcci, lib, index );
+            WdeFindLibIndexFromInfo( lpcci, pcust_lib, index );
             *min_hd = new_min;
         }
     }

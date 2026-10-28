@@ -73,29 +73,29 @@ WINEXPORT BOOL      CALLBACK WdeCustEDITRES( LPCSTR, LPCSTR );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool             WdeLoadMSCustomControls( WdeCustLib * );
-static bool             WdeLoadBorCustomControls( WdeCustLib * );
+static bool             WdeLoadMSCustomControls( WdeCustLib *cust_lib );
+static bool             WdeLoadBorCustomControls( WdeCustLib *cust_lib );
 static WdeCustLib       *WdeAllocCustLib( void );
 static WdeCustControl   *WdeAllocCustControl( void );
 static WdeCustControl   *WdeAllocCustControlFromWDECTLINFO( WDECTLINFO *, bool );
-static bool             WdeCreateAndAddCustControl( WdeCustLib *, WdeCustInfoProc, WdeCustStyleProc, WdeCustFlagsProc );
-static bool             WdeAddBorControlsToCustLib( WdeCustLib *, WdeBorlandClassList * );
-static void             WdeAddCustControlToCustLib( WdeCustLib *, WdeCustControl * );
-static bool             WdeFreeCustLib( WdeCustLib * );
+static bool             WdeCreateAndAddCustControl( WdeCustLib *cust_lib, WdeCustInfoProc, WdeCustStyleProc, WdeCustFlagsProc );
+static bool             WdeAddBorControlsToCustLib( WdeCustLib *cust_lib, WdeBorlandClassList * );
+static void             WdeAddCustControlToCustLib( WdeCustLib *cust_lib, WdeCustControl *cust_ctrl );
+static bool             WdeFreeCustLib( WdeCustLib *cust_lib );
 static void             WdeFreeCustLibControls( LIST ** );
-static bool             WdeFreeCustControl( WdeCustControl * );
+static bool             WdeFreeCustControl( WdeCustControl *cust_ctrl );
 static void             WdeFindClassInCustLibControls( char *, LIST **, LIST * );
-static void             WdeFindClassInCustLib( char *, LIST **, WdeCustLib * );
+static void             WdeFindClassInCustLib( char *, LIST **, WdeCustLib *cust_lib );
 static bool             WdeQueryUnsafeMSLoad( void );
 static bool             WdeQueryAssumeMS( void );
 static void             WdeFreeSelectWinCBox( HWND );
-static bool             WdeSetSelectWinCBox( HWND, WdeCustControl * );
+static bool             WdeSetSelectWinCBox( HWND, WdeCustControl *cust_ctrl );
 static bool             WdeSetSelectWin( HWND );
 static bool             WdeSetCurrentControl( HWND, int );
 static bool             WdePreviewSelected( HWND );
-static void             WdeSetLoadCustInfo( HWND, WdeCustLib * );
+static void             WdeSetLoadCustInfo( HWND, WdeCustLib *cust_lib );
 static void             WdeSetLoadCustInfoOrd( HWND hDlg );
-static bool             WdeGetLoadCustInfo( HWND, WdeCustLib * );
+static bool             WdeGetLoadCustInfo( HWND, WdeCustLib *cust_lib );
 static void             WdeEnableNonStandardCustInfo( HWND, bool, bool );
 
 /****************************************************************************/
@@ -144,13 +144,13 @@ bool WdeIsBorBtnIDSupported( uint_16 id )
     return( false );
 }
 
-void WdeGetCurrentCustControl( int which, WdeCustControl **control, UINT *type )
+void WdeGetCurrentCustControl( int which, WdeCustControl **pcust_ctrl, UINT *type )
 {
     if( !WDE_CHECK_WHICH( which ) ) {
         WdeWriteTrail( "WdeGetCurrentCustControl: bad which!" );
         return;
     }
-    *control = WdeCurrControl[which].control;
+    *pcust_ctrl = WdeCurrControl[which].control;
     *type = WdeCurrControl[which].type;
 }
 
@@ -208,7 +208,7 @@ bool WdeLoadCustomLib( bool ms_lib, bool load_only )
 {
     char                *name;
     HINSTANCE           inst;
-    WdeCustLib          *lib;
+    WdeCustLib          *cust_lib;
     bool                ret;
     WdeGetFileStruct    gf;
 
@@ -230,45 +230,45 @@ bool WdeLoadCustomLib( bool ms_lib, bool load_only )
         return( false );
     }
 
-    lib = WdeAllocCustLib();
-    if( lib == NULL ) {
+    cust_lib = WdeAllocCustLib();
+    if( cust_lib == NULL ) {
         WdeWriteTrail( "WdeLoadCustomLib: WdeAllocCustLib failed!" );
         MemFree( name );
         FreeLibrary( inst );
         return( false );
     }
 
-    lib->inst = inst;
-    lib->ms_lib = ms_lib;
-    lib->load_only = load_only;
-    lib->file_name = name;
+    cust_lib->inst = inst;
+    cust_lib->ms_lib = ms_lib;
+    cust_lib->load_only = load_only;
+    cust_lib->file_name = name;
 
     if( load_only ) {
         WdeSetStatusByID( 0, WDE_LIBRARYLOADED );
         ret = true;
     } else {
         if( ms_lib ) {
-            ret = WdeLoadMSCustomControls( lib );
+            ret = WdeLoadMSCustomControls( cust_lib );
         } else {
-            ret = WdeLoadBorCustomControls( lib );
+            ret = WdeLoadBorCustomControls( cust_lib );
         }
     }
 
     if( !ret ) {
-        WdeFreeCustLib( lib );
+        WdeFreeCustLib( cust_lib );
         return( false );
     }
 
     if( load_only ) {
-        WdeInsertObject( &WdeLibList, (OBJPTR)lib );
+        WdeInsertObject( &WdeLibList, (OBJPTR)cust_lib );
     } else {
-        WdeInsertObject( &WdeCustomLibList, (OBJPTR)lib );
+        WdeInsertObject( &WdeCustomLibList, (OBJPTR)cust_lib );
     }
 
     return( true );
 }
 
-bool WdeLoadMSCustomControls( WdeCustLib *lib )
+bool WdeLoadMSCustomControls( WdeCustLib *cust_lib )
 {
     WdeCustInfoProc  info_proc;
     WdeCustStyleProc style_proc;
@@ -281,7 +281,7 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
     app_inst = WdeGetAppInstance();
     {
         DLGPROC dlgproc = MakeProcInstance_DLG( WdeLoadCustDlgProc, app_inst );
-        rc = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlgproc, (LPARAM)(LPVOID)lib );
+        rc = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlgproc, (LPARAM)(LPVOID)cust_lib );
         FreeProcInstance_DLG( dlgproc );
     }
     if( rc == -1 ) {
@@ -293,33 +293,33 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
         return( false );
     }
 
-    if( IS_INTRESOURCE( lib->info_name ) ) {
+    if( IS_INTRESOURCE( cust_lib->info_name ) ) {
         if( !WdeQueryUnsafeMSLoad() ) {
             WdeWriteTrail( "WdeLoadMSCustomControls: User aborted unsafe load!" );
             return( false );
         }
     }
 
-    info_proc = (WdeCustInfoProc)GetProcAddress( lib->inst, lib->info_name );
-    style_proc = (WdeCustStyleProc)GetProcAddress ( lib->inst, lib->style_name );
-    flags_proc = (WdeCustFlagsProc)GetProcAddress ( lib->inst, lib->flags_name );
+    info_proc = (WdeCustInfoProc)GetProcAddress( cust_lib->inst, cust_lib->info_name );
+    style_proc = (WdeCustStyleProc)GetProcAddress ( cust_lib->inst, cust_lib->style_name );
+    flags_proc = (WdeCustFlagsProc)GetProcAddress ( cust_lib->inst, cust_lib->flags_name );
 
     if( info_proc == NULL || style_proc == NULL || flags_proc == NULL ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Could not get proc address of ordinal!" );
         return( false );
     }
 
-    if( !WdeCreateAndAddCustControl( lib, info_proc, style_proc, flags_proc ) ) {
+    if( !WdeCreateAndAddCustControl( cust_lib, info_proc, style_proc, flags_proc ) ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Control not added to list!" );
         return( false );
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 6 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 6 ) );
 
     return( true );
 }
 
-bool WdeLoadBorCustomControls( WdeCustLib *lib )
+bool WdeLoadBorCustomControls( WdeCustLib *cust_lib )
 {
     WdeListClassesProc  list_proc;
     HGLOBAL             list_global;
@@ -328,14 +328,12 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     WdeBorlandClassList *class_list;
     size_t              class_list_size;
 
-    /* unused parameters */ (void)lib;
-
-    list_proc = (WdeListClassesProc)GetProcAddress( lib->inst, "ListClasses" );
+    list_proc = (WdeListClassesProc)GetProcAddress( cust_lib->inst, "ListClasses" );
 
     if( list_proc == NULL ) {
         if( WdeQueryAssumeMS() ) {
-            lib->ms_lib = true;
-            return( WdeLoadMSCustomControls( lib ) );
+            cust_lib->ms_lib = true;
+            return( WdeLoadMSCustomControls( cust_lib ) );
         } else {
             WdeWriteTrail( "WdeLoadBorCustomControls: User aborted load!" );
             return( false );
@@ -383,9 +381,9 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
 
     memcpy( class_list, list_locked, class_list_size );
 
-    lib->class_list = list_global;
+    cust_lib->class_list = list_global;
 
-    if( !WdeAddBorControlsToCustLib( lib, class_list ) ) {
+    if( !WdeAddBorControlsToCustLib( cust_lib, class_list ) ) {
         WdeWriteTrail( "WdeLoadBorCustomControls: Add to CustLib failed!" );
         MemFree( class_list );
         GlobalUnlock( list_global );
@@ -396,17 +394,17 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     MemFree( class_list );
     GlobalUnlock( list_global );
 
-    WRMemValidate( lib, _TRMEM_WHO( 7 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 7 ) );
 
     return( true );
 }
 
-bool WdeAddBorControlsToCustLib( WdeCustLib *lib, WdeBorlandClassList *class_list )
+bool WdeAddBorControlsToCustLib( WdeCustLib *cust_lib, WdeBorlandClassList *class_list )
 {
     uint_16 num;
 
     for( num = 0; num < class_list->nClasses; num++ ) {
-        if( !WdeCreateAndAddCustControl( lib, class_list->Classes[num].info_proc,
+        if( !WdeCreateAndAddCustControl( cust_lib, class_list->Classes[num].info_proc,
                                          class_list->Classes[num].style_proc,
                                          class_list->Classes[num].flags_proc ) ) {
             WdeWriteTrail( "WdeAddBorControlsToCustLib: Control not added to list!" );
@@ -414,19 +412,19 @@ bool WdeAddBorControlsToCustLib( WdeCustLib *lib, WdeBorlandClassList *class_lis
         }
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 8 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 8 ) );
 
     return( true );
 }
 
-bool WdeCreateAndAddCustControl( WdeCustLib *lib, WdeCustInfoProc info_proc,
+bool WdeCreateAndAddCustControl( WdeCustLib *cust_lib, WdeCustInfoProc info_proc,
                                  WdeCustStyleProc style_proc, WdeCustFlagsProc flags_proc )
 {
     HGLOBAL         info_global;
     uint_8          *info_locked;
-    WdeCustControl  *control;
+    WdeCustControl  *cust_ctrl;
 
-    if( lib == NULL || info_proc == NULL || style_proc == NULL || flags_proc == NULL ) {
+    if( cust_lib == NULL || info_proc == NULL || style_proc == NULL || flags_proc == NULL ) {
         WdeWriteTrail( "WdeCreateAndAddCustControl: NULL param!" );
         return( false );
     }
@@ -445,100 +443,100 @@ bool WdeCreateAndAddCustControl( WdeCustLib *lib, WdeCustInfoProc info_proc,
         return( false );
     }
 
-    control = WdeAllocCustControlFromWDECTLINFO( (WDECTLINFO *)info_locked, lib->ms_lib );
-    if( control == NULL ) {
+    cust_ctrl = WdeAllocCustControlFromWDECTLINFO( (WDECTLINFO *)info_locked, cust_lib->ms_lib );
+    if( cust_ctrl == NULL ) {
         WdeWriteTrail( "WdeCreateAndAddCustControl: Could alloc control!" );
         GlobalUnlock( info_global );
         GlobalFree( info_global );
         return( false );
     }
 
-    control->lib = lib;
+    cust_ctrl->lib = cust_lib;
 
-    control->info_proc = info_proc;
-    control->style_proc = style_proc;
-    control->flags_proc = flags_proc;
+    cust_ctrl->info_proc = info_proc;
+    cust_ctrl->style_proc = style_proc;
+    cust_ctrl->flags_proc = flags_proc;
 
-    WdeAddCustControlToCustLib( lib, control );
+    WdeAddCustControlToCustLib( cust_lib, cust_ctrl );
 
     GlobalUnlock( info_global );
     GlobalFree( info_global );
 
-    WRMemValidate( lib, _TRMEM_WHO( 9 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 9 ) );
 
     return( true );
 }
 
-void WdeAddCustControlToCustLib( WdeCustLib *lib, WdeCustControl *control )
+void WdeAddCustControlToCustLib( WdeCustLib *cust_lib, WdeCustControl *cust_ctrl )
 {
     LIST *end;
 
-    if( lib->controls == NULL ) {
-        ListAddElt( &lib->controls, (OBJPTR)control );
+    if( cust_lib->controls == NULL ) {
+        ListAddElt( &cust_lib->controls, (OBJPTR)cust_ctrl );
     } else {
         /* make sure item is inserted at end of list */
-        WdeListLastElt( lib->controls, &end );
-        ListInsertElt( end, (OBJPTR)control );
+        WdeListLastElt( cust_lib->controls, &end );
+        ListInsertElt( end, (OBJPTR)cust_ctrl );
     }
 
-    WRMemValidate( lib, _TRMEM_WHO( 10 ) );
-    WRMemValidate( control, _TRMEM_WHO( 11 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 10 ) );
+    WRMemValidate( cust_ctrl, _TRMEM_WHO( 11 ) );
 }
 
 WdeCustLib *WdeAllocCustLib( void )
 {
-    WdeCustLib  *lib;
+    WdeCustLib  *cust_lib;
 
-    lib = MemAlloc( sizeof( WdeCustLib ) );
+    cust_lib = MemAlloc( sizeof( WdeCustLib ) );
 
-    if( lib == NULL ) {
+    if( cust_lib == NULL ) {
         WdeWriteTrail( "WdeAllocCustLib: WdeCustLib alloc failed!" );
         return( NULL );
     }
 
-    memset( lib, 0, sizeof( WdeCustLib ) );
+    memset( cust_lib, 0, sizeof( WdeCustLib ) );
 
-    WRMemValidate( lib, _TRMEM_WHO( 12 ) );
+    WRMemValidate( cust_lib, _TRMEM_WHO( 12 ) );
 
-    return( lib );
+    return( cust_lib );
 }
 
 WdeCustControl *WdeAllocCustControlFromWDECTLINFO( WDECTLINFO *info, bool ms_lib )
 {
-    WdeCustControl  *control;
+    WdeCustControl  *cust_ctrl;
 
-    control = WdeAllocCustControl();
-    if( control == NULL ) {
+    cust_ctrl = WdeAllocCustControl();
+    if( cust_ctrl == NULL ) {
         WdeWriteTrail( "WdeAllocCustControlFromWDECTLINFO: "
                        "WdeCustControl alloc failed!" );
         return( NULL );
     }
 
-    control->ms_lib = ms_lib;
+    cust_ctrl->ms_lib = ms_lib;
 
     if( ms_lib ) {
-        memcpy( &control->control_info.ms, info, sizeof( CTLINFO ) );
+        memcpy( &cust_ctrl->control_info.ms, info, sizeof( CTLINFO ) );
     } else {
-        memcpy( &control->control_info.bor, info, sizeof( WDECTLINFO ) );
+        memcpy( &cust_ctrl->control_info.bor, info, sizeof( WDECTLINFO ) );
     }
 
-    return( control );
+    return( cust_ctrl );
 }
 
 WdeCustControl *WdeAllocCustControl( void )
 {
-    WdeCustControl  *control;
+    WdeCustControl  *cust_ctrl;
 
-    control = MemAlloc( sizeof( WdeCustControl ) );
+    cust_ctrl = MemAlloc( sizeof( WdeCustControl ) );
 
-    if( control == NULL ) {
+    if( cust_ctrl == NULL ) {
         WdeWriteTrail( "WdeAllocCustControl: WdeCustControl alloc failed!" );
         return( NULL );
     }
 
-    memset( control, 0, sizeof( WdeCustControl ) );
+    memset( cust_ctrl, 0, sizeof( WdeCustControl ) );
 
-    return( control );
+    return( cust_ctrl );
 }
 
 void WdeFreeCustRESProcs( void )
@@ -555,12 +553,12 @@ void WdeFreeCustRESProcs( void )
 bool WdeFreeAllCustLibs( void )
 {
     LIST        *llist;
-    WdeCustLib  *lib;
+    WdeCustLib  *cust_lib;
 
     if( WdeCustomLibList != NULL ) {
         for( llist = WdeCustomLibList; llist != NULL; llist = ListNext( llist ) ) {
-            lib = (WdeCustLib *)ListElement( llist );
-            WdeFreeCustLib( lib );
+            cust_lib = (WdeCustLib *)ListElement( llist );
+            WdeFreeCustLib( cust_lib );
         }
         ListFree( WdeCustomLibList );
         WdeCustomLibList = NULL;
@@ -568,8 +566,8 @@ bool WdeFreeAllCustLibs( void )
 
     if( WdeLibList != NULL ) {
         for( llist = WdeLibList; llist != NULL; llist = ListNext( llist ) ) {
-            lib = (WdeCustLib *)ListElement( llist );
-            WdeFreeCustLib( lib );
+            cust_lib = (WdeCustLib *)ListElement( llist );
+            WdeFreeCustLib( cust_lib );
         }
         ListFree( WdeLibList );
         WdeLibList = NULL;
@@ -578,31 +576,31 @@ bool WdeFreeAllCustLibs( void )
     return( true );
 }
 
-bool WdeFreeCustLib( WdeCustLib *lib )
+bool WdeFreeCustLib( WdeCustLib *cust_lib )
 {
-    if( lib != NULL ) {
-        if( lib->controls != NULL ) {
-            WdeFreeCustLibControls( &lib->controls );
+    if( cust_lib != NULL ) {
+        if( cust_lib->controls != NULL ) {
+            WdeFreeCustLibControls( &cust_lib->controls );
         }
-        if( lib->file_name != NULL ) {
-            MemFree( lib->file_name );
+        if( cust_lib->file_name != NULL ) {
+            MemFree( cust_lib->file_name );
         }
-        if( lib->info_name != NULL && !IS_INTRESOURCE( lib->info_name ) ) {
-            MemFree( (void *)lib->info_name );
+        if( cust_lib->info_name != NULL && !IS_INTRESOURCE( cust_lib->info_name ) ) {
+            MemFree( (void *)cust_lib->info_name );
         }
-        if( lib->style_name != NULL && !IS_INTRESOURCE( lib->style_name ) ) {
-            MemFree( (void *)lib->style_name );
+        if( cust_lib->style_name != NULL && !IS_INTRESOURCE( cust_lib->style_name ) ) {
+            MemFree( (void *)cust_lib->style_name );
         }
-        if( lib->flags_name != NULL && !IS_INTRESOURCE( lib->flags_name ) ) {
-            MemFree( (void *)lib->flags_name );
+        if( cust_lib->flags_name != NULL && !IS_INTRESOURCE( cust_lib->flags_name ) ) {
+            MemFree( (void *)cust_lib->flags_name );
         }
-        if( lib->inst != NULL ) {
-            FreeLibrary( lib->inst );
+        if( cust_lib->inst != NULL ) {
+            FreeLibrary( cust_lib->inst );
         }
-        if( !lib->ms_lib && lib->class_list != NULL ) {
-            GlobalFree( lib->class_list );
+        if( !cust_lib->ms_lib && cust_lib->class_list != NULL ) {
+            GlobalFree( cust_lib->class_list );
         }
-        MemFree( lib );
+        MemFree( cust_lib );
     } else {
         WdeWriteTrail( "WdeFreeCustLib: NULL lib!" );
         return( false );
@@ -614,12 +612,12 @@ bool WdeFreeCustLib( WdeCustLib *lib )
 void WdeFreeCustLibControls( LIST **control_list )
 {
     LIST           *clist;
-    WdeCustControl *control;
+    WdeCustControl *cust_ctrl;
 
     if( control_list != NULL && *control_list != NULL ) {
         for( clist = *control_list; clist != NULL; clist = ListNext( clist ) ) {
-            control = (WdeCustControl *)ListElement( clist );
-            WdeFreeCustControl( control );
+            cust_ctrl = (WdeCustControl *)ListElement( clist );
+            WdeFreeCustControl( cust_ctrl );
         }
         ListFree( *control_list );
         *control_list = NULL;
@@ -628,21 +626,21 @@ void WdeFreeCustLibControls( LIST **control_list )
     }
 }
 
-bool WdeFreeCustControl( WdeCustControl *control )
+bool WdeFreeCustControl( WdeCustControl *cust_ctrl )
 {
     uint_16 type;
     uint_16 num_types;
 
-    if( control != NULL ) {
-        if( !control->ms_lib ) {
-            num_types = control->control_info.bor.wCtlTypes;
+    if( cust_ctrl != NULL ) {
+        if( !cust_ctrl->ms_lib ) {
+            num_types = cust_ctrl->control_info.bor.wCtlTypes;
             for( type = 0; type < num_types; type++ ) {
-                if( control->control_info.bor.Type[type].hToolBit ) {
-                    DeleteObject( control->control_info.bor.Type[type].hToolBit );
+                if( cust_ctrl->control_info.bor.Type[type].hToolBit ) {
+                    DeleteObject( cust_ctrl->control_info.bor.Type[type].hToolBit );
                 }
             }
         }
-        MemFree( control );
+        MemFree( cust_ctrl );
     } else {
         WdeWriteTrail( "WdeFreeCustControl: NULL control!" );
         return( false );
@@ -654,7 +652,7 @@ bool WdeFreeCustControl( WdeCustControl *control )
 void WdeFindClassInAllCustLibs( char *class, LIST **list )
 {
     LIST        *llist;
-    WdeCustLib  *lib;
+    WdeCustLib  *cust_lib;
 
     if( list == NULL ) {
         return;
@@ -664,29 +662,29 @@ void WdeFindClassInAllCustLibs( char *class, LIST **list )
 
     if( class != NULL && WdeCustomLibList != NULL ) {
         for( llist = WdeCustomLibList; llist != NULL; llist = ListNext( llist ) ) {
-            lib = (WdeCustLib *)ListElement( llist );
-            WdeFindClassInCustLib( class, list, lib );
+            cust_lib = (WdeCustLib *)ListElement( llist );
+            WdeFindClassInCustLib( class, list, cust_lib );
         }
     }
 }
 
-void WdeFindClassInCustLib( char *class, LIST **list, WdeCustLib *lib )
+void WdeFindClassInCustLib( char *class, LIST **list, WdeCustLib *cust_lib )
 {
-    if( lib != NULL && lib->controls != NULL ) {
-        WdeFindClassInCustLibControls( class, list, lib->controls );
+    if( cust_lib != NULL && cust_lib->controls != NULL ) {
+        WdeFindClassInCustLibControls( class, list, cust_lib->controls );
     }
 }
 
 void WdeFindClassInCustLibControls( char *class, LIST **list, LIST *control_list )
 {
     LIST           *clist;
-    WdeCustControl *control;
+    WdeCustControl *cust_ctrl;
 
     if( control_list != NULL ) {
         for( clist = control_list; clist != NULL; clist = ListNext( clist ) ) {
-            control = (WdeCustControl *)ListElement( clist );
-            if( stricmp( class, control->control_info.ms.szClass ) == 0 ) {
-                ListAddElt( list, (OBJPTR)control );
+            cust_ctrl = (WdeCustControl *)ListElement( clist );
+            if( stricmp( class, cust_ctrl->control_info.ms.szClass ) == 0 ) {
+                ListAddElt( list, (OBJPTR)cust_ctrl );
             }
         }
     }
@@ -865,24 +863,24 @@ void WdeFreeSelectWinCBox( HWND win )
     }
 }
 
-bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
+bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *cust_ctrl )
 {
     WdeCurrCustControl  *current;
     uint_16             type;
     LRESULT             index;
 
-    for( type = 0; type < control->control_info.ms.wCtlTypes; type++ ) {
+    for( type = 0; type < cust_ctrl->control_info.ms.wCtlTypes; type++ ) {
         current = MemAlloc( sizeof( WdeCurrCustControl ) );
         if( current == NULL ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( false );
         }
-        current->control = control;
+        current->control = cust_ctrl;
         current->type = type;
-        if( control->ms_lib ) {
-            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)control->control_info.ms.Type[type].szDescr );
+        if( cust_ctrl->ms_lib ) {
+            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)cust_ctrl->control_info.ms.Type[type].szDescr );
         } else {
-            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)control->control_info.bor.Type[type].szDescr );
+            index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)cust_ctrl->control_info.bor.Type[type].szDescr );
         }
         if( index == CB_ERR || index == CB_ERRSPACE ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_ADDSTRING failed!" );
@@ -904,19 +902,19 @@ bool WdeSetSelectWin( HWND win )
 {
     LIST            *llist;
     LIST            *clist;
-    WdeCustLib      *lib;
-    WdeCustControl  *control;
+    WdeCustLib      *cust_lib;
+    WdeCustControl  *cust_ctrl;
     HWND            cbox;
 
     cbox = GetDlgItem( win, IDB_CUST_DESC );
 
     if( WdeCustomLibList != NULL ) {
         for( llist = WdeCustomLibList; llist != NULL; llist = ListNext( llist ) ) {
-            lib = (WdeCustLib *)ListElement( llist );
-            if( lib->controls != NULL ) {
-                for( clist = lib->controls; clist != NULL; clist = ListNext( clist ) ) {
-                    control = (WdeCustControl *)ListElement( clist );
-                    if( !WdeSetSelectWinCBox( cbox, control ) ) {
+            cust_lib = (WdeCustLib *)ListElement( llist );
+            if( cust_lib->controls != NULL ) {
+                for( clist = cust_lib->controls; clist != NULL; clist = ListNext( clist ) ) {
+                    cust_ctrl = (WdeCustControl *)ListElement( clist );
+                    if( !WdeSetSelectWinCBox( cbox, cust_ctrl ) ) {
                         return( false );
                     }
                 }
@@ -1138,14 +1136,14 @@ INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, L
     return( ret );
 }
 
-void WdeSetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
+void WdeSetLoadCustInfo( HWND hDlg, WdeCustLib *cust_lib )
 {
     pgroup2     pg;
     char        info[_MAX_FNAME + 4];
     char        style[_MAX_FNAME + 5];
     char        flags[_MAX_FNAME + 5];
 
-    _splitpath2( lib->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
+    _splitpath2( cust_lib->file_name, pg.buffer, NULL, NULL, &pg.fname, NULL );
 
     strlwr( pg.fname );
     pg.fname[0] = toupper( pg.fname[0] );
@@ -1190,7 +1188,7 @@ void WdeEnableNonStandardCustInfo( HWND hDlg, bool flag, bool init )
     }
 }
 
-bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
+bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *cust_lib )
 {
     char    *info;
     char    *style;
@@ -1200,14 +1198,14 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
     ok = true;
 
     if( !IsDlgButtonChecked( hDlg, IDB_CUST_NONSTANDARD ) ) {
-        lib->info_name = MAKEINTRESOURCE( CCINFOORD );
-        lib->style_name = MAKEINTRESOURCE( CCSTYLEORD );
-        lib->flags_name = MAKEINTRESOURCE( CCFLAGSORD );
+        cust_lib->info_name = MAKEINTRESOURCE( CCINFOORD );
+        cust_lib->style_name = MAKEINTRESOURCE( CCSTYLEORD );
+        cust_lib->flags_name = MAKEINTRESOURCE( CCFLAGSORD );
     } else if( IsDlgButtonChecked( hDlg, IDB_CUST_ORD ) ) {
-        lib->info_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_INFO, NULL );
-        lib->style_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_STYLE, NULL );
-        lib->flags_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_FLAGS, NULL );
-        if( lib->info_name == NULL || lib->style_name == NULL || lib->flags_name == NULL ) {
+        cust_lib->info_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_INFO, NULL );
+        cust_lib->style_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_STYLE, NULL );
+        cust_lib->flags_name = (char *)WdeGetUINT32FromEdit( hDlg, IDB_CUST_FLAGS, NULL );
+        if( cust_lib->info_name == NULL || cust_lib->style_name == NULL || cust_lib->flags_name == NULL ) {
             WdeDisplayErrorMsg( WDE_BADPROCEDUREORDINAL );
             ok = false;
         }
@@ -1215,15 +1213,15 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
         info = WdeGetStrFromEdit( hDlg, IDB_CUST_INFO, NULL );
         style = WdeGetStrFromEdit( hDlg, IDB_CUST_STYLE, NULL );
         flags = WdeGetStrFromEdit( hDlg, IDB_CUST_FLAGS, NULL );
-        if( GetProcAddress( lib->inst, info ) == NULL ) {
+        if( GetProcAddress( cust_lib->inst, info ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDINFOPROC );
             ok = false;
         }
-        if( ok && GetProcAddress( lib->inst, style ) == NULL ) {
+        if( ok && GetProcAddress( cust_lib->inst, style ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDSTYLEPROC );
             ok = false;
         }
-        if( ok && GetProcAddress( lib->inst, flags ) == NULL ) {
+        if( ok && GetProcAddress( cust_lib->inst, flags ) == NULL ) {
             WdeDisplayErrorMsg( WDE_CANTFINDFLAGSPROC );
             ok = false;
         }
@@ -1232,9 +1230,9 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
             MemFree( style );
             MemFree( flags );
         } else {
-            lib->info_name = info;
-            lib->style_name = style;
-            lib->flags_name = flags;
+            cust_lib->info_name = info;
+            cust_lib->style_name = style;
+            cust_lib->flags_name = flags;
         }
     }
 
@@ -1243,7 +1241,7 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
 
 INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    static WdeCustLib   *lib;
+    static WdeCustLib   *cust_lib;
     bool                checked;
     bool                ret;
 
@@ -1251,8 +1249,8 @@ INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPA
 
     switch( message ) {
     case WM_INITDIALOG:
-        lib = (WdeCustLib *)lParam;
-        WdeSetLoadCustInfo( hDlg, lib );
+        cust_lib = (WdeCustLib *)lParam;
+        WdeSetLoadCustInfo( hDlg, cust_lib );
         WdeEnableNonStandardCustInfo( hDlg, false, true );
         break;
 
@@ -1263,7 +1261,7 @@ INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPA
             break;
 
         case IDOK:
-            if( WdeGetLoadCustInfo( hDlg, lib ) ) {
+            if( WdeGetLoadCustInfo( hDlg, cust_lib ) ) {
                 EndDialog( hDlg, TRUE );
                 ret = true;
             }
@@ -1278,7 +1276,7 @@ INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPA
             if( GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
                 checked = ( IsDlgButtonChecked( hDlg, LOWORD( wParam ) ) != 0 );
                 if( !checked ) {
-                    WdeSetLoadCustInfo( hDlg, lib );
+                    WdeSetLoadCustInfo( hDlg, cust_lib );
                 }
                 WdeEnableNonStandardCustInfo( hDlg, checked, false );
             }
