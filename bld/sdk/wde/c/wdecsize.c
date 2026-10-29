@@ -37,11 +37,11 @@
 #include "wrdll.h"
 #include "wresall.h"
 
-static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
+static size_t WdeCalcSizeOfControlClass( ResNameOrOrdinal *cclass, bool is32bit )
 {
     size_t size;
 
-    if( name == NULL ) {
+    if( cclass == NULL ) {
         if( is32bit ) {
             size = SIZEU16;
         } else {
@@ -49,16 +49,16 @@ static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
         }
     } else {
         if( is32bit ) {
-            if( name->Class & 0x80 ) {
+            if( cclass->ord.fFlag == 0xff ) {
                 size = SIZEU16 + SIZEU16;
             } else {
-                size = WRCalcStrlen( name->ClassName, is32bit );
+                size = WRCalcStrlen( cclass->name, is32bit );
             }
         } else {
-            if( name->Class & 0x80 ) {
+            if( cclass->ord.fFlag == 0xff ) {
                 size = SIZEU8;
             } else {
-                size = WRCalcStrlen( name->ClassName, is32bit );
+                size = WRCalcStrlen( cclass->name, is32bit );
             }
         }
     }
@@ -66,7 +66,7 @@ static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
     return( size );
 }
 
-static size_t WdeCalcSizeOfDialogBoxControl( ControlClass *ClassID, ResNameOrOrdinal *Text, bool is32bit, bool is32bitEx )
+static size_t WdeCalcSizeOfDialogBoxControl( ResNameOrOrdinal *ClassID, ResNameOrOrdinal *Text, bool is32bit, bool is32bitEx )
 {
     size_t size;
 

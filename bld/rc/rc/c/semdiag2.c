@@ -206,7 +206,7 @@ FullDialogBoxControlOS2 *SemOS2NewDialogCtrl( YYTOKENTYPE token,
     uint_32                     defstyle;
     uint_32                     style;
     uint_16                     ctlClass;
-    ControlClass                *cont_class;
+    ResNameOrOrdinal            *cclass;
 
     switch( token ) {
     case Y_AUTOCHECKBOX:
@@ -295,7 +295,7 @@ FullDialogBoxControlOS2 *SemOS2NewDialogCtrl( YYTOKENTYPE token,
     }
 
     newctrl = SemOS2InitDialogCtrl();
-    cont_class = ResNumToControlClass( ctlClass );
+    cclass = ResNumToNameOrOrdinal( ctlClass );
 
     style_mask  = opts.Style.Mask;
     style_value = opts.Style.Value;
@@ -304,7 +304,7 @@ FullDialogBoxControlOS2 *SemOS2NewDialogCtrl( YYTOKENTYPE token,
     newctrl->ctrl.ID         = opts.ID;
     newctrl->ctrl.SizeInfo   = opts.SizeInfo;
     newctrl->ctrl.Text       = opts.Text;
-    newctrl->ctrl.ClassID    = cont_class;
+    newctrl->ctrl.ClassID    = cclass;
     newctrl->ctrl.Style      = style;
     /*
      * ExtraBytes is 0 for all predefined controls
@@ -524,8 +524,8 @@ static size_t SemOS2CalcControlSize( FullDialogCtrlListOS2 *ctrls )
     for( ctrl = ctrls->head; ctrl != NULL; ctrl = ctrl->next ) {
         control = &(ctrl->ctrl);
         size += sizeof( DialogTemplateItemOS2 );
-        if( (control->ClassID->Class & 0x80) == 0 ) // Class name length if provided
-            size += strlen( control->ClassID->ClassName ) + 1;
+        if( control->ClassID->ord.fFlag != 0xff )   // Class name length if provided
+            size += strlen( control->ClassID->name ) + 1;
         if( control->Text != NULL ) {               // Conrol text if provided
             if( control->Text->ord.fFlag == 0xFF ) {        // We have ID
                 size += 3;
@@ -572,11 +572,12 @@ static char *SemOS2BuildTemplateItemsArray( char *ptr, FullDialogCtrlListOS2 *ct
         tmpl->offPresParams = (uint_16)-1;
         tmpl->offCtlData    = (uint_16)-1;
 
-        if( (control->ClassID->Class & 0x80) == 0 ) {
-            tmpl->cchClassName = strlen( control->ClassID->ClassName );
+        if( control->ClassID->ord.fFlag != 0xff ) {
+            tmpl->cchClassName = strlen( control->ClassID->name );
         } else {
             tmpl->cchClassName = 0;
-            tmpl->offClassName = control->ClassID->Class & 0x7F;
+            /* NOTE question if high bits to be zeroed, or zero only 0x80 bit */
+            tmpl->offClassName = control->ClassID->ord.wOrdinalID & 0x7f;
         }
 
         if( control->Text != NULL ) {
@@ -621,8 +622,8 @@ static char *SemOS2DumpTemplateItemsData( char *base, char *ptr,
         /*
          * Write out class name if provided
          */
-        if( (control->ClassID->Class & 0x80) == 0 ) {
-            strcpy( ptr, control->ClassID->ClassName );
+        if( control->ClassID->ord.fFlag != 0xff ) {
+            strcpy( ptr, control->ClassID->name );
             tmpl->offClassName = (uint_16)( ptr - base + DialogHeaderOS2_FILESIZE );
             ptr += tmpl->cchClassName + 1;
         }
@@ -740,7 +741,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
+    control->ctrl.ClassID    = ResNormalizeControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 0;
@@ -763,7 +764,7 @@ FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNameOrOrdinalToControlClass( ctlclassname );
+    control->ctrl.ClassID    = ResNormalizeControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 4;
@@ -807,7 +808,7 @@ FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDialogCtrlOptionsOS2 opts,
     control->ctrl.ID         = opts.ID;
     control->ctrl.SizeInfo   = opts.SizeInfo;
     control->ctrl.Text       = opts.Text;
-    control->ctrl.ClassID    = ResNumToControlClass( OS2_WC_FRAME );
+    control->ctrl.ClassID    = ResNumToNameOrOrdinal( OS2_WC_FRAME );
     control->ctrl.Style      = style;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 4;   // Frame control data

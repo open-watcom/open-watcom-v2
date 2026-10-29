@@ -297,7 +297,7 @@ bool WdeButtonInit( bool first )
     SETCTL_SIZEW( WdeDefaultButton, 0 );
     SETCTL_SIZEH( WdeDefaultButton, 0 );
     SETCTL_TEXT( WdeDefaultButton, NULL );
-    SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
+    SETCTL_CLASSID( WdeDefaultButton, ResNumToNameOrOrdinal( CLASS_BUTTON ) );
 
 #ifdef __WINDOWS__
     WdeButtonDispatch = MakeProcInstance_DISPATCHER( WdeButtonDispatcher, WdeGetAppInstance() );

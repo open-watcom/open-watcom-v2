@@ -67,10 +67,12 @@ typedef struct DialogBoxHeader {
     char                FontCharsetDefined;
 } DialogBoxHeader;
 
+#if 0
 typedef union ControlClass {
     uint_8              Class;          /* if (class & 0x80) */
     char                ClassName[1];   /* '\0' terminated */
 } ControlClass;
+#endif
 
 typedef struct DialogBoxControl {
     uint_32             HelpId;
@@ -78,7 +80,7 @@ typedef struct DialogBoxControl {
     DialogStyle         Style;
     DialogSizeInfo      SizeInfo;
     uint_32             ID;
-    ControlClass        *ClassID;
+    ResNameOrOrdinal    *ClassID;
     ResNameOrOrdinal    *Text;
     uint_16             ExtraBytes;
 } DialogBoxControl;
@@ -99,8 +101,9 @@ extern bool         ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *fp )
 extern bool         ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp );
 extern bool         ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp );
 extern bool         ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp );
-extern ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal * );
-extern ControlClass *ResNumToControlClass( uint_16 classnum );
+extern ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass );
+//extern ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal * );
+//extern ControlClass *ResNumToControlClass( uint_16 classnum );
 
 /* resrdiag.c */
 

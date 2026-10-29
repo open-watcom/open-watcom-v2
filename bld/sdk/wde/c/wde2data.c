@@ -67,7 +67,7 @@
 static WdeDialogBoxHeader  *WdeDialogBoxHeaderFromData( const char **pdata, bool, bool );
 static WdeDialogBoxControl *WdeDialogBoxControlFromData( const char **pdata, bool, bool );
 static ResNameOrOrdinal    *WdeNameOrOrdinalFromData( const char **pdata, bool );
-static ControlClass        *WdeControlClassFromData( const char **pdata, bool );
+static ResNameOrOrdinal    *WdeControlClassFromData( const char **pdata, bool );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -194,7 +194,7 @@ static size_t WdeDataFromDialogBoxHeader( WdeDialogBoxHeader *header, char *data
 static size_t WdeDataFromDialogBoxControl( WdeDialogBoxControl *control,
                                      char *data, bool is32bit, bool is32bitEx )
 {
-    ControlClass            *cclass;
+    ResNameOrOrdinal        *cclass;
     size_t                  size;
     bool                    ok;
     char                    *start;
@@ -237,18 +237,18 @@ static size_t WdeDataFromDialogBoxControl( WdeDialogBoxControl *control,
             INCU32( data );
         }
         cclass = GETCTL_CLASSID( control );
-        if( cclass->Class & 0x80 ) {
+        if( cclass->ord.fFlag == 0xff ) {
             if( is32bit ) {
-                VALU16( data ) = (uint_16)-1;
+                VALU16( data ) = 0xffff;
                 INCU16( data );
-                VALU16( data ) = cclass->Class;
+                VALU16( data ) = cclass->ord.wOrdinalID;
                 INCU16( data );
             } else {
-                VALU8( data ) = cclass->Class;
+                VALU8( data ) = cclass->ord.wOrdinalID;
                 INCU8( data );
             }
         } else {
-            size = WRDataFromString( cclass->ClassName, is32bit, data );
+            size = WRDataFromString( cclass->name, is32bit, data );
             data += size;
             ok = (size != 0);
         }
@@ -600,56 +600,61 @@ WdeDialogBoxControl *WdeDialogBoxControlFromData( const char **pdata, bool is32b
 
 ResNameOrOrdinal *WdeNameOrOrdinalFromData( const char **pdata, bool is32bit )
 {
-    ResNameOrOrdinal    *new;
+    ResNameOrOrdinal    *cclass;
     size_t              size;
 
     if( pdata == NULL || *pdata == NULL ) {
         return( NULL );
     }
 
-    new = WRNameOrOrdinalFromData( *pdata, is32bit );
-    if( new == NULL ) {
+    cclass = WRNameOrOrdinalFromData( *pdata, is32bit );
+    if( cclass == NULL ) {
         return( NULL );
     }
 
-    size = WdeCalcSizeOfResNameOrOrdinal( new, is32bit );
+    size = WdeCalcSizeOfResNameOrOrdinal( cclass, is32bit );
     if( size == 0 ) {
         return( NULL );
     }
 
     *pdata += size;
 
-    return( new );
+    return( cclass );
 }
 
-ControlClass *WdeControlClassFromData( const char **pdata, bool is32bit )
+ResNameOrOrdinal *WdeControlClassFromData( const char **pdata, bool is32bit )
 {
-    ControlClass        *new;
+    ResNameOrOrdinal    *cclass;
     const char          *data;
 
     if( pdata == NULL || *pdata == NULL ) {
         return( NULL );
     }
     data = *pdata;
-    if( ( is32bit && VALU16( data ) != 0xffff )
-      || ( !is32bit && (VALU8( data ) & 0x80) == 0 ) ) {
-        return( (ControlClass *)WRStringFromData( pdata, is32bit ) );
-    }
-
-    new = MemAlloc( sizeof( ControlClass ) );
-    if( new == NULL ) {
-        return( NULL );
-    }
-
     if( is32bit ) {
-        INCU16( data );
-        new->Class = VALU16( data ) & 0x00ff;
+        if( VALU16( data ) != 0xffff ) {
+            return( (ResNameOrOrdinal *)WRStringFromData( pdata, is32bit ) );
+        }
         INCU16( data );
     } else {
-        new->Class = VALU8( data );
+        if( (VALU8( data ) & 0x80) == 0 ) {
+            return( (ResNameOrOrdinal *)WRStringFromData( pdata, is32bit ) );
+        }
+    }
+
+    cclass = MemAlloc( sizeof( ResNameOrOrdinal ) );
+    if( cclass == NULL ) {
+        return( NULL );
+    }
+    cclass->ord.fFlag = 0xff;
+    if( is32bit ) {
+        cclass->ord.wOrdinalID = VALU16( data );
+        INCU16( data );
+    } else {
+        cclass->ord.wOrdinalID = VALU8( data );
         INCU8( data );
     }
     *pdata = data;
 
-    return( new );
+    return( cclass );
 }

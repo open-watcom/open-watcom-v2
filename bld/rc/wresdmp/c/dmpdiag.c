@@ -41,8 +41,8 @@
 #include "clibext.h"
 
 
-static void PrintDialogBoxHeader( DialogBoxHeader * head )
-/********************************************************/
+static void PrintDialogBoxHeader( DialogBoxHeader *head )
+/*******************************************************/
 {
     puts( "Dialog Header:" );
     printf("\tStyle: 0x%08x  No. of items: %d\n",
@@ -58,11 +58,11 @@ static void PrintDialogBoxHeader( DialogBoxHeader * head )
     }
 }
 
-static void PrintControlClass( ControlClass * class )
-/***************************************************/
+static void PrintControlClass( ResNameOrOrdinal *cclass )
+/*******************************************************/
 {
-    if (class->Class & 0x80) {
-        switch (class->Class) {
+    if( cclass->ord.fFlag == 0xff ) {
+        switch( cclass->ord.wOrdinalID ) {
         case CLASS_BUTTON:
             fputs( "\tClass: 0x80 button        ", stdout);
             break;
@@ -82,25 +82,25 @@ static void PrintControlClass( ControlClass * class )
             fputs( "\tClass: 0x85 combobox       ", stdout);
             break;
         default:
-            printf( "\tClass: 0x%02x                ", class->Class );
+            printf( "\tClass: 0x%02x                ", cclass->ord.wOrdinalID );
         }
     } else {
-        printf( "\tClass: %-15.15s     ", class->ClassName );
+        printf( "\tClass: %-15.15s     ", cclass->name );
     }
 }
 
-static void PrintResNameOrOrdinal( ResNameOrOrdinal * name )
-/**********************************************************/
+static void PrintResNameOrOrdinal( ResNameOrOrdinal *name )
+/*********************************************************/
 {
-    if (name->ord.fFlag == 0xff) {
+    if( name->ord.fFlag == 0xff ) {
         printf( "%5d\n", name->ord.wOrdinalID );
     } else {
         printf( "%-40.40s\n", name->name );
     }
 }
 
-static void PrintDialogBoxControl( DialogBoxControl * control )
-/*************************************************************/
+static void PrintDialogBoxControl( DialogBoxControl *control )
+/************************************************************/
 {
     printf( "x: %d   y: %d   w: %d   h: %d\n",
             control->SizeInfo.x, control->SizeInfo.y, control->SizeInfo.width,

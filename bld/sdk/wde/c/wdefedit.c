@@ -254,7 +254,7 @@ bool WdeEditInit( bool first )
     SETCTL_SIZEW( WdeDefaultEdit, 0 );
     SETCTL_SIZEH( WdeDefaultEdit, 0 );
     SETCTL_TEXT( WdeDefaultEdit, NULL );
-    SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
+    SETCTL_CLASSID( WdeDefaultEdit, ResNumToNameOrOrdinal( CLASS_EDIT ) );
 
 #ifdef __WINDOWS__
     WdeEditDispatch = MakeProcInstance_DISPATCHER( WdeEditDispatcher, WdeGetAppInstance() );

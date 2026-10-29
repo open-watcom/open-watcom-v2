@@ -589,7 +589,7 @@ bool WdeChangeControlSize( WdeControlObject *obj, bool widths_only, bool snap_to
 
 bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resizer )
 {
-    ControlClass        *control_class;
+    ResNameOrOrdinal    *cclass;
     ResNameOrOrdinal    *rname;
     char                *name;
     char                temp[10];
@@ -609,8 +609,10 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
     }
 
     if( obj->window_handle != NULL ) {
-        control_class = GETCTL_CLASSID( obj->control );
-        if( control_class->Class == CLASS_STATIC && (GETCTL_STYLE( obj->control ) & 0x0000000f) == SS_ICON ) {
+        cclass = GETCTL_CLASSID( obj->control );
+        if( cclass->ord.fFlag == 0xff
+          && cclass->ord.wOrdinalID == CLASS_STATIC
+          && (GETCTL_STYLE( obj->control ) & 0x0000000f) == SS_ICON ) {
             return( true );
         }
 

@@ -64,32 +64,15 @@ static bool ResWriteDialogSizeInfo( DialogSizeInfo *SizeInfo, FILE *fp )
     return( error );
 }
 
-static bool WriteControlClass( FILE *fp, ControlClass *class_id )
+static bool writeControlClass( FILE *fp, ResNameOrOrdinal *cclass )
 {
     /* if the ClassID is one of the predefined ones write it out as a byte */
     /* otherwise it is a string */
-    if( class_id->Class & 0x80 )
-        return( ResWriteUint8( fp, class_id->Class ) );
-    return( ResWriteString( class_id->ClassName, fp ) );
-}
-
-static bool WriteControlClass32( FILE *fp, ControlClass *class_id )
-{
-    bool            error;
-
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
-    if( class_id->Class & 0x80 ) {
-        /*
-         * the class number is prefixed by 0xffff to distinguish it from a string
-         */
-        error = ResWriteUint16( fp, 0xffff );
-        if( !error ) {
-            error = ResWriteUint16( fp, class_id->Class );
-        }
-        return( error );
+    if( cclass->ord.fFlag == 0xff ) {
+        return( ResWriteUint8( fp, cclass->ord.wOrdinalID ) );
+    } else {
+        return( ResWriteString( cclass->name, fp ) );
     }
-    return( ResWriteString32( class_id->ClassName, fp ) );
 }
 
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
@@ -256,7 +239,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp )
         error = ResWriteUint32( fp, control->Style );
     }
     if( !error ) {
-        error = WriteControlClass( fp, control->ClassID );
+        error = writeControlClass( fp, control->ClassID );
     }
     if( !error ) {
         error = ResWriteNameOrOrdinal( control->Text, fp );
@@ -284,7 +267,7 @@ bool ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp )
         error = ResWriteUint16( fp, control->ID );
     }
     if( !error ) {
-        error = WriteControlClass32( fp, control->ClassID );
+        error = ResWriteNameOrOrdinal32( control->ClassID, fp );
     }
     if( !error ) {
         error = ResWriteNameOrOrdinal32( control->Text, fp );
@@ -320,7 +303,7 @@ bool ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp )
         error = ResWriteUint32( fp, control->ID );
     }
     if( !error ) {
-        error = WriteControlClass32( fp, control->ClassID );
+        error = ResWriteNameOrOrdinal32( control->ClassID, fp );
     }
     if( !error ) {
         error = ResWriteNameOrOrdinal32( control->Text, fp );
@@ -337,6 +320,34 @@ bool ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp )
     return( error );
 }
 
+ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass )
+/**************************************************************************/
+{
+    ResNameOrOrdinal    *new_cclass;
+
+    if( cclass->ord.fFlag == 0xff ) {
+        new_cclass = ResNumToNameOrOrdinal( cclass->ord.wOrdinalID );
+    } else {
+        if( IS_STR_IGNORE_CASE( cclass->name, "button" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_BUTTON );
+        } else if( IS_STR_IGNORE_CASE( cclass->name, "edit" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_EDIT );
+        } else if( IS_STR_IGNORE_CASE( cclass->name, "static" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_STATIC );
+        } else if( IS_STR_IGNORE_CASE( cclass->name, "listbox" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_LISTBOX );
+        } else if( IS_STR_IGNORE_CASE( cclass->name, "scrollbar" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_SCROLLBAR );
+        } else if( IS_STR_IGNORE_CASE( cclass->name, "combobox" ) ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_COMBOBOX );
+        } else {
+            new_cclass = ResStrToNameOrOrdinal( cclass->name );
+        }
+    }
+    return( new_cclass );
+}
+
+#if 0
 ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal *name )
 /**************************************************************************/
 {
@@ -398,3 +409,4 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
     }
     return( class );
 }
+#endif

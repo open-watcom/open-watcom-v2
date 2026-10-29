@@ -799,10 +799,10 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     bool                ctext_alloc;
     char                *cid;
     bool                cid_alloc;
-    char                *cclass;
+    char                *class;
     char                *cstyle;
     char                *ExStyle;
-    ControlClass        *control_class;
+    ResNameOrOrdinal    *cclass;
     uint_8              class_type;
     size_t              nlen;
     char                *ControlStr;
@@ -812,7 +812,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     cid = NULL;
     n = NULL;
     ctext = NULL;
-    cclass = NULL;
+    class = NULL;
     cstyle = NULL;
     ExStyle = NULL;
     ctext_alloc = FALSE;
@@ -838,23 +838,22 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     }
 
     if( ok ) {
-        control_class = GETCTL_CLASSID( control );
-        cclass = WdeControlClassToStr( control_class );
-        ok = (cclass != NULL);
+        cclass = GETCTL_CLASSID( control );
+        class = WdeControlClassToStr( cclass );
+        ok = (class != NULL);
     }
 
     if( ok ) {
         class_type = 0;
-        if( control_class != NULL ) {
-            if( control_class->Class & 0x80 ) {
-                class_type = control_class->Class;
+        if( cclass != NULL ) {
+            if( cclass->ord.fFlag == 0xff ) {
+                class_type = cclass->ord.wOrdinalID;
             }
         }
         if( class_type != 0 ) {
             ok = WdeSetControlFlagText( class_type, GETCTL_STYLE( control ), &cstyle );
         } else {
-            ok = WdeSetCommControlFlagText( control_class->ClassName,
-                                            GETCTL_STYLE( control ), &cstyle );
+            ok = WdeSetCommControlFlagText( cclass->name, GETCTL_STYLE( control ), &cstyle );
         }
         ok = (ok && cstyle != NULL);
     }
@@ -896,13 +895,13 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
 
             if( cid != NULL ) {
                 fprintf( fp, "%s %s, \"%s\", %s, %d, %d, %d, %d",
-                         ControlStr, cid, cclass, cstyle,
+                         ControlStr, cid, class, cstyle,
                          GETCTL_SIZEX( control ), GETCTL_SIZEY( control ),
                          GETCTL_SIZEW( control ), GETCTL_SIZEH( control ) );
             } else {
                 fprintf( fp, "%s %d, \"%s\", %s, %d, %d, %d, %d", ControlStr,
                          (GETCTL_ID( control ) == 0xffff) ? -1 : GETCTL_ID( control ),
-                         cclass, cstyle,
+                         class, cstyle,
                          GETCTL_SIZEX( control ), GETCTL_SIZEY( control ),
                          GETCTL_SIZEW( control ), GETCTL_SIZEH( control ) );
             }
@@ -931,13 +930,13 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
             /* standard control */
             if( cid != NULL ) {
                 fprintf( fp, "%s %s, \"%s\", %s, %d, %d, %d, %d\n",
-                         ControlStr, cid, cclass, cstyle,
+                         ControlStr, cid, class, cstyle,
                          GETCTL_SIZEX( control ), GETCTL_SIZEY( control ),
                          GETCTL_SIZEW( control ), GETCTL_SIZEH( control ) );
             } else {
                 fprintf( fp, "%s %d, \"%s\", %s, %d, %d, %d, %d\n", ControlStr,
                          (GETCTL_ID( control ) == 0xffff) ? -1 : GETCTL_ID( control ),
-                         cclass, cstyle,
+                         class, cstyle,
                          GETCTL_SIZEX( control ), GETCTL_SIZEY( control ),
                          GETCTL_SIZEW( control ), GETCTL_SIZEH( control ) );
             }
@@ -955,8 +954,8 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
         MemFree( ctext );
     }
 
-    if( cclass != NULL ) {
-        MemFree( cclass );
+    if( class != NULL ) {
+        MemFree( class );
     }
 
     if( cstyle != NULL ) {

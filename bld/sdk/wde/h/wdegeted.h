@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +52,8 @@ extern WResID           *WdeGetWResIDFromEdit( HWND, int, bool *);
 extern void             WdeSetEditWithWResID( WResID *, HWND, int );
 extern void             WdeSetEditWithWResHelpID( WResHelpID *, HWND, int );
 extern void             WdeSetEditWithResNameOr( ResNameOrOrdinal *, HWND, int );
-extern void             WdeSetEditWithControlClass( ControlClass *, HWND, int );
-extern ControlClass     *WdeGetControlClassFromEdit( HWND, int, bool * );
+extern void             WdeSetEditWithControlClass( ResNameOrOrdinal *, HWND, int );
+extern ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND, int, bool * );
 extern void             WdeSetComboWithStr( char *, HWND, int );
 extern void             WdeSetEditWithStr( char *, HWND, int );
 extern void             WdeSetEditWithUINT32( uint_32, int, HWND, int );

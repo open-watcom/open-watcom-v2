@@ -213,14 +213,14 @@ void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
     }
 }
 
-ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
+ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
 {
-    ControlClass    *cc;
-    int             class;
-    char            *cp;
-    char            *ep;
+    ResNameOrOrdinal    *cclass;
+    int                 class;
+    char                *cp;
+    char                *ep;
 
-    cc = NULL;
+    cclass = NULL;
 
     cp = WdeGetStrFromEdit( hDlg, id, mod );
 
@@ -231,11 +231,11 @@ ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
         }
         class = (int)strtoul( cp, &ep, 0 );
         if( *ep == '\0' ) {
-            cc = ResNumToControlClass( (uint_8)class );
+            cclass = ResNumToNameOrOrdinal( (uint_8)class );
         } else if( (class = WdeGetClassFromClassName( cp )) != 0 ) {
-            cc = ResNumToControlClass( (uint_8)class );
+            cclass = ResNumToNameOrOrdinal( (uint_8)class );
         } else {
-            cc = WdeStrToControlClass( cp );
+            cclass = WdeStrToControlClass( cp );
         }
     }
 
@@ -243,14 +243,14 @@ ControlClass *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
         MemFree( cp );
     }
 
-    return( cc );
+    return( cclass );
 }
 
-void WdeSetEditWithControlClass( ControlClass *cc, HWND hDlg, int id )
+void WdeSetEditWithControlClass( ResNameOrOrdinal *cclass, HWND hDlg, int id )
 {
     char *cp;
 
-    cp = WdeControlClassToStr( cc );
+    cp = WdeControlClassToStr( cclass );
     if( cp != NULL ) {
         WdeSetEditWithStr( cp, hDlg, id );
         MemFree( cp );

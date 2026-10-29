@@ -468,7 +468,7 @@ bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
             if( GETCTL_CLASSID( control ) != NULL ) {
                 MemFree( GETCTL_CLASSID( control ) );
             }
-            SETCTL_CLASSID( control, ResNumToControlClass( CLASS_STATIC ) );
+            SETCTL_CLASSID( control, ResNumToNameOrOrdinal( CLASS_STATIC ) );
             new = Create(object_id, dialog, &control_rect, (OBJPTR)control );
         }
     } else {
@@ -601,23 +601,23 @@ OBJ_ID WdeGetOBJIDFromClassNum( uint_8 class, uint_32 style )
 
 OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
 {
-    ControlClass    *class;
-    uint_8          class_id;
-    OBJ_ID          id;
+    ResNameOrOrdinal    *cclass;
+    uint_8              class;
+    OBJ_ID              id;
 
-    class = GETCTL_CLASSID( control );
+    cclass = GETCTL_CLASSID( control );
 
     id = 0;
 
-    if( class->Class & 0x80 ) {
-        id = WdeGetOBJIDFromClassNum( class->Class, GETCTL_STYLE( control ) );
+    if( cclass->ord.fFlag == 0xff ) {
+        id = WdeGetOBJIDFromClassNum( cclass->ord.wOrdinalID, GETCTL_STYLE( control ) );
     } else {
-        id = WdeGetCommonControlClassFromClassName( class->ClassName );
+        id = WdeGetCommonControlClassFromClassName( cclass->name );
         if( id == 0 ) {
-            class_id = WdeGetClassFromClassName( class->ClassName );
-            /* assume some sort of custom class if class_id is 0 */
-            if( class_id != 0 ) {
-                id = WdeGetOBJIDFromClassNum( class_id, GETCTL_STYLE( control ) );
+            class = WdeGetClassFromClassName( cclass->name );
+            /* assume some sort of custom class if class is 0 */
+            if( class != 0 ) {
+                id = WdeGetOBJIDFromClassNum( class, GETCTL_STYLE( control ) );
             }
         }
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,21 +48,20 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern uint_8                   WdeGetClassFromClassName( char *);
+extern uint_8                   WdeGetClassFromClassName( const char * );
 extern WdeDialogBoxHeader       *WdeAllocDialogBoxHeader( void );
-extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader **);
+extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader ** );
 extern WdeDialogBoxControl      *WdeAllocDialogBoxControl( void );
-extern void                     WdeFreeDialogBoxControl( WdeDialogBoxControl **);
+extern void                     WdeFreeDialogBoxControl( WdeDialogBoxControl ** );
 extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( WdeDialogBoxHeader * );
 extern WdeDialogBoxControl      *WdeCopyDialogBoxControl( WdeDialogBoxControl * );
-extern ControlClass             *WdeCopyControlClass( ControlClass *);
-extern ResNameOrOrdinal         *WdeCopyResNameOr( ResNameOrOrdinal *);
-extern WResID                   *WdeCopyWResID( WResID *);
-extern char                     *WdeControlClassToStr( ControlClass *);
-extern ControlClass             *WdeStrToControlClass( char *);
+extern ResNameOrOrdinal         *WdeCopyResNameOrOrdinal( ResNameOrOrdinal * );
+extern WResID                   *WdeCopyWResID( WResID * );
+extern char                     *WdeControlClassToStr( ResNameOrOrdinal * );
+extern ResNameOrOrdinal         *WdeStrToControlClass( const char * );
 extern char                     *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *, int );
-extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal( char *str );
-extern OBJ_ID                   WdeGetCommonControlClassFromClassName( char *class_name );
+extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal( const char *str );
+extern OBJ_ID                   WdeGetCommonControlClassFromClassName( const char *class_name );
 extern WResHelpID               *WdeCopyWResHelpID( WResHelpID *src );
 
 #endif

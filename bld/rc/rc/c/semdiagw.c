@@ -336,7 +336,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
     uint_32                 style_lo;
     uint_16                 class = 0;
     uint_16                 tmp_mask;
-    ControlClass            *cont_class;
+    ResNameOrOrdinal        *cclass;
 
     switch( token ) {
     case Y_LTEXT:
@@ -452,7 +452,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
     }
 
     diagctrl = semInitDialogCtrl();
-    cont_class = ResNumToControlClass( class );
+    cclass = ResNumToNameOrOrdinal( class );
 
     style_mask = opts.Style.Mask;
     style_value = opts.Style.Value;
@@ -479,7 +479,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
         diagctrl->ctrl.ID = opts.ID;
         diagctrl->ctrl.SizeInfo = opts.SizeInfo;
         diagctrl->ctrl.Text = opts.Text;
-        diagctrl->ctrl.ClassID = cont_class;
+        diagctrl->ctrl.ClassID = cclass;
         diagctrl->ctrl.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
         /*
          * ExtraBytes and ExtendStyle are 0 for all controls
@@ -493,7 +493,7 @@ FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlO
         diagctrl->ctrl.ID = opts.ID;
         diagctrl->ctrl.SizeInfo = opts.SizeInfo;
         diagctrl->ctrl.Text = opts.Text;
-        diagctrl->ctrl.ClassID = cont_class;
+        diagctrl->ctrl.ClassID = cclass;
         diagctrl->ctrl.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
         /*
          * ExtraBytes is 0 for all controls that RC understands
@@ -747,7 +747,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
         diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
-        diagctrl->ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
+        diagctrl->ctrl.ClassID = ResNormalizeControlClass( ctlclassname );
         diagctrl->ctrl.Style = style;
         /*
          * ExtraBytes and ExtendStyle are 0 for all controls
@@ -763,7 +763,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
         diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
-        diagctrl->ctrl.ClassID = ResNameOrOrdinalToControlClass( ctlclassname );
+        diagctrl->ctrl.ClassID = ResNormalizeControlClass( ctlclassname );
         diagctrl->ctrl.Style = style;
         /*
          * ExtraBytes is 0 for all controls that RC understands

@@ -258,7 +258,7 @@ bool WdeCBoxInit( bool first )
     SETCTL_SIZEW( WdeDefaultCBox, 0 );
     SETCTL_SIZEH( WdeDefaultCBox, 0 );
     SETCTL_TEXT( WdeDefaultCBox, NULL );
-    SETCTL_CLASSID( WdeDefaultCBox, ResNumToControlClass( CLASS_COMBOBOX ) );
+    SETCTL_CLASSID( WdeDefaultCBox, ResNumToNameOrOrdinal( CLASS_COMBOBOX ) );
 
 #ifdef __WINDOWS__
     WdeCBoxDispatch = MakeProcInstance_DISPATCHER( WdeCBoxDispatcher, WdeGetAppInstance());

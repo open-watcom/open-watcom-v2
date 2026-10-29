@@ -275,7 +275,7 @@ bool WdeStaticInit( bool first )
     SETCTL_SIZEW( WdeDefaultStatic, 0 );
     SETCTL_SIZEH( WdeDefaultStatic, 0 );
     SETCTL_TEXT( WdeDefaultStatic, NULL );
-    SETCTL_CLASSID( WdeDefaultStatic, ResNumToControlClass( CLASS_STATIC ) );
+    SETCTL_CLASSID( WdeDefaultStatic, ResNumToNameOrOrdinal( CLASS_STATIC ) );
 
 #ifdef __WINDOWS__
     WdeStaticDispatch = MakeProcInstance_DISPATCHER( WdeStaticDispatcher, WdeGetAppInstance() );

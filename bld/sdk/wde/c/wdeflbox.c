@@ -253,7 +253,7 @@ bool WdeLBoxInit( bool first )
     SETCTL_SIZEW( WdeDefaultLBox, 0 );
     SETCTL_SIZEH( WdeDefaultLBox, 0 );
     SETCTL_TEXT( WdeDefaultLBox, NULL );
-    SETCTL_CLASSID( WdeDefaultLBox, ResNumToControlClass( CLASS_LISTBOX ) );
+    SETCTL_CLASSID( WdeDefaultLBox, ResNumToNameOrOrdinal( CLASS_LISTBOX ) );
 
 #ifdef __WINDOWS__
     WdeLBoxDispatch = MakeProcInstance_DISPATCHER( WdeLBoxDispatcher, WdeGetAppInstance() );

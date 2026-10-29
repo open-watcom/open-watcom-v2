@@ -229,8 +229,10 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
 
     control_class = GUI_BAD_CLASS;
 
-    if( ctl != NULL && ctl->ClassID && (ctl->ClassID->Class & 0x80) ) {
-        switch( ctl->ClassID->Class ) {
+    if( ctl != NULL
+      && ctl->ClassID != NULL
+      && (ctl->ClassID->ord.fFlag == 0xff) ) {
+        switch( ctl->ClassID->ord.wOrdinalID ) {
         case CLASS_BUTTON:
             control_class = GUI_PUSH_BUTTON;
             if( CHK_BSTYLE( ctl->Style, BS_GROUPBOX ) ) {

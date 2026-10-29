@@ -270,7 +270,7 @@ bool WdeScrollInit( bool first )
     SETCTL_SIZEW( WdeDefaultScroll, 0 );
     SETCTL_SIZEH( WdeDefaultScroll, 0 );
     SETCTL_TEXT( WdeDefaultScroll, NULL );
-    SETCTL_CLASSID( WdeDefaultScroll, ResNumToControlClass( CLASS_SCROLLBAR ) );
+    SETCTL_CLASSID( WdeDefaultScroll, ResNumToNameOrOrdinal( CLASS_SCROLLBAR ) );
 
 #ifdef __WINDOWS__
     WdeScrollDispatch = MakeProcInstance_DISPATCHER( WdeScrollDispatcher, WdeGetAppInstance() );
