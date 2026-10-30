@@ -60,7 +60,7 @@ typedef struct {
     HFONT               font;
     RECT                nc_size;
     ResMemFlags         res_flags;
-    WdeDialogBoxHeader  *dialog_info;
+    WdeDialogBoxHeader  *dialog_header;
     WdeResInfo          *res_info;
     WdeResDlgItem       *ditem;
     WdeResizeRatio      resizer;
