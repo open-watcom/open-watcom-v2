@@ -150,14 +150,14 @@ void WdeGetCurrentCustControl( int which, WdeCustControl **pcust_ctrl, UINT *typ
         WdeWriteTrail( "WdeGetCurrentCustControl: bad which!" );
         return;
     }
-    *pcust_ctrl = WdeCurrControl[which].control;
+    *pcust_ctrl = WdeCurrControl[which].cust_ctrl;
     *type = WdeCurrControl[which].type;
 }
 
 bool WdeIsCurrentCustControlSet( int which )
 {
     if( WDE_CHECK_WHICH( which ) ) {
-        if( WdeCurrControl[which].control != NULL ) {
+        if( WdeCurrControl[which].cust_ctrl != NULL ) {
             return( true );
         }
     }
@@ -451,7 +451,7 @@ bool WdeCreateAndAddCustControl( WdeCustLib *cust_lib, WdeCustInfoProc info_proc
         return( false );
     }
 
-    cust_ctrl->lib = cust_lib;
+    cust_ctrl->cust_lib = cust_lib;
 
     cust_ctrl->info_proc = info_proc;
     cust_ctrl->style_proc = style_proc;
@@ -875,7 +875,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *cust_ctrl )
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( false );
         }
-        current->control = cust_ctrl;
+        current->cust_ctrl = cust_ctrl;
         current->type = type;
         if( cust_ctrl->ms_lib ) {
             index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)cust_ctrl->control_info.ms.Type[type].szDescr );
@@ -942,7 +942,7 @@ bool WdeSetCurrentControl( HWND win, int which )
         return( false );
     }
 
-    WdeCurrControl[which].control = current->control;
+    WdeCurrControl[which].cust_ctrl = current->cust_ctrl;
     WdeCurrControl[which].type = current->type;
 
     return( true );
@@ -1023,18 +1023,18 @@ bool WdePreviewSelected( HWND win )
         return( false );
     }
 
-    if( current->control->ms_lib ) {
-        class = current->control->control_info.ms.szClass;
-        caption = current->control->control_info.ms.szTitle;
-        pstyle = current->control->control_info.ms.Type[current->type].dwStyle;
-        pwidth = current->control->control_info.ms.Type[current->type].wWidth;
-        pheight = current->control->control_info.ms.Type[current->type].wHeight;
+    if( current->cust_ctrl->ms_lib ) {
+        class = current->cust_ctrl->control_info.ms.szClass;
+        caption = current->cust_ctrl->control_info.ms.szTitle;
+        pstyle = current->cust_ctrl->control_info.ms.Type[current->type].dwStyle;
+        pwidth = current->cust_ctrl->control_info.ms.Type[current->type].wWidth;
+        pheight = current->cust_ctrl->control_info.ms.Type[current->type].wHeight;
     } else {
-        class = current->control->control_info.bor.szClass;
-        caption = current->control->control_info.bor.szTitle;
-        pstyle = current->control->control_info.bor.Type[current->type].dwStyle;
-        pwidth = current->control->control_info.bor.Type[current->type].wWidth;
-        pheight = current->control->control_info.bor.Type[current->type].wHeight;
+        class = current->cust_ctrl->control_info.bor.szClass;
+        caption = current->cust_ctrl->control_info.bor.szTitle;
+        pstyle = current->cust_ctrl->control_info.bor.Type[current->type].dwStyle;
+        pwidth = current->cust_ctrl->control_info.bor.Type[current->type].wWidth;
+        pheight = current->cust_ctrl->control_info.bor.Type[current->type].wHeight;
     }
 
     WdeGetResizerFromFont( &resizer, "System", 10 );

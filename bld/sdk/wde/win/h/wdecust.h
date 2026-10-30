@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2023 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -135,7 +135,7 @@ typedef struct WdeCustLibStruct {
 
 typedef struct WdeCustControlStruct {
     bool                ms_lib;
-    WdeCustLib          *lib;
+    WdeCustLib          *cust_lib;
     WdeCustInfoProc     info_proc;
     WdeCustStyleProc    style_proc;
     WdeCustFlagsProc    flags_proc;
@@ -146,7 +146,7 @@ typedef struct WdeCustControlStruct {
 } WdeCustControl;
 
 typedef struct {
-    WdeCustControl  *control;
+    WdeCustControl  *cust_ctrl;
     UINT            type;
 } WdeCurrCustControl;
 
@@ -155,7 +155,7 @@ typedef struct {
 /****************************************************************************/
 extern bool WdeIsCurrentCustControlSet( int which );
 extern bool WdeCustControlsLoaded( void );
-extern void WdeGetCurrentCustControl( int, WdeCustControl **, UINT * );
+extern void WdeGetCurrentCustControl( int, WdeCustControl **pcust_ctrl, UINT * );
 extern bool WdeSetCurrentCustControl( int );
 extern bool WdeLoadCustomLib( bool, bool );
 extern bool WdeFreeAllCustLibs( void );

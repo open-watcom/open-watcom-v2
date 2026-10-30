@@ -512,7 +512,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         class = cust_ctrl->control_info.bor.szClass;
     }
 
-    if( !WdeCustomRegisterClass( class, cust_ctrl->lib->inst, &new->win_class,
+    if( !WdeCustomRegisterClass( class, cust_ctrl->cust_lib->inst, &new->win_class,
                                  &new->win_extra, &new->win_proc ) ) {
         WdeWriteTrail( "WdeCustomCreate: WdeCustomRegisterClass failed!" );
         MemFree( new );

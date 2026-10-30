@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,7 +62,7 @@ typedef struct WdeCustLibStruct {
 } WdeCustLib;
 
 typedef struct {
-    WdeCustLib  *lib;
+    WdeCustLib  *cust_lib;
     UINT        index;
 } WdeCurrCustControl;
 
@@ -71,12 +72,12 @@ typedef struct {
 extern bool WdeIsCurrentCustControlSet( int which );
 extern bool WdeCustControlsLoaded( void );
 extern bool WdeIsBorBtnIDSupported( uint_16 );
-extern void WdeGetCurrentCustControl( int, WdeCustLib **, UINT * );
+extern void WdeGetCurrentCustControl( int, WdeCustLib **pcust_lib, UINT * );
 extern bool WdeSetCurrentCustControl( int );
 extern bool WdeLoadCustomLib( bool, bool );
 extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( const char *, LIST ** );
-extern bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **, UINT * );
+extern bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **pcust_lib, UINT * );
 extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );
 
 #endif

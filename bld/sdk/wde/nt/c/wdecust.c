@@ -105,14 +105,14 @@ void WdeGetCurrentCustControl( int which, WdeCustLib **pcust_lib, UINT *index )
         WdeWriteTrail( "WdeGetCurrentCustControl: bad which!" );
         return;
     }
-    *pcust_lib = WdeCurrControl[which].lib;
+    *pcust_lib = WdeCurrControl[which].cust_lib;
     *index = WdeCurrControl[which].index;
 }
 
 bool WdeIsCurrentCustControlSet( int which )
 {
     if( WDE_CHECK_WHICH( which ) ) {
-        if( WdeCurrControl[which].lib != NULL ) {
+        if( WdeCurrControl[which].cust_lib != NULL ) {
             return( true );
         }
     }
@@ -402,7 +402,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *cust_lib )
             WdeWriteTrail( "WdeSetSelectWinCBox: alloc failed!" );
             return( false );
         }
-        current->lib = cust_lib;
+        current->cust_lib = cust_lib;
         current->index = i;
         index = SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)cust_lib->lpcci[i].szDesc );
         if( index == CB_ERR || index == CB_ERRSPACE ) {
@@ -457,7 +457,7 @@ bool WdeSetCurrentControl( HWND win, int which )
         return( false );
     }
 
-    WdeCurrControl[which].lib = current->lib;
+    WdeCurrControl[which].cust_lib = current->cust_lib;
     WdeCurrControl[which].index = current->index;
 
     return( true );
@@ -517,17 +517,17 @@ bool WdePreviewSelected( HWND win )
         return( false );
     }
 
-    if( current->lib->lpcci[current->index].flOptions & CCF_NOTEXT ) {
+    if( current->cust_lib->lpcci[current->index].flOptions & CCF_NOTEXT ) {
         caption = NULL;
     } else {
-        caption = current->lib->lpcci[current->index].szTextDefault;
+        caption = current->cust_lib->lpcci[current->index].szTextDefault;
     }
 
-    class = current->lib->lpcci[current->index].szClass;
-    pstyle = current->lib->lpcci[current->index].flStyleDefault;
-    pestyle = current->lib->lpcci[current->index].flExtStyleDefault;
-    pwidth = current->lib->lpcci[current->index].cxDefault;
-    pheight = current->lib->lpcci[current->index].cyDefault;
+    class = current->cust_lib->lpcci[current->index].szClass;
+    pstyle = current->cust_lib->lpcci[current->index].flStyleDefault;
+    pestyle = current->cust_lib->lpcci[current->index].flExtStyleDefault;
+    pwidth = current->cust_lib->lpcci[current->index].cxDefault;
+    pheight = current->cust_lib->lpcci[current->index].cyDefault;
 
     WdeGetResizerFromFont( &resizer, "System", 10 );
 
