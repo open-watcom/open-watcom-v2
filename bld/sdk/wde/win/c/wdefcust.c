@@ -98,8 +98,8 @@ WINEXPORT DWORD     CALLBACK WdeStrToID( LPSTR );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *control, WdeCustControl **, UINT * );
-static bool     WdeChooseCustControlType( WdeCustControl *, WdeDialogBoxControl *control, WdeCustControl **, UINT *, uint_32 * );
+static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *control, WdeCustControl **pcust_ctrl, UINT * );
+static bool     WdeChooseCustControlType( WdeCustControl *cust_ctrl, WdeDialogBoxControl *control, WdeCustControl **pcust_ctrl, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
 static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control, WdeCustControl *, UINT );
 static bool     WdeAddNewClassToList( const char *, const char *, int, WNDPROC );
@@ -132,23 +132,23 @@ static DISPATCH_ITEM WdeCustomActions[] = {
 #define MAX_ACTIONS     (sizeof( WdeCustomActions ) / sizeof( DISPATCH_ITEM ))
 
 void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control,
-                                   WdeCustControl **rinfo, UINT *rtype )
+                                   WdeCustControl **pcust_ctrl, UINT *rtype )
 {
     LIST            *ilist;
-    WdeCustControl  *info;
+    WdeCustControl  *cust_ctrl;
     uint_32         min_hd;
     bool            found;
     char            temp[5];
 
     min_hd = 32;
-    *rinfo = NULL;
+    *pcust_ctrl = NULL;
 
     found = false;
 
     if( info_list != NULL ) {
         for( ilist = info_list; ilist != NULL; ilist = ListNext( ilist ) ) {
-            info = (WdeCustControl *)ListElement( ilist );
-            found = WdeChooseCustControlType( info, control, rinfo, rtype, &min_hd );
+            cust_ctrl = (WdeCustControl *)ListElement( ilist );
+            found = WdeChooseCustControlType( cust_ctrl, control, pcust_ctrl, rtype, &min_hd );
             if( found ) {
                 break;
             }
@@ -163,8 +163,8 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
     }
 }
 
-bool WdeChooseCustControlType( WdeCustControl *info, WdeDialogBoxControl *control,
-                               WdeCustControl **rinfo, UINT *rtype, uint_32 *min_hd )
+bool WdeChooseCustControlType( WdeCustControl *cust_ctrl, WdeDialogBoxControl *control,
+                               WdeCustControl **pcust_ctrl, UINT *rtype, uint_32 *min_hd )
 {
     uint_16 type;
     bool    found;
@@ -175,19 +175,19 @@ bool WdeChooseCustControlType( WdeCustControl *info, WdeDialogBoxControl *contro
     /* if this class just has one type ASSUME (YIKES!!) that this is the
      * one we are looking for.
      */
-    if( info->control_info.ms.wCtlTypes <= 1 ) {
-        *rinfo = info;
+    if( cust_ctrl->control_info.ms.wCtlTypes <= 1 ) {
+        *pcust_ctrl = cust_ctrl;
         *rtype = 0;
         return( true );
     }
 
     found = false;
 
-    for( type = 0; type < info->control_info.ms.wCtlTypes; type++ ) {
-        if( info->ms_lib ) {
-            s1 = info->control_info.ms.Type[type].dwStyle;
+    for( type = 0; type < cust_ctrl->control_info.ms.wCtlTypes; type++ ) {
+        if( cust_ctrl->ms_lib ) {
+            s1 = cust_ctrl->control_info.ms.Type[type].dwStyle;
         } else {
-            s1 = info->control_info.bor.Type[type].dwStyle;
+            s1 = cust_ctrl->control_info.bor.Type[type].dwStyle;
         }
         s1 &= 0x0000ffff;
         s2 = GETCTL_STYLE( control ) & 0x0000ffff;
@@ -197,14 +197,14 @@ bool WdeChooseCustControlType( WdeCustControl *info, WdeDialogBoxControl *contro
         }
         new_min = WdeHammingDistance( s1, s2 );
         if( new_min < *min_hd ) {
-            *rinfo = info;
+            *pcust_ctrl = cust_ctrl;
             *rtype = type;
             *min_hd = new_min;
         }
     }
 
     if( found ) {
-        *rinfo = info;
+        *pcust_ctrl = cust_ctrl;
         *rtype = type;
     }
 

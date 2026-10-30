@@ -300,8 +300,8 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
             WdeSetBaseObject( IDM_SELECT_MODE );
         }
     } else {
-        if( new ) {
-            if( new->control ) {
+        if( new != NULL ) {
+            if( new->control != NULL ) {
                 WdeFreeDialogBoxControl( &new->control );
             }
             MemFree( new );
