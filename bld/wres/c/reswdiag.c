@@ -66,13 +66,16 @@ static bool ResWriteDialogSizeInfo( DialogSizeInfo *SizeInfo, FILE *fp )
 
 static bool writeControlClass( FILE *fp, ResNameOrOrdinal *cclass )
 {
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
-    if( cclass->ord.fFlag == 0xff ) {
-        return( ResWriteUint8( fp, cclass->ord.wOrdinalID ) );
+    bool    error;
+
+    if( cclass == NULL ) {
+        error = ResWriteString( "", fp );
+    } else if( cclass->ord.fFlag == 0xff ) {
+        error = ResWriteUint8( fp, cclass->ord.wOrdinalID );
     } else {
-        return( ResWriteString( cclass->name, fp ) );
+        error = ResWriteString( cclass->name, fp );
     }
+    return( error );
 }
 
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp )
@@ -346,67 +349,3 @@ ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass )
     }
     return( new_cclass );
 }
-
-#if 0
-ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal *name )
-/**************************************************************************/
-{
-    size_t          stringlen;
-    ControlClass    *class;
-
-    if( name->ord.fFlag == 0xff ) {
-        class = ResNumToControlClass( name->ord.wOrdinalID );
-    } else {
-        if( IS_STR_IGNORE_CASE( name->name, "button" ) ) {
-            class = ResNumToControlClass( CLASS_BUTTON );
-        } else if( IS_STR_IGNORE_CASE( name->name, "edit" ) ) {
-            class = ResNumToControlClass( CLASS_EDIT );
-        } else if( IS_STR_IGNORE_CASE( name->name, "static" ) ) {
-            class = ResNumToControlClass( CLASS_STATIC );
-        } else if( IS_STR_IGNORE_CASE( name->name, "listbox" ) ) {
-            class = ResNumToControlClass( CLASS_LISTBOX );
-        } else if( IS_STR_IGNORE_CASE( name->name, "scrollbar" ) ) {
-            class = ResNumToControlClass( CLASS_SCROLLBAR );
-        } else if( IS_STR_IGNORE_CASE( name->name, "combobox" ) ) {
-            class = ResNumToControlClass( CLASS_COMBOBOX );
-        } else {
-            /* space for the '\0' is reserve in the ControlClass structure */
-            stringlen = strlen( name->name );
-            class = WRESALLOC( sizeof( ControlClass ) + stringlen );
-            if( class == NULL ) {
-                WRES_ERROR( WRS_MALLOC_FAILED );
-            } else {
-                /* +1 to copy the '\0' */
-                memcpy( class->ClassName, name->name, stringlen + 1 );
-            }
-        }
-    }
-    return( class );
-}
-
-ControlClass *ResNumToControlClass( uint_16 classnum )
-/****************************************************/
-{
-    ControlClass *  class;
-
-    if( (classnum & 0x80) != 0 || classnum == 0) {
-        class = WRESALLOC( sizeof( ControlClass ) );
-        if( class == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        } else if( (classnum & 0x80) != 0 ) {
-            class->Class = (uint_8)classnum;
-        } else {
-            class->ClassName[0] = '\0';
-        }
-    } else {
-        class = WRESALLOC( sizeof( ControlClass ) + 1 );
-        if( class == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
-            class->ClassName[0] = (char)classnum;
-            class->ClassName[1] = '\0';
-        }
-    }
-    return( class );
-}
-#endif

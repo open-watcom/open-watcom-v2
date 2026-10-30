@@ -67,13 +67,6 @@ typedef struct DialogBoxHeader {
     char                FontCharsetDefined;
 } DialogBoxHeader;
 
-#if 0
-typedef union ControlClass {
-    uint_8              Class;          /* if (class & 0x80) */
-    char                ClassName[1];   /* '\0' terminated */
-} ControlClass;
-#endif
-
 typedef struct DialogBoxControl {
     uint_32             HelpId;
     DialogExstyle       ExtendedStyle;
@@ -95,26 +88,24 @@ typedef struct DialogBoxControl {
 
 /* reswdiag.c */
 
-extern bool         ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
-extern bool         ResWriteDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
-extern bool         ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
-extern bool         ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp );
-extern bool         ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp );
-extern bool         ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp );
+extern bool             ResWriteDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
+extern bool             ResWriteDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
+extern bool             ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
+extern bool             ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp );
+extern bool             ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp );
+extern bool             ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp );
 extern ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass );
-//extern ControlClass *ResNameOrOrdinalToControlClass( const ResNameOrOrdinal * );
-//extern ControlClass *ResNumToControlClass( uint_16 classnum );
 
 /* resrdiag.c */
 
-extern bool         ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
-extern bool         ResReadDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
-extern bool         ResReadDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
-extern bool         ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp );
-extern bool         ResReadDialogBoxControl32( DialogBoxControl *control, FILE *fp );
-extern bool         ResReadDialogBoxExControl( DialogBoxControl *control, FILE *fp );
-extern bool         ResIsDialogBoxEx( FILE *fp );
-extern void         ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
-extern void         ResFreeDialogBoxHeaderPtrs32( DialogBoxHeader *head );
+extern bool             ResReadDialogBoxHeader( DialogBoxHeader *head, FILE *fp );
+extern bool             ResReadDialogBoxHeader32( DialogBoxHeader *head, FILE *fp );
+extern bool             ResReadDialogBoxExHeader( DialogBoxHeader *head, FILE *fp );
+extern bool             ResReadDialogBoxControl( DialogBoxControl *control, FILE *fp );
+extern bool             ResReadDialogBoxControl32( DialogBoxControl *control, FILE *fp );
+extern bool             ResReadDialogBoxExControl( DialogBoxControl *control, FILE *fp );
+extern bool             ResIsDialogBoxEx( FILE *fp );
+extern void             ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
+extern void             ResFreeDialogBoxHeaderPtrs32( DialogBoxHeader *head );
 
 #endif
