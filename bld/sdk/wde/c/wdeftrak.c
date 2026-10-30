@@ -258,7 +258,7 @@ bool WdeTrakInit( bool first )
     SETCTL_SIZEW( WdeDefaultTrak, 0 );
     SETCTL_SIZEH( WdeDefaultTrak, 0 );
     SETCTL_TEXT( WdeDefaultTrak, NULL );
-    SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
+    SETCTL_CLASSID( WdeDefaultTrak, ResStrToNameOrOrdinal( WTRACKBAR_CLASS ) );
 
 #ifdef __WINDOWS__
     WdeTrakDispatch = MakeProcInstance_DISPATCHER( WdeTrakDispatcher, WdeGetAppInstance() );
@@ -353,7 +353,7 @@ bool WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
+bool WdeTrakGetWindowClass( WdeTrakObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

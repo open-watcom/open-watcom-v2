@@ -80,7 +80,7 @@ WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeLBox( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeLBox( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeLBCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeLBoxSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLBoxGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -120,7 +120,7 @@ OBJPTR CALLBACK WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 }
 
 OBJPTR WdeMakeLBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+                    DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -348,7 +348,7 @@ bool WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeLBoxGetWindowClass( WdeLBoxObject *obj, char **class, void *p2 )
+bool WdeLBoxGetWindowClass( WdeLBoxObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,9 +56,9 @@ extern OBJPTR   WdeCloneObject( OBJPTR, POINT * );
 extern void     WdeFreeControlIDs( void );
 extern uint_16  WdeGetNextControlID( void );
 extern uint_32  WdeHammingDistance( uint_32, uint_32 );
-extern bool     WdeIsClassDefined( char * );
+extern bool     WdeIsClassDefined( const char * );
 extern char     *WdeRectToStr( RECT * );
-extern void     WdeStrToRect( char *, RECT * );
+extern void     WdeStrToRect( const char *, RECT * );
 extern void     WdeShowObjectWindow( HWND, bool );
 extern void     WdeBringWindowToTop( HWND );
 extern bool     WdePutObjFirst( OBJPTR, LIST **);

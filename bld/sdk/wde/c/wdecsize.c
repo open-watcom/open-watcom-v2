@@ -37,7 +37,7 @@
 #include "wrdll.h"
 #include "wresall.h"
 
-static size_t WdeCalcSizeOfControlClass( ResNameOrOrdinal *cclass, bool is32bit )
+static size_t WdeCalcSizeOfControlClass( const ResNameOrOrdinal *cclass, bool is32bit )
 {
     size_t size;
 
@@ -47,32 +47,26 @@ static size_t WdeCalcSizeOfControlClass( ResNameOrOrdinal *cclass, bool is32bit 
         } else {
             size = SIZEU8;
         }
-    } else {
+    } else if( cclass->ord.fFlag == 0xff ) {
         if( is32bit ) {
-            if( cclass->ord.fFlag == 0xff ) {
-                size = SIZEU16 + SIZEU16;
-            } else {
-                size = WRCalcStrlen( cclass->name, is32bit );
-            }
+            size = SIZEU16 + SIZEU16;
         } else {
-            if( cclass->ord.fFlag == 0xff ) {
-                size = SIZEU8;
-            } else {
-                size = WRCalcStrlen( cclass->name, is32bit );
-            }
+            size = SIZEU8;
         }
+    } else {
+        size = WRCalcStrlen( cclass->name, is32bit );
     }
 
     return( size );
 }
 
-static size_t WdeCalcSizeOfDialogBoxControl( ResNameOrOrdinal *ClassID, ResNameOrOrdinal *Text, bool is32bit, bool is32bitEx )
+static size_t WdeCalcSizeOfDialogBoxControl( const ResNameOrOrdinal *ClassID, const ResNameOrOrdinal *Text, bool is32bit, bool is32bitEx )
 {
     size_t size;
 
     if( is32bitEx ) {
         // fix part of DialogBoxExControl32 (up to ClassID)
-        size = 4 * SIZEU16 + 4 * SIZEU32 + /* Extra bytes */ SIZEU16; 
+        size = 4 * SIZEU16 + 4 * SIZEU32 + /* Extra bytes */ SIZEU16;
     } else if( is32bit ) {
         // fix part of DialogBoxControl32 (up to ClassID)
         size = 5 * SIZEU16 + 2 * SIZEU32 + /* Extra bytes */ SIZEU16;
@@ -88,7 +82,7 @@ static size_t WdeCalcSizeOfDialogBoxControl( ResNameOrOrdinal *ClassID, ResNameO
     return( size );
 }
 
-static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameOrOrdinal *ClassName, char *Caption, char *FontName, bool is32bit, bool is32bitEx )
+static size_t WdeCalcSizeOfDialogBoxHeader( const ResNameOrOrdinal *MenuName, const ResNameOrOrdinal *ClassName, const char *Caption, const char *FontName, bool is32bit, bool is32bitEx )
 {
     size_t size;
 
@@ -120,7 +114,7 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
     return( size );
 }
 
-size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
+size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *info )
 {
     size_t              size;
     size_t              csize;
@@ -156,7 +150,7 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     return( size );
 }
 
-size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
+size_t WdeCalcSizeOfResNameOrOrdinal( const ResNameOrOrdinal *name, bool is32bit )
 {
     size_t size;
 
@@ -166,20 +160,14 @@ size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *name, bool is32bit )
         } else {
             size = SIZEU8;
         }
-    } else {
+    } else if( name->ord.fFlag == 0xff ) {
         if( is32bit ) {
-            if( name->ord.fFlag == 0xff ) {
-                size = SIZEU16 + SIZEU16;
-            } else {
-                size = WRCalcStrlen( name->name, is32bit );
-            }
+            size = SIZEU16 + SIZEU16;
         } else {
-            if( name->ord.fFlag == 0xff ) {
-                size = SIZEU8 + SIZEU16;
-            } else {
-                size = WRCalcStrlen( name->name, is32bit );
-            }
+            size = SIZEU8 + SIZEU16;
         }
+    } else {
+        size = WRCalcStrlen( name->name, is32bit );
     }
 
     return( size );

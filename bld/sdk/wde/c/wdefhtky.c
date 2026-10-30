@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeHtKy( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeHtKy( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeHKCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeHtKySetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHtKyGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -122,7 +122,7 @@ OBJPTR CALLBACK WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeHtKy( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -257,7 +257,7 @@ bool WdeHtKyInit( bool first )
     SETCTL_SIZEW( WdeDefaultHtKy, 0 );
     SETCTL_SIZEH( WdeDefaultHtKy, 0 );
     SETCTL_TEXT( WdeDefaultHtKy, NULL );
-    SETCTL_CLASSID( WdeDefaultHtKy, WdeStrToControlClass( WHOTKEY_CLASS ) );
+    SETCTL_CLASSID( WdeDefaultHtKy, ResStrToNameOrOrdinal( WHOTKEY_CLASS ) );
 
 #ifdef __WINDOWS__
     WdeHtKyDispatch = MakeProcInstance_DISPATCHER( WdeHtKyDispatcher, WdeGetAppInstance() );
@@ -352,7 +352,7 @@ bool WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeHtKyGetWindowClass( WdeHtKyObject *obj, char **class, void *p2 )
+bool WdeHtKyGetWindowClass( WdeHtKyObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

@@ -48,20 +48,20 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern uint_8                   WdeGetClassFromClassName( const char * );
+extern uint_16                  WdeGetClassOrdinalFromName( const char * );
 extern WdeDialogBoxHeader       *WdeAllocDialogBoxHeader( void );
 extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader ** );
 extern WdeDialogBoxControl      *WdeAllocDialogBoxControl( void );
 extern void                     WdeFreeDialogBoxControl( WdeDialogBoxControl ** );
-extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( WdeDialogBoxHeader * );
-extern WdeDialogBoxControl      *WdeCopyDialogBoxControl( WdeDialogBoxControl * );
-extern ResNameOrOrdinal         *WdeCopyResNameOrOrdinal( ResNameOrOrdinal * );
-extern WResID                   *WdeCopyWResID( WResID * );
-extern char                     *WdeControlClassToStr( ResNameOrOrdinal * );
-extern ResNameOrOrdinal         *WdeStrToControlClass( const char * );
-extern char                     *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *, int );
+extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( const WdeDialogBoxHeader * );
+extern WdeDialogBoxControl      *WdeCopyDialogBoxControl( const WdeDialogBoxControl * );
+extern ResNameOrOrdinal         *WdeCopyResNameOrOrdinal( const ResNameOrOrdinal * );
+extern WResID                   *WdeCopyWResID( const WResID * );
+extern char                     *WdeControlClassToStr( const ResNameOrOrdinal * );
+extern ResNameOrOrdinal         *WdeStrToControlClass( const char *str );
+extern char                     *WdeResNameOrOrdinalToStr( const ResNameOrOrdinal *, int );
 extern ResNameOrOrdinal         *WdeStrToResNameOrOrdinal( const char *str );
 extern OBJ_ID                   WdeGetCommonControlClassFromClassName( const char *class_name );
-extern WResHelpID               *WdeCopyWResHelpID( WResHelpID *src );
+extern WResHelpID               *WdeCopyWResHelpID( const WResHelpID *src );
 
 #endif

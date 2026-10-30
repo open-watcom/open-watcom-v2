@@ -166,6 +166,6 @@ extern void             WdeFreeResDlgItem( WdeResDlgItem **, bool );
 extern WdeResDlgItem    *WdeAllocResDlgItem( void );
 extern WdeResInfo       *WdeAllocResInfo( void );
 extern bool             WdeIsResModified( WdeResInfo * );
-extern void             WdeSetResModified( WdeResInfo *, bool );
+extern void             WdeSetResModified( WdeResInfo *, bool modified );
 
 #endif

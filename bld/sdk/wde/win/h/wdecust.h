@@ -159,7 +159,7 @@ extern void WdeGetCurrentCustControl( int, WdeCustControl **, UINT * );
 extern bool WdeSetCurrentCustControl( int );
 extern bool WdeLoadCustomLib( bool, bool );
 extern bool WdeFreeAllCustLibs( void );
-extern void WdeFindClassInAllCustLibs( char *, LIST ** );
+extern void WdeFindClassInAllCustLibs( const char *, LIST ** );
 extern void WdeFreeCustRESProcs( void );
 extern bool WdeIsBorBtnIDSupported( uint_16 );
 extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );

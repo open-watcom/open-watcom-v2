@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeProg( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeProg( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeProgressCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeProgSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeProgGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -122,7 +122,7 @@ OBJPTR CALLBACK WdeProgCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeProg( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeProg( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -255,7 +255,7 @@ bool WdeProgInit( bool first )
     SETCTL_SIZEW( WdeDefaultProg, 0 );
     SETCTL_SIZEH( WdeDefaultProg, 0 );
     SETCTL_TEXT( WdeDefaultProg, NULL );
-    SETCTL_CLASSID( WdeDefaultProg, WdeStrToControlClass( WPROGRESS_CLASS ) );
+    SETCTL_CLASSID( WdeDefaultProg, ResStrToNameOrOrdinal( WPROGRESS_CLASS ) );
 
 #ifdef __WINDOWS__
     WdeProgDispatch = MakeProcInstance_DISPATCHER( WdeProgDispatcher, WdeGetAppInstance() );
@@ -350,7 +350,7 @@ bool WdeProgGetWndProc( WdeProgObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeProgGetWindowClass( WdeProgObject *obj, char **class, void *p2 )
+bool WdeProgGetWindowClass( WdeProgObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

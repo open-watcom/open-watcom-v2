@@ -616,15 +616,14 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
             return( true );
         }
 
-        name = NULL;
         rname = GETCTL_TEXT( obj->control );
         if( rname->ord.fFlag == 0xff ) {
-            ultoa( (uint_32)rname->ord.wOrdinalID, temp, 10 );
+            ultoa( rname->ord.wOrdinalID, temp, 10 );
             name = temp;
+        } else if( rname->name[0] != '\0' ) {
+            name = rname->name;
         } else {
-            if( rname->name[0] ) {
-                name = rname->name;
-            }
+            name = NULL;
         }
 
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)*font, TRUE );
@@ -695,8 +694,8 @@ bool WdeControlGetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
 {
     ResNameOrOrdinal    *rname;
-    char                *name;
-    char                *cname;
+    const char          *name;
+    const char          *cname;
     void                *crt_params;
     char                temp[10];
     POINT               pnt;
@@ -754,10 +753,8 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
             if( rname->ord.fFlag == 0xff ) {
                 ultoa( rname->ord.wOrdinalID, temp, 10 );
                 name = temp;
-            } else {
-                if( rname->name[0] ) {
-                    name = rname->name;
-                }
+            } else if( rname->name[0] != '\0' ) {
+                name = rname->name;
             }
         }
     }
@@ -1625,7 +1622,7 @@ bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_control, void *s )
     return( true );
 }
 
-bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *control, char *hs )
+bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *control, const char *hs )
 {
 //    WdeDialogBoxControl *control = _control;
     /* unused parameters */ (void)control;
@@ -1638,7 +1635,7 @@ bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *control, char *hs
     return( true );
 }
 
-bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_pcontrol, char **hs )
+bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_pcontrol, const char **hs )
 {
     WdeDialogBoxControl **pcontrol = (WdeDialogBoxControl **)_pcontrol;
 
@@ -1657,7 +1654,7 @@ bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_pcontrol, char 
 
 bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WRHashValue         val;
+    WRHashValue         value;
     void                *vp;
     bool                found;
 
@@ -1673,9 +1670,9 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
             }
         } else {
             if( obj->symbol != NULL ) {
-                val = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
+                value = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
                 if( found ) {
-                    SETCTL_ID( obj->control, (uint_16)val );
+                    SETCTL_ID( obj->control, (uint_16)value );
                     WdeControlModified( obj );
                 } else {
                     MemFree( obj->symbol );
@@ -1695,7 +1692,7 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 
 bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
-    WRHashValue         val;
+    WRHashValue         value;
     void                *vp;
     bool                found;
 
@@ -1715,9 +1712,9 @@ bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
             }
         } else {
             if( obj->helpsymbol ) {
-                val = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
+                value = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
                 if( found ) {
-                    SETCTL_HELPID( obj->control, (uint_32)val );
+                    SETCTL_HELPID( obj->control, (uint_32)value );
                     WdeControlModified( obj );
                 } else {
                     MemFree( obj->helpsymbol );

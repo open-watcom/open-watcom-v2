@@ -460,7 +460,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     char                *cp;
     bool                quoted_str;
     bool                str_is_ordinal;
-    uint_16             ord;
+    uint_16             ordinal;
     bool                found;
     WRHashValue         value;
 
@@ -508,7 +508,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
         return;
     }
 
-    ord = (uint_16)strtoul( str, &cp, 0 );
+    ordinal = (uint_16)strtoul( str, &cp, 0 );
     str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
@@ -517,7 +517,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
         c_is.u.dlg.name = WResIDFromStr( str );
         MemFree( str );
     } else if( str_is_ordinal ) {
-        c_is.u.dlg.name = WResIDFromNum( ord );
+        c_is.u.dlg.name = WResIDFromNum( ordinal );
         MemFree( str );
     } else {
         if( !WRIsValidSymbol( str ) ) {
@@ -540,7 +540,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
             WdeSetEditWithSINT32( (int_32)value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
         }
     } else if( str_is_ordinal ) {
-        WdeSetEditWithSINT32( (int_32)ord, 10, WdeInfoWindow, IDB_INFO_IDNUM );
+        WdeSetEditWithSINT32( (int_32)ordinal, 10, WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     }
@@ -554,7 +554,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     char                *cp;
     WdeInfoStruct       c_is;
     bool                str_is_ordinal;
-    uint_16             ord;
+    uint_16             ordinal;
     bool                found;
     WRHashValue         value;
 
@@ -590,13 +590,13 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
         return;
     }
 
-    ord = (uint_16)strtoul( str, &cp, 0 );
+    ordinal = (uint_16)strtoul( str, &cp, 0 );
     str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
 
     if( str_is_ordinal ) {
-        c_is.u.ctl.id = ord;
+        c_is.u.ctl.id = ordinal;
         MemFree( str );
     } else {
         if( !WRIsValidSymbol( str ) ) {
@@ -618,7 +618,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
             WdeSetEditWithSINT32( (int_32)value, 10, WdeInfoWindow, IDB_INFO_IDNUM );
         }
     } else if( str_is_ordinal ) {
-        WdeSetEditWithSINT32( (int_32)ord, 10, WdeInfoWindow, IDB_INFO_IDNUM );
+        WdeSetEditWithSINT32( (int_32)ordinal, 10, WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     }

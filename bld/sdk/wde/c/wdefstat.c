@@ -370,7 +370,7 @@ bool WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeStaticGetWindowClass( WdeStaticObject *obj, char **class, void *p2 )
+bool WdeStaticGetWindowClass( WdeStaticObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

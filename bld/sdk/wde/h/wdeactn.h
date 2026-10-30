@@ -34,12 +34,12 @@
 #define WDEACTN_INCLUDED
 
 #define pick_ACTION_GET_WINDOW_HANDLE(o,x)      x##( GET_WINDOW_HANDLE,    GetWindowHandle,    (o *, HWND *, void *) )
-#define pick_ACTION_GET_WINDOW_CLASS(o,x)       x##( GET_WINDOW_CLASS,     GetWindowClass,     (o *, char **, void *) )
+#define pick_ACTION_GET_WINDOW_CLASS(o,x)       x##( GET_WINDOW_CLASS,     GetWindowClass,     (o *, const char **, void *) )
 #define pick_ACTION_GET_SUBOBJ_LIST(o,x)        x##( GET_SUBOBJ_LIST,      GetSubObjectList,   (o *, LIST **, void *) )
 #define pick_ACTION_GET_OBJECT_INFO(o,x)        x##( GET_OBJECT_INFO,      GetObjectInfo,      (o *, void **, void **) )
 #define pick_ACTION_SET_OBJECT_INFO(o,x)        x##( SET_OBJECT_INFO,      SetObjectInfo,      (o *, void *, void *) )
-#define pick_ACTION_GET_OBJECT_HELPINFO(o,x)    x##( GET_OBJECT_HELPINFO,  GetObjectHelpInfo,  (o *, void **, char **) )
-#define pick_ACTION_SET_OBJECT_HELPINFO(o,x)    x##( SET_OBJECT_HELPINFO,  SetObjectHelpInfo,  (o *, void *, char *) )
+#define pick_ACTION_GET_OBJECT_HELPINFO(o,x)    x##( GET_OBJECT_HELPINFO,  GetObjectHelpInfo,  (o *, void **, const char **) )
+#define pick_ACTION_SET_OBJECT_HELPINFO(o,x)    x##( SET_OBJECT_HELPINFO,  SetObjectHelpInfo,  (o *, void *, const char *) )
 #define pick_ACTION_CREATE_WINDOW(o,x)          x##( CREATE_WINDOW,        CreateWindow,       (o *, bool *, void *) )
 #define pick_ACTION_DESTROY_WINDOW(o,x)         x##( DESTROY_WINDOW,       DestroyWindow,      (o *, bool *, bool *) )
 #define pick_ACTION_SHOW_WIN(o,x)               x##( SHOW_WIN,             ShowWindow,         (o *, bool *, void *) )

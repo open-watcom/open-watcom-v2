@@ -133,15 +133,15 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int
     WPDLGTEMPLATEEX     dt;
     WPDLGITEMTEMPLATEEX dit;
     WPCHAR              ditstr;
-    unsigned char       class_ordinal;
+    uint_16             ordinal;
     size_t              item_start;
 
     /*
      * compute size of block, reallocate block to hold this stuff
      */
 
-    class_ordinal = DlgGetClassOrdinal( classname );
-    if( class_ordinal > 0 ) {
+    ordinal = DlgGetClassOrdinal( classname );
+    if( ordinal ) {
 #if defined( __WINDOWS__ )
         classlen = 1;
 #else
@@ -191,12 +191,12 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int
      */
 
     ditstr = (WPCHAR)( dit + 1 );
-    if( class_ordinal > 0 ) {
+    if( ordinal > 0 ) {
 #if defined( __WINDOWS__ )
-        *ditstr++ = class_ordinal;
+        *ditstr++ = ordinal;
 #else
         ditstr = DlgCopyWord( ditstr, -1 );
-        ditstr = DlgCopyWord( ditstr, class_ordinal );
+        ditstr = DlgCopyWord( ditstr, ordinal );
 #endif
     } else {
         ditstr = DlgCopyMBString( ditstr, classname, classlen );

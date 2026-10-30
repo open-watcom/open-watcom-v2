@@ -83,7 +83,7 @@ WINEXPORT LRESULT CALLBACK WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeSBar( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeSBar( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeSBCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeSBarSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeSBarGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -163,7 +163,7 @@ OBJPTR CALLBACK WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 }
 
 OBJPTR WdeMakeSBar( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+                    DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -300,7 +300,7 @@ bool WdeSBarInit( bool first )
     SETCTL_SIZEW( WdeDefaultSBar, 0 );
     SETCTL_SIZEH( WdeDefaultSBar, 0 );
     SETCTL_TEXT( WdeDefaultSBar, NULL );
-    SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
+    SETCTL_CLASSID( WdeDefaultSBar, ResStrToNameOrOrdinal( WSTATUSCLASSNAME ) );
 
 #ifdef __WINDOWS__
     WdeSBarDispatch = MakeProcInstance_DISPATCHER( WdeSBarDispatcher, WdeGetAppInstance() );
@@ -405,7 +405,7 @@ bool WdeSBarGetWndProc( WdeSBarObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeSBarGetWindowClass( WdeSBarObject *obj, char **class, void *p2 )
+bool WdeSBarGetWindowClass( WdeSBarObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

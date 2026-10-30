@@ -101,9 +101,9 @@ static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *contr
 static bool     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *control, WdeCustLib **pcust_lib, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
 static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control, WdeCustLib *cust_lib, UINT );
-static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
-static LIST     *WdeFindClassInList( char * );
-static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
+static bool     WdeAddNewClassToList( const char *, const char *, int, WNDPROC );
+static LIST     *WdeFindClassInList( const char * );
+static bool     WdeCustomRegisterClass( const char *, HINSTANCE, char **, int *, WNDPROC * );
 static void     WdeFreeClassList( void );
 static void     WdeFreeClassNode( WdeCustClassNode * );
 
@@ -265,7 +265,7 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
         style |= (WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_GROUP);
         SETCTL_STYLE( WdeDefaultCustom, style );
         SETCTL_TEXT( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_lib->lpcci[cust_index].szTextDefault ) );
-        SETCTL_CLASSID( WdeDefaultCustom, WdeStrToControlClass( cust_lib->lpcci[cust_index].szClass ) );
+        SETCTL_CLASSID( WdeDefaultCustom, ResStrToNameOrOrdinal( cust_lib->lpcci[cust_index].szClass ) );
 
         SETCTL_ID( WdeDefaultCustom, WdeGetNextControlID() );
 
@@ -330,7 +330,7 @@ void WdeFreeClassNode( WdeCustClassNode *node )
     }
 }
 
-bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC win_proc )
+bool WdeAddNewClassToList( const char *class, const char *new_name, int win_extra, WNDPROC win_proc )
 {
     WdeCustClassNode *node;
     char             *str;
@@ -366,7 +366,7 @@ bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
     return( true );
 }
 
-LIST *WdeFindClassInList( char *class )
+LIST *WdeFindClassInList( const char *class )
 {
     LIST             *clist;
     WdeCustClassNode *node;
@@ -381,7 +381,7 @@ LIST *WdeFindClassInList( char *class )
     return( clist );
 }
 
-bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
+bool WdeCustomRegisterClass( const char *class, HINSTANCE inst, char **new_name,
                              int *win_extra, WNDPROC *win_proc )
 {
     WdeCustClassNode    *node;
@@ -654,7 +654,7 @@ bool WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeCustomGetWindowClass( WdeCustomObject *obj, char **class, void *p2 )
+bool WdeCustomGetWindowClass( WdeCustomObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

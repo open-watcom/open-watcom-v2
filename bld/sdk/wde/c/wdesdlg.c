@@ -386,10 +386,10 @@ bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool mak
 
 bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
 {
-    bool    old;
+    bool    modified_save;
     bool    show;
 
-    old = ditem->modified;
+    modified_save = ditem->modified;
 
     if( res_info != NULL && ditem != NULL && ditem->dialog_info != NULL ) {
         ditem->object = WdeCreateDialogFromRes( res_info, ditem );
@@ -403,7 +403,7 @@ bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
         }
         show = TRUE;
         Forward( ditem->object, SHOW_WIN, &show, NULL );
-        ditem->modified = old;
+        ditem->modified = modified_save;
         return( TRUE );
     }
 
@@ -602,7 +602,7 @@ OBJ_ID WdeGetOBJIDFromClassNum( uint_8 class, uint_32 style )
 OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
 {
     ResNameOrOrdinal    *cclass;
-    uint_8              class;
+    uint_16             ordinal;
     OBJ_ID              id;
 
     cclass = GETCTL_CLASSID( control );
@@ -614,10 +614,10 @@ OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
     } else {
         id = WdeGetCommonControlClassFromClassName( cclass->name );
         if( id == 0 ) {
-            class = WdeGetClassFromClassName( cclass->name );
-            /* assume some sort of custom class if class is 0 */
-            if( class != 0 ) {
-                id = WdeGetOBJIDFromClassNum( class, GETCTL_STYLE( control ) );
+            ordinal = WdeGetClassOrdinalFromName( cclass->name );
+            /* assume some sort of custom class if class_id is 0 */
+            if( ordinal != 0 ) {
+                id = WdeGetOBJIDFromClassNum( ordinal, GETCTL_STYLE( control ) );
             }
         }
     }

@@ -418,7 +418,7 @@ bool WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeScrollGetWindowClass( WdeScrollObject *obj, char **class, void *p2 )
+bool WdeScrollGetWindowClass( WdeScrollObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

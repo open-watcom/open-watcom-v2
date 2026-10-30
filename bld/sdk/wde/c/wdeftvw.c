@@ -254,7 +254,7 @@ bool WdeTViewInit( bool first )
     SETCTL_SIZEW( WdeDefaultTView, 0 );
     SETCTL_SIZEH( WdeDefaultTView, 0 );
     SETCTL_TEXT( WdeDefaultTView, NULL );
-    SETCTL_CLASSID( WdeDefaultTView, WdeStrToControlClass( WWC_TREEVIEW ) );
+    SETCTL_CLASSID( WdeDefaultTView, ResStrToNameOrOrdinal( WWC_TREEVIEW ) );
 
 #ifdef __WINDOWS__
     WdeTViewDispatch = MakeProcInstance_DISPATCHER( WdeTViewDispatcher, WdeGetAppInstance() );
@@ -348,7 +348,7 @@ bool WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeTViewGetWindowClass( WdeTViewObject *obj, char **class, void *p2 )
+bool WdeTViewGetWindowClass( WdeTViewObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

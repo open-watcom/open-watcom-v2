@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo * );
-extern size_t WdeCalcSizeOfResNameOrOrdinal( ResNameOrOrdinal *, bool );
+extern size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo * );
+extern size_t WdeCalcSizeOfResNameOrOrdinal( const ResNameOrOrdinal *, bool );
 
 #endif

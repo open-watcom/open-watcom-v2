@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeHdr( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeHdr( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeHCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeHdrSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHdrGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -122,7 +122,7 @@ OBJPTR CALLBACK WdeHdrCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeHdr( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeHdr( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -257,7 +257,7 @@ bool WdeHdrInit( bool first )
     SETCTL_SIZEW( WdeDefaultHdr, 0 );
     SETCTL_SIZEH( WdeDefaultHdr, 0 );
     SETCTL_TEXT( WdeDefaultHdr, NULL );
-    SETCTL_CLASSID( WdeDefaultHdr, WdeStrToControlClass( WWC_HEADER ) );
+    SETCTL_CLASSID( WdeDefaultHdr, ResStrToNameOrOrdinal( WWC_HEADER ) );
 
 #ifdef __WINDOWS__
     WdeHdrDispatch = MakeProcInstance_DISPATCHER( WdeHdrDispatcher, WdeGetAppInstance() );
@@ -352,7 +352,7 @@ bool WdeHdrGetWndProc( WdeHdrObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeHdrGetWindowClass( WdeHdrObject *obj, char **class, void *p2 )
+bool WdeHdrGetWindowClass( WdeHdrObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

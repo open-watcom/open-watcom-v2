@@ -854,7 +854,7 @@ void WdeDialogFini( void )
 
 bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
-    WRHashValue         val;
+    WRHashValue         value;
     OBJPTR              child;
     LIST                *olist;
     void                *vp;
@@ -881,9 +881,9 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
             }
         } else {
             if( obj->symbol != NULL ) {
-                val = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
+                value = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
                 if( found ) {
-                    obj->name->ID.Num = (uint_16)val;
+                    obj->name->ID.Num = (uint_16)value;
                     WdeSetDialogModified( obj );
                 } else {
                     MemFree( obj->symbol );
@@ -901,7 +901,7 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 
 bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
-    WRHashValue         val;
+    WRHashValue         value;
     OBJPTR              child;
     LIST                *olist;
     void                *vp;
@@ -928,9 +928,9 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         }
     } else {
         if( obj->helpsymbol ) {
-            val = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
+            value = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
             if( found ) {
-                SETHDR_HELPID( obj->dialog_info, val );
+                SETHDR_HELPID( obj->dialog_info, value );
                 WdeSetDialogModified( obj );
             } else {
                 MemFree( obj->helpsymbol );
@@ -2282,7 +2282,7 @@ bool WdeDialogSetObjectInfo( WdeDialogObject *obj, void *_info, void *name )
     return( true );
 }
 
-bool WdeDialogGetObjectHelpInfo( WdeDialogObject *obj, void **info, char **helpsymbol )
+bool WdeDialogGetObjectHelpInfo( WdeDialogObject *obj, void **info, const char **helpsymbol )
 {
 //    WdeDialogBoxHeader **info = (WdeDialogBoxHeader **)_info;
     /* unused parameters */ (void)info;
@@ -2835,7 +2835,7 @@ void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     void                *vp;
-    bool                mod;
+    bool                modified;
     WdeDialogObject     *obj;
     DialogStyle         mask;
     DialogStyle         style;
@@ -2865,9 +2865,9 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeDialogGetDialogMemFlags( hDlg, &obj->res_flags );
 
     /* get the dialog caption */
-    vp = WdeGetStrFromEdit( hDlg, IDB_TEXT, &mod );
+    vp = WdeGetStrFromEdit( hDlg, IDB_TEXT, &modified );
     if( vp != NULL ) {
-        if( mod ) {
+        if( modified ) {
             if( GETHDR_CAPTION( obj->dialog_info ) ) {
                 MemFree( GETHDR_CAPTION( obj->dialog_info ) );
             }
@@ -2909,8 +2909,8 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     /* get the menu name */
-    rname = WdeGetResNameOrFromEdit( hDlg, IDB_MENU, &mod );
-    if( mod && rname != NULL ) {
+    rname = WdeGetResNameOrFromEdit( hDlg, IDB_MENU, &modified );
+    if( modified && rname != NULL ) {
         if( GETHDR_MENUNAME( obj->dialog_info ) ) {
             MemFree( GETHDR_MENUNAME( obj->dialog_info ) );
         }
@@ -2922,8 +2922,8 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     /* get the class name */
-    rname = WdeGetResNameOrFromEdit( hDlg, IDB_CLASS, &mod );
-    if( mod && rname != NULL ) {
+    rname = WdeGetResNameOrFromEdit( hDlg, IDB_CLASS, &modified );
+    if( modified && rname != NULL ) {
         if( GETHDR_CLASSNAME( obj->dialog_info ) ) {
             MemFree( GETHDR_CLASSNAME( obj->dialog_info ) );
         }

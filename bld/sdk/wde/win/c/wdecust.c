@@ -84,8 +84,8 @@ static void             WdeAddCustControlToCustLib( WdeCustLib *cust_lib, WdeCus
 static bool             WdeFreeCustLib( WdeCustLib *cust_lib );
 static void             WdeFreeCustLibControls( LIST ** );
 static bool             WdeFreeCustControl( WdeCustControl *cust_ctrl );
-static void             WdeFindClassInCustLibControls( char *, LIST **, LIST * );
-static void             WdeFindClassInCustLib( char *, LIST **, WdeCustLib *cust_lib );
+static void             WdeFindClassInCustLibControls( const char *, LIST **, LIST * );
+static void             WdeFindClassInCustLib( const char *, LIST **, WdeCustLib *cust_lib );
 static bool             WdeQueryUnsafeMSLoad( void );
 static bool             WdeQueryAssumeMS( void );
 static void             WdeFreeSelectWinCBox( HWND );
@@ -649,7 +649,7 @@ bool WdeFreeCustControl( WdeCustControl *cust_ctrl )
     return( true );
 }
 
-void WdeFindClassInAllCustLibs( char *class, LIST **list )
+void WdeFindClassInAllCustLibs( const char *class, LIST **list )
 {
     LIST        *llist;
     WdeCustLib  *cust_lib;
@@ -668,14 +668,14 @@ void WdeFindClassInAllCustLibs( char *class, LIST **list )
     }
 }
 
-void WdeFindClassInCustLib( char *class, LIST **list, WdeCustLib *cust_lib )
+void WdeFindClassInCustLib( const char *class, LIST **list, WdeCustLib *cust_lib )
 {
     if( cust_lib != NULL && cust_lib->controls != NULL ) {
         WdeFindClassInCustLibControls( class, list, cust_lib->controls );
     }
 }
 
-void WdeFindClassInCustLibControls( char *class, LIST **list, LIST *control_list )
+void WdeFindClassInCustLibControls( const char *class, LIST **list, LIST *control_list )
 {
     LIST           *clist;
     WdeCustControl *cust_ctrl;

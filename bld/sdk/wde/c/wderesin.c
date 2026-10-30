@@ -195,7 +195,7 @@ bool WdeIsResModified( WdeResInfo *res_info )
     return( false );
 }
 
-void WdeSetResModified( WdeResInfo *res_info, bool mod )
+void WdeSetResModified( WdeResInfo *res_info, bool modified )
 {
     LIST          *ilist;
     WdeResDlgItem *item;
@@ -203,9 +203,9 @@ void WdeSetResModified( WdeResInfo *res_info, bool mod )
     if( res_info != NULL ) {
         for( ilist = res_info->ditem_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             item = (WdeResDlgItem *)ListElement( ilist );
-            item->modified = mod;
+            item->modified = modified;
         }
-        res_info->modified = mod;
+        res_info->modified = modified;
     }
 }
 

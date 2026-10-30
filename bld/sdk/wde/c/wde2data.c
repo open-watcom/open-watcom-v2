@@ -82,13 +82,13 @@ static size_t WdeDataFromNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                VALU16( data ) = (uint_16)-1;
+                VALU16( data ) = 0xffff;
                 INCU16( data );
                 VALU16( data ) = name->ord.wOrdinalID;
                 INCU16( data );
                 size = SIZEU16 + SIZEU16;
             } else {
-                VALU8( data ) = name->ord.fFlag;
+                VALU8( data ) = 0xff;
                 INCU8( data );
                 VALU16( data ) = name->ord.wOrdinalID;
                 INCU16( data );

@@ -57,7 +57,7 @@ uint_32 WdeGetUINT32FromCombo( HWND hDlg, int id )
     return( WdeGetUINT32FromEdit( hDlg, id, NULL ) );
 }
 
-char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
+char *WdeGetStrFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     char    *cp;
     int     text_length;
@@ -65,12 +65,12 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
 
     text_copied = 0;
 
-    if( mod != NULL ) {
+    if( pmodified != NULL ) {
         /* find out if the edit field has changed */
         if( SendDlgItemMessage( hDlg, id, EM_GETMODIFY, 0, 0 ) ) {
-            *mod = TRUE;
+            *pmodified = true;
         } else {
-            *mod = FALSE;
+            *pmodified = false;
         }
     }
 
@@ -213,34 +213,37 @@ void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
     }
 }
 
-ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
+ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     ResNameOrOrdinal    *cclass;
-    int                 class;
-    char                *cp;
+    int                 ordinal;
+    char                *str;
     char                *ep;
 
     cclass = NULL;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    str = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
-        if( cp == NULL ) {
+    if( pmodified == NULL || *pmodified ) {
+        if( str == NULL ) {
             return( NULL );
         }
-        class = (int)strtoul( cp, &ep, 0 );
+        ordinal = (int)strtoul( str, &ep, 0 );
         if( *ep == '\0' ) {
-            cclass = ResNumToNameOrOrdinal( (uint_8)class );
-        } else if( (class = WdeGetClassFromClassName( cp )) != 0 ) {
-            cclass = ResNumToNameOrOrdinal( (uint_8)class );
+            cclass = ResNumToNameOrOrdinal( ordinal );
         } else {
-            cclass = WdeStrToControlClass( cp );
+            ordinal = WdeGetClassOrdinalFromName( str );
+            if( ordinal ) {
+                cclass = ResNumToNameOrOrdinal( ordinal );
+            } else {
+                cclass = ResStrToNameOrOrdinal( str );
+            }
         }
     }
 
-    if( cp != NULL ) {
-        MemFree( cp );
+    if( str != NULL ) {
+        MemFree( str );
     }
 
     return( cclass );
@@ -248,12 +251,12 @@ ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *mod )
 
 void WdeSetEditWithControlClass( ResNameOrOrdinal *cclass, HWND hDlg, int id )
 {
-    char *cp;
+    char *name;
 
-    cp = WdeControlClassToStr( cclass );
-    if( cp != NULL ) {
-        WdeSetEditWithStr( cp, hDlg, id );
-        MemFree( cp );
+    name = WdeControlClassToStr( cclass );
+    if( name != NULL ) {
+        WdeSetEditWithStr( name, hDlg, id );
+        MemFree( name );
     }
 }
 
@@ -302,17 +305,17 @@ void WdeSetEditWithWResHelpID( WResHelpID *ip, HWND hDlg, int id )
     }
 }
 
-ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
+ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     ResNameOrOrdinal *rp;
     char             *cp;
 
     rp = NULL;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    cp = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
+    if( pmodified == NULL || *pmodified ) {
         if( cp == NULL ) {
             return( NULL );
         }
@@ -330,25 +333,25 @@ ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND hDlg, int id, bool *mod )
     return( rp );
 }
 
-WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
+WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     WResID  *rp;
-    uint_16 ordID;
+    uint_16 ordinal;
     char    *cp;
     char    *ep;
 
     rp = NULL;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    cp = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
+    if( pmodified == NULL || *pmodified ) {
         if( cp == NULL ) {
             return( NULL );
         }
-        ordID = (uint_16)strtoul( cp, &ep, 0 );
+        ordinal = (uint_16)strtoul( cp, &ep, 0 );
         if( *ep == '\0' ) {
-            rp = WResIDFromNum( ordID );
+            rp = WResIDFromNum( ordinal );
         } else {
             rp = WResIDFromStr( cp );
         }
@@ -362,25 +365,25 @@ WResID *WdeGetWResIDFromEdit( HWND hDlg, int id, bool *mod )
 }
 
 #if 0
-WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
+WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     WResHelpID  *rp;
-    uint_32     ordID;
+    uint_32     ordinal;
     char        *cp;
     char        *ep;
 
     rp = NULL;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    cp = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
+    if( pmodified == NULL || *pmodified ) {
         if( cp == NULL ) {
             return( NULL );
         }
-        ordID = (uint_32)strtoul( cp, &ep, 0 );
+        ordinal = (uint_32)strtoul( cp, &ep, 0 );
         if( *ep == '\0' ) {
-            rp = WResHelpIDFromNum( ordID );
+            rp = WResHelpIDFromNum( ordinal );
         } else {
             rp = WResHelpIDFromStr( cp );
         }
@@ -394,12 +397,12 @@ WResHelpID *WdeGetWResHelpIDFromEdit( HWND hDlg, int id, bool *mod )
 }
 #endif
 
-int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *mod )
+int_16 WdeGetSINT16FromEdit( HWND hDlg, int id, bool *pmodified )
 {
-    return( (int_16)WdeGetSINT32FromEdit( hDlg, id, mod ) );
+    return( (int_16)WdeGetSINT32FromEdit( hDlg, id, pmodified ) );
 }
 
-int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
+int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *pmodified )
 {
     int_32  val;
     char    *cp;
@@ -407,17 +410,17 @@ int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
 
     val = 0;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    cp = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
+    if( pmodified == NULL || *pmodified ) {
         if( cp == NULL ) {
             return( 0 );
         }
         val = (int_32)strtol( cp, &ep, 0 );
         if( *ep != '\0' ) {
-            if( mod != NULL ) {
-                *mod = FALSE;
+            if( pmodified != NULL ) {
+                *pmodified = false;
             }
             val = 0;
         }
@@ -430,12 +433,12 @@ int_32 WdeGetSINT32FromEdit( HWND hDlg, int id, bool *mod )
     return( val );
 }
 
-uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, bool *mod )
+uint_16 WdeGetUINT16FromEdit( HWND hDlg, int id, bool *pmodified )
 {
-    return( (uint_16)WdeGetUINT32FromEdit( hDlg, id, mod ) );
+    return( (uint_16)WdeGetUINT32FromEdit( hDlg, id, pmodified ) );
 }
 
-uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *mod )
+uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *pmodified )
 {
     uint_32 val;
     char    *cp;
@@ -443,17 +446,17 @@ uint_32 WdeGetUINT32FromEdit( HWND hDlg, int id, bool *mod )
 
     val = 0;
 
-    cp = WdeGetStrFromEdit( hDlg, id, mod );
+    cp = WdeGetStrFromEdit( hDlg, id, pmodified );
 
     /* find out if the edit field has changed */
-    if( mod == NULL || *mod ) {
+    if( pmodified == NULL || *pmodified ) {
         if( cp == NULL ) {
             return( 0 );
         }
         val = (uint_32)strtoul( cp, &ep, 0 );
         if( *ep != '\0' ) {
-            if( mod != NULL ) {
-                *mod = FALSE;
+            if( pmodified != NULL ) {
+                *pmodified = false;
             }
             val = 0;
         }

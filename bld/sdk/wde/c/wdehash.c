@@ -172,15 +172,15 @@ bool WdeRemoveName( WRHashTable *table, const char *name )
 
 WRHashValue WdeLookupName( WRHashTable *table, const char *name, bool *found )
 {
-    WRHashValue         val;
+    WRHashValue         value;
 
-    *found = WRLookupName( table, name, &val ) != 0;
+    *found = WRLookupName( table, name, &value ) != 0;
 
     if( !*found ) {
         return( (WRHashValue)0 );
     }
 
-    return( val );
+    return( value );
 }
 
 #if 0

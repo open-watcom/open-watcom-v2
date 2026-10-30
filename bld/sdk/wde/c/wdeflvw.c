@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeLView( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeLView( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeLVCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeLViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -122,7 +122,7 @@ OBJPTR CALLBACK WdeLViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -257,7 +257,7 @@ bool WdeLViewInit( bool first )
     SETCTL_SIZEW( WdeDefaultLView, 0 );
     SETCTL_SIZEH( WdeDefaultLView, 0 );
     SETCTL_TEXT( WdeDefaultLView, NULL );
-    SETCTL_CLASSID( WdeDefaultLView, WdeStrToControlClass( WWC_LISTVIEW ) );
+    SETCTL_CLASSID( WdeDefaultLView, ResStrToNameOrOrdinal( WWC_LISTVIEW ) );
 
 #ifdef __WINDOWS__
     WdeLViewDispatch = MakeProcInstance_DISPATCHER( WdeLViewDispatcher, WdeGetAppInstance() );
@@ -352,7 +352,7 @@ bool WdeLViewGetWndProc( WdeLViewObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeLViewGetWindowClass( WdeLViewObject *obj, char **class, void *p2 )
+bool WdeLViewGetWindowClass( WdeLViewObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

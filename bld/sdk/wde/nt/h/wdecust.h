@@ -75,7 +75,7 @@ extern void WdeGetCurrentCustControl( int, WdeCustLib **, UINT * );
 extern bool WdeSetCurrentCustControl( int );
 extern bool WdeLoadCustomLib( bool, bool );
 extern bool WdeFreeAllCustLibs( void );
-extern void WdeFindClassInAllCustLibs( char *, LIST ** );
+extern void WdeFindClassInAllCustLibs( const char *, LIST ** );
 extern bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **, UINT * );
 extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );
 

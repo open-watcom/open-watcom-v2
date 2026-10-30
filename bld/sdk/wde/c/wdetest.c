@@ -182,16 +182,16 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
     char        *str;
     char        cname[20];
     int         len;
-    uint_8      class;
+    uint_16     ordinal;
 
     len = GetClassName( win, cname, sizeof( cname ) );
     if( len == 0 ) {
         return( TRUE );
     }
 
-    class = WdeGetClassFromClassName( cname );
+    ordinal = WdeGetClassOrdinalFromName( cname );
 
-    if( class == CLASS_LISTBOX || class == CLASS_COMBOBOX ) {
+    if( ordinal == CLASS_LISTBOX || ordinal == CLASS_COMBOBOX ) {
         str = NULL;
         text = WdeAllocRCString( WDE_TESTITEM );
         if( text != NULL ) {
@@ -206,7 +206,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
         SendMessage( win, WM_SETREDRAW, FALSE, 0 );
         for( index = 1; index <= TEST_DEFAULT_ENTRIES; index++ ) {
             sprintf( str, text, index );
-            if( class == CLASS_LISTBOX ) {
+            if( ordinal == CLASS_LISTBOX ) {
                 SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
             } else {
                 SendMessage( win, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );

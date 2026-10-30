@@ -257,7 +257,7 @@ bool WdeUpDnInit( bool first )
     SETCTL_SIZEW( WdeDefaultUpDn, 0 );
     SETCTL_SIZEH( WdeDefaultUpDn, 0 );
     SETCTL_TEXT( WdeDefaultUpDn, NULL );
-    SETCTL_CLASSID( WdeDefaultUpDn, WdeStrToControlClass( WUPDOWN_CLASS ) );
+    SETCTL_CLASSID( WdeDefaultUpDn, ResStrToNameOrOrdinal( WUPDOWN_CLASS ) );
 
 #ifdef __WINDOWS__
     WdeUpDnDispatch = MakeProcInstance_DISPATCHER( WdeUpDnDispatcher, WdeGetAppInstance() );
@@ -351,7 +351,7 @@ bool WdeUpDnGetWndProc( WdeUpDnObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeUpDnGetWindowClass( WdeUpDnObject *obj, char **class, void *p2 )
+bool WdeUpDnGetWindowClass( WdeUpDnObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

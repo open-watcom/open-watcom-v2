@@ -40,19 +40,19 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static char     *WdeGetClassNameFromClass( uint_8 );
+static const char   *WdeGetClassNameFromOrdinal( uint_16 );
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    uint_8  class;
-    char   *class_name;
+    uint_16     ordinal;
+    const char  *name;
 } WdeControlClassItems;
 
 typedef struct {
-    OBJ_ID  class;
-    char   *class_name;
+    OBJ_ID      id;
+    char        *name;
 } WdeCommonControlItems;
 
 /****************************************************************************/
@@ -65,7 +65,7 @@ static WdeControlClassItems WdeControlClasses[] = {
     { CLASS_LISTBOX,    "LISTBOX"   },
     { CLASS_SCROLLBAR,  "SCROLLBAR" },
     { CLASS_COMBOBOX,   "COMBOBOX"  },
-    { 0x00,             NULL        }
+    { 0,                NULL        }
 };
 
 static WdeCommonControlItems WdeCommonControlClasses[] = {
@@ -86,7 +86,7 @@ static WdeCommonControlItems WdeCommonControlClasses[] = {
 ResNameOrOrdinal *WdeStrToResNameOrOrdinal( const char *str )
 {
     ResNameOrOrdinal    *rp;
-    uint_16             ordID;
+    uint_16             ordinal;
     unsigned long       ul;
     char                *ep;
 
@@ -100,8 +100,8 @@ ResNameOrOrdinal *WdeStrToResNameOrOrdinal( const char *str )
 
     ul = strtoul( str, &ep, 0 );
     if( *ep == '\0' && ul <= 0xffff ) {
-        ordID = (uint_16)ul;
-        rp = ResNumToNameOrOrdinal( ordID );
+        ordinal = (uint_16)ul;
+        rp = ResNumToNameOrOrdinal( ordinal );
     } else {
         rp = ResStrToNameOrOrdinal( str );
     }
@@ -109,26 +109,23 @@ ResNameOrOrdinal *WdeStrToResNameOrOrdinal( const char *str )
     return( rp );
 }
 
-char *WdeResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
+char *WdeResNameOrOrdinalToStr( const ResNameOrOrdinal *name, int base )
 {
     char    temp[15];
-    char    *cp;
+    char    *str;
 
-    cp = NULL;
+    str = NULL;
 
     if( name != NULL ) {
         if( name->ord.fFlag == 0xff ) {
             sprintf( temp, ( base == 10 ) ? "%u" : "%x", name->ord.wOrdinalID );
-            cp = WdeStrdup( temp );
+            str = WdeStrdup( temp );
         } else {
-            cp = (char *)WdeStrdup( name->name );
-        }
-        if( cp == NULL ) {
-            return( NULL );
+            str = (char *)WdeStrdup( name->name );
         }
     }
 
-    return( cp );
+    return( str );
 }
 
 ResNameOrOrdinal *WdeStrToControlClass( const char *str )
@@ -147,17 +144,17 @@ ResNameOrOrdinal *WdeStrToControlClass( const char *str )
     return( cclass );
 }
 
-char *WdeControlClassToStr( ResNameOrOrdinal *cclass )
+char *WdeControlClassToStr( const ResNameOrOrdinal *cclass )
 {
-    char    *name;
-    char    *cp;
-    char    temp[35];
+    const char  *name;
+    char        *str;
+    char        temp[35];
 
-    cp = NULL;
+    str = NULL;
 
     if( cclass != NULL ) {
         if( cclass->ord.fFlag == 0xff ) {
-            name = WdeGetClassNameFromClass( cclass->ord.wOrdinalID );
+            name = WdeGetClassNameFromOrdinal( cclass->ord.wOrdinalID );
             if( name == NULL ) {
                 sprintf( temp, "%lu", cclass->ord.wOrdinalID );
                 name = temp;
@@ -166,14 +163,14 @@ char *WdeControlClassToStr( ResNameOrOrdinal *cclass )
             name = cclass->name;
         }
         if( name != NULL && name[0] != '\0' ) {
-            cp = WdeStrdup( name );
+            str = WdeStrdup( name );
         }
     }
 
-    return( cp );
+    return( str );
 }
 
-WdeDialogBoxControl *WdeCopyDialogBoxControl( WdeDialogBoxControl *src )
+WdeDialogBoxControl *WdeCopyDialogBoxControl( const WdeDialogBoxControl *src )
 {
     WdeDialogBoxControl *dest;
 
@@ -197,7 +194,7 @@ WdeDialogBoxControl *WdeCopyDialogBoxControl( WdeDialogBoxControl *src )
     return( dest );
 }
 
-WdeDialogBoxHeader *WdeCopyDialogBoxHeader( WdeDialogBoxHeader *src )
+WdeDialogBoxHeader *WdeCopyDialogBoxHeader( const WdeDialogBoxHeader *src )
 {
     WdeDialogBoxHeader *dest;
 
@@ -224,7 +221,7 @@ WdeDialogBoxHeader *WdeCopyDialogBoxHeader( WdeDialogBoxHeader *src )
 }
 
 
-WResID *WdeCopyWResID( WResID *src )
+WResID *WdeCopyWResID( const WResID *src )
 {
     WResID  *dest;
     size_t  len;
@@ -248,7 +245,7 @@ WResID *WdeCopyWResID( WResID *src )
     return( dest );
 }
 
-WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
+WResHelpID *WdeCopyWResHelpID( const WResHelpID *src )
 {
     WResHelpID  *dest;
     size_t      len;
@@ -272,7 +269,7 @@ WResHelpID *WdeCopyWResHelpID( WResHelpID *src )
     return( dest );
 }
 
-ResNameOrOrdinal *WdeCopyResNameOrOrdinal( ResNameOrOrdinal *src )
+ResNameOrOrdinal *WdeCopyResNameOrOrdinal( const ResNameOrOrdinal *src )
 {
     ResNameOrOrdinal *dest;
 
@@ -359,38 +356,38 @@ WdeDialogBoxHeader *WdeAllocDialogBoxHeader( void )
     return( header );
 }
 
-char *WdeGetClassNameFromClass( uint_8 class )
+const char *WdeGetClassNameFromOrdinal( uint_16 ordinal )
 {
     int i;
 
-    for( i = 0; WdeControlClasses[i].class != 0x00; i++ ) {
-        if( WdeControlClasses[i].class == class ) {
-            return ( WdeControlClasses[i].class_name );
+    for( i = 0; WdeControlClasses[i].ordinal != 0; i++ ) {
+        if( WdeControlClasses[i].ordinal == ordinal ) {
+            return( WdeControlClasses[i].name );
         }
     }
     return ( NULL );
 }
 
-uint_8 WdeGetClassFromClassName( const char *class_name )
+uint_16 WdeGetClassOrdinalFromName( const char *name )
 {
     int i;
 
-    for( i = 0; WdeControlClasses[i].class != 0x00; i++ ) {
-        if( stricmp( WdeControlClasses[i].class_name, class_name ) == 0 ) {
-            return ( WdeControlClasses[i].class );
+    for( i = 0; WdeControlClasses[i].ordinal != 0; i++ ) {
+        if( stricmp( WdeControlClasses[i].name, name ) == 0 ) {
+            return( WdeControlClasses[i].ordinal );
         }
     }
 
-    return( 0x00 );
+    return( 0 );
 }
 
-OBJ_ID WdeGetCommonControlClassFromClassName( const char *class_name )
+OBJ_ID WdeGetCommonControlClassFromClassName( const char *name )
 {
     int i;
 
-    for( i = 0; WdeCommonControlClasses[i].class != 0x00; i++ ) {
-        if( stricmp( WdeCommonControlClasses[i].class_name, class_name ) == 0 ) {
-            return( WdeCommonControlClasses[i].class );
+    for( i = 0; WdeCommonControlClasses[i].id != 0; i++ ) {
+        if( stricmp( WdeCommonControlClasses[i].name, name ) == 0 ) {
+            return( WdeCommonControlClasses[i].id );
         }
     }
 

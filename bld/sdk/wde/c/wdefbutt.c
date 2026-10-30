@@ -84,7 +84,7 @@ WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM )
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeButton( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeButton( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeButtonSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -149,7 +149,7 @@ OBJPTR CALLBACK WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -440,7 +440,7 @@ bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
+bool WdeButtonGetWindowClass( WdeButtonObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

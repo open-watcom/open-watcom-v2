@@ -319,7 +319,7 @@ bool WdeFreeCustLib( WdeCustLib *cust_lib )
     return( true );
 }
 
-void WdeFindClassInAllCustLibs( char *class, LIST **list )
+void WdeFindClassInAllCustLibs( const char *class, LIST **list )
 {
     LIST        *llist;
     WdeCustLib  *cust_lib;

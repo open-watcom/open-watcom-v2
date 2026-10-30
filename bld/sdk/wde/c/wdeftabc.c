@@ -255,7 +255,7 @@ bool WdeTabCInit( bool first )
     SETCTL_SIZEW( WdeDefaultTabC, 0 );
     SETCTL_SIZEH( WdeDefaultTabC, 0 );
     SETCTL_TEXT( WdeDefaultTabC, NULL );
-    SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
+    SETCTL_CLASSID( WdeDefaultTabC, ResStrToNameOrOrdinal( WWC_TABCONTROL ) );
 
 #ifdef __WINDOWS__
     WdeTabCDispatch = MakeProcInstance_DISPATCHER( WdeTabCDispatcher, WdeGetAppInstance() );
@@ -350,7 +350,7 @@ bool WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
+bool WdeTabCGetWindowClass( WdeTabCObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

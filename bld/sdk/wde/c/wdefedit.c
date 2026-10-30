@@ -80,7 +80,7 @@ WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeEdit( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeEdit( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeEdCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -119,7 +119,7 @@ OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -349,7 +349,7 @@ bool WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
+bool WdeEditGetWindowClass( WdeEditObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

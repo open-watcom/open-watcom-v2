@@ -81,7 +81,7 @@ WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static OBJPTR   WdeMakeAniC( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
+static OBJPTR   WdeMakeAniC( OBJPTR, RECT *, OBJPTR, DialogStyle, const char *, OBJ_ID );
 static OBJPTR   WdeAniCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *control );
 static void     WdeAniCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeAniCGetDefineInfo( WdeDefineObjectInfo *, HWND );
@@ -121,7 +121,7 @@ OBJPTR CALLBACK WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 }
 
-OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, const char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -255,7 +255,7 @@ bool WdeAniCInit( bool first )
     SETCTL_SIZEW( WdeDefaultAniC, 0 );
     SETCTL_SIZEH( WdeDefaultAniC, 0 );
     SETCTL_TEXT( WdeDefaultAniC, NULL );
-    SETCTL_CLASSID( WdeDefaultAniC, WdeStrToControlClass( WANIMATE_CLASS ) );
+    SETCTL_CLASSID( WdeDefaultAniC, ResStrToNameOrOrdinal( WANIMATE_CLASS ) );
 
 #ifdef __WINDOWS__
     WdeAniCDispatch = MakeProcInstance_DISPATCHER( WdeAniCDispatcher, WdeGetAppInstance() );
@@ -350,7 +350,7 @@ bool WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
     return( true );
 }
 
-bool WdeAniCGetWindowClass( WdeAniCObject *obj, char **class, void *p2 )
+bool WdeAniCGetWindowClass( WdeAniCObject *obj, const char **class, void *p2 )
 {
     /* unused parameters */ (void)obj; (void)p2;
 

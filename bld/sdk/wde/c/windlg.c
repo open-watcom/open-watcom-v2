@@ -48,7 +48,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     WPCHAR              template;
     WPDLGTEMPLATE       dt;
 #ifndef __WINDOWS__
-    unsigned char       class_ordinal;
+    uint_16             ordinal;
 #endif
 
     /*
@@ -58,8 +58,8 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 #ifdef __WINDOWS__
     classlen = DlgStringLength( classname );
 #else
-    class_ordinal = DlgGetClassOrdinal( classname );
-    if( class_ordinal > 0 ) {
+    ordinal = DlgGetClassOrdinal( classname );
+    if( ordinal ) {
         classlen = 4;
     } else {
         classlen = DlgStringLength( classname );
@@ -103,10 +103,10 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 #ifdef __WINDOWS__
     template = DlgCopyMBString( template, classname, classlen );
 #else
-    class_ordinal = DlgGetClassOrdinal( classname );
-    if( class_ordinal > 0 ) {
-        template = DlgCopyWord( template, (WORD)-1 );
-        template = DlgCopyWord( template, class_ordinal );
+    ordinal = DlgGetClassOrdinal( classname );
+    if( ordinal ) {
+        template = DlgCopyWord( template, 0xffff );
+        template = DlgCopyWord( template, ordinal );
     } else {
         template = DlgCopyMBString( template, classname, classlen );
     }
@@ -140,15 +140,15 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int c
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
     WPCHAR              ditstr;
-    unsigned char       class_ordinal;
+    uint_16             ordinal;
     size_t              item_start;
 
     /*
      * compute size of block, reallocate block to hold this stuff
      */
 
-    class_ordinal = DlgGetClassOrdinal( classname );
-    if( class_ordinal > 0 ) {
+    ordinal = DlgGetClassOrdinal( classname );
+    if( ordinal ) {
 #ifdef __WINDOWS__
         classlen = 1;
 #else
@@ -198,12 +198,12 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int c
      */
 
     ditstr = (WPCHAR)( dit + 1 );
-    if( class_ordinal > 0 ) {
+    if( ordinal > 0 ) {
 #ifdef __WINDOWS__
-        *ditstr++ = class_ordinal;
+        *ditstr++ = ordinal;
 #else
-        ditstr = DlgCopyWord( ditstr, -1 );
-        ditstr = DlgCopyWord( ditstr, class_ordinal );
+        ditstr = DlgCopyWord( ditstr, 0xffff );
+        ditstr = DlgCopyWord( ditstr, ordinal );
 #endif
     } else {
         ditstr = DlgCopyMBString( ditstr, classname, classlen );

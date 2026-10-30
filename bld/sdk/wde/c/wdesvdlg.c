@@ -803,7 +803,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     char                *cstyle;
     char                *ExStyle;
     ResNameOrOrdinal    *cclass;
-    uint_8              class_type;
+    uint_16             class_type;
     size_t              nlen;
     char                *ControlStr;
     size_t              len;
