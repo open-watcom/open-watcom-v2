@@ -379,6 +379,7 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
         ret = deflate(&zstr, flush);
         if (ret != Z_OK && ret != Z_STREAM_END) {
             _zip_error_set(error, ZIP_ER_ZLIB, ret);
+            deflateEnd(&zstr);
             return -1;
         }
 
@@ -387,6 +388,7 @@ add_data_uncomp(zip_source_callback cb, void *ud, struct zip_stat *st,
 
             if (fwrite(b2, 1, n, ft) != n) {
                 _zip_error_set(error, ZIP_ER_WRITE, errno);
+                deflateEnd(&zstr);
                 return -1;
             }
 

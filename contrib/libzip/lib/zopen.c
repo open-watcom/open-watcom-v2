@@ -293,14 +293,13 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
         /* comment size wrong -- too few or too many left after central dir */
         /* or number of cdir-entries on this disk != number of cdir-entries */
         _zip_error_set(error, ZIP_ER_NOZIP, 0);
-        ZIP_FREE(cd);
+        _zip_cdir_free(cd);
         return NULL;
     }
 
     if (cd->comment_len)
-        if ((cd->comment=_zip_memdup(eocd+EOCDLEN, cd->comment_len, error))
-            == NULL) {
-            ZIP_FREE(cd);
+        if ((cd->comment=_zip_memdup(eocd+EOCDLEN, cd->comment_len, error)) == NULL) {
+            _zip_cdir_free(cd);
             return NULL;
         }
 
@@ -321,7 +320,7 @@ _zip_readcdir(FILE *fp, unsigned char *buf, unsigned char *eocd, int buflen,
                 _zip_error_set(error, ZIP_ER_SEEK, errno);
             else
                 _zip_error_set(error, ZIP_ER_NOZIP, 0);
-            ZIP_FREE(cd);
+            _zip_cdir_free(cd);
             return NULL;
         }
     }
