@@ -127,7 +127,7 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *info )
     if( info == NULL ) {
         return( 0 );
     }
-    header = info->dialog_header;
+    header = info->header;
     is32bit = header->is32bit;
     is32bitEx = header->is32bitEx;
     size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( header ), GETHDR_CLASSNAME( header ),

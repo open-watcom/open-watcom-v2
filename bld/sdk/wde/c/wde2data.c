@@ -292,8 +292,8 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
         return( false );
 
     start = NULL;
-    is32bit = info->dialog_header->is32bit;
-    is32bitEx = info->dialog_header->is32bitEx;
+    is32bit = info->header->is32bit;
+    is32bitEx = info->header->is32bitEx;
     memsize = WdeCalcSizeOfWdeDialogBoxInfo( info );
     ok = (memsize != 0);
 
@@ -303,7 +303,7 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
     }
 
     if( ok ) {
-        size = WdeDataFromDialogBoxHeader( info->dialog_header, data );
+        size = WdeDataFromDialogBoxHeader( info->header, data );
         data += size;
         ok = (size != 0);
     }
@@ -381,13 +381,13 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
 
         dbi->control_list = NULL;
         dbi->res_flags = DEFAULT_FLAGS_NONE;
-        dbi->dialog_header = WdeDialogBoxHeaderFromData( &data, is32bit, is32bitEx );
-        ok = (dbi->dialog_header != NULL);
+        dbi->header = WdeDialogBoxHeaderFromData( &data, is32bit, is32bitEx );
+        ok = (dbi->header != NULL);
     }
 
     if( ok ) {
         prev_control = NULL;
-        for( index = 0; index < GETHDR_NUMITEMS( dbi->dialog_header ); index++ ) {
+        for( index = 0; index < GETHDR_NUMITEMS( dbi->header ); index++ ) {
             if( is32bit ) {
                 PADDING_SET( data, start );
             }

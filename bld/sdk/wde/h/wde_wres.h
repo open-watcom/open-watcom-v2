@@ -50,10 +50,10 @@
 /****************************************************************************/
 extern uint_16                  WdeGetClassOrdinalFromName( const char * );
 extern WdeDialogBoxHeader       *WdeAllocDialogBoxHeader( void );
-extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader ** );
+extern void                     WdeFreeDialogBoxHeader( WdeDialogBoxHeader **pheader );
 extern WdeDialogBoxControl      *WdeAllocDialogBoxControl( void );
 extern void                     WdeFreeDialogBoxControl( WdeDialogBoxControl ** );
-extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( const WdeDialogBoxHeader * );
+extern WdeDialogBoxHeader       *WdeCopyDialogBoxHeader( const WdeDialogBoxHeader *header );
 extern WdeDialogBoxControl      *WdeCopyDialogBoxControl( const WdeDialogBoxControl * );
 extern ResNameOrOrdinal         *WdeCopyResNameOrOrdinal( const ResNameOrOrdinal * );
 extern WResID                   *WdeCopyWResID( const WResID * );

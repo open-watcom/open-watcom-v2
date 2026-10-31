@@ -88,7 +88,7 @@ bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
 {
     if( dlg_info != NULL ) {
         WdeFreeControlList( &dlg_info->control_list );
-        WdeFreeDialogBoxHeader( &dlg_info->dialog_header );
+        WdeFreeDialogBoxHeader( &dlg_info->header );
         MemFree( dlg_info );
     } else {
         return( false );

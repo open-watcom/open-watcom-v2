@@ -983,15 +983,15 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     char                *name;
     char                *str;
     bool                ok;
-    WdeDialogBoxHeader  *header = ditem->dialog_info->dialog_header;
+    WdeDialogBoxHeader  *header = ditem->dialog_info->header;
     uint_32             ExStyle;
 
     name = NULL;
     ok = (rinfo != NULL && ditem != NULL && fp != NULL);
 
     if( ok ) {
-        if( ditem->dialog_info->dialog_header->symbol != NULL ) {
-            name = WdeStrdup( ditem->dialog_info->dialog_header->symbol );
+        if( ditem->dialog_info->header->symbol != NULL ) {
+            name = WdeStrdup( ditem->dialog_info->header->symbol );
         } else {
             if( rinfo->hash_table != NULL && !ditem->dialog_name->IsName ) {
                 name = WRResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
@@ -1044,7 +1044,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             MemFree( str );
             str = NULL;
         }
-        style = GETHDR_STYLE( ditem->dialog_info->dialog_header );
+        style = GETHDR_STYLE( ditem->dialog_info->header );
         ok = (WdeSetDialogFlagText( style, &str ) && str != NULL);
         MemFree( name );
         name = NULL;
@@ -1056,7 +1056,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             MemFree( str );
             str = NULL;
         }
-        rname = GETHDR_CLASSNAME( ditem->dialog_info->dialog_header );
+        rname = GETHDR_CLASSNAME( ditem->dialog_info->header );
         if( rname != NULL ) {
             str = WdeResNameOrOrdinalToStr( rname, 10 );
             if( str != NULL ) {
@@ -1068,9 +1068,9 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             }
         }
         if( style & WS_CAPTION ) {
-            if( GETHDR_CAPTION( ditem->dialog_info->dialog_header ) ) {
+            if( GETHDR_CAPTION( ditem->dialog_info->header ) ) {
                 str = WRConvertStringFrom(
-                    GETHDR_CAPTION( ditem->dialog_info->dialog_header ), "\t\n\"", "tn\"" );
+                    GETHDR_CAPTION( ditem->dialog_info->header ), "\t\n\"", "tn\"" );
                 if( str != NULL ) {
                     fprintf( fp, "CAPTION \"%s\"\n", str );
                     MemFree( str );
@@ -1081,7 +1081,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
         ExStyle = 0;
 #if __NT__XX
-        ExStyle = GETHDR_EXSTYLE( ditem->dialog_info->dialog_header );
+        ExStyle = GETHDR_EXSTYLE( ditem->dialog_info->header );
         WdeSetEXFlagText( ExStyle, &str );
         if( str != NULL ) {
             fprintf( fp, "EXSTYLE %s\n", str );
@@ -1090,7 +1090,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         }
 #endif
 
-        rname = GETHDR_MENUNAME( ditem->dialog_info->dialog_header );
+        rname = GETHDR_MENUNAME( ditem->dialog_info->header );
         if( rname != NULL ) {
             str = WdeResNameOrOrdinalToStr( rname, 10 );
             if( str != NULL ) {
@@ -1102,10 +1102,10 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             }
         }
         if( (style & DS_SETFONT) &&
-            GETHDR_FONTFACENAME( ditem->dialog_info->dialog_header ) != NULL ) {
+            GETHDR_FONTFACENAME( ditem->dialog_info->header ) != NULL ) {
             fprintf( fp, "FONT %d, \"%s\"\n",
-                     GETHDR_FONTPOINTSIZE( ditem->dialog_info->dialog_header ),
-                     GETHDR_FONTFACENAME( ditem->dialog_info->dialog_header ) );
+                     GETHDR_FONTPOINTSIZE( ditem->dialog_info->header ),
+                     GETHDR_FONTFACENAME( ditem->dialog_info->header ) );
         }
     }
 
@@ -1195,7 +1195,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         wrote_begin = TRUE;
         for( clist = ditem->dialog_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
-            ok = WdeWriteDlgControl( rinfo, control, ditem->dialog_info->dialog_header->is32bitEx, fp, nlen );
+            ok = WdeWriteDlgControl( rinfo, control, ditem->dialog_info->header->is32bitEx, fp, nlen );
         }
     }
 

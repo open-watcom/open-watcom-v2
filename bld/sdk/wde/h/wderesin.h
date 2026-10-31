@@ -142,7 +142,7 @@ typedef struct WdeDialogBoxControl {
 } WdeDialogBoxControl;
 
 typedef struct WdeDialogBoxInfoStruct {
-    WdeDialogBoxHeader  *dialog_header;
+    WdeDialogBoxHeader  *header;
     LIST                *control_list;      /* list of DialogBoxControl's      */
     ResMemFlags         res_flags;
 } WdeDialogBoxInfo;

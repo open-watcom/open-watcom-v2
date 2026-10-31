@@ -119,12 +119,12 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
     }
 
     if( ok ) {
-        dlg_info->dialog_header = WdeAllocDialogBoxHeader();
-        ok = ( dlg_info->dialog_header != NULL );
+        dlg_info->header = WdeAllocDialogBoxHeader();
+        ok = ( dlg_info->header != NULL );
     }
 
     if( ok ) {
-        dlg_info->dialog_header->is32bit = is32bit;
+        dlg_info->header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->res_flags = DEFAULT_FLAGS_NONE;
         ok = ( (fp = ResOpenFileRO( file_name )) != NULL );
@@ -138,22 +138,22 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
-            dlg_info->dialog_header->is32bitEx = ResIsDialogBoxEx( fp );
+            dlg_info->header->is32bitEx = ResIsDialogBoxEx( fp );
             ResSeek( fp, langnode->Info.Offset, SEEK_SET );
 
-            if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogBoxExHeader( &dlg_info->dialog_header->head, fp );
+            if( dlg_info->header->is32bitEx ) {
+                ok = !ResReadDialogBoxExHeader( &dlg_info->header->head, fp );
             } else {
-                ok = !ResReadDialogBoxHeader32( &dlg_info->dialog_header->head, fp );
+                ok = !ResReadDialogBoxHeader32( &dlg_info->header->head, fp );
             }
         } else {
-            ok = !ResReadDialogBoxHeader( &dlg_info->dialog_header->head, fp );
+            ok = !ResReadDialogBoxHeader( &dlg_info->header->head, fp );
         }
     }
 
     if( ok ) {
         prev_control = NULL;
-        for( index = 0; index < GETHDR_NUMITEMS( dlg_info->dialog_header ); index++ ) {
+        for( index = 0; index < GETHDR_NUMITEMS( dlg_info->header ); index++ ) {
             control = WdeAllocDialogBoxControl();
             if( control == NULL ) {
                 ok = false;
@@ -164,7 +164,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lang
                  * JPK - check which control structure to expect based on
                  *       whether this an extended dialog or not
                 */
-                if( dlg_info->dialog_header->is32bitEx ) {
+                if( dlg_info->header->is32bitEx ) {
                     if( ResReadDialogBoxExControl( &control->ctrl, fp ) ) {
                         ok = false;
                         break;
