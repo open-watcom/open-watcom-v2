@@ -208,7 +208,7 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
             WdeFreeRCString( text );
         }
         if( GETCTL_TEXT( info->info.c.control ) ) {
-            WdeSetEditWithResNameOr( GETCTL_TEXT( info->info.c.control ), hDlg, IDB_TEXT );
+            WdeSetEditWithResNameOrOrdinal( GETCTL_TEXT( info->info.c.control ), hDlg, IDB_TEXT );
         }
     }
 

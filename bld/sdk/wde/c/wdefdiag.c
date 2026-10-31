@@ -2826,10 +2826,10 @@ void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeSetDefineObjectSymbolInfo( o_info, hDlg );
 
     /* set the menu name */
-    WdeSetEditWithResNameOr( GETHDR_MENUNAME( obj->dialog_header ), hDlg, IDB_MENU );
+    WdeSetEditWithResNameOrOrdinal( GETHDR_MENUNAME( obj->dialog_header ), hDlg, IDB_MENU );
 
     /* set the menu name */
-    WdeSetEditWithResNameOr( GETHDR_CLASSNAME( obj->dialog_header ), hDlg, IDB_CLASS );
+    WdeSetEditWithResNameOrOrdinal( GETHDR_CLASSNAME( obj->dialog_header ), hDlg, IDB_CLASS );
 }
 
 void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )

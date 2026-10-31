@@ -51,7 +51,7 @@ extern ResNameOrOrdinal *WdeGetResNameOrFromEdit( HWND, int, bool *pmodified );
 extern WResID           *WdeGetWResIDFromEdit( HWND, int, bool *pmodified );
 extern void             WdeSetEditWithWResID( WResID *, HWND, int );
 extern void             WdeSetEditWithWResHelpID( WResHelpID *, HWND, int );
-extern void             WdeSetEditWithResNameOr( ResNameOrOrdinal *, HWND, int );
+extern void             WdeSetEditWithResNameOrOrdinal( ResNameOrOrdinal *, HWND, int );
 extern void             WdeSetEditWithControlClass( ResNameOrOrdinal *, HWND, int );
 extern ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND, int, bool *pmodified );
 extern void             WdeSetComboWithStr( char *, HWND, int );

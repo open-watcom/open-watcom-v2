@@ -260,7 +260,7 @@ void WdeSetEditWithControlClass( ResNameOrOrdinal *cclass, HWND hDlg, int id )
     }
 }
 
-void WdeSetEditWithResNameOr( ResNameOrOrdinal *rp, HWND hDlg, int id )
+void WdeSetEditWithResNameOrOrdinal( ResNameOrOrdinal *rp, HWND hDlg, int id )
 {
     char *cp;
 
