@@ -476,7 +476,7 @@ bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
 
     if( *flag ) {
         if( obj->res_info ) {
-            next = WdeGetNextObject( FALSE, obj->object_handle, obj->parent );
+            next = WdeGetNextObject( false, obj->object_handle, obj->parent );
             if( next == NULL ) {
                 next = obj->parent;
             }
@@ -1193,9 +1193,9 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
         }
 
         if( obj->parent == obj->base_obj ) {
-            WdeSetControlObjectMenu( FALSE, FALSE, FALSE, obj->mode );
+            WdeSetControlObjectMenu( false, false, false, obj->mode );
         } else {
-            WdeSetControlObjectMenu( TRUE, WdeIsDialogRestorable( (WdeDialogObject *)obj->parent ),
+            WdeSetControlObjectMenu( true, WdeIsDialogRestorable( (WdeDialogObject *)obj->parent ),
                                      obj->res_info && obj->res_info->hash_table, obj->mode );
         }
 
@@ -1804,7 +1804,7 @@ bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOr
         o->new_oe = NULL;
         o->lists = *l;
         o->old_oe->mode = *mode;
-        o->old_oe->pos_set = FALSE;
+        o->old_oe->pos_set = false;
         o->old_oe->tab_set = ( (style & WS_TABSTOP) != 0 );
         o->old_oe->grp_set = ( (style & WS_GROUP) != 0 );
         o->res_info = obj->res_info;

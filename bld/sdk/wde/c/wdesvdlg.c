@@ -491,7 +491,7 @@ static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, c
     int         not_first;
 
     if( map == NULL || text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tlen = 0;
@@ -519,19 +519,19 @@ static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, c
         map++;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 #if 0
 bool WdeSetWindowFlagText( unsigned long flags, char **text )
 {
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *text = NULL;
     if( WdeSetFlagText( WindowMap, WindowStyle, flags, text ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( *text != NULL ) {
@@ -539,7 +539,7 @@ bool WdeSetWindowFlagText( unsigned long flags, char **text )
         *text = NULL;
     }
 
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -549,7 +549,7 @@ static bool WdeAddStyleString( char **text, char *str )
     size_t  tlen;
 
     if( text == NULL || str == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     slen = strlen( str );
@@ -575,7 +575,7 @@ static bool WdeAddStyleString( char **text, char *str )
 bool WdeSetDialogFlagText( unsigned long flags, char **text )
 {
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *text = NULL;
@@ -584,7 +584,7 @@ bool WdeSetDialogFlagText( unsigned long flags, char **text )
             WdeAddStyleString( text, "WS_OVERLAPPED" );
         }
         if( WdeSetFlagText( WindowMap, WindowStyle, flags, text ) ) {
-            return( TRUE );
+            return( true );
         }
     }
 
@@ -593,7 +593,7 @@ bool WdeSetDialogFlagText( unsigned long flags, char **text )
         *text = NULL;
     }
 
-    return( FALSE );
+    return( false );
 }
 
 #if __NT__XX
@@ -602,7 +602,7 @@ static bool WdeSetEXFlagText( uint_32 flags, char **text )
     uint_32 mask;
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *text = NULL;
@@ -636,7 +636,7 @@ static bool WdeSetEXFlagText( uint_32 flags, char **text )
     }
 
     if( WdeSetFlagText( WindowEXMap, WindowStyle, flags, text ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( *text != NULL ) {
@@ -644,7 +644,7 @@ static bool WdeSetEXFlagText( uint_32 flags, char **text )
         *text = NULL;
     }
 
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -654,7 +654,7 @@ bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text )
     char        msg[80];
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *text = NULL;
@@ -726,7 +726,7 @@ static bool WdeSetCommControlFlagText( char *control_class, unsigned long flags,
     bool        ok;
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
     *text = NULL;
     ok = true;
@@ -815,19 +815,19 @@ bool WdeWriteDlgControl( WdeResInfo *res_info, WdeDialogBoxControl *control, boo
     class = NULL;
     cstyle = NULL;
     ExStyle = NULL;
-    ctext_alloc = FALSE;
-    cid_alloc = FALSE;
+    ctext_alloc = false;
+    cid_alloc = false;
     ok = (res_info != NULL && control != NULL &&
           GETCTL_CLASSID( control ) != NULL && fp != NULL);
 
     if( ok ) {
         if( GETCTL_TEXT( control ) != NULL ) {
             ctext = WdeResNameOrOrdinalToStr( GETCTL_TEXT( control ), 10 );
-            ctext_alloc = TRUE;
+            ctext_alloc = true;
         }
         if( ctext == NULL ) {
             ctext = "";
-            ctext_alloc = FALSE;
+            ctext_alloc = false;
         }
         ok = (ctext != NULL);
     }
@@ -864,7 +864,7 @@ bool WdeWriteDlgControl( WdeResInfo *res_info, WdeDialogBoxControl *control, boo
         } else if( res_info->hash_table != NULL ) {
             cid = WRResolveValue( res_info->hash_table, GETCTL_ID( control ) );
             if( cid != NULL ) {
-                cid_alloc = TRUE;
+                cid_alloc = true;
             }
         }
     }
@@ -1166,7 +1166,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp )
     size_t              nlen;
     char                *ctext;
 
-    wrote_begin = FALSE;
+    wrote_begin = false;
     ok = (res_info != NULL && ditem != NULL && ditem->dlg_info != NULL && fp != NULL);
 
     if( ok ) {
@@ -1192,7 +1192,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp )
         }
 
         fwrite( "BEGIN\n", sizeof( char ), 6, fp );
-        wrote_begin = TRUE;
+        wrote_begin = true;
         for( clist = ditem->dlg_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
             ok = WdeWriteDlgControl( res_info, control, ditem->dlg_info->header->is32bitEx, fp, nlen );
@@ -1209,27 +1209,27 @@ bool WdeSaveDlgItemToRC( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp )
 bool WdeCreateItemDBI( WdeResInfo *res_info, WdeResDlgItem *ditem )
 {
     if( res_info == NULL || ditem == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( ditem->object != NULL ) {
         if( WdeGetItemDBI( ditem ) == NULL ) {
-            return( FALSE );
+            return( false );
         }
     } else if( ditem->dlg_info == NULL ) {
         ditem->dlg_info = WdeLoadDialogFromRes( res_info, ditem->langnode, ditem->is32bit );
         if( ditem->dlg_info == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( ditem->dialog_name == NULL ) {
             ditem->dialog_name = WdeCopyWResID( &ditem->resnode->Info.ResName );
             if( ditem->dialog_name == NULL ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeSaveResInfoToRC( char *filename, WdeResInfo *res_info, bool append )
@@ -1313,7 +1313,7 @@ bool WdeSaveRC( char *filename, WdeResInfo *res_info )
     }
 
     if( ok ) {
-        ok = WdeSaveResInfoToRC( filename, res_info, FALSE );
+        ok = WdeSaveResInfoToRC( filename, res_info, false );
     }
 
     return( ok );

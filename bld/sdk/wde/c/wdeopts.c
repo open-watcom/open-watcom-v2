@@ -147,9 +147,9 @@ static bool WdeGetBoolOpt( char *entry, bool *i )
 
     if( val != 0x7fff ) {
         *i = ( val != 0 );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -161,9 +161,9 @@ static bool WdeGetIntOpt( char *entry, int *i )
 
     if( val != 0x7fff ) {
         *i = val;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -172,7 +172,7 @@ static bool WdeWriteRectOpt( char *entry, RECT *r )
     char    *str;
     bool    ret;
 
-    ret = FALSE;
+    ret = false;
     str = WdeRectToStr( r );
     if( str != NULL ) {
         ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
@@ -191,10 +191,10 @@ static bool WdeGetRectOpt( char *entry, RECT *r )
                                    str, 40, WdeProfileName );
     if( ret && strcmp( "0, 0, 0, 0", str ) ) {
         WdeStrToRect( str, r );
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static bool WdeGetStrOpt( char *entry, char **opt )
@@ -462,12 +462,12 @@ bool WdeDisplayOptions( void )
 #endif
     if( modified == -1 ) {
         WdeWriteTrail( "WdeDisplayOptions: Dialog not created!" );
-        return( FALSE );
+        return( false );
     }
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 static void WdeSetOptInfo( HWND hDlg, WdeOptState *state )

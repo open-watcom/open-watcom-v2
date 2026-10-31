@@ -127,7 +127,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
     }
 
     if( ok ) {
-        WdeSetResModified( res_info, FALSE );
+        WdeSetResModified( res_info, false );
     }
 
     if( res_info != NULL && res_info->info->save_type != WR_WIN_RC_DLG ) {
@@ -261,12 +261,12 @@ bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
     WdeDialogBoxInfo   *dlg_info;
 
     if( ditem == NULL || data == NULL || dsize == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     dlg_info = WdeGetItemDBI( ditem );
     if( dlg_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     return( WdeAllocDataFromDBI( dlg_info, data, dsize ) );
@@ -298,13 +298,13 @@ WResResNode *WdeRenameWResResNode( WResTypeNode *typenode, WResResNode *resnode,
 bool WdeAddResToType( WResTypeNode *typenode, WResResNode *resnode )
 {
     if( typenode == NULL || resnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
     ResAddLLItemAtEnd( (void**)&(typenode->Head), (void**)&(typenode->Tail), resnode );
 
     typenode->Info.NumResources++;
 
-    return( TRUE );
+    return( true );
 }
 
 WResTypeNode *WdeAddTypeToDir( WResDir dir, uint_16 type )

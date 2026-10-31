@@ -128,21 +128,21 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
         ListRemoveElt( &o->lists->newlist, (OBJPTR)o->new_oe );
         MemFree( o->new_oe );
         o->new_oe = NULL;
-        o->old_oe->present = TRUE;
-        o->old_oe->pos_set = FALSE;
+        o->old_oe->present = true;
+        o->old_oe->pos_set = false;
     } else {
         o->new_oe = MemAlloc( sizeof( WdeOrderedEntry ) );
         if( o->new_oe != NULL ) {
-            o->old_oe->pos_set = TRUE;
+            o->old_oe->pos_set = true;
             memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
-            o->old_oe->present = FALSE;
+            o->old_oe->present = false;
             o->old_oe->pos = 0;
             WdeInsertObject( &o->lists->newlist, (OBJPTR)o->new_oe );
         }
     }
 
     if( reorder ) {
-        WdeReorderTags( o->lists, FALSE );
+        WdeReorderTags( o->lists, false );
     }
 }
 
@@ -163,7 +163,7 @@ static void WdeOrderPrevTags( WdeSetOrderStruct *o )
             break;
         }
         if( !oentry->pos_set ) {
-            WdeSetTagOrder( os, FALSE );
+            WdeSetTagOrder( os, false );
         }
     }
 }
@@ -189,8 +189,8 @@ static void WdeTagDblClicked( WdeSetOrderStruct *o )
 
     for( olist = o->lists->oldlist; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
-        oentry->present = TRUE;
-        oentry->pos_set = FALSE;
+        oentry->present = true;
+        oentry->pos_set = false;
         os = WdeGetTagInfo( oentry->tag );
         if( os != NULL ) {
             os->new_oe = NULL;
@@ -199,7 +199,7 @@ static void WdeTagDblClicked( WdeSetOrderStruct *o )
 
     WdeTagPressed( o );
 
-    WdeReorderTags( o->lists, TRUE );
+    WdeReorderTags( o->lists, true );
 }
 
 void WdeFreeOrderedList( LIST *list )
@@ -257,7 +257,7 @@ bool WdeAddOrderedEntry( LIST **list, OBJPTR obj )
 
     if( (olist = WdeFindOrderedEntry( *list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement ( olist );
-        oentry->present = TRUE;
+        oentry->present = true;
         return( true );
     }
 
@@ -265,7 +265,7 @@ bool WdeAddOrderedEntry( LIST **list, OBJPTR obj )
     if( oentry != NULL ) {
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
-        oentry->present = TRUE;
+        oentry->present = true;
         WdeInsertObject( list, (OBJPTR)oentry );
     }
 
@@ -279,7 +279,7 @@ bool WdeRemoveOrderedEntry( LIST *list, OBJPTR obj )
 
     if( (olist = WdeFindOrderedEntry( list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
-        oentry->present = FALSE;
+        oentry->present = false;
         return( true );
     }
 
@@ -449,7 +449,7 @@ void WdeTagPressed( WdeSetOrderStruct *o )
             if( GetKeyState( VK_SHIFT ) < 0 ) {
                 WdeOrderPrevTags( o );
             }
-            WdeSetTagOrder( o, TRUE );
+            WdeSetTagOrder( o, true );
             break;
         case WdeSetTabs:
             o->old_oe->tab_set = !o->old_oe->tab_set;

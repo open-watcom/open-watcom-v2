@@ -240,7 +240,7 @@ bool WdeCloseToolBar( WdeToolBar *tbar )
         WdeFreeToolBar( tbar );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeToolBarInfo( WdeToolBarInfo *info )

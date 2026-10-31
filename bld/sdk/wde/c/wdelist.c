@@ -78,7 +78,7 @@ bool WdeListConcat( LIST **dest, LIST *src, size_t size )
     OBJPTR  elt;
 
     if( dest == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     WdeListLastElt( *dest, &end );
@@ -89,7 +89,7 @@ bool WdeListConcat( LIST **dest, LIST *src, size_t size )
         } else {
             elt = MemAlloc( size );
             if( elt == NULL ) {
-                return( FALSE );
+                return( false );
             }
             memcpy( elt, ListElement( olist ), size );
         }
@@ -102,7 +102,7 @@ bool WdeListConcat( LIST **dest, LIST *src, size_t size )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 LIST *WdeListCopy( LIST *src )

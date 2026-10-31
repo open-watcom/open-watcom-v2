@@ -57,7 +57,7 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #define WDE_NUM_CUSTOMS         2
-#define WDE_CHECK_WHICH( w )    (((w < 0) || (w >= WDE_NUM_CUSTOMS)) ? FALSE : TRUE)
+#define WDE_CHECK_WHICH( w )    ((w >= 0) && (w < WDE_NUM_CUSTOMS))
 #define WDE_PREVIEW_PAD         10
 
 /****************************************************************************/

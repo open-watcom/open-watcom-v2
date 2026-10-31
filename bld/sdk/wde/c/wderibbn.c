@@ -210,9 +210,9 @@ void WdeShowRibbon( void )
     } else {
         if( WdeRibbon == NULL ) {
             WdeCreateRibbon( WdeGetMainWindowHandle() );
-            created = TRUE;
+            created = true;
         } else {
-            created = FALSE;
+            created = false;
         }
         if( !created ) {
             WdeRibbonHeight = 2 * WdeRibbonInfo->dinfo.border_size.y +

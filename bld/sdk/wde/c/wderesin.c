@@ -54,7 +54,7 @@ bool WdeFreeResInfo( WdeResInfo *res_info )
     if( res_info != NULL ) {
         InitState( res_info->forms_win );
         if( res_info->res_win != NULL ) {
-            WdeSetEditMode( res_info, FALSE );
+            WdeSetEditMode( res_info, false );
             CloseFormEdit( res_info->forms_win );
         }
         if( res_info->ditem_list != NULL ) {
@@ -141,7 +141,7 @@ void WdeFreeResItemList( LIST **item_list )
             if( ditem->object != NULL ) {
                 Destroy( ditem->object, false );
             } else {
-                WdeFreeResDlgItem( &ditem, TRUE );
+                WdeFreeResDlgItem( &ditem, true );
             }
         }
         ListFree( *item_list );

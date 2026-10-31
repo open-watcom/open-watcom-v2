@@ -709,14 +709,14 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
     bool        check_lefttext;
-    BOOL        auto_checked;
+    bool        auto_checked;
     OBJ_ID      id;
     DialogStyle mask;
 
     id = o_info->obj_id;
     mask = 0;
     check_lefttext = false;
-    auto_checked = FALSE;
+    auto_checked = false;
 
     if( id == PBUTTON_OBJ ) {
 
@@ -783,7 +783,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         check_lefttext = true;
 
-        auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTOCHECKBOX );
+        auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTOCHECKBOX ) != 0;
 
         if( IsDlgButtonChecked( hDlg, IDB_BS_3STATE ) ) {
             if( auto_checked ) {
@@ -823,7 +823,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
         check_lefttext = true;
 
-        auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTORADIOBUTTON );
+        auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTORADIOBUTTON ) != 0;
 
         if( auto_checked ) {
             mask = BS_AUTORADIOBUTTON;

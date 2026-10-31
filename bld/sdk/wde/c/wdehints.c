@@ -320,7 +320,7 @@ bool WdeInitHints( void )
 {
     bool ret;
 
-    ret = TRUE;
+    ret = true;
 
     if( !WdeIsDDE() ) {
         ret = WdeCreateWdePopupListItem( 4, WdeGetInitialMenuHandle(),
@@ -365,13 +365,13 @@ bool WdeCreateWdePopupListItem( int num, HMENU hmenu, WdePopupHintItem *hint_ite
             ListAddElt( &WdePopupList, (OBJPTR)p );
         } else {
             MemFree( p );
-            return( FALSE );
+            return( false );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeInitHintItems( int num, HMENU hmenu, WdePopupHintItem *hint_items )
@@ -388,5 +388,5 @@ bool WdeInitHintItems( int num, HMENU hmenu, WdePopupHintItem *hint_items )
         hint_items[i].hpopup = hpopup;
     }
 
-    return( TRUE );
+    return( true );
 }

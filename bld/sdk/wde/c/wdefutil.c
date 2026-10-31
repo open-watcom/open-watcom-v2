@@ -312,7 +312,7 @@ bool WdeIsStrSpace( char *_s )
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 uint_32 WdeHammingDistance( uint_32 x1, uint_32 x2 )
@@ -382,7 +382,7 @@ bool WdePutObjFirst( OBJPTR obj, LIST **list )
     }
 
     if( obj == ListElement( *list ) ) {
-        return( TRUE );
+        return( true );
     }
 
     if( ListFindElt( *list, obj ) ) {
@@ -393,7 +393,7 @@ bool WdePutObjFirst( OBJPTR obj, LIST **list )
         return( FALSE );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
@@ -710,7 +710,7 @@ void WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             *cp = '\0';
         }
         WRStripSymbol( str );
-        quoted_str = TRUE;
+        quoted_str = true;
     }
 
     if( str[0] == '\0' ) {
@@ -801,7 +801,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             *cp = '\0';
         }
         WRStripSymbol( str );
-        quoted_str = TRUE;
+        quoted_str = true;
     }
 
     if( str[0] == '\0' ) {
@@ -865,7 +865,7 @@ void WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *symbol, WRHashVa
             res_info->hash_table = WRInitHashTable();
         }
         if( res_info->hash_table != NULL ) {
-            force = TRUE;
+            force = true;
             WdeAddHashEntry( res_info->hash_table, symbol, value, &force );
         }
     }
@@ -907,7 +907,7 @@ bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
         ClientToScreen( hWnd, &mouse_location );
         ScreenToClient( WdeGetEditWindowHandle( NULL ), &mouse_location );
         WdePassToEdit( message, wParam, MAKELONG( mouse_location.x, mouse_location.y ) );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_NCLBUTTONDBLCLK:
@@ -926,7 +926,7 @@ bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
         ScreenToClient( WdeGetEditWindowHandle( NULL ), &mouse_location );
         WdePassToEdit( new_message, new_wparam,
                        MAKELONG( mouse_location.x, mouse_location.y ) );
-        ret = TRUE;
+        ret = true;
         break;
     }
 

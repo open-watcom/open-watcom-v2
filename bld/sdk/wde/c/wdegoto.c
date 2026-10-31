@@ -66,14 +66,14 @@ bool WdeIsCurrentObjectVisible( WdeResInfo *res_info )
     POINT       origin;
 
     if( res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     curr_obj = WdeGetCurrentDialog();
     if( curr_obj == NULL ) {
         curr_obj = GetCurrObject();
         if( curr_obj == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -83,10 +83,10 @@ bool WdeIsCurrentObjectVisible( WdeResInfo *res_info )
     OffsetRect( &brect, origin.x, origin.y );
 
     if( IntersectRect( &intersect, &crect, &brect ) ) {
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeHandleGotoCurrentObject( void )
@@ -100,12 +100,12 @@ bool WdeHandleGotoCurrentObject( void )
 
     res_info = WdeGetCurrentRes();
     if( res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
     InitState( res_info->forms_win );
 
     if( WdeIsCurrentObjectVisible( res_info ) ) {
-        return( TRUE );
+        return( true );
     }
 
     // calculate the exclusion rectangle for the new offset
@@ -119,7 +119,7 @@ bool WdeHandleGotoCurrentObject( void )
 
     obj = GetCurrObject();
     if( obj == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     Location( obj, &crect );
@@ -139,5 +139,5 @@ bool WdeHandleGotoCurrentObject( void )
 
     NewOffset( pt );
 
-    return( TRUE );
+    return( true );
 }

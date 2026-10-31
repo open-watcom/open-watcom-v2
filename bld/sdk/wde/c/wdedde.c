@@ -388,7 +388,7 @@ bool WdeUpdateDDEEditSession( void )
 
     if( ok ) {
         res_info = WdeGetCurrentRes();
-        WdeSetResModified( res_info, FALSE );
+        WdeSetResModified( res_info, false );
     }
 
     return( ok );
@@ -500,7 +500,7 @@ bool WdeStartDDEEditSession( void )
         } else {
             object = WdeCreateNewDialog( ditem->dialog_name, ditem->is32bit );
             if( ditem != NULL ) {
-                WdeFreeResDlgItem( &ditem, TRUE );
+                WdeFreeResDlgItem( &ditem, true );
             }
             ditem = NULL;
         }
@@ -515,7 +515,7 @@ bool WdeStartDDEEditSession( void )
 
     if( !ok ) {
         if( ditem != NULL ) {
-            WdeFreeResDlgItem( &ditem, TRUE );
+            WdeFreeResDlgItem( &ditem, true );
         }
         if( res_info != NULL ) {
             WdeFreeResInfo( res_info );

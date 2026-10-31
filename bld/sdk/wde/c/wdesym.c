@@ -255,7 +255,7 @@ bool WdeResourceLoadHash( WdeResInfo *res_info )
         Notify( obj, PRIMARY_OBJECT, NULL );
     }
 
-    WdeSetResModified( res_info, TRUE );
+    WdeSetResModified( res_info, true );
 
     return( true );
 }
@@ -456,7 +456,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *res_info )
                 MemFree( res_info->sym_name );
             }
             res_info->sym_name = include;
-            WdeSetResModified( res_info, TRUE );
+            WdeSetResModified( res_info, true );
         }
     }
 

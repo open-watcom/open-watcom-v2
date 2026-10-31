@@ -66,14 +66,14 @@ bool WdePushEnv( jmp_buf *e )
 
     s = MemAlloc( sizeof( WdeStackEnvType ) );
     if( s == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     memcpy( &s->e, e, sizeof( jmp_buf ) );
     s->next = WdeTop;
     WdeTop = s;
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdePopEnv( jmp_buf *e )
@@ -86,10 +86,10 @@ bool WdePopEnv( jmp_buf *e )
         memcpy( e, &s->e, sizeof( jmp_buf ) );
         MemFree( s );
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeTopEnv( jmp_buf *e )
@@ -97,8 +97,8 @@ bool WdeTopEnv( jmp_buf *e )
     if( WdeTop != NULL ) {
         memcpy( e, &WdeTop->e, sizeof( jmp_buf ) );
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }

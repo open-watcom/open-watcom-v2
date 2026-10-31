@@ -121,7 +121,7 @@ bool WdeInitCreateTable( void )
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
 #ifdef __WINDOWS__
@@ -132,7 +132,7 @@ bool WdeInitCreateTable( void )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFiniCreateTable( void )

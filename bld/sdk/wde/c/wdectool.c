@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -93,7 +93,7 @@ static OBJ_ID  WdeGetOBJIDFromMenu( int );
 /****************************************************************************/
 static WdeToolBarInfo *WdeControlsInfo      = NULL;
 static WdeToolBar     *WdeControls          = NULL;
-static bool            WdeStickyMode        = FALSE;
+static bool            WdeStickyMode        = false;
 
 #define WCBFCC  WCB_FLAG_COMMON_CONTROL
 
@@ -384,10 +384,10 @@ void WdeHandleShowToolsMenu( void )
 {
     if( WdeControls != NULL ) {
         WdeDestroyControls();
-        WdeSetOption( WdeOptIsCntlsTBarVisible, FALSE );
+        WdeSetOption( WdeOptIsCntlsTBarVisible, false );
     } else {
         WdeCreateControlsToolBar();
-        WdeSetOption( WdeOptIsCntlsTBarVisible, TRUE );
+        WdeSetOption( WdeOptIsCntlsTBarVisible, true );
     }
 }
 
@@ -411,17 +411,17 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
     bool                ignore_msg;
     bool                ret;
 
-    ignore_msg = FALSE;
+    ignore_msg = false;
 
     if( WdeGetNumRes() && !WdeInCleanup() ) {
         obj = WdeGetCurrentDialog();
         if( obj != NULL && Forward( obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-            ignore_msg = TRUE;
+            ignore_msg = true;
         }
     }
 
     if( !ignore_msg && WdeGetTestMode() ) {
-        ignore_msg = TRUE;
+        ignore_msg = true;
     }
 
     if( ignore_msg ) {
@@ -501,7 +501,7 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     case WM_CLOSE:
         WdeDestroyControls();
-        WdeSetOption ( WdeOptIsCntlsTBarVisible, FALSE );
+        WdeSetOption ( WdeOptIsCntlsTBarVisible, false );
         ret = true;
         break;
 

@@ -90,7 +90,7 @@ bool WdeDefineCurrentObject( WORD w )
 
     if( obj != NULL && obj != GetMainObject() ) {
         if( w != IDM_DEFINEOBJECT ) {
-            old_option = WdeSetOption( WdeOptUseDefDlg, FALSE );
+            old_option = WdeSetOption( WdeOptUseDefDlg, false );
         }
         ret = Define( obj, &pnt, NULL ) != 0;
         if( w != IDM_DEFINEOBJECT ) {
@@ -126,8 +126,6 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
         WdeWriteTrail( "WdeGenericDefine: GET_WINDOW_HANDLE failed!" );
         return( false );
     }
-
-    redraw = FALSE;
 
     app_inst = WdeGetAppInstance();
 #ifdef __WINDOWS__

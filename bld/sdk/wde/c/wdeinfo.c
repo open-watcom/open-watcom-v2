@@ -169,7 +169,7 @@ int WdeGetInfoWindowDepth( void )
 bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
 {
     if( !WdeInitInfoText() ) {
-        return( FALSE );
+        return( false );
     }
 
 #ifdef __WINDOWS__
@@ -186,14 +186,14 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
     /* if the window could not be created return FALSE */
     if ( WdeInfoWindow == NULL ) {
         WdeWriteTrail( "WdeCreateInfoWindow: Could not create info window!" );
-        return( FALSE );
+        return( false );
     }
 
     WdeInfoWindowDepth = 0;
 
     WdeResizeWindows();
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeInfoFini( void )
@@ -241,7 +241,7 @@ void WdeShowInfoWindow( bool show )
 void WdeEnableInfoWindowInput( bool enable )
 {
     HWND        win;
-    static bool last = TRUE;
+    static bool last = true;
 
     if( WdeInfoWindowDepth != 0 && last != enable ) {
         win = GetDlgItem( WdeInfoWindow, IDB_INFO_CAPTION );
@@ -327,13 +327,13 @@ void WdeWriteInfo( WdeInfoStruct *is )
 
     if( is->obj_id == BASE_OBJ ) {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_SIZE );
-        WdeEnableInfoWindowInput( FALSE );
+        WdeEnableInfoWindowInput( false );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_CAPTION );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
         WdeWriteObjectDimensions( &(is->SizeInfo) );
-        WdeEnableInfoWindowInput( TRUE );
+        WdeEnableInfoWindowInput( true );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
         } else if( is->obj_id == CONTROL_OBJ ) {

@@ -139,15 +139,15 @@ static HMENU        WdeResMenu         = NULL;
 static HMENU        WdeCurrentMenu     = NULL;
 static HWND         hWinWdeMain        = NULL;
 static HWND         hWinWdeMDIClient   = NULL;
-static bool         WdeCleanupStarted  = FALSE;
-static bool         WdeFatalExit       = FALSE;
-static bool         IsDDE              = FALSE;
-static bool         EnableMenuInput    = FALSE;
+static bool         WdeCleanupStarted  = false;
+static bool         WdeFatalExit       = false;
+static bool         IsDDE              = false;
+static bool         EnableMenuInput    = false;
 static char         WdeMainClass[]     = "WdeMainClass";
-static bool         WdeFirstInst       = FALSE;
+static bool         WdeFirstInst       = false;
 static jmp_buf      WdeEnv;
 
-bool WdeCreateNewFiles  = FALSE;
+bool WdeCreateNewFiles  = false;
 
 static void nomemcb( void )
 {
@@ -242,7 +242,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         }
     }
 
-    WdeEnableMenuInput( TRUE );
+    WdeEnableMenuInput( true );
 
     if( setjmp( WdeEnv ) ) {
         PostMessage( hWinWdeMain, WDE_FATAL_EXIT, 0, 0 );
@@ -306,30 +306,30 @@ bool WdeInit( HINSTANCE app_inst )
     /* register the main window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_NOREGISTERMAINCLASS );
-        return( FALSE );
+        return( false );
     }
 
     /* register the edit window class */
     if( !WdeRegisterEditClass( app_inst ) ) {
         WdeDisplayErrorMsg( WDE_NOREGISTEREDITCLASS );
-        return( FALSE );
+        return( false );
     }
 
     /* register the res MDI window class */
     if( !WdeRegisterResClass( app_inst ) ) {
         WdeDisplayErrorMsg( WDE_NOREGISTERRESCLASS );
-        return( FALSE );
+        return( false );
     }
 
     /* register the tag window class */
     if( !WdeRegisterTagClass( app_inst ) ) {
         WdeDisplayErrorMsg( WDE_NOREGISTERTAGCLASS );
-        return( FALSE );
+        return( false );
     }
 
     LoadCommCtrl();
 
-    return( TRUE );
+    return( true );
 }
 
 /* Function to initialize all instances of Wde */
@@ -343,16 +343,16 @@ bool WdeInitInst( HINSTANCE app_inst )
     WdeInitOpts();
 
     if( !JDialogInit() ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeInitResStrings() ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeInitCreateTable() ) {
         WdeDisplayErrorMsg( WDE_NOINITCONTROLOBJECTS );
-        return( FALSE );
+        return( false );
     }
 
     WdeCtl3DInit( app_inst );
@@ -364,7 +364,7 @@ bool WdeInitInst( HINSTANCE app_inst )
     /* if the window could not be created return FALSE */
     if( WdeAccel == (HACCEL)NULL ) {
         WdeDisplayErrorMsg( WDE_LOADACCELFAILED );
-        return( FALSE );
+        return( false );
     }
 
     GetWindowRect( GetDesktopWindow(), &screen );
@@ -396,7 +396,7 @@ bool WdeInitInst( HINSTANCE app_inst )
     /* if the window could not be created return FALSE */
     if( hWinWdeMain == NULL ) {
         WdeDisplayErrorMsg( WDE_NOCREATEMAINWINDOW );
-        return( FALSE );
+        return( false );
     }
 
     hWinWdeMDIClient = WdeCreateMDIClientWindow( hWinWdeMain, app_inst );
@@ -404,12 +404,12 @@ bool WdeInitInst( HINSTANCE app_inst )
     /* attempt to create the main application info window */
     if( !WdeCreateInfoWindow( hWinWdeMain, app_inst ) ) {
         WdeDisplayErrorMsg( WDE_NOCREATEINFOWINDOW );
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeCreateStatusLine( hWinWdeMain, app_inst ) ) {
         WdeDisplayErrorMsg( WDE_NOCREATESTATUSLINE );
-        return( FALSE );
+        return( false );
     }
 
     WdeInitialMenu = GetMenu( hWinWdeMain );
@@ -418,18 +418,18 @@ bool WdeInitInst( HINSTANCE app_inst )
     WdeDDEMenu = LoadMenu( app_inst, "WdeDDEMenu" );
 
     if( IsDDE ) {
-        WdeSetAppMenuToRes( TRUE );
+        WdeSetAppMenuToRes( true );
     }
 
 
     if( !WdeInitialMenu || !WdeResMenu ) {
         WdeDisplayErrorMsg( WDE_NOINITMENUS );
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeInitHints() ) {
         WdeDisplayErrorMsg( WDE_NOINITHINTS );
-        return( FALSE );
+        return( false );
     }
 
     WdeInitRibbon( app_inst );
@@ -462,13 +462,13 @@ bool WdeInitInst( HINSTANCE app_inst )
     if( WdeGetOption( WdeOptIsCntlsTBarVisible ) ) {
         if( !WdeCreateControlsToolBar ( ) ) {
             WdeDisplayErrorMsg( WDE_NOCREATETOOLBOX );
-            return( FALSE );
+            return( false );
         }
     }
 
     SetFocus( hWinWdeMain );
 
-    return( TRUE );
+    return( true );
 
 }
 
@@ -668,19 +668,19 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
     case WM_MOVE:
         if( IsZoomed( hWnd ) ) {
-            WdeSetOption( WdeOptIsScreenMax, TRUE );
+            WdeSetOption( WdeOptIsScreenMax, true );
         } else if( !IsIconic( hWnd ) ) {
             WdeUpdateScreenPosOpt();
-            WdeSetOption( WdeOptIsScreenMax, FALSE );
+            WdeSetOption( WdeOptIsScreenMax, false );
         }
         break;
 
     case WM_SIZE:
         if( wParam == SIZE_MAXIMIZED ) {
-            WdeSetOption( WdeOptIsScreenMax, TRUE );
+            WdeSetOption( WdeOptIsScreenMax, true );
         } else if( wParam != SIZE_MINIMIZED ) {
             WdeUpdateScreenPosOpt();
-            WdeSetOption( WdeOptIsScreenMax, FALSE );
+            WdeSetOption( WdeOptIsScreenMax, false );
         }
 
         if( wParam != SIZE_MINIMIZED ) {
@@ -983,21 +983,21 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         break;
 
     case WDE_FATAL_EXIT:
-        WdeFatalExit = TRUE;
-        WdeQueryKillApp( TRUE );
+        WdeFatalExit = true;
+        WdeQueryKillApp( true );
         PostMessage( hWinWdeMain, WM_CLOSE, 0, 0 );
         break;
 
     case WM_ENDSESSION:
         if ( !wParam ) {
-            WdeFatalExit = FALSE;
+            WdeFatalExit = false;
         }
         break;
 
     case WM_QUERYENDSESSION:
-        ret = WdeQueryKillApp( FALSE );
+        ret = WdeQueryKillApp( false );
         if( ret ) {
-            WdeFatalExit = TRUE;
+            WdeFatalExit = true;
             pass_to_def = false;
         }
         break;
@@ -1009,14 +1009,14 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             return( 0 );
         }
         /* clean up before we exit */
-        WdeCleanupStarted = TRUE;
+        WdeCleanupStarted = true;
         if( wParam ) {  // wParam is non-zero if the DDE connection died
-            WdeFatalExit = TRUE;
-            WdeQueryKillApp( TRUE );
+            WdeFatalExit = true;
+            WdeQueryKillApp( true );
             wParam = 0;
         }
         if( !WdeCleanup( res_info, WdeFatalExit ) ) {
-            WdeCleanupStarted = FALSE;
+            WdeCleanupStarted = false;
             pass_to_def = false;
         }
     }
@@ -1032,12 +1032,12 @@ bool WdeIsMenuIDValid( HMENU hmenu, unsigned id )
     UINT        st;
 
     if( !EnableMenuInput ) {
-        return( FALSE );
+        return( false );
     }
 
     if( WdeGetTestMode() ) {
         if( id != IDM_TEST_MODE ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -1058,7 +1058,7 @@ bool WdeIsMenuIDValid( HMENU hmenu, unsigned id )
     st = GetMenuState( hmenu, id, MF_BYCOMMAND );
 
     if( st == -1 || (st & MF_GRAYED) == MF_GRAYED ) {
-        return( FALSE );
+        return( false );
     }
 
     return( TRUE );
@@ -1084,7 +1084,7 @@ bool WdeSetDialogMode( WORD id )
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
         return( Forward( obj, SET_ORDER_MODE, &mode, NULL ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool WdeSaveCurrentDialog( WORD menu_id )
@@ -1094,7 +1094,7 @@ bool WdeSaveCurrentDialog( WORD menu_id )
     if ( (obj = WdeGetCurrentDialog()) != NULL ) {
         return( Forward( obj, SAVE_OBJECT, &menu_id, NULL ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool WdeRestoreCurrentDialog( void )
@@ -1104,7 +1104,7 @@ bool WdeRestoreCurrentDialog( void )
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
         return( Forward( obj, RESTORE_OBJECT, NULL, NULL ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool WdeHideCurrentDialog( void )
@@ -1113,12 +1113,12 @@ bool WdeHideCurrentDialog( void )
     bool        user_action, hide;
 
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
-        user_action = FALSE;
+        user_action = false;
         hide = TRUE;
         return( Forward( obj, DESTROY, &user_action, &hide ) != 0 );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WdeHandleSizeToText( void )
@@ -1232,7 +1232,7 @@ bool WdeCleanup( WdeResInfo *res_info, bool fatal_exit )
     if( WdeQueryKillApp( fatal_exit ) ) {
         WdeFreeResList();
     } else {
-        return( FALSE );
+        return( false );
     }
 
     WdeFiniHints();
@@ -1248,7 +1248,7 @@ bool WdeCleanup( WdeResInfo *res_info, bool fatal_exit )
 
     WdeOptsShutdown();
     WdeFreeControlIDs();
-    WdeSetAppMenuToRes( FALSE );
+    WdeSetAppMenuToRes( false );
     DestroyMenu( WdeResMenu );
     DestroyMenu( WdeDDEMenu );
     WdeFiniToolMenu();

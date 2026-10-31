@@ -235,7 +235,7 @@ bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
         return( false );
     }
 
-    if( !WdeRemoveDialogFromResInfo( res_info, ditem, FALSE ) ) {
+    if( !WdeRemoveDialogFromResInfo( res_info, ditem, false ) ) {
         WdeWriteTrail( "WdeRemoveObject: remove failed!" );
         return( false );
     }
@@ -1371,7 +1371,7 @@ bool WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
     if( hide != NULL && *hide ) {
         WdePreserveDialogWithDBI( obj );
         if( obj->res_info != NULL ) {
-            sub_obj = WdeGetNextObject( FALSE, (OBJPTR)obj, parent );
+            sub_obj = WdeGetNextObject( false, (OBJPTR)obj, parent );
             if( sub_obj == NULL ) {
                 sub_obj = parent;
             }
@@ -1396,7 +1396,7 @@ bool WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
         WdeWriteTrail( "WdeDialogDestroy: WdeDialogDestroyWindow failed!" );
     }
 
-    b = FALSE;
+    b = false;
 
     // we do this BEFORE we destroy the children as a child if this
     // dialog may be the current object
@@ -1545,7 +1545,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
             return( false );
         }
         if( Forward( child, IDENTIFY, &id, NULL ) && id == SBAR_OBJ ) {
-            WdeSBNoodleSize( child, TRUE );
+            WdeSBNoodleSize( child, true );
         }
     }
 
@@ -1761,7 +1761,7 @@ bool WdeDialogSetFont( WdeDialogObject *obj, HFONT *font, WdeResizeRatio *resize
 
     obj->font = *font;
 
-    if( !WdeKludgeDialogSize( obj, TRUE, FALSE ) ) {
+    if( !WdeKludgeDialogSize( obj, true, false ) ) {
         WdeWriteTrail( "WdeDialogSetFont: Couldn't kludge size!" );
         return( false );
     }
@@ -2036,7 +2036,7 @@ bool WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
     if( *flag ) {
         WdeSetDialogModified( obj );
         WdeUpdateDialogUnits( obj, new_pos, &obj->nc_size );
-        if( !WdeKludgeDialogSize( obj, TRUE, FALSE ) ) {
+        if( !WdeKludgeDialogSize( obj, true, false ) ) {
             WdeWriteTrail( "WdeDialogResize: Couldn't kludge size!" );
             return( false );
         }
@@ -2082,7 +2082,7 @@ bool WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
         OBJ_ID  id;
         child = ListElement( olist );
         if( Forward( child, IDENTIFY, &id, NULL ) && id == SBAR_OBJ ) {
-            WdeSBNoodleSize( child, TRUE );
+            WdeSBNoodleSize( child, true );
         }
     }
 
@@ -2148,7 +2148,7 @@ bool WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
 
     if( ok && *forms_called ) {
         WdeOffsetDialogUnits( obj, NULL, &obj->nc_size );
-        if( !WdeKludgeDialogSize( obj, TRUE, TRUE ) ) {
+        if( !WdeKludgeDialogSize( obj, true, true ) ) {
             WdeWriteTrail( "WdeDialogMove: Couldn't kludge size!" );
             ok = false;
         }
@@ -2548,7 +2548,7 @@ bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrde
                       RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW | RDW_FRAME );
     } else {
         obj->mode = *mode;
-        WdeReorderTags( sol, TRUE );
+        WdeReorderTags( sol, true );
     }
 
     WdeSetDialogObjectMenu( WdeIsDialogRestorable( obj ), obj->res_info->hash_table != NULL, obj->mode );
@@ -3273,7 +3273,7 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
 
     font_list = WdeGetFontList();
 
-    found = FALSE;
+    found = false;
     index = -1;
     for( olist = font_list; olist != NULL; olist = ListNext( olist ) ) {
         font_name = (WdeFontNames *)ListElement( olist );
@@ -3284,7 +3284,7 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
         if( !found && GETHDR_FONTFACENAME( obj->header ) &&
             (GETHDR_STYLE( obj->header ) & DS_SETFONT) ) {
             if( strcmp( font_name->name, GETHDR_FONTFACENAME( obj->header ) ) == 0 ) {
-                found = TRUE;
+                found = true;
             }
             index++;
         }
