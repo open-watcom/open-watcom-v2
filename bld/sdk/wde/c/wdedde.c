@@ -466,8 +466,8 @@ bool WdeStartDDEEditSession( void )
             ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
             if( ok ) {
-                ditem->dialog_info = WdeAllocDBIFromData( data, size, ditem->is32bit );
-                if( ditem->dialog_info == NULL ) {
+                ditem->dlg_info = WdeAllocDBIFromData( data, size, ditem->is32bit );
+                if( ditem->dlg_info == NULL ) {
                     ok = false;
                 }
                 MemFree( data );
@@ -483,7 +483,7 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        if( ditem->dialog_info != NULL ) {
+        if( ditem->dlg_info != NULL ) {
             ok = WdeOpenDialogFromResInfo( rinfo, ditem );
             if( ok ) {
                 WdeAddResDlgItemToResInfo( rinfo, ditem );

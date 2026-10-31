@@ -162,7 +162,7 @@ bool WdeInfoToData( WdeResInfo *info )
         data = NULL;
         dsize = 0;
 
-        if( ditem->object != NULL || ditem->dialog_info != NULL ) {
+        if( ditem->object != NULL || ditem->dlg_info != NULL ) {
             if( !WdeGetItemData( ditem, &data, &dsize ) ) {
                 return( false );
             }
@@ -179,11 +179,11 @@ bool WdeInfoToData( WdeResInfo *info )
                 ditem->langnode->data = data;
                 ditem->langnode->Info.Length = dsize;
                 ditem->langnode->Info.Offset = 0;
-                ditem->langnode->Info.res_flags = ditem->dialog_info->res_flags;
+                ditem->langnode->Info.res_flags = ditem->dlg_info->res_flags;
             }
         } else {
             resnode = WdeCreateWResResNode( 1, ditem->dialog_name, &lang,
-                                          ditem->dialog_info->res_flags, 0,
+                                          ditem->dlg_info->res_flags, 0,
                                           dsize, data );
             if( resnode != NULL ) {
                 if( info->info->dir == NULL ) {
@@ -224,7 +224,7 @@ void WdeFreeInfoData( WdeResInfo *info )
 
 WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
 {
-    WdeDialogBoxInfo    *dbi;
+    WdeDialogBoxInfo    *dlg_info;
     WResID              *name;
 
     if( ditem == NULL ) {
@@ -242,34 +242,34 @@ WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem )
                 ditem->dialog_name = name;
             }
         }
-        dbi = WdeAllocDBIFromObject( (WdeDialogObject *)ditem->object );
-        if( dbi != NULL ) {
-            if( ditem->dialog_info != NULL ) {
-                WdeFreeDialogBoxInfo( ditem->dialog_info );
+        dlg_info = WdeAllocDBIFromObject( (WdeDialogObject *)ditem->object );
+        if( dlg_info != NULL ) {
+            if( ditem->dlg_info != NULL ) {
+                WdeFreeDialogBoxInfo( ditem->dlg_info );
             }
-            ditem->dialog_info = dbi;
+            ditem->dlg_info = dlg_info;
         }
     } else {
-        dbi = ditem->dialog_info;
+        dlg_info = ditem->dlg_info;
     }
 
-    return( dbi );
+    return( dlg_info );
 }
 
 bool WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize )
 {
-    WdeDialogBoxInfo   *dbi;
+    WdeDialogBoxInfo   *dlg_info;
 
     if( ditem == NULL || data == NULL || dsize == NULL ) {
         return( FALSE );
     }
 
-    dbi = WdeGetItemDBI( ditem );
-    if( dbi == NULL ) {
+    dlg_info = WdeGetItemDBI( ditem );
+    if( dlg_info == NULL ) {
         return( FALSE );
     }
 
-    return( WdeAllocDataFromDBI( dbi, data, dsize ) );
+    return( WdeAllocDataFromDBI( dlg_info, data, dsize ) );
 }
 
 WResResNode *WdeRenameWResResNode( WResTypeNode *typenode, WResResNode *resnode, WResID *name )

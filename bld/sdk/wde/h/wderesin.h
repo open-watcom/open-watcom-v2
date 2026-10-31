@@ -148,7 +148,7 @@ typedef struct WdeDialogBoxInfoStruct {
 } WdeDialogBoxInfo;
 
 typedef struct WdeResDlgItem {
-    WdeDialogBoxInfo    *dialog_info;
+    WdeDialogBoxInfo    *dlg_info;
     OBJPTR              object;
     WResID              *dialog_name;
     bool                modified;
@@ -161,7 +161,7 @@ typedef struct WdeResDlgItem {
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool             WdeFreeResInfo( WdeResInfo * );
-extern bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo * );
+extern bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info );
 extern void             WdeFreeResDlgItem( WdeResDlgItem **, bool );
 extern WdeResDlgItem    *WdeAllocResDlgItem( void );
 extern WdeResInfo       *WdeAllocResInfo( void );

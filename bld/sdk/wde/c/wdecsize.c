@@ -114,7 +114,7 @@ static size_t WdeCalcSizeOfDialogBoxHeader( const ResNameOrOrdinal *MenuName, co
     return( size );
 }
 
-size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *info )
+size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *dlg_info )
 {
     size_t              size;
     size_t              csize;
@@ -124,15 +124,15 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *info )
     WdeDialogBoxHeader  *header;
     WdeDialogBoxControl *control;
 
-    if( info == NULL ) {
+    if( dlg_info == NULL ) {
         return( 0 );
     }
-    header = info->header;
+    header = dlg_info->header;
     is32bit = header->is32bit;
     is32bitEx = header->is32bitEx;
     size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( header ), GETHDR_CLASSNAME( header ),
                                         GETHDR_CAPTION( header ), GETHDR_FONTFACENAME( header ), is32bit, is32bitEx );
-    for( clist = info->control_list; clist != NULL; clist = ListNext( clist ) ) {
+    for( clist = dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
         control = (WdeDialogBoxControl *)ListElement( clist );
         csize = WdeCalcSizeOfDialogBoxControl( GETCTL_CLASSID( control ), GETCTL_TEXT( control ), is32bit, is32bitEx );
         if( csize == 0 ) {

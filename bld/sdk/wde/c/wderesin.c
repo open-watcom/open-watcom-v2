@@ -103,8 +103,8 @@ void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
         if( (*ditem)->dialog_name != NULL ) {
             WResIDFree( (*ditem)->dialog_name );
         }
-        if( (*ditem)->dialog_info != NULL ) {
-            WdeFreeDialogBoxInfo( (*ditem)->dialog_info );
+        if( (*ditem)->dlg_info != NULL ) {
+            WdeFreeDialogBoxInfo( (*ditem)->dlg_info );
         }
         if( destroy_object && (*ditem)->object != NULL ) {
             Destroy( (*ditem)->object, false );

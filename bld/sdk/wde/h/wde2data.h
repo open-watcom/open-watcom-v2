@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +47,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeAllocDataFromDBI( WdeDialogBoxInfo *, char **pdata, size_t *dsize );
+extern bool             WdeAllocDataFromDBI( WdeDialogBoxInfo *dlg_info, char **pdata, size_t *dsize );
 extern WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool );
 
 #endif

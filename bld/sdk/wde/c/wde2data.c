@@ -276,7 +276,7 @@ static size_t WdeDataFromDialogBoxControl( WdeDialogBoxControl *control,
 }
 
 
-bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
+bool WdeAllocDataFromDBI( WdeDialogBoxInfo *dlg_info, char **pdata, size_t *dsize )
 {
     bool                ok;
     size_t              size;
@@ -288,13 +288,13 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
     char                *data;
     char                *start;
 
-    if( info == NULL || pdata == NULL || dsize == NULL )
+    if( dlg_info == NULL || pdata == NULL || dsize == NULL )
         return( false );
 
     start = NULL;
-    is32bit = info->header->is32bit;
-    is32bitEx = info->header->is32bitEx;
-    memsize = WdeCalcSizeOfWdeDialogBoxInfo( info );
+    is32bit = dlg_info->header->is32bit;
+    is32bitEx = dlg_info->header->is32bitEx;
+    memsize = WdeCalcSizeOfWdeDialogBoxInfo( dlg_info );
     ok = (memsize != 0);
 
     if( ok ) {
@@ -303,13 +303,13 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
     }
 
     if( ok ) {
-        size = WdeDataFromDialogBoxHeader( info->header, data );
+        size = WdeDataFromDialogBoxHeader( dlg_info->header, data );
         data += size;
         ok = (size != 0);
     }
 
     if( ok ) {
-        for( l = info->control_list; l != NULL; l = ListNext( l ) ) {
+        for( l = dlg_info->control_list; l != NULL; l = ListNext( l ) ) {
             control = (WdeDialogBoxControl *)ListElement( l );
             if( control == NULL ) {
                 ok = false;
@@ -352,7 +352,7 @@ bool WdeAllocDataFromDBI( WdeDialogBoxInfo *info, char **pdata, size_t *dsize )
 
 WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32bit )
 {
-    WdeDialogBoxInfo    *dbi;
+    WdeDialogBoxInfo    *dlg_info;
     WdeDialogBoxControl *control;
     LIST                *prev_control;
     int                 index;
@@ -362,14 +362,14 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
     uint_16             sign0;
     uint_16             sign1;
 
-    dbi = NULL;
+    dlg_info = NULL;
     start = data;
 
     ok = (data != NULL && size != 0);
 
     if( ok ) {
-        dbi = MemAlloc( sizeof( WdeDialogBoxInfo ) );
-        ok = (dbi != NULL);
+        dlg_info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
+        ok = (dlg_info != NULL);
     }
 
 
@@ -379,15 +379,15 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
         sign1 = VALU16( data + SIZEU16 );
         is32bitEx = (sign0 == 0x0001 && sign1 == 0xFFFF);
 
-        dbi->control_list = NULL;
-        dbi->res_flags = DEFAULT_FLAGS_NONE;
-        dbi->header = WdeDialogBoxHeaderFromData( &data, is32bit, is32bitEx );
-        ok = (dbi->header != NULL);
+        dlg_info->control_list = NULL;
+        dlg_info->res_flags = DEFAULT_FLAGS_NONE;
+        dlg_info->header = WdeDialogBoxHeaderFromData( &data, is32bit, is32bitEx );
+        ok = (dlg_info->header != NULL);
     }
 
     if( ok ) {
         prev_control = NULL;
-        for( index = 0; index < GETHDR_NUMITEMS( dbi->header ); index++ ) {
+        for( index = 0; index < GETHDR_NUMITEMS( dlg_info->header ); index++ ) {
             if( is32bit ) {
                 PADDING_SET( data, start );
             }
@@ -397,8 +397,8 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
                 break;
             }
             if( prev_control == NULL ) {
-                ListAddElt( &dbi->control_list, (OBJPTR)control );
-                prev_control = dbi->control_list;
+                ListAddElt( &dlg_info->control_list, (OBJPTR)control );
+                prev_control = dlg_info->control_list;
             } else {
                 ListInsertElt( prev_control, (OBJPTR)control );
                 prev_control = ListNext( prev_control );
@@ -411,13 +411,13 @@ WdeDialogBoxInfo *WdeAllocDBIFromData( const char *data, size_t size, bool is32b
     }
 
     if( !ok ) {
-        if( dbi != NULL ) {
-            WdeFreeDialogBoxInfo( dbi );
-            dbi = NULL;
+        if( dlg_info != NULL ) {
+            WdeFreeDialogBoxInfo( dlg_info );
+            dlg_info = NULL;
         }
     }
 
-    return( dbi );
+    return( dlg_info );
 }
 
 WdeDialogBoxHeader *WdeDialogBoxHeaderFromData( const char **pdata, bool is32bit, bool is32bitEx )

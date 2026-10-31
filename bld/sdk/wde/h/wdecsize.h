@@ -46,7 +46,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo * );
+extern size_t WdeCalcSizeOfWdeDialogBoxInfo( const WdeDialogBoxInfo *dlg_info );
 extern size_t WdeCalcSizeOfResNameOrOrdinal( const ResNameOrOrdinal *, bool );
 
 #endif

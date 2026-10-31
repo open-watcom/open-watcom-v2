@@ -983,15 +983,15 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     char                *name;
     char                *str;
     bool                ok;
-    WdeDialogBoxHeader  *header = ditem->dialog_info->header;
+    WdeDialogBoxHeader  *header = ditem->dlg_info->header;
     uint_32             ExStyle;
 
     name = NULL;
     ok = (rinfo != NULL && ditem != NULL && fp != NULL);
 
     if( ok ) {
-        if( ditem->dialog_info->header->symbol != NULL ) {
-            name = WdeStrdup( ditem->dialog_info->header->symbol );
+        if( ditem->dlg_info->header->symbol != NULL ) {
+            name = WdeStrdup( ditem->dlg_info->header->symbol );
         } else {
             if( rinfo->hash_table != NULL && !ditem->dialog_name->IsName ) {
                 name = WRResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
@@ -1004,7 +1004,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        ok = WdeSetMemFlagsText( ditem->dialog_info->res_flags, &str );
+        ok = WdeSetMemFlagsText( ditem->dlg_info->res_flags, &str );
     }
 
     if( ok ) {
@@ -1044,7 +1044,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             MemFree( str );
             str = NULL;
         }
-        style = GETHDR_STYLE( ditem->dialog_info->header );
+        style = GETHDR_STYLE( ditem->dlg_info->header );
         ok = (WdeSetDialogFlagText( style, &str ) && str != NULL);
         MemFree( name );
         name = NULL;
@@ -1056,7 +1056,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             MemFree( str );
             str = NULL;
         }
-        rname = GETHDR_CLASSNAME( ditem->dialog_info->header );
+        rname = GETHDR_CLASSNAME( ditem->dlg_info->header );
         if( rname != NULL ) {
             str = WdeResNameOrOrdinalToStr( rname, 10 );
             if( str != NULL ) {
@@ -1068,9 +1068,9 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             }
         }
         if( style & WS_CAPTION ) {
-            if( GETHDR_CAPTION( ditem->dialog_info->header ) ) {
+            if( GETHDR_CAPTION( ditem->dlg_info->header ) ) {
                 str = WRConvertStringFrom(
-                    GETHDR_CAPTION( ditem->dialog_info->header ), "\t\n\"", "tn\"" );
+                    GETHDR_CAPTION( ditem->dlg_info->header ), "\t\n\"", "tn\"" );
                 if( str != NULL ) {
                     fprintf( fp, "CAPTION \"%s\"\n", str );
                     MemFree( str );
@@ -1081,7 +1081,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
         ExStyle = 0;
 #if __NT__XX
-        ExStyle = GETHDR_EXSTYLE( ditem->dialog_info->header );
+        ExStyle = GETHDR_EXSTYLE( ditem->dlg_info->header );
         WdeSetEXFlagText( ExStyle, &str );
         if( str != NULL ) {
             fprintf( fp, "EXSTYLE %s\n", str );
@@ -1090,7 +1090,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         }
 #endif
 
-        rname = GETHDR_MENUNAME( ditem->dialog_info->header );
+        rname = GETHDR_MENUNAME( ditem->dlg_info->header );
         if( rname != NULL ) {
             str = WdeResNameOrOrdinalToStr( rname, 10 );
             if( str != NULL ) {
@@ -1102,10 +1102,10 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             }
         }
         if( (style & DS_SETFONT) &&
-            GETHDR_FONTFACENAME( ditem->dialog_info->header ) != NULL ) {
+            GETHDR_FONTFACENAME( ditem->dlg_info->header ) != NULL ) {
             fprintf( fp, "FONT %d, \"%s\"\n",
-                     GETHDR_FONTPOINTSIZE( ditem->dialog_info->header ),
-                     GETHDR_FONTFACENAME( ditem->dialog_info->header ) );
+                     GETHDR_FONTPOINTSIZE( ditem->dlg_info->header ),
+                     GETHDR_FONTFACENAME( ditem->dlg_info->header ) );
         }
     }
 
@@ -1167,7 +1167,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     char                *ctext;
 
     wrote_begin = FALSE;
-    ok = (rinfo != NULL && ditem != NULL && ditem->dialog_info != NULL && fp != NULL);
+    ok = (rinfo != NULL && ditem != NULL && ditem->dlg_info != NULL && fp != NULL);
 
     if( ok ) {
         ok = WdeWriteDlgHeader( rinfo, ditem, fp );
@@ -1177,7 +1177,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         // find the longest control text
         nlen = 0;
         ctext = NULL;
-        for( clist = ditem->dialog_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
+        for( clist = ditem->dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
             if( GETCTL_TEXT( control ) != NULL ) {
                 ctext = WdeResNameOrOrdinalToStr( GETCTL_TEXT( control ), 10 );
@@ -1193,9 +1193,9 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
         fwrite( "BEGIN\n", sizeof( char ), 6, fp );
         wrote_begin = TRUE;
-        for( clist = ditem->dialog_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
+        for( clist = ditem->dlg_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
-            ok = WdeWriteDlgControl( rinfo, control, ditem->dialog_info->header->is32bitEx, fp, nlen );
+            ok = WdeWriteDlgControl( rinfo, control, ditem->dlg_info->header->is32bitEx, fp, nlen );
         }
     }
 
@@ -1216,9 +1216,9 @@ bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem )
         if( WdeGetItemDBI( ditem ) == NULL ) {
             return( FALSE );
         }
-    } else if( ditem->dialog_info == NULL ) {
-        ditem->dialog_info = WdeLoadDialogFromRes( rinfo, ditem->langnode, ditem->is32bit );
-        if( ditem->dialog_info == NULL ) {
+    } else if( ditem->dlg_info == NULL ) {
+        ditem->dlg_info = WdeLoadDialogFromRes( rinfo, ditem->langnode, ditem->is32bit );
+        if( ditem->dlg_info == NULL ) {
             return( FALSE );
         }
         if( ditem->dialog_name == NULL ) {

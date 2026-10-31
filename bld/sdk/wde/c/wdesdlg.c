@@ -82,7 +82,7 @@ static bool   WdeGetSelectInfo( HWND, WdeDialogSelectInfo * );
 static bool   WdeInitSelectListBox( WdeResInfo *, HWND );
 static char  *WdeResolveDialogName( WdeResInfo *, WResID * );
 static bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *control, POINT *, HWND );
-static bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo * );
+static bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo *dlg_info );
 static OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control );
 static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 
@@ -280,7 +280,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         ditem = (WdeResDlgItem *)ListElement( dlist );
         id = NULL;
 
-        if( ditem->object != NULL || ditem->dialog_info != NULL ) {
+        if( ditem->object != NULL || ditem->dlg_info != NULL ) {
             if( ditem->object != NULL ) {
                 Forward( ditem->object, GET_OBJECT_INFO, NULL, &id );
             } else if( ditem->dialog_name != NULL ) {
@@ -349,12 +349,12 @@ bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool mak
     }
 
     if( (ditem->resnode == NULL || ditem->langnode == NULL) &&
-        (ditem->dialog_info == NULL || ditem->dialog_name == NULL) ) {
+        (ditem->dlg_info == NULL || ditem->dialog_name == NULL) ) {
         return( FALSE );
     }
 
-    if( ditem->dialog_info == NULL ) {
-        ditem->dialog_info = WdeLoadDialogFromRes( res_info, ditem->langnode, ditem->is32bit );
+    if( ditem->dlg_info == NULL ) {
+        ditem->dlg_info = WdeLoadDialogFromRes( res_info, ditem->langnode, ditem->is32bit );
         ditem->modified = false;
     }
 
@@ -391,12 +391,12 @@ bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
 
     modified_save = ditem->modified;
 
-    if( res_info != NULL && ditem != NULL && ditem->dialog_info != NULL ) {
+    if( res_info != NULL && ditem != NULL && ditem->dlg_info != NULL ) {
         ditem->object = WdeCreateDialogFromRes( res_info, ditem );
         if( ditem->object == NULL ) {
             return( FALSE );
         }
-        if( !WdeAddControlsToDialog( res_info, ditem->object, ditem->dialog_info ) ) {
+        if( !WdeAddControlsToDialog( res_info, ditem->object, ditem->dlg_info ) ) {
             Destroy( ditem->object, false );
             ditem->object = NULL;
             return( FALSE );
@@ -410,7 +410,7 @@ bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
     return( FALSE );
 }
 
-bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxInfo *info )
+bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxInfo *dlg_info )
 {
     WdeDialogBoxControl *control;
     LIST                *clist;
@@ -424,7 +424,7 @@ bool WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR dialog, WdeDialogBoxIn
 
     GetOffset( &origin );
 
-    for( clist = info->control_list; clist != NULL; clist = ListNext( clist ) ) {
+    for( clist = dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
         control = (WdeDialogBoxControl *)ListElement( clist );
         if( !WdeAddControlToDialog( res_info, dialog, control, &origin, dialog_window ) ) {
             WdeWriteTrail( "WdeAddControlsToDialog: add control failed!" );

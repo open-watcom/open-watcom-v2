@@ -260,11 +260,11 @@ bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
         return( false );
     }
 
-    if( obj->ditem->dialog_info != NULL ) {
-        WdeFreeDialogBoxInfo( obj->ditem->dialog_info );
+    if( obj->ditem->dlg_info != NULL ) {
+        WdeFreeDialogBoxInfo( obj->ditem->dlg_info );
     }
 
-    obj->ditem->dialog_info = vp;
+    obj->ditem->dlg_info = vp;
     obj->ditem->object = NULL;
 
     return( true );
@@ -272,7 +272,7 @@ bool WdePreserveDialogWithDBI( WdeDialogObject *obj )
 
 WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 {
-    WdeDialogBoxInfo    *info;
+    WdeDialogBoxInfo    *dlg_info;
     LIST                *clist;
     LIST                *end;
     WdeDialogBoxControl *control;
@@ -283,29 +283,29 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
     bool                is32bitEx;
     WdeDialogBoxHeader  *header;
 
-    info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
+    dlg_info = MemAlloc( sizeof( WdeDialogBoxInfo ) );
 
-    if( info == NULL ) {
+    if( dlg_info == NULL ) {
         WdeWriteTrail( "WdeAllocDBIFromObject: WdeResInfo alloc failed!" );
         return( NULL );
     }
 
     SETHDR_NUMITEMS( obj->header, obj->num_children );
 
-    info->header = WdeCopyDialogBoxHeader( obj->header );
+    dlg_info->header = WdeCopyDialogBoxHeader( obj->header );
 
-    if( info->header == NULL ) {
+    if( dlg_info->header == NULL ) {
         WdeWriteTrail( "WdeAllocDBIFromObject: CopyDBH failed!" );
-        MemFree( info );
+        MemFree( dlg_info );
         return( NULL );
     }
 
     is32bitEx = false;
 
-    info->res_flags = obj->res_flags;
-    info->header->symbol = WdeStrdup( obj->symbol );
-    info->header->helpsymbol = WdeStrdup( obj->helpsymbol );
-    info->control_list = NULL;
+    dlg_info->res_flags = obj->res_flags;
+    dlg_info->header->symbol = WdeStrdup( obj->symbol );
+    dlg_info->header->helpsymbol = WdeStrdup( obj->helpsymbol );
+    dlg_info->control_list = NULL;
 
     end = NULL;
 
@@ -315,13 +315,13 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
         oentry = (WdeOrderedEntry *)ListElement( clist );
         if( !Forward( oentry->obj, GET_OBJECT_INFO, &control, &symbol ) ) {
             WdeWriteTrail( "WdeAllocDBIFromObject: GET_OBJECT_INFO failed!" );
-            WdeFreeDialogBoxInfo( info );
+            WdeFreeDialogBoxInfo( dlg_info );
             return( NULL );
         }
         /* JPK - do it again for the help symbol */
         if( !Forward( oentry->obj, GET_OBJECT_HELPINFO, &control, &helpsymbol ) ) {
             WdeWriteTrail( "WdeAllocDBIFromObject: GET_OBJECT_HELPINFO failed!" );
-            WdeFreeDialogBoxInfo( info );
+            WdeFreeDialogBoxInfo( dlg_info );
             return( NULL );
         }
 
@@ -340,12 +340,12 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
             ListInsertElt( end, (OBJPTR)control );
             end = ListNext( end );
         } else {
-            ListAddElt( &info->control_list, (OBJPTR)control );
-            end = info->control_list;
+            ListAddElt( &dlg_info->control_list, (OBJPTR)control );
+            end = dlg_info->control_list;
         }
     }
 
-    header = info->header;
+    header = dlg_info->header;
     if( obj->header->is32bit ) {
         if( GETHDR_HELPID( header ) != 0 || GETHDR_EXSTYLE( header ) != 0 || header->head.FontWeightDefined || header->head.FontItalicDefined || header->head.FontCharsetDefined ) {
             is32bitEx = true;
@@ -356,7 +356,7 @@ WdeDialogBoxInfo *WdeAllocDBIFromObject( WdeDialogObject *obj )
 
     header->is32bitEx = is32bitEx;
 
-    return( info );
+    return( dlg_info );
 }
 
 static uint_32 NumDialogTitles = 0;
@@ -560,8 +560,8 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     if( ok ) {
         new->res_info = res_info;
         new->ditem = ditem;
-        new->res_flags = ditem->dialog_info->res_flags;
-        new->header = WdeCopyDialogBoxHeader( ditem->dialog_info->header );
+        new->res_flags = ditem->dlg_info->res_flags;
+        new->header = WdeCopyDialogBoxHeader( ditem->dlg_info->header );
         ok = ( new->header != NULL );
     }
 
@@ -1145,12 +1145,12 @@ bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 
 bool WdeIsDialogRestorable( WdeDialogObject *obj )
 {
-    return( obj != NULL && obj->res_info != NULL && obj->ditem != NULL && obj->ditem->dialog_info != NULL );
+    return( obj != NULL && obj->res_info != NULL && obj->ditem != NULL && obj->ditem->dlg_info != NULL );
 }
 
 bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 {
-    WdeDialogBoxInfo    *dbi;
+    WdeDialogBoxInfo    *dlg_info;
     bool                ret;
     WResLangType        lang;
 
@@ -1163,12 +1163,12 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
         Forward( obj->object_handle, RESOLVE_HELPSYMBOL, NULL, NULL );
     }
 
-    dbi = WdeAllocDBIFromObject( obj );
-    if( dbi != NULL ) {
-        if( obj->ditem->dialog_info != NULL ) {
-            WdeFreeDialogBoxInfo( obj->ditem->dialog_info );
+    dlg_info = WdeAllocDBIFromObject( obj );
+    if( dlg_info != NULL ) {
+        if( obj->ditem->dlg_info != NULL ) {
+            WdeFreeDialogBoxInfo( obj->ditem->dlg_info );
         }
-        obj->ditem->dialog_info = dbi;
+        obj->ditem->dlg_info = dlg_info;
 
         if( obj->ditem->langnode != NULL ) {
             lang = obj->ditem->langnode->Info.lang;
@@ -1179,15 +1179,15 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 
         switch( *id ) {
         case IDM_DIALOG_SAVE:
-            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, false );
+            ret = WdeSaveObject( obj->res_info, dlg_info, &obj->file_name, obj->name, &lang, false, false );
             break;
 
         case IDM_DIALOG_SAVEAS:
-            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, true );
+            ret = WdeSaveObject( obj->res_info, dlg_info, &obj->file_name, obj->name, &lang, false, true );
             break;
 
         case IDM_DIALOG_SAVEINTO:
-            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, true, true );
+            ret = WdeSaveObject( obj->res_info, dlg_info, &obj->file_name, obj->name, &lang, true, true );
             break;
         }
     }
