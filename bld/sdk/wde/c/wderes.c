@@ -363,9 +363,9 @@ void WdeShowResourceWindows( int show )
     }
 }
 
-void WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem *item )
+void WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem )
 {
-    WdeInsertObject( &res_info->ditem_list, (OBJPTR)item );
+    WdeInsertObject( &res_info->ditem_list, (OBJPTR)ditem );
 }
 
 WdeResInfo *WdeCreateNewResource( char *title )
@@ -1117,14 +1117,14 @@ LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return( ret );
 }
 
-bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **pres_info, WdeResDlgItem **di, WResID *id )
+bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **pres_info, WdeResDlgItem **pditem, WResID *id )
 {
     WdeResInfo      *res_info;
     WdeResDlgItem   *ditem;
     WResID          *name;
     bool            ok;
 
-    ok = (dlg != NULL && id != NULL && pres_info != NULL && di != NULL);
+    ok = (dlg != NULL && id != NULL && pres_info != NULL && pditem != NULL);
 
     if( ok ) {
         ok = ((res_info = WdeGetCurrentRes()) != NULL);
@@ -1139,13 +1139,13 @@ bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **pres_info, WdeResDlgItem **di, W
     }
 
     if( ok ) {
-        item->object = dlg;
-        item->dialog_name = name;
-        item->modified = true;
-        item->is32bit = res_info->is32bit;
-        WdeAddResDlgItemToResInfo( res_info, item );
+        ditem->object = dlg;
+        ditem->dialog_name = name;
+        ditem->modified = true;
+        ditem->is32bit = res_info->is32bit;
+        WdeAddResDlgItemToResInfo( res_info, ditem );
         *pres_info = res_info;
-        *di = item;
+        *pditem = ditem;
     } else {
         if( ditem != NULL ) {
             WdeFreeResDlgItem( &ditem, FALSE );

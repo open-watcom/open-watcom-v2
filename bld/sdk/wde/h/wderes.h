@@ -62,8 +62,8 @@ extern bool         WdeOpenResource( char * );
 extern int          WdeGetNumRes( void );
 extern WdeResInfo   *WdeGetCurrentRes( void );
 extern OBJPTR       WdeGetCurrentDialog( void );
-extern void         WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem * );
-extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **pres_info, WdeResDlgItem **, WResID * );
-extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *, bool );
+extern void         WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem );
+extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **pres_info, WdeResDlgItem **pditem, WResID * );
+extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem, bool );
 
 #endif

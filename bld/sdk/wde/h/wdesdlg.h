@@ -48,7 +48,7 @@
 extern bool WdeResInfoHasDialogs( WdeResInfo *res_info );
 extern bool WdeSelectDialog( WdeResInfo *res_info );
 extern bool WdeRemoveDialog( WdeResInfo *res_info );
-extern bool WdeOpenDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem * );
-extern bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *, bool );
+extern bool WdeOpenDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem );
+extern bool WdeOpenSelectedDialog( WdeResInfo *res_info, WdeResDlgItem *ditem, bool );
 
 #endif
