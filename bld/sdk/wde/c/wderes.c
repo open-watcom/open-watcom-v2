@@ -73,13 +73,13 @@ void    WdeMouseRtn( HWND, RECT * );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static void         WdeSetCurrentRes( WdeResInfo * );
-static bool         WdeCreateResourceWindow( WdeResInfo *, size_t, char * );
-static bool         WdeAddDlgItems( WdeResInfo * );
-static bool         WdeRemoveResource( WdeResInfo * );
-static char         *WdeGetQueryName( WdeResInfo * );
-static bool         WdeQuerySaveResOnDeleteRes( WdeResInfo *, bool );
-static bool         WdeQuerySaveSymOnDeleteRes( WdeResInfo *, bool );
+static void         WdeSetCurrentRes( WdeResInfo *res_info );
+static bool         WdeCreateResourceWindow( WdeResInfo *res_info, size_t, char * );
+static bool         WdeAddDlgItems( WdeResInfo *res_info );
+static bool         WdeRemoveResource( WdeResInfo *res_info );
+static char         *WdeGetQueryName( WdeResInfo *res_info );
+static bool         WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool );
+static bool         WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool );
 static int          WdeIncNumRes( void );
 static int          WdeDecNumRes( void );
 static WdeResInfo   *WdeResInfoFromWin( HWND );
@@ -363,9 +363,9 @@ void WdeShowResourceWindows( int show )
     }
 }
 
-void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *ditem )
+void WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem *item )
 {
-    WdeInsertObject( &info->ditem_list, (OBJPTR)ditem );
+    WdeInsertObject( &res_info->ditem_list, (OBJPTR)item );
 }
 
 WdeResInfo *WdeCreateNewResource( char *title )
@@ -534,15 +534,15 @@ bool WdeOpenResource( char *fn )
 
 WdeResInfo *WdeResInfoFromWin( HWND win )
 {
-    WdeResInfo  *info;
+    WdeResInfo  *res_info;
     LIST        *rlist;
 
     if( win != NULL ) {
-        info = NULL;
+        res_info = NULL;
         for( rlist = WdeResList; rlist != NULL; rlist = ListNext( rlist ) ) {
-            info = (WdeResInfo *)ListElement( rlist );
-            if( info->res_win == win ) {
-                return( info );
+            res_info = (WdeResInfo *)ListElement( rlist );
+            if( res_info->res_win == win ) {
+                return( res_info );
             }
         }
     }
@@ -552,7 +552,7 @@ WdeResInfo *WdeResInfoFromWin( HWND win )
 
 static void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPARAM lParam )
 {
-    WdeResInfo  *info;
+    WdeResInfo  *old_res_info;
     OBJPTR      current_obj;
     bool        fActivate;
     HWND        hwndDeact;
@@ -572,9 +572,9 @@ static void WdeActivateResourceWindow( WdeResInfo *res_info, WPARAM wParam, LPAR
 
     if( fActivate ) {
         WdeSetCurrentRes( res_info );
-        info = WdeResInfoFromWin( hwndDeact );
-        if( info != NULL ) {
-            info->active = FALSE;
+        old_res_info = WdeResInfoFromWin( hwndDeact );
+        if( old_res_info != NULL ) {
+            old_res_info->active = FALSE;
         }
     }
 
@@ -1117,14 +1117,14 @@ LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return( ret );
 }
 
-bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **pditem, WResID *id )
+bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **pres_info, WdeResDlgItem **di, WResID *id )
 {
     WdeResInfo      *res_info;
     WdeResDlgItem   *ditem;
     WResID          *name;
     bool            ok;
 
-    ok = (dlg != NULL && id != NULL && ri != NULL && pditem != NULL);
+    ok = (dlg != NULL && id != NULL && pres_info != NULL && di != NULL);
 
     if( ok ) {
         ok = ((res_info = WdeGetCurrentRes()) != NULL);
@@ -1139,13 +1139,13 @@ bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **pditem, WRes
     }
 
     if( ok ) {
-        ditem->object = dlg;
-        ditem->dialog_name = name;
-        ditem->modified = true;
-        ditem->is32bit = res_info->is32bit;
-        WdeAddResDlgItemToResInfo( res_info, ditem );
-        *ri = res_info;
-        *pditem = ditem;
+        item->object = dlg;
+        item->dialog_name = name;
+        item->modified = true;
+        item->is32bit = res_info->is32bit;
+        WdeAddResDlgItemToResInfo( res_info, item );
+        *pres_info = res_info;
+        *di = item;
     } else {
         if( ditem != NULL ) {
             WdeFreeResDlgItem( &ditem, FALSE );
@@ -1160,16 +1160,16 @@ bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **pditem, WRes
 
 OBJPTR WdeGetCurrentDialog( void )
 {
-    WdeResInfo  *info;
+    WdeResInfo  *res_info;
     OBJPTR      curr_obj;
     OBJPTR      ancestor;
     OBJ_ID      id;
 
-    info = WdeGetCurrentRes();
-    if( info == NULL ) {
+    res_info = WdeGetCurrentRes();
+    if( res_info == NULL ) {
         return( NULL );
     }
-    InitState( info->forms_win );
+    InitState( res_info->forms_win );
 
     curr_obj = GetCurrObject();
     if( curr_obj == NULL ) {
@@ -1227,7 +1227,7 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
     bool                adjust;
     POINT               pt;
     WdeResizeRatio      resizer;
-    WdeResInfo          *info;
+    WdeResInfo          *res_info;
     DialogSizeInfo      SizeInfo;
 
     rect = *r;
@@ -1278,8 +1278,8 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
         }
         GetOffset( &pt );
         OffsetRect( &rect, -pt.x, -pt.y );
-        if( (info = WdeGetCurrentRes()) != NULL ) {
-            MapWindowRect( info->edit_win, win, &rect );
+        if( (res_info = WdeGetCurrentRes()) != NULL ) {
+            MapWindowRect( res_info->edit_win, win, &rect );
         }
     }
 
@@ -1302,7 +1302,7 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
     RECT                nc;
     WdeResizeRatio      resizer;
     bool                adjust;
-    WdeResInfo          *info;
+    WdeResInfo          *res_info;
     DialogSizeInfo      SizeInfo;
     SUBOBJ_REQUEST      req;
 
@@ -1358,8 +1358,8 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
         }
         GetOffset( &pt );
         OffsetRect( &rect, -pt.x, -pt.y );
-        if( (info = WdeGetCurrentRes()) != NULL ) {
-            MapWindowRect( info->edit_win, win, &rect );
+        if( (res_info = WdeGetCurrentRes()) != NULL ) {
+            MapWindowRect( res_info->edit_win, win, &rect );
         }
     }
 

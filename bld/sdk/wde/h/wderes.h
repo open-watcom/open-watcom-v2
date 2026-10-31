@@ -51,19 +51,19 @@ extern bool         WdeInitResStrings( void );
 extern void         WdeFiniResStrings( void );
 extern char         *WdeSelectSaveFilter( WRFileType ftype );
 
-extern bool         WdeDestroyResourceWindow( WdeResInfo * );
+extern bool         WdeDestroyResourceWindow( WdeResInfo *res_info );
 extern void         WdeShowResourceWindows( int );
 extern bool         WdeRegisterResClass( HINSTANCE );
 extern bool         WdeQueryKillApp( bool );
 extern void         WdeFreeResList( void );
 extern WdeResInfo   *WdeCreateNewResource( char * );
-extern bool         WdeSaveResource( WdeResInfo *, bool prompt_name );
+extern bool         WdeSaveResource( WdeResInfo *res_info, bool prompt_name );
 extern bool         WdeOpenResource( char * );
 extern int          WdeGetNumRes( void );
 extern WdeResInfo   *WdeGetCurrentRes( void );
 extern OBJPTR       WdeGetCurrentDialog( void );
-extern void         WdeAddResDlgItemToResInfo( WdeResInfo *, WdeResDlgItem *ditem );
-extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **, WdeResDlgItem **pditem, WResID * );
-extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *, WdeResDlgItem *ditem, bool );
+extern void         WdeAddResDlgItemToResInfo( WdeResInfo *res_info, WdeResDlgItem * );
+extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **pres_info, WdeResDlgItem **, WResID * );
+extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *, bool );
 
 #endif

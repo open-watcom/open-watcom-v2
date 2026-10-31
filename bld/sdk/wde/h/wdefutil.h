@@ -74,7 +74,7 @@ extern void     WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern bool     WdeIsStrSpace( char * );
 extern bool     WdeWinStylesHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
-extern void     WdeAddSymbolToObjectHashTable( WdeResInfo *, char *, WRHashValue );
+extern void     WdeAddSymbolToObjectHashTable( WdeResInfo *res_info, char *, WRHashValue );
 
 extern void     WdeEXSetDefineInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeEXGetDefineInfo( WdeDefineObjectInfo *, HWND );

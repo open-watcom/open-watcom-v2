@@ -45,7 +45,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeSaveResourceToFile( WdeResInfo * );
+extern bool             WdeSaveResourceToFile( WdeResInfo *res_info );
 extern WdeDialogBoxInfo *WdeGetItemDBI( WdeResDlgItem *ditem );
 extern bool             WdeGetItemData( WdeResDlgItem *ditem, char **data, size_t *dsize );
 extern bool             WdeCreateDLGName( const char *filename, char *newname );

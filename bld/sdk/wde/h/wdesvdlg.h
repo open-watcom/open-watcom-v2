@@ -45,11 +45,11 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern bool WdeSaveRC( char *filename, WdeResInfo *res_info );
-extern bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem, bool append );
-extern bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append );
+extern bool WdeSaveObjectToRC( char *filename, WdeResInfo *res_info, WdeResDlgItem *ditem, bool append );
+extern bool WdeSaveResInfoToRC( char *filename, WdeResInfo *res_info, bool append );
 extern bool WdeSetWindowFlagText( unsigned long flags, char **text );
 extern bool WdeSetDialogFlagText( unsigned long flags, char **text );
 extern bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text );
-extern char *WdeConstructDLGInclude( WdeResInfo *rinfo );
+extern char *WdeConstructDLGInclude( WdeResInfo *res_info );
 
 #endif

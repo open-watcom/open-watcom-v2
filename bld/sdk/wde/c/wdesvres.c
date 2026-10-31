@@ -53,8 +53,8 @@
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool          WdeInfoToData( WdeResInfo * );
-static void          WdeFreeInfoData( WdeResInfo * );
+static bool          WdeInfoToData( WdeResInfo *res_info );
+static void          WdeFreeInfoData( WdeResInfo *res_info );
 static WResResNode  *WdeRenameWResResNode( WResTypeNode *, WResResNode *, WResID * );
 static bool          WdeAddResToType( WResTypeNode *, WResResNode * );
 static WResTypeNode *WdeAddTypeToDir( WResDir, uint_16 );
@@ -139,7 +139,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
     return( ok );
 }
 
-bool WdeInfoToData( WdeResInfo *info )
+bool WdeInfoToData( WdeResInfo *res_info )
 {
     WResTypeNode        *dtypenode;
     WResResNode         *resnode;
@@ -150,14 +150,14 @@ bool WdeInfoToData( WdeResInfo *info )
     WResLangType        lang;
 
 
-    if( info == NULL ) {
+    if( res_info == NULL ) {
         return( false );
     }
 
     lang.lang = DEF_SUBLANG;
     lang.sublang = DEF_SUBLANG;
-    dtypenode = info->dlg_entry;
-    for( dlist = info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+    dtypenode = res_info->dlg_entry;
+    for( dlist = res_info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         data = NULL;
         dsize = 0;
@@ -186,14 +186,14 @@ bool WdeInfoToData( WdeResInfo *info )
                                           ditem->dlg_info->res_flags, 0,
                                           dsize, data );
             if( resnode != NULL ) {
-                if( info->info->dir == NULL ) {
-                    info->info->dir = WResInitDir();
+                if( res_info->info->dir == NULL ) {
+                    res_info->info->dir = WResInitDir();
                 }
                 if( dtypenode == NULL ) {
-                    dtypenode = WdeAddTypeToDir( info->info->dir, RESOURCE2INT( RT_DIALOG ) );
-                    info->dlg_entry = dtypenode;
+                    dtypenode = WdeAddTypeToDir( res_info->info->dir, RESOURCE2INT( RT_DIALOG ) );
+                    res_info->dlg_entry = dtypenode;
                 }
-                if( info->info->dir != NULL && dtypenode != NULL ) {
+                if( res_info->info->dir != NULL && dtypenode != NULL ) {
                     WdeAddResToType( dtypenode, resnode );
                     ditem->resnode = resnode;
                     ditem->langnode = resnode->Head;
@@ -208,17 +208,17 @@ bool WdeInfoToData( WdeResInfo *info )
                 return( false );
             }
 
-            info->info->dir->NumResources++;
+            res_info->info->dir->NumResources++;
         }
     }
 
     return( true );
 }
 
-void WdeFreeInfoData( WdeResInfo *info )
+void WdeFreeInfoData( WdeResInfo *res_info )
 {
-    if( info != NULL && info->info != NULL ) {
-        WRFreeWResDirData( info->info->dir );
+    if( res_info != NULL && res_info->info != NULL ) {
+        WRFreeWResDirData( res_info->info->dir );
     }
 }
 

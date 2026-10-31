@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,19 +63,21 @@ static bool     WdeFindObjectsInRect( RECT *, LIST **, LIST * );
 
 void WdeSOP( OBJPTR obj, OBJPTR parent )
 {
-    LIST       *ilist, *tlist, *clist;
-    WdeResInfo *info;
+    LIST        *ilist;
+    LIST        *tlist;
+    LIST        *clist;
+    WdeResInfo  *res_info;
     RECT        orect;
     OBJPTR      sib;
     OBJ_ID      id;
     bool        clear;
     POINT       origin;
 
-    info = WdeGetCurrentRes();
-    if( info == NULL ) {
+    res_info = WdeGetCurrentRes();
+    if( res_info == NULL ) {
         return;
     }
-    GetClientRect( info->edit_win, &orect );
+    GetClientRect( res_info->edit_win, &orect );
 
     GetOffset( &origin );
     OffsetRect( &orect, origin.x, origin.y );

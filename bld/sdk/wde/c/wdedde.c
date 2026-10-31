@@ -339,13 +339,13 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
 
 static WdeResDlgItem *WdeGetDlgItem( void )
 {
-    WdeResInfo          *rinfo;
+    WdeResInfo          *res_info;
     WdeResDlgItem       *ditem;
 
     ditem = NULL;
-    rinfo = WdeGetCurrentRes();
-    if( rinfo != NULL && rinfo->ditem_list != NULL ) {
-        ditem = (WdeResDlgItem *)ListElement( rinfo->ditem_list );
+    res_info = WdeGetCurrentRes();
+    if( res_info != NULL && res_info->ditem_list != NULL ) {
+        ditem = (WdeResDlgItem *)ListElement( res_info->ditem_list );
     }
 
     return( ditem );
@@ -353,7 +353,7 @@ static WdeResDlgItem *WdeGetDlgItem( void )
 
 bool WdeUpdateDDEEditSession( void )
 {
-    WdeResInfo          *rinfo;
+    WdeResInfo          *res_info;
     WdeResDlgItem       *ditem;
     HDDEDATA            hData;
     bool                ok;
@@ -387,8 +387,8 @@ bool WdeUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        rinfo = WdeGetCurrentRes();
-        WdeSetResModified( rinfo, FALSE );
+        res_info = WdeGetCurrentRes();
+        WdeSetResModified( res_info, FALSE );
     }
 
     return( ok );
@@ -396,7 +396,7 @@ bool WdeUpdateDDEEditSession( void )
 
 bool WdeStartDDEEditSession( void )
 {
-    WdeResInfo          *rinfo;
+    WdeResInfo          *res_info;
     WdeResDlgItem       *ditem;
     char                *filename;
     HDDEDATA            hData;
@@ -476,17 +476,17 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        rinfo = WdeCreateNewResource( filename );
-        if( rinfo == NULL ) {
+        res_info = WdeCreateNewResource( filename );
+        if( res_info == NULL ) {
             ok = false;
         }
     }
 
     if( ok ) {
         if( ditem->dlg_info != NULL ) {
-            ok = WdeOpenDialogFromResInfo( rinfo, ditem );
+            ok = WdeOpenDialogFromResInfo( res_info, ditem );
             if( ok ) {
-                WdeAddResDlgItemToResInfo( rinfo, ditem );
+                WdeAddResDlgItemToResInfo( res_info, ditem );
                 object = ditem->object;
             }
         } else {
@@ -509,8 +509,8 @@ bool WdeStartDDEEditSession( void )
         if( ditem != NULL ) {
             WdeFreeResDlgItem( &ditem, TRUE );
         }
-        if( rinfo != NULL ) {
-            WdeFreeResInfo( rinfo );
+        if( res_info != NULL ) {
+            WdeFreeResInfo( res_info );
         }
     }
 
@@ -528,7 +528,7 @@ void WdeHandlePokedData( HDDEDATA hData )
     HWND        main;
     char        *cmd;
     size_t      size;
-    WdeResInfo  *rinfo;
+    WdeResInfo  *res_info;
 
     if( hData == NULL ) {
         return;
@@ -548,8 +548,8 @@ void WdeHandlePokedData( HDDEDATA hData )
     } else if( stricmp( cmd, "endsession" ) == 0 ) {
         if( !GotEndSession ) {
             GotEndSession = true;
-            rinfo = WdeGetCurrentRes();
-            WdeDestroyResourceWindow( rinfo );
+            res_info = WdeGetCurrentRes();
+            WdeDestroyResourceWindow( res_info );
         }
     } else if( stricmp( cmd, "bringtofront" ) == 0 ) {
         if( IsIconic( main ) ) {

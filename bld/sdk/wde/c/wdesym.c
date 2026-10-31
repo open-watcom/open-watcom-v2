@@ -83,9 +83,9 @@ typedef struct {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeResourceViewHash( WdeResInfo * );
-static bool WdeResourceLoadHash( WdeResInfo * );
-static bool WdeResourceWriteHash( WdeResInfo * );
+static bool WdeResourceViewHash( WdeResInfo *res_info );
+static bool WdeResourceLoadHash( WdeResInfo *res_info );
+static bool WdeResourceWriteHash( WdeResInfo *res_info );
 static char *WdeLoadSymbols( WRHashTable **, char *, bool prompt_name );
 
 /****************************************************************************/
@@ -169,7 +169,7 @@ static bool WdeViewSymbols( WRHashTable **table, HWND parent )
     return( ok );
 }
 
-bool WdeResourceHashTableAction( WdeResInfo *info, int action )
+bool WdeResourceHashTableAction( WdeResInfo *res_info, int action )
 {
     bool ret;
 
@@ -177,41 +177,41 @@ bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 
     switch( action ) {
     case VIEW_HASH:
-        ret = WdeResourceViewHash( info );
+        ret = WdeResourceViewHash( res_info );
         break;
     case LOAD_HASH:
-        ret = WdeResourceLoadHash( info );
+        ret = WdeResourceLoadHash( res_info );
         break;
     case WRITE_HASH:
-        ret = WdeResourceWriteHash( info );
+        ret = WdeResourceWriteHash( res_info );
         break;
     }
 
     return( ret );
 }
 
-bool WdeResourceViewHash( WdeResInfo *info )
+bool WdeResourceViewHash( WdeResInfo *res_info )
 {
     bool    no_hash;
     bool    ret;
     OBJPTR  obj;
 
     no_hash = false;
-    if( info->hash_table == NULL ) {
-        InitState( info->forms_win );
+    if( res_info->hash_table == NULL ) {
+        InitState( res_info->forms_win );
         no_hash = true;
-        info->hash_table = WRInitHashTable();
+        res_info->hash_table = WRInitHashTable();
     }
 
-    ret = WdeViewSymbols( &info->hash_table, info->edit_win );
+    ret = WdeViewSymbols( &res_info->hash_table, res_info->edit_win );
 
-    if( !WRNumInHashTable( info->hash_table ) ) {
-        WRFreeHashTable( info->hash_table );
-        info->hash_table = NULL;
+    if( !WRNumInHashTable( res_info->hash_table ) ) {
+        WRFreeHashTable( res_info->hash_table );
+        res_info->hash_table = NULL;
     }
 
     if( ret && (obj = GetMainObject()) != NULL ) {
-        WdeTouchHashTable( info->hash_table );
+        WdeTouchHashTable( res_info->hash_table );
         Forward( obj, RESOLVE_HELPSYMBOL, &ret, NULL ); /* JPK */
         Forward( obj, RESOLVE_SYMBOL, &ret, NULL );
     }
@@ -226,22 +226,22 @@ bool WdeResourceViewHash( WdeResInfo *info )
     return( ret );
 }
 
-bool WdeResourceLoadHash( WdeResInfo *info )
+bool WdeResourceLoadHash( WdeResInfo *res_info )
 {
     OBJPTR      obj;
     bool        b;
     bool        from_id;
     char        *include;
 
-    include = WdeLoadSymbols( &info->hash_table, NULL, true );
+    include = WdeLoadSymbols( &res_info->hash_table, NULL, true );
     if( include == NULL ) {
         return( false );
     }
 
-    if( info->sym_name != NULL ) {
-        MemFree( info->sym_name );
+    if( res_info->sym_name != NULL ) {
+        MemFree( res_info->sym_name );
     }
-    info->sym_name = include;
+    res_info->sym_name = include;
 
     if( (obj = GetMainObject()) != NULL ) {
         b = true;
@@ -255,17 +255,17 @@ bool WdeResourceLoadHash( WdeResInfo *info )
         Notify( obj, PRIMARY_OBJECT, NULL );
     }
 
-    WdeSetResModified( info, TRUE );
+    WdeSetResModified( res_info, TRUE );
 
     return( true );
 }
 
-bool WdeResourceWriteHash( WdeResInfo *info )
+bool WdeResourceWriteHash( WdeResInfo *res_info )
 {
-    return( WdeSaveSymbols( info->hash_table, &info->sym_name, true ) );
+    return( WdeSaveSymbols( res_info->hash_table, &res_info->sym_name, true ) );
 }
 
-bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
+bool WdeCreateDLGInclude( WdeResInfo *res_info, char *include )
 {
     WResID              *type;
     WResID              *res;
@@ -277,17 +277,17 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     type = NULL;
     res = NULL;
     str = NULL;
-    ok = (rinfo != NULL && include != NULL);
+    ok = (res_info != NULL && include != NULL);
 
     if( ok ) {
-        if( rinfo->info->dir == NULL ) {
-            rinfo->info->dir = WResInitDir();
-            ok = (rinfo->info->dir != NULL);
+        if( res_info->info->dir == NULL ) {
+            res_info->info->dir = WResInitDir();
+            ok = (res_info->info->dir != NULL);
         }
     }
 
     if( ok ) {
-        WdeDeleteDLGInclude( rinfo );
+        WdeDeleteDLGInclude( res_info );
         type = WResIDFromNum( RESOURCE2INT( RT_RCDATA ) );
         ok = (type != NULL);
     }
@@ -306,11 +306,11 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         len = strlen( include ) + 1;
-        ok = !WResAddResource( type, res, RESFLAG_DISCARDABLE, 0, len, rinfo->info->dir, &lang, NULL );
+        ok = !WResAddResource( type, res, RESFLAG_DISCARDABLE, 0, len, res_info->info->dir, &lang, NULL );
     }
 
     if( ok ) {
-        ok = WRFindAndSetData( rinfo->info->dir, type, res, &lang, str );
+        ok = WRFindAndSetData( res_info->info->dir, type, res, &lang, str );
     }
 
     if( type != NULL ) {
@@ -330,7 +330,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
     return( ok );
 }
 
-bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
+bool WdeDeleteDLGInclude( WdeResInfo *res_info )
 {
     WResTypeNode        *typenode;
     WResResNode         *resnode;
@@ -338,10 +338,10 @@ bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
     WResLangType        lang;
     bool                ok;
 
-    ok = (rinfo != NULL);
+    ok = (res_info != NULL);
 
     if( ok ) {
-        typenode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        typenode = WRFindTypeNode( res_info->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
         ok = (typenode != NULL);
     }
 
@@ -358,13 +358,13 @@ bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
     }
 
     if( ok ) {
-        ok = WRRemoveLangNodeFromDir( rinfo->info->dir, &typenode, &resnode, &langnode );
+        ok = WRRemoveLangNodeFromDir( res_info->info->dir, &typenode, &resnode, &langnode );
     }
 
     return( ok );
 }
 
-static char *WdeFindDLGInclude( WdeResInfo *rinfo )
+static char *WdeFindDLGInclude( WdeResInfo *res_info )
 {
     WResTypeNode        *typenode;
     WResResNode         *resnode;
@@ -374,10 +374,10 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     bool                ok;
 
     include = NULL;
-    ok = (rinfo != NULL);
+    ok = (res_info != NULL);
 
     if( ok ) {
-        typenode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        typenode = WRFindTypeNode( res_info->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
         ok = (typenode != NULL);
     }
 
@@ -394,7 +394,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     }
 
     if( ok ) {
-        include = WRAllocCopyResData( rinfo->info, langnode );
+        include = WRAllocCopyResData( res_info->info, langnode );
     }
 
     return( include );
@@ -415,7 +415,7 @@ char *WdeCreateSymName( const char *fname )
     return( WdeStrdup( fn_path ) );
 }
 
-bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
+bool WdeFindAndLoadSymbols( WdeResInfo *res_info )
 {
     pgroup2     pg;
     char        fn_path[_MAX_PATH];
@@ -425,18 +425,18 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
 
     include = NULL;
 
-    if( rinfo == NULL || rinfo->info->file_name == NULL ) {
+    if( res_info == NULL || res_info->info->file_name == NULL ) {
         return( false );
     }
 
-    include = WdeFindDLGInclude( rinfo );
+    include = WdeFindDLGInclude( res_info );
     if( include != NULL && !WRFileExists( include ) ) {
         MemFree( include );
         include = NULL;
     }
 
     if( include == NULL ) {
-        _splitpath2( rinfo->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
+        _splitpath2( res_info->info->file_name, pg.buffer, &pg.drive, &pg.dir, &pg.fname, NULL );
         _makepath( fn_path, pg.drive, pg.dir, pg.fname, "h" );
         prompt_name = true;
     } else {
@@ -449,14 +449,14 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
     ret = true;
 
     if( WRFileExists( fn_path ) ) {
-        include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt_name );
+        include = WdeLoadSymbols( &res_info->hash_table, fn_path, prompt_name );
         ret = (include != NULL);
         if( ret ) {
-            if( rinfo->sym_name != NULL ) {
-                MemFree( rinfo->sym_name );
+            if( res_info->sym_name != NULL ) {
+                MemFree( res_info->sym_name );
             }
-            rinfo->sym_name = include;
-            WdeSetResModified( rinfo, TRUE );
+            res_info->sym_name = include;
+            WdeSetResModified( res_info, TRUE );
         }
     }
 

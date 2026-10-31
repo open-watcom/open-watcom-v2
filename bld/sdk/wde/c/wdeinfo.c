@@ -297,7 +297,7 @@ void WdeWriteSymInfo( WdeInfoStruct *is, bool same_as_last, char *s )
 void WdeWriteInfo( WdeInfoStruct *is )
 {
     static WRHashTable  *last_table = NULL;
-    static WdeResInfo   *last_res = NULL;
+    static WdeResInfo   *last_res_info = NULL;
     static OBJ_ID       last_obj = 0;
     char                *cap_text, *id;
     bool                same_hash;
@@ -318,12 +318,12 @@ void WdeWriteInfo( WdeInfoStruct *is )
 
     WdeCurrentInfo = *is;
 
-    same_hash = (last_res == is->res_info && last_table == is->res_info->hash_table);
+    same_hash = (last_res_info == is->res_info && last_table == is->res_info->hash_table);
 
     WdeWriteSymInfo( is, same_hash, NULL );
 
     last_table = is->res_info->hash_table;
-    last_res = is->res_info;
+    last_res_info = is->res_info;
 
     if( is->obj_id == BASE_OBJ ) {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_SIZE );

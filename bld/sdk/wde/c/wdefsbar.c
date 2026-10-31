@@ -136,12 +136,14 @@ bool WdeSBNoodleSize( OBJPTR obj, bool recreate )
     }
 
     if( Forward( sb_obj->object_handle, GET_WINDOW_HANDLE, &hWnd, NULL ) ) {
-        WdeResInfo      *rinfo;
-        rinfo = WdeGetCurrentRes();
-        if( rinfo != NULL ) {
+        WdeResInfo      *res_info;
+
+        res_info = WdeGetCurrentRes();
+        if( res_info != NULL ) {
             RECT                rect;
+
             GetWindowRect( hWnd, &rect );
-            MapWindowRect( (HWND)NULL, rinfo->forms_win, &rect );
+            MapWindowRect( (HWND)NULL, res_info->forms_win, &rect );
             HideSelectBoxes();
             Resize( sb_obj->control, &rect, false );
             WdeUpdateCDialogUnits( sb_obj->control, &rect, NULL );

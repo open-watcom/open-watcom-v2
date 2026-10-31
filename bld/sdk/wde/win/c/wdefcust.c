@@ -793,7 +793,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
         }
         MemFree( text );
     } else {
-         ctl_data->szTitle[0] = '\0';
+        ctl_data->szTitle[0] = '\0';
     }
 
     strcpy( ctl_data->szClass, obj->cust_ctrl->control_info.ms.szClass );

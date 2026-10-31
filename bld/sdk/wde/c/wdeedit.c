@@ -63,13 +63,13 @@ static HFONT    WdeEditFont     = NULL;
 static HBRUSH   WdeFormsBrush   = NULL;
 static HBRUSH   WdeEditBrush    = NULL;
 
-bool WdeSetEditMode( WdeResInfo *info, bool new_mode )
+bool WdeSetEditMode( WdeResInfo *res_info, bool new_mode )
 {
     bool old_mode;
 
-    if( info != NULL ) {
-        old_mode = info->editting;
-        info->editting = new_mode;
+    if( res_info != NULL ) {
+        old_mode = res_info->editting;
+        res_info->editting = new_mode;
     } else {
         old_mode = false;
     }
@@ -77,28 +77,28 @@ bool WdeSetEditMode( WdeResInfo *info, bool new_mode )
     return( old_mode );
 }
 
-HWND WdeGetFormsWindowHandle( WdeResInfo *info )
+HWND WdeGetFormsWindowHandle( WdeResInfo *res_info )
 {
-    if( info != NULL ) {
-        return( info->forms_win );
+    if( res_info != NULL ) {
+        return( res_info->forms_win );
     } else {
-        info = WdeGetCurrentRes();
-        if( info != NULL ) {
-            return( info->edit_win );
+        res_info = WdeGetCurrentRes();
+        if( res_info != NULL ) {
+            return( res_info->edit_win );
         } else {
             return( NULL );
         }
     }
 }
 
-HWND WdeGetEditWindowHandle( WdeResInfo *info )
+HWND WdeGetEditWindowHandle( WdeResInfo *res_info )
 {
-    if( info != NULL ) {
-        return( info->edit_win );
+    if( res_info != NULL ) {
+        return( res_info->edit_win );
     } else {
-        info = WdeGetCurrentRes();
-        if( info != NULL ) {
-            return( info->edit_win );
+        res_info = WdeGetCurrentRes();
+        if( res_info != NULL ) {
+            return( res_info->edit_win );
         } else {
             return( NULL );
         }
@@ -198,84 +198,84 @@ bool WdeRegisterEditClass( HINSTANCE app_inst )
     return( true );
 }
 
-void WdeDestroyEditWindows( WdeResInfo *info )
+void WdeDestroyEditWindows( WdeResInfo *res_info )
 {
     HWND win;
 
-    if( info != NULL ) {
-        if( info->edit_win != NULL ) {
-            win = info->edit_win;
-            info->edit_win = NULL;
+    if( res_info != NULL ) {
+        if( res_info->edit_win != NULL ) {
+            win = res_info->edit_win;
+            res_info->edit_win = NULL;
             DestroyWindow( win );
         }
 
-        if( info->forms_win != NULL ) {
-            win = info->forms_win;
-            info->forms_win = NULL;
+        if( res_info->forms_win != NULL ) {
+            win = res_info->forms_win;
+            res_info->forms_win = NULL;
             DestroyWindow( win );
         }
     }
 }
 
-bool WdeCreateEditWindows( WdeResInfo *info )
+bool WdeCreateEditWindows( WdeResInfo *res_info )
 {
     RECT      rect;
     HINSTANCE app_inst;
 
-    if( info == NULL || info->res_win == NULL ) {
+    if( res_info == NULL || res_info->res_win == NULL ) {
         return( false );
     }
 
     app_inst = WdeGetAppInstance();
 
-    GetClientRect( info->res_win, &rect );
+    GetClientRect( res_info->res_win, &rect );
 
-    info->forms_win = CreateWindow( "WdeFormsClass", NULL, WS_CHILD | WS_VISIBLE,
+    res_info->forms_win = CreateWindow( "WdeFormsClass", NULL, WS_CHILD | WS_VISIBLE,
                                     0, 0, rect.right - rect.left, rect.bottom - rect.top,
-                                    info->res_win, (HMENU)NULL, app_inst, NULL );
+                                    res_info->res_win, (HMENU)NULL, app_inst, NULL );
 
-    if( info->forms_win == NULL ) {
+    if( res_info->forms_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
         return( false );
     }
 
-    GetClientRect( info->forms_win, &rect );
+    GetClientRect( res_info->forms_win, &rect );
 
-    info->edit_win = CreateWindow( "WdeEditClass", NULL, WS_CHILD | WS_VISIBLE, 0, 0,
+    res_info->edit_win = CreateWindow( "WdeEditClass", NULL, WS_CHILD | WS_VISIBLE, 0, 0,
                                    rect.right - rect.left, rect.bottom - rect.top,
-                                   info->res_win, (HMENU)NULL, app_inst, NULL );
+                                   res_info->res_win, (HMENU)NULL, app_inst, NULL );
 
-    if( info->edit_win == NULL ) {
+    if( res_info->edit_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
         return( false );
     }
 
-    SET_WNDINFO( info->edit_win, (LONG_PTR)info );
-    SET_WNDINFO( info->forms_win, (LONG_PTR)info );
+    SET_WNDINFO( res_info->edit_win, (LONG_PTR)res_info );
+    SET_WNDINFO( res_info->forms_win, (LONG_PTR)res_info );
 
-    SetWindowPos( info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+    SetWindowPos( res_info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
     return( true );
 }
 
-bool WdeResizeEditWindows( WdeResInfo *info )
+bool WdeResizeEditWindows( WdeResInfo *res_info )
 {
     RECT rect;
 
-    if( info == NULL || info->res_win == NULL ||
-        info->forms_win == NULL || info->edit_win == NULL ) {
+    if( res_info == NULL || res_info->res_win == NULL ||
+        res_info->forms_win == NULL || res_info->edit_win == NULL ) {
         return( false );
     }
 
-    GetClientRect( info->res_win, &rect );
+    GetClientRect( res_info->res_win, &rect );
 
-    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
+    MoveWindow( res_info->forms_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
     WdeCheckBaseScrollbars( true );
 
-    GetClientRect( info->forms_win, &rect );
+    GetClientRect( res_info->forms_win, &rect );
 
-    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
+    MoveWindow( res_info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
     return( true );
 }
@@ -287,12 +287,12 @@ HFONT WdeGetEditFont( void )
 
 LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WdeResInfo *info;
+    WdeResInfo *res_info;
 
-    info = WdeGetCurrentRes();
+    res_info = WdeGetCurrentRes();
 
-    if( info != NULL && info->forms_win != NULL ) {
-        return( SendMessage( info->forms_win, message, wParam, lParam ) );
+    if( res_info != NULL && res_info->forms_win != NULL ) {
+        return( SendMessage( res_info->forms_win, message, wParam, lParam ) );
     }
 
     return( false );
@@ -361,17 +361,17 @@ LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    WdeResInfo *info;
+    WdeResInfo *res_info;
     LRESULT     result;
 
-    info = (WdeResInfo *)GET_WNDINFO( hWnd );
+    res_info = (WdeResInfo *)GET_WNDINFO( hWnd );
     result = FALSE;
 
-    if( info != NULL && info->editting && info->forms_win != (HWND)NULL ) {
-        InitState( info->forms_win );
+    if( res_info != NULL && res_info->editting && res_info->forms_win != (HWND)NULL ) {
+        InitState( res_info->forms_win );
         result = FMEditWndProc( hWnd, message, wParam, lParam );
         if( message == WM_ERASEBKGND ) {
-            SendMessage( info->edit_win, message, wParam, lParam );
+            SendMessage( res_info->edit_win, message, wParam, lParam );
             result = TRUE;
         }
     }

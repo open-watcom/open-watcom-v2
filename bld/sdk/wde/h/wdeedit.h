@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,16 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool     WdeSetEditMode( WdeResInfo *, bool );
+extern bool     WdeSetEditMode( WdeResInfo *res_info, bool );
 extern LRESULT  WdePassToEdit( UINT, WPARAM, LPARAM );
 extern bool     WdeRegisterEditClass( HINSTANCE );
 extern void     WdeInitEditClass( void );
 extern void     WdeFiniEditClass( void );
-extern bool     WdeCreateEditWindows( WdeResInfo * );
-extern bool     WdeResizeEditWindows( WdeResInfo * );
-extern HWND     WdeGetEditWindowHandle( WdeResInfo * );
+extern bool     WdeCreateEditWindows( WdeResInfo *res_info );
+extern bool     WdeResizeEditWindows( WdeResInfo *res_info );
+extern HWND     WdeGetEditWindowHandle( WdeResInfo *res_info );
 extern HFONT    WdeGetEditFont( void );
-extern HWND     WdeGetFormsWindowHandle( WdeResInfo * );
-extern void     WdeDestroyEditWindows( WdeResInfo * );
+extern HWND     WdeGetFormsWindowHandle( WdeResInfo *res_info );
+extern void     WdeDestroyEditWindows( WdeResInfo *res_info );
 
 #endif

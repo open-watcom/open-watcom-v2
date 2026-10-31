@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,7 +45,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern WdeResDlgItem    *WdeFindDialogInResInfo( WdeResInfo *, int );
-extern int              WdeFindObjectPosInDialogList( WdeResInfo *, OBJPTR );
+extern WdeResDlgItem    *WdeFindDialogInResInfo( WdeResInfo *res_info, int );
+extern int              WdeFindObjectPosInDialogList( WdeResInfo *res_info, OBJPTR );
 
 #endif

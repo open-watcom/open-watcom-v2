@@ -69,12 +69,12 @@ static HWND             WdeTestDialogHandle = NULL;
 static bool             WdeTestMode = FALSE;
 static WdeResInfo       *WdeTestResource = FALSE;
 
-bool WdeHandleTestModeMenu( WdeResInfo *info )
+bool WdeHandleTestModeMenu( WdeResInfo *res_info )
 {
     HWND   main_window;
     bool   ret;
 
-    if( info == NULL ) {
+    if( res_info == NULL ) {
         return( FALSE );
     }
 
@@ -102,7 +102,7 @@ bool WdeHandleTestModeMenu( WdeResInfo *info )
             WdeShowResourceWindows( SW_HIDE );
             WdeSetTestModeMenu( TRUE );
             WdeTestMode = TRUE;
-            WdeTestResource = info;
+            WdeTestResource = res_info;
         } else {
             WdeSetStatusReadyText();
         }

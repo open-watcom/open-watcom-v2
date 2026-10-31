@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,7 @@
 /****************************************************************************/
 extern bool WdeIsTestMessage( MSG * );
 extern bool WdeGetTestMode( void );
-extern bool WdeHandleTestModeMenu( WdeResInfo * );
+extern bool WdeHandleTestModeMenu( WdeResInfo *res_info );
 extern bool WdeSetTestControlDefaults( HWND );
 WINEXPORT extern INT_PTR CALLBACK WdeTestDlgProc( HWND, UINT, WPARAM, LPARAM );
 

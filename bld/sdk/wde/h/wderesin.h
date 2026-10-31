@@ -160,12 +160,12 @@ typedef struct WdeResDlgItem {
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool             WdeFreeResInfo( WdeResInfo * );
+extern bool             WdeFreeResInfo( WdeResInfo *res_info );
 extern bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info );
 extern void             WdeFreeResDlgItem( WdeResDlgItem **pditem, bool );
 extern WdeResDlgItem    *WdeAllocResDlgItem( void );
 extern WdeResInfo       *WdeAllocResInfo( void );
-extern bool             WdeIsResModified( WdeResInfo * );
-extern void             WdeSetResModified( WdeResInfo *, bool modified );
+extern bool             WdeIsResModified( WdeResInfo *res_info );
+extern void             WdeSetResModified( WdeResInfo *res_info, bool modified );
 
 #endif

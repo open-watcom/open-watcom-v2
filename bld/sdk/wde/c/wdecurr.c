@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +39,15 @@
 
 OBJPTR WdeGetCurrObject( void )
 {
-    WdeResInfo  *rinfo;
+    WdeResInfo  *res_info;
     OBJPTR      curr;
 
-    rinfo = WdeGetCurrentRes();
-    if( rinfo == NULL || !rinfo->editting ) {
+    res_info = WdeGetCurrentRes();
+    if( res_info == NULL || !res_info->editting ) {
         return( NULL );
     }
 
-    InitState( rinfo->forms_win );
+    InitState( res_info->forms_win );
 
     curr = GetCurrObject();
 
@@ -55,15 +56,15 @@ OBJPTR WdeGetCurrObject( void )
 
 LIST *WdeGetCurrObjectList( void )
 {
-    WdeResInfo  *rinfo;
+    WdeResInfo  *res_info;
     LIST        *olist;
 
-    rinfo = WdeGetCurrentRes();
-    if( rinfo == NULL || !rinfo->editting ) {
+    res_info = WdeGetCurrentRes();
+    if( res_info == NULL || !res_info->editting ) {
         return( NULL );
     }
 
-    InitState( rinfo->forms_win );
+    InitState( res_info->forms_win );
 
     olist = GetCurrObjectList();
 

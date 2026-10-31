@@ -425,10 +425,10 @@ flag_map HotkeyMap[] = {
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t );
-static bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
-static bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
-static bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem );
+static bool WdeWriteDlgControl( WdeResInfo *res_info, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t );
+static bool WdeWriteDlgHeader( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp );
+static bool WdeSaveDlgItemToRC( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp );
+static bool WdeCreateItemDBI( WdeResInfo *res_info, WdeResDlgItem *ditem );
 
 static bool WdeSetMemFlagsText( ResMemFlags res_flags, char **text )
 {
@@ -792,7 +792,7 @@ static bool WdeSetCommControlFlagText( char *control_class, unsigned long flags,
     return( ok );
 }
 
-bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t nlength )
+bool WdeWriteDlgControl( WdeResInfo *res_info, WdeDialogBoxControl *control, bool is32bitEx, FILE *fp, size_t nlength )
 {
     char                *ctext;
     char                *n;
@@ -817,7 +817,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     ExStyle = NULL;
     ctext_alloc = FALSE;
     cid_alloc = FALSE;
-    ok = (rinfo != NULL && control != NULL &&
+    ok = (res_info != NULL && control != NULL &&
           GETCTL_CLASSID( control ) != NULL && fp != NULL);
 
     if( ok ) {
@@ -861,8 +861,8 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     if( ok ) {
         if( control->symbol != NULL ) {
             cid = control->symbol;
-        } else if( rinfo->hash_table != NULL ) {
-            cid = WRResolveValue( rinfo->hash_table, GETCTL_ID( control ) );
+        } else if( res_info->hash_table != NULL ) {
+            cid = WRResolveValue( res_info->hash_table, GETCTL_ID( control ) );
             if( cid != NULL ) {
                 cid_alloc = TRUE;
             }
@@ -975,7 +975,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control, bool i
     return( ok );
 }
 
-bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
+bool WdeWriteDlgHeader( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp )
 {
     DialogSizeInfo      SizeInfo;
     DialogStyle         style;
@@ -987,14 +987,14 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     uint_32             ExStyle;
 
     name = NULL;
-    ok = (rinfo != NULL && ditem != NULL && fp != NULL);
+    ok = (res_info != NULL && ditem != NULL && fp != NULL);
 
     if( ok ) {
         if( ditem->dlg_info->header->symbol != NULL ) {
             name = WdeStrdup( ditem->dlg_info->header->symbol );
         } else {
-            if( rinfo->hash_table != NULL && !ditem->dialog_name->IsName ) {
-                name = WRResolveValue( rinfo->hash_table, ditem->dialog_name->ID.Num );
+            if( res_info->hash_table != NULL && !ditem->dialog_name->IsName ) {
+                name = WRResolveValue( res_info->hash_table, ditem->dialog_name->ID.Num );
             }
         }
         if( name == NULL ) {
@@ -1112,38 +1112,38 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     return( ok );
 }
 
-char *WdeConstructDLGInclude( WdeResInfo *rinfo )
+char *WdeConstructDLGInclude( WdeResInfo *res_info )
 {
     char        *include;
     size_t      len;
 
-    if( rinfo == NULL || rinfo->sym_name == NULL ) {
+    if( res_info == NULL || res_info->sym_name == NULL ) {
         return( NULL );
     }
 
-    len = strlen( rinfo->sym_name );
+    len = strlen( res_info->sym_name );
     len += 1 + 1 + 2 + 2; // for a nullchar, tab, 2 double quotes, and "\0"
     include = MemAlloc( len );
     if( include == NULL ) {
         return( NULL );
     }
     strcpy( include, "\t\"" );
-    strcat( include, rinfo->sym_name );
+    strcat( include, res_info->sym_name );
     strcat( include, "\\0\"" );
 
     return( include );
 }
 
 #if 0
-static void WdeWriteDLGInclude( WdeResInfo *rinfo, FILE *fp )
+static void WdeWriteDLGInclude( WdeResInfo *res_info, FILE *fp )
 {
     char        *include;
 
-    if( rinfo == NULL || rinfo->sym_name == NULL || fp == NULL ) {
+    if( res_info == NULL || res_info->sym_name == NULL || fp == NULL ) {
         return;
     }
 
-    include = WdeConstructDLGInclude( rinfo );
+    include = WdeConstructDLGInclude( res_info );
     if( include == NULL ) {
         return;
     }
@@ -1157,7 +1157,7 @@ static void WdeWriteDLGInclude( WdeResInfo *rinfo, FILE *fp )
 }
 #endif
 
-bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
+bool WdeSaveDlgItemToRC( WdeResInfo *res_info, WdeResDlgItem *ditem, FILE *fp )
 {
     bool                ok;
     bool                wrote_begin;
@@ -1167,10 +1167,10 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     char                *ctext;
 
     wrote_begin = FALSE;
-    ok = (rinfo != NULL && ditem != NULL && ditem->dlg_info != NULL && fp != NULL);
+    ok = (res_info != NULL && ditem != NULL && ditem->dlg_info != NULL && fp != NULL);
 
     if( ok ) {
-        ok = WdeWriteDlgHeader( rinfo, ditem, fp );
+        ok = WdeWriteDlgHeader( res_info, ditem, fp );
     }
 
     if( ok ) {
@@ -1195,7 +1195,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         wrote_begin = TRUE;
         for( clist = ditem->dlg_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
-            ok = WdeWriteDlgControl( rinfo, control, ditem->dlg_info->header->is32bitEx, fp, nlen );
+            ok = WdeWriteDlgControl( res_info, control, ditem->dlg_info->header->is32bitEx, fp, nlen );
         }
     }
 
@@ -1206,9 +1206,9 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     return( ok );
 }
 
-bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem )
+bool WdeCreateItemDBI( WdeResInfo *res_info, WdeResDlgItem *ditem )
 {
-    if( rinfo == NULL || ditem == NULL ) {
+    if( res_info == NULL || ditem == NULL ) {
         return( FALSE );
     }
 
@@ -1217,7 +1217,7 @@ bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem )
             return( FALSE );
         }
     } else if( ditem->dlg_info == NULL ) {
-        ditem->dlg_info = WdeLoadDialogFromRes( rinfo, ditem->langnode, ditem->is32bit );
+        ditem->dlg_info = WdeLoadDialogFromRes( res_info, ditem->langnode, ditem->is32bit );
         if( ditem->dlg_info == NULL ) {
             return( FALSE );
         }
@@ -1232,7 +1232,7 @@ bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem )
     return( TRUE );
 }
 
-bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
+bool WdeSaveResInfoToRC( char *filename, WdeResInfo *res_info, bool append )
 {
     FILE                *fp;
     bool                ok;
@@ -1240,7 +1240,7 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
     WdeResDlgItem       *ditem;
 
     fp = NULL;
-    ok = ( rinfo != NULL && rinfo->info != NULL && filename != NULL );
+    ok = ( res_info != NULL && res_info->info != NULL && filename != NULL );
 
     if( ok ) {
         if( append ) {
@@ -1253,14 +1253,14 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
 
 #if 0
     if( ok ) {
-        WdeWriteDLGInclude( rinfo, fp );
+        WdeWriteDLGInclude( res_info, fp );
     }
 #endif
 
     if( ok ) {
-        for( dlist = rinfo->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+        for( dlist = res_info->ditem_list; dlist != NULL; dlist = ListNext( dlist ) ) {
             ditem = (WdeResDlgItem *)ListElement( dlist );
-            ok = WdeCreateItemDBI( rinfo, ditem ) && WdeSaveDlgItemToRC( rinfo, ditem, fp );
+            ok = WdeCreateItemDBI( res_info, ditem ) && WdeSaveDlgItemToRC( res_info, ditem, fp );
             if( !ok ) {
                 break;
             }
@@ -1274,13 +1274,13 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
     return( ok );
 }
 
-bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem, bool append )
+bool WdeSaveObjectToRC( char *filename, WdeResInfo *res_info, WdeResDlgItem *ditem, bool append )
 {
     FILE                *fp;
     bool                ok;
 
     fp = NULL;
-    ok = ( rinfo != NULL && ditem != NULL && filename != NULL );
+    ok = ( res_info != NULL && ditem != NULL && filename != NULL );
 
     if( ok ) {
         if( append ) {
@@ -1292,7 +1292,7 @@ bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem,
     }
 
     if( ok ) {
-        ok = WdeSaveDlgItemToRC( rinfo, ditem, fp );
+        ok = WdeSaveDlgItemToRC( res_info, ditem, fp );
     }
 
     if( fp != NULL ) {

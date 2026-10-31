@@ -230,10 +230,9 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 
 bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 {
-    DialogStyle style;
-    DialogStyle cstyle;
-    void        *vp;
-    bool        mod;
+    DialogStyle         style;
+    DialogStyle         cstyle;
+    bool                modified;
 
     WdeGetWinStyles( hDlg, &style, WdeGenericMask );
 
@@ -245,22 +244,26 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         WdeWriteTrail( "WdeGenericSetDefineInfo: Attempt to define base object.!" );
         return( false );
     } else if( info->obj_id == DIALOG_OBJ ) {
+        char    *text;
+
         SETHDR_STYLE( info->info.d.header, style );
-        vp = (void *)WdeGetStrFromEdit ( hDlg, IDB_TEXT, &mod );
-        if( mod && vp != NULL ) {
+        text = WdeGetStrFromEdit( hDlg, IDB_TEXT, &modified );
+        if( modified && text != NULL ) {
             if( GETHDR_CAPTION( info->info.d.header ) ) {
                 MemFree( GETHDR_CAPTION( info->info.d.header ) );
             }
-            SETHDR_CAPTION( info->info.d.header, (char *)vp );
+            SETHDR_CAPTION( info->info.d.header, text );
         }
     } else {
+        ResNameOrOrdinal    *text;
+
         SETCTL_STYLE( info->info.c.control, style );
-        vp = (void *)WdeGetResNameOrFromEdit ( hDlg, IDB_TEXT, &mod );
-        if ( mod && vp != NULL ) {
+        text = WdeGetResNameOrFromEdit( hDlg, IDB_TEXT, &modified );
+        if( modified && text != NULL ) {
             if( GETCTL_TEXT( info->info.c.control ) ) {
                 MemFree( GETCTL_TEXT( info->info.c.control ) );
             }
-            SETCTL_TEXT( info->info.c.control, (ResNameOrOrdinal *)vp );
+            SETCTL_TEXT( info->info.c.control, text );
         }
     }
 

@@ -216,7 +216,7 @@ void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
 ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *pmodified )
 {
     ResNameOrOrdinal    *cclass;
-    int                 ordinal;
+    uint_16             ordinal;
     char                *str;
     char                *ep;
 
@@ -229,7 +229,7 @@ ResNameOrOrdinal *WdeGetControlClassFromEdit( HWND hDlg, int id, bool *pmodified
         if( str == NULL ) {
             return( NULL );
         }
-        ordinal = (int)strtoul( str, &ep, 0 );
+        ordinal = strtoul( str, &ep, 0 );
         if( *ep == '\0' ) {
             cclass = ResNumToNameOrOrdinal( ordinal );
         } else {

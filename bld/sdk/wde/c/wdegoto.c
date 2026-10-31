@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,7 +57,7 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WdeIsCurrentObjectVisible( WdeResInfo *info )
+bool WdeIsCurrentObjectVisible( WdeResInfo *res_info )
 {
     OBJPTR      curr_obj;
     RECT        crect;
@@ -64,7 +65,7 @@ bool WdeIsCurrentObjectVisible( WdeResInfo *info )
     RECT        intersect;
     POINT       origin;
 
-    if( info == NULL ) {
+    if( res_info == NULL ) {
         return( FALSE );
     }
 
@@ -77,7 +78,7 @@ bool WdeIsCurrentObjectVisible( WdeResInfo *info )
     }
 
     Location( curr_obj, &crect );
-    GetClientRect( info->edit_win, &brect );
+    GetClientRect( res_info->edit_win, &brect );
     GetOffset( &origin );
     OffsetRect( &brect, origin.x, origin.y );
 
@@ -90,27 +91,27 @@ bool WdeIsCurrentObjectVisible( WdeResInfo *info )
 
 bool WdeHandleGotoCurrentObject( void )
 {
-    WdeResInfo  *info;
+    WdeResInfo  *res_info;
     OBJPTR      obj;
     RECT        crect;
     RECT        srect;
     RECT        rect;
     POINT       pt;
 
-    info = WdeGetCurrentRes();
-    if( info == NULL ) {
+    res_info = WdeGetCurrentRes();
+    if( res_info == NULL ) {
         return( FALSE );
     }
-    InitState( info->forms_win );
+    InitState( res_info->forms_win );
 
-    if( WdeIsCurrentObjectVisible( info ) ) {
+    if( WdeIsCurrentObjectVisible( res_info ) ) {
         return( TRUE );
     }
 
     // calculate the exclusion rectangle for the new offset
     obj = GetMainObject();
     Forward( obj, GET_SCROLL_RECT, &srect, NULL );
-    GetClientRect( info->forms_win, &crect );
+    GetClientRect( res_info->forms_win, &crect );
     rect.left = srect.right - (crect.right - crect.left) + 1;
     rect.top = srect.bottom - (crect.bottom - crect.top) + 1;
     rect.right = srect.right;

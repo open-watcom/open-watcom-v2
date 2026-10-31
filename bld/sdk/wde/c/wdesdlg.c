@@ -76,13 +76,13 @@ WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static LIST  *WdeSelectDialogs( WdeResInfo *, bool );
+static LIST  *WdeSelectDialogs( WdeResInfo *res_info, bool );
 static bool   WdeSetSelectInfo( HWND, WdeDialogSelectInfo * );
 static bool   WdeGetSelectInfo( HWND, WdeDialogSelectInfo * );
-static bool   WdeInitSelectListBox( WdeResInfo *, HWND );
-static char  *WdeResolveDialogName( WdeResInfo *, WResID * );
-static bool   WdeAddControlToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxControl *control, POINT *, HWND );
-static bool   WdeAddControlsToDialog( WdeResInfo *, OBJPTR, WdeDialogBoxInfo *dlg_info );
+static bool   WdeInitSelectListBox( WdeResInfo *res_info, HWND );
+static char  *WdeResolveDialogName( WdeResInfo *res_info, WResID * );
+static bool   WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR, WdeDialogBoxControl *control, POINT *, HWND );
+static bool   WdeAddControlsToDialog( WdeResInfo *res_info, OBJPTR, WdeDialogBoxInfo *dlg_info );
 static OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control );
 static OBJ_ID WdeGetOBJIDFromClassNum( uint_8, uint_32 );
 

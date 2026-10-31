@@ -551,7 +551,6 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     DialogStyle style;
     char        *cp;
     char        *cp2;
-    void        *vp;
     bool        modified;
 
     /* set the control text */
@@ -559,11 +558,13 @@ void WdeGetDefineControlInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     if( modified ) {
         cp2 = WRConvertStringTo( cp, "\t\n", "tn" );
         if( cp2 != NULL ) {
-            vp = WdeStrToResNameOrOrdinal( cp2 );
+            ResNameOrOrdinal    *text;
+
+            text = WdeStrToResNameOrOrdinal( cp2 );
             if( GETCTL_TEXT( o_info->info.c.control ) ) {
                 MemFree( GETCTL_TEXT( o_info->info.c.control ) );
             }
-            SETCTL_TEXT( o_info->info.c.control, (ResNameOrOrdinal *)vp );
+            SETCTL_TEXT( o_info->info.c.control, text );
             MemFree( cp2 );
         }
         MemFree( cp );
@@ -821,7 +822,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             o_info->info.d.header->helpsymbol = WdeStrdup( str );
             strupr( o_info->helpsymbol );
             ordinal = GETHDR_HELPID( o_info->info.d.header );
-            if( ordinal > 0 ) {
+            if( ordinal ) {
                 entry = WdeAddHashEntry( o_info->res_info->hash_table, str, ordinal, &dup );
             } else {
                 entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
@@ -841,7 +842,7 @@ void WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
             o_info->info.c.control->helpsymbol = WdeStrdup( str );
             strupr( o_info->helpsymbol );
             ordinal = GETCTL_HELPID( o_info->info.c.control );
-            if( ordinal > 0 ) {
+            if( ordinal ) {
                 entry = WdeAddHashEntry( o_info->res_info->hash_table, str, ordinal, &dup );
             } else {
                 entry = WdeDefAddHashEntry( o_info->res_info->hash_table, str, &dup );
