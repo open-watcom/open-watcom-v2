@@ -334,16 +334,12 @@ bool WREGetDlgSessionIs32Bit( HCONV server, char **pdata, size_t *dsize )
         return( false );
     }
 
-    if( !session->info.is32bit ) {
-        return( false );
-    }
-
-    *dsize = sizeof( bool );
+    *dsize = 1;
     *pdata = MemAlloc( *dsize );
     if( *pdata == NULL ) {
         return( false );
     }
-    memcpy( *pdata, &session->info.is32bit, *dsize );
+    (*pdata)[0] = ( session->info.is32bit ) ? 1 : 0;
 
     return( true );
 }

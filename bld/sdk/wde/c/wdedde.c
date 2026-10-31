@@ -408,6 +408,7 @@ bool WdeStartDDEEditSession( void )
 
     object = NULL;
     filename = NULL;
+    res_info = NULL;
 
     ditem = WdeAllocResDlgItem();
     ok = (ditem != NULL);
@@ -431,9 +432,16 @@ bool WdeStartDDEEditSession( void )
         if( hData == NULL ) {
             ok = false;
         } else {
-            ditem->is32bit = true;
+            ok = WRAllocDataFromDDE( hData, &data, &size );
             DdeFreeDataHandle( hData );
         }
+    }
+    if( ok ) {
+        ok = ( size != 0 );
+        if( ok ) {
+            ditem->is32bit = ( data[0] != 0 );
+        }
+        MemFree( data );
     }
 
     if( ok ) {
