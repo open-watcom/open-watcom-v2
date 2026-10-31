@@ -87,6 +87,6 @@ _zip_error_strerror(struct zip_error *err)
                 ss);
         err->str = s;
 
-        return ss;
+        return s;
     }
 }
