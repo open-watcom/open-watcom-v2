@@ -162,7 +162,7 @@ typedef struct WdeResDlgItem {
 /****************************************************************************/
 extern bool             WdeFreeResInfo( WdeResInfo * );
 extern bool             WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info );
-extern void             WdeFreeResDlgItem( WdeResDlgItem **, bool );
+extern void             WdeFreeResDlgItem( WdeResDlgItem **pditem, bool );
 extern WdeResDlgItem    *WdeAllocResDlgItem( void );
 extern WdeResInfo       *WdeAllocResInfo( void );
 extern bool             WdeIsResModified( WdeResInfo * );

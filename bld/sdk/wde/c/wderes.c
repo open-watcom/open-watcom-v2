@@ -363,9 +363,9 @@ void WdeShowResourceWindows( int show )
     }
 }
 
-void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *item )
+void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *ditem )
 {
-    WdeInsertObject( &info->ditem_list, (OBJPTR)item );
+    WdeInsertObject( &info->ditem_list, (OBJPTR)ditem );
 }
 
 WdeResInfo *WdeCreateNewResource( char *title )
@@ -1117,21 +1117,21 @@ LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM l
     return( ret );
 }
 
-bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **di, WResID *id )
+bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **pditem, WResID *id )
 {
     WdeResInfo      *res_info;
-    WdeResDlgItem   *item;
+    WdeResDlgItem   *ditem;
     WResID          *name;
     bool            ok;
 
-    ok = (dlg != NULL && id != NULL && ri != NULL && di != NULL);
+    ok = (dlg != NULL && id != NULL && ri != NULL && pditem != NULL);
 
     if( ok ) {
         ok = ((res_info = WdeGetCurrentRes()) != NULL);
     }
 
     if( ok ) {
-        ok = ((item = WdeAllocResDlgItem()) != NULL);
+        ok = ((ditem = WdeAllocResDlgItem()) != NULL);
     }
 
     if( ok ) {
@@ -1139,16 +1139,16 @@ bool WdeSetObjectInfo( OBJPTR dlg, WdeResInfo **ri, WdeResDlgItem **di, WResID *
     }
 
     if( ok ) {
-        item->object = dlg;
-        item->dialog_name = name;
-        item->modified = true;
-        item->is32bit = res_info->is32bit;
-        WdeAddResDlgItemToResInfo( res_info, item );
+        ditem->object = dlg;
+        ditem->dialog_name = name;
+        ditem->modified = true;
+        ditem->is32bit = res_info->is32bit;
+        WdeAddResDlgItemToResInfo( res_info, ditem );
         *ri = res_info;
-        *di = item;
+        *pditem = ditem;
     } else {
-        if( item != NULL ) {
-            WdeFreeResDlgItem( &item, FALSE );
+        if( ditem != NULL ) {
+            WdeFreeResDlgItem( &ditem, FALSE );
         }
         if( name != NULL ) {
             WResIDFree( name );

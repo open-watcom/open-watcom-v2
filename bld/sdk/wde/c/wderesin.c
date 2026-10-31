@@ -97,21 +97,21 @@ bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
     return( true );
 }
 
-void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
+void WdeFreeResDlgItem( WdeResDlgItem **pditem, bool destroy_object )
 {
-    if( ditem != NULL && *ditem != NULL ) {
-        if( (*ditem)->dialog_name != NULL ) {
-            WResIDFree( (*ditem)->dialog_name );
+    if( pditem != NULL && *pditem != NULL ) {
+        if( (*pditem)->dialog_name != NULL ) {
+            WResIDFree( (*pditem)->dialog_name );
         }
-        if( (*ditem)->dlg_info != NULL ) {
-            WdeFreeDialogBoxInfo( (*ditem)->dlg_info );
+        if( (*pditem)->dlg_info != NULL ) {
+            WdeFreeDialogBoxInfo( (*pditem)->dlg_info );
         }
-        if( destroy_object && (*ditem)->object != NULL ) {
-            Destroy( (*ditem)->object, false );
+        if( destroy_object && (*pditem)->object != NULL ) {
+            Destroy( (*pditem)->object, false );
         }
-        (*ditem)->object = NULL;
-        MemFree( *ditem );
-        *ditem = NULL;
+        (*pditem)->object = NULL;
+        MemFree( *pditem );
+        *pditem = NULL;
     }
 }
 
@@ -133,15 +133,15 @@ void WdeFreeControlList( LIST **control_list )
 void WdeFreeResItemList( LIST **item_list )
 {
     LIST          *ilist;
-    WdeResDlgItem *item;
+    WdeResDlgItem *ditem;
 
     if( item_list != NULL && *item_list != NULL ) {
         for( ilist = *item_list; ilist != NULL; ilist = ListNext( ilist ) ) {
-            item = (WdeResDlgItem *)ListElement( ilist );
-            if( item->object != NULL ) {
-                Destroy( item->object, false );
+            ditem = (WdeResDlgItem *)ListElement( ilist );
+            if( ditem->object != NULL ) {
+                Destroy( ditem->object, false );
             } else {
-                WdeFreeResDlgItem( &item, TRUE );
+                WdeFreeResDlgItem( &ditem, TRUE );
             }
         }
         ListFree( *item_list );
@@ -151,15 +151,15 @@ void WdeFreeResItemList( LIST **item_list )
 
 WdeResDlgItem *WdeAllocResDlgItem( void )
 {
-    WdeResDlgItem  *item;
+    WdeResDlgItem  *ditem;
 
-    item = MemAlloc( sizeof( WdeResDlgItem ) );
+    ditem = MemAlloc( sizeof( WdeResDlgItem ) );
 
-    if( item != NULL ) {
-        memset( item, 0, sizeof( WdeResDlgItem ) );
+    if( ditem != NULL ) {
+        memset( ditem, 0, sizeof( WdeResDlgItem ) );
     }
 
-    return( item );
+    return( ditem );
 }
 
 WdeResInfo *WdeAllocResInfo( void )
@@ -178,15 +178,15 @@ WdeResInfo *WdeAllocResInfo( void )
 bool WdeIsResModified( WdeResInfo *res_info )
 {
     LIST          *ilist;
-    WdeResDlgItem *item;
+    WdeResDlgItem *ditem;
 
     if( res_info != NULL ) {
         if( res_info->modified ) {
             return( true );
         }
         for( ilist = res_info->ditem_list; ilist != NULL; ilist = ListNext( ilist ) ) {
-            item = (WdeResDlgItem *)ListElement( ilist );
-            if( item->modified ) {
+            ditem = (WdeResDlgItem *)ListElement( ilist );
+            if( ditem->modified ) {
                 return( true );
             }
         }
@@ -198,12 +198,12 @@ bool WdeIsResModified( WdeResInfo *res_info )
 void WdeSetResModified( WdeResInfo *res_info, bool modified )
 {
     LIST          *ilist;
-    WdeResDlgItem *item;
+    WdeResDlgItem *ditem;
 
     if( res_info != NULL ) {
         for( ilist = res_info->ditem_list; ilist != NULL; ilist = ListNext( ilist ) ) {
-            item = (WdeResDlgItem *)ListElement( ilist );
-            item->modified = modified;
+            ditem = (WdeResDlgItem *)ListElement( ilist );
+            ditem->modified = modified;
         }
         res_info->modified = modified;
     }

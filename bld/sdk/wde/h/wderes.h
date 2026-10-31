@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +62,8 @@ extern bool         WdeOpenResource( char * );
 extern int          WdeGetNumRes( void );
 extern WdeResInfo   *WdeGetCurrentRes( void );
 extern OBJPTR       WdeGetCurrentDialog( void );
-extern void         WdeAddResDlgItemToResInfo( WdeResInfo *, WdeResDlgItem * );
-extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **, WdeResDlgItem **, WResID * );
-extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *, WdeResDlgItem *, bool );
+extern void         WdeAddResDlgItemToResInfo( WdeResInfo *, WdeResDlgItem *ditem );
+extern bool         WdeSetObjectInfo( OBJPTR, WdeResInfo **, WdeResDlgItem **pditem, WResID * );
+extern bool         WdeRemoveDialogFromResInfo( WdeResInfo *, WdeResDlgItem *ditem, bool );
 
 #endif

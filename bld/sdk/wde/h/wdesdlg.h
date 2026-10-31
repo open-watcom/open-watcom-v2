@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,7 @@
 extern bool WdeResInfoHasDialogs( WdeResInfo * );
 extern bool WdeSelectDialog( WdeResInfo * );
 extern bool WdeRemoveDialog( WdeResInfo * );
-extern bool WdeOpenDialogFromResInfo( WdeResInfo *, WdeResDlgItem * );
-extern bool WdeOpenSelectedDialog( WdeResInfo *, WdeResDlgItem *, bool );
+extern bool WdeOpenDialogFromResInfo( WdeResInfo *, WdeResDlgItem *ditem );
+extern bool WdeOpenSelectedDialog( WdeResInfo *, WdeResDlgItem *ditem, bool );
 
 #endif
