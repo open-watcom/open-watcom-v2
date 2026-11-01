@@ -1,8 +1,8 @@
 s/r conflict in state 39 on Y_STRING:
 	shift to 163
-323 (143): string-constant <- string-group (unit production)
+319 (13f): string-constant <- string-group (unit production)
 
-Sample sentence(s) for reduce of rule 323:
+Sample sentence(s) for reduce of rule 319:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_CONTROL Y_NAME Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER Y_STRING . Y_STRING
   Will never shift token 'Y_STRING' in this context
@@ -14,9 +14,9 @@ Y_STRING Y_END $eof
 
 s/r conflict in state 46 on Y_MINUS:
 	shift to 168
-348 (15c): shift-exp <- additive-exp (unit production)
+344 (158): shift-exp <- additive-exp (unit production)
 
-Sample sentence(s) for reduce of rule 348:
+Sample sentence(s) for reduce of rule 344:
   Y_DLGTEMPLATE Y_MLE Y_BEGIN Y_ICON Y_MLE Y_INTEGER Y_INTEGER 
 Y_INTEGER Y_INTEGER Y_INTEGER Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
@@ -28,9 +28,9 @@ Y_MINUS Y_INTEGER Y_END $eof
 
 s/r conflict in state 230 on Y_MINUS:
 	shift to 168
-350 (15e): shift-exp <- shift-exp Y_SHIFTR additive-exp
+346 (15a): shift-exp <- shift-exp Y_SHIFTR additive-exp
 
-Sample sentence(s) for reduce of rule 350:
+Sample sentence(s) for reduce of rule 346:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTR Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
 Sample sentence(s) for shift to state 168:
@@ -42,9 +42,9 @@ $eof
 
 s/r conflict in state 231 on Y_MINUS:
 	shift to 168
-349 (15d): shift-exp <- shift-exp Y_SHIFTL additive-exp
+345 (159): shift-exp <- shift-exp Y_SHIFTL additive-exp
 
-Sample sentence(s) for reduce of rule 349:
+Sample sentence(s) for reduce of rule 345:
   Y_DLGTEMPLATE Y_INTEGER Y_SHIFTL Y_INTEGER . Y_MINUS
   Will never shift token 'Y_MINUS' in this context
 Sample sentence(s) for shift to state 168:
@@ -69,8 +69,8 @@ Y_COMMA Y_END $eof
 ---
 
 actions combined:                           50
-parser states:                             602
-# states (1 reduce only):                  284
+parser states:                             598
+# states (1 reduce only):                  280
 reduce/reduce conflicts:                     0
 shift/reduce conflicts:                      5
 number of rules not reduced:                10
@@ -83,7 +83,7 @@ number of rules not reduced:                10
 237 (0ed): diag-options-stmt <- menu-stmt (unit production)
 238 (0ee): diag-options-stmt <- font-stmt (unit production)
 239 (0ef): menu-stmt <- Y_MENU name-id
-247 (0f7): font-stmt <- Y_FONT comma-opt
-bytes used in tables:                     7262
-states with defaults:                      437
+243 (0f3): font-stmt <- Y_FONT comma-opt
+bytes used in tables:                     7274
+states with defaults:                      433
 states with parents:                       215

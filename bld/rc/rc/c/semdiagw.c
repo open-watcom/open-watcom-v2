@@ -324,6 +324,32 @@ static FullDialogBoxControlWIN *semInitDialogCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
+static ResNameOrOrdinal *WINCanonicalControlClass( ResNameOrOrdinal *cclass )
+{
+    ResNameOrOrdinal    *new_cclass;
+
+    if( cclass->ord.fFlag == 0xff ) {
+        new_cclass = ResNumToNameOrOrdinal( cclass->ord.wOrdinalID );
+    } else {
+        if( stricmp( cclass->name, "button" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_BUTTON );
+        } else if( stricmp( cclass->name, "edit" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_EDIT );
+        } else if( stricmp( cclass->name, "static" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_STATIC );
+        } else if( stricmp( cclass->name, "listbox" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_LISTBOX );
+        } else if( stricmp( cclass->name, "scrollbar" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_SCROLLBAR );
+        } else if( stricmp( cclass->name, "combobox" ) == 0 ) {
+            new_cclass = ResNumToNameOrOrdinal( CLASS_COMBOBOX );
+        } else {
+            new_cclass = ResStrToNameOrOrdinal( cclass->name );
+        }
+    }
+    return( new_cclass );
+}
+
 FullDialogBoxControlWIN *SemWINNewDialogCtrl( YYTOKENTYPE token, FullDialogCtrlOptionsWIN opts )
 /**********************************************************************************************/
 {
@@ -747,7 +773,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
         diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
-        diagctrl->ctrl.ClassID = ResNormalizeControlClass( ctlclassname );
+        diagctrl->ctrl.ClassID = WINCanonicalControlClass( ctlclassname );
         diagctrl->ctrl.Style = style;
         /*
          * ExtraBytes and ExtendStyle are 0 for all controls
@@ -763,7 +789,7 @@ FullDialogBoxControlWIN *SemWINSetControlData( IntMask ctrlstyle,
         diagctrl->ctrl.SizeInfo = SizeInfo;
         diagctrl->ctrl.Text = WResIDToNameOrOrdinal( cntltext_id );
         MemFree( cntltext_id );
-        diagctrl->ctrl.ClassID = ResNormalizeControlClass( ctlclassname );
+        diagctrl->ctrl.ClassID = WINCanonicalControlClass( ctlclassname );
         diagctrl->ctrl.Style = style;
         /*
          * ExtraBytes is 0 for all controls that RC understands

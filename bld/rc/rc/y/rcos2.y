@@ -1160,16 +1160,8 @@ menu-stmt
 ctl-class-name
     : string-constant
         { $$ = ResStrToNameOrOrdinal( $1.string ); MemFree( $1.string ); }
-    | Y_PUSHBUTTON
-        { $$ = ResStrToNameOrOrdinal( "PUSHBUTTON" ); }
-    | Y_COMBOBOX
-        { $$ = ResStrToNameOrOrdinal( "COMBOBOX" ); }
-    | Y_ENTRYFIELD
-        { $$ = ResStrToNameOrOrdinal( "ENTRYFIELD" ); }
-    | Y_LISTBOX
-        { $$ = ResStrToNameOrOrdinal( "LISTBOX" ); }
     | constant-expression
-        { $$ = ResNumToNameOrOrdinal( (uint_16)$1.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrdinal( $1.Value ); }
     /*
      * A little hack - OS/2 standard window classes are defined like this:
      * #define WC_BUTTON ((PSZ)0xffff0003L)
@@ -1178,7 +1170,7 @@ ctl-class-name
      * clean but does the job.
      */
     | Y_LPAREN Y_LPAREN Y_PSZ Y_RPAREN constant-expression Y_RPAREN
-        { $$ = ResNumToNameOrOrdinal( (uint_16)$5.Value | 0x80 ); }
+        { $$ = ResNumToNameOrOrdinal( $5.Value ); }
     ;
 
 font-stmt

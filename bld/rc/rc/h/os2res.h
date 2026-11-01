@@ -63,21 +63,21 @@
 /*
  * Select OS/2 window classes (encoded Windows style)
  */
-#define OS2_WC_FRAME           0x81
-#define OS2_WC_COMBOBOX        0x82
-#define OS2_WC_BUTTON          0x83
-#define OS2_WC_MENU            0x84
-#define OS2_WC_STATIC          0x85
-#define OS2_WC_ENTRYFIELD      0x86
-#define OS2_WC_LISTBOX         0x87
-#define OS2_WC_SCROLLBAR       0x88
-#define OS2_WC_TITLEBAR        0x89
-#define OS2_WC_MLE             0x8A
-#define OS2_WC_SPINBUTTON      0xA0
-#define OS2_WC_CONTAINER       0xA5
-#define OS2_WC_SLIDER          0xA6
-#define OS2_WC_VALUESET        0xA7
-#define OS2_WC_NOTEBOOK        0xA8
+#define OS2_WC_FRAME           0x01
+#define OS2_WC_COMBOBOX        0x02
+#define OS2_WC_BUTTON          0x03
+#define OS2_WC_MENU            0x04
+#define OS2_WC_STATIC          0x05
+#define OS2_WC_ENTRYFIELD      0x06
+#define OS2_WC_LISTBOX         0x07
+#define OS2_WC_SCROLLBAR       0x08
+#define OS2_WC_TITLEBAR        0x09
+#define OS2_WC_MLE             0x0A
+#define OS2_WC_SPINBUTTON      0x20
+#define OS2_WC_CONTAINER       0x25
+#define OS2_WC_SLIDER          0x26
+#define OS2_WC_VALUESET        0x27
+#define OS2_WC_NOTEBOOK        0x28
 
 /*
  * OS/2 window styles

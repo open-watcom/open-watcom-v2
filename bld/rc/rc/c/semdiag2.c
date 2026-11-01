@@ -195,6 +195,22 @@ static FullDialogBoxControlOS2 *SemOS2InitDialogCtrl( void )
 #define DEF_SPINBUTTON       (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 #define DEF_VALUESET         (OS2_WS_VISIBLE|OS2_WS_TABSTOP)
 
+static ResNameOrOrdinal *OS2CanonicalControlClass( ResNameOrOrdinal *cclass )
+{
+    ResNameOrOrdinal    *new_cclass;
+
+    if( cclass->ord.fFlag == 0xff ) {
+        new_cclass = ResNumToNameOrOrdinal( cclass->ord.wOrdinalID );
+    } else {
+        /*
+         * Code for converting from a Control class name to an ordinal
+         * can be placed here.
+         */
+        new_cclass = ResStrToNameOrOrdinal( cclass->name );
+    }
+    return( new_cclass );
+}
+
 FullDialogBoxControlOS2 *SemOS2NewDialogCtrl( YYTOKENTYPE token,
                                     FullDialogCtrlOptionsOS2 opts,
                                     PresParamListOS2 *presparams )
@@ -576,8 +592,7 @@ static char *SemOS2BuildTemplateItemsArray( char *ptr, FullDialogCtrlListOS2 *ct
             tmpl->cchClassName = strlen( control->ClassID->name );
         } else {
             tmpl->cchClassName = 0;
-            /* NOTE question if high bits to be zeroed, or zero only 0x80 bit */
-            tmpl->offClassName = control->ClassID->ord.wOrdinalID & 0x7f;
+            tmpl->offClassName = control->ClassID->ord.wOrdinalID;
         }
 
         if( control->Text != NULL ) {
@@ -741,7 +756,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNormalizeControlClass( ctlclassname );
+    control->ctrl.ClassID    = OS2CanonicalControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 0;
@@ -764,7 +779,7 @@ FullDialogBoxControlOS2 *SemOS2SetWndData( ResNameOrOrdinal *name,
     control->ctrl.ID         = id;
     control->ctrl.SizeInfo   = SizeInfo;
     control->ctrl.Text       = name;
-    control->ctrl.ClassID    = ResNormalizeControlClass( ctlclassname );
+    control->ctrl.ClassID    = OS2CanonicalControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
     control->children        = childctls;
     control->ctrl.ExtraBytes = 4;
