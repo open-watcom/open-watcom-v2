@@ -9,10 +9,12 @@
 ###
 ## Welcome to the Open Watcom v2 Project! 
 
-For more information about the project and build instructions see the GitHub wiki.
+A Friendly Open Watcom fork to continue development, open to [`contributions`] and [`Issues`].
+For more information about the project and build instructions see the [`Open Watcom GitHub wiki`](https://github.com/open-watcom/open-watcom-v2/wiki).
+This Project has a [`Webpage`](https://open-watcom.github.io/)
 
 Discuss the Project on GitHub, Reddit or Discord.
-----------------------------------------------------------------------------
+-------------------------------------------------
 
 GitHub, join the discussion [`Open Watcom on GitHub`](https://github.com/open-watcom/open-watcom-v2/discussions)
 
@@ -25,13 +27,31 @@ Other general Discord server for "Open Watcom" exists [invite link](https://disc
 
 [`Official OpenWatcom site`](http://openwatcom.org) only WEB site is up, all other services (bugzilla, Wiki, News server, Perforce) is down for long time, it looks like it is dead.
 
+Open Watcom Installation
+------------------------
+[`Installers`] (https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) are build by a Github Action Workflow
+[`Installation instructions`](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installation)
+ are in each Installer Package and also in the Open Watcom Wiki.
+
+Open Watcom Documentation
+-------------------------
+The Open Watcom Documentation is build by a Github Action Workflow and an [`overview Page`]
+(https://github.com/open-watcom/open-watcom-v2/wiki/Open-Watcom-Documentation)
+for the "html" and "PDF" formats is available in the Open Watcom Wiki.
+The Open Watcom Documentation in various formats is also included in the installation packages.
+
+
+Open Watcom Building
+--------------------
+The detailed [`build instruction`](https://github.com/open-watcom/open-watcom-v2/wiki/Build) is located in the Open Watcom Wiki.
+
 Source Tree Layout
 ------------------
 
 Open Watcom allows you to place the source tree almost anywhere (although
 we recommend avoiding paths containing spaces). The root of the source
 tree should be specified by the `OWROOT` environment variable in `setvars`
-(as described in [`Build`](https://github.com/open-watcom/open-watcom-v2/wiki/Build) document). All relative paths in this document are
+(as described in the [`Build`](https://github.com/open-watcom/open-watcom-v2/wiki/Build) document). All relative paths in this document are
 taken relative to `OWROOT` location. Also this document uses the backslash
 character as a path separator as is normal for DOS, Windows, and OS/2. Of
 course on Linux systems a slash character should be used instead.
@@ -76,13 +96,14 @@ The directory layout is as follows:
         location of rel tree can be changed by OWRELROOT environment
         variable.
 
-OpenWatcom Installation
------------------------
-[Installer installation instruction](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installation) in Documentation (OW Wiki).
 
-OpenWatcom Building
+Open Watcom Licence
 -------------------
-[Building instruction](https://github.com/open-watcom/open-watcom-v2/wiki/Build) in OW Wiki.
+The Open Watcom Source uses the [`Sybase Open Watcom Public License version 1.0`](https://github.com/open-watcom/open-watcom-v2/blob/master/license.txt) (OSI certified as [`Watcom-1.0`](https://opensource.org/license/watcom-1.0))
+[`Relicensing is in Progress`](https://github.com/open-watcom/open-watcom-v2/wiki/Relicensing-effort), waiting for approval by SAP.
 
-[Open Watcom Licence](https://github.com/open-watcom/open-watcom-v2/blob/master/license.txt)
----------------------
+
+Contributions
+-------------
+Open Watcom works with [Issues](https://github.com/open-watcom/open-watcom-v2/issues?q=sort%3Aupdated-desc+is%3Aissue+state%3Aopen+) 
+and [Pull Requests](https://github.com/open-watcom/open-watcom-v2/pulls?q=sort%3Aupdated-desc+is%3Apr+state%3Aopen+) here on Github.
