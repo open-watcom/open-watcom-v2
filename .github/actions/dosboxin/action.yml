@@ -20,9 +20,9 @@ runs:
     run: |
       brew tap-new local/custom --no-git
       cp ci/dosbox-x.rb "$(brew --repository local/custom)/Formula/dosbox-x.rb"
+      brew trust --formula local/custom/dosbox-x
       brew install local/custom/dosbox-x
     env:
       HOMEBREW_NO_AUTO_UPDATE: 1
-      HOMEBREW_NO_REQUIRE_TAP_TRUST: 1
       HOMEBREW_NO_ENV_HINTS: 1
     shell: bash
