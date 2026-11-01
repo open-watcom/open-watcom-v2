@@ -79,6 +79,8 @@
 #include "rcrtns.h"
 #include "rccore.h"
 
+#include "clibext.h"
+
 
 static FullDialogBoxHeader *NewDialogBoxHeader( void )
 /****************************************************/
