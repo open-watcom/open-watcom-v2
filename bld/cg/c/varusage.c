@@ -430,10 +430,10 @@ void    FindReferences( void )
     Traverse the blocks an allocate a data_flow_def for each one if it
     is needed.  Then calculate which variables are USE_WITHIN_BLOCK,
     USE_IN_OTHER_BLOCK, DEF_IN_BLOCK and turn on their bits in the
-    dataflo->def and dataflo->use sets.  Note that USE_WITHIN_BLOCK
+    dataflow->def and dataflow->use sets.  Note that USE_WITHIN_BLOCK
     means that a variable is used before it is defined.
     DEF_WITHIN_BLOCK means that the entire variable is redefined by the
-    block, so that no definitition of it in a previous block could flow
+    block, so that no definition of it in a previous block could flow
     through this block and be used in a subsequent block.  USE_IN_ANOTHER
     block means that a variable is used in more than one block.
 */
