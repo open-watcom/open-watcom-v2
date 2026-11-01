@@ -94,7 +94,6 @@ extern bool             ResWriteDialogBoxExHeader( DialogBoxHeader *head, FILE *
 extern bool             ResWriteDialogBoxControl( DialogBoxControl *control, FILE *fp );
 extern bool             ResWriteDialogBoxControl32( DialogBoxControl *control, FILE *fp );
 extern bool             ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp );
-extern ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass );
 
 /* resrdiag.c */
 

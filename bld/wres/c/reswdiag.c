@@ -44,8 +44,6 @@
 #include "wstrcmp.h"
 
 
-#define IS_STR_IGNORE_CASE(s,c) ( WresStrnicmp( s, c, sizeof( c ) ) == 0 )
-
 static bool ResWriteDialogSizeInfo( DialogSizeInfo *SizeInfo, FILE *fp )
 /**********************************************************************/
 {
@@ -321,31 +319,4 @@ bool ResWriteDialogBoxExControl( DialogBoxControl *control, FILE *fp )
         error = ResWritePadDWord( fp );
     }
     return( error );
-}
-
-ResNameOrOrdinal *ResNormalizeControlClass( const ResNameOrOrdinal *cclass )
-/**************************************************************************/
-{
-    ResNameOrOrdinal    *new_cclass;
-
-    if( cclass->ord.fFlag == 0xff ) {
-        new_cclass = ResNumToNameOrOrdinal( cclass->ord.wOrdinalID );
-    } else {
-        if( IS_STR_IGNORE_CASE( cclass->name, "button" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_BUTTON );
-        } else if( IS_STR_IGNORE_CASE( cclass->name, "edit" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_EDIT );
-        } else if( IS_STR_IGNORE_CASE( cclass->name, "static" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_STATIC );
-        } else if( IS_STR_IGNORE_CASE( cclass->name, "listbox" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_LISTBOX );
-        } else if( IS_STR_IGNORE_CASE( cclass->name, "scrollbar" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_SCROLLBAR );
-        } else if( IS_STR_IGNORE_CASE( cclass->name, "combobox" ) ) {
-            new_cclass = ResNumToNameOrOrdinal( CLASS_COMBOBOX );
-        } else {
-            new_cclass = ResStrToNameOrOrdinal( cclass->name );
-        }
-    }
-    return( new_cclass );
 }
