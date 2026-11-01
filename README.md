@@ -6,6 +6,7 @@
 |![Build Status](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml/badge.svg) ![Coverity Scan](https://scan.coverity.com/projects/2647/badge.svg?flat=1)|Coverity Scan|[Analysis Results](https://scan.coverity.com/projects/open-watcom-open-watcom-v2) , [GitHub Actions Build](https://github.com/open-watcom/open-watcom-v2/actions/workflows/coverity.yml)|
 ||Releases Archive|[**All Github Releases**](https://github.com/open-watcom/open-watcom-v2/releases)
 |![WikiDocs](https://github.com/open-watcom/open-watcom-v2/workflows/WikiDocs/badge.svg)[](https://github.com/open-watcom/open-watcom-v2/actions?query=workflow%3AWikiDocs)|Wiki Documentation||
+|[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10123/badge)](https://www.bestpractices.dev/projects/10123)|OpenSSF Best Practices|
 ###
 ## Welcome to the Open Watcom v2 Project! 
 
@@ -29,14 +30,13 @@ Other general Discord server for "Open Watcom" exists [invite link](https://disc
 
 Open Watcom Installation
 ------------------------
-[`Installers`] (https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) are build by a Github Action Workflow
+[`Installers`](https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build) are build by a Github Action Workflow
 [`Installation instructions`](https://open-watcom.github.io/open-watcom-v2-wikidocs/c_readme.html#Installation)
  are in each Installer Package and also in the Open Watcom Wiki.
 
 Open Watcom Documentation
 -------------------------
-The Open Watcom Documentation is build by a Github Action Workflow and an [`overview Page`]
-(https://github.com/open-watcom/open-watcom-v2/wiki/Open-Watcom-Documentation)
+The Open Watcom Documentation is build by a Github Action Workflow and an [`overview Page`](https://github.com/open-watcom/open-watcom-v2/wiki/Open-Watcom-Documentation)
 for the "html" and "PDF" formats is available in the Open Watcom Wiki.
 The Open Watcom Documentation in various formats is also included in the installation packages.
 
@@ -99,11 +99,13 @@ The directory layout is as follows:
 
 Open Watcom Licence
 -------------------
-The Open Watcom Source uses the [`Sybase Open Watcom Public License version 1.0`](https://github.com/open-watcom/open-watcom-v2/blob/master/license.txt) (OSI certified as [`Watcom-1.0`](https://opensource.org/license/watcom-1.0))
+The Open Watcom Source uses the [`Sybase Open Watcom Public License version 1.0`](https://github.com/open-watcom/open-watcom-v2/blob/master/license.txt), which is OSI certified as [`Watcom-1.0`](https://opensource.org/license/watcom-1.0). 
 [`Relicensing is in Progress`](https://github.com/open-watcom/open-watcom-v2/wiki/Relicensing-effort), waiting for approval by SAP.
 
 
 Contributions
 -------------
-Open Watcom works with [Issues](https://github.com/open-watcom/open-watcom-v2/issues?q=sort%3Aupdated-desc+is%3Aissue+state%3Aopen+) 
-and [Pull Requests](https://github.com/open-watcom/open-watcom-v2/pulls?q=sort%3Aupdated-desc+is%3Apr+state%3Aopen+) here on Github.
+Open Watcom works with [`Issues`](https://github.com/open-watcom/open-watcom-v2/issues?q=sort%3Aupdated-desc+is%3Aissue+state%3Aopen+) 
+and [`Pull Requests`](https://github.com/open-watcom/open-watcom-v2/pulls?q=sort%3Aupdated-desc+is%3Apr+state%3Aopen+) here on Github.
+Please check the [`Open Watcom Developer's Guide`](https://open-watcom.github.io/open-watcom-v2-wikidocs/devguide.pdf) 
+and the other [Developer's Internal Documentation](https://github.com/open-watcom/open-watcom-v2/wiki/Open-Watcom-Documentation).
