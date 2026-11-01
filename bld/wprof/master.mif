@@ -12,6 +12,11 @@ wprof_wreslib_cli = gui
 wprof_qnx_usage = 1
 
 additional_clean = *.grc *.grh
+!ifdef sys_windowed
+!ifeq host_os os2
+additional_clean += *.dlg
+!endif
+!endif
 
 !include cproj.mif
 !include defrule.mif
