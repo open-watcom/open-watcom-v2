@@ -57,6 +57,7 @@
 #define SELECTOR_FIX            0x02
 #define table( x )              { x, #x }
 #define MAX_BUFF                0xff00
+#define MAX_ORDINAL             65535
 
 #define FIX_DMP         0x0001  /* dump the fixups         */
 #define RESRC_DMP       0x0002  /* dump the resources      */
