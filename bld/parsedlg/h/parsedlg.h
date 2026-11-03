@@ -39,6 +39,7 @@
 
 #define pick(a,b) T_##a,
 typedef enum {
+    T_NONE = -1,
 #include "restab.h"
     CTRL_TYPE_CNT
 } control_type;
