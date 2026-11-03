@@ -47,10 +47,10 @@
 
 #define MAX_NAME_LEN    122
 #define MAX_LINE_LEN    255
+#define MAX_STMT_LEN    25
+#define MAX_PARM_LEN    45
 
 #define MAX_STMT_PARMS  14
-
-#define MAX_PARM_LEN    45
 
 #define ADD_AFTER   1
 #define ADD_BEFORE  0
@@ -120,8 +120,10 @@ static char *my_fgets( char *buf, int max_len, FILE *fp )
     size_t  i;
 
     if( (rc = fgets( buf, max_len, fp )) != NULL ) {
-        for( i = strlen( buf ); i && isspace( buf[i - 1] ); --i ) {
-            buf[i - 1] = '\0';
+        i = strlen( buf );
+        while( i-- > 0
+          && isspace( ((unsigned char *)buf)[i] ) ) {
+            buf[i] = '\0';
         }
     }
     return( rc );
@@ -367,26 +369,6 @@ static bool check_control_style( style idx, control_type control )
     }
 }
 
-static int convert_parm_table( char *parm, control_type control,
-    int tab_cnt, char *str, const char * const *win_tab, const char * const *os2_tab )
-/************************************************************************************/
-{
-    int     i;
-
-    for( i = 0; i < tab_cnt; ++i ) {
-        if( strcmp( str, win_tab[i] ) == 0 ) {
-            if( ( win_tab == control_style_win )
-              && !check_control_style( i, control ) ) {
-                *parm = '\0';
-            } else {
-                strcpy( parm, os2_tab[i] );
-            }
-            return( i );
-        }
-    }
-    return( -1 );
-}
-
 static bool process_parms_check( char *parms[], char *symbol )
 /************************************************************/
 {
@@ -426,9 +408,17 @@ static control_type process_parms_convert( char *parms[], const char * const * w
                 buff1[j++] = (char)c;
             }
             buff1[j] = '\0';
-            rc = convert_parm_table( parm, control, tab_cnt, buff1, win_tab, os2_tab );
-            if( rc != -1 ) {
-                retval = rc;
+            for( j = 0; j < tab_cnt; ++j ) {
+                if( strcmp( buff1, win_tab[j] ) == 0 ) {
+                    if( ( win_tab == control_style_win )
+                      && !check_control_style( j, control ) ) {
+                        *parm = '\0';
+                    } else {
+                        strcpy( parm, os2_tab[j] );
+                    }
+                    retval = j;
+                    break;
+                }
             }
         }
     }
