@@ -649,7 +649,8 @@ static void process_style( char *parms[], char *str )
     }
     if( new_str != NULL )
         strcpy( str, new_str );
-    process_parms_convert( parms, style_win[control], style_os2[control], style_cnt[control], control );
+    if( control != T_NONE )
+        process_parms_convert( parms, style_win[control], style_os2[control], style_cnt[control], control );
     if( control == T_CONTROL ) {
         process_parms_convert( parms, control_class_win, control_class_os2, CTRL_NAME_CNT, control );
         if( process_parms_check( parms, "WC_STATIC" ) ) {
