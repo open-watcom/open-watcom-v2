@@ -47,13 +47,15 @@
 
 #define MAX_NAME_LEN    122
 #define MAX_LINE_LEN    255
-#define MAX_STMT_LEN    25
+#define MAX_STMT_LEN    20
+#define MAX_SYM_LEN     30
 #define MAX_PARM_LEN    45
 
 #define MAX_STMT_PARMS  14
 
-#define ADD_AFTER   1
-#define ADD_BEFORE  0
+#define ADD_AFTER   true
+#define ADD_BEFORE  false
+#define ADD_OVERWR  false
 
 #define CONV_X      54 / 46
 #define CONV_Y      52 / 62
@@ -245,26 +247,36 @@ static const char *skip_separators2( const char *str )
     return( str );
 }
 
-static int check_type( const char *str, const char *extra_str )
-/**************************************************************/
+static void get_stmt( const char *str, char *stmt_buf )
+/*****************************************************/
 {
-    char    buff1[MAX_LINE_LEN];
-    char    *p;
     int     i;
     int     c;
 
-    p = buff1;
-    while( (c = *(unsigned char *)str++) != '\0' ) {
-        *p++ = (char)toupper( c );
+    i = 0;
+    if( str != NULL ) {
+        while( i < MAX_STMT_LEN
+          && (c = ((unsigned char *)str)[i]) != '\0'
+          && strchr( SEPARATORS1, c ) == NULL ) {
+            stmt_buf[i++] = (char)toupper( c );
+        }
     }
-    *p = '\0';
-    p = strtok( buff1, SEPARATORS2 );
+    stmt_buf[i] = '\0';
+}
+
+static int check_type( const char *str, const char *extra_str )
+/*************************************************************/
+{
+    char    stmt_buf[MAX_STMT_LEN + 1];
+    int     i;
+
+    get_stmt( str, stmt_buf );
     for( i = 0; i < CTRL_TYPE_CNT; i++ ) {
-        if( strcmp( buff1, control_type_win[i] ) == 0 ) {
+        if( strcmp( stmt_buf, control_type_win[i] ) == 0 ) {
             return( i );
         }
     }
-    if( extra_str != NULL && strcmp( buff1, extra_str ) == 0 ) {
+    if( extra_str != NULL && strcmp( stmt_buf, extra_str ) == 0 ) {
         return( i );
     }
     return( -1 );
@@ -440,8 +452,8 @@ static void convert_buttons( char *ID, char *name, int flag )
     }
 }
 
-static void add_parms_item( char *parms[], char *str, int after )
-/***************************************************************/
+static void add_parms_item( char *parms[], char *str, bool after )
+/****************************************************************/
 {
     int     i;
     char    *parm;
@@ -467,13 +479,13 @@ static void add_parms_item( char *parms[], char *str, int after )
     }
 }
 
-static void add_parms_list( statement *stmt, int flag )
-/*****************************************************/
+static void add_parms_list( statement *stmt, bool after )
+/*******************************************************/
 {
     int     i = 0;
     char    *p;
 
-    if( flag ) {
+    if( after ) {
         for( i = 0; i < MAX_STMT_PARMS; ++i ) {
             if( *stmt->parms[i] == '\0' ) {
                 break;
@@ -483,14 +495,14 @@ static void add_parms_list( statement *stmt, int flag )
     for( ; i < MAX_STMT_PARMS; ++i ) {
         p = strtok( NULL, SEPARATORS1 );
         if( p == NULL ) {
-            if( flag )
+            if( after )
                 break;
             *stmt->parms[i] = '\0';
         } else {
             strcpy( stmt->parms[i], p );
         }
     }
-    if( ( strstr( stmt->name, "TEXT" ) != NULL )
+    if( ( strcmp( stmt->name + 1, "TEXT" ) == 0 )
       || ( strcmp( stmt->name, "GROUPBOX" ) == 0 )
       || ( strcmp( stmt->name, "CONTROL" ) == 0 ) ) {
         if( !process_parms_check( stmt->parms, "DT_MNEMONIC" )
@@ -735,16 +747,15 @@ static bool process_statement( char *line, FILE *fo )
 /***************************************************/
 {
     char    buff1[MAX_LINE_LEN + 1];
-    int     len = 0;
+    int     len;
     char    *p;
 
     if( *line == '\0' )
         return( false );
     strcpy( buff1, skip_separators2( line ) );
     p = strtok( buff1, SEPARATORS1 );
-    if( p != NULL )
-        strcpy( dlg_item.name, p );
-    if( strncmp( dlg_item.name, "END", 3 ) == 0 ) {
+    get_stmt( p, dlg_item.name );
+    if( strcmp( dlg_item.name, "END" ) == 0 ) {
         fprintf( fo, "%s%s\nEND\n", STR_SPC, dlg_item.name );
         return( true );
     }
@@ -762,7 +773,7 @@ static bool process_statement( char *line, FILE *fo )
             strcpy( dlg_item.ID, "-1" );
         }
         convert_buttons( dlg_item.ID, dlg_item.name, 1 );
-        add_parms_list( &dlg_item, 0 );
+        add_parms_list( &dlg_item, ADD_OVERWR );
         get_rectangle_parms( &dlg_item );
     } else {
         if( ( strcmp( dlg_item.name, "COMBOBOX" ) == 0 )
@@ -791,7 +802,7 @@ static bool process_statement( char *line, FILE *fo )
         }
         convert_buttons( dlg_item.ID, dlg_item.name, 1 );
         get_rectangle_list( &dlg_item );
-        add_parms_list( &dlg_item, 0 );
+        add_parms_list( &dlg_item, ADD_OVERWR );
     }
     if( strcmp( dlg_item.name, "SCROLLBAR" ) == 0 ) {
         add_parms_item( dlg_item.parms, "WC_SCROLLBAR", ADD_BEFORE );
@@ -822,8 +833,10 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     char    *p;
     char    **p2;
     size_t  len;
-    int     sysmodal, visible;
+    int     sysmodal;
+    int     visible;
     int     i;
+    char    stmt_buf[MAX_STMT_LEN + 1];
 
     ++dialogs_cnt;
     if( opt.quiet == 0 ) {
@@ -835,6 +848,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     p = strtok( buff1, SEPARATORS1 );
     if( p != NULL )
         strcpy( dlg_hdr.ID, p );
+    strtok( NULL, SEPARATORS2 );    /* skip DIALOG */
     p = strtok( NULL, SEPARATORS2 );
     while( ( p != NULL )
       && !isdigit( *p ) ) {
@@ -855,12 +869,14 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     strcpy( dlg_hdr.text, "\"\"" );
     // process next lines
     my_fgets( line, max_len, fi );
-    while( ( *line != '\0' )
-      && ( strstr( line, "BEGIN" ) == NULL ) ) {
+    while( *line != '\0' ) {
         strcpy( buff1, line );
-        strtok( buff1, SEPARATORS1 );
-        if( strstr( line, "STYLE" ) != NULL ) {
-            add_parms_list( &dlg_hdr, 1 );
+        p = strtok( buff1, SEPARATORS1 );
+        get_stmt( p, stmt_buf );
+        if( strcmp( stmt_buf, "BEGIN" ) == 0 ) {
+            break;
+        } else if( strcmp( stmt_buf, "STYLE" ) == 0 ) {
+            add_parms_list( &dlg_hdr, ADD_AFTER );
             len = strlen( line );
             for( p = line + len - 1; len && isspace( *p ); --len )
                 *(p--) = '\0';
@@ -873,10 +889,11 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
                     p = strtok( NULL, SEPARATORS1 );
                 }
             }
-        } else if( (p = strstr( line, "CAPTION" )) != NULL ) {
-            strcpy( dlg_hdr.text, p + 8 );
+        } else if( strcmp( stmt_buf, "CAPTION" ) == 0 ) {
+            p = strtok( NULL, "" );
+            strcpy( dlg_hdr.text, p );
             dlg_hdr.text[strlen( dlg_hdr.text )] = '\0';
-        } else if( strstr( line, "FONT" ) != NULL ) {
+        } else if( strcmp( stmt_buf, "FONT" ) == 0 ) {
             font_set = 1;
             p = strtok( NULL, SEPARATORS1 );
             font_size = strtol( p, &p, 10 );
@@ -996,6 +1013,7 @@ int main( int argc, char *argv[] )
     char    *buff1;
     char    *buff2;
     size_t  len;
+    char    stmt_buf[MAX_STMT_LEN + 1];
 
     i = process_cmdl( argc, argv );
     if( i == 0 ) {
@@ -1033,6 +1051,7 @@ int main( int argc, char *argv[] )
     }
 
     alloc_statement( &dlg_hdr );
+    strcpy( dlg_hdr.name, "DIALOG" );
     alloc_statement( &dlg_item );
 
     line = malloc( MAX_LINE_LEN );
@@ -1043,7 +1062,13 @@ int main( int argc, char *argv[] )
     my_fgets( line, MAX_LINE_LEN, fi );
     while( !feof( fi ) ) {
         while( !feof( fi ) ) {
-            if( strstr( line, "DLGINCLUDE" ) != NULL ) {
+            strcpy( buff1, line );
+            p = buff1;
+            while( isspace( *(unsigned char *)p ) )
+                p++;
+            p = strtok( p, SEPARATORS3 );
+            get_stmt( p, stmt_buf );
+            if( strcmp( stmt_buf, "DLGINCLUDE" ) == 0 ) {
                 /**********************
                  * source file format:
                  *
@@ -1056,36 +1081,39 @@ int main( int argc, char *argv[] )
                  *
                  * DLGINCLUDE 1 filename
                  */
-                p = malloc( MAX_LINE_LEN );
-                strcpy( p, line );
-                fprintf( fo, "%s 1 ", strtok( p, SEPARATORS3 ) );
+                strcpy( buff1, line );
+                fprintf( fo, "%s 1 ", strtok( buff1, SEPARATORS3 ) );
                 my_fgets( line, MAX_LINE_LEN, fi );
                 my_fgets( line, MAX_LINE_LEN, fi );
-                strcpy( p, line );
-                fprintf( fo, "%s\n", strtok( p, SEPARATORS3 ) );
-                free( p );
+                strcpy( buff1, line );
+                fprintf( fo, "%s\n", strtok( buff1, SEPARATORS3 ) );
                 my_fgets( line, MAX_LINE_LEN, fi );
                 my_fgets( line, MAX_LINE_LEN, fi );
-            } else if( strstr( line, "DIALOG" ) != NULL ) {
-                p = malloc( MAX_LINE_LEN );
-                strcpy( p, line );
-                process_dialog_declaration( fi, fo, p, MAX_LINE_LEN );
-                strcpy( line, p );
-                free( p );
-            } else if( strstr( line, "BEGIN" ) != NULL ) {
+            } else if( strcmp( stmt_buf, "BEGIN" ) == 0 ) {
                 my_fgets( line, MAX_LINE_LEN, fi );
                 break;
             } else {
+                if( p != NULL )
+                    p = strtok( NULL, SEPARATORS3 );
+                get_stmt( p, stmt_buf );
+                if( strcmp( stmt_buf, "DIALOG" ) == 0 ) {
+                    strcpy( buff1, line );
+                    process_dialog_declaration( fi, fo, buff1, MAX_LINE_LEN );
+                    strcpy( line, buff1 );
+                } else {
 #if !defined( OLD_FORMAT )
-                if( *line != '\0' )
+                    if( *line != '\0' )
 #endif
-                fprintf( fo, "%s\n", line );
-                my_fgets( line, MAX_LINE_LEN, fi );
+                    fprintf( fo, "%s\n", line );
+                    my_fgets( line, MAX_LINE_LEN, fi );
+                }
             }
         }
         p = "";
-        while( !feof( fi )
-          && strcmp( p, "END" ) ) {
+        while( !feof( fi ) ) {
+            get_stmt( p, stmt_buf );
+            if( strcmp( stmt_buf, "END" ) == 0 )
+                break;
             while( my_fgets( buff1, MAX_LINE_LEN, fi ) != NULL ) {
                 if( check_statement( buff1 ) )
                     break;
