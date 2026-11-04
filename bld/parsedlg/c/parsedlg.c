@@ -395,7 +395,6 @@ static control_type process_parms_convert( char *parms[], const char * const * w
     char    buff1[MAX_LINE_LEN];
     char    *parm;
     int     c;
-    int     rc;
 
     retval = -1;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
