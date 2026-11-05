@@ -236,8 +236,8 @@ static const char *skip_separators2( const char *str )
     return( str );
 }
 
-static void get_stmt( const char *str, char *stmt_buf )
-/*****************************************************/
+static void get_statement_name( const char *str, char *stmt_buf )
+/***************************************************************/
 {
     int     i;
     int     c;
@@ -253,31 +253,31 @@ static void get_stmt( const char *str, char *stmt_buf )
     stmt_buf[i] = '\0';
 }
 
-static control_type check_stmt( const char *str, const char *extra_str )
-/**********************************************************************/
+static control_type check_control( const char *str, const char *extra_str )
+/*************************************************************************/
 {
     char            stmt_buf[MAX_STMT_LEN + 1];
-    control_type    stmt;
+    control_type    control;
 
-    get_stmt( str, stmt_buf );
-    for( stmt = 0; stmt < CTRL_TYPE_CNT; stmt++ ) {
-        if( strcmp( stmt_buf, control_type_win[stmt] ) == 0 ) {
-            return( stmt );
+    get_statement_name( str, stmt_buf );
+    for( control = 0; control < CTRL_TYPE_CNT; control++ ) {
+        if( strcmp( stmt_buf, control_type_win[control] ) == 0 ) {
+            return( control );
         }
     }
     if( extra_str != NULL && strcmp( stmt_buf, extra_str ) == 0 ) {
-        return( stmt );
+        return( control );
     }
     return( T_NONE );
 }
 
-static bool check_statement( const char *str )
-/********************************************/
+static bool is_control( const char *str )
+/***************************************/
 {
     if( *str != '\0' ) {
         while( isspace( *str ) )
             ++str;
-        if( check_stmt( str, "END" ) != T_NONE ) {
+        if( check_control( str, "END" ) != T_NONE ) {
             return( true );
         }
     }
@@ -340,10 +340,10 @@ static char *skip_keyword( char *str, int *plen )
     return( str );
 }
 
-static bool check_control_style( style idx, control_type stmt )
-/*************************************************************/
+static bool check_control_style( style idx, control_type control )
+/****************************************************************/
 {
-    switch( stmt ) {
+    switch( control ) {
     case T_LTEXT:
     case T_RTEXT:
     case T_CTEXT:
@@ -386,22 +386,20 @@ static bool process_parms_check( char *parms[], char *symbol )
     return( false );
 }
 
-static control_type process_parms_convert( char *parms[], const char * const * win_tab,
-    const char * const * os2_tab, int tab_cnt, control_type stmt )
-/*************************************************************************************/
+static void process_parms_convert( char *parms[], const char * const * win_tab,
+    const char * const * os2_tab, int tab_cnt, control_type control )
+/*****************************************************************************/
 {
     int     i;
     int     j;
-    int     retval;
     char    sym_buf[MAX_SYM_LEN + 1];
     char    *parm;
 
-    retval = -1;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         parm = parms[i];
         if( *parm != '\0' ) {
             if( win_tab == control_class_win ) {
-                get_stmt( parm, sym_buf );
+                get_statement_name( parm, sym_buf );
             } else {
                 strncpy( sym_buf, parm, MAX_SYM_LEN );
                 sym_buf[MAX_SYM_LEN] = '\0';
@@ -409,18 +407,16 @@ static control_type process_parms_convert( char *parms[], const char * const * w
             for( j = 0; j < tab_cnt; ++j ) {
                 if( strcmp( sym_buf, win_tab[j] ) == 0 ) {
                     if( ( win_tab == control_style_win )
-                      && !check_control_style( j, stmt ) ) {
+                      && !check_control_style( j, control ) ) {
                         *parm = '\0';
                     } else {
                         strcpy( parm, os2_tab[j] );
                     }
-                    retval = j;
                     break;
                 }
             }
         }
     }
-    return( retval );
 }
 
 static void convert_buttons( char *ID, char *name, int flag )
@@ -551,8 +547,8 @@ static void convert_font( char *parms[], int parms_cnt )
     }
 }
 
-static void out_parms_style( FILE *fo, char *parms[], const char *str )
-/*********************************************************************/
+static void out_parms_style( FILE *fo, statement *stmt )
+/******************************************************/
 {
     bool    oper_NOT;
     int     item_idx;
@@ -562,7 +558,7 @@ static void out_parms_style( FILE *fo, char *parms[], const char *str )
     oper_NOT = false;
     item_idx = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-        p = parms[i];
+        p = stmt->parms[i];
         if( ( *p != '\0' )
           && !isdigit( *p ) ) {
 #if defined( OLD_FORMAT )
@@ -574,12 +570,12 @@ static void out_parms_style( FILE *fo, char *parms[], const char *str )
                 fprintf( fo, ", " );
 #if !defined( OLD_FORMAT )
                 fprintf( fo, "\n\t\t" );
-                if( strcmp( str, "DIALOG" ) != 0 ) {
+                if( strcmp( stmt->name, "DIALOG" ) != 0 ) {
                     fprintf( fo, "\t" );
                 }
 #endif
             } else if( ( item_idx == 1 )
-              && ( strcmp( str, "CONTROL" ) == 0 ) ) {
+              && ( strcmp( stmt->name, "CONTROL" ) == 0 ) ) {
                 fprintf( fo, " , " );
             } else if( !oper_NOT ) {
                 fprintf( fo, " | " );
@@ -604,65 +600,62 @@ static void out_parms_style( FILE *fo, char *parms[], const char *str )
     fprintf( fo, "\n" );
 }
 
-static void process_style( char *parms[], char *str )
-/***************************************************/
+static void process_style( statement *stmt )
+/******************************************/
 {
-    control_type    stmt;
+    control_type    control;
     int             i;
     const char      *new_str;
 
-    stmt = T_NONE;
     new_str = NULL;
-    if( str != '\0' ) {
-        stmt = check_stmt( str, NULL );
-        if( stmt != T_NONE ) {
-            new_str = control_type_os2[stmt];
-        }
+    control = check_control( stmt->name, NULL );
+    if( control != T_NONE ) {
+        new_str = control_type_os2[control];
     }
-    if( stmt == T_COMBOBOX ) {
-        if( process_parms_check( parms, "CBS_DROPDOWNLIST" ) ) {
-            if( process_parms_check( parms, "CBS_OWNERDRAW" ) ) {
+    if( control == T_COMBOBOX ) {
+        if( process_parms_check( stmt->parms, "CBS_DROPDOWNLIST" ) ) {
+            if( process_parms_check( stmt->parms, "CBS_OWNERDRAW" ) ) {
                 new_str = "CONTROL";
-                add_parms_item( parms, "\"watcombo\"", ADD_BEFORE );
+                add_parms_item( stmt->parms, "\"watcombo\"", ADD_BEFORE );
             }
         }
-    } else if( stmt == T_CONTROL ) {
-        if( process_parms_check( parms, "BS_GROUPBOX" ) ) {
+    } else if( control == T_CONTROL ) {
+        if( process_parms_check( stmt->parms, "BS_GROUPBOX" ) ) {
             new_str = "GROUPBOX";
-            stmt = T_GROUPBOX;
+            control = T_GROUPBOX;
             for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-                *parms[i] = '\0';
+                *stmt->parms[i] = '\0';
             }
         }
     }
     if( new_str != NULL )
-        strcpy( str, new_str );
-    if( stmt != T_NONE )
-        process_parms_convert( parms, style_win[stmt], style_os2[stmt], style_cnt[stmt], stmt );
-    if( stmt == T_CONTROL ) {
-        process_parms_convert( parms, control_class_win, control_class_os2, CTRL_NAME_CNT, stmt );
-        if( process_parms_check( parms, "WC_STATIC" ) ) {
-            if( !process_parms_check( parms, "SS_" ) ) {
-                add_parms_item( parms, "SS_GROUPBOX", ADD_AFTER );
+        strcpy( stmt->name, new_str );
+    if( control != T_NONE )
+        process_parms_convert( stmt->parms, style_win[control], style_os2[control], style_cnt[control], control );
+    if( control == T_CONTROL ) {
+        process_parms_convert( stmt->parms, control_class_win, control_class_os2, CTRL_NAME_CNT, control );
+        if( process_parms_check( stmt->parms, "WC_STATIC" ) ) {
+            if( !process_parms_check( stmt->parms, "SS_" ) ) {
+                add_parms_item( stmt->parms, "SS_GROUPBOX", ADD_AFTER );
             }
         }
     } else {
-        process_parms_convert( parms, control_style_win, control_style_os2, CTRL_STYLE_CNT, stmt );
+        process_parms_convert( stmt->parms, control_style_win, control_style_os2, CTRL_STYLE_CNT, control );
     }
-    if( !process_parms_check( parms, "WS_VISIBLE" ) ) {
-        add_parms_item( parms, "WS_VISIBLE", ADD_AFTER );
+    if( !process_parms_check( stmt->parms, "WS_VISIBLE" ) ) {
+        add_parms_item( stmt->parms, "WS_VISIBLE", ADD_AFTER );
     }
-    process_parms_convert( parms, window_style_win, window_style_os2, WND_STYLE_CNT, stmt );
+    process_parms_convert( stmt->parms, window_style_win, window_style_os2, WND_STYLE_CNT, control );
 }
 
-static void out_color_style( FILE *fo, statement *x )
-/***************************************************/
+static void out_color_style( FILE *fo, statement *stmt )
+/******************************************************/
 {
     int     i;
     char    *p;
 
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-        p = x->parms[i];
+        p = stmt->parms[i];
         if( ( strcmp( p, "SS_WHITEFRAME" ) == 0 )
           || ( strcmp( p, "SS_WHITERECT" ) == 0 ) ) {
             fprintf( fo, "%sPRESPARAMS PP_BACKGROUNDCOLOR, RGB_WHITE\n", STR_SPC STR_SPC );
@@ -680,31 +673,31 @@ static void out_color_style( FILE *fo, statement *x )
     }
 }
 
-static void get_rectangle_list( statement *x )
-/********************************************/
+static void get_rectangle_list( statement *stmt )
+/***********************************************/
 {
     char    *p;
 
     p = strtok( NULL, SEPARATORS1 );
     if( p != NULL ) {
-        x->x = atoi( p ) * CONV_X;
+        stmt->x = atoi( p ) * CONV_X;
     }
     p = strtok( NULL, SEPARATORS1 );
     if( p != NULL ) {
-        x->y = atoi( p ) * CONV_Y;
+        stmt->y = atoi( p ) * CONV_Y;
     }
     p = strtok( NULL, SEPARATORS1 );
     if( p != NULL ) {
-        x->dx = atoi( p ) * CONV_X;
+        stmt->dx = atoi( p ) * CONV_X;
     }
     p = strtok( NULL, SEPARATORS1 );
     if( p != NULL ) {
-        x->dy = atoi( p ) * CONV_Y;
+        stmt->dy = atoi( p ) * CONV_Y;
     }
 }
 
-static void get_rectangle_parms( statement *x )
-/*********************************************/
+static void get_rectangle_parms( statement *stmt )
+/************************************************/
 {
     int     i;
     int     j;
@@ -712,20 +705,20 @@ static void get_rectangle_parms( statement *x )
 
     j = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
-        p = x->parms[i];
+        p = stmt->parms[i];
         if( !isdigit( *p ) )
             continue;
         if( ( *p == '0' )
           && ( tolower( *(p + 1) ) == 'x' ) )
             continue;
         if( j == 0 ) {
-            x->x = atoi( p ) * CONV_X;
+            stmt->x = atoi( p ) * CONV_X;
         } else if( j == 1 ) {
-            x->y = atoi( p ) * CONV_Y;
+            stmt->y = atoi( p ) * CONV_Y;
         } else if( j == 2 ) {
-            x->dx = atoi( p ) * CONV_X;
+            stmt->dx = atoi( p ) * CONV_X;
         } else if( j == 3 ) {
-            x->dy = atoi( p ) * CONV_Y;
+            stmt->dy = atoi( p ) * CONV_Y;
         }
         ++j;
         *p = '\0';
@@ -743,7 +736,7 @@ static bool process_statement( char *line, FILE *fo )
         return( false );
     strcpy( buff1, skip_separators2( line ) );
     p = strtok( buff1, SEPARATORS1 );
-    get_stmt( p, dlg_item.name );
+    get_statement_name( p, dlg_item.name );
     if( strcmp( dlg_item.name, "END" ) == 0 ) {
         fprintf( fo, "%s%s\nEND\n", STR_SPC, dlg_item.name );
         return( true );
@@ -796,7 +789,7 @@ static bool process_statement( char *line, FILE *fo )
     if( strcmp( dlg_item.name, "SCROLLBAR" ) == 0 ) {
         add_parms_item( dlg_item.parms, "WC_SCROLLBAR", ADD_BEFORE );
     }
-    process_style( dlg_item.parms, dlg_item.name );
+    process_style( &dlg_item );
     dlg_item.y = dlg_hdr.dy - dlg_item.y - dlg_item.dy;
     fprintf( fo, "%s%s", STR_SPC STR_SPC, dlg_item.name );
     if( strlen( dlg_item.name ) < 8 )
@@ -806,7 +799,7 @@ static bool process_statement( char *line, FILE *fo )
         fprintf( fo, "%s, ", dlg_item.text );
     fprintf( fo, "%s, %d, %d, %d, %d", dlg_item.ID, dlg_item.x,
                           dlg_item.y, dlg_item.dx, dlg_item.dy );
-    out_parms_style( fo, dlg_item.parms, dlg_item.name );
+    out_parms_style( fo, &dlg_item );
     out_color_style( fo, &dlg_item );
     return( false );
 }
@@ -865,7 +858,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     while( *line != '\0' ) {
         strcpy( buff1, line );
         p = strtok( buff1, SEPARATORS1 );
-        get_stmt( p, stmt_buf );
+        get_statement_name( p, stmt_buf );
         if( strcmp( stmt_buf, "BEGIN" ) == 0 ) {
             break;
         } else if( strcmp( stmt_buf, "STYLE" ) == 0 ) {
@@ -958,7 +951,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
             fprintf( fo, "\n\t\t0L" );
         }
 #endif
-        out_parms_style( fo, dlg_hdr.parms, dlg_hdr.name );
+        out_parms_style( fo, &dlg_hdr );
     }
     if( font_name != NULL ) {
         fprintf( fo, "%sPRESPARAMS PP_FONTNAMESIZE, ", STR_SPC );
@@ -1060,7 +1053,7 @@ int main( int argc, char *argv[] )
             while( isspace( *(unsigned char *)p ) )
                 p++;
             p = strtok( p, SEPARATORS3 );
-            get_stmt( p, stmt_buf );
+            get_statement_name( p, stmt_buf );
             if( strcmp( stmt_buf, "DLGINCLUDE" ) == 0 ) {
                 /**********************
                  * source file format:
@@ -1088,7 +1081,7 @@ int main( int argc, char *argv[] )
             } else {
                 if( p != NULL )
                     p = strtok( NULL, SEPARATORS3 );
-                get_stmt( p, stmt_buf );
+                get_statement_name( p, stmt_buf );
                 if( strcmp( stmt_buf, "DIALOG" ) == 0 ) {
                     strcpy( buff1, line );
                     process_dialog_declaration( fi, fo, buff1, MAX_LINE_LEN );
@@ -1104,11 +1097,11 @@ int main( int argc, char *argv[] )
         }
         p = "";
         while( !feof( fi ) ) {
-            get_stmt( p, stmt_buf );
+            get_statement_name( p, stmt_buf );
             if( strcmp( stmt_buf, "END" ) == 0 )
                 break;
             while( my_fgets( buff1, MAX_LINE_LEN, fi ) != NULL ) {
-                if( check_statement( buff1 ) )
+                if( is_control( buff1 ) )
                     break;
                 strncat( line, skip_separators2( buff1 ), MAX_LINE_LEN );
             }
