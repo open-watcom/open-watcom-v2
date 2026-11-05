@@ -404,23 +404,21 @@ static control_type process_parms_convert( char *parms[], const char * const * w
     int     i;
     int     j;
     int     retval;
-    char    buff1[MAX_LINE_LEN];
+    char    sym_buf[MAX_SYM_LEN + 1];
     char    *parm;
-    int     c;
 
     retval = -1;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         parm = parms[i];
         if( *parm != '\0' ) {
-            j = 0;
-            while( (c = ((unsigned char *)parm)[j]) != '\0' ) {
-                if( win_tab == control_class_win )
-                    c = toupper( c );
-                buff1[j++] = (char)c;
+            if( win_tab == control_class_win ) {
+                get_stmt( parm, sym_buf );
+            } else {
+                strncpy( sym_buf, parm, MAX_SYM_LEN );
+                sym_buf[MAX_SYM_LEN] = '\0';
             }
-            buff1[j] = '\0';
             for( j = 0; j < tab_cnt; ++j ) {
-                if( strcmp( buff1, win_tab[j] ) == 0 ) {
+                if( strcmp( sym_buf, win_tab[j] ) == 0 ) {
                     if( ( win_tab == control_style_win )
                       && !check_control_style( j, control ) ) {
                         *parm = '\0';
