@@ -237,7 +237,7 @@ static int process_cmdl( int argc, char *argv[] )
 }
 
 static const char *skip_separators2( const char *str )
-/***************************************************/
+/****************************************************/
 {
     while( ( *str == ' ' )
       || ( *str == '\t' )
@@ -450,8 +450,8 @@ static void convert_buttons( char *ID, char *name, int flag )
     }
 }
 
-static void add_parms_item( char *parms[], char *str, bool after )
-/****************************************************************/
+static void add_parms_item( char *parms[], const char *str, bool after )
+/**********************************************************************/
 {
     int     i;
     char    *parm;
@@ -480,11 +480,12 @@ static void add_parms_item( char *parms[], char *str, bool after )
 static void add_parms_list( statement *stmt, bool after )
 /*******************************************************/
 {
-    int     i = 0;
+    int     i;
     char    *p;
 
+    i = 0;
     if( after ) {
-        for( i = 0; i < MAX_STMT_PARMS; ++i ) {
+        for( ; i < MAX_STMT_PARMS; ++i ) {
             if( *stmt->parms[i] == '\0' ) {
                 break;
             }
@@ -517,8 +518,8 @@ static void add_parms_list( statement *stmt, bool after )
 }
 
 #if 0
-static void remove_parms_item( char *parms[], char *str )
-/*******************************************************/
+static void remove_parms_item( char *parms[], const char *str )
+/*************************************************************/
 {
     int     i;
     char    *parm;
@@ -561,15 +562,15 @@ static void convert_font( char *parms[], int parms_cnt )
     }
 }
 
-static void out_parms_style( FILE *fo, char *parms[], char *str )
-/***************************************************************/
+static void out_parms_style( FILE *fo, char *parms[], const char *str )
+/*********************************************************************/
 {
-    int     oper_NOT;
+    bool    oper_NOT;
     int     item_idx;
     int     i;
     char    *p;
 
-    oper_NOT = 0;
+    oper_NOT = false;
     item_idx = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         p = parms[i];
@@ -591,7 +592,7 @@ static void out_parms_style( FILE *fo, char *parms[], char *str )
             } else if( ( item_idx == 1 )
               && ( strcmp( str, "CONTROL" ) == 0 ) ) {
                 fprintf( fo, " , " );
-            } else if( oper_NOT == 0 ) {
+            } else if( !oper_NOT ) {
                 fprintf( fo, " | " );
             } else {
                 fprintf( fo, " " );
@@ -607,7 +608,7 @@ static void out_parms_style( FILE *fo, char *parms[], char *str )
             } else {
                 fprintf( fo, "%s", p );
             }
-            oper_NOT = ( strcmp( p, "NOT" ) == 0 ) ? 1 : 0 ;
+            oper_NOT = ( strcmp( p, "NOT" ) == 0 );
             ++item_idx;
         }
     }
