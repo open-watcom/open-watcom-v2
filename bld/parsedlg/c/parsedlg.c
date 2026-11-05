@@ -53,6 +53,8 @@
 
 #define MAX_STMT_PARMS  14
 
+#define MAX_OPT_LEN     6
+
 #define ADD_AFTER   true
 #define ADD_BEFORE  false
 #define ADD_OVERWR  false
@@ -93,18 +95,10 @@ static const char   UsageText[] = {
     "     -font=font name : dialog font overwrite\0"
 };
 
-const char * const options_text[] = {
-    "f",
-    "hide",
-    "quiet",
-    "font",
-    NULL
-};
-
 struct _options {
-    int     quiet;
-    int     hide;
-    int     font;
+    bool    quiet;
+    bool    hide;
+    bool    font;
     char    font_name[MAX_NAME_LEN];
     long    font_size;
     int     flist_cnt;
@@ -172,14 +166,14 @@ static int process_cmdl( int argc, char *argv[] )
 /***********************************************/
 {
     char            *p;
-    const char      *o;
+    char            opt_buf[MAX_OPT_LEN + 1];
     int             i;
     int             j;
-    size_t          len;
+    int             c;
 
-    opt.quiet = 0;
-    opt.hide = 0;
-    opt.font = 0;
+    opt.quiet = false;
+    opt.hide = false;
+    opt.font = false;
     *opt.font_name = '\0';
     opt.font_size = 0;
     opt.flist_cnt = 0;
@@ -194,37 +188,32 @@ static int process_cmdl( int argc, char *argv[] )
 #endif
             break;
         ++p;
-        len = 0;
-        for( j = 0; options_text[j] != NULL; ++j ) {
-            o = options_text[j];
-            len = strlen( o );
-            if( ( p[len] == '=' )
-              && ( strnicmp( o, p, len ) == 0 ) )
-                break;
-            if( stricmp( o, p ) == 0 ) {
-                break;
-            }
+        j = 0;
+        while( j < MAX_OPT_LEN
+          && (c = *(unsigned char *)p) != '\0'
+          && c != '=' ) {
+            opt_buf[j++] = (char)tolower( c );
+            ++p;
         }
-        switch( j ) {
-        case 0: // "f"
-            process_f_option( p + 2 );
-            break;
-        case 1: // "hide"
-            opt.hide = 1;
-            break;
-        case 2: // "quiet"
-            opt.quiet = 1;
-            break;
-        case 3: // "font"
-            opt.font = 1;
-            p += len + 1;
-            opt.font_size = strtol( p, &p, 10 );
-            if( *p == '.' )
-                ++p;
-            strcpy( opt.font_name, p );
-            break;
-        default:
-            break;
+        opt_buf[j] = '\0';
+        if( strcmp( opt_buf, "f" ) == 0 ) {
+            if( *p == '=' ) {
+                p++;
+                process_f_option( p );
+            }
+        } else if( strcmp( opt_buf, "hide" ) == 0 ) {
+            opt.hide = true;
+        } else if( strcmp( opt_buf, "quiet" ) == 0 ) {
+            opt.quiet = true;
+        } else if( strcmp( opt_buf, "font" ) == 0 ) {
+            if( *p == '=' ) {
+                p++;
+                opt.font = true;
+                opt.font_size = strtol( p, &p, 10 );
+                if( *p == '.' )
+                    ++p;
+                strcpy( opt.font_name, p );
+            }
         }
     }
     if( i == argc ) {
@@ -264,22 +253,22 @@ static void get_stmt( const char *str, char *stmt_buf )
     stmt_buf[i] = '\0';
 }
 
-static int check_type( const char *str, const char *extra_str )
-/*************************************************************/
+static control_type check_stmt( const char *str, const char *extra_str )
+/**********************************************************************/
 {
-    char    stmt_buf[MAX_STMT_LEN + 1];
-    int     i;
+    char            stmt_buf[MAX_STMT_LEN + 1];
+    control_type    stmt;
 
     get_stmt( str, stmt_buf );
-    for( i = 0; i < CTRL_TYPE_CNT; i++ ) {
-        if( strcmp( stmt_buf, control_type_win[i] ) == 0 ) {
-            return( i );
+    for( stmt = 0; stmt < CTRL_TYPE_CNT; stmt++ ) {
+        if( strcmp( stmt_buf, control_type_win[stmt] ) == 0 ) {
+            return( stmt );
         }
     }
     if( extra_str != NULL && strcmp( stmt_buf, extra_str ) == 0 ) {
-        return( i );
+        return( stmt );
     }
-    return( -1 );
+    return( T_NONE );
 }
 
 static bool check_statement( const char *str )
@@ -288,7 +277,7 @@ static bool check_statement( const char *str )
     if( *str != '\0' ) {
         while( isspace( *str ) )
             ++str;
-        if( check_type( str, "END" ) != -1 ) {
+        if( check_stmt( str, "END" ) != T_NONE ) {
             return( true );
         }
     }
@@ -351,10 +340,10 @@ static char *skip_keyword( char *str, int *plen )
     return( str );
 }
 
-static bool check_control_style( style idx, control_type control )
-/****************************************************************/
+static bool check_control_style( style idx, control_type stmt )
+/*************************************************************/
 {
-    switch( control ) {
+    switch( stmt ) {
     case T_LTEXT:
     case T_RTEXT:
     case T_CTEXT:
@@ -398,7 +387,7 @@ static bool process_parms_check( char *parms[], char *symbol )
 }
 
 static control_type process_parms_convert( char *parms[], const char * const * win_tab,
-    const char * const * os2_tab, int tab_cnt, control_type control )
+    const char * const * os2_tab, int tab_cnt, control_type stmt )
 /*************************************************************************************/
 {
     int     i;
@@ -420,7 +409,7 @@ static control_type process_parms_convert( char *parms[], const char * const * w
             for( j = 0; j < tab_cnt; ++j ) {
                 if( strcmp( sym_buf, win_tab[j] ) == 0 ) {
                     if( ( win_tab == control_style_win )
-                      && !check_control_style( j, control ) ) {
+                      && !check_control_style( j, stmt ) ) {
                         *parm = '\0';
                     } else {
                         strcpy( parm, os2_tab[j] );
@@ -618,29 +607,29 @@ static void out_parms_style( FILE *fo, char *parms[], const char *str )
 static void process_style( char *parms[], char *str )
 /***************************************************/
 {
-    control_type    control;
+    control_type    stmt;
     int             i;
     const char      *new_str;
 
-    control = T_NONE;
+    stmt = T_NONE;
     new_str = NULL;
     if( str != '\0' ) {
-        control = check_type( str, NULL );
-        if( control != T_NONE ) {
-            new_str = control_type_os2[control];
+        stmt = check_stmt( str, NULL );
+        if( stmt != T_NONE ) {
+            new_str = control_type_os2[stmt];
         }
     }
-    if( control == T_COMBOBOX ) {
+    if( stmt == T_COMBOBOX ) {
         if( process_parms_check( parms, "CBS_DROPDOWNLIST" ) ) {
             if( process_parms_check( parms, "CBS_OWNERDRAW" ) ) {
                 new_str = "CONTROL";
                 add_parms_item( parms, "\"watcombo\"", ADD_BEFORE );
             }
         }
-    } else if( control == T_CONTROL ) {
+    } else if( stmt == T_CONTROL ) {
         if( process_parms_check( parms, "BS_GROUPBOX" ) ) {
             new_str = "GROUPBOX";
-            control = T_GROUPBOX;
+            stmt = T_GROUPBOX;
             for( i = 0; i < MAX_STMT_PARMS; ++i ) {
                 *parms[i] = '\0';
             }
@@ -648,22 +637,22 @@ static void process_style( char *parms[], char *str )
     }
     if( new_str != NULL )
         strcpy( str, new_str );
-    if( control != T_NONE )
-        process_parms_convert( parms, style_win[control], style_os2[control], style_cnt[control], control );
-    if( control == T_CONTROL ) {
-        process_parms_convert( parms, control_class_win, control_class_os2, CTRL_NAME_CNT, control );
+    if( stmt != T_NONE )
+        process_parms_convert( parms, style_win[stmt], style_os2[stmt], style_cnt[stmt], stmt );
+    if( stmt == T_CONTROL ) {
+        process_parms_convert( parms, control_class_win, control_class_os2, CTRL_NAME_CNT, stmt );
         if( process_parms_check( parms, "WC_STATIC" ) ) {
             if( !process_parms_check( parms, "SS_" ) ) {
                 add_parms_item( parms, "SS_GROUPBOX", ADD_AFTER );
             }
         }
     } else {
-        process_parms_convert( parms, control_style_win, control_style_os2, CTRL_STYLE_CNT, control );
+        process_parms_convert( parms, control_style_win, control_style_os2, CTRL_STYLE_CNT, stmt );
     }
     if( !process_parms_check( parms, "WS_VISIBLE" ) ) {
         add_parms_item( parms, "WS_VISIBLE", ADD_AFTER );
     }
-    process_parms_convert( parms, window_style_win, window_style_os2, WND_STYLE_CNT, control );
+    process_parms_convert( parms, window_style_win, window_style_os2, WND_STYLE_CNT, stmt );
 }
 
 static void out_color_style( FILE *fo, statement *x )
@@ -825,21 +814,25 @@ static bool process_statement( char *line, FILE *fo )
 static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_len )
 /***********************************************************************************/
 {
-    long    font_size = 0;
-    char    *font_name = NULL;
-    int     font_set = 0;
-    int     hidden_dialog = 0;
+    long    font_size;
+    char    *font_name;
+    bool    font_set;
+    bool    hidden_dialog;
     char    *buff1;
     char    *p;
     char    **p2;
     size_t  len;
-    int     sysmodal;
-    int     visible;
+    bool    sysmodal;
+    bool    visible;
     int     i;
     char    stmt_buf[MAX_STMT_LEN + 1];
 
+    font_set = false;
+    font_size = 0;
+    font_name = NULL;
+    hidden_dialog = false;
     ++dialogs_cnt;
-    if( opt.quiet == 0 ) {
+    if( !opt.quiet ) {
         fprintf( stdout, "." );
     }
     // process DIALOG line
@@ -894,7 +887,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
             strcpy( dlg_hdr.text, p );
             dlg_hdr.text[strlen( dlg_hdr.text )] = '\0';
         } else if( strcmp( stmt_buf, "FONT" ) == 0 ) {
-            font_set = 1;
+            font_set = true;
             p = strtok( NULL, SEPARATORS1 );
             font_size = strtol( p, &p, 10 );
             p = strtok( NULL, "\"" );
@@ -923,7 +916,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
         my_fgets( line, max_len, fi );
     }
     process_parms_convert( dlg_hdr.parms, window_style_win, window_style_os2, WND_STYLE_CNT, T_NONE );
-    if( font_set == 0 ) {
+    if( !font_set ) {
         font_name = malloc( sizeof( DEFAULT_FONT_NAME ) );
         strcpy( font_name, DEFAULT_FONT_NAME );
         font_size = DEFAULT_FONT_SIZE;
@@ -932,7 +925,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     if( opt.hide ) {
         for( i = 0; i < opt.flist_cnt; ++i ) {
             if( stricmp( dlg_hdr.ID, opt.flist_data[i] ) == 0 ) {
-                hidden_dialog = 1;
+                hidden_dialog = true;
                 break;
             }
         }
@@ -965,7 +958,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
             fprintf( fo, "\n\t\t0L" );
         }
 #endif
-        out_parms_style( fo, dlg_hdr.parms, "DIALOG" );
+        out_parms_style( fo, dlg_hdr.parms, dlg_hdr.name );
     }
     if( font_name != NULL ) {
         fprintf( fo, "%sPRESPARAMS PP_FONTNAMESIZE, ", STR_SPC );
