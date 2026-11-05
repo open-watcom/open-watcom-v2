@@ -186,6 +186,7 @@ static int process_cmdl( int argc, char *argv[] )
 /***********************************************/
 {
     const char      *p;
+    char            *end;
     char            opt_buf[MAX_OPT_LEN + 1];
     int             i;
 
@@ -220,7 +221,8 @@ static int process_cmdl( int argc, char *argv[] )
             if( *p == '=' ) {
                 p++;
                 opt.font = true;
-                opt.font_size = strtol( p, &p, 10 );
+                opt.font_size = strtol( p, &end, 10 );
+                p = end;
                 if( *p == '.' )
                     ++p;
                 strcpy( opt.font_name, p );
@@ -387,8 +389,8 @@ static bool check_control_style( style idx, control_type control )
     }
 }
 
-static bool process_parms_check( char *parms[], char *symbol )
-/************************************************************/
+static bool process_parms_check( char *parms[], const char *symbol )
+/******************************************************************/
 {
     int     i;
     char    *parm;
@@ -888,7 +890,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
         } else if( strcmp( stmt_buf, "FONT" ) == 0 ) {
             font_set = true;
             p = strtok( NULL, SEPARATORS1 );
-            font_size = strtol( p, &p, 10 );
+            font_size = strtol( p, NULL, 10 );
             p = strtok( NULL, "\"" );
             p = strtok( NULL, "\"" );
             if( opt.font ) {
