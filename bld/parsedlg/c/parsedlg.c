@@ -101,18 +101,30 @@ statement   dlg_hdr;
 statement   dlg_item;
 int         dialogs_cnt = 0;
 
+static char *remove_trailing_spaces( char *str )
+/***********************************************
+ * return pointer to last character
+ */
+{
+    int     i;
+
+    i = strlen( str );
+    while( i-- > 0
+      && isspace( ((unsigned char *)str)[i] ) ) {
+        str[i] = '\0';
+    }
+    if( i > 0 )
+        return( str + i );
+    return( str );
+}
+
 static char *my_fgets( char *buf, int max_len, FILE *fp )
 /*******************************************************/
 {
     char    *rc;
-    size_t  i;
 
     if( (rc = fgets( buf, max_len, fp )) != NULL ) {
-        i = strlen( buf );
-        while( i-- > 0
-          && isspace( ((unsigned char *)buf)[i] ) ) {
-            buf[i] = '\0';
-        }
+        remove_trailing_spaces( buf );
     }
     return( rc );
 }
@@ -154,14 +166,28 @@ static void process_f_option( const char *fname )
     }
 }
 
+static const char *get_option( const char *str, char *opt_buf )
+{
+    int     i;
+    int     c;
+
+    i = 0;
+    while( i < MAX_OPT_LEN
+      && (c = *(unsigned char *)str) != '\0'
+      && c != '=' ) {
+        opt_buf[i++] = (char)tolower( c );
+        ++str;
+    }
+    opt_buf[i] = '\0';
+    return( str );
+}
+
 static int process_cmdl( int argc, char *argv[] )
 /***********************************************/
 {
-    char            *p;
+    const char      *p;
     char            opt_buf[MAX_OPT_LEN + 1];
     int             i;
-    int             j;
-    int             c;
 
     opt.quiet = false;
     opt.hide = false;
@@ -180,14 +206,7 @@ static int process_cmdl( int argc, char *argv[] )
 #endif
             break;
         ++p;
-        j = 0;
-        while( j < MAX_OPT_LEN
-          && (c = *(unsigned char *)p) != '\0'
-          && c != '=' ) {
-            opt_buf[j++] = (char)tolower( c );
-            ++p;
-        }
-        opt_buf[j] = '\0';
+        p = get_option( p, opt_buf );
         if( strcmp( opt_buf, "f" ) == 0 ) {
             if( *p == '=' ) {
                 p++;
@@ -220,9 +239,16 @@ static int process_cmdl( int argc, char *argv[] )
 static const char *skip_separators2( const char *str )
 /****************************************************/
 {
-    while( ( *str == ' ' )
-      || ( *str == '\t' )
-      || ( *str == ',' ) ) {
+    while( strchr( SEPARATORS2, *str ) != NULL ) {
+        ++str;
+    }
+    return( str );
+}
+
+static const char *skip_separators3( const char *str )
+/****************************************************/
+{
+    while( strchr( SEPARATORS3, *str ) != NULL ) {
         ++str;
     }
     return( str );
@@ -263,12 +289,11 @@ static control_type check_control( const char *str, const char *extra_str )
     return( T_NONE );
 }
 
-static bool is_control( const char *str )
-/***************************************/
+static bool is_control_line( const char *str )
+/********************************************/
 {
     if( *str != '\0' ) {
-        while( isspace( *str ) )
-            ++str;
+        str = skip_separators3( str);
         if( check_control( str, "END" ) != T_NONE ) {
             return( true );
         }
@@ -798,7 +823,6 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
     char    *buff1;
     char    *p;
     char    **p2;
-    size_t  len;
     bool    sysmodal;
     bool    visible;
     int     i;
@@ -847,9 +871,7 @@ static void process_dialog_declaration( FILE *fi, FILE *fo, char *line, int max_
             break;
         } else if( strcmp( stmt_buf, "STYLE" ) == 0 ) {
             add_parms_list( &dlg_hdr, ADD_AFTER );
-            len = strlen( line );
-            for( p = line + len - 1; len && isspace( *p ); --len )
-                *(p--) = '\0';
+            p = remove_trailing_spaces( line );
             if( *p == '|' ) {
                 my_fgets( line, max_len, fi );
                 strcpy( buff1, line );
@@ -1020,11 +1042,8 @@ int main( int argc, char *argv[] )
     my_fgets( line, MAX_LINE_LEN, fi );
     while( !feof( fi ) ) {
         while( !feof( fi ) ) {
-            strcpy( buff1, line );
-            p = buff1;
-            while( isspace( *(unsigned char *)p ) )
-                p++;
-            p = strtok( p, SEPARATORS3 );
+            strcpy( buff1, skip_separators3( line ) );
+            p = strtok( buff1, SEPARATORS3 );
             get_statement_name( p, stmt_buf );
             if( strcmp( stmt_buf, "DLGINCLUDE" ) == 0 ) {
                 /**********************
@@ -1039,11 +1058,11 @@ int main( int argc, char *argv[] )
                  *
                  * DLGINCLUDE 1 filename
                  */
-                strcpy( buff1, line );
+                strcpy( buff1, skip_separators3( line ) );
                 fprintf( fo, "%s 1 ", strtok( buff1, SEPARATORS3 ) );
                 my_fgets( line, MAX_LINE_LEN, fi );
                 my_fgets( line, MAX_LINE_LEN, fi );
-                strcpy( buff1, line );
+                strcpy( buff1, skip_separators3( line ) );
                 fprintf( fo, "%s\n", strtok( buff1, SEPARATORS3 ) );
                 my_fgets( line, MAX_LINE_LEN, fi );
                 my_fgets( line, MAX_LINE_LEN, fi );
@@ -1071,7 +1090,7 @@ int main( int argc, char *argv[] )
             if( strcmp( stmt_buf, "END" ) == 0 )
                 break;
             while( my_fgets( buff1, MAX_LINE_LEN, fi ) != NULL ) {
-                if( is_control( buff1 ) )
+                if( is_control_line( buff1 ) )
                     break;
                 strncat( line, skip_separators2( buff1 ), MAX_LINE_LEN );
             }
