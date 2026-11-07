@@ -66,6 +66,7 @@
     #include <time.h>       /* for time_t */
     extern time_t _mkgmtime20( struct tm *t );
    #endif
+    #define _MK_FP  MK_FP
    #ifdef __NT__
     /*
      * this enable to use new OW 2.0 ...dir() functions

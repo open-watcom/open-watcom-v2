@@ -80,6 +80,9 @@ essentially no worst case performance scenario.
 #include "memsydep.h"
 #include "feprotos.h"
 
+#include "clibext.h"
+
+
 #define ALLOCATED       1
 
 #define MAX_SIZE        14  /* 16384 (2 ^ 14) */
