@@ -84,8 +84,8 @@
 #include "clibext.h"
 
 
-#define MAX_DEPS    	50
-#define TOKEN_MAX_LEN	31
+#define MAX_DEPS        50
+#define TOKEN_MAX_LEN   31
 
 #define KEYWORD_CHAR    ':'
 
