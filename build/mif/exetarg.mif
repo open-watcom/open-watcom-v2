@@ -17,7 +17,7 @@
 exetarg_name = $(proj_name)
 !endif
 !ifdef exetarg_ext
-additional_clean_sys = *$(exetarg_ext)
+additional_clean_sys += *$(exetarg_ext)
 !else
 exetarg_ext = .exe
 !endif
