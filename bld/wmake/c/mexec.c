@@ -74,7 +74,8 @@
 
 #ifdef __UNIX__
     #define MASK_ALL_ITEMS      "*"
-    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE) == FNM_NOMATCH)
+    #define RM_FNMATCH_FLAGS    (FNM_PATHNAME | FNM_NOESCAPE)
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, RM_FNMATCH_FLAGS) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)   chk_is_dir(n)
     #define ENTRY_RDONLY(n,e)   (access( n, W_OK ) == -1 && errno == EACCES)
     #define PATH_SEP_CHAR       '/'
@@ -82,7 +83,8 @@
     #define MKDIR(p)            mkdir( (p), S_IRWXU | S_IRWXG | S_IRWXO )
 #else
     #define MASK_ALL_ITEMS      "*.*"
-    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE) == FNM_NOMATCH)
+    #define RM_FNMATCH_FLAGS    (FNM_PATHNAME | FNM_NOESCAPE | FNM_IGNORECASE)
+    #define ENTRY_INVALID(n,e)  (IsDotOrDotDot(e->d_name) || fnmatch(n, e->d_name, RM_FNMATCH_FLAGS) == FNM_NOMATCH)
     #define ENTRY_SUBDIR(n,e)   (e->d_attr & _A_SUBDIR)
     #define ENTRY_RDONLY(n,e)   (e->d_attr & _A_RDONLY)
     #define PATH_SEP_CHAR       '\\'
@@ -121,6 +123,18 @@ typedef struct dd {
     char        attr;
     char        name[1];
 } iolist;
+
+typedef struct rm_pattern {
+    struct rm_pattern   *next;
+    char                name[1];
+} rm_pattern;
+
+typedef struct rm_group {
+    struct rm_group     *next;
+    rm_pattern          *patterns;
+    rm_pattern          **pattern_tail;
+    char                path[1];
+} rm_group;
 
 typedef struct {
     boolbit     bForce   : 1;
@@ -1829,8 +1843,182 @@ static bool doRM( const char *fullpath, const rm_flags *flags )
         if( !RecursiveRM( tmp->name, flags ) ) {
             rc = false;
         }
-        free( tmp );
+        MemFree( tmp );
     }
+    return( rc );
+}
+
+
+static void split_rm_spec( const char *fullpath, char *path, char *pattern )
+/****************************************************************************/
+{
+    size_t  i;
+    size_t  j;
+    size_t  len;
+
+    len = strlen( fullpath );
+    for( i = len; i > 0; --i ) {
+        if( cisdirc( fullpath[i - 1] ) ) {
+            break;
+        }
+    }
+    j = i;
+
+    if( i == 0 ) {
+        path[i++] = '.';
+        path[i++] = PATH_SEP_CHAR;
+    } else {
+        memcpy( path, fullpath, i );
+    }
+    path[i] = NULLCHAR;
+
+#ifdef __UNIX__
+    memcpy( pattern, fullpath + j, len - j + 1 );
+#else
+    if( strcmp( fullpath + j, MASK_ALL_ITEMS ) == 0 ) {
+        pattern[0] = '*';
+        pattern[1] = NULLCHAR;
+    } else {
+        memcpy( pattern, fullpath + j, len - j + 1 );
+    }
+#endif
+}
+
+static rm_group *find_rm_group( rm_group *groups, const char *path )
+/***************************************************************************/
+{
+    rm_group   *group;
+
+    for( group = groups; group != NULL; group = group->next ) {
+        if( FNameEq( group->path, path ) ) {
+            return( group );
+        }
+    }
+    return( NULL );
+}
+
+static rm_group *add_rm_group( rm_group **groups, const char *path )
+/**************************************************************************/
+{
+    rm_group   *group;
+    rm_group   *tail;
+    size_t      len;
+
+    len = strlen( path ) + 1;
+    group = MemAllocSafe( offsetof( rm_group, path ) + len );
+
+    group->next = NULL;
+    group->patterns = NULL;
+    group->pattern_tail = &group->patterns;
+    memcpy( group->path, path, len );
+
+    if( *groups == NULL ) {
+        *groups = group;
+    } else {
+        for( tail = *groups; tail->next != NULL; tail = tail->next )
+            ;
+        tail->next = group;
+    }
+    return( group );
+}
+
+static void add_rm_pattern( rm_group *group, const char *pattern )
+/****************************************************************/
+{
+    rm_pattern *item;
+    size_t      len;
+
+    len = strlen( pattern ) + 1;
+    item = MemAllocSafe( offsetof( rm_pattern, name ) + len );
+
+    item->next = NULL;
+    memcpy( item->name, pattern, len );
+
+    *group->pattern_tail = item;
+    group->pattern_tail = &item->next;
+}
+
+static void free_rm_groups( rm_group *groups )
+/*********************************************/
+{
+    rm_group   *group;
+    rm_group   *next_group;
+    rm_pattern *pattern;
+    rm_pattern *next_pattern;
+
+    for( group = groups; group != NULL; group = next_group ) {
+        next_group = group->next;
+
+        for( pattern = group->patterns; pattern != NULL; pattern = next_pattern ) {
+            next_pattern = pattern->next;
+            MemFree( pattern );
+        }
+        MemFree( group );
+    }
+}
+
+static bool rm_match_any( const rm_pattern *patterns, const char *name )
+/****************************************************************************/
+{
+    const rm_pattern   *pattern;
+
+    for( pattern = patterns; pattern != NULL; pattern = pattern->next ) {
+        if( fnmatch( pattern->name, name, RM_FNMATCH_FLAGS ) == 0 ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
+static bool doRMMasks( const rm_group *group, const rm_flags *flags )
+/***************************************************************************/
+{
+    char                fpath[_MAX_PATH];
+    char                *fpathend;
+    size_t              path_len;
+    size_t              name_len;
+    DIRXX               *dirp;
+    struct DIRENTXX     *dire;
+    bool                rc;
+
+    rc = true;
+    path_len = strlen( group->path );
+    if( path_len >= sizeof( fpath ) ) {
+        return( false );
+    }
+
+    memcpy( fpath, group->path, path_len + 1 );
+    fpathend = fpath + path_len;
+
+    dirp = OPENDIRXX( group->path );
+    if( dirp == NULL ) {
+        return( true );
+    }
+
+    while( ( dire = READDIRXX( dirp ) ) != NULL ) {
+        if( IsDotOrDotDot( dire->d_name ) )
+            continue;
+        if( !rm_match_any( group->patterns, dire->d_name ) )
+            continue;
+
+        name_len = strlen( dire->d_name );
+        if( path_len + name_len >= sizeof( fpath ) ) {
+            rc = false;
+            continue;
+        }
+
+        memcpy( fpathend, dire->d_name, name_len + 1 );
+
+        if( ENTRY_SUBDIR( fpath, dire ) ) {
+            rc = false;
+        } else if( ENTRY_RDONLY( fpath, dire ) && !flags->bForce ) {
+            rc = false;
+        } else if( !remove_item( fpath, flags, false ) ) {
+            rc = false;
+        }
+    }
+
+    CLOSEDIRXX( dirp );
     return( rc );
 }
 
@@ -1867,7 +2055,7 @@ STATIC bool processRM( const char *name, const rm_flags *flags )
             return( RecursiveRM( ".", flags ) );
         } else if( strpbrk( name, WILD_METAS ) != NULL ) {
             /*
-             * don't process wild cards on directories
+             * Do not expand wildcards in directory names. wmake uses explicit directory paths; wildcard matching applies only to the file-name component.
              */
         } else if( chk_is_dir( name ) ) {
             return( RecursiveRM( name, flags ) );
@@ -1894,9 +2082,13 @@ STATIC RET_T handleRM( char *cmd )
  */
 {
     rm_flags    flags;
+    rm_group    *groups;
+    rm_group    *group;
     bool        ok;
     char        *name;
     char        *p;
+    char        path[_MAX_PATH];
+    char        pattern[_MAX_PATH];
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_RM] );
@@ -1905,18 +2097,45 @@ STATIC RET_T handleRM( char *cmd )
     if( Glob.noexec )
         return( RET_SUCCESS );
 
+    groups = NULL;
+
     for( ok = getRMArgs( cmd, &flags, &p ); ok && p != NULL && *p != NULLCHAR; ok = getRMArgs( NULL, NULL, &p ) ) {
         /*
          * handle File/Directory name
          */
         p = CmdGetFileName( p, &name, false );
         *p = NULLCHAR;                  /* terminate file name */
-        if( flags.bDirs )
+        if( flags.bDirs ) {
             fix_path_separator( name ); /* fix trailing separator */
-        if( !processRM( name, &flags ) ) {
-            return( RET_ERROR );
+            if( !processRM( name, &flags ) ) {
+                free_rm_groups( groups );
+                return( RET_ERROR );
+            }
+        } else if( strpbrk( name, WILD_METAS ) == NULL ) {
+            if( !processRM( name, &flags ) ) {
+                free_rm_groups( groups );
+                return( RET_ERROR );
+            }
+        } else {
+            split_rm_spec( name, path, pattern );
+            group = find_rm_group( groups, path );
+            if( group == NULL ) {
+                group = add_rm_group( &groups, path );
+            }
+            add_rm_pattern( group, pattern );
         }
     }
+
+    if( ok ) {
+        for( group = groups; group != NULL; group = group->next ) {
+            if( !doRMMasks( group, &flags ) ) {
+                ok = false;
+                break;
+            }
+        }
+    }
+
+    free_rm_groups( groups );
     return( ( ok ) ? RET_SUCCESS : RET_ERROR );
 }
 

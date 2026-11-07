@@ -100,6 +100,18 @@ typedef struct dd {
     char        name[1];
 } iolist;
 
+typedef struct rm_pattern {
+    struct rm_pattern   *next;
+    char                text[1];
+} rm_pattern;
+
+typedef struct rm_group {
+    struct rm_group     *next;
+    rm_pattern          *patterns;
+    rm_pattern          *pattern_tail;
+    char                path[1];
+} rm_group;
+
 char            tmp_buf[MAX_LINE];
 
 static int      rm_rflag;
@@ -637,6 +649,172 @@ static int remove_item( const char *name, bool dir )
     return( 0 );
 }
 
+static void SplitRMSpec( const char *spec, char *path, char *pattern )
+{
+    size_t      i;
+    size_t      j;
+    size_t      len;
+
+    len = strlen( spec );
+    for( i = len; i > 0; --i ) {
+        char ch = spec[i - 1];
+
+        if( ch == '/'
+          || ch == '\\'
+          || ch == ':' ) {
+            break;
+        }
+    }
+    j = i;
+    if( i == 0 ) {
+        path[i++] = '.';
+        path[i++] = '/';
+    } else {
+        memcpy( path, spec, i );
+    }
+    path[i] = '\0';
+#ifdef __UNIX__
+    memcpy( pattern, spec + j, len - j + 1 );
+#else
+    if( strcmp( spec + j, MASK_ALL_ITEMS ) == 0 ) {
+        pattern[0] = '*';
+        pattern[1] = '\0';
+    } else {
+        memcpy( pattern, spec + j, len - j + 1 );
+    }
+#endif
+}
+
+static rm_group *FindRMGroup( rm_group *groups, const char *path )
+{
+    rm_group    *group;
+
+    for( group = groups; group != NULL; group = group->next ) {
+        if( strcmp( group->path, path ) == 0 ) {
+            return( group );
+        }
+    }
+    return( NULL );
+}
+
+static rm_group *AddRMGroup( rm_group **head, rm_group **tail, const char *path )
+{
+    rm_group    *group;
+    size_t      len;
+
+    len = strlen( path ) + 1;
+    group = MemAllocSafe( offsetof( rm_group, path ) + len );
+    group->next = NULL;
+    group->patterns = NULL;
+    group->pattern_tail = NULL;
+    memcpy( group->path, path, len );
+    if( *tail == NULL ) {
+        *head = group;
+    } else {
+        (*tail)->next = group;
+    }
+    *tail = group;
+    return( group );
+}
+
+static void AddRMPattern( rm_group *group, const char *pattern )
+{
+    rm_pattern  *item;
+    size_t      len;
+
+    len = strlen( pattern ) + 1;
+    item = MemAllocSafe( offsetof( rm_pattern, text ) + len );
+    item->next = NULL;
+    memcpy( item->text, pattern, len );
+    if( group->pattern_tail == NULL ) {
+        group->patterns = item;
+    } else {
+        group->pattern_tail->next = item;
+    }
+    group->pattern_tail = item;
+}
+
+static bool RMMatchAny( const rm_pattern *patterns, const struct dirent *dire )
+{
+    const rm_pattern    *pattern;
+
+    for( pattern = patterns; pattern != NULL; pattern = pattern->next ) {
+        if( !ENTRY_NOMATCH( pattern->text, dire ) ) {
+            return( true );
+        }
+    }
+    return( false );
+}
+
+static int DoRMMasks( const rm_group *group )
+{
+    char                fpath[_MAX_PATH];
+    char                *fpathend;
+    size_t              path_len;
+    size_t              len;
+    DIR                 *dirp;
+    struct dirent       *dire;
+    const rm_pattern    *pattern;
+    int                 rc;
+    int                 retval = 0;
+
+    path_len = strlen( group->path );
+    memcpy( fpath, group->path, path_len + 1 );
+    fpathend = fpath + path_len;
+    dirp = opendir( group->path );
+    if( dirp == NULL ) {
+        for( pattern = group->patterns; pattern != NULL; pattern = pattern->next ) {
+            Log( false, "File (%s%s) not found.\n", group->path, pattern->text );
+        }
+        return( ENOENT );
+    }
+
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( ENTRY_INVALID( dire ) )
+            continue;
+        if( !RMMatchAny( group->patterns, dire ) )
+            continue;
+        len = strlen( dire->d_name );
+        if( path_len + len >= sizeof( fpath ) ) {
+            retval = ENAMETOOLONG;
+            continue;
+        }
+        memcpy( fpathend, dire->d_name, len + 1 );
+        if( ENTRY_SUBDIR( fpath, dire ) ) {
+            Log( false, "%s is a directory, use -r\n", fpath );
+            retval = EACCES;
+        } else if( !rm_fflag
+          && ENTRY_RDONLY( fpath, dire ) ) {
+            Log( false, "%s is read-only, use -f\n", fpath );
+            retval = EACCES;
+        } else {
+            rc = remove_item( fpath, false );
+            if( rc != 0 ) {
+                retval = rc;
+            }
+        }
+    }
+    closedir( dirp );
+    return( retval );
+}
+
+static void FreeRMGroups( rm_group *groups )
+{
+    rm_group    *next_group;
+    rm_pattern  *pattern;
+    rm_pattern  *next_pattern;
+
+    while( groups != NULL ) {
+        next_group = groups->next;
+        for( pattern = groups->patterns; pattern != NULL; pattern = next_pattern ) {
+            next_pattern = pattern->next;
+            MemFree( pattern );
+        }
+        MemFree( groups );
+        groups = next_group;
+    }
+}
+
 static int DoRM( const char *f )
 /*******************************
  * DoRM - perform RM on a specified file
@@ -850,6 +1028,12 @@ static int ProcRm( const char *cmd )
             }
         }
     } else {
+        rm_group    *groups = NULL;
+        rm_group    *group_tail = NULL;
+        rm_group    *group;
+        char        path[_MAX_PATH];
+        char        pattern[_MAX_PATH];
+
         /*
          * run through all specified files
          */
@@ -858,17 +1042,35 @@ static int ProcRm( const char *cmd )
 
             cmd = GetPathOrFile( cmd, buffer );
             if( *buffer != '\0' ) {
-                rc = DoRM( buffer );
-                if( rc != 0 ) {
-                    retval = rc;
+                if( strpbrk( buffer, WILD_METAS ) == NULL ) {
+                    rc = DoRM( buffer );
+                    if( rc != 0 ) {
+                        retval = rc;
+                    }
+                } else {
+                    SplitRMSpec( buffer, path, pattern );
+                    group = FindRMGroup( groups, path );
+                    if( group == NULL ) {
+                        group = AddRMGroup( &groups, &group_tail, path );
+                    }
+                    AddRMPattern( group, pattern );
                 }
             }
         }
+        for( group = groups; group != NULL; group = group->next ) {
+            int rc;
+
+            rc = DoRMMasks( group );
+            if( rc != 0 ) {
+                retval = rc;
+            }
+        }
+        FreeRMGroups( groups );
     }
     return( retval );
 }
 
-#define BUILTIN_CMD_MAX	10
+#define BUILTIN_CMD_MAX     10
 static bool BuiltIn( const char **ptr, const char *cmd )
 {
     size_t          len;
