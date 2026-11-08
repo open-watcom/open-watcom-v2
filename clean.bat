@@ -1,6 +1,4 @@
 @echo off
-set NUL=NUL
-if '%OS%' == 'Windows_NT' set NUL=
 cd "%OWROOT%"
 if not exist build\%OWOBJDIR%\builder.exe goto nobuilder
 REM delete the builder and wmake build directories
