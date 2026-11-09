@@ -227,13 +227,13 @@ static unsigned short __far *_get_dbcs_lead_table( void )
                 return( RealModeDataPtr( dp.ds, dp.r.x.esi ) );
             }
         }
-    } else if( _DPMI || _IsRational() ) {
+    } else if( DPMIModeDetect() == 0 || _IsRational() ) {
         dpmi_regs_struct    dr;
         int                 cflag;
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.h.ah = 0x63;                   /* get DBCS vector table */
-        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, &dr ) || (dr.flags & INTR_CF);
         if( cflag == 0 && dr.r.h.al == 0 ) {
             /*
              * check if DS not 0

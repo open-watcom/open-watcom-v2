@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -119,7 +119,7 @@ bool _RMAlloc( int size, dpmi_dos_mem_block *dos_mem )
         if( dos_mem->rm != 0 ) {
             return( true );
         }
-    } else if( _DPMI || _IsRational() ) {
+    } else if( DPMIModeDetect() == 0 || _IsRational() ) {
         *dos_mem = DPMIAllocateDOSMemoryBlock( size_para );
         if( dos_mem->rm != 0 ) {
             return( true );
@@ -136,7 +136,7 @@ void _RMFree( dpmi_dos_mem_block *dos_mem )
     if( dos_mem->rm ) {
         if( _IsPharLap() ) {
             PharlapFreeDOSMemoryBlock( dos_mem->rm );
-        } else if( _DPMI || _IsRational() ) {
+        } else if( DPMIModeDetect() == 0 || _IsRational() ) {
             DPMIFreeDOSMemoryBlock( dos_mem->pm );
         }
         dos_mem->pm = 0;
@@ -159,7 +159,7 @@ short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
         dp.es = es;
         PharlapSimulateRealModeInterrupt( &dp, bx, cx, di );
         return( dp.r.w.ax );
-    } else if( _DPMI || _IsRational() ) {
+    } else if( DPMIModeDetect() == 0 || _IsRational() ) {
         dpmi_regs_struct    dr;
 
         memset( &dr, 0, sizeof( dr ) );
@@ -169,7 +169,7 @@ short _RMVideoInt( short ax, short bx, short cx, short dx, short es, short di )
         dr.r.x.edx = dx;
         dr.es = es;
         dr.r.x.edi = di;
-        DPMISimulateRealModeInterrupt( 0x10, 0, 0, &dr );
+        DPMISimulateRealModeInterrupt( 0x10, 0, &dr );
         return( dr.r.w.ax );
     }
     return( 0 );
