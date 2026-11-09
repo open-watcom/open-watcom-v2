@@ -60,27 +60,27 @@ typedef struct wdpmi_mem_block {
 #define DPMI_0501   0x01 0x05
 #define DPMI_0502   0x02 0x05
 
-#define WDPMI_FreeMemoryBlock(a)                __WDPMI_FreeMemoryBlock( (a) >> 16, (a) )
-#define WDPMI_SetSegmentBaseAddress(a,b)        __WDPMI_SetSegmentBaseAddress( (a), (b) >> 16, (b) )
+#define WDPMI_FreeMemoryBlock                   __WDPMI_FreeMemoryBlock
+#define WDPMI_SetSegmentBaseAddress             __WDPMI_SetSegmentBaseAddress
 #define WDPMI_AllocateLDTDescriptors            __WDPMI_AllocateLDTDescriptors
 #define WDPMI_FreeLDTDescriptor                 __WDPMI_FreeLDTDescriptor
 #define WDPMI_SetDescriptorAccessRights         __WDPMI_SetDescriptorAccessRights
-#define WDPMI_SetSegmentLimit(a,b)              __WDPMI_SetSegmentLimit( (a), (b) >> 16, (b) & 0xffff )
-#define WDPMI_AllocateMemoryBlock(a,b)          __WDPMI_AllocateMemoryBlock( (a), (b) >> 16, (b) )
+#define WDPMI_SetSegmentLimit                   __WDPMI_SetSegmentLimit
+#define WDPMI_AllocateMemoryBlock               __WDPMI_AllocateMemoryBlock
 #define WDPMI_GetNextSelectorIncrementValue     __WDPMI_GetNextSelectorIncrementValue
 #define WDPMI_GetDescriptor                     __WDPMI_GetDescriptor
 #define WDPMI_GetSegmentBaseAddress             __WDPMI_GetSegmentBaseAddress
 
-extern int      __WDPMI_FreeMemoryBlock( WORD hiw, WORD low );
-extern int      __WDPMI_SetSegmentBaseAddress( WORD, WORD hiw, WORD low );
-extern long     __WDPMI_AllocateLDTDescriptors( WORD );
-extern int      __WDPMI_FreeLDTDescriptor( WORD );
-extern int      __WDPMI_SetDescriptorAccessRights( WORD, WORD );
-extern int      __WDPMI_SetSegmentLimit( WORD, WORD hiw, WORD low );
-extern int      __WDPMI_AllocateMemoryBlock( wdpmi_mem_block __far *, WORD hiw, WORD low );
+extern int      __WDPMI_FreeMemoryBlock( DWORD handle );
+extern int      __WDPMI_SetSegmentBaseAddress( WORD, DWORD base );
+extern long     __WDPMI_AllocateLDTDescriptors( WORD count );
+extern int      __WDPMI_FreeLDTDescriptor( WORD selector );
+extern int      __WDPMI_SetDescriptorAccessRights( WORD  selector, WORD rights );
+extern int      __WDPMI_SetSegmentLimit( WORD selector, DWORD limit );
+extern int      __WDPMI_AllocateMemoryBlock( wdpmi_mem_block __far *mem_block, DWORD size );
 extern WORD     __WDPMI_GetNextSelectorIncrementValue( void );
-extern int      __WDPMI_GetDescriptor( WORD, descriptor __far * );
-extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
+extern int      __WDPMI_GetDescriptor( WORD selector, descriptor __far *desc_ptr );
+extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD selector );
 
 #pragma aux __WDPMI_AllocateLDTDescriptors = \
         _MOV_AX_word DPMI_0000 \
@@ -132,7 +132,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
 #pragma aux __WDPMI_GetNextSelectorIncrementValue = \
         _MOV_AX_word DPMI_0003 \
         _INT_31         \
-    __parm __caller [__bx] \
+    __parm __caller [] \
     __value         [__ax] \
     __modify __exact [__ax]
 
@@ -153,7 +153,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
         _MOV_AX_word DPMI_0007 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [__cx] [__dx] \
+    __parm __caller [__bx] [__cx __dx] \
     __value         [__ax] \
     __modify __exact [__ax]
 
@@ -161,7 +161,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
         _MOV_AX_word DPMI_0008 \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__bx] [__cx] [__dx] \
+    __parm __caller [__bx] [__cx __dx] \
     __value         [__ax] \
     __modify __exact [__ax]
 
@@ -183,6 +183,7 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
 
 #pragma aux __WDPMI_AllocateMemoryBlock =  \
         _MOV_AX_word DPMI_0501 \
+        _XCHG_BX_CX     \
         _INT_31         \
         _SBB_AX_AX      \
         _XCHG_BX_DX      \
@@ -190,16 +191,17 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD );
         "mov  es:[bx+2],dx" \
         "mov  es:[bx+4],di" \
         "mov  es:[bx+6],si" \
-    __parm __caller [__es __dx] [__bx] [__cx] \
+    __parm __caller [__es __dx] [__bx __cx] \
     __value         [__ax] \
     __modify __exact [__ax __bx __cx __dx __di __si]
 
 #pragma aux __WDPMI_FreeMemoryBlock =  \
         _MOV_AX_word DPMI_0502 \
+        _XCHG_SI_DI     \
         _INT_31         \
         _SBB_AX_AX      \
-    __parm __caller [__si] [__di] \
-    __value         [__ax] \
+    __parm __caller [__si __di] \
+    __value         [__ax __si __di] \
     __modify __exact [__ax]
 
 
