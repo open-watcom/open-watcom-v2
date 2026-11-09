@@ -42,6 +42,7 @@
 #ifdef __386__
     #include "extender.h"
     #include "dpmi.h"
+	#include "dpmihost.h"
 #endif
 
 
@@ -166,7 +167,7 @@ _WCRTLINK unsigned short __nec98_bios_disk( unsigned __cmd, struct diskinfo_t *_
             dr.r.x.edx = rregs.x.edx;
             dr.es = dos_mem.rm;
             /* int 1BH */
-            cflag = DPMISimulateRealModeInterrupt( 0x1b, 0, 0, &dr ) || (dr.flags & INTR_CF);
+            cflag = DPMISimulateRealModeInterrupt( 0x1b, 0, &dr ) || (dr.flags & INTR_CF);
             ret = dr.r.h.ah;
             if( cflag ) {
                 ret |= 0xff00;

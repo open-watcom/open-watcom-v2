@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2025      The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2025-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,8 +35,10 @@
 #ifndef __WINDOWS__
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 #include "grabfp87.h"
+
 
 void _WCNEAR __GrabFP87( void )
 {

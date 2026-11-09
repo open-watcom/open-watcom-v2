@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #ifndef _M_I86
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 #include "getcpdos.h"
 #include "dointr.h"
@@ -84,7 +85,7 @@ unsigned short dos_get_code_page( void )
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.w.ax = 0x6601;             /* get extended country info */
-        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, &dr ) || (dr.flags & INTR_CF);
         if( cflag == 0 ) {
             codepage = dr.r.w.bx;       /* return active code page */
         }

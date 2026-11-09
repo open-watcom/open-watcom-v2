@@ -42,6 +42,7 @@
 #ifndef _M_I86
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 
 
@@ -108,7 +109,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
 
                 memset( &dr, 0, sizeof( dr ) );
                 dr.r.w.ax = data;
-                DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
+                DPMISimulateRealModeInterrupt( 0x1a, 0, &dr );
                 ret = dr.r.h.ah;
             } else {
                 ret = 0;
@@ -169,7 +170,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                     dr.r.h.ah = _PRINTER_WRITE_STRING;
                     dr.r.w.cx = 0xffff;
                     dr.es = dos_mem.rm;
-                    DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
+                    DPMISimulateRealModeInterrupt( 0x1a, 0, &dr );
                     if( dr.r.x.eax ) {
                         ret = dr.r.w.cx;
                         break;
@@ -180,7 +181,7 @@ _WCRTLINK unsigned short __nec98_bios_printer( unsigned __cmd, unsigned char *__
                 dr.r.h.ah = _PRINTER_WRITE_STRING;
                 dr.r.w.cx = len;
                 dr.es = dos_mem.rm;
-                DPMISimulateRealModeInterrupt( 0x1a, 0, 0, &dr );
+                DPMISimulateRealModeInterrupt( 0x1a, 0, &dr );
                 ret = dr.r.w.cx;
                 if( dos_mem.pm ){
                     DPMIFreeDOSMemoryBlock( dos_mem.pm );

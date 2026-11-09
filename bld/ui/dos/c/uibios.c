@@ -98,14 +98,14 @@ LP_PIXEL UIAPI dos_uishadowbuffer( LP_PIXEL vbuff )
             /* we use _FP_OFF since old_selector==0x34 and new_selector==0x37 */
             vbuff = _MK_FP( regs.w.es, regs.x.edi );
         }
-    } else if( _DPMI || _IsRational() ) {
+    } else if( DPMIModeDetect() == 0 || _IsRational() ) {
         dpmi_regs_struct    dr;
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.h.ah = 0xfe;                   /* get video buffer addr */
         dr.es = _FP_OFF( vbuff ) >> 4;
         dr.r.w.di = (_FP_OFF( vbuff ) & 0x0f);
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
         vbuff = RealModeDataPtr( dr.es, dr.r.x.edi );
     }
     return( vbuff );
@@ -313,7 +313,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         dp.es = _FP_OFF( UIData->screen.origin ) >> 4;
         dp.intno = VECTOR_VIDEO;       /* VIDEO call */
         PharlapSimulateRealModeInterrupt( &dp, 0, count, (_FP_OFF( UIData->screen.origin ) & 0x0f) + sizeof( *UIData->screen.origin ) * offset );
-    } else if( _DPMI || _IsRational() ) {
+    } else if( DPMIModeDetect() == 0 || _IsRational() ) {
         dpmi_regs_struct    dr;
 
         memset( &dr, 0, sizeof( dr ) );
@@ -321,7 +321,7 @@ static void desqview_update( unsigned short offset, unsigned short count )
         dr.es = _FP_OFF( UIData->screen.origin ) >> 4;
         dr.r.w.di = (_FP_OFF( UIData->screen.origin ) & 0x0f) + sizeof( *UIData->screen.origin ) * offset;
         dr.r.w.cx = count;
-        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+        DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
     }
 #endif
 }

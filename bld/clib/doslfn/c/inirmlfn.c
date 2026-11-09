@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,6 +44,7 @@
 #include "rtinit.h"
 #include "tinyio.h"
 #include "_doslfn.h"
+#include "dpmihost.h"
 
 
 #define TOTAL_RM_TB_SIZE_PARA   __ROUND_UP_SIZE_TO_PARA( RM_TB_PARM1_SIZE + RM_TB_PARM2_SIZE )

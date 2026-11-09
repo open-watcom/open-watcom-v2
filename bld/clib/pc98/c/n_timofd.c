@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +41,7 @@
 #ifdef __386__
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 
 
@@ -97,7 +98,7 @@ _WCRTLINK unsigned short __nec98_bios_timeofday( unsigned __cmd, char *__timeval
                 memset( &dr, 0, sizeof( dr ) );
                 dr.r.h.ah = __cmd;
                 dr.es = dos_mem.rm;
-                DPMISimulateRealModeInterrupt( 0x1c, 0, 0, &dr );
+                DPMISimulateRealModeInterrupt( 0x1c, 0, &dr );
                 _fmemmove( __timeval, p, 6 );
                 DPMIFreeDOSMemoryBlock( dos_mem.pm );
             }

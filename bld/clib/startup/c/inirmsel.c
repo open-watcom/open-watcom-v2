@@ -34,6 +34,7 @@
 #include "watcom.h"
 #include "extender.h"
 #include "dpmi.h"
+#include "dpmihost.h"
 #include "exitwmsg.h"
 #include "rtinit.h"
 

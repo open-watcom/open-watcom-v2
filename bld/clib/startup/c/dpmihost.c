@@ -33,8 +33,9 @@
 #include "variety.h"
 #include "extender.h"
 #include "dpmi.h"
-#include "rtdata.h"
+#include "dpmihost.h"
 #include "rtinit.h"
+
 
 extern short _CheckDPMIVersion( void );
 #pragma aux _CheckDPMIVersion = \

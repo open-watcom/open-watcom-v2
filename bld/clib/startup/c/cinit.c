@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,7 @@
 #if defined(__DOS_386__)
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #elif defined(__OS2__)
     #define INCL_DOSFILEMGR
     #include <wos2.h>
@@ -44,6 +45,7 @@
     #include <windows.h>
 #endif
 #include "cominit.h"
+
 
 #if defined(__OS2__)
     #if defined(__PPC__)

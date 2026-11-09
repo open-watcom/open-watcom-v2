@@ -42,6 +42,7 @@
 #ifdef __386__
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 
 
@@ -217,7 +218,7 @@ _WCRTLINK unsigned short __nec98_bios_serialcom( unsigned __cmd, unsigned __port
             dr.r.x.edx = regs.w.dx;
             dr.r.x.ebx = regs.w.bx;
             dr.r.x.ecx = regs.w.cx;
-            DPMISimulateRealModeInterrupt( intno, 0, 0, &dr );
+            DPMISimulateRealModeInterrupt( intno, 0, &dr );
             regs.w.cx = dr.r.w.cx;
             regs.w.ax = dr.r.w.ax;
         }

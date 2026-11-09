@@ -39,6 +39,7 @@
 #ifndef _M_I86
     #include "extender.h"
     #include "dpmi.h"
+    #include "dpmihost.h"
 #endif
 #include "realmod.h"
 #include "getltdos.h"
@@ -103,7 +104,7 @@ unsigned short __far *dos_get_dbcs_lead_table( void )
 
         memset( &dr, 0, sizeof( dr ) );
         dr.r.h.ah = 0x63;                   /* get DBCS vector table */
-        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dr ) || (dr.flags & INTR_CF);
+        cflag = DPMISimulateRealModeInterrupt( 0x21, 0, &dr ) || (dr.flags & INTR_CF);
         if( cflag == 0 && dr.r.h.al == 0 ) {
             /*
              * check if DS not 0

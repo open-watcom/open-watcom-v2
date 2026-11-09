@@ -135,7 +135,7 @@ static uint_16 _VidStateSize( void )
     memset( &dr, 0, sizeof( dr ) );
     dr.r.h.ah = 0x1c;
     dr.r.w.cx = VID_STATE_SWAP;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
     if( dr.r.h.al != 0x1c )
         return( 0 );
     return( dr.r.w.bx );
@@ -150,7 +150,7 @@ static void _VidStateSave( addr32_off buff_offset )
     dr.es = SwapSeg.rm;
     dr.r.x.ebx = buff_offset;
     dr.r.w.cx = VID_STATE_SWAP;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
 }
 
 static void _VidStateRestore( addr32_off buff_offset )
@@ -162,7 +162,7 @@ static void _VidStateRestore( addr32_off buff_offset )
     dr.es = SwapSeg.rm;
     dr.r.x.ebx = buff_offset;
     dr.r.w.cx = VID_STATE_SWAP;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
 }
 
 static void BIOSCharPattSet( unsigned char vidroutine, unsigned char bytesperchar,
@@ -178,7 +178,7 @@ static void BIOSCharPattSet( unsigned char vidroutine, unsigned char bytespercha
     dr.r.w.dx = charoffset;
     dr.es = SwapSeg.rm;
     dr.r.x.ebp = table_offset;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
 }
 
 static uint_16 BIOSDevCombCode( void )
@@ -187,7 +187,7 @@ static uint_16 BIOSDevCombCode( void )
 
     memset( &dr, 0, sizeof( dr ) );
     dr.r.h.ah = 0x1a;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
     if( dr.r.h.al != 0x1a )
         return( 0 );
     return( dr.r.w.bx );
@@ -199,7 +199,7 @@ static uint_16 MouseStateSize( void )
 
     memset( &dr, 0, sizeof( dr ) );
     dr.r.h.al = 0x15;
-    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, &dr );
     return( dr.r.w.bx );
 }
 
@@ -212,7 +212,7 @@ static void MouseStateSave( addr32_off buff_offset, uint_16 size )
     dr.r.w.bx = size;
     dr.es = SwapSeg.rm;
     dr.r.x.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, &dr );
 }
 
 static void MouseStateRestore( addr32_off buff_offset, uint_16 size )
@@ -224,7 +224,7 @@ static void MouseStateRestore( addr32_off buff_offset, uint_16 size )
     dr.r.w.bx = size;
     dr.es = SwapSeg.rm;
     dr.r.x.edx = buff_offset;
-    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_MOUSE, 0, &dr );
 }
 
 static void _DoRingBell( unsigned char page )
@@ -234,7 +234,7 @@ static void _DoRingBell( unsigned char page )
     memset( &dr, 0, sizeof( dr ) );
     dr.r.h.bh = page;
     dr.r.w.ax = 0x0e07;
-    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, 0, &dr );
+    DPMISimulateRealModeInterrupt( VECTOR_VIDEO, 0, &dr );
 }
 
 void Ring_Bell( void )
