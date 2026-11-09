@@ -107,12 +107,6 @@ essentially no worst case performance scenario.
 #define MAX_ALLOC       (1 << MAX_SIZE)
 #define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
-#if defined( __DOS__ ) && ( __WATCOMC__ == 1290 )
-extern char int2f( short );
-#pragma aux int2f __parm [__ax] __value [__al] = "int 2fh"
-#define _DPMI   int2f( 0x1686 ) == 0
-#endif
-
 typedef pointer_uint    tag;
 
 static pointer          MemFromSys( size_t );
@@ -219,7 +213,7 @@ static  void    CalcMemSize( void )
 
         } else { // PharLap or win386
 
-            if( _DPMI ) { // DPMI HOST
+            if( DPMIModeDetect() == 0 ) { // DPMI HOST
 
                 dpmi_mem    mem_info;
 
