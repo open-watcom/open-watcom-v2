@@ -37,10 +37,13 @@
 #include <dirent.h>
 #include <malloc.h>
 #include <tchar.h>
+#include "widechar.h"
+#include "initarg.h"
+#include "exitwmsg.h"
+#include "histsplt.h"
+
 
 #ifdef _UNICODE
-    #define __F_NAME(n1,n2) n2
-    #define CHAR_TYPE   wchar_t
     #define CMDLINE     _LpwCmdLine
     #define PGMNAME     _LpwPgmName
     #define _ARGC       _wargc
@@ -50,8 +53,6 @@
     #define __INIT_ARGV __wInit_Argv
     #define __FINI_ARGV __wFini_Argv
 #else
-    #define __F_NAME(n1,n2) n1
-    #define CHAR_TYPE   char
     #define CMDLINE     _LpCmdLine
     #define PGMNAME     _LpPgmName
     #define _ARGC       _argc
@@ -65,13 +66,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "initarg.h"
-
-#include "exitwmsg.h"
-
-#include "histsplt.h"
-
 
 static _WCNORETURN void _Not_Enough_Memory( void )
 {
