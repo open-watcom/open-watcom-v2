@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2023-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2023-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,11 +31,13 @@
 ****************************************************************************/
 
 
+#include "fltused.h"
 #if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
-
 #include "clibsupp.h"
 #include "clibint.h"
+#endif
 
+#if defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__)
 
 #if defined( _M_IX86 )
 
@@ -71,7 +73,7 @@ int DllMainCRTStartup( void )
 
 #endif  /* _M_IX86 */
 
-#endif
+#endif  /* defined(__NT__) || defined(__DOS__) || defined(__OS2__) || defined(__UNIX__) */
 
 int _fltused_;
 #if defined( _M_IX86 )

@@ -48,13 +48,7 @@ extern char             **_argv;        /* arguments vector */
 
 #if defined( __WATCOMC__ )
 
-extern int              _fltused_;
-
 #if defined( _M_IX86 )
-
-extern int              _fltused_80bit_;
-#pragma aux _fltused_ "*"
-#pragma aux _fltused_80bit_  "*"
 
 extern unsigned char    _8087;
 extern unsigned char    _real87;
