@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2017-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2017-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include "widechar.h"
 #define _DEBUG                  /* so prototypes are included */
 #include <crtdbg.h>
 #include <signal.h>
@@ -47,11 +48,10 @@
 #ifndef __NT__
     #include <unistd.h>
 #endif
+#include "initarg.h"
 #include "dbgdata.h"
 #include "enterdb.h"
 #include "liballoc.h"
-
-#include "clibint.h"
 
 
 #define MAX_MSG_LEN             512
@@ -83,7 +83,7 @@ static int _WCNEAR window_report( int reporttype, const char *filename,
   #endif
     char                outmsg[MAX_MSG_LEN];
     char                linestr[32];
-    char                progname[_MAX_PATH];
+    char                *progname;
     int                 rc;
     int                 retval = 0;
     static const char * reportnames[3] = {
@@ -93,17 +93,10 @@ static int _WCNEAR window_report( int reporttype, const char *filename,
     };
 
     /*** Initialize some stuff ***/
-  #ifdef __NT__
-    if( GetModuleFileNameA( NULL, progname, _MAX_PATH ) == 0 ) {
-        strcpy( progname, "<unknown program>" );
+    progname = _LpPgmName;
+    if( progname == NULL || *progname == '\0' ) {
+        progname = "<unknown program>";
     }
-  #else
-    if( (_argv[0])[0] != '\0' ) {
-        strcpy( progname, _argv[0] );
-    } else {
-        strcpy( progname, "<unknown program>" );
-    }
-  #endif
     if( linenumber != 0 ) {
         _bprintf( linestr, 32, "%d", linenumber );
     } else {
