@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -233,7 +233,7 @@ trap_retval TRAP_RFX( setdatetime )( void )
 
 #define NM_SEC_1970_1980 315532800UL
 
-static unsigned long mymktime( unsigned time, unsigned date )
+static unsigned long mymktime( tiny_file_stamp_t *stamp )
 {
     unsigned      day_since_jan[] = { 0,31,59,90,120,151,181,212,243,273,304,334 };
     unsigned      num_yr_since_1980;
@@ -241,12 +241,12 @@ static unsigned long mymktime( unsigned time, unsigned date )
     unsigned      sec, min, hour, day, month, year;
 
     //NYI: Output in local time, but not in GMT time
-    sec   = ( time & 0x1f ) * 2;
-    min   = ( time >> 5 ) & 0x3f;
-    hour  = ( time >> 11 ) & 0x1f;
-    day   = date & 0x1f;
-    month = ( ( date >> 5 ) & 0xf );
-    year  = ( ( date >> 9 ) & 0x7f );
+    sec   = stamp->ut.time.twosecs * 2;
+    min   = stamp->ut.time.minutes;
+    hour  = stamp->ut.time.hours;
+    day   = stamp->ud.date.day;
+    month = stamp->ud.date.month;
+    year  = stamp->ud.date.year;
 
     //note that year 2000 is a leap year and I don't think this prog. will still
     //be around in year 2099....
@@ -266,15 +266,12 @@ trap_retval TRAP_RFX( getdatetime )( void )
     tiny_ret_t          rc;
     rfx_getdatetime_req *acc;
     rfx_getdatetime_ret *ret;
-    unsigned            time;
-    unsigned            date;
+    tiny_file_stamp_t   stamp;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyGetFileStamp( TRPH2LH( acc ) );
-    time = rc & 0xffff;
-    date = rc >> 16;
-    ret->time = mymktime( time, date );
+    rc = TinyGetFileStamp( TRPH2LH( acc ), &stamp );
+    ret->time = mymktime( &stamp );
     return( sizeof( *ret ) );
 }
 

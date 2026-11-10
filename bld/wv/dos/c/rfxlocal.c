@@ -172,23 +172,20 @@ long LocalGetFreeSpace( int drv )
     return( TinyFreeSpace( drv ) );
 }
 
-error_handle LocalDateTime( sys_handle sh, int *time, int *date, int set )
-/************************************************************************/
+error_handle LocalDateTime( sys_handle sh, int *ptime, int *pdate, int set )
+/**************************************************************************/
 {
-    tiny_ftime_t *ptime;
-    tiny_fdate_t *pdate;
-    tiny_ret_t rc;
-    tiny_file_stamp_t *file_stamp;
+    tiny_ret_t          rc;
+    tiny_file_stamp_t   stamp;
 
-    ptime = (tiny_ftime_t *)time;
-    pdate = (tiny_fdate_t *)date;
     if( set ) {
-        rc = TinySetFileStamp( SYSH2LH( sh ), *ptime, *pdate );
+        stamp.ut.raw_time = *ptime;
+        stamp.ud.raw_date = *pdate;
+        rc = TinySetFileStamp( SYSH2LH( sh ), stamp.ut.time, stamp.ud.date );
     } else {
-        rc = TinyGetFileStamp( SYSH2LH( sh ) );
-        file_stamp = (void *)&rc;
-        *ptime = file_stamp->time;
-        *pdate = file_stamp->date;
+        rc = TinyGetFileStamp( SYSH2LH( sh ), &stamp );
+        *ptime = stamp.ut.raw_time;
+        *pdate = stamp.ud.raw_date;
     }
     return( DOSErrCode( rc ) );
 }

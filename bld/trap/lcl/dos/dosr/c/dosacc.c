@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -574,27 +574,24 @@ static void remove_breakpoint( addr48_ptr *addr, opcode_type old_opcode )
 
 trap_retval TRAP_CORE( Prog_load )( void )
 {
-    addr_seg        psp;
-    pblock          parmblock;
-    tiny_ret_t      rc;
-    char            *parm;
-    char            *name;
-    char            exe_name[128];
-    EXE_TYPE        exe_type;
-    prog_load_ret   *ret;
-    size_t          len;
-    union {
-        tiny_ret_t        rc;
-        tiny_file_stamp_t stamp;
-    } exe_time;
-    word            value;
-    opcode_type     old_opcode;
-    os2_exe_header  os2_head;
-    tiny_handle_t   handle;
-    dword           ne_header_off;
-    dword           StartPos;
-    dword           SegTable;
-    addr48_ptr      start_addr;
+    addr_seg            psp;
+    pblock              parmblock;
+    tiny_ret_t          rc;
+    char                *parm;
+    char                *name;
+    char                exe_name[128];
+    EXE_TYPE            exe_type;
+    prog_load_ret       *ret;
+    size_t              len;
+    tiny_file_stamp_t   stamp;
+    word                value;
+    opcode_type         old_opcode;
+    os2_exe_header      os2_head;
+    tiny_handle_t       handle;
+    dword               ne_header_off;
+    dword               StartPos;
+    dword               SegTable;
+    addr48_ptr          start_addr;
 
     ExceptNum = -1;
     ret = GetOutPtr( 0 );
@@ -625,7 +622,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     rc = TinyOpen( exe_name, TIO_READ_WRITE );
     if( TINY_OK( rc ) ) {
         handle = TINY_INFO( rc );
-        exe_time.rc = TinyGetFileStamp( handle );
+        rc = TinyGetFileStamp( handle, &stamp );
         exe_type = CheckEXEType( handle );
         if( exe_type == EXE_TYPE_OS2 ) {
             if( TINY_OK( TinySeek( handle, NE_HEADER_OFFSET, TIO_SEEK_SET ) )
@@ -694,7 +691,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
                 if( TINY_OK( rc ) ) {
                     handle = TINY_INFO( rc );
                     remove_breakpoint_file( handle, StartPos, old_opcode );
-                    TinySetFileStamp( handle, exe_time.stamp.time, exe_time.stamp.date );
+                    TinySetFileStamp( handle, stamp.ut.time, stamp.ud.date );
                     TinyClose( handle );
                     Flags |= F_BoundApp;
                 }

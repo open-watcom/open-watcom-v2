@@ -222,8 +222,14 @@ typedef struct {
 } tiny_fdate_t;
 
 typedef struct {
-    tiny_ftime_t        time;
-    tiny_fdate_t        date;
+    union {
+        tiny_ftime_t    time;
+        uint_16         raw_time;
+    } ut;
+    union {
+        tiny_fdate_t    date;
+        uint_16         raw_date;
+    } ud;
 } tiny_file_stamp_t;
 
 /*

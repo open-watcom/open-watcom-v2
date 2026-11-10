@@ -37,14 +37,11 @@
 
 void main( void )
 {
-    union {
-        tiny_file_stamp_t stamp;
-        tiny_ret_t rc;
-    } u;
-    tiny_date_t date;
-    tiny_time_t time;
-    tiny_handle_t fh;
-    tiny_ret_t rc;
+    tiny_file_stamp_t   stamp;
+    tiny_date_t         date;
+    tiny_time_t         time;
+    tiny_handle_t       fh;
+    tiny_ret_t          rc;
 
     date = TinyGetDate();
     time = TinyGetTime();
@@ -54,11 +51,9 @@ void main( void )
         exit( 1 );
     }
     fh = TINY_INFO( rc );
-    u.rc = TinyGetFileStamp( fh );
-    printf("current time is %02u:%02u:%02u\n",time.hour,time.minutes,time.seconds);
-    printf("current date is %02u-%02u-%02u\n",date.year,date.month,date.day_of_month);
-    printf("file stamp is: %02u-%02u-%02u\n", u.stamp.date.year + 80, u.stamp.date.month,
-                                        u.stamp.date.day );
-    printf("file stamp is: %02u:%02u:%02u\n", u.stamp.time.hours, u.stamp.time.minutes,
-                                        u.stamp.time.twosecs * 2 );
+    rc = TinyGetFileStamp( fh, &stamp );
+    printf( "current time is %02u:%02u:%02u\n", time.hour, time.minutes, time.seconds );
+    printf( "current date is %02u-%02u-%02u\n", date.year, date.month, date.day_of_month );
+    printf( "file stamp is: %02u-%02u-%02u\n", stamp.ud.date.year + 80, stamp.ud.date.month, stamp.ud.date.day );
+    printf( "file stamp is: %02u:%02u:%02u\n", stamp.ut.time.hours, stamp.ut.time.minutes, stamp.ut.time.twosecs * 2 );
 }
