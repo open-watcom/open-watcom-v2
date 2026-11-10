@@ -201,8 +201,8 @@ extern DWORD    __WDPMI_GetSegmentBaseAddress( WORD selector );
         _INT_31         \
         _SBB_AX_AX      \
     __parm __caller [__si __di] \
-    __value         [__ax __si __di] \
-    __modify __exact [__ax]
+    __value         [__ax] \
+    __modify __exact [__ax __si __di]
 
 
 extern bool     _WDPMI_GetAliases( DWORD offs32, LPDWORD palias, WORD count);
