@@ -976,7 +976,11 @@ tn      FoldMod( tn left, tn rite, const type_def *tipe )
         rv = rite->u.name->c.u.cfval;
         if( CFTest( rv ) != 0 && left->class == TN_CONS ) {
             lv = left->u.name->c.u.cfval;
-            if( CFIs64( lv ) && CFIs64( rv ) ) {
+            /*
+             * as in FoldDiv: only a 64-bit type here, a narrower one's
+             * constant may hold its bits unsigned (-1234L as 0xFFFFFB2E)
+             */
+            if( HasBigConst( tipe ) && CFIs64( lv ) && CFIs64( rv ) ) {
                 signed_64       div;
                 signed_64       rem;
                 signed_64       li;
