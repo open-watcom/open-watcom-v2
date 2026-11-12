@@ -1,4 +1,4 @@
-name: Project Status Update
+name: X-Project Status Update
 
 on:
   workflow_call:
