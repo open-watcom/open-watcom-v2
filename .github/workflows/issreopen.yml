@@ -69,6 +69,8 @@ jobs:
       item_url: ${{ github.event.issue.html_url }}
       project_url: ${{ vars.GLOBAL_PROJECT_URL }}
       target_status: Todo
+      updated_at: ${{ github.event.issue.updated_at }}
+      repomark_option_id: "5f088986"
 
     secrets:
       project_token: ${{ secrets.GLOBAL_PROJECT_TOKEN }}

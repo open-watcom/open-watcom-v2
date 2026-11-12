@@ -18,6 +18,16 @@ on:
         required: true
         type: string
 
+      updated_at:
+        description: GitHub item update timestamp
+        required: true
+        type: string
+
+      repomark_option_id:
+        description: RepoMark option ID for the source repository
+        required: true
+        type: string
+
     secrets:
       project_token:
         description: Token with GitHub Project write access
@@ -26,28 +36,32 @@ on:
 permissions: {}
 
 env:
-  PROJECT_ID: "PVT_kwHOAB7H7M4BZk7B"
+  UPDATEAT_FIELD_ID: "PVTF_lAHOAB7H7M4BZk7BzhUmsLs"
+  REPOMARK_FIELD_ID: "PVTSSF_lAHOAB7H7M4BZk7BzhUjAmA"
 
 jobs:
-  update-project-status:
-    name: Update Project Status
+  update-project:
+    name: Update Project Item
     runs-on: ubuntu-latest
 
     steps:
-      - name: Move Project Item to Target Status
+      - name: Update Project Item
         env:
           GH_TOKEN: ${{ secrets.project_token }}
           ITEM_URL: ${{ inputs.item_url }}
           PROJECT_URL: ${{ inputs.project_url }}
           TARGET_STATUS: ${{ inputs.target_status }}
+          UPDATED_AT: ${{ inputs.updated_at }}
+          REPOMARK_OPTION_ID: ${{ inputs.repomark_option_id }}
         run: |
           echo "Resolving Project configuration..."
 
           PROJECT_NUMBER="${PROJECT_URL##*/}"
           PROJECT_OWNER=$(gh api user --jq '.login')
 
-          if [ -z "$PROJECT_NUMBER" ] || [ -z "$PROJECT_OWNER" ]; then
-            echo "Error: Could not resolve Project number or Project owner."
+          if [ -z "$PROJECT_NUMBER" ] ||
+             [ -z "$PROJECT_OWNER" ]; then
+            echo "Error: Could not resolve Project number or owner."
             exit 1
           fi
 
@@ -116,4 +130,27 @@ jobs:
             --field-id "$STATUS_FIELD_ID" \
             --single-select-option-id "$STATUS_OPTION_ID"
 
-          echo "Project item moved successfully."
+          ISO_STRING=$(date -d "$UPDATED_AT" +"%Y-%m-%d %H:%M")
+
+          if [ -z "$ISO_STRING" ]; then
+            echo "Error: Could not format UpdatedAt value."
+            exit 1
+          fi
+
+          echo "Setting UpdatedAt to '$ISO_STRING'..."
+
+          gh project item-edit \
+            --id "$PROJECT_ITEM_ID" \
+            --project-id "$PROJECT_ID" \
+            --field-id "$UPDATEAT_FIELD_ID" \
+            --text "$ISO_STRING"
+
+          echo "Setting RepoMark..."
+
+          gh project item-edit \
+            --id "$PROJECT_ITEM_ID" \
+            --project-id "$PROJECT_ID" \
+            --field-id "$REPOMARK_FIELD_ID" \
+            --single-select-option-id "$REPOMARK_OPTION_ID"
+
+          echo "Project item updated successfully."
