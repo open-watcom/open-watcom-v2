@@ -1,0 +1,119 @@
+name: Project Status Update
+
+on:
+  workflow_call:
+    inputs:
+      item_url:
+        description: URL of the Issue or Pull Request
+        required: true
+        type: string
+
+      project_url:
+        description: URL of the target GitHub Project
+        required: true
+        type: string
+
+      target_status:
+        description: Name of the target Status option
+        required: true
+        type: string
+
+    secrets:
+      project_token:
+        description: Token with GitHub Project write access
+        required: true
+
+permissions: {}
+
+env:
+  PROJECT_ID: "PVT_kwHOAB7H7M4BZk7B"
+
+jobs:
+  update-project-status:
+    name: Update Project Status
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Move Project Item to Target Status
+        env:
+          GH_TOKEN: ${{ secrets.project_token }}
+          ITEM_URL: ${{ inputs.item_url }}
+          PROJECT_URL: ${{ inputs.project_url }}
+          TARGET_STATUS: ${{ inputs.target_status }}
+        run: |
+          echo "Resolving Project configuration..."
+
+          PROJECT_NUMBER="${PROJECT_URL##*/}"
+          PROJECT_OWNER=$(gh api user --jq '.login')
+
+          if [ -z "$PROJECT_NUMBER" ] || [ -z "$PROJECT_OWNER" ]; then
+            echo "Error: Could not resolve Project number or Project owner."
+            exit 1
+          fi
+
+          echo "Project Owner: $PROJECT_OWNER"
+          echo "Project Number: $PROJECT_NUMBER"
+          echo "Target Status: $TARGET_STATUS"
+
+          PROJECT_ID=$(
+            gh project view "$PROJECT_NUMBER" \
+              --owner "$PROJECT_OWNER" \
+              --format json \
+              --jq '.id'
+          )
+
+          PROJECT_ITEM_ID=$(
+            gh project item-add "$PROJECT_NUMBER" \
+              --owner "$PROJECT_OWNER" \
+              --url "$ITEM_URL" \
+              --format json \
+              --jq '.id'
+          )
+
+          FIELD_DATA=$(
+            gh project field-list "$PROJECT_NUMBER" \
+              --owner "$PROJECT_OWNER" \
+              --format json
+          )
+
+          STATUS_FIELD_ID=$(
+            echo "$FIELD_DATA" |
+              jq -r \
+                '.fields[]
+                 | select(.name == "Status")
+                 | .id'
+          )
+
+          STATUS_OPTION_ID=$(
+            echo "$FIELD_DATA" |
+              jq -r \
+                --arg field_id "$STATUS_FIELD_ID" \
+                --arg status_name "$TARGET_STATUS" \
+                '.fields[]
+                 | select(.id == $field_id)
+                 | .options[]
+                 | select(.name == $status_name)
+                 | .id'
+          )
+
+          if [ -z "$PROJECT_ID" ] ||
+             [ "$PROJECT_ID" = "null" ] ||
+             [ -z "$PROJECT_ITEM_ID" ] ||
+             [ "$PROJECT_ITEM_ID" = "null" ] ||
+             [ -z "$STATUS_FIELD_ID" ] ||
+             [ "$STATUS_FIELD_ID" = "null" ] ||
+             [ -z "$STATUS_OPTION_ID" ] ||
+             [ "$STATUS_OPTION_ID" = "null" ]; then
+            echo "Error: Could not resolve all required Project metadata."
+            exit 1
+          fi
+
+          echo "Moving Project item to '$TARGET_STATUS'..."
+
+          gh project item-edit \
+            --id "$PROJECT_ITEM_ID" \
+            --project-id "$PROJECT_ID" \
+            --field-id "$STATUS_FIELD_ID" \
+            --single-select-option-id "$STATUS_OPTION_ID"
+
+          echo "Project item moved successfully."

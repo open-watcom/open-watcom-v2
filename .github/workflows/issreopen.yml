@@ -1,0 +1,74 @@
+name: Issue Reopen Manager
+
+on:
+  issues:
+    types: [closed]
+
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+
+jobs:
+  # ===========================================================================
+  # TASK 1: Post the guide comment when an issue is closed
+  # ===========================================================================
+  post-instructions:
+    name: Post Reopen Instructions
+    if: >
+      github.event_name == 'issues' &&
+      github.event.action == 'closed' &&
+      github.event.issue.active_lock_reason == null
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Post instructions on close
+        uses: actions/github-script@v9
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: "**This issue is now closed.**\n\nIf the problem persists or you have new information, type `/reopen` in a new comment below, and our bot will automatically open this issue back up for you."
+            });
+
+  # ===========================================================================
+  # TASK 2: Reopen the issue in the current repository
+  # ===========================================================================
+  reopen-issue:
+    name: Reopen Issue
+    if: >
+      github.event_name == 'issue_comment' &&
+      github.event.issue.state == 'closed' &&
+      contains(github.event.comment.body, '/reopen')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Reopen Issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          echo "Reopening issue #$ISSUE_NUMBER in repository $REPOSITORY..."
+
+          gh issue reopen "$ISSUE_NUMBER" \
+            --repo "$REPOSITORY"
+
+  # ===========================================================================
+  # TASK 3: Call the Project-specific workflow after successful reopen
+  # ===========================================================================
+  update-project:
+    name: Move Project Item to Todo
+    needs: reopen-issue
+    uses: ./.github/workflows/project-status.yml
+
+    with:
+      item_url: ${{ github.event.issue.html_url }}
+      project_url: ${{ vars.GLOBAL_PROJECT_URL }}
+      target_status: Todo
+
+    secrets:
+      project_token: ${{ secrets.GLOBAL_PROJECT_TOKEN }}

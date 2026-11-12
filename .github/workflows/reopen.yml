@@ -1,10 +1,10 @@
 name: Issue Reopen Manager
 
-on:
-  issues:
-    types: [closed]
-  issue_comment:
-    types: [created]
+on: workflow_dispatch
+#  issues:
+#    types: [closed]
+#  issue_comment:
+#    types: [created]
 
 jobs:
   manage-issue:
