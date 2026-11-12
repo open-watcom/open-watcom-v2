@@ -1,4 +1,5 @@
 name: Project Backfill
+
 on:
   workflow_dispatch:
 
@@ -22,18 +23,14 @@ jobs:
           echo "👤 Project Owner resolved dynamically: $PROJECT_OWNER"
 
           # Automatically handle pagination to fetch up to 50,000 items from the project board
-          ITEMS=$(gh project item-list "${{ env.PROJECT_NUMBER }}" --owner "$PROJECT_OWNER" --format json --limit 50000)
-          
+          ITEMS=$(gh project item-list "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json --limit 50000)
+
           LENGTH=$(echo "$ITEMS" | jq '.items | length')
           echo "Found a total of $LENGTH items to check on the project board."
 
           # Define target tracking parameters based on the current execution context
           TARGET_REPOSITORY="${{ github.repository }}"
           echo "🔍 Targeted isolation mode enabled. Processing items ONLY belonging to: $TARGET_REPOSITORY"
-
-          # Define the static Single-Select Option ID for RepoMark for this repository
-          REPOMARK_OPTION_ID="5f088986"
-          echo "📦 RepoMark Option ID assigned for this run: $REPOMARK_OPTION_ID"
 
           # Loop through all project items securely using static indexing
           for ((i=0; i<LENGTH; i++)); do
@@ -43,43 +40,52 @@ jobs:
               URL=$(echo "$ITEM" | jq -r '.content.url')
 
               if [ "$CONTENT_TYPE" = "Issue" ] || [ "$CONTENT_TYPE" = "PullRequest" ]; then
-                  
-                  # 1. FIXED REPOSITORY PATH EXTRACTION
-                  # Strips 'https://github.com/' and cuts out the first two path segments (owner/repo)
+
+                  # 1. Extract repository path from the item URL
                   EXTRACTED_REPO=$(echo "$URL" | sed 's|https://github.com/||' | cut -d'/' -f1,2)
 
                   # 2. Strict validation filter
-                  # Compares the card's origin repository with the current running repository context
+                  # Compare the item's origin repository with the current repository
                   if [ "$EXTRACTED_REPO" != "$TARGET_REPOSITORY" ]; then
                       echo "[$((i+1))/$LENGTH] Skipping: Item belongs to '$EXTRACTED_REPO', not '$TARGET_REPOSITORY' ($URL)"
                       continue
                   fi
 
                   echo "[$((i+1))/$LENGTH] Processing MATCHED [$CONTENT_TYPE]: $URL"
-                  
-                  # 3. Update the RepoMark selection field
-                  echo "   ↳ Updating RepoMark field..."
-                  gh project item-edit --id "$ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.REPOMARK_FIELD_ID }}" --single-select-option-id "$REPOMARK_OPTION_ID" > /dev/null
 
-                  # 4. Dynamically build the correct GitHub API endpoint path based on item structural type
+                  # 3. Update RepoMark using the repository configuration variable
+                  echo "   ↳ Updating RepoMark field..."
+
+                  gh project item-edit \
+                    --id "$ITEM_ID" \
+                    --project-id "$PROJECT_ID" \
+                    --field-id "$REPOMARK_FIELD_ID" \
+                    --single-select-option-id "${{ vars.REPOMARK_OPTION_ID }}" \
+                    > /dev/null
+
+                  # 4. Build the repository API endpoint according to item type
                   if [ "$CONTENT_TYPE" = "PullRequest" ]; then
                       API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|' | sed 's|/pull/|/pulls/|')
                   else
                       API_PATH=$(echo "$URL" | sed 's|https://github.com/|repos/|')
                   fi
 
-                  # Fetch the true repository-level updated_at timestamp safely
+                  # Fetch the true repository-level updated_at timestamp
                   RAW_TIME=$(gh api "$API_PATH" --jq '.updated_at' 2>/dev/null || echo "")
-                  
-                  # Validate if the fetched timestamp contains a valid ISO date pattern (starts with a digit)
+
+                  # 5. Update timestamp when a valid value was returned
                   if [[ -n "$RAW_TIME" && "$RAW_TIME" =~ ^[0-9] ]]; then
-                      # Format time into a highly sortable format (YYYY-MM-DD HH:MM)
                       ISO_STRING=$(date -d "$RAW_TIME" +"%Y-%m-%d %H:%M" 2>/dev/null || echo "")
-                      
+
                       if [ -n "$ISO_STRING" ]; then
                           echo "   ↳ Setting UpdatedAt time to: $ISO_STRING"
-                          # Save the text timestamp string into your target project column
-                          gh project item-edit --id "$ITEM_ID" --project-id "${{ env.PROJECT_ID }}" --field-id "${{ env.UPDATEAT_FIELD_ID }}" --text "$ISO_STRING" > /dev/null
+
+                          gh project item-edit \
+                            --id "$ITEM_ID" \
+                            --project-id "$PROJECT_ID" \
+                            --field-id "$UPDATEAT_FIELD_ID" \
+                            --text "$ISO_STRING" \
+                            > /dev/null
                       else
                           echo "   ⚠️ Date parsing failed for value: $RAW_TIME"
                       fi

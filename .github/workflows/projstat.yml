@@ -23,11 +23,6 @@ on:
         required: true
         type: string
 
-      repomark_option_id:
-        description: RepoMark option ID for the source repository
-        required: true
-        type: string
-
     secrets:
       project_token:
         description: Token with GitHub Project write access
@@ -52,7 +47,6 @@ jobs:
           PROJECT_URL: ${{ inputs.project_url }}
           TARGET_STATUS: ${{ inputs.target_status }}
           UPDATED_AT: ${{ inputs.updated_at }}
-          REPOMARK_OPTION_ID: ${{ inputs.repomark_option_id }}
         run: |
           echo "Resolving Project configuration..."
 
@@ -151,6 +145,6 @@ jobs:
             --id "$PROJECT_ITEM_ID" \
             --project-id "$PROJECT_ID" \
             --field-id "$REPOMARK_FIELD_ID" \
-            --single-select-option-id "$REPOMARK_OPTION_ID"
+            --single-select-option-id "${{ vars.REPOMARK_OPTION_ID }}"
 
           echo "Project item updated successfully."

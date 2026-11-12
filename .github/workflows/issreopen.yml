@@ -3,7 +3,6 @@ name: Issue Reopen Manager
 on:
   issues:
     types: [closed]
-
   issue_comment:
     types: [created]
 
@@ -58,10 +57,10 @@ jobs:
             --repo "$REPOSITORY"
 
   # ===========================================================================
-  # TASK 3: Call the Project-specific workflow after successful reopen
+  # TASK 3: Synchronize the Project item after successful reopen
   # ===========================================================================
   update-project:
-    name: Move Project Item to Todo
+    name: Update Project Item
     needs: reopen-issue
     uses: ./.github/workflows/projstat.yml
 
@@ -70,7 +69,6 @@ jobs:
       project_url: ${{ vars.GLOBAL_PROJECT_URL }}
       target_status: Todo
       updated_at: ${{ github.event.issue.updated_at }}
-      repomark_option_id: "5f088986"
 
     secrets:
       project_token: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
