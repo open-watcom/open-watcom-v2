@@ -63,7 +63,7 @@ jobs:
   update-project:
     name: Move Project Item to Todo
     needs: reopen-issue
-    uses: ./.github/workflows/project-status.yml
+    uses: ./.github/workflows/projstat.yml
 
     with:
       item_url: ${{ github.event.issue.html_url }}
