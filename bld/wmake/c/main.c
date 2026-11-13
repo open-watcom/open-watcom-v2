@@ -61,9 +61,28 @@
 #endif
 #define CHECK_STDIN(p)          ( p[0] == '-' && p[1] == NULLCHAR )
 
+typedef struct {
+        size_t      size;
+        char        *data;
+} mem_blk;
+
 STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
 STATIC NODE     *filesToDo;         /* pointers into argv to -f files   */
+
+static void resize_data( mem_blk *blk, size_t len )
+/**************************************************
+ * ensure the buffer holds at least len bytes
+ * (grow-only, old contents are NOT preserved)
+ */
+{
+    if( blk->size < len ) {
+        if( blk->data != NULL )
+            MemFree( blk->data );
+        blk->data = MemAllocSafe( len );
+        blk->size = len;
+    }
+}
 
 static void parseString( const char *s )
 /**************************************/
@@ -75,67 +94,92 @@ static void parseString( const char *s )
     FreeTList( tlist );
 }
 
-#ifdef __WATCOMC__
-#pragma on( check_stack );
-#endif
 STATIC void doBuiltIns( const char *makeopts )
 /*********************************************
  * perform the builtin commands
  */
 {
-    char        buf[2048];
-    char        *cpy;
+    mem_blk     cpy;
     const char  FAR *suffices;
     const char  FAR *builtins;
+    size_t      len;
 
     if( !Glob.overide ) {
         DoingBuiltIn = true;
-        cpy = MemAllocSafe( 2048 + strlen( makeopts ) );
-        FmtStr( buf, "%F", BuiltIns );
-        FmtStr( cpy, buf, makeopts );
-        parseString( cpy );
-        strcpy(cpy, "MAKE=" );
-        if( _cmdname( cpy + sizeof( "MAKE=" ) - 1 ) == NULL ) {
-            strcat( cpy, "wmake" );
+        len = strlen( makeopts );
+        /*
+         * process BuildIns (include makeopts)
+         */
+        cpy.size = 0;
+        cpy.data = NULL;
+        resize_data( &cpy, BuiltIns1_len + len + BuiltIns2_len + 1 );
+        FmtStr( cpy.data, "%F%s%F", BuiltIns1, makeopts, BuiltIns2 );
+        parseString( cpy.data );
+        /*
+         * process MAKE
+         */
+        resize_data( &cpy, sizeof( "MAKE=" ) + sizeof( "wmake" ) + PATH_MAX + 1 );
+        strcpy( cpy.data, "MAKE=" );
+        if( _cmdname( cpy.data + sizeof( "MAKE=" ) - 1 ) == NULL ) {
+            strcat( cpy.data, "wmake" );
         }
-        parseString( cpy );
+        parseString( cpy.data );
         if( Glob.compat_nmake
           || Glob.compat_unix ) {
-            FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %s", makeopts );
-            parseString( cpy );
-        }
-        if( Glob.compat_nmake ) {
-            suffices = MSSuffixList;
-            builtins = MSBuiltIn;
-        } else if( Glob.compat_posix ) {
-            suffices = POSIXSuffixList;
-            builtins = POSIXBuiltIn;
-        } else if( Glob.compat_unix ) {
-            suffices = UNIXSuffixList;
-            builtins = UNIXBuiltIn;
-        } else {
-            suffices = SuffixList;
-            builtins = NULL;
+            /*
+             * process MAKEFLAGS
+             */
+            resize_data( &cpy, sizeof( "%%MAKEFLAGS=$(%%MAKEFLAGS) %s" ) + len + 1 );
+            FmtStr( cpy.data, "%%MAKEFLAGS=$(%%MAKEFLAGS) %s", makeopts );
+            parseString( cpy.data );
         }
         /*
-         * suffixes must be parsed before builtins
+         * process SuffixList, must be parsed before BuiltIn
          */
-        if( suffices != NULL ) {
-            FmtStr( cpy, "%F", suffices );
-            parseString( cpy );
+        if( Glob.compat_nmake ) {
+            suffices = MSSuffixList;
+            len = MSSuffixList_len + 1;
+        } else if( Glob.compat_posix ) {
+            suffices = POSIXSuffixList;
+            len = POSIXSuffixList_len + 1;
+        } else if( Glob.compat_unix ) {
+            suffices = UNIXSuffixList;
+            len = UNIXSuffixList_len + 1;
+        } else {
+            suffices = SuffixList;
+            len = SuffixList_len + 1;
+        }
+        resize_data( &cpy, len );
+        FmtStr( cpy.data, "%F", suffices );
+        parseString( cpy.data );
+        /*
+         * process BuiltIn, must be parsed after SuffixList
+         */
+        if( Glob.compat_nmake ) {
+            builtins = MSBuiltIn;
+            len = MSBuiltIn_len + 1;
+        } else if( Glob.compat_posix ) {
+            builtins = POSIXBuiltIn;
+            len = POSIXBuiltIn_len + 1;
+        } else if( Glob.compat_unix ) {
+            builtins = UNIXBuiltIn;
+            len = UNIXBuiltIn_len + 1;
+        } else {
+            builtins = NULL;
+            len = 0;
         }
         if( builtins != NULL ) {
-            FmtStr( buf, "%F", builtins );
-            FmtStr( cpy, buf, makeopts );
-            parseString( cpy );
+            resize_data( &cpy, len );
+            FmtStr( cpy.data, "%F", builtins );
+            parseString( cpy.data );
         }
-        MemFree( cpy );
+        /*
+         * clenup
+         */
+        MemFree( cpy.data );
         DoingBuiltIn = false;
     }
 }
-#ifdef __WATCOMC__
-#pragma pop( check_stack );
-#endif
 
 static void setFirstTarget( TLIST *potential_first )
 /**************************************************/

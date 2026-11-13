@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -126,7 +126,8 @@ typedef enum {
 } case_sensitivity;
 
 extern struct Glob      Glob;
-extern const char FAR   BuiltIns[];
+extern const char FAR   BuiltIns1[];
+extern const char FAR   BuiltIns2[];
 extern const char FAR   MSBuiltIn[];
 extern const char FAR   UNIXBuiltIn[];
 extern const char FAR   POSIXBuiltIn[];
@@ -134,6 +135,15 @@ extern const char FAR   SuffixList[];
 extern const char FAR   MSSuffixList[];
 extern const char FAR   UNIXSuffixList[];
 extern const char FAR   POSIXSuffixList[];
+extern size_t           BuiltIns1_len;
+extern size_t           BuiltIns2_len;
+extern size_t           MSBuiltIn_len;
+extern size_t           UNIXBuiltIn_len;
+extern size_t           POSIXBuiltIn_len;
+extern size_t           SuffixList_len;
+extern size_t           MSSuffixList_len;
+extern size_t           UNIXSuffixList_len;
+extern size_t           POSIXSuffixList_len;
 
 NO_RETURN( extern void ExitFatal( void ) );
 NO_RETURN( extern void ExitError( void ) );

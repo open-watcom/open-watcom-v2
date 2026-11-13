@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2025 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,9 +62,12 @@ struct Glob Glob;
  * Be careful that these declarations doesn't exceed 2048 characters.
  * Note that this is just one big string - not an array of strings.
  */
-const char FAR BuiltIns[] = {
-    "__MAKEOPTS__=%s\n"
-    "__MAKEFILES__=\n"
+const char FAR BuiltIns1[] = {
+    "__MAKEOPTS__="
+};
+
+const char FAR BuiltIns2[] = {
+    "\n__MAKEFILES__=\n"
     "__VERSION__=" _MACROSTR( _BLDVER ) "\n"
 #ifdef DLLS_IMPLEMENTED
     "__LOADDLL__=\n"
@@ -415,3 +418,13 @@ const UINT8 IsArray[] = {
     0,      /* -1 STRM_END              */
     #include "isarray.gh"
 };
+
+size_t BuiltIns1_len = sizeof( BuiltIns1 ) - 1;
+size_t BuiltIns2_len = sizeof( BuiltIns2 ) - 1;
+size_t SuffixList_len = sizeof( SuffixList ) - 1;
+size_t MSSuffixList_len = sizeof( MSSuffixList ) - 1;
+size_t UNIXSuffixList_len = sizeof( UNIXSuffixList ) - 1;
+size_t POSIXSuffixList_len = sizeof( POSIXSuffixList ) - 1;
+size_t MSBuiltIn_len = sizeof( MSBuiltIn ) - 1;
+size_t UNIXBuiltIn_len = sizeof( UNIXBuiltIn ) - 1;
+size_t POSIXBuiltIn_len = sizeof( POSIXBuiltIn ) - 1;
