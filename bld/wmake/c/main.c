@@ -118,10 +118,10 @@ STATIC void doBuiltIns( const char *makeopts )
         /*
          * process MAKE
          */
-        resize_data( &cpy, sizeof( "MAKE=" ) + sizeof( "wmake" ) + PATH_MAX + 1 );
+        resize_data( &cpy, sizeof( "MAKE=" ) + PATH_MAX + 1 );
         strcpy( cpy.data, "MAKE=" );
         if( _cmdname( cpy.data + sizeof( "MAKE=" ) - 1 ) == NULL ) {
-            strcat( cpy.data, "wmake" );
+            strcpy( cpy.data + sizeof( "MAKE=" ) - 1, "wmake" );
         }
         parseString( cpy.data );
         if( Glob.compat_nmake
