@@ -95,47 +95,47 @@ all : $(dirs) $(hdrs$(targ_cpu)) $(libs$(targ_cpu)) .SYMBOLIC
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 .obj.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $[@
+    $(librarian) -n $(libflags) $[@
 
 lib/os2.lib: lib286.lbc msgseg.obj $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@ +msgseg.obj
+    $(librarian) -n $(libflags) @$[@ +msgseg.obj
 
 lib286.lbc: $(comp286) $(__MAKEFILES__)
     @for %l in ($(comp286)) do @%append $@ @%l
 
 lib/os2386.lib: lib386.lbc msgseg32.obj $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@ +msgseg32.obj
+    $(librarian) -n $(libflags) @$[@ +msgseg32.obj
 
 lib386.lbc: $(comp386) $(__MAKEFILES__)
     @for %l in ($(comp386)) do @%append $@ @%l
 
 lib/rexx.lib: rexxall.lbc $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 rexxall.lbc: $(comprexx) $(__MAKEFILES__)
     @for %l in ($(comprexx)) do @%append $@ @%l
 
 lib/mmpm2.lib: mmpm2all.lbc $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 mmpm2all.lbc: $(compmmpm2) $(__MAKEFILES__)
     @for %l in ($(compmmpm2)) do @%append $@ @%l
 
 lib/libuls.lib: libuni.lbc $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 lib/libconv.lib: uconv.lbc $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 $(dirs):
     mkdir $@

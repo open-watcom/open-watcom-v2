@@ -38,14 +38,14 @@ tmp.lib : $(graph_path)/graphi.lib $(graph_path)/special.lib $(pgchart_path)/cha
     @%append tmp.lbc  +$(graph_path)/special.lib
     @%append tmp.lbc  +$(pgchart_path)/chart.lib
     @%make echo_lib
-    $(librarian) $(libflags) @tmp.lbc
+    $(librarian) -n $(libflags) @tmp.lbc
 
 tmp2.lib : $(graph_path)/graphi2.lib $(graph_path)/special2.lib $(pgchart_path)/chart2.lib $(__MAKEFILES__)
     @%write  tmp2.lbc  +$(graph_path)/graphi2.lib
     @%append tmp2.lbc  +$(graph_path)/special2.lib
     @%append tmp2.lbc  +$(pgchart_path)/chart2.lib
     @%make echo_lib
-    $(librarian) $(libflags) @tmp2.lbc
+    $(librarian) -n $(libflags) @tmp2.lbc
 
 !else
 
@@ -56,7 +56,7 @@ tmp.lib : $(graph_path)s/graphi.lib $(graph_path)r/graphi.lib $(graph_path)r/spe
     @%append tmp.lbc  +$(pgchart_path)r/chart.lib
     @%append tmp.lbc  +$(pgchart_path)s/chart.lib
     @%make echo_lib
-    $(librarian) $(libflags) @tmp.lbc
+    $(librarian) -n $(libflags) @tmp.lbc
 
 tmp2.lib : $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(graph_path)r/special2.lib $(pgchart_path)r/chart2.lib $(pgchart_path)s/chart2.lib $(__MAKEFILES__)
     @%write  tmp2.lbc  +$(graph_path)s/graphi2.lib
@@ -65,25 +65,25 @@ tmp2.lib : $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(graph_path)r/
     @%append tmp2.lbc  +$(pgchart_path)r/chart2.lib
     @%append tmp2.lbc  +$(pgchart_path)s/chart2.lib
     @%make echo_lib
-    $(librarian) $(libflags) @tmp2.lbc
+    $(librarian) -n $(libflags) @tmp2.lbc
 
 !endif
 
 graph3r.lib : $(graph_path)r/graphi.lib $(graph_path)r/special.lib $(pgchart_path)r/chart.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +$(graph_path)r/graphi.lib +$(graph_path)r/special.lib +$(pgchart_path)r/chart.lib
+    $(librarian) -n $(libflags) +$(graph_path)r/graphi.lib +$(graph_path)r/special.lib +$(pgchart_path)r/chart.lib
 
 graph3s.lib : $(graph_path)s/graphi.lib $(graph_path)r/special.lib $(pgchart_path)s/chart.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +$(graph_path)s/graphi.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart.lib
+    $(librarian) -n $(libflags) +$(graph_path)s/graphi.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart.lib
 
 graph23r.lib : $(graph_path)r/graphi2.lib $(graph_path)r/special.lib $(pgchart_path)r/chart2.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +$(graph_path)r/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)r/chart2.lib
+    $(librarian) -n $(libflags) +$(graph_path)r/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)r/chart2.lib
 
 graph23s.lib : $(graph_path)r/graphi2.lib $(graph_path)r/special.lib $(pgchart_path)s/chart2.lib $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +$(graph_path)s/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart2.lib
+    $(librarian) -n $(libflags) +$(graph_path)s/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart2.lib
 
 graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     @rm -f *.obj
@@ -133,7 +133,7 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
     @%make echo_lib
-    $(librarian) $(libflags) @$^&.lbc
+    $(librarian) -n $(libflags) @$^&.lbc
 
 graph2.lib : $(clibdir) tmp2.lib
     @rm -f *.obj
@@ -183,4 +183,4 @@ graph2.lib : $(clibdir) tmp2.lib
     $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
     @%make echo_lib
-    $(librarian) $(libflags) @$^&.lbc
+    $(librarian) -n $(libflags) @$^&.lbc

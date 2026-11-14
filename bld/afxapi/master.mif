@@ -349,11 +349,11 @@ all : $($(what_to_build)) .SYMBOLIC
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $(objs) $(static_objs)
+    $(librarian) -n $(libflags) $(objs) $(static_objs)
 
 $(intname).lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) -z=tmp.gdf $(libflags) $(objs)
+    $(librarian) -z=tmp.gdf -n $(libflags) $(objs)
     @%make echo_sed
     $(noecho)sed -f $(lib_misc_dir)/sed/export.sed tmp.gdf > tmp2.gdf
     sort < tmp2.gdf > tmp3.gdf
@@ -372,11 +372,11 @@ dlltarg_name = $(dllname)
 
 $(dllname).lib: $(dllname).dll $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) +$(dllname).dll
+    $(librarian) -n $(libflags) +$(dllname).dll
 
 $(statname).lib: $(static_objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $(static_objs)
+    $(librarian) -n $(libflags) $(static_objs)
 
 $(dllname).res: ../h/owf.rc ../$(host_os)/afxprint.rc ../$(host_os)/afxres.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc

@@ -104,11 +104,11 @@ all : $(dirs) $(headers) $(libs) .SYMBOLIC
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 .lbc{lib}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 .mh{h}.h:
     @%make echo_wsplice
@@ -123,7 +123,7 @@ windows.lbc : $(winlibs)
 
 lib/windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@ profc.obj
+    $(librarian) -n $(libflags) @$[@ profc.obj
 
 !include $(mh_dir)/deps.mif
 

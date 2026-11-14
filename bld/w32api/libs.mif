@@ -173,19 +173,19 @@ all : $(dirs) $(libs) .SYMBOLIC
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 .lbc{lib}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 .obj.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $[@
+    $(librarian) -n $(libflags) $[@
 
 .obj{lib}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $[@
+    $(librarian) -n $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
     @%make echo_awk
@@ -193,11 +193,11 @@ all : $(dirs) $(libs) .SYMBOLIC
 
 {ddk}.lbc{lib/ddk}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 {ddk}.obj{lib/ddk}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $[@
+    $(librarian) -n $(libflags) $[@
 
 {directx}.def{directx}.lbc:
     @%make echo_awk
@@ -205,11 +205,11 @@ all : $(dirs) $(libs) .SYMBOLIC
 
 {directx}.lbc{lib/directx}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) @$[@
+    $(librarian) -n $(libflags) @$[@
 
 {directx}.obj{lib/directx}.lib: $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $[@
+    $(librarian) -n $(libflags) $[@
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i

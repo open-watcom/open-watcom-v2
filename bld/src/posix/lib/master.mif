@@ -14,8 +14,8 @@ objs =  die.obj &
 
 util.lib : $(objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(libflags) $(objs)
+    $(librarian) -n $(libflags) $(objs)
 #    @%create $^&.lbc
 #    @for %i in ($(orl_objs)) do @%append $^&.lbc +%i
 #    @%make echo_lib
-#    @$(librarian) $(libflags) @$^&.lbc
+#    @$(librarian) -n $(libflags) @$^&.lbc
