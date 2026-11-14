@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2020 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,10 +46,12 @@ extern void         DoWildCardClose( void );
 extern void         ReadRecInit( void );
 extern void         ReadRecFini( void );
 extern bool         IsDataToRead( void );
+extern unsigned_8   GetByte( void );
 extern unsigned_16  GetUInt( void );
 extern unsigned_32  GetOffset( bool wide );
 extern unsigned_16  GetIndex( void );
 extern char         *GetName( void );
+extern void         ReadSkip( int );
 extern int          ReadRec( FILE *fp, byte *hdr );
 extern void         RewindReadRec( void );
 extern bool         WriteReadRec( FILE *fo, byte *hdr );

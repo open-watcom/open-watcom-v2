@@ -281,6 +281,16 @@ bool IsDataToRead( void )
     return( ReadRecPtr - ReadRecBuff < ReadRecLen - 1 );
 }
 
+unsigned_8 GetByte( void )
+/************************/
+{
+    unsigned_8  byte;
+
+    byte = ReadRecPtr[0];
+    ReadRecPtr++;
+    return( byte );
+}
+
 unsigned_16 GetUInt( void )
 /*************************/
 {
@@ -334,6 +344,12 @@ void NameTerm( void )
 /*******************/
 {
     *ReadRecPtr = '\0';
+}
+
+void ReadSkip( int skip )
+/***********************/
+{
+    ReadRecPtr += skip;
 }
 
 byte *GetReadPtr( void )
