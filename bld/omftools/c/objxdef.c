@@ -67,11 +67,7 @@ static bool ProcFile( FILE *fp )
         switch( GET_RECCMD() ) {
         case CMD_MODEND:
             if( page_len != 0 ) {
-                offset = ftell( fp );
-                offset = page_len - offset % page_len;
-                if( offset != page_len ) {
-                    fseek( fp, offset, SEEK_CUR );
-                }
+                AlignFile( fp, page_len );
             }
             break;
         case CMD_PUBDEF:

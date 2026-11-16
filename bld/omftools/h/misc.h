@@ -58,6 +58,7 @@ extern char         *GetNameBuf( char *name );
 extern void         ReadSkip( int );
 extern int          ReadRec( FILE *fp );
 extern void         RewindReadRec( void );
+extern bool         AlignFile( FILE *fp, int page_len );
 extern bool         WriteReadRec( FILE *fo );
 extern byte         *GetReadPtr( void );
 

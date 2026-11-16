@@ -265,6 +265,21 @@ void RewindReadRec( void )
     ReadRecPtr = ReadRecBuff;
 }
 
+bool AlignFile( FILE *fp, int page_len )
+/**************************************/
+{
+    long        offset;
+
+    offset = ftell( fp );
+    if( offset == -1 )
+        return( false );
+    offset = (-offset) & ( page_len - 1 );
+    if( offset && fseek( fp, offset, SEEK_CUR ) ) {
+        return( false );
+    }
+    return( true );
+}
+
 bool WriteReadRec( FILE *fo )
 /***************************/
 {
