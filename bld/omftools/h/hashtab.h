@@ -39,7 +39,7 @@ typedef struct symbol {
     char            name[1];
 } symbol, **sym_table;
 
-extern  void        AddSymbol( sym_table tab, const char *name, const void *value, size_t len );
+extern  bool        AddSymbol( sym_table tab, const char *name, const void *value, size_t len );
 extern  void        *SymbolExists( sym_table tab, const char *name );
 extern  sym_table   SymbolInit( void );
 extern  void        SymbolFini( sym_table tab );
