@@ -15,6 +15,7 @@ set PROJDIR=<CWD>
 #========================
     cdsay "<PROJDIR>"
     <CPCMD> <OWOBJDIR>/objchg.exe   "<OWROOT>/build/<OWOBJDIR>/objchg<CMDEXT>"
+    <CPCMD> <OWOBJDIR>/libchg.exe   "<OWROOT>/build/<OWOBJDIR>/libchg<CMDEXT>"
     <CPCMD> <OWOBJDIR>/objfind.exe  "<OWROOT>/build/<OWOBJDIR>/objfind<CMDEXT>"
     <CPCMD> <OWOBJDIR>/objlist.exe  "<OWROOT>/build/<OWOBJDIR>/objlist<CMDEXT>"
     <CPCMD> <OWOBJDIR>/objxdef.exe  "<OWROOT>/build/<OWOBJDIR>/objxdef<CMDEXT>"
@@ -24,6 +25,8 @@ set PROJDIR=<CWD>
 #========================
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/objchg<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/objchg<CMDEXT>"
+    echo rm -f "<OWROOT>/build/<OWOBJDIR>/libchg<CMDEXT>"
+    rm -f "<OWROOT>/build/<OWOBJDIR>/libchg<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/objfind<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/objfind<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/objlist<CMDEXT>"
