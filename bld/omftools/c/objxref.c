@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2022 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,20 +45,7 @@
 
 static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
-static byte         RecHdr[3];
 static byte         *tptr = NULL;
-
-static void NameTermPtr( void )
-/*****************************/
-{
-    tptr = GetReadPtr();
-}
-
-static void NameTermData( void )
-/******************************/
-{
-    *tptr = '\0';
-}
 
 static void usage( void )
 /***********************/
@@ -80,13 +67,13 @@ static bool ProcFilePubDef( FILE *fp )
     ok = true;
     while( ok ) {
         offset = ftell( fp );
-        rc = ReadRec( fp, RecHdr );
+        rc = ReadRec( fp );
         if( rc <= 0 ) {
             if( rc == 0 )
                 ok = false;
             break;
         }
-        switch( RecHdr[0] & ~1 ) {
+        switch( GET_RECCMD() ) {
         case CMD_MODEND:
             if( page_len != 0 ) {
                 offset = ftell( fp );
@@ -100,19 +87,20 @@ static bool ProcFilePubDef( FILE *fp )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                GetName();
-                NameTerm();
+                char    name[256];
+
+                GetNameBuf( name );
                 AddSymbol( pubdef_tab, NamePtr, NULL, 0 );
-                GetOffset( RecHdr[0] & 1 );
+                GetOffset();
                 GetIndex();
             }
             break;
         case LIB_HEADER_REC:
-            if( RecHdr[0] & 1 ) {
+            if( IS_CMD32() ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
+                page_len = GET_RECLEN() - 1 + 4;
             }
             break;
         default:
@@ -136,13 +124,13 @@ static bool ProcFileExtDef( FILE *fp )
     ok = true;
     while( ok ) {
         offset = ftell( fp );
-        rc = ReadRec( fp, RecHdr );
+        rc = ReadRec( fp );
         if( rc <= 0 ) {
             if( rc == 0 )
                 ok = false;
             break;
         }
-        switch( RecHdr[0] & ~1 ) {
+        switch( GET_RECCMD() ) {
         case CMD_MODEND:
             if( page_len != 0 ) {
                 offset = ftell( fp );
@@ -154,10 +142,10 @@ static bool ProcFileExtDef( FILE *fp )
             break;
         case CMD_EXTDEF:
             while( IsDataToRead() ) {
-                GetName();
-                NameTermPtr();
+                char    name[256];
+
+                GetNameBuf( name );
                 GetIndex();
-                NameTermData();
                 if( SymbolExists( pubdef_tab, NamePtr ) == NULL ) {
                     if( SymbolExists( extdef_tab, NamePtr ) == NULL ) {
                         AddSymbol( extdef_tab, NamePtr, NULL, 0 );
@@ -167,11 +155,11 @@ static bool ProcFileExtDef( FILE *fp )
             }
             break;
         case LIB_HEADER_REC:
-            if( RecHdr[0] & 1 ) {
+            if( IS_CMD32() ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
+                page_len = GET_RECLEN() - 1 + 4;
             }
             break;
         default:

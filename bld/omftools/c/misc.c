@@ -56,6 +56,7 @@
 
 char         *NamePtr;
 byte         NameLen;
+byte         RecHdr[3];
 
 static unsigned_16  ReadRecLen;
 static unsigned_16  ReadRecMaxLen;
@@ -242,14 +243,14 @@ static bool ExtendReadRecBuff( unsigned_16 size )
     return( true );
 }
 
-int ReadRec( FILE *fp, byte *hdr )
-/********************************/
+int ReadRec( FILE *fp )
+/*********************/
 {
     bool    ok;
 
-    if( fread( hdr, 1, 3, fp ) != 3 )
+    if( fread( RecHdr, 1, 3, fp ) != 3 )
         return( ( ferror( fp ) == 0 ) ? -1 : 0 );
-    ReadRecLen = GET_RECLEN( hdr );
+    ReadRecLen = GET_RECLEN();
     ok = ExtendReadRecBuff( ReadRecLen );
     if( ok ) {
         ok = ( fread( ReadRecBuff, ReadRecLen, 1, fp ) != 0 );
@@ -264,12 +265,12 @@ void RewindReadRec( void )
     ReadRecPtr = ReadRecBuff;
 }
 
-bool WriteReadRec( FILE *fo, byte *hdr )
-/**************************************/
+bool WriteReadRec( FILE *fo )
+/***************************/
 {
     bool    ok;
 
-    ok = ( fwrite( hdr, 1, 3, fo ) == 3 );
+    ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
     if( ok )
         ok = ( fwrite( ReadRecBuff, 1, ReadRecLen, fo ) == ReadRecLen );
     return( ok );
@@ -301,10 +302,10 @@ unsigned_16 GetUInt( void )
     return( word );
 }
 
-unsigned_32 GetOffset( bool wide )
-/********************************/
+unsigned_32 GetOffset( void )
+/***************************/
 {
-    if( wide ) {
+    if( IS_CMD32() ) {
         unsigned_32 dword;
 
         dword = MGET_LE_U32_UN( ReadRecPtr );
@@ -331,19 +332,15 @@ unsigned_16 GetIndex( void )
     return( index );
 }
 
-char *GetName( void )
-/*******************/
+char *GetNameBuf( char *name )
+/****************************/
 {
     NameLen = *ReadRecPtr++;
-    NamePtr = (char *)ReadRecPtr;
+    strncpy( name, (char *)ReadRecPtr, NameLen );
+    name[NameLen] = '\0';
+    NamePtr = name;
     ReadRecPtr += NameLen;
     return( NamePtr );
-}
-
-void NameTerm( void )
-/*******************/
-{
-    *ReadRecPtr = '\0';
 }
 
 void ReadSkip( int skip )

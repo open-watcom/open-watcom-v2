@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,7 +45,6 @@
 
 static symbol           **pubdef_tab;
 static symbol           **extdef_tab;
-static byte             RecHdr[3];
 
 static void usage( void )
 /***********************/
@@ -71,19 +70,20 @@ static bool ProcFileModRef( FILE *fp )
     ok = true;
     while( ok ) {
         offset = ftell( fp );
-        rc = ReadRec( fp, RecHdr );
+        rc = ReadRec( fp );
         if( rc <= 0 ) {
             if( rc == 0 )
                 ok = false;
             break;
         }
-        switch( RecHdr[0] & ~1 ) {
+        switch( GET_RECCMD() ) {
         case CMD_THEADR:
             if( first ) {
+                char    name[256];
+
                 if( module_name != NULL )
                     free( module_name );
-                GetName();
-                NameTerm();
+                GetNameBuf( name );
                 module_name = malloc( strlen( NamePtr ) + 1 );
                 strcpy( module_name, NamePtr );
                 first = false;
@@ -105,24 +105,25 @@ static bool ProcFileModRef( FILE *fp )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                GetName();
-                NameTerm();
+                char    name[256];
+
+                GetNameBuf( name );
                 if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
                     if( SymbolExists( extdef_tab, module_name ) == NULL ) {
                         AddSymbol( extdef_tab, module_name, NULL, 0 );
                         printf( "%s\n", module_name );
                     }
                 }
-                GetOffset( RecHdr[0] & 1 );
+                GetOffset();
                 GetIndex();
             }
             break;
         case LIB_HEADER_REC:
-            if( RecHdr[0] & 1 ) {
+            if( IS_CMD32() ) {
                 fseek( fp, 0L, SEEK_END );
                 page_len = 0;
             } else {
-                page_len = GET_RECLEN( RecHdr ) - 1 + 4;
+                page_len = GET_RECLEN() - 1 + 4;
             }
             break;
         default:
