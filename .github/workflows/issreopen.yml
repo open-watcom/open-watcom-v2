@@ -72,3 +72,25 @@ jobs:
 
     secrets:
       project_token: ${{ secrets.GLOBAL_PROJECT_TOKEN }}
+
+  # ===========================================================================
+  # TASK 4: Mark events which require no action as successfully handled
+  # ===========================================================================
+  no-action:
+    name: No Action Required
+    if: >
+      !(
+        github.event_name == 'issues' &&
+        github.event.action == 'closed' &&
+        github.event.issue.active_lock_reason == null
+      ) &&
+      !(
+        github.event_name == 'issue_comment' &&
+        github.event.issue.state == 'closed' &&
+        contains(github.event.comment.body, '/reopen')
+      )
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Nothing to do
+        run: echo "Event processed successfully; no action required."
