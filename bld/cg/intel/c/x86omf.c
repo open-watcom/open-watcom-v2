@@ -1658,11 +1658,11 @@ static  void    OutLEDataStart( bool iterated )
         if( CurrSeg->comdat_label != NULL ) {
             flag = 0;
             if( CurrSeg->location != 0 )
-                flag |= 1; /* continued */
+                flag |= COMDAT_CONTINUE;    /* continued */
             if( iterated )
-                flag |= 2;   /* LIDATA form */
+                flag |= COMDAT_ITERATED;    /* LIDATA form */
             if( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 ) {
-                flag |= 0x4;    /* local comdat */
+                flag |= COMDAT_LOCAL;       /* local comdat */
             }
             OutByte( flag, obj_data );
             OutByte( 0x10, obj_data );
