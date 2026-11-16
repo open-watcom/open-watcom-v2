@@ -5,14 +5,9 @@ BEGIN {
         printf( "OUTFILE variable must be set!\n" ) > "/dev/stderr"
         exit 1
     }
-    if( host == "unix" ) {
-        cmd = ":";
-    } else {
-        cmd = "*";
-    }
 }
 
 # Process all lines and redirect module to .obj file
 {
-    printf( "%s%s=.obj\n", cmd, $1 ) > OUTFILE
+    printf( "%s%s=.obj\n", host_cmd, $1 ) > OUTFILE
 }

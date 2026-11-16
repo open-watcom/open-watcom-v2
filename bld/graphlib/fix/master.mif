@@ -16,57 +16,35 @@ clibdir = $(clib_dir)/library/msdos.386/ms_r/clib3r.lib
 graph_path = $(graphlib_dir)/$(host)
 pgchart_path = $(graphlib_dir)/pgchart/$(host)
 
+! ifdef __UNIX__
+awk_wlib_cmd=-v host_cmd=:
+! else
+awk_wlib_cmd=-v host_cmd=*
+! endif
+
 !ifeq host_cpu i86
 
 all: graph.lib graph2.lib
 
+def_suffix =
+change_segm = -l=_TEXT=GRAPH_TEXT
+gliblist = $(graph_path)/graphi.lib $(graph_path)$(def_suffix)/special.lib $(pgchart_path)/chart.lib
+gliblist2 = $(graph_path)/graphi2.lib $(graph_path)$(def_suffix)/special2.lib $(pgchart_path)/chart2.lib
+
 !else ifeq host_os dos
 
 all: graph.lib graph2.lib
+
+def_suffix = r
+change_segm =
+gliblist = $(graph_path)s/graphi.lib $(graph_path)r/graphi.lib $(graph_path)$(def_suffix)/special.lib $(pgchart_path)r/chart.lib $(pgchart_path)s/chart.lib
+gliblist2 = $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(graph_path)$(def_suffix)/special2.lib $(pgchart_path)r/chart2.lib $(pgchart_path)s/chart2.lib
 
 !else ifeq host_os qnx
 
 all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
 
 !else
-!endif
-
-!ifeq host_cpu i86
-
-tmp.lib : $(graph_path)/graphi.lib $(graph_path)/special.lib $(pgchart_path)/chart.lib $(__MAKEFILES__)
-    @%write  tmp.lbc  +$(graph_path)/graphi.lib
-    @%append tmp.lbc  +$(graph_path)/special.lib
-    @%append tmp.lbc  +$(pgchart_path)/chart.lib
-    @%make echo_lib
-    $(librarian) -n $(libflags) $@ @tmp.lbc
-
-tmp2.lib : $(graph_path)/graphi2.lib $(graph_path)/special2.lib $(pgchart_path)/chart2.lib $(__MAKEFILES__)
-    @%write  tmp2.lbc  +$(graph_path)/graphi2.lib
-    @%append tmp2.lbc  +$(graph_path)/special2.lib
-    @%append tmp2.lbc  +$(pgchart_path)/chart2.lib
-    @%make echo_lib
-    $(librarian) -n $(libflags) $@ @tmp2.lbc
-
-!else
-
-tmp.lib : $(graph_path)s/graphi.lib $(graph_path)r/graphi.lib $(graph_path)r/special.lib $(pgchart_path)r/chart.lib $(pgchart_path)s/chart.lib $(__MAKEFILES__)
-    @%write  tmp.lbc  +$(graph_path)s/graphi.lib
-    @%append tmp.lbc  +$(graph_path)r/graphi.lib
-    @%append tmp.lbc  +$(graph_path)r/special.lib
-    @%append tmp.lbc  +$(pgchart_path)r/chart.lib
-    @%append tmp.lbc  +$(pgchart_path)s/chart.lib
-    @%make echo_lib
-    $(librarian) -n $(libflags) $@ @tmp.lbc
-
-tmp2.lib : $(graph_path)s/graphi2.lib $(graph_path)r/graphi2.lib $(graph_path)r/special2.lib $(pgchart_path)r/chart2.lib $(pgchart_path)s/chart2.lib $(__MAKEFILES__)
-    @%write  tmp2.lbc  +$(graph_path)s/graphi2.lib
-    @%append tmp2.lbc  +$(graph_path)r/graphi2.lib
-    @%append tmp2.lbc  +$(graph_path)r/special2.lib
-    @%append tmp2.lbc  +$(pgchart_path)r/chart2.lib
-    @%append tmp2.lbc  +$(pgchart_path)s/chart2.lib
-    @%make echo_lib
-    $(librarian) -n $(libflags) $@ @tmp2.lbc
-
 !endif
 
 graph3r.lib : $(graph_path)r/graphi.lib $(graph_path)r/special.lib $(pgchart_path)r/chart.lib $(__MAKEFILES__)
@@ -85,7 +63,11 @@ graph23s.lib : $(graph_path)r/graphi2.lib $(graph_path)r/special.lib $(pgchart_p
     @%make echo_lib
     $(librarian) -n $(libflags) $@ +$(graph_path)s/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart2.lib
 
-graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
+graph.lib : $(clibdir) $(gliblist) $(__MAKEFILES__)
+    @%create tmp.lbc
+    @for %i in ($(gliblist)) do @%append tmp.lbc +%i
+    @%make echo_lib
+    $(librarian) -n $(libflags) tmp.lib @tmp.lbc
     @rm -f *.obj
   # find external references - and check for double precision usage
     $(noecho)objxref -e=../except tmp.lib >ref1.tmp
@@ -96,46 +78,35 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
   # find all modules in clib which are referenced from graph.lib
     $(noecho)objfind -i=ref.tmp $(clibdir) >modc.tmp
   # extract all modules from clib which are referenced from graph.lib
-!ifdef __UNIX__
-    $(noecho)*awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
-!else
-    $(noecho)*awk -v host= -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
-!endif
+    $(noecho)*awk $(awk_wlib_cmd) -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
     $(librarian) -b $(clibdir) @clibget.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
-!ifeq host_cpu i86
-    $(noecho)objxdef *.obj $(graph_path)/fsmath.obj $(graph_path)/dummy.obj >stb.tmp
-!else
-    $(noecho)objxdef *.obj $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj >stb.tmp
-!endif
+    $(noecho)objxdef *.obj $(graph_path)$(def_suffix)/fsmath.obj $(graph_path)$(def_suffix)/dummy.obj >stb.tmp
 !ifeq host_cpu i86
   # extract all modules from graph.lib library
     $(librarian) -b -x=.obj tmp.lib
-  # modify modules as needed
-  # add _GR to names of all symbols in extracted files and fsmath, dummy
-  # change _TEXT segment to GRAPH_TEXT
-    $(noecho)objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=stb.tmp *.obj
 !else
   # extract all modules from graph.lib library, use alias for 8.3 format
     $(noecho)objlist tmp.lib >modg.tmp
-!ifdef __UNIX__
-    $(noecho)*awk -v host=unix -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
-!else
-    $(noecho)*awk -v host= -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
-!endif
+    $(noecho)*awk $(awk_wlib_cmd) -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
     $(librarian) -b tmp.lib @extract.lbc
+!endif
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
-    $(noecho)objchg -m=_GR* -s=stb.tmp *.obj
-!endif
+  # 16-bit change _TEXT segment to GRAPH_TEXT
+    $(noecho)objchg $(change_segm) -m=_GR* -s=stb.tmp *.obj
   # put all modules together into new library
     $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) -n $(libflags) $@ @$^&.lbc
 
-graph2.lib : $(clibdir) tmp2.lib
+graph2.lib : $(clibdir) $(gliblist2) $(__MAKEFILES__)
+    @%create tmp2.lbc
+    @for %i in ($(gliblist2)) do @%append tmp2.lbc +%i
+    @%make echo_lib
+    $(librarian) -n $(libflags) tmp2.lib @tmp2.lbc
     @rm -f *.obj
   # find external references - and check for double precision usage
     $(noecho)objxref -e=../except tmp2.lib >ref21.tmp
@@ -146,39 +117,24 @@ graph2.lib : $(clibdir) tmp2.lib
   # find all modules in clib which are referenced from graph.lib
     $(noecho)objfind -i=ref2.tmp $(clibdir) >modc2.tmp
   # extract all modules from clib which are referenced from graph.lib
-!ifdef __UNIX__
-    $(noecho)*awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
-!else
-    $(noecho)*awk -v host= -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
-!endif
+    $(noecho)*awk $(awk_wlib_cmd) -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
     $(librarian) -b $(clibdir) @clibget2.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
   # they will be renamed later to don't conflict with public symbols in clib
-!ifeq host_cpu i86
-    $(noecho)objxdef *.obj $(graph_path)/fsmath.obj $(graph_path)/dummy.obj >stb2.tmp
-!else
-    $(noecho)objxdef *.obj $(graph_path)r/dummy.obj $(graph_path)r/fsmath.obj >stb2.tmp
-!endif
+    $(noecho)objxdef *.obj $(graph_path)$(def_suffix)/fsmath.obj $(graph_path)$(def_suffix)/dummy.obj >stb2.tmp
 !ifeq host_cpu i86
   # extract all modules from graph.lib library
     $(librarian) -b -x=.obj tmp2.lib
-  # modify modules as needed
-  # add _GR to names of all symbols in extracted files and fsmath, dummy
-  # change _TEXT segment to GRAPH_TEXT
-    $(noecho)objchg -l=_TEXT=GRAPH_TEXT -m=_GR* -s=stb2.tmp *.obj
 !else
   # extract all modules from graph.lib library, use alias for 8.3 format
     $(noecho)objlist tmp2.lib >modg2.tmp
-!ifdef __UNIX__
-    $(noecho)*awk -v host=unix -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
-!else
-    $(noecho)*awk -v host= -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
-!endif
+    $(noecho)*awk $(awk_wlib_cmd) -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
     $(librarian) -b tmp2.lib @extract2.lbc
+!endif
   # modify modules as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
-    $(noecho)objchg -m=_GR* -s=stb2.tmp *.obj
-!endif
+  # 16-bit change _TEXT segment to GRAPH_TEXT
+    $(noecho)objchg $(change_segm) -m=_GR* -s=stb2.tmp *.obj
   # put all modules together into new library
     $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
