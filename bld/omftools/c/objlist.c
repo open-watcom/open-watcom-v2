@@ -54,6 +54,7 @@ static bool ProcFile( FILE *fp )
     bool        ok;
     int         rc;
     bool        first;
+    char        name[256];
 
     page_len = 0;
     ReadRecInit();
@@ -70,8 +71,6 @@ static bool ProcFile( FILE *fp )
         switch( GET_RECCMD() ) {
         case CMD_THEADR:
             if( first ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 printf( "%s\n", NamePtr );
                 first = false;

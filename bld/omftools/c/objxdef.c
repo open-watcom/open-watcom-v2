@@ -52,6 +52,7 @@ static bool ProcFile( FILE *fp )
     unsigned_32 offset;
     bool        ok;
     int         rc;
+    char        name[256];
 
     page_len = 0;
     ReadRecInit();
@@ -76,8 +77,6 @@ static bool ProcFile( FILE *fp )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 printf( "%s\n", NamePtr );
                 GetOffset();

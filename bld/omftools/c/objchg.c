@@ -137,6 +137,7 @@ static bool WriteLNAMES( FILE *fo )
 {
     bool        ok;
     char        *n;
+    char        name[256];
 
     SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -146,8 +147,6 @@ static bool WriteLNAMES( FILE *fo )
             WriteRecPtr = WriteRecBuff;
             RewindReadRec();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
@@ -171,6 +170,7 @@ static bool WriteEXTDEF( FILE *fo )
     unsigned_16 indx;
     bool        ok;
     char        *n;
+    char        name[256];
 
     SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -180,8 +180,6 @@ static bool WriteEXTDEF( FILE *fo )
             WriteRecPtr = WriteRecBuff;
             RewindReadRec();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 indx = GetIndex();
                 n = SymbolExists( pubdef_tab, NamePtr );
@@ -209,6 +207,7 @@ static bool WritePUBDEF( FILE *fo )
     unsigned_32 offs;
     bool        ok;
     char        *n;
+    char        name[256];
 
     SET_RECLEN( RecHdr, WriteRecLen );
     ok = ( fwrite( RecHdr, 1, 3, fo ) == 3 );
@@ -224,8 +223,6 @@ static bool WritePUBDEF( FILE *fo )
             if( ( idx1 | idx2 ) == 0 )
                 WriteRecPtr = PutUInt( WriteRecPtr, GetUInt() );
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 offs = GetOffset();
                 n = SymbolExists( pubdef_tab, NamePtr );
@@ -256,6 +253,7 @@ static int ProcFile( FILE *fp, FILE *fo )
     char            *n;
     bool            ok;
     int             rc;
+    char            name[256];
 
 //    page_len = 0;
     ReadRecInit();
@@ -276,8 +274,6 @@ static int ProcFile( FILE *fp, FILE *fo )
         case CMD_LNAMES:
             isChanged = false;
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 n = SymbolExists( extdef_tab, NamePtr );
                 if( n != NULL ) {
@@ -295,8 +291,6 @@ static int ProcFile( FILE *fp, FILE *fo )
         case CMD_EXTDEF:
             isChanged = false;
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {
@@ -318,8 +312,6 @@ static int ProcFile( FILE *fp, FILE *fo )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 n = SymbolExists( pubdef_tab, NamePtr );
                 if( n != NULL ) {

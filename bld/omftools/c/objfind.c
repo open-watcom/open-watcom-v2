@@ -62,6 +62,7 @@ static bool ProcFileModRef( FILE *fp )
     bool        ok;
     int         rc;
     bool        first;
+    char        name[256];
 
     page_len = 0;
     ReadRecInit();
@@ -79,8 +80,6 @@ static bool ProcFileModRef( FILE *fp )
         switch( GET_RECCMD() ) {
         case CMD_THEADR:
             if( first ) {
-                char    name[256];
-
                 if( module_name != NULL )
                     free( module_name );
                 GetNameBuf( name );
@@ -103,8 +102,6 @@ static bool ProcFileModRef( FILE *fp )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 if( SymbolExists( pubdef_tab, NamePtr ) != NULL ) {
                     if( SymbolExists( extdef_tab, module_name ) == NULL ) {

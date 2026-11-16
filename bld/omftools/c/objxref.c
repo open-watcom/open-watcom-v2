@@ -60,6 +60,7 @@ static bool ProcFilePubDef( FILE *fp )
     unsigned_32 offset;
     bool        ok;
     int         rc;
+    char        name[256];
 
     page_len = 0;
     ReadRecInit();
@@ -84,8 +85,6 @@ static bool ProcFilePubDef( FILE *fp )
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 AddSymbol( pubdef_tab, NamePtr, NULL, 0 );
                 GetOffset();
@@ -114,6 +113,7 @@ static bool ProcFileExtDef( FILE *fp )
     unsigned_32 offset;
     bool        ok;
     int         rc;
+    char        name[256];
 
     page_len = 0;
     ReadRecInit();
@@ -135,8 +135,6 @@ static bool ProcFileExtDef( FILE *fp )
             break;
         case CMD_EXTDEF:
             while( IsDataToRead() ) {
-                char    name[256];
-
                 GetNameBuf( name );
                 GetIndex();
                 if( SymbolExists( pubdef_tab, NamePtr ) == NULL ) {
