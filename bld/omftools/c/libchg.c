@@ -785,8 +785,12 @@ static mod_status ProcessModule( FILE *fi, FILE *fo,
                     GetByte();          /* align */
                     GetOffset();
                     GetIndex();         /* type index */
-                    if( (byte & COMDAT_ALLOC_MASK) == COMDAT_EXPLICIT )
-                        GetIndex();     /* public base */
+                    if( (byte & COMDAT_ALLOC_MASK) == COMDAT_EXPLICIT ) {
+                        if( (GetIndex() | GetIndex()) == 0 ) {  /* base index */
+                            GetUInt();                          /* base frame */
+                        }
+                    }
+                    /* Publi base */
                     if( !InsertOmfDictIdxLName( dict, &lnames, pageno, dict_full ) ) {
                         done = true;
                         break;
