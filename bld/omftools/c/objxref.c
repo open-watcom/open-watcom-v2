@@ -45,7 +45,6 @@
 
 static symbol       **pubdef_tab;
 static symbol       **extdef_tab;
-static byte         *tptr = NULL;
 
 static void usage( void )
 /***********************/
