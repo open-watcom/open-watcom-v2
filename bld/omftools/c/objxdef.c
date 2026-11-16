@@ -66,11 +66,13 @@ static bool ProcFile( FILE *fp )
         }
         switch( GET_RECCMD() ) {
         case CMD_MODEND:
+        case CMD_MODEND32:
             if( page_len != 0 ) {
                 AlignFile( fp, page_len );
             }
             break;
         case CMD_PUBDEF:
+        case CMD_PUBDEF32:
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
             while( IsDataToRead() ) {
@@ -83,12 +85,11 @@ static bool ProcFile( FILE *fp )
             }
             break;
         case LIB_HEADER_REC:
-            if( IS_CMD32() ) {
-                fseek( fp, 0L, SEEK_END );
-                page_len = 0;
-            } else {
-                page_len = GET_RECLEN() - 1 + 4;
-            }
+            page_len = GET_RECLEN() - 1 + 4;
+            break;
+        case LIB_TRAILER_REC:
+            fseek( fp, 0L, SEEK_END );
+            page_len = 0;
             break;
         default:
             break;

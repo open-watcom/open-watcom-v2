@@ -78,18 +78,18 @@ static bool ProcFile( FILE *fp )
             }
             break;
         case CMD_MODEND:
+        case CMD_MODEND32:
             if( page_len != 0 ) {
                 AlignFile( fp, page_len );
             }
             first = true;
             break;
         case LIB_HEADER_REC:
-            if( IS_CMD32() ) {
-                fseek( fp, 0L, SEEK_END );
-                page_len = 0;
-            } else {
-                page_len = GET_RECLEN() - 1 + 4;
-            }
+            page_len = GET_RECLEN() - 1 + 4;
+            break;
+        case LIB_TRAILER_REC:
+            fseek( fp, 0L, SEEK_END );
+            page_len = 0;
             break;
         default:
             break;

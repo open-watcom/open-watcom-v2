@@ -61,9 +61,6 @@ static char         *symbol_name_pattern = NULL;
 static size_t       symbol_name_pattern_len = 0;
 static sym_file     *sym_files = NULL;
 
-static byte tbyte = 0;
-static byte *tptr = NULL;
-
 static void usage( void )
 /***********************/
 {
@@ -316,6 +313,7 @@ static int ProcFile( FILE *fp, FILE *fo )
             }
             break;
         case CMD_PUBDEF:
+        case CMD_PUBDEF32:
             isChanged = false;
             if( ( GetIndex() | GetIndex() ) == 0 )
                 GetUInt();
@@ -339,6 +337,7 @@ static int ProcFile( FILE *fp, FILE *fo )
             }
             break;
         case LIB_HEADER_REC:
+        case LIB_TRAILER_REC:
             ok = false;
             break;
         default:
