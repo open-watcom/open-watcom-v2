@@ -33,21 +33,13 @@
 
 #include "gdefn.h"
 #include "dummy.h"
-#include "fltused.h"
-#include "clibint.h"
 
 
 // This file contains definitions used to create the
-// standalone graphics library GRAPH.LIB and GRAPH386.LIB
-
-int         _fltused_;
-int         _fltused_80bit_;
-
-short       _small_code_;
+// standalone graphics library GRAPH.LIB and GRAPH2.LIB
 
 #pragma aux nomangle "*"
 
-#pragma aux (nomangle) _small_code_
 #pragma aux (nomangle) F4DivZero
 #pragma aux (nomangle) F4OverFlow
 #pragma aux (nomangle) F4UnderFlow
@@ -99,21 +91,18 @@ extern double   F8RetInf( double );
 
 float _WCI86FAR F4UnderFlow( void )
 //============================
-
 {
     return( 0 );
 }
 
 float _WCI86FAR F4DivZero( float num )
 //===============================
-
 {
     return( F4RetInf( num ) );
 }
 
 float _WCI86FAR F4OverFlow( float num )
 //================================
-
 {
     return( F4RetInf( num ) );
 }
@@ -121,21 +110,18 @@ float _WCI86FAR F4OverFlow( float num )
 #if 0
 double _WCI86FAR F8UnderFlow( void )
 //=============================
-
 {
     return( 0 );
 }
 
 double _WCI86FAR F8DivZero( double num )
 //=================================
-
 {
     return( F8RetInf( num ) );
 }
 
 double _WCI86FAR F8OverFlow( double num )
 //==================================
-
 {
     return( F8RetInf( num ) );
 }
