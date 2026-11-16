@@ -83,7 +83,7 @@ static bool ProcFileModRef( FILE *fp )
                 if( module_name != NULL )
                     free( module_name );
                 GetNameBuf( name );
-                module_name = malloc( strlen( NamePtr ) + 1 );
+                module_name = malloc( NameLen + 1 );
                 strcpy( module_name, NamePtr );
                 first = false;
             }
