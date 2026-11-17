@@ -966,9 +966,11 @@ static int ProcFile( FILE *fi, const char *tmp )
                 }
             }
         }
-
-        if( fclose( fo ) != 0 && pass_rc == PASS_OK )
-            pass_rc = PASS_ERROR;
+        if( fclose( fo ) ) {
+            if( pass_rc == PASS_OK ) {
+                pass_rc = PASS_ERROR;
+            }
+        }
         fo = NULL;
 
         switch( pass_rc ) {
@@ -1005,8 +1007,6 @@ static int ProcFile( FILE *fi, const char *tmp )
         }
     }
 
-    if( fo != NULL )
-        fclose( fo );
     dictFini( &dict );
     WriteRecFini();
     ReadRecFini();
