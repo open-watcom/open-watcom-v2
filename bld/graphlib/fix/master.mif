@@ -64,17 +64,16 @@ graph23s.lib : $(graph_path)r/graphi2.lib $(graph_path)r/special.lib $(pgchart_p
     $(librarian) -n $(libflags) $@ +$(graph_path)s/graphi2.lib +$(graph_path)r/special.lib +$(pgchart_path)s/chart2.lib
 
 graph.lib : $(clibdir) $(gliblist) $(__MAKEFILES__)
-    @%create tmpa.lbc
-    for %x in ($(gliblist)) do @%append tmpa.lbc +%x
-    @%make echo_lib
-    $(librarian) -n $(libflags) tmp.lib @tmpa.lbc
+    $(noecho)%create tmp.lbc
+    @for %x in ($(gliblist)) do @%append tmp.lbc +%x
+!ifeq verbose 0
+    @echo lib tmp.lib
+!endif
+    $(librarian) -n $(libflags) tmp.lib @tmp.lbc
     @rm -f *.obj
   # find external references - and check for double precision usage
-    $(noecho)objxref -e=../except tmp.lib >ref1.tmp
-    $(noecho)sort -o ref.tmp ref1.tmp
-    $(noecho)egrep "__FD" ref.tmp >fdchk.tmp
-    $(noecho)diff fdchk.tmp ../fd.ok
-    @if errorlevel 1 echo ERROR - double precision floating point used
+    $(noecho)objxref -e=../except tmp.lib >ref.tmp
+    $(noecho)awk -f ../fix2.awk ../fd.ok ref.tmp
   # find all modules in clib which are referenced from graph.lib
     $(noecho)objfind -i=ref.tmp $(clibdir) >modc.tmp
   # extract all modules from clib which are referenced from graph.lib
@@ -84,29 +83,31 @@ graph.lib : $(clibdir) $(gliblist) $(__MAKEFILES__)
   # they will be renamed later to don't conflict with public symbols in clib
     $(noecho)objxdef *.obj $(graph_path)$(def_suffix)/fsmath.obj $(graph_path)$(def_suffix)/dummy.obj >stb.tmp
   # put all modules together into new library
-    $(noecho)%create $^&b.lbc
-    @for %i in (*.obj) do @%append $^&b.lbc +%i
-    @%make echo_lib
-    $(librarian) $(libflags) tmp.lib @$^&b.lbc
+    $(noecho)%create tmpa.lbc
+    @for %i in (*.obj) do @%append tmpa.lbc +%i
+!ifeq verbose 0
+    @echo lib+ tmp.lib
+!endif
+    $(librarian) $(libflags) tmp.lib @tmpa.lbc
   # duplicate temporary library to final library
+    @%make echo_lib
     $(librarian) -n $(libflags) $@ +tmp.lib
   # modify all modules in final library as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
   # for 16-bit change _TEXT segment to GRAPH_TEXT
-    $(noecho)libchg $(libchg_segm) -m=_GR* -s=stb.tmp $@
+    $(noecho)libchg -b $(libchg_segm) -m=_GR* -s=stb.tmp $@
 
 graph2.lib : $(clibdir) $(gliblist2) $(__MAKEFILES__)
-    @%create tmp2a.lbc
-    for %x in ($(gliblist2)) do @%append tmp2a.lbc +%x
-    @%make echo_lib
-    $(librarian) -n $(libflags) tmp2.lib @tmp2a.lbc
+    $(noecho)%create tmp2.lbc
+    @for %x in ($(gliblist2)) do @%append tmp2.lbc +%x
+!ifeq verbose 0
+    @echo lib tmp2.lib
+!endif
+    $(librarian) -n $(libflags) tmp2.lib @tmp2.lbc
     @rm -f *.obj
   # find external references - and check for double precision usage
-    $(noecho)objxref -e=../except tmp2.lib >ref21.tmp
-    $(noecho)sort -o ref2.tmp ref21.tmp
-    $(noecho)egrep "__FD" ref2.tmp >fdchk2.tmp
-    $(noecho)diff fdchk2.tmp ../fd.ok
-    @if errorlevel 1 echo ERROR - double precision floating point used
+    $(noecho)objxref -e=../except tmp2.lib >ref2.tmp
+    $(noecho)awk -f ../fix2.awk ../fd.ok ref2.tmp
   # find all modules in clib which are referenced from graph.lib
     $(noecho)objfind -i=ref2.tmp $(clibdir) >modc2.tmp
   # extract all modules from clib which are referenced from graph.lib
@@ -116,13 +117,16 @@ graph2.lib : $(clibdir) $(gliblist2) $(__MAKEFILES__)
   # they will be renamed later to don't conflict with public symbols in clib
     $(noecho)objxdef *.obj $(graph_path)$(def_suffix)/fsmath.obj $(graph_path)$(def_suffix)/dummy.obj >stb2.tmp
   # put all modules together into new library
-    $(noecho)%create $^&b.lbc
-    @for %i in (*.obj) do @%append $^&b.lbc +%i
-    @%make echo_lib
-    $(librarian) $(libflags) tmp2.lib @$^&b.lbc
+    $(noecho)%create tmp2a.lbc
+    @for %i in (*.obj) do @%append tmp2a.lbc +%i
+!ifeq verbose 0
+    @echo lib+ tmp2.lib
+!endif
+    $(librarian) $(libflags) tmp2.lib @tmp2a.lbc
   # duplicate temporary library to final library
+    @%make echo_lib
     $(librarian) -n $(libflags) $@ +tmp2.lib
   # modify all modules in final library as needed
   # add _GR to names of all symbols in extracted files and fsmath, dummy
   # for 16-bit change _TEXT segment to GRAPH_TEXT
-    $(noecho)libchg $(libchg_segm) -m=_GR* -s=stb2.tmp $@
+    $(noecho)libchg -b $(libchg_segm) -m=_GR* -s=stb2.tmp $@
