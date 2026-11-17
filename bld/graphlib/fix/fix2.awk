@@ -1,15 +1,28 @@
-# Print set counter variable
-BEGIN {
-    # Basic sanity check on input
-    if( OUTFILE == "" ) {
-        printf( "OUTFILE variable must be set!\n" ) > "/dev/stderr"
-        exit 1
-    }
-    num = 1;
+NR == FNR {
+    ref[$0] = 1
+    next
 }
 
-# Process all lines and redirect each module to g#.obj file
-{
-    printf( "%s%s=%-.8s.obj\n", host_cmd, $1, $1 ) > OUTFILE
-    num = num + 1;
+/__FD/ {
+    cur[$0] = 1
+}
+
+END {
+    err = 0
+
+    for (s in ref) {
+        if (!(s in cur)) {
+            print "missing:", s
+            err = 1
+        }
+    }
+
+    for (s in cur) {
+        if (!(s in ref)) {
+            print "unexpected:", s
+            err = 1
+        }
+    }
+
+    exit err
 }
