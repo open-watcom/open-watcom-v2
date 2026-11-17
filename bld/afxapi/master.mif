@@ -354,13 +354,9 @@ $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
 $(intname).lib: $(objs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) -z=tmp.gdf -n $(libflags) $@ $(objs)
-    @%make echo_sed
-    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed tmp.gdf > tmp2.gdf
-    sort < tmp2.gdf > tmp3.gdf
-    uniq tmp3.gdf > export.gdf
+    @%make echo_awk
+    $(noecho)awk -f $(build_dir)/export.awk tmp.gdf > export.gdf
     @rm tmp.gdf
-    @rm tmp2.gdf
-    @rm tmp3.gdf
 
 extra_l_flags_dll = export @export.gdf
 

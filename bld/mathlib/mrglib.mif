@@ -14,11 +14,14 @@ all : $(objfiles) $(libname).lib .SYMBOLIC
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @rm -f export.tmp
     @rm -f export.gdf
-    @%make echo_lib
-    $(librarian) $(mlib_lib_flags) $(mlib_linkage_flags) $@ $(objs) $(libs)
 !ifeq linkage dynamic
-    @%make echo_sed
-    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
+    @%make echo_lib
+    $(librarian) $(mlib_lib_flags) -z=export.tmp $@ $(objs) $(libs)
+    @%make echo_awk
+    $(noecho)awk -f $(build_dir)/export.awk export.tmp > export.gdf
+!else	# linkage static
+    @%make echo_lib
+    $(librarian) $(mlib_lib_flags) -z $@ $(objs) $(libs)
 !endif
 
 !include $(mathlib_dir)/deps.mif

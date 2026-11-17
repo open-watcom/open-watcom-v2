@@ -16,11 +16,14 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @for %i in ($(objs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.gdf
-    @%make echo_lib
-    $(librarian) $(clib_lib_flags) $(clib_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    @%make echo_sed
-    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
+    @%make echo_lib
+    $(librarian) $(clib_lib_flags) -z=export.tmp $@ @$^&.lbc
+    @%make echo_awk
+    $(noecho)awk -f $(build_dir)/export.awk export.tmp > export.gdf
+!else	# linkage static
+    @%make echo_lib
+    $(librarian) $(clib_lib_flags) -z $@ @$^&.lbc
 !endif
 
 !include ../../deps.mif

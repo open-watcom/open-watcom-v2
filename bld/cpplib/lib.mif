@@ -17,13 +17,3 @@ plib_lib_flags = -b-c-n-pa
 !else
 plib_lib_flags = -b-c-n-pa-s-t-zld
 !endif
-
-plib_linkage_flags_086 = -z=export.tmp
-plib_linkage_flags_286 = -z=export.tmp
-plib_linkage_flags_386 = -z=export.tmp
-plib_linkage_flags = $(plib_linkage_flags_$(processor))
-
-plibx_linkage_flags_086 = -z=exportx.tmp
-plibx_linkage_flags_286 = -z=exportx.tmp
-plibx_linkage_flags_386 = -z=exportx.tmp
-plibx_linkage_flags = $(plibx_linkage_flags_$(processor))

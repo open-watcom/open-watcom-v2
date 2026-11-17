@@ -16,11 +16,14 @@ $(target_lib) : $(libs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.gdf
-    @%make echo_lib
-    $(librarian) $(plib_lib_flags) $(plib_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    @%make echo_sed
-    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) -z=export.tmp $@ @$^&.lbc
+    @%make echo_awk
+    $(noecho)awk -f $(build_dir)/export.awk export.tmp > export.gdf
+!else	# linkage static
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) -z=export.tmp $@ @$^&.lbc
 !endif
 
 $(target_lib_x) : $(libsx) $(__MAKEFILES__)
@@ -28,9 +31,12 @@ $(target_lib_x) : $(libsx) $(__MAKEFILES__)
     @for %i in ($(libsx)) do @%append $^&.lbc +%i
     @rm -f exportx.tmp
     @rm -f exportx.gdf
-    @%make echo_lib
-    $(librarian) $(plib_lib_flags) $(plibx_linkage_flags) $@ @$^&.lbc
 !ifeq linkage dynamic
-    @%make echo_sed
-    $(noecho)sed -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.gdf
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) -z=exportx.tmp $@ @$^&.lbc
+    @%make echo_awk
+    $(noecho)awk -f $(build_dir)/export.awk exportx.tmp > exportx.gdf
+!else	# linkage static
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) -z=exportx.tmp $@ @$^&.lbc
 !endif
