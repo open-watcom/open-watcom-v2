@@ -105,6 +105,7 @@ static unsigned_16  WriteRecMaxLen;
 static char         *symbol_name_pattern = NULL;
 static size_t       symbol_name_pattern_len = 0;
 static sym_file     *sym_files = NULL;
+static bool         backup_opt = true;
 
 static unsigned     PrimeNos[] = {
       2,      3,      5,      7,     11,     13,     17,     19,     23,     29,
@@ -119,7 +120,8 @@ static void usage( void )
 /***********************/
 {
     printf( "Usage: objchg <options> <list of object or library files>\n" );
-    printf( "  <options> -l=<old>=<new>  rename LNAMES item\n" );
+    printf( "  <options> -b              don't create .bak file" );
+    printf( "            -l=<old>=<new>  rename LNAMES item\n" );
     printf( "            -m=....         symbol name pattern\n" );
     printf( "            -s=<file>       file with symbols\n" );
 }
@@ -653,9 +655,8 @@ static mod_status ProcessModule( FILE *fi, FILE *fo,
         return( status );
     if( offset / page_len > USHRT_MAX ) {
         status = MOD_PAGE_FULL;
-    } else {
-        pageno = (int)( offset / page_len );
     }
+    pageno = (int)( offset / page_len );
     lnamesInit( &lnames );
     done = false;
     while( !done ) {
@@ -911,6 +912,10 @@ static int ProcFile( FILE *fi, const char *tmp )
     fo = NULL;
     result = -1;
     finished = false;
+    page_len_in = 0;
+    page_len = 0;
+    lib_flags = 0;
+    fi_start = 0;
 
     rc = ReadRec( fi );
     if( rc <= 0 ) {
@@ -1086,22 +1091,25 @@ static bool process_library( const char *filename )
 {
     FILE        *fi;
     int         rc;
-    char        *backup;
+    char        *backup_file;
     char        *tmp;
     pgroup2     pg;
     bool        ok;
-    size_t      backup_len;
+    size_t      backup_file_len;
     size_t      tmp_len;
+    int         msg;
 
     _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
     /*
      * Space for the original path, with individual sections replaced.
      */
-    backup_len = strlen( filename ) - strlen( pg.ext ) + sizeof( ".bak" );
+    backup_file_len = 0;
+    if( backup_opt )
+        backup_file_len = strlen( filename ) - strlen( pg.ext ) + sizeof( ".bak" );
     tmp_len = strlen( filename ) - strlen( pg.fname ) - strlen( pg.ext ) + sizeof( "tmp.tmp" );
 
-    backup = NULL;
+    backup_file = NULL;
     tmp = NULL;
     ok = false;
 
@@ -1150,55 +1158,77 @@ static bool process_library( const char *filename )
         return( true );
     }
 
-    backup = malloc( backup_len );
-    if( backup == NULL ) {
-        printf( "**FATAL** Out of memory while creating backup file name.\n" );
-        remove( tmp );
-        free( tmp );
-        return( false );
-    }
-
-    _makepath( backup, pg.drive, pg.dir, pg.fname, ".bak" );
-
-    /*
-     * Remove a backup left by an earlier successful invocation.
-     * A missing backup is not an error.
-     */
-    if( remove( backup ) != 0 && errno != ENOENT ) {
-        printf( "Cannot remove old backup file '%s': %s.\n",
-                backup, strerror( errno ) );
-    } else if( rename( filename, backup ) != 0 ) {
-        printf( "Cannot rename original library '%s' to backup '%s': %s.\n",
-                filename, backup, strerror( errno ) );
-    } else if( rename( tmp, filename ) == 0 ) {
-        printf( "Library '%s' was updated successfully.\n", filename );
-        printf( "The original library was preserved as '%s'.\n", backup );
-        ok = true;
-    } else {
-        int install_errno;
-
-        /*
-         * Preserve the installation error because the rollback rename
-         * can change errno.
-         */
-        install_errno = errno;
-
-        printf( "Cannot install temporary library '%s' as '%s': %s.\n",
-                tmp, filename, strerror( install_errno ) );
-        printf( "Attempting to restore the original library.\n" );
-
-        if( rename( backup, filename ) == 0 ) {
-            printf( "The original library was restored successfully.\n" );
+    msg = 0;
+    if( backup_opt ) {
+        backup_file = malloc( backup_file_len );
+        if( backup_file == NULL ) {
+            printf( "**FATAL** Out of memory while creating backup file name.\n" );
             remove( tmp );
+            free( tmp );
+            return( false );
+        }
+        _makepath( backup_file, pg.drive, pg.dir, pg.fname, ".bak" );
+        /*
+         * Remove a backup left by an earlier successful invocation.
+         * A missing backup is not an error.
+         */
+        if( remove( backup_file ) != 0 && errno != ENOENT ) {
+            printf( "Cannot remove old backup file '%s': %s.\n",
+                    backup_file, strerror( errno ) );
+            msg = 1;
+        } else if( rename( filename, backup_file ) != 0 ) {
+            printf( "Cannot rename original library '%s' to backup '%s': %s.\n",
+                    filename, backup_file, strerror( errno ) );
+            msg = 1;
+        } else if( rename( tmp, filename ) == 0 ) {
+            ok = true;
         } else {
-            printf( "**FATAL** Cannot restore backup '%s' as '%s': %s.\n",
-                    backup, filename, strerror( errno ) );
-            printf( "The original library remains available as '%s'.\n", backup );
-            printf( "The generated library remains available as '%s'.\n", tmp );
+            int install_errno;
+
+            /*
+             * Preserve the installation error because the rollback rename
+             * can change errno.
+             */
+            install_errno = errno;
+
+            if( rename( backup_file, filename ) ) {
+                msg = 2;
+                printf( "**FATAL** Cannot restore backup '%s' as '%s': %s.\n",
+                        backup_file, filename, strerror( errno ) );
+            } else {
+                msg = 1;
+                printf( "Cannot install temporary library '%s' as '%s': %s.\n",
+                    tmp, filename, strerror( install_errno ) );
+            }
+        }
+        free( backup_file );
+    } else {
+        if( remove( filename ) != 0 && errno != ENOENT ) {
+            printf( "Cannot remove library file '%s': %s.\n", filename, strerror( errno ) );
+            msg = 1;
+        } else if( rename( tmp, filename ) == 0 ) {
+            ok = true;
+        } else {
+            printf( "Cannot install temporary library '%s' as '%s': %s.\n",
+                    tmp, filename, strerror( errno ) );
+            msg = 3;
         }
     }
-
-    free( backup );
+    if( ok ) {
+        printf( "Library '%s' was updated successfully.\n", filename );
+        if( backup_opt ) {
+            printf( "The original library was preserved as '%s'.\n", backup_file );
+        }
+    } else if( msg == 1 ) {
+        printf( "The original library remains available as '%s'.\n", filename );
+        printf( "The generated library remains available as '%s'.\n", tmp );
+    } else if( msg == 2 ) {
+        printf( "The original library remains available as '%s'.\n", backup_file );
+        printf( "The generated library remains available as '%s'.\n", tmp );
+    } else if( msg == 3 ) {
+        printf( "The original library '%s' was lost.\n", filename );
+        printf( "The generated library remains available as '%s'.\n", tmp );
+    }
     free( tmp );
 
     return( ok );
@@ -1219,7 +1249,9 @@ int main( int argc, char *argv[] )
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
             c = tolower( (unsigned char)argv[i][1] );
-            if( c == 'l' && argv[i][2] == '=' ) {
+            if( c == 'b' && argv[i][2] == '\0' ) {
+                backup_opt = false;
+            } else if( c == 'l' && argv[i][2] == '=' ) {
                 process_lnames( argv[i] + 3 );
             } else if( c == 's' && argv[i][2] == '=' ) {
                 if( sym_files == NULL ) {
