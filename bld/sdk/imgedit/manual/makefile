@@ -39,7 +39,7 @@ vihelp2: .SYMBOLIC
     @cp toc.src vitoc.src
 
 toc: .SYMBOLIC
-    egrep '^  ..[^ ]' vitoc.src >t1
+    awk '/^  ..[^ ]/' vitoc.src >t1
     $(vi) -s tocind.vi t1
     $(vi) -s links.vi vitoc.src
     $(vi) -s toc.vi vitoc.src

@@ -119,7 +119,7 @@ t27: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
-    @-egrep W27 $@.tmp > $@.lst
+    @-awk '/W27/' $@.tmp > $@.lst
     @-diff -i $@.chk $@.lst
     @%make result
 
@@ -128,7 +128,7 @@ t35: .SYMBOLIC
     @set ERRORS=0
     @head -n 3 $@
     @-$(test_wmake) -h -f $@ -d > $@.tmp 2>&1
-    @-egrep W35 $@.tmp > $@.lst
+    @-awk '/W35/' $@.tmp > $@.lst
     @-diff -i $@.chk $@.lst
     @%make result
 
