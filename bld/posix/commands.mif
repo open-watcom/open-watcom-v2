@@ -52,7 +52,7 @@
 !inject true      all qnx           #
 !inject trunc     all qnx           #
 !inject unexpand  all qnx           #
-!inject uniq      all qnx boot      # build
+!inject uniq      all qnx           #
 !inject uudecode  all qnx           #
 !inject uuencode  all qnx           #
 !inject wc        all qnx boot      # build     test

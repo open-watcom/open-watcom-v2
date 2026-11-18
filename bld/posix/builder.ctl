@@ -23,7 +23,6 @@ set PROJDIR=<CWD>
     <CPCMD> <OWOBJDIR>/sleep.exe "<OWROOT>/build/<OWOBJDIR>/sleep<CMDEXT>"
     <CPCMD> <OWOBJDIR>/tee.exe   "<OWROOT>/build/<OWOBJDIR>/tee<CMDEXT>"
     <CPCMD> <OWOBJDIR>/tr.exe    "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
-    <CPCMD> <OWOBJDIR>/uniq.exe  "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
     <CPCMD> <OWOBJDIR>/wc.exe    "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
     <CPCMD> <OWOBJDIR>/which.exe "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
 [ ENDIF ]
@@ -46,8 +45,6 @@ set PROJDIR=<CWD>
     rm -f "<OWROOT>/build/<OWOBJDIR>/tee<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/tr<CMDEXT>"
-    echo rm -f "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
-    rm -f "<OWROOT>/build/<OWOBJDIR>/uniq<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
     rm -f "<OWROOT>/build/<OWOBJDIR>/wc<CMDEXT>"
     echo rm -f "<OWROOT>/build/<OWOBJDIR>/which<CMDEXT>"
