@@ -41,10 +41,12 @@
 
 #define MIN_VBUF_INC 32     // minimum increment allocated (power of 2)
 
-#define BUFFER_SIZE(x)      ((x+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
+#define BUFFER_SIZE(x)      (((x)+1+(MIN_VBUF_INC-1))&(-MIN_VBUF_INC))
 
 #define EXT_SEP             '.'
 #define IS_EXT_SEP(c)       ((c) == EXT_SEP)
+
+#define VBUFLEN(x)          (((x) != NULL) ? (x)->used : 0)
 
 // ************************************
 // Vbuf functions that manage size only
@@ -516,58 +518,86 @@ void VbufMakepath(              // SET A FILE PATH NAME TO VBUF
     const VBUF *name,           // - file name
     const VBUF *ext )           // - file extension
 {
-    VbufRewind( full );
-    if( drive != NULL ) {
-        if( VbufLen( drive ) > 0 ) {
+    vbuflen      reqd;
+    char         *p;
+    /*
+     * calculate required buffer size for path
+     * add 4 bytes to have space for missing separators (if any)
+     * and terminating '\0'
+     */
+    reqd = BUFFER_SIZE( VBUFLEN( drive ) + VBUFLEN( dir )
+        + VBUFLEN( name ) + VBUFLEN( ext ) + 4 );
+
+    if( reqd > full->len ) {
+        if( full->len > 1 )
+            MemFree( full->buf );
+        full->buf = MemAllocSafe( reqd );
+        full->len = reqd;
+    }
+
+    /*
+     * set new position to 0
+     */
+    full->used = 0;
+    p = full->buf;
+
+    if( drive != NULL && drive->used != 0 ) {
 #if defined( __UNIX__ )
-            VbufConcVbuf( full, drive );
-            /*
-             * if node did not end in '/' then put in a provisional one
-             */
-            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
-                VbufConcChr( full, DIR_SEP );
-            }
+        memcpy( p, drive->buf, drive->used );
+        p += drive->used;
+        if( !IS_DIR_SEP( p[-1] ) ) {
+            *p++ = DIR_SEP;
+        }
 #elif defined( __NETWARE__ )
-            VbufConcVbuf( full, drive );
-            if( !IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
-                VbufConcChr( full, DRIVE_SEP );
-            }
+        memcpy( p, drive->buf, drive->used );
+        p += drive->used;
+        if( p[-1] != DRIVE_SEP ) {
+            *p++ = DRIVE_SEP;
+        }
 #else
-            if( TEST_UNC( VbufString( drive ) ) ) {
-                VbufConcVbuf( full, drive );
-            } else {
-                VbufConcChr( full, VbufString( drive )[0] );
-                VbufConcChr( full, DRIVE_SEP );
-            }
+        if( TEST_UNC( drive->buf ) ) {
+            memcpy( p, drive->buf, drive->used );
+            p += drive->used;
+        } else {
+            *p++ = drive->buf[0];
+            *p++ = DRIVE_SEP;
+        }
 #endif
+    }
+
+    if( dir != NULL && dir->used != 0 ) {
+        if( p != full->buf
+          && IS_DIR_SEP( p[-1] )
+          && IS_DIR_SEP( dir->buf[0] ) ) {
+            --p;
+        }
+        memcpy( p, dir->buf, dir->used );
+        p += dir->used;
+        if( !IS_DIR_SEP( p[-1] ) ) {
+            *p++ = DIR_SEP;
         }
     }
-    if( dir != NULL ) {
-        if( VbufLen( dir ) > 0 ) {
-            if( IS_DIR_SEP( VbufString( dir )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
-                VbufConcVbufPos( full, dir, 1 );
-            } else {
-                VbufConcVbuf( full, dir );
-            }
-            VbufAddDirSep( full );
+
+    if( name != NULL && name->used != 0 ) {
+        if( p != full->buf
+          && IS_DIR_SEP( p[-1] )
+          && IS_DIR_SEP( name->buf[0] ) ) {
+            --p;
         }
+        memcpy( p, name->buf, name->used );
+        p += name->used;
     }
-    if( name != NULL ) {
-        if( VbufLen( name ) > 0 ) {
-            if( IS_DIR_SEP( VbufString( name )[0] ) && IS_DIR_SEP( VbufString( full )[VbufLen( full ) - 1] ) ) {
-                VbufConcVbufPos( full, name, 1 );
-            } else {
-                VbufConcVbuf( full, name );
-            }
+
+    if( ext != NULL && ext->used != 0 ) {
+        if( !IS_EXT_SEP( ext->buf[0] ) ) {
+            *p++ = EXT_SEP;
         }
+        memcpy( p, ext->buf, ext->used );
+        p += ext->used;
     }
-    if( ext != NULL ) {
-        if( VbufLen( ext ) > 0 ) {
-            if( !IS_EXT_SEP( VbufString( ext )[0] ) )
-                VbufConcChr( full, EXT_SEP );
-            VbufConcVbuf( full, ext );
-        }
-    }
+
+    *p = '\0';
+    full->used = p - full->buf;
 }
 
 void VbufSplitpath(             // GET A FILE PATH COMPONENTS FROM VBUF

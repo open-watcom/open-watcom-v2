@@ -524,5 +524,6 @@ void FreeVarsList( bool delete_all_vars )
         }
     } else {
         MemFree( Vars.list );
+        Vars.list = NULL;
     }
 }

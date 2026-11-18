@@ -90,7 +90,9 @@ typedef struct {
     unsigned long       block_size;
     char                *root;
     bool                writable;
-#if !defined( __UNIX__ )
+#if defined( __UNIX__ )
+    dev_t               device;
+#else
     bool                fixed;
     bool                removable;
 #endif
@@ -505,25 +507,112 @@ void FiniFsysInfo( void )
     MemFree( FsysInfo );
 }
 
+#if defined( __UNIX__ )
+static const char *GetRootFromPath( VBUF *root, const char *path, dev_t *device )
+#else
 static const char *GetRootFromPath( VBUF *root, const char *path )
-/****************************************************************/
+#endif
+/*******************************************************************************/
 {
     char        curr_dir[_MAX_PATH];
     char        c;
 
 #if defined( __UNIX__ )
+    VBUF        full;
+    VBUF        current;
+    struct stat st;
+    dev_t       curr_device;
+    const char  *src;
+    const char  *end;
+    size_t      len;
+
+    VbufInit( &full );
+    VbufInit( &current );
+
+    /*
+     * Build the absolute logical target path.  The logical spelling is
+     * preserved; the existing components are resolved by stat() only for
+     * determining the filesystem that contains the target.
+     */
     c = path[0];
     if( c == '/' ) {
-        VbufSetStr( root, path );
+        VbufSetStr( &full, path );
     } else if( getcwd( curr_dir, sizeof( curr_dir ) ) == NULL ) {
+        VbufFree( &current );
+        VbufFree( &full );
         return( NULL );
     } else {
-        VbufSetStr( root, curr_dir );
+        VbufSetStr( &full, curr_dir );
         if( c != '\0' ) {
-            VbufAddDirSep( root );
-            VbufConcStr( root, path );
+            VbufAddDirSep( &full );
+            VbufConcStr( &full, path );
         }
     }
+
+    /*
+     * The system root always exists and supplies the initial filesystem
+     * identity.  A later st_dev change marks a filesystem boundary.
+     */
+    if( stat( "/", &st ) != 0 ) {
+        VbufFree( &current );
+        VbufFree( &full );
+        return( NULL );
+    }
+    curr_device = st.st_dev;
+    VbufSetStr( root, "/" );
+    VbufSetStr( &current, "/" );
+
+    /*
+     * Walk the existing components from the system root towards the
+     * target.  The target itself need not exist.  Once a component is
+     * missing, the uncreated suffix necessarily belongs to the last
+     * filesystem reached by the walk.
+     *
+     * Target paths are expected to be lexically normalized, as before;
+     * duplicate separators and "." components are nevertheless ignored.
+     */
+    src = VbufString( &full );
+    while( *src == '/' ) {
+        ++src;
+    }
+    while( *src != '\0' ) {
+        end = src;
+        while( *end != '\0' && *end != '/' ) {
+            ++end;
+        }
+        len = (size_t)( end - src );
+
+        if( len != 0
+          && !(len == 1 && src[0] == '.') ) {
+            if( VbufLen( &current ) > 1 ) {
+                VbufAddDirSep( &current );
+            }
+            VbufConcBuffer( &current, src, (vbuflen)len );
+
+            if( stat( VbufString( &current ), &st ) != 0 ) {
+                if( errno == ENOENT || errno == ENOTDIR ) {
+                    break;
+                }
+                VbufFree( &current );
+                VbufFree( &full );
+                return( NULL );
+            }
+
+            if( st.st_dev != curr_device ) {
+                curr_device = st.st_dev;
+                VbufSetStr( root, VbufString( &current ) );
+            }
+        }
+
+        src = end;
+        while( *src == '/' ) {
+            ++src;
+        }
+    }
+
+    *device = curr_device;
+    VbufFree( &current );
+    VbufFree( &full );
 #else
   #if defined( __NT__ ) || defined( __WINDOWS__ )
     if( TEST_UNC( path ) ) {
@@ -591,9 +680,20 @@ static int AddFsysInfo( int target )
     VBUF        root;
     array_idx   i;
     const char  *p;
+#if defined( __UNIX__ )
+    dev_t       device;
+#endif
 
     VbufInit( &root );
+#if defined( __UNIX__ )
+    p = GetRootFromPath( &root, SimTargetPath( target ), &device );
+#else
     p = GetRootFromPath( &root, SimTargetPath( target ) );
+#endif
+    if( p == NULL ) {
+        VbufFree( &root );
+        return( -1 );
+    }
     for( i = 0; i < FsysArray.num; i++ ) {
 #ifdef __UNIX__
         if( strcmp( FsysInfo[i].root, p ) == 0 ) {
@@ -608,6 +708,9 @@ static int AddFsysInfo( int target )
     BumpArray( &FsysArray );
     ResetFsysInfoData( &FsysInfo[i] );
     FsysInfo[i].root = MemStrdupSafe( p );
+#if defined( __UNIX__ )
+    FsysInfo[i].device = device;
+#endif
     VbufFree( &root );
     SimSetTargetFsys( target, i );
     return( i );
@@ -651,29 +754,12 @@ static bool updateFsysInfo( fsys_info *info, bool removable )
 
         /* unused parameters */ (void)removable;
 
-#if 0
         if( statvfs( info->root, &vfs ) == 0 ) {
             info->block_size = ( vfs.f_frsize != 0 ) ? vfs.f_frsize : vfs.f_bsize;
-            info->free_space = (fsys_size)vfs.f_bfree * (fsys_size)info->block_size;
+            info->free_space = (fsys_size)vfs.f_bavail * (fsys_size)info->block_size;
         } else {
             info->block_size = 1;
         }
-#else
-        int         fd;
-
-        fd = open(info->root, O_RDONLY | O_DIRECTORY);
-        if (fd >= 0) {
-            if (fstatvfs(fd, &vfs) == 0) {
-                info->block_size = ( vfs.f_frsize ) ? vfs.f_frsize : vfs.f_bsize;
-                if (vfs.f_bavail != 0) {
-                    info->free_space = (fsys_size)vfs.f_bavail * info->block_size;
-                } else {
-                    info->free_space = (fsys_size)vfs.f_bfree * info->block_size;
-                }
-            }
-            close(fd);
-        }
-#endif
     }
 #elif defined( __OS2__ )
     {
