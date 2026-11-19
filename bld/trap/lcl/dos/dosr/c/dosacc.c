@@ -600,7 +600,7 @@ trap_retval TRAP_CORE( Prog_load )( void )
     TaskRegs.EFL = MyFlags() & ~USR_FLAGS;
     /* build a DOS command line parameter in our PSP command area */
     Flags &= ~F_BoundApp;
-    psp = DbgPSP();
+    psp = GetDbgPSP();
     name = GetInPtr( sizeof( prog_load_req ) );
     FindFilePath( DIG_FILETYPE_EXE, name, exe_name );
     parm = name;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,9 +32,9 @@
 
 extern __segment    __near GetPSP( void );
 extern void         __near SetPSP( __segment );
-extern void         __near SaveVectors( unsigned long * );
-extern void         __near RestoreVectors( unsigned long * );
-extern void         __near InitPSP( void );
+extern void         __near SaveVectors( unsigned long __far * );
+extern void         __near RestoreVectors( unsigned long __far * );
+extern void         __near InitDbgPSP( void );
 extern int          __near _fork( char __far *pgm, char __far *cmdl );
 
 

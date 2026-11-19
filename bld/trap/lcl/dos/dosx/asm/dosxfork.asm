@@ -114,18 +114,18 @@ RestoreVectors_ endp
 
 DebugPSP        dw  ?
 
-public          DbgPSP_
-DbgPSP_         proc    near
+public          GetDbgPSP_
+GetDbgPSP_      proc    near
                 mov     ax,cs:DebugPSP
                 ret
-DbgPSP_         endp
+GetDbgPSP_      endp
 
-public          InitPSP_
-InitPSP_        proc    near
+public          InitDbgPSP_
+InitDbgPSP_     proc    near
                 call    GetPSP_
                 mov     cs:DebugPSP,ax
                 ret
-InitPSP_        endp
+InitDbgPSP_     endp
 
 
 

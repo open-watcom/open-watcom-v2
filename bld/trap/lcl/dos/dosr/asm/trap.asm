@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2026      The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -734,11 +735,11 @@ DOSTaskPSP_     proc    near
 DOSTaskPSP_     endp
 
 
-public          DbgPSP_
-DbgPSP_         proc    near
+public          GetDbgPSP_
+GetDbgPSP_      proc    near
                 mov     AX,CS:DebugPSP
                 ret
-DbgPSP_         endp
+GetDbgPSP_      endp
 
 
 ; return with carry set if we don't want to watch this interrupt

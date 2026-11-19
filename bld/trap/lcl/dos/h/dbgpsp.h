@@ -24,9 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  DbgPSP function prototype
+* Description:  GetDbgPSP function prototype
 *
 ****************************************************************************/
 
 
-extern __segment    __near DbgPSP( void );
+extern __segment    __near GetDbgPSP( void );

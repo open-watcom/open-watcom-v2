@@ -265,7 +265,7 @@ void __far BackFromProtMode( void )
     BeenToProtMode = 1;
     if( setjmp( ProtModeState ) == 0 ) {
         OldPSP = GetPSP();
-        SetPSP( DbgPSP() );
+        SetPSP( GetDbgPSP() );
         longjmp( RealModeState, 0 );
     }
     SetPSP( OldPSP );

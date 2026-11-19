@@ -34,7 +34,7 @@
 
                 PUBLIC  Fork_
                 EXTRN   DOSEnvFind_             :proc
-                EXTRN   DbgPSP_                 :near
+                EXTRN   GetDbgPSP_              :near
 
 _TEXT segment byte public 'CODE'
 assume cs:_TEXT
@@ -67,7 +67,7 @@ Fork_           proc    near
 
                 mov     CS:savess,SS
                 mov     CS:savebp,BP
-                call    DbgPSP_
+                call    GetDbgPSP_
                 push    AX
                 mov     CX,006cH
                 push    CX

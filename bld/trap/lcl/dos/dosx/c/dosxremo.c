@@ -476,7 +476,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         return( ver );
     }
     _DBG_EnterFunc( "TrapInit()" );
-    InitPSP();
+    InitDbgPSP();
     LoadError = NULL;
     err[0] = '\0';
     strcpy( LinkParms, parms );      // save trap parameters

@@ -71,7 +71,7 @@ const char __far *DOSEnvFind( const char *src )
     char        c1;
     char        c2;
 
-    env = _MK_FP( *(unsigned __far *)_MK_FP( DbgPSP(), 0x2c ), 0 );
+    env = _MK_FP( *(unsigned __far *)_MK_FP( GetDbgPSP(), 0x2c ), 0 );
     do {
         p = src;
         do {
