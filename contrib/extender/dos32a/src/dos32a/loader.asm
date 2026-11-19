@@ -42,7 +42,7 @@
 ;
 ;*****************************************************************************
 
-PushState
+; PushState
 
 APP_MAXOBJECTS	= 64
 
@@ -66,7 +66,7 @@ load_application:
 	call	load_header		; load 'LE'/'LX' exec header
 	call	verbose_showloadhdr
 	mov	ecx,1			; start with Object #1
-@@1:	call	load_object		; load object
+@load_application_1:	call	load_object		; load object
 	call	create_selector		; allocate selector for loaded object
 	call	verbose_showloadobj
 	push	edx			; save Object Selector/Object Flags
@@ -75,16 +75,16 @@ load_application:
 	push	ebx			; save # Page Table Entries
 	inc	cx			; increment Current_Object#
 	cmp	cx,word ptr _app_num_objects
-	jbe	@@1			; loop until all objects are loaded
+	jbe	@load_application_1			; loop until all objects are loaded
 	call	preload_fixups		; preload fixup tables and records
 	mov	ebp,esp			; base pointer to last loaded Object
 	mov	ebx,_app_num_objects	; number of Objects
 	dec	bx
 	shl	bx,4
 	mov	_app_tmp_addr1,ebx
-@@4:	call	relocate_object
+@load_application_4:	call	relocate_object
 	sub	bx,10h
-	jnc	@@4
+	jnc	@load_application_4
 	call	unload_fixups		; free allocated memory for fixups
 	call	close_exec		; close file
 	mov	esp,_sel_esp
@@ -145,13 +145,13 @@ load_header:
 
 	mov	eax,0FFFh
 	cmp	_app_type,0
-	jz	@@done
+	jz	@load_header_done
 	mov	ax,1
 	mov	cx,fs:[002Ch]		; get Page Offset Shift for LX-type
 	shl	ax,cl			; max shift is 15 (8000h-1)
 	dec	ax
 
-@@done:	mov	_app_off_pageshift,eax
+@load_header_done:	mov	_app_off_pageshift,eax
 	ret
 
 
@@ -186,38 +186,38 @@ load_object:
 
 	mov	eax,ebx
 	test	eax,eax			; check if # Page Table Entries = 0
-	jz	@@5			; if yes, skip loading
+	jz	@load_object_5			; if yes, skip loading
 	shl	eax,12			; convert # Page Table Entries to bytes
 	cmp	eax,ecx			; check if # bytes >= bytes to load
-	jae	@@1			; if yes, jump
+	jae	@load_object_1			; if yes, jump
 	mov	ecx,eax			; else adjust number of bytes to read
 
-@@1:	mov	ax,[esp+4]		; get Object #
+@load_object_1:	mov	ax,[esp+4]		; get Object #
 	cmp	ax,word ptr _app_num_objects
-	jnz	@@3
+	jnz	@load_object_3
 	cmp	_app_type,0
-	jnz	@@2
+	jnz	@load_object_2
 	lea	ecx,[ebx-1]		; load LE-style Last Object (BSS)
 	shl	ecx,12
 	add	ecx,_app_siz_lastpage
-	jmp	@@3
-@@2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
+	jmp	@load_object_3
+@load_object_2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
 	shl	ecx,12
 
-@@3:	mov	_err_code,3002h		; "error in app file"
+@load_object_3:	mov	_err_code,3002h		; "error in app file"
 	call	load_gs_block		; load object data
 	mov	eax,ecx
 	mov	edx,_app_off_pageshift
 	test	eax,edx
-	jz	@@4
+	jz	@load_object_4
 	mov	ecx,edx
 	not	edx
 	and	eax,edx
 	lea	eax,[eax+ecx+1]
-@@4:	add	_app_off_datapages,eax
+@load_object_4:	add	_app_off_datapages,eax
 
-@@5:	pop	edx			; restore Object Flags
-@@done:	pop	ecx
+@load_object_5:	pop	edx			; restore Object Flags
+@load_object_done:	pop	ecx
 	ret
 
 
@@ -227,9 +227,9 @@ load_object:
 relocate_object:
 	xor	eax,eax
 	cmp	eax,[ebp+ebx+0]		; get # Page Table Entries[Object]
-	jnz	@@0			; if zero, done
+	jnz	@relocate_object_0			; if zero, done
 	ret
-@@0:	cmp	_app_type,0
+@relocate_object_0:	cmp	_app_type,0
 	jnz	relocate_lx_object
 
 relocate_le_object:
@@ -238,7 +238,7 @@ relocate_le_object:
 	lea	edx,[ecx*4+edx-4]
 	mov	_err_code,3002h		; "error in app file"
 	call	seek_from_start		; *1) move file ptr
-@@1:	push	eax			; EAX = counter
+@relocate_le_object_1:	push	eax			; EAX = counter
 	mov	ecx,4
 	xor	edx,edx
 	mov	_err_code,3002h		; "error in app file"
@@ -246,52 +246,55 @@ relocate_le_object:
 	xor	ecx,ecx			; get index into FixupPageTab
 	mov	ch,fs:[0001h]
 	mov	cl,fs:[0002h]
-	jcxz	@@2
+	jcxz	@relocate_le_object_2
 	mov	eax,_app_off_fixpagetab	; get Fixup Page Table Offset
 	lea	eax,[ecx*4+eax-4]
 	mov	esi,gs:[eax+00h]	; get offset of 1st fixup table
 	mov	ecx,gs:[eax+04h]	; get offset of 2nd fixup table
 	sub	ecx,esi			; calculate size of 1st tab
-	jz	@@2			; if 1st == 2nd, no fixups
+	jz	@relocate_le_object_2			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
 	mov	edi,[esp]		; get current page number
 	shl	edi,12
 	add	edi,[ebp+ebx+8]		; address of page target to fix in mem
 	add	ecx,esi
 	call	apply_fixups		; patch target with fixup data
-@@2:	pop	eax
+@relocate_le_object_2:	pop	eax
 	inc	ax
 	cmp	ax,word ptr [ebp+ebx+0]
-	jb	@@1
+	jb	@relocate_le_object_1
 	ret
 
 relocate_lx_object:
 	mov	ecx,[ebp+ebx+4]		; get Page Table Index
 	mov	edx,_app_off_fixpagetab	; get Fixup Page Table Offset
 	lea	edx,[ecx*4+edx-4]
-@@1:	push	eax edx			; EAX = counter
+@relocate_lx_object_1:	push	eax	; EAX = counter
+	push	edx
 	mov	esi,gs:[edx+00h]	; get offset of 1st fixup table
 	mov	ecx,gs:[edx+04h]	; get offset of 2nd fixup table
 	sub	ecx,esi			; calculate size of 1st tab
-	jz	@@2			; if 1st == 2nd, no fixups
+	jz	@relocate_lx_object_2			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
 	mov	edi,[esp+4]		; get current page number
 	shl	edi,12
 	add	edi,[ebp+ebx+8]		; address of page target to fix in mem
 	add	ecx,esi
 	call	apply_fixups		; patch target with fixup data
-@@2:	pop	edx eax
+@relocate_lx_object_2:	pop	edx
+	pop	eax
 	add	edx,4
 	inc	ax
 	cmp	ax,word ptr [ebp+ebx+0]
-	jb	@@1
+	jb	@relocate_lx_object_1
 	ret
 
 
 
 ;=============================================================================
 apply_fixups:
-@@0:	push	ecx edi
+@apply_fixups_0:	push	ecx
+	push	edi
 	mov	_err_code,4005h		; "unrecognized fixup data"
 	mov	cx,gs:[esi+0]		; get SRC/FLAGS
 	movsx	edx,word ptr gs:[esi+2]	; get SRCOFF
@@ -300,10 +303,10 @@ apply_fixups:
 	test	cx,0F20h		; SrcLists/Imports not supported
 	jnz	file_errorm		; jump if one of these
 	test	cx,4000h		; test if 16bit object number
-	jnz	@@1			; if yes, jump
+	jnz	@apply_fixups_1			; if yes, jump
 	mov	ah,0
 	dec	esi
-@@1:	add	esi,6
+@apply_fixups_1:	add	esi,6
 	dec	eax			; Object Number - 1
 	shl	eax,4
 	mov	edx,_app_tmp_addr1
@@ -314,31 +317,32 @@ apply_fixups:
 	mov	al,cl
 	and	al,0Fh
 	cmp	al,02h			; check if 16bit Selector
-	jz	@@3			; if yes, jump
+	jz	@apply_fixups_3			; if yes, jump
 	cmp	al,08h
 	ja	file_errorm
 	mov	eax,gs:[esi]
 	test	cx,1000h		; check for Alias flag
-	jnz	@@2			; if not, jump
+	jnz	@apply_fixups_2			; if not, jump
 	movzx	eax,ax
 	sub	esi,2
-@@2:	add	esi,4
-@@3:	cmp	cl,07h
-	jnz	@@4
+@apply_fixups_2:	add	esi,4
+@apply_fixups_3:	cmp	cl,07h
+	jnz	@apply_fixups_4
 	add	eax,edx
 	mov	gs:[edi+0],eax
-@@5:	pop	edi ecx
+@apply_fixups_5:	pop	edi
+	pop	ecx
 	cmp	esi,ecx
-	jb	@@0
+	jb	@apply_fixups_0
 	ret
-@@4:	push	si
+@apply_fixups_4:	push	si
 	mov	si,cx
 	and	si,0Fh
 	add	si,si
 	mov	_err_code,4006h		; "16bit fixup overflow"
 	call	fix_tab[si]
 	pop	si
-	jmp	@@5
+	jmp	@apply_fixups_5
 
 ;
 ; EAX = Data
@@ -361,13 +365,13 @@ fix_32selfrel:
 	lea	ecx,[edi+4]
 	sub	eax,ecx
 	test	word ptr [ebp+ebx+12],2000h
-	jnz	@@1
+	jnz	@fix_32selfrel_1
 	lea	ecx,[eax+8002h]
 	shr	ecx,16
 	jnz	file_errorm
 	mov	gs:[edi+0],ax
 	ret
-@@1:	mov	gs:[edi+0],eax
+@fix_32selfrel_1:	mov	gs:[edi+0],eax
 	ret
 fix_16sel:
 	call	check_range
@@ -390,14 +394,14 @@ fix_invalid:
 
 check_range:
 	test	word ptr [ebp+ebx+12],1000h	; check if 16:16 alias requird
-	jnz	@@1				; if yes, jump
+	jnz	@check_range_1				; if yes, jump
 	test	cl,10h
-	jnz	@@1
-@@0:	mov	ecx,_app_tmp_addr2
+	jnz	@check_range_1
+@check_range_0:	mov	ecx,_app_tmp_addr2
 	mov	dx,[ebp+ecx+14]			; get selector
 	ret
-@@1:	test	cl,10h
-	jz	@@0
+@check_range_1:	test	cl,10h
+	jz	@check_range_0
 	mov	ecx,_app_tmp_addr2
 	mov	dx,[ebp+ecx+14]			; get selector
 	test	eax,0FFFF0000h			; check 64K range
@@ -429,7 +433,11 @@ fix_tab	label word
 ; Out:	EDI = address
 ;
 fill_zero_pages:
-	push	es dx eax ecx edi
+	push	es
+	push	dx
+	push	eax
+	push	ecx
+	push	edi
 	push	gs
 	pop	es
 	mov	dl,cl
@@ -439,7 +447,11 @@ fill_zero_pages:
 	mov	cl,dl
 	and	cl,3
 	rep	stos byte ptr es:[edi]
-	pop	edi ecx eax dx es
+	pop	edi
+	pop	ecx
+	pop	eax
+	pop	dx
+	pop	es
 	ret
 
 
@@ -450,62 +462,65 @@ fill_zero_pages:
 alloc_block:
 	push	dx
 	test	eax,eax			; if size of Object is zero
-	jz	@@null			; then report a warning 9005
+	jz	@alloc_block_null			; then report a warning 9005
 	mov	dl,_misc_byte		; get misc byte
 	shr	dx,4			; get memory alloc bits in bit1,0
 	and	dx,3			; mask them
-	jz	@@00			; if 00b alloc scheme, jump
+	jz	@alloc_block_00			; if 00b alloc scheme, jump
 	dec	dx
-	jz	@@01
+	jz	@alloc_block_01
 	dec	dx
-	jz	@@10
+	jz	@alloc_block_10
 	dec	dx
-	jz	@@11
-@@done:	pop	dx
+	jz	@alloc_block_11
+@alloc_block_done:	pop	dx
 	ret
-@@null:	push	ax si
+@alloc_block_null:	push	ax
+	push	si
 	mov	si,[esp+0Ch]
 	mov	ax,9005h
 	call	report_error
-	pop	si ax dx
+	pop	si
+	pop	ax
+	pop	dx
 	xor	edi,edi
 	ret
 
 ;
 ; load 16bit/32bit -> low, then high, then error
 ;---------------------------------------
-@@00:	call	alloc_dos_mem		; try to allocate DOS memory block
-	jnc	@@done			; if allocated, jump
+@alloc_block_00:	call	alloc_dos_mem		; try to allocate DOS memory block
+	jnc	@alloc_block_done			; if allocated, jump
 	mov	_err_code,4003h		; "not enough DPMI mem"
 	call	alloc_dpmi_mem		; try to allocate DPMI memory block
-	jnc	@@done			; if allocated, jump
+	jnc	@alloc_block_done			; if allocated, jump
 	jmp	file_errorm		; if failed, error
 ;
 ; load 16bit -> low, then high, then error
 ; load 32bit -> high only, then error
 ;---------------------------------------
-@@01:	test	cx,2000h		; check if 32bit Object
-	jnz	@@01_1			; if yes, jump
+@alloc_block_01:	test	cx,2000h		; check if 32bit Object
+	jnz	@alloc_block_01_1			; if yes, jump
 	mov	_err_code,4002h		; "not enough DOS mem"
 	call	alloc_dos_mem
-	jnc	@@done			; if allocated, jump
-@@01_1:	mov	_err_code,4003h		; "not enough DPMI mem"
+	jnc	@alloc_block_done			; if allocated, jump
+@alloc_block_01_1:	mov	_err_code,4003h		; "not enough DPMI mem"
 	call	alloc_dpmi_mem
-	jnc	@@done			; if allocated, jump
+	jnc	@alloc_block_done			; if allocated, jump
 	jmp	file_errorm		; if failed, error
 ;
 ; load 16bit/32bit low, then error
 ;---------------------------------------
-@@10:	mov	_err_code,4002h		; "not enough DOS mem"
+@alloc_block_10:	mov	_err_code,4002h		; "not enough DOS mem"
 	call	alloc_dos_mem
-	jnc	@@done
+	jnc	@alloc_block_done
 	jmp	file_errorm		; if failed, error
 ;
 ; load 16bit/32bit high, then error
 ;---------------------------------------
-@@11:	mov	_err_code,4003h		; "not enough DPMI mem"
+@alloc_block_11:	mov	_err_code,4003h		; "not enough DPMI mem"
 	call	alloc_dpmi_mem
-	jnc	@@done
+	jnc	@alloc_block_done
 	jmp	file_errorm		; if failed, error
 
 
@@ -513,12 +528,13 @@ alloc_block:
 
 ;-----------------------------------------------------------------------------
 alloc_dos_mem:
-	push	eax ebp			; EAX = size to allocate
+	push	eax	; EAX = size to allocate
+	push	ebp
 	add	eax,0Fh			; align size on para
 	shr	eax,4
 	test	eax,0FFFF0000h		; check high word of EAX
 	stc
-	jnz	@@done
+	jnz	@alloc_dos_mem_done
 	sub	esp,32h
 	mov	ebp,esp
 	mov	byte ptr [ebp+1Dh],48h	; DOS func: AH=48h
@@ -528,97 +544,113 @@ alloc_dos_mem:
 	shl	edi,4			; NOTE: addres is relative to 0
 	bt	word ptr [ebp+20h],0	; check for errors
 	lea	esp,[esp+32h]
-@@done:	pop	ebp eax
+@alloc_dos_mem_done:	pop	ebp
+	pop	eax
 	ret
 
 ;-----------------------------------------------------------------------------
 alloc_dpmi_mem:
-	push	esi ebx ecx edx eax
+	push	esi
+	push	ebx
+	push	ecx
+	push	edx
+	push	eax
 	mov	ebx,eax
 	mov	ax,0FF91h		; allocate DPMI memory
 	int	21h
-	jc	@@done
+	jc	@alloc_dpmi_mem_done
 	mov	eax,ebx
 	xor	edx,edx
 	test	_misc_byte2,00000100b	; check if para or page alignment
-	jnz	@@l1
+	jnz	@alloc_dpmi_mem_l1
 	test	al,0Fh
-	jz	@@1
-	jmp	@@l2
-@@l1:	test	ax,0FFFh		; check if returned addr aligned
-	jz	@@1			; on PAGE boundary, if yes, jump
-@@l2:	test	_misc_byte2,00000100b
-	jnz	@@l3
+	jz	@alloc_dpmi_mem_1
+	jmp	@alloc_dpmi_mem_l2
+@alloc_dpmi_mem_l1:	test	ax,0FFFh		; check if returned addr aligned
+	jz	@alloc_dpmi_mem_1			; on PAGE boundary, if yes, jump
+@alloc_dpmi_mem_l2:	test	_misc_byte2,00000100b
+	jnz	@alloc_dpmi_mem_l3
 	add	ebx,0Fh
 	and	bl,0F0h
-	jmp	@@l4
-@@l3:	add	ebx,0FFFh
+	jmp	@alloc_dpmi_mem_l4
+@alloc_dpmi_mem_l3:	add	ebx,0FFFh
 	and	bx,0F000h		; align linear addr on PAGE boundary
-@@l4:	sub	ebx,eax			; calculate difference
+@alloc_dpmi_mem_l4:	sub	ebx,eax			; calculate difference
 	mov	edx,ebx
 	add	ebx,[esp]
 	mov	ax,0FF93h		; resize DPMI memory block
 	int	21h
-	jc	@@done
-@@1:	lea	edi,[ebx+edx]		; adjust linear address
+	jc	@alloc_dpmi_mem_done
+@alloc_dpmi_mem_1:	lea	edi,[ebx+edx]		; adjust linear address
 	test	_misc_byte2,00000100b
-	jnz	@@l5
+	jnz	@alloc_dpmi_mem_l5
 	test	di,000Fh
-	jmp	@@l6
-@@l5:	test	di,0FFFh
-@@l6:	stc
-	jnz	@@done
+	jmp	@alloc_dpmi_mem_l6
+@alloc_dpmi_mem_l5:	test	di,0FFFh
+@alloc_dpmi_mem_l6:	stc
+	jnz	@alloc_dpmi_mem_done
 	clc
-@@done:	pop	eax edx ecx ebx esi
+@alloc_dpmi_mem_done:	pop	eax
+	pop	edx
+	pop	ecx
+	pop	ebx
+	pop	esi
 	ret
 
 
 
 ;-----------------------------------------------------------------------------
 create_selector:
-	push	ebx ecx edx esi edi
+	push	ebx
+	push	ecx
+	push	edx
+	push	esi
+	push	edi
 	mov	ax,dx
 	mov	ecx,ebp			; ECX = Virtual Size[Object]
 	mov	dx,_acc_rights		; default: PAGE, USE32, DATA
 	test	al,0004h		; check if object is executable
-	jz	@@1			; if not, jump
+	jz	@create_selector_1			; if not, jump
 	or	dl,0008h		; set selector to Code
-@@1:	test	ax,2000h		; check if object is 32bit
-	jz	@@2			; if not, jump
+@create_selector_1:	test	ax,2000h		; check if object is 32bit
+	jz	@create_selector_2			; if not, jump
 	xor	edi,edi			; set base to Zero
 	or	ecx,-1			; set limit to 4Gb
 
 	test	al,0004h		; check if code or data Object
 	mov	ax,_sel32_cs		; AX = 32bit code selector
-	jnz	@@0			; if code, then jump
+	jnz	@create_selector_0			; if code, then jump
 	mov	ax,_sel32_ss		; AX = 32bit data selector
-@@0:	test	ax,ax			; check if already allocated
-	jnz	@@4			; if yes, use this selector
-	jmp	@@3
+@create_selector_0:	test	ax,ax			; check if already allocated
+	jnz	@create_selector_4			; if yes, use this selector
+	jmp	@create_selector_3
 
-@@2:	and	dx,0BFFFh		; set selector to 16bit
-@@3:	call	set_descriptor		; allocate selector
+@create_selector_2:	and	dx,0BFFFh		; set selector to 16bit
+@create_selector_3:	call	set_descriptor		; allocate selector
 	jc	dpmi_error
-@@4:	pop	edi esi
+@create_selector_4:	pop	edi
+	pop	esi
 	mov	[esp+2],ax		; store selector in high word of EDX
-	pop	edx ecx ebx
+	pop	edx
+	pop	ecx
+	pop	ebx
 	mov	_app_buf_allocsel[ecx*2],ax
 	mov	_app_buf_allocbase[ecx*4],edi
 
 	cmp	cx,word ptr _app_eip_object; is Current_Object# == EIP_Object#
-	jnz	@@l1			; if not, jump
+	jnz	@create_selector_l1			; if not, jump
 	mov	_sel32_cs,ax
 	mov	_unreloc_eip,edi
 	test	dx,2000h		; check if Object is 32bit
-	jz	@@l1			; if not, leave _APP_EIP as is
+	jz	@create_selector_l1			; if not, leave _APP_EIP as is
 	add	_app_eip,edi
 
-@@l1:	cmp	cx,word ptr _app_esp_object; is Current_Object# == ESP_Object#
-	jnz	@@l2			; if not, jump
+@create_selector_l1:	cmp	cx,word ptr _app_esp_object; is Current_Object# == ESP_Object#
+	jnz	@create_selector_l2			; if not, jump
 	mov	_sel32_ss,ax
 	mov	_unreloc_esp,edi
 	add	_app_esp,edi		; adjust ESP
-@@l2:	ret
+@create_selector_l2:	ret
 
 
 preload_fixups:
@@ -629,13 +661,13 @@ preload_fixups:
 	mov	_app_load,0		; default load fixups low
 	mov	ax,0FF95h
 	int	21h
-	jnc	@@1
+	jnc	@preload_fixups_1
 	mov	_app_load,1		; try load fixups hi
 	mov	al,91h
 	int	21h
 	mov	ax,4004h
 	jc	file_error		; if not enough memory, error
-@@1:	mov	_app_buf_fixrecstab,esi
+@preload_fixups_1:	mov	_app_buf_fixrecstab,esi
 
 	mov	_err_code,3002h		; "error in app file"
 	mov	edx,_app_off_fixpagetab	; move file ptr to fixups
@@ -660,11 +692,11 @@ unload_fixups:
 	mov	esi,_app_buf_fixrecstab
 	mov	ax,0FF96h
 	cmp	_app_load,0
-	jz	@@1
+	jz	@unload_fixups_1
 	mov	al,92h
-@@1:	int	21h
+@unload_fixups_1:	int	21h
 	ret
 
 
-PopState
+	.386p
 

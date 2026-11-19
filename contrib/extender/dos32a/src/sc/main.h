@@ -38,6 +38,7 @@
  */
 
 #include <dos.h>
+#include <io.h>
 #include <env.h>
 #include <math.h>
 #include <fcntl.h>
@@ -54,6 +55,8 @@
 extern	int app_num_objects;
 
 extern	int get_exec_type(void);
+extern	int open_exec(char *);
+extern	void close_exec(void);
 
 extern	int create_temp(void);
 extern	int close_temp(void);
@@ -64,6 +67,25 @@ extern	int create_lc_fixups(void);
 
 extern	int relocate_exec(char *);
 extern	int write_oem_to_temp(int, char *, int);
+
+void ArgInit(int argc, char *argv[]);
+void CompressExec(void);
+void CreateLCHeader(void);
+void CreateLCObjects(void);
+void CreateLCFixups(void);
+void UnbindExec(void);
+void BindExec(void);
+void Print(char *format, ...);
+int GetFileSize(char *name);
+void GetDOS32APath(void);
+void CreateD32AEnvVar(void);
+void DeleteTempFiles(void);
+void ShowCount(int count);
+void CopyFile(char *f1, char *f2);
+void CheckExec(char *argv[]);
+int CheckIfExists(char *name);
+void copy_file(char *f1, char *f2);
+void AppendTitleFile(void);
 
 extern	unsigned short exec_handle;
 extern	unsigned short temp_handle;

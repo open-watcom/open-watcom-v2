@@ -39,8 +39,8 @@
 
 		.486p
 		.MODEL flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 
 PUBLIC	Debug_, _Debug, Debug
@@ -76,7 +76,12 @@ _Debug_Init:
 Debug_Init:
 	pushfd
 	pushad
-	push	cs ds es ss fs gs
+	push	cs
+	push	ds
+	push	es
+	push	ss
+	push	fs
+	push	gs
 	cli
 	cld
 
@@ -85,7 +90,8 @@ Debug_Init:
 	cli
 	cld
 
-	push	es ds			; check for DOS/32 Advanced
+	push	es	; check for DOS/32 Advanced
+	push	ds
 	push	cs
 	pop	ds
 	mov	esi,offs __idstring
@@ -95,11 +101,11 @@ Debug_Init:
 	mov	__api_off,edi
 	mov	__api_sel,es
 	pop	es
-	jnc	@@0
-	jmp	@@done
+	jnc	@Debug_Init_3_0
+	jmp	@Debug_Init_3_done
 __idstring	db 'SUNSYS DOS/32A',0
 
-@@0:	push	ds
+@Debug_Init_3_0:	push	ds
 	pop	es
 	mov	ds:__datasel,ds		; set up selectors
 	mov	ds:__zerosel,ds		; DOS/32A defines DS=ES=CS=0
@@ -125,11 +131,11 @@ __idstring	db 'SUNSYS DOS/32A',0
 	mov	edi,offs _registers
 	lea	esi,[esp+52]
 	mov	ecx,14
-@@l1:	mov	eax,[esi]		; copy general & segment regs into buf
+@Debug_Init_3_l1:	mov	eax,[esi]		; copy general & segment regs into buf
 	sub	esi,4
 	mov	[edi],eax
 	add	edi,4
-	loop	@@l1
+	loop	@Debug_Init_3_l1
 	mov	eax,cr0
 	mov	_cr0,eax
 	mov	eax,cr2
@@ -208,7 +214,7 @@ __idstring	db 'SUNSYS DOS/32A',0
 	mov	edx,offs _int0E
 	int	31h
 
-@@dpmi:	clr	eax			; initialize DEBUG REGISTERS
+@Debug_Init_3_dpmi:	clr	eax			; initialize DEBUG REGISTERS
 	mov	dr0,eax		; clear DR0-DR7: linear addresses
 	mov	dr1,eax
 	mov	dr2,eax
@@ -250,9 +256,9 @@ __idstring	db 'SUNSYS DOS/32A',0
 	mov	cx,0007h
 	int	10h
 	cmp	al,1Ch
-	jnz	@@verr
+	jnz	@Debug_Init_3_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_3_verr
 	mov	_vgastate_set,1
 
 	mov	ax,4F04h
@@ -260,15 +266,19 @@ __idstring	db 'SUNSYS DOS/32A',0
 	mov	dx,0000h
 	int	10h
 	cmp	ax,004Fh
-	jnz	@@verr
+	jnz	@Debug_Init_3_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_3_verr
 	mov	_svgastate_set,1
 
-@@verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
+@Debug_Init_3_verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
 
 
-@@done:	pop	gs fs ss es ds		; return to caller
+@Debug_Init_3_done:	pop	gs	; return to caller
+	pop	fs
+	pop	ss
+	pop	es
+	pop	ds
 	add	esp,4
 	sti
 	popad
@@ -290,12 +300,12 @@ _exit:	cli
 	mov	esp,cs:__savedstack
 	and	old_video_mode,7F7Fh
 	cmp	old_video_mode,03h
-	jnz	@@l1
+	jnz	@exit_l1
 	call	restore_video		; raw exit to DOS
 	call	restore_state
 	mov	ax,4C00h
 	int	21h
-@@l1:	mov	ax,0003h
+@exit_l1:	mov	ax,0003h
 	int	10h
 	call	restore_state
 	mov	ax,4C00h

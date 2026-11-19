@@ -37,7 +37,7 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .8086
@@ -72,7 +72,11 @@ exit386:cli
 
 ;=============================================================================
 save_inttab:				; save real mode interrupts
-	push	cx si di ds es
+	push	cx
+	push	si
+	push	di
+	push	ds
+	push	es
 	xor	si,si
 	mov	di,STACKSIZE*16
 	mov	ds,cs:_sel_zero
@@ -83,21 +87,28 @@ save_inttab:				; save real mode interrupts
 	in	al,21h			; save PIC mask
 	mov	ah,al
 	in	al,0A1h
-	pop	es ds di si cx
+	pop	es
+	pop	ds
+	pop	di
+	pop	si
+	pop	cx
 	mov	_pic_mask,ax
 	ret
 
 ;=============================================================================
 restore_inttab:				; restore real mode interrupts
 	test	cs:_misc_byte,00000100b
-	jz	@@done
+	jz	@restore_inttab_done
 	cmp	cs:_sys_type,3
-	jz	@@1
+	jz	@restore_inttab_1
 	xor	eax,eax			; reset Null-Pointer protection
 	mov	dr7,eax
-@@1:	pushf
+@restore_inttab_1:	pushf
 	cli
-	push	si di ds es
+	push	si
+	push	di
+	push	ds
+	push	es
 	xor	di,di
 	mov	si,STACKSIZE*16
 	mov	es,cs:_sel_zero
@@ -109,36 +120,43 @@ restore_inttab:				; restore real mode interrupts
 	out	0A1h,al
 	mov	al,ah
 	out	21h,al
-	pop	es ds di si
+	pop	es
+	pop	ds
+	pop	di
+	pop	si
 	popf
-@@done:	ret
+@restore_inttab_done:	ret
 
 ;=============================================================================
 check_inttab:
 	test	cs:_misc_byte,00001000b
-	jz	@@done
+	jz	@check_inttab_done
 	pushad
-	push	ds es
+	push	ds
+	push	es
 	xor	bx,bx
 	mov	ds,cs:_sel_ss
 	mov	es,cs:_sel_zero
 	mov	esi,STACKSIZE*16
 	xor	edi,edi
 	cld
-@@1:	cmps	dptr ds:[esi],[edi]
-	jnz	@@2
-@@3:	inc	bx
+@check_inttab_1:	cmps	dptr ds:[esi],[edi]
+	jnz	@check_inttab_2
+@check_inttab_3:	inc	bx
 	cmp	bx,256
-	jb	@@1
-	pop	es ds
+	jb	@check_inttab_1
+	pop	es
+	pop	ds
 	popad
-@@done:	ret
-@@2:	mov	ax,9003h
-	push	bx si
+@check_inttab_done:	ret
+@check_inttab_2:	mov	ax,9003h
+	push	bx
+	push	si
 	mov	si,bx
 	call	report_error
-	pop	si bx
-	jmp	@@3
+	pop	si
+	pop	bx
+	jmp	@check_inttab_3
 
 ;=============================================================================
 restore_pit:
@@ -153,31 +171,37 @@ restore_pit:
 
 ;=============================================================================
 set_descriptor:				; EDI=base, ECX=limit, DX=access
-	push	ebx ecx edx ebp
+	push	ebx
+	push	ecx
+	push	edx
+	push	ebp
 	mov	ebp,ecx
 	xor	ax,ax			; allocate descriptor
 	mov	cx,1
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	bx,ax
 	mov	ax,0009h		; set access rights
 	mov	cx,dx
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	dec	ax			; set limit
 	mov	ecx,ebp
 	mov	dx,cx
 	shr	ecx,16
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	dec	ax			; set base
 	mov	ecx,edi
 	mov	dx,cx
 	shr	ecx,16
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	ax,bx
-@@err:	pop	ebp edx ecx ebx
+@set_descriptor_err:	pop	ebp
+	pop	edx
+	pop	ecx
+	pop	ebx
 	ret
 
 ;=============================================================================
@@ -199,7 +223,9 @@ int33h:	push	bx			; simulate INT 33h (Mouse API)
 int21h:	push	bx			; simulate INT 21h (DOS API)
 	mov	bx,21h
 
-intxxh:	push	cx edi es
+intxxh:	push	cx
+	push	edi
+	push	es
 	xor	eax,eax
 	mov	[ebp+20h],ax		; clear Flags
 	mov	[ebp+2Eh],eax		; clear SS:SP
@@ -209,7 +235,10 @@ intxxh:	push	cx edi es
 	mov	edi,ebp
 	mov	ax,0300h
 	int	31h
-	pop	es edi cx bx
+	pop	es
+	pop	edi
+	pop	cx
+	pop	bx
 	jc	dpmi_error
 	ret
 
@@ -242,22 +271,23 @@ initialize_mouse:
 	mov	ds,_sel_zero
 	cmp	dptr ds:[4*33h],0	; check if mouse INT 33h is installed
 	pop	ds
-	jz	@@err			; if not, report warning
+	jz	@initialize_mouse_err			; if not, report warning
 	mov	ax,0021h		; software reset mouse handler
 	int	33h
 	cmp	ax,0021h		; check if function supported
-	jnz	@@1			; if yes, go on
+	jnz	@initialize_mouse_1			; if yes, go on
 	xor	ax,ax			; try hardware reset
 	int	33h
 	inc	ax			; if failed, report warning
-	jnz	@@err
-@@1:	mov	ax,0015h		; get mouse buffer size
+	jnz	@initialize_mouse_err
+@initialize_mouse_1:	mov	ax,0015h		; get mouse buffer size
 	int	33h
 	movzx	eax,bx
 	cmp	eax,_lobufsize
-	jae	@@err
+	jae	@initialize_mouse_err
 	mov	_mus_size,eax
-	push	ds es
+	push	ds
+	push	es
 	push	cs
 	pop	ds
 	push	ss
@@ -266,14 +296,19 @@ initialize_mouse:
 	mov	edi,STACKSIZE*16-40h
 	mov	ax,0303h
 	int	31h
-	pop	es ds
+	pop	es
+	pop	ds
 	jc	dpmi_error
 	mov	_mus_backoff,dx
 	mov	_mus_backseg,cx
 	ret
-@@err:	mov	wptr _int33,0CF66h
+@initialize_mouse_err:	mov	wptr _int33,0CF66h
+If DOS_LEGACY_125_20 ne 0
+	ret				; cleanly disable PM mouse wrapper when INT 33h absent
+Else
 	mov	ax,9004h
 	jmp	report_error		; "mouse init failed"
+Endif
 
 ;=============================================================================
 install_client_ints:
@@ -283,22 +318,22 @@ install_client_ints:
 	mov	bl,10h
 	mov	edx,offs _int10
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,21h
 	mov	dx,offs _int21
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,23h
 	mov	dx,offs _int23
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,33h
 	mov	dx,offs _int33
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 
 	mov	ax,0203h
@@ -306,79 +341,79 @@ install_client_ints:
 	mov	bl,00h
 	mov	dx,offs eh00
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,01h
 	mov	dx,offs eh01
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,02h
 	mov	dx,offs eh02
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,03h
 	mov	dx,offs eh03
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,04h
 	mov	dx,offs eh04
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,05h
 	mov	dx,offs eh05
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,06h
 	mov	dx,offs eh06
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,07h
 	mov	dx,offs eh07
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,08h
 	mov	dx,offs eh08
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,09h
 	mov	dx,offs eh09
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,0Ah
 	mov	dx,offs eh0A
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,0Bh
 	mov	dx,offs eh0B
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,0Ch
 	mov	dx,offs eh0C
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,0Dh
 	mov	dx,offs eh0D
 	int	31h
-	jc	@@err
+	jc	@install_client_ints_err
 
 	mov	bl,0Eh
 	mov	dx,offs eh0E
 	int	31h
 
 	clc
-@@err:	ret
+@install_client_ints_err:	ret
 
 
 ;=============================================================================
@@ -407,22 +442,22 @@ uninstall_client_ints:
 
 	mov	ax,0203h			; restore default PM exception handlers
 	xor	ebx,ebx
-@@0:	mov	cx,wptr cs:_exc_tab[ebx*8+4]
+@uninstall_client_ints_0:	mov	cx,wptr cs:_exc_tab[ebx*8+4]
 	mov	edx,dptr cs:_exc_tab[ebx*8+0]
 	int	31h
 	inc	bl
 	cmp	bl,15
-	jb	@@0
+	jb	@uninstall_client_ints_0
 
 	clc
-@@done:	ret
+@uninstall_client_ints_done:	ret
 
 ;=============================================================================
 install_nullptr_protect:
 	cmp	_sys_type,3
-	jz	@@done
+	jz	@install_nullptr_protect_done
 	test	_misc_byte,10000000b
-	jz	@@done
+	jz	@install_nullptr_protect_done
 
 	xor	eax,eax				; install null-pointer protection
 	mov	dr6,eax
@@ -435,7 +470,7 @@ install_nullptr_protect:
 	mov	dr3,eax
 	mov	eax,0DDDD03FFh
 	mov	dr7,eax
-@@done:	ret
+@install_nullptr_protect_done:	ret
 
 ;=============================================================================
 setup_selectors:
@@ -449,16 +484,16 @@ setup_selectors:
 	or	dl,92h
 	mov	_acc_rights,dx		; set std selector access rights
 	call	set_descriptor		; allocate descriptor
-	jc	@@err
+	jc	@setup_selectors_err
 	mov	_sel_zero,ax
 	mov	ax,0008h		; resize DS limit to 4GB
 	mov	bx,ds			; this might be needed to access
 	mov	cx,0FFFFh		; DOS buffer which is it self 64KB
 	mov	dx,cx
 	int	31h
-	jc	@@err
+	jc	@setup_selectors_err
 	ret
-@@err:	mov	ax,4CFFh
+@setup_selectors_err:	mov	ax,4CFFh
 	int	21h
 
 
@@ -469,67 +504,118 @@ setup_selectors:
 check_command_line:
 	mov	di,80h
 	movzx	cx,es:[di]		; get length of command line
-	jcxz	@@err			; if zero, error
+	jcxz	@check_command_line_err			; if zero, error
 	inc	di			; offset to start of command line
 	mov	al,20h
 	repe	scasb			; look for non-space character
-	jz	@@err			; if not found, error
+	jz	@check_command_line_err			; if not found, error
 	dec	di
 	inc	cx
 	mov	bx,di
-@@1:	mov	al,es:[di]
+@check_command_line_1:	mov	al,es:[di]
 	cmp	al,09h			; look for TAB character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,0Dh			; look for CR character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,20h			; look for ' ' character
-	jz	@@2
+	jz	@check_command_line_2
 	inc	di
-	loop	@@1
-@@2:	mov	cx,di
+	loop	@check_command_line_1
+@check_command_line_2:	mov	cx,di
 	mov	si,bx			; SI = pointer to file name
 	mov	di,bx			; DI = pointer to file name
 	sub	cx,bx			; CX = file name length
-@@done:	ret
-@@err:	xor	si,si
+@check_command_line_done:	ret
+@check_command_line_err:	xor	si,si
 	ret
 
 ;=============================================================================
 remove_name_from_cmd:
 	call	check_command_line
-	jz	@@done
+	jz	@remove_name_from_cmd_done
 	mov	al,20h
 	rep	stosb
-@@done:	ret
+@remove_name_from_cmd_done:	ret
 
 ;=============================================================================
 check_if_fullname:
-	push	ds es
+	push	ds
+	push	es
 	call	check_command_line
-	jz	@@done
+	jz	@check_if_fullname_done
 	mov	al,'\'
 	mov	bx,cx
 	repne	scasb
-	jcxz	@@done
-	push	ds es
-	pop	ds es
+	jcxz	@check_if_fullname_done
+	push	ds
+	push	es
+	pop	ds
+	pop	es
 	mov	cx,bx
 	mov	di,offs start+40h
 	rep	movsb
 	xor	al,al
 	stosb
-@@full:	pop	es ds
+@check_if_fullname_full:	pop	es
+	pop	ds
 	stc
 	ret
-@@done:	pop	es ds
+@check_if_fullname_done:	pop	es
+	pop	ds
 	clc
 	ret
 
 ;=============================================================================
+; dos_open_rdonly: Open DS:EDX read-only with automatic pre-DOS-3.0 mode lowering
+;
+dos_open_rdonly:
+If DOS_LEGACY_125_20 ne 0
+	cmp	cs:_dos_ver_major,3
+	jb	@dos_open_compat
+	mov	ax,3DC0h
+	int	21h
+	jnc	@dos_open_done
+	cmp	ax,1			; retry compatibility mode if SHARE absent (AX=01h)
+	jnz	@dos_open_stc
+@dos_open_compat:
+	mov	ax,3D00h
+	int	21h
+	ret
+@dos_open_stc:
+	stc
+@dos_open_done:
+	ret
+Else
+	mov	ax,3DC0h
+	int	21h
+	ret
+Endif
+
+;=============================================================================
 update_environment:
-	push	ds es
+	push	ds
+	push	es
+If DOS_LEGACY_125_20 ne 0
+	cmp	_using_synth_env,0	; MS-DOS 1.25 / synthesized environment block
+	jz	@update_env_check_v2
+	push	ds
+	pop	es
+	mov	si,offs start
+	mov	di,offs _synth_env+4
+	mov	cx,60
+@update_env_synth_cpy:
+	lodsb
+	stosb
+	test	al,al
+	loopne	@update_env_synth_cpy
+	mov	bptr es:[offs _synth_env+64],0
+	pop	es
+	pop	ds
+	ret
+@update_env_check_v2:
+Endif
 	call	check_if_fullname		; check if full path provided
-	jc	@@skip				; if yes, skip copying
+	jc	@update_environment_skip	; if yes, skip copying
 	mov	ah,19h
 	int	21h				; get drive letter
 	mov	dl,al
@@ -547,16 +633,16 @@ update_environment:
 	mov	cx,64
 	repne	scasb				; get length of dir string
 	cmp	bptr [di-2],'\'
-	jnz	@@0
+	jnz	@update_environment_0
 	dec	di
-@@0:	mov	bptr [di-1],'\'
+@update_environment_0:	mov	bptr [di-1],'\'
 	mov	si,offs start
 	mov	cx,64
-@@1:	lodsb
+@update_environment_1:	lodsb
 	stosb
 	test	al,al
-	loopne	@@1
-@@skip:	push	ds
+	loopne	@update_environment_1
+@update_environment_skip:	push	ds
 	pop	es
 	xor	al,al
 	mov	cx,-1
@@ -568,16 +654,20 @@ update_environment:
 	push	es
 	mov	ax,es:[002Ch]		; get environment selector
 	test	ax,ax			; check if selector is NULL
-	jz	@@err			; if yes, jump to error
+	jz	@update_environment_err	; if yes, jump to error
 	lar	cx,ax
-	jnz	@@err
+	jnz	@update_environment_err
 	mov	es,ax
 	xor	al,al
 	xor	di,di
 	mov	cx,-1
-@@2:	repne	scasb
+If DOS_LEGACY_125_20 ne 0
+	cmp	_dos_ver_major,3	; DOS 2.0 has no argv[0] tail yet; append via new block
+	jb	create_new_environment
+Endif
+@update_environment_2:	repne	scasb
 	scasb
-	jnz	@@2
+	jnz	@update_environment_2
 	inc	di
 	inc	di
 	mov	cx,-1
@@ -590,22 +680,29 @@ update_environment:
 	mov	di,dx
 	mov	si,offs start+40h
 	rep	movsb
-	pop	es ds
+	pop	es
+	pop	ds
 	ret
-@@err:	mov	ax,2000h
+@update_environment_err:	mov	ax,2000h
 	jmp	report_error
 
 create_new_environment:
 	push	bx
 	mov	cx,-1
 	xor	di,di
-@@1:	repne	scasb			; get size of environment
+	cmp	bptr es:[0],0		; handle empty ("\0\0") environment cleanly
+	jz	@create_new_env_empty
+@create_new_environment_1:	repne	scasb			; get size of environment
 	dec	cx
 	scasb
-	jnz	@@1
+	jnz	@create_new_environment_1
 	not	cx
 	inc	cx
 	inc	cx
+	jmp	@create_new_env_alloc
+@create_new_env_empty:
+	mov	cx,4			; "\0\0" + word 0001h
+@create_new_env_alloc:
 	push	cx
 	add	bx,cx
 	shr	bx,4
@@ -613,63 +710,331 @@ create_new_environment:
 	mov	ax,0100h
 	int	31h
 	pop	cx
-	jc	@@err
+	jc	@create_new_environment_err
 	push	es
 	pop	ds
 	mov	es,dx
 	xor	si,si
 	xor	di,di
 	rep	movsb
+	mov	wptr es:[di-2],0001h	; ensure DOS 3.0+ string-count word (0001h)
 	pop	cx
 	mov	si,offs start+40h
 	push	cs
 	pop	ds
 	rep	movsb
-	pop	es ds
+	pop	es
+	pop	ds
 	mov	es:[002Ch],dx
 	ret
-@@err:	mov	ax,2000h
+@create_new_environment_err:	mov	ax,2000h
 	jmp	report_error
 
 
 ;=============================================================================
 open_exec:
-	push	ds es
+	push	ds
+	push	es
 	mov	ax,es:[002Ch]		; get environment selector
 	test	ax,ax			; check if selector is NULL
-	jz	@@err			; if yes, jump to error
+	jz	@open_exec_err		; if yes, jump to error
 	lar	cx,ax
-	jnz	@@err
+	jnz	@open_exec_err
 	mov	es,ax
 	xor	ax,ax
 	xor	di,di
 	mov	cx,0FFFFh
-@@1:	repne	scasb			; look for end of environment
+@open_exec_1:	repne	scasb			; look for end of environment
 	scasb
-	jcxz	@@err			; reached end of environment
-	jnz	@@1
+	jcxz	@open_exec_err		; reached end of environment
+	jnz	@open_exec_1
 	inc	di
 	inc	di
-	push	ds es
-	pop	ds es
+	push	ds
+	push	es
+	pop	ds
+	pop	es
 	push	di
 	mov	si,di
 	mov	di,offs start
-@@2:	lodsb
+@open_exec_2:	lodsb
 	stosb
 	test	al,al
-	jnz	@@2
+	jnz	@open_exec_2
 	pop	di
 	movzx	edx,di			; DS:EDX = pointer to exec name
-	mov	ax,3DC0h		; open file
-	int	21h
-	pop	es ds
+	call	dos_open_rdonly		; open file
+	pop	es
+	pop	ds
 	mov	_exec_handle,ax		; store file handle
 	mov	ax,2001h
 	jc	file_error		; if error, jump
 	ret
-@@err:	mov	ax,2000h
+@open_exec_err:	mov	ax,2000h
 	jmp	report_error
+
+If DOS_LEGACY_125_20 ne 0
+;=============================================================================
+; try_open_self_legacy: Non-fatal check for bound payload on DOS < 3.0
+; Out: CF=0 if self opened and bound MZ+LE found (_exec_start != 0), CF=1 otherwise
+;
+try_open_self_legacy:
+	push	ds
+	push	es
+	push	ds
+	pop	es
+	mov	si,offs _default_self
+	mov	di,offs start
+	mov	cx,11
+	rep	movsb
+	mov	edx,offs start
+	call	dos_open_rdonly
+	jc	@try_self_not_bound
+	mov	_exec_handle,ax
+	xor	edx,edx
+	mov	ecx,64
+	push	bx
+	push	ds
+	push	fs
+	pop	ds
+	mov	bx,cs:_exec_handle
+	mov	ah,3Fh
+	int	21h
+	pop	ds
+	pop	bx
+	jc	@try_self_close
+	cmp	ax,64
+	jb	@try_self_close
+	cmp	wptr fs:[0000h],'ZM'
+	jnz	@try_self_close
+	cmp	wptr fs:[0018h],0040h
+	jnz	@try_self_close
+	mov	eax,fs:[003Ch]
+	test	eax,eax
+	jz	@try_self_close
+	mov	_exec_start,eax
+	pop	es
+	pop	ds
+	clc
+	ret
+@try_self_close:
+	call	close_exec
+@try_self_not_bound:
+If DOS32A_BOUND_STUB ne 0
+	; Bound stub on DOS < 3.0: scan COMMAND.COM memory for the launched .EXE
+	call	find_bound_self_in_ram
+	jnc	@try_self_ok
+Endif
+	pop	es
+	pop	ds
+	stc
+	ret
+@try_self_ok:
+	pop	es
+	pop	ds
+	clc
+	ret
+
+If DOS32A_BOUND_STUB ne 0
+;-----------------------------------------------------------------------------
+; find_bound_self_in_ram: Locate bound .EXE path on MS-DOS 1.25 & 2.00
+;   - DOS 1.25: scans COMMAND.COM FCBs below PSP ([00700h..PSP<<4]) for [drv,8,'EXE']
+;   - DOS 2.00: scans COMMAND.COM EXEC path buffers ([00700h..9FFF0h]) for "*.EXE\0"
+;
+find_bound_self_in_ram:
+	cmp	_dos_ver_major,2
+	jae	@find_bound_dos2
+	movzx	edi,_seg_es
+	shl	edi,4
+	sub	edi,12
+@find_fcb_loop:
+	cmp	edi,00700h
+	jb	@find_bound_fail
+	cmp	wptr gs:[edi+9],'XE'
+	jnz	@find_fcb_next
+	cmp	bptr gs:[edi+11],'E'
+	jnz	@find_fcb_next
+	mov	al,gs:[edi]
+	cmp	al,4
+	ja	@find_fcb_next
+	mov	ah,gs:[edi+1]
+	cmp	ah,21h
+	jb	@find_fcb_next
+	cmp	ah,5Ah
+	ja	@find_fcb_next
+	; Build [D:]NAME.EXE\0 in [offs start]
+	mov	bx,offs start
+	test	al,al
+	jz	@find_fcb_nodrv
+	add	al,'A'-1
+	mov	[bx],al
+	mov	bptr [bx+1],':'
+	add	bx,2
+@find_fcb_nodrv:
+	mov	cx,8
+	mov	esi,edi
+	inc	esi
+@find_fcb_chr:
+	mov	al,gs:[esi]
+	inc	esi
+	cmp	al,' '
+	jz	@find_fcb_ext
+	cmp	al,21h
+	jb	@find_fcb_next
+	mov	[bx],al
+	inc	bx
+	loop	@find_fcb_chr
+@find_fcb_ext:
+	mov	dptr [bx],4558452Eh	; '.EXE'
+	mov	bptr [bx+4],0
+	call	@verify_bound_candidate
+	jnc	@find_bound_hit
+@find_fcb_next:
+	dec	edi
+	jmp	@find_fcb_loop
+
+@find_bound_dos2:
+	; Scan resident COMMAND.COM below PSP first, then transient COMMAND.COM at top of RAM
+	movzx	edi,_seg_es
+	shl	edi,4
+	sub	edi,5
+	mov	ebp,00700h
+	call	@scan_asciiz_exe_range
+	jnc	@find_bound_hit
+	mov	edi,09FFF0h
+	movzx	ebp,wptr es:[0002h]
+	shl	ebp,4
+	cmp	edi,ebp
+	jbe	@find_bound_fail
+	call	@scan_asciiz_exe_range
+	jnc	@find_bound_hit
+@find_bound_fail:
+	stc
+	ret
+@find_bound_hit:
+	; Update argv[0] in environment with discovered bound .EXE name
+	push	ds
+	pop	es
+	cmp	bptr [start+1],':'
+	jnz	@find_bound_norm_done
+	cmp	bptr [start+2],'\'
+	jz	@find_bound_norm_done
+	mov	si,offs start+2
+	mov	di,offs start
+	mov	cx,62
+@find_bound_strip_drv:
+	lodsb
+	stosb
+	test	al,al
+	loopne	@find_bound_strip_drv
+@find_bound_norm_done:
+	mov	si,offs start
+	mov	di,offs start+40h
+	mov	cx,64
+@find_bound_cp40:
+	lodsb
+	stosb
+	test	al,al
+	loopne	@find_bound_cp40
+	mov	es,_sel_es
+	call	update_environment
+	clc
+	ret
+
+@scan_asciiz_exe_range:
+@scan_exe_loop:
+	cmp	edi,ebp
+	jb	@scan_exe_fail
+	cmp	bptr gs:[edi+4],0
+	jnz	@scan_exe_prev
+	cmp	bptr gs:[edi],'.'
+	jnz	@scan_exe_prev
+	mov	eax,gs:[edi+1]
+	and	eax,00DFDFDFh		; uppercase 3 chars
+	cmp	eax,00455845h		; 'EXE'
+	jnz	@scan_exe_prev
+	; Walk backwards to beginning of path token
+	mov	esi,edi
+@scan_exe_bk:
+	cmp	esi,ebp
+	jbe	@scan_exe_copy
+	mov	al,gs:[esi-1]
+	cmp	al,21h
+	jb	@scan_exe_copy
+	cmp	al,7Eh
+	ja	@scan_exe_copy
+	cmp	al,'"'
+	jz	@scan_exe_copy
+	dec	esi
+	mov	ecx,edi
+	sub	ecx,esi
+	cmp	ecx,60
+	jb	@scan_exe_bk
+@scan_exe_copy:
+	cmp	esi,edi
+	jz	@scan_exe_prev
+	mov	bx,offs start
+@scan_exe_cp:
+	mov	al,gs:[esi]
+	mov	[bx],al
+	inc	esi
+	inc	bx
+	test	al,al
+	jnz	@scan_exe_cp
+	call	@verify_bound_candidate
+	jnc	@scan_exe_ok
+@scan_exe_prev:
+	dec	edi
+	jmp	@scan_exe_loop
+@scan_exe_fail:
+	stc
+	ret
+@scan_exe_ok:
+	clc
+	ret
+
+@verify_bound_candidate:
+	push	edi
+	push	ebp
+	mov	edx,offs start
+	call	dos_open_rdonly
+	jc	@verify_cand_fail
+	mov	_exec_handle,ax
+	xor	edx,edx
+	mov	ecx,64
+	push	bx
+	push	ds
+	push	fs
+	pop	ds
+	mov	bx,cs:_exec_handle
+	mov	ah,3Fh
+	int	21h
+	pop	ds
+	pop	bx
+	jc	@verify_cand_close
+	cmp	ax,64
+	jb	@verify_cand_close
+	cmp	wptr fs:[0000h],'ZM'
+	jnz	@verify_cand_close
+	cmp	wptr fs:[0018h],0040h
+	jnz	@verify_cand_close
+	mov	eax,fs:[003Ch]
+	test	eax,eax
+	jz	@verify_cand_close
+	mov	_exec_start,eax
+	pop	ebp
+	pop	edi
+	clc
+	ret
+@verify_cand_close:
+	call	close_exec
+@verify_cand_fail:
+	pop	ebp
+	pop	edi
+	stc
+	ret
+Endif
+Endif
 
 
 
@@ -692,42 +1057,45 @@ load_exec_header:
 
 ;=============================================================================
 open_extrn_exec:
-	push	ds es
-	push	ds es			; swap DS and ES
-	pop	ds es
+	push	ds
+	push	es
+	push	ds	; swap DS and ES
+	push	es
+	pop	ds
+	pop	es
 	mov	di,offs start		; copy application exec name
 	rep	movsb
 	push	es
 	pop	ds
 	mov	bptr [di],0
 	mov	edx,offs start
-	mov	ax,3DC0h
-	int	21h
-	jc	@@1			; if error opening, try ".EXE"
-	pop	es ds
+	call	dos_open_rdonly
+	jc	@open_extrn_exec_1			; if error opening, try ".EXE"
+	pop	es
+	pop	ds
 	mov	_exec_handle,ax
 	ret
 
-@@1:	mov	bx,offs start
-@@2:	cmp	bptr [bx],2Eh
+@open_extrn_exec_1:	mov	bx,offs start
+@open_extrn_exec_2:	cmp	bptr [bx],2Eh
 	stc
-	jz	@@err
+	jz	@open_extrn_exec_err
 	inc	bx
 	cmp	bx,di
-	jb	@@2
+	jb	@open_extrn_exec_2
 	mov	eax,4558452Eh
 	cmp	eax,[di-4]
 	stc
-	jz	@@err
+	jz	@open_extrn_exec_err
 	mov	eax,6578652Eh
 	cmp	eax,[di-4]
 	stc
-	jz	@@err
+	jz	@open_extrn_exec_err
 	mov	[di],eax
 	mov	bptr [di+4],0
-	mov	ax,3DC0h
-	int	21h
-@@err:	pop	es ds
+	call	dos_open_rdonly
+@open_extrn_exec_err:	pop	es
+	pop	ds
 	mov	_exec_handle,ax
 	mov	ax,3001h
 	jc	file_error
@@ -759,18 +1127,18 @@ load_extrn_exec_header:
 
 search_for_mz:
 	xor	esi,esi
-@@0:	movzx	eax,wptr fs:[0004h]	; get pages in file
+@search_for_mz_0:	movzx	eax,wptr fs:[0004h]	; get pages in file
 	shl	eax,9			; *512
 	movzx	ebx,wptr fs:[0002h]	; get bytes on last page
 	add	eax,ebx
 	mov	bx,fs:[0000h]
 	cmp	bx,'ZM'
-	jz	@@1
+	jz	@search_for_mz_1
 	cmp	bx,'WB'
-	jz	@@2
-	jmp	@@3
-@@1:	sub	eax,0200h
-@@2:	mov	esi,ebp
+	jz	@search_for_mz_2
+	jmp	@search_for_mz_3
+@search_for_mz_1:	sub	eax,0200h
+@search_for_mz_2:	mov	esi,ebp
 	add	ebp,eax
 	mov	edx,ebp
 	call	seek_from_start
@@ -778,59 +1146,59 @@ search_for_mz:
 	xor	edx,edx
 	call	load_fs_block
 	test	eax,eax
-	jnz	@@0
+	jnz	@search_for_mz_0
 	mov	ax,3003h
 	jmp	file_error		; if zero, no app in file
-@@3:	mov	bx,fs:[0000h]
+@search_for_mz_3:	mov	bx,fs:[0000h]
 	cmp	bx,'EL'
-	jz	@@4
+	jz	@search_for_mz_4
 	cmp	bx,'XL'
-	jz	@@4
+	jz	@search_for_mz_4
 	cmp	bx,'CL'
-	jz	@@4
+	jz	@search_for_mz_4
 	cmp	bx,'EP'
-	jz	@@4
+	jz	@search_for_mz_4
 	mov	edx,ebp
 	call	seek_from_start
 	call	search_for_le
-@@4:	cmp	eax,esi
-	jz	@@5
+@search_for_mz_4:	cmp	eax,esi
+	jz	@search_for_mz_5
 	mov	edx,esi
 	add	eax,10h
 	add	edx,10h
 	and	al,0F0h
 	and	dl,0F0h
 	cmp	eax,edx
-	jz	@@5
+	jz	@search_for_mz_5
 	mov	_exec_start,ebp
 	mov	_app_off_datapages,esi
-@@5:	ret
+@search_for_mz_5:	ret
 
 search_for_le:
-@@1:	mov	edx,_lobufzero		; DS:EDX = current ptr
+@search_for_le_1:	mov	edx,_lobufzero		; DS:EDX = current ptr
 	mov	ecx,_lobufsize		; ECX = bytes to load
 	call	load_gs_block
 	test	ax,ax			; check if no bytes read
 	mov	ax,3003h
 	jz	file_error		; if true, no app in file
 	shr	cx,1
-@@2:	mov	ax,gs:[edx+0]
+@search_for_le_2:	mov	ax,gs:[edx+0]
 	mov	bx,gs:[edx+2]
 	test	bx,bx
-	jnz	@@4
+	jnz	@search_for_le_4
 	cmp	ax,'EL'			; 'LE' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'XL'			; 'LX' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'CL'			; 'LC' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'PE'			; 'PE' type
-	jz	@@3
-@@4:	add	edx,2
+	jz	@search_for_le_3
+@search_for_le_4:	add	edx,2
 	add	ebp,2			; increment pointer in file
-	loop	@@2
-	jmp	@@1
-@@3:	ret
+	loop	@search_for_le_2
+	jmp	@search_for_le_1
+@search_for_le_3:	ret
 
 
 
@@ -838,38 +1206,53 @@ search_for_le:
 
 ;=============================================================================
 close_exec:
-	mov	bx,cs:_exec_handle
+	xor	bx,bx
+	xchg	bx,cs:_exec_handle
+	test	bx,bx
+	jz	@close_exec_done
 	mov	ah,3Eh
 	int	21h
+@close_exec_done:
 	ret
 
 
 ;=============================================================================
 seek_from_start:
-	push	bx ecx edx eax
+	push	bx
+	push	ecx
+	push	edx
+	push	eax
 	mov	ecx,edx
 	shr	ecx,16
 	mov	bx,cs:_exec_handle
 	mov	ax,4200h
 	int	21h
-	pop	eax edx ecx bx
+	pop	eax
+	pop	edx
+	pop	ecx
+	pop	bx
 	jc	file_errorm
 	ret
 
 
 ;=============================================================================
 load_fs_block:
-	push	bx ds fs
+	push	bx
+	push	ds
+	push	fs
 	pop	ds
 	jmp	@load_block
 load_gs_block:
-	push	bx ds gs
+	push	bx
+	push	ds
+	push	gs
 	pop	ds
 @load_block:
 	mov	bx,cs:_exec_handle
 	mov	ah,3Fh
 	int	21h
-	pop	ds bx
+	pop	ds
+	pop	bx
 	jc	file_errorm
 	ret
 
@@ -882,10 +1265,10 @@ verbose_getmem:
 	shr	eax,10
 	test	eax,0FFFF0000h
 	mov	dx,offs v_msg04
-	jz	@@1
+	jz	@verbose_getmem_1
 	mov	dx,offs v_msg05
 	shr	eax,10
-@@1:	push	dx
+@verbose_getmem_1:	push	dx
 	push	ax
 	mov	ah,48h
 	mov	bx,-1
@@ -896,7 +1279,7 @@ verbose_getmem:
 
 verbose_showsys:
 	test	_misc_byte2,00010000b
-	jz	@@done
+	jz	@verbose_showsys_done
 	call	verbose_getmem
 	movzx	eax,_sys_type
 	lea	eax,v_msg02[eax*4+eax]
@@ -908,11 +1291,11 @@ verbose_showsys:
 	mov	dx,offs v_msg01
 	call	prints
 	add	sp,10
-@@done:	ret
+@verbose_showsys_done:	ret
 
 verbose_showloadhdr:
 	test	_misc_byte2,00010000b
-	jz	@@done
+	jz	@verbose_showloadhdr_done
 	movzx	eax,_app_type
 	lea	eax,v_msg03[eax*2+eax]
 	push	ax
@@ -920,11 +1303,11 @@ verbose_showloadhdr:
 	mov	dx,offs v_msg10
 	call	prints
 	add	sp,4
-@@done:	ret
+@verbose_showloadhdr_done:	ret
 
 verbose_showloadobj:
 	test	_misc_byte2,00010000b
-	jz	@@done
+	jz	@verbose_showloadobj_done
 	pushad
 	mov	ax,dx
 	shr	edx,16
@@ -939,11 +1322,11 @@ verbose_showloadobj:
 	call	prints
 	add	sp,18
 	popad
-@@done:	ret
+@verbose_showloadobj_done:	ret
 
 verbose_showstartup:
 	test	_misc_byte2,00010000b
-	jz	@@done
+	jz	@verbose_showstartup_done
 	push	wptr _seg_env
 	push	wptr es:[002Ch]
 	push	wptr _sel_es
@@ -960,16 +1343,20 @@ verbose_showstartup:
 	mov	dx,offs v_msg12
 	call	prints
 	add	sp,32
-@@done:	ret
+@verbose_showstartup_done:	ret
 
 
 win_focus_vm:				; Windows 9x - set focus on specified VM
 	test	_misc_byte2,00000010b
-	jz	@@done
+	jz	@win_focus_vm_done
+If DOS_LEGACY_125_20 ne 0
+	cmp	_dos_ver_major,4
+	jb	@win_focus_vm_done
+Endif
 	xor	bx,bx
 	mov	ax,168Bh
 	int	2Fh
-@@done:	ret
+@win_focus_vm_done:	ret
 
 
-PopState
+	.386p

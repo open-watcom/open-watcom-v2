@@ -39,8 +39,8 @@
 
 		.486p
 		.MODEL	flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 include	stddef.inc
 
@@ -60,7 +60,29 @@ PUBLIC	bind_exec_
 PUBLIC	find_oem_info_
 
 .CODE
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+externdef _buffer:dword
+externdef _str_dos32a_new:byte
+externdef _str_stub32a_new:byte
+externdef _str_stub32c_new:byte
+externdef _str_dos32a:byte
+externdef _str_stb32a:byte
+externdef _str_stub32a:byte
+externdef _str_dos4g:byte
+externdef _str_pmodew:byte
+externdef _exec_start:dword
+externdef _app_off_datapages:dword
+externdef @buffer:byte
+externdef _tmp_handle1:dword
+externdef _tmp_handle2:dword
+externdef _tmp_size1:dword
+externdef _tmp_size2:dword
+externdef _mem_ptr:dword
+externdef _mem_handle:dword
+externdef _exec_handle:word
+externdef _saved_stack:dword
+externdef _temp_handle:word
+
+;-----------------------------------------------------------------------------
 
 
 
@@ -75,14 +97,14 @@ bind_exec_:
 
 	lea	eax,[ebx+ecx+0FFFh]
 	call	allocate_memory
-	jc	@@err1
+	jc	@bind_exec_err1
 
 	mov	ebx,_tmp_handle1		; load stub
 	mov	ecx,_tmp_size1
 	mov	edx,dword ptr _mem_ptr
 	mov	ah,3Fh
 	int	21h
-	jc	@@err2
+	jc	@bind_exec_err2
 
 	movzx	eax,word ptr [edx+0018h]	; get reloc tab offset
 	mov	esi,dword ptr _mem_ptr
@@ -101,7 +123,7 @@ bind_exec_:
 	mov	edi,dword ptr _mem_ptr
 	add	edi,eax
 	sub	ebx,eax
-	jc	@@err6				; invalid stub format
+	jc	@bind_exec_err6				; invalid stub format
 	mov	ecx,ebx
 	xor	eax,eax
 	rep	stosb
@@ -137,7 +159,7 @@ bind_exec_:
 	add	edx,_tmp_size1
 	mov	ah,3Fh
 	int	21h
-	jc	@@err3
+	jc	@bind_exec_err3
 
 	pushad
 	mov	eax,_exec_start
@@ -148,36 +170,36 @@ bind_exec_:
 	mov	ax,4200h
 	int	21h				; move to next exec in file
 	popad
-	jc	@@err3
+	jc	@bind_exec_err3
 
 	mov	eax,_tmp_size1			; update Data Pages Offset
 	mov	ebp,[edx+80h]
 	add	eax,ebp
 
 	cmp _Main_Type,0
-	jz	@@0
+	jz	@bind_exec_0
 
 	cmp	_Main_Type,1
-	jz	@@1
+	jz	@bind_exec_1
 	cmp	_Main_Type,2
-	jz	@@1
-	jmp	@@2
+	jz	@bind_exec_1
+	jmp	@bind_exec_2
 
-@@0:
+@bind_exec_0:
 	cmp	_Exec_Type,1
-	jz	@@1
+	jz	@bind_exec_1
 	cmp	_Exec_Type,2
-	jz	@@1
-	jmp	@@2
+	jz	@bind_exec_1
+	jmp	@bind_exec_2
 
-@@1:	mov	[edx+80h],eax
+@bind_exec_1:	mov	[edx+80h],eax
 
-@@2:	mov	edx,_tempname			; create temp file
+@bind_exec_2:	mov	edx,_tempname			; create temp file
 	mov	ecx,00h
 	mov	ah,3Ch
 	int	21h
 	mov	_temp_handle,ax
-	jc	@@err4
+	jc	@bind_exec_err4
 
 	mov	edx,dword ptr _mem_ptr
 	mov	ecx,_tmp_size1
@@ -185,7 +207,7 @@ bind_exec_:
 	mov	bx,_temp_handle			; write to temp file
 	mov	ah,40h
 	int	21h
-	jc	@@err5
+	jc	@bind_exec_err5
 
 	mov	bx,_temp_handle			; close temp file
 	mov	ah,3Eh
@@ -195,27 +217,27 @@ bind_exec_:
 	xor	eax,eax
 	ret
 
-@@err1:	call	free_memory
+@bind_exec_err1:	call	free_memory
 	popad
 	mov	eax,-1
 	ret
-@@err2:	call	free_memory
+@bind_exec_err2:	call	free_memory
 	popad
 	mov	eax,-2
 	ret
-@@err3:	call	free_memory
+@bind_exec_err3:	call	free_memory
 	popad
 	mov	eax,-3
 	ret
-@@err4:	call	free_memory
+@bind_exec_err4:	call	free_memory
 	popad
 	mov	eax,-4
 	ret
-@@err5:	call	free_memory
+@bind_exec_err5:	call	free_memory
 	popad
 	mov	eax,-5
 	ret
-@@err6:	call	free_memory
+@bind_exec_err6:	call	free_memory
 	popad
 	mov	eax,-6
 	ret
@@ -227,21 +249,21 @@ unbind_exec_:
 	mov	eax,_filesize			; allocate memory
 	add	eax,0FFFh
 	call	allocate_memory
-	jc	@@err1
+	jc	@unbind_exec_err1
 
 	mov	bx,_exec_handle			; load exec
 	mov	ecx,_filesize
 	mov	edx,dword ptr _mem_ptr
 	mov	ah,3Fh
 	int	21h
-	jc	@@err2
+	jc	@unbind_exec_err2
 
 	mov	edx,_tempname			; create temp file
 	mov	ecx,00h
 	mov	ah,3Ch
 	int	21h
 	mov	_temp_handle,ax
-	jc	@@err3
+	jc	@unbind_exec_err3
 
 	mov	edx,dword ptr _mem_ptr
 	mov	ecx,_filesize
@@ -252,16 +274,16 @@ unbind_exec_:
 	sub	ebp,_app_off_datapages
 	sub	eax,ebp
 	cmp	_Exec_Type,1
-	jz	@@1
+	jz	@unbind_exec_1
 	cmp	_Exec_Type,2
-	jz	@@1
-	jmp	@@2
-@@1:	mov	[edx+80h],eax
+	jz	@unbind_exec_1
+	jmp	@unbind_exec_2
+@unbind_exec_1:	mov	[edx+80h],eax
 
-@@2:	mov	bx,_temp_handle			; write to temp file
+@unbind_exec_2:	mov	bx,_temp_handle			; write to temp file
 	mov	ah,40h
 	int	21h
-	jc	@@err4
+	jc	@unbind_exec_err4
 
 	mov	bx,_temp_handle			; close temp file
 	mov	ah,3Eh
@@ -271,19 +293,19 @@ unbind_exec_:
 	xor	eax,eax
 	ret
 
-@@err1:	call	free_memory
+@unbind_exec_err1:	call	free_memory
 	popad
 	mov	eax,-1
 	ret
-@@err2:	call	free_memory
+@unbind_exec_err2:	call	free_memory
 	popad
 	mov	eax,-2
 	ret
-@@err3:	call	free_memory
+@unbind_exec_err3:	call	free_memory
 	popad
 	mov	eax,-3
 	ret
-@@err4:	call	free_memory
+@unbind_exec_err4:	call	free_memory
 	popad
 	mov	eax,-4
 	ret
@@ -323,18 +345,18 @@ open_exec_:
 	mov	ax,4300h
 	int	21h
 	test	ecx,01h
-	jnz	@@err2
+	jnz	@open_exec_err2
 	mov	ax,3D02h
 	int	21h
-	jc	@@err1
+	jc	@open_exec_err1
 	mov	_exec_handle,ax
 	popad
 	xor	eax,eax
 	ret
-@@err1:	popad
+@open_exec_err1:	popad
 	mov	eax,-1
 	ret
-@@err2:	popad
+@open_exec_err2:	popad
 	mov	eax,-2
 	ret
 
@@ -350,53 +372,53 @@ close_exec_:
 check_if_unbound_exec_:
 	pushad
 	call	seek_to_start
-	jc	@@err1
+	jc	@check_if_unbound_exec_err1
 	mov	ax,3F00h
 	mov	bx,_exec_handle
 	mov	ecx,64			; ECX = 64 bytes to load
 	mov	edx,_buffer		; DS:EDX = ptr
 	int	21h
-	jc	@@err2
+	jc	@check_if_unbound_exec_err2
 	call	seek_to_start
-	jc	@@err1
+	jc	@check_if_unbound_exec_err1
 	cmp	word ptr [edx],'ZM'	; is exec 'MZ' file type
-	jz	@@0
+	jz	@check_if_unbound_exec_0
 	cmp	word ptr [edx],'EL'	; is exec 'LE' file type
-	jz	@@1
+	jz	@check_if_unbound_exec_1
 	cmp	word ptr [edx],'XL'	; is exec 'LX' file type
-	jz	@@2
+	jz	@check_if_unbound_exec_2
 	cmp	word ptr [edx],'CL'	; is exec 'LC' file type
-	jz	@@3
+	jz	@check_if_unbound_exec_3
 	cmp	word ptr [edx],'EP'	; is exec 'PE' file type
-	jz	@@4
+	jz	@check_if_unbound_exec_4
 	cmp	dword ptr [edx],'1WMP'	; is exec 'PMW1' file type
-	jz	@@5
+	jz	@check_if_unbound_exec_5
 	popad
 	mov	eax,-3
 	ret
-@@err1:	popad
+@check_if_unbound_exec_err1:	popad
 	mov	eax,-1
 	ret
-@@err2:	popad
+@check_if_unbound_exec_err2:	popad
 	mov	eax,-2
 	ret
 
-@@0:	popad
+@check_if_unbound_exec_0:	popad
 	mov	eax,0
 	ret
-@@1:	popad
+@check_if_unbound_exec_1:	popad
 	mov	eax,1
 	ret
-@@2:	popad
+@check_if_unbound_exec_2:	popad
 	mov	eax,2
 	ret
-@@3:	popad
+@check_if_unbound_exec_3:	popad
 	mov	eax,3
 	ret
-@@4:	popad
+@check_if_unbound_exec_4:	popad
 	mov	eax,4
 	ret
-@@5:	popad
+@check_if_unbound_exec_5:	popad
 	mov	eax,5
 	ret
 
@@ -454,17 +476,17 @@ load_exec_header:
 search_for_mz:
 	xor	esi,esi
 
-@@0:	movzx	eax,wptr [edx+04h]	; get pages in file
+@search_for_mz_0:	movzx	eax,wptr [edx+04h]	; get pages in file
 	shl	eax,9			; *512
 	movzx	ebx,wptr [edx+02h]	; get bytes on last page
 	add	eax,ebx
 	cmp	wptr [edx],'ZM'
-	jz	@@1
+	jz	@search_for_mz_1
 	cmp	wptr [edx],'WB'
-	jz	@@2
-	jmp	@@3
-@@1:	sub	eax,0200h
-@@2:	mov	esi,ebp
+	jz	@search_for_mz_2
+	jmp	@search_for_mz_3
+@search_for_mz_1:	sub	eax,0200h
+@search_for_mz_2:	mov	esi,ebp
 	add	ebp,eax
 
 	mov	ecx,ebp
@@ -482,14 +504,14 @@ search_for_mz:
 	jc	@err1
 	test	eax,eax
 	jz	@err2			; unknown exec format
-	jmp	@@0
+	jmp	@search_for_mz_0
 
-@@3:	cmp	wptr [edx],'EL'
-	jz	@@4
+@search_for_mz_3:	cmp	wptr [edx],'EL'
+	jz	@search_for_mz_4
 	cmp	wptr [edx],'XL'
-	jz	@@4
+	jz	@search_for_mz_4
 	cmp	wptr [edx],'CL'
-	jz	@@4
+	jz	@search_for_mz_4
 	mov	ecx,ebp
 	mov	edx,ebp
 	shr	ecx,16
@@ -498,13 +520,13 @@ search_for_mz:
 	int	21h			; move to next exec in file
 	jc	@err1
 	call	search_for_le
-@@4:	mov	_exec_start,ebp
+@search_for_mz_4:	mov	_exec_start,ebp
 	mov	_app_off_datapages,esi
 	ret
 
 
 search_for_le:
-@@1:	mov	edx,_buffer		; DS:EDX = current ptr
+@search_for_le_1:	mov	edx,_buffer		; DS:EDX = current ptr
 	mov	ecx,1000h		; ECX = bytes to load
 	mov	ax,3F00h
 	mov	bx,_exec_handle
@@ -513,21 +535,21 @@ search_for_le:
 	test	eax,eax			; check if no bytes read
 	jz	@err2			; if true, no app in file
 	shr	ecx,1
-@@2:	mov	ax,[edx+0]
+@search_for_le_2:	mov	ax,[edx+0]
 	mov	bx,[edx+2]
 	test	bx,bx
-	jnz	@@4
+	jnz	@search_for_le_4
 	cmp	ax,'EL'			; 'LE' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'XL'			; 'LX' type
-	jz	@@3
-@@4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
-	jz	@@3
+	jz	@search_for_le_3
+@search_for_le_4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
+	jz	@search_for_le_3
 	add	edx,2
 	add	ebp,2			; increment pointer in file
-	loop	@@2
-	jmp	@@1
-@@3:	mov	_app_off_datapages,0
+	loop	@search_for_le_2
+	jmp	@search_for_le_1
+@search_for_le_3:	mov	_app_off_datapages,0
 	ret
 
 
@@ -539,51 +561,51 @@ get_exec_type_:
 	mov	bx,_exec_handle
 	mov	ax,4200h
 	int	21h
-	jc	@@err1
+	jc	@get_exec_type_err1
 
 	mov	ax,3F00h
 	mov	bx,_exec_handle
 	mov	ecx,64
 	mov	edx,_buffer
 	int	21h
-	jc	@@err1
+	jc	@get_exec_type_err1
 	test	eax,eax
-	jz	@@err2			; unknown exec format
+	jz	@get_exec_type_err2			; unknown exec format
 
 	cmp	wptr [edx],'EL'
-	jz	@@1
+	jz	@get_exec_type_1
 	cmp	wptr [edx],'XL'
-	jz	@@2
+	jz	@get_exec_type_2
 	cmp	wptr [edx],'CL'
-	jz	@@3
+	jz	@get_exec_type_3
 	cmp	wptr [edx],'EP'
-	jz	@@4
+	jz	@get_exec_type_4
 	cmp	dptr [edx],'1WMP'
-	jz	@@5
+	jz	@get_exec_type_5
 
-@@err2:	popad
+@get_exec_type_err2:	popad
 	mov	eax,-2
 	ret
-@@err1:	popad
+@get_exec_type_err1:	popad
 	mov	eax,-1
 	ret
 
-@@0:	popad
+@get_exec_type_0:	popad
 	xor	eax,eax
 	ret
-@@1:	popad
+@get_exec_type_1:	popad
 	mov	eax,1
 	ret
-@@2:	popad
+@get_exec_type_2:	popad
 	mov	eax,2
 	ret
-@@3:	popad
+@get_exec_type_3:	popad
 	mov	eax,3
 	ret
-@@4:	popad
+@get_exec_type_4:	popad
 	mov	eax,4
 	ret
-@@5:	popad
+@get_exec_type_5:	popad
 	mov	eax,5
 	ret
 
@@ -592,99 +614,124 @@ get_exec_type_:
 get_extender_type_:
 	pushad
 	call	seek_to_start
-	jc	@@err1
+	jc	@get_extender_type_err1
 
 	mov	ax,3F00h
 	mov	bx,_exec_handle
 	mov	ecx,0400h		; ECX = 64 bytes to load
 	mov	edx,_buffer		; DS:EDX = ptr
 	int	21h
-	jc	@@err1
+	jc	@get_extender_type_err1
 
+	mov	ebx,_buffer
+	movzx	edx,wptr [ebx+08h]
+	shl	edx,4
+	cmp	edx,0380h
+	ja	@get_extender_type_legacy
+	mov	esi,offs _str_dos32a_new
+	lea	edi,[ebx+edx+1Ch]
+	call	check_string
+	jnc	@get_extender_type_1
+	mov	ebx,_buffer
+	movzx	edx,wptr [ebx+08h]
+	shl	edx,4
+	mov	esi,offs _str_stub32c_new
+	lea	edi,[ebx+edx+0Ch]
+	call	check_string
+	jnc	@get_extender_type_2
+	mov	ebx,_buffer
+	movzx	edx,wptr [ebx+08h]
+	shl	edx,4
+	mov	esi,offs _str_stub32a_new
+	lea	edi,[ebx+edx]
+	call	check_string
+	jnc	@get_extender_type_3
+
+@get_extender_type_legacy:
 	mov	ebx,_buffer
 	mov	esi,offs _str_dos32a
 	lea	edi,[ebx+009Ah]
 	call	check_string
-	jnc	@@1
+	jnc	@get_extender_type_1
 	mov	ebx,_buffer
 	mov	esi,offs _str_stb32a
 	lea	edi,[ebx+006Ah]
 	call	check_string
-	jnc	@@2
+	jnc	@get_extender_type_2
 	mov	ebx,_buffer
 	mov	esi,offs _str_stub32a
 	lea	edi,[ebx+0040h]
 	call	check_string
-	jnc	@@3
+	jnc	@get_extender_type_3
 
 	mov	ebx,_buffer
 	mov	esi,offs _str_dos32a_new
 	lea	edi,[ebx+009Ch]
 	call	check_string
-	jnc	@@1
+	jnc	@get_extender_type_1
 	mov	ebx,_buffer
 	mov	esi,offs _str_stub32c_new
 	lea	edi,[ebx+006Ch]
 	call	check_string
-	jnc	@@2
+	jnc	@get_extender_type_2
 	mov	ebx,_buffer
 	mov	esi,offs _str_stub32a_new
 	lea	edi,[ebx+0040h]
 	call	check_string
-	jnc	@@3
+	jnc	@get_extender_type_3
 
 	mov	esi,offs _str_dos4g
 	lea	edi,[ebx+025Ah]
 	call	check_string
-	jnc	@@4
+	jnc	@get_extender_type_4
 	mov	esi,offs _str_dos4g
 	lea	edi,[ebx+025Ch]
 	call	check_string
-	jnc	@@4
+	jnc	@get_extender_type_4
 
 	mov	esi,offs _str_pmodew
 	lea	edi,[ebx+0055h]
 	call	check_string
-	jnc	@@5
+	jnc	@get_extender_type_5
 
 	popad
 	xor	eax,eax
 	ret
-@@err1:	popad
+@get_extender_type_err1:	popad
 	mov	eax,-1
 	ret
 
-@@1:	popad
+@get_extender_type_1:	popad
 	mov	eax,1			; DOS/32A
 	ret
-@@2:	popad
+@get_extender_type_2:	popad
 	mov	eax,2			; STUB/32A Configurable
 	ret
-@@3:	popad
+@get_extender_type_3:	popad
 	mov	eax,3			; STUB/32A Standard
 	ret
-@@4:	popad
+@get_extender_type_4:	popad
 	mov	eax,4			; DOS/4G
 	ret
-@@5:	popad
+@get_extender_type_5:	popad
 	mov	eax,5			; PMODE/W
 	ret
 
 
 check_string:
 	pushad
-@@0:	mov	al,[esi]
+@check_string_0:	mov	al,[esi]
 	test	al,al
-	jz	@@ok
+	jz	@check_string_ok
 	cmp	al,[edi]
-	jnz	@@err
+	jnz	@check_string_err
 	inc	esi
 	inc	edi
-	jmp	@@0
-@@ok:	popad
+	jmp	@check_string_0
+@check_string_ok:	popad
 	clc
 	ret
-@@err:	popad
+@check_string_err:	popad
 	stc
 	ret
 
@@ -727,38 +774,38 @@ find_oem_info_:
 	pushad
 	mov	edx,_exec_start
 	call	seek_from_start
-	jc	@@err
+	jc	@find_oem_info_err
 
 	mov	ecx,10h				; read LC header
 	mov	edx,_buffer
 	call	read_from_exec
-	jc	@@err
+	jc	@find_oem_info_err
 
 	mov	al,[edx+05h]			; get LC flags
 	test	al,80h				; check if OEM is appended
-	jz	@@err
+	jz	@find_oem_info_err
 
 	xor	esi,esi				; current Object #
 	movzx	ebp,byte ptr [edx+04h]		; get # of Objects
 
-@@1:	mov	ecx,10h				; read Object header
+@find_oem_info_1:	mov	ecx,10h				; read Object header
 	mov	edx,_buffer
 	call	read_from_exec
-	jc	@@err
+	jc	@find_oem_info_err
 	mov	edx,[edx+04h]			; get Object compressed size
 	call	seek_from_current
-	jc	@@err
+	jc	@find_oem_info_err
 	inc	esi
 	cmp	esi,ebp
-	jnz	@@1
+	jnz	@find_oem_info_1
 
 	mov	ecx,0Ch				; read Fixups header
 	mov	edx,_buffer
 	call	read_from_exec
-	jc	@@err
+	jc	@find_oem_info_err
 	mov	edx,[edx+04h]			; get Fixups compressed size
 	call	seek_from_current
-	jc	@@err
+	jc	@find_oem_info_err
 
 	xor	eax,eax
 	mov	ecx,128
@@ -768,22 +815,22 @@ find_oem_info_:
 	mov	ecx,512
 	mov	edx,_buffer
 	call	read_from_exec
-	jc	@@err
+	jc	@find_oem_info_err
 	test	eax,eax				; if read nothing, no OEM info
-	jz	@@err
+	jz	@find_oem_info_err
 
 	popad
 	mov	eax,_buffer
 	ret
 
-@@err:	popad
+@find_oem_info_err:	popad
 	xor	eax,eax
 	ret
 
 
 
 .DATA
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+;-----------------------------------------------------------------------------
 _buffer			dd offset @buffer
 
 _str_dos32a_new		db 'DOS/32A',0
@@ -802,7 +849,7 @@ _app_off_datapages	dd 0
 
 
 .DATA?
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+;-----------------------------------------------------------------------------
 @buffer			db 10000h dup(?)
 _tmp_handle1		dd ?
 _tmp_handle2		dd ?

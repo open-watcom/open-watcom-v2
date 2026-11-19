@@ -43,7 +43,7 @@
 
 int21h_pm:
 	cmp	ah,4Ch			; watch for INT 21h AH=4Ch
-	jne	@@done
+	jne	@int21h_pm_done
 
 	cli
 	cld
@@ -65,18 +65,22 @@ int21h_pm:
 	mov	es:[4*23h],eax
 	mov	eax,oldint24h
 	mov	es:[4*24h],eax
+If DOS_LEGACY_125_20 ne 0
+	mov	eax,oldint2Ah
+	mov	es:[4*2Ah],eax
+Endif
 	mov	eax,oldint2Fh
 	mov	es:[4*2Fh],eax
 
 	call	mem_dealloc		; dealloc memory for current process
 	movzx	bx,pmodetype		; appropriate exit routine
 	add	bx,bx
-	call	@@exit[bx]		; call cleanup routine on exit
+	call	@int21h_pm_exit[bx]		; call cleanup routine on exit
 
 	pop	ax			; restore AX
-@@done:	jmp	int_matrix+4*21h	; go to INT 21h redirection
+@int21h_pm_done:	jmp	int_matrix+4*21h	; go to INT 21h redirection
 
-@@exit	dw r_exit
+@int21h_pm_exit	dw r_exit
 	dw x_exit
 	dw v_exit
 	dw d_exit
@@ -86,27 +90,28 @@ int21h_pm:
 ;=============================================================================
 mem_dealloc:
 	cmp	id32_process_id,0	; no need in freeing memory when
-	jz	@@done			;  only one process is running
+	jz	@mem_dealloc_done			;  only one process is running
 
 	mov	esi,mem_ptr
 	mov	eax,mem_free
 	or	eax,esi			; check if memory was allocated
-	jz	@@done			; if not, we are done
+	jz	@mem_dealloc_done			; if not, we are done
 
-@@1:	mov	eax,es:[esi+04h]
+@mem_dealloc_1:	mov	eax,es:[esi+04h]
 	mov	edx,es:[esi+08h]
 	btr	eax,31
 	cmp	edx,dptr id32_process_id	; block allocated from this process
-	jnz	@@2			; if not, jump
+	jnz	@mem_dealloc_2			; if not, jump
 	mov	es:[esi+04h],eax	; otherwise set this block as free
-@@2:	lea	esi,[esi+eax+10h]	; get ptr to next memory block
+@mem_dealloc_2:	lea	esi,[esi+eax+10h]	; get ptr to next memory block
 	cmp	esi,mem_top		; check if at top of memory
-	jb	@@1			; if not, loop
-	push	ds es
+	jb	@mem_dealloc_1			; if not, loop
+	push	ds
+	push	es
 	pop	ds
 	call	int31_linkfreeblocks
 	pop	ds
-@@done:	ret
+@mem_dealloc_done:	ret
 
 
 ; RAW exit prologue
@@ -130,12 +135,12 @@ v_exit:	mov	cx,vcpi_allocmem	; check if memory was allocated
 	mov	esi,pagetablefree
 	jcxz	xms_dealloc		; if no VCPI memory was allocated, try XMS
 
-@@0:	mov	edx,es:[esi]
+@v_exit_0:	mov	edx,es:[esi]
 	add	esi,4
 	and	dx,0F000h
 	mov	ax,0DE05h
 	call	fptr vcpi_calleip
-	loop	@@0
+	loop	@v_exit_0
 
 	mov	eax,vcpi_cr3		; reload CR3 to flush page cache
 	mov	cr3,eax
@@ -146,7 +151,7 @@ xms_dealloc:				; XMS deallocate memory
 	test	dx,dx
 	jz	d_exit			; if not, done
 
-@@0:	mov	ah,0Dh			; unlock XMS memory
+@xms_dealloc_0:	mov	ah,0Dh			; unlock XMS memory
 	call	xms_call_pm
 	mov	ah,0Ah			; free XMS memory
 xms_call_pm:

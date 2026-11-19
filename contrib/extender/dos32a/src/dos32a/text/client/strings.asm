@@ -37,7 +37,7 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .8086
@@ -51,25 +51,28 @@ report_errorm:
 ; note: this function may autimatically terminate the client
 ;
 report_error:
-	push	bx ds
+	push	bx
+	push	ds
 	cmp	cs:_sel_ds,0
-	jnz	@@1
+	jnz	@report_error_1
 	mov	ds,cs:_seg_ds
-	jmp	@@2
-@@1:	mov	ds,cs:_sel_ds
-@@2:	xor	bx,bx
-@@3:	cmp	ah,g_errtab[bx]		; check Global error #
-	jz	@@4			; if found, jump
+	jmp	@report_error_2
+@report_error_1:	mov	ds,cs:_sel_ds
+@report_error_2:	xor	bx,bx
+@report_error_3:	cmp	ah,g_errtab[bx]		; check Global error #
+	jz	@report_error_4			; if found, jump
 	cmp	bptr [bx],0FFh
-	jz	@@done
+	jz	@report_error_done
 	add	bx,4
-	jmp	@@3
+	jmp	@report_error_3
 
-@@4:	cmp	g_errtab[bx+1],1	; check if warning
-	jnz	@@5			; if not, jump
+@report_error_4:	cmp	g_errtab[bx+1],1	; check if warning
+	jnz	@report_error_5			; if not, jump
 	test	_misc_byte,00000001b	; check if report warnings on
-	jz	@@done			; if not, done
-@@5:	push	ax cx dx
+	jz	@report_error_done			; if not, done
+@report_error_5:	push	ax
+	push	cx
+	push	dx
 	push	bx
 	mov	bl,g_errtab[bx+1]
 	mov	bh,0
@@ -78,32 +81,37 @@ report_error:
 	mov	dx,h_errtab[bx]		; DX = Header error string
 	pop	bx
 
-	push	di si			; SI, DI = event. parameters
+	push	di	; SI, DI = event. parameters
+	push	si
 	mov	si,wptr g_errtab[bx+2]	; SI = Local error offset
 	mov	bl,al
 	mov	bh,0
 	add	bx,bx			; BX = Local error #
 	mov	di,[bx+si]		; DX = Local error string
 	test	di,di
-	jz	@@6
+	jz	@report_error_6
 	push	ax
 	call	prints
 	pop	ax
 	mov	dx,di
 	call	prints
 	call	printcr
-@@6:	pop	si di
+@report_error_6:	pop	si
+	pop	di
 	cmp	cl,1
-	jnz	@@exit
-	pop	dx cx ax
-@@done:	pop	ds bx
+	jnz	@report_error_exit
+	pop	dx
+	pop	cx
+	pop	ax
+@report_error_done:	pop	ds
+	pop	bx
 	ret
 
-@@exit:	mov	al,-1
+@report_error_exit:	mov	al,-1
 	cmp	_sel_cs,0
-	jnz	@@0
+	jnz	@report_error_0
 	jmp	exit86
-@@0:	jmp	exit386
+@report_error_0:	jmp	exit386
 
 
 
@@ -114,7 +122,7 @@ report_error:
 ;
 copyright:
 	test	_misc_byte2,00001000b
-	jz	@@done
+	jz	@copyright_done
 	mov	ax,_version
 	mov	bx,offs ver_msg
 	mov	si,offs cpr_msg
@@ -129,14 +137,14 @@ copyright:
 	mov	[bx+2],ah
 	mov	[bx+4],al
 	mov	cx,offs cpr_end - offs cpr_msg
-@@1:	lodsb
+@copyright_1:	lodsb
 	push	cx
 	xor	bx,bx
 	mov	ah,0Eh
 	int	10h
 	pop	cx
-	loop	@@1
-@@done:	ret
+	loop	@copyright_1
+@copyright_done:	ret
 
 
 
@@ -174,7 +182,15 @@ printcr:
 ;	... = arguments pushed on stack
 ;
 prints:
-	push	ax bx cx dx si di bp ds es
+	push	ax
+	push	bx
+	push	cx
+	push	dx
+	push	si
+	push	di
+	push	bp
+	push	ds
+	push	es
 	push	ss
 	pop	es
 	mov	bp,sp
@@ -183,104 +199,115 @@ prints:
 	mov	si,dx		; DS:SI -> string
 	mov	di,sp		; ES:DI -> space for formatted string
 	push	di
-@@loop:	lodsb
+@prints_loop:	lodsb
 	cmp	al,'%'
-	jz	@@args
+	jz	@prints_args
 	cmp	al,'$'
-	jnz	@@next
+	jnz	@prints_next
 	mov	al,'?'
-@@next:	stosb
+@prints_next:	stosb
 	test	al,al
-	jnz	@@loop
+	jnz	@prints_loop
 	pop	di
 	call	writes
 	add	sp,STRSIZE
-	pop	es ds bp di si dx cx bx ax
+	pop	es
+	pop	ds
+	pop	bp
+	pop	di
+	pop	si
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
 	ret
-@@args:	lodsb
+@prints_args:	lodsb
 	cmp	al,'%'
-	jz	@@next
+	jz	@prints_next
 	cmp	al,'c'		; char
-	jz	@@c
+	jz	@prints_c
 	cmp	al,'s'		; string
-	jz	@@s
+	jz	@prints_s
 	cmp	al,'b'		; byte
-	jz	@@b
+	jz	@prints_b
 	cmp	al,'w'		; word
-	jz	@@w
+	jz	@prints_w
 	cmp	al,'l'		; long
-	jz	@@l
+	jz	@prints_l
 	cmp	al,'d'		; decimal
-	jz	@@d
-	jmp	@@next		; unrecognized
-@@c:	mov	al,[bp]
+	jz	@prints_d
+	jmp	@prints_next		; unrecognized
+@prints_c:	mov	al,[bp]
 	add	bp,2
-	jmp	@@next
-@@s:	mov	bx,[bp]
+	jmp	@prints_next
+@prints_s:	mov	bx,[bp]
 	add	bp,2
-@@s0:	mov	al,[bx]
+@prints_s0:	mov	al,[bx]
 	inc	bx
 	test	al,al
-	jz	@@loop
+	jz	@prints_loop
 	cmp	al,'$'
-	jnz	@@s1
+	jnz	@prints_s1
 	mov	al,'?'
-@@s1:	stosb
-	jmp	@@s0
-@@b:	mov	ah,[bp]
+@prints_s1:	stosb
+	jmp	@prints_s0
+@prints_b:	mov	ah,[bp]
 	add	bp,2
 	mov	cx,2
-	call	@@hex
-	jmp	@@loop
-@@w:	mov	ax,[bp]
+	call	@prints_hex
+	jmp	@prints_loop
+@prints_w:	mov	ax,[bp]
 	add	bp,2
 	mov	cx,4
-	call	@@hex
-	jmp	@@loop
-@@l:	mov	ax,[bp+2]
+	call	@prints_hex
+	jmp	@prints_loop
+@prints_l:	mov	ax,[bp+2]
 	mov	cx,4
-	call	@@hex
+	call	@prints_hex
 	mov	ax,[bp]
 	add	bp,4
 	mov	cx,4
-	call	@@hex
-	jmp	@@loop
-@@d:	mov	ax,[bp]
+	call	@prints_hex
+	jmp	@prints_loop
+@prints_d:	mov	ax,[bp]
 	add	bp,2
 	xor	cx,cx
-	call	@@dec
-	jmp	@@loop
-@@hex:	rol	ax,4
+	call	@prints_dec
+	jmp	@prints_loop
+@prints_hex:	rol	ax,1
+	rol	ax,1
+	rol	ax,1
+	rol	ax,1
 	mov	bl,al
 	and	bl,0Fh
 	add	bl,30h
 	cmp	bl,39h
-	jbe	@@hex0
+	jbe	@prints_hex0
 	add	bl,07h
-@@hex0:	xchg	ax,bx
+@prints_hex0:	xchg	ax,bx
 	stosb
 	xchg	ax,bx
-	loop	@@hex
+	loop	@prints_hex
 	ret
-@@dec:	mov	bx,10000
-	call	@@dec0
+@prints_dec:	mov	bx,10000
+	call	@prints_dec0
 	mov	bx,1000
-	call	@@dec0
+	call	@prints_dec0
 	mov	bx,100
-	call	@@dec0
+	call	@prints_dec0
 	mov	bx,10
-	call	@@dec0
-	jmp	@@dec2
-@@dec0:	xor	dx,dx
+	call	@prints_dec0
+	jmp	@prints_dec2
+@prints_dec0:	xor	dx,dx
 	div	bx
 	test	ax,ax
-	jz	@@dec1
+	jz	@prints_dec1
 	inc	cx
-@@dec1:	test	cx,cx
-	jz	@@dec3
-@@dec2:	add	al,30h
+@prints_dec1:	test	cx,cx
+	jz	@prints_dec3
+@prints_dec2:	add	al,30h
 	stosb
-@@dec3:	mov	ax,dx
+@prints_dec3:	mov	ax,dx
 	ret
 
 ;=============================================================================
@@ -294,13 +321,13 @@ writes:	xor	al,al
 	mov	ax,0924h
 	mov	[di],al
 	cmp	cs:_sel_cs,0
-	jnz	@@0
+	jnz	@writes_0
 	int	21h
 	ret
 
 .386p
 ;-----------------------------------------------------------------------------
-@@0:	push	ebp
+@writes_0:	push	ebp
 	sub	esp,32h
 	mov	ebp,esp
 	mov	[ebp+1Ch],ax
@@ -336,4 +363,4 @@ common_error:
 	jmp	report_error
 
 
-PopState
+	.386p

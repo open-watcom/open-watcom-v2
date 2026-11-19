@@ -37,13 +37,14 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .386p
 ;=============================================================================
 _int10:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	ah,1Bh
@@ -62,7 +63,8 @@ _int10:	cld
 	jz	@v_4F0Ah
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	db	66h
 	jmp	cs:_int10_ip
 
@@ -151,8 +153,10 @@ _int10:	cld
 	int	10h
 	mov	ecx,ebx
 	shl	ecx,4
-	push	ds es
-	pop	ds es
+	push	ds
+	push	es
+	pop	ds
+	pop	es
 	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
@@ -188,32 +192,32 @@ _int10:	cld
 	mov	esi,_lobufbase
 	test	dl,dl
 	mov	ecx,64
-	jnz	@@1
+	jnz	@v_4F01h_1
 
 	lea	ebx,[esi+06h]		; offset of OEM Str
-	call	@@mod
+	call	@v_4F01h_mod
 	lea	ebx,[esi+0Eh]		; offset of VideoMode Ptr
-	call	@@mod
+	call	@v_4F01h_mod
 	lea	ebx,[esi+16h]		; offset of OEM Version Ptr
-	call	@@mod
+	call	@v_4F01h_mod
 	lea	ebx,[esi+1Ah]		; offset of OEM Name Ptr
-	call	@@mod
+	call	@v_4F01h_mod
 	lea	ebx,[esi+1Eh]		; offset of OEM Revision Ptr
-	call	@@mod
+	call	@v_4F01h_mod
 	mov	ecx,128
-@@1:	rep	movs dptr es:[edi],[esi]
+@v_4F01h_1:	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
 
-@@mod:	movzx	edx,wptr [ebx+00h]	; get low word (offset)
+@v_4F01h_mod:	movzx	edx,wptr [ebx+00h]	; get low word (offset)
 	movzx	eax,wptr [ebx+02h]	; get high word (segment)
 	shl	eax,4			; convert real mode seg:off
 	add	eax,edx			; to linear ptr relative to zero
 	mov	dx,[ebx+02h]
 	cmp	dx,_seg_buf
-	jnz	@@ok
+	jnz	@v_4F01h_ok
 	sub	eax,_lobufzero		; since the structure will be moved
 	add	eax,edi			; from buffer, we must adjust ptr
-@@ok:	mov	[ebx+00h],eax
+@v_4F01h_ok:	mov	[ebx+00h],eax
 	ret
 
 
@@ -266,8 +270,10 @@ _int10:	cld
 	int	10h
 	mov	ecx,ebx
 	shl	ecx,4
-	push	ds es
-	pop	ds es
+	push	ds
+	push	es
+	pop	ds
+	pop	es
 	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
@@ -289,10 +295,10 @@ _int10:	cld
 ;
 @v_4F09h:
 	cmp	bl,03h
-	jbe	@@0
+	jbe	@v_4F09h_0
 	cmp	bl,80h
 	jnz	@v_err
-@@0:	sub	esp,32h
+@v_4F09h_0:	sub	esp,32h
 	mov	ebp,esp
 	mov	[ebp+1Ch],ax
 	mov	[ebp+18h],cx
@@ -303,21 +309,23 @@ _int10:	cld
 	mov	wptr [ebp+22h],ax
 	mov	wptr [ebp+00h],0
 	test	bl,bl
-	jz	@@1
+	jz	@v_4F09h_1
 	dec	bl
-	jz	@@2
+	jz	@v_4F09h_2
 	dec	bl
-	jz	@@1
+	jz	@v_4F09h_1
 	dec	bl
-	jz	@@2
-@@1:	mov	esi,edi
+	jz	@v_4F09h_2
+@v_4F09h_1:	mov	esi,edi
 	mov	edi,_lobufbase
-	push	ds es
-	pop	ds es
+	push	ds
+	push	es
+	pop	ds
+	pop	es
 	rep	movs dptr es:[edi],[esi]
 	call	int10h
 	jmp	@v_ok
-@@2:	call	int10h
+@v_4F09h_2:	call	int10h
 	mov	esi,_lobufbase
 	rep	movs dptr es:[edi],[esi]
 	jmp	@v_ok
@@ -374,4 +382,4 @@ _int10:	cld
 	jmp	@__ok
 
 
-PopState
+	.386p

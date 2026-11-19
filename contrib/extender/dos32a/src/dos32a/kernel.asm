@@ -48,33 +48,36 @@ BUILDING_CLIENT = 0
 ;
 ;*****************************************************************************
 
-		.386p
-		.387
-		LOCALS
-		NOJUMPS
+.8086
+; LOCALS
+; NOJUMPS
 
 SELCODE		= 08h			; KERNEL code selector
-SELDATA		= 10h			; KERNEL data selector
-SELZERO		= 18h			; ZERO data selector
+K_SELDATA		= 10h			; KERNEL data selector
+K_SELZERO		= 18h			; ZERO data selector
 SELVCPITSS	= 20h			; TSS selector for VCPI
 SELVCPICODE	= 28h			; VCPI call code selector
 SELVCPICOD2	= 30h			; VCPI internal selector #2
 SELVCPICOD3	= 38h			; VCPI internal selector #3
 SELBIOSDATA	= 40h			; BIOS DATA Area 40h selector
-SELCALLBACK	= 48h			; Callback DS selector
+K_SELCALLBACK	= 48h			; Callback DS selector
 
 SYSSELECTORS	= 10			; number of system selectors in GDT
 
-INCLUDE	TEXT\include.asm
+INCLUDE	text/include.asm
 PUBLIC	pm32_info
 PUBLIC	pm32_init
 PUBLIC	pm32_data
+PUBLIC	pm32_psp_seg
+PUBLIC	dos_ver_major
 PUBLIC	@kernel_beg
 PUBLIC	@kernel_end
 
 
-_KERNEL	segment para public use16 'CODE1'
+_KERNEL	segment para public 'CODE1'
 	assume	cs:_KERNEL, ds:_KERNEL
+	.386p
+	.387
 ;=============================================================================
 pm32_data	label byte	; data area 12 bytes
 pm32_mode	db	-1	; mode bits:
@@ -190,15 +193,20 @@ picslave	db	0		; PIC slave base interrupt
 picmaster	db	0		; PIC master base interrupt
 __reserved_1	db	0		; reserved
 A20_state	db	0		; old A20 gate state
+dos_ver_major	db	0		; detected DOS major version (1, 2, 3, 4+)
+dos_ver_minor	db	0		; detected DOS minor version
+pm32_psp_seg	dw	0		; cached startup PSP segment from client entry
+oldint2Ah	dd	0		; preserved real-mode INT 2Ah vector
+rm_iret_stub:	iret			; resident real-mode IRET stub for null IVT slots
 cpuidlvl	dd	0		; CPUID level
 
 		evendata
 codebase	dd	0		; _KERNEL linear address
 dpmiepmode	dd	0		; DPMI enter pmode addx
 
-selzero		dw	SELZERO		; for immediate segreg loading
-seldata		dw	SELDATA		; for immediate segreg loading
-selcallback	dw	SELCALLBACK	; for immediate segreg loading
+selzero		dw	K_SELZERO		; for immediate segreg loading
+seldata		dw	K_SELDATA		; for immediate segreg loading
+selcallback	dw	K_SELCALLBACK	; for immediate segreg loading
 gdtseg		dw	0		; segment of GDT
 gdtlimit	dw	0		; GDT limit
 gdtbase		dd	0		; GDT base
@@ -251,25 +259,25 @@ int31h_cache	label word
 ;=============================================================================
 ; PROTECTED MODE INIT/EXIT CODE
 
-include	TEXT\KERNEL\detect.asm
-include	TEXT\KERNEL\init.asm
-include	TEXT\KERNEL\exit.asm
-include	TEXT\KERNEL\misc.asm
+include	text/kernel/detect.asm
+include	text/kernel/init.asm
+include	text/kernel/exit.asm
+include	text/kernel/misc.asm
 
 
 ;=============================================================================
 ; PROTECTED MODE KERNEL CODE
 
-include	TEXT\KERNEL\mode.asm
-include	TEXT\KERNEL\intr.asm
-include	TEXT\KERNEL\int31h.asm
+include	text/kernel/mode.asm
+include	text/kernel/intr.asm
+include	text/kernel/int31h.asm
 
 
 ;=============================================================================
 ; BETA test code
 
 If EXEC_TYPE eq 2
-include	TEXT\testbeta.asm
+include	text/testbeta.asm
 Endif
 
 	Align 16

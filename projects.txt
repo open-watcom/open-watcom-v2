@@ -33,6 +33,7 @@ cvpack          - CodeView debug info packing utility
 dig             - used by debugger
 dip             - used by debugger
 dmpobj          - OMF file dump utility
+dos32a          - the DOS/32A 32-bit DOS extender and tools
 dwarf           - dwarf reading/writing libraries
 editdll         - DLL to integrate VI and codewright with watcom IDE
 exedump         - multi-format dump utility

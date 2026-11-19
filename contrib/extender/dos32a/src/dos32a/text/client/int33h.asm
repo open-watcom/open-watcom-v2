@@ -37,13 +37,14 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .386p
 ;=============================================================================
 _int33:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	ax,0009h
@@ -64,7 +65,8 @@ _int33:	cld
 	jz	@__0020h
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	db	66h
 	jmp	cs:_int33_ip
 
@@ -162,10 +164,10 @@ _mus_int_def:
 	mov	_mus_sel,es
 	mov	ax,es
 	or	eax,edx
-	jz	@@1
+	jz	@mus_int_def_1
 	mov	ax,_seg_ds
 	mov	dx,offs _mus_int_rm
-@@1:	mov	wptr [ebp+14h],dx
+@mus_int_def_1:	mov	wptr [ebp+14h],dx
 	mov	wptr [ebp+22h],ax
 	cli
 	call	int33h
@@ -177,14 +179,17 @@ _mus_int_def:
 _mus_int_rm:
 	cmp	cs:_mus_data,0
 	mov	cs:_mus_data,1
-	jnz	@@1
+	jnz	@mus_int_rm_1
 	jmp	dword ptr cs:_mus_backoff
-@@1:	retf
+@mus_int_rm_1:	retf
 
 _mus_int_pm:
 	cld
 	pushad
-	push	ds es fs gs
+	push	ds
+	push	es
+	push	fs
+	push	gs
 	xor	eax,eax
 
 	mov	ax,ds
@@ -196,12 +201,12 @@ _mus_int_pm:
 	mov	ax,ss
 	lar	eax,eax
 	shr	eax,23
-	jc	@@1
+	jc	@mus_int_pm_1
 	movzx	esp,sp
 
-@@1:	mov	ax,cs:_seg_ds
+@mus_int_pm_1:	mov	ax,cs:_seg_ds
 	mov	wptr es:[edi+2Ch],ax
-	mov	wptr es:[edi+2Ah],offs @@done
+	mov	wptr es:[edi+2Ah],offs @mus_int_pm_done
 
 	movzx	eax,wptr es:[edi+1Ch]
 	movzx	ecx,wptr es:[edi+18h]
@@ -214,10 +219,13 @@ _mus_int_pm:
 
 	lss	esp,fword ptr cs:_mus_esp
 
-	pop	gs fs es ds
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
 	popad
 	iretd
-@@done:	mov	cs:_mus_data,0
+@mus_int_pm_done:	mov	cs:_mus_data,0
 	retf
 
 
@@ -282,4 +290,4 @@ _mus_int_pm:
 	jmp	@__ok
 
 
-PopState
+	.386p

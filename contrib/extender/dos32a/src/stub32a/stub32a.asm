@@ -39,14 +39,14 @@
 
 	.286
 	.MODEL tiny
-	LOCALS
+; LOCALS
 
 .CODE
 ;=============================================================================
 db	'STUB/32A'							,0
 db	'Copyright (C) 1996-2006 by Narech K.'				,0
-db	??date								,0
-db	??time								,0
+db	'04-20-06'								,0
+db	'00:00:00'								,0
 
 
 start:	sti
@@ -64,7 +64,7 @@ start:	sti
 	int	21h
 	jc	err1
 
-@@1:	mov	es,es:[002Ch]		; get environment
+@start_1:	mov	es,es:[002Ch]		; get environment
 	call	make_cmd
 	mov	bp,0090h
 	call	exec
@@ -81,15 +81,16 @@ err1:	mov	ax,4CFFh
 
 ;-----------------------------------------------------------------------------
 make_cmd:
-	push	ds es
+	push	ds
+	push	es
 	push	ss
 	pop	ds
 	xor	ax,ax
 	xor	di,di
 	mov	cx,7FFFh
-@@1:	repne	scasb
+@make_cmd_1:	repne	scasb
 	scasb
-	jnz	@@1
+	jnz	@make_cmd_1
 	inc	di
 	inc	di
 	mov	si,di
@@ -111,7 +112,8 @@ make_cmd:
 	inc	cx
 	mov	es:[0010h],al
 	rep	movsb
-	pop	es ds
+	pop	es
+	pop	ds
 	ret
 
 
@@ -119,33 +121,33 @@ make_cmd:
 find_path1:
 	xor	ax,ax
 	xor	di,di
-@@1:	mov	cx,0007h
+@find_path1_1:	mov	cx,0007h
 	mov	si,offset path1
-	rep	cmpsb
-	jz	@@2
+	repe	cmpsb
+	jz	@find_path1_2
 	mov	cl,0FFh
 	repne	scasb
 	cmp	al,es:[di]
-	jnz	@@1
+	jnz	@find_path1_1
 	ret
-@@2:	mov	al,20h				; skip leading spaces
+@find_path1_2:	mov	al,20h				; skip leading spaces
 	mov	cl,0FFh
-	rep	scasb
+	repe	scasb
 	cmp	word ptr es:[di],'\:'
-	jz	@@3
+	jz	@find_path1_3
 	ret
-@@3:	dec	di
+@find_path1_3:	dec	di
 	mov	bp,0090h
-@@loop:	mov	al,es:[di]
+@find_path1_loop:	mov	al,es:[di]
 	test	al,al
-	jz	@@4
+	jz	@find_path1_4
 	inc	di
 	cmp	al,20h
-	jz	@@4
+	jz	@find_path1_4
 	mov	[bp],al
 	inc	bp
-	jmp	@@loop
-@@4:	mov	byte ptr [bp],'\'
+	jmp	@find_path1_loop
+@find_path1_4:	mov	byte ptr [bp],'\'
 	mov	word ptr [bp+1],'IB'
 	mov	word ptr [bp+3],'WN'
 	add	bp,5
@@ -158,47 +160,53 @@ find_path1:
 find_path2:
 	xor	ax,ax
 	xor	di,di
-@@1:	mov	cx,0005h
+@find_path2_1:	mov	cx,0005h
 	mov	si,offset path2
-	rep	cmpsb
-	jz	@@2
+	repe	cmpsb
+	jz	@find_path2_2
 	mov	cl,0FFh
 	repne	scasb
 	cmp	al,es:[di]
-	jnz	@@1
+	jnz	@find_path2_1
 	ret
-@@2:	mov	bp,0090h
-@@loop:	mov	al,es:[di]
+@find_path2_2:	mov	bp,0090h
+@find_path2_loop:	mov	al,es:[di]
 	test	al,al
 	jz	exec
 	inc	di
 	cmp	al,20h
-	jz	@@loop
+	jz	@find_path2_loop
 	cmp	al,';'
-	jz	@@3
+	jz	@find_path2_3
 	mov	[bp],al
 	inc	bp
-	jmp	@@loop
-@@3:	call	exec
-	jmp	@@2
+	jmp	@find_path2_loop
+@find_path2_3:	call	exec
+	jmp	@find_path2_2
 
 
 ;-----------------------------------------------------------------------------
-exec:	push	ds es di
+exec:	push	ds
+	push	es
+	push	di
 	xor	si,si
 	cmp	bp,0090h
-	jz	@@0
+	jz	@exec_0
 	inc	si
 	mov	byte ptr [bp],'\'
-@@0:	lea	di,[bp+si]
+@exec_0:	lea	di,[bp+si]
 	mov	si,offset name1
 	push	ss
 	pop	es
 	mov	cx,11
 	rep	movsb
 
-	push	ss ss ss
-	pop	ds es ax
+	push	ss
+	push	ss
+	push	ss
+	pop	ds
+	pop	es
+	pop	ax
 	xor	bx,bx
 	mov	word ptr ds:[0000h],bx
 	mov	word ptr ds:[0002h],0010h
@@ -211,14 +219,16 @@ exec:	push	ds es di
 	mov	dx,0090h
 	mov	ax,4B00h
 	int	21h
-	jc	@@1
+	jc	@exec_1
 
 	mov	ah,4Dh
 	int	21h
 	mov	ah,4Ch
 	int	21h
 
-@@1:	pop	di es ds
+@exec_1:	pop	di
+	pop	es
+	pop	ds
 	ret
 
 

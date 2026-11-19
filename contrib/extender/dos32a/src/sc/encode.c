@@ -42,6 +42,8 @@
 #include <typedefs.h>
 //#include <debug.h>
 
+void ShowCount(int count);
+
 #define N			4*1024	// size of the buffer
 #define F			18
 #define THRESHOLD	2

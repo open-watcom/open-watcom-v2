@@ -38,6 +38,7 @@
  */
 
 #include <dos.h>
+#include <io.h>
 #include <math.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -59,5 +60,14 @@ extern	int get_extender_type(void);
 extern	int unbind_exec(void);
 extern	int bind_exec(int, int, int, int);
 extern	char *find_oem_info(void);
+
+void ArgInit(int argc, char *argv[]);
+void UnbindExec(char *argv[]);
+void BindExec(char *argv[]);
+void Print(char *format, ...);
+void CheckIfExists(char *name);
+int GetFileSize(char *name);
+void copy_file(char *f1, char *f2);
+void DisplayOEMInfo(void);
 
 extern	short exec_handle;

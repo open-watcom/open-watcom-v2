@@ -38,6 +38,7 @@
  */
 
 #include <dos.h>
+#include <io.h>
 #include <math.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -47,7 +48,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <typedefs.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 //#include <debug.h>
 
 #define	BLACK		0
@@ -104,9 +105,18 @@ void ShowKernelMenu(void);
 void ShowKernelConfig(void);
 void SelectKernelMenu(void);
 
-void ShowExtenderMemu(void);
+void ShowExtenderMenu(void);
 void ShowExtenderConfig(void);
 void SelectExtenderMenu(void);
+
+void ArgInit(int argc, char *argv[]);
+void ShowHeaderInfo(void);
+void ValidateConfig(void);
+void CreateConfig(void);
+void RestoreConfig(void);
+void ClearConfigName(void);
+void ShowBannerStatus(void);
+void DiskError(void);
 
 void ShowMainMenu(void);
 void SelectMainMenu(void);
@@ -121,6 +131,7 @@ extern	void SetPos(char, char);
 extern	void SetColor(char);
 extern	void SetBackColor(char);
 extern	void SetBlink(char);
+extern	void PrintC(char);
 extern	void Prints(char *);
 extern	void PrintHelp(char *);
 extern	short int GetKey(void);

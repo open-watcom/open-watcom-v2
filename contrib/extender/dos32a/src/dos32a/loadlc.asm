@@ -1,3 +1,8 @@
+_ic_byte	equ	_int_number			;db 0
+_xc_byte	equ	_app_load			;db 0
+_srcaddr	equ	_app_tmp_addr1			;dd 0
+_codesize	equ	_app_tmp_addr2			;dd 0
+
 ;
 ; Copyright (C) 1996-2006 by Narech K. All rights reserved.
 ;
@@ -126,9 +131,9 @@ load_lc_object:
 	mov	_err_code,3002h		; "error in app file"
 	mov	ebx,fs:[0004h]		; EBX = compressed data size
 	mov	ecx,ebx
-	jecxz	@@done			; skip null-size Objects
+	jecxz	@load_lc_object_done			; skip null-size Objects
 	cmp	_ic_byte,0
-	jnz	@@1
+	jnz	@load_lc_object_1
 	mov	ax,0FF91h
 	int	21h
 	mov	ax,4003h		; "not enough extended memory"
@@ -139,9 +144,9 @@ load_lc_object:
 	mov	ax,0FF92h
 	mov	esi,_app_buf_fixrecstab
 	int	21h
-	jmp	@@done
-@@1:	call	load_gs_block
-@@done:	pop	ebp			; get Virtual_Size[Object]
+	jmp	@load_lc_object_done
+@load_lc_object_1:	call	load_gs_block
+@load_lc_object_done:	pop	ebp			; get Virtual_Size[Object]
 	movzx	ebx,word ptr fs:[000Eh]	; get # Page Table Entries
 	movzx	edx,word ptr fs:[0008h]	; get Flags[Object]
 	movzx	esi,word ptr fs:[000Ch]	; get Page Table Index
@@ -171,7 +176,7 @@ preload_lc_fixups:
 	mov	ebx,fs:[0004h]
 	mov	ecx,ebx
 	cmp	_ic_byte,0
-	jnz	@@1
+	jnz	@preload_lc_fixups_1
 	mov	ax,0FF91h		; alloc memory for Encoded fixups
 	inc	ebx			; prevent error when EBX = 0
 	int	21h
@@ -181,9 +186,9 @@ preload_lc_fixups:
 	call	decompress_data
 	mov	ax,0FF92h
 	int	21h
-	jmp	@@done
-@@1:	call	load_gs_block
-@@done:	mov	_app_off_fixpagetab,edi
+	jmp	@preload_lc_fixups_done
+@preload_lc_fixups_1:	call	load_gs_block
+@preload_lc_fixups_done:	mov	_app_off_fixpagetab,edi
 	add	edi,fs:[0008h]
 	mov	_app_off_fixrectab,edi
 	ret
@@ -217,40 +222,40 @@ decompress:
 	pop	edi
 	xor	bx,bx
 	mov	edx,0FEEh
-@@3:	shr	bx,1
+@decompress_3:	shr	bx,1
 	and	dx,0FFFh
 	test	bh,01h
-	je	@@6
-@@4:	test	bl,01h
-	je	@@8
+	je	@decompress_6
+@decompress_4:	test	bl,01h
+	je	@decompress_8
 	call	getbyte
-	js	@@5
+	js	@decompress_5
 	mov	[esi+edx],al
 	mov	gs:[edi],al
 	inc	dx
 	inc	edi
-	jmp	@@3
-@@5:	mov	_codesize,edi		; for INT 21h / AX=0FF8Dh function
+	jmp	@decompress_3
+@decompress_5:	mov	_codesize,edi		; for INT 21h / AX=0FF8Dh function
 	popad
 	ret
-@@6:	call	getbyte
-	js	@@5
+@decompress_6:	call	getbyte
+	js	@decompress_5
 	or	ah,-1
 	mov	bx,ax
-	jmp	@@4
-@@8:	call	getbyte
-	js	@@5
+	jmp	@decompress_4
+@decompress_8:	call	getbyte
+	js	@decompress_5
 	mov	cl,al
 	call	getbyte
-	js	@@5
+	js	@decompress_5
 	mov	ch,al
 	shr	ch,4
 	and	ax,0Fh
 	add	al,02h
 	mov	bp,ax
 	test	ax,ax
-	jl	@@3
-@@9:	and	cx,0FFFh
+	jl	@decompress_3
+@decompress_9:	and	cx,0FFFh
 	and	dx,0FFFh
 	mov	al,[esi+ecx]
 	mov	[esi+edx],al
@@ -259,25 +264,21 @@ decompress:
 	inc	dx
 	inc	edi
 	dec	bp
-	jns	@@9
-	jmp	@@3
+	jns	@decompress_9
+	jmp	@decompress_3
 
 
 ;-----------------------------------------------------------------------------
 getbyte:mov	eax,_srcaddr
 	mov	al,gs:[eax]
 	xor	al,_xc_byte
-	inc	_srcaddr
+	inc	dptr _srcaddr
 	mov	_xc_byte,al
-	dec	_codesize
+	dec	dptr _codesize
 	ret
 
 
 
 
 ;-----------------------------------------------------------------------------
-_ic_byte	equ	_int_number			;db 0
-_xc_byte	equ	_app_load			;db 0
-_srcaddr	equ	_app_tmp_addr1			;dd 0
-_codesize	equ	_app_tmp_addr2			;dd 0
 

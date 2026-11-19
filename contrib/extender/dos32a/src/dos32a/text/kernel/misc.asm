@@ -41,26 +41,26 @@
 ;=============================================================================
 int15h_rm:
 	cmp	ah,88h			; if function 88h, need to process
-	jz	@@1
+	jz	@int15h_rm_1
 	cmp	ax,0E801h		; if function 0E801h, not supported
-	jz	@@err
+	jz	@int15h_rm_err
 	cmp	ax,0E820h		; if function 0E820h, not supported
-	jz	@@err
+	jz	@int15h_rm_err
 	jmp	cs:oldint15h		; chain to the old INT 15h handler
 
-@@1:	pushf				; call old INT 15h handler
+@int15h_rm_1:	pushf				; call old INT 15h handler
 	call	cs:oldint15h
 	sub	ax,cs:mem_used		; adjust AX by extended memory used
-	jnc	@@ok
+	jnc	@int15h_rm_ok
 	xor	ax,ax			; reset on overflow
 
-@@ok:	push	bp
+@int15h_rm_ok:	push	bp
 	mov	bp,sp
 	and	bptr [bp+6],0FEh	; clear carry flag on stack for IRET
 	pop	bp
 	iret
 
-@@err:	push	bp
+@int15h_rm_err:	push	bp
 	mov	bp,sp
 	or	bptr [bp+6],01h		; set carry flag on stack for IRET
 	pop	bp
@@ -72,13 +72,13 @@ int15h_rm:
 ;=============================================================================
 int21h_rm:
 	cmp	cs:id32_tsrmode_id,0	; if we are TSR, ignore 0FF88h calls
-	jnz	@@1
+	jnz	@int21h_rm_1
 
 	cmp	ax,0FF88h		; DOS/32A id call
 	jz	int21h_call
 
 	cmp	cs:id32_spawned_id,0	; check if we're in spawn mode
-	jnz	@@1			; if yes, chain to the previous handler
+	jnz	@int21h_rm_1			; if yes, chain to the previous handler
 
 	cmp	ah,4Ch			; Real mode INT 21h
 	jz	int21h_exit
@@ -86,21 +86,21 @@ int21h_rm:
 	jz	int21h_spawn
 	cmp	ah,31h
 	jz	int21h_tsr
-@@1:	jmp	cs:oldint21h		; go to original real mode INT 21h
+@int21h_rm_1:	jmp	cs:oldint21h		; go to original real mode INT 21h
 
 
 ;-----------------------------------------------------------------------------
 int21h_exit:
 	cli
 	mov	bp,ax			; preserve AX=exit code
-	mov	ax,SELDATA		; DS selector for protected mode
+	mov	ax,K_SELDATA		; DS selector for protected mode
 	mov	cx,ax
-	mov	dx,SELZERO		; SS selector = zero selector
+	mov	dx,K_SELZERO		; SS selector = zero selector
 	mov	ebx,cs:pmstacktop	; EBX = ESP for protected mode
 	mov	si,SELCODE		; target protected mode CS:EIP
-	mov	edi,offs @@1
+	mov	edi,offs @int21h_exit_1
 	jmp	cs:rmtopmswrout		; switch to protected mode
-@@1:	mov	ax,bp			; restore AX=exit code
+@int21h_exit_1:	mov	ax,bp			; restore AX=exit code
 	jmp	int21h_pm
 
 ;-----------------------------------------------------------------------------
@@ -109,8 +109,11 @@ int21h_spawn:
 	pushf
 	call	cs:oldint21h
 	mov	cs:id32_spawned_id,0
-	pop	bx cx dx		; pop IP, CS, FLG
-	push	cx bx			; push CS, IP
+	pop	bx	; pop IP, CS, FLG
+	pop	cx
+	pop	dx
+	push	cx	; push CS, IP
+	push	bx
 	retf
 
 ;-----------------------------------------------------------------------------
@@ -203,12 +206,14 @@ intold_save:
 	mov	es:[edi+20h],ax
 	mov	eax,ds:[esi+00h]	; update CS:IP in structure
 	mov	es:[edi+2Ah],eax
-	push	es edi
+	push	es
+	push	edi
 	jmp	bp
 
 ;-----------------------------------------------------------------------------
 intold_restore:
-	pop	edi es
+	pop	edi
+	pop	es
 	add	es:[edi+2Eh],ax
 	iretd
 
@@ -224,7 +229,7 @@ enable_A20:				; hardware enable gate A20
 	call	enablea20test		; is A20 already enabled?
 	setz	al			; AL = 00h (OFF),  AL = 01h (ON)
 	mov	A20_state,al
-	jz	@@done			; if yes, done
+	jz	@enable_A20_done			; if yes, done
 	in	al,92h			; PS/2 A20 enable
 	or	al,02h
 	jmp	short $+2
@@ -232,54 +237,55 @@ enable_A20:				; hardware enable gate A20
 	jmp	short $+2
 	out	92h,al
 	call	enablea20test
-	jz	@@done
+	jz	@enable_A20_done
 	call	enablea20kbwait		; AT A20 enable
-	jnz	@@f0
+	jnz	@enable_A20_f0
 	mov	al,0D1h
 	out	64h,al
 	call	enablea20kbwait
-	jnz	@@f0
+	jnz	@enable_A20_f0
 	mov	al,0DFh
 	out	60h,al
 	call	enablea20kbwait
-@@f0:	mov	cx,0800h		; wait for A20 to enable do 800h tries
-@@l0:	call	enablea20test		; is A20 enabled?
-	jz	@@done			; if yes, done
+@enable_A20_f0:	mov	cx,0800h		; wait for A20 to enable do 800h tries
+@enable_A20_l0:	call	enablea20test		; is A20 enabled?
+	jz	@enable_A20_done			; if yes, done
 	in	al,40h			; get current tick counter
 	jmp	short $+2
 	jmp	short $+2
 	jmp	short $+2
 	in	al,40h
 	mov	ah,al
-@@l1:	in	al,40h			; wait a single tick
+@enable_A20_l1:	in	al,40h			; wait a single tick
 	jmp	short $+2
 	jmp	short $+2
 	jmp	short $+2
 	in	al,40h
 	cmp	al,ah
-	je	@@l1
-	loop	@@l0			; loop for another try
+	je	@enable_A20_l1
+	loop	@enable_A20_l0			; loop for another try
 	popf
 	stc				; error: set carry flag
 	ret
-@@done:	popf
+@enable_A20_done:	popf
 	clc				; success: clear carry
 	ret
 
 ;-----------------------------------------------------------------------------
 enablea20kbwait:			; wait for safe to write to 8042
 	xor	cx,cx
-@@0:	jmp	short $+2
+@enablea20kbwait_0:	jmp	short $+2
 	jmp	short $+2
 	jmp	short $+2
 	in	al,64h			; read 8042 status
 	test	al,2			; buffer full?
-	loopnz	@@0			; if yes, loop
+	loopnz	@enablea20kbwait_0			; if yes, loop
 	ret
 
 ;-----------------------------------------------------------------------------
 enablea20test:				; test for enabled A20
-	push	fs gs
+	push	fs
+	push	gs
 	xor	ax,ax			; set A20 test segments 0 and 0ffffh
 	mov	fs,ax
 	dec	ax
@@ -290,6 +296,7 @@ enablea20test:				; test for enabled A20
 	xchg	al,gs:[0010h]		; put modified byte to 0ffffh:10h
 	cmp	ah,fs:[0000h]		; set zero if byte at 0:0 not modified
 	mov	gs:[0010h],al		; put back old byte at 0ffffh:10h
-	pop	gs fs
+	pop	gs
+	pop	fs
 	ret				; return, zero if A20 enabled
 

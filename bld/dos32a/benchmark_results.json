@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "extender": "DOS/32A",
+  "version": "9.1.2",
+  "artifacts": {
+    "dos32a_exe": {
+      "size_bytes": 28512,
+      "mz_header_bytes": 512,
+      "relocations": 112,
+      "conventional_ram_footprint_bytes": 38240,
+      "sha256": "92c17d989d067d9d25133a00a3bb6e6bf7cb0d94706d144e250fe3b66069621f"
+    },
+    "dos32a_stb": {
+      "size_bytes": 28960,
+      "mz_header_bytes": 512,
+      "relocations": 112,
+      "sha256": "733d1af69527b3d441387658ec93b12c0589db16228f92aaf429350e55bdc263"
+    },
+    "dos32a_stock_exe": {
+      "size_bytes": 28096,
+      "mz_header_bytes": 512,
+      "relocations": 112,
+      "sha256": "bdc26431a90d1b92ed6932f66974ca4154151e5a955c7fba1b13b8a8bb97ebeb"
+    }
+  },
+  "guests": {
+    "msdos-1.25": {
+      "ablation_a1_stock_output": "DOS/32A fatal (0000): this program requires DOS 4.0 or higher",
+      "external_dos32a_pass": true,
+      "bound_dos32a_stb_pass": true,
+      "warning_9004_emitted": false,
+      "pmode_backend": "raw-int15h",
+      "cpu_level": 6,
+      "lowbuf_bytes": 8192,
+      "argv0": "SYST32.EXE",
+      "cycles_per_mode_switch_roundtrip": 19340.0,
+      "end_to_end_command_latency_ms": 204.32
+    },
+    "msdos-2.0": {
+      "ablation_a1_stock_output": "DOS/32A fatal (0000): this program requires DOS 4.0 or higher",
+      "external_dos32a_pass": true,
+      "bound_dos32a_stb_pass": true,
+      "warning_9004_emitted": false,
+      "pmode_backend": "raw-int15h",
+      "cpu_level": 6,
+      "lowbuf_bytes": 8192,
+      "argv0": "C:\\SYST32.EXE",
+      "cycles_per_mode_switch_roundtrip": 43130.0,
+      "end_to_end_command_latency_ms": 166.67
+    },
+    "msdos-4.0": {
+      "ablation_a1_stock_output": "DOS/32A warning (9004): mouse initialization failed\nSYST32_PASS dos=4.00 mode=raw-int15h cpu=6 lowbuf=8192 argc=2 argv0=C:\\SYST32.EXE arg1=--exit0 cycles100=4009000",
+      "external_dos32a_pass": true,
+      "bound_dos32a_stb_pass": true,
+      "warning_9004_emitted": false,
+      "pmode_backend": "raw-int15h",
+      "cpu_level": 6,
+      "lowbuf_bytes": 8192,
+      "argv0": "C:\\SYST32.EXE",
+      "cycles_per_mode_switch_roundtrip": 38500.0,
+      "end_to_end_command_latency_ms": 102.57
+    }
+  }
+}

@@ -153,6 +153,8 @@ cdsay .
 [ INCLUDE "<OWROOT>/bld/wstuba/builder.ctl" ]
 # Continue with Causeway DOS extender.
 [ INCLUDE "<OWROOT>/bld/causeway/builder.ctl" ]
+# Continue with DOS/32A DOS extender.
+[ INCLUDE "<OWROOT>/bld/dos32a/builder.ctl" ]
 # Continue with WIN386 extender.
 [ INCLUDE "<OWROOT>/bld/win386/builder.ctl" ]
 # Now we have enough to start cross building everything else

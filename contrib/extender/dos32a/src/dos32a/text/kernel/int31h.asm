@@ -178,7 +178,10 @@ int31h_end	label word
 int31h_pm:
 	cli
 	cld
-	push	ds es fs gs			; push registers on stack
+	push	ds	; push registers on stack
+	push	es
+	push	fs
+	push	gs
 	pushad
 
 	push	bx
@@ -186,24 +189,24 @@ int31h_pm:
 
 	cmp	ax,int31h_cache[0]		; check if function # is in cache
 	mov	bx,int31h_cache[2]		; retrieve cached target addr
-	je	@@2				; if cached, jump
+	je	@int31h_pm_2				; if cached, jump
 
 	xor	bx,bx				; do a linear search
-@@0:	cmp	ax,int31h_tab[bx]		; found function # ?
-	je	@@1				; if yes, jump
+@int31h_pm_0:	cmp	ax,int31h_tab[bx]		; found function # ?
+	je	@int31h_pm_1				; if yes, jump
 
 	add	bx,4				; advance to next entry
 	cmp	bx,(offs int31h_end - offs int31h_tab)	; end of table?
-	jb	@@0				; loop until end of table
+	jb	@int31h_pm_0				; loop until end of table
 
 	pop	bx				; no function found
 	jmp	int31fail8001			; exit with error 8001h
 
-@@1:	mov	bx,int31h_tab[bx+2]		; get address of the appropriate handler
+@int31h_pm_1:	mov	bx,int31h_tab[bx+2]		; get address of the appropriate handler
 	mov	int31h_cache[0],ax		; store function # in cache
 	mov	int31h_cache[2],bx		; store function addr in cache
 
-@@2:	mov	ds,selzero			; DS -> 0 (beginning of memory)
+@int31h_pm_2:	mov	ds,selzero			; DS -> 0 (beginning of memory)
 	xchg	bx,[esp]			; store target addr & restore BX
 	ret
 
@@ -265,7 +268,10 @@ int31failax:					; INT 31h return fail with AX
 ;-----------------------------------------------------------------------------
 int31fail:					; INT 31h return fail, pop all regs
 	popad
-	pop	gs fs es ds
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
 int31failnopop:					; INT 31h return fail with carry set
 	or	bptr [esp+8],01h		; set carry in EFLAGS on stack
 	iretd
@@ -294,7 +300,10 @@ int31okax:					; INT 31h return ok with AX
 ;-----------------------------------------------------------------------------
 int31ok:					; INT 31h return ok, pop all regs
 	popad
-	pop	gs fs es ds
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
 int31oknopop:					; INT 31h return ok with carry clear
 	and	bptr [esp+8],0FEh		; clear carry in EFLAGS on stack
 	iretd
@@ -329,12 +338,12 @@ int31testaccess:				; test access bits in CX
 	test	cl,60h				; test DPL
 	jnz	int31fail8021			; if not 0, error 8021h
 	test	cl,8				; if code, more tests needed
-	jz	@@0				; if data, skip code tests
+	jz	@int31testaccess_0				; if data, skip code tests
 	test	cl,2				; readable?
 	jz	int31fail8021
 	test	cl,4				; non-conform?
 	jnz	int31fail8021
-@@0:	jmp	bp				; return ok
+@int31testaccess_0:	jmp	bp				; return ok
 
 ;-----------------------------------------------------------------------------
 int31testint:
@@ -344,12 +353,12 @@ int31testint:
 	and	ax,0F807h
 	movzx	esi,al
 	cmp	ah,picmaster			; if 1st PIC, offset = buffer + 0
-	jz	@@done
+	jz	@int31testint_done
 	add	si,8
 	cmp	ah,picslave			; if 2nd PIC, offset = buffer + 8
-	jz	@@done
+	jz	@int31testint_done
 	or	si,-1
-@@done:	ret					; return: ZF = 0 if BL is IRQ, otherwise ZF = 1
+@int31testint_done:	ret					; return: ZF = 0 if BL is IRQ, otherwise ZF = 1
 
 
 
@@ -371,22 +380,22 @@ int31h_0000:
 	and	al,0F8h
 
 	mov	bx,cx				; BX = number of selectors to find
-@@l0:	test	bptr [edx+eax+6],10h		; is descriptor used?
-	jnz	@@f0
+@int31h_0000_l0:	test	bptr [edx+eax+6],10h		; is descriptor used?
+	jnz	@int31h_0000_f0
 	dec	bx				; found free descriptor, dec counter
-	jnz	@@f1				; continue if need to find more
+	jnz	@int31h_0000_f1				; continue if need to find more
 
 	mov	ebx,eax				; found all descriptors requested
-@@l1:	mov	dptr [edx+ebx],0		; set entire new descriptor
+@int31h_0000_l1:	mov	dptr [edx+ebx],0		; set entire new descriptor
 	mov	dptr [edx+ebx+4],109200h
 	add	bx,8				; increment selector index
-	loop	@@l1				; dec counter of descriptors to mark
+	loop	@int31h_0000_l1				; dec counter of descriptors to mark
 	jmp	int31okax			; return ok, with AX
 
-@@f0:	mov	bx,cx				; reset number of selectors to find
-@@f1:	sub	ax,8				; dec current selector counter
+@int31h_0000_f0:	mov	bx,cx				; reset number of selectors to find
+@int31h_0000_f1:	sub	ax,8				; dec current selector counter
 	cmp	ax,8*SYSSELECTORS		; more descriptors to go?
-	jae	@@l0				; if yes, loop
+	jae	@int31h_0000_l0				; if yes, loop
 	jmp	int31fail8011			; did not find descriptors
 
 
@@ -407,13 +416,13 @@ int31h_0001:
 
 	mov	cx,4				; zero any segregs loaded with BX
 	lea	ebp,[esp+32]			; EBP -> selectors on stack
-@@l0:	cmp	wptr [ebp],bx			; selector = BX?
-	jne	@@f0				; if no, continue loop
+@int31h_0001_l0:	cmp	wptr [ebp],bx			; selector = BX?
+	jne	@int31h_0001_f0				; if no, continue loop
 
 	mov	[ebp],ax			; zero selector on stack
 
-@@f0:	add	ebp,2				; increment selector ptr
-	loop	@@l0				; loop
+@int31h_0001_f0:	add	ebp,2				; increment selector ptr
+	loop	@int31h_0001_l0				; loop
 	jmp	int31ok				; return ok
 
 
@@ -425,23 +434,23 @@ int31h_0002:
 
 	mov	cx,16				; max 16 selectors
 	mov	si,offs segmentbases		; check, if segment already mapped
-@@0:	mov	ax,[si+0]			; is selector zero (free entry)
+@int31h_0002_0:	mov	ax,[si+0]			; is selector zero (free entry)
 	test	ax,ax
-	jz	@@1				; if yes, loop
+	jz	@int31h_0002_1				; if yes, loop
 	cmp	bx,[si+2]			; compare segment values
 	jz	int31okax			; if already mapped, done
-@@1:	add	si,4
-	loop	@@0
+@int31h_0002_1:	add	si,4
+	loop	@int31h_0002_0
 
 	mov	cl,16
 	mov	si,offs segmentbases		; search for a free entry
-@@2:	cmp	wptr [si],0			; this field free?
-	jz	@@3				; if yes, use it
+@int31h_0002_2:	cmp	wptr [si],0			; this field free?
+	jz	@int31h_0002_3				; if yes, use it
 	add	si,4
-	loop	@@2
+	loop	@int31h_0002_2
 	jmp	int31fail8010			; no entry free
 
-@@3:	mov	[si+2],bx			; store segment
+@int31h_0002_3:	mov	[si+2],bx			; store segment
 	movzx	edi,bx				; convert to linear address
 	shl	edi,4
 	mov	cl,1
@@ -508,14 +517,14 @@ int31h_0007:
 int31h_0008:
 	call	int31testsel			; test for valid selector BX
 	cmp	cx,0Fh				; is limit greater than 1M?
-	jbe	@@1				; if not, jump
+	jbe	@int31h_0008_1				; if not, jump
 
 	or	dx,0FFFh			; auto-adjust limit
 	shrd	dx,cx,12			; DX = low 16 bits of page limit
 	shr	cx,12				; CL = high 4 bits of page limit
 	or	cl,80h				; set granularity bit in CL
 
-@@1:	mov	wptr ds:[edi+ebx],dx		; put low word of limit
+@int31h_0008_1:	mov	wptr ds:[edi+ebx],dx		; put low word of limit
 	and	bptr ds:[edi+ebx+6],50h		; mask off G and high nibble of limit
 	or	bptr ds:[edi+ebx+6],cl		; put high nibble of limit
 	jmp	int31ok				; return ok
@@ -584,8 +593,10 @@ int31h_000C:
 	mov	cx,es:[esi+5]			; get access rights from descriptor
 	call	int31testaccess			; test access bits in CX
 
-	push	ds es				; swap DS and ES, target and source
-	pop	ds es
+	push	ds	; swap DS and ES, target and source
+	push	es
+	pop	ds
+	pop	es
 
 	add	edi,ebx				; adjust EDI to descriptor in GDT
 	movs	dptr es:[edi],ds:[esi]		; copy descriptor
@@ -615,7 +626,7 @@ int31h_000EF:					; common to functions 000Eh and 000Fh
 
 	mov	dx,cx				; DX = number of descriptors
 	xor	cx,cx				; CX = successful counter
-@@l0:	mov	bx,es:[edi]			; BX = selector to get
+@int31h_000EF_l0:	mov	bx,es:[edi]			; BX = selector to get
 	add	edi,2
 	int	31h				; get/set descriptor
 	jc	int31failcx			; if error, fail with AX and CX
@@ -623,7 +634,7 @@ int31h_000EF:					; common to functions 000Eh and 000Fh
 	add	edi,8				; increment descriptor ptr
 	inc	cx				; increment successful copy counter
 	dec	dx				; decrement loop counter
-	jnz	@@l0				; if more descriptors to go, loop
+	jnz	@int31h_000EF_l0				; if more descriptors to go, loop
 	jmp	int31ok				; return ok
 
 
@@ -647,12 +658,12 @@ int31h_0100:
 	xor	ax,ax				; allocate descriptor
 	mov	cx,1
 	int	31h
-	jnc	@@1
+	jnc	@int31h_0100_1
 	mov	ah,49h				; if error allocating descriptor
 	call	int31010x_f2			; free what was allocated
 	jmp	int31fail8011			; and exit with error 8011h
 
-@@1:	mov	[esp+14h],ax			; set selector in DX
+@int31h_0100_1:	mov	[esp+14h],ax			; set selector in DX
 	mov	[esp+1Ch],dx			; set base address in AX
 	mov	bx,ax
 	mov	cx,dx
@@ -702,11 +713,13 @@ int31010x:
 ;-----------------------------------------------------------------------------
 int31010x_f1:
 	pop	bp
-	push	ax bx
+	push	ax
+	push	bx
 	mov	bx,dx				; BX = selector
 	mov	ax,0006h			; get base
 	int	31h
-	pop	bx ax
+	pop	bx
+	pop	ax
 	jc	int31failax
 	shrd	dx,cx,4				; adjust CX:DX to segment value
 	push	bp
@@ -779,13 +792,13 @@ int31h_0202:
 	xor	cx,cx
 	xor	edx,edx
 	cmp	bl,10h				; if not in range 00..0Fh
-	jae	@@done				; return 0:0
+	jae	@int31h_0202_done				; return 0:0
 
 	movzx	ebx,bl
 	mov	cx,wptr exctab_pm[ebx*8+4]	; get user-defined exception handler CS
 	mov	edx,dptr exctab_pm[ebx*8+0]	; get user-defined exception handler EIP
 
-@@done:	mov	ax,[esp+28]
+@int31h_0202_done:	mov	ax,[esp+28]
 	jmp	int31okedx			; return ok, with AX, CX, EDX
 
 
@@ -802,13 +815,13 @@ int31h_0203:
 	jae	int31fail8021			; invalid value
 
 	cmp	bl,10h				; if not in range 00..0Fh
-	jae	@@done				; then done
+	jae	@int31h_0203_done				; then done
 
 	movzx	ebx,bl
 	mov	wptr exctab_pm[ebx*8+4],cx	; set user-defined exception handler CS
 	mov	dptr exctab_pm[ebx*8+0],edx	; set user-defined exception handler EIP
 
-@@done:	jmp	int31ok				; return ok
+@int31h_0203_done:	jmp	int31ok				; return ok
 
 
 ;=============================================================================
@@ -817,29 +830,29 @@ int31h_0203:
 int31h_0204:
 	mov	ds,cs:seldata
 	call	int31testint			; check if one of IRQs
-	jz	@@1				; if yes, read from buffer
+	jz	@int31h_0204_1				; if yes, read from buffer
 
-@@0:	shl	ebx,3				; adjust for location in IDT
+@int31h_0204_0:	shl	ebx,3				; adjust for location in IDT
 	add	ebx,idtbase			; add base of IDT
 	mov	ds,selzero
 	mov	edx,dptr [ebx+4]		; get high word of offset
 	mov	dx,wptr [ebx+0]			; get low word of offset
 	mov	cx,wptr [ebx+2]			; get selector
-	jmp	@@done
+	jmp	@int31h_0204_done
 
-@@1:	bt	irqset_pm,si			; check if IRQ is installed
-	jnc	@@2				; if not, return built-in handler
+@int31h_0204_1:	bt	irqset_pm,si			; check if IRQ is installed
+	jnc	@int31h_0204_2				; if not, return built-in handler
 	test	bl,0F0h				; check if IRQ is above INT 0Fh
-	jnz	@@0				; if yes, don't buffer: read from IDT
+	jnz	@int31h_0204_0				; if yes, don't buffer: read from IDT
 
 	mov	cx,wptr irqtab_pm[esi*8+4]	; get user-defined IRQ handler CS
 	mov	edx,dptr irqtab_pm[esi*8+0]	; get user-defined IRQ handler EIP
-	jmp	@@done
+	jmp	@int31h_0204_done
 
-@@2:	mov	cx,SELCODE			; load built-in IRQ handler CS
+@int31h_0204_2:	mov	cx,SELCODE			; load built-in IRQ handler CS
 	lea	edx,std_matrix[esi*4]		; load built-in IRQ handler EIP
 
-@@done:	mov	ax,[esp+28]
+@int31h_0204_done:	mov	ax,[esp+28]
 	jmp	int31okedx			; return ok, with AX, CX, EDX
 
 
@@ -856,37 +869,37 @@ int31h_0205:
 	movzx	ecx,cx				; ECX = CX (selector)
 
 	call	int31testint			; check if one of IRQs
-	jz	@@1				; if yes, install in buffer
+	jz	@int31h_0205_1				; if yes, install in buffer
 	cmp	bl,1Bh				; process special interrupts
-	jz	@@1Bh
+	jz	@int31h_0205_1Bh
 	cmp	bl,1Ch
-	jz	@@1Ch
+	jz	@int31h_0205_1Ch
 	cmp	bl,23h
-	jz	@@23h
+	jz	@int31h_0205_23h
 	cmp	bl,24h
-	jz	@@24h
+	jz	@int31h_0205_24h
 
-@@0:	shl	ebx,3				; adjust for location in IDT
+@int31h_0205_0:	shl	ebx,3				; adjust for location in IDT
 	add	ebx,idtbase			; add base of IDT
 	mov	wptr es:[ebx+0],dx		; set low word of offset
 	shr	edx,16
 	mov	wptr es:[ebx+6],dx		; set high word of offset
 	mov	wptr es:[ebx+2],cx		; set selector
-	jmp	@@done
+	jmp	@int31h_0205_done
 
-@@1:	cmp	cx,SELCODE			; check if restoring IRQ
-	jnz	@@2				; if not, jump
+@int31h_0205_1:	cmp	cx,SELCODE			; check if restoring IRQ
+	jnz	@int31h_0205_2				; if not, jump
 
 	btr	irqset_rm,si			; reset IRQ installed bit (RM)
 	btr	irqset_pm,si			; reset IRQ installed bit (PM)
 	mov	eax,irqtab_rm[esi*4]		; restore real mode interrupt
 	mov	es:[ebx*4],eax
 	cmp	bl,10h				; check if INT vector is above INT 0Fh
-	jae	@@0				; if yes, install into IDT
+	jae	@int31h_0205_0				; if yes, install into IDT
 
-	jmp	@@done
+	jmp	@int31h_0205_done
 
-@@2:	bts	irqset_rm,si			; set IRQ installed bit (RM)
+@int31h_0205_2:	bts	irqset_rm,si			; set IRQ installed bit (RM)
 	bts	irqset_pm,si			; set IRQ installed bit (PM)
 	mov	eax,es:[ebx*4]			; get CS:IP of real mode INT vector
 	mov	irqtab_rm[esi*4],eax		; save CS:IP of real mode INT vector
@@ -894,40 +907,40 @@ int31h_0205:
 	mov	wptr es:[ebx*4+0],ax		; set real mode IRQ callback IP
 	mov	wptr es:[ebx*4+2],_KERNEL	; set real mode IRQ callback CS
 	cmp	bl,10h				; check if INT vector is above INT 0Fh
-	jae	@@0				; if yes, install into IDT
+	jae	@int31h_0205_0				; if yes, install into IDT
 
 	mov	wptr irqtab_pm[esi*8+4],cx	; install CS into IRQ buffer
 	mov	dptr irqtab_pm[esi*8+0],edx	; install EIP into IRQ buffer
 
-@@done:	jmp	int31ok				; return ok
+@int31h_0205_done:	jmp	int31ok				; return ok
 
-@@1Bh:	cmp	cx,SELCODE			; install real mode INT 1Bh callback
+@int31h_0205_1Bh:	cmp	cx,SELCODE			; install real mode INT 1Bh callback
 	mov	eax,newint1Bh
-	jnz	@@1Bh0
+	jnz	@int31h_0205_1Bh0
 	mov	eax,oldint1Bh
-@@1Bh0:	mov	es:[4*1Bh],eax
-	jmp	@@0
+@int31h_0205_1Bh0:	mov	es:[4*1Bh],eax
+	jmp	@int31h_0205_0
 
-@@1Ch:	cmp	cx,SELCODE			; install real mode INT 1Ch callback
+@int31h_0205_1Ch:	cmp	cx,SELCODE			; install real mode INT 1Ch callback
 	mov	eax,newint1Ch
-	jnz	@@1Ch0
+	jnz	@int31h_0205_1Ch0
 	mov	eax,oldint1Ch
-@@1Ch0:	mov	es:[4*1Ch],eax
-	jmp	@@0
+@int31h_0205_1Ch0:	mov	es:[4*1Ch],eax
+	jmp	@int31h_0205_0
 
-@@23h:	cmp	cx,SELCODE			; install real mode INT 23h callback
+@int31h_0205_23h:	cmp	cx,SELCODE			; install real mode INT 23h callback
 	mov	eax,newint23h
-	jnz	@@23h0
+	jnz	@int31h_0205_23h0
 	mov	eax,oldint23h
-@@23h0:	mov	es:[4*23h],eax
-	jmp	@@0
+@int31h_0205_23h0:	mov	es:[4*23h],eax
+	jmp	@int31h_0205_0
 
-@@24h:	cmp	cx,SELCODE			; install real mode INT 24h callback
+@int31h_0205_24h:	cmp	cx,SELCODE			; install real mode INT 24h callback
 	mov	eax,newint24h
-	jnz	@@24h0
+	jnz	@int31h_0205_24h0
 	mov	eax,oldint24h
-@@24h0:	mov	es:[4*24h],eax
-	jmp	@@0
+@int31h_0205_24h0:	mov	es:[4*24h],eax
+	jmp	@int31h_0205_0
 
 
 ;=============================================================================
@@ -994,7 +1007,7 @@ int3103:					; common to 0300h, 0301h, and 0302h
 	movzx	edx,wptr es:[edi+30h]		; EDX = SS from register structure
 	mov	ax,bx				; check if caller provided stack
 	or	ax,dx
-	jnz	@@f3				; if yes, go on to setup stack
+	jnz	@int3103_f3				; if yes, go on to setup stack
 
 	mov	dx,cs:rmstacktop		; DX = SS for real mode redirection
 	mov	bx,cs:rmstacklen		; get size of real mode stack
@@ -1004,7 +1017,7 @@ int3103:					; common to 0300h, 0301h, and 0302h
 	mov	gs:rmstacktop,dx		; update ptr for possible reenterancy
 	shl	bx,4				; adjust BX from paragraphs to bytes
 
-@@f3:	lea	edi,[edx*4]			; EDI -> top of real mode stack
+@int3103_f3:	lea	edi,[edx*4]			; EDI -> top of real mode stack
 	lea	edi,[edi*4+ebx]
 
 	mov	ax,ss
@@ -1020,8 +1033,10 @@ int3103:					; common to 0300h, 0301h, and 0302h
 	sub	bx,2Eh				; adjust real mode SP for needed vars
 	sub	bx,ax				; adjust real mode SP for stack parms
 
-	push	ds es				; swap DS and ES
-	pop	ds es
+	push	ds	; swap DS and ES
+	push	es
+	pop	ds
+	pop	es
 
 	std					; string copy backwards
 	sub	edi,2				; copy stack parms from protected mode
@@ -1031,12 +1046,12 @@ int3103:					; common to 0300h, 0301h, and 0302h
 	mov	esi,[esp+06h]			; ESI = offset of structure from stack
 	mov	ax,ds:[esi+20h]			; AX = FLAGS from register structure
 	cmp	bptr [esp+22h],1		; check AL on stack for function code
-	jz	@@f4				; if function 0301h, go on
+	jz	@int3103_f4				; if function 0301h, go on
 	and	ah,0FCh				; 0300h or 0302h, clear IF and TF flag
 	stos	wptr es:[edi]			; put flags on real mode stack
 	sub	bx,2
 
-@@f4:	cld					; string copy forward
+@int3103_f4:	cld					; string copy forward
 	lea	edi,[edx*4]			; EDI -> bottom of stack
 	lea	edi,[edi*4+ebx]
 	mov	cl,8				; copy general regs to real mode stack
@@ -1045,21 +1060,25 @@ int3103:					; common to 0300h, 0301h, and 0302h
 	movs	dptr es:[edi],ds:[esi]
 
 	mov	wptr es:[edi+8],_KERNEL		; return address from call
-	mov	wptr es:[edi+6],offs @@f1
+	mov	wptr es:[edi+6],offs @int3103_f1
 	mov	wptr es:[edi+4],ax		; store FLAGS for real mode IRET maybe
 	mov	dptr es:[edi],ebp		; put call address to real mode stack
 	mov	ax,[esi-6]			; real mode DS from register structure
 	mov	cx,[esi-8]			; real mode ES from register structure
 	mov	si,_KERNEL			; real mode target CS:IP
-	mov	di,offs @@f0
+	mov	di,offs @int3103_f0
 	db 66h					; JMP DWORD PTR, as in 32bit offset,
 	jmp	wptr cs:pmtormswrout		;  not seg:16bit offset
 
-@@f0:	popad					; load regs with call values
-	pop	fs gs
+@int3103_f0:	popad					; load regs with call values
+	pop	fs
+	pop	gs
 	iret					; go to call address
 
-@@f1:	push	gs fs ds es			; store registers on stack
+@int3103_f1:	push	gs	; store registers on stack
+	push	fs
+	push	ds
+	push	es
 	pushf					; store flags on stack
 	cli
 	pushad
@@ -1073,13 +1092,13 @@ int3103:					; common to 0300h, 0301h, and 0302h
 
 	mov	dx,cs:rmstackss			; get protected mode SS:ESP from stack
 	mov	ebx,cs:rmstackesp
-	mov	ax,SELZERO			; DS selector value for protected mode
-	mov	cx,SELDATA			; ES selector value for protected mode
+	mov	ax,K_SELZERO			; DS selector value for protected mode
+	mov	cx,K_SELDATA			; ES selector value for protected mode
 	mov	si,SELCODE			; target CS:EIP in protected mode
-	mov	edi,offs @@f2
+	mov	edi,offs @int3103_f2
 	jmp	cs:rmtopmswrout			; go back to protected mode
 
-@@f2:	push	es
+@int3103_f2:	push	es
 	pop	gs
 	pop	es:rmstackesp
 	pop	es:rmstackss
@@ -1108,14 +1127,14 @@ int31h_0303:
 	mov	edx,cs:callbackbase		; EDX -> base of callbacks
 	mov	ecx,edx				; for later use
 
-@@l0:	cmp	wptr [edx+3],0			; is this callback free?
-	jz	@@f0				; if yes, allocate
+@int31h_0303_l0:	cmp	wptr [edx+3],0			; is this callback free?
+	jz	@int31h_0303_f0				; if yes, allocate
 	add	edx,25				; increment ptr to callback
 	dec	bl				; decrement loop counter
-	jnz	@@l0				; if more callbacks to check, loop
+	jnz	@int31h_0303_l0				; if more callbacks to check, loop
 	jmp	int31fail8015			; no free callback, error 8015h
 
-@@f0:	mov	bx,[esp+38]			; BX = caller DS from stack
+@int31h_0303_f0:	mov	bx,[esp+38]			; BX = caller DS from stack
 	mov	[edx+3],bx			; store callback parms in callback
 	mov	[edx+7],esi
 	mov	[edx+12],es
@@ -1193,9 +1212,9 @@ int31h_0400:
 	mov	ax,005Ah			; return version 0.9
 	mov	bx,0003h			; capabilities
 	cmp	cs:pmodetype,2
-	jnz	@@1
+	jnz	@int31h_0400_1
 	mov	bl,1
-@@1:	mov	cl,cs:cputype			; processor type
+@int31h_0400_1:	mov	cl,cs:cputype			; processor type
 	mov	dx,wptr cs:picslave		; master and slave PIC values
 	jmp	int31oknopop			; return ok, don't pop registers
 
@@ -1207,29 +1226,33 @@ int31h_0A00:
 	add	esp,26h				; adjust stack
 	pop	ds				; restore DS
 
-	push	es edi ecx esi			; save regs that will be modified
+	push	es	; save regs that will be modified
+	push	edi
+	push	ecx
+	push	esi
 	push	cs				; ES = CS
 	pop	es
 
 	mov	ecx,15				; search for vendor1 string
-	mov	edi,offs @@str1
+	mov	edi,offs @int31h_0A00_str1
 	push	esi
 	repe	cmps bptr ds:[esi],es:[edi]
 	pop	esi
-	mov	edi,offs @@ent1			; ES:EDI = sel:offset of entry SUNSYS
-	jz	@@0				; if found, jump
+	mov	edi,offs @int31h_0A00_ent1			; ES:EDI = sel:offset of entry SUNSYS
+	jz	@int31h_0A00_0				; if found, jump
 	test	cs:pm32_mode,10000000b		; check if to ignore DOS/4G extensions
-	jnz	@@err				; if not, we are done
+	jnz	@int31h_0A00_err				; if not, we are done
 	mov	cl,16				; search for vendor2 string
-	mov	edi,offs @@str2
+	mov	edi,offs @int31h_0A00_str2
 	repe	cmps bptr ds:[esi],es:[edi]
-	jnz	@@err				; if not found, done
-	mov	edi,offs @@ent2			; ES:EDI = sel:offset of entry DOS/4G
-	pop	esi ecx
+	jnz	@int31h_0A00_err				; if not found, done
+	mov	edi,offs @int31h_0A00_ent2			; ES:EDI = sel:offset of entry DOS/4G
+	pop	esi
+	pop	ecx
 	add	esp,6
 	jmp	int31oknopop
 
-@@0:	add	esp,14
+@int31h_0A00_0:	add	esp,14
 	xor	eax,eax				; clear high words
 	mov	ebx,eax
 	mov	ecx,eax
@@ -1242,17 +1265,20 @@ int31h_0A00:
 	mov	dx,wptr cs:picslave		; DX = PIC values (unremapped)
 	jmp	int31oknopop
 
-@@err:	pop	esi ecx edi es			; if none of the strings were idetified
+@int31h_0A00_err:	pop	esi	; if none of the strings were idetified
+	pop	ecx
+	pop	edi
+	pop	es
 	mov	ax,8001h			; return with AX=8001h
 	jmp	int31failnopop
 
-@@str1	db 'SUNSYS DOS/32A',0			; vendor1 API ID-string (DOS/32A)
-@@str2	db 'RATIONAL DOS/4G',0			; vendor2 API ID-string (DOS/4G)
+@int31h_0A00_str1	db 'SUNSYS DOS/32A',0			; vendor1 API ID-string (DOS/32A)
+@int31h_0A00_str2	db 'RATIONAL DOS/4G',0			; vendor2 API ID-string (DOS/4G)
 
-@@ent2:	mov	ax,8500h			; vendor2 API entry point (DOS/4G)
+@int31h_0A00_ent2:	mov	ax,8500h			; vendor2 API entry point (DOS/4G)
 	jmp	dptr cs:client_call
 
-@@ent1:	test	al,al				; vendor1 API entry point (DOS/32A)
+@int31h_0A00_ent1:	test	al,al				; vendor1 API entry point (DOS/32A)
 	jz	API_func00
 	cmp	al,01h
 	jz	API_func01
@@ -1278,7 +1304,7 @@ int31h_0A00:
 
 ;---------------------------------------------------------------------
 API_func00:					; API function 00h: get access to IDT & GDT
-	mov	bx,SELZERO
+	mov	bx,K_SELZERO
 	movzx	ecx,cs:gdtlimit			; ECX = GDT limit
 	movzx	edx,cs:idtlimit			; EDX = IDT limit
 	mov	esi,cs:gdtbase			; BX:ESI = pointer to GDT
@@ -1287,7 +1313,7 @@ API_func00:					; API function 00h: get access to IDT & GDT
 
 ;---------------------------------------------------------------------
 API_func01:					; API function 01h: get access to PageTables
-	mov	bx,SELZERO
+	mov	bx,K_SELZERO
 	movzx	ecx,cs:pagetables		; ECX = number of allocated pagetables
 	movzx	edx,cs:pm32_maxfpages		; EDX = number of allocated phystables
 	mov	esi,cs:pagetablebase		; BX:ESI = pointer to 0th pagetable
@@ -1297,14 +1323,14 @@ API_func01:					; API function 01h: get access to PageTables
 
 ;---------------------------------------------------------------------
 API_func02:					; API function 02: get access to INT tables
-	mov	bx,SELDATA
+	mov	bx,K_SELDATA
 	mov	esi,offs irqset_rm		; BX:ESI = pointer to INT switches
 	mov	edi,offs irqtab_rm		; BX:EDI = pointer to INT tables
 	jmp	API_funcok
 
 ;---------------------------------------------------------------------
 API_func03:					; API function 03: get access to EXT memory
-	mov	bx,SELZERO
+	mov	bx,K_SELZERO
 	mov	ecx,cs:mem_free			; ECX = size of allocated memory
 	mov	edx,cs:mem_ptr			; EDX = pointer to allocated memory
 	mov	esi,cs:mem_top			; ESI = top of allocated memory
@@ -1312,7 +1338,7 @@ API_func03:					; API function 03: get access to EXT memory
 
 ;---------------------------------------------------------------------
 API_func04:					; API function 04: get access to rm-stacks
-	mov	bx,SELZERO
+	mov	bx,K_SELZERO
 	movzx	ecx,cs:rmstacklen		; ECX = size of one stack
 	movzx	edx,cs:rmstacktop		; EDX = pointer to top of stack
 	movzx	esi,cs:rmstackbase		; ESI = base of stack area
@@ -1321,7 +1347,7 @@ API_func04:					; API function 04: get access to rm-stacks
 
 ;---------------------------------------------------------------------
 API_func05:					; API function 05: get access to pm-stacks
-	mov	bx,SELZERO
+	mov	bx,K_SELZERO
 	mov	ecx,cs:pmstacklen		; ECX = size of one stack
 	mov	edx,cs:pmstacktop		; EDX = pointer to top of stack
 	mov	esi,cs:pmstackbase		; ESI = base of stack area
@@ -1331,8 +1357,8 @@ API_func05:					; API function 05: get access to pm-stacks
 ;---------------------------------------------------------------------
 API_func06:					; API function 06: get kernel selectors
 	mov	bx,SELCODE			; BX = Kernel code selector
-	mov	cx,SELDATA			; CX = Kernel data selector
-	mov	dx,SELZERO			; DX = Kernel zero selector
+	mov	cx,K_SELDATA			; CX = Kernel data selector
+	mov	dx,K_SELZERO			; DX = Kernel zero selector
 	movzx	esi,wptr cs:kernel_code		; ESI = Kernel code segment
 	mov	di,wptr cs:client_call[2]	; DI = Client code selector
 	jmp	API_funcok
@@ -1354,7 +1380,7 @@ API_func08:					; API function 08: set critical handler entry
 
 ;---------------------------------------------------------------------
 API_func09:					; API function 09: get access to p. counters
-	mov	cx,SELDATA			; CX = Kernel data selector
+	mov	cx,K_SELDATA			; CX = Kernel data selector
 	mov	edx,offs _pc_base		; EDX = base of performance counters
 
 ;---------------------------------------------------------------------
@@ -1383,11 +1409,11 @@ int31h_0500:
 	pop	edi
 	mov	eax,cs:mem_ptr
 	or	eax,cs:mem_free
-	jz	@@1
+	jz	@int31h_0500_1
 	call	int31_checkblocks
 	call	int31_getfreemem
 
-@@1:	mov	ebx,eax
+@int31h_0500_1:	mov	ebx,eax
 	mov	edx,eax				; EDX = largest free block
 	mov	eax,cs:mem_free
 	shr	eax,12				; EAX = total memory pages
@@ -1414,14 +1440,14 @@ int31h_0501:
 	call	int31_testbxcxtoebx		; convert BX:CX to EBX
 	call	int31_checkblocks
 	mov	esi,cs:mem_ptr			; get pointer to memory
-@@1:	mov	eax,[esi+04h]			; get block size
+@int31h_0501_1:	mov	eax,[esi+04h]			; get block size
 	btr	eax,31				; check if memory block is used
-	jc	@@2				; if yes, jump
+	jc	@int31h_0501_2				; if yes, jump
 	cmp	eax,ebx				; check if block is large enough
 	jae	int31_allocblock		; if yes, allocate block
-@@2:	lea	esi,[esi+eax+10h]		; load address of next memory block
+@int31h_0501_2:	lea	esi,[esi+eax+10h]		; load address of next memory block
 	cmp	esi,cs:mem_top			; check if at top of memory
-	jb	@@1				; if not, loop
+	jb	@int31h_0501_1				; if not, loop
 	jmp	int31fail8013			; fail: not enough memory
 
 
@@ -1458,31 +1484,32 @@ int31h_0503:
 	mov	[esi+04h],eax			; set this block as free
 	lea	edi,[esi+eax+10h]		; get address of next block
 	cmp	edi,cs:mem_top			; check if at top of memory
-	jae	@@0
+	jae	@int31h_0503_0
 	mov	edx,[edi+04h]			; get size of next block
 	btr	edx,31				; check if block next to us is free
-	jc	@@0				; if not, jump
+	jc	@int31h_0503_0				; if not, jump
 	lea	edx,[eax+edx+10h]		; calculate total size (this+hdr+next)
 	cmp	edx,ebx				; check if enough
-	jb	@@0				; if not, jump
+	jb	@int31h_0503_0				; if not, jump
 	mov	eax,edx				; set this size = (this + next)
 	mov	[esi+04h],eax			; link this and next blocks
 	jmp	int31_allocblock		; and go to the allocation routine
 
-@@0:	mov	edi,cs:mem_ptr			; get pointer to memory
-@@1:	mov	edx,[edi+04h]			; get block size
+@int31h_0503_0:	mov	edi,cs:mem_ptr			; get pointer to memory
+@int31h_0503_1:	mov	edx,[edi+04h]			; get block size
 	btr	edx,31				; check if memory block is used
-	jc	@@2				; if yes, jump
+	jc	@int31h_0503_2				; if yes, jump
 	cmp	edx,ebx				; check if block is large enough
-	jae	@@3				; if yes, allocate block
-@@2:	lea	edi,[edi+edx+10h]		; load address of next memory block
+	jae	@int31h_0503_3				; if yes, allocate block
+@int31h_0503_2:	lea	edi,[edi+edx+10h]		; load address of next memory block
 	cmp	edi,cs:mem_top			; check if at top of memory
-	jb	@@1				; if not, loop
+	jb	@int31h_0503_1				; if not, loop
 	bts	eax,31				; set this block as used
 	mov	[esi+04h],eax			; restore state of this block
 	jmp	int31fail8013			; fail: not enough memory
 
-@@3:	push	esi edi
+@int31h_0503_3:	push	esi
+	push	edi
 	mov	ecx,eax
 	shr	ecx,2
 	add	esi,10h
@@ -1491,7 +1518,8 @@ int31h_0503:
 	mov	cl,al
 	and	cl,3
 	rep	movs bptr es:[edi],ds:[esi]
-	pop	edi esi
+	pop	edi
+	pop	esi
 	call	int31_linkfreeblocks
 	mov	esi,edi
 	mov	eax,edx
@@ -1532,27 +1560,29 @@ int31_checkifmemavail:				; check if memory had been allocated
 
 ;-----------------------------------------------------------------------------
 int31_checkblocks:				; check if memory had been overwritten
-	push	eax esi
+	push	eax
+	push	esi
 	mov	esi,cs:mem_ptr
-@@1:	test	si,000Fh			; blocks must be para aligned
-	jnz	@@err
+@int31_checkblocks_1:	test	si,000Fh			; blocks must be para aligned
+	jnz	@int31_checkblocks_err
 	mov	eax,12345678h			; header id
 	cmp	eax,[esi+00h]			; if no header_id at block start
-	jnz	@@err				; then signal error
+	jnz	@int31_checkblocks_err				; then signal error
 	cmp	eax,[esi+0Ch]			; if no header_id at block end
-	jnz	@@err				; then signal error
+	jnz	@int31_checkblocks_err				; then signal error
 	mov	eax,[esi+04h]			; get block size
 	btr	eax,31				; reset the used flag
 	lea	esi,[esi+eax+10h]		; load address of next memory block
 	cmp	esi,cs:mem_ptr
-	jb	@@err
+	jb	@int31_checkblocks_err
 	cmp	esi,cs:mem_top			; check if at top of memory
-	ja	@@err
-	jb	@@1				; if not, loop
-	pop	esi eax
-@@done:	ret
+	ja	@int31_checkblocks_err
+	jb	@int31_checkblocks_1				; if not, loop
+	pop	esi
+	pop	eax
+@int31_checkblocks_done:	ret
 
-@@err:	mov	ds,cs:seldata
+@int31_checkblocks_err:	mov	ds,cs:seldata
 	xor	eax,eax
 	mov	mem_ptr,eax			; set to zero to prevent looping error
 	mov	mem_free,eax			; when exiting
@@ -1563,16 +1593,16 @@ int31_checkblocks:				; check if memory had been overwritten
 int31_checkhandle:
 	pop	bp				; check for valid handle in ESI
 	cmp	esi,cs:mem_ptr
-	jb	@@1
+	jb	@int31_checkhandle_1
 	cmp	esi,cs:mem_top
-	ja	@@1
+	ja	@int31_checkhandle_1
 	mov	eax,12345678h
 	cmp	eax,[esi+00h]
-	jnz	@@1
+	jnz	@int31_checkhandle_1
 	cmp	eax,[esi+0Ch]
-	jnz	@@1
+	jnz	@int31_checkhandle_1
 	jmp	bp
-@@1:	jmp	int31fail8023			; fail: invalid handle
+@int31_checkhandle_1:	jmp	int31fail8023			; fail: invalid handle
 
 ;-----------------------------------------------------------------------------
 int31_testbxcxtoebx:				; convert BX:CX to EBX
@@ -1592,16 +1622,16 @@ int31_getfreemem:
 	xor	eax,eax				; reset free memory size
 	xor	ecx,ecx
 	mov	esi,cs:mem_ptr			; get pointer to memory
-@@1:	mov	edx,[esi+04h]			; get block size
+@int31_getfreemem_1:	mov	edx,[esi+04h]			; get block size
 	btr	edx,31				; check if memory block is used
-	jc	@@2				; if yes, jump
+	jc	@int31_getfreemem_2				; if yes, jump
 	add	ecx,edx
 	cmp	eax,edx				; pick largest value
-	ja	@@2
+	ja	@int31_getfreemem_2
 	mov	eax,edx
-@@2:	lea	esi,[esi+edx+10h]		; load addres of next memory block
+@int31_getfreemem_2:	lea	esi,[esi+edx+10h]		; load addres of next memory block
 	cmp	esi,cs:mem_top			; check if at top of memory
-	jb	@@1				; if not, loop
+	jb	@int31_getfreemem_1				; if not, loop
 	ret
 
 ;-----------------------------------------------------------------------------
@@ -1610,14 +1640,14 @@ int31_allocblock:
 	movzx	edx,cs:id32_process_id
 	sub	eax,ebx				; nextsize=actualsize-allocsize
 	sub	eax,10h				; is nextsize<16 (header size)
-	jb	@@1				; if yes, do not create next block
+	jb	@int31_allocblock_1				; if yes, do not create next block
 	lea	edi,[esi+ebx+10h]		; EDI = ptr to next block
 	mov	[edi+00h],ecx			; header ID1
 	mov	[edi+04h],eax			; set next block as free/size
 	mov	[edi+08h],edx			; process_ID
 	mov	[edi+0Ch],ecx			; header ID2
 
-@@1:	bts	ebx,31				; set this block as used
+@int31_allocblock_1:	bts	ebx,31				; set this block as used
 	mov	[esi+00h],ecx			; header ID1
 	mov	[esi+04h],ebx			; store this block size in header
 	mov	[esi+08h],edx			; process_ID
@@ -1641,41 +1671,41 @@ int31_linkfreeblocks:
 	btr	eax,31
 	lea	esi,[edi+eax+10h]		; ESI = ptr to 2nd block handle
 	cmp	esi,ebp				; check if at top of memory
-	jae	@@done				; if yes, done
+	jae	@int31_linkfreeblocks_done				; if yes, done
 	mov	esi,edi				; ESI=EDI = ptr to 1st block
 
-@@1:	mov	eax,[esi+04h]			; get block size
+@int31_linkfreeblocks_1:	mov	eax,[esi+04h]			; get block size
 	btr	eax,31				; check if block is used
-	jc	@@4				; if yes, jump
+	jc	@int31_linkfreeblocks_4				; if yes, jump
 
 	xor	ebx,ebx				; reset amount of free block memory
 	xor	ecx,ecx				; reset number of free blocks in raw
 	mov	edi,esi				; remember addr of first free block
-	jmp	@@3
+	jmp	@int31_linkfreeblocks_3
 
-@@2:	add	ecx,10h				; increment number of free blocks
+@int31_linkfreeblocks_2:	add	ecx,10h				; increment number of free blocks
 	mov	eax,[esi+04h]			; get block size
 	btr	eax,31				; check if block is free
 	lea	ebx,[eax+ebx]			; amount of free memory encountered
-	jnc	@@3				; if yes, jump
+	jnc	@int31_linkfreeblocks_3				; if yes, jump
 	sub	ebx,eax
 	sub	ecx,10h
 	add	ebx,ecx
 	add	[edi+04h],ebx
-	jmp	@@4
+	jmp	@int31_linkfreeblocks_4
 
-@@3:	lea	esi,[esi+eax+10h]		; calculate address of next block
+@int31_linkfreeblocks_3:	lea	esi,[esi+eax+10h]		; calculate address of next block
 	cmp	esi,ebp				; check if at top of memory
-	jb	@@2				; if not, loop
+	jb	@int31_linkfreeblocks_2				; if not, loop
 	add	ebx,ecx
 	add	[edi+04h],ebx
-	jmp	@@done
+	jmp	@int31_linkfreeblocks_done
 
-@@4:	lea	esi,[esi+eax+10h]		; calculate address of next block
+@int31_linkfreeblocks_4:	lea	esi,[esi+eax+10h]		; calculate address of next block
 	cmp	esi,ebp				; check if at top of memory
-	jb	@@1				; if not, loop
+	jb	@int31_linkfreeblocks_1				; if not, loop
 
-@@done:	popad
+@int31_linkfreeblocks_done:	popad
 	ret
 
 
@@ -1733,40 +1763,40 @@ int31h_0800:
 	test	esi,esi				; check if size is zero
 	jz	int31fail8021			; if yes, error
 	cmp	cs:pmodetype,2			; check if system is VCPI
-	jz	@@vcpi				; if yes, do VCPI memory mapping
+	jz	@int31h_0800_vcpi				; if yes, do VCPI memory mapping
 	jmp	int31ok				; if under raw/XMS, do nothing
 
-@@vcpi:	cmp	cs:pm32_maxfpages,0		; check if any linear memory avail.
+@int31h_0800_vcpi:	cmp	cs:pm32_maxfpages,0		; check if any linear memory avail.
 	jz	int31fail8012			; if not, signal error 8012h
 
 	push	ds
 	pop	es
 	mov	edi,cs:phystablebase		; get base of pagetables
-@@0:	mov	eax,ebx				; EAX = physical address
+@int31h_0800_0:	mov	eax,ebx				; EAX = physical address
 	lea	ecx,[esi+0FFFh]			; ECX = size of memory to map
 	and	ax,0F000h
 	shr	ecx,12
 	mov	edx,edi
-@@1:	cmp	edi,cs:phystabletop		; are there any pages mapped left
-	jae	@@3				; no, go on with mapping
+@int31h_0800_1:	cmp	edi,cs:phystabletop		; are there any pages mapped left
+	jae	@int31h_0800_3				; no, go on with mapping
 
 	mov	ebp,[edi]
 	and	bp,0F000h
 	cmp	eax,ebp				; check if page already mapped
-	jz	@@2				; if yes, go to check next page
+	jz	@int31h_0800_2				; if yes, go to check next page
 	add	edi,4				; increment pointer into pagetables
-	jmp	@@0				; loop
+	jmp	@int31h_0800_0				; loop
 
-@@2:	add	edi,4				; increment pointer into pagetables
+@int31h_0800_2:	add	edi,4				; increment pointer into pagetables
 	add	eax,4096
 	dec	ecx				; decrement amount of pages checked
-	jnz	@@1				; if there are more left, loop
+	jnz	@int31h_0800_1				; if there are more left, loop
 	mov	eax,ebx
 	and	ax,0F000h
 	sub	ebx,eax
-	jmp	@@done				; region already mapped, we are done
+	jmp	@int31h_0800_done				; region already mapped, we are done
 
-@@3:	mov	edi,cs:phystablebase		; get base of pagetables
+@int31h_0800_3:	mov	edi,cs:phystablebase		; get base of pagetables
 	mov	ecx,cs:phystabletop		; get number of available pagetables
 	sub	ecx,edi
 	shr	ecx,2				; convert to 4KB pages
@@ -1776,7 +1806,7 @@ int31h_0800:
 	sub	ebp,eax
 	shr	ebp,12
 
-@@4:	test	ecx,ecx				; check if no linear space left
+@int31h_0800_4:	test	ecx,ecx				; check if no linear space left
 	jz	int31fail8021			; if yes, error
 	xor	eax,eax
 	repne	scas dptr es:[edi]		; scan for first free page
@@ -1786,7 +1816,7 @@ int31h_0800:
 	sub	eax,edx
 	shr	eax,2				; EAX = free pages available
 	cmp	eax,ebp				; check if enough free pages
-	jb	@@4				; no, must loop
+	jb	@int31h_0800_4				; no, must loop
 
 	mov	eax,ebx				; EAX = physical address
 	and	ax,0F000h
@@ -1795,16 +1825,16 @@ int31h_0800:
 	mov	ecx,ebp
 	mov	al,07h				; set page as user/writeable/present
 	cmp	cs:cputype,3			; check if CPU is 486+
-	jbe	@@loop				; if not, jump
+	jbe	@int31h_0800_loop				; if not, jump
 	mov	al,1Fh				; set PCD and PWT bits (no page cache)
 
-@@loop:	stos	dptr es:[edi]			; map one 4KB page
+@int31h_0800_loop:	stos	dptr es:[edi]			; map one 4KB page
 	add	eax,4096			; go for next page
-	loop	@@loop				; loop until no pages left
+	loop	@int31h_0800_loop				; loop until no pages left
 	or	bptr [edx+1],2			; mark start of mapped block
 	or	bptr [edi-3],4			; mark end of mapped block
 
-@@done:	sub	edx,cs:phystablebase
+@int31h_0800_done:	sub	edx,cs:phystablebase
 	shl	edx,10
 	add	edx,ebx
 
@@ -1825,10 +1855,10 @@ int31h_0800:
 ;
 int31h_0801:
 	cmp	cs:pmodetype,2
-	jz	@@vcpi
+	jz	@int31h_0801_vcpi
 	jmp	int31ok				; if under raw/XMS, do nothing
 
-@@vcpi:	cmp	cs:pm32_maxfpages,0		; check if any linear memory avail.
+@int31h_0801_vcpi:	cmp	cs:pm32_maxfpages,0		; check if any linear memory avail.
 	jz	int31fail8012			; if not, signal error 8012h
 
 	and	bx,7FFFh
@@ -1845,13 +1875,13 @@ int31h_0801:
 	test	bptr [ebx+1],2
 	jz	int31fail8025
 
-@@loop:	xor	eax,eax				; clear page table entries
+@int31h_0801_loop:	xor	eax,eax				; clear page table entries
 	xchg	eax,[ebx]
 	add	ebx,04h
 	test	ah,04h
-	jz	@@loop
+	jz	@int31h_0801_loop
 
-@@1:	mov	eax,cs:vcpi_cr3
+@int31h_0801_1:	mov	eax,cs:vcpi_cr3
 	mov	cr3,eax
 	xor	eax,eax
 	mov	cr2,eax

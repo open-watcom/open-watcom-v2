@@ -156,6 +156,11 @@ _dta_sel	dw 0
 _dta_off	dd 0
 _app_dta_sel	dw 0
 _app_dta_off	dd 0
+_dos_ver_major	db 0		; cached DOS major version (1, 2, 3, 4+)
+_using_synth_env db 0		; 1 if using synthesized _synth_env block
+_default_self	db 'DOS32A.EXE',0
+		Align 16
+_synth_env	db 0,0,1,0,'DOS32A.EXE',0,65 dup(0)
 
 ;-----------------------------------------------------------------------------
 _int10_ip	dd 0		; default INT 10h handler
@@ -170,57 +175,15 @@ _exc_tab	dd 16 * 2 dup(0)
 
 
 ;-----------------------------------------------------------------------------
-_exec_handle		equ @area1_dw+00h		;dw 0
-_exec_start		equ @area1_dd+04h		;dd 0
-_app_tmp_addr1		equ @area1_dd+08h		;dd 0
-_app_tmp_addr2		equ @area1_dd+0Ch		;dd 0
 
-_app_num_objects	equ @area1_dd+10h		;dd 0
-_app_off_objects	equ @area1_dd+14h		;dd 0
 
-_app_off_objpagetab	equ @area1_dd+18h		;dd 0
-_app_off_fixpagetab	equ @area1_dd+1Ch		;dd 0
-_app_off_fixrectab	equ @area1_dd+20h		;dd 0
-_app_off_datapages	equ @area1_dd+24h		;dd 0
-_app_off_pageshift	equ @area1_dd+28h		;dd 0
 
-_app_eip_object		equ @area1_dd+2Ch		;dd 0
-_app_esp_object		equ @area1_dd+30h		;dd 0
-_app_eip		equ @area1_dd+34h		;dd 0
-_app_esp		equ @area1_dd+38h		;dd 0
-_unreloc_eip		equ @area1_dd+3Ch		;dd 0
-_unreloc_esp		equ @area1_dd+40h		;dd 0
-_app_siz_fixrecstab	equ @area1_dd+44h		;dd 0
-_app_buf_fixrecstab	equ @area1_dd+48h		;dd 0
-_app_siz_lastpage	equ @area1_dd+4Ch		;dd 0
 
-_int_number		equ @area1_db+50h		;db 0,0
-_int_temp		equ @area1_dw+52h		;dw 0
-_int_errcode		equ @area1_dd+54h		;dd 0
-_int_esp		equ @area1_dd+58h		;dd 0
-_int_ss			equ @area1_dd+5Ch		;dw 0
-_int_erravail		equ @area1_db+5Eh		;db 0
 
-_app_type		equ @area1_db+60h		;db 0
-_app_load		equ @area1_db+61h		;db 0
 
-_mus_esp		equ @area1_dd+64h		;dd 0
-_mus_ss			equ @area1_dw+68h		;dw 0
 
 ; machine state
-ms_reg_cr0		equ @area1_dd+ 80h		;dd 0
-ms_reg_cr2		equ @area1_dd+ 84h		;dd 0
-ms_reg_cr3		equ @area1_dd+ 88h		;dd 0
-ms_reg_dr6		equ @area1_dd+ 8Ch		;dd 0
-ms_eflags		equ @area1_dd+ 90h		;dd 0
-ms_ec			equ @area1_dd+ 94h		;dd 0
-ms_frame_esp		equ @area1_dd+0A0h		;dd 0	; exception handler's stack frame: ESP
-ms_frame_ss		equ @area1_dw+0A4h		;dw 0	; exception handler's stack frame: SS
-ms_reg_ds		equ @area1_dw+0A8h		;dw 0
-ms_int			equ @area1_dw+0ACh		;dw 0	; INT #
 
-_app_buf_allocsel	equ @area2_dw+00h		;dw 0
-_app_buf_allocbase	equ @area2_dd+APP_MAXOBJECTS*2	;dd APP_MAXOBJECTS*2 dup(00h)
 
 
 ;-----------------------------------------------------------------------------

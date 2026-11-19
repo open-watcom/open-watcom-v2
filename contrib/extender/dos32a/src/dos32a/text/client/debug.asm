@@ -37,7 +37,7 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .386p
@@ -76,36 +76,36 @@ critical_handler:
 
 	mov	ax,6001h		; error 6001: "unexpected interrupt"
 	cmp	dh,81h
-	jz	@@arg_dl
+	jz	@critical_handler_arg_dl
 
 	mov	al,02h			; error 6002: "out of real-mode virtual stacks"
 	cmp	dh,82h
-	jz	@@report
+	jz	@critical_handler_report
 
 	mov	al,03h			; error 6003: "out of protected-mode virtual stacks"
 	cmp	dh,83h
-	jz	@@report
+	jz	@critical_handler_report
 
 	mov	al,04h			; error 6004: "extended memory blocks have been corrupted"
 	cmp	dh,84h
-	jz	@@arg_esi
+	jz	@critical_handler_arg_esi
 
 	mov	al,05h			; error 6005: "DOS/4G API calls not supported"
 	cmp	dh,85h
-	jz	@@report
+	jz	@critical_handler_report
 
 	mov	al,00h			; error 6000: "unknown error code"
 
-@@arg_dl:
+@critical_handler_arg_dl:
 	movzx	si,dl			; load SI with DL
-	jmp	@@report
+	jmp	@critical_handler_report
 
-@@arg_esi:
+@critical_handler_arg_esi:
 	rol	esi,16			; convert ESI to DI:SI
 	mov	di,si
 	shr	esi,16
 
-@@report:
+@critical_handler_report:
 	call	report_error
 	mov	al,0FFh			; exit with error code 0FFh
 	jmp	exit386
@@ -179,7 +179,7 @@ eh0E:	push	0Eh
 ;
 eh_debug:
 	cmp	cs:_sys_type,3
-	jz	@@0
+	jz	@eh_debug_0
 
 	push	eax
 	mov	eax,dr6				; check if breakpoint on one of DRs
@@ -187,7 +187,7 @@ eh_debug:
 	pop	eax
 	jnz	eh_common			; if yes, jump
 
-@@0:	add	esp,2				; pop INT #
+@eh_debug_0:	add	esp,2				; pop INT #
 	and	bptr [esp+15h],0FEh		; reset trap flag
 	db 66h					; do 32bit far ret
 	retf
@@ -267,7 +267,7 @@ eh_common:
 	mov	ms_reg_dr6,eax			; machine state: reset DR6
 
 	cmp	_sys_type,3
-	jz	@@1
+	jz	@eh_common_1
 	mov	eax,cr0
 	mov	ms_reg_cr0,eax			; machine state: save CR0
 	mov	eax,cr2
@@ -277,7 +277,7 @@ eh_common:
 	mov	eax,dr6
 	mov	ms_reg_dr6,eax			; machine state: save DR6
 
-@@1:	mov	ebp,esp
+@eh_common_1:	mov	ebp,esp
 
 	mov	al,20h				; send EOI to PICs
 	out	0A0h,al
@@ -321,7 +321,7 @@ eh_reporter:
 dump_description:
 	mov	eax,ms_reg_dr6			; check if this is a breakpoint on one of DRs
 	and	al,0Fh
-	jz	@@0				; if not, jump
+	jz	@dump_description_0				; if not, jump
 
 	call	check_faultsel			; check if CS is known code selector
 	push	esi				; show EIP
@@ -331,7 +331,7 @@ dump_description:
 	add	sp,6
 	ret
 
-@@0:	push	6001h				; manually push error code
+@dump_description_0:	push	6001h				; manually push error code
 	mov	dx,offs errmsg3			; 'DOS/32A run-time:'
 	call	prints
 	pop	ax				; remove arg from stack
@@ -344,10 +344,10 @@ dump_description:
 	cmp	ax,bx
 
 	mov	cx,offs excmsgE			; "exception"
-	jnz	@@1
+	jnz	@dump_description_1
 	mov	cx,offs excmsgI			; "unexpected interrupt"
 
-@@1:	mov	ax,ms_int			; machine state: get INT #
+@dump_description_1:	mov	ax,ms_int			; machine state: get INT #
 	mov	bx,ax
 	add	bx,bx
 
@@ -369,27 +369,27 @@ dump_description2:
 	push	eax				; addr
 	push	cx				; object #
 	mov	ax,offs excmsgA			; "Linear"
-	jc	@@1
+	jc	@dump_description2_1
 	mov	ax,offs excmsgB			; "Unrelocated"
-@@1:	push	ax
+@dump_description2_1:	push	ax
 	mov	dx,offs excmsg2			; "...crash address..."
 	call	prints
 	add	sp,8
 
 	mov	ax,ms_int
 	cmp	al,08h				; if error code present, show it
-	jb	@@3
+	jb	@dump_description2_3
 	cmp	al,09h
-	je	@@2
+	je	@dump_description2_2
 	cmp	al,0Eh
-	ja	@@3
+	ja	@dump_description2_3
 
-@@2:	push	ms_ec				; display error code
+@dump_description2_2:	push	ms_ec				; display error code
 	mov	dx,offs excmsg4
 	call	prints
 	add	sp,4
 
-@@3:	call	printcr
+@dump_description2_3:	call	printcr
 
 	ret
 
@@ -400,21 +400,21 @@ dump_description2:
 dump_origin:
 	mov	al,'='
 	mov	cx,72
-@@0:	call	printc
-	loop	@@0
+@dump_origin_0:	call	printc
+	loop	@dump_origin_0
 
 	mov	ax,fs
 	cmp	ax,0008h		; note: kernel selector hardcoded!
 	mov	dx,offs selmsgX		; exception came from "KERNEL"
-	jz	@@1
+	jz	@dump_origin_1
 	cmp	ax,_sel_cs
 	mov	dx,offs selmsgY		; exception came from "CLIENT"
-	jz	@@1
+	jz	@dump_origin_1
 	cmp	ax,_sel32_cs
 	mov	dx,offs selmsgZ		; exception came from "APP/32"
-	jz	@@1
+	jz	@dump_origin_1
 	mov	dx,offs selmsgW		; where do all they come from?
-@@1:	call	prints
+@dump_origin_1:	call	prints
 	jmp	printcr
 
 
@@ -424,11 +424,11 @@ dump_eflags:
 	mov	ebx,ms_eflags
 	xor	eax,eax
 	xor	edx,edx
-@@0:	shr	bl,1
+@dump_eflags_0:	shr	bl,1
 	rcr	eax,4
 	shr	bh,1
 	rcr	edx,4
-	loop	@@0
+	loop	@dump_eflags_0
 	push	eax
 	push	edx
 	push	ms_eflags
@@ -444,10 +444,10 @@ dump_eflags:
 dump_opcodes:
 	mov	cl,10
 	mov	ebx,9
-@@0:	call	loadb_cs_eip
+@dump_opcodes_0:	call	loadb_cs_eip
 	push	ax
 	dec	ebx
-	loop	@@0
+	loop	@dump_opcodes_0
 	mov	dx,offs dbgmsg2
 	call	prints
 	add	sp,10*2
@@ -547,25 +547,25 @@ describe_selector:
 	call	prints
 	pop	ax
 	test	ax,ax				; check if NULL selector
-	jnz	@@1
+	jnz	@describe_selector_1
 	mov	dx,offs dbgmsgB
 	call	prints
 	jmp	printcr
 
-@@1:	mov	bx,ax
+@describe_selector_1:	mov	bx,ax
 	sub	sp,8				; get selector info
 	push	ss
 	pop	es
 	mov	edi,esp
 	mov	ax,000Bh
 	int	31h
-	jnc	@@2				; branch if selector is OK
+	jnc	@describe_selector_2				; branch if selector is OK
 	add	sp,8				; invalid selector
 	mov	dx,offs dbgmsgA
 	call	prints
 	jmp	printcr
 
-@@2:	mov	ax,wptr es:[edi+5]		; describe selector
+@describe_selector_2:	mov	ax,wptr es:[edi+5]		; describe selector
 	mov	dx,ax
 	push	ax				; Acc
 
@@ -625,13 +625,13 @@ check_faultsel:
 	mov	cx,dx				; ECX = base of app's CS
 	lea	eax,[ecx+esi]			; EAX = linear addr (eg CS.base + EIP)
 	mov	ecx,_app_num_objects
-	jcxz	@@err
-@@0:	cmp	bx,_app_buf_allocsel[ecx*2]
-	jz	@@ok
-	loop	@@0
-@@err:	stc
+	jcxz	@check_faultsel_err
+@check_faultsel_0:	cmp	bx,_app_buf_allocsel[ecx*2]
+	jz	@check_faultsel_ok
+	loop	@check_faultsel_0
+@check_faultsel_err:	stc
 	ret
-@@ok:	sub	eax,_app_buf_allocbase[ecx*4]	; EAX = unrelocated addr
+@check_faultsel_ok:	sub	eax,_app_buf_allocbase[ecx*4]	; EAX = unrelocated addr
 	clc
 	ret
 
@@ -644,14 +644,14 @@ check_faultsel:
 ;
 check_selector:
 	lar	bx,ax			; get access rights
-	jnz	@@0			; if sel not a valid selector, jump
+	jnz	@check_selector_0			; if sel not a valid selector, jump
 	verr	ax			; verify selector read access
-	jnz	@@0			; if non-readable, jump
+	jnz	@check_selector_0			; if non-readable, jump
 	not	bx			; invert Present bit
 	test	bh,80h			; test Present bit
-	jnz	@@0			; if segment not present, jump
+	jnz	@check_selector_0			; if segment not present, jump
 	ret
-@@0:	xor	ax,ax			; return Null selector
+@check_selector_0:	xor	ax,ax			; return Null selector
 	ret
 
 
@@ -664,10 +664,10 @@ check_selector:
 loadb_cs_eip:
 	mov	ax,fs
 	test	ax,ax
-	jnz	@@0
+	jnz	@loadb_cs_eip_0
 	xor	eax,eax
 	ret
-@@0:	movzx	eax,bptr fs:[esi+ebx]
+@loadb_cs_eip_0:	movzx	eax,bptr fs:[esi+ebx]
 	ret
 
 ;=============================================================================
@@ -679,10 +679,10 @@ loadb_cs_eip:
 loadl_cs_eip:
 	mov	ax,fs
 	test	ax,ax
-	jnz	@@0
+	jnz	@loadl_cs_eip_0
 	xor	eax,eax
 	ret
-@@0:	mov	eax,fs:[esi+ebx]
+@loadl_cs_eip_0:	mov	eax,fs:[esi+ebx]
 	ret
 
 ;=============================================================================
@@ -694,10 +694,10 @@ loadl_cs_eip:
 loadl_ss_esp:
 	mov	ax,gs
 	test	ax,ax
-	jnz	@@0
+	jnz	@loadl_ss_esp_0
 	xor	eax,eax
 	ret
-@@0:	mov	eax,gs:[edi+ebx]
+@loadl_ss_esp_0:	mov	eax,gs:[edi+ebx]
 	ret
 
 
@@ -706,21 +706,25 @@ loadl_ss_esp:
 
 .8086
 ;=============================================================================
-tone:	push	ax cx
+tone:	push	ax
+	push	cx
 	mov	ax,0500h
 	mov	cx,0110h
 	call	beep
 	mov	ax,0300h
 	call	beep
-	pop	cx ax
+	pop	cx
+	pop	ax
 	ret
 
 ;=============================================================================
 beep:	test	cs:_misc_byte,00000010b
-	jnz	@@0
+	jnz	@beep_0
 	ret
 
-@@0:	push	cx dx ax		; AX=frequency, CX=time
+@beep_0:	push	cx	; AX=frequency, CX=time
+	push	dx
+	push	ax
 	mov	al,0B6h			; set frequency
 	out	43h,al
 	pop	ax
@@ -730,38 +734,45 @@ beep:	test	cs:_misc_byte,00000010b
 	in	al,61h			; beep on
 	or	al,03h
 	out	61h,al
-@@loop:	in	al,40h
+@beep_loop:	in	al,40h
 	in	al,40h
 	mov	ah,al
-@@1:	in	al,40h
+@beep_1:	in	al,40h
 	in	al,40h
 	cmp	ah,al
-	je	@@1
-	loop	@@loop
+	je	@beep_1
+	loop	@beep_loop
 	in	al,61h			; beep off
 	and	al,not 03h
 	out	61h,al
-	pop	dx cx
+	pop	dx
+	pop	cx
 	ret
 
 ;=============================================================================
-scr_on:	push	ax bx cx dx
+scr_on:	push	ax
+	push	bx
+	push	cx
+	push	dx
 	test	cs:_misc_byte,01000000b
-	jz	@@0
+	jz	@scr_on_0
 
 	mov	ax,0003h
 	int	10h			; set default videomode
 
-@@0:	mov	dx,03C4h		; turn on VGA screen
+@scr_on_0:	mov	dx,03C4h		; turn on VGA screen
 	mov	al,01
 	out	dx,al
 	inc	dx
 	in	al,dx
 	and	al,0DFh
 	out	dx,al
-	pop	dx cx bx ax
+	pop	dx
+	pop	cx
+	pop	bx
+	pop	ax
 	ret
 
 
-PopState
+	.386p
 

@@ -38,6 +38,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <typedefs.h>
@@ -57,7 +58,7 @@
 	int extender_build_version;
 
 	FILE *fp;
-	char buffer[512];
+	char buffer[1024];
 	char filename[256];
 	char orgfilename[256];
 
@@ -172,9 +173,33 @@ void CheckFileFormat()
 
 void CheckStubExtender()
 {
+	unsigned int hdr_off;
 
 	if(fileisbound==FALSE)
 		return;
+
+	hdr_off = ((unsigned int)(unsigned char)buffer[0x08] | ((unsigned int)(unsigned char)buffer[0x09] << 8)) * 16U;
+	if(hdr_off + 0x40U < sizeof(buffer))
+	{
+		if(strcmp(&buffer[hdr_off + 0x1CU],"DOS/32A") == 0)
+		{
+			fileverptr=(char *)(buffer + hdr_off + 0x24U);
+			extendertype=1;
+			return;
+		}
+		if(strcmp(&buffer[hdr_off],"STUB/32A") == 0)
+		{
+			fileverptr=(char *)(buffer + hdr_off + 0x09U);
+			extendertype=2;
+			return;
+		}
+		if(strcmp(&buffer[hdr_off + 0x0CU],"STUB/32C") == 0)
+		{
+			fileverptr=(char *)(buffer + hdr_off + 0x15U);
+			extendertype=3;
+			return;
+		}
+	}
 
 	if(strcmp(&buffer[0x7C],"DOS/32A") == 0)
 	{
@@ -229,35 +254,48 @@ void ShowApplicationName()
 void ShowExtenderVersion()
 {
 	char buf[8];
+	unsigned int hdr_off;
 
 	if(fileisbound==FALSE)
 		return;
 
-	memset(buf,0,sizeof(buf));
-	buf[0] = *(fileverptr+1);
-	extender_release=atoi(buf);
+	hdr_off = ((unsigned int)(unsigned char)buffer[0x08] | ((unsigned int)(unsigned char)buffer[0x09] << 8)) * 16U;
+	if(extendertype == 1 && hdr_off + 0x20U < sizeof(buffer) && *fileverptr == 'C')
+	{
+		extender_minor_version = (unsigned char)buffer[hdr_off + 0x18U];
+		extender_major_version = (unsigned char)buffer[hdr_off + 0x19U];
+		extender_release = extender_major_version;
+		extender_revision = 0;
+		extender_build_version = 0;
+	}
+	else
+	{
+		memset(buf,0,sizeof(buf));
+		buf[0] = *(fileverptr+1);
+		extender_release=atoi(buf);
 
-	memset(buf,0,sizeof(buf));
-	buf[0] = *(fileverptr+6);
-	buf[1] = *(fileverptr+7);
-	extender_revision=atoi(buf);
+		memset(buf,0,sizeof(buf));
+		buf[0] = *(fileverptr+6);
+		buf[1] = *(fileverptr+7);
+		extender_revision=atoi(buf);
 
-	memset(buf,0,sizeof(buf));
-	buf[0] = *(fileverptr+3);
-	buf[1] = *(fileverptr+4);
-	extender_major_version=atoi(buf);
+		memset(buf,0,sizeof(buf));
+		buf[0] = *(fileverptr+3);
+		buf[1] = *(fileverptr+4);
+		extender_major_version=atoi(buf);
 
-	memset(buf,0,sizeof(buf));
-	buf[0] = *(fileverptr+8);
-	buf[1] = *(fileverptr+9);
-	extender_minor_version=atoi(buf);
+		memset(buf,0,sizeof(buf));
+		buf[0] = *(fileverptr+8);
+		buf[1] = *(fileverptr+9);
+		extender_minor_version=atoi(buf);
 
-	memset(buf,0,sizeof(buf));
-	buf[0] = *(fileverptr+11);
-	buf[1] = *(fileverptr+12);
-	buf[2] = *(fileverptr+13);
-	buf[3] = *(fileverptr+14);
-	extender_build_version=atoi(buf);
+		memset(buf,0,sizeof(buf));
+		buf[0] = *(fileverptr+11);
+		buf[1] = *(fileverptr+12);
+		buf[2] = *(fileverptr+13);
+		buf[3] = *(fileverptr+14);
+		extender_build_version=atoi(buf);
+	}
 
 
 	printf("\n");

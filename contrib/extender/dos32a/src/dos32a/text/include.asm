@@ -44,3 +44,15 @@ bptr	equ byte ptr
 wptr	equ word ptr
 dptr	equ dword ptr
 fptr	equ fword ptr
+
+IFNDEF DOS_LEGACY_125_20
+DOS_LEGACY_125_20 = 1
+ENDIF
+
+IFNDEF DOS32A_BOUND_STUB
+DOS32A_BOUND_STUB = 0
+ENDIF
+
+evendata macro
+	even
+endm

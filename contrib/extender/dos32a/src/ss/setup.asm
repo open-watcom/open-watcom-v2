@@ -39,14 +39,14 @@
 
 		.486p
 		.MODEL flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 
 PUBLIC	VideoInit_, VideoReset_
 PUBLIC	DrawBackground_
 PUBLIC	GetKey_
-PUBLIC	Printc_, Prints_, SetPos_, SetColor_, SetBackColor_, SetBlink_
+PUBLIC	PrintC_, Prints_, SetPos_, SetColor_, SetBackColor_, SetBlink_
 PUBLIC	OpenWindow_, DrawWindow_, CloseWindow_, ShowCursor_, PrintHelp_
 PUBLIC	get_himem_size_, get_lomem_size_, get_cpu_type_
 PUBLIC	get_sys_type_, get_dosmem_used_, get_total_mem_, get_dpmi_bufsize_
@@ -60,47 +60,70 @@ EXTRN	_mem_kernel	: dword
 include	stddef.inc
 
 .CODE
+externdef _str_dos32a:byte
+externdef _str_stub32c:byte
+externdef _screen_addr:dword
+externdef _buffer_addr:dword
+externdef _window_addr:dword
+externdef _buffer:dword
+externdef _old_video_pos:word
+externdef _xpos:byte
+externdef _ypos:byte
+externdef _color:byte
+externdef _color2:byte
+externdef _color3:byte
+externdef _xwinpos:dword
+externdef _ywinpos:dword
+externdef _xwinlen:dword
+externdef _ywinlen:dword
+externdef _keychar:byte
+externdef _keycode:byte
+externdef _file_handle:word
+externdef @video_buffer:byte
+externdef @window_buffer:byte
+externdef _ss_file_buffer:byte
+
 
 
 GetFileType_:
 	pushad
-	mov	esi,offs @file_buffer
+	mov	esi,offs _ss_file_buffer
 	mov	ax,4200h
 	mov	bx,_file_handle
 	xor	ecx,ecx
 	movzx	edx,wptr [esi+3Ch]
 	int	21h
-	jc	@@t_no
+	jc	@GetFileType_t_no
 
 	mov	ah,3Fh
 	mov	bx,_file_handle
 	mov	ecx,0004h
-	mov	edx,offs @file_buffer+80h
+	mov	edx,offs _ss_file_buffer+80h
 	int	21h
-	jc	@@t_no
+	jc	@GetFileType_t_no
 
 	cmp	wptr [edx],'EL'
-	jz	@@t_le
+	jz	@GetFileType_t_le
 	cmp	wptr [edx],'XL'
-	jz	@@t_lx
+	jz	@GetFileType_t_lx
 	cmp	wptr [edx],'CL'
-	jz	@@t_lc
+	jz	@GetFileType_t_lc
 	cmp	wptr [edx],'EP'
-	jz	@@t_pe
+	jz	@GetFileType_t_pe
 
-@@t_no:	popad				; not bound
+@GetFileType_t_no:	popad				; not bound
 	xor	eax,eax
 	ret
-@@t_le:	popad				; LE - style
+@GetFileType_t_le:	popad				; LE - style
 	mov	eax,1
 	ret
-@@t_lx:	popad				; LX - style
+@GetFileType_t_lx:	popad				; LX - style
 	mov	eax,2
 	ret
-@@t_lc:	popad				; LC - style
+@GetFileType_t_lc:	popad				; LC - style
 	mov	eax,3
 	ret
-@@t_pe:	popad				; PE - style
+@GetFileType_t_pe:	popad				; PE - style
 	mov	eax,4
 	ret
 
@@ -114,63 +137,81 @@ GetExtenderType_:
 	xor	ecx,ecx
 	xor	edx,edx
 	int	21h
-	jc	@@0
+	jc	@GetExtenderType_0
 
 	mov	ax,3F00h
 	mov	bx,_file_handle
-	mov	ecx,0100h
+	mov	ecx,0400h
 	mov	edx,_buffer
 	int	21h
-	jc	@@0
+	jc	@GetExtenderType_0
 
+	mov	ebx,_buffer
+	movzx	edx,wptr [ebx+08h]
+	shl	edx,4
+	cmp	edx,0380h
+	ja	@GetExtenderType_legacy
+	mov	esi,offs _str_dos32a
+	lea	edi,[ebx+edx+1Ch]
+	call	check_string
+	jnc	@GetExtenderType_1
+	mov	ebx,_buffer
+	movzx	edx,wptr [ebx+08h]
+	shl	edx,4
+	mov	esi,offs _str_stub32c
+	lea	edi,[ebx+edx+0Ch]
+	call	check_string
+	jnc	@GetExtenderType_2
+
+@GetExtenderType_legacy:
 	mov	ebx,_buffer
 	mov	esi,offs _str_dos32a
 	lea	edi,[ebx+007Ch]
 	call	check_string
-	jnc	@@1
+	jnc	@GetExtenderType_1
 	mov	ebx,_buffer
 	mov	esi,offs _str_dos32a
 	lea	edi,[ebx+009Ch]
 	call	check_string
-	jnc	@@1
+	jnc	@GetExtenderType_1
 
 	mov	ebx,_buffer
 	mov	esi,offs _str_stub32c
 	lea	edi,[ebx+004Ch]
 	call	check_string
-	jnc	@@2
+	jnc	@GetExtenderType_2
 	mov	ebx,_buffer
 	mov	esi,offs _str_stub32c
 	lea	edi,[ebx+006Ch]
 	call	check_string
-	jnc	@@2
+	jnc	@GetExtenderType_2
 
 
-@@0:	popad
+@GetExtenderType_0:	popad
 	xor	eax,eax			; N/A
 	ret
-@@1:	popad
+@GetExtenderType_1:	popad
 	mov	eax,1			; DOS/32A
 	ret
-@@2:	popad
+@GetExtenderType_2:	popad
 	mov	eax,2			; STUB/32C
 	ret
 
 
 check_string:
 	pushad
-@@0:	mov	al,[esi]
+@check_string_0:	mov	al,[esi]
 	test	al,al
-	jz	@@ok
+	jz	@check_string_ok
 	cmp	al,[edi]
-	jnz	@@err
+	jnz	@check_string_err
 	inc	esi
 	inc	edi
-	jmp	@@0
-@@ok:	popad
+	jmp	@check_string_0
+@check_string_ok:	popad
 	clc
 	ret
-@@err:	popad
+@check_string_err:	popad
 	stc
 	ret
 
@@ -183,44 +224,44 @@ ReadHeader_:
 	mov	edx,eax
 	mov	ax,3D02h
 	int	21h
-	jc	@@err1
+	jc	@ReadHeader_err1
 	mov	_file_handle,ax
 
 	mov	ah,3Fh
 	mov	bx,_file_handle
 	mov	ecx,0040h
-	mov	edx,offs @file_buffer
+	mov	edx,offs _ss_file_buffer
 	int	21h
-	jc	@@err2
+	jc	@ReadHeader_err2
 
-	mov	esi,offs @file_buffer
+	mov	esi,offs _ss_file_buffer
 	cmp	wptr [esi+00h],'ZM'
-	jnz	@@err3
+	jnz	@ReadHeader_err3
 	mov	ax,4200h
 	mov	bx,_file_handle
 	xor	ecx,ecx
 	movzx	edx,wptr [esi+08h]
 	shl	edx,4
 	int	21h
-	jc	@@err2
+	jc	@ReadHeader_err2
 
 	mov	ah,3Fh
 	mov	bx,_file_handle
 	mov	ecx,0080h
 	mov	edx,ebp
 	int	21h
-	jc	@@err2
+	jc	@ReadHeader_err2
 
 	popad
 	xor	eax,eax
 	ret
-@@err1:	popad
+@ReadHeader_err1:	popad
 	mov	eax,1		; error opening
 	ret
-@@err2:	popad
+@ReadHeader_err2:	popad
 	mov	eax,2		; error reading
 	ret
-@@err3:	popad
+@ReadHeader_err3:	popad
 	mov	eax,3		; invalid header type (not MZ exec)
 	ret
 
@@ -230,7 +271,7 @@ ReadHeader_:
 WriteHeader_:
 	pushad
 	push	eax
-	mov	esi,offs @file_buffer
+	mov	esi,offs _ss_file_buffer
 	mov	ax,4200h
 	mov	bx,_file_handle
 	xor	ecx,ecx
@@ -238,16 +279,16 @@ WriteHeader_:
 	shl	edx,4
 	int	21h
 	pop	edx
-	jc	@@err1
+	jc	@WriteHeader_err1
 	mov	ah,40h
 	mov	bx,_file_handle
 	mov	ecx,0080h
 	int	21h
-	jc	@@err1
+	jc	@WriteHeader_err1
 	popad
 	xor	eax,eax
 	ret
-@@err1:	popad
+@WriteHeader_err1:	popad
 	mov	eax,1		; error writing
 	ret
 
@@ -271,27 +312,27 @@ get_dosmem_used_:
 	mov	ax,0FF89h
 	int	21h
 	cmp	eax,'ID32'
-	jz	@@l1
+	jz	@get_dosmem_used_l1
 	popad
 	xor	eax,eax
 	ret
 
-@@l1:	pushad
+@get_dosmem_used_l1:	pushad
 	mov	ax,0FF8Ah
 	int	21h
 	cmp	eax,'ID32'
-	jz	@@l2
+	jz	@get_dosmem_used_l2
 	popad
 	popad
 	xor	eax,eax
 	ret
 
-@@l2:	cmp	ch,03h			; if SYS = DPMI
+@get_dosmem_used_l2:	cmp	ch,03h			; if SYS = DPMI
 	popad
-	jnz	@@l3
+	jnz	@get_dosmem_used_l3
 	sub	ebp,_mem_kernel		; kernel has been removed
 
-@@l3:	mov	eax,ebp			; DOS/32A exec size
+@get_dosmem_used_l3:	mov	eax,ebp			; DOS/32A exec size
 	add	eax,0080h		; + DTA and Mouse_Buf
 	add	eax,0400h		; + RM IDT
 	add	eax,ecx			; + DOS Transfer Buffer
@@ -304,10 +345,10 @@ get_dosmem_used_:
 	add	eax,ebp
 
 	test	word ptr gs:[edi+06h],0001h ; check if STUB/32C is resident
-	jz	@@done
+	jz	@get_dosmem_used_done
 	add	eax,2048		; count in size of STUB/32C
 
-@@done:	mov	[esp+1Ch],eax
+@get_dosmem_used_done:	mov	[esp+1Ch],eax
 	popad
 	ret
 
@@ -368,11 +409,11 @@ get_cpu_type_:
 	movzx	eax,cl
 	mov	[esp+1Ch],eax
 	cmp	cl,3
-	ja	@@1
+	ja	@get_cpu_type_1
 	popad
 	ret
 
-@@1:	pushfd
+@get_cpu_type_1:	pushfd
 	cli
 	pushfd
 	pop     eax
@@ -383,19 +424,19 @@ get_cpu_type_:
 	pushfd
 	pop     eax
 	xor     eax,edx
-	jne	@@l4
-	jmp	@@x
-@@l4:	xor	eax,eax
+	jne	@get_cpu_type_l4
+	jmp	@get_cpu_type_x
+@get_cpu_type_l4:	xor	eax,eax
 	db	0Fh, 0A2h
 	mov	dword ptr [esp+1Ch+4],5	; CPU is 586
 	cmp	eax,1			; check CPUID level
-	jb	@@x			; if level 1 not supported, exit
+	jb	@get_cpu_type_x			; if level 1 not supported, exit
 	mov	eax,1
 	db	0Fh, 0A2h
 	mov	al,ah
 	and     eax,0Fh
 	mov	[esp+1Ch+4],eax
-@@x:	sti
+@get_cpu_type_x:	sti
 	popfd
 	popad
 	ret
@@ -410,21 +451,21 @@ get_sys_type_:
 	mov	ax,1600h
 	int	2Fh
 	test	al,al
-	jz	@@0
+	jz	@get_sys_type_0
 	cmp	al,80h
-	jz	@@0
+	jz	@get_sys_type_0
 	mov	ch,4
-	jmp	@@1
+	jmp	@get_sys_type_1
 
-@@0:	mov	ax,0FF8Ah
+@get_sys_type_0:	mov	ax,0FF8Ah
 	push	fs
 	int	21h
 	pop	fs
 	cmp	eax,'ID32'
-	jz	@@1
+	jz	@get_sys_type_1
 	mov	ch,5
 
-@@1:	movzx	eax,ch
+@get_sys_type_1:	movzx	eax,ch
 	mov	[esp+1Ch],eax
 	popad
 	ret
@@ -474,15 +515,15 @@ set_video_mode_init:
 	mov	ah,0Fh
 	int	10h
 	cmp	al,03h
-	jnz	@@0
+	jnz	@set_video_mode_init_0
 	cmp	ah,80
-	jnz	@@0
+	jnz	@set_video_mode_init_0
 	cmp	bh,00h
-	jnz	@@0
-	jmp	@@1
-@@0:	mov	ax,0003h
+	jnz	@set_video_mode_init_0
+	jmp	@set_video_mode_init_1
+@set_video_mode_init_0:	mov	ax,0003h
 	int	10h
-@@1:	mov	ax,1003h		; toggle blink/background
+@set_video_mode_init_1:	mov	ax,1003h		; toggle blink/background
 	mov	bx,0001h
 	int	10h
 ;	xor	eax,eax
@@ -496,15 +537,15 @@ set_video_mode_exit:
 	mov	ah,0Fh
 	int	10h
 	cmp	al,03h
-	jnz	@@0
+	jnz	@set_video_mode_exit_0
 	cmp	ah,80
-	jnz	@@0
+	jnz	@set_video_mode_exit_0
 	cmp	bh,00h
-	jnz	@@0
-	jmp	@@1
-@@0:	mov	ax,0003h
+	jnz	@set_video_mode_exit_0
+	jmp	@set_video_mode_exit_1
+@set_video_mode_exit_0:	mov	ax,0003h
 	int	10h
-@@1:	mov	ax,1003h		; toggle blink/background
+@set_video_mode_exit_1:	mov	ax,1003h		; toggle blink/background
 	mov	bx,0000h
 	int	10h
 ;	xor	eax,eax
@@ -544,12 +585,12 @@ GetKey_:
 	ret
 
 
-Printc_:
+PrintC_:
 	pushad
 	cmp	al,0Ah
-	jz	@@1
+	jz	@Printc_1
 	cmp	al,0Dh
-	jz	@@2
+	jz	@Printc_2
 	mov	edi,_screen_addr
 	movzx	ebx,_ypos
 	lea	edx,[ebx*4]
@@ -565,14 +606,14 @@ Printc_:
 	mov	[edi],al
 	popad
 	ret
-@@1:	mov	_xpos,0			; handle 0Ah
+@Printc_1:	mov	_xpos,0			; handle 0Ah
 	popad
 	ret
-@@2:	inc	_ypos			; handle 0Dh
+@Printc_2:	inc	_ypos			; handle 0Dh
 	cmp	_ypos,25
-	jb	@@3
+	jb	@Printc_3
 	mov	_ypos,0
-@@3:	popad
+@Printc_3:	popad
 	ret
 
 
@@ -580,23 +621,23 @@ Printc_:
 Prints_:
 	pushad
 	mov	esi,eax
-@@loop:	mov	al,[esi]
+@Prints_loop:	mov	al,[esi]
 	inc	esi
 	test	al,al
-	jz	@@done
+	jz	@Prints_done
 	call	Printc_
 	inc	_xpos
 	cmp	_xpos,80
-	jae	@@1
-	jmp	@@loop
-@@1:	mov	_xpos,0
+	jae	@Prints_1
+	jmp	@Prints_loop
+@Prints_1:	mov	_xpos,0
 	inc	_ypos
 	cmp	_ypos,25
-	jae	@@2
-	jmp	@@loop
-@@2:	mov	_ypos,0
-	jmp	@@loop
-@@done:	popad
+	jae	@Prints_2
+	jmp	@Prints_loop
+@Prints_2:	mov	_ypos,0
+	jmp	@Prints_loop
+@Prints_done:	popad
 	ret
 
 SetPos_:
@@ -631,11 +672,11 @@ SetBackColor_:
 SetBlink_:
 	pushad
 	and	al,01h
-	jnz	@@1
+	jnz	@SetBlink_1
 	and	_color,7Fh
-	jmp	@@done
-@@1:	or	_color,80h
-@@done:	popad
+	jmp	@SetBlink_done
+@SetBlink_1:	or	_color,80h
+@SetBlink_done:	popad
 	ret
 
 ShowCursor_:
@@ -657,46 +698,46 @@ ShowCursor_:
 	lea	ebx,[ebx*2]
 	add	edi,ebx
 	inc	edi
-@@1:	mov	al,[edi]
+@ShowCursor_1:	mov	al,[edi]
 
 	mov	ah,30h
 	cmp	al,1Fh
-	jz	@@2
+	jz	@ShowCursor_2
 	mov	ah,1Fh
 	cmp	al,30h
-	jz	@@2
+	jz	@ShowCursor_2
 
 	mov	ah,37h
 	cmp	al,17h
-	jz	@@2
+	jz	@ShowCursor_2
 	mov	ah,17h
 	cmp	al,37h
-	jz	@@2
+	jz	@ShowCursor_2
 
 	mov	ah,3Ch OR 80h
 	cmp	al,1Ch OR 80h
-	jz	@@2
+	jz	@ShowCursor_2
 	mov	ah,1Ch OR 80h
 	cmp	al,3Ch OR 80h
-	jz	@@2
+	jz	@ShowCursor_2
 
 	mov	ah,3Eh
 	cmp	al,1Eh
-	jz	@@2
+	jz	@ShowCursor_2
 	mov	ah,1Eh
 	cmp	al,3Eh
-	jz	@@2
+	jz	@ShowCursor_2
 
 	mov	ah,3Bh
 	cmp	al,1Bh
-	jz	@@2
+	jz	@ShowCursor_2
 	mov	ah,1Bh
 	cmp	al,3Bh
-	jz	@@2
+	jz	@ShowCursor_2
 
-@@2:	mov	[edi],ah
+@ShowCursor_2:	mov	[edi],ah
 	add	edi,2
-	loop	@@1
+	loop	@ShowCursor_1
 	pop	eax
 	mov	_ypos,al
 	pop	eax
@@ -709,61 +750,63 @@ PrintHelp_:
 	pushad
 	mov	esi,eax
 
-@@0:	lodsb
+@PrintHelp_0:	lodsb
 	test	al,al
-	jz	@@done
+	jz	@PrintHelp_done
 	cmp	al,'['
-	jz	@@l1on
+	jz	@PrintHelp_l1on
 	cmp	al,']'
-	jz	@@l1of
+	jz	@PrintHelp_l1of
 	cmp	al,'<'
-	jz	@@l2on
+	jz	@PrintHelp_l2on
 	cmp	al,'>'
-	jz	@@l2of
+	jz	@PrintHelp_l2of
 	cmp	al,0Dh
-	jz	@@0
+	jz	@PrintHelp_0
 	cmp	al,0Ah
-	jnz	@@1
+	jnz	@PrintHelp_1
 	inc	_ypos
 	mov	_xpos,3
-	jmp	@@0
-@@1:	call	Printc_
+	jmp	@PrintHelp_0
+@PrintHelp_1:	call	Printc_
 	inc	_xpos
-	jmp	@@0
+	jmp	@PrintHelp_0
 
-@@done:	popad
+@PrintHelp_done:	popad
 	ret
 
-@@l1on:	mov	al,_color
+@PrintHelp_l1on:	mov	al,_color
 	mov	_color2,al
 	and	al,0F0h
 	or	al,004h
 	mov	_color,al
-	jmp	@@0
-@@l1of:	mov	al,_color2
+	jmp	@PrintHelp_0
+@PrintHelp_l1of:	mov	al,_color2
 	mov	_color,al
-	jmp	@@0
-@@l2on:	mov	al,_color
+	jmp	@PrintHelp_0
+@PrintHelp_l2on:	mov	al,_color
 	mov	_color3,al
 	and	al,0F0h
 	or	al,00Eh
 	mov	_color,al
-	jmp	@@0
-@@l2of:	mov	al,_color3
+	jmp	@PrintHelp_0
+@PrintHelp_l2of:	mov	al,_color3
 	mov	_color,al
-	jmp	@@0
+	jmp	@PrintHelp_0
 
 
 sync_display:
-	push	eax edx
+	push	eax
+	push	edx
 	mov	dx,03DAh
-@@1:	in	al,dx
+@sync_display_1:	in	al,dx
 	test	al,08h
-	jnz	@@1
-@@2:	in	al,dx
+	jnz	@sync_display_1
+@sync_display_2:	in	al,dx
 	test	al,08h
-	jz	@@2
-	pop	edx eax
+	jz	@sync_display_2
+	pop	edx
+	pop	eax
 	ret
 
 
@@ -782,18 +825,18 @@ save_window:
 	mov	edi,_window_addr
 	mov	ecx,_xwinlen
 	mov	edx,_ywinlen
-@@1:	push	esi
-@@2:	mov	ax,[esi]
+@save_window_1:	push	esi
+@save_window_2:	mov	ax,[esi]
 	mov	[edi],ax
 	add	esi,2
 	add	edi,2
 	dec	ecx
-	jnz	@@2
+	jnz	@save_window_2
 	pop	esi
 	add	esi,80*2
 	mov	ecx,_xwinlen
 	dec	edx
-	jnz	@@1
+	jnz	@save_window_1
 	mov	eax,_xwinpos
 	mov	[edi+0*4],eax
 	mov	eax,_ywinpos
@@ -836,18 +879,18 @@ restore_window:
 	add	edi,ebx
 	mov	ecx,_xwinlen
 	mov	edx,_ywinlen
-@@1:	push	edi
-@@2:	mov	ax,[esi]
+@restore_window_1:	push	edi
+@restore_window_2:	mov	ax,[esi]
 	mov	[edi],ax
 	add	esi,2
 	add	edi,2
 	dec	ecx
-	jnz	@@2
+	jnz	@restore_window_2
 	pop	edi
 	add	edi,80*2
 	mov	ecx,_xwinlen
 	dec	edx
-	jnz	@@1
+	jnz	@restore_window_1
 	popad
 	ret
 
@@ -865,31 +908,31 @@ draw_window:
 	add	edi,ebx
 	mov	ecx,_xwinlen
 	mov	edx,_ywinlen
-@@1:	push	edi
-@@2:	mov	[edi],ax
+@draw_window_1:	push	edi
+@draw_window_2:	mov	[edi],ax
 	add	edi,2
 	dec	ecx
-	jnz	@@2
+	jnz	@draw_window_2
 	pop	edi
 	add	edi,80*2
 	mov	ecx,_xwinlen
 	dec	edx
-	jnz	@@1
+	jnz	@draw_window_1
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
 	mov	_xpos,al
 	mov	_ypos,dl
-	mov	al,	'ษ'
+	mov	al,	0C9h
 	call	Printc_
 	inc	_xpos
 	mov	ecx,_xwinlen
 	sub	ecx,2
-	mov	al,	'อ'
-@@3:	call	Printc_
+	mov	al,	0CDh
+@draw_window_3:	call	Printc_
 	inc	_xpos
-	loop	@@3
-	mov	al,	'ป'
+	loop	@draw_window_3
+	mov	al,	0BBh
 	call	Printc_
 
 	mov	eax,_xwinpos
@@ -899,11 +942,11 @@ draw_window:
 	mov	_ypos,dl
 	mov	ecx,_ywinlen
 	sub	ecx,2
-	mov	al,	'บ'
-@@4:	call	Printc_
+	mov	al,	0BAh
+@draw_window_4:	call	Printc_
 	inc	_ypos
-	loop	@@4
-	mov	al,	'ศ'
+	loop	@draw_window_4
+	mov	al,	0C8h
 	call	Printc_
 
 	mov	eax,_xwinpos
@@ -915,11 +958,11 @@ draw_window:
 	mov	_ypos,dl
 	mov	ecx,_ywinlen
 	sub	ecx,2
-	mov	al,	'บ'
-@@5:	call	Printc_
+	mov	al,	0BAh
+@draw_window_5:	call	Printc_
 	inc	_ypos
-	loop	@@5
-	mov	al,	'ผ'
+	loop	@draw_window_5
+	mov	al,	0BCh
 	call	Printc_
 
 	mov	eax,_xwinpos
@@ -931,10 +974,10 @@ draw_window:
 	mov	_ypos,dl
 	mov	ecx,_xwinlen
 	sub	ecx,2
-	mov	al,	'อ'
-@@6:	call	Printc_
+	mov	al,	0CDh
+@draw_window_6:	call	Printc_
 	inc	_xpos
-	loop	@@6
+	loop	@draw_window_6
 
 	mov	edi,_screen_addr
 	mov	ebx,_ywinpos
@@ -950,10 +993,10 @@ draw_window:
 	mov	ecx,_ywinlen
 	inc	edi
 	mov	al,07h
-@@7:	mov	[edi+0],al
+@draw_window_7:	mov	[edi+0],al
 	mov	[edi+2],al
 	add	edi,80*2
-	loop	@@7
+	loop	@draw_window_7
 
 	mov	edi,_screen_addr
 	mov	ebx,_ywinpos
@@ -970,9 +1013,9 @@ draw_window:
 	mov	ecx,_xwinlen
 	inc	edi
 	mov	al,07h
-@@8:	mov	[edi],al
+@draw_window_8:	mov	[edi],al
 	add	edi,2
-	loop	@@8
+	loop	@draw_window_8
 
 	popad
 	ret
@@ -1018,23 +1061,23 @@ DrawWindow_:
 CloseWindow_:
 	pushad
 	cmp	_window_addr,offs @window_buffer
-	jbe	@@done
+	jbe	@CloseWindow_done
 	call	restore_window
-@@done:	popad
+@CloseWindow_done:	popad
 	ret
 
 
 
 
 .DATA
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+;-----------------------------------------------------------------------------
 _str_dos32a		db 'DOS/32A',0
 _str_stub32c		db 'STUB/32C',0
 
 _screen_addr	dd 000B8000h
 _buffer_addr	dd offs @video_buffer
 _window_addr	dd offs @window_buffer
-_buffer		dd offs @file_buffer
+_buffer		dd offs _ss_file_buffer
 _old_video_pos	dw 0
 _xpos		db 0
 _ypos		db 0
@@ -1051,8 +1094,8 @@ _file_handle	dw 0
 
 
 .DATA?
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+;-----------------------------------------------------------------------------
 @video_buffer	db 2000h dup(?)
 @window_buffer	db 10000h dup(?)
-@file_buffer	db 400h dup(?)
+_ss_file_buffer	db 400h dup(?)
 end

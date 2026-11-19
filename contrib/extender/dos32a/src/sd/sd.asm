@@ -39,16 +39,753 @@
 
 		.486p
 		.MODEL flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 include	stddef.inc
+.DATA?
+;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+
+__screen	db 0C000h dup(?)	; allocate memory for user screen
+__screen2	db 10000h dup(?)
+__vgastatebuf	db 4096 dup(?)
+__svgastatebuf	db 4096 dup(?)
 
 
+
+.DATA
+externdef __cputype:byte
+externdef __fputype:byte
+externdef __buffer:dword
+externdef __exec_handle:word
+externdef __exec_start:dword
+externdef __free_mem:dword
+externdef __base_mem:dword
+externdef _old_int10off:dword
+externdef _old_int10sel:dword
+externdef _old_int21off:dword
+externdef _old_int21sel:dword
+externdef _old_int31off:dword
+externdef _old_int31sel:dword
+externdef _old_int33off:dword
+externdef _old_int33sel:dword
+externdef __idstring:byte
+externdef __message0:byte
+externdef __error0:byte
+externdef __error1:byte
+externdef __error2:byte
+externdef __error3:byte
+externdef __error4:byte
+externdef __error5:byte
+externdef __error6:byte
+externdef __lerror1:byte
+externdef __lerror2:byte
+externdef __lerror3:byte
+externdef __lerror4:byte
+externdef __lerror5:byte
+externdef __lerror6:byte
+externdef __lerror7:byte
+externdef __lerror8:byte
+externdef _app_type:byte
+externdef _app_type2:byte
+externdef _app_tmp_addr1:dword
+externdef _app_tmp_addr2:dword
+externdef _app_num_objects:dword
+externdef _app_off_objects:dword
+externdef _app_off_objpagetab:dword
+externdef _app_off_fixpagetab:dword
+externdef _app_off_fixrectab:dword
+externdef _app_off_datapages:dword
+externdef _app_off_pageshift:dword
+externdef _app_siz_fixrecstab:dword
+externdef _app_siz_lastpage:dword
+externdef _app_buf_fixrecstab:dword
+externdef _app_eip_object:dword
+externdef _app_esp_object:dword
+externdef _app_eip:dword
+externdef _sel32_cs:word
+externdef _app_esp:dword
+externdef _sel32_ss:word
+externdef _unreloc_esp:dword
+externdef _obj_selector:word
+externdef _obj_address:dword
+externdef _obj_sel_ptr:dword
+externdef _acc_rights:word
+externdef __saved_esp:dword
+externdef library_string:byte
+externdef _registers:dword
+externdef _eax:dword
+externdef _ax:word
+externdef _al:byte
+externdef _ah:byte
+externdef _ecx:dword
+externdef _cx:word
+externdef _cl:byte
+externdef _ch:byte
+externdef _edx:dword
+externdef _dx:word
+externdef _dl:byte
+externdef _dh:byte
+externdef _ebx:dword
+externdef _bx:word
+externdef _bl:byte
+externdef _bh:byte
+externdef _esp:dword
+externdef _sp:word
+externdef _ebp:dword
+externdef _bp:word
+externdef _esi:dword
+externdef _si:word
+externdef _edi:dword
+externdef _di:word
+externdef _cs:dword
+externdef _ds:dword
+externdef _es:dword
+externdef _ss:dword
+externdef _fs:dword
+externdef _gs:dword
+externdef _eip:dword
+externdef _ip:word
+externdef _efl:dword
+externdef _fl:word
+externdef _cr0:dword
+externdef _cr2:dword
+externdef _cr3:dword
+externdef _old_registers:dword
+externdef _old_eax:dword
+externdef _old_ecx:dword
+externdef _old_edx:dword
+externdef _old_ebx:dword
+externdef _old_esp:dword
+externdef _old_ebp:dword
+externdef _old_esi:dword
+externdef _old_edi:dword
+externdef _old_cs:dword
+externdef _old_ds:dword
+externdef _old_es:dword
+externdef _old_ss:dword
+externdef _old_fs:dword
+externdef _old_gs:dword
+externdef _old_eip:dword
+externdef _old_efl:dword
+externdef _old_cr0:dword
+externdef _old_cr2:dword
+externdef _old_cr3:dword
+externdef _errorcode:dword
+externdef _es_acc:word
+externdef _cs_acc:word
+externdef _ss_acc:word
+externdef _ds_acc:word
+externdef _fs_acc:word
+externdef _gs_acc:word
+externdef _es_base:dword
+externdef _cs_base:dword
+externdef _ss_base:dword
+externdef _ds_base:dword
+externdef _fs_base:dword
+externdef _gs_base:dword
+externdef _es_limit:dword
+externdef _cs_limit:dword
+externdef _ss_limit:dword
+externdef _ds_limit:dword
+externdef _fs_limit:dword
+externdef _gs_limit:dword
+externdef _dr0:dword
+externdef _dr1:dword
+externdef _dr2:dword
+externdef _dr3:dword
+externdef _dr7:dword
+externdef _old_stack:dword
+externdef _old_int9sel:dword
+externdef _old_int9off:dword
+externdef _old_intAsel:dword
+externdef _old_intAoff:dword
+externdef _old_intBsel:dword
+externdef _old_intBoff:dword
+externdef _old_intCsel:dword
+externdef _old_intCoff:dword
+externdef _old_intDsel:dword
+externdef _old_intDoff:dword
+externdef _old_intEsel:dword
+externdef _old_intEoff:dword
+externdef _old_picmask:word
+externdef old_video_mode:word
+externdef old_video_bank:byte
+externdef old_video_pos:word
+externdef screen_base:dword
+externdef xpos:byte
+externdef ypos:byte
+externdef color:byte
+externdef _keycode:byte
+externdef _keychar:byte
+externdef _keyshift:byte
+externdef _keyhit:byte
+externdef _keytab:byte
+externdef kbxtbl:byte
+externdef selbuf:byte
+externdef __page_faults:dword
+externdef _temp:dword
+externdef _fname:byte
+externdef _data_byte_tab:dword
+externdef msg00:byte
+externdef cpu_table:byte
+externdef fpu_table:byte
+externdef msg10:byte
+externdef msg11:byte
+externdef msg12:byte
+externdef msg13:byte
+externdef msg14:byte
+externdef msg15:byte
+externdef msg16:byte
+externdef msg10f:byte
+externdef msg11f:byte
+externdef msg12f:byte
+externdef msg13f:byte
+externdef msg14f:byte
+externdef msg15f:byte
+externdef msg16f:byte
+externdef msg17f:byte
+externdef msg18f:byte
+externdef msg19f:byte
+externdef msg1Ef1:byte
+externdef msg1Ef2:byte
+externdef msg1Ef3:byte
+externdef msg1Ef4:byte
+externdef msg1Ef5:byte
+externdef msg1Ef6:byte
+externdef msg1Ef7:byte
+externdef msg20:byte
+externdef msg21:byte
+externdef msg22:byte
+externdef msg2es:byte
+externdef msg2cs:byte
+externdef msg2ss:byte
+externdef msg2ds:byte
+externdef msg2fs:byte
+externdef msg2gs:byte
+externdef msg2er:byte
+externdef msg2sip:byte
+externdef msg2sim:byte
+externdef msg2dip:byte
+externdef msg2dim:byte
+externdef msg30:byte
+externdef msg3spp:byte
+externdef msg3spm:byte
+externdef selerr1:byte
+externdef selerr2:byte
+externdef msg40:byte
+externdef msg086:byte
+externdef msg386:byte
+externdef msgrdy:byte
+externdef msgbusy:byte
+externdef msg50:byte
+externdef msg55:byte
+externdef msg56:byte
+externdef msg57:byte
+externdef msg58:byte
+externdef msg60:byte
+externdef msg61:byte
+externdef msg62:byte
+externdef errortab:dword
+externdef err0:byte
+externdef err1:byte
+externdef errterm:byte
+externdef errkbrk:byte
+externdef errcrt0:byte
+externdef errcrt1:byte
+externdef errcrt2:byte
+externdef errcrt3:byte
+externdef errcrt4:byte
+externdef errcrt5:byte
+externdef errec:byte
+externdef err00:byte
+externdef err01:byte
+externdef err02:byte
+externdef err03:byte
+externdef err04:byte
+externdef err05:byte
+externdef err06:byte
+externdef err07:byte
+externdef err08:byte
+externdef err09:byte
+externdef err0A:byte
+externdef err0B:byte
+externdef err0C:byte
+externdef err0D:byte
+externdef err0E:byte
+externdef err0F:byte
+externdef hlpid:byte
+externdef hlp00:byte
+externdef hlp0A:byte
+externdef hlp0B:byte
+externdef hlp0C:byte
+externdef hlp0D:byte
+externdef hlp01:byte
+externdef hlp10:byte
+externdef hlp11:byte
+externdef hlp12:byte
+externdef hlp13:byte
+externdef hlp14:byte
+externdef hlp20:byte
+externdef hlp21:byte
+externdef hlp22:byte
+externdef hlp25:byte
+externdef hlp26:byte
+externdef hlp30:byte
+externdef hlp31:byte
+externdef hlp32:byte
+externdef hlp33:byte
+externdef hlp34:byte
+externdef hlp40:byte
+externdef hlp41:byte
+externdef hlp50:byte
+externdef hlp51:byte
+externdef hlp52:byte
+externdef hlp53:byte
+externdef hlp54:byte
+externdef hlp55:byte
+externdef hlp56:byte
+externdef hlp60:byte
+externdef hlp61:byte
+externdef hlp62:byte
+externdef hlp70:byte
+externdef hlp71:byte
+externdef hlp72:byte
+externdef hlp80:byte
+externdef hlp81:byte
+externdef hlp82:byte
+externdef hlp90:byte
+externdef hlp91:byte
+externdef hlp92:byte
+externdef hlpA0:byte
+externdef hlpA1:byte
+externdef hlpA2:byte
+externdef hlpA3:byte
+externdef hlpA4:byte
+externdef hlpA5:byte
+externdef hlpA6:byte
+externdef hlpA7:byte
+externdef hlpA8:byte
+externdef hlpB0:byte
+externdef hlpB1:byte
+externdef hlpB2:byte
+externdef _acc_typeg:byte
+externdef _acc_typeb:byte
+externdef _pagenum:byte
+externdef _gdt_string:byte
+externdef _gdt_string2:byte
+externdef _idt_string:byte
+externdef _idt_string2:byte
+externdef _emb_string:byte
+externdef _emb_string2:byte
+externdef _emb_str1:byte
+externdef _emb_str2:byte
+externdef _emb_str3:byte
+externdef _emb_str4:byte
+externdef _hist_str01:byte
+externdef _hist_str02:byte
+externdef _hist_str03:byte
+externdef _hist_str04:byte
+externdef _hist_str05:byte
+externdef _hist_str06:byte
+externdef _hist_str07:byte
+externdef _hist_str10:byte
+externdef _hist_str11:byte
+externdef _hist_str12:byte
+externdef _hist_str20:byte
+externdef _hist_str30:byte
+externdef _hist_str31:byte
+externdef _hist_str32:byte
+externdef _hist_str33:byte
+externdef _hist_str34:byte
+externdef __api_off:dword
+externdef __api_sel:word
+externdef _gdt_ptr:dword
+externdef _idt_ptr:dword
+externdef _emb_num:dword
+externdef _emb_mem_ptr:dword
+externdef _emb_mem_top:dword
+externdef __history_bufsize:dword
+externdef __history_bufbase:dword
+externdef __history_bufhand:dword
+externdef __history_bufptr:dword
+externdef __history_bufnum:dword
+externdef __history_current:dword
+externdef __history_bufon:byte
+externdef __history_intnum:byte
+externdef __kernel_codesel:word
+externdef __kernel_datasel:word
+externdef __kernel_zerosel:word
+externdef __kernel_codeseg:word
+externdef __client_codesel:word
+externdef __irq1_buffer_sel:dword
+externdef __irq1_buffer_off:dword
+externdef _dumpname:byte
+externdef _cpu_xpos:dword
+externdef _cpu_ypos:dword
+externdef _cpu_xptr:dword
+externdef _mem_xpos:dword
+externdef _mem_ypos:dword
+externdef _stk_xpos:dword
+externdef _stk_ypos:dword
+externdef _reg_xpos:dword
+externdef _reg_ypos:dword
+externdef _reg_ldat:dword
+externdef _reg_xptr:dword
+externdef _reg_xtab:byte
+externdef _reg_ytab:byte
+externdef _reg_ltab:byte
+externdef _reg_rtab:dword
+externdef _current_window:dword
+externdef _windowtab:dword
+externdef _cursortab:dword
+externdef _addrbuffer:dword
+externdef _fpuregs_on:byte
+externdef _fpuregs_set:byte
+externdef _assmmode_flag:byte
+externdef _showmode_flag:byte
+externdef _commmode_flag:byte
+externdef _data_override:byte
+externdef _data_addr:dword
+externdef _code_addr:dword
+externdef _stack_addr:dword
+externdef _system_block:dword
+externdef _vgastate_buf:dword
+externdef _svgastate_buf:dword
+externdef _unreloc_eip:dword
+externdef _show_unreloc:byte
+externdef _vgastate_set:byte
+externdef _svgastate_set:byte
+externdef _system_stack:dword
+externdef _opsiz:byte
+externdef _adrsiz:byte
+externdef _prefix:byte
+externdef _refaddr:dword
+externdef _refshow:byte
+externdef _jump_taken:byte
+externdef _prefix_esp:byte
+externdef __temp_addr:dword
+externdef cmdadr:dword
+externdef textadr:dword
+externdef commadr:dword
+externdef cmdbuf:byte
+externdef textbuf:byte
+externdef commbuf:byte
+externdef hexbuf:byte
+externdef hextab:byte
+externdef _text_fabs:byte
+externdef _text_fadd:byte
+externdef _text_faddp:byte
+externdef _text_fbld:byte
+externdef _text_fbstp:byte
+externdef _text_fchs:byte
+externdef _text_fnclex:byte
+externdef _text_fcom:byte
+externdef _text_fcomp:byte
+externdef _text_fcompp:byte
+externdef _text_fcos:byte
+externdef _text_fdecstp:byte
+externdef _text_fdiv:byte
+externdef _text_fdivp:byte
+externdef _text_fdivr:byte
+externdef _text_fdivrp:byte
+externdef _text_ffree:byte
+externdef _text_fiadd:byte
+externdef _text_ficom:byte
+externdef _text_ficomp:byte
+externdef _text_fidiv:byte
+externdef _text_fidivr:byte
+externdef _text_fild:byte
+externdef _text_fimul:byte
+externdef _text_fincstp:byte
+externdef _text_fninit:byte
+externdef _text_fist:byte
+externdef _text_fistp:byte
+externdef _text_fisub:byte
+externdef _text_fisubr:byte
+externdef _text_fld:byte
+externdef _text_fld1:byte
+externdef _text_fldl2e:byte
+externdef _text_fldl2t:byte
+externdef _text_fldlg2:byte
+externdef _text_fldln2:byte
+externdef _text_fldpi:byte
+externdef _text_fldz:byte
+externdef _text_fldcw:byte
+externdef _text_fldenv:byte
+externdef _text_fmul:byte
+externdef _text_fmulp:byte
+externdef _text_fnop:byte
+externdef _text_fpatan:byte
+externdef _text_fprem:byte
+externdef _text_fprem1:byte
+externdef _text_fptan:byte
+externdef _text_frndint:byte
+externdef _text_frstor:byte
+externdef _text_fnsave:byte
+externdef _text_fscale:byte
+externdef _text_fsetpm:byte
+externdef _text_fsin:byte
+externdef _text_fsincos:byte
+externdef _text_fsqrt:byte
+externdef _text_fst:byte
+externdef _text_fstp:byte
+externdef _text_fnstcw:byte
+externdef _text_fnstenv:byte
+externdef _text_fnstsw:byte
+externdef _text_fsub:byte
+externdef _text_fsubp:byte
+externdef _text_fsubr:byte
+externdef _text_fsubrp:byte
+externdef _text_ftst:byte
+externdef _text_fucom:byte
+externdef _text_fucomp:byte
+externdef _text_fucompp:byte
+externdef _text_fwait:byte
+externdef _text_fxam:byte
+externdef _text_fxch:byte
+externdef _text_fxtract:byte
+externdef _text_fyl2x:byte
+externdef _text_fyl2xp1:byte
+externdef _text_f2xm1:byte
+externdef _text_fpremi:byte
+externdef _text_feni:byte
+externdef _text_fdisi:byte
+externdef _text_aaa:byte
+externdef _text_aad:byte
+externdef _text_aam:byte
+externdef _text_aas:byte
+externdef _text_adc:byte
+externdef _text_add:byte
+externdef _text_and:byte
+externdef _text_arpl:byte
+externdef _text_bound:byte
+externdef _text_bsf:byte
+externdef _text_bsr:byte
+externdef _text_bswap:byte
+externdef _text_bt:byte
+externdef _text_btc:byte
+externdef _text_btr:byte
+externdef _text_bts:byte
+externdef _text_call:byte
+externdef _text_cbw:byte
+externdef _text_cdq:byte
+externdef _text_clc:byte
+externdef _text_cld:byte
+externdef _text_cli:byte
+externdef _text_clts:byte
+externdef _text_cmc:byte
+externdef _text_cmp:byte
+externdef _text_cmps:byte
+externdef _text_cmpx:byte
+externdef _text_cmpxchg8b:byte
+externdef _text_cpuid:byte
+externdef _text_cwd:byte
+externdef _text_cwde:byte
+externdef _text_daa:byte
+externdef _text_das:byte
+externdef _text_dec:byte
+externdef _text_div:byte
+externdef _text_emms:byte
+externdef _text_enter:byte
+externdef _text_hlt:byte
+externdef _text_idiv:byte
+externdef _text_imul:byte
+externdef _text_in:byte
+externdef _text_inc:byte
+externdef _text_ins:byte
+externdef _text_int:byte
+externdef _text_int1:byte
+externdef _text_int3:byte
+externdef _text_into:byte
+externdef _text_invd:byte
+externdef _text_invlpg:byte
+externdef _text_iret:byte
+externdef _text_jmp:byte
+externdef _text_jcxz:byte
+externdef _text_jecxz:byte
+externdef _text_lahf:byte
+externdef _text_lar:byte
+externdef _text_lea:byte
+externdef _text_leave:byte
+externdef _text_lgdt:byte
+externdef _text_lidt:byte
+externdef _text_lldt:byte
+externdef _text_lmsw:byte
+externdef _text_lock:byte
+externdef _text_lods:byte
+externdef _text_loop:byte
+externdef _text_loope:byte
+externdef _text_loopne:byte
+externdef _text_les:byte
+externdef _text_lds:byte
+externdef _text_lss:byte
+externdef _text_lfs:byte
+externdef _text_lgs:byte
+externdef _text_lsl:byte
+externdef _text_ltr:byte
+externdef _text_mov:byte
+externdef _text_movs:byte
+externdef _text_movsx:byte
+externdef _text_movzx:byte
+externdef _text_mul:byte
+externdef _text_neg:byte
+externdef _text_nop:byte
+externdef _text_not:byte
+externdef _text_or:byte
+externdef _text_out:byte
+externdef _text_outs:byte
+externdef _text_pop:byte
+externdef _text_popa:byte
+externdef _text_popf:byte
+externdef _text_push:byte
+externdef _text_pusha:byte
+externdef _text_pushf:byte
+externdef _text_rcl:byte
+externdef _text_rcr:byte
+externdef _text_rdmsr:byte
+externdef _text_rdtsc:byte
+externdef _text_rep:byte
+externdef _text_repne:byte
+externdef _text_ret:byte
+externdef _text_retf:byte
+externdef _text_rol:byte
+externdef _text_ror:byte
+externdef _text_sahf:byte
+externdef _text_sar:byte
+externdef _text_sbb:byte
+externdef _text_scas:byte
+externdef _text_setalc:byte
+externdef _text_sgdt:byte
+externdef _text_shl:byte
+externdef _text_shld:byte
+externdef _text_shr:byte
+externdef _text_shrd:byte
+externdef _text_sidt:byte
+externdef _text_sldt:byte
+externdef _text_smsw:byte
+externdef _text_stc:byte
+externdef _text_std:byte
+externdef _text_sti:byte
+externdef _text_stos:byte
+externdef _text_str:byte
+externdef _text_sub:byte
+externdef _text_test:byte
+externdef _text_verr:byte
+externdef _text_verw:byte
+externdef _text_wait:byte
+externdef _text_wbinvd:byte
+externdef _text_wrmsr:byte
+externdef _text_xadd:byte
+externdef _text_xchg:byte
+externdef _text_xlat:byte
+externdef _text_xor:byte
+externdef _text_esc:byte
+externdef _text_aldx:byte
+externdef _text_dxal:byte
+externdef _text_axdx:byte
+externdef _text_dxax:byte
+externdef _text_eaxdx:byte
+externdef _text_dxeax:byte
+externdef _text_byte:byte
+externdef _text_short:byte
+externdef _text_far:byte
+externdef _text_bptr:byte
+externdef _text_wptr:byte
+externdef _text_dptr:byte
+externdef _text_long:byte
+externdef _text_temp:byte
+externdef err_addr_f2:byte
+externdef err_addr_f:byte
+externdef err_addr_d:byte
+externdef err_addr_w:byte
+externdef err_addr_b:byte
+externdef _text_none:byte
+externdef _fpureg:byte
+externdef _fputab87:byte
+externdef _regtab8:byte
+externdef _regtab16:byte
+externdef _regtab32:byte
+externdef _regtab86:byte
+externdef _segtab86:byte
+externdef _crtab386:byte
+externdef _drtab386:byte
+externdef _trtab386:byte
+externdef _jumptab86:byte
+externdef _settab386:byte
+externdef _esc0tab0:dword
+externdef _esc0tab1:dword
+externdef _esc1tab0:dword
+externdef _esc1tab1:dword
+externdef _esc2tab0:dword
+externdef _esc2tab1:dword
+externdef _esc3tab0:dword
+externdef _esc3tab1:dword
+externdef _esc4tab0:dword
+externdef _esc4tab1:dword
+externdef _esc5tab0:dword
+externdef _esc5tab1:dword
+externdef _esc6tab0:dword
+externdef _esc6tab1:dword
+externdef _esc7tab0:dword
+externdef _esc7tab1:dword
+externdef _grouptab:dword
+externdef _group0Ftab:dword
+externdef _type0tab:dword
+externdef _type1tab:dword
+externdef _type2tab:dword
+externdef _type3tab:dword
+externdef _type4tab:dword
+externdef _type5tab:dword
+externdef _type6tab:dword
+externdef _type7tab:dword
+externdef _type8tab:dword
+externdef _type9tab:dword
+externdef _typeAtab:dword
+externdef _typeBtab:dword
+externdef _typeCtab:dword
+externdef _typeDtab:dword
+externdef _typeEtab:dword
+externdef _typeFtab:dword
+externdef _type0tab0F:dword
+externdef _type1tab0F:dword
+externdef _type2tab0F:dword
+externdef _type3tab0F:dword
+externdef _type4tab0F:dword
+externdef _type5tab0F:dword
+externdef _type6tab0F:dword
+externdef _type7tab0F:dword
+externdef _type8tab0F:dword
+externdef _type9tab0F:dword
+externdef _typeAtab0F:dword
+externdef _typeBtab0F:dword
+externdef _typeCtab0F:dword
+externdef _typeDtab0F:dword
+externdef _typeEtab0F:dword
+externdef _typeFtab0F:dword
+externdef _grp1tab:dword
+externdef _grp2tab:dword
+externdef _grp3tab:dword
+externdef _grp4tab:dword
+externdef _grp5tab:dword
+externdef _grp6tab:dword
+externdef _grp7tab:dword
+externdef _grp8tab:dword
+externdef _r86tab:dword
 .CODE
+externdef @debug@:byte
+externdef __datasel:word
+externdef __zerosel:word
+externdef __savedstack:dword
+externdef fix_tab:dword
+externdef _jumptbl:dword
 
 start32:
-	push	ds es ss fs gs
+	push	ds
+	push	es
+	push	ss
+	push	fs
+	push	gs
 	pushfd
 	pushad
 	mov	edx,offs __message0
@@ -114,7 +851,7 @@ start32:
 	int	21h			; move to file start
 	jc	@err4
 
-	push	offs @@2
+	push	offs @start32_2
 	mov	edx,__buffer
 	mov	ax,[edx+0]		; get file signature
 	mov	bx,[edx+2]
@@ -128,7 +865,7 @@ start32:
 	jz	load_lc_app
 	jmp	@lerr6
 
-@@2:	call	remove_name_from_cmd
+@start32_2:	call	remove_name_from_cmd
 	call	close_exec
 	clr	ebx
 	mov	ax,0300h
@@ -139,12 +876,12 @@ start32:
 	int	10h
 	push	edx
 	mov	ecx,160
-@@l1:	mov	ax,0E20h
+@start32_l1:	mov	ax,0E20h
 	xor	ebx,ebx
 	push	ecx
 	int	10h
 	pop	ecx
-	loop	@@l1
+	loop	@start32_l1
 	pop	edx
 	mov	ax,0200h
 	int	10h
@@ -173,7 +910,11 @@ start32:
 	mov	__history_bufon,1	; turn on history buffer
 	popad
 	popfd
-	pop	gs fs ss es ds			; restore ES, FS, GS
+	pop	gs	; restore ES, FS, GS
+	pop	fs
+	pop	ss
+	pop	es
+	pop	ds
 
 	mov	ds,word ptr cs:_sel32_ss	; load new DS
 	lss	esp,fword ptr cs:_app_esp	; load new SS:ESP
@@ -184,7 +925,8 @@ start32:
 
 ;=============================================================================
 check_d32a_dpmi:
-	push	es ds			; check for DOS/32 Advanced ADPMI
+	push	es	; check for DOS/32 Advanced ADPMI
+	push	ds
 	mov	esi,offs __idstring
 	mov	ax,0A00h
 	int	31h
@@ -222,7 +964,7 @@ fill_memory_with_ints:
 	mov	ebx,eax			; allocate memory
 	mov	ax,0FF91h
 	int	21h
-	jc	@@done
+	jc	@fill_memory_with_ints_done
 	mov	__base_mem,ebx
 	mov	eax,0CCCCCCCCh		; set memory to INT 3
 	mov	edi,__base_mem
@@ -235,7 +977,7 @@ fill_memory_with_ints:
 	rep	stosb
 	mov	ax,0FF92h		; free memory
 	int	21h
-@@done:	pop	es
+@fill_memory_with_ints_done:	pop	es
 	ret
 
 
@@ -271,41 +1013,42 @@ fill_memory_with_ints:
 check_command_line:
 	mov	edi,80h
 	movzx	ecx,byte ptr es:[edi]	; get length of command line
-	jecxz	@@err			; if zero, error
+	jecxz	@check_command_line_err			; if zero, error
 	inc	edi			; offset to start of command line
 	mov	al,20h
 	repe	scasb			; look for non-space character
-	jz	@@err			; if not found, error
+	jz	@check_command_line_err			; if not found, error
 	dec	edi
 	inc	ecx
 	mov	ebx,edi
-@@1:	mov	al,es:[edi]
+@check_command_line_1:	mov	al,es:[edi]
 	cmp	al,09h			; look for TAB character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,0Dh			; look for CR character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,20h			; look for ' ' character
-	jz	@@2
+	jz	@check_command_line_2
 	inc	edi
-	loop	@@1
-@@2:	mov	ecx,edi
+	loop	@check_command_line_1
+@check_command_line_2:	mov	ecx,edi
 	mov	esi,ebx			; SI = pointer to file name
 	mov	edi,ebx			; DI = pointer to file name
 	sub	ecx,ebx
-@@done:	ret
-@@err:	xor	esi,esi
+@check_command_line_done:	ret
+@check_command_line_err:	xor	esi,esi
 	ret
 remove_name_from_cmd:
 	call	check_command_line
-	jz	@@done
+	jz	@remove_name_from_cmd_done
 	mov	al,20h
 	rep	stosb
-@@done:	ret
+@remove_name_from_cmd_done:	ret
 
 
 ;-----------------------------------------------------------------------------
 update_environment:
-	push	ds es
+	push	ds
+	push	es
 	sub	esp,64
 	mov	ebp,esp
 	mov	ah,19h
@@ -325,9 +1068,9 @@ update_environment:
 	mov	ecx,64
 	repne	scasb
 	cmp	byte ptr [edi-2],'\'
-	jnz	@@0
+	jnz	@update_environment_0
 	dec	edi
-@@0:	mov	byte ptr [edi-1],'\'
+@update_environment_0:	mov	byte ptr [edi-1],'\'
 	mov	es,[esp+64]
 	push	edi
 	call	check_command_line
@@ -335,10 +1078,10 @@ update_environment:
 	push	ds
 	pop	es
 	mov	ds,[esp+64]
-@@1:	lodsb
+@update_environment_1:	lodsb
 	stosb
 	test	al,al
-	loopne	@@1
+	loopne	@update_environment_1
 	xor	al,al
 	stosb
 	push	es
@@ -351,16 +1094,16 @@ update_environment:
 	mov	es,[esp+64]
 	mov	ax,es:[002Ch]		; get environment selector
 	test	ax,ax			; check if selector is NULL
-	jz	@@err			; if yes, jump to error
+	jz	@update_environment_err			; if yes, jump to error
 	lar	cx,ax
-	jnz	@@err
+	jnz	@update_environment_err
 	mov	es,ax
 	xor	al,al
 	xor	edi,edi
 	mov	ecx,7FFFh
-@@2:	repne	scasb
+@update_environment_2:	repne	scasb
 	scasb
-	jnz	@@2
+	jnz	@update_environment_2
 	add	edi,2
 	mov	ecx,-1
 	mov	edx,edi
@@ -372,22 +1115,25 @@ update_environment:
 	mov	edi,edx
 	mov	esi,ebp
 	rep	movsb
-@@done:	add	esp,64
-	pop	es ds
+@update_environment_done:	add	esp,64
+	pop	es
+	pop	ds
 	ret
-@@err:	add	esp,64
-	pop	es ds
+@update_environment_err:	add	esp,64
+	pop	es
+	pop	ds
 	stc
 	ret
 
 create_new_environment:
-	push	ebx ebp
+	push	ebx
+	push	ebp
 	mov	ecx,-1
 	xor	edi,edi
-@@1:	repne	scasb
+@create_new_environment_1:	repne	scasb
 	dec	ecx
 	scasb
-	jnz	@@1
+	jnz	@create_new_environment_1
 	not	ecx
 	add	ecx,2
 	push	ecx
@@ -405,21 +1151,26 @@ create_new_environment:
 	xor	esi,esi
 	xor	edi,edi
 	rep	movsb
-	pop	esi ecx
+	pop	esi
+	pop	ecx
 	push	ss
 	pop	ds
 	rep	movsb
 	add	esp,64
-	pop	es ds
+	pop	es
+	pop	ds
 	mov	es:[002Ch],dx
 	ret
 
 
 ;-----------------------------------------------------------------------------
 open_exec:
-	push	ds es
-	push	ss es
-	pop	ds es
+	push	ds
+	push	es
+	push	ss
+	push	es
+	pop	ds
+	pop	es
 	mov	edi,cs:_system_block
 	rep	movsb
 	mov	byte ptr es:[edi],0
@@ -428,32 +1179,34 @@ open_exec:
 	mov	edx,_system_block
 	mov	ax,3DC0h
 	int	21h
-	jc	@@1			; if error opening, try ".EXE"
-	pop	es ds
+	jc	@open_exec_1			; if error opening, try ".EXE"
+	pop	es
+	pop	ds
 	mov	__exec_handle,ax
 	jc	@err3
 	ret
 
-@@1:	mov	ebx,_system_block
-@@2:	cmp	byte ptr [ebx],2Eh
+@open_exec_1:	mov	ebx,_system_block
+@open_exec_2:	cmp	byte ptr [ebx],2Eh
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	inc	ebx
 	cmp	ebx,edi
-	jb	@@2
+	jb	@open_exec_2
 	mov	eax,4558452Eh
 	cmp	eax,[edi-4]
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	mov	eax,6578652Eh
 	cmp	eax,[edi-4]
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	mov	[edi],eax
 	mov	byte ptr [edi+4],0
 	mov	ax,3DC0h
 	int	21h
-@@err:	pop	es ds
+@open_exec_err:	pop	es
+	pop	ds
 	mov	__exec_handle,ax
 	jc	@err3
 	ret
@@ -494,17 +1247,17 @@ load_exec_header:
 search_for_mz:
 	xor	esi,esi
 
-@@0:	movzx	eax,wptr [edx+04h]	; get pages in file
+@search_for_mz_0:	movzx	eax,wptr [edx+04h]	; get pages in file
 	shl	eax,9			; *512
 	movzx	ebx,wptr [edx+02h]	; get bytes on last page
 	add	eax,ebx
 	cmp	wptr [edx],'ZM'
-	jz	@@1
+	jz	@search_for_mz_1
 	cmp	wptr [edx],'WB'
-	jz	@@2
-	jmp	@@3
-@@1:	sub	eax,0200h
-@@2:	mov	esi,ebp
+	jz	@search_for_mz_2
+	jmp	@search_for_mz_3
+@search_for_mz_1:	sub	eax,0200h
+@search_for_mz_2:	mov	esi,ebp
 	add	ebp,eax
 
 	mov	ecx,ebp
@@ -522,12 +1275,12 @@ search_for_mz:
 	jc	@err4
 	test	eax,eax
 	jz	@err5
-	jmp	@@0
+	jmp	@search_for_mz_0
 
-@@3:	cmp	wptr [edx],'EL'
-	jz	@@4
+@search_for_mz_3:	cmp	wptr [edx],'EL'
+	jz	@search_for_mz_4
 	cmp	wptr [edx],'XL'
-	jz	@@4
+	jz	@search_for_mz_4
 	mov	ecx,ebp
 	mov	edx,ebp
 	shr	ecx,16
@@ -536,13 +1289,13 @@ search_for_mz:
 	int	21h			; move to next exec in file
 	jc	@err4
 	call	search_for_le
-@@4:	mov	__exec_start,ebp
+@search_for_mz_4:	mov	__exec_start,ebp
 	mov	_app_off_datapages,esi
 	ret
 
 
 search_for_le:
-@@1:	mov	edx,__buffer		; DS:EDX = current ptr
+@search_for_le_1:	mov	edx,__buffer		; DS:EDX = current ptr
 	mov	ecx,1000h		; ECX = bytes to load
 	mov	ax,3F00h
 	mov	bx,__exec_handle
@@ -551,21 +1304,21 @@ search_for_le:
 	test	eax,eax			; check if no bytes read
 	jz	@err5			; if true, no app in file
 	shr	ecx,1
-@@2:	mov	ax,[edx+0]
+@search_for_le_2:	mov	ax,[edx+0]
 	mov	bx,[edx+2]
 	test	bx,bx
-	jnz	@@4
+	jnz	@search_for_le_4
 	cmp	ax,'EL'			; 'LE' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'XL'			; 'LX' type
-	jz	@@3
-@@4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
-	jz	@@3
+	jz	@search_for_le_3
+@search_for_le_4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
+	jz	@search_for_le_3
 	add	edx,2
 	add	ebp,2			; increment pointer in file
-	loop	@@2
-	jmp	@@1
-@@3:	mov	_app_off_datapages,0
+	loop	@search_for_le_2
+	jmp	@search_for_le_1
+@search_for_le_3:	mov	_app_off_datapages,0
 	ret
 
 close_exec:
@@ -582,12 +1335,12 @@ print_string:
 	clr	eax
 	clr	ecx
 	mov	ebx,edx
-@@1:	cmp	al,[ebx]
-	jz	@@2
+@print_string_1:	cmp	al,[ebx]
+	jz	@print_string_2
 	inc	ebx
 	inc	ecx
-	jmp	@@1
-@@2:	mov	eax,4000h
+	jmp	@print_string_1
+@print_string_2:	mov	eax,4000h
 	mov	ebx,0002h
 	int	21h
 	popad
@@ -625,7 +1378,12 @@ Debug_:
 Debug_Init_:				; needed to initialize debugger's INTs
 	pushfd
 	pushad
-	push	cs ds es ss fs gs
+	push	cs
+	push	ds
+	push	es
+	push	ss
+	push	fs
+	push	gs
 	cli
 	cld
 
@@ -653,11 +1411,11 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	edi,offs _registers
 	lea	esi,[esp+52]
 	mov	ecx,14
-@@l1:	mov	eax,[esi]		; copy general & segment regs into buf
+@Debug_Init_l1:	mov	eax,[esi]		; copy general & segment regs into buf
 	sub	esi,4
 	mov	[edi],eax
 	add	edi,4
-	loop	@@l1
+	loop	@Debug_Init_l1
 	mov	eax,cr0
 	mov	_cr0,eax
 	mov	eax,cr2
@@ -793,7 +1551,7 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	edx,offs _int0E
 	int	31h
 
-@@dpmi:	clr	eax			; initialize DEBUG REGISTERS
+@Debug_Init_dpmi:	clr	eax			; initialize DEBUG REGISTERS
 	mov	dr0,eax		; clear DR0-DR7: linear addresses
 	mov	dr1,eax
 	mov	dr2,eax
@@ -835,9 +1593,9 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	cx,0007h
 	int	10h
 	cmp	al,1Ch
-	jnz	@@verr
+	jnz	@Debug_Init_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_verr
 	mov	_vgastate_set,1
 
 	mov	ax,4F04h
@@ -845,14 +1603,18 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	dx,0000h
 	int	10h
 	cmp	ax,004Fh
-	jnz	@@verr
+	jnz	@Debug_Init_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_verr
 	mov	_svgastate_set,1
 
-@@verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
+@Debug_Init_verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
 
-	pop	gs fs ss es ds		; return to caller
+	pop	gs	; return to caller
+	pop	fs
+	pop	ss
+	pop	es
+	pop	ds
 	add	esp,4
 	sti
 	popad
@@ -879,14 +1641,14 @@ _exit:	cli
 	mov	esp,cs:__savedstack
 	and	old_video_mode,7F7Fh
 	cmp	old_video_mode,0003h
-	jnz	@@l1
+	jnz	@exit_l1
 	call	restore_video		; raw exit to DOS
 	call	restore_state
 	xor	eax,eax
 	int	33h
 	mov	ax,4C00h
 	int	21h
-@@l1:	mov	ax,0003h
+@exit_l1:	mov	ax,0003h
 	int	10h
 	call	restore_state
 	xor	eax,eax
@@ -907,28 +1669,29 @@ _abort:	cli
 ;-----------------------------------------------------------------------------
 	Align 4
 _int21:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int21_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int21_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int21_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int21_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int21_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int21_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -967,12 +1730,13 @@ _int21:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int21_l1:	popad
 	pushad
 	cmp	ah,4Ch
 	jz	@__4Ch
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int21off
 
 
@@ -997,7 +1761,8 @@ _int21:	cld
 	mov	edx,cs:_old_int33off
 	int	31h
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int21off
 
 _terminated:
@@ -1007,9 +1772,14 @@ _terminated:
 	sub	eax,2
 	mov	[esp+20h+8+0],eax
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 
-	push	es ss ds fs gs
+	push	es
+	push	ss
+	push	ds
+	push	fs
+	push	gs
 	pushad
 	call	save_state
 	mov	al,4Ch
@@ -1019,28 +1789,29 @@ _terminated:
 ;-----------------------------------------------------------------------------
 	Align 4
 _int31:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int31_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int31_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int31_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int31_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int31_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int31_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1079,11 +1850,12 @@ _int31:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int31_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int31off
 
 
@@ -1091,28 +1863,29 @@ _int31:	cld
 ;-----------------------------------------------------------------------------
 	Align 4
 _int10:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int10_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int10_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int10_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int10_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int10_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int10_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1151,11 +1924,12 @@ _int10:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int10_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int10off
 
 
@@ -1165,28 +1939,29 @@ _int10:	cld
 ;-----------------------------------------------------------------------------
 	Align 4
 _int33:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int33_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int33_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int33_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int33_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int33_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int33_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1225,28 +2000,41 @@ _int33:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int33_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int33off
 
 
 
 _critical_error_handler:
-	push	es ss ds fs gs
+	push	es
+	push	ss
+	push	ds
+	push	fs
+	push	gs
 	pushad
 	call	save_state
 	mov	eax,cs:_eax
-	push	ds es ecx esi edi
+	push	ds
+	push	es
+	push	ecx
+	push	esi
+	push	edi
 	mov	ds,cs:__datasel
 	mov	es,cs:__datasel
 	mov	esi,offs _old_registers
 	mov	edi,offs _registers
 	mov	ecx,19
 	rep	movsd
-	pop	edi esi ecx es ds
+	pop	edi
+	pop	esi
+	pop	ecx
+	pop	es
+	pop	ds
 	jmp	_exception
 
 	Align 4
@@ -1296,15 +2084,6 @@ __error4 db 'SD/32A fatal: error in application file exec',cre
 __error5 db 'SD/32A fatal: application file exec format not supported',cre
 __error6 db 'SD/32A fatal: 80486 processor or better required',cre
 
-
-
-.DATA?
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
-
-__screen	db 0C000h dup(?)	; allocate memory for user screen
-__screen2	db 10000h dup(?)
-__vgastatebuf	db 4096 dup(?)
-__svgastatebuf	db 4096 dup(?)
 
 
 .STACK

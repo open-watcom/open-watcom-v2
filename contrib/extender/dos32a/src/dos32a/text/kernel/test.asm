@@ -49,30 +49,40 @@ hexax:	push	dx
 	jmp	mkhex
 hexeax:	push	dx
 	mov	dx,offs hexbuf
-mkhex:	push	eax cx si di ds dx
+mkhex:	push	eax
+	push	cx
+	push	si
+	push	di
+	push	ds
+	push	dx
 	smsw	si
 	test	si,1
-	jz	@@a
+	jz	@mkhex_a
 	mov	ds,cs:seldata
-	jmp	@@b
-@@a:	mov	ds,cs:kernel_code
-@@b:	mov	di,7
-@@0:	mov	si,ax
+	jmp	@mkhex_b
+@mkhex_a:	mov	ds,cs:kernel_code
+@mkhex_b:	mov	di,7
+@mkhex_0:	mov	si,ax
 	and	si,000Fh
 	mov	cl,cs:hextab[si]
 	mov	ds:hexbuf[di],cl
 	shr	eax,4
 	dec	di
-	jns	@@0
+	jns	@mkhex_0
 	pop	si
 	mov	cx,offset hexbuf+10
 	sub	cx,si
-@@c:	lodsb
+@mkhex_c:	lodsb
 	mov	dl,al
 	mov	ah,2
 	int	21h
-	loop	@@c
-	pop	ds di si cx eax dx
+	loop	@mkhex_c
+	pop	ds
+	pop	di
+	pop	si
+	pop	cx
+	pop	eax
+	pop	dx
 	ret
 hextab	db '0123456789ABCDEF'
 hexbuf	db '        ',13,10
@@ -81,7 +91,9 @@ wait:	push ax
 	int 16h
 	pop ax
 	ret
-@_tone:	push	ax cx dx		; AX=frequency, CX=time
+@_tone:	push	ax	; AX=frequency, CX=time
+	push	cx
+	push	dx
 	mov	dx,0540h
 	mov	cx,9FFFh
 	mov	al,0B6h			; set frequency
@@ -93,17 +105,19 @@ wait:	push ax
 	in	al,61h			; beep on
 	or	al,03h
 	out	61h,al
-@@loop:	mov	ax,0001h
+@tone_loop:	mov	ax,0001h
 	cwd
 	div	ax
 	div	ax
 	div	ax
-	loop	@@loop
+	loop	@tone_loop
 	in	al,61h			; beep off
 	and	al,not 03h
 	out	61h,al
-	pop	dx cx ax
-@@done:	ret
+	pop	dx
+	pop	cx
+	pop	ax
+@tone_done:	ret
 
 
 show_debug_string:
@@ -115,5 +129,5 @@ show_debug_string:
 	ret
 _debug_string	label byte
 db	'Kernel Module, built-in DPMI host 0.9A',0Dh,0Ah
-db	'Debug Version, build ',??date,' ',??time,0Dh,0Ah
+db	'Debug Version, build ','04-20-06',' ','00:00:00',0Dh,0Ah
 db	0Dh,0Ah,'$'

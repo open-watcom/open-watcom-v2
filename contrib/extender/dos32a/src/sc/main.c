@@ -495,7 +495,7 @@ void CreateLCObjects()
 
 		if(!quiet)
 		{
-			printf("[û]  ");
+			printf("[ï¿½]  ");
 			if(!verbose) printf("(%1.1f%%)\n", ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100);
 			else
 			{	  		 printf("Old=%7d,   New=%7d,   (%1.1f%%)  (%s)%c\n", obj_old_size,obj_new_size, ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100, encodetype[app_enc_status], c);
@@ -523,7 +523,7 @@ void CreateLCFixups()
 
 	if(quiet!=TRUE)
 	{
-		printf("[û]  ");
+		printf("[ï¿½]  ");
 		if(!verbose) printf("(%1.1f%%)\n", ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100);
 		else	     printf("Old=%7d,   New=%7d,   (%1.1f%%)  (%s)\n", obj_old_size,obj_new_size, ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100, encodetype[app_enc_status]);
 	}
@@ -684,7 +684,7 @@ void GetDOS32APath()
 	char *envname;
 	char envbuf[512];
 
-	dos32apath[0]=NULL;
+	dos32apath[0]=0;
 	envname=getenv("DOS32A");
 	if(envname!=0)
 	{
