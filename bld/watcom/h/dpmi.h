@@ -102,7 +102,8 @@
 #define DPMISavePMStateAddr                     _DPMISavePMStateAddr
 #define DPMISaveStateSize                       _DPMISaveStateSize
 #define DPMIGetVendorSpecificAPI                _DPMIGetVendorSpecificAPI
-#define DPMIGetVersion                          _DPMIGetVersion
+#define DPMIVersionNumber                       _DPMIVersionNumber
+#define DPMIVersionInfo                         _DPMIVersionInfo
 #define DPMIGetFreeMemoryInformation            _DPMIGetFreeMemoryInformation
 
 #define PharlapAllocateDOSMemoryBlock           _PharlapAllocateDOSMemoryBlock
@@ -276,7 +277,8 @@ extern intr_addr _DPMIGetPMInterruptVector( uint_8 iv );
 extern void     _DPMISetRealModeInterruptVector( uint_8 iv, intr_addr intr );
 extern int_16   _DPMIModeDetect( void );
 extern void     _DPMIIdle( void );
-extern void     _DPMIGetVersion( version_info _WCI86FAR * );
+extern uint_16  _DPMIVersionNumber( void );
+extern void     _DPMIVersionInfo( version_info _WCI86FAR * );
 extern int_32   _DPMIAllocateLDTDescriptors( uint_16 );
 extern int_32   _DPMISegmentToDescriptor( uint_16 );
 extern int      _DPMIFreeLDTDescriptor( uint_16 );
@@ -832,8 +834,15 @@ extern uint_8   _PMIs32bitCPU( void );
     __modify __exact [__eax __ebx __cx __si __edi]
 #endif
 
+#pragma aux _DPMIVersionNumber = \
+        _MOV_AX_word DPMI_0400 \
+        _INT_31         \
+    __parm   [] \
+    __value  [__ax] \
+    __modify __exact [__ax __bx __cx __dx]
+
 #ifdef _M_I86
-#pragma aux _DPMIGetVersion = \
+#pragma aux _DPMIVersionInfo = \
         _MOV_AX_word DPMI_0400 \
         _INT_31         \
         "mov  byte ptr es:[si],ah"      \
@@ -846,7 +855,7 @@ extern uint_8   _PMIs32bitCPU( void );
     __value         \
     __modify __exact [__ax __bx __cx __dx]
 #else
-#pragma aux _DPMIGetVersion = \
+#pragma aux _DPMIVersionInfo = \
         _MOV_AX_word DPMI_0400 \
         _INT_31         \
         "mov  byte ptr [esi],ah"    \

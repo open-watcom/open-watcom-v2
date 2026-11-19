@@ -331,7 +331,7 @@ static digld_error SetTrapHandler( void )
     PMData->vecttable2[DOS4G_COMM_VECTOR].s.segment = RMData.rm;
     PMData->vecttable2[DOS4G_COMM_VECTOR].s.offset = RM_OFF( Interrupt15 );
     if( IntrState == IS_NONE ) {
-        DPMIGetVersion( &ver );
+        DPMIVersionInfo( &ver );
         if( (ver.major_version >= 1 || ver.minor_version > 90) || DPMICheck == 2 ) {
             RawPMtoRMSwitchAddr = DPMIRawPMtoRMAddr();
             PMData->switchaddr.a= DPMIRawRMtoPMAddr();

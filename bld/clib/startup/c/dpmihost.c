@@ -37,20 +37,12 @@
 #include "rtinit.h"
 
 
-extern short _CheckDPMIVersion( void );
-#pragma aux _CheckDPMIVersion = \
-        _MOV_AX_word DPMI_0400 \
-        _INT_31         \
-    __parm   [] \
-    __value  [__ax] \
-    __modify [__bx __cx __dx]
-
 unsigned char   _DPMI = 0;
 
 static void _WCNEAR dpmi_check( void )
 {
     if( DPMIModeDetect() == 0 || _IsRational() ) {
-        if( _CheckDPMIVersion() ) {
+        if( DPMIVersionNumber() ) {
             _DPMI = 1;
         }
     }

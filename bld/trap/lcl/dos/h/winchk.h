@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Varoius environment checks for the DOS debugger.
+* Description:  Various environment checks for the DOS debugger.
 *
 ****************************************************************************/
 
@@ -38,8 +38,8 @@ extern byte EnhancedWinCheck( void );
     __value     [__al] \
     __modify    [__ah]
 
-extern unsigned DPMIVersion( void );
-#pragma aux DPMIVersion = \
+extern unsigned RealModeDPMIVersionNumber( void );
+#pragma aux RealModeDPMIVersionNumber = \
         "mov  ax,1687h" \
         "int 2fh"       \
         "test ax,ax"    \
