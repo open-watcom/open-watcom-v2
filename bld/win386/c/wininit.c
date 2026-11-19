@@ -59,8 +59,8 @@
 #define READSIZE        (0x8000)
 #define FPU_AREA        0x40            // offset into stack for fpu
 
-extern BYTE WDPMI_Check386Version( void );
-#pragma aux WDPMI_Check386Version = \
+extern BYTE WDPMI_32BitClient( void );
+#pragma aux WDPMI_32BitClient = \
         _MOV_AX_word DPMI_0400 \
         _INT_31         \
         _AND_BL 0x01    \
@@ -185,7 +185,7 @@ bool Init32BitTask( HINSTANCE thisInstance, HINSTANCE prevInstance, LPSTR cmdlin
     /*
      * verify that we are running on a 32-bit DPMI
      */
-    if( !WDPMI_Check386Version() ) {
+    if( !WDPMI_32BitClient() ) {
         MessageBox( NULL, "Not running on a 386 DPMI implementation",MsgTitle,
                         MB_OK | MB_ICONHAND | MB_TASKMODAL );
         return( false );
