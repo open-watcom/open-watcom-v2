@@ -37,8 +37,7 @@ RawGetDescriptors proc near
         repne   scasb           ;find a zero.
         jnz     ldt1_8
         dec     edi
-        inc     al
-        mov     es:[edi],al
+        mov     BYTE PTR es:[edi],DT_ALLOCATED
         jmp     ldt1_1
         ;
         ;search for multiple selectors.
@@ -58,7 +57,7 @@ ldt1_0: repne   scasb           ;find a zero.
         push    edi
         mov     ecx,edx
         inc     ecx
-        inc     al
+        mov     al,DT_ALLOCATED
         rep     stosb           ;mark all entries as used.
         pop     edi
 ldt1_1: sub     edi,MDTLinear+4
@@ -108,70 +107,62 @@ RawGetDescriptors endp
 ;
 ;BX     - Selector for descriptor to release.
 ;
-RawRelDescriptor proc near
-        ;
-        ;Check segment registers for value we're releasing and clear
-        ;if found.
-        ;
-        push    ebx
+RawReleaseDescriptor    proc near
         push    eax
         push    ecx
-        movzx   ebx,bx
-        GetDescOffset ebx               ;lose RPL & TI
-        xor     ecx,ecx
-        xor     eax,eax
-        mov     ax,ds
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     ldt2_0
-        mov     ds,cx
-ldt2_0: mov     ax,es
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     ldt2_1
-        mov     es,cx
-ldt2_1: mov     ax,fs
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     ldt2_2
-        mov     fs,cx
-ldt2_2: mov     ax,gs
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     ldt2_3
-        mov     gs,cx
-ldt2_3:
-        pop     ecx
-        pop     eax
-        ;
-        push    eax
         push    esi
         push    ds
         push    es
-        mov     ax,KernalDS             ;make our data addresable.
-        mov     ds,ax
+        mov     ax,KernalDS             ; make our data addresable.
+        mov     ds,eax
         assume ds:_cwRaw
-        mov     ax,KernalZero           ;make LDT addresable.
-        mov     es,ax
-        mov     esi,ebx                 ;Get selector offset to use.
-        shr     esi,3                   ;/8 for descriptor number.
-        add     esi,MDTLinear+4
-        mov     BYTE PTR es:[esi],0     ;mark this entry as free.
-        mov     esi,ebx                 ;Get selector offset again.
-        add     esi,MDTLinear
-        xor     eax,eax
-        mov     DWORD PTR es:[esi],eax
-        mov     DWORD PTR es:[esi+4],eax
+        mov     ax,KernalZero           ; make LDT addresable.
+        mov     es,eax
+        test    bl,4                    ; LDT selector?
+        jz      error
+        movzx   eax,bx                  ; Get selector to use.
+        shr     eax,3                   ; /8 for descriptor number.
+        mov     esi,MDTLinear+4
+        cmp     BYTE PTR es:[esi+eax],DT_ALLOCATED ; descriptor allocated as LDT descriptor?
+        jnz     error
+        mov     BYTE PTR es:[esi+eax],DT_FREE ; mark this entry as free.
+        shl     eax,3                   ; Get selector to use.
+        mov     esi,MDTLinear
+        xor     ecx,ecx
+        mov     DWORD PTR es:[esi+eax],ecx
+        mov     DWORD PTR es:[esi+4+eax],ecx
         ;
+        mov     esi,gs
+        lar     eax,esi
+        jz      @F
+        mov     gs,ecx
+@@:     mov     esi,fs
+        lar     eax,esi
+        jz      @F
+        mov     fs,ecx
+@@:     pop     esi
+        lar     eax,esi
+        jz      @F
+        mov     esi,ecx
+@@:     mov     es,esi
+        pop     esi
+        lar     eax,esi
+        jz      @F
+        mov     esi,ecx
+@@:     mov     ds,esi
         clc
+        jmp short ret_1
+error:
         pop     es
         pop     ds
+        stc
+ret_1:
         pop     esi
+        pop     ecx
         pop     eax
-        pop     ebx
         ret
         assume ds:_cwDPMIEMU
-RawRelDescriptor endp
+RawReleaseDescriptor    endp
 
 
 ;-------------------------------------------------------------------------------

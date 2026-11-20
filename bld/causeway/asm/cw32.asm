@@ -2685,7 +2685,12 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         xor     al,al
         rep     stos b[edi]
         mov     edi,MDTLinear+4
-        or      DWORD PTR es:[edi],-1   ;Force VCPI values to not used.
+        ; Protect the first four selectors from normal allocation.
+        ; The first is the NULL selector and the next three are reserved for VCPI.
+        ; Each descriptor has a one-byte status entry. Since
+        ; DT_RESERVED is -1 (0xff), one DWORD write marks all
+        ; four corresponding descriptor entries as reserved.
+        mov     DWORD PTR es:[edi],DT_RESERVED
         ;
         ;See which table we want to use.
         ;
@@ -2736,7 +2741,7 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         mov     cx,GDT_Entries
 cw5_4:  test    BYTE PTR es:[edi+5],DescPresent ;this descriptor in use?
         jz      cw5_5
-        or      BYTE PTR es:[esi],-1
+        mov     BYTE PTR es:[esi],DT_RESERVED
 cw5_5:  add     edi,8                   ;next descriptor.
         inc     esi                     ;update descriptor number.
         dec     cx
@@ -2768,8 +2773,16 @@ cw5_5:  add     edi,8                   ;next descriptor.
         xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
         call    MakeDesc
-        pop     es
-        ;
+        pop     es                      ; ES = KernalZero (flat) again
+        ; Reserve the fixed video selectors in the allocation map.
+        ; They are selector = real mode segment (+RPL 3), kept for legacy
+        ; 16-bit code, and sit far outside GDT_Entries (not covered by cw5_4).
+        ; They exist only when the big shared GDT is built, not in the
+        ; separate GDT/LDT mode (SYSFLAG_LDT).        ;
+        mov     esi,MDTLinear+4
+        mov     BYTE PTR es:[esi+(KernalB000 shr 3)],DT_RESERVED
+        mov     BYTE PTR es:[esi+(KernalB800 shr 3)],DT_RESERVED
+        mov     BYTE PTR es:[esi+(KernalA000 shr 3)],DT_RESERVED
 cw5_LDT:
         ;Setup new LDT.
         ;

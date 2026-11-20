@@ -377,7 +377,7 @@ rv1_NoDIRMove:
         ;
         ;Release XMS memory.
         ;
-        call    RawRelXMS
+        call    RawReleaseXMS
         ;
         ;Release INT 15h memory.
         ;
@@ -697,7 +697,7 @@ ITable  dd 8*2 dup (0)
 ;
 ;Release any XMS we claimed.
 ;
-RawRelXMS       proc    far
+RawReleaseXMS   proc    far
         cmp     XMSPresent,0
         jz      rv11_Done
         push    ds
@@ -746,7 +746,7 @@ rv11_1: add     si,2+4+4
         ;
 rv11_Done:
         ret
-RawRelXMS       endp
+RawReleaseXMS   endp
 
 ;-------------------------------------------------------------------------------
 ;
@@ -2816,7 +2816,7 @@ rv46_DPMI_0000:
 rv46_DPMI_0001:
         cmp     al,01h                  ;Free LDT descriptor?
         jnz     rv46_DPMI_0002
-        call    RawRelDescriptor
+        call    RawReleaseDescriptor
         jmp     rv46_Done
 
 rv46_DPMI_0002:
@@ -2977,7 +2977,7 @@ rv46_DPMI_0101:
         jmp     med3_0101
         ;
 med2_0101:
-        call    RawRelDOSMemory
+        call    RawReleaseDOSMemory
         jc      rv46_0101_0
 med3_0101:
         pop     eax
@@ -3319,7 +3319,7 @@ rv46_DPMI_0303:
 rv46_DPMI_0304:
         cmp     al,04h                  ;release CallBack?
         jnz     rv46_DPMI_0305
-        call    RawRelCallBack
+        call    RawReleaseCallBack
         jmp     rv46_Done
 
 rv46_DPMI_0305:
@@ -3576,7 +3576,7 @@ rv46_DPMI_0501:
 rv46_DPMI_0502:
         cmp     al,02h                  ;free memory block?
         jnz     rv46_DPMI_0503
-        call    RawRelMemory
+        call    RawReleaseMemory
         jmp     rv46_Done
 
 rv46_DPMI_0503:

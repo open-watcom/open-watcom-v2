@@ -700,7 +700,7 @@ RawGetCallBack endp
 ;
 ;CX:DX  - Real mode call back address.
 ;
-RawRelCallBack proc near
+RawReleaseCallBack  proc near
         pushad
         push    ds
         push    es
@@ -740,7 +740,7 @@ inter13_2:
         ret
         ;
         assume ds:_cwDPMIEMU
-RawRelCallBack endp
+RawReleaseCallBack  endp
 
 ;-------------------------------------------------------------------------------
 ;

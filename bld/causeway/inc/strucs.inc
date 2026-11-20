@@ -58,6 +58,11 @@ Res_NOTHING     equ     254
 Res_CHAIN       equ     255     ;single entry.
 
 
+;--- values for GDT/LDT bytestring (MDTLinear+4)
+DT_FREE         equ     0       ; free descriptor 
+DT_ALLOCATED    equ     1       ; allocated LDT descriptor 
+DT_RESERVED     equ     -1      ; reserved GDT descriptor
+
 
 MEM_FREE        equ     0       ;Free page.
 MEM_START       equ     1       ;Used page, start of block.

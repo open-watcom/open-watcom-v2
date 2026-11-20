@@ -452,7 +452,7 @@ mem2_NewBlock:
         pushad
         GetPageLinearAddr esi
         Reg32To16hilo esi, si, di       ;esi -> si:di
-        call    RawRelMemory
+        call    RawReleaseMemory
         popad
         ;
         ;Use new block in place of original.
@@ -496,7 +496,7 @@ RawResMemory    endp
 ;
 ;SI:DI  - handle (Base linear address).
 ;
-RawRelMemory    proc    near
+RawReleaseMemory    proc    near
         pushad
         push    ds
         push    es
@@ -590,7 +590,7 @@ mem3_exit:
         ret
         ;
         assume ds:_cwDPMIEMU
-RawRelMemory    endp
+RawReleaseMemory    endp
 
 ;-------------------------------------------------------------------------------
 ;
@@ -2601,7 +2601,7 @@ mem20_Shrink:
 mem20_1:
         push    ebx
         push    ecx
-        call    RawRelDescriptor        ;release this selector.
+        call    RawReleaseDescriptor    ;release this selector.
         pop     ecx
         pop     ebx
         add     ebx,8
@@ -2683,43 +2683,7 @@ RawResDOSMemory endp
 ;
 ;Release a block of DOS memory.
 ;
-RawRelDOSMemory proc near
-
-        push    eax
-        push    ebx
-        push    ecx
-        movzx   ebx,dx
-        GetDescOffset ebx               ;lose RPL & TI
-        xor     ecx,ecx
-        xor     eax,eax
-        mov     ax,ds
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     mem21_z0
-        mov     ds,cx
-mem21_z0:
-        mov     ax,es
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     mem21_z1
-        mov     es,cx
-mem21_z1:
-        mov     ax,fs
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     mem21_z2
-        mov     fs,cx
-mem21_z2:
-        mov     ax,gs
-        GetDescOffset eax               ;lose RPL & TI
-        cmp     eax,ebx
-        jnz     mem21_z3
-        mov     gs,cx
-mem21_z3:
-        pop     ecx
-        pop     ebx
-        pop     eax
-
+RawReleaseDOSMemory proc near
         push    ebx
         push    ecx
         push    edx
@@ -2754,7 +2718,7 @@ mem21_0:
         push    eax
         push    ebx
         push    ecx
-        call    RawRelDescriptor
+        call    RawReleaseDescriptor
         pop     ecx
         pop     ebx
         pop     eax
@@ -2789,4 +2753,4 @@ mem21_noc:
         pop     ecx
         pop     ebx
         ret
-RawRelDOSMemory endp
+RawReleaseDOSMemory endp
