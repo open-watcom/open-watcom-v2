@@ -60,27 +60,7 @@ PUBLIC	bind_exec_
 PUBLIC	find_oem_info_
 
 .CODE
-externdef _buffer:dword
-externdef _str_dos32a_new:byte
-externdef _str_stub32a_new:byte
-externdef _str_stub32c_new:byte
-externdef _str_dos32a:byte
-externdef _str_stb32a:byte
-externdef _str_stub32a:byte
-externdef _str_dos4g:byte
-externdef _str_pmodew:byte
-externdef _exec_start:dword
 externdef _app_off_datapages:dword
-externdef @buffer:byte
-externdef _tmp_handle1:dword
-externdef _tmp_handle2:dword
-externdef _tmp_size1:dword
-externdef _tmp_size2:dword
-externdef _mem_ptr:dword
-externdef _mem_handle:dword
-externdef _exec_handle:word
-externdef _saved_stack:dword
-externdef _temp_handle:word
 
 ;-----------------------------------------------------------------------------
 

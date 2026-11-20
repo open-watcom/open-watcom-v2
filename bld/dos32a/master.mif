@@ -1,0 +1,64 @@
+proj_name = dos32a
+
+dos32a_autodepends = .AUTODEPEND
+
+additional_clean = *.map
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+d32_src = $(dos32a_dir)/src
+d32_inc = -I"$(dos32a_dir)/h32" -I"$(d32_src)/sutils/misc"
+
+wasm_16_flags = -bt=dos -fpi87 -wx -we -zld -zq -DEXEC_TYPE=0 -I"$(d32_src)/sutils/misc" -I"$(d32_src)/dos32a" -I"$(d32_src)/dos32a/text"
+wasm_32_flags = -bt=dos -3p -mf -wx -we -zld -zq -I"$(d32_src)/sutils/misc"
+wcc386_flags  = -zq -oneatx -ohirbk -ol+ -ei -zp16 -6 -fp6 -fpi87 -bt=dos -mf $(d32_inc) $(inc_path)
+
+all : dos32a.exe stub32a.exe stub32c.exe sb.exe ss.exe sc.exe sd.exe sver.exe .SYMBOLIC
+
+kernel.obj : $(d32_src)/dos32a/kernel.asm
+    $(as) $(wasm_16_flags) -fo=$@ $[@
+
+dos32a.obj : $(d32_src)/dos32a/dos32a.asm
+    $(as) $(wasm_16_flags) -fo=$@ $[@
+
+dos32a.exe : dos32a.obj kernel.obj
+    $(linker) system dos op q, map, fullheader, packcode=0, packdata=0 name $@ file dos32a.obj, kernel.obj
+
+stub32a.obj : $(d32_src)/stub32a/stub32a.asm
+    $(as) -bt=dos -wx -we -zld -zq -DEXEC_TYPE=0 -I"$(d32_src)/sutils/misc" -I"$(d32_src)/stub32a" -fo=$@ $[@
+
+stub32c.obj : $(d32_src)/stub32a/stub32c.asm
+    $(as) -bt=dos -wx -we -zld -zq -DEXEC_TYPE=0 -I"$(d32_src)/sutils/misc" -I"$(d32_src)/stub32a" -fo=$@ $[@
+
+stub32a.exe : stub32a.obj
+    $(linker) system dos op q, map name $@ file stub32a.obj
+
+stub32c.exe : stub32c.obj
+    $(linker) system dos op q, map name $@ file stub32c.obj
+
+sb.exe : dos32a.exe $(d32_src)/sb/sbind.asm $(d32_src)/sb/main.c
+    $(as) $(wasm_32_flags) -I"$(d32_src)/sb" -fo=sbind.obj $(d32_src)/sb/sbind.asm
+    $(cc_386) $(wcc386_flags) -I"$(d32_src)/sb" -fo=sb_main.obj $(d32_src)/sb/main.c
+    $(linker) system dos32a op q, map, stack=65536 name $@ file sbind.obj, sb_main.obj
+
+ss.exe : dos32a.exe $(d32_src)/ss/setup.asm $(d32_src)/ss/main.c
+    $(as) $(wasm_32_flags) -I"$(d32_src)/ss" -fo=setup.obj $(d32_src)/ss/setup.asm
+    $(cc_386) $(wcc386_flags) -I"$(d32_src)/ss" -fo=ss_main.obj $(d32_src)/ss/main.c
+    $(linker) system dos32a op q, map, stack=65536 name $@ file setup.obj, ss_main.obj
+
+sc.exe : dos32a.exe $(d32_src)/sc/scomp.asm $(d32_src)/sc/sload.asm $(d32_src)/sc/encode.c $(d32_src)/sc/main.c
+    $(as) $(wasm_32_flags) -I"$(d32_src)/sc" -fo=scomp.obj $(d32_src)/sc/scomp.asm
+    $(as) $(wasm_32_flags) -I"$(d32_src)/sc" -fo=sload.obj $(d32_src)/sc/sload.asm
+    $(cc_386) $(wcc386_flags) -I"$(d32_src)/sc" -fo=sc_encode.obj $(d32_src)/sc/encode.c
+    $(cc_386) $(wcc386_flags) -I"$(d32_src)/sc" -fo=sc_main.obj $(d32_src)/sc/main.c
+    $(linker) system dos32a op q, map, stack=65536 name $@ file scomp.obj, sload.obj, sc_encode.obj, sc_main.obj
+
+sd.exe : dos32a.exe $(d32_src)/sd/sd.asm
+    $(as) $(wasm_32_flags) -fpi87 -DSVR=0 -I"$(d32_src)/sd" -I"$(d32_src)/sd/sdlib" -fo=sd.obj $(d32_src)/sd/sd.asm
+    $(linker) system dos32a op q, map name $@ file sd.obj
+
+sver.exe : $(d32_src)/sutils/sver/main.c
+    $(cc_i86) -zq -oneatx -bt=dos -ms $(d32_inc) $(inc_path) -fo=sver.obj $[@
+    $(linker) system dos op q, map, fullheader name $@ file sver.obj

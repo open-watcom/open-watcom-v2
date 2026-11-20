@@ -60,28 +60,11 @@ EXTRN	_mem_kernel	: dword
 include	stddef.inc
 
 .CODE
-externdef _str_dos32a:byte
-externdef _str_stub32c:byte
-externdef _screen_addr:dword
-externdef _buffer_addr:dword
-externdef _window_addr:dword
-externdef _buffer:dword
-externdef _old_video_pos:word
 externdef _xpos:byte
 externdef _ypos:byte
 externdef _color:byte
-externdef _color2:byte
-externdef _color3:byte
-externdef _xwinpos:dword
-externdef _ywinpos:dword
 externdef _xwinlen:dword
 externdef _ywinlen:dword
-externdef _keychar:byte
-externdef _keycode:byte
-externdef _file_handle:word
-externdef @video_buffer:byte
-externdef @window_buffer:byte
-externdef _ss_file_buffer:byte
 
 
 
@@ -625,7 +608,7 @@ Prints_:
 	inc	esi
 	test	al,al
 	jz	@Prints_done
-	call	PrintC_
+	call	Printc_
 	inc	_xpos
 	cmp	_xpos,80
 	jae	@Prints_1
@@ -768,7 +751,7 @@ PrintHelp_:
 	inc	_ypos
 	mov	_xpos,3
 	jmp	@PrintHelp_0
-@PrintHelp_1:	call	PrintC_
+@PrintHelp_1:	call	Printc_
 	inc	_xpos
 	jmp	@PrintHelp_0
 
@@ -924,16 +907,16 @@ draw_window:
 	mov	_xpos,al
 	mov	_ypos,dl
 	mov	al,	0C9h
-	call	PrintC_
+	call	Printc_
 	inc	_xpos
 	mov	ecx,_xwinlen
 	sub	ecx,2
 	mov	al,	0CDh
-@draw_window_3:	call	PrintC_
+@draw_window_3:	call	Printc_
 	inc	_xpos
 	loop	@draw_window_3
 	mov	al,	0BBh
-	call	PrintC_
+	call	Printc_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -943,11 +926,11 @@ draw_window:
 	mov	ecx,_ywinlen
 	sub	ecx,2
 	mov	al,	0BAh
-@draw_window_4:	call	PrintC_
+@draw_window_4:	call	Printc_
 	inc	_ypos
 	loop	@draw_window_4
 	mov	al,	0C8h
-	call	PrintC_
+	call	Printc_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -959,11 +942,11 @@ draw_window:
 	mov	ecx,_ywinlen
 	sub	ecx,2
 	mov	al,	0BAh
-@draw_window_5:	call	PrintC_
+@draw_window_5:	call	Printc_
 	inc	_ypos
 	loop	@draw_window_5
 	mov	al,	0BCh
-	call	PrintC_
+	call	Printc_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -975,7 +958,7 @@ draw_window:
 	mov	ecx,_xwinlen
 	sub	ecx,2
 	mov	al,	0CDh
-@draw_window_6:	call	PrintC_
+@draw_window_6:	call	Printc_
 	inc	_xpos
 	loop	@draw_window_6
 

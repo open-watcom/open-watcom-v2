@@ -39,8 +39,8 @@
 
 		.486p
 		.MODEL flat
-; LOCALS
-; NOJUMPS
+		LOCALS
+		NOJUMPS
 
 TIMER	= 10000		; timer setup value
 MEMORY	= 300*1024	; 150KB + 150KB = 300KB to overcome 256KB cache limit
@@ -87,10 +87,7 @@ include	stddef.inc
 ;=============================================================================
 	Align 4
 get_cpl_:
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	pushad
 	mov	ax,cs
 	lar	ax,ax
@@ -98,20 +95,14 @@ get_cpl_:
 	and	eax,03h
 	mov	[esp+1Ch],eax
 	popad
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
+	pop	gs fs es ds
 	ret
 
 
 ;=============================================================================
 	Align 4
 get_iopl_:
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	pushad
 	pushfd
 	pop	eax
@@ -119,30 +110,21 @@ get_iopl_:
 	and	eax,03h
 	mov	[esp+1Ch],eax
 	popad
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
+	pop	gs fs es ds
 	ret
 
 
 ;=============================================================================
 	Align 4
 get_dpmi_flags_:
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	pushad
 	mov	ax,0400h
 	int	31h
 	movzx	eax,bx
 	mov	[esp+1Ch],eax
 	popad
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
+	pop	gs fs es ds
 	ret
 
 
@@ -168,8 +150,7 @@ get_total_size_:
 ;=============================================================================
 	Align 4
 get_himem_size_:
-	push	ds
-	push	es
+	push	ds es
 	pushad
 	sub	esp,48
 	mov	edi,esp
@@ -181,8 +162,7 @@ get_himem_size_:
 	add	esp,48
 	mov	[esp+1Ch],eax
 	popad
-	pop	es
-	pop	ds
+	pop	es ds
 	ret
 
 
@@ -205,19 +185,18 @@ get_lomem_size_:
 ;=============================================================================
 	Align 4
 get_extender_type_:
-	push	ds
-	push	es
+	push	ds es
 	pushad
 
 	mov	ax,1600h	; check for Enhanced Windows
 	int	2Fh
 	test	al,al
-	jz	@get_extender_type_1
+	jz	@@1
 	cmp	al,80h
-	jz	@get_extender_type_1
-	jmp	@get_extender_type_windows
+	jz	@@1
+	jmp	@@windows
 
-@get_extender_type_1:	push	es		; save ES: selector
+@@1:	push	es		; save ES: selector
 	push	ds		; check for DOS/4G
 	push	cs
 	pop	ds
@@ -226,12 +205,12 @@ get_extender_type_:
 	int	31h
 	pop	ds
 	pop	edx		; restore ES: selector in DX
-	jc	@get_extender_type_unknown	; if carry set, unknown DOS Extender
+	jc	@@unknown	; if carry set, unknown DOS Extender
 
 	mov	ax,es		; check if the same ES selector was returned
 	cmp	ax,dx
 	mov	es,dx
-	jz	@get_extender_type_pmodew	; if yes, it is PMODE/W or EOS Extenders
+	jz	@@pmodew	; if yes, it is PMODE/W or EOS Extenders
 
 	push	ds		; check for DOS/32 Advanced
 	push	cs
@@ -240,14 +219,14 @@ get_extender_type_:
 	mov	ax,0A00h
 	int	31h
 	pop	ds
-	jnc	@get_extender_type_dos32a
+	jnc	@@dos32a
 
 	mov	ax,cs		; check for CAUSEWAY
 	lar	ax,ax
 	shr	ax,13
 	and	ax,3
 	cmp	ax,3
-	jz	@get_extender_type_causeway	; if DPL = 3 it is CauseWay Extender
+	jz	@@causeway	; if DPL = 3 it is CauseWay Extender
 
 
 	xor	ebx,ebx
@@ -256,59 +235,58 @@ get_extender_type_:
 	xor	edi,edi
 	mov	ax,0306h	; get Raw Mode Switch Addr
 	int	31h
-	jc	@get_extender_type_dos4gw	; DOS/4GW does not support this call
+	jc	@@dos4gw	; DOS/4GW does not support this call
 	mov	ax,bx
 	or	ax,cx
-	jz	@get_extender_type_dos4gw
+	jz	@@dos4gw
 	mov	eax,esi
 	or	eax,edi
-	jz	@get_extender_type_dos4gw
+	jz	@@dos4gw
 	lar	ax,si		; check returned selector
-	jnz	@get_extender_type_dos4gw
+	jnz	@@dos4gw
 
-	jmp	@get_extender_type_dos4g
+	jmp	@@dos4g
 
-@get_extender_type_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	popad
-	pop	es
-	pop	ds
+	pop	es ds
 	ret
 
-@get_extender_type_unknown:
+@@unknown:
 	mov	eax,EXT_UNKNOWN
-	jmp	@get_extender_type_done
-@get_extender_type_dos32a:
+	jmp	@@done
+@@dos32a:
 	mov	eax,EXT_DOS32A
-	jmp	@get_extender_type_done
-@get_extender_type_pmodew:
+	jmp	@@done
+@@pmodew:
 	mov	ax,cs		; check for EOS first
 	lar	ax,ax
 	shr	ax,13
 	and	ax,3
 	cmp	ax,3
-	jz	@get_extender_type_eos		; if DPL = 3 it is EOS
+	jz	@@eos		; if DPL = 3 it is EOS
 	mov	ax,0EEFFh
 	int	31h
-	jnc	@get_extender_type_pmodew_new
+	jnc	@@pmodew_new
 	mov	eax,EXT_PMODEW
-	jmp	@get_extender_type_done
-@get_extender_type_pmodew_new:
+	jmp	@@done
+@@pmodew_new:
 	mov	eax,EXT_PMODEWNEW
-	jmp	@get_extender_type_done
-@get_extender_type_dos4g:
+	jmp	@@done
+@@dos4g:
 	mov	eax,EXT_DOS4G
-	jmp	@get_extender_type_done
-@get_extender_type_dos4gw:
+	jmp	@@done
+@@dos4gw:
 	mov	eax,EXT_DOS4GW
-	jmp	@get_extender_type_done
-@get_extender_type_causeway:
+	jmp	@@done
+@@causeway:
 	mov	eax,EXT_CAUSEWAY
-	jmp	@get_extender_type_done
-@get_extender_type_windows:
+	jmp	@@done
+@@windows:
 	mov	eax,EXT_WINDOWS
-	jmp	@get_extender_type_done
-@get_extender_type_eos:	mov	eax,EXT_EOS
-	jmp	@get_extender_type_done
+	jmp	@@done
+@@eos:	mov	eax,EXT_EOS
+	jmp	@@done
 
 @s1	db 'RATIONAL DOS/4G',0
 @s2	db 'SUNSYS DOS/32A',0
@@ -318,9 +296,9 @@ get_pmodew_ver_:
 	mov	ax,0EEFFh
 	int	31h
 	movzx	eax,dx
-	jnc	@get_pmodew_ver_1
+	jnc	@@1
 	mov	eax,-1
-@get_pmodew_ver_1:	mov	[esp+1Ch],eax
+@@1:	mov	[esp+1Ch],eax
 	popad
 	ret
 
@@ -331,30 +309,30 @@ get_fpu_info_:
 	pushad
 	call	get_extender_type_
 	cmp	eax,EXT_CAUSEWAY; if running under CauseWay
-	jz	@get_fpu_info_exit		; do not check for FPU
+	jz	@@exit		; do not check for FPU
 	cmp	eax,EXT_EOS	; if running under EOS
-	jz	@get_fpu_info_exit		; do not check for FPU
+	jz	@@exit		; do not check for FPU
 	cmp	eax,EXT_UNKNOWN
-	jnz	@get_fpu_info_1
+	jnz	@@1
 	mov	eax,0E00h
 	int	31h
-	jc	@get_fpu_info_exit
+	jc	@@exit
 	cmp	ax,0E00h
-	jz	@get_fpu_info_exit
+	jz	@@exit
 
-@get_fpu_info_1:	mov	eax,0E00h	; try DPMI check FPU installation
+@@1:	mov	eax,0E00h	; try DPMI check FPU installation
 	int	31h
-	jc	@get_fpu_info_l0		; if not supported, jump
+	jc	@@l0		; if not supported, jump
 	cmp	ax,0E00h
-	jz	@get_fpu_info_l0		; if simply cleared CF, jump
+	jz	@@l0		; if simply cleared CF, jump
 	mov	edx,eax
 	and	edx,03h		; HOST: bit0=MPr, bit1=EMr
 	shr	eax,2
 	and	eax,03h		; CLIENT: bit0=MPr, bit1=EMr
 	or	eax,edx
-	jmp	@get_fpu_info_done
+	jmp	@@done
 
-@get_fpu_info_l0:	mov	eax,cr0		; try native instruction
+@@l0:	mov	eax,cr0		; try native instruction
 	mov	edx,eax
 	shr	eax,1
 	and	eax,03h
@@ -362,12 +340,12 @@ get_fpu_info_:
 	shr	edx,4
 	or	eax,edx
 
-@get_fpu_info_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	popad
 	ret
 
-@get_fpu_info_exit:	mov	eax,1		;  don't check for FPU type
-	jmp	@get_fpu_info_done
+@@exit:	mov	eax,1		;  don't check for FPU type
+	jmp	@@done
 
 ;=============================================================================
 ; Get CPU Vendor specific ID string
@@ -388,16 +366,16 @@ get_cpu_id_:
 	pushfd
 	pop     eax
 	xor     eax,ecx
-	jne	@get_cpu_id_1
-	jmp	@get_cpu_id_done
+	jne	@@1
+	jmp	@@done
 .586p
-@get_cpu_id_1:	xor	eax,eax			; set up for CPUID instruction
+@@1:	xor	eax,eax			; set up for CPUID instruction
 	cpuid
 	mov	dword ptr cpuid_name[0],ebx
 	mov     dword ptr cpuid_name[4],edx
 	mov     dword ptr cpuid_name[8],ecx
 .486p
-@get_cpu_id_done:	sti
+@@done:	sti
 	popad
 	popfd
 	mov	eax,offset cpuid_name
@@ -411,23 +389,17 @@ get_cpu_id_:
 	Align 4
 get_cpu_type_:
 	pushad
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	mov	ax,0400h		; DPMI get CPU
 	int	31h
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
+	pop	gs fs es ds
 	movzx	eax,cl
 	mov	[esp+1Ch],eax
 	cmp	cl,3
-	ja	@get_cpu_type_1
+	ja	@@1
 	popad
 	ret
-@get_cpu_type_1:	pushfd
+@@1:	pushfd
 	cli
 	pushfd
 	pop     eax
@@ -438,14 +410,14 @@ get_cpu_type_:
 	pushfd
 	pop     eax
 	xor     eax,edx
-	jne	@get_cpu_type_l4
-	jmp	@get_cpu_type_x
-@get_cpu_type_l4:	xor	eax,eax
+	jne	@@l4
+	jmp	@@x
+@@l4:	xor	eax,eax
 .586p
 	cpuid
 	mov	dword ptr [esp+1Ch+4],5	; CPU is 586
 	cmp	eax,1			; check CPUID level
-	jb	@get_cpu_type_x			; if level 1 not supported, exit
+	jb	@@x			; if level 1 not supported, exit
 	mov	eax,1
 	cpuid
 .486p
@@ -453,7 +425,7 @@ get_cpu_type_:
 	shr	ax,8
 	movzx	eax,al
 	mov	[esp+1Ch+4],eax
-@get_cpu_type_x:	sti
+@@x:	sti
 	popfd
 	popad
 	ret
@@ -474,7 +446,7 @@ get_fpu_type_:
 	fnstcw	word ptr [esp+2]
 	mov	ax,word ptr [esp+2]
 	cmp	ah,03h
-	jnz	@get_fpu_type_done				; no FPU present
+	jnz	@@done				; no FPU present
 	mov	word ptr [esp],1
 	and	word ptr [esp+2],0FF7Fh
 	wait
@@ -483,7 +455,7 @@ get_fpu_type_:
 	fstcw	word ptr [esp+2]
 	wait
 	test	word ptr [esp+2],0080h
-	jnz	@get_fpu_type_done				; 8087 is present
+	jnz	@@done				; 8087 is present
 	mov	word ptr [esp],2
 	fninit
 	wait
@@ -504,15 +476,15 @@ get_fpu_type_:
 	fnclex
 	wait
 	sahf
-	jz	@get_fpu_type_done
+	jz	@@done
 	mov	word ptr [esp],3		; 387
 	cmp	edx,4
-	jb	@get_fpu_type_done
+	jb	@@done
 	mov	eax,edx
 	mov	byte ptr [esp],al		; 487+ (build-in)
-@get_fpu_type_done:	pop	eax
+@@done:	pop	eax
 	and	eax,7
-	jz	@get_fpu_type_exit
+	jz	@@exit
 	fldz
 	fldz
 	fldz
@@ -522,7 +494,7 @@ get_fpu_type_:
 	fldz
 	fldz
 	finit
-@get_fpu_type_exit:	mov	[esp+1Ch],eax
+@@exit:	mov	[esp+1Ch],eax
 	popad
 	ret
 
@@ -536,30 +508,28 @@ get_sys_type_:
 	pushad
 	call	get_extender_type_
 	test	eax,eax
-	jnz	@get_sys_type_1
-	push	ds
-	push	es
+	jnz	@@1
+	push	ds es
 	mov	esi,offs @s2
 	push	cs
 	pop	ds
 	mov	ax,0A00h
 	int	31h
-	jc	@get_sys_type_err
+	jc	@@err
 	movzx	eax,bh
-	pop	es
-	pop	ds
-	jmp	@get_sys_type_done
+	pop	es ds
+	jmp	@@done
 
-@get_sys_type_1:	cmp	eax,EXT_PMODEWNEW
-	jnz	@get_sys_type_err
+@@1:	cmp	eax,EXT_PMODEWNEW
+	jnz	@@err
 	mov	ax,0EEFFh
 	int	31h
-	jc	@get_sys_type_err
+	jc	@@err
 	movzx	eax,ch
-	jmp	@get_sys_type_done
+	jmp	@@done
 
-@get_sys_type_err:	mov	eax,-1
-@get_sys_type_done:	mov	[esp+1Ch],eax
+@@err:	mov	eax,-1
+@@done:	mov	[esp+1Ch],eax
 	popad
 	ret
 
@@ -637,8 +607,7 @@ test_cpu586_:
 	mov	ax,0204h
 	mov	bl,08h
 	int	31h
-	push	ecx
-	push	edx
+	push	ecx edx
 
 	mov	ax,0205h
 	mov	bl,08h
@@ -659,8 +628,8 @@ test_cpu586_:
 	mov	esi,eax
 	mov	edi,edx
 
-@test_cpu586_1:	cmp	bptr __586ack,0
-	loopnz	@test_cpu586_1
+@@1:	cmp	bptr __586ack,0
+	loopnz	@@1
 
 	rdtsc
 	cli
@@ -668,8 +637,7 @@ test_cpu586_:
 	sbb	edx,edi
 
 	mov	ebp,esp
-	push	edx
-	push	eax
+	push	edx eax
 	fild	qword ptr [ebp-8]
 	fld	qword ptr __586dat2
 	fld	qword ptr __586dat1
@@ -678,11 +646,9 @@ test_cpu586_:
 	fmulp	st(1)
 	fdivp	st(1)
 	fistp	qword ptr [ebp-8]
-	pop	eax
-	pop	edx
+	pop	eax edx
 
-	pop	edx
-	pop	ecx
+	pop	edx ecx
 	pushad
 	mov	ax,0205h
 	mov	bl,08h
@@ -831,7 +797,7 @@ test_fpu_:
 	pushad
 	call	get_fpu_type_
 	test	eax,eax
-	jz	@test_fpu_err			; if no FPU, exit
+	jz	@@err			; if no FPU, exit
 	cli
 	cld
 	call	disable_irqs
@@ -875,13 +841,13 @@ test_fpu_:
 	mov	[esp+1Ch],eax
 	finit				; reinitialize FPU
 	call	enable_irqs
-@test_fpu_done:	sti
+@@done:	sti
 	popad
 	popfd
 	ret
-@test_fpu_err:	mov	eax,-1
+@@err:	mov	eax,-1
 	mov	[esp+1Ch],eax
-	jmp	@test_fpu_done
+	jmp	@@done
 
 
 
@@ -909,12 +875,11 @@ test_int_:
 	mov	bl,80h		; get real mode INT 80h
 	mov	ax,0200h
 	int	31h
-	push	ecx
-	push	edx
+	push	ecx edx
 
 	mov	ax,int_mem_seg
 	test	ax,ax
-	jnz	@test_int_x1
+	jnz	@@x1
 
 	mov	bx,4		; allocate real mode memory (64 bytes)
 	mov	ax,0100h
@@ -931,7 +896,7 @@ test_int_:
 	rep	movsb
 	pop	es
 
-@test_int_x1:	mov	bl,80h
+@@x1:	mov	bl,80h
 	mov	cx,ax		; CX = segment returned by INT 31h AX=0100h
 	mov	dx,0		; DX = offset is zero
 	mov	ax,0201h
@@ -978,8 +943,7 @@ test_int_:
 ;	mov	ax,0101h
 ;	int	31h
 
-	pop	edx	; restore original Real Mode INT 80h
-	pop	ecx
+	pop	edx ecx		; restore original Real Mode INT 80h
 	mov	bl,80h
 	mov	ax,0201h
 	int	31h
@@ -1030,7 +994,7 @@ test_irq_:
 
 	mov	ax,irq_mem_seg
 	test	ax,ax
-	jnz	@test_irq_x1
+	jnz	@@x1
 
 	mov	bx,4		; allocate real mode memory (64 bytes)
 	mov	ax,0100h
@@ -1049,17 +1013,15 @@ test_irq_:
 	stosd
 	pop	es
 
-@test_irq_x1:	mov	bl,08h		; get real mode IRQ 0 (INT 08h)
+@@x1:	mov	bl,08h		; get real mode IRQ 0 (INT 08h)
 	mov	ax,0200h
 	int	31h
-	push	ecx	;*
-	push	edx
+	push	ecx edx		;*
 
 	mov	bl,08h
 	mov	ax,0204h
 	int	31h
-	push	ecx	;**
-	push	edx
+	push	ecx edx		;**
 
 	mov	bl,08h		; install Real Mode IRQ 0 (INT 08h)
 	mov	cx,irq_mem_seg
@@ -1097,9 +1059,9 @@ test_irq_:
 ; interrupt (and we cannot trigger a hardware interrupt on our own)
 
 	Align	4
-@test_irq_loop:	mov	bx,ds:[edi]	; BX = (PM to RM) + HLT switch time
+@@loop:	mov	bx,ds:[edi]	; BX = (PM to RM) + HLT switch time
 	cmp	bx,dx
-	jz	@test_irq_loop
+	jz	@@loop
 	pop	ds
 	cli			; disable interrupts
 
@@ -1132,14 +1094,12 @@ test_irq_:
 	mov	ax,bx		; EAX = [ high=RMPM | low=PMRM ]
 	mov	ebp,eax
 
-	pop	edx	; restore original Prot. Mode IRQ 0
-	pop	ecx
+	pop	edx ecx		; restore original Prot. Mode IRQ 0
 	mov	bl,08h
 	mov	ax,0205h
 	int	31h
 
-	pop	edx	; restore original Real Mode IRQ 0
-	pop	ecx
+	pop	edx ecx		; restore original Real Mode IRQ 0
 	mov	bl,08h
 	mov	ax,0201h
 	int	31h
@@ -1202,12 +1162,11 @@ test_low_movsw_:
 	call	alloc_low
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_low_movsw_done
+	jc	@@done
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,MEMORY/2		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	lea	edi,[esi+ecx]		; EDI = destination base
@@ -1246,11 +1205,10 @@ test_low_movsw_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_low
 
-@test_low_movsw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1265,12 +1223,11 @@ test_low_movsd_:
 	call	alloc_low
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_low_movsd_done
+	jc	@@done
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,MEMORY/2		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	lea	edi,[esi+ecx]		; EDI = destination base
@@ -1309,11 +1266,10 @@ test_low_movsd_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_low
 
-@test_low_movsd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1329,7 +1285,7 @@ test_low_stosw_:
 	call	alloc_low
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_low_stosw_done
+	jc	@@done
 
 	cli
 	cld
@@ -1374,7 +1330,7 @@ test_low_stosw_:
 	pop	es
 	call	dealloc_low
 
-@test_low_stosw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1389,7 +1345,7 @@ test_low_stosd_:
 	call	alloc_low
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_low_stosd_done
+	jc	@@done
 
 	cli
 	cld
@@ -1434,7 +1390,7 @@ test_low_stosd_:
 	pop	es
 	call	dealloc_low
 
-@test_low_stosd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1462,12 +1418,11 @@ test_high_movsw_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_high_movsw_done
+	jc	@@done
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,MEMORY/2		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	lea	edi,[esi+ecx]		; EDI = destination base
@@ -1507,11 +1462,10 @@ test_high_movsw_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_hi
 
-@test_high_movsw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1526,12 +1480,11 @@ test_high_movsd_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_high_movsd_done
+	jc	@@done
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,MEMORY/2		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	lea	edi,[esi+ecx]		; EDI = destination base
@@ -1570,11 +1523,10 @@ test_high_movsd_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_hi
 
-@test_high_movsd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1589,7 +1541,7 @@ test_high_stosw_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_high_stosw_done
+	jc	@@done
 
 	cli
 	cld
@@ -1634,7 +1586,7 @@ test_high_stosw_:
 	pop	es
 	call	dealloc_hi
 
-@test_high_stosw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1649,7 +1601,7 @@ test_high_stosd_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_high_stosd_done
+	jc	@@done
 
 	cli
 	cld
@@ -1694,7 +1646,7 @@ test_high_stosd_:
 	pop	es
 	call	dealloc_hi
 
-@test_high_stosd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1716,13 +1668,12 @@ test_vid_movsw_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_vid_movsw_done
+	jc	@@done
 	call	alloc_vid
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,VMEMORY		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	xor	edi,edi			; EDI = destination base
@@ -1761,12 +1712,11 @@ test_vid_movsw_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_vid
 	call	dealloc_hi
 
-@test_vid_movsw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1781,13 +1731,12 @@ test_vid_movsd_:
 	call	alloc_hi
 	mov	ebx,eax			; ebx = selector
 	mov	eax,-1
-	jc	@test_vid_movsd_done
+	jc	@@done
 	call	alloc_vid
 
 	cli
 	cld
-	push	ds
-	push	es
+	push	ds es
 	mov	ecx,VMEMORY		; ECX = size of memory block
 	xor	esi,esi			; ESI = source base
 	xor	edi,edi			; EDI = destination base
@@ -1826,12 +1775,11 @@ test_vid_movsd_:
 	neg	ax
 	movzx	eax,ax
 
-	pop	es
-	pop	ds
+	pop	es ds
 	call	dealloc_vid
 	call	dealloc_hi
 
-@test_vid_movsd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1888,7 +1836,7 @@ test_vid_stosw_:
 	pop	es
 	call	dealloc_vid
 
-@test_vid_stosw_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1945,7 +1893,7 @@ test_vid_stosd_:
 	pop	es
 	call	dealloc_vid
 
-@test_vid_stosd_done:	mov	[esp+1Ch],eax
+@@done:	mov	[esp+1Ch],eax
 	sti
 	popad
 	popfd
@@ -1993,22 +1941,20 @@ alloc_low:
 	int	31h
 	mov	eax,-1
 	mov	mem_dx,0
-	jc	@alloc_low_done
+	jc	@@done
 	mov	mem_dx,dx
 
 	mov	bx,dx
 	mov	ax,0006h		; get selector base
 	int	31h
 
-	push	ecx
-	push	edx
+	push	ecx edx
 	mov	bx,ds
 	mov	ax,000Ah		; allocate alias selector
 	int	31h
 	mov	ebx,eax
 
-	pop	edx
-	pop	ecx
+	pop	edx ecx
 	mov	ax,0007h		; set selector base
 	int	31h
 
@@ -2021,7 +1967,7 @@ alloc_low:
 	xor	eax,eax
 	mov	ax,bx
 	mov	mem_sel,ax
-@alloc_low_done:	mov	[esp+1Ch],eax		; return selector
+@@done:	mov	[esp+1Ch],eax		; return selector
 	popad
 	ret
 
@@ -2036,24 +1982,21 @@ alloc_hi:
 	mov	eax,-1
 	mov	mem_si,0
 	mov	mem_di,0
-	jc	@alloc_hi_done
+	jc	@@done
 	mov	mem_si,si
 	mov	mem_di,di
 	mov	edx,ecx
 	mov	ecx,ebx
 
-	push	ecx
-	push	edx
+	push	ecx edx
 	mov	bx,ds
 	mov	ax,000Ah		; allocate alias selector
 	int	31h
 	mov	ebx,eax
 	mov	mem_sel,ax
-	pop	edx
-	pop	ecx
+	pop	edx ecx
 
-	push	ecx
-	push	edx
+	push	ecx edx
 	mov	ax,0007h		; set selector base
 	int	31h
 
@@ -2065,14 +2008,13 @@ alloc_hi:
 
 	mov	esi,ecx
 	mov	edi,edx
-	pop	ecx
-	pop	ebx
+	pop	ecx ebx
 	mov	ax,0600h		; lock pages
 	int	31h
 
 	xor	eax,eax
 	mov	ax,mem_sel
-@alloc_hi_done:	mov	[esp+1Ch],eax		; return selector
+@@done:	mov	[esp+1Ch],eax		; return selector
 	popad
 	ret
 
@@ -2110,13 +2052,13 @@ dealloc_low:
 	pushad
 	mov	dx,mem_dx
 	test	dx,dx
-	jz	@dealloc_low_done
+	jz	@@done
 	mov	ax,0101h
 	int	31h
 	mov	bx,mem_sel
 	mov	ax,0001h
 	int	31h
-@dealloc_low_done:	popad
+@@done:	popad
 	ret
 
 	Align 4
@@ -2126,13 +2068,13 @@ dealloc_hi:
 	mov	di,mem_di
 	mov	ax,si
 	or	ax,di
-	jz	@dealloc_hi_done
+	jz	@@done
 	mov	ax,0502h
 	int	31h
 	mov	bx,mem_sel
 	mov	ax,0001h
 	int	31h
-@dealloc_hi_done:	popad
+@@done:	popad
 	ret
 
 	Align 4
@@ -2141,7 +2083,7 @@ dealloc_vid:
 	mov	bx,mem_vid
 	mov	ax,0001h
 	int	31h
-@dealloc_vid_done:	popad
+@@done:	popad
 	ret
 
 

@@ -61,18 +61,18 @@ _step_over:
 	call	decode
 	mov	eax,dptr cmdbuf[0]
 	cmp	eax,'llac'			; check for CALL
-	jz	@step_over_doit
+	jz	@@doit
 	cmp	eax,'pool'			; check for LOOP..
-	jz	@step_over_doit
+	jz	@@doit
 	and	eax,00FFFFFFh
 	mov	ebx,00746E69h			;' tni'
 	cmp	eax,ebx				; check for INT
-	jz	@step_over_doit
+	jz	@@doit
 	mov	ebx,00706572h			;' per'
 	cmp	eax,ebx				; check for REP
-	jz	@step_over_doit
+	jz	@@doit
 	jmp	_trace_into
-@step_over_doit:	mov	_dr0,esi
+@@doit:	mov	_dr0,esi
 	and	bptr _dr7[2],0F0h		; LEN=byte, R/W=exec
 	or	bptr _dr7[0],003h
 	call	restore_video
@@ -88,70 +88,70 @@ _jump_over:
 	call	decode
 	mov	eax,dptr cmdbuf[0]
 	cmp	eax,'llac'			; check for CALL
-	jz	@jump_over_doit
+	jz	@@doit
 	cmp	eax,'pool'			; check for LOOP..
-	jz	@jump_over_doit
+	jz	@@doit
 	and	eax,00FFFFFFh
 	mov	ebx,00746E69h			;' tni'
 	cmp	eax,ebx				; check for INT
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00706572h			;' per'
 	cmp	eax,ebx				; check for REP
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00706D6Ah			;' pmj'
 	cmp	eax,ebx				; check for JMP
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,006F6E6Ah			;' onj'
 	cmp	eax,ebx				; check for JNO
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0065616Ah			;' eaj'
 	cmp	eax,ebx				; check for JAE
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,007A6E6Ah			;' znj'
 	cmp	eax,ebx				; check for JNZ
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0065626Ah			;' ebj'
 	cmp	eax,ebx				; check for JBE
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00736E6Ah			;' snj'
 	cmp	eax,ebx				; check for JNS
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0065706Ah			;' epj'
 	cmp	eax,ebx				; check for JPE
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,006F706Ah			;' opj'
 	cmp	eax,ebx				; check for JPO
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0065676Ah			;' egj'
 	cmp	eax,ebx				; check for JGE
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00656C6Ah			;' elj'
 	cmp	eax,ebx				; check for JLE
-	jz	@jump_over_doit
+	jz	@@doit
 	and	eax,0000FFFFh
 	mov	ebx,00006F6Ah			;' oj'
 	cmp	eax,ebx				; check for JO
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0000626Ah			;' bj'
 	cmp	eax,ebx				; check for JB
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00007A6Ah			;' zj'
 	cmp	eax,ebx				; check for JZ
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0000616Ah			;' aj'
 	cmp	eax,ebx				; check for JA
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0000736Ah			;' sj'
 	cmp	eax,ebx				; check for JS
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,00006C6Ah			;' lj'
 	cmp	eax,ebx				; check for JL
-	jz	@jump_over_doit
+	jz	@@doit
 	mov	ebx,0000676Ah			;' gj'
 	cmp	eax,ebx				; check for JG
-	jz	@jump_over_doit
+	jz	@@doit
 	jmp	_trace_into
-@jump_over_doit:	mov	_dr0,esi
+@@doit:	mov	_dr0,esi
 	and	bptr _dr7[2],0F0h		; LEN=byte, R/W=exec
 	or	bptr _dr7[0],003h
 	call	restore_video
@@ -182,25 +182,25 @@ _trace_into:
 _return_to:
 	mov	ecx,1024			; try 1024 instructions
 	mov	esi,_eip
-@return_to_l0:	mov	ebp,esi
+@@l0:	mov	ebp,esi
 	call	decode
 	mov	eax,dptr cmdbuf[0]
 	mov	ebx,'teri'
 	cmp	eax,ebx				; check for IRET
-	jz	@return_to_l1
+	jz	@@l1
 	and	eax,00FFFFFFh
 	mov	ebx,00746572h			;' ter'
 	cmp	eax,ebx				; check for RET
-	jz	@return_to_l1
+	jz	@@l1
 	mov	ebx,00706D6Ah			;' pmj'
 	cmp	eax,ebx				; check for JMP
-	jz	@return_to_l1
-	loop	@return_to_l0
+	jz	@@l1
+	loop	@@l0
 	ret
-@return_to_l1:	cmp	ecx,512
-	jnz	@return_to_l2
+@@l1:	cmp	ecx,512
+	jnz	@@l2
 	ret
-@return_to_l2:	mov	_dr0,ebp
+@@l2:	mov	_dr0,ebp
 	and	bptr _dr7[2],0F0h
 	or	bptr _dr7[0],003h
 	call	restore_video
@@ -235,25 +235,25 @@ _break_pnt:
 	mov	edx,_addrbuffer[eax*4]		; EDX = addr of breakpoint
 	mov	ebx,1
 	mov	ecx,0Ch
-@break_pnt_l0:	cmp	_dr0[ebx*4],edx
-	jz	@break_pnt_l1
+@@l0:	cmp	_dr0[ebx*4],edx
+	jz	@@l1
 	inc	ebx
 	shl	cl,2
-	jnz	@break_pnt_l0
+	jnz	@@l0
 	mov	ebx,1
 	mov	ecx,0Ch
 	mov	al,bptr _dr7[0]
-@break_pnt_l00:	test	al,cl
-	jz	@break_pnt_l2
+@@l00:	test	al,cl
+	jz	@@l2
 	inc	ebx
 	shl	cl,2
-	jnz	@break_pnt_l00
+	jnz	@@l00
 	ret
-@break_pnt_l1:	mov	_dr0[ebx*4],0
+@@l1:	mov	_dr0[ebx*4],0
 	not	cl
 	and	bptr _dr7[0],cl
 	jmp	repaint_text
-@break_pnt_l2:	mov	_dr0[ebx*4],edx
+@@l2:	mov	_dr0[ebx*4],edx
 	or	bptr _dr7[0],cl
 	mov	ax,0FFF0h
 	lea	ecx,[ebx*4]
@@ -364,18 +364,10 @@ show_page0:
 	mov	color,31h
 	call	prints
 	mov	ax,0400h
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	int	31h
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
-	push	dx
-	push	cx
-	push	bx
+	pop	gs fs es ds
+	push	dx cx bx
 	mov	color,3Fh
 	call	printax
 	mov	xpos,4
@@ -461,19 +453,11 @@ show_page0:
 	mov	color,31h
 	call	prints
 	mov	ax,0A00h
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	mov	esi,offs hlpid
 	int	31h
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
-	push	dx
-	push	cx
-	push	bx
+	pop	gs fs es ds
+	push	dx cx bx
 	mov	color,3Fh
 	call	printax
 	mov	xpos,38
@@ -512,15 +496,9 @@ show_page0:
 	mov	color,31h
 	call	prints
 	mov	ax,0E00h
-	push	ds
-	push	es
-	push	fs
-	push	gs
+	push	ds es fs gs
 	int	31h
-	pop	gs
-	pop	fs
-	pop	es
-	pop	ds
+	pop	gs fs es ds
 	mov	color,3Fh
 	call	printax
 
@@ -847,11 +825,11 @@ show_page1:					; show GDT
 	mov	eax,ecx
 	call	printeax
 
-@show_page1_0:	lea	edx,[esi+ecx-7]
+@@0:	lea	edx,[esi+ecx-7]
 	sub	edx,_gdt_ptr
 	mov	ebp,22
 	mov	ypos,6
-@show_page1_1:	inc	ypos
+@@1:	inc	ypos
 	mov	xpos,6
 
 	push	es			; check Avail
@@ -859,9 +837,9 @@ show_page1:					; show GDT
 	test	byte ptr es:[edx+6],10h
 	pop	es
 	mov	color,3Eh
-	jnz	@show_page1_avl
+	jnz	@@avl
 	mov	color,3Fh
-@show_page1_avl:	mov	eax,edx
+@@avl:	mov	eax,edx
 	sub	eax,esi
 	call	printax
 	add	xpos,3
@@ -900,25 +878,25 @@ show_page1:					; show GDT
 	pop	edx
 	sub	edx,8
 	cmp	edx,esi
-	jae	@show_page1_w
+	jae	@@w
 	mov	xpos,1
 	mov	al,20h
 	push	ecx
 	mov	ecx,50
-@show_page1_x:	call	printc
-	loop	@show_page1_x
+@@x:	call	printc
+	loop	@@x
 	pop	ecx
-@show_page1_w:	dec	ebp
-	jnz	@show_page1_1
+@@w:	dec	ebp
+	jnz	@@1
 
-@show_page1_2:	call	get_key
+@@2:	call	get_key
 
 	cmp	al,49h
-	jz	@show_page1_down
+	jz	@@down
 	cmp	al,51h
-	jz	@show_page1_up
+	jz	@@up
 	cmp	al,47h				; Home
-	jz	@show_page1_home
+	jz	@@home
 	cmp	al,1				; ESC
 	jz	info_exit
 	cmp	al,3Bh				; F1 - DPMI
@@ -935,23 +913,23 @@ show_page1:					; show GDT
 	jz	show_page5
 	cmp	al,44h				; F10 - DOS/32A
 	jz	show_page8
-	jmp	@show_page1_2
+	jmp	@@2
 
-@show_page1_up:	mov	eax,_gdt_ptr
+@@up:	mov	eax,_gdt_ptr
 	add	eax,00B0h
 	lea	edx,[esi+ecx-7]
 	sub	edx,eax
 	cmp	edx,esi
-	jbe	@show_page1_2
+	jbe	@@2
 	mov	_gdt_ptr,eax
-	jmp	@show_page1_0
-@show_page1_down:	mov	eax,_gdt_ptr
+	jmp	@@0
+@@down:	mov	eax,_gdt_ptr
 	sub	eax,00B0h
-	jb	@show_page1_2
+	jb	@@2
 	mov	_gdt_ptr,eax
-	jmp	@show_page1_0
-@show_page1_home:	mov	_gdt_ptr,0
-	jmp	@show_page1_0
+	jmp	@@0
+@@home:	mov	_gdt_ptr,0
+	jmp	@@0
 
 
 
@@ -1004,11 +982,11 @@ show_page2:					; show IDT
 	mov	eax,ecx
 	call	printeax
 
-@show_page2_0:	lea	edx,[esi]
+@@0:	lea	edx,[esi]
 	add	edx,_idt_ptr
 	mov	ebp,22
 	mov	ypos,6
-@show_page2_1:	inc	ypos
+@@1:	inc	ypos
 	mov	xpos,6
 
 	push	es			; check Selector
@@ -1017,10 +995,10 @@ show_page2:					; show IDT
 	pop	es
 	cmp	ax,__kernel_codesel
 	mov	color,3Eh
-	jnz	@show_page2_inst
+	jnz	@@inst
 	mov	color,3Fh
 
-@show_page2_inst:	mov	eax,edx
+@@inst:	mov	eax,edx
 	sub	eax,esi
 	shr	eax,3
 	call	printal
@@ -1050,9 +1028,9 @@ show_page2:					; show IDT
 	pop	es
 	test	al,01h
 	mov	ah,color
-	jnz	@show_page2_m
+	jnz	@@m
 	mov	color,3Ah
-@show_page2_m:	call	printal
+@@m:	call	printal
 	mov	color,ah
 	add	xpos,3
 
@@ -1067,25 +1045,25 @@ show_page2:					; show IDT
 	add	edx,8
 	lea	eax,[esi+ecx+1]
 	cmp	edx,eax
-	jbe	@show_page2_w
+	jbe	@@w
 	mov	xpos,1
 	mov	al,20h
 	push	ecx
 	mov	ecx,50
-@show_page2_x:	call	printc
-	loop	@show_page2_x
+@@x:	call	printc
+	loop	@@x
 	pop	ecx
-@show_page2_w:	dec	ebp
-	jnz	@show_page2_1
+@@w:	dec	ebp
+	jnz	@@1
 
-@show_page2_2:	call	get_key
+@@2:	call	get_key
 
 	cmp	al,49h
-	jz	@show_page2_up
+	jz	@@up
 	cmp	al,51h
-	jz	@show_page2_down
+	jz	@@down
 	cmp	al,47h				; Home
-	jz	@show_page2_home
+	jz	@@home
 	cmp	al,1				; ESC
 	jz	info_exit
 	cmp	al,3Bh				; F1 - DPMI
@@ -1102,22 +1080,22 @@ show_page2:					; show IDT
 	jz	show_page5
 	cmp	al,44h				; F10 - DOS/32A
 	jz	show_page8
-	jmp	@show_page2_2
+	jmp	@@2
 
-@show_page2_up:	mov	eax,_idt_ptr
+@@up:	mov	eax,_idt_ptr
 	sub	eax,00B0h
-	jb	@show_page2_2
+	jb	@@2
 	mov	_idt_ptr,eax
-	jmp	@show_page2_0
-@show_page2_down:	mov	eax,_idt_ptr
+	jmp	@@0
+@@down:	mov	eax,_idt_ptr
 	add	eax,00B0h
 	lea	edx,[ecx+1]
 	cmp	eax,edx
-	ja	@show_page2_2
+	ja	@@2
 	mov	_idt_ptr,eax
-	jmp	@show_page2_0
-@show_page2_home:	mov	_idt_ptr,0
-	jmp	@show_page2_0
+	jmp	@@0
+@@home:	mov	_idt_ptr,0
+	jmp	@@0
 
 
 
@@ -1171,7 +1149,7 @@ show_page3:					; show Ext Blocks
 	call	printeax
 	mov	_emb_mem_ptr,edx
 	mov	_emb_mem_top,esi
-@show_page3_0:	pushad
+@@0:	pushad
 	mov	ebx,22
 	mov	ecx,40
 	mov	esi,4
@@ -1182,9 +1160,9 @@ show_page3:					; show Ext Blocks
 	xor	edi,edi
 	mov	esi,_emb_mem_ptr
 	mov	ypos,7
-@show_page3_1:	call	@read_emb
+@@1:	call	@read_emb
 	cmp	edi,_emb_num
-	jb	@show_page3_3
+	jb	@@3
 
 	mov	xpos,5
 	mov	color,3Fh
@@ -1202,10 +1180,10 @@ show_page3:					; show Ext Blocks
 	test	al,al
 	mov	color,3Fh
 	mov	edx,offs _emb_str1
-	jz	@show_page3_l1
+	jz	@@l1
 	mov	color,3Eh
 	mov	edx,offs _emb_str2
-@show_page3_l1:	call	prints
+@@l1:	call	prints
 	push	eax
 	mov	al,'/'
 	mov	color,30h
@@ -1214,28 +1192,28 @@ show_page3:					; show Ext Blocks
 	test	ah,ah
 	mov	color,3Ah
 	mov	edx,offs _emb_str3
-	jz	@show_page3_l2
+	jz	@@l2
 	mov	color,34h
 	mov	edx,offs _emb_str4
-@show_page3_l2:	call	prints
+@@l2:	call	prints
 	inc	ypos
 	dec	ebp
-	jz	@show_page3_4
-@show_page3_3:	inc	edi
+	jz	@@4
+@@3:	inc	edi
 	cmp	esi,_emb_mem_top
-	jb	@show_page3_1
+	jb	@@1
 
-@show_page3_4:	call	get_key
+@@4:	call	get_key
 	cmp	al,48h				; up
-	jz	@show_page3_upk
+	jz	@@upk
 	cmp	al,50h				; down
-	jz	@show_page3_dnk
+	jz	@@dnk
 	cmp	al,49h
-	jz	@show_page3_up
+	jz	@@up
 	cmp	al,51h
-	jz	@show_page3_down
+	jz	@@down
 	cmp	al,47h				; Home
-	jz	@show_page3_home
+	jz	@@home
 	cmp	al,1				; ESC
 	jz	info_exit
 	cmp	al,3Bh				; F1 - DPMI
@@ -1252,54 +1230,50 @@ show_page3:					; show Ext Blocks
 	jz	show_page5
 	cmp	al,44h				; F10 - DOS/32A
 	jz	show_page8
-	jmp	@show_page3_4
+	jmp	@@4
 
-@show_page3_upk:	mov	eax,_emb_num
+@@upk:	mov	eax,_emb_num
 	sub	eax,1
-	jc	@show_page3_home
+	jc	@@home
 	mov	_emb_num,eax
-	jmp	@show_page3_0
-@show_page3_up:	mov	eax,_emb_num
+	jmp	@@0
+@@up:	mov	eax,_emb_num
 	sub	eax,22
-	jc	@show_page3_home
+	jc	@@home
 	mov	_emb_num,eax
-	jmp	@show_page3_0
-@show_page3_dnk:	mov	eax,_emb_num
+	jmp	@@0
+@@dnk:	mov	eax,_emb_num
 	add	eax,1
 	mov	ecx,eax
 	mov	esi,_emb_mem_ptr
-@show_page3_dk1:	cmp	esi,_emb_mem_top
-	jz	@show_page3_dk2
-	push	eax
-	push	ecx
+@@dk1:	cmp	esi,_emb_mem_top
+	jz	@@dk2
+	push	eax ecx
 	call	@read_emb
-	pop	ecx
-	pop	eax
+	pop	ecx eax
 	test	dh,dh
-	jnz	@show_page3_dn2
-	loop	@show_page3_dn1
+	jnz	@@dn2
+	loop	@@dn1
 	mov	_emb_num,eax
-	jmp	@show_page3_0
-@show_page3_dk2:	jmp	@show_page3_4
-@show_page3_dk3:	dec	_emb_num
-	jmp	@show_page3_0
-@show_page3_down:	mov	eax,_emb_num
+	jmp	@@0
+@@dk2:	jmp	@@4
+@@dk3:	dec	_emb_num
+	jmp	@@0
+@@down:	mov	eax,_emb_num
 	add	eax,22
 	mov	ecx,eax
 	mov	esi,_emb_mem_ptr
-@show_page3_dn1:	push	eax
-	push	ecx
+@@dn1:	push	eax ecx
 	call	@read_emb
-	pop	ecx
-	pop	eax
+	pop	ecx eax
 	test	dh,dh
-	jnz	@show_page3_dn2
-	loop	@show_page3_dn1
+	jnz	@@dn2
+	loop	@@dn1
 	mov	_emb_num,eax
-	jmp	@show_page3_0
-@show_page3_dn2:	jmp	@show_page3_4
-@show_page3_home:	mov	_emb_num,0
-	jmp	@show_page3_0
+	jmp	@@0
+@@dn2:	jmp	@@4
+@@home:	mov	_emb_num,0
+	jmp	@@0
 
 @read_emb:
 	xor	eax,eax			; EAX = base
@@ -1314,11 +1288,11 @@ show_page3:					; show Ext Blocks
 	setc	dl
 	lea	esi,[esi+ecx+10h]	; load addres of next memory block
 	cmp	esi,_emb_mem_ptr
-	jb	@read_emb_err
+	jb	@@err
 	cmp	esi,_emb_mem_top	; check if at top of memory
-	ja	@read_emb_err
+	ja	@@err
 	ret
-@read_emb_err:	mov	dh,1
+@@err:	mov	dh,1
 	ret
 
 
@@ -1352,7 +1326,7 @@ show_page4:					; show Interrupt History
 	cmp	__history_bufon,0
 	jz	get_page_key
 
-@show_page4_0:	pushad
+@@0:	pushad
 	mov	ebx,24
 	mov	ecx,56
 	mov	esi,3
@@ -1364,74 +1338,74 @@ show_page4:					; show Interrupt History
 	mov	color,31h
 	mov	edx,offs _hist_str30
 	cmp	__history_intnum,0
-	jz	@show_page4_lax
+	jz	@@lax
 	mov	edx,offs _hist_str31
 	cmp	__history_intnum,10h
-	jz	@show_page4_lax
+	jz	@@lax
 	mov	edx,offs _hist_str32
 	cmp	__history_intnum,21h
-	jz	@show_page4_lax
+	jz	@@lax
 	mov	edx,offs _hist_str33
 	cmp	__history_intnum,31h
-	jz	@show_page4_lax
+	jz	@@lax
 	mov	edx,offs _hist_str34
 	cmp	__history_intnum,33h
-	jz	@show_page4_lax
+	jz	@@lax
 	mov	edx,offs _hist_str30
-@show_page4_lax:	call	prints
+@@lax:	call	prints
 
 	mov	ypos,5
 	mov	ecx,__history_bufnum
 	test	ecx,ecx
-	jz	@show_page4_done
+	jz	@@done
 	mov	esi,__history_bufbase
 	mov	edx,__history_current
 	mov	ebp,4
 	mov	eax,ecx
 	sub	eax,edx
-	jbe	@show_page4_l2
+	jbe	@@l2
 	cmp	eax,4
-	jae	@show_page4_2
+	jae	@@2
 	mov	ebp,eax
-@show_page4_2:	mov	eax,__history_bufsize
+@@2:	mov	eax,__history_bufsize
 	shr	eax,6
 	sub	eax,edx
-	jbe	@show_page4_l2
+	jbe	@@l2
 	cmp	eax,4
-	jae	@show_page4_5
+	jae	@@5
 	mov	ebp,eax
-@show_page4_5:	imul	edx,40h
+@@5:	imul	edx,40h
 	add	esi,edx
 
-@show_page4_l1:	mov	al,[esi+02h]
+@@l1:	mov	al,[esi+02h]
 	cmp	__history_intnum,0
-	jz	@show_page4_all
+	jz	@@all
 	cmp	__history_intnum,10h
-	jz	@show_page4_10h
+	jz	@@10h
 	cmp	__history_intnum,21h
-	jz	@show_page4_21h
+	jz	@@21h
 	cmp	__history_intnum,31h
-	jz	@show_page4_31h
+	jz	@@31h
 	cmp	__history_intnum,33h
-	jz	@show_page4_33h
-	jmp	@show_page4_all
-@show_page4_10h:	cmp	al,10h
-	jnz	@show_page4_next
-	jmp	@show_page4_all
-@show_page4_21h:	cmp	al,21h
-	jnz	@show_page4_next
-	jmp	@show_page4_all
-@show_page4_31h:	cmp	al,31h
-	jnz	@show_page4_next
-	jmp	@show_page4_all
-@show_page4_33h:	cmp	al,33h
-	jnz	@show_page4_next
-	jmp	@show_page4_all
-@show_page4_next:	add	esi,40h
+	jz	@@33h
+	jmp	@@all
+@@10h:	cmp	al,10h
+	jnz	@@next
+	jmp	@@all
+@@21h:	cmp	al,21h
+	jnz	@@next
+	jmp	@@all
+@@31h:	cmp	al,31h
+	jnz	@@next
+	jmp	@@all
+@@33h:	cmp	al,33h
+	jnz	@@next
+	jmp	@@all
+@@next:	add	esi,40h
 	dec	ecx
-	jnz	@show_page4_l1
-	jmp	@show_page4_l2
-@show_page4_all:	mov	xpos,4
+	jnz	@@l1
+	jmp	@@l2
+@@all:	mov	xpos,4
 	mov	edx,offs _hist_str01
 	mov	color,31h
 	call	prints
@@ -1457,22 +1431,22 @@ show_page4:					; show Interrupt History
 	cmp	al,10h
 	mov	color,39h
 	mov	edx,offs _hist_str04
-	jz	@show_page4_3
+	jz	@@3
 	cmp	al,21h
 	mov	color,3Ah
 	mov	edx,offs _hist_str05
-	jz	@show_page4_3
+	jz	@@3
 	cmp	al,31h
 	mov	color,3Bh
 	mov	edx,offs _hist_str06
-	jz	@show_page4_3
+	jz	@@3
 	cmp	al,33h
 	mov	color,38h
 	mov	edx,offs _hist_str07
-	jz	@show_page4_3
-	jmp	@show_page4_4
-@show_page4_3:	call	prints
-@show_page4_4:	mov	edx,offs _hist_str03
+	jz	@@3
+	jmp	@@4
+@@3:	call	prints
+@@4:	mov	edx,offs _hist_str03
 	mov	color,31h
 	call	prints
 	mov	color,3Eh
@@ -1561,42 +1535,42 @@ show_page4:					; show Interrupt History
 	mov	al,'Ä'
 	mov	edx,56
 	mov	color,31h
-@show_page4_1:	call	printc
+@@1:	call	printc
 	dec	edx
-	jnz	@show_page4_1
+	jnz	@@1
 
 	inc	ypos
 	add	esi,40h
 	dec	ebp
-	jz	@show_page4_l2
+	jz	@@l2
 	dec	ecx
-	jnz	@show_page4_l1
+	jnz	@@l1
 
-@show_page4_l2:	call	get_key
+@@l2:	call	get_key
 	cmp	al,48h				; up
-	jz	@show_page4_up
+	jz	@@up
 	cmp	al,50h				; down
-	jz	@show_page4_dn
+	jz	@@dn
 	cmp	al,49h
-	jz	@show_page4_pgup
+	jz	@@pgup
 	cmp	al,51h
-	jz	@show_page4_pgdn
+	jz	@@pgdn
 	cmp	al,47h				; Home
-	jz	@show_page4_home
+	jz	@@home
 	cmp	al,4Fh				; End
-	jz	@show_page4_end
+	jz	@@end
 	cmp	al,0Eh				; Backspace
-	jz	@show_page4_clr
+	jz	@@clr
 	cmp	al,2				; 1
-	jz	@show_page4_s10h
+	jz	@@s10h
 	cmp	al,3				; 2
-	jz	@show_page4_s21h
+	jz	@@s21h
 	cmp	al,4				; 3
-	jz	@show_page4_s31h
+	jz	@@s31h
 	cmp	al,5				; 4
-	jz	@show_page4_s33h
+	jz	@@s33h
 	cmp	al,11				; 0
-	jz	@show_page4_sall
+	jz	@@sall
 	cmp	al,1				; ESC
 	jz	info_exit
 	cmp	al,3Bh				; F1 - DPMI
@@ -1613,61 +1587,61 @@ show_page4:					; show Interrupt History
 	jz	show_page5
 	cmp	al,44h				; F10 - DOS/32A
 	jz	show_page8
-	jmp	@show_page4_l2
+	jmp	@@l2
 
-@show_page4_up:	cmp	__history_current,0
-	jbe	@show_page4_l2
+@@up:	cmp	__history_current,0
+	jbe	@@l2
 	dec	__history_current
-	jmp	@show_page4_0
-@show_page4_dn:	mov	eax,__history_current
+	jmp	@@0
+@@dn:	mov	eax,__history_current
 	mov	edx,__history_bufsize
 	inc	eax
 	shr	edx,6
 	cmp	eax,edx
-	jae	@show_page4_l2
+	jae	@@l2
 	cmp	eax,__history_bufnum
-	jae	@show_page4_l2
+	jae	@@l2
 	mov	__history_current,eax
-	jmp	@show_page4_0
-@show_page4_pgup:	mov	eax,__history_current
+	jmp	@@0
+@@pgup:	mov	eax,__history_current
 	sub	eax,4
-	jbe	@show_page4_home
+	jbe	@@home
 	mov	__history_current,eax
-	jmp	@show_page4_0
-@show_page4_pgdn:	mov	eax,__history_current
+	jmp	@@0
+@@pgdn:	mov	eax,__history_current
 	mov	edx,__history_bufsize
 	add	eax,4
 	shr	edx,6
 	cmp	eax,edx
-	jae	@show_page4_l2
+	jae	@@l2
 	cmp	eax,__history_bufnum
-	jae	@show_page4_l2
+	jae	@@l2
 	mov	__history_current,eax
-	jmp	@show_page4_0
-@show_page4_home:	mov	__history_current,0
-	jmp	@show_page4_0
-@show_page4_end:	mov	eax,__history_bufnum
+	jmp	@@0
+@@home:	mov	__history_current,0
+	jmp	@@0
+@@end:	mov	eax,__history_bufnum
 	mov	edx,__history_bufsize
 	shr	edx,6
 	cmp	eax,edx
-	jb	@show_page4_end1
+	jb	@@end1
 	mov	eax,edx
-@show_page4_end1:	test	eax,eax
-	jz	@show_page4_end2
+@@end1:	test	eax,eax
+	jz	@@end2
 	dec	eax
-@show_page4_end2:	mov	__history_current,eax
-	jmp	@show_page4_0
-@show_page4_s10h:	mov	__history_intnum,10h
-	jmp	@show_page4_home
-@show_page4_s21h:	mov	__history_intnum,21h
-	jmp	@show_page4_home
-@show_page4_s31h:	mov	__history_intnum,31h
-	jmp	@show_page4_home
-@show_page4_s33h:	mov	__history_intnum,33h
-	jmp	@show_page4_home
-@show_page4_sall:	mov	__history_intnum,00h
-	jmp	@show_page4_home
-@show_page4_clr:	xor	eax,eax
+@@end2:	mov	__history_current,eax
+	jmp	@@0
+@@s10h:	mov	__history_intnum,10h
+	jmp	@@home
+@@s21h:	mov	__history_intnum,21h
+	jmp	@@home
+@@s31h:	mov	__history_intnum,31h
+	jmp	@@home
+@@s33h:	mov	__history_intnum,33h
+	jmp	@@home
+@@sall:	mov	__history_intnum,00h
+	jmp	@@home
+@@clr:	xor	eax,eax
 	mov	__history_intnum,al
 	mov	__history_current,eax
 	mov	__history_bufptr,eax
@@ -1683,8 +1657,8 @@ show_page4:					; show Interrupt History
 	mov	eax,__history_bufnum
 	mov	color,3Fh
 	call	printax
-	jmp	@show_page4_home
-@show_page4_done:	jmp	get_page_key
+	jmp	@@home
+@@done:	jmp	get_page_key
 
 
 ;-----------------------------------------------------------------------------
@@ -1718,11 +1692,11 @@ show_page5:					; show INT Buffers
 	mov	ecx,16
 	mov	al,00h
 	mov	color,3Fh
-@show_page5_1:	mov	xpos,6
+@@1:	mov	xpos,6
 	call	printal
 	inc	ypos
 	inc	al
-	loop	@show_page5_1
+	loop	@@1
 	sub	ypos,16
 
 	push	gs
@@ -1730,7 +1704,7 @@ show_page5:					; show INT Buffers
 
 	mov	ecx,16
 	mov	edx,40h+80h
-@show_page5_2:	mov	xpos,12
+@@2:	mov	xpos,12
 	mov	ax,gs:[edx+edi+4]
 	call	printax
 	mov	al,':'
@@ -1739,12 +1713,12 @@ show_page5:					; show INT Buffers
 	call	printeax
 	add	edx,8
 	inc	ypos
-	loop	@show_page5_2
+	loop	@@2
 	sub	ypos,16
 
 	mov	ecx,16
 	mov	edx,40h
-@show_page5_3:	mov	xpos,28
+@@3:	mov	xpos,28
 	mov	ax,gs:[edx+edi+4]
 	call	printax
 	mov	al,':'
@@ -1753,7 +1727,7 @@ show_page5:					; show INT Buffers
 	call	printeax
 	add	edx,8
 	inc	ypos
-	loop	@show_page5_3
+	loop	@@3
 	sub	ypos,16
 
 	inc	ypos
@@ -1769,13 +1743,13 @@ show_page5:					; show INT Buffers
 	mov	ecx,16
 	mov	bx,gs:[esi+02h]
 	mov	dx,gs:[esi+04h]
-@show_page5_4:	mov	xpos,45
+@@4:	mov	xpos,45
 	mov	ax,dx
 	and	al,01h
 	mov	color,3Eh
-	jnz	@show_page5_l1
+	jnz	@@l1
 	mov	color,3Fh
-@show_page5_l1:	add	al,30h
+@@l1:	add	al,30h
 	call	printc
 	mov	al,'/'
 	mov	color,30h
@@ -1783,14 +1757,14 @@ show_page5:					; show INT Buffers
 	mov	ax,bx
 	and	al,01h
 	mov	color,3Eh
-	jnz	@show_page5_l2
+	jnz	@@l2
 	mov	color,3Fh
-@show_page5_l2:	add	al,30h
+@@l2:	add	al,30h
 	call	printc
 	shr	bx,1
 	shr	dx,1
 	inc	ypos
-	loop	@show_page5_4
+	loop	@@4
 	sub	ypos,16
 
 	inc	ypos
@@ -1799,9 +1773,9 @@ show_page5:					; show INT Buffers
 	shr	eax,17
 	and	al,01h
 	mov	color,3Eh
-	jnz	@show_page5_l3
+	jnz	@@l3
 	mov	color,3Fh
-@show_page5_l3:	add	al,30h
+@@l3:	add	al,30h
 	call	printc
 
 	pop	gs
@@ -1832,7 +1806,7 @@ show_page8:					; show Extender/Debugger info
 	test	dx,8000h
 	popad
 	pop	fs
-	jz	@show_page8_1
+	jz	@@1
 
 	mov	edx,offs hlpA1
 	call	prints
@@ -1841,27 +1815,27 @@ show_page8:					; show Extender/Debugger info
 	mov	edx,offs hlpA3
 	call	prints
 	mov	color,3Fh
-	call	@show_page8_ver
+	call	@@ver
 	mov	xpos,3
 	add	ypos,2
 	mov	color,31h
 	mov	edx,offs hlpA5
 	call	prints
-	jmp	@show_page8_done
-@show_page8_1:	mov	edx,offs hlpA2
+	jmp	@@done
+@@1:	mov	edx,offs hlpA2
 	call	prints
 	mov	xpos,3
 	inc	ypos
 	mov	edx,offs hlpA4
 	call	prints
 	mov	color,3Fh
-	call	@show_page8_ver
+	call	@@ver
 	mov	xpos,3
 	add	ypos,2
 	mov	color,31h
 	mov	edx,offs hlpA6
 	call	prints
-@show_page8_done:	mov	xpos,3
+@@done:	mov	xpos,3
 	inc	ypos
 	mov	edx,offs hlpA7
 	call	prints
@@ -1871,18 +1845,18 @@ show_page8:					; show Extender/Debugger info
 	call	prints
 	add	ypos,2
 	mov	esi,offs library_string
-@show_page8_l1:	mov	al,[esi]
+@@l1:	mov	al,[esi]
 	inc	esi
 	test	al,al
-	jz	@show_page8_ok
+	jz	@@ok
 	call	printc
 	cmp	al,0Ah
-	jnz	@show_page8_l1
+	jnz	@@l1
 	mov	xpos,3
-	jmp	@show_page8_l1
-@show_page8_ok:	jmp	get_page_key
+	jmp	@@l1
+@@ok:	jmp	get_page_key
 
-@show_page8_ver:	mov	ax,0EEFFh
+@@ver:	mov	ax,0EEFFh
 	push	es
 	int	31h
 	pop	es
@@ -1935,48 +1909,45 @@ show_text:
 	mov	eax,_code_addr		; start addr (sel=always CS)
 	mov	esi,eax
 	xor	ebx,ebx
-@show_text_l1:	mov	eax,esi
+@@l1:	mov	eax,esi
 	call	decode
 	mov	_addrbuffer[ebx*4],eax
 	inc	ebx
 	mov	edx,offs textbuf
 	cmp	eax,_eip
-	jnz	@show_text_l2
+	jnz	@@l2
 	mov	bptr [edx+8],10h	; show EIP '>>' marker
 	mov	_cpu_xptr,ebx
 	push	ebx
 	cmp	_showmode_flag,0
 	mov	ebx,23
-	jz	@show_text_0
+	jz	@@0
 	mov	ebx,8
-@show_text_0:	cmp	_jump_taken,0
-	jz	@show_text_2
-	jg	@show_text_1
+@@0:	cmp	_jump_taken,0
+	jz	@@2
+	jg	@@1
 	mov	bptr [edx+ebx],18h
-	jmp	@show_text_2
-@show_text_1:	mov	bptr [edx+ebx],19h
-@show_text_2:	pop	ebx
-@show_text_l2:	mov	xpos,1
+	jmp	@@2
+@@1:	mov	bptr [edx+ebx],19h
+@@2:	pop	ebx
+@@l2:	mov	xpos,1
 	call	prints
-	call	@show_text_bchk
+	call	@@bchk
 	inc	ypos
 	dec	ecx
-	jnz	@show_text_l1
+	jnz	@@l1
 	mov	_addrbuffer[ebx*4],esi
 	mov	ebx,_cpu_ypos
 	dec	ebx
 	mov	esi,_addrbuffer[ebx*4]
 	jmp	decode
-@show_text_bchk:	push	ebx
-	push	ecx
-	push	esi
-	push	edi
+@@bchk:	push	ebx ecx esi edi
 	mov	bl,0C0h
 	mov	ebp,3
-@show_text_l001:	test	bptr _dr7,bl
-	jz	@show_text_l002
+@@l001:	test	bptr _dr7,bl
+	jz	@@l002
 	cmp	eax,_dr0[ebp*4]
-	jnz	@show_text_l002
+	jnz	@@l002
 	push	eax
 	mov	esi,1
 	movzx	edi,ypos
@@ -1996,13 +1967,10 @@ show_text:
 	mov	[esi],eax
 	pop	edx
 	pop	eax
-@show_text_l002:	shr	bl,2
+@@l002:	shr	bl,2
 	dec	ebp
-	jnz	@show_text_l001
-	pop	edi
-	pop	esi
-	pop	ecx
-	pop	ebx
+	jnz	@@l001
+	pop	edi esi ecx ebx
 	ret
 
 
@@ -2020,66 +1988,66 @@ show_gregs:
 	mov	eax,_eax
 	cmp	eax,_old_eax
 	mov	color,30h
-	jz	@show_gregs_l1
+	jz	@@l1
 	mov	color,3Fh
-@show_gregs_l1:	call	printeax
+@@l1:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_ebx
 	cmp	eax,_old_ebx
 	mov	color,30h
-	jz	@show_gregs_l2
+	jz	@@l2
 	mov	color,3Fh
-@show_gregs_l2:	call	printeax
+@@l2:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_ecx
 	cmp	eax,_old_ecx
 	mov	color,30h
-	jz	@show_gregs_l3
+	jz	@@l3
 	mov	color,3Fh
-@show_gregs_l3:	call	printeax
+@@l3:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_edx
 	cmp	eax,_old_edx
 	mov	color,30h
-	jz	@show_gregs_l4
+	jz	@@l4
 	mov	color,3Fh
-@show_gregs_l4:	call	printeax
+@@l4:	call	printeax
 	mov	dl,20
 	mov	ypos,32
 	mov	xpos,dl
 	mov	eax,_esi
 	cmp	eax,_old_esi
 	mov	color,30h
-	jz	@show_gregs_l5
+	jz	@@l5
 	mov	color,3Fh
-@show_gregs_l5:	call	printeax
+@@l5:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_edi
 	cmp	eax,_old_edi
 	mov	color,30h
-	jz	@show_gregs_l6
+	jz	@@l6
 	mov	color,3Fh
-@show_gregs_l6:	call	printeax
+@@l6:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_ebp
 	cmp	eax,_old_ebp
 	mov	color,30h
-	jz	@show_gregs_l7
+	jz	@@l7
 	mov	color,3Fh
-@show_gregs_l7:	call	printeax
+@@l7:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_esp
 	cmp	eax,_old_esp
 	mov	color,30h
-	jz	@show_gregs_l8
+	jz	@@l8
 	mov	color,3Fh
-@show_gregs_l8:	jmp	printeax
+@@l8:	jmp	printeax
 show_sregs:				; segment registers
 	mov	dl,34
 	mov	ypos,32
@@ -2087,73 +2055,73 @@ show_sregs:				; segment registers
 	mov	eax,_cs
 	cmp	ax,wptr _old_cs
 	mov	color,30h
-	jz	@show_sregs_l1
+	jz	@@l1
 	mov	color,3Fh
-@show_sregs_l1:	call	printax
-	call	@show_sregs_show
+@@l1:	call	printax
+	call	@@show
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_ds
 	cmp	ax,wptr _old_ds
 	mov	color,30h
-	jz	@show_sregs_l2
+	jz	@@l2
 	mov	color,3Fh
-@show_sregs_l2:	call	printax
-	call	@show_sregs_show
+@@l2:	call	printax
+	call	@@show
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_es
 	cmp	ax,wptr _old_es
 	mov	color,30h
-	jz	@show_sregs_l3
+	jz	@@l3
 	mov	color,3Fh
-@show_sregs_l3:	call	printax
-	call	@show_sregs_show
+@@l3:	call	printax
+	call	@@show
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_ss
 	cmp	ax,wptr _old_ss
 	mov	color,30h
-	jz	@show_sregs_l4
+	jz	@@l4
 	mov	color,3Fh
-@show_sregs_l4:	call	printax
-	call	@show_sregs_show
+@@l4:	call	printax
+	call	@@show
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_fs
 	cmp	ax,wptr _old_fs
 	mov	color,30h
-	jz	@show_sregs_l5
+	jz	@@l5
 	mov	color,3Fh
-@show_sregs_l5:	call	printax
-	call	@show_sregs_show
+@@l5:	call	printax
+	call	@@show
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_gs
 	cmp	ax,wptr _old_gs
 	mov	color,30h
-	jz	@show_sregs_l6
+	jz	@@l6
 	mov	color,3Fh
-@show_sregs_l6:	call	printax
-@show_sregs_show:	add	xpos,3
+@@l6:	call	printax
+@@show:	add	xpos,3
 	push	edx
 	test	ax,ax
-	jz	@show_sregs_s1
+	jz	@@s1
 	mov	bx,ax
 	mov	ax,0006h
 	int	31h
-	jc	@show_sregs_s2
+	jc	@@s2
 	shl	ecx,16
 	mov	cx,dx
 	mov	eax,ecx
 	call	printeax
 	pop	edx
 	ret
-@show_sregs_s1:	mov	edx,offs selerr1
+@@s1:	mov	edx,offs selerr1
 	call	prints
 	pop	edx
 	ret
-@show_sregs_s2:	mov	edx,offs selerr2
+@@s2:	mov	edx,offs selerr2
 	call	prints
 	pop	edx
 	ret
@@ -2164,42 +2132,42 @@ show_xregs:
 	mov	eax,_eip
 	cmp	eax,_old_eip
 	mov	color,30h
-	jz	@show_xregs_l1
+	jz	@@l1
 	mov	color,3Fh
-@show_xregs_l1:	call	printeax
+@@l1:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_cr0
 	cmp	eax,_old_cr0
 	mov	color,30h
-	jz	@show_xregs_l2
+	jz	@@l2
 	mov	color,3Fh
-@show_xregs_l2:	call	printeax
+@@l2:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_cr2
 	cmp	eax,_old_cr2
 	mov	color,30h
-	jz	@show_xregs_l3
+	jz	@@l3
 	mov	color,3Fh
-@show_xregs_l3:	call	printeax
+@@l3:	call	printeax
 	inc	ypos
 	mov	xpos,dl
 	mov	eax,_cr3
 	cmp	eax,_old_cr3
 	mov	color,30h
-	jz	@show_xregs_l4
+	jz	@@l4
 	mov	color,3Fh
-@show_xregs_l4:	call	printeax
+@@l4:	call	printeax
 	mov	edx,71
 	mov	ypos,32
 	mov	xpos,dl
 	mov	eax,_efl
 	cmp	eax,_old_efl
 	mov	color,30h
-	jz	@show_xregs_l5
+	jz	@@l5
 	mov	color,3Fh
-@show_xregs_l5:	jmp	printeax
+@@l5:	jmp	printeax
 show_slide:
 	mov	xpos,1
 	mov	ypos,37
@@ -2207,67 +2175,67 @@ show_slide:
 	mov	edi,_old_efl
 	shl	esi,14
 	shl	edi,14
-	call	@show_slide_show			; VM-flag
-	call	@show_slide_show			; RF-flag
+	call	@@show			; VM-flag
+	call	@@show			; RF-flag
 	shl	esi,1
 	shl	edi,1
-	call	@show_slide_show			; NT-flag
-	call	@show_slide_show			; IOPL-flag
+	call	@@show			; NT-flag
+	call	@@show			; IOPL-flag
 	dec	xpos
-	call	@show_slide_show
-	call	@show_slide_show			; OF-flag
-	call	@show_slide_show			; DF-flag
-	call	@show_slide_show			; IF-flag
-	call	@show_slide_show			; TF-flag
-	call	@show_slide_show			; SF-flag
+	call	@@show
+	call	@@show			; OF-flag
+	call	@@show			; DF-flag
+	call	@@show			; IF-flag
+	call	@@show			; TF-flag
+	call	@@show			; SF-flag
 	inc	xpos
-	call	@show_slide_show			; ZF-flag
+	call	@@show			; ZF-flag
 	shl	esi,1
 	shl	edi,1
-	call	@show_slide_show			; AF-flag
+	call	@@show			; AF-flag
 	shl	esi,1
 	shl	edi,1
-	call	@show_slide_show			; PF-flag
+	call	@@show			; PF-flag
 	shl	esi,1
 	shl	edi,1
-	call	@show_slide_show			; CF-flag
+	call	@@show			; CF-flag
 	mov	xpos,53
 	mov	ypos,37
 	mov	esi,_cr0
 	mov	edi,_old_cr0
-	call	@show_slide_show			; PG-flag
+	call	@@show			; PG-flag
 	inc	xpos
 	shl	esi,12
 	shl	edi,12
-	call	@show_slide_show			; AM-flag
+	call	@@show			; AM-flag
 	inc	xpos
 	shl	esi,1
 	shl	edi,1
-	call	@show_slide_show			; WP-flag
+	call	@@show			; WP-flag
 	inc	xpos
 	inc	xpos
 	shl	esi,10
 	shl	edi,10
-	call	@show_slide_show			; NE-flag
+	call	@@show			; NE-flag
 	inc	xpos
-	call	@show_slide_show			; ET-flag
+	call	@@show			; ET-flag
 	inc	xpos
-	call	@show_slide_show			; TS-flag
+	call	@@show			; TS-flag
 	inc	xpos
-	call	@show_slide_show			; EM-flag
+	call	@@show			; EM-flag
 	inc	xpos
-	call	@show_slide_show			; MP-flag
+	call	@@show			; MP-flag
 	inc	xpos
-@show_slide_show:	xor	ax,ax
+@@show:	xor	ax,ax
 	shl	esi,1
 	adc	al,'0'
 	shl	edi,1
 	adc	ah,'0'
 	cmp	al,ah
 	mov	color,30h
-	jz	@show_slide_s1
+	jz	@@s1
 	mov	color,3Fh
-@show_slide_s1:	call	printc
+@@s1:	call	printc
 	inc	xpos
 	ret
 
@@ -2279,41 +2247,41 @@ show_data:
 	mov	esi,_data_addr
 	mov	al,_data_override
 	test	al,al			; 0 = es
-	jnz	@show_data_l1
+	jnz	@@l1
 	mov	edx,offs msg2es
 	call	_show_data
-	jmp	@show_data_l0
-@show_data_l1:	dec	al			; 1 = cs
-	jnz	@show_data_l2
+	jmp	@@l0
+@@l1:	dec	al			; 1 = cs
+	jnz	@@l2
 	mov	edx,offs msg2cs
 	call	_show_data
-	jmp	@show_data_l0
-@show_data_l2:	dec	al			; 2 = ss
-	jnz	@show_data_l3
+	jmp	@@l0
+@@l2:	dec	al			; 2 = ss
+	jnz	@@l3
 	mov	edx,offs msg2ss
 	call	_show_data
-	jmp	@show_data_l0
-@show_data_l3:	dec	al			; 3 = ds
-	jnz	@show_data_l4
+	jmp	@@l0
+@@l3:	dec	al			; 3 = ds
+	jnz	@@l4
 	mov	edx,offs msg2ds
 	call	_show_data
-	jmp	@show_data_l0
-@show_data_l4:	dec	al			; 4 = fs
-	jnz	@show_data_l5
+	jmp	@@l0
+@@l4:	dec	al			; 4 = fs
+	jnz	@@l5
 	mov	edx,offs msg2fs
 	call	_show_data
-	jmp	@show_data_l0
-@show_data_l5:	dec	al			; 5 = gs
-	jnz	@show_data_l0
+	jmp	@@l0
+@@l5:	dec	al			; 5 = gs
+	jnz	@@l0
 	mov	edx,offs msg2gs
 	call	_show_data
-@show_data_l0:	cmp	_fpuregs_on,0
-	jz	@show_data___0
+@@l0:	cmp	_fpuregs_on,0
+	jz	@@__0
 	call	_show_fpuregs
 	jmp	_show_addr
 
-@show_data___0:	cmp	_fpuregs_set,0
-	jz	@show_data___1
+@@__0:	cmp	_fpuregs_set,0
+	jz	@@__1
 	mov	ebx,10
 	mov	ecx,30
 	mov	esi,49
@@ -2348,7 +2316,7 @@ show_data:
 	call	prints
 	mov	color,30h
 	mov	_fpuregs_set,0
-@show_data___1:	mov	bl,4
+@@__1:	mov	bl,4
 	xor	ebp,ebp
 	mov	edi,_esi
 	mov	ypos,39
@@ -2380,157 +2348,157 @@ _show_addr:
 	jmp	prints
 
 _show_data:
-@show_data_2_l1:	mov	xpos,1
+@@l1:	mov	xpos,1
 	call	prints
 	mov	eax,esi
 	call	printeax
 	add	xpos,2
 	mov	ecx,2708h
-@show_data_2_l2:	call	get_data_byte
-	jc	@show_data_2_l3
+@@l2:	call	get_data_byte
+	jc	@@l3
 	mov	eax,offs msg2er
 	xchg	eax,edx
 	call	prints
 	xchg	eax,edx
 	mov	al,'?'
-	jmp	@show_data_2_l5
-@show_data_2_l3:	call	printal
+	jmp	@@l5
+@@l3:	call	printal
 	test	al,al
-	jz	@show_data_2_l4
+	jz	@@l4
 	cmp	al,08h
-	jz	@show_data_2_l4
+	jz	@@l4
 	cmp	al,09h
-	jz	@show_data_2_l4
+	jz	@@l4
 	cmp	al,0Ah
-	jz	@show_data_2_l4
+	jz	@@l4
 	cmp	al,0Dh
-	jz	@show_data_2_l4
-	jmp	@show_data_2_l5
-@show_data_2_l4:	mov	al,'.'
-@show_data_2_l5:	xchg	xpos,ch
+	jz	@@l4
+	jmp	@@l5
+@@l4:	mov	al,'.'
+@@l5:	xchg	xpos,ch
 	call	printc
 	xchg	xpos,ch
 	inc	xpos
 	inc	esi
 	dec	cl
-	jnz	@show_data_2_l2
+	jnz	@@l2
 	inc	ypos
 	dec	bl
-	jnz	@show_data_2_l1
+	jnz	@@l1
 	ret
 _show_data_esi:
 	mov	bh,_data_override
 	mov	_data_override,3
-@show_data_esi_l1:	mov	xpos,50
+@@l1:	mov	xpos,50
 	mov	eax,ebp
 	test	ebp,ebp
 	mov	edx,offs msg2sip
-	jns	@show_data_esi_l01
+	jns	@@l01
 	mov	edx,offs msg2sim
 	neg	eax
-@show_data_esi_l01:	call	prints
+@@l01:	call	prints
 	call	printal
 	mov	al,']'
 	call	printc
 	test	ebp,ebp
-	jnz	@show_data_esi_l03
+	jnz	@@l03
 	mov	al,10h
 	call	printc
 	inc	xpos
-	jmp	@show_data_esi_l04
-@show_data_esi_l03:	add	xpos,2
-@show_data_esi_l04:	mov	ecx,4B04h
-@show_data_esi_l2:	lea	esi,[edi+ebp]
+	jmp	@@l04
+@@l03:	add	xpos,2
+@@l04:	mov	ecx,4B04h
+@@l2:	lea	esi,[edi+ebp]
 	call	get_data_byte
-	jc	@show_data_esi_l3
+	jc	@@l3
 	mov	edx,offs msg2er
 	call	prints
 	mov	al,'?'
-	jmp	@show_data_esi_l5
-@show_data_esi_l3:	call	printal
+	jmp	@@l5
+@@l3:	call	printal
 	test	al,al
-	jz	@show_data_esi_l4
+	jz	@@l4
 	cmp	al,08h
-	jz	@show_data_esi_l4
+	jz	@@l4
 	cmp	al,09h
-	jz	@show_data_esi_l4
+	jz	@@l4
 	cmp	al,0Ah
-	jz	@show_data_esi_l4
+	jz	@@l4
 	cmp	al,0Dh
-	jz	@show_data_esi_l4
-	jmp	@show_data_esi_l5
-@show_data_esi_l4:	mov	al,'.'
-@show_data_esi_l5:	xchg	xpos,ch
+	jz	@@l4
+	jmp	@@l5
+@@l4:	mov	al,'.'
+@@l5:	xchg	xpos,ch
 	call	printc
 	xchg	xpos,ch
 	inc	xpos
 	inc	ebp
 	dec	cl
-	jnz	@show_data_esi_l2
+	jnz	@@l2
 	inc	ypos
 	dec	bl
-	jnz	@show_data_esi_l1
+	jnz	@@l1
 	mov	_data_override,bh
 	ret
 _show_data_edi:
 	mov	bh,_data_override
 	mov	_data_override,0
-@show_data_edi_l1:	mov	xpos,50
+@@l1:	mov	xpos,50
 	mov	eax,ebp
 	test	ebp,ebp
 	mov	edx,offs msg2dip
-	jns	@show_data_edi_l01
+	jns	@@l01
 	mov	edx,offs msg2dim
 	neg	eax
-@show_data_edi_l01:	call	prints
+@@l01:	call	prints
 	call	printal
 	mov	al,']'
 	call	printc
 	test	ebp,ebp
-	jnz	@show_data_edi_l03
+	jnz	@@l03
 	mov	al,10h
 	call	printc
 	inc	xpos
-	jmp	@show_data_edi_l04
-@show_data_edi_l03:	add	xpos,2
-@show_data_edi_l04:	mov	ecx,4B04h
-@show_data_edi_l2:	lea	esi,[edi+ebp]
+	jmp	@@l04
+@@l03:	add	xpos,2
+@@l04:	mov	ecx,4B04h
+@@l2:	lea	esi,[edi+ebp]
 	call	get_data_byte
-	jc	@show_data_edi_l3
+	jc	@@l3
 	mov	edx,offs msg2er
 	call	prints
 	mov	al,'?'
-	jmp	@show_data_edi_l5
-@show_data_edi_l3:	call	printal
+	jmp	@@l5
+@@l3:	call	printal
 	test	al,al
-	jz	@show_data_edi_l4
+	jz	@@l4
 	cmp	al,08h
-	jz	@show_data_edi_l4
+	jz	@@l4
 	cmp	al,09h
-	jz	@show_data_edi_l4
+	jz	@@l4
 	cmp	al,0Ah
-	jz	@show_data_edi_l4
+	jz	@@l4
 	cmp	al,0Dh
-	jz	@show_data_edi_l4
-	jmp	@show_data_edi_l5
-@show_data_edi_l4:	mov	al,'.'
-@show_data_edi_l5:	xchg	xpos,ch
+	jz	@@l4
+	jmp	@@l5
+@@l4:	mov	al,'.'
+@@l5:	xchg	xpos,ch
 	call	printc
 	xchg	xpos,ch
 	inc	xpos
 	inc	ebp
 	dec	cl
-	jnz	@show_data_edi_l2
+	jnz	@@l2
 	inc	ypos
 	dec	bl
-	jnz	@show_data_edi_l1
+	jnz	@@l1
 	mov	_data_override,bh
 	ret
 
 ;-----------------------------------------------------------------------------
 _show_fpuregs:
 	cmp	_fpuregs_set,0
-	jnz	@show_fpuregs_1
+	jnz	@@1
 	mov	ebx,10
 	mov	ecx,30
 	mov	esi,49
@@ -2596,7 +2564,7 @@ _show_fpuregs:
 	call	prints
 	mov	_fpuregs_set,1
 
-@show_fpuregs_1:	mov	color,30h
+@@1:	mov	color,30h
 	mov	xpos,55
 	mov	ypos,39
 	sub	esp,108
@@ -2612,29 +2580,29 @@ _show_fpuregs:
 	lea	ecx,[eax*2]
 	ror	word ptr _temp,cl
 
-@show_fpuregs_loop:	mov	eax,_temp
+@@loop:	mov	eax,_temp
 	ror	word ptr _temp,02h
 	and	eax,0003h
 	cmp	eax,0003h
-	jz	@show_fpuregs___ftoa_empty
+	jz	@@__ftoa_empty
 	fld	tbyte ptr ss:[esp+edi]
 	fxam
 	fstsw	ax
 	mov	al,ah
 	and	al,01000101b
-	jz	@show_fpuregs___ftoa_err	; unsupported number
+	jz	@@__ftoa_err	; unsupported number
 	cmp	al,00000001b
-	jz	@show_fpuregs___ftoa_NaN	; NaN number
+	jz	@@__ftoa_NaN	; NaN number
 	cmp	al,00000101b
-	jz	@show_fpuregs___ftoa_inf	; infinity
+	jz	@@__ftoa_inf	; infinity
 	cmp	al,01000000b
-	jz	@show_fpuregs___ftoa_zero	; zero
+	jz	@@__ftoa_zero	; zero
 	cmp	al,01000100b
-	jz	@show_fpuregs___ftoa_den	; denormal
+	jz	@@__ftoa_den	; denormal
 	cmp	al,01000001b
-	jz	@show_fpuregs___ftoa_unu	; unused
+	jz	@@__ftoa_unu	; unused
 	cmp	al,01000101b
-	jz	@show_fpuregs___ftoa_unu	; unused
+	jz	@@__ftoa_unu	; unused
 	mov	eax,57
 	call	_float2dec
 	add	eax,17
@@ -2650,17 +2618,17 @@ _show_fpuregs:
 	mov	bh,15
 	and	ch,80h
 	mov	al,'+'
-	jz	@show_fpuregs_2
+	jz	@@2
 	mov	al,'-'
-@show_fpuregs_2:	call	printc
+@@2:	call	printc
 	call	__ftoa_char
 	call	printc
 	mov	al,'.'
 	call	printc
-@show_fpuregs_3:	call	__ftoa_char
+@@3:	call	__ftoa_char
 	call	printc
 	dec	bh
-	jnz	@show_fpuregs_3
+	jnz	@@3
 
 	mov	al,' '
 	call	printc
@@ -2668,35 +2636,35 @@ _show_fpuregs:
 	call	printc
 	test	edx,edx
 	mov	al,'+'
-	jns	@show_fpuregs_4
+	jns	@@4
 	mov	al,'-'
 	neg	edx
-@show_fpuregs_4:	call	printc
+@@4:	call	printc
 
 	mov	bh,3
 	mov	eax,edx
 	xor	ebp,ebp
-@show_fpuregs_5:	mov	ecx,10
+@@5:	mov	ecx,10
 	xor	edx,edx
 	idiv	ecx
 	shl	ebp,8
 	or	ebp,edx
 	dec	bh
-	jnz	@show_fpuregs_5
+	jnz	@@5
 
 	mov	bh,3
-@show_fpuregs_6:	mov	eax,ebp
+@@6:	mov	eax,ebp
 	add	al,30h
 	shr	ebp,8
 	call	printc
 	dec	bh
-	jnz	@show_fpuregs_6
+	jnz	@@6
 
-@show_fpuregs_next:	add	edi,10
+@@next:	add	edi,10
 	mov	xpos,55
 	inc	ypos
 	dec	bl
-	jnz	@show_fpuregs_loop
+	jnz	@@loop
 
 	mov	xpos,52
 	mov	ax,[esp+0]	; CW
@@ -2713,41 +2681,41 @@ _show_fpuregs:
 	ret
 
 
-@show_fpuregs___ftoa_err:
+@@__ftoa_err:
 	mov	edx,offs msg1Ef1
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_NaN:
+	jmp	@@__ftoa_
+@@__ftoa_NaN:
 	mov	edx,offs msg1Ef2
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_inf:
+	jmp	@@__ftoa_
+@@__ftoa_inf:
 	and	ah,00000010h
 	mov	al,'+'
-	jz	@show_fpuregs___ftoa_inf_
+	jz	@@__ftoa_inf_
 	mov	al,'-'
-@show_fpuregs___ftoa_inf_:
+@@__ftoa_inf_:
 	mov	edx,offs msg1Ef3
 	mov	[edx],al
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_zero:
+	jmp	@@__ftoa_
+@@__ftoa_zero:
 	and	ah,00000010h
 	mov	al,'+'
-	jz	@show_fpuregs___ftoa_zero_
+	jz	@@__ftoa_zero_
 	mov	al,'-'
-@show_fpuregs___ftoa_zero_:
+@@__ftoa_zero_:
 	mov	edx,offs msg1Ef4
 	mov	[edx],al
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_den:
+	jmp	@@__ftoa_
+@@__ftoa_den:
 	mov	edx,offs msg1Ef5
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_unu:
+	jmp	@@__ftoa_
+@@__ftoa_unu:
 	mov	edx,offs msg1Ef6
-	jmp	@show_fpuregs___ftoa_
-@show_fpuregs___ftoa_empty:
+	jmp	@@__ftoa_
+@@__ftoa_empty:
 	mov	edx,offs msg1Ef7
-@show_fpuregs___ftoa_:
+@@__ftoa_:
 	call	prints
-	jmp	@show_fpuregs_next
+	jmp	@@next
 
 __ftoa_char:
 	mov	al,cl
@@ -2803,8 +2771,8 @@ _exp2:	sub	esp,2*4
 	fstsw	wptr [esp+4]
 	and	bptr [esp+5],45h
 	cmp	bptr [esp+5],01h
-	ja	@exp2_err
-	je	@exp2_neg
+	ja	@@err
+	je	@@neg
 	f2xm1
 	fld1
 	fadd
@@ -2813,8 +2781,8 @@ _exp2:	sub	esp,2*4
 	fscale
 	fmulp	st(2),st
 	fstp	st(0)
-	jmp	@exp2_done
-@exp2_neg:	fabs
+	jmp	@@done
+@@neg:	fabs
 	f2xm1
 	fld1
 	fadd
@@ -2823,13 +2791,13 @@ _exp2:	sub	esp,2*4
 	fscale
 	fdivrp	st(2),st
 	fstp	st(0)
-@exp2_done:	fldcw	wptr [esp]
+@@done:	fldcw	wptr [esp]
 	add	esp,2*4
 	ret
-@exp2_err:	fstp	st(0)
+@@err:	fstp	st(0)
 	fstp	st(0)
 	fld1
-	jmp	@exp2_done
+	jmp	@@done
 
 
 ;-----------------------------------------------------------------------------
@@ -2839,26 +2807,26 @@ show_stack:
 	mov	cl,30
 	mov	edi,_esp
 	add	edi,_stack_addr
-@show_stack_l1:	mov	eax,edi
+@@l1:	mov	eax,edi
 	sub	eax,_esp
 	mov	edx,offs msg3spp
 	test	eax,eax
-	jns	@show_stack_l2
+	jns	@@l2
 	mov	edx,offs msg3spm
 	neg	eax
-@show_stack_l2:	mov	xpos,62
+@@l2:	mov	xpos,62
 	call	prints
 	call	printal
 	mov	al,']'
 	call	printc
-@show_stack_l20:	cmp	edi,_esp
+@@l20:	cmp	edi,_esp
 	mov	al,10h
-	jz	@show_stack_l3
+	jz	@@l3
 	cmp	edi,_ebp
 	mov	al,'>'
-	jz	@show_stack_l3
+	jz	@@l3
 	mov	al,20h
-@show_stack_l3:	call	printc
+@@l3:	call	printc
 	lea	esi,[edi+3]
 	call	get_stack_byte
 	dec	esi
@@ -2871,15 +2839,15 @@ show_stack:
 	shl	eax,8
 	call	get_stack_byte
 	cmp	_assmmode_flag,0
-	jz	@show_stack_l4
+	jz	@@l4
 	call	printax
 	add	edi,2
-	jmp	@show_stack_l5
-@show_stack_l4:	call	printeax
+	jmp	@@l5
+@@l4:	call	printeax
 	add	edi,4
-@show_stack_l5:	dec	ypos
+@@l5:	dec	ypos
 	dec	cl
-	jnz	@show_stack_l1
+	jnz	@@l1
 	cmp	_current_window,3
 	jz	_show_addr_stk
 	ret
@@ -3062,8 +3030,8 @@ clear_cmdline:
 	mov	color,70h
 	mov	al,' '
 	mov	ecx,78
-@clear_cmdline_loop:	call	printc
-	loop	@clear_cmdline_loop
+@@loop:	call	printc
+	loop	@@loop
 	ret
 print_cmdline:
 	call	clear_cmdline
@@ -3078,35 +3046,35 @@ print_errline:
 	mov	color,4Fh
 	mov	al,' '
 	mov	ecx,78
-@print_errline_loop:	call	printc
-	loop	@print_errline_loop
+@@loop:	call	printc
+	loop	@@loop
 	mov	xpos,1
 
 	cmp	bl,4Ch
-	jz	@print_errline_term
+	jz	@@term
 	cmp	bl,0FFh
-	jz	@print_errline_kbrk
+	jz	@@kbrk
 
 	cmp	bl,16
 	mov	edx,offs err0
-	jb	@print_errline_l1
+	jb	@@l1
 	mov	edx,offs err1
-@print_errline_l1:	call	prints
+@@l1:	call	prints
 	mov	edx,errortab[ebx*4]
 	call	prints
 	cmp	bl,8
-	jb	@print_errline_l2
+	jb	@@l2
 	cmp	bl,16
-	ja	@print_errline_l2
+	ja	@@l2
 	mov	edx,offs errec
 	call	prints
 	mov	eax,_errorcode
 	call	printeax
-@print_errline_l2:	ret
+@@l2:	ret
 
-@print_errline_term:	mov	edx,offs errterm
+@@term:	mov	edx,offs errterm
 	jmp	prints
-@print_errline_kbrk:	mov	edx,offs errkbrk
+@@kbrk:	mov	edx,offs errkbrk
 	jmp	prints
 
 
@@ -3118,10 +3086,10 @@ _cursor:pushad
 	shl	edx,4
 	lea	esi,[edx+esi*2]
 	add	esi,screen_base
-@cursor_loop:	xor	[esi],ax
+@@loop:	xor	[esi],ax
 	add	esi,2
 	dec	cl
-	jnz	@cursor_loop
+	jnz	@@loop
 	popad
 	ret
 _cursorx:
@@ -3131,41 +3099,39 @@ _cursorx:
 	shl	edx,4
 	lea	esi,[edx+esi*2]
 	add	esi,screen_base
-@cursorx_loop:	mov	al,[esi+1]
+@@loop:	mov	al,[esi+1]
 	cmp	al,17h
-	jz	@cursorx_l1
+	jz	@@l1
 	cmp	al,1Fh
-	jz	@cursorx_l2
+	jz	@@l2
 	cmp	al,30h
-	jz	@cursorx_l3
+	jz	@@l3
 	cmp	al,3Fh
-	jz	@cursorx_l4
-	jmp	@cursorx_next
-@cursorx_l1:	mov	al,3Fh
-	jmp	@cursorx_next
-@cursorx_l2:	mov	al,30h
-	jmp	@cursorx_next
-@cursorx_l3:	mov	al,1Fh
-	jmp	@cursorx_next
-@cursorx_l4:	mov	al,17h
-@cursorx_next:	mov	[esi+1],al
+	jz	@@l4
+	jmp	@@next
+@@l1:	mov	al,3Fh
+	jmp	@@next
+@@l2:	mov	al,30h
+	jmp	@@next
+@@l3:	mov	al,1Fh
+	jmp	@@next
+@@l4:	mov	al,17h
+@@next:	mov	[esi+1],al
 	add	esi,2
 	dec	cl
-	jnz	@cursorx_loop
+	jnz	@@loop
 	popad
 	ret
 syncdisplay:
-	push	eax
-	push	edx
+	push	eax edx
 	mov	dx,03DAh
-@syncdisplay_l1:	in	al,dx
+@@l1:	in	al,dx
 	test	al,08h
-	jnz	@syncdisplay_l1
-@syncdisplay_l2:	in	al,dx
+	jnz	@@l1
+@@l2:	in	al,dx
 	test	al,08h
-	jz	@syncdisplay_l2
-	pop	edx
-	pop	eax
+	jz	@@l2
+	pop	edx eax
 	ret
 screen_on:
 	mov	dx,03C4h
@@ -3194,7 +3160,7 @@ clearwindow:
 	add	edi,screen_base
 	lea	edx,[ecx*2]
 	mov	ax,3F00h
-@clearwindow_loop:	push	ecx
+@@loop:	push	ecx
 	rep	stosw
 	pop	ecx
 	sub	esi,edx
@@ -3202,7 +3168,7 @@ clearwindow:
 	add	esi,80*2
 	add	edi,80*2
 	dec	ebx
-	jnz	@clearwindow_loop
+	jnz	@@loop
 	ret
 drawchar:
 	mov	[edi+edx*2],ax
@@ -3218,14 +3184,13 @@ drawdown:
 	add	edx,50h
 	loop	drawdown
 	ret
-printc:	push	edx
-	push	edi
+printc:	push	edx edi
 	cmp	al,09h
-	jz	@printc_09
+	jz	@@09
 	cmp	al,0Ah
-	jz	@printc_0A
+	jz	@@0A
 	cmp	al,0Dh
-	jz	@printc_0D
+	jz	@@0D
 	movzx	edi,ypos
 	lea	edx,[edi*8+edi]
 	add	edx,edi
@@ -3237,62 +3202,55 @@ printc:	push	edx
 	mov	[edi+edx*2],ax
 	inc	xpos
 	cmp	xpos,50h
-	jb	@printc_done
+	jb	@@done
 	mov	xpos,0
-	jmp	@printc_0A
-@printc_done:	pop	edi
-	pop	edx
+	jmp	@@0A
+@@done:	pop	edi edx
 	ret
-@printc_0D:	mov	xpos,0
-	pop	edi
-	pop	edx
+@@0D:	mov	xpos,0
+	pop	edi edx
 	ret
-@printc_0A:	inc	ypos
+@@0A:	inc	ypos
 	cmp	ypos,32h
-	jb	@printc_done
+	jb	@@done
 	mov	ypos,0
-	pop	edi
-	pop	edx
+	pop	edi edx
 	ret
-@printc_09:	and	xpos,0F8h
+@@09:	and	xpos,0F8h
 	add	xpos,8
 	cmp	xpos,80
-	jb	@printc_done
+	jb	@@done
 	sub	xpos,80
-	jmp	@printc_0A
-prints:	push	eax
-	push	edx
-@prints_loop:	mov	al,[edx]
+	jmp	@@0A
+prints:	push	eax edx
+@@loop:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@prints_done
+	jz	@@done
 	cmp	al,08h
-	jz	@prints_l1
+	jz	@@l1
 	call	printc
-	jmp	@prints_loop
-@prints_l1:	mov	al,[edx]
+	jmp	@@loop
+@@l1:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@prints_done
+	jz	@@done
 	mov	color,al
-	jmp	@prints_loop
-@prints_done:	pop	edx
-	pop	eax
+	jmp	@@loop
+@@done:	pop	edx eax
 	ret
 printsback:
-	push	eax
-	push	ebx
+	push	eax ebx
 	clr	ebx
-@printsback_l1:	mov	al,[edx+ebx]
+@@l1:	mov	al,[edx+ebx]
 	inc	ebx
 	test	al,al
-	jnz	@printsback_l1
+	jnz	@@l1
 	sub	xpos,bl
-	jnc	@printsback_l2
+	jnc	@@l2
 	mov	xpos,0
-@printsback_l2:	call	prints
-	pop	ebx
-	pop	eax
+@@l2:	call	prints
+	pop	ebx eax
 	ret
 printal:push	edi
 	mov	edi,offs hexbuf
@@ -3312,24 +3270,21 @@ printhex:
 	push	edx
 	mov	edx,edi
 	call	prints
-	pop	edx
-	pop	edi
+	pop	edx edi
 	ret
 makehex:pushad
 	mov	edx,7
-@makehex_loop:	mov	esi,eax
+@@loop:	mov	esi,eax
 	and	esi,0Fh
 	mov	bl,hextab[esi]
 	mov	[edi+edx],bl
 	shr	eax,4
 	sub	edx,1
-	jnc	@makehex_loop
+	jnc	@@loop
 	popad
 	ret
 get_key:
-	push	ebx
-	push	ecx
-	push	edx
+	push	ebx ecx edx
 	mov	bl,xpos
 	mov	bh,ypos
 	mov	cl,color
@@ -3339,11 +3294,11 @@ get_key:
 	call	prints
 	sti
 	mov	_keyshift,0
-@get_key_loop:	cmp	_keyshift,0
-	jnz	@get_key_1
+@@loop:	cmp	_keyshift,0
+	jnz	@@1
 	cmp	_keyhit,0
-	jz	@get_key_loop
-@get_key_1:	mov	_keyhit,0
+	jz	@@loop
+@@1:	mov	_keyhit,0
 	cli
 	mov	xpos,75
 	mov	ypos,0
@@ -3353,9 +3308,7 @@ get_key:
 	mov	ypos,bh
 	mov	color,cl
 	movzx	eax,_keycode
-	pop	edx
-	pop	ecx
-	pop	ebx
+	pop	edx ecx ebx
 	ret
 
 clearkeytab:
@@ -3370,8 +3323,7 @@ clearkeytab:
 	mov	_keyhit,0
 	popad
 	ret
-beep:	push	eax
-	push	ecx
+beep:	push	eax ecx
 	mov	al,0B6h		; set frequency
 	out	43h,al
 	mov	al,0		; fL
@@ -3382,19 +3334,18 @@ beep:	push	eax
 	or	al,03h
 	out	61h,al
 	mov	ecx,3FFFh
-@beep_loop:	in	al,42h
+@@loop:	in	al,42h
 	in	al,42h
 	mov	ah,al
-@beep_0:	in	al,40h
+@@0:	in	al,40h
 	in	al,40h
 	cmp	ah,al
-	je	@beep_0
-	loop	@beep_loop
+	je	@@0
+	loop	@@loop
 	in	al,61h		; beep off
 	and	al,not 03h
 	out	61h,al
-	pop	ecx
-	pop	eax
+	pop	ecx eax
 	ret
 
 
@@ -3411,9 +3362,9 @@ selector_init:
 	mov	_cs_limit,edi
 	test	cl,40h
 	mov	_assmmode_flag,0
-	jnz	@selector_init_l1
+	jnz	@@l1
 	mov	_assmmode_flag,1
-@selector_init_l1:	mov	bx,wptr _ss
+@@l1:	mov	bx,wptr _ss
 	call	get_selector
 	mov	_ss_acc,bx
 	mov	_ss_base,esi
@@ -3438,7 +3389,7 @@ get_selector:
 	mov	ax,000Bh
 	mov	edi,offs es:selbuf
 	int	31h
-	jc	@get_selector_err
+	jc	@@err
 	mov	ah,bptr es:selbuf[7]
 	mov	al,bptr es:selbuf[4]
 	shl	eax,16
@@ -3453,12 +3404,12 @@ get_selector:
 	shl	eax,16
 	mov	ax,wptr es:selbuf[0]
 	shr	ch,7			; CH = granularity
-	jz	@get_selector_l1
+	jz	@@l1
 	shl	eax,12			; page granular
 	add	eax,0FFFh		; one page is 4096 bytes
-@get_selector_l1:	mov	edi,eax			; EDI = limit
+@@l1:	mov	edi,eax			; EDI = limit
 	ret
-@get_selector_err:	clr	eax
+@@err:	clr	eax
 	mov	ebx,eax
 	mov	ecx,eax
 	mov	esi,eax
@@ -3575,22 +3526,22 @@ _cpu_cursor:
 	call	drawline
 	mov	edx,offs commbuf
 	cmp	bptr [edx],20h
-	jnz	@cpu_cursor_l1
+	jnz	@@l1
 	ret
-@cpu_cursor_l1:	mov	xpos,61
+@@l1:	mov	xpos,61
 	mov	ypos,0
 	mov	color,3Fh
 	jmp	printsback
 _cpu_up:call	show_cursor
 	cmp	_cpu_ypos,1
-	jbe	@cpu_up_l1
+	jbe	@@l1
 	dec	_cpu_ypos
 	mov	ebx,_cpu_ypos
 	dec	ebx
 	mov	esi,_addrbuffer[ebx*4]
 	call	decode
 	jmp	show_cursor
-@cpu_up_l1:	call	find_code_up
+@@l1:	call	find_code_up
 	mov	_code_addr,eax
 	mov	ebx,30
 	mov	ecx,60
@@ -3602,14 +3553,14 @@ _cpu_up:call	show_cursor
 _cpu_down:
 	call	show_cursor
 	cmp	_cpu_ypos,30
-	jae	@cpu_down_l1
+	jae	@@l1
 	inc	_cpu_ypos
 	mov	ebx,_cpu_ypos
 	dec	ebx
 	mov	esi,_addrbuffer[ebx*4]
 	call	decode
 	jmp	show_cursor
-@cpu_down_l1:	mov	ebx,30
+@@l1:	mov	ebx,30
 	mov	ecx,60
 	mov	esi,1
 	mov	edi,1
@@ -3628,9 +3579,9 @@ _cpu_right:
 	jmp	_cpu_common
 _cpu_pageup:
 	mov	ecx,30
-@cpu_pageup_l1:	call	find_code_up
+@@l1:	call	find_code_up
 	mov	_addrbuffer[0],eax
-	loop	@cpu_pageup_l1
+	loop	@@l1
 	mov	_code_addr,eax
 	jmp	_cpu_common
 _cpu_pagedn:
@@ -3653,17 +3604,17 @@ _cpu_common:
 find_code_up:
 	mov	eax,_addrbuffer[0]
 	sub	eax,16			; average opcode length
-@find_code_up_l1:	inc	eax
+@@l1:	inc	eax
 	mov	ebx,eax
 	mov	esi,eax
-@find_code_up_l2:	mov	esi,ebx
+@@l2:	mov	esi,ebx
 	mov	edx,ebx
 	call	decode
 	mov	ebx,esi
 	sub	esi,_addrbuffer[0]
-	jb	@find_code_up_l2
-	ja	@find_code_up_done
-@find_code_up_done:	mov	eax,edx
+	jb	@@l2
+	ja	@@done
+@@done:	mov	eax,edx
 	ret
 _cpu_showassm:
 	xor	_showmode_flag,1
@@ -3680,10 +3631,10 @@ _cpu_decsel:
 	jmp	_mem_decsel
 _cpu_fpuregs:
 	cmp	__fputype,0
-	jz	@cpu_fpuregs_1
+	jz	@@1
 	xor	_fpuregs_on,1
 	jmp	show_data
-@cpu_fpuregs_1:	ret
+@@1:	ret
 _cpu_unreloc:
 	xor	_show_unreloc,1
 	jmp	repaint_text
@@ -3695,76 +3646,76 @@ _cpu_newaddr:
 	call	prints
 	call	_input
 	cmp	al,1
-	jz	@cpu_newaddr_end
+	jz	@@end
 
 	clr	ebx
 	mov	cl,8
 	mov	edx,offs _fname
 	cmp	bptr [edx],'.'
 	setz	ch
-	jnz	@cpu_newaddr_1
+	jnz	@@1
 	inc	edx
-@cpu_newaddr_1:	cmp	dptr [edx],00584145h		;EAX
-	jz	@cpu_newaddr_reg
+@@1:	cmp	dptr [edx],00584145h		;EAX
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584245h		;EBX
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584345h		;ECX
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584445h		;EDX
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00495345h		;ESI
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00494445h		;EDI
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00504245h		;EBP
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00505345h		;ESP
-	jz	@cpu_newaddr_reg
+	jz	@@reg
 	clr	ebx
 	cmp	dptr [edx],00504945h		;EIP
-	jnz	@cpu_newaddr_loop
+	jnz	@@loop
 	mov	ebx,_eip
-	jmp	@cpu_newaddr_doit
-@cpu_newaddr_reg:	mov	eax,_reg_rtab[ebx*4]
+	jmp	@@doit
+@@reg:	mov	eax,_reg_rtab[ebx*4]
 	mov	ebx,[eax]
-	jmp	@cpu_newaddr_doit
+	jmp	@@doit
 
-@cpu_newaddr_loop:	mov	al,[edx]
+@@loop:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@cpu_newaddr_done
+	jz	@@done
 	sub	al,30h
-	jc	@cpu_newaddr_err
+	jc	@@err
 	cmp	al,9
-	jbe	@cpu_newaddr_m0
+	jbe	@@m0
 	sub	al,7
 	cmp	al,0Fh
-	ja	@cpu_newaddr_err
-@cpu_newaddr_m0:	rol	ebx,4
+	ja	@@err
+@@m0:	rol	ebx,4
 	or	bl,al
 	dec	cl
-	jnz	@cpu_newaddr_loop
-@cpu_newaddr_done:	cmp	cl,8
-	jz	@cpu_newaddr_end
-@cpu_newaddr_doit:	mov	eax,ebx
+	jnz	@@loop
+@@done:	cmp	cl,8
+	jz	@@end
+@@doit:	mov	eax,ebx
 	test	ch,ch
-	jz	@cpu_newaddr_unrl
+	jz	@@unrl
 	mov	dx,wptr _cs
 	call	make_unreloc
-@cpu_newaddr_unrl:	mov	_code_addr,eax
+@@unrl:	mov	_code_addr,eax
 	call	show_cursor
 	mov	_cpu_ypos,1
 	call	show_text_clr
 	call	show_cursor
-@cpu_newaddr_end:	jmp	print_cmdline
-@cpu_newaddr_err:	call	clear_cmdline
+@@end:	jmp	print_cmdline
+@@err:	call	clear_cmdline
 	mov	edx,offs msg58
 	mov	xpos,1
 	mov	ypos,49
@@ -3776,16 +3727,16 @@ _cpu_newaddr:
 
 make_unreloc:
 	clr	ebx
-@make_unreloc_0:	cmp	_obj_selector[ebx*2],0
-	jz	@make_unreloc_err
+@@0:	cmp	_obj_selector[ebx*2],0
+	jz	@@err
 	cmp	dx,_obj_selector[ebx*2]
-	jz	@make_unreloc_1
+	jz	@@1
 	inc	ebx
-	jmp	@make_unreloc_0
-@make_unreloc_1:	add	eax,_obj_address[ebx*4]
+	jmp	@@0
+@@1:	add	eax,_obj_address[ebx*4]
 	clc
 	ret
-@make_unreloc_err:	stc
+@@err:	stc
 	ret
 
 
@@ -3796,16 +3747,16 @@ _cpu_searchnext:
 	call	prints
 	clr	ebx
 	clr	ecx
-@cpu_searchnext_zx:	mov	al,_fname[ebx]
+@@zx:	mov	al,_fname[ebx]
 	test	al,al
-	jz	@cpu_searchnext_zz
+	jz	@@zz
 	cmp	al,9
-	jnz	@cpu_searchnext_zy
+	jnz	@@zy
 	mov	al,20h
-@cpu_searchnext_zy:	call	printc
+@@zy:	call	printc
 	inc	ebx
-	jmp	@cpu_searchnext_zx
-@cpu_searchnext_zz:	xor	eax,eax
+	jmp	@@zx
+@@zz:	xor	eax,eax
 	jmp	_cpu_search_common
 
 _cpu_search:
@@ -3816,9 +3767,9 @@ _cpu_search:
 	call	_inputl
 _cpu_search_common:
 	cmp	al,1
-	jz	@cpu_search_common_end
+	jz	@@end
 	cmp	bptr _fname[0],0
-	jz	@cpu_search_common_end
+	jz	@@end
 	mov	xpos,1
 	mov	edx,offs msg61
 	call	prints
@@ -3827,40 +3778,40 @@ _cpu_search_common:
 	mov	ebx,esi
 	mov	ecx,-1
 	sti
-@cpu_search_common_l00:	mov	eax,ebx
+@@l00:	mov	eax,ebx
 	mov	esi,ebx
 	mov	xpos,23
 	call	printeax
 	call	decode
 	mov	edi,offs _fname
 	mov	edx,offs cmdbuf
-@cpu_search_common_loop:	mov	al,[edx]
+@@loop:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@cpu_search_common_done
+	jz	@@done
 	mov	ah,[edi]
 	inc	edi
 	test	ah,ah
-	jz	@cpu_search_common_done
+	jz	@@done
 	cmp	ah,'*'
-	jz	@cpu_search_common_loop
+	jz	@@loop
 	cmp	al,ah
-	jz	@cpu_search_common_loop
-@cpu_search_common_llll:	cmp	_keytab[1],0
-	jnz	@cpu_search_common_err
+	jz	@@loop
+@@llll:	cmp	_keytab[1],0
+	jnz	@@err
 	mov	ebx,esi
-	loop	@cpu_search_common_l00
-	jmp	@cpu_search_common_err
-@cpu_search_common_done:	cmp	edx,offs cmdbuf+1
-	jz	@cpu_search_common_llll
+	loop	@@l00
+	jmp	@@err
+@@done:	cmp	edx,offs cmdbuf+1
+	jz	@@llll
 	cli
 	mov	_keyhit,0
 	mov	_code_addr,ebx
 	call	show_cursor
 	mov	_cpu_ypos,1
 	call	_cpu_common
-@cpu_search_common_end:	jmp	print_cmdline
-@cpu_search_common_err:	cli
+@@end:	jmp	print_cmdline
+@@err:	cli
 	mov	_keyhit,0
 	call	clear_cmdline
 	mov	edx,offs msg62
@@ -3874,149 +3825,149 @@ _cpu_search_common:
 
 _input:	clr	ebx
 	mov	cl,32
-@input_loop:	mov	al,'_'
+@@loop:	mov	al,'_'
 	call	printc
 	dec	xpos
 	call	get_key
 	cmp	al,1
-	jz	@input_end
-@input_l0x:	mov	al,_keychar
+	jz	@@end
+@@l0x:	mov	al,_keychar
 	cmp	al,80h
-	jae	@input_loop
+	jae	@@loop
 	cmp	al,0Dh
-	jz	@input_load
+	jz	@@load
 	cmp	al,10h
-	jz	@input_l1x
+	jz	@@l1x
 	cmp	al,20h
-	jbe	@input_loop
+	jbe	@@loop
 	cmp	al,'a'
-	jb	@input_next
+	jb	@@next
 	sub	al,20h
-	jmp	@input_next
-@input_l1x:	test	ebx,ebx
-	jz	@input_loop
+	jmp	@@next
+@@l1x:	test	ebx,ebx
+	jz	@@loop
 	dec	ebx
 	inc	cl
 	mov	al,' '
 	call	printc
 	sub	xpos,2
-	jmp	@input_loop
-@input_next:	call	printc
+	jmp	@@loop
+@@next:	call	printc
 	mov	_fname[ebx],al
 	inc	ebx
 	dec	cl
-	jnz	@input_loop
-@input_load:	mov	bptr _fname[ebx],0
+	jnz	@@loop
+@@load:	mov	bptr _fname[ebx],0
 	clr	eax
-@input_end:	ret
+@@end:	ret
 
 _inputl:clr	ebx
 	clr	ecx
-@inputl_zx:	mov	al,_fname[ebx]
+@@zx:	mov	al,_fname[ebx]
 	test	al,al
-	jz	@inputl_zz
+	jz	@@zz
 	cmp	al,9
-	jnz	@inputl_zy
+	jnz	@@zy
 	mov	al,20h
-@inputl_zy:	call	printc
+@@zy:	call	printc
 	inc	ebx
-	jmp	@inputl_zx
-@inputl_zz:	mov	cl,32
+	jmp	@@zx
+@@zz:	mov	cl,32
 	sub	cl,bl
-	jnc	@inputl_loop
+	jnc	@@loop
 	clr	ecx
-@inputl_loop:	mov	al,'_'
+@@loop:	mov	al,'_'
 	call	printc
 	dec	xpos
 	call	get_key
 	cmp	al,1
-	jz	@inputl_end
-@inputl_l0x:	mov	al,_keychar
+	jz	@@end
+@@l0x:	mov	al,_keychar
 	cmp	al,80h
-	jae	@inputl_loop
+	jae	@@loop
 	cmp	al,0Dh
-	jz	@inputl_load
+	jz	@@load
 	cmp	al,10h
-	jz	@inputl_l1x
+	jz	@@l1x
 	cmp	al,0Fh
-	jz	@inputl_nxt
+	jz	@@nxt
 	cmp	al,20h
-	jb	@inputl_loop
-	jmp	@inputl_next
-@inputl_l1x:	test	ebx,ebx
-	jz	@inputl_loop
+	jb	@@loop
+	jmp	@@next
+@@l1x:	test	ebx,ebx
+	jz	@@loop
 	dec	ebx
 	inc	cl
 	mov	al,' '
 	call	printc
 	sub	xpos,2
-	jmp	@inputl_loop
-@inputl_nxt:	mov	al,20h
-@inputl_next:	jecxz	@inputl_load
+	jmp	@@loop
+@@nxt:	mov	al,20h
+@@next:	jecxz	@@load
 	call	printc
 	cmp	al,20h
-	jnz	@inputl_cn
+	jnz	@@cn
 	mov	al,9
-@inputl_cn:	mov	_fname[ebx],al
+@@cn:	mov	_fname[ebx],al
 	inc	ebx
 	dec	cl
-	jnz	@inputl_loop
-@inputl_load:	mov	bptr _fname[ebx],0
+	jnz	@@loop
+@@load:	mov	bptr _fname[ebx],0
 	clr	eax
-@inputl_end:	ret
+@@end:	ret
 
 
 dump_screen:
 	mov	dptr _dumpname[4],'0000'
-@dump_screen_l1:	mov	ax,3DC0h
+@@l1:	mov	ax,3DC0h
 	mov	edx,offs _dumpname
 	int	21h
-	jc	@dump_screen_l2
+	jc	@@l2
 	mov	bx,ax
 	mov	ax,3E00h
 	int	21h
 	inc	bptr _dumpname[7]
 	cmp	bptr _dumpname[7],'9'
-	jbe	@dump_screen_l1
+	jbe	@@l1
 	mov	bptr _dumpname[7],'0'
 	inc	bptr _dumpname[6]
 	cmp	bptr _dumpname[6],'9'
-	jbe	@dump_screen_l1
+	jbe	@@l1
 	mov	bptr _dumpname[6],'0'
 	cli
 	ret
 
-@dump_screen_l2:	mov	ax,3C00h
+@@l2:	mov	ax,3C00h
 	mov	ecx,0000h
 	mov	edx,offs _dumpname
 	int	21h
-	jc	@dump_screen_err
+	jc	@@err
 	push	eax
 	mov	ebx,50
 	mov	esi,0BE000h
 	mov	edi,__buffer
-@dump_screen_l3:	mov	ecx,80
-@dump_screen_l4:	mov	al,[esi]
+@@l3:	mov	ecx,80
+@@l4:	mov	al,[esi]
 	test	al,al
-	jz	@dump_screen_l5
+	jz	@@l5
 	cmp	al,0Ah
-	jz	@dump_screen_l5
+	jz	@@l5
 	cmp	al,0Dh
-	jz	@dump_screen_l5
+	jz	@@l5
 	cmp	al,10h
-	jb	@dump_screen_l51
-	jmp	@dump_screen_l6
-@dump_screen_l5:	mov	al,20h
-	jmp	@dump_screen_l6
-@dump_screen_l51:	mov	al,'.'
-@dump_screen_l6:	mov	[edi],al
+	jb	@@l51
+	jmp	@@l6
+@@l5:	mov	al,20h
+	jmp	@@l6
+@@l51:	mov	al,'.'
+@@l6:	mov	[edi],al
 	add	esi,2
 	add	edi,1
-	loop	@dump_screen_l4
+	loop	@@l4
 	mov	wptr [edi],0A0Dh
 	add	edi,2
 	dec	ebx
-	jnz	@dump_screen_l3
+	jnz	@@l3
 	pop	ebx
 	push	ebx
 	mov	ax,4000h
@@ -4024,10 +3975,10 @@ dump_screen:
 	mov	edx,__buffer
 	int	21h
 	pop	ebx
-	jc	@dump_screen_err
+	jc	@@err
 	mov	ax,3E00h
 	int	21h
-@dump_screen_err:	cli
+@@err:	cli
 	ret
 
 
@@ -4140,16 +4091,16 @@ _mem_right:
 	jmp	_mem_down
 _mem_decsel:
 	dec	_data_override
-	jns	@mem_decsel_l1
+	jns	@@l1
 	mov	_data_override,5
-@mem_decsel_l1:	call	show_data
+@@l1:	call	show_data
 	jmp	show_cursor
 _mem_incsel:
 	inc	_data_override
 	cmp	_data_override,6
-	jb	@mem_incsel_l1
+	jb	@@l1
 	mov	_data_override,0
-@mem_incsel_l1:	call	show_data
+@@l1:	call	show_data
 	jmp	show_cursor
 _mem_fpuregs:
 	call	_cpu_fpuregs
@@ -4161,95 +4112,95 @@ _mem_address:
 	call	prints
 	call	_input
 	cmp	al,1
-	jz	@mem_address_end
+	jz	@@end
 
 	clr	ebx
 	mov	cl,8
 	mov	edx,offs _fname
 	cmp	bptr [edx],'.'
 	setz	ch
-	jnz	@mem_address_1
+	jnz	@@1
 	inc	edx
-@mem_address_1:	cmp	dptr [edx],00584145h		;EAX
-	jz	@mem_address_reg
+@@1:	cmp	dptr [edx],00584145h		;EAX
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584245h		;EBX
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584345h		;ECX
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584445h		;EDX
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00495345h		;ESI
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00494445h		;EDI
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00504245h		;EBP
-	jz	@mem_address_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00505345h		;ESP
-	jz	@mem_address_reg
+	jz	@@reg
 	clr	ebx
 	cmp	dptr [edx],00504945h		;EIP
-	jnz	@mem_address_loop
+	jnz	@@loop
 	mov	ebx,_eip
 	mov	_data_override,1
-	jmp	@mem_address_doit
-@mem_address_reg:	mov	eax,_reg_rtab[ebx*4]
+	jmp	@@doit
+@@reg:	mov	eax,_reg_rtab[ebx*4]
 	mov	ebx,[eax]
-	jmp	@mem_address_doit
+	jmp	@@doit
 
-@mem_address_loop:	mov	al,[edx]
+@@loop:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@mem_address_done
+	jz	@@done
 	sub	al,30h
-	jc	@mem_address_err
+	jc	@@err
 	cmp	al,9
-	jbe	@mem_address_m0
+	jbe	@@m0
 	sub	al,7
 	cmp	al,0Fh
-	ja	@mem_address_err
-@mem_address_m0:	rol	ebx,4
+	ja	@@err
+@@m0:	rol	ebx,4
 	or	bl,al
 	dec	cl
-	jnz	@mem_address_loop
-@mem_address_done:	cmp	cl,8
-	jz	@mem_address_end
-@mem_address_doit:	mov	eax,ebx
+	jnz	@@loop
+@@done:	cmp	cl,8
+	jz	@@end
+@@doit:	mov	eax,ebx
 	test	ch,ch
-	jz	@mem_address_unrl
+	jz	@@unrl
 	mov	bl,_data_override
 	test	bl,bl			; 0 = es
 	mov	dx,wptr _es
-	jz	@mem_address_keen
+	jz	@@keen
 	dec	bl
 	mov	dx,wptr _cs
-	jz	@mem_address_keen
+	jz	@@keen
 	dec	bl
 	mov	dx,wptr _ss
-	jz	@mem_address_keen
+	jz	@@keen
 	dec	bl
 	mov	dx,wptr _ds
-	jz	@mem_address_keen
+	jz	@@keen
 	dec	bl
 	mov	dx,wptr _fs
-	jz	@mem_address_keen
+	jz	@@keen
 	dec	bl
 	mov	dx,wptr _gs
-@mem_address_keen:	call	make_unreloc
-@mem_address_unrl:	mov	_data_addr,eax
+@@keen:	call	make_unreloc
+@@unrl:	mov	_data_addr,eax
 	call	show_cursor
 	mov	_mem_ypos,39
 	mov	_mem_xpos,14
 	call	show_data
 	call	show_cursor
-@mem_address_end:	jmp	print_cmdline
-@mem_address_err:	call	clear_cmdline
+@@end:	jmp	print_cmdline
+@@err:	call	clear_cmdline
 	mov	edx,offs msg58
 	mov	xpos,1
 	mov	ypos,49
@@ -4460,14 +4411,14 @@ _reg_end:
 _reg_incr:
 	mov	ebp,_reg_xptr
 	cmp	ebp,9
-	jb	@reg_incr_l1
+	jb	@@l1
 	mov	eax,_reg_rtab[ebp*4]
 	xor	_efl,eax
 	call	show_cursor
 	call	show_regs
 	call	show_text_clr
 	jmp	show_cursor
-@reg_incr_l1:	mov	eax,_reg_rtab[ebp*4]
+@@l1:	mov	eax,_reg_rtab[ebp*4]
 	inc	dptr [eax]
 	call	show_cursor
 	call	show_regs
@@ -4477,14 +4428,14 @@ _reg_incr:
 _reg_decr:
 	mov	ebp,_reg_xptr
 	cmp	ebp,9
-	jb	@reg_decr_l1
+	jb	@@l1
 	mov	eax,_reg_rtab[ebp*4]
 	xor	_efl,eax
 	call	show_cursor
 	call	show_regs
 	call	show_text_clr
 	jmp	show_cursor
-@reg_decr_l1:	mov	eax,_reg_rtab[ebp*4]
+@@l1:	mov	eax,_reg_rtab[ebp*4]
 	dec	dptr [eax]
 	call	show_cursor
 	call	show_regs
@@ -4494,7 +4445,7 @@ _reg_decr:
 _reg_res:
 	mov	ebp,_reg_xptr
 	cmp	ebp,9
-	jb	@reg_res_l1
+	jb	@@l1
 	mov	eax,_reg_rtab[ebp*4]
 	not	eax
 	and	_efl,eax
@@ -4503,7 +4454,7 @@ _reg_res:
 	call	show_text_clr
 	call	show_data
 	jmp	show_cursor
-@reg_res_l1:	mov	eax,_reg_rtab[ebp*4]
+@@l1:	mov	eax,_reg_rtab[ebp*4]
 	mov	dptr [eax],0
 	call	show_cursor
 	call	show_regs
@@ -4513,14 +4464,14 @@ _reg_res:
 _reg_not:
 	mov	ebp,_reg_xptr
 	cmp	ebp,9
-	jb	@reg_not_l1
+	jb	@@l1
 	mov	eax,_reg_rtab[ebp*4]
 	xor	_efl,eax
 	call	show_cursor
 	call	show_text_clr
 	call	show_regs
 	jmp	show_cursor
-@reg_not_l1:	mov	eax,_reg_rtab[ebp*4]
+@@l1:	mov	eax,_reg_rtab[ebp*4]
 	not	dptr [eax]
 	call	show_cursor
 	call	show_regs
@@ -4540,84 +4491,84 @@ _reg_common:
 _reg_input:
 	mov	ebp,_reg_xptr
 	cmp	ebp,9
-	jb	@reg_input_strt
+	jb	@@strt
 	ret
-@reg_input_strt:	call	clear_cmdline
+@@strt:	call	clear_cmdline
 	mov	xpos,1
 	mov	edx,offs msg55
 	call	prints
 	call	_input
 	cmp	al,1
-	jz	@reg_input_end
+	jz	@@end
 	clr	ebx
 	mov	cl,8
 	mov	edx,offs _fname
 
 	cmp	dptr [edx],00584145h		;EAX
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584245h		;EBX
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584345h		;ECX
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00584445h		;EDX
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00495345h		;ESI
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00494445h		;EDI
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00504245h		;EBP
-	jz	@reg_input_reg
+	jz	@@reg
 	inc	ebx
 	cmp	dptr [edx],00505345h		;ESP
-	jz	@reg_input_reg
+	jz	@@reg
 	clr	ebx
 	cmp	dptr [edx],00504945h		;EIP
-	jnz	@reg_input_loop
+	jnz	@@loop
 	mov	ebx,_eip
-	jmp	@reg_input_doit
-@reg_input_reg:	mov	eax,_reg_rtab[ebx*4]
+	jmp	@@doit
+@@reg:	mov	eax,_reg_rtab[ebx*4]
 	mov	ebx,[eax]
-	jmp	@reg_input_doit
+	jmp	@@doit
 
-@reg_input_loop:	mov	al,[edx]
+@@loop:	mov	al,[edx]
 	inc	edx
 	test	al,al
-	jz	@reg_input_done
+	jz	@@done
 	sub	al,30h
-	jc	@reg_input_err
+	jc	@@err
 	cmp	al,9
-	jbe	@reg_input_m0
+	jbe	@@m0
 	sub	al,7
 	cmp	al,0Fh
-	ja	@reg_input_err
-@reg_input_m0:	rol	ebx,4
+	ja	@@err
+@@m0:	rol	ebx,4
 	or	bl,al
 	dec	cl
-	jnz	@reg_input_loop
-@reg_input_done:	cmp	cl,8
-	jz	@reg_input_end
-@reg_input_doit:	mov	eax,_reg_rtab[ebp*4]
+	jnz	@@loop
+@@done:	cmp	cl,8
+	jz	@@end
+@@doit:	mov	eax,_reg_rtab[ebp*4]
 	mov	dptr [eax],ebx
 	push	ebp
 	call	show_cursor
 	pop	ebp
 	cmp	ebp,8
-	jnz	@reg_input_lll
+	jnz	@@lll
 	mov	eax,_eip
 	mov	_code_addr,eax
 	mov	_cpu_ypos,1
 	call	show_text_clr
-@reg_input_lll:	call	show_regs
+@@lll:	call	show_regs
 	call	show_data
 	call	show_cursor
-@reg_input_end:	jmp	print_cmdline
-@reg_input_err:	call	clear_cmdline
+@@end:	jmp	print_cmdline
+@@err:	call	clear_cmdline
 	mov	edx,offs msg56
 	mov	xpos,1
 	mov	ypos,49
@@ -4646,11 +4597,11 @@ window_switch:
 	add	esp,4
 	call	show_cursor
 	test	_keyshift,01h
-	jz	@window_switch_1
+	jz	@@1
 	dec	_current_window
-	jmp	@window_switch_2
-@window_switch_1:	inc	_current_window
-@window_switch_2:	and	_current_window,3
+	jmp	@@2
+@@1:	inc	_current_window
+@@2:	and	_current_window,3
 _win_switch:
 	call	show_cursor
 	mov	ebp,offs _windowtab
@@ -4673,66 +4624,42 @@ goto_window:
 ;=============================================================================
 	Align 4
 _int00:	cli				; Divide by 0
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	xor	al,al
 	jmp	_exception
 	Align 4
 _int01:	cli				; hardware breakpoint, stepping
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,1
 	jmp	_exception
 	Align 4
 _int03:	cli				; software breakpnt int 3
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,3
 	jmp	_exception
 	Align 4
 _int04:	cli				; Into
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,4
 	jmp	_exception
 	Align 4
 _int05:	cli				; Bound
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,5
 	jmp	_exception
 	Align 4
 _int06:	cli				; Invalid OP
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,6
@@ -4742,22 +4669,18 @@ _int06:	cli				; Invalid OP
 _int09:	push	eax
 	in	al,60h
 	cmp	al,45h
-	jnz	@int09_0
+	jnz	@@0
 	mov	ax,cs
 	cmp	ax,[esp+12]
 	jnz	_interrupted
-@int09_0:	pop	eax
+@@0:	pop	eax
 	push	_old_int9sel
 	push	_old_int9off
 	retf
 _interrupted:
 	pop	eax
 	cli				; Keyboard trap
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,0FFh
@@ -4771,15 +4694,11 @@ _int0A:	cli				; Invalid TSS
 	in	al,20h
 	test	al,al
 	pop	eax
-	jz	@int0A_int
+	jz	@@int
 	push	_old_intAsel
 	push	_old_intAoff
 	retf
-@int0A_int:	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+@@int:	push	es ss ds fs gs
 	pushad
 	call	save_state_err
 	mov	al,10
@@ -4792,15 +4711,11 @@ _int0B:	cli				; Segment not present
 	in	al,20h
 	test	al,al
 	pop	eax
-	jz	@int0B_int
+	jz	@@int
 	push	_old_intBsel
 	push	_old_intBoff
 	retf
-@int0B_int:	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+@@int:	push	es ss ds fs gs
 	pushad
 	call	save_state
 	mov	al,11
@@ -4813,15 +4728,11 @@ _int0C:	cli				; Stack exception
 	in	al,20h
 	test	al,al
 	pop	eax
-	jz	@int0C_int
+	jz	@@int
 	push	_old_intCsel
 	push	_old_intCoff
 	retf
-@int0C_int:	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+@@int:	push	es ss ds fs gs
 	pushad
 	call	save_state_err
 	mov	al,12
@@ -4834,15 +4745,11 @@ _int0D:	cli				; General Protection
 	in	al,20h
 	test	al,al
 	pop	eax
-	jz	@int0D_int
+	jz	@@int
 	push	_old_intDsel
 	push	_old_intDoff
 	retf
-@int0D_int:	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+@@int:	push	es ss ds fs gs
 	pushad
 	call	save_state_err
 	mov	al,13
@@ -4855,17 +4762,17 @@ _int0E:	cli				; Page fault
 	in	al,20h
 	test	al,al
 	pop	eax
-	jz	@int0E_int
+	jz	@@int
 	push	_old_intEsel
 	push	_old_intEoff
 	retf
-@int0E_int:	push	eax
+@@int:	push	eax
 	mov	eax,[esp+8]
 	cmp	eax,offs __safe_load
-	jnz	@int0E_exc
+	jnz	@@exc
 	mov	ax,cs
 	cmp	ax,[esp+12]
-	jnz	@int0E_exc
+	jnz	@@exc
 	pop	eax
 	push	ds
 	mov	ds,cs:__datasel
@@ -4875,12 +4782,8 @@ _int0E:	cli				; Page fault
 	add	dptr [esp],4	; update EIP
 	or	bptr [esp+8],1	; set carry flag
 	iretd
-@int0E_exc:	pop	eax
-	push	es
-	push	ss
-	push	ds
-	push	fs
-	push	gs
+@@exc:	pop	eax
+	push	es ss ds fs gs
 	pushad
 	call	save_state_err
 	mov	al,14
@@ -4889,9 +4792,7 @@ _int0E:	cli				; Page fault
 ;-----------------------------------------------------------------------------
 	Align 4
 _keyboard:				; IRQ 1
-	push	eax
-	push	ebx
-	push	ds
+	push	eax ebx ds
 	mov	ds,cs:__datasel
 	clr	ebx
 	in	al,60h
@@ -4906,13 +4807,13 @@ _keyboard:				; IRQ 1
 	out	20h,al
 	mov	al,bl
 	cmp	al,0E0h
-	jz	@keyboard_exit
+	jz	@@exit
 	mov	_keycode,al
 	btr	ebx,7
 	setnc	al
 	mov	_keytab[ebx],al
 	test	al,al
-	jz	@keyboard_exit
+	jz	@@exit
 	mov	ah,_keytab[2Ah]		; SHIFT
 	or	ah,_keytab[36h]		; SHIFT
 	mov	bh,ah
@@ -4921,7 +4822,7 @@ _keyboard:				; IRQ 1
 	and	ebx,0FFh
 	mov	al,kbxtbl[ebx]
 	test	al,al
-	jz	@keyboard_exit
+	jz	@@exit
 	mov	_keychar,al
 	mov	_keyhit,1
 	mov	al,_keytab[1Dh]		; CONTROL
@@ -4930,13 +4831,11 @@ _keyboard:				; IRQ 1
 	shl	al,1
 	or	al,ah
 	mov	_keyshift,al
-	jmp	@keyboard_done
-@keyboard_exit:	xor	al,al
+	jmp	@@done
+@@exit:	xor	al,al
 	mov	_keychar,al
 	mov	_keyhit,al
-@keyboard_done:	pop	ds
-	pop	ebx
-	pop	eax
+@@done:	pop	ds ebx eax
 	iretd
 
 ;-----------------------------------------------------------------------------
@@ -4947,7 +4846,7 @@ _exception:			; EXCEPTION entry: activated by INTs 0..14
 	call	video_init		; initialize video (if necessary)
 	call	show_text_clr
 	cmp	_cpu_xptr,0
-	jnz	@exception_l1
+	jnz	@@l1
 	mov	eax,_eip
 	mov	_code_addr,eax
 	mov	_cpu_ypos,1
@@ -4957,13 +4856,13 @@ _exception:			; EXCEPTION entry: activated by INTs 0..14
 	mov	edi,1
 	call	clearwindow
 	call	show_text
-	jmp	@exception_l2
-@exception_l1:	mov	eax,_cpu_xptr
+	jmp	@@l2
+@@l1:	mov	eax,_cpu_xptr
 	mov	_cpu_ypos,eax
 	dec	eax
 	mov	esi,_addrbuffer[eax*4]
 	call	decode
-@exception_l2:	mov	ebx,30
+@@l2:	mov	ebx,30
 	mov	ecx,17
 	mov	esi,62
 	mov	edi,1
@@ -4975,11 +4874,11 @@ _exception:			; EXCEPTION entry: activated by INTs 0..14
 	call	screen_on
 	pop	eax
 	cmp	al,1
-	jz	@exception_l3
+	jz	@@l3
 	call	print_errline
 	call	beep
 	call	get_key
-@exception_l3:	call	print_cmdline
+@@l3:	call	print_cmdline
 	jmp	_cpu_window
 
 ;-----------------------------------------------------------------------------
@@ -4987,19 +4886,8 @@ _exception:			; EXCEPTION entry: activated by INTs 0..14
 save_state_err:
 	pop	ebp
 	mov	ds,cs:__datasel		; load data selectors
-	pop	_edi
-	pop	_esi
-	pop	_ebp
-	pop	_esp
-	pop	_ebx
-	pop	_edx
-	pop	_ecx
-	pop	_eax
-	pop	_gs	; copy registers into structure
-	pop	_fs
-	pop	_ds
-	pop	_ss
-	pop	_es
+	pop	_edi _esi _ebp _esp _ebx _edx _ecx _eax
+	pop	_gs _fs _ds _ss _es	; copy registers into structure
 	pop	_errorcode		; remove errorcode from stack
 	mov	_old_stack,esp		; save program's stack pointer
 	jmp	_save_common
@@ -5007,19 +4895,8 @@ save_state_err:
 save_state:
 	pop	ebp			; pop caller
 	mov	ds,cs:__datasel		; load data selectors
-	pop	_edi
-	pop	_esi
-	pop	_ebp
-	pop	_esp
-	pop	_ebx
-	pop	_edx
-	pop	_ecx
-	pop	_eax
-	pop	_gs	; copy registers into structure
-	pop	_fs
-	pop	_ds
-	pop	_ss
-	pop	_es
+	pop	_edi _esi _ebp _esp _ebx _edx _ecx _eax
+	pop	_gs _fs _ds _ss _es	; copy registers into structure
 	mov	_old_stack,esp		; save program's stack pointer
 _save_common:
 	cld
@@ -5139,15 +5016,15 @@ restore_state:
 ;-----------------------------------------------------------------------------
 video_init:
 	cmp	old_video_mode,0
-	jz	@video_init_l0
+	jz	@@l0
 	call	show_regs
 	call	show_data
 	jmp	show_mode
-@video_init_l0:	mov	eax,0BE000h
+@@l0:	mov	eax,0BE000h
 	mov	screen_base,eax
 
 	cmp	_vgastate_set,0
-	jz	@video_init_novg
+	jz	@@novg
 	push	es			; save VGA state
 	mov	ax,1C01h
 	mov	es,__datasel
@@ -5161,8 +5038,8 @@ video_init:
 	cli
 	pop	es
 
-@video_init_novg:	cmp	_svgastate_set,0
-	jz	@video_init_nosv
+@@novg:	cmp	_svgastate_set,0
+	jz	@@nosv
 	push	es			; save VESA state
 	mov	ax,4F04h
 	mov	es,__datasel
@@ -5178,13 +5055,13 @@ video_init:
 	cli
 	pop	es
 
-@video_init_nosv:	call	screen_off
+@@nosv:	call	screen_off
 	mov	ax,4F03h		; get VGA/VESA mode
 	int	10h
 	cli
 	mov	old_video_mode,bx
 	and	bh,7Fh			; clear high bit of BX
-	jz	@video_init_l1			; if only VGA, no need in bank
+	jz	@@l1			; if only VGA, no need in bank
 	mov	ax,4F05h
 	mov	bx,0100h
 	int	10h			; get VESA bank
@@ -5196,20 +5073,20 @@ video_init:
 	int	10h
 	cli
 
-@video_init_l1:	mov	ax,old_video_mode
+@@l1:	mov	ax,old_video_mode
 	mov	bx,8000h
 	and	ah,7Fh			; clear high bit of AX
-	jnz	@video_init_l2			; if VESA, certainly graphics mode
+	jnz	@@l2			; if VESA, certainly graphics mode
 	mov	bx,0080h
 
 	and	al,7Fh
 	cmp	al,08h
 	mov	esi,0B8000h		; Text modes seg
 	mov	ecx,800h
-	jbe	@video_init_m1
-@video_init_l2:	mov	esi,0A0000h		; Graphics modes seg
+	jbe	@@m1
+@@l2:	mov	esi,0A0000h		; Graphics modes seg
 	mov	ecx,4000h
-@video_init_m1:	or	old_video_mode,bx
+@@m1:	or	old_video_mode,bx
 	mov	edi,_system_block
 	cld
 	;shl	ecx,2
@@ -5221,7 +5098,7 @@ video_init:
 	mov	dx,03C9h
 	rep	insb		; block read dac registers
 
-@video_init___1:	clr	ebx
+@@__1:	clr	ebx
 	mov	ax,0300h
 	int	10h			; get DOS cursor position
 	cli
@@ -5264,17 +5141,17 @@ restore_video:
 	push	eax
 	mov	ebx,eax
 	and	ah,7Fh
-	jnz	@restore_video_l1			; it is VESA mode
+	jnz	@@l1			; it is VESA mode
 	and	bl,7Fh			; if mode > 03h, don't clear screen
 	cmp	bl,03h
-	ja	@restore_video_0
+	ja	@@0
 	and	al,7Fh
-@restore_video_0:	xor	ah,ah
+@@0:	xor	ah,ah
 	int	10h
 	cli
-	jmp	@restore_video_l2
+	jmp	@@l2
 
-@restore_video_l1:	mov	ax,4F02h
+@@l1:	mov	ax,4F02h
 	int	10h
 	cli
 	mov	ax,4F05h		; set proper vesa bank
@@ -5284,7 +5161,7 @@ restore_video:
 	int	10h
 	cli
 	cmp	_svgastate_set,0
-	jz	@restore_video_nosv
+	jz	@@nosv
 	push	es			; restore VESA state
 	mov	ax,4F04h
 	mov	es,__datasel
@@ -5294,11 +5171,11 @@ restore_video:
 	int	10h
 	cli
 	pop	es
-	jmp	@restore_video_novg
+	jmp	@@novg
 
-@restore_video_nosv:
-@restore_video_l2:	cmp	_vgastate_set,0
-	jz	@restore_video_novg
+@@nosv:
+@@l2:	cmp	_vgastate_set,0
+	jz	@@novg
 	push	es			; restore VGA state
 	mov	ax,1C02h
 	mov	es,__datasel
@@ -5308,22 +5185,22 @@ restore_video:
 	cli
 	pop	es
 
-@restore_video_novg:	clr	ebx
+@@novg:	clr	ebx
 	mov	ax,0200h
 	mov	dx,old_video_pos
 	int	10h
 	cli
 	pop	eax
 	and	ah,7Fh
-	jnz	@restore_video_l3
+	jnz	@@l3
 	and	al,7Fh			; mask bit 7 in al
 	cmp	al,08h
 	mov	edi,0B8000h
 	mov	ecx,800h
-	jb	@restore_video_m1
-@restore_video_l3:	mov	edi,0A0000h
+	jb	@@m1
+@@l3:	mov	edi,0A0000h
 	mov	ecx,4000h
-@restore_video_m1:	mov	esi,_system_block
+@@m1:	mov	esi,_system_block
 	cld
 	;shl	ecx,2
 	rep	movsd

@@ -40,8 +40,9 @@
 #include "main.h"
 
 
-int main(int argc, char *argv[])
+void main(int argc, char *argv[])
 {
+	int n;
 
 	memset(startdir,0,sizeof(startdir));
 	memset(cfgfilename,0,sizeof(cfgfilename));
@@ -235,7 +236,6 @@ l2:	  printf("%s syntax is SS <execname.xxx> [config.d32 | command] [option]\n\n
 void ShowCopyright(int argc, char *argv[])
 {
 	char buf[80];
-	(void)argc;
 	DrawBackground();
 	SetColor(YELLOW);
 	SetBackColor(BLUE);
@@ -691,6 +691,7 @@ void ShowEnvInfo()
 
 void ShowHelp(int menu, int header)
 {
+	char c;
 	SetColor(LIGHTWHITE);
 	SetBackColor(GREEN);
 	DrawWindow(18,1,5,76);

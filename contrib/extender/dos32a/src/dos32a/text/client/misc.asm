@@ -820,11 +820,8 @@ try_open_self_legacy:
 @try_self_close:
 	call	close_exec
 @try_self_not_bound:
-If DOS32A_BOUND_STUB ne 0
-	; Bound stub on DOS < 3.0: scan COMMAND.COM memory for the launched .EXE
 	call	find_bound_self_in_ram
 	jnc	@try_self_ok
-Endif
 	pop	es
 	pop	ds
 	stc
@@ -835,12 +832,6 @@ Endif
 	clc
 	ret
 
-If DOS32A_BOUND_STUB ne 0
-;-----------------------------------------------------------------------------
-; find_bound_self_in_ram: Locate bound .EXE path on MS-DOS 1.25 & 2.00
-;   - DOS 1.25: scans COMMAND.COM FCBs below PSP ([00700h..PSP<<4]) for [drv,8,'EXE']
-;   - DOS 2.00: scans COMMAND.COM EXEC path buffers ([00700h..9FFF0h]) for "*.EXE\0"
-;
 find_bound_self_in_ram:
 	cmp	_dos_ver_major,2
 	jae	@find_bound_dos2
@@ -1104,7 +1095,6 @@ find_bound_self_in_ram:
 	xor	al,al
 	stc
 	ret
-Endif
 Endif
 
 

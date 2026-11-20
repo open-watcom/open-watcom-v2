@@ -38,7 +38,6 @@
  */
 
 #include <dos.h>
-#include <io.h>
 #include <math.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -60,37 +59,5 @@ extern	int get_extender_type(void);
 extern	int unbind_exec(void);
 extern	int bind_exec(int, int, int, int);
 extern	char *find_oem_info(void);
-
-void ArgInit(int argc, char *argv[]);
-void UnbindExec(char *argv[]);
-void BindExec(char *argv[]);
-void Print(char *format, ...);
-void CheckIfExists(char *name);
-int GetFileSize(char *name);
-void copy_file(char *f1, char *f2);
-void DisplayOEMInfo(void);
-void err_open(char *str);
-void err_rdonly(char *str);
-void err_seek(char *str);
-void err_read(char *str);
-void err_support(char *str);
-void err_dest(char *str);
-void err_mem(char *str);
-void err_crtmp(void);
-void err_wrtmp(void);
-void err_rdstub(void);
-void err_invstub(void);
-void err_nod32a(void);
-void err_nostub(char *str);
-void err_arg(char *str);
-void err_sameact(void);
-void err_nullname(void);
-void err_environment(void);
-void ShowCopyright(void);
-void OpenExec(char *argv[]);
-int GetExecType(char *argv[]);
-int FindExecType(char *argv[]);
-int GetExtenderType(char *argv[]);
-void CheckEnvironment(void);
 
 extern	short exec_handle;

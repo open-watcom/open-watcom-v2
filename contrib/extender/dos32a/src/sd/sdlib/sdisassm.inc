@@ -39,12 +39,7 @@
 
 .CODE
 
-decode:	push	eax
-	push	ebx
-	push	ecx
-	push	edx
-	push	edi
-	push	ebp
+decode:	push	eax ebx ecx edx edi ebp
 
 	mov	eax,20202020h		; clear text buffers
 	mov	ecx,20
@@ -70,113 +65,93 @@ decode:	push	eax
 	mov	eax,esi			; print eff. address
 	mov	edi,textadr
 	cmp	_show_unreloc,0
-	jz	@decode_1
+	jz	@@1
 	call	show_unreloc_addr
-	jc	@decode_1
-	jmp	@decode_4
-@decode_1:	cmp	_adrsiz,0
-	jz	@decode_2
+	jc	@@1
+	jmp	@@4
+@@1:	cmp	_adrsiz,0
+	jz	@@2
 	mov	dptr [edi],':sc '
 	add	textadr,4
 	call	text_makehexax
-	jmp	@decode_3
-@decode_2:	call	text_makehexeax
-@decode_3:	inc	textadr			; add one space
+	jmp	@@3
+@@2:	call	text_makehexeax
+@@3:	inc	textadr			; add one space
 
-@decode_4:	call	put_textal		; get first byte (op-code)
+@@4:	call	put_textal		; get first byte (op-code)
 	movzx	ebx,al
 	shr	ebx,4			; ebx = 0F0h masked opcode (group)
 	mov	edi,cmdadr
 	call	_grouptab[ebx*4]	; goto choosen group
 	mov	bptr [edi],0
 	call	merge_text
-	pop	ebp
-	pop	edi
-	pop	edx
-	pop	ecx
-	pop	ebx
-	pop	eax
+	pop	ebp edi edx ecx ebx eax
 _empty:	ret
 
-decode2:push	eax
-	push	ebx
-	push	ecx
-	push	edx
+decode2:push	eax ebx ecx edx
 	call	put_textal		; get first byte (op-code)
 	movzx	ebx,al
 	shr	ebx,4			; ebx = 0F0h masked opcode (group)
 	call	_grouptab[ebx*4]	; goto choosen group
-	pop	edx
-	pop	ecx
-	pop	ebx
-	pop	eax
+	pop	edx ecx ebx eax
 	ret
 
 show_unreloc_addr:
 	clr	ebx
 	mov	dx,wptr _cs
-@show_unreloc_addr_0:	cmp	_obj_selector[ebx*2],0
-	jz	@show_unreloc_addr_err
+@@0:	cmp	_obj_selector[ebx*2],0
+	jz	@@err
 	cmp	dx,_obj_selector[ebx*2]
-	jz	@show_unreloc_addr_1
+	jz	@@1
 	inc	ebx
-	jmp	@show_unreloc_addr_0
-@show_unreloc_addr_1:	sub	eax,_obj_address[ebx*4]
+	jmp	@@0
+@@1:	sub	eax,_obj_address[ebx*4]
 	call	text_makehexeax
 	lea	eax,[ebx+1]
 	and	eax,3Fh
 	cmp	eax,09h
 	lea	eax,[eax+30h]
-	jbe	@show_unreloc_addr_2
+	jbe	@@2
 	lea	eax,[eax+07h]
-@show_unreloc_addr_2:	mov	ah,':'
+@@2:	mov	ah,':'
 	mov	[edi],ax
 	inc	textadr			; add one space
 	clc
 	ret
-@show_unreloc_addr_err:	stc
+@@err:	stc
 	ret
 
 
 ;=============================================================================
 makehexal:
-	push	ecx
-	push	esi
-	push	edi
+	push	ecx esi edi
 	mov	edi,offs hexbuf
 	call	makehex
 	lea	esi,[edi+6]
 	mov	ecx,2
 	pop	edi
 	rep	movsb
-	pop	esi
-	pop	ecx
+	pop	esi ecx
 	ret
 makehexax:
-	push	ecx
-	push	esi
-	push	edi
+	push	ecx esi edi
 	mov	edi,offs hexbuf
 	call	makehex
 	lea	esi,[edi+4]
 	mov	ecx,4
 	pop	edi
 	rep	movsb
-	pop	esi
-	pop	ecx
+	pop	esi ecx
 	ret
 makehexeax:
-	push	ecx
-	push	esi
-	push	edi
+	push	ecx esi edi
 	mov	edi,offs hexbuf
 	call	makehex
 	mov	esi,edi
 	mov	ecx,8
 	pop	edi
 	rep	movsb
-	pop	esi
-	pop	ecx
+	pop	esi ecx
 	ret
 makehexword:
 	test	ax,0FF00h
@@ -210,9 +185,9 @@ text_makehexeax:
 put_textal:
 	call	load_byte
 	cmp	_showmode_flag,0
-	jnz	@put_textal_done
+	jnz	@@done
 	call	text_makehexal
-@put_textal_done:	inc	esi
+@@done:	inc	esi
 	ret
 put_textax:
 	inc	esi
@@ -221,11 +196,11 @@ put_textax:
 	mov	ah,al
 	call	load_byte
 	cmp	_showmode_flag,0
-	jnz	@put_textax_done
+	jnz	@@done
 	xchg	ah,al
 	call	text_makehexax
 	xchg	ah,al
-@put_textax_done:	add	esi,2
+@@done:	add	esi,2
 	ret
 put_texteax:
 	add	esi,3
@@ -240,11 +215,11 @@ put_texteax:
 	shl	eax,8
 	call	load_byte
 	cmp	_showmode_flag,0
-	jnz	@put_texteax_done
+	jnz	@@done
 	call	@bswap		;bswap	eax
 	call	text_makehexeax
 	call	@bswap		;bswap	eax
-@put_texteax_done:	add	esi,4
+@@done:	add	esi,4
 	ret
 @bswap:	push	edx
 	ror	eax,16
@@ -260,48 +235,40 @@ put_texteax:
 	ret
 
 put_commaddr:
-	push	eax
-	push	ebx
-	push	edi
+	push	eax ebx edi
 	mov	edi,commadr
 	movzx	ebx,_prefix
 	cmp	bl,3			; if prefix is not DS
-	jnz	@put_commaddr_0			; then do not check for SS
+	jnz	@@0			; then do not check for SS
 	cmp	_prefix_esp,0
-	jz	@put_commaddr_0
+	jz	@@0
 	mov	bl,02h			; SS:[ xxx ]
-@put_commaddr_0:	lea	edx,_segtab86[ebx*4]
+@@0:	lea	edx,_segtab86[ebx*4]
 	call	put_string
 	call	put_colon
 	cmp	_adrsiz,0
-	jz	@put_commaddr_l1
+	jz	@@l1
 	movzx	eax,ax
 	call	makehexax
-	jmp	@put_commaddr_l2
-@put_commaddr_l1:	call	makehexeax
-@put_commaddr_l2:	mov	_refaddr,eax
+	jmp	@@l2
+@@l1:	call	makehexeax
+@@l2:	mov	_refaddr,eax
 	mov	dptr [edi],'  = '
 	add	edi,3
 	mov	commadr,edi
 	mov	_refshow,1
-	pop	edi
-	pop	ebx
-	pop	eax
+	pop	edi ebx eax
 	ret
 put_memx_err:
 	call	put_string
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
+	pop	edi esi eax
 	ret
 put_memb:
 	cmp	_refshow,0
-	jz	@put_memb_done
-	push	eax
-	push	esi
-	push	edi
+	jz	@@done
+	push	eax esi edi
 	mov	esi,_refaddr
 	mov	edi,commadr
 	mov	edx,offs err_addr_b
@@ -310,16 +277,12 @@ put_memb:
 	call	makehexal
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
-@put_memb_done:	ret
+	pop	edi esi eax
+@@done:	ret
 put_memw:
 	cmp	_refshow,0
-	jz	@put_memw_done
-	push	eax
-	push	esi
-	push	edi
+	jz	@@done
+	push	eax esi edi
 	mov	esi,_refaddr
 	mov	edi,commadr
 	mov	edx,offs err_addr_w
@@ -333,16 +296,12 @@ put_memw:
 	call	makehexax
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
-@put_memw_done:	ret
+	pop	edi esi eax
+@@done:	ret
 put_memd:
 	cmp	_refshow,0
-	jz	@put_memd_done
-	push	eax
-	push	esi
-	push	edi
+	jz	@@done
+	push	eax esi edi
 	mov	esi,_refaddr
 	mov	edi,commadr
 	mov	edx,offs err_addr_d
@@ -364,16 +323,12 @@ put_memd:
 	call	makehexeax
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
-@put_memd_done:	ret
+	pop	edi esi eax
+@@done:	ret
 put_memfw:
 	cmp	_refshow,0
-	jz	@put_memfw_done
-	push	eax
-	push	esi
-	push	edi
+	jz	@@done
+	push	eax esi edi
 	mov	esi,_refaddr
 	mov	edi,commadr
 	mov	edx,offs err_addr_f2
@@ -399,16 +354,12 @@ put_memfw:
 	call	makehexax
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
-@put_memfw_done:	ret
+	pop	edi esi eax
+@@done:	ret
 put_memfd:
 	cmp	_refshow,0
-	jz	@put_memfd_done
-	push	eax
-	push	esi
-	push	edi
+	jz	@@done
+	push	eax esi edi
 	mov	esi,_refaddr
 	mov	edi,commadr
 	mov	edx,offs err_addr_f
@@ -442,10 +393,8 @@ put_memfd:
 	call	makehexeax
 	mov	commadr,edi
 	mov	wptr [edi],0068h
-	pop	edi
-	pop	esi
-	pop	eax
-@put_memfd_done:	ret
+	pop	edi esi eax
+@@done:	ret
 put_adrmemb:
 	call	put_commaddr
 	jmp	put_memb
@@ -465,15 +414,15 @@ __safe_load:
 load_byte:
 	push	esi
 	cmp	_cs_limit,-1
-	jz	@load_byte_l1
+	jz	@@l1
 	cmp	esi,_cs_limit
-	ja	@load_byte_l2
-@load_byte_l1:	add	esi,_cs_base
+	ja	@@l2
+@@l1:	add	esi,_cs_base
 	xor	al,al
 	call	__safe_load
 	pop	esi
 	ret
-@load_byte_l2:	xor	al,al
+@@l2:	xor	al,al
 	pop	esi
 	ret
 	Align 4
@@ -481,9 +430,9 @@ get_code_byte:
 	push	esi
 	movzx	ebx,_prefix
 	cmp	_prefix_esp,0
-	jz	@get_code_byte_0
+	jz	@@0
 	mov	bl,02h
-@get_code_byte_0:	jmp	_data_byte_tab[ebx*4]
+@@0:	jmp	_data_byte_tab[ebx*4]
 	Align 4
 get_data_byte:
 	push	esi
@@ -507,20 +456,20 @@ _get_data_byte_es:
 	cmp	wptr _es,0
 	jz	_get_byte_err
 	cmp	_es_limit,-1
-	jz	@get_data_byte_es_l1
+	jz	@@l1
 	cmp	esi,_es_limit
 	ja	_get_byte_err
-@get_data_byte_es_l1:	add	esi,_es_base
+@@l1:	add	esi,_es_base
 	jmp	_get_byte_safe
 	Align 4
 _get_data_byte_cs:
 	cmp	wptr _cs,0
 	jz	_get_byte_err
 	cmp	_cs_limit,-1
-	jz	@get_data_byte_cs_l1
+	jz	@@l1
 	cmp	esi,_cs_limit
 	ja	_get_byte_err
-@get_data_byte_cs_l1:	add	esi,_cs_base
+@@l1:	add	esi,_cs_base
 	jmp	_get_byte_safe
 get_stack_byte:
 	push	esi
@@ -529,40 +478,40 @@ _get_data_byte_ss:
 	cmp	wptr _ss,0
 	jz	_get_byte_err
 	cmp	_ss_limit,-1
-	je	@get_data_byte_ss_l1
+	je	@@l1
 	cmp	esi,_ss_limit
 	ja	_get_byte_err
-@get_data_byte_ss_l1:	add	esi,_ss_base
+@@l1:	add	esi,_ss_base
 	jmp	_get_byte_safe
 	Align 4
 _get_data_byte_ds:
 	cmp	wptr _ds,0
 	jz	_get_byte_err
 	cmp	_ds_limit,-1
-	je	@get_data_byte_ds_l1
+	je	@@l1
 	cmp	esi,_ds_limit
 	ja	_get_byte_err
-@get_data_byte_ds_l1:	add	esi,_ds_base
+@@l1:	add	esi,_ds_base
 	jmp	_get_byte_safe
 	Align 4
 _get_data_byte_fs:
 	cmp	wptr _fs,0
 	jz	_get_byte_err
 	cmp	_fs_limit,-1
-	je	@get_data_byte_fs_l1
+	je	@@l1
 	cmp	esi,_fs_limit
 	ja	_get_byte_err
-@get_data_byte_fs_l1:	add	esi,_fs_base
+@@l1:	add	esi,_fs_base
 	jmp	_get_byte_safe
 	Align 4
 _get_data_byte_gs:
 	cmp	wptr _gs,0
 	jz	_get_byte_err
 	cmp	_gs_limit,-1
-	je	@get_data_byte_gs_l1
+	je	@@l1
 	cmp	esi,_gs_limit
 	ja	_get_byte_err
-@get_data_byte_gs_l1:	add	esi,_gs_base
+@@l1:	add	esi,_gs_base
 	jmp	_get_byte_safe
 
 put_comma:
@@ -605,40 +554,40 @@ put_cl:	mov	wptr [edi],'lc'
 	ret
 put_prefix:
 	cmp	_prefix,03h
-	jnz	@put_prefix_l0
+	jnz	@@l0
 	ret
-@put_prefix_l0:	movzx	ebx,_prefix
+@@l0:	movzx	ebx,_prefix
 	lea	edx,_segtab86[ebx*4]
 	call	put_string
 	jmp	put_colon
 make_indexah:
 	cmp	ah,0
-	jnz	@make_indexah_l0
+	jnz	@@l0
 	mov	ah,'1'
-	jmp	@make_indexah_done
-@make_indexah_l0:	cmp	ah,1
-	jnz	@make_indexah_l1
+	jmp	@@done
+@@l0:	cmp	ah,1
+	jnz	@@l1
 	mov	ah,'2'
-	jmp	@make_indexah_done
-@make_indexah_l1:	cmp	ah,2
-	jnz	@make_indexah_l2
+	jmp	@@done
+@@l1:	cmp	ah,2
+	jnz	@@l2
 	mov	ah,'4'
-	jmp	@make_indexah_done
-@make_indexah_l2:	mov	ah,'8'
-@make_indexah_done:	mov	al,'*'
+	jmp	@@done
+@@l2:	mov	ah,'8'
+@@done:	mov	al,'*'
 	mov	[edi],ax
 	add	edi,2
 	ret
 put_string:
 	push	eax
-@put_string_loop:	mov	al,[edx]
+@@loop:	mov	al,[edx]
 	test	al,al
-	jz	@put_string_done
+	jz	@@done
 	mov	[edi],al
 	inc	edx
 	inc	edi
-	jmp	@put_string_loop
-@put_string_done:	pop	eax
+	jmp	@@loop
+@@done:	pop	eax
 	ret
 
 merge_text:
@@ -646,41 +595,41 @@ merge_text:
 	clr	ebx
 	cmp	_showmode_flag,0
 	mov	bl,24
-	jz	@merge_text_l1
+	jz	@@l1
 	mov	bl,9
-@merge_text_l1:	mov	esi,offs cmdbuf
+@@l1:	mov	esi,offs cmdbuf
 	mov	edi,offs textbuf
 	cmp	bptr [edi+ebx],20h
-	jz	@merge_text_loop
+	jz	@@loop
 	mov	bptr [edi+ebx-1],0AFh
-@merge_text_loop:	mov	al,[esi]
+@@loop:	mov	al,[esi]
 	inc	esi
 	test	al,al
-	jz	@merge_text_done
+	jz	@@done
 	cmp	al,09h
-	jz	@merge_text_tab
+	jz	@@tab
 	mov	[edi+ebx],al
 	inc	ebx
 	cmp	ebx,60
-	jb	@merge_text_loop
+	jb	@@loop
 	mov	wptr [edi+ebx-1],00AFh
 	popad
 	ret
-@merge_text_tab:	mov	ecx,ebx
+@@tab:	mov	ecx,ebx
 	not	ecx
 	and	ecx,07h
-@merge_text_ltab:	mov	bptr [edi+ebx],20h
+@@ltab:	mov	bptr [edi+ebx],20h
 	inc	ebx
-	jecxz	@merge_text_loop
-	loop	@merge_text_ltab
-	jmp	@merge_text_loop
-@merge_text_done:	mov	[edi+ebx],al
+	jecxz	@@loop
+	loop	@@ltab
+	jmp	@@loop
+@@done:	mov	[edi+ebx],al
 
 	cmp	_commmode_flag,0
-	jz	@merge_text_xxxx
+	jz	@@xxxx
 	mov	esi,offs commbuf
 	cmp	byte ptr [esi],20h
-	jz	@merge_text_xxxx
+	jz	@@xxxx
 	mov	byte ptr [edi+ebx],20h
 
 	push	edi
@@ -692,22 +641,22 @@ merge_text:
 	pop	edi
 	mov	ecx,59
 	sub	ecx,ebx
-	jbe	@merge_text_xxxx
+	jbe	@@xxxx
 	mov	ebx,59
-@merge_text_1:	mov	al,[esi]
+@@1:	mov	al,[esi]
 	dec	esi
 	test	al,al
-	jz	@merge_text_2
+	jz	@@2
 	cmp	al,20h
-	jz	@merge_text_1
+	jz	@@1
 	mov	[edi+ebx],al
 	dec	ebx
-	loop	@merge_text_1
-@merge_text_2:	cmp	esi,offs commbuf-1
-	jbe	@merge_text_xxxx
+	loop	@@1
+@@2:	cmp	esi,offs commbuf-1
+	jbe	@@xxxx
 	mov	byte ptr [edi+ebx],0AEh
 
-@merge_text_xxxx:	mov	edi,offs textbuf
+@@xxxx:	mov	edi,offs textbuf
 	mov	byte ptr [edi+60],0
 	popad
 	ret
@@ -1018,13 +967,13 @@ _type_esc0:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc0_mod3
+	jz	@@mod3
 	mov	edx,_esc0tab0[ebx*4]
 	call	put_string
 	call	put_tab
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc0_mod3:	mov	edx,_esc0tab1[ebx*4]
+@@mod3:	mov	edx,_esc0tab1[ebx*4]
 	call	put_string
 	call	put_tab
 	mov	edx,offs _fpureg
@@ -1039,21 +988,21 @@ _type_esc1:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc1_mod3
+	jz	@@mod3
 	mov	edx,_esc1tab0[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
 	call	put_tab
 	cmp	ch,5
-	jz	@type_esc1_l0
+	jz	@@l0
 	cmp	ch,7
-	jz	@type_esc1_l0
+	jz	@@l0
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc1_l0:	call	decode_by_mod
+@@l0:	call	decode_by_mod
 	jmp	put_memw
-@type_esc1_mod3:	movzx	eax,cl
+@@mod3:	movzx	eax,cl
 	shl	eax,3
 	add	ebx,eax
 	mov	edx,_esc1tab1[ebx*4]
@@ -1061,9 +1010,9 @@ _type_esc1:
 	jz	_escape
 	call	put_string
 	cmp	ch,1
-	jbe	@type_esc1_l1
+	jbe	@@l1
 	ret
-@type_esc1_l1:	call	put_tab
+@@l1:	call	put_tab
 	movzx	ebx,cl
 	lea	edx,_fputab87[ebx*8]
 	jmp	put_string
@@ -1073,13 +1022,13 @@ _type_esc2:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc2_mod3
+	jz	@@mod3
 	mov	edx,_esc2tab0[ebx*4]
 	call	put_string
 	call	put_tab
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc2_mod3:	mov	edx,_esc2tab1[ebx*4]
+@@mod3:	mov	edx,_esc2tab1[ebx*4]
 	test	edx,edx
 	jz	_escape
 	jmp	put_string
@@ -1089,21 +1038,21 @@ _type_esc3:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc3_mod3
+	jz	@@mod3
 	mov	edx,_esc3tab0[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
 	call	put_tab
 	cmp	ch,3
-	ja	@type_esc3_l1
+	ja	@@l1
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc3_l1:	mov	edx,offs _text_temp
+@@l1:	mov	edx,offs _text_temp
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc3_mod3:	cmp	ch,4
+@@mod3:	cmp	ch,4
 	jnz	_escape
 	movzx	ebx,cl
 	mov	edx,_esc3tab1[ebx*4]
@@ -1116,7 +1065,7 @@ _type_esc4:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc4_mod3
+	jz	@@mod3
 	mov	edx,_esc4tab0[ebx*4]
 	call	put_string
 	call	put_tab
@@ -1124,7 +1073,7 @@ _type_esc4:
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc4_mod3:	mov	edx,_esc4tab1[ebx*4]
+@@mod3:	mov	edx,_esc4tab1[ebx*4]
 	call	put_string
 	call	put_tab
 	movzx	ebx,cl
@@ -1139,25 +1088,25 @@ _type_esc5:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc5_mod3
+	jz	@@mod3
 	mov	edx,_esc5tab0[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
 	call	put_tab
 	cmp	ch,4
-	jz	@type_esc5_l1
+	jz	@@l1
 	cmp	ch,6
-	jz	@type_esc5_l1
+	jz	@@l1
 	cmp	ch,7
-	jz	@type_esc5_l2
+	jz	@@l2
 	mov	edx,offs _text_long
 	call	put_string
-@type_esc5_l1:	call	decode_by_mod
+@@l1:	call	decode_by_mod
 	jmp	put_memd
-@type_esc5_l2:	call	decode_by_mod
+@@l2:	call	decode_by_mod
 	jmp	put_memw
-@type_esc5_mod3:	mov	edx,_esc5tab1[ebx*4]
+@@mod3:	mov	edx,_esc5tab1[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
@@ -1171,7 +1120,7 @@ _type_esc6:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc6_mod3
+	jz	@@mod3
 	mov	edx,_esc6tab0[ebx*4]
 	call	put_string
 	call	put_tab
@@ -1179,7 +1128,7 @@ _type_esc6:
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memw
-@type_esc6_mod3:	mov	edx,_esc6tab1[ebx*4]
+@@mod3:	mov	edx,_esc6tab1[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
@@ -1196,31 +1145,31 @@ _type_esc7:
 	call	decode_mode
 	movzx	ebx,ch
 	cmp	ah,3
-	jz	@type_esc7_mod3
+	jz	@@mod3
 	mov	edx,_esc7tab0[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
 	call	put_tab
 	cmp	ch,3
-	ja	@type_esc7_l1
+	ja	@@l1
 	mov	edx,offs _text_short
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memw
-@type_esc7_l1:	cmp	ch,4
-	jz	@type_esc7_l2
+@@l1:	cmp	ch,4
+	jz	@@l2
 	cmp	ch,6
-	jz	@type_esc7_l2
+	jz	@@l2
 	mov	edx,offs _text_long
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc7_l2:	mov	edx,offs _text_temp
+@@l2:	mov	edx,offs _text_temp
 	call	put_string
 	call	decode_by_mod
 	jmp	put_memd
-@type_esc7_mod3:	mov	edx,_esc7tab1[ebx*4]
+@@mod3:	mov	edx,_esc7tab1[ebx*4]
 	test	edx,edx
 	jz	_escape
 	call	put_string
@@ -1250,48 +1199,48 @@ decode_by_mod:
 	cmp	_adrsiz,0
 	jnz	decode_by_mod86
 	cmp	ah,03h
-	jz	@decode_by_mod_l3			; mod=11
+	jz	@@l3			; mod=11
 	call	put_prefix
 	call	put_open
-@decode_by_mod_l0:	cmp	ah,02h
-	jz	@decode_by_mod_l2			; mod=10
+@@l0:	cmp	ah,02h
+	jz	@@l2			; mod=10
 	cmp	ah,01h
-	jz	@decode_by_mod_l1			; mod=01
+	jz	@@l1			; mod=01
 ;---------------------------------------------------------------------------
 	cmp	cl,05h			; [ addr ],reg
-	jnz	@decode_by_mod_l01
+	jnz	@@l01
 	call	put_texteax
 	call	makehexeax
 	call	put_commaddr
 	jmp	put_close
-@decode_by_mod_l01:	cmp	cl,04h		; is s-i-b present?
-	jnz	@decode_by_mod_l02		; no, jump
+@@l01:	cmp	cl,04h		; is s-i-b present?
+	jnz	@@l02		; no, jump
 	push	ecx		; yes, do [ reg * index ]
 	call	put_textal
 	call	decode_mode
 	cmp	cl,4
 	setz	_prefix_esp		; reference to SS:[ xxx ]
 	cmp	cl,05h			; [ d32 + reg * index ]
-	jnz	@decode_by_mod_l01e
+	jnz	@@l01e
 	push	eax
 	call	put_texteax		; get d32
 	add	__temp_addr,eax
 	test	eax,eax			; don't print if zero
-	jz	@decode_by_mod_l01w
+	jz	@@l01w
 	call	makehexeax
 	pop	eax
-	jmp	@decode_by_mod_l01d
-@decode_by_mod_l01w:	pop	eax
-	jmp	@decode_by_mod_l01v
-@decode_by_mod_l01e:	movzx	ebx,cl			; get base register
+	jmp	@@l01d
+@@l01w:	pop	eax
+	jmp	@@l01v
+@@l01e:	movzx	ebx,cl			; get base register
 	lea	edx,_regtab32[ebx*4]
 	call	put_string
 	mov	edx,_registers[ebx*4]
 	add	__temp_addr,edx
 	cmp	ch,04h			; when index=100b, no index is present
-	jz	@decode_by_mod_l01a
-@decode_by_mod_l01d:	call	put_plus
-@decode_by_mod_l01v:	movzx	ebx,ch			; get index register
+	jz	@@l01a
+@@l01d:	call	put_plus
+@@l01v:	movzx	ebx,ch			; get index register
 	lea	edx,_regtab32[ebx*4]
 	call	put_string
 	mov	edx,_registers[ebx*4]
@@ -1299,36 +1248,36 @@ decode_by_mod:
 	shl	edx,cl
 	add	__temp_addr,edx
 	test	ah,ah
-	jz	@decode_by_mod_l01a
+	jz	@@l01a
 	call	make_indexah
-@decode_by_mod_l01a:	mov	eax,__temp_addr
+@@l01a:	mov	eax,__temp_addr
 	call	put_commaddr
 	call	put_close
 	pop	ecx
 	ret
-@decode_by_mod_l02:	movzx	ebx,cl
+@@l02:	movzx	ebx,cl
 	lea	edx,_regtab32[ebx*4]
 	call	put_string
 	mov	eax,_registers[ebx*4]
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod_l1:	cmp	cl,04h		; if s-i-b, do   [reg+reg*index+disp8]
-	jnz	@decode_by_mod_l10		; no sib, jump
+@@l1:	cmp	cl,04h		; if s-i-b, do   [reg+reg*index+disp8]
+	jnz	@@l10		; no sib, jump
 	push	ecx
 	call	put_textal
 	call	decode_mode
 	movzx	ebx,cl
 	cmp	cl,4
-	jz	@decode_by_mod___1
+	jz	@@__1
 	cmp	cl,5
-@decode_by_mod___1:	setz	_prefix_esp		; reference to SS:[ xxx ]
+@@__1:	setz	_prefix_esp		; reference to SS:[ xxx ]
 	lea	edx,_regtab32[ebx*4]	; get base register
 	call	put_string
 	mov	edx,_registers[ebx*4]
 	add	__temp_addr,edx
 	cmp	ch,04h			; when index=100b, no index is present
-	jz	@decode_by_mod_l11a
+	jz	@@l11a
 	call	put_plus
 	movzx	ebx,ch
 	lea	edx,_regtab32[ebx*4]	; get index register
@@ -1338,25 +1287,25 @@ decode_by_mod:
 	shl	edx,cl
 	add	__temp_addr,edx
 	test	ah,ah
-	jz	@decode_by_mod_l11a
+	jz	@@l11a
 	call	make_indexah
-@decode_by_mod_l11a:	call	put_textal
+@@l11a:	call	put_textal
 	movsx	edx,al
 	add	__temp_addr,edx
 	test	al,al
-	jz	@decode_by_mod_l11d
-	js	@decode_by_mod_l11b
+	jz	@@l11d
+	js	@@l11b
 	call	put_plus
-	jmp	@decode_by_mod_l11c
-@decode_by_mod_l11b:	call	put_minus
+	jmp	@@l11c
+@@l11b:	call	put_minus
 	neg	al
-@decode_by_mod_l11c:	call	makehexal
-@decode_by_mod_l11d:	mov	eax,__temp_addr
+@@l11c:	call	makehexal
+@@l11d:	mov	eax,__temp_addr
 	call	put_commaddr
 	call	put_close
 	pop	ecx
 	ret
-@decode_by_mod_l10:	movzx	ebx,cl
+@@l10:	movzx	ebx,cl
 	cmp	cl,5
 	setz	_prefix_esp		; reference to SS:[ xxx ]
 	lea	edx,_regtab32[ebx*4]
@@ -1367,33 +1316,33 @@ decode_by_mod:
 	movsx	edx,al
 	add	__temp_addr,edx
 	test	al,al
-	jz	@decode_by_mod_l10d
-	js	@decode_by_mod_l10b
+	jz	@@l10d
+	js	@@l10b
 	call	put_plus
-	jmp	@decode_by_mod_l10c
-@decode_by_mod_l10b:	call	put_minus
+	jmp	@@l10c
+@@l10b:	call	put_minus
 	neg	al
-@decode_by_mod_l10c:	call	makehexal
-@decode_by_mod_l10d:	mov	eax,__temp_addr
+@@l10c:	call	makehexal
+@@l10d:	mov	eax,__temp_addr
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod_l2:	cmp	cl,04h			; s-i-b   [reg+reg*index+disp32]
-	jnz	@decode_by_mod_l20
+@@l2:	cmp	cl,04h			; s-i-b   [reg+reg*index+disp32]
+	jnz	@@l20
 	push	ecx
 	call	put_textal
 	call	decode_mode
 	movzx	ebx,cl
 	cmp	cl,4
-	jz	@decode_by_mod___2
+	jz	@@__2
 	cmp	cl,5
-@decode_by_mod___2:	setz	_prefix_esp		; reference to SS:[ xxx ]
+@@__2:	setz	_prefix_esp		; reference to SS:[ xxx ]
 	lea	edx,_regtab32[ebx*4]	; get base
 	call	put_string
 	mov	edx,_registers[ebx*4]
 	add	__temp_addr,edx
 	cmp	ch,04h			; when index=100b, no index is present
-	jz	@decode_by_mod_l21a
+	jz	@@l21a
 	call	put_plus
 	movzx	ebx,ch
 	lea	edx,_regtab32[ebx*4]	; get index
@@ -1403,24 +1352,24 @@ decode_by_mod:
 	shl	edx,cl
 	add	__temp_addr,edx
 	test	ah,ah
-	jz	@decode_by_mod_l21a
+	jz	@@l21a
 	call	make_indexah
-@decode_by_mod_l21a:	call	put_texteax
+@@l21a:	call	put_texteax
 	add	__temp_addr,eax
 	test	eax,eax
-	jz	@decode_by_mod_l21d
-	js	@decode_by_mod_l21b
+	jz	@@l21d
+	js	@@l21b
 	call	put_plus
-	jmp	@decode_by_mod_l21c
-@decode_by_mod_l21b:	call	put_minus
+	jmp	@@l21c
+@@l21b:	call	put_minus
 	neg	eax
-@decode_by_mod_l21c:	call	makehexdword
-@decode_by_mod_l21d:	mov	eax,__temp_addr
+@@l21c:	call	makehexdword
+@@l21d:	mov	eax,__temp_addr
 	call	put_commaddr
 	call	put_close
 	pop	ecx
 	ret
-@decode_by_mod_l20:	movzx	ebx,cl
+@@l20:	movzx	ebx,cl
 	cmp	cl,5
 	setz	_prefix_esp		; reference to SS:[ xxx ]
 	lea	edx,_regtab32[ebx*4]
@@ -1430,85 +1379,85 @@ decode_by_mod:
 	call	put_texteax
 	add	__temp_addr,eax
 	test	eax,eax
-	jz	@decode_by_mod_l20d
-	js	@decode_by_mod_l20b
+	jz	@@l20d
+	js	@@l20b
 	call	put_plus
-	jmp	@decode_by_mod_l20c
-@decode_by_mod_l20b:	call	put_minus
+	jmp	@@l20c
+@@l20b:	call	put_minus
 	neg	eax
-@decode_by_mod_l20c:	call	makehexdword
-@decode_by_mod_l20d:	mov	eax,__temp_addr
+@@l20c:	call	makehexdword
+@@l20d:	mov	eax,__temp_addr
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod_l3:	movzx	ebx,cl			; mod=11	register only
+@@l3:	movzx	ebx,cl			; mod=11	register only
 	lea	edx,[ebp+ebx*4]
 	jmp	put_string
 
 
 decode_by_mod86:
 	cmp	ah,03h
-	jz	@decode_by_mod86_l3			; mod=11
+	jz	@@l3			; mod=11
 	call	put_prefix
 	call	put_open
 	cmp	ah,02h
-	jz	@decode_by_mod86_l2			; mod=10
+	jz	@@l2			; mod=10
 	cmp	ah,01h
-	jz	@decode_by_mod86_l1			; mod=01
+	jz	@@l1			; mod=01
 ;---------------------------------------------------------------------------
 	cmp	cl,06h			; [ addr ],reg
-	jnz	@decode_by_mod86_l01
+	jnz	@@l01
 	call	put_textax
 	call	makehexax
 	call	put_commaddr
 	jmp	put_close
-@decode_by_mod86_l01:	movzx	ebx,cl
+@@l01:	movzx	ebx,cl
 	lea	edx,_regtab86[ebx*8]
 	call	put_string
-	call	@decode_by_mod86_d86
+	call	@@d86
 	mov	eax,__temp_addr
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod86_l1:	movzx	ebx,cl
+@@l1:	movzx	ebx,cl
 	lea	edx,_regtab86[ebx*8]
 	call	put_string
-	call	@decode_by_mod86_d86
+	call	@@d86
 	call	put_textal
 	movsx	dx,al
 	add	wptr __temp_addr,dx
 	test	al,al
-	js	@decode_by_mod86_l11
+	js	@@l11
 	call	put_plus
-	jmp	@decode_by_mod86_l12
-@decode_by_mod86_l11:	call	put_minus
+	jmp	@@l12
+@@l11:	call	put_minus
 	neg	al
-@decode_by_mod86_l12:	call	makehexal
+@@l12:	call	makehexal
 	mov	eax,__temp_addr
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod86_l2:	movzx	ebx,cl
+@@l2:	movzx	ebx,cl
 	lea	edx,_regtab86[ebx*8]
 	call	put_string
-	call	@decode_by_mod86_d86
+	call	@@d86
 	call	put_textax
 	add	wptr __temp_addr,ax
 	test	ax,ax
-	js	@decode_by_mod86_l21
+	js	@@l21
 	call	put_plus
-	jmp	@decode_by_mod86_l22
-@decode_by_mod86_l21:	call	put_minus
+	jmp	@@l22
+@@l21:	call	put_minus
 	neg	ax
-@decode_by_mod86_l22:	call	makehexax
+@@l22:	call	makehexax
 	mov	eax,__temp_addr
 	call	put_commaddr
 	jmp	put_close
 ;---------------------------------------------------------------------------
-@decode_by_mod86_l3:	movzx	ebx,cl			; mod=11	// register
+@@l3:	movzx	ebx,cl			; mod=11	// register
 	lea	edx,[ebp+ebx*4]
 	jmp	put_string
-@decode_by_mod86_d86:	movzx	ebx,cl
+@@d86:	movzx	ebx,cl
 	and	ebx,07h
 	jmp	_r86tab[ebx*4]
 _r86c0:	mov	dx,_bx
@@ -1559,8 +1508,7 @@ decode_by_grp:
 ;---------------------------------------------------------------------------
 check_jump:
 	pushfd
-	push	eax
-	push	edx
+	push	eax edx
 	and	eax,0Fh
 	mov	edx,cs:_jumptbl[eax*4]
 	pushfd
@@ -1571,8 +1519,7 @@ check_jump:
 	popfd
 	jmp	edx
 _jump_end:
-	pop	edx
-	pop	eax
+	pop	edx eax
 	popfd
 	ret
 
@@ -1582,100 +1529,100 @@ _jumptbl	dd _jump_jo, _jump_jno, _jump_jb, _jump_jnb
 		dd _jump_jl, _jump_jnl, _jump_jle, _jump_jnle
 
 _jump_jo:
-	jo	@jump_jo_0
+	jo	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jo_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jno:
-	jno	@jump_jno_0
+	jno	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jno_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jb:
-	jb	@jump_jb_0
+	jb	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jb_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnb:
-	jnb	@jump_jnb_0
+	jnb	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnb_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jz:
-	jz	@jump_jz_0
+	jz	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jz_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnz:
-	jnz	@jump_jnz_0
+	jnz	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnz_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jbe:
-	jbe	@jump_jbe_0
+	jbe	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jbe_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnbe:				; (ja)
-	jnbe	@jump_jnbe_0
+	jnbe	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnbe_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_js:
-	js	@jump_js_0
+	js	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_js_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jns:
-	jns	@jump_jns_0
+	jns	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jns_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jp:
-	jp	@jump_jp_0
+	jp	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jp_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnp:
-	jnp	@jump_jnp_0
+	jnp	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnp_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jl:
-	jl	@jump_jl_0
+	jl	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jl_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnl:				; (jge)
-	jnl	@jump_jnl_0
+	jnl	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnl_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jle:
-	jle	@jump_jle_0
+	jle	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jle_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 _jump_jnle:				; (jg)
-	jnle	@jump_jnle_0
+	jnle	@@0
 	mov	_jump_taken,0
 	jmp	_jump_end
-@jump_jnle_0:	mov	_jump_taken,1
+@@0:	mov	_jump_taken,1
 	jmp	_jump_end
 
 
@@ -1706,13 +1653,13 @@ _type_EvGv:					; addr16/32 , reg16/32
 	call	put_textal
 	call	decode_mode
 	cmp	_opsiz,0
-	jz	@type_EvGv_l1
+	jz	@@l1
 	mov	ebp,offs _regtab16
 	call	decode_by_mod
 	call	put_memw
 	call	put_comma
 	jmp	decode_by_reg
-@type_EvGv_l1:	mov	ebp,offs _regtab32
+@@l1:	mov	ebp,offs _regtab32
 	call	decode_by_mod
 	call	put_memd
 	call	put_comma
@@ -1722,13 +1669,13 @@ _type_GvEv:					; reg16/32 , addr16/32
 	call	put_textal
 	call	decode_mode
 	cmp	_opsiz,0
-	jz	@type_GvEv_l1
+	jz	@@l1
 	mov	ebp,offs _regtab16
 	call	decode_by_reg
 	call	put_comma
 	call	decode_by_mod
 	jmp	put_memw
-@type_GvEv_l1:	mov	ebp,offs _regtab32
+@@l1:	mov	ebp,offs _regtab32
 	call	decode_by_reg
 	call	put_comma
 	call	decode_by_mod
@@ -1739,9 +1686,9 @@ _type_GvEb:					; reg16/32 , addr8
 	call	decode_mode
 	cmp	_opsiz,0
 	mov	ebp,offs _regtab16
-	jnz	@type_GvEb_l1
+	jnz	@@l1
 	mov	ebp,offs _regtab32
-@type_GvEb_l1:	call	decode_by_reg
+@@l1:	call	decode_by_reg
 	call	put_comma
 	mov	ebp,offs _regtab8
 	call	decode_by_mod
@@ -1752,9 +1699,9 @@ _type_GvEw:					; reg16/32 , addr16
 	call	decode_mode
 	cmp	_opsiz,0
 	mov	ebp,offs _regtab16
-	jnz	@type_GvEw_l1
+	jnz	@@l1
 	mov	ebp,offs _regtab32
-@type_GvEw_l1:	call	decode_by_reg
+@@l1:	call	decode_by_reg
 	call	put_comma
 	mov	ebp,offs _regtab16
 	call	decode_by_mod
@@ -1794,9 +1741,9 @@ _type_eAXIb:					; eAX , imm8	***IN
 	call	put_tab
 	cmp	_opsiz,0
 	mov	edx,offs _regtab16
-	jnz	@type_eAXIb_l1
+	jnz	@@l1
 	mov	edx,offs _regtab32
-@type_eAXIb_l1:	call	put_string
+@@l1:	call	put_string
 	call	put_comma
 	call	put_textal
 	call	makehexal
@@ -1804,14 +1751,14 @@ _type_eAXIb:					; eAX , imm8	***IN
 _type_eAXIv:					; eAX , imm16/32
 	call	put_tab
 	cmp	_opsiz,0
-	jz	@type_eAXIv_l1
+	jz	@@l1
 	mov	edx,offs _regtab16
 	call	put_string
 	call	put_comma
 	call	put_textax
 	call	makehexax
 	jmp	put_charh
-@type_eAXIv_l1:	mov	edx,offs _regtab32
+@@l1:	mov	edx,offs _regtab32
 	call	put_string
 	call	put_comma
 	call	put_texteax
@@ -1833,9 +1780,9 @@ _type_IbeAX:					; imm8 , eAX	***OUT
 	call	put_comma
 	cmp	_opsiz,0
 	mov	edx,offs _regtab16
-	jnz	@type_IbeAX_l1
+	jnz	@@l1
 	mov	edx,offs _regtab32
-@type_IbeAX_l1:	jmp	put_string
+@@l1:	jmp	put_string
 
 
 
@@ -1856,7 +1803,7 @@ _type_EvIb:					; addr16/32 , imm8
 	call	put_textal
 	call	decode_mode
 	cmp	_opsiz,0
-	jz	@type_EvIb_l1
+	jz	@@l1
 	mov	ebp,offs _regtab16
 	call	decode_by_mod
 	call	put_memw
@@ -1865,7 +1812,7 @@ _type_EvIb:					; addr16/32 , imm8
 	movsx	eax,al
 	call	makehexax
 	jmp	put_charh
-@type_EvIb_l1:	mov	ebp,offs _regtab32
+@@l1:	mov	ebp,offs _regtab32
 	call	decode_by_mod
 	call	put_memd
 	call	put_comma
@@ -1878,7 +1825,7 @@ _type_EvIv:					; addr16/32 , imm16/32
 	call	put_textal
 	call	decode_mode
 	cmp	_opsiz,0
-	jz	@type_EvIv_l1
+	jz	@@l1
 	mov	ebp,offs _regtab16
 	call	decode_by_mod
 	call	put_memw
@@ -1886,7 +1833,7 @@ _type_EvIv:					; addr16/32 , imm16/32
 	call	put_textax
 	call	makehexax
 	jmp	put_charh
-@type_EvIv_l1:	mov	ebp,offs _regtab32
+@@l1:	mov	ebp,offs _regtab32
 	call	decode_by_mod
 	call	put_memd
 	call	put_comma
@@ -1905,12 +1852,12 @@ _type_ALOb:					; AL , offs16/32
 	call	put_prefix
 	call	put_open
 	cmp	_adrsiz,0
-	jz	@type_ALOb_l1
+	jz	@@l1
 	call	put_textax
 	call	makehexax
 	call	put_adrmemb
 	jmp	put_close
-@type_ALOb_l1:	call	put_texteax
+@@l1:	call	put_texteax
 	call	makehexeax
 	call	put_adrmemb
 	jmp	put_close
@@ -1919,15 +1866,15 @@ _type_ObAL:					; offs16/32 , AL
 	call	put_prefix
 	call	put_open
 	cmp	_adrsiz,0
-	jz	@type_ObAL_l1
+	jz	@@l1
 	call	put_textax
 	call	makehexax
 	call	put_adrmemb
-	jmp	@type_ObAL_l2
-@type_ObAL_l1:	call	put_texteax
+	jmp	@@l2
+@@l1:	call	put_texteax
 	call	makehexeax
 	call	put_adrmemb
-@type_ObAL_l2:	call	put_close
+@@l2:	call	put_close
 	call	put_comma
 	mov	edx,offs _regtab8
 	jmp	put_string
@@ -1936,21 +1883,21 @@ _type_eAXOv:
 	call	put_tab
 	cmp	_opsiz,0
 	mov	edx,offs _regtab16
-	jnz	@type_eAXOv_l0
+	jnz	@@l0
 	mov	edx,offs _regtab32
-@type_eAXOv_l0:	call	put_string
+@@l0:	call	put_string
 	call	put_comma
 	call	put_prefix
 	call	put_open
 	cmp	_adrsiz,0
-	jz	@type_eAXOv_l1
+	jz	@@l1
 	call	put_textax
 	call	makehexax
 	call	put_close
 	cmp	_opsiz,0
 	jnz	put_adrmemw
 	jmp	put_adrmemd
-@type_eAXOv_l1:	call	put_texteax
+@@l1:	call	put_texteax
 	call	makehexeax
 	call	put_close
 	cmp	_opsiz,0
@@ -1961,20 +1908,20 @@ _type_OveAX:
 	call	put_prefix
 	call	put_open
 	cmp	_adrsiz,0
-	jz	@type_OveAX_l1
+	jz	@@l1
 	call	put_textax
 	call	makehexax
-	jmp	@type_OveAX_l2
-@type_OveAX_l1:	call	put_texteax
+	jmp	@@l2
+@@l1:	call	put_texteax
 	call	makehexeax
-@type_OveAX_l2:	call	put_close
+@@l2:	call	put_close
 	call	put_comma
 	cmp	_opsiz,0
-	jz	@type_OveAX_l0
+	jz	@@l0
 	call	put_adrmemw
 	mov	edx,offs _regtab16
 	jmp	put_string
-@type_OveAX_l0:	call	put_adrmemd
+@@l0:	call	put_adrmemd
 	mov	edx,offs _regtab32
 	jmp	put_string
 
@@ -1989,9 +1936,9 @@ _type_Eb:					; ex:INC bptr [addr]
 	mov	ebp,offs _regtab8
 	mov	edx,offs _text_bptr
 	cmp	ah,03h
-	jz	@type_Eb_l2
+	jz	@@l2
 	call	put_string
-@type_Eb_l2:	call	decode_by_mod
+@@l2:	call	decode_by_mod
 	jmp	put_memb
 _type_Ew:					; ex:NEG wptr [addr]
 	call	put_tab
@@ -2000,9 +1947,9 @@ _type_Ew:					; ex:NEG wptr [addr]
 	mov	ebp,offs _regtab16
 	mov	edx,offs _text_wptr
 	cmp	ah,03h
-	jz	@type_Ew_l2
+	jz	@@l2
 	call	put_string
-@type_Ew_l2:	call	decode_by_mod
+@@l2:	call	decode_by_mod
 	jmp	put_memw
 _type_Ev:					; push 0000h / push 12345678h
 	call	put_tab
@@ -2011,13 +1958,13 @@ type_Ev:call	put_textal
 	cmp	_opsiz,0
 	mov	ebp,offs _regtab16
 	mov	edx,offs _text_wptr
-	jnz	@type_Ev_2_l1
+	jnz	@@l1
 	mov	ebp,offs _regtab32
 	mov	edx,offs _text_dptr
-@type_Ev_2_l1:	cmp	ah,03h
-	jz	@type_Ev_2_l2
+@@l1:	cmp	ah,03h
+	jz	@@l2
 	call	put_string
-@type_Ev_2_l2:	call	decode_by_mod
+@@l2:	call	decode_by_mod
 	cmp	_opsiz,0
 	jnz	put_memw
 	jmp	put_memd
@@ -2034,11 +1981,11 @@ type_Iw:call	put_textax
 _type_Iv:
 	call	put_tab
 type_Iv:cmp	_opsiz,0
-	jz	@type_Iv_2_l1
+	jz	@@l1
 	call	put_textax
 	call	makehexax
 	jmp	put_charh
-@type_Iv_2_l1:	call	put_texteax
+@@l1:	call	put_texteax
 	call	makehexdword
 	jmp	put_charh
 _type_IwIb:
@@ -2094,7 +2041,7 @@ _type_GvMp:
 	call	put_textal
 	call	decode_mode
 	cmp	_opsiz,0
-	jz	@type_GvMp_l1
+	jz	@@l1
 
 	mov	ebp,offs _regtab16
 	call	decode_by_reg
@@ -2102,7 +2049,7 @@ _type_GvMp:
 	call	decode_by_mod
 	jmp	put_memfw
 
-@type_GvMp_l1:	mov	ebp,offs _regtab32
+@@l1:	mov	ebp,offs _regtab32
 	call	decode_by_reg
 	call	put_comma
 	call	decode_by_mod
@@ -2126,14 +2073,14 @@ _type_movIv:
 	call	put_tab
 	and	eax,07h
 	cmp	_opsiz,0
-	jz	@type_movIv_l1
+	jz	@@l1
 	lea	edx,_regtab16[eax*4]
 	call	put_string
 	call	put_comma
 	call	put_textax
 	call	makehexax
 	jmp	put_charh
-@type_movIv_l1:	lea	edx,_regtab32[eax*4]
+@@l1:	lea	edx,_regtab32[eax*4]
 	call	put_string
 	call	put_comma
 	call	put_texteax
@@ -2144,9 +2091,9 @@ _type_eAXr:					; eAX,reg16/32
 	and	eax,7
 	cmp	_opsiz,0
 	mov	ebx,offs _regtab16
-	jnz	@type_eAXr_l1
+	jnz	@@l1
 	mov	ebx,offs _regtab32
-@type_eAXr_l1:	lea	edx,[ebx+eax*4]
+@@l1:	lea	edx,[ebx+eax*4]
 	call	put_string
 	call	put_comma
 	mov	edx,ebx
@@ -2160,28 +2107,28 @@ _type_Jb:
 	call	put_textal
 	movsx	eax,al
 	test	eax,eax
-	jns	@type_Jb_0
+	jns	@@0
 	neg	_jump_taken
-@type_Jb_0:	add	eax,esi
+@@0:	add	eax,esi
 	cmp	_adrsiz,0
 	jnz	makehexax
 	jmp	makehexeax
 _type_Jv:					; relative addr calculation
 	call	put_tab
 	cmp	_adrsiz,0
-	jz	@type_Jv_l1
+	jz	@@l1
 	call	put_textax
 	movsx	eax,ax
 	test	eax,eax
-	jns	@type_Jv_0
+	jns	@@0
 	neg	_jump_taken
-@type_Jv_0:	add	eax,esi
+@@0:	add	eax,esi
 	jmp	makehexax
-@type_Jv_l1:	call	put_texteax
+@@l1:	call	put_texteax
 	test	eax,eax
-	jns	@type_Jv_1
+	jns	@@1
 	neg	_jump_taken
-@type_Jv_1:	add	eax,esi
+@@1:	add	eax,esi
 	jmp	makehexeax
 
 _type_loopne:
@@ -2194,11 +2141,11 @@ _type_loope:
 	jmp	_type_loop
 _type_loop:
 	cmp	_opsiz,0		; check for CX or ECX == 0
-	jnz	@type_loop_1
+	jnz	@@1
 	mov	eax,dptr _ecx
-	jmp	@type_loop_2
-@type_loop_1:	movzx	eax,wptr _ecx
-@type_loop_2:	dec	eax
+	jmp	@@2
+@@1:	movzx	eax,wptr _ecx
+@@2:	dec	eax
 	setnz	al
 	or	_jump_taken,al
 	jmp	_type_Jb
@@ -2224,9 +2171,9 @@ _type_regv:
 	and	eax,07h
 	cmp	_opsiz,0
 	lea	edx,_regtab16[eax*4]
-	jnz	@type_regv_l1
+	jnz	@@l1
 	lea	edx,_regtab32[eax*4]
-@type_regv_l1:	jmp	put_string
+@@l1:	jmp	put_string
 _type_setb:
 	and	eax,0Fh
 	lea	edx,_settab386[eax*8]
@@ -2247,7 +2194,7 @@ _type_jumpv:
 _type_Ap:				; very far jump (imm.seg:imm.offset)
 	call	put_tab
 	cmp	_opsiz,0
-	jz	@type_Ap_l1
+	jz	@@l1
 	call	put_texteax		; offset16
 	mov	ebx,eax
 	shr	eax,16
@@ -2255,7 +2202,7 @@ _type_Ap:				; very far jump (imm.seg:imm.offset)
 	call	put_colon
 	mov	eax,ebx
 	jmp	makehexax
-@type_Ap_l1:	call	put_texteax		; offset32
+@@l1:	call	put_texteax		; offset32
 	xchg	eax,ebx
 	call	put_textax
 	call	makehexax
@@ -2271,13 +2218,13 @@ _type_farEv:
 	cmp	_opsiz,0
 	mov	ebp,offs _regtab16
 	mov	edx,offs _text_far
-	jnz	@type_farEv_l1
+	jnz	@@l1
 	mov	ebp,offs _regtab32
 	mov	edx,offs _text_far
-@type_farEv_l1:	cmp	ah,03h
-	jz	@type_farEv_l2
+@@l1:	cmp	ah,03h
+	jz	@@l2
 	call	put_string
-@type_farEv_l2:	call	decode_by_mod
+@@l2:	call	decode_by_mod
 	cmp	_opsiz,0
 	jnz	put_memfw
 	jmp	put_memfd
@@ -2286,10 +2233,10 @@ _type_pushIb:
 	call	put_textal
 	and	eax,00FFh
 	cmp	_opsiz,0
-	jz	@type_pushIb_l1
+	jz	@@l1
 	call	makehexax
 	jmp	put_charh
-@type_pushIb_l1:	call	makehexeax
+@@l1:	call	makehexeax
 	jmp	put_charh
 _type_pushs:					; segment register
 	call	put_tab
@@ -2299,10 +2246,10 @@ _type_pushs:					; segment register
 	jmp	put_string
 _type_pushd:					; pusha(d)/popa(d)
 	cmp	_opsiz,0
-	jnz	@type_pushd_done
+	jnz	@@done
 	mov	bptr [edi],'d'
 	inc	edi
-@type_pushd_done:	ret
+@@done:	ret
 _type_es:
 	mov	_prefix,0
 	jmp	_type_seg
@@ -2339,23 +2286,23 @@ _type_rep:
 	jmp	decode2
 _type_cdq:
 	cmp	_opsiz,0
-	jz	@type_cdq_l1
+	jz	@@l1
 	cmp	al,98h
 	mov	edx,offs _text_cbw
-	jz	@type_cdq_done
+	jz	@@done
 	cmp	al,99h
 	mov	edx,offs _text_cwd
-	jz	@type_cdq_done
+	jz	@@done
 	mov	edx,offs _text_none
-	jmp	@type_cdq_done
-@type_cdq_l1:	cmp	al,98h
+	jmp	@@done
+@@l1:	cmp	al,98h
 	mov	edx,offs _text_cwde
-	jz	@type_cdq_done
+	jz	@@done
 	cmp	al,99h
 	mov	edx,offs _text_cdq
-	jz	@type_cdq_done
+	jz	@@done
 	mov	edx,offs _text_none
-@type_cdq_done:	jmp	put_string
+@@done:	jmp	put_string
 _type_ALDX:
 	call	put_tab
 	mov	edx,offs _text_aldx
@@ -2368,27 +2315,27 @@ _type_eAXDX:
 	call	put_tab
 	cmp	_opsiz,0
 	mov	edx,offs _text_axdx
-	jnz	@type_eAXDX_l1
+	jnz	@@l1
 	mov	edx,offs _text_eaxdx
-@type_eAXDX_l1:	jmp	put_string
+@@l1:	jmp	put_string
 _type_DXeAX:
 	call	put_tab
 	cmp	_opsiz,0
 	mov	edx,offs _text_dxax
-	jnz	@type_DXeAX_l1
+	jnz	@@l1
 	mov	edx,offs _text_dxeax
-@type_DXeAX_l1:	jmp	put_string
+@@l1:	jmp	put_string
 _type_jcxz:
 	cmp	_adrsiz,0
-	jz	@type_jcxz_l1
+	jz	@@l1
 	mov	edx,offs _text_jcxz
 	cmp	wptr _ecx,0
 	setz	_jump_taken
-	jmp	@type_jcxz_l2
-@type_jcxz_l1:	mov	edx,offs _text_jecxz
+	jmp	@@l2
+@@l1:	mov	edx,offs _text_jecxz
 	cmp	dptr _ecx,0
 	setz	_jump_taken
-@type_jcxz_l2:	call	put_string
+@@l2:	call	put_string
 	jmp	_type_Jb
 _type_strb:
 	mov	bptr [edi],'b'
@@ -2397,9 +2344,9 @@ _type_strb:
 _type_strd:
 	cmp	_opsiz,0
 	mov	al,'w'
-	jnz	@type_strd_l1
+	jnz	@@l1
 	mov	al,'d'
-@type_strd_l1:	mov	[edi],al
+@@l1:	mov	[edi],al
 	inc	edi
 _type_str:
 	cmp	_prefix,03h
@@ -2510,11 +2457,11 @@ _type_aamd:
 	call	put_string
 	call	put_textal
 	cmp	al,0Ah
-	jz	@type_aamd_1
+	jz	@@1
 	call	put_tab
 	call	makehexal
 	call	put_charh
-@type_aamd_1:	ret
+@@1:	ret
 
 
 .DATA

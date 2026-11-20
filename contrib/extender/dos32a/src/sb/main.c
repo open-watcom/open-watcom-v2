@@ -290,7 +290,7 @@ l1:	  Print("SB/32A fatal: syntax is SB [commands] [options] <execname.xxx>\n\n"
 
 void OpenExec(char *argv[])
 {
-	int n;
+	int n,m;
 
 	strcpy(filename,argv[execargn]);
 	n=open_exec(filename);
@@ -393,11 +393,14 @@ int GetExtenderType(char *argv[])
 
 
 /****************************************************************************/
-int main(int argc, char *argv[])
+void main(int argc, char *argv[])
 {
 	int n=-1;
 	int m=-1;
 	int l=-1;
+	int e=-1;
+	int x,y;
+	char buf[80];
 
 	ArgInit(argc, argv);
 	OpenExec(argv);
@@ -494,7 +497,7 @@ int main(int argc, char *argv[])
 	}
 
 	close_exec();
-	return 0;
+	exit(0);
 }
 
 
@@ -508,9 +511,8 @@ int main(int argc, char *argv[])
 
 void UnbindExec(char *argv[])
 {
-	int n;
+	int n,m;
 
-	(void)argv;
 	Print("\n");
 	Print("  Unbinding file:   \"%s\"\n",filename);
 	Print("Destination file:   \"%s\"\n",newname);
@@ -534,7 +536,7 @@ void UnbindExec(char *argv[])
 
 void BindExec(char *argv[])
 {
-	int n;
+	int n,m;
 	int stubsize;
 	int execsize;
 	int stubhandle;

@@ -354,7 +354,7 @@ int FindExecType()
 
 
 /****************************************************************************/
-int main(int argc, char *argv[])
+void main(int argc, char *argv[])
 {
 	int n;
 
@@ -418,15 +418,17 @@ int main(int argc, char *argv[])
 	{
 		if(!silent) printf("SC/32A: File \"%s\" has been successfully compressed\n", oldfilename);
 	}
-	return 0;
+	exit(0);
 }
 
 
 
 
 /****************************************************************************/
-void CompressExec(void)
+void CompressExec()
 {
+	int n;
+
 	CreateTemp();
 	CreateLCHeader();
 	CreateLCObjects();
@@ -493,7 +495,7 @@ void CreateLCObjects()
 
 		if(!quiet)
 		{
-			printf("[ï¿½]  ");
+			printf("[û]  ");
 			if(!verbose) printf("(%1.1f%%)\n", ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100);
 			else
 			{	  		 printf("Old=%7d,   New=%7d,   (%1.1f%%)  (%s)%c\n", obj_old_size,obj_new_size, ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100, encodetype[app_enc_status], c);
@@ -521,7 +523,7 @@ void CreateLCFixups()
 
 	if(quiet!=TRUE)
 	{
-		printf("[ï¿½]  ");
+		printf("[û]  ");
 		if(!verbose) printf("(%1.1f%%)\n", ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100);
 		else	     printf("Old=%7d,   New=%7d,   (%1.1f%%)  (%s)\n", obj_old_size,obj_new_size, ((float)(obj_new_size+0.01)/(float)(obj_old_size+0.01))*100, encodetype[app_enc_status]);
 	}
@@ -682,7 +684,7 @@ void GetDOS32APath()
 	char *envname;
 	char envbuf[512];
 
-	dos32apath[0]=0;
+	dos32apath[0]=NULL;
 	envname=getenv("DOS32A");
 	if(envname!=0)
 	{

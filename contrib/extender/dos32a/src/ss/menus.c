@@ -403,8 +403,9 @@ void ShowExtenderMenu()
 
 
 /*--------------------------------------------------------------------------*/
-void ShowExtenderConfig(void)
+void ShowExtenderConfig()
 {
+	int n;
 	SetColor(LIGHTWHITE);
 	SetBackColor(BLUE);
 	if(id32.dos32a_misc&0x01) Print_At(3,65,". ON");else Print_At(3,65," OFF");
@@ -455,8 +456,10 @@ void ShowExtenderConfig(void)
 
 
 /*--------------------------------------------------------------------------*/
-void SelectExtenderMenu(void)
+void SelectExtenderMenu()
 {
+	int n;
+
 	do {
 		ShowModified();
 		ShowHelp(2,extendermenu_sel);

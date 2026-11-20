@@ -38,7 +38,6 @@
  */
 
 #include <dos.h>
-#include <io.h>
 #include <math.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -105,29 +104,14 @@ void ShowKernelMenu(void);
 void ShowKernelConfig(void);
 void SelectKernelMenu(void);
 
-void ShowExtenderMenu(void);
+void ShowExtenderMemu(void);
 void ShowExtenderConfig(void);
 void SelectExtenderMenu(void);
-
-void ArgInit(int argc, char *argv[]);
-void ShowHeaderInfo(void);
-void ValidateConfig(void);
-void CreateConfig(void);
-void RestoreConfig(void);
-void ClearConfigName(void);
-void ShowBannerStatus(void);
-void DiskError(void);
 
 void ShowMainMenu(void);
 void SelectMainMenu(void);
 unsigned long Input(int, int, int, unsigned long);
 void ShowMemory(void);
-void CheckIfLocked(void);
-void CheckVersion(void);
-int CheckIfModified(void);
-void ShowModified(void);
-void RestoreDefaults(void);
-void ShowMemReq(void);
 
 
 extern	void VideoInit(void);
@@ -137,7 +121,6 @@ extern	void SetPos(char, char);
 extern	void SetColor(char);
 extern	void SetBackColor(char);
 extern	void SetBlink(char);
-extern	void PrintC(char);
 extern	void Prints(char *);
 extern	void PrintHelp(char *);
 extern	short int GetKey(void);

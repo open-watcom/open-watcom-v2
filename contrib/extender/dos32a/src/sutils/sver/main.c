@@ -61,73 +61,51 @@
 	char buffer[1024];
 	char filename[256];
 	char orgfilename[256];
+#define _P9(x) x,x,x,x,x,x,x,x,x
+	void __far * const _mzpad[] = { _P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp) };
 
 
-static int sver_ieq( const char *a, const char *b )
-{
-	unsigned char ca;
-	unsigned char cb;
-
-	while( *a != '\0' && *b != '\0' )
-	{
-		ca = (unsigned char)*a++;
-		cb = (unsigned char)*b++;
-		if( ca >= 'A' && ca <= 'Z' ) ca = (unsigned char)( ca + ( 'a' - 'A' ) );
-		if( cb >= 'A' && cb <= 'Z' ) cb = (unsigned char)( cb + ( 'a' - 'A' ) );
-		if( ca != cb ) return 0;
-	}
-	return *a == '\0' && *b == '\0';
-}
-
-static unsigned long read_le32( const char *p )
-{
-	return (unsigned long)(unsigned char)p[0]
-		| ( (unsigned long)(unsigned char)p[1] << 8 )
-		| ( (unsigned long)(unsigned char)p[2] << 16 )
-		| ( (unsigned long)(unsigned char)p[3] << 24 );
-}
-
-static void err_usage( void ) {
+void err_usage() {
 	printf("%s syntax is SV <execname.xxx>\n",errstr);
 	printf("            use -h or -? to get more help\n");
 	exit(1);
 }
 
-static void err_open( void ) {
+void err_open() {
 	printf("%s cannot open file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-static void err_read( void ) {
+void err_read() {
 	printf("%s cannot read from file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-static void err_seek( void ) {
+void err_seek() {
 	printf("%s error seeking in file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-static void err_format( void ) {
+void err_format() {
 	printf("%s unsupported exec format in file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-static void err_extender( void ) {
+void err_extender() {
 	printf("%s \"%s\" is not a DOS/32A executable\n",errstr,filename);
 	exit(1);
 }
 
 
 /****************************************************************************/
-static void ShowCopyright( void )
+void ShowCopyright()
 {
 	printf("SVER -- SUNSYS Version Report Utility  Version %s\n",version);
 	printf("Copyright (C) Supernar Systems, Ltd. 1996-2002\n");
 }
 
 
-static void ShowHelp( void )
+void ShowHelp()
 {
 	printf("\n");
 	printf("The SVER Utility Program should be used to determine the version\n");
@@ -150,73 +128,63 @@ static void ShowHelp( void )
 
 
 /****************************************************************************/
-static void OpenFile( void )
+void OpenFile()
 {
-	static const char * const exts[] = {
-		"", ".exe", ".EXE", ".le", ".LE", ".lx", ".LX", ".lc", ".LC"
-	};
-	char buf[264];
-	size_t i;
+	char buf[256];
 
-	fp = NULL;
-	for( i = 0; i < sizeof(exts) / sizeof(exts[0]); i++ )
+	strcpy(buf,filename);
+	if( (fp=fopen(buf,"rb")) == NULL)
 	{
-		if( strlen(filename) + strlen(exts[i]) >= sizeof(buf) )
-			continue;
-		strcpy(buf, filename);
-		strcat(buf, exts[i]);
-		fp = fopen(buf, "rb");
-		if( fp != NULL )
-		{
-			strcpy(orgfilename, buf);
-			return;
-		}
+	  strcpy(buf,filename);
+	  strcat(buf,".exe");
+	  if( (fp=fopen(buf,"rb")) == NULL)
+	  {
+	    strcpy(buf,filename);
+	    strcat(buf,".le");
+	    if( (fp=fopen(buf,"rb")) == NULL)
+	    {
+	      strcpy(buf,filename);
+	      strcat(buf,".lx");
+	      if( (fp=fopen(buf,"rb")) == NULL)
+	      {
+	        strcpy(buf,filename);
+	        strcat(buf,".lc");
+	        if( (fp=fopen(buf,"rb")) == NULL)
+	        {
+			  err_open();
+	        }
+	      }
+	    }
+	  }
 	}
-	err_open();
+	strcpy(orgfilename,buf);
 }
 
-static void ReadFileHeader( void )
+void ReadFileHeader()
 {
-	memset(buffer, 0, sizeof(buffer));
-	fread(buffer, 1, sizeof(buffer), fp);
+	fread(&buffer,1,sizeof(buffer),fp);
 	if(ferror(fp)) err_read();
 }
 
-static void CheckFileFormat( void )
+void CheckFileFormat()
 {
 	if(strncmp(buffer,"MZ",2) == 0) { fileisbound=TRUE; return; }
 	if(strncmp(buffer,"LC",2) == 0) { fileisbound=FALSE; return; }
 	err_format();
 }
 
-static void CheckStubExtender( void )
+void CheckStubExtender()
 {
 	unsigned int hdr_off;
 
 	if(fileisbound==FALSE)
 		return;
 
-	hdr_off = ((unsigned int)(unsigned char)buffer[0x08] | ((unsigned int)(unsigned char)buffer[0x09] << 8)) * 16U;
-	if(hdr_off + 0x40U < sizeof(buffer))
-	{
-		if(strcmp(&buffer[hdr_off + 0x1CU],"DOS/32A") == 0)
-		{
-			fileverptr=(char *)(buffer + hdr_off + 0x24U);
-			extendertype=1;
-			return;
-		}
-		if(strcmp(&buffer[hdr_off],"STUB/32A") == 0)
-		{
-			fileverptr=(char *)(buffer + hdr_off + 0x09U);
-			extendertype=2;
-			return;
-		}
-		if(strcmp(&buffer[hdr_off + 0x0CU],"STUB/32C") == 0)
-		{
-			fileverptr=(char *)(buffer + hdr_off + 0x15U);
-			extendertype=3;
-			return;
-		}
+	hdr_off = (*(unsigned short *)&buffer[0x08]) * 16U;
+	if(hdr_off + 0x40U < sizeof(buffer)) {
+		if(strcmp(&buffer[hdr_off + 0x1CU],"DOS/32A") == 0) { fileverptr = buffer + hdr_off + 0x24U; extendertype = 1; return; }
+		if(strcmp(&buffer[hdr_off],"STUB/32A") == 0)        { fileverptr = buffer + hdr_off + 0x09U; extendertype = 2; return; }
+		if(strcmp(&buffer[hdr_off + 0x0CU],"STUB/32C") == 0){ fileverptr = buffer + hdr_off + 0x15U; extendertype = 3; return; }
 	}
 
 	if(strcmp(&buffer[0x7C],"DOS/32A") == 0)
@@ -259,7 +227,7 @@ static void CheckStubExtender( void )
 }
 
 
-static void ShowApplicationName( void )
+void ShowApplicationName()
 {
 
 	printf("\n");
@@ -269,50 +237,43 @@ static void ShowApplicationName( void )
 }
 
 
-static void ShowExtenderVersion( void )
+void ShowExtenderVersion()
 {
 	char buf[8];
-	unsigned int hdr_off;
 
 	if(fileisbound==FALSE)
 		return;
 
-	hdr_off = ((unsigned int)(unsigned char)buffer[0x08] | ((unsigned int)(unsigned char)buffer[0x09] << 8)) * 16U;
-	if(extendertype == 1 && hdr_off + 0x20U < sizeof(buffer) && *fileverptr == 'C')
-	{
+	memset(buf,0,sizeof(buf));
+	buf[0] = *(fileverptr+1);
+	extender_release=atoi(buf);
+
+	memset(buf,0,sizeof(buf));
+	buf[0] = *(fileverptr+6);
+	buf[1] = *(fileverptr+7);
+	extender_revision=atoi(buf);
+
+	memset(buf,0,sizeof(buf));
+	buf[0] = *(fileverptr+3);
+	buf[1] = *(fileverptr+4);
+	extender_major_version=atoi(buf);
+
+	memset(buf,0,sizeof(buf));
+	buf[0] = *(fileverptr+8);
+	buf[1] = *(fileverptr+9);
+	extender_minor_version=atoi(buf);
+
+	memset(buf,0,sizeof(buf));
+	buf[0] = *(fileverptr+11);
+	buf[1] = *(fileverptr+12);
+	buf[2] = *(fileverptr+13);
+	buf[3] = *(fileverptr+14);
+	extender_build_version=atoi(buf);
+	if(extendertype == 1 && *fileverptr == 'C') {
+		unsigned int hdr_off = (*(unsigned short *)&buffer[0x08]) * 16U;
 		extender_minor_version = (unsigned char)buffer[hdr_off + 0x18U];
-		extender_major_version = (unsigned char)buffer[hdr_off + 0x19U];
-		extender_release = extender_major_version;
-		extender_revision = 0;
-		extender_build_version = 0;
-	}
-	else
-	{
-		memset(buf,0,sizeof(buf));
-		buf[0] = *(fileverptr+1);
-		extender_release=atoi(buf);
-
-		memset(buf,0,sizeof(buf));
-		buf[0] = *(fileverptr+6);
-		buf[1] = *(fileverptr+7);
-		extender_revision=atoi(buf);
-
-		memset(buf,0,sizeof(buf));
-		buf[0] = *(fileverptr+3);
-		buf[1] = *(fileverptr+4);
-		extender_major_version=atoi(buf);
-
-		memset(buf,0,sizeof(buf));
-		buf[0] = *(fileverptr+8);
-		buf[1] = *(fileverptr+9);
-		extender_minor_version=atoi(buf);
-
-		memset(buf,0,sizeof(buf));
-		buf[0] = *(fileverptr+11);
-		buf[1] = *(fileverptr+12);
-		buf[2] = *(fileverptr+13);
-		buf[3] = *(fileverptr+14);
-		extender_build_version=atoi(buf);
+		extender_major_version = extender_release = (unsigned char)buffer[hdr_off + 0x19U];
+		extender_revision = extender_build_version = 0;
 	}
 
 
@@ -343,7 +304,7 @@ static void ShowExtenderVersion( void )
 	printf("Build:          %04d\n",	extender_build_version);
 }
 
-static void ShowOEMInfo( void ) {
+void ShowOEMInfo() {
 	int n;
 	int objects;
 	unsigned long offs;
@@ -355,12 +316,16 @@ static void ShowOEMInfo( void ) {
 // if MZ, move to Linear Exec start
 	if(strncmp(buffer,"MZ",2) == 0)
 	{
-		offs = read_le32(&buffer[0x3C]);
+		offs=0;
+		offs|=(unsigned long)buffer[0x3C];
+		offs|=(unsigned long)buffer[0x3D]<<8;
+		offs|=(unsigned long)buffer[0x3E]<<16;
+		offs|=(unsigned long)buffer[0x3F]<<24;
 		if(offs == 0) return;
 	}
 	else 	offs=0;
 
-	if(fseek(fp,(long)offs,SEEK_SET) != 0) err_seek();
+	if(fseek(fp,offs,SEEK_SET) != 0) err_seek();
 	fread(buffer,1,16,fp);
 	if(ferror(fp)) err_read();
 
@@ -368,26 +333,34 @@ static void ShowOEMInfo( void ) {
 	if(strncmp(buffer,"LC",2) != 0) return;
 
 // check if OEM Info is appended
-	if( ((unsigned char)buffer[5]&0x80U) != 0x80U) return;
+	if( (buffer[5]&0x80) != 0x80) return;
 
-	objects = (unsigned char)buffer[4];
+	objects=buffer[4];
 
 // scan through Objects
 	for(n=0; n<objects; n++)
 	{
 		fread(buffer,1,16,fp);
 		if(ferror(fp)) err_read();
-		size = read_le32(&buffer[4]);
-		if(fseek(fp,(long)size,SEEK_CUR) != 0) err_seek();
+		size=0;
+		size|=(unsigned long)buffer[4];
+		size|=(unsigned long)buffer[5]<<8;
+		size|=(unsigned long)buffer[6]<<16;
+		size|=(unsigned long)buffer[7]<<24;
+		if(fseek(fp,size,SEEK_CUR) != 0) err_seek();
 	}
 
 // skip Fixups
 	fread(buffer,1,12,fp);
-	size = read_le32(&buffer[4]);
-	if(fseek(fp,(long)size,SEEK_CUR) != 0) err_seek();
+	size=0;
+	size|=(unsigned long)buffer[4];
+	size|=(unsigned long)buffer[5]<<8;
+	size|=(unsigned long)buffer[6]<<16;
+	size|=(unsigned long)buffer[7]<<24;
+	if(fseek(fp,size,SEEK_CUR) != 0) err_seek();
 
 	memset(buffer,0,sizeof(buffer));
-	fread(buffer,1,sizeof(buffer) - 1,fp);
+	fread(buffer,1,sizeof(buffer),fp);
 	if(ferror(fp)) err_read();
 
 	printf("\n");
@@ -402,19 +375,18 @@ static void ShowOEMInfo( void ) {
 
 
 /****************************************************************************/
-int main( int argc, char *argv[] )
+void main(int argc, char *argv[])
 {
 
 	setbuf(stdout, NULL);
 	ShowCopyright();
 
 	if(argc<2) err_usage();
-	if(	sver_ieq(argv[1],"-h") ||
-		sver_ieq(argv[1],"/h") ||
-		sver_ieq(argv[1],"-?") ||
-		sver_ieq(argv[1],"/?")
+	if(	stricmp(argv[1],"-h") == 0 ||
+		stricmp(argv[1],"/h") == 0 ||
+		stricmp(argv[1],"-?") == 0 ||
+		stricmp(argv[1],"/?") == 0
 	) ShowHelp();
-	if( strlen(argv[1]) >= sizeof(filename) ) err_open();
 	strcpy(filename,argv[1]);
 
 	OpenFile();
@@ -426,8 +398,6 @@ int main( int argc, char *argv[] )
 	ShowExtenderVersion();
 	ShowOEMInfo();
 
-	if( fp != NULL ) fclose(fp);
-	return 0;
 }
 
 

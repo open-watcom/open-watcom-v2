@@ -187,10 +187,6 @@
 #
 /bld/docstxt/docs/*.txt
 #
-!/bld/dos32a/*.d32
-/bld/dos32a/test/.vagrant/
-/bld/dos32a/test/.sync/
-#
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini
 /bld/vi/*/*.vi
