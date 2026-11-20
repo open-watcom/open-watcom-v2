@@ -37,7 +37,7 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .386p
@@ -46,7 +46,8 @@ _int21:	cld
 	test	cs:_sys_misc,0100h	; check for CTRL-C flag
 	jnz	_ctrl_c
 
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	ah,09h		; Print string:		DS:EDX
@@ -162,7 +163,8 @@ _int21:	cld
 	jz	@_716C
 
 @__go21:popad
-	pop	es ds
+	pop	es
+	pop	ds
 	db	66h
 	jmp	cs:_int21_ip
 
@@ -234,7 +236,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 @__1Ch:	call	@__all
 	mov	[esp+1Ch],al
 	cmp	al,0FFh
-	jz	@@done
+	jz	@1Ch_done
 	mov	[esp+14h],edx
 	mov	[esp+18h],ecx
 	shl	esi,4
@@ -242,7 +244,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	[esp+10h],ebx
 	mov	ax,cs:_sel_zero
 	mov	[esp+22h],ax
-@@done:	jmp	@__ok
+@1Ch_done:	jmp	@__ok
 
 
 
@@ -268,13 +270,13 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 @__32h:	call	@__all
 	mov	[esp+1Ch],al
 	cmp	al,0FFh
-	jz	@@done
+	jz	@32h_done
 	shl	esi,4
 	add	ebx,esi
 	mov	[esp+10h],ebx
 	mov	ax,cs:_sel_zero
 	mov	[esp+22h],ax
-@@done:	jmp	@__ok
+@32h_done:	jmp	@__ok
 
 
 
@@ -401,12 +403,17 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 
 
 ;=============================================================================
-; Create File
-;  In:	DS:EDX = file name, ECX = attributes
+; Create / Open File
+;  In:	DS:EDX = file name, ECX = attributes (3Ch) / AL = access mode (3Dh)
 ;  Out:	EAX = file handle
 ;
-@__3Ch:
-@__3Dh:	call	@__std
+@__3Dh:
+If DOS_LEGACY_125_20 ne 0
+	cmp	cs:_dos_ver_major,3
+	jae	@__3Ch
+	and	al,07h			; lower SHARE bits (e.g. 3DC0h -> 3D00h) on DOS < 3.0
+Endif
+@__3Ch:	call	@__std
 	mov	[esp+1Ch],eax
 	jz	@__ok
 	jmp	@__err
@@ -441,24 +448,24 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	ebx,ecx				; EBX=bytes to read
 	xor	edx,edx				; EDX=counter bytes read
 
-@@loop:	mov	[ebp+1Ch],ax			; store AX in structure
+@3Fh_loop:	mov	[ebp+1Ch],ax			; store AX in structure
 	mov	ax,_seg_buf
 	mov	[ebp+24h],ax			; store DS in structure
 	mov	wptr [ebp+14h],0		; store DX in structure
 
 	mov	eax,ebx
 	cmp	eax,_lobufsize
-	jbe	@@1
+	jbe	@3Fh_1
 	mov	eax,_lobufsize
-@@1:	mov	[ebp+18h],ax			; store CX in structure
+@3Fh_1:	mov	[ebp+18h],ax			; store CX in structure
 
 	call	int21h				; DOS read
 	movzx	eax,wptr [ebp+1Ch]		; EAX=bytes read
 	test	bptr [ebp+20h],1		; check for error
-	jnz	@@err
+	jnz	@3Fh_err
 
 	test	ax,ax				; if read 0 bytes
-	jz	@@done				;  then we're done
+	jz	@3Fh_done				;  then we're done
 
 	mov	esi,_lobufbase			; DS:ESI=source
 	call	@__cp2				; copy buffer to destination
@@ -466,16 +473,16 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	add	edx,eax				; adjust bytes read
 
 	cmp	wptr [ebp+10h],0		; if was reading from stdin
-	jz	@@done				;  then we're done
+	jz	@3Fh_done				;  then we're done
 
 	sub	ebx,eax				; adjust bytes to read
 	mov	ax,[ebp+1Ch+32h]
-	ja	@@loop
+	ja	@3Fh_loop
 
-@@done:	add	esp,32h
+@3Fh_done:	add	esp,32h
 	mov	[esp+1Ch],edx			; store bytes count
 	jmp	@__ok
-@@err:	add	esp,32h
+@3Fh_err:	add	esp,32h
 	mov	[esp+1Ch],eax			; error reading, store errcode
 	jmp	@__err
 
@@ -497,16 +504,16 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	ebx,ecx				; EBX=bytes to write
 	xor	edx,edx				; EDX=counter bytes written
 
-@@loop:	mov	[ebp+1Ch],ax			; store AX in structure
+@40h_loop:	mov	[ebp+1Ch],ax			; store AX in structure
 	mov	ax,cs:_seg_buf
 	mov	[ebp+24h],ax			; store DS in structure
 	mov	wptr [ebp+14h],0		; store DX in structure
 
 	mov	eax,ebx
 	cmp	eax,cs:_lobufsize
-	jbe	@@1
+	jbe	@40h_1
 	mov	eax,cs:_lobufsize
-@@1:	mov	[ebp+18h],ax			; store CX in structure
+@40h_1:	mov	[ebp+18h],ax			; store CX in structure
 
 	mov	edi,cs:_lobufbase
 	call	@__cp2				; copy source into buffer
@@ -514,20 +521,20 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	call	int21h				; DOS write to file
 	movzx	eax,wptr [ebp+1Ch]		; EAX=bytes written
 	test	bptr [ebp+20h],1		; check for error
-	jnz	@@err
+	jnz	@40h_err
 
 	test	ax,ax
-	jz	@@done				; if 0 bytes written, we're done
+	jz	@40h_done				; if 0 bytes written, we're done
 
 	add	edx,eax				; adjust bytes written
 	sub	ebx,eax				; adjust bytes to write
 	mov	ax,[ebp+1Ch+32h]
-	ja	@@loop				; loop until done
+	ja	@40h_loop				; loop until done
 
-@@done:	add	esp,32h
+@40h_done:	add	esp,32h
 	mov	[esp+1Ch],edx			; store bytes count
 	jmp	@__ok
-@@err:	add	esp,32h
+@40h_err:	add	esp,32h
 	mov	[esp+1Ch],eax			; error writing, store errcode
 	jmp	@__err
 
@@ -561,10 +568,10 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 ;  Out:	-
 ;
 @__43h:	call	@__std
-	jz	@@1
+	jz	@43h_1
 	mov	[esp+1Ch],eax
 	jmp	@__err
-@@1:	mov	[esp+18h],ecx
+@43h_1:	mov	[esp+18h],ecx
 	jmp	@__ok
 
 
@@ -584,19 +591,19 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	wptr [ebp+04h],0
 	call	int21h
 	test	bptr [ebp+20h],1
-	jnz	@@err
+	jnz	@47h_err
 	push	ds
 	pop	es
 	mov	edi,esi
 	mov	ds,cs:_sel_ds
 	mov	esi,_lobufbase
-@@1:	lods	bptr ds:[esi]
+@47h_1:	lods	bptr ds:[esi]
 	stos	bptr es:[edi]
 	test	al,al
-	jnz	@@1
+	jnz	@47h_1
 	add	esp,32h
 	jmp	@__ok
-@@err:	movzx	eax,wptr [ebp+1Ch]
+@47h_err:	movzx	eax,wptr [ebp+1Ch]
 	add	esp,32h
 	mov	[esp+1Ch],eax
 	jmp	@__err
@@ -610,11 +617,11 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 ;
 @__48h:	mov	ax,0100h
 	int	31h
-	jc	@@1
+	jc	@48h_1
 	movzx	edx,dx
 	mov	[esp+1Ch],edx
 	jmp	@__ok
-@@1:	movzx	eax,ax
+@48h_1:	movzx	eax,ax
 	movzx	ebx,bx
 	mov	[esp+1Ch],eax
 	mov	[esp+10h],ebx
@@ -630,11 +637,11 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 @__49h:	mov	ax,0101h
 	mov	dx,es
 	int	31h
-	jnc	@@0
+	jnc	@49h_0
 	movzx	eax,ax
 	mov	[esp+1Ch],eax
 	jmp	@__err
-@@0:	mov	wptr [esp+20h],0
+@49h_0:	mov	wptr [esp+20h],0
 	jmp	@__ok
 
 
@@ -677,13 +684,14 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	edi,cs:_lobufbase
 	mov	esi,edx
 	add	edi,100h
-@@1:	lods	bptr ds:[esi]		; copy Path\Name into buffer
+@4Bh_1:	lods	bptr ds:[esi]		; copy Path\Name into buffer
 	stos	bptr es:[edi]
 	test	al,al
-	jnz	@@1
+	jnz	@4Bh_1
 	pop	es
 
-	push	ds es
+	push	ds
+	push	es
 	mov	esi,es:[ebx+06h]
 	mov	edi,cs:_lobufbase
 	mov	ds,es:[ebx+0Ah]
@@ -693,34 +701,36 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	inc	cx
 	inc	cx
 	rep	movs bptr es:[edi],[esi]	; copy command line
-	pop	es ds
+	pop	es
+	pop	ds
 
-	push	ds es
+	push	ds
+	push	es
 	mov	edi,es:[ebx+00h]	; get environment
 	mov	ax,es:[ebx+04h]
 	test	ax,ax			; check env selector is 0
-	jz	@@3			; if yes, jump
+	jz	@4Bh_3			; if yes, jump
 	mov	es,ax
 	xor	ax,ax
 	mov	esi,edi
 	or	ecx,-1
-@@2:	repne	scas bptr es:[edi]
+@4Bh_2:	repne	scas bptr es:[edi]
 	dec	ecx
 	scas	bptr es:[edi]
-	jnz	@@2
+	jnz	@4Bh_2
 	not	ecx
 	mov	ax,0100h		; allocate mem for environment
 	mov	bx,cx
 	shr	bx,4
 	inc	bx
 	int	31h
-	jc	@@4
+	jc	@4Bh_4
 	push	es
 	pop	ds
 	mov	es,dx
 	xor	edi,edi
 	rep	movs bptr es:[edi],[esi]	; copy environment
-@@3:	mov	ds,cs:_sel_ds
+@4Bh_3:	mov	ds,cs:_sel_ds
 	mov	edi,_lobufbase
 	mov	wptr [edi+00h],ax
 	mov	ax,_seg_buf
@@ -731,8 +741,9 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	wptr [edi+08h],ax
 	mov	wptr [edi+0Ah],6Ch
 	mov	wptr [edi+0Ch],ax
-@@4:	pop	es ds
-	jc	@@err
+@4Bh_4:	pop	es
+	pop	ds
+	jc	@4Bh_err
 
 	push	dx			; save env selector
 	mov	ds,cs:_sel_ds
@@ -743,19 +754,19 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	wptr [ebp+14h],0100h
 
 	cmp	_sys_type,3
-	jz	@@5
+	jz	@4Bh_5
 	mov	eax,cr0
 	mov	edi,eax
 	and	al,0FBh
 	mov	cr0,eax
-@@5:	call	uninstall_client_ints
+@4Bh_5:	call	uninstall_client_ints
 	call	int21h
 	call	install_client_ints
 	cmp	_sys_type,3
-	jz	@@6
+	jz	@4Bh_6
 	mov	cr0,edi
 
-@@6:	pop	dx				; restore env sel
+@4Bh_6:	pop	dx				; restore env sel
 	mov	ax,0101h
 	int	31h
 
@@ -766,7 +777,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	jnz	@__err				; if error, set carry on ret
 	jmp	@__ok
 
-@@err:	add	esp,32h
+@4Bh_err:	add	esp,32h
 	mov	dptr [esp+1Ch],-1
 	jmp	@__err
 
@@ -787,11 +798,11 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	es:[002Ch],ax		; restore default environment
 
 	cmp	_sys_type,3		; if under DPMI, do not clear DRx
-	jz	@@1
+	jz	@4Ch_1
 	xor	eax,eax
 	mov	dr7,eax
 
-@@1:	push	es			; undefine Mouse ISR
+@4Ch_1:	push	es			; undefine Mouse ISR
 	mov	ax,000Ch
 	xor	edx,edx
 	mov	cx,dx
@@ -803,22 +814,22 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	cx,_mus_backseg
 	mov	ax,cx
 	or	ax,dx
-	jz	@@2
+	jz	@4Ch_2
 	mov	ax,0304h
 	int	31h
 
-@@2:	mov	ecx,_app_num_objects		; deallocate selectors
-	jcxz	@@4
-@@3:	mov	ax,0001h
+@4Ch_2:	mov	ecx,_app_num_objects		; deallocate selectors
+	jcxz	@4Ch_4
+@4Ch_3:	mov	ax,0001h
 	mov	bx,_app_buf_allocsel[ecx*2]
 	int	31h
-	loop	@@3
+	loop	@4Ch_3
 
-@@4:	call	check_inttab
+@4Ch_4:	call	check_inttab
 	call	restore_inttab
 	call	uninstall_client_ints
 
-@@5:	mov	ax,0001h			; free ZERO selector
+@4Ch_5:	mov	ax,0001h			; free ZERO selector
 	mov	bx,cs:_sel_zero
 	int	31h
 
@@ -838,7 +849,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 ;  Out:	-
 ;
 @__4Eh:	call	@__std
-	jnz	@@err
+	jnz	@4Eh_err
 	mov	ds,cs:_dta_sel
 	mov	esi,cs:_dta_off
 	mov	es,cs:_app_dta_sel
@@ -846,7 +857,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	ecx,2Bh
 	rep	movs bptr es:[edi],[esi]
 	jmp	@__ok
-@@err:	mov	[esp+1Ch],eax
+@4Eh_err:	mov	[esp+1Ch],eax
 	jmp	@__err
 
 
@@ -863,7 +874,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	ecx,2Bh
 	rep	movs bptr es:[edi],[esi]
 	call	@__all
-	jnz	@@err
+	jnz	@4Fh_err
 	mov	ds,cs:_dta_sel
 	mov	esi,cs:_dta_off
 	mov	es,cs:_app_dta_sel
@@ -871,7 +882,7 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	ecx,2Bh
 	rep	movs bptr es:[edi],[esi]
 	jmp	@__ok
-@@err:	mov	[esp+1Ch],eax
+@4Fh_err:	mov	[esp+1Ch],eax
 	jmp	@__err
 
 
@@ -975,16 +986,17 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 ;
 @_7160:	sub	esp,32h
 	mov	ebp,esp
-	push	es edi
+	push	es
+	push	edi
 	mov	[ebp+1Ch],ax
 	mov	[ebp+18h],cx
 	mov	es,cs:_sel_ds
 	mov	edi,cs:_lobufbase
 	add	edi,0200h
-@@1:	lods	bptr ds:[esi]
+@7160_1:	lods	bptr ds:[esi]
 	stos	bptr es:[edi]
 	test	al,al
-	jnz	@@1
+	jnz	@7160_1
 	mov	ax,cs:_seg_buf
 	mov	wptr [ebp+24h],ax
 	mov	wptr [ebp+22h],ax
@@ -994,16 +1006,17 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	push	es
 	pop	ds
 	mov	esi,cs:_lobufbase
-	pop	edi es
+	pop	edi
+	pop	es
 	test	bptr [ebp+20h],1
-	jnz	@@err
-@@2:	lods	bptr ds:[esi]
+	jnz	@7160_err
+@7160_2:	lods	bptr ds:[esi]
 	stos	bptr es:[edi]
 	test	al,al
-	jnz	@@2
+	jnz	@7160_2
 	add	esp,32h
 	jmp	@__ok
-@@err:	movzx	eax,wptr [ebp+1Ch]
+@7160_err:	movzx	eax,wptr [ebp+1Ch]
 	add	esp,32h
 	mov	[esp+1Ch],eax
 	jmp	@__err
@@ -1032,10 +1045,10 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	wptr [ebp+04h],0
 	mov	es,cs:_sel_ds
 	mov	edi,cs:_lobufbase
-@@0:	lods	bptr ds:[esi]
+@716C_0:	lods	bptr ds:[esi]
 	stos	bptr es:[edi]
 	test	al,al
-	jnz	@@0
+	jnz	@716C_0
 	call	int21h
 	movzx	eax,wptr [ebp+1Ch]
 	movzx	ecx,wptr [ebp+18h]
@@ -1173,7 +1186,8 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 ;	ECX = source size
 ;  Out:	EAX = destination size
 ;
-@_FF8D:	push	gs ds
+@_FF8D:	push	gs
+	push	ds
 	pop	gs
 	mov	ds,cs:_sel_ds
 	call	decompress
@@ -1221,10 +1235,10 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	edi,cs:_lobufbase
 	mov	esi,edx
 	mov	dx,di
-@@1:	lods	bptr ds:[esi]
+@FF80_1:	lods	bptr ds:[esi]
 	stosb
 	test	al,al
-	jnz	@@1
+	jnz	@FF80_1
 	push	es
 	pop	ds
 	mov	_int_ss,ss
@@ -1481,13 +1495,15 @@ _ctrl_c:mov	ax,4CFFh	; exit on CTRL-C with code 255
 	mov	[esp+1Ch],eax			; put EAX (error) on stack
 	jnz	@__err
 @__ok:	popad					; return ok
-@__exi:	pop	es ds
+@__exi:	pop	es
+	pop	ds
 	and	bptr [esp+8],0FEh
 	iretd
 @__err:	popad					; return with error
-	pop	es ds
+	pop	es
+	pop	ds
 	or	bptr [esp+8],01h
 	iretd
 
 
-PopState
+	.386p

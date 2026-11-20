@@ -39,8 +39,8 @@
 
 		.486p
 		.MODEL	flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 include	stddef.inc
 
@@ -73,9 +73,58 @@ PUBLIC	_obj_old_size, _obj_new_size
 PUBLIC	create_lc_header_
 PUBLIC	create_lc_object_
 PUBLIC	create_lc_fixups_
+.DATA?
+;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+_sc_buffer		db 1000h dup(?)
+
+_sc_exec_type		dd ?
+_exec_name		dd ?
+
+_exec_buffer		dd ?
+_exec_bufhand		dd ?
+_temp_buffer		dd ?
+_temp_bufhand		dd ?
+
+__saved_esp		dd ?
+_tmp_cur_object		dd ?
+_tmp_cnt_bytes		dd ?
+_obj_old_size		dd ?
+_obj_new_size		dd ?
+
+;-----------------------------------------------------------------------------
+_app_num_objects	dd ?
+_app_off_objects	dd ?
+_app_off_objpagetab	dd ?
+_app_off_fixpagetab	dd ?
+_app_off_fixrectab	dd ?
+_app_off_datapages	dd ?
+_app_siz_fixrectab	dd ?
+_app_siz_lastpage	dd ?
+_app_off_pageshift	dd ?
+_app_obj_virtsize	dd ?
+
+_app_enc_status		db ?			; 0=encoded, 1=not encoded
+_app_obj_iscode		db ?
+_app_obj_is32bit	db ?
+
+
+.DATA
+;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+_buffer			dd offset _sc_buffer
+_exec_handle		dw -1
+_temp_handle		dw -1
+
+_str_reading		db 'Reading...',8,8,8,8,8,8,8,8,8,8,0
+_str_writing		db 'Writing...',8,8,8,8,8,8,8,8,8,8,0
+_str_nothing		db '          ',8,8,8,8,8,8,8,8,8,8,0
+
+
+
 
 
 .CODE
+
+
 ;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 
 
@@ -94,11 +143,11 @@ PUBLIC	create_lc_fixups_
 create_lc_header_:
 	pushad
 	call	seek_to_start			; move to exec start
-	jc	@@err1
+	jc	@create_lc_header_err1
 	mov	ecx,0A8h
 	mov	edx,_buffer
 	call	read_from_exec			; load LE/LX header
-	jc	@@err2
+	jc	@create_lc_header_err2
 
 	mov	esi,_buffer			; source LE/LX header
 	lea	edi,[esi+0100h]			; destination LC header
@@ -120,10 +169,10 @@ create_lc_header_:
 
 	mov	eax,[esi+0010h]			; check Module Flags
 	and	eax,2000h
-	jnz	@@err4
+	jnz	@create_lc_header_err4
 	mov	eax,[esi+0044h]			; check # of Objects
 	cmp	eax,APP_MAXOBJECTS
-	ja	@@err5
+	ja	@create_lc_header_err5
 	mov	_app_num_objects,eax
 	mov	eax,[esi+0040h]
 	mov	_app_off_objects,eax
@@ -142,34 +191,34 @@ create_lc_header_:
 
 	mov	eax,0FFFh
 	cmp	_Exec_Type,1
-	jz	@@1
+	jz	@create_lc_header_1
 	mov	eax,1
 	mov	ecx,[esi+002Ch]		; get Page Offset Shift for LX-type
 	shl	eax,cl			; max shift is 15 (8000h-1)
 	dec	eax
-@@1:	mov	_app_off_pageshift,eax
+@create_lc_header_1:	mov	_app_off_pageshift,eax
 
 	mov	ecx,16
 	mov	edx,edi
 	call	write_to_temp			; write LC header to temp file
-	jc	@@err3
+	jc	@create_lc_header_err3
 	popad
 	xor	eax,eax
 	ret
 
-@@err1:	popad					; error seeking in exec
+@create_lc_header_err1:	popad					; error seeking in exec
 	mov	eax,-1
 	ret
-@@err2:	popad					; error loading from exec
+@create_lc_header_err2:	popad					; error loading from exec
 	mov	eax,-2
 	ret
-@@err3:	popad					; error writing to temp
+@create_lc_header_err3:	popad					; error writing to temp
 	mov	eax,-3
 	ret
-@@err4:	popad					; error in application exec
+@create_lc_header_err4:	popad					; error in application exec
 	mov	eax,-4
 	ret
-@@err5:	popad					; too many objects in exec
+@create_lc_header_err5:	popad					; too many objects in exec
 	mov	eax,-5
 	ret
 
@@ -200,17 +249,17 @@ create_lc_object_:
 
 	mov	edx,_app_off_objects		; move to current Object head
 	call	seek_to_edx
-	jc	@@err1
+	jc	@create_lc_object_err1
 
 	mov	ecx,18h				; load Object header
 	mov	edx,_buffer
 	call	read_from_exec
-	jc	@@err2
+	jc	@create_lc_object_err2
 	add	_app_off_objects,ecx
 
 	mov	edx,_app_off_datapages
 	call	seek_to_edx
-	jc	@@err1
+	jc	@create_lc_object_err1
 
 	mov	esi,_buffer
 	mov	eax,[esi+0000h]		; Virtual Size
@@ -218,59 +267,59 @@ create_lc_object_:
 	mov	_app_obj_virtsize,eax
 
 	call	alloc_exec_buffer
-	jc	@@err3
+	jc	@create_lc_object_err3
 	call	clear_exec_buffer
 
 	mov	ecx,eax
 	mov	eax,ebx
 	xor	ebp,ebp
 	test	eax,eax			; check if # Page Table Entries = 0
-	jz	@@5			; if yes, skip loading
+	jz	@create_lc_object_5			; if yes, skip loading
 	shl	eax,12			; convert # Page Table Entries to bytes
 	cmp	eax,ecx			; check if # bytes >= bytes to load
-	jae	@@1			; if yes, jump
+	jae	@create_lc_object_1			; if yes, jump
 	mov	ecx,eax			; else adjust number of bytes to read
 
-@@1:	mov	eax,_tmp_cur_object	; get Object #
+@create_lc_object_1:	mov	eax,_tmp_cur_object	; get Object #
 	cmp	eax,_app_num_objects
-	jnz	@@3
+	jnz	@create_lc_object_3
 	cmp	_Exec_Type,1
-	jnz	@@2
+	jnz	@create_lc_object_2
 	lea	ecx,[ebx-1]		; load LE-style Last Object (BSS)
 	shl	ecx,12
 	add	ecx,_app_siz_lastpage
-	jmp	@@3
-@@2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
+	jmp	@create_lc_object_3
+@create_lc_object_2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
 	shl	ecx,12
 	cmp	ecx,_app_obj_virtsize
-	jb	@@3
+	jb	@create_lc_object_3
 	mov	ecx,_app_obj_virtsize
-@@3:	mov	ebp,ecx			; EBP = bytes to load (phys. size)
+@create_lc_object_3:	mov	ebp,ecx			; EBP = bytes to load (phys. size)
 	mov	edx,_exec_buffer
 	call	read_from_exec		; load object data
-	jc	@@err2
+	jc	@create_lc_object_err2
 
 	mov	eax,ecx
 	mov	edx,_app_off_pageshift
 	test	eax,edx
-	jz	@@4
+	jz	@create_lc_object_4
 	mov	ecx,edx
 	not	edx
 	and	eax,edx
 	lea	eax,[eax+ecx+1]
-@@4:	add	_app_off_datapages,eax
+@create_lc_object_4:	add	_app_off_datapages,eax
 
-@@5:	mov	eax,ebp				; EAX = size
+@create_lc_object_5:	mov	eax,ebp				; EAX = size
 	mov	_obj_old_size,eax
 	shl	eax,1				; double that
 	add	eax,10h				; + Object header size
 	call	alloc_temp_buffer
-	jc	@@err3
+	jc	@create_lc_object_err3
 	call	clear_temp_buffer
 
 	mov	eax,ebp
 	test	eax,eax				; if null-size Object
-	jz	@@6				; then skip compressing it
+	jz	@create_lc_object_6				; then skip compressing it
 	call	find_last_byte
 	mov	ebp,eax
 
@@ -282,7 +331,7 @@ create_lc_object_:
 	mov	ebx,ebp				; EBX = size
 	call	compress_data			; returns: EAX = new size
 
-@@6:	call	print_writing
+@create_lc_object_6:	call	print_writing
 
 	mov	ebp,eax				; EBP = compressed size
 	mov	_obj_new_size,eax
@@ -291,9 +340,9 @@ create_lc_object_:
 
 	mov	eax,[esi+0000h]			; Virtual Size
 	cmp	_app_enc_status,0
-	jz	@@l1
+	jz	@create_lc_object_l1
 	or	eax,80000000h
-@@l1:	mov	[edi+0000h],eax
+@create_lc_object_l1:	mov	[edi+0000h],eax
 	mov	eax,ebp				; Compressed Size
 	mov	[edi+0004h],eax
 	mov	eax,[esi+0008h]			; Object Flags
@@ -302,17 +351,17 @@ create_lc_object_:
 	mov	[edi+000Ah],ax
 	mov	eax,[esi+000Ch]			; Page Table Index
 	test	eax,0FFFF0000h
-	jnz	@@err5
+	jnz	@create_lc_object_err5
 	mov	[edi+000Ch],ax
 	mov	eax,[esi+0010h]			; # of Page Table Entries
 	test	eax,0FFFF0000h
-	jnz	@@err5
+	jnz	@create_lc_object_err5
 	mov	[edi+000Eh],ax
 
 	lea	ecx,[ebp+10h]
 	mov	edx,_temp_buffer
 	call	write_to_temp
-	jc	@@err4
+	jc	@create_lc_object_err4
 
 	mov	eax,[esi+0008h]			; Object Flags
 	test	eax,0004h
@@ -328,19 +377,19 @@ create_lc_object_:
 	popad
 	xor	eax,eax
 	ret
-@@err1:	popad					; error seeking in exec
+@create_lc_object_err1:	popad					; error seeking in exec
 	mov	eax,-1
 	ret
-@@err2:	popad					; error reading from exec
+@create_lc_object_err2:	popad					; error reading from exec
 	mov	eax,-2
 	ret
-@@err3:	popad					; error allocating memory
+@create_lc_object_err3:	popad					; error allocating memory
 	mov	eax,-3
 	ret
-@@err4:	popad					; error writing to temp
+@create_lc_object_err4:	popad					; error writing to temp
 	mov	eax,-4
 	ret
-@@err5:	popad					; object header overflow
+@create_lc_object_err5:	popad					; object header overflow
 	mov	eax,-5
 	ret
 
@@ -368,23 +417,23 @@ create_lc_fixups_:
 
 	mov	eax,_app_siz_fixrectab
 	call	alloc_exec_buffer
-	jc	@@err3
+	jc	@create_lc_fixups_err3
 	call	clear_exec_buffer
 
 	mov	edx,_app_off_fixpagetab
 	call	seek_to_edx
-	jc	@@err1
+	jc	@create_lc_fixups_err1
 	mov	ecx,_app_siz_fixrectab
 	mov	edx,_exec_buffer
 	call	read_from_exec
-	jc	@@err2
+	jc	@create_lc_fixups_err2
 
 	mov	eax,_app_siz_fixrectab
 	mov	_obj_old_size,eax
 	shl	eax,1
 	add	eax,0Ch
 	call	alloc_temp_buffer
-	jc	@@err3
+	jc	@create_lc_fixups_err3
 	call	clear_temp_buffer
 
 	mov	eax,_app_siz_fixrectab
@@ -407,9 +456,9 @@ create_lc_fixups_:
 
 	mov	eax,_app_siz_fixrectab
 	cmp	_app_enc_status,0
-	jz	@@l1
+	jz	@create_lc_fixups_l1
 	or	eax,80000000h
-@@l1:	mov	[edi+0000h],eax
+@create_lc_fixups_l1:	mov	[edi+0000h],eax
 	mov	[edi+0004h],ebp
 	mov	eax,_app_off_fixrectab
 	mov	ebx,_app_off_fixpagetab
@@ -419,7 +468,7 @@ create_lc_fixups_:
 	lea	ecx,[ebp+0Ch]
 	mov	edx,_temp_buffer
 	call	write_to_temp
-	jc	@@err4
+	jc	@create_lc_fixups_err4
 
 	call	free_temp_buffer
 	call	free_exec_buffer
@@ -430,16 +479,16 @@ create_lc_fixups_:
 	xor	eax,eax
 	ret
 
-@@err1:	popad					; error seeking in exec
+@create_lc_fixups_err1:	popad					; error seeking in exec
 	mov	eax,-1
 	ret
-@@err2:	popad					; error reading from exec
+@create_lc_fixups_err2:	popad					; error reading from exec
 	mov	eax,-2
 	ret
-@@err3:	popad					; error allocating memory
+@create_lc_fixups_err3:	popad					; error allocating memory
 	mov	eax,-3
 	ret
-@@err4:	popad					; error writing to temp
+@create_lc_fixups_err4:	popad					; error writing to temp
 	mov	eax,-4
 	ret
 
@@ -450,25 +499,28 @@ create_lc_fixups_:
 compress_data:
 	mov	_app_enc_status,0
 	cmp	_encode,TRUE			; if NOT encode, copy data
-	jnz	@@2
+	jnz	@compress_data_2
 	cmp	_smart,TRUE			; if NOT smart, compress data
 	jnz	CompressData_
 	test	ebx,ebx
-	jnz	@@0
+	jnz	@compress_data_0
 	xor	eax,eax
 	mov	_app_enc_status,1
 	ret
 
-@@0:	push	eax edx ebx
+@compress_data_0:	push	eax
+	push	edx
+	push	ebx
 	call	CompressData_
-	pop	ebx edx
+	pop	ebx
+	pop	edx
 	cmp	eax,ebx
-	ja	@@1
+	ja	@compress_data_1
 	add	esp,4
 	ret
 
-@@1:	pop	eax
-@@2:	pushad
+@compress_data_1:	pop	eax
+@compress_data_2:	pushad
 	mov	esi,eax
 	mov	edi,edx
 	mov	ecx,ebx
@@ -500,28 +552,28 @@ find_common_byte:
 	xor	eax,eax
 	mov	ebx,0100h
 	Align 4
-@@1:	mov	ecx,ebp
+@find_common_byte_1:	mov	ecx,ebp
 	mov	edi,_exec_buffer
 	Align 4
-@@2:	scasb
-	jnz	@@3
+@find_common_byte_2:	scasb
+	jnz	@find_common_byte_3
 	inc	dword ptr [esp+eax*4]
 	Align 4
-@@3:	dec	ecx
-	jnz	@@2
+@find_common_byte_3:	dec	ecx
+	jnz	@find_common_byte_2
 	inc	eax
 	dec	ebx
-	jnz	@@1
+	jnz	@find_common_byte_1
 	xor	eax,eax
 	xor	ebx,ebx
 	xor	edx,edx
-@@4:	cmp	eax,[esp+ebx*4]
-	jae	@@5
+@find_common_byte_4:	cmp	eax,[esp+ebx*4]
+	jae	@find_common_byte_5
 	mov	eax,[esp+ebx*4]
 	mov	edx,ebx
-@@5:	inc	ebx
+@find_common_byte_5:	inc	ebx
 	cmp	ebx,0100h
-	jb	@@4
+	jb	@find_common_byte_4
 	add	esp,0100h*4
 	mov	[esp+1Ch],edx
 	popad
@@ -537,10 +589,10 @@ find_common_byte:
 find_last_byte:
 	pushad
 	cmp	_strip,TRUE
-	jnz	@@done
+	jnz	@find_last_byte_done
 
 	mov	ecx,eax
-	jecxz	@@done
+	jecxz	@find_last_byte_done
 	xor	eax,eax
 	mov	edi,_exec_buffer
 	lea	edi,[edi+ecx-1]
@@ -548,10 +600,10 @@ find_last_byte:
 	repe	scasb
 	cld
 	cmp	al,[edi+1]
-	jz	@@1
+	jz	@find_last_byte_1
 	inc	ecx
-@@1:	mov	[esp+1Ch],ecx
-@@done:	popad
+@find_last_byte_1:	mov	[esp+1Ch],ecx
+@find_last_byte_done:	popad
 	ret
 
 
@@ -562,9 +614,9 @@ open_exec_:
 	mov	edx,eax
 	mov	ax,3D02h
 	int	21h
-	jc	@@0
+	jc	@open_exec_0
 	mov	_exec_handle,ax
-@@0:	popad
+@open_exec_0:	popad
 	mov	eax,0
 	sbb	eax,eax
 	ret
@@ -573,11 +625,11 @@ close_exec_:
 	pushad
 	mov	bx,_exec_handle
 	cmp	bx,-1
-	jz	@@0
+	jz	@close_exec_0
 	mov	ah,3Eh
 	int	21h
 	mov	_exec_handle,-1
-@@0:	popad
+@close_exec_0:	popad
 	ret
 
 create_temp_:
@@ -586,9 +638,9 @@ create_temp_:
 	mov	ecx,00h
 	mov	ah,3Ch
 	int	21h
-	jc	@@0
+	jc	@create_temp_0
 	mov	_temp_handle,ax
-@@0:	popad
+@create_temp_0:	popad
 	mov	eax,0
 	sbb	eax,eax
 	ret
@@ -597,11 +649,11 @@ close_temp_:
 	pushad
 	mov	bx,_temp_handle
 	cmp	bx,-1
-	jz	@@0
+	jz	@close_temp_0
 	mov	ah,3Eh
 	int	21h
 	mov	_temp_handle,-1
-@@0:	popad
+@close_temp_0:	popad
 	ret
 
 
@@ -614,38 +666,38 @@ get_exec_type_:
 	mov	ecx,4
 	mov	edx,_buffer
 	int	21h
-	jc	@@err1
+	jc	@get_exec_type_err1
 	test	eax,eax
-	jz	@@err2			; unknown exec format
+	jz	@get_exec_type_err2			; unknown exec format
 	cmp	wptr [edx],'EL'
-	jz	@@1
+	jz	@get_exec_type_1
 	cmp	wptr [edx],'XL'
-	jz	@@2
+	jz	@get_exec_type_2
 	cmp	wptr [edx],'CL'
-	jz	@@3
+	jz	@get_exec_type_3
 	cmp	wptr [edx],'EP'
-	jz	@@4
+	jz	@get_exec_type_4
 	cmp	dptr [edx],'1WMP'
-	jz	@@5
-@@err2:	popad
+	jz	@get_exec_type_5
+@get_exec_type_err2:	popad
 	mov	eax,-2
 	ret
-@@err1:	popad
+@get_exec_type_err1:	popad
 	mov	eax,-1
 	ret
-@@1:	popad
+@get_exec_type_1:	popad
 	mov	eax,1
 	ret
-@@2:	popad
+@get_exec_type_2:	popad
 	mov	eax,2
 	ret
-@@3:	popad
+@get_exec_type_3:	popad
 	mov	eax,3
 	ret
-@@4:	popad
+@get_exec_type_4:	popad
 	mov	eax,4
 	ret
-@@5:	popad
+@get_exec_type_5:	popad
 	mov	eax,5
 	ret
 
@@ -658,28 +710,28 @@ write_oem_to_temp_:
 	mov	ah,40h
 	mov	bx,_temp_handle
 	int	21h
-	jc	@@err
+	jc	@write_oem_to_temp_err
 
 	xor	ecx,ecx
 	xor	edx,edx
 	mov	ax,4200h
 	mov	bx,_temp_handle
 	int	21h
-	jc	@@err
+	jc	@write_oem_to_temp_err
 
 	mov	ah,3Fh
 	mov	bx,_temp_handle
 	mov	ecx,10h
 	mov	edx,_buffer
 	int	21h
-	jc	@@err
+	jc	@write_oem_to_temp_err
 
 	xor	ecx,ecx
 	xor	edx,edx
 	mov	ax,4200h
 	mov	bx,_temp_handle
 	int	21h
-	jc	@@err
+	jc	@write_oem_to_temp_err
 
 	mov	edx,_buffer
 	mov	al,[edx+05h]
@@ -691,13 +743,13 @@ write_oem_to_temp_:
 	mov	ecx,10h
 	mov	edx,_buffer
 	int	21h
-	jc	@@err
+	jc	@write_oem_to_temp_err
 
 	popad
 	xor	eax,eax
 	ret
 
-@@err:	popad
+@write_oem_to_temp_err:	popad
 	mov	eax,-1
 	ret
 
@@ -797,83 +849,38 @@ clear_temp_buffer:
 print_reading:
 	pushad
 	cmp	_quiet,0
-	jnz	@@0
+	jnz	@print_reading_0
 	cmp	_nocount,TRUE
-	jz	@@0
+	jz	@print_reading_0
 	mov	ax,0FF80h
 	mov	edx,offset _str_reading
 	int	21h
-@@0:	popad
+@print_reading_0:	popad
 	ret
 print_writing:
 	pushad
 	cmp	_quiet,0
-	jnz	@@0
+	jnz	@print_writing_0
 	cmp	_nocount,TRUE
-	jz	@@0
+	jz	@print_writing_0
 	mov	ax,0FF80h
 	mov	edx,offset _str_writing
 	int	21h
-@@0:	popad
+@print_writing_0:	popad
 	ret
 print_nothing:
 	pushad
 	cmp	_quiet,0
-	jnz	@@0
+	jnz	@print_nothing_0
 	cmp	_nocount,TRUE
-	jz	@@0
+	jz	@print_nothing_0
 	mov	ax,0FF80h
 	mov	edx,offset _str_nothing
 	int	21h
-@@0:	popad
+@print_nothing_0:	popad
 	ret
 
 
 
-.DATA
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
-_buffer			dd offset @buffer
-_exec_handle		dw -1
-_temp_handle		dw -1
-
-_str_reading		db 'Reading...',8,8,8,8,8,8,8,8,8,8,0
-_str_writing		db 'Writing...',8,8,8,8,8,8,8,8,8,8,0
-_str_nothing		db '          ',8,8,8,8,8,8,8,8,8,8,0
-
-
-
-.DATA?
-;อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
-@buffer		db 1000h dup(?)
-
-_exec_type		dd ?
-_exec_name		dd ?
-
-_exec_buffer		dd ?
-_exec_bufhand		dd ?
-_temp_buffer		dd ?
-_temp_bufhand		dd ?
-
-__saved_esp		dd ?
-_tmp_cur_object		dd ?
-_tmp_cnt_bytes		dd ?
-_obj_old_size		dd ?
-_obj_new_size		dd ?
-
-;-----------------------------------------------------------------------------
-_app_num_objects	dd ?
-_app_off_objects	dd ?
-_app_off_objpagetab	dd ?
-_app_off_fixpagetab	dd ?
-_app_off_fixrectab	dd ?
-_app_off_datapages	dd ?
-_app_siz_fixrectab	dd ?
-_app_siz_lastpage	dd ?
-_app_off_pageshift	dd ?
-_app_obj_virtsize	dd ?
-
-_app_enc_status		db ?			; 0=encoded, 1=not encoded
-_app_obj_iscode		db ?
-_app_obj_is32bit	db ?
 
 end

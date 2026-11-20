@@ -15,17 +15,3 @@ type="e"    usr="pmwbind.exe"
 type="e"    usr="pmwlite.exe"
 type="e"    usr="pmwsetup.exe"
 type="e"    usr="pmwver.com"
-
-# DOS/32A"
-type="e"    usr="dos32a.exe"
-type="s"    usr="license.d32"
-type="s"    usr="readme.d32"
-type="e"    usr="sb.exe"
-type="e"    usr="sc.exe"
-type="e"    usr="sd.exe"
-type="e"    usr="ss.exe"
-type="e"    usr="stub32a.exe"
-type="e"    usr="stub32c.exe"
-type="e"    usr="sver.exe"
-
-

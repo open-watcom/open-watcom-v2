@@ -47,7 +47,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <typedefs.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 //#include <debug.h>
 
 #define	BLACK		0

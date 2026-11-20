@@ -39,10 +39,10 @@
 
 	.286
 	.MODEL tiny
-	LOCALS
+; LOCALS
 
 ;=============================================================================
-_ID32	segment para public use16 'CODE0'
+_ID32	segment para public 'CODE0'
 _ID32_SIZE=16		; size excluding 'ID32' signature
 ;-----------------------------------------------------------------------------
 db	'ID32'		; ID signature
@@ -93,8 +93,8 @@ dw	0000h		; Reserved (v7.0+)
 ;-----------------------------------------------------------------------------
 db	'STUB/32C'							,0
 db	'Copyright (C) 1996-2006 by Narech K.'				,0
-db	??date								,0
-db	??time								,0
+db	'04-20-06'								,0
+db	'00:00:00'								,0
 
 _ID32	ends
 
@@ -120,7 +120,8 @@ start:	push	cs
 	int	21h
 	jc	err1
 
-	push	ax ds				; install INT 21h
+	push	ax	; install INT 21h
+	push	ds
 	xor	ax,ax
 	mov	ds,ax
 	cli
@@ -133,10 +134,11 @@ start:	push	cs
 	mov	ax,seg _TEXT16
 	mov	ds:[21h*4+2],ax
 	sti
-	pop	ds ax
+	pop	ds
+	pop	ax
 
 
-@@1:	mov	es,es:[002Ch]		; get environment
+@start_1:	mov	es,es:[002Ch]		; get environment
 	call	make_cmd
 	mov	bp,0090h
 	call	exec
@@ -153,15 +155,16 @@ err1:	mov	ax,4CFFh
 
 ;-----------------------------------------------------------------------------
 make_cmd:
-	push	ds es
+	push	ds
+	push	es
 	push	ss
 	pop	ds
 	xor	ax,ax
 	xor	di,di
 	mov	cx,7FFFh
-@@1:	repne	scasb
+@make_cmd_1:	repne	scasb
 	scasb
-	jnz	@@1
+	jnz	@make_cmd_1
 	inc	di
 	inc	di
 	mov	si,di
@@ -183,7 +186,8 @@ make_cmd:
 	inc	cx
 	mov	es:[0010h],al
 	rep	movsb
-	pop	es ds
+	pop	es
+	pop	ds
 	ret
 
 
@@ -191,33 +195,33 @@ make_cmd:
 find_path1:
 	xor	ax,ax
 	xor	di,di
-@@1:	mov	cx,0007h
+@find_path1_1:	mov	cx,0007h
 	mov	si,offset path1
-	rep	cmpsb
-	jz	@@2
+	repe	cmpsb
+	jz	@find_path1_2
 	mov	cl,0FFh
 	repne	scasb
 	cmp	al,es:[di]
-	jnz	@@1
+	jnz	@find_path1_1
 	ret
-@@2:	mov	al,20h				; skip leading spaces
+@find_path1_2:	mov	al,20h				; skip leading spaces
 	mov	cl,0FFh
-	rep	scasb
+	repe	scasb
 	cmp	word ptr es:[di],'\:'
-	jz	@@3
+	jz	@find_path1_3
 	ret
-@@3:	dec	di
+@find_path1_3:	dec	di
 	mov	bp,0090h
-@@loop:	mov	al,es:[di]
+@find_path1_loop:	mov	al,es:[di]
 	test	al,al
-	jz	@@4
+	jz	@find_path1_4
 	inc	di
 	cmp	al,20h
-	jz	@@4
+	jz	@find_path1_4
 	mov	[bp],al
 	inc	bp
-	jmp	@@loop
-@@4:	mov	byte ptr [bp],'\'
+	jmp	@find_path1_loop
+@find_path1_4:	mov	byte ptr [bp],'\'
 	mov	word ptr [bp+1],'IB'
 	mov	word ptr [bp+3],'WN'
 	add	bp,5
@@ -230,47 +234,53 @@ find_path1:
 find_path2:
 	xor	ax,ax
 	xor	di,di
-@@1:	mov	cx,0005h
+@find_path2_1:	mov	cx,0005h
 	mov	si,offset path2
-	rep	cmpsb
-	jz	@@2
+	repe	cmpsb
+	jz	@find_path2_2
 	mov	cl,0FFh
 	repne	scasb
 	cmp	al,es:[di]
-	jnz	@@1
+	jnz	@find_path2_1
 	ret
-@@2:	mov	bp,0090h
-@@loop:	mov	al,es:[di]
+@find_path2_2:	mov	bp,0090h
+@find_path2_loop:	mov	al,es:[di]
 	test	al,al
 	jz	exec
 	inc	di
 	cmp	al,20h
-	jz	@@loop
+	jz	@find_path2_loop
 	cmp	al,';'
-	jz	@@3
+	jz	@find_path2_3
 	mov	[bp],al
 	inc	bp
-	jmp	@@loop
-@@3:	call	exec
-	jmp	@@2
+	jmp	@find_path2_loop
+@find_path2_3:	call	exec
+	jmp	@find_path2_2
 
 
 ;-----------------------------------------------------------------------------
-exec:	push	ds es di
+exec:	push	ds
+	push	es
+	push	di
 	xor	si,si
 	cmp	bp,0090h
-	jz	@@0
+	jz	@exec_0
 	inc	si
 	mov	byte ptr [bp],'\'
-@@0:	lea	di,[bp+si]
+@exec_0:	lea	di,[bp+si]
 	mov	si,offset name1
 	push	ss
 	pop	es
 	mov	cx,11
 	rep	movsb
 
-	push	ss ss ss
-	pop	ds es ax
+	push	ss
+	push	ss
+	push	ss
+	pop	ds
+	pop	es
+	pop	ax
 	xor	bx,bx
 	mov	word ptr ds:[0000h],bx
 	mov	word ptr ds:[0002h],0010h
@@ -283,14 +293,16 @@ exec:	push	ds es di
 	mov	dx,0090h
 	mov	ax,4B00h
 	int	21h
-	jc	@@1
+	jc	@exec_1
 
 	mov	ah,4Dh
 	int	21h
 	mov	ah,4Ch
 	int	21h
 
-@@1:	pop	di es ds
+@exec_1:	pop	di
+	pop	es
+	pop	ds
 	ret
 
 
@@ -298,17 +310,17 @@ exec:	push	ds es di
 ;-----------------------------------------------------------------------------
 	Align 4
 int21h:	cmp	ah,4Ch
-	jz	@@1
+	jz	@int21h_1
 	cmp	ax,0FF87h
-	jz	@@2
-@@0:	jmp	dword ptr cs:_ip21h
+	jz	@int21h_2
+@int21h_0:	jmp	dword ptr cs:_ip21h
 
-@@1:	push	ax
+@int21h_1:	push	ax
 	call	uninstall_int21h
 	pop	ax
-	jmp	@@0
+	jmp	@int21h_0
 
-@@2:	call	uninstall_int21h
+@int21h_2:	call	uninstall_int21h
 	mov	ax,seg _ID32
 	mov	ds,ax			; DS:SI = pointer to configuration
 	xor	si,si
@@ -341,7 +353,7 @@ $theend	proc near
 $theend	endp
 
 
-	evendata
+	even
 _ip21h	dw ?
 _cs21h	dw ?
 _psp	dw ?

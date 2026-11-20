@@ -293,6 +293,29 @@ system begin causeway_pc98
     format os2 le ^
 end
 
+system begin dos32a
+    option osname='DOS/32 Advanced DOS Extender (LE-style)'
+    libpath '%OWROOT%/bld/fpuemu/386/stub386'
+    libpath '%OWROOT%/bld/fpuemu/386/dos386'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/clib/doslfn/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.386/ms_s'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_r'
+    libpath '%OWROOT%/bld/mathlib/library/msdos.387/ms_s'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/library/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.386/ms_s'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_r'
+    libpath '%OWROOT%/bld/cpplib/complex/generic.387/ms_s'
+    libpath '%OWROOT%/bld/dos32a/dos386'
+    op stub='%OWROOT%/bld/dos32a/dos386/dos32a.exe'
+    format os2 le ^
+end
+
 system begin pharlap
     option osname='PharLap'
     libpath '%OWROOT%/bld/fpuemu/386/stub386'

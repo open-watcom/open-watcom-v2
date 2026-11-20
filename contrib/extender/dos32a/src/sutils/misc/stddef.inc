@@ -19,3 +19,7 @@ rdtsc	macro
 
 TRUE	equ 1
 FALSE	equ 0
+
+evendata macro
+	even
+endm

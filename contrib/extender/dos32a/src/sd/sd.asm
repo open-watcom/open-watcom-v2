@@ -39,16 +39,85 @@
 
 		.486p
 		.MODEL flat
-		LOCALS
-		NOJUMPS
+; LOCALS
+; NOJUMPS
 
 include	stddef.inc
 
+.DATA
+externdef __history_bufnum:dword
+externdef __history_bufptr:dword
+externdef __history_bufon:byte
+externdef _app_off_datapages:dword
+externdef _data_override:byte
+externdef xpos:byte
+externdef _cpu_xpos:dword
+externdef ypos:byte
+externdef _cpu_ypos:dword
+externdef _cpu_xptr:dword
+externdef _mem_xpos:dword
+externdef _mem_ypos:dword
+externdef _stk_xpos:dword
+externdef _stk_ypos:dword
+externdef _reg_xpos:dword
+externdef _reg_ypos:dword
+externdef _reg_ldat:dword
+externdef _reg_xptr:dword
+externdef _vgastate_set:byte
+externdef _svgastate_set:byte
+externdef old_video_mode:word
+externdef _app_type:byte
+externdef _obj_sel_ptr:dword
+externdef _dr0:dword
+externdef _pagenum:byte
+externdef color:byte
+externdef _gdt_ptr:dword
+externdef _idt_ptr:dword
+externdef _emb_num:dword
+externdef __history_intnum:byte
+externdef __history_current:dword
+externdef _fl:word
+externdef _assmmode_flag:byte
+externdef _prefix:byte
+externdef _showmode_flag:byte
+externdef _jump_taken:byte
+externdef _fpuregs_on:byte
+externdef _fpureg:byte
+externdef _fpuregs_set:byte
+externdef _current_window:dword
+externdef _keyshift:byte
+externdef _keyhit:byte
+externdef _keychar:byte
+externdef _keycode:byte
+externdef _code_addr:dword
+externdef _commmode_flag:byte
+externdef _show_unreloc:byte
+externdef _keytab:byte
+externdef _data_addr:dword
+externdef _stack_addr:dword
+externdef __page_faults:dword
+externdef _adrsiz:byte
+externdef textadr:dword
+externdef _esp:dword
+externdef _es:dword
+externdef _prefix_esp:byte
+externdef _refshow:byte
+externdef _opsiz:byte
 
 .CODE
+externdef @debug@:byte
+externdef __datasel:word
+externdef __zerosel:word
+externdef __savedstack:dword
+externdef fix_tab:dword
+externdef _jumptbl:dword
 
 start32:
-	push	ds es ss fs gs
+	push	ds
+	push	es
+	push	ss
+	push	fs
+	push	gs
 	pushfd
 	pushad
 	mov	edx,offs __message0
@@ -114,7 +183,7 @@ start32:
 	int	21h			; move to file start
 	jc	@err4
 
-	push	offs @@2
+	push	offs @start32_2
 	mov	edx,__buffer
 	mov	ax,[edx+0]		; get file signature
 	mov	bx,[edx+2]
@@ -128,7 +197,7 @@ start32:
 	jz	load_lc_app
 	jmp	@lerr6
 
-@@2:	call	remove_name_from_cmd
+@start32_2:	call	remove_name_from_cmd
 	call	close_exec
 	clr	ebx
 	mov	ax,0300h
@@ -139,12 +208,12 @@ start32:
 	int	10h
 	push	edx
 	mov	ecx,160
-@@l1:	mov	ax,0E20h
+@start32_l1:	mov	ax,0E20h
 	xor	ebx,ebx
 	push	ecx
 	int	10h
 	pop	ecx
-	loop	@@l1
+	loop	@start32_l1
 	pop	edx
 	mov	ax,0200h
 	int	10h
@@ -173,7 +242,11 @@ start32:
 	mov	__history_bufon,1	; turn on history buffer
 	popad
 	popfd
-	pop	gs fs ss es ds			; restore ES, FS, GS
+	pop	gs	; restore ES, FS, GS
+	pop	fs
+	pop	ss
+	pop	es
+	pop	ds
 
 	mov	ds,word ptr cs:_sel32_ss	; load new DS
 	lss	esp,fword ptr cs:_app_esp	; load new SS:ESP
@@ -184,7 +257,8 @@ start32:
 
 ;=============================================================================
 check_d32a_dpmi:
-	push	es ds			; check for DOS/32 Advanced ADPMI
+	push	es	; check for DOS/32 Advanced ADPMI
+	push	ds
 	mov	esi,offs __idstring
 	mov	ax,0A00h
 	int	31h
@@ -222,7 +296,7 @@ fill_memory_with_ints:
 	mov	ebx,eax			; allocate memory
 	mov	ax,0FF91h
 	int	21h
-	jc	@@done
+	jc	@fill_memory_with_ints_done
 	mov	__base_mem,ebx
 	mov	eax,0CCCCCCCCh		; set memory to INT 3
 	mov	edi,__base_mem
@@ -235,7 +309,7 @@ fill_memory_with_ints:
 	rep	stosb
 	mov	ax,0FF92h		; free memory
 	int	21h
-@@done:	pop	es
+@fill_memory_with_ints_done:	pop	es
 	ret
 
 
@@ -271,41 +345,42 @@ fill_memory_with_ints:
 check_command_line:
 	mov	edi,80h
 	movzx	ecx,byte ptr es:[edi]	; get length of command line
-	jecxz	@@err			; if zero, error
+	jecxz	@check_command_line_err			; if zero, error
 	inc	edi			; offset to start of command line
 	mov	al,20h
 	repe	scasb			; look for non-space character
-	jz	@@err			; if not found, error
+	jz	@check_command_line_err			; if not found, error
 	dec	edi
 	inc	ecx
 	mov	ebx,edi
-@@1:	mov	al,es:[edi]
+@check_command_line_1:	mov	al,es:[edi]
 	cmp	al,09h			; look for TAB character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,0Dh			; look for CR character
-	jz	@@2
+	jz	@check_command_line_2
 	cmp	al,20h			; look for ' ' character
-	jz	@@2
+	jz	@check_command_line_2
 	inc	edi
-	loop	@@1
-@@2:	mov	ecx,edi
+	loop	@check_command_line_1
+@check_command_line_2:	mov	ecx,edi
 	mov	esi,ebx			; SI = pointer to file name
 	mov	edi,ebx			; DI = pointer to file name
 	sub	ecx,ebx
-@@done:	ret
-@@err:	xor	esi,esi
+@check_command_line_done:	ret
+@check_command_line_err:	xor	esi,esi
 	ret
 remove_name_from_cmd:
 	call	check_command_line
-	jz	@@done
+	jz	@remove_name_from_cmd_done
 	mov	al,20h
 	rep	stosb
-@@done:	ret
+@remove_name_from_cmd_done:	ret
 
 
 ;-----------------------------------------------------------------------------
 update_environment:
-	push	ds es
+	push	ds
+	push	es
 	sub	esp,64
 	mov	ebp,esp
 	mov	ah,19h
@@ -325,9 +400,9 @@ update_environment:
 	mov	ecx,64
 	repne	scasb
 	cmp	byte ptr [edi-2],'\'
-	jnz	@@0
+	jnz	@update_environment_0
 	dec	edi
-@@0:	mov	byte ptr [edi-1],'\'
+@update_environment_0:	mov	byte ptr [edi-1],'\'
 	mov	es,[esp+64]
 	push	edi
 	call	check_command_line
@@ -335,10 +410,10 @@ update_environment:
 	push	ds
 	pop	es
 	mov	ds,[esp+64]
-@@1:	lodsb
+@update_environment_1:	lodsb
 	stosb
 	test	al,al
-	loopne	@@1
+	loopne	@update_environment_1
 	xor	al,al
 	stosb
 	push	es
@@ -351,16 +426,16 @@ update_environment:
 	mov	es,[esp+64]
 	mov	ax,es:[002Ch]		; get environment selector
 	test	ax,ax			; check if selector is NULL
-	jz	@@err			; if yes, jump to error
+	jz	@update_environment_err			; if yes, jump to error
 	lar	cx,ax
-	jnz	@@err
+	jnz	@update_environment_err
 	mov	es,ax
 	xor	al,al
 	xor	edi,edi
 	mov	ecx,7FFFh
-@@2:	repne	scasb
+@update_environment_2:	repne	scasb
 	scasb
-	jnz	@@2
+	jnz	@update_environment_2
 	add	edi,2
 	mov	ecx,-1
 	mov	edx,edi
@@ -372,22 +447,25 @@ update_environment:
 	mov	edi,edx
 	mov	esi,ebp
 	rep	movsb
-@@done:	add	esp,64
-	pop	es ds
+@update_environment_done:	add	esp,64
+	pop	es
+	pop	ds
 	ret
-@@err:	add	esp,64
-	pop	es ds
+@update_environment_err:	add	esp,64
+	pop	es
+	pop	ds
 	stc
 	ret
 
 create_new_environment:
-	push	ebx ebp
+	push	ebx
+	push	ebp
 	mov	ecx,-1
 	xor	edi,edi
-@@1:	repne	scasb
+@create_new_environment_1:	repne	scasb
 	dec	ecx
 	scasb
-	jnz	@@1
+	jnz	@create_new_environment_1
 	not	ecx
 	add	ecx,2
 	push	ecx
@@ -405,21 +483,26 @@ create_new_environment:
 	xor	esi,esi
 	xor	edi,edi
 	rep	movsb
-	pop	esi ecx
+	pop	esi
+	pop	ecx
 	push	ss
 	pop	ds
 	rep	movsb
 	add	esp,64
-	pop	es ds
+	pop	es
+	pop	ds
 	mov	es:[002Ch],dx
 	ret
 
 
 ;-----------------------------------------------------------------------------
 open_exec:
-	push	ds es
-	push	ss es
-	pop	ds es
+	push	ds
+	push	es
+	push	ss
+	push	es
+	pop	ds
+	pop	es
 	mov	edi,cs:_system_block
 	rep	movsb
 	mov	byte ptr es:[edi],0
@@ -428,32 +511,34 @@ open_exec:
 	mov	edx,_system_block
 	mov	ax,3DC0h
 	int	21h
-	jc	@@1			; if error opening, try ".EXE"
-	pop	es ds
+	jc	@open_exec_1			; if error opening, try ".EXE"
+	pop	es
+	pop	ds
 	mov	__exec_handle,ax
 	jc	@err3
 	ret
 
-@@1:	mov	ebx,_system_block
-@@2:	cmp	byte ptr [ebx],2Eh
+@open_exec_1:	mov	ebx,_system_block
+@open_exec_2:	cmp	byte ptr [ebx],2Eh
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	inc	ebx
 	cmp	ebx,edi
-	jb	@@2
+	jb	@open_exec_2
 	mov	eax,4558452Eh
 	cmp	eax,[edi-4]
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	mov	eax,6578652Eh
 	cmp	eax,[edi-4]
 	stc
-	jz	@@err
+	jz	@open_exec_err
 	mov	[edi],eax
 	mov	byte ptr [edi+4],0
 	mov	ax,3DC0h
 	int	21h
-@@err:	pop	es ds
+@open_exec_err:	pop	es
+	pop	ds
 	mov	__exec_handle,ax
 	jc	@err3
 	ret
@@ -494,17 +579,17 @@ load_exec_header:
 search_for_mz:
 	xor	esi,esi
 
-@@0:	movzx	eax,wptr [edx+04h]	; get pages in file
+@search_for_mz_0:	movzx	eax,wptr [edx+04h]	; get pages in file
 	shl	eax,9			; *512
 	movzx	ebx,wptr [edx+02h]	; get bytes on last page
 	add	eax,ebx
 	cmp	wptr [edx],'ZM'
-	jz	@@1
+	jz	@search_for_mz_1
 	cmp	wptr [edx],'WB'
-	jz	@@2
-	jmp	@@3
-@@1:	sub	eax,0200h
-@@2:	mov	esi,ebp
+	jz	@search_for_mz_2
+	jmp	@search_for_mz_3
+@search_for_mz_1:	sub	eax,0200h
+@search_for_mz_2:	mov	esi,ebp
 	add	ebp,eax
 
 	mov	ecx,ebp
@@ -522,12 +607,12 @@ search_for_mz:
 	jc	@err4
 	test	eax,eax
 	jz	@err5
-	jmp	@@0
+	jmp	@search_for_mz_0
 
-@@3:	cmp	wptr [edx],'EL'
-	jz	@@4
+@search_for_mz_3:	cmp	wptr [edx],'EL'
+	jz	@search_for_mz_4
 	cmp	wptr [edx],'XL'
-	jz	@@4
+	jz	@search_for_mz_4
 	mov	ecx,ebp
 	mov	edx,ebp
 	shr	ecx,16
@@ -536,13 +621,13 @@ search_for_mz:
 	int	21h			; move to next exec in file
 	jc	@err4
 	call	search_for_le
-@@4:	mov	__exec_start,ebp
+@search_for_mz_4:	mov	__exec_start,ebp
 	mov	_app_off_datapages,esi
 	ret
 
 
 search_for_le:
-@@1:	mov	edx,__buffer		; DS:EDX = current ptr
+@search_for_le_1:	mov	edx,__buffer		; DS:EDX = current ptr
 	mov	ecx,1000h		; ECX = bytes to load
 	mov	ax,3F00h
 	mov	bx,__exec_handle
@@ -551,21 +636,21 @@ search_for_le:
 	test	eax,eax			; check if no bytes read
 	jz	@err5			; if true, no app in file
 	shr	ecx,1
-@@2:	mov	ax,[edx+0]
+@search_for_le_2:	mov	ax,[edx+0]
 	mov	bx,[edx+2]
 	test	bx,bx
-	jnz	@@4
+	jnz	@search_for_le_4
 	cmp	ax,'EL'			; 'LE' type
-	jz	@@3
+	jz	@search_for_le_3
 	cmp	ax,'XL'			; 'LX' type
-	jz	@@3
-@@4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
-	jz	@@3
+	jz	@search_for_le_3
+@search_for_le_4:	cmp	ax,'CL'			; 'LC' type (Linear Compressed)
+	jz	@search_for_le_3
 	add	edx,2
 	add	ebp,2			; increment pointer in file
-	loop	@@2
-	jmp	@@1
-@@3:	mov	_app_off_datapages,0
+	loop	@search_for_le_2
+	jmp	@search_for_le_1
+@search_for_le_3:	mov	_app_off_datapages,0
 	ret
 
 close_exec:
@@ -582,12 +667,12 @@ print_string:
 	clr	eax
 	clr	ecx
 	mov	ebx,edx
-@@1:	cmp	al,[ebx]
-	jz	@@2
+@print_string_1:	cmp	al,[ebx]
+	jz	@print_string_2
 	inc	ebx
 	inc	ecx
-	jmp	@@1
-@@2:	mov	eax,4000h
+	jmp	@print_string_1
+@print_string_2:	mov	eax,4000h
 	mov	ebx,0002h
 	int	21h
 	popad
@@ -625,7 +710,12 @@ Debug_:
 Debug_Init_:				; needed to initialize debugger's INTs
 	pushfd
 	pushad
-	push	cs ds es ss fs gs
+	push	cs
+	push	ds
+	push	es
+	push	ss
+	push	fs
+	push	gs
 	cli
 	cld
 
@@ -653,11 +743,11 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	edi,offs _registers
 	lea	esi,[esp+52]
 	mov	ecx,14
-@@l1:	mov	eax,[esi]		; copy general & segment regs into buf
+@Debug_Init_l1:	mov	eax,[esi]		; copy general & segment regs into buf
 	sub	esi,4
 	mov	[edi],eax
 	add	edi,4
-	loop	@@l1
+	loop	@Debug_Init_l1
 	mov	eax,cr0
 	mov	_cr0,eax
 	mov	eax,cr2
@@ -793,7 +883,7 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	edx,offs _int0E
 	int	31h
 
-@@dpmi:	clr	eax			; initialize DEBUG REGISTERS
+@Debug_Init_dpmi:	clr	eax			; initialize DEBUG REGISTERS
 	mov	dr0,eax		; clear DR0-DR7: linear addresses
 	mov	dr1,eax
 	mov	dr2,eax
@@ -835,9 +925,9 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	cx,0007h
 	int	10h
 	cmp	al,1Ch
-	jnz	@@verr
+	jnz	@Debug_Init_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_verr
 	mov	_vgastate_set,1
 
 	mov	ax,4F04h
@@ -845,14 +935,18 @@ Debug_Init_:				; needed to initialize debugger's INTs
 	mov	dx,0000h
 	int	10h
 	cmp	ax,004Fh
-	jnz	@@verr
+	jnz	@Debug_Init_verr
 	cmp	ebx,4096/64
-	ja	@@verr
+	ja	@Debug_Init_verr
 	mov	_svgastate_set,1
 
-@@verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
+@Debug_Init_verr:	mov	byte ptr ds:@debug@,90h	; replace RET with NOP
 
-	pop	gs fs ss es ds		; return to caller
+	pop	gs	; return to caller
+	pop	fs
+	pop	ss
+	pop	es
+	pop	ds
 	add	esp,4
 	sti
 	popad
@@ -879,14 +973,14 @@ _exit:	cli
 	mov	esp,cs:__savedstack
 	and	old_video_mode,7F7Fh
 	cmp	old_video_mode,0003h
-	jnz	@@l1
+	jnz	@exit_l1
 	call	restore_video		; raw exit to DOS
 	call	restore_state
 	xor	eax,eax
 	int	33h
 	mov	ax,4C00h
 	int	21h
-@@l1:	mov	ax,0003h
+@exit_l1:	mov	ax,0003h
 	int	10h
 	call	restore_state
 	xor	eax,eax
@@ -907,28 +1001,29 @@ _abort:	cli
 ;-----------------------------------------------------------------------------
 	Align 4
 _int21:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int21_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int21_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int21_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int21_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int21_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int21_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -967,12 +1062,13 @@ _int21:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int21_l1:	popad
 	pushad
 	cmp	ah,4Ch
 	jz	@__4Ch
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int21off
 
 
@@ -997,7 +1093,8 @@ _int21:	cld
 	mov	edx,cs:_old_int33off
 	int	31h
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int21off
 
 _terminated:
@@ -1007,9 +1104,14 @@ _terminated:
 	sub	eax,2
 	mov	[esp+20h+8+0],eax
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 
-	push	es ss ds fs gs
+	push	es
+	push	ss
+	push	ds
+	push	fs
+	push	gs
 	pushad
 	call	save_state
 	mov	al,4Ch
@@ -1019,28 +1121,29 @@ _terminated:
 ;-----------------------------------------------------------------------------
 	Align 4
 _int31:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int31_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int31_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int31_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int31_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int31_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int31_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1079,11 +1182,12 @@ _int31:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int31_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int31off
 
 
@@ -1091,28 +1195,29 @@ _int31:	cld
 ;-----------------------------------------------------------------------------
 	Align 4
 _int10:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int10_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int10_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int10_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int10_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int10_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int10_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1151,11 +1256,12 @@ _int10:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int10_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int10off
 
 
@@ -1165,28 +1271,29 @@ _int10:	cld
 ;-----------------------------------------------------------------------------
 	Align 4
 _int33:	cld
-	push	ds es
+	push	ds
+	push	es
 	pushad
 
 	cmp	cs:__history_bufon,0
-	jz	@@l1
+	jz	@int33_l1
 	mov	dx,cs
 	mov	ax,[esp+2Ch]
 	cmp	ax,dx
-	jz	@@l1
+	jz	@int33_l1
 	cmp	ax,cs:__kernel_codesel
-	jz	@@l1
+	jz	@int33_l1
 	cmp	ax,cs:__client_codesel
-	jz	@@l1
+	jz	@int33_l1
 
 	mov	ds,cs:__datasel
 	mov	edx,__history_bufptr
 	imul	edx,40h
 	cmp	edx,__history_bufsize
-	jb	@@1
+	jb	@int33_1
 	xor	edx,edx
 	mov	__history_bufptr,edx
-@@1:	add	edx,__history_bufbase
+@int33_1:	add	edx,__history_bufbase
 	mov	eax,__history_bufnum
 	inc	__history_bufnum
 	inc	__history_bufptr
@@ -1225,28 +1332,41 @@ _int33:	cld
 	mov	[edx+38h],gs		; 38h - GS
 
 	mov	ds,[esp+24h]
-@@l1:	popad
+@int33_l1:	popad
 	pushad
 
 	popad
-	pop	es ds
+	pop	es
+	pop	ds
 	jmp	fword ptr cs:_old_int33off
 
 
 
 _critical_error_handler:
-	push	es ss ds fs gs
+	push	es
+	push	ss
+	push	ds
+	push	fs
+	push	gs
 	pushad
 	call	save_state
 	mov	eax,cs:_eax
-	push	ds es ecx esi edi
+	push	ds
+	push	es
+	push	ecx
+	push	esi
+	push	edi
 	mov	ds,cs:__datasel
 	mov	es,cs:__datasel
 	mov	esi,offs _old_registers
 	mov	edi,offs _registers
 	mov	ecx,19
 	rep	movsd
-	pop	edi esi ecx es ds
+	pop	edi
+	pop	esi
+	pop	ecx
+	pop	es
+	pop	ds
 	jmp	_exception
 
 	Align 4

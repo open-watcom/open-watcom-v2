@@ -37,7 +37,7 @@
 ;
 ;
 
-PushState
+; PushState
 
 
 .8086
@@ -46,26 +46,29 @@ PushState
 ; and configure the both KERNEL and CLIENT
 ;
 get_default_config:
-	push	ds es
+	push	ds
+	push	es
 	mov	ax,_ID32
 	mov	dx,_KERNEL
 	mov	_seg_id32,ax
 	mov	_seg_kernel,dx
 
-	push	ax dx			; STUB/32C configuration code
+	push	ax	; STUB/32C configuration code
+	push	dx
 	mov	ax,0FF87h
 	int	21h
 	cmp	dx,'ID'
-	jnz	@@1
+	jnz	@get_default_config_1
 	cmp	ax,'32'
-	jnz	@@1
+	jnz	@get_default_config_1
 	mov	es,cs:_seg_id32
 	xor	di,di
 	mov	cx,12
 	rep	movsw
 	mov	ds,cs:_seg_ds
 	or	_sys_misc,0001h		; indicate STUB/32C configuration
-@@1:	pop	dx ax
+@get_default_config_1:	pop	dx
+	pop	ax
 
 	mov	ds,ax
 	mov	es,dx
@@ -73,10 +76,10 @@ get_default_config:
 	mov	di,offs pm32_data	; ES:DI=_KERNEL:PM32_DATA
 	lodsw				; check for 'ID32' signature
 	cmp	ax,'DI'			; if not present, skip confuguration
-	jnz	@@err
+	jnz	@get_default_config_err
 	lodsw
 	cmp	ax,'23'
-	jnz	@@err
+	jnz	@get_default_config_err
 	mov	cx,_ID32_SIZE
 	rep	movsb			; copy default config to KERNEL
 	mov	es,cs:_seg_ds
@@ -92,9 +95,10 @@ Endif
 	lodsw				; get version
 	mov	wptr es:_version,ax
 	clc
-	jmp	@@done
-@@err:	stc
-@@done:	pop	es ds
+	jmp	@get_default_config_done
+@get_default_config_err:	stc
+@get_default_config_done:	pop	es
+	pop	ds
 	ret
 
 
@@ -108,75 +112,77 @@ Endif
 ; and configure both KERNEL and DOS/32A
 ;
 get_environ_config:
-	push	ds es
-	jc	@@done
+	push	ds
+	push	es
+	jc	@get_environ_config_done
 	test	_misc_byte2,00000001b
-	jz	@@done
+	jz	@get_environ_config_done
 	mov	es,_seg_env
 	xor	di,di			; ES:DI=envirment
 	mov	cx,-1			; environment size, unlimited
 	xor	ax,ax
-@@0:	push	cx
+@get_environ_config_0:	push	cx
 	mov	cx,7			; CX   =length of 'DOS32A=' string
 	mov	si,offs dos_str		; DS:SI=offset of 'DOS32A=' string
 	repe	cmpsb
 	pop	cx
-	jz	@@1			; quit loop if found
+	jz	@get_environ_config_1			; quit loop if found
 	repne	scasb
 	cmp	al,es:[di]		; check for end of environment
-	jnz	@@0			; loop until found or end of environ.
-	jmp	@@done			; no string found, exit
-@@1:	call	skip_env_spaces		; skip any leading spaces
+	jnz	@get_environ_config_0			; loop until found or end of environ.
+	jmp	@get_environ_config_done			; no string found, exit
+@get_environ_config_1:	call	skip_env_spaces		; skip any leading spaces
 	cmp	bptr es:[di],0		; if at the end of the line, exit
-	jz	@@done			; (actually, just in case)
+	jz	@get_environ_config_done			; (actually, just in case)
 	call	get_env_word		; get word and configure
 	call	skip_env_nonspaces	; skip anything else until space or 0
 	cmp	bptr es:[di],0
-	jnz	@@1
-@@done:	pop	es ds
+	jnz	@get_environ_config_1
+@get_environ_config_done:	pop	es
+	pop	ds
 	ret
 
 get_env_word:
 	xor	bx,bx			; BX=pointer to next argument in tab
-@@0:	mov	si,dfn_tab[bx]		; DS:SI=string offset
+@get_env_word_0:	mov	si,dfn_tab[bx]		; DS:SI=string offset
 	cmp	si,-1			; check if at end of arg. list
-	jz	@@1			; if yes, terminate search
+	jz	@get_env_word_1			; if yes, terminate search
 	mov	cx,dfn_tab[bx+2]	; CX=get string length
 	push	di
 	repe	cmpsb			; compare strings
 	pop	di
-	jz	@@2			; if equ, process argument
+	jz	@get_env_word_2			; if equ, process argument
 	add	bx,6			; loop until done
-	jmp	@@0
-@@1:	ret
-@@2:	add	di,dfn_tab[bx+2]	; adjust env pointer by string length
+	jmp	@get_env_word_0
+@get_env_word_1:	ret
+@get_env_word_2:	add	di,dfn_tab[bx+2]	; adjust env pointer by string length
 	jmp	cs:dfn_tab[bx-2+6]	; goto appropriate argument handler
 
 skip_env_spaces:
-@@1:	mov	al,es:[di]
+@skip_env_spaces_1:	mov	al,es:[di]
 	test	al,al
-	jz	@@3
+	jz	@skip_env_spaces_3
 	cmp	al,'/'
-	jz	@@2
+	jz	@skip_env_spaces_2
 	cmp	al,20h
-	jnz	@@3
+	jnz	@skip_env_spaces_3
 	inc	di
-	jmp	@@1
-@@2:	inc	di
-@@3:	ret
+	jmp	@skip_env_spaces_1
+@skip_env_spaces_2:	inc	di
+@skip_env_spaces_3:	ret
 
 skip_env_nonspaces:
-@@1:	mov	al,es:[di]
+@skip_env_nonspaces_1:	mov	al,es:[di]
 	test	al,al
-	jz	@@3
+	jz	@skip_env_nonspaces_3
 	cmp	al,'/'
-	jz	@@2
+	jz	@skip_env_nonspaces_2
 	cmp	al,20h
-	jz	@@3
+	jz	@skip_env_nonspaces_3
 	inc	di
-	jmp	@@1
-@@2:	inc	di
-@@3:	ret
+	jmp	@skip_env_nonspaces_1
+@skip_env_nonspaces_2:	inc	di
+@skip_env_nonspaces_3:	ret
 
 
 
@@ -185,26 +191,26 @@ skip_env_nonspaces:
 ;
 get_env_swc:
 	cmp	bptr es:[di],':'	; skip ':' if present
-	jne	@@1
+	jne	@get_env_swc_1
 	inc	di
-@@1:	xor	ax,ax			; if '0', return(0)
+@get_env_swc_1:	xor	ax,ax			; if '0', return(0)
 	cmp	bptr es:[di],'0'	; check for '0'=OFF
-	jz	@@x1
+	jz	@get_env_swc_x1
 	inc	ax			; if '1', return(1)
 	cmp	bptr es:[di],'1'	; check for '1'=ON
-	jz	@@x1
+	jz	@get_env_swc_x1
 	cmp	wptr es:[di],'NO'	; check for 'ON'
-	jz	@@x2
+	jz	@get_env_swc_x2
 	dec	ax
 	cmp	wptr es:[di],'FO'	; check for 'OF'(F)
-	jnz	@@x0
+	jnz	@get_env_swc_x0
 	cmp	bptr es:[di+2],'F'	; check for (OF)'F'
-	jz	@@x3
-@@x0:	stc
+	jz	@get_env_swc_x3
+@get_env_swc_x0:	stc
 	ret
-@@x3:	inc	di
-@@x2:	inc	di
-@@x1:	inc	di
+@get_env_swc_x3:	inc	di
+@get_env_swc_x2:	inc	di
+@get_env_swc_x1:	inc	di
 	test	al,al
 	ret
 
@@ -215,36 +221,36 @@ get_env_swc:
 ;
 get_env_num:
 	cmp	bptr es:[di],':'	; skip ':' if present
-	jne	@@1
+	jne	@get_env_num_1
 	inc	di
-@@1:	xor	ax,ax
+@get_env_num_1:	xor	ax,ax
 	xor	bx,bx
 	mov	cx,10
 	mov	al,es:[di]
 	sub	al,'0'
-	jb	@@exit
+	jb	@get_env_num_exit
 	cmp	al,9
-	ja	@@exit
+	ja	@get_env_num_exit
 	xchg	bx,ax
 	mul	cx
 	xchg	bx,ax
 	add	bx,ax
-@@2:	inc	di
+@get_env_num_2:	inc	di
 	xor	ax,ax
 	mov	al,es:[di]
 	sub	al,'0'
-	jb	@@done
+	jb	@get_env_num_done
 	cmp	al,9
-	ja	@@done
+	ja	@get_env_num_done
 	xchg	bx,ax
 	mul	cx
 	xchg	bx,ax
 	add	bx,ax
-	jmp	@@2
-@@done:	mov	ax,bx
+	jmp	@get_env_num_2
+@get_env_num_done:	mov	ax,bx
 	clc
 	ret
-@@exit:	stc
+@get_env_num_exit:	stc
 	ret
 
 
@@ -269,12 +275,12 @@ Endif
 ;
 cfg_env_print:
 	call	get_env_swc
-	jc	@@0
-	jz	@@1
+	jc	@cfg_env_print_0
+	jz	@cfg_env_print_1
 	or	wptr _misc_byte,0000100000000001b
 	ret
-@@1:	and	wptr _misc_byte,1111011111111110b
-@@0:	ret
+@cfg_env_print_1:	and	wptr _misc_byte,1111011111111110b
+@cfg_env_print_0:	ret
 
 
 
@@ -283,12 +289,12 @@ cfg_env_print:
 ;
 cfg_env_sound:
 	call	get_env_swc
-	jc	@@0
-	jz	@@1
+	jc	@cfg_env_sound_0
+	jz	@cfg_env_sound_1
 	or	_misc_byte,00000010b
 	ret
-@@1:	and	_misc_byte,11111101b
-@@0:	ret
+@cfg_env_sound_1:	and	_misc_byte,11111101b
+@cfg_env_sound_0:	ret
 
 
 
@@ -297,7 +303,7 @@ cfg_env_sound:
 ;
 cfg_env_extmem:
 	call	get_env_num
-	jc	@@0
+	jc	@cfg_env_extmem_0
 	push	ds
 	mov	ds,_seg_kernel
 	assume	ds:_KERNEL
@@ -313,12 +319,12 @@ cfg_env_extmem:
 	mov	bx,1000h			; BX=Page size in KB
 	div	bx				; MEM KB / Page Size KB
 	test	al,al
-	jnz	@@1				; must alloc at least one
+	jnz	@cfg_env_extmem_1				; must alloc at least one
 	inc	al
-@@1:	mov	bptr ds:[pm32_data+1],al	; set max allowed pagetables
+@cfg_env_extmem_1:	mov	bptr ds:[pm32_data+1],al	; set max allowed pagetables
 	assume	ds:_TEXT16
 	pop	ds
-@@0:	ret
+@cfg_env_extmem_0:	ret
 
 
 
@@ -328,16 +334,16 @@ cfg_env_extmem:
 cfg_env_dosbuf:
 	call	get_env_num
 	cmp	ax,1				; 1KB < ax < 64KB
-	jb	@@0
+	jb	@cfg_env_dosbuf_0
 	cmp	ax,64
-	ja	@@0
-	jnz	@@2
+	ja	@cfg_env_dosbuf_0
+	jnz	@cfg_env_dosbuf_2
 	mov	ax,0FFFh
-	jmp	@@1
-@@2:	mov	cl,6
+	jmp	@cfg_env_dosbuf_1
+@cfg_env_dosbuf_2:	mov	cl,6
 	shl	ax,cl				; convert KB to para
-@@1:	mov	_lowmembuf,ax
-@@0:	ret
+@cfg_env_dosbuf_1:	mov	_lowmembuf,ax
+@cfg_env_dosbuf_0:	ret
 
 
 
@@ -346,18 +352,18 @@ cfg_env_dosbuf:
 ;
 cfg_env_test:
 	call	get_env_swc
-;	jc	@@0
+;	jc	@cfg_env_test_0
 ;	push	ds
 ;	mov	ds,_seg_kernel
 ;	assume	ds:_KERNEL
-;	jz	@@1
+;	jz	@cfg_env_test_1
 ;	or	bptr ds:pm32_data[0],00000001b
 ;	pop	ds
 ;	ret
-;@@1:	and	bptr ds:pm32_data[0],11111110b
+;@cfg_env_test_1:	and	bptr ds:pm32_data[0],11111110b
 ;	assume	ds:_TEXT16
 ;	pop	ds
-@@0:	ret
+@cfg_env_test_0:	ret
 
 
 
@@ -366,12 +372,12 @@ cfg_env_test:
 ;
 cfg_env_restore:
 	call	get_env_swc
-	jc	@@0
-	jz	@@1
+	jc	@cfg_env_restore_0
+	jz	@cfg_env_restore_1
 	or	_misc_byte,00000100b
 	ret
-@@1:	and	_misc_byte,11111011b
-@@0:	ret
+@cfg_env_restore_1:	and	_misc_byte,11111011b
+@cfg_env_restore_0:	ret
 
 
 
@@ -380,11 +386,11 @@ cfg_env_restore:
 ;
 cfg_env_nullp:
 	call	get_env_swc
-	jc	@@0
-	jz	@@1
-@@0:	or	_misc_byte,10000000b
+	jc	@cfg_env_nullp_0
+	jz	@cfg_env_nullp_1
+@cfg_env_nullp_0:	or	_misc_byte,10000000b
 	ret
-@@1:	and	_misc_byte,01111111b
+@cfg_env_nullp_1:	and	_misc_byte,01111111b
 	ret
 
 
@@ -394,11 +400,11 @@ cfg_env_nullp:
 ;
 cfg_env_verbose:
 	call	get_env_swc
-	jc	@@0
-	jz	@@1
-@@0:	or	_misc_byte2,00010000b
+	jc	@cfg_env_verbose_0
+	jz	@cfg_env_verbose_1
+@cfg_env_verbose_0:	or	_misc_byte2,00010000b
 	ret
-@@1:	and	_misc_byte2,11101111b
+@cfg_env_verbose_1:	and	_misc_byte2,11101111b
 	ret
 
 
@@ -409,17 +415,17 @@ cfg_env_verbose:
 cfg_env_nowarn:
 	call	get_env_num
 	sub	ax,9000
-	jb	@@0
+	jb	@cfg_env_nowarn_0
 	cmp	al,6
-	ja	@@0
+	ja	@cfg_env_nowarn_0
 	add	ax,ax
 	mov	bx,ax
 	mov	wptr errtab_90xx[bx],0
 	cmp	bptr es:[di],','
-	jnz	@@0
+	jnz	@cfg_env_nowarn_0
 	inc	di
 	jmp	cfg_env_nowarn
-@@0:	ret
+@cfg_env_nowarn_0:	ret
 
 
 
@@ -430,4 +436,4 @@ cfg_env_noc:
 	and	bptr _misc_byte2,11110111b
 	ret
 
-PopState
+	.386p

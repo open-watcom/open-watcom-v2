@@ -51,6 +51,7 @@
 [ INCLUDE "<OWROOT>/bld/w16api/files.dat" ]
 [ INCLUDE "<OWROOT>/bld/w32api/files.dat" ]
 [ INCLUDE "<OWROOT>/bld/causeway/files.dat" ]
+[ INCLUDE "<OWROOT>/bld/dos32a/files.dat" ]
 [ INCLUDE "<OWROOT>/bld/wipfc/files.dat" ]
 [ INCLUDE "<OWROOT>/bld/redist/files.dat" ]
 [ INCLUDE "<OWROOT>/bld/uninstal/files.dat" ]

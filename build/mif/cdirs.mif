@@ -292,6 +292,9 @@ libzip_dir      = $(owroot_contrib)libzip
 !ifndef zlib_dir
 zlib_dir        = $(owroot_contrib)zlib
 !endif
+!ifndef dos32a_dir
+dos32a_dir      = $(owroot_contrib)extender/dos32a
+!endif
 !ifndef awk_dir
 awk_dir         = $(owroot_bld)awk
 !endif

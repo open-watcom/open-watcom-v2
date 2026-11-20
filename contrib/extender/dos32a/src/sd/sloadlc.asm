@@ -39,15 +39,13 @@
 
 ; superviser mode: can debug LC apps
 if SVR eq 1
-
 .CODE
-
 load_lc_app:
 	mov	_app_type,2
 	mov	__saved_esp,esp
 	call	load_lc_header		; load 'LC' exec header
 	mov	ecx,1			; start with Object #1
-@@1:	call	load_lc_object		; load compressed Object
+@load_lc_app_1:	call	load_lc_object		; load compressed Object
 	call	create_selector		; allocate selector for loaded object
 	push	edx			; save Object Selector/Object Flags
 	push	edi			; save Address of loaded Object
@@ -55,16 +53,16 @@ load_lc_app:
 	push	ebx			; save # Page Table Entries
 	inc	ecx			; increment Current_Object#
 	cmp	ecx,_app_num_objects
-	jbe	@@1			; loop until all objects are loaded
+	jbe	@load_lc_app_1			; loop until all objects are loaded
 	call	preload_lc_fixups	; preload fixup tables and records
 	mov	ebp,esp			; base pointer to last loaded Object
 	mov	ebx,_app_num_objects	; number of Objects
 	dec	ebx
 	shl	ebx,4
 	mov	_app_tmp_addr1,ebx
-@@2:	call	relocate_lx_object
+@load_lc_app_2:	call	relocate_lx_object
 	sub	ebx,10h
-	jnc	@@2
+	jnc	@load_lc_app_2
 	call	unload_lc_fixups	; free allocated memory for fixups
 	mov	esp,__saved_esp
 	ret
@@ -168,8 +166,12 @@ decompress_data:
 	cmp	_ic_byte,0
 	jz	decompress
 	pushad
-	push	ds es ds ds
-	pop	es ds
+	push	ds
+	push	es
+	push	ds
+	push	ds
+	pop	es
+	pop	ds
 	mov	esi,ebx
 	mov	edx,ecx
 	shr	ecx,2
@@ -177,7 +179,8 @@ decompress_data:
 	mov	cl,dl
 	and	cl,3
 	rep	movs byte ptr es:[edi],[esi]
-	pop	es ds
+	pop	es
+	pop	ds
 	popad
 	ret
 

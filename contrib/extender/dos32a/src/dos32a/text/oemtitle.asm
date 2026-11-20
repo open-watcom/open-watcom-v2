@@ -43,5 +43,5 @@
 ;
 db	'DOS/32A'							,0
 db	'Copyright (C) 1996-2006 by Narech K.'				,0
-db	??date								,0
-db	??time								,0
+db	'04-20-06'								,0
+db	'00:00:00'								,0

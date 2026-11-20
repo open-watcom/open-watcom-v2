@@ -41,9 +41,7 @@ APP_MAXOBJECTS	= 64
 if SVR ne 0
 include sloadlc.asm
 endif
-
 .CODE
-
 load_le_app:
 	mov	_app_type,0
 	jmp	load_application
@@ -63,7 +61,7 @@ load_application:
 	mov	__saved_esp,esp
 	call	load_header		; load 'LE' exec header
 	mov	ecx,1			; start with Object #1
-@@1:	call	load_object		; load object
+@load_application_1:	call	load_object		; load object
 	call	create_selector		; allocate selector for loaded object
 	push	edx			; save Object Selector/Object Flags
 	push	edi			; save Address of loaded Object
@@ -71,16 +69,16 @@ load_application:
 	push	ebx			; save # Page Table Entries
 	inc	ecx			; increment Current_Object#
 	cmp	ecx,_app_num_objects
-	jbe	@@1			; loop until all objects are loaded
+	jbe	@load_application_1			; loop until all objects are loaded
 	call	preload_fixups		; preload fixup tables and records
 	mov	ebp,esp			; base pointer to last loaded Object
 	mov	ebx,_app_num_objects	; number of Objects
 	dec	ebx
 	shl	ebx,4
 	mov	_app_tmp_addr1,ebx
-@@2:	call	relocate_object
+@load_application_2:	call	relocate_object
 	sub	ebx,10h
-	jnc	@@2
+	jnc	@load_application_2
 	call	unload_fixups		; free allocated memory for fixups
 	mov	esp,__saved_esp
 	ret
@@ -134,13 +132,13 @@ load_header:
 
 	mov	eax,0FFFh
 	cmp	_app_type,0
-	jz	@@done
+	jz	@load_header_done
 	mov	ax,1
 	mov	cx,fs:[002Ch]		; get Page Offset Shift for LX-type
 	shl	ax,cl			; max shift is 15 (8000h-1)
 	dec	ax
 
-@@done:	mov	_app_off_pageshift,eax
+@load_header_done:	mov	_app_off_pageshift,eax
 	ret
 
 
@@ -171,34 +169,34 @@ load_object:
 
 	mov	eax,ebx
 	test	eax,eax			; check if # Page Table Entries = 0
-	jz	@@5			; if yes, skip loading
+	jz	@load_object_5			; if yes, skip loading
 	shl	eax,12			; convert # Page Table Entries to bytes
 	cmp	eax,ecx			; check if # bytes >= bytes to load
-	jae	@@1			; if yes, jump
+	jae	@load_object_1			; if yes, jump
 	mov	ecx,eax			; else adjust number of bytes to read
-@@1:	mov	ax,[esp+4]		; get Object #
+@load_object_1:	mov	ax,[esp+4]		; get Object #
 	cmp	ax,word ptr _app_num_objects
-	jnz	@@3
+	jnz	@load_object_3
 	cmp	_app_type,0
-	jnz	@@2
+	jnz	@load_object_2
 	lea	ecx,[ebx-1]		; load LE-style Last Object (BSS)
 	shl	ecx,12
 	add	ecx,_app_siz_lastpage
-	jmp	@@3
-@@2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
+	jmp	@load_object_3
+@load_object_2:	mov	ecx,ebx			; load LX-style Last Object (BSS)
 	shl	ecx,12
-@@3:	call	load_gs_block		; load object data
+@load_object_3:	call	load_gs_block		; load object data
 	mov	eax,ecx
 	mov	edx,_app_off_pageshift
 	test	eax,edx
-	jz	@@4
+	jz	@load_object_4
 	mov	ecx,edx
 	not	edx
 	and	eax,edx
 	lea	eax,[eax+ecx+1]
-@@4:	add	_app_off_datapages,eax
-@@5:	pop	edx			; restore Object Flags
-@@done:	pop	ecx
+@load_object_4:	add	_app_off_datapages,eax
+@load_object_5:	pop	edx			; restore Object Flags
+@load_object_done:	pop	ecx
 	ret
 
 
@@ -212,13 +210,13 @@ relocate_object:
 relocate_le_object:
 	xor	eax,eax
 	cmp	eax,[ebp+ebx+0]		; get # Page Table Entries[Object]
-	jz	@@done			; if zero, done
+	jz	@relocate_le_object_done			; if zero, done
 	mov	ecx,[ebp+ebx+4]		; get Page Table Index
 	mov	edx,_app_off_objpagetab	; get Object Page Table Offset in exec
 	lea	edx,[ecx*4+edx-4]
 	call	seek_from_start		; move file ptr
 
-@@1:	push	eax			; EAX = counter
+@relocate_le_object_1:	push	eax			; EAX = counter
 	mov	ecx,4
 	xor	edx,edx
 	call	load_fs_block		; load block
@@ -226,38 +224,39 @@ relocate_le_object:
 	xor	ecx,ecx			; get index into FixupPageTab
 	mov	ch,fs:[0001h]
 	mov	cl,fs:[0002h]
-	jecxz	@@3
+	jecxz	@relocate_le_object_3
 	mov	eax,_app_off_fixpagetab	; get Fixup Page Table Offset
 	lea	eax,[ecx*4+eax-4]
 	mov	esi,[eax+00h]		; get offset of 1st fixup table
 	mov	ecx,[eax+04h]		; get offset of 2nd fixup table
 	sub	ecx,esi			; calculate size of 1st tab
-	jz	@@3			; if 1st == 2nd, no fixups
+	jz	@relocate_le_object_3			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
 	mov	edi,[esp]		; get current page number
 	shl	edi,12
 	add	edi,[ebp+ebx+8]		; address of page target to fix in mem
 	add	ecx,esi
 	call	apply_le_fixups		; patch target with fixup data
-@@3:	pop	eax
+@relocate_le_object_3:	pop	eax
 	inc	eax
 	cmp	eax,[ebp+ebx+0]
-	jb	@@1
-@@done:	ret
+	jb	@relocate_le_object_1
+@relocate_le_object_done:	ret
 
 
 relocate_lx_object:
 	xor	eax,eax
 	cmp	eax,[ebp+ebx+0]		; get # Page Table Entries[Object]
-	jz	@@done			; if zero, done
+	jz	@relocate_lx_object_done			; if zero, done
 	mov	ecx,[ebp+ebx+4]		; get Page Table Index
 	mov	edx,_app_off_fixpagetab	; get Fixup Page Table Offset
 	lea	edx,[ecx*4+edx-4]
-@@1:	push	eax edx			; EAX = counter
+@relocate_lx_object_1:	push	eax	; EAX = counter
+	push	edx
 	mov	esi,[edx+00h]		; get offset of 1st fixup table
 	mov	ecx,[edx+04h]		; get offset of 2nd fixup table
 	sub	ecx,esi			; calculate size of 1st tab
-	jz	@@3			; if 1st == 2nd, no fixups
+	jz	@relocate_lx_object_3			; if 1st == 2nd, no fixups
 	add	esi,_app_off_fixrectab	; get Fixup Record Table Offset
 	mov	edi,[esp+4]		; get current page number
 	shl	edi,12
@@ -265,17 +264,19 @@ relocate_lx_object:
 	add	ecx,esi
 	call	apply_le_fixups		; patch target with fixup data
 
-@@3:	pop	edx eax
+@relocate_lx_object_3:	pop	edx
+	pop	eax
 	add	edx,4
 	inc	eax
 	cmp	eax,[ebp+ebx+0]
-	jb	@@1
-@@done:	ret
+	jb	@relocate_lx_object_1
+@relocate_lx_object_done:	ret
 
 
 ;=============================================================================
 apply_le_fixups:
-@@0:	push	ecx edi
+@apply_le_fixups_0:	push	ecx
+	push	edi
 	mov	cx,[esi+0]		; get SRC/FLAGS
 	movsx	edx,word ptr [esi+2]	; get SRCOFF
 	movzx	eax,word ptr [esi+4]	; get OBJNUM
@@ -284,10 +285,10 @@ apply_le_fixups:
 	test	cx,0F20h		; SrcLists/Imports not supported
 	jnz	@lerr4			; jump if one of these
 	test	cx,4000h		; test if 16bit object number
-	jnz	@@1			; if yes, jump
+	jnz	@apply_le_fixups_1			; if yes, jump
 	mov	ah,0
 	dec	esi
-@@1:	add	esi,6
+@apply_le_fixups_1:	add	esi,6
 	dec	eax			; Object Number - 1
 	shl	eax,4
 	mov	edx,_app_tmp_addr1
@@ -298,23 +299,24 @@ apply_le_fixups:
 	mov	al,cl
 	and	al,0Fh
 	cmp	al,02h			; check if 16bit Selector
-	jz	@@3			; if yes, jump
+	jz	@apply_le_fixups_3			; if yes, jump
 	cmp	al,08h
 	ja	@lerr4
 	mov	eax,[esi]
 	test	cx,1000h		; check for Alias flag
-	jnz	@@2			; if not, jump
+	jnz	@apply_le_fixups_2			; if not, jump
 	movzx	eax,ax
 	sub	esi,2
-@@2:	add	esi,4
-@@3:	push	esi
+@apply_le_fixups_2:	add	esi,4
+@apply_le_fixups_3:	push	esi
 	mov	esi,ecx
 	and	esi,0Fh
 	call	cs:fix_tab[esi*4]
 	pop	esi
-	pop	edi ecx
+	pop	edi
+	pop	ecx
 	cmp	esi,ecx
-	jb	@@0
+	jb	@apply_le_fixups_0
 	ret
 ;
 ; EAX = Data
@@ -339,13 +341,13 @@ fix_32selfrel:
 	lea	ecx,[edi+4]
 	sub	eax,ecx
 	test	word ptr [ebp+ebx+12],2000h
-	jnz	@@1
+	jnz	@fix_32selfrel_1
 	lea	ecx,[eax+8002h]
 	shr	ecx,16
 	jnz	@lerr5
 	mov	gs:[edi+0],ax
 	ret
-@@1:	mov	gs:[edi+0],eax
+@fix_32selfrel_1:	mov	gs:[edi+0],eax
 	ret
 fix_16sel:
 	call	check_range
@@ -365,14 +367,14 @@ fix_1632ptr:
 
 check_range:
 	test	word ptr [ebp+ebx+12],1000h	; check if 16:16 alias requird
-	jnz	@@1				; if yes, jump
+	jnz	@check_range_1				; if yes, jump
 	test	cl,10h
-	jnz	@@1
-@@0:	mov	ecx,_app_tmp_addr2
+	jnz	@check_range_1
+@check_range_0:	mov	ecx,_app_tmp_addr2
 	mov	dx,[ebp+ecx+14]			; get selector
 	ret
-@@1:	test	cl,10h
-	jz	@@0
+@check_range_1:	test	cl,10h
+	jz	@check_range_0
 	mov	ecx,_app_tmp_addr2
 	mov	dx,[ebp+ecx+14]			; get selector
 	test	eax,0FFFF0000h			; check 64K range
@@ -405,7 +407,11 @@ fix_invalid:
 ; Out:	EDI = address
 ;
 fill_zero_pages:
-	push	es eax ecx edx edi
+	push	es
+	push	eax
+	push	ecx
+	push	edx
+	push	edi
 	push	gs
 	pop	es
 	mov	dl,cl
@@ -415,7 +421,11 @@ fill_zero_pages:
 	mov	cl,dl
 	and	cl,3
 	rep	stosb
-	pop	edi edx ecx eax es
+	pop	edi
+	pop	edx
+	pop	ecx
+	pop	eax
+	pop	es
 	ret
 
 
@@ -427,49 +437,49 @@ fill_zero_pages:
 alloc_block:
 	push	dx
 	test	eax,eax
-	jz	@@done
+	jz	@alloc_block_done
 	mov	dl,00110000b		; get misc byte
 	shr	dx,4			; get memory alloc bits in bit1,0
 	and	dx,3			; mask them
-	jz	@@00			; if 00b alloc scheme, jump
+	jz	@alloc_block_00			; if 00b alloc scheme, jump
 	dec	dx
-	jz	@@01
+	jz	@alloc_block_01
 	dec	dx
-	jz	@@10
+	jz	@alloc_block_10
 	dec	dx
-	jz	@@11
-@@done:	pop	dx
+	jz	@alloc_block_11
+@alloc_block_done:	pop	dx
 	ret
 ;
 ; load 16bit/32bit -> low, then high, then error
 ;
-@@00:	call	alloc_dos_mem		; try to allocate DOS memory block
-	jnc	@@done			; if allocated, jump
+@alloc_block_00:	call	alloc_dos_mem		; try to allocate DOS memory block
+	jnc	@alloc_block_done			; if allocated, jump
 	call	alloc_dpmi_mem		; try to allocate DPMI memory block
-	jnc	@@done			; if allocated, jump
+	jnc	@alloc_block_done			; if allocated, jump
 	jmp	@lerr3			; if failed, error
 ;
 ; load 16bit -> low, then high, then error
 ; load 32bit -> high only, then error
 ;
-@@01:	test	cx,2000h		; check if 32bit Object
-	jnz	@@01_1			; if yes, jump
+@alloc_block_01:	test	cx,2000h		; check if 32bit Object
+	jnz	@alloc_block_01_1			; if yes, jump
 	call	alloc_dos_mem
-	jnc	@@done			; if allocated, jump
-@@01_1:	call	alloc_dpmi_mem
-	jnc	@@done			; if allocated, jump
+	jnc	@alloc_block_done			; if allocated, jump
+@alloc_block_01_1:	call	alloc_dpmi_mem
+	jnc	@alloc_block_done			; if allocated, jump
 	jmp	@lerr3			; if failed, error
 ;
 ; load 16bit/32bit low, then error
 ;
-@@10:	call	alloc_dos_mem
-	jnc	@@done
+@alloc_block_10:	call	alloc_dos_mem
+	jnc	@alloc_block_done
 	jmp	@lerr3			; if failed, error
 ;
 ; load 16bit/32bit high, then error
 ;
-@@11:	call	alloc_dpmi_mem
-	jnc	@@done
+@alloc_block_11:	call	alloc_dpmi_mem
+	jnc	@alloc_block_done
 	jmp	@lerr3			; if failed, error
 
 
@@ -477,12 +487,13 @@ alloc_block:
 
 ;-----------------------------------------------------------------------------
 alloc_dos_mem:
-	push	eax ebp			; EAX = size to allocate
+	push	eax	; EAX = size to allocate
+	push	ebp
 	add	eax,0Fh			; align size on para
 	shr	eax,4
 	test	eax,0FFFF0000h		; check high word of EAX
 	stc
-	jnz	@@done
+	jnz	@alloc_dos_mem_done
 	sub	esp,32h
 	mov	ebp,esp
 	mov	byte ptr [ebp+1Dh],48h	; DOS func: AH=48h
@@ -492,21 +503,26 @@ alloc_dos_mem:
 	shl	edi,4			; NOTE: addres is relative to 0
 	btr	word ptr [ebp+20h],0	; check for errors
 	lea	esp,[esp+32h]
-@@done:	pop	ebp eax
+@alloc_dos_mem_done:	pop	ebp
+	pop	eax
 	ret
 
 ;-----------------------------------------------------------------------------
 alloc_dpmi_mem:
-	push	esi ebx ecx edx eax
+	push	esi
+	push	ebx
+	push	ecx
+	push	edx
+	push	eax
 	mov	cx,ax			; convert EAX bytes to BX:CX
 	mov	ebx,eax
 	shr	ebx,16
 	mov	ax,0501h		; allocate DPMI memory
 	int	31h
-	jc	@@done
+	jc	@alloc_dpmi_mem_done
 	xor	edx,edx
 	test	cx,0FFFh		; check if returned addr aligned
-	jz	@@1			; on PAGE boundary, if yes, jump
+	jz	@alloc_dpmi_mem_1			; on PAGE boundary, if yes, jump
 	shl	ebx,16			; convert BX:CX addr to EAX
 	mov	bx,cx
 	mov	eax,ebx
@@ -519,57 +535,68 @@ alloc_dpmi_mem:
 	shr	ebx,16
 	mov	ax,0503h		; resize DPMI memory block
 	int	31h
-	jc	@@done
-@@1:	shl	ebx,16			; get new addr (should be the same)
+	jc	@alloc_dpmi_mem_done
+@alloc_dpmi_mem_1:	shl	ebx,16			; get new addr (should be the same)
 	mov	bx,cx
 	lea	edi,[ebx+edx]		; adjust linear address
 	test	di,0FFFh
 	stc
-	jnz	@@done
+	jnz	@alloc_dpmi_mem_done
 	clc
-@@done:	pop	eax edx ecx ebx esi
+@alloc_dpmi_mem_done:	pop	eax
+	pop	edx
+	pop	ecx
+	pop	ebx
+	pop	esi
 	ret
 
 
 ;-----------------------------------------------------------------------------
 create_selector:
-	push	ebx ecx edx esi edi
+	push	ebx
+	push	ecx
+	push	edx
+	push	esi
+	push	edi
 	mov	ax,dx
 	mov	ecx,ebp			; ECX = Virtual Size[Object]
 	mov	dx,_acc_rights		; default: PAGE, USE32, DATA
 	test	ax,0004h		; check if object is executable
-	jz	@@1			; if not, jump
+	jz	@create_selector_1			; if not, jump
 	or	dx,0008h		; set selector to Code
-@@1:	test	ax,2000h		; check if object is 32bit
-	jz	@@2			; if not, jump
+@create_selector_1:	test	ax,2000h		; check if object is 32bit
+	jz	@create_selector_2			; if not, jump
 	xor	edi,edi			; set base to Zero
 	or	ecx,-1			; set limit to 4Gb
-	jmp	@@3
-@@2:	and	dx,0BFFFh		; set selector to 16bit
-@@3:	call	set_descriptor		; allocate selector
+	jmp	@create_selector_3
+@create_selector_2:	and	dx,0BFFFh		; set selector to 16bit
+@create_selector_3:	call	set_descriptor		; allocate selector
 	jc	@lerr2
-	pop	edi esi
+	pop	edi
+	pop	esi
 	mov	[esp+2],ax		; store selector in high word of EDX
 	mov	edx,_obj_sel_ptr
 	mov	_obj_selector[edx*2],ax
 	mov	_obj_address[edx*4],edi
 	inc	_obj_sel_ptr
-	pop	edx ecx ebx
+	pop	edx
+	pop	ecx
+	pop	ebx
 
 	cmp	ecx,_app_eip_object	; is Current_Object# == EIP_Object#
-	jnz	@@l1			; if not, jump
+	jnz	@create_selector_l1			; if not, jump
 	mov	_sel32_cs,ax
 	mov	_unreloc_eip,edi
 	test	dx,2000h
-	jz	@@l1
+	jz	@create_selector_l1
 	add	_app_eip,edi
 
-@@l1:	cmp	ecx,_app_esp_object	; is Current_Object# == ESP_Object#
-	jnz	@@l2			; if not, jump
+@create_selector_l1:	cmp	ecx,_app_esp_object	; is Current_Object# == ESP_Object#
+	jnz	@create_selector_l2			; if not, jump
 	mov	_sel32_ss,ax
 	add	_app_esp,edi		; adjust ESP
 	mov	_unreloc_esp,edi
-@@l2:	ret
+@create_selector_l2:	ret
 
 
 preload_fixups:
@@ -591,7 +618,7 @@ preload_fixups:
 	add	eax,edx
 	mov	_app_off_fixpagetab,edx
 	mov	_app_off_fixrectab,eax
-@@done:	ret
+@preload_fixups_done:	ret
 
 
 unload_fixups:
@@ -617,7 +644,9 @@ unload_fixups:
 ;=============================================================================
 int21h:	push	ebx			; simulate INT 21h (DOS API)
 	mov	bx,21h
-	push	ecx edi es
+	push	ecx
+	push	edi
+	push	es
 	xor	ecx,ecx
 	xor	eax,eax
 	mov	[ebp+20h],ax		; clear Flags
@@ -627,55 +656,71 @@ int21h:	push	ebx			; simulate INT 21h (DOS API)
 	mov	edi,ebp
 	mov	ax,0300h
 	int	31h
-	pop	es edi ecx
+	pop	es
+	pop	edi
+	pop	ecx
 	pop	ebx
 	ret
 set_descriptor:				; EDI=base, ECX=limit, DX=access
-	push	ebx ecx edx ebp
+	push	ebx
+	push	ecx
+	push	edx
+	push	ebp
 	mov	ebp,ecx
 	xor	ax,ax			; allocate descriptor
 	mov	cx,1
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	bx,ax
 	mov	ax,0009h		; set access rights
 	mov	cx,dx
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	ax,0007h		; set base
 	mov	ecx,edi
 	mov	dx,cx
 	shr	ecx,16
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	ax,0008h		; set limit
 	mov	ecx,ebp
 	mov	dx,cx
 	shr	ecx,16
 	int	31h
-	jc	@@err
+	jc	@set_descriptor_err
 	mov	ax,bx
 	clc
-@@err:	pop	ebp edx ecx ebx
+@set_descriptor_err:	pop	ebp
+	pop	edx
+	pop	ecx
+	pop	ebx
 	ret
 seek_from_start:
-	push	ebx ecx edx eax
+	push	ebx
+	push	ecx
+	push	edx
+	push	eax
 	mov	ecx,edx
 	shr	ecx,16
 	mov	bx,__exec_handle
 	mov	ax,4200h
 	int	21h
-	pop	eax edx ecx ebx
+	pop	eax
+	pop	edx
+	pop	ecx
+	pop	ebx
 	jc	@err4
 	ret
 load_fs_block:
-	push	ebx ds
+	push	ebx
+	push	ds
 	mov	bx,__exec_handle
 	push	fs
 	pop	ds
 	mov	ah,3Fh
 	int	21h
-	pop	ds ebx
+	pop	ds
+	pop	ebx
 	jc	@err4
 	ret
 load_gs_block:

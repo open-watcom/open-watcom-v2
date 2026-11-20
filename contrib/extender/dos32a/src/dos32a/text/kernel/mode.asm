@@ -106,13 +106,13 @@ v_pmtormsw:
 	mov	ds:[eax+16],edx		; store real mode SS
 	mov	ds:[eax+12],ebx		; store real mode SP
 	mov	dptr ds:[eax+4],_KERNEL	; store real mode CS
-	mov	dptr ds:[eax],offs @@0	; store real mode IP
+	mov	dptr ds:[eax],offs @v_pmtormsw_0	; store real mode IP
 	pop	bx			; restore FLAGS from stack
 	mov	ss,cs:selzero		; SS -> 0 (beginning of memory)
 	mov	esp,eax			; ESP = stack ptr for VCPI call
 	mov	ax,0DE0Ch		; VCPI switch to real mode (V86)
 	call	fptr cs:vcpi_calleip
-@@0:	push	bx			; store old FLAGS
+@v_pmtormsw_0:	push	bx			; store old FLAGS
 	push	si 			; store target CS in real mode
 	push	di 			; store target IP in real mode
 	iret				; go to target addx in real mode
@@ -174,7 +174,7 @@ xr_pmtormsw:
 	mov	ds,cs:seldata		; DS -> 0 (beginning of memory)
 	pop	tempw0			; move real mode DS from stack to temp
 	pop	tempw1			; move FLAGS from stack to temp
-	mov	ax,SELDATA		; load descriptors with real mode seg
+	mov	ax,K_SELDATA		; load descriptors with real mode seg
 	mov	ds,ax			;  attributes
 	mov	es,ax
 	mov	fs,ax

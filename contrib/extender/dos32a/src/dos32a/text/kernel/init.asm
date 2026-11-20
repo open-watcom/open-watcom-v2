@@ -96,11 +96,11 @@ pm32_init:
 	mov	ax,0FF88h		; detect if DOS/32A is present
 	int	21h
 	cmp	eax,'ID32'		; check if we were spawned
-	jnz	@@1			; if not, jump
+	jnz	@pm32_init_1			; if not, jump
 
 	mov	[bp+02h],bx		; set DI to prev. version of D32A
 	cmp	bx,client_version	; check versions
-	jnz	@@1			; if not equal, jump
+	jnz	@pm32_init_1			; if not equal, jump
 	mov	id32_mem_free,ecx
 	mov	id32_mem_ptr,edx
 	mov	id32_mem_vcpi,edi
@@ -109,11 +109,11 @@ pm32_init:
 	mov	id32_process_id,si	; store the new, current process id
 	mov	pm32_maxextmem,0	; use already allocated memory
 
-@@1:	movzx	bx,pmodetype		; jump to appropriate init code
+@pm32_init_1:	movzx	bx,pmodetype		; jump to appropriate init code
 	add	bx,bx
-	jmp	@@init[bx]
+	jmp	@pm32_init_init[bx]
 
-@@init	dw r_init
+@pm32_init_init	dw r_init
 	dw x_init
 	dw v_init
 	dw d_init
@@ -124,11 +124,11 @@ dvxr_init:				; DPMI/VCPI/XMS/raw common init tail
 	xor	ax,ax			; allocate selector for return code
 	mov	cx,1
 	int	31h
-	jnc	@@0
-@@err:	mov	ax,4CFFh		; could not allocate selector
+	jnc	@dvxr_init_0
+@dvxr_init_err:	mov	ax,4CFFh		; could not allocate selector
 	int	21h			; terminate immediately
 
-@@0:	mov	bp,sp
+@dvxr_init_0:	mov	bp,sp
 	mov	bx,ax			; new code descriptor for return
 	mov	ax,0007h		; set base address of calling segment
 	mov	dx,[bp+36]
@@ -136,44 +136,44 @@ dvxr_init:				; DPMI/VCPI/XMS/raw common init tail
 	shl	dx,4
 	shr	cx,12
 	int	31h
-	jc	@@err
+	jc	@dvxr_init_err
 
 	inc	ax			; set selector limit to 64k
 	xor	cx,cx
 	mov	dx,0FFFFh
 	int	31h
-	jc	@@err
+	jc	@dvxr_init_err
 
 	inc	ax			; set selector type and access rights
 	mov	dx,cs			; get DPL from current CPL, and access
 	lar	cx,dx			;  rights and type from current CS
 	shr	cx,8			; type is already 16bit code segment
 	int	31h
-	jc	@@err
+	jc	@dvxr_init_err
 
 	mov	[bp+36],bx		; store selector in return address
 
 	cmp	cs:pmodetype,3		; if DPMI, no need in client_call
-	jz	@@1			;  DPMI will handle all the exceptions
+	jz	@dvxr_init_1			;  DPMI will handle all the exceptions
 	push	ds			; store client's code selector
 	mov	ds,cs:seldata
 	mov	client_call[2],bx
 	pop	ds
 
-@@1:	xor	bx,bx			; init successful, carry clear
+@dvxr_init_1:	xor	bx,bx			; init successful, carry clear
 
 ;-----------------------------------------------------------------------------
 init_done:				; return with return code
 	mov	[bp+1Eh],bx		; set AX=return code
-	jc	@@1
+	jc	@init_done_1
 	mov	eax,cs:mem_free
 	mov	edx,cs:mem_ptr
 	mov	[bp+1Ah],eax		; set ECX=amount of allocated memory
 	mov	[bp+16h],edx		; set EDX=pointer to allocated memory
 	or	eax,edx			; if allocated some memory, exit
-	jnz	@@1
+	jnz	@init_done_1
 	call	init_done_id32
-@@1:	pop	ds
+@init_done_1:	pop	ds
 	popad
 	mov	bx,cs			; return BX=kernel code selector
 	mov	si,cs:id32_process_id	; return SI=current process ID
@@ -182,10 +182,10 @@ init_done:				; return with return code
 
 init_done_id32:
 	cmp	cs:pmodetype,3		; if under DPMI, exit
-	jz	@@done
+	jz	@init_done_id32_done
 	mov	ds,cs:seldata
 	cmp	id32_process_id,0	; if this is the first process (mom)
-	jz	@@done			; then we're done
+	jz	@init_done_id32_done			; then we're done
 
 	mov	eax,id32_mem_free
 	mov	edx,id32_mem_ptr
@@ -199,9 +199,9 @@ init_done_id32:
 
 	mov	al,pmodetype		; now check if running under VCPI
 	cmp	al,0
-	jz	@@done
+	jz	@init_done_id32_done
 	cmp	al,1
-	jz	@@done
+	jz	@init_done_id32_done
 	push	es
 	mov	esi,id32_mem_vcpi	; import pagetables from prev process
 	mov	edi,pagetablefree
@@ -210,7 +210,7 @@ init_done_id32:
 	shr	ecx,12
 	rep	movs dptr es:[edi],[esi]
 	pop	es
-@@done:	ret
+@init_done_id32_done:	ret
 
 
 
@@ -285,9 +285,9 @@ v_init:	xor	eax,eax
 
 	push	di			;** store DI = ptr to free entry
 	mov	vcpi_calleip,ebx	; store protected mode VCPI call EIP
-@@1:	and	bptr es:[di+1],0F1h	; clear bits 9-11 in imported PageTab
+@v_init_1:	and	bptr es:[di+1],0F1h	; clear bits 9-11 in imported PageTab
 	sub	di,4
-	jnc	@@1
+	jnc	@v_init_1
 
 	mov	cx,dx			; get physical address of PageDir
 	shr	cx,8
@@ -330,15 +330,17 @@ v_init:	xor	eax,eax
 
 	xor	eax,eax
 	test	pm32_mode,00000100b	; if smart pagetables is off
-	jnz	@@2			;  then align pagetablefree to
+	jnz	@v_init_2			;  then align pagetablefree to
 	mov	di,1000h		;  first allocated free pagetable
-@@2:	mov	ax,di			; set base of usable page table area
+@v_init_2:	mov	ax,di			; set base of usable page table area
 	add	eax,pagetablebase
 	mov	pagetablefree,eax
 
-	push	si es
+	push	si
+	push	es
 	call	vcpi_alloc_ems		; allocate VCPI memory
-	pop	es si
+	pop	es
+	pop	si
 
 	push	si			; SI = segment of TSS (for later use)
 	xor	di,di			; clear TSS with all 0, not really
@@ -359,8 +361,8 @@ vcpi_setup_pagetables:
 	push	bp
 	movzx	bp,al			; BP = PageTables to alloc
 	test	bp,bp
-	jz	@@done
-@@1:	mov	cx,si			; CX = PageTable segment
+	jz	@vcpi_setup_pagetables_done
+@vcpi_setup_pagetables_1:	mov	cx,si			; CX = PageTable segment
 	shr	cx,8			; convert to PageTable number
 	mov	ax,0DE06h		; VCPI get PageTable Physical Addr
 	int	67h
@@ -375,8 +377,8 @@ vcpi_setup_pagetables:
 	rep	stos dptr es:[di]
 	inc	bx			; increment index in PageDir
 	dec	bp			; decrement PageTable counter
-	jnz	@@1			; if no, loop
-@@done:	pop	bp
+	jnz	@vcpi_setup_pagetables_1			; if no, loop
+@vcpi_setup_pagetables_done:	pop	bp
 	ret
 
 vcpi_alloc_ems:
@@ -391,72 +393,72 @@ vcpi_alloc_ems:
 	add	eax,ecx			; EAX = available linear space (bytes)
 	mov	ecx,pm32_maxextmem	; ECX = memory to allocate (bytes)
 	cmp	ecx,eax			; choose smallest value
-	jbe	@@0
+	jbe	@vcpi_alloc_ems_0
 	mov	ecx,eax
-@@0:	xor	ebx,ebx			; EBX = counter of allocated pages
-	jecxz	@@done			; if no memory to be allocated, done
+@vcpi_alloc_ems_0:	xor	ebx,ebx			; EBX = counter of allocated pages
+	jecxz	@vcpi_alloc_ems_done			; if no memory to be allocated, done
 
-@@1:	cmp	di,1000h		; if NOT overflowing page (DX>4096)
-	jb	@@2			;  then jump
+@vcpi_alloc_ems_1:	cmp	di,1000h		; if NOT overflowing page (DX>4096)
+	jb	@vcpi_alloc_ems_2			;  then jump
 	mov	ax,es			; else adjust ES:DI pointer to next PG
 	add	ax,0100h
 	mov	es,ax
 	xor	di,di
 
-@@2:	mov	ax,0DE04h		; allocate 4K VCPI page
+@vcpi_alloc_ems_2:	mov	ax,0DE04h		; allocate 4K VCPI page
 	int	67h
 	test	ah,ah			; check if error
-	jnz	@@3			; if yes, then we are done
+	jnz	@vcpi_alloc_ems_3			; if yes, then we are done
 	and	dh,0F0h			; clear avail bits
 	mov	dl,07h			; set page as user/writeable/present
 	mov	es:[di],edx		; store page addr in PageTable
 	add	di,4			; increment ptr into PageTable
 	inc	bx			; increment allocated page counter
 	sub	ecx,4096
-	ja	@@1			; loop until no more pages to allocate
+	ja	@vcpi_alloc_ems_1			; loop until no more pages to allocate
 
-@@3:	mov	vcpi_allocmem,bx	; store alloc pages for deallocation
+@vcpi_alloc_ems_3:	mov	vcpi_allocmem,bx	; store alloc pages for deallocation
 	cmp	ecx,4096		; is there memory left to allocate
-	jb	@@4			; no, then done
+	jb	@vcpi_alloc_ems_4			; no, then done
 	test	pm32_mode,00001000b	; check if VCPI+XMS allocation scheme
-	jz	@@4			;  enabled, if not jump
+	jz	@vcpi_alloc_ems_4			;  enabled, if not jump
 	call	vcpi_alloc_xms		; try XMS memory allocation
 
-@@4:	shl	ebx,12			; convert allocated pages to bytes
-	jz	@@done			; allocated any memory? if no, jump
+@vcpi_alloc_ems_4:	shl	ebx,12			; convert allocated pages to bytes
+	jz	@vcpi_alloc_ems_done			; allocated any memory? if no, jump
 	mov	mem_free,ebx		; store amount of allocated memory
 	mov	eax,pagetablefree	; figure out address of memory
 	sub	eax,pagetablebase
 	shl	eax,10
 	mov	mem_ptr,eax
-@@done:	ret
+@vcpi_alloc_ems_done:	ret
 
 vcpi_alloc_xms:
 	push	ebx			; save EBX counter
 	shr	ecx,10			; convert bytes to KB
 	and	cl,0FCh			; mask ECX to match 4KB pages
 
-@@1:	mov	edx,ecx
-	jecxz	@@done			; if EDX=0, no mem to be allocated
+@vcpi_alloc_xms_1:	mov	edx,ecx
+	jecxz	@vcpi_alloc_xms_done			; if EDX=0, no mem to be allocated
 	call	xms_allocmem		; XMS allocate extended memory
 	dec	ax
-	jz	@@2			; if got memory, jump
+	jz	@vcpi_alloc_xms_2			; if got memory, jump
 	sub	ecx,4			; try less memory, subtract 4K page
-	jnc	@@1			; loop til there is no memory to alloc
-	jmp	@@done			; no memory allocated, done
+	jnc	@vcpi_alloc_xms_1			; loop til there is no memory to alloc
+	jmp	@vcpi_alloc_xms_done			; no memory allocated, done
 
-@@2:	mov	xms_handle,dx		; store handle
+@vcpi_alloc_xms_2:	mov	xms_handle,dx		; store handle
 	mov	ah,0Ch			; XMS lock extended memory
 	call	dptr xms_call
 	dec	ax
-	jz	@@3			; if locked memory, jump
+	jz	@vcpi_alloc_xms_3			; if locked memory, jump
 	xor	dx,dx
 	xchg	dx,xms_handle		; reset xms_handle: no mem allocated
 	mov	ah,0Ah			; free allocated XMS memory
 	call	dptr xms_call
-	jmp	@@done
+	jmp	@vcpi_alloc_xms_done
 
-@@3:	shl	edx,16			; convert DX:BX to EDX pointer
+@vcpi_alloc_xms_3:	shl	edx,16			; convert DX:BX to EDX pointer
 	mov	dx,bx
 	shr	ecx,2			; ECX=memory allocated in 4K blocks
 	movzx	eax,cx
@@ -464,21 +466,21 @@ vcpi_alloc_xms:
 	add	ebx,eax			; adjust allocated page number
 	push	ebx
 
-@@4:	cmp	di,1000h		; if NOT overflowing page (DX>4096)
-	jb	@@5			;  then jump
+@vcpi_alloc_xms_4:	cmp	di,1000h		; if NOT overflowing page (DX>4096)
+	jb	@vcpi_alloc_xms_5			;  then jump
 	mov	ax,es			; else adjust ES:DI pointer to next PG
 	add	ax,0100h
 	mov	es,ax
 	xor	di,di
 
-@@5:	and	dh,0F0h			; clear avail bits
+@vcpi_alloc_xms_5:	and	dh,0F0h			; clear avail bits
 	mov	dl,07h			; set page as user/writeable/present
 	mov	es:[di],edx		; set linear memory addr
 	add	di,4			; increment pointer
 	add	edx,4096		; increment address
-	loop	@@4
+	loop	@vcpi_alloc_xms_4
 
-@@done:	pop	ebx			; restore EBX counter
+@vcpi_alloc_xms_done:	pop	ebx			; restore EBX counter
 	ret
 
 
@@ -500,33 +502,33 @@ x_init:	mov	ah,07h			; query A20
 	mov	edx,pm32_maxextmem	; get requested amount of memory
 	shr	edx,10			; convert to KB
 	cmp	edx,eax
-	jbe	@@1
+	jbe	@x_init_1
 	mov	edx,eax
 
-@@1:	mov	esi,edx
+@x_init_1:	mov	esi,edx
 	test	edx,edx			; check if no extended memory is to
-	jz	@@done			;  be allocated, if so, then jump
+	jz	@x_init_done			;  be allocated, if so, then jump
 
 	call	xms_allocmem		; allocate EDX KB memory
 	dec	ax
-	jnz	@@done			; no memory has been allocated
+	jnz	@x_init_done			; no memory has been allocated
 	mov	xms_handle,dx		; store handle
 
 	mov	ah,0Ch			; lock extended memory
 	call	dptr xms_call
 	dec	ax
-	jz	@@2			; if no error, jump
+	jz	@x_init_2			; if no error, jump
 	xor	dx,dx
 	xchg	dx,xms_handle		; reset handle: no mem allocated
 	mov	ah,0Ah			; free allocated extended memory
 	call	dptr xms_call
-	jmp	@@done
+	jmp	@x_init_done
 
-@@2:	mov	wptr mem_ptr[0],bx	; store linear pointer to memory
+@x_init_2:	mov	wptr mem_ptr[0],bx	; store linear pointer to memory
 	mov	wptr mem_ptr[2],dx
 	shl	esi,10			; convert to bytes
 	mov	dptr mem_free,esi	; store amount of memory allocated
-@@done:	jmp	xr_init			; go to XMS/raw continue init
+@x_init_done:	jmp	xr_init			; go to XMS/raw continue init
 
 
 
@@ -549,35 +551,35 @@ r_init:	call	enable_A20		; enable A20
 	sub	sp,32
 	mov	di,sp
 
-@@0:	mov	cl,20
+@r_init_0:	mov	cl,20
 	mov	eax,0000E820h		; try INT 15h, AX=0E820h allocation scheme
 	mov	edx,534D4150h		; "SMAP"
 	int	15h
-	jc	@@noE820		; cover all the possible
-	jcxz	@@noE820		;  exit paths
+	jc	@r_init_noE820		; cover all the possible
+	jcxz	@r_init_noE820		;  exit paths
 	cmp	eax,534D4150h		; "SMAP"
-	jnz	@@noE820
+	jnz	@r_init_noE820
 
 	xor	eax,eax
 	cmp	eax,es:[di+04h]		; hiword: base address (must be 0)
-	jnz	@@0
+	jnz	@r_init_0
 	cmp	eax,es:[di+0Ch]		; hiword: length in bytes (must be 0)
-	jnz	@@0
+	jnz	@r_init_0
 	inc	ax
 	cmp	eax,es:[di+10h]		; type: memory, available to OS (must be 1)
-	jnz	@@0
+	jnz	@r_init_0
 
 	mov	edx,es:[di+00h]		; loword: base address
 	cmp	edx,00100000h
-	jnz	@@0
+	jnz	@r_init_0
 	mov	eax,es:[di+08h]		; loword: length in bytes
 	add	edx,eax
 
 	add	sp,32
 	pop	es
-	jmp	@@temper
+	jmp	@r_init_temper
 
-@@noE820:
+@r_init_noE820:
 	add	sp,32
 	pop	es
 
@@ -587,52 +589,52 @@ r_init:	call	enable_A20		; enable A20
 	mov	ax,0E801h		; try INT 15h, AX=0E801h allocation scheme
 	stc
 	int	15h
-	jc	@@noE801
+	jc	@r_init_noE801
 
 	mov	di,cx			; test if configured memory is > 0
 	or	di,dx
-	jz	@@useE801		; if not, use extended memory (AX,BX)
+	jz	@r_init_useE801		; if not, use extended memory (AX,BX)
 
 	mov	ax,cx			; use configured memory (CX,DX)
 	mov	bx,dx
 
-@@useE801:
+@r_init_useE801:
 	mov	di,ax			; test if extended memory is > 0
 	or	di,bx
-	jz	@@noE801		; if not, skip E801
+	jz	@r_init_noE801		; if not, skip E801
 
 	movzx	eax,ax			; EBX holds extended/configured memory above 16M in 64K blocks
 	movzx	ebx,bx			; EAX holds extended/configured memory in range 1..16M in 1K blocks
 	shl	ebx,6
 	add	eax,ebx			; compute total memory as 1K blocks
-	jmp	@@calcmem
+	jmp	@r_init_calcmem
 
-@@noE801:
+@r_init_noE801:
 	xor	eax,eax			; try INT 15h, AX=88h allocation scheme
 	mov	ah,88h			; how much extended memory free
 	int	15h
 	test	ax,ax			; if none, done with raw init
 	jz	xr_init
 
-@@calcmem:
+@r_init_calcmem:
 	shl	eax,10			; EAX = size of memory (bytes)
 	lea	edx,[eax+100000h]	; EDX = base of memory
 
-@@temper:
+@r_init_temper:
 	cmp	eax,pm32_maxextmem	; check how much memory to alloc
-	jbe	@@1			; pick lowest value
+	jbe	@r_init_1			; pick lowest value
 	mov	eax,pm32_maxextmem
 
-@@1:	add	eax, 000003FFh		; align memory to KB
+@r_init_1:	add	eax, 000003FFh		; align memory to KB
 	and	eax,0FFFFFC00h
 	sub	edx,eax
 	mov	mem_ptr,edx		; store extended memory base
 	mov	mem_free,eax		; store size of extended memory
 	shr	eax,10			; convert to KB
 	test	eax,0ffff0000h
-	jz	@@2
+	jz	@r_init_2
 	or	ax,0ffffh
-@@2:	mov	mem_used,ax		; set used memory
+@r_init_2:	mov	mem_used,ax		; set used memory
 
 xr_init:				; XMS/raw common init tail
 	mov	wptr picslave,0870h
@@ -698,7 +700,7 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	rep	stos wptr es:[di]
 
 	cmp	pmodetype,2			; if under VCPI, do VCPI GDT set up
-	jne	@@f0
+	jne	@vxr_init_f0
 	pop	ax				; restore TSS seg from stack
 	shl	eax,4				; set up TSS selector in GDT
 	mov	es:[SELVCPITSS+2],eax
@@ -712,19 +714,19 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	rep	movs wptr es:[di],ss:[si]
 	add	sp,8*3				;***NOTE: (VCPI) adjust stack
 
-@@f0:	mov	ax,0FFFFh
-	mov	wptr es:[SELZERO],ax		; set SELZERO limit
-	mov	wptr es:[SELCALLBACK],ax	; set callback DS limit
+@vxr_init_f0:	mov	ax,0FFFFh
+	mov	wptr es:[K_SELZERO],ax		; set K_SELZERO limit
+	mov	wptr es:[K_SELCALLBACK],ax	; set callback DS limit
 	mov	ax,0DF92h
-	mov	wptr es:[SELZERO+5],ax		; set SELZERO rights
-	mov	wptr es:[SELCALLBACK+5],ax	; set callback DS rights
+	mov	wptr es:[K_SELZERO+5],ax		; set K_SELZERO rights
+	mov	wptr es:[K_SELCALLBACK+5],ax	; set callback DS rights
 
 	mov	ax,cs			; AX = base
 	mov	bx,SELCODE		; BX = index to SELCODE descriptor
 	mov	cx,0FFFFh		; CX = limit (64k)
 	mov	dx,109Ah		; DX = access rights
 	call	vxr_initsetdsc
-	mov	bx,SELDATA		; BX = index to SELDATA descriptor
+	mov	bx,K_SELDATA		; BX = index to K_SELDATA descriptor
 	mov	dx,1092h		; DX = access rights
 	call	vxr_initsetdsc
 	mov	ax,0040h
@@ -741,35 +743,43 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	call	vxr_initsetdsc
 
 	push	bx			; get PSP segment
+If DOS_LEGACY_125_20 ne 0
+	cmp	cs:dos_ver_major,3
+	jae	@vxr_init_getpsp51
+	mov	si,cs:pm32_psp_seg
+	jmp	@vxr_init_gotpsp
+@vxr_init_getpsp51:
+Endif
 	mov	ah,51h
 	int	21h
 	mov	si,bx			; SI = PSP segment
+@vxr_init_gotpsp:
 	pop	bx
 
 	push	ds
 	mov	ds,si			; set caller environment descriptor
 	mov	ax,ds:[002Ch]
 	test	ax,ax			; is environment seg 0?
-	jz	@@f1			; if yes, dont convert to descriptor
+	jz	@vxr_init_f1		; if yes, dont convert to descriptor
 	mov	ds:[002Ch],bx		; store selector value in PSP
 	call	vxr_initsetdsc
-	mov	ax,si			; set caller PSP descriptor
-@@f1:	mov	cx,0FFh			; limit is 100h bytes
+@vxr_init_f1:	mov	ax,si			; set caller PSP descriptor
+	mov	cx,0FFh			; limit is 100h bytes
 	call	vxr_initsetdsc
 	pop	ds
 
 	sub	bx,8
 	mov	cx,bx			; CX = ES descriptor, PSP
 	pop	dx			; DX = SS descriptor, from stack
-	mov	ax,SELZERO		; AX = DS descriptor, SELZERO
+	mov	ax,K_SELZERO		; AX = DS descriptor, K_SELZERO
 	movzx	ebx,sp			; EBX = SP, current SP - same stack
 	mov	si,SELCODE		; target CS is SELCODE, same segment
-	mov	edi,offs @@swpm		; target EIP
+	mov	edi,offs @vxr_init_swpm		; target EIP
 	jmp	rmtopmswrout		; jump to mode switch routine
 ;
 ; now we are in protected mode
 ;
-@@swpm:	cli
+@vxr_init_swpm:	cli
 	mov	edi,cs:codebase		; EDI = offset of _KERNEL from 0
 
 	mov	eax,cs:vcpi_cr3		; EAX = CR3
@@ -782,11 +792,11 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	mov	cr2,eax			; reset CR2 page fault addr register
 
 	cmp	eax,cs:cpuidlvl		; check CPUID level
-	jz	@@0			; if not available, jump
+	jz	@vxr_init_0			; if not available, jump
 	mov	al,1
 	db 0Fh, 0A2h			; CPUID
 	test	edx,01000000h		; test if FXSAVE/FXRSTOR available (FXSR bit)
-	jz	@@0			; if not, jump
+	jz	@vxr_init_0			; if not, jump
 	mov	eax,cr4			; load CR4 into EAX
 	or	ax,0200h		; set OSFXFR bit
 	mov	cr4,eax			; reload CR4 (note: OSXMMEXCPT is left unchanged)
@@ -794,7 +804,7 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	and	al,0F9h			; clear EM & MP bits
 	mov	cr0,eax			; reload CR0
 
-@@0:	clts
+@vxr_init_0:	clts
 
 	mov	eax,ds:[4*15h]		; preserve INT 15h
 	mov	oldint15h[edi],eax
@@ -808,6 +818,10 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	mov	oldint23h[edi],eax
 	mov	eax,ds:[4*24h]		; preserve INT 24h - (DOS Critical handler)
 	mov	oldint24h[edi],eax
+If DOS_LEGACY_125_20 ne 0
+	mov	eax,ds:[4*2Ah]		; preserve INT 2Ah - (Network)
+	mov	oldint2Ah[edi],eax
+Endif
 	mov	eax,ds:[4*2Fh]		; preserve INT 2Fh - (Multiplex)
 	mov	oldint2Fh[edi],eax
 
@@ -816,15 +830,29 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	mov	ax,offs int21h_rm
 	mov	ds:[4*21h],eax
 
+If DOS_LEGACY_125_20 ne 0
+	mov	ax,offs rm_iret_stub	; sanitize NULL INT 2Ah / INT 2Fh IVT slots
+	cmp	dptr ds:[4*2Ah],0
+	jnz	@vxr_init_san2f
+	mov	ds:[4*2Ah],eax
+@vxr_init_san2f:
+	cmp	dptr ds:[4*2Fh],0
+	jnz	@vxr_init_sandone
+	mov	ds:[4*2Fh],eax
+@vxr_init_sandone:
+Endif
+
 	cmp	cs:pmodetype,0		; is system raw?
-	jnz	@@1			; if not, we are done
+	jnz	@vxr_init_1			; if not, we are done
 	cmp	cs:id32_process_id,0	; is this the only instance?
-	jnz	@@1			; if not, we are done
+	jnz	@vxr_init_1			; if not, we are done
 
 	mov	ax,offs int15h_rm
 	mov	ds:[4*15h],eax		; install real mode INT 15h handler
 
-@@1:	push	ds es edi
+@vxr_init_1:	push	ds
+	push	es
+	push	edi
 	push	cs
 	pop	ds			; DS = code base (executable)
 	mov	es,seldata		; ES = code base (writeable)
@@ -832,25 +860,31 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	mov	esi,offs int1Bh			;** NOTE: EDI points to init_code
 	mov	edi,offs @callback_data+00h	;** EDI = callback data structure
 	int	31h				;** which will be used only once
-	push	cx dx				;** at startup.
+	push	cx	;** at startup.
+	push	dx
 	mov	si,offs int1Ch
 	mov	di,offs @callback_data+32h
 	int	31h
-	push	cx dx
+	push	cx
+	push	dx
 	mov	si,offs int23h
 	mov	di,offs @callback_data+64h
 	int	31h
-	push	cx dx
+	push	cx
+	push	dx
 	mov	si,offs int24h
 	mov	di,offs @callback_data+96h
 	int	31h
-	push	cx dx
+	push	cx
+	push	dx
 	mov	ds,seldata		; DS = data selector
 	pop	newint24h		; set allocated callbacks
 	pop	newint23h
 	pop	newint1Ch
 	pop	newint1Bh
-	pop	edi es ds
+	pop	edi
+	pop	es
+	pop	ds
 
 	xor	eax,eax
 	mov	ebx,cs:mem_ptr		; EBX = base of extended memory
@@ -862,12 +896,12 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	sub	esi,edx			; get the difference
 	add	esi,10h			; plus 16 bytes for 1st block header
 	sub	ecx,esi			; reduce size of free memory
-	ja	@@2			; if no error, jump
+	ja	@vxr_init_2			; if no error, jump
 	mov	mem_ptr[edi],eax	; not enough memory even for one
 	mov	mem_free[edi],eax	; memory block header, done now
-	jmp	@@done
+	jmp	@vxr_init_done
 
-@@2:	mov	eax,12345678h		; header id
+@vxr_init_2:	mov	eax,12345678h		; header id
 	mov	[ebx+00h],eax		; set header id
 	mov	[ebx+0Ch],eax		; set header id
 	movzx	eax,id32_process_id	; load current process id
@@ -878,7 +912,7 @@ vxr_init:				; VCPI/XMS/raw common init tail
 	mov	mem_ptr[edi],ebx	; set base of memory
 	mov	mem_free[edi],ecx	; set size of memory
 
-@@done:	sti
+@vxr_init_done:	sti
 	jmp	dvxr_init		; go to DPMI/VCPI/XMS/raw init tail
 
 
@@ -901,28 +935,29 @@ install_ints:
 ;
 ; initialize IDT, point all INTs into int_matrix call table
 ;
-@@1:	lea	eax,[ecx*4 + SELCODE*10000h + offs int_matrix]
+@install_ints_1:	lea	eax,[ecx*4 + SELCODE*10000h + offs int_matrix]
 	stos	dptr es:[di]
 	mov	eax,8E00h		; interrupt gate type (IF=0)
 	mov	bl,cl			; isolate high 5 bits of int num
 	and	bl,0F8h
 	test	cl,0F0h			; one of the low 16 interrupts?
-	jz	@@2			; if yes, store as interrupt gate
+	jz	@install_ints_2			; if yes, store as interrupt gate
 	cmp	bl,dl			; one of the high IRQs?
-	je	@@2			; if yes, store as interrupt gate
+	je	@install_ints_2			; if yes, store as interrupt gate
 	cmp	bl,dh			; one of the low IRQs?
-	je	@@2			; if yes, store as interrupt gate
+	je	@install_ints_2			; if yes, store as interrupt gate
 	mov	ax,8F00h		; set to trap gate type (IF=unchanged)
-@@2:	stos	dptr es:[di]
+@install_ints_2:	stos	dptr es:[di]
 	inc	cl			; increment interrupt number
-	jnz	@@1			; loop if more interrupts to go
+	jnz	@install_ints_1			; loop if more interrupts to go
 ;
 ; initialize IDT, redirect INT 21h and INT 31h
 ;
 	mov	wptr es:[8*21h],offs int21h_pm	; protected mode INT 21h
 	mov	wptr es:[8*31h],offs int31h_pm	; protected mode INT 31h
 
-	push	ds es
+	push	ds
+	push	es
 	push	ds
 	pop	es				; ES = DS
 ;
@@ -945,13 +980,14 @@ install_ints:
 	mov	cl,16
 	mov	di,offs exctab_pm
 	mov	ax,offs exc_matrix
-@@3:	stos	wptr es:[di]
+@install_ints_3:	stos	wptr es:[di]
 	mov	wptr es:[di+2],SELCODE
 	add	di,6
 	add	ax,4
-	loop	@@3
+	loop	@install_ints_3
 
-	pop	es ds
+	pop	es
+	pop	ds
 ;
 ; install INTs 00..0Eh (exceptions),
 ;  modify call targets in int_matrix call table such that they point to irq_fail
@@ -960,10 +996,10 @@ install_ints:
 	sub	ax,offs int_matrix+4	; calculate offset displacement
 	mov	di,offs int_matrix+2	; DI = pointer into CALL matrix
 	mov	cl,15
-@@l1:	mov	ds:[di],ax		; modify CALL address
+@install_ints_l1:	mov	ds:[di],ax		; modify CALL address
 	sub	ax,4			; PUSH + CALL = 4 bytes
 	add	di,4
-	loop	@@l1
+	loop	@install_ints_l1
 ;
 ; install IRQs 0..15 (PIC dependent),
 ;  modify call targets in int_matrix call table such that they point to either irq_normal or irq_tester
@@ -984,36 +1020,36 @@ install_ints:
 ;  modify call target of INT 0Fh in int_matrix call table such that it points to irq_normal
 ;
 	cmp	picmaster,10h		; setup IRQ 7, damn it!
-	jae	@@done
+	jae	@install_ints_done
 	mov	ax,(offs irq_normal) - (offs int_matrix+4) - 0Fh*4
 	mov	wptr int_matrix[0Fh*4+2],ax	; install INT 0Fh (IRQ 7)
 
-@@done:	ret
+@install_ints_done:	ret
 
 
 ;-----------------------------------------------------------------------------
 setup_irqs:
 	cmp	dl,0Fh
 	mov	ax,offs irq_tester	; if DX is in range INT 00..0Fh
-	jbe	@@0			;  install as IRQ check handler
+	jbe	@setup_irqs_0			;  install as IRQ check handler
 	mov	ax,offs irq_normal	; else no IRQ check is needed
-@@0:	shl	dx,2
+@setup_irqs_0:	shl	dx,2
 	sub	ax,offs int_matrix+4
 	sub	ax,dx
 	mov	di,offs int_matrix+2
 	add	di,dx
 	mov	cl,8			; 8 IRQs to go
-@@loop:	mov	ds:[di],ax
+@setup_irqs_loop:	mov	ds:[di],ax
 	sub	ax,4			; PUSH + CALL is 4 bytes
 	add	di,4			; next entry in int_matrix call table
-	loop	@@loop
+	loop	@setup_irqs_loop
 	ret
 
 
 ;-----------------------------------------------------------------------------
 allocate_callbacks:
 	movzx	cx,pm32_callbacks	; CL = number of callbacks
-	jcxz	@@done			; if no, done with this part
+	jcxz	@allocate_callbacks_done			; if no, done with this part
 	xor	di,di			; location within callback seg
 	mov	ax,6866h
 	mov	dx,kernel_code
@@ -1021,7 +1057,7 @@ allocate_callbacks:
 	push	ds
 	push	es
 	pop	ds
-@@1:	mov	wptr ds:[di],6066h	; PUSHAD instruction
+@allocate_callbacks_1:	mov	wptr ds:[di],6066h	; PUSHAD instruction
 	mov	bptr ds:[di+2],ah	; PUSH WORD instruction
 	mov	wptr ds:[di+3],0	; immediate 0 used as free flag
 	mov	wptr ds:[di+5],ax	; PUSH DWORD instruction
@@ -1031,7 +1067,7 @@ allocate_callbacks:
 	mov	wptr ds:[di+21],offs callback
 	mov	wptr ds:[di+23],dx
 	add	di,25			; increment ptr to callback
-	loop	@@1			; if more callbacks to do, loop
+	loop	@allocate_callbacks_1			; if more callbacks to do, loop
 	pop	ds
 
 	add	di,0Fh			; align next data area on paragraph
@@ -1039,7 +1075,7 @@ allocate_callbacks:
 	mov	ax,es
 	add	ax,di
 	mov	es,ax			; set ES to base of next data area
-@@done:	ret
+@allocate_callbacks_done:	ret
 
 
 ;-----------------------------------------------------------------------------
@@ -1062,11 +1098,11 @@ xms_allocmem:
 	mov	ah,89h
 	call	dptr xms_call
 	cmp	ax,0001h
-	jz	@@ok
+	jz	@xms_allocmem_ok
 	mov	dx,di
 	mov	ah,09h
 	call	dptr xms_call
-@@ok:	pop	edi
+@xms_allocmem_ok:	pop	edi
 	ret
 
 

@@ -103,14 +103,14 @@ critical_error_pm:
 	mov	pmstacktop,eax		;  to a safe value
 
 	mov	ebx,eax			; EBX = ESP for protected mode
-	mov	ax,SELDATA		; DS selector for protected mode
+	mov	ax,K_SELDATA		; DS selector for protected mode
 	mov	cx,ax
-	mov	dx,SELZERO		; SS selector = zero selector
+	mov	dx,K_SELZERO		; SS selector = zero selector
 	mov	si,SELCODE		; target protected mode CS:EIP
-	mov	edi,offs @@0
+	mov	edi,offs @critical_error_pm_0
 	jmp	rmtopmswrout		; switch to protected mode
 
-@@0:	mov	ax,8300h		; AX = kernel error code
+@critical_error_pm_0:	mov	ax,8300h		; AX = kernel error code
 	jmp	dptr client_call	; enter client's run-time error handler
 
 
@@ -131,11 +131,14 @@ int_main:
 	shr	ax,2			; now AX = INT ##h
 
 	pushad
-	push	ds es fs gs
+	push	ds
+	push	es
+	push	fs
+	push	gs
 	mov	ds,cs:seldata
 
 	inc	_pc_intpmtorm		; increment INT PM->RM counter
-	mov	@@N,al			; modify code with interrupt number
+	mov	@int_main_N,al			; modify code with interrupt number
 
 	mov	dx,rmstacktop		; DX = SS for real mode redirection
 	mov	bx,rmstacklen		; get size of real mode stack
@@ -159,14 +162,14 @@ int_main:
 	mov	ax,[esp+28h]		; move AX to real mode stack frame
 	mov	[edi-04h],ax
 	mov	si,_KERNEL		; real mode target CS:IP
-	mov	di,offs @@0
+	mov	di,offs @int_main_0
 	sub	bx,26h			; adjust real mode SP for stored vars
 	db 66h				; JMP DWORD PTR, as in 32bit offset,
 	jmp	wptr cs:pmtormswrout	;  not seg:16bit offset
 
-@@0:	popad				; load regs with int call values
+@int_main_0:	popad				; load regs with int call values
 	db 0CDh				; issue INT ##h in real-mode
-@@N	db 000h
+@int_main_N	db 000h
 
 	pushad				; store registers on stack
 	pushf				; store flags on stack
@@ -179,13 +182,13 @@ int_main:
 	mov	ebx,[bp+22h]		; get protected mode SS:ESP from stack
 	mov	dx,[bp+26h]
 	add	ebp,eax			; EBP -> stored regs on stack
-	mov	ax,SELZERO		; DS selector value for protected mode
-	mov	cx,SELDATA		; ES selector value for protected mode
+	mov	ax,K_SELZERO		; DS selector value for protected mode
+	mov	cx,K_SELDATA		; ES selector value for protected mode
 	mov	si,SELCODE		; target CS:EIP in protected mode
-	mov	edi,offs @@1
+	mov	edi,offs @int_main_1
 	jmp	cs:rmtopmswrout		; go back to protected mode
 
-@@1:	inc	es:_pc_intrmtopm	; increment INT RM->PM counter
+@int_main_1:	inc	es:_pc_intrmtopm	; increment INT RM->PM counter
 
 	mov	ax,es:rmstacklen	; restore top of real mode stack
 	add	es:rmstacktop,ax
@@ -205,7 +208,10 @@ int_main:
 	mov	ecx,[eax+26]
 	mov	eax,[eax+30]
 
-	pop	gs fs es ds		; restore segment regs
+	pop	gs	; restore segment regs
+	pop	fs
+	pop	es
+	pop	ds
 	add	esp,22h			; skip old registers
 	iretd				;**no pop AX
 
@@ -264,7 +270,10 @@ irq_normal:				; Standard IRQ handler that will send
 ;
 irq_down:
 	pushad
-	push	ds es fs gs
+	push	ds
+	push	es
+	push	fs
+	push	gs
 	mov	ds,cs:seldata
 
 	inc	_pc_irqpmtorm		; increment IRQ PM->RM counter
@@ -312,15 +321,15 @@ irq_fail:
 ; invoke a user-defined exception handler
 ;
 	cmp	al,08h			; exceptions 08h, 0A..0Eh push error codes
-	jb	@@2
+	jb	@irq_fail_2
 	cmp	al,09h
-	je	@@2
+	je	@irq_fail_2
 	cmp	al,0Eh
-	ja	@@2
+	ja	@irq_fail_2
 ;
 ; rearrange stack frame: have exception code
 ;
-@@1:	sub	esp,16h
+@irq_fail_1:	sub	esp,16h
 	mov	[esp+08h],eax		; save hiword(EAX)
 
 	movzx	eax,ax
@@ -346,11 +355,11 @@ irq_fail:
 	mov	eax,[esp+24h]
 	mov	[esp+1Ch],eax		; EFL
 
-	jmp	@@run
+	jmp	@irq_fail_run
 ;
 ; rearrange stack frame: no exception code
 ;
-@@2:	sub	esp,1Ah
+@irq_fail_2:	sub	esp,1Ah
 	mov	[esp+08h],eax		; save hiword(EAX)
 
 	movzx	eax,ax
@@ -376,14 +385,14 @@ irq_fail:
 	mov	eax,[esp+24h]
 	mov	[esp+1Ch],eax		; EFL
 
-@@run:	lea	eax,[esp+28h]
+@irq_fail_run:	lea	eax,[esp+28h]
 	mov	[esp+20h],eax		; ESP
 
 	mov	ax,ss
 	movzx	eax,ax
 	mov	[esp+24h],eax		; SS
 
-	mov	ax,offs @@ret		; ret EIP
+	mov	ax,offs @irq_fail_ret		; ret EIP
 	xchg	eax,[esp+08h]		; restore EAX
 
 	db 66h				; do 32bit far ret to the
@@ -392,7 +401,7 @@ irq_fail:
 
 ; exception handler epilogue
 ; note:	we don't reload the stack but simply ignore SS:ESP values on eh's stack frame
-@@ret:	mov	[esp],eax
+@irq_fail_ret:	mov	[esp],eax
 	mov	eax,[esp+0Ch]
 	mov	[esp+14h],eax
 	mov	eax,[esp+08h]
@@ -434,7 +443,10 @@ irq_standard:				; Standard IRQ handler that will send
 	shr	ax,2
 
 	pushad
-	push	ds es fs gs
+	push	ds
+	push	es
+	push	fs
+	push	gs
 	mov	ds,cs:seldata
 
 	inc	_pc_irqpmtorm		; increment IRQ PM->RM counter
@@ -463,20 +475,23 @@ irq_standard:				; Standard IRQ handler that will send
 	jmp	wptr cs:pmtormswrout	;  not seg:16bit offset
 
 @irq:	cli
-	mov	ax,SELDATA		; DS selector value for protected mode
+	mov	ax,K_SELDATA		; DS selector value for protected mode
 	mov	cx,ax			; ES selector value for protected mode
 	pop	ebx			; get protected mode SS:ESP from stack
 	pop	dx
 	mov	si,SELCODE		; target CS:EIP in protected mode
-	mov	edi,offs @@2
+	mov	edi,offs @irq_2
 	jmp	cs:rmtopmswrout		; go back to protected mode
 
-@@2:	inc	_pc_irqrmtopm		; increment IRQ RM->PM counter
+@irq_2:	inc	_pc_irqrmtopm		; increment IRQ RM->PM counter
 
 	mov	ax,rmstacklen		; restore top of real mode stack
 	add	rmstacktop,ax
 
-	pop	gs fs es ds		; restore all registers
+	pop	gs	; restore all registers
+	pop	fs
+	pop	es
+	pop	ds
 	popad
 	pop	ax			; restore original AX
 	iretd
@@ -500,7 +515,10 @@ irq_callback:
 	shr	ax,2			; AX = IRQ number
 
 	pushad
-	push	ds es fs gs
+	push	ds
+	push	es
+	push	fs
+	push	gs
 	mov	ds,cs:kernel_code
 
 	inc	_pc_irqcbrmtopm		; increment IRQCallback RM->PM counter
@@ -521,30 +539,30 @@ irq_callback:
 	add	irqcallbackptr,4
 
 	mov	ax,SELCODE		; prot. mode DS
-	mov	cx,SELZERO		; prot. mode ES
+	mov	cx,K_SELZERO		; prot. mode ES
 	mov	dx,cx			; prot. mode SS
 	mov	si,ax			; prot. mode CS
-	mov	edi,offs @@0		; prot. mode EIP
+	mov	edi,offs @irq_callback_0		; prot. mode EIP
 	jmp	rmtopmswrout		; switch to protected mode
 
-@@0:	movzx	bx,temp_int
+@irq_callback_0:	movzx	bx,temp_int
 	shl	bx,3			; BX = pointer to interrupt ##h
 	pushfd				; set return eflags
-	push	large SELCODE		; set return CS on PM stack
-	push	large offs @@1		; set return EIP on PM stack
+	pushd	SELCODE		; set return CS on PM stack
+	pushd	offs @irq_callback_1		; set return EIP on PM stack
 	db 66h
 	jmp	dptr irqtab_pm[bx]	; go to prot. mode interrupt handler
 
-@@1:	mov	ax,_KERNEL		; AX = real mode DS
+@irq_callback_1:	mov	ax,_KERNEL		; AX = real mode DS
 	mov	si,ax			; SI = real mode CS
-	mov	di,offs @@2		; DI = real mode IP
+	mov	di,offs @irq_callback_2		; DI = real mode IP
 	mov	bx,bp			; BX = real mode SP
 	shr	ebp,16
 	mov	dx,bp			; DX = real mode SS
 	db 66h
 	jmp	wptr cs:pmtormswrout	; switch to real mode
 
-@@2:	inc	_pc_irqcbpmtorm		; increment IRQCallback PM->RM counter
+@irq_callback_2:	inc	_pc_irqcbpmtorm		; increment IRQCallback PM->RM counter
 
 	mov	eax,pmstacklen
 	add	pmstacktop,eax
@@ -553,7 +571,10 @@ irq_callback:
 	mov	si,irqcallbackptr
 	mov	esp,dptr @callback_data[si+100h]
 
-	pop	gs fs es ds
+	pop	gs
+	pop	fs
+	pop	es
+	pop	ds
 	popad
 	pop	ax
 	iret				; return from IRQ callback
@@ -579,7 +600,10 @@ callback:				; real mode callback handler
 	mov	ax,sp			; preserve SS:SP for callback
 	push	ss
 	push	ax
-	push	gs fs ds es		; preserve real mode regs for callback
+	push	gs	; preserve real mode regs for callback
+	push	fs
+	push	ds
+	push	es
 	pushf				; preserve FLAGS for callback
 	cli
 	push	cs
@@ -603,14 +627,14 @@ callback:				; real mode callback handler
 
 	mov	es,ds:gdtseg		; set for protected mode callback DS
 	or	eax,92000000h		;  base address in GDT
-	mov	es:[SELCALLBACK+2],eax
-	mov	ax,SELZERO		; DS selector for protected mode
+	mov	es:[K_SELCALLBACK+2],eax
+	mov	ax,K_SELZERO		; DS selector for protected mode
 	mov	dx,ax			; SS selector = DS selector
 	mov	si,SELCODE		; target protected mode CS:EIP
-	mov	edi,offs @@0
+	mov	edi,offs @callback_0
 	jmp	rmtopmswrout		; go to protected mode
 
-@@0:	mov	edi,[esp+14]		; EDI -> register structure from stack
+@callback_0:	mov	edi,[esp+14]		; EDI -> register structure from stack
 	lea	esi,[esp+24]		; copy general registers from stack
 	mov	ecx,8			;  to register structure
 	cld
@@ -628,15 +652,16 @@ callback:				; real mode callback handler
 	movzx	esi,ax			; ESI = old real mode SP
 	xchg	esp,ebp			; ESP = protected mode stack
 	pushfd				; push flags for IRETD from callback
-	push	large cs		; push 32bit CS for IRETD
-	push	large offs @@1		; push 32bit EIP for IRETD
+	db 66h
+	push	cs		; push 32bit CS for IRETD
+	pushd	offs @callback_1		; push 32bit EIP for IRETD
 	movzx	eax,wptr [ebp+22]	; EAX = target CS of callback
 	push	eax			; push 32bit CS for RETF to callback
 	push	dptr [ebp+18]		; push 32bit EIP for retf
 	db 66h				; 32bit RETF to callback
 	retf
 
-@@1:	cli
+@callback_1:	cli
 	push	es			; DS:ESI = register structure
 	pop	ds
 	mov	esi,edi
@@ -660,17 +685,18 @@ callback:				; real mode callback handler
 	mov	ax,[esi+4]		; AX = return DS for real mode
 	mov	cx,[esi+2]		; CX = return ES for real mode
 	mov	si,_KERNEL		; real mode target CS:IP
-	mov	di,offs @@2
+	mov	di,offs @callback_2
 	db 66h				; JMP DWORD PTR, as in 32bit offset,
 	jmp	wptr cs:pmtormswrout	;  not seg:16bit offset
 
-@@2:	inc	cs:_pc_cbpmtorm		; increment Callback PM->RM counter
+@callback_2:	inc	cs:_pc_cbpmtorm		; increment Callback PM->RM counter
 
 	mov	esp,ebp			; restore total ESP, old high word
 	mov	eax,cs:pmstacklen	; restore top of protected mode stack
 	add	cs:pmstacktop,eax
 
 	popad				; get callback return general regs
-	pop	fs gs			; get callback return FS and GS values
+	pop	fs	; get callback return FS and GS values
+	pop	gs
 	iret				; go to callback return CS:IP
 

@@ -38,6 +38,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <typedefs.h>
@@ -57,9 +58,11 @@
 	int extender_build_version;
 
 	FILE *fp;
-	char buffer[512];
+	char buffer[1024];
 	char filename[256];
 	char orgfilename[256];
+#define _P9(x) x,x,x,x,x,x,x,x,x
+	void __far * const _mzpad[] = { _P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp),_P9(&fp) };
 
 
 void err_usage() {
@@ -172,9 +175,17 @@ void CheckFileFormat()
 
 void CheckStubExtender()
 {
+	unsigned int hdr_off;
 
 	if(fileisbound==FALSE)
 		return;
+
+	hdr_off = (*(unsigned short *)&buffer[0x08]) * 16U;
+	if(hdr_off + 0x40U < sizeof(buffer)) {
+		if(strcmp(&buffer[hdr_off + 0x1CU],"DOS/32A") == 0) { fileverptr = buffer + hdr_off + 0x24U; extendertype = 1; return; }
+		if(strcmp(&buffer[hdr_off],"STUB/32A") == 0)        { fileverptr = buffer + hdr_off + 0x09U; extendertype = 2; return; }
+		if(strcmp(&buffer[hdr_off + 0x0CU],"STUB/32C") == 0){ fileverptr = buffer + hdr_off + 0x15U; extendertype = 3; return; }
+	}
 
 	if(strcmp(&buffer[0x7C],"DOS/32A") == 0)
 	{
@@ -258,6 +269,12 @@ void ShowExtenderVersion()
 	buf[2] = *(fileverptr+13);
 	buf[3] = *(fileverptr+14);
 	extender_build_version=atoi(buf);
+	if(extendertype == 1 && *fileverptr == 'C') {
+		unsigned int hdr_off = (*(unsigned short *)&buffer[0x08]) * 16U;
+		extender_minor_version = (unsigned char)buffer[hdr_off + 0x18U];
+		extender_major_version = extender_release = (unsigned char)buffer[hdr_off + 0x19U];
+		extender_revision = extender_build_version = 0;
+	}
 
 
 	printf("\n");
