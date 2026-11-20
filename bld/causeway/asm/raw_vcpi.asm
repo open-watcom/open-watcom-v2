@@ -123,8 +123,8 @@ CR0ProtSav      DD ?            ; MED 10/15/96
 ;
 IDTReal         dw ?            ;Real mode segment for IDT.
 GDTReal         dw ?            ;Real mode segment for GDT.
-GDTLinear       dd ?,?,-1
-MDTLinear       dd ?,?
+GDTLinear       GDTLinearStruct <?,?,-1>
+MDTLinear       MDTLinearStruct <?,?>
 LDTReal         dw ?
 LDTLinear       dd ?
 LDTStart        dw 0
@@ -273,10 +273,10 @@ rv1_7:  add     bx,size CallBackStruc   ;next entry.
         ;
         ;Move the GDT/LDT back down into conventional memory.
         ;
-        cmp     GDTLinear+8,-1
+        cmp     GDTLinear.orig_gdt,-1
         jz      rv1_NoGDTMove
-        mov     eax,GDTLinear+8
-        mov     GDTLinear,eax
+        mov     eax,GDTLinear.orig_gdt
+        mov     GDTLinear.gdt,eax
         mov     d[GDTVal+2],eax
         mov     d[VCPI_GDT+2],eax
         mov     ah,1
@@ -394,7 +394,7 @@ rv1_NoDIRMove:
         mov     es,ax           ;expand up, read/write for switch back to real
         mov     fs,ax           ;mode.
         mov     gs,ax           ;/
-        mov     edi,GDTLinear
+        mov     edi,GDTLinear.gdt
         add     edi,KernalPL3_2_PL0
         GetDescOffset edi       ;lose RPL & TI
         push    es
@@ -1086,7 +1086,7 @@ rv16_0: mov     ax,KernalLDT            ;Point to empty LDT descriptor.
         push    es
         mov     ax,KernalZero
         mov     es,ax
-        mov     esi,GDTLinear
+        mov     esi,GDTLinear.gdt
         add     esi,KernalTS-3
         mov     BYTE PTR es:[esi+5],DescPresent+DescPL3+Desc386Tss
         pop     es
@@ -1200,7 +1200,7 @@ rv18_Resume486:
         push    es
         mov     ax,KernalZero
         mov     es,ax
-        mov     esi,GDTLinear
+        mov     esi,GDTLinear.gdt
         add     esi,KernalTS-3
         mov     BYTE PTR es:[esi+5],DescPresent+DescPL3+Desc386Tss
         pop     es
@@ -1309,7 +1309,7 @@ RawPL0toPL3     endp
 RawPL3toPL0     proc    near
         pop     w[rv21_RetAdd]
         push    edi
-        mov     edi,GDTLinear
+        mov     edi,GDTLinear.gdt
         add     edi,KernalPL3_2_PL0
         GetDescOffset edi               ;lose RPL & TI
         push    es
@@ -1587,7 +1587,7 @@ SFrameB1 ends
         xor     esi,esi
         mov     si,RawStackReal
         mov     es:RealRegsStruc.Real_SS[edi],si
-        or      w[rv29_ourstack],-1
+        mov     w[rv29_ourstack],-1
 rv29_GotStack:
         ;
         ;Point to the real mode stack.
@@ -1989,7 +1989,7 @@ rv30_oops:
         mov     es,ax
         movzx   eax,w[CallBackStruc.CallBackStackSel+bx]
         GetDescOffset eax       ;lose RPL & TI
-        mov     edi,GDTLinear
+        mov     edi,GDTLinear.gdt
         add     edi,eax
         mov     es:[edi+2],si   ;store low word of linear base.
         shr     esi,16
@@ -2742,7 +2742,7 @@ EmuRawPL3toPL0  proc    near
         mov     ds,ax
         ;
         assume ds:_cwRaw
-        mov     edi,GDTLinear
+        mov     edi,GDTLinear.gdt
         ;
         assume ds:_cwDPMIEMU
         pop     ds
@@ -5117,7 +5117,7 @@ GIComputeBytes2:
         xor     edx,edx
         div     ecx                     ;get chunk size.
         inc     eax
-        or      Int15Size,-1            ;set chunk size to use.
+        mov     Int15Size,-1            ;set chunk size to use.
         RoundPageDN eax                 ;round down to nearest page.
         jz      rv56_GotSize
         mov     Int15Size,eax           ;set chunk size to use.

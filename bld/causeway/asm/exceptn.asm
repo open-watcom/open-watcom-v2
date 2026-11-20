@@ -579,7 +579,7 @@ exc20_Not14Special:
         ;
         assume ds:_Excep
 exc20_ok:
-        or      InExcep,-1
+        mov     InExcep,-1
         push    ds
         pop     es
         ;
@@ -747,7 +747,7 @@ DebugSegmentDPMI proc near
         assume ds:_cwMain
         push    fs
         mov     fs,PSPSegment
-        mov     ebx,-1
+        or      ebx,-1
         ;
         push    eax
         mov     ax,fs

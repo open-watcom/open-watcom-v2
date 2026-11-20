@@ -43,6 +43,17 @@ ResHead_Next    dd 0
 ResHead_Handle  dd 0
 ResHead ends
 
+MDTLinearStruct struc
+descriptors     dd  0
+status          dd  0
+MDTLinearStruct ends
+
+GDTLinearStruct struc
+gdt             dd  0
+new_gdt         dd  0
+orig_gdt        dd  0
+GDTLinearStruct ends
+
 ResSize         equ     4096                                        ;Size of resource block.
 ResNum          equ     ((((ResSize-size ResHead)/5) shr 2) shl 2)  ;Number of entries.
 ResCount        equ     ResNum-4                                    ;count for free entry checking.
@@ -57,8 +68,7 @@ Res_CALLBACK    equ     6       ;3 entries.
 Res_NOTHING     equ     254
 Res_CHAIN       equ     255     ;single entry.
 
-
-;--- values for GDT/LDT bytestring (MDTLinear+4)
+;--- values for GDT/LDT MDTLinear.status
 DT_FREE         equ     0       ; free descriptor 
 DT_ALLOCATED    equ     1       ; allocated LDT descriptor 
 DT_RESERVED     equ     -1      ; reserved GDT descriptor

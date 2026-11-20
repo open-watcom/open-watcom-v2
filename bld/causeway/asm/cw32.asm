@@ -572,7 +572,7 @@ cw1_KeepRaw:
 ;
 ;Enable resource tracking and MCB allocations.
 ;
-        or      ResourceTracking,-1     ;Enable resource tracking.
+        mov     ResourceTracking,-1     ;Enable resource tracking.
 ;
 ;Run the main program.
 ;
@@ -918,7 +918,7 @@ endif
         int     21h
 
         mov     ah,48h
-        mov     bx,-1
+        or      bx,-1
         int     21h
 
         pop     bx
@@ -1546,7 +1546,7 @@ cw5_GDTGot:
         mov     es,ax
         movzx   eax,ax
         shl     eax,4
-        mov     GDTLinear,eax
+        mov     GDTLinear.gdt,eax
         xor     di,di
         mov     cx,(8*GDT_Entries)
         xor     al,al
@@ -1936,7 +1936,7 @@ END COMMENT !
         ;
         ;Init GDT data alias.
         ;
-        mov     esi,GDTLinear
+        mov     esi,GDTLinear.gdt
         mov     ecx,65535
         xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
@@ -2150,7 +2150,7 @@ cw5_InProt:
         mov     ds,ax
         ;
         assume ds:_cwInit
-        or      IProtectedMode,-1
+        mov     IProtectedMode,-1
         mov     ax,KernalDS             ;Get data descriptor.
         mov     ds,ax
         ;
@@ -2227,7 +2227,7 @@ cw5_pl3:
         push    es
         mov     ax,KernalZero
         mov     es,ax
-        mov     esi,GDTLinear
+        mov     esi,GDTLinear.gdt
         add     esi,KernalTS-3
         mov     BYTE PTR es:[esi+5],DescPresent+DescPL3+Desc386Tss
         pop     es
@@ -2673,18 +2673,18 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         jnz     cw5_6
         ;
         mov     esi,LinearEntry+4
-        mov     MDTLinear,esi           ;store for allocation code.
-        mov     MDTLinear+4,esi
-        add     MDTLinear+4,8192*8      ;setup bit string address.
+        mov     MDTLinear.descriptors,esi   ;store for allocation code.
+        mov     MDTLinear.status,esi
+        add     MDTLinear.status,8192*8      ;setup bit string address.
         ;
         ;Clear the memory to zero's.
         ;
-        mov     edi,MDTLinear
+        mov     edi,MDTLinear.descriptors
         mov     ecx,(8192*8)+8192
         cld
         xor     al,al
         rep     stos b[edi]
-        mov     edi,MDTLinear+4
+        mov     edi,MDTLinear.status
         ; Protect the first four selectors from normal allocation.
         ; The first is the NULL selector and the next three are reserved for VCPI.
         ; Each descriptor has a one-byte status entry. Since
@@ -2699,8 +2699,8 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         ;
         ;Setup a new GDT.
         ;
-        mov     esi,MDTLinear
-        mov     GDTLinear+4,esi
+        mov     esi,MDTLinear.descriptors
+        mov     GDTLinear.new_gdt,esi
         mov     ecx,65535
         xor     al,al                   ;descriptor size bit
         mov     ah,DescPresent+DescPL3+DescMemory+DescRWData
@@ -2713,8 +2713,8 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         ;Copy current GDT to new GDT.
         ;
         push    ds
-        mov     esi,GDTLinear
-        mov     edi,GDTLinear+4
+        mov     esi,GDTLinear.gdt
+        mov     edi,GDTLinear.new_gdt
         mov     ax,KernalZero
         mov     ds,ax
         mov     ecx,GDT_Entries*8
@@ -2726,18 +2726,18 @@ cw5_6:  call    d[fPhysicalGetPage]     ;try to allocate a page.
         ;
         pushf
         cli
-        mov     eax,GDTLinear
-        mov     GDTLinear+8,eax
-        mov     eax,GDTLinear+4
-        mov     GDTLinear,eax
+        mov     eax,GDTLinear.gdt
+        mov     GDTLinear.orig_gdt,eax
+        mov     eax,GDTLinear.new_gdt
+        mov     GDTLinear.gdt,eax
         mov     d[GDTVal+2],eax
         mov     d[VCPI_GDT+2],eax
         popf
         ;
         ;Now mark all used descriptors in allocation control string.
         ;
-        mov     edi,GDTLinear
-        mov     esi,MDTLinear+4
+        mov     edi,GDTLinear.gdt
+        mov     esi,MDTLinear.status
         mov     cx,GDT_Entries
 cw5_4:  test    BYTE PTR es:[edi+5],DescPresent ;this descriptor in use?
         jz      cw5_5
@@ -2779,14 +2779,14 @@ cw5_5:  add     edi,8                   ;next descriptor.
         ; 16-bit code, and sit far outside GDT_Entries (not covered by cw5_4).
         ; They exist only when the big shared GDT is built, not in the
         ; separate GDT/LDT mode (SYSFLAG_LDT).        ;
-        mov     esi,MDTLinear+4
+        mov     esi,MDTLinear.status
         mov     BYTE PTR es:[esi+(KernalB000 shr 3)],DT_RESERVED
         mov     BYTE PTR es:[esi+(KernalB800 shr 3)],DT_RESERVED
         mov     BYTE PTR es:[esi+(KernalA000 shr 3)],DT_RESERVED
 cw5_LDT:
         ;Setup new LDT.
         ;
-        mov     esi,MDTLinear
+        mov     esi,MDTLinear.descriptors
         mov     LDTLinear,esi
         ;
         ;Map LDT into GDT.
@@ -3320,7 +3320,7 @@ endif
         mov     ds,DataSegmenti
         ;
         assume ds:_cwInit
-        or      IProtectedMode,-1
+        mov     IProtectedMode,-1
 cw5_InProtected:
         ;
         ;Now get on with installing the higher level stuff.
@@ -3703,7 +3703,7 @@ cw5_exp1:
         mov     ds,mDataSegment
         ;
         assume ds:_cwMain
-        or      mcbAllocations,-1       ;Enable MCB code.
+        mov     mcbAllocations,-1       ;Enable MCB code.
         mov     di,offset ExtensionList
 cw5_e0: cmp     w[di],-1                ;end of the list?
         jz      cw5_e9
@@ -4355,7 +4355,7 @@ cw10_nopass:
         mov     ds,bx
         ;
         assume ds:_cwRaw
-        or      NoPassFlag,-1
+        mov     NoPassFlag,-1
         ;
         assume ds:_cwMain
         pop     ds
@@ -4371,7 +4371,7 @@ cw10_big1:
         mov     ds,bx
         ;
         assume ds:_cwRaw
-        or      Big1Flag,-1
+        mov     Big1Flag,-1
         ;
         assume ds:_cwMain
         pop     ds
@@ -4441,7 +4441,7 @@ cw10_extall:
         mov     ds,bx
         ;
         assume ds:_cwRaw
-        or      ExtALLSwitch,-1
+        mov     ExtALLSwitch,-1
         ;
         assume ds:_cwMain
         pop     ds
@@ -4457,7 +4457,7 @@ cw10_novm:
         mov     ds,bx
         ;
         assume ds:_cwInit
-        or      NoVMSwitch,-1
+        mov     NoVMSwitch,-1
         ;
         assume ds:_cwMain
         pop     ds

@@ -783,7 +783,7 @@ int334_start0:
 int334_shit:
         jmp     int334_shit
         ;
-        mov     ax,-1
+        or      ax,-1
         mov     es,ax
         jmp     int334_Exit
         ;

@@ -7785,7 +7785,7 @@ api94_0:
         mov     ds,apiDSeg
         ;
         assume ds:_cwMain
-        or      apiExcepPatched,-1
+        mov     apiExcepPatched,-1
         ;
         assume ds:_apiCode
         pop     ds

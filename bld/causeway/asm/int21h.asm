@@ -734,8 +734,8 @@ Int21hAllocMem  proc    near
         ret
         ;
 int2118_AllocMuch:
-        mov     cx,-1
-        mov     dx,-1
+        or      cx,-1
+        or      dx,-1
         Sys     GetMem          ;get free memory size.
         Reg16hiloTo32 cx, dx, ebx       ;cx:dx ->ebx
         cmp     ebx,0fffeh*16   ;can't report too much.
@@ -1707,13 +1707,13 @@ setgs:
         mov     ds,cs:Int21hDSeg
         ;
         assume ds:_cwMain
-        or      DOS4GFlag,-1
+        mov     DOS4GFlag,-1
         ;
         assume ds:nothing
         mov     ds,cs:Int21hDDSeg
         ;
         assume ds:_Int21h
-        or      Int21hDOS4GFlag,-1
+        mov     Int21hDOS4GFlag,-1
         ;
         assume ds:nothing
         pop     ecx

@@ -24,17 +24,17 @@ RawGetDescriptors proc near
         assume ds:_cwRaw
         mov     ax,KernalZero   ;make LDT memory addresable.
         mov     es,ax
-        mov     edi,MDTLinear+4 ;point to descriptor map.
+        mov     edi,MDTLinear.status ;point to descriptor map.
         movzx   edx,cx
         mov     ecx,8192
-        xor     al,al
+        mov     al,DT_FREE
         cld
         dec     edx
         jnz     ldt1_0
         ;
-        ;Search for single selector.
+        ;Search for single free selector.
         ;
-        repne   scasb           ;find a zero.
+        repne   scasb           ;find a free selector (DT_FREE).
         jnz     ldt1_8
         dec     edi
         mov     BYTE PTR es:[edi],DT_ALLOCATED
@@ -42,14 +42,14 @@ RawGetDescriptors proc near
         ;
         ;search for multiple selectors.
         ;
-ldt1_0: repne   scasb           ;find a zero.
+ldt1_0: repne   scasb           ;find a free selector (DT_FREE).
         jnz     ldt1_8
         cmp     edx,ecx
         jnc     ldt1_8
         push    ecx
         push    edi
         mov     ecx,edx
-        repe    scasb           ;check for string of zero's
+        repe    scasb           ; Check for consecutive free descriptors.
         pop     edi
         pop     ecx
         jnz     ldt1_0
@@ -58,12 +58,12 @@ ldt1_0: repne   scasb           ;find a zero.
         mov     ecx,edx
         inc     ecx
         mov     al,DT_ALLOCATED
-        rep     stosb           ;mark all entries as used.
+        rep     stosb           ; Allocate requested ECX descriptors.
         pop     edi
-ldt1_1: sub     edi,MDTLinear+4
+ldt1_1: sub     edi,MDTLinear.status
         shl     edi,3
         push    edi
-        add     edi,MDTLinear
+        add     edi,MDTLinear.descriptors
         xor     eax,eax
         mov     DWORD PTR es:[edi],eax
         mov     DWORD PTR es:[edi+4],(DescPresent+DescMemory+DescRWData+DescPL3) shl 8
@@ -122,12 +122,12 @@ RawReleaseDescriptor    proc near
         jz      error
         movzx   eax,bx                  ; Get selector to use.
         shr     eax,3                   ; /8 for descriptor number.
-        mov     esi,MDTLinear+4
+        mov     esi,MDTLinear.status
         cmp     BYTE PTR es:[esi+eax],DT_ALLOCATED ; descriptor allocated as LDT descriptor?
         jnz     error
         mov     BYTE PTR es:[esi+eax],DT_FREE ; mark this entry as free.
         shl     eax,3                   ; Get selector to use.
-        mov     esi,MDTLinear
+        mov     esi,MDTLinear.descriptors
         xor     ecx,ecx
         mov     DWORD PTR es:[esi+eax],ecx
         mov     DWORD PTR es:[esi+4+eax],ecx
@@ -230,7 +230,7 @@ ldt3_New:
         push    eax
         push    ebx
         push    ecx
-        mov     dx,-1
+        or      dx,-1
         xor     cx,cx
         mov     bx,ax
         call    RawSetSelLimit
@@ -286,7 +286,7 @@ RawSetSelType   proc    near
         mov     es,ax
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         mov     BYTE PTR es:[esi+5],cl
         and     ch,11110000b
         and     BYTE PTR es:[esi+6],00001111b
@@ -325,7 +325,7 @@ RawSetSelLimit  proc    near
         mov     es,ax
         movzx   esi,bx                  ;Get the selector.
         GetDescOffset esi               ;lose RPL & TI.
-        add     esi,MDTLinear           ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         Reg16hiloTo32 cx, dx, ecx       ;cx:dx -> ecx
         xor     al,al
         cmp     ecx,100000h             ; see if we need to set g bit
@@ -371,7 +371,7 @@ RawSetSelBase   proc    near
         mov     es,ax
         movzx   esi,bx                  ;Get the selector.
         GetDescOffset esi               ;lose RPL & TI.
-        add     esi,MDTLinear           ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         mov     es:[esi+4],cl           ;base mid.
         mov     es:[esi+7],ch           ;base high.
         mov     es:[esi+2],dx           ;base low.
@@ -410,7 +410,7 @@ RawGetSelBase   proc    near
         mov     es,ax
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         mov     cl,es:[esi+4]   ;base mid.
         mov     ch,es:[esi+7]   ;base high.
         mov     dx,es:[esi+2]   ;base low.
@@ -446,7 +446,7 @@ RawBPutDescriptor proc near
         assume ds:_cwRaw
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt8_Use32
         movzx   edi,di
@@ -498,7 +498,7 @@ RawBGetDescriptor proc near
         assume ds:_cwRaw
         movzx   esi,bx          ;Get the selector.
         GetDescOffset esi       ;lose RPL & TI.
-        add     esi,MDTLinear   ;offset into descriptor table.
+        add     esi,MDTLinear.descriptors ;offset into descriptor table.
         test    BYTE PTR RawSystemFlags,SYSFLAG_16B
         jz      ldt9_Use32
         movzx   edi,di
