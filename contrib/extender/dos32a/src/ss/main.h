@@ -122,6 +122,12 @@ void ShowMainMenu(void);
 void SelectMainMenu(void);
 unsigned long Input(int, int, int, unsigned long);
 void ShowMemory(void);
+void CheckIfLocked(void);
+void CheckVersion(void);
+int CheckIfModified(void);
+void ShowModified(void);
+void RestoreDefaults(void);
+void ShowMemReq(void);
 
 
 extern	void VideoInit(void);

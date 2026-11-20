@@ -96,7 +96,6 @@ makefile text
 *.rez binary
 *.sdl binary
 *.sex binary
-*.stb binary
 *.sym binary
 *.sys binary
 *.uni binary

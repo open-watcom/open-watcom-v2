@@ -844,12 +844,28 @@ If DOS32A_BOUND_STUB ne 0
 find_bound_self_in_ram:
 	cmp	_dos_ver_major,2
 	jae	@find_bound_dos2
+	mov	edi,09FFF0h
+	movzx	ebp,wptr es:[0002h]
+	shl	ebp,4
+	cmp	edi,ebp
+	jbe	@find_bound_dos1_low
+	call	@scan_fcb_range
+	jnc	@find_bound_hit
+	test	al,al
+	jnz	@find_bound_fail
+@find_bound_dos1_low:
 	movzx	edi,_seg_es
 	shl	edi,4
 	sub	edi,12
+	mov	ebp,00500h
+	call	@scan_fcb_range
+	jnc	@find_bound_hit
+	jmp	@find_bound_fail
+
+@scan_fcb_range:
 @find_fcb_loop:
-	cmp	edi,00700h
-	jb	@find_bound_fail
+	cmp	edi,ebp
+	jb	@scan_fcb_fail
 	cmp	wptr gs:[edi+9],'XE'
 	jnz	@find_fcb_next
 	cmp	bptr gs:[edi+11],'E'
@@ -862,6 +878,11 @@ find_bound_self_in_ram:
 	jb	@find_fcb_next
 	cmp	ah,5Ah
 	ja	@find_fcb_next
+	cmp	bptr gs:[edi+12],20h
+	jnz	@find_fcb_not_dirent
+	cmp	dptr gs:[edi+16],0
+	jz	@find_fcb_next
+@find_fcb_not_dirent:
 	; Build [D:]NAME.EXE\0 in [offs start]
 	mov	bx,offs start
 	test	al,al
@@ -888,24 +909,35 @@ find_bound_self_in_ram:
 	mov	dptr [bx],4558452Eh	; '.EXE'
 	mov	bptr [bx+4],0
 	call	@verify_bound_candidate
-	jnc	@find_bound_hit
+	jnc	@scan_fcb_ok
+	test	al,al
+	jnz	@scan_fcb_fail
 @find_fcb_next:
 	dec	edi
 	jmp	@find_fcb_loop
+@scan_fcb_fail:
+	stc
+	ret
+@scan_fcb_ok:
+	clc
+	ret
 
 @find_bound_dos2:
-	; Scan resident COMMAND.COM below PSP first, then transient COMMAND.COM at top of RAM
-	movzx	edi,_seg_es
-	shl	edi,4
-	sub	edi,5
-	mov	ebp,00700h
-	call	@scan_asciiz_exe_range
-	jnc	@find_bound_hit
+	; Scan transient COMMAND.COM EXEC buffer at top of RAM first, then resident COMMAND.COM below PSP
 	mov	edi,09FFF0h
 	movzx	ebp,wptr es:[0002h]
 	shl	ebp,4
 	cmp	edi,ebp
-	jbe	@find_bound_fail
+	jbe	@find_bound_dos2_low
+	call	@scan_asciiz_exe_range
+	jnc	@find_bound_hit
+	test	al,al
+	jnz	@find_bound_fail
+@find_bound_dos2_low:
+	movzx	edi,_seg_es
+	shl	edi,4
+	sub	edi,5
+	mov	ebp,00700h
 	call	@scan_asciiz_exe_range
 	jnc	@find_bound_hit
 @find_bound_fail:
@@ -983,6 +1015,8 @@ find_bound_self_in_ram:
 	jnz	@scan_exe_cp
 	call	@verify_bound_candidate
 	jnc	@scan_exe_ok
+	test	al,al
+	jnz	@scan_exe_fail
 @scan_exe_prev:
 	dec	edi
 	jmp	@scan_exe_loop
@@ -1018,19 +1052,56 @@ find_bound_self_in_ram:
 	jnz	@verify_cand_close
 	cmp	wptr fs:[0018h],0040h
 	jnz	@verify_cand_close
-	mov	eax,fs:[003Ch]
-	test	eax,eax
-	jz	@verify_cand_close
-	mov	_exec_start,eax
+	movzx	edx,wptr fs:[0008h]
+	shl	edx,4
+	mov	ebp,fs:[003Ch]
+	push	bx
+	push	cx
+	mov	bx,_exec_handle
+	mov	ecx,edx
+	shr	ecx,16
+	mov	ax,4200h
+	int	21h
+	pop	cx
+	pop	bx
+	jc	@verify_cand_close
+	xor	edx,edx
+	mov	ecx,4
+	push	bx
+	push	ds
+	push	fs
+	pop	ds
+	mov	bx,cs:_exec_handle
+	mov	ah,3Fh
+	int	21h
+	pop	ds
+	pop	bx
+	jc	@verify_cand_close
+	cmp	ax,4
+	jb	@verify_cand_close
+	cmp	dptr fs:[0000h],32334449h
+	jnz	@verify_cand_close
+	test	ebp,ebp
+	jz	@verify_cand_unbound_id32
+	mov	_exec_start,ebp
 	pop	ebp
 	pop	edi
+	xor	al,al
 	clc
+	ret
+@verify_cand_unbound_id32:
+	call	close_exec
+	pop	ebp
+	pop	edi
+	mov	al,1
+	stc
 	ret
 @verify_cand_close:
 	call	close_exec
 @verify_cand_fail:
 	pop	ebp
 	pop	edi
+	xor	al,al
 	stc
 	ret
 Endif

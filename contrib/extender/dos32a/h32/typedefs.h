@@ -61,26 +61,38 @@ extern "C" {
 /* typedefs for compatibility with previous versions */
 typedef unsigned char     uchar;
 typedef unsigned short    ushort;
-typedef unsigned long     ulong;
 typedef unsigned char     byte;
 typedef unsigned short    word;
+#if defined( __LP64__ ) || defined( _LP64 )
+typedef unsigned int      ulong;
+typedef unsigned int      dword;
+#else
+typedef unsigned long     ulong;
 typedef unsigned long     dword;
+#endif
 
 /* the new typedefs are in upper case */
 typedef unsigned char     UCHAR;
 typedef unsigned short    USHORT;
-typedef unsigned long     ULONG;
 typedef unsigned int      UINT;
 typedef unsigned char     BYTE;
 typedef unsigned short    WORD;
+#if defined( __LP64__ ) || defined( _LP64 )
+typedef unsigned int      ULONG;
+typedef unsigned int      DWORD;
+#else
+typedef unsigned long     ULONG;
 typedef unsigned long     DWORD;
+#endif
 /* WATCOM C v10.6 and below do not support __int64 */
-#if __WATCOMC__ > 1060
+#if ( defined( __WATCOMC__ ) && __WATCOMC__ > 1060 ) || defined( _MSC_VER )
 typedef unsigned __int64  QWORD;
+#elif defined( __GNUC__ ) || ( defined( __STDC_VERSION__ ) && __STDC_VERSION__ >= 199901L )
+typedef unsigned long long QWORD;
 #endif
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif  // __TYPEDEFS__

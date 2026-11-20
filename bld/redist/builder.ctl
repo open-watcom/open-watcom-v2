@@ -25,7 +25,6 @@ cdsay .
 #============================
     <CPCMD> dos4gw/*.exe            "<OWRELROOT>/binw/"
     <CPCMD> dos4gw/*.doc            "<OWRELROOT>/binw/"
-    <CPCMD> dos32a/*.d32            "<OWRELROOT>/binw/"
     <CPCMD> pmodew/*                "<OWRELROOT>/binw/"
 
 [ BLOCK <BLDRULE> clean ]

@@ -354,7 +354,7 @@ int FindExecType()
 
 
 /****************************************************************************/
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 	int n;
 
@@ -418,17 +418,15 @@ void main(int argc, char *argv[])
 	{
 		if(!silent) printf("SC/32A: File \"%s\" has been successfully compressed\n", oldfilename);
 	}
-	exit(0);
+	return 0;
 }
 
 
 
 
 /****************************************************************************/
-void CompressExec()
+void CompressExec(void)
 {
-	int n;
-
 	CreateTemp();
 	CreateLCHeader();
 	CreateLCObjects();

@@ -15,45 +15,33 @@ set PROJDIR=<CWD>
 
 [ BLOCK <BLDRULE> rel cprel ]
 #============================
-    <CCCMD> dos386/*.exe            "<OWRELROOT>/binw/"
-    <CCCMD> dos386/*.stb            "<OWRELROOT>/binw/"
+    <CCCMD> dos32a/dosi86/dos32a.exe    "<OWRELROOT>/binw/"
+    <CCCMD> dos32a/dosi86/stub32a.exe   "<OWRELROOT>/binw/"
+    <CCCMD> dos32a/dosi86/stub32c.exe   "<OWRELROOT>/binw/"
 
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/binnt/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/binnt/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/binnt/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/binnt/"
+    <CCCMD> sb/dos386/sb.exe            "<OWRELROOT>/binw/"
+    <CCCMD> sc/dos386/sc.exe            "<OWRELROOT>/binw/"
+    <CCCMD> sd/dos386/sd.exe            "<OWRELROOT>/binw/"
+    <CCCMD> ss/dos386/ss.exe            "<OWRELROOT>/binw/"
 
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/binnt64/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/binnt64/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/binnt64/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/binnt64/"
+    <CCCMD> license.d32                 "<OWRELROOT>/binw/"
+    <CCCMD> readme.d32                  "<OWRELROOT>/binw/"
 
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/binl/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/binl/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/binl/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/binl/"
+    <CCCMD> sver/dosi86/sver.exe        "<OWRELROOT>/binw/"
+    <CCCMD> sver/os2386/sver.exe        "<OWRELROOT>/binp/"
+    <CCCMD> sver/nt386/sver.exe         "<OWRELROOT>/binnt/"
+    <CCCMD> sver/linux386/sver.exe      "<OWRELROOT>/binl/sver"
+    <CCCMD> sver/ntaxp/sver.exe         "<OWRELROOT>/axpnt/"
 
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/binl64/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/binl64/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/binl64/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/binl64/"
-
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/arml64/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/arml64/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/arml64/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/arml64/"
-
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/bino64/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/bino64/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/bino64/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/bino64/"
-
-    <CCCMD> dos386/dos32a.exe       "<OWRELROOT>/armo64/"
-    <CCCMD> dos386/dos32a.stb       "<OWRELROOT>/armo64/"
-    <CCCMD> dos386/stub32a.exe      "<OWRELROOT>/armo64/"
-    <CCCMD> dos386/stub32c.exe      "<OWRELROOT>/armo64/"
-
-    <CCCMD> "<OWROOT>/contrib/extender/dos32a/h32/d32a.h" "<OWRELROOT>/h/"
+    <CCCMD> sver/bsdx64/sver.exe        "<OWRELROOT>/binb64/sver"
+    <CCCMD> sver/bsda64/sver.exe        "<OWRELROOT>/armb64/sver"
+    <CCCMD> sver/ntx64/sver.exe         "<OWRELROOT>/binnt64/"
+    <CCCMD> sver/linuxx64/sver.exe      "<OWRELROOT>/binl64/sver"
+    <CCCMD> sver/linuxarm/sver.exe      "<OWRELROOT>/arml/sver"
+    <CCCMD> sver/linuxa64/sver.exe      "<OWRELROOT>/arml64/sver"
+    <CCCMD> sver/osxx64/sver.exe        "<OWRELROOT>/bino64/sver"
+    <CCCMD> sver/osxarm/sver.exe        "<OWRELROOT>/armo/sver"
+    <CCCMD> sver/osxa64/sver.exe        "<OWRELROOT>/armo64/sver"
 
 [ BLOCK . . ]
 

@@ -1,0 +1,22 @@
+tree_depth = 4
+
+proj_name = sd
+
+sd_autodepends  = .AUTODEPEND
+sd_dos_extender = dos32a
+
+memory_model_386 = f
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.asm : $(dos32a_dir)/src/sd
+
+inc_dirs = -I"$(dos32a_dir)/src/sd" -I"$(dos32a_dir)/src/sd/sdlib" -I"$(dos32a_dir)/src/sutils/misc"
+
+extra_a_flags = -DSVR=0 -fpi87 -zld
+
+exetarg_objs = sd.obj
+exetarg_name = sd
+!include exetarg.mif

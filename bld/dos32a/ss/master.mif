@@ -1,0 +1,26 @@
+tree_depth = 4
+
+proj_name = ss
+
+ss_autodepends  = .AUTODEPEND
+ss_dos_extender = dos32a
+
+memory_model_386 = f
+fpu_flags_dos386 = -fpi87
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c : $(dos32a_dir)/src/ss
+.asm : $(dos32a_dir)/src/ss
+
+inc_dirs = -I"$(dos32a_dir)/src/ss" -I"$(dos32a_dir)/h32" -I"$(dos32a_dir)/src/sutils/misc"
+
+extra_c_flags = -ei -zp16
+extra_a_flags = -fpi87 -zld
+
+exetarg_objs = setup.obj main.obj
+exetarg_name = ss
+exetarg_opts = op stack=65536
+!include exetarg.mif

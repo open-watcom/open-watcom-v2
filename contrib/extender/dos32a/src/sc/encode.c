@@ -43,6 +43,7 @@
 //#include <debug.h>
 
 void ShowCount(int count);
+int CompressData(char *src, char *dest, int size);
 
 #define N			4*1024	// size of the buffer
 #define F			18
@@ -63,27 +64,27 @@ void ShowCount(int count);
 	ulong	textsize = 0;
 	ulong	codesize = 0;
 
-	char	cc = 0;
-	char	xc = 0;
+	uchar	cc = 0;
+	uchar	xc = 0;
 	char	*srcaddr = NULL;
 	char	*destaddr = NULL;
 
 
-int getbyte()
+static int getbyte(void)
 {
 	if(bytecount-- > 0)
-		return(*srcaddr++);
+		return((unsigned char)*srcaddr++);
 	else
 		return(EOF);
 }
 
-void putbyte(char c)
+static void putbyte(uchar c)
 {
-	*destaddr++=(c^xc);
+	*destaddr++=(char)(c^xc);
 	xc=c;
 }
 
-void InitTree(void)
+static void InitTree(void)
 {
 	int  i;
 
@@ -93,10 +94,10 @@ void InitTree(void)
 		node[i]=NIL;
 }
 
-void InsertNode(int r)
+static void InsertNode(int r)
 {
 	int i,p,cmp;
-	char *key;
+	uchar *key;
 
 	cmp=1;
 	key=&text_buf[r];
@@ -150,7 +151,7 @@ void InsertNode(int r)
 	node[p]=NIL;
 }
 
-void DeleteNode(int p)
+static void DeleteNode(int p)
 {
 	int q;
 
@@ -187,10 +188,10 @@ void DeleteNode(int p)
 	node[p]=NIL;
 }
 
-void Encode(void)
+static void Encode(void)
 {
 	int i, c, len, r, s, last_match_length, code_buf_ptr;
-	char  code_buf[17], mask;
+	uchar code_buf[17], mask;
 
 	bytecount=textsize;
 	InitTree();

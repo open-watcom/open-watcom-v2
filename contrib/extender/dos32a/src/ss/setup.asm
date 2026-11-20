@@ -625,7 +625,7 @@ Prints_:
 	inc	esi
 	test	al,al
 	jz	@Prints_done
-	call	Printc_
+	call	PrintC_
 	inc	_xpos
 	cmp	_xpos,80
 	jae	@Prints_1
@@ -768,7 +768,7 @@ PrintHelp_:
 	inc	_ypos
 	mov	_xpos,3
 	jmp	@PrintHelp_0
-@PrintHelp_1:	call	Printc_
+@PrintHelp_1:	call	PrintC_
 	inc	_xpos
 	jmp	@PrintHelp_0
 
@@ -924,16 +924,16 @@ draw_window:
 	mov	_xpos,al
 	mov	_ypos,dl
 	mov	al,	0C9h
-	call	Printc_
+	call	PrintC_
 	inc	_xpos
 	mov	ecx,_xwinlen
 	sub	ecx,2
 	mov	al,	0CDh
-@draw_window_3:	call	Printc_
+@draw_window_3:	call	PrintC_
 	inc	_xpos
 	loop	@draw_window_3
 	mov	al,	0BBh
-	call	Printc_
+	call	PrintC_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -943,11 +943,11 @@ draw_window:
 	mov	ecx,_ywinlen
 	sub	ecx,2
 	mov	al,	0BAh
-@draw_window_4:	call	Printc_
+@draw_window_4:	call	PrintC_
 	inc	_ypos
 	loop	@draw_window_4
 	mov	al,	0C8h
-	call	Printc_
+	call	PrintC_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -959,11 +959,11 @@ draw_window:
 	mov	ecx,_ywinlen
 	sub	ecx,2
 	mov	al,	0BAh
-@draw_window_5:	call	Printc_
+@draw_window_5:	call	PrintC_
 	inc	_ypos
 	loop	@draw_window_5
 	mov	al,	0BCh
-	call	Printc_
+	call	PrintC_
 
 	mov	eax,_xwinpos
 	mov	edx,_ywinpos
@@ -975,7 +975,7 @@ draw_window:
 	mov	ecx,_xwinlen
 	sub	ecx,2
 	mov	al,	0CDh
-@draw_window_6:	call	Printc_
+@draw_window_6:	call	PrintC_
 	inc	_xpos
 	loop	@draw_window_6
 

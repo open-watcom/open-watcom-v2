@@ -63,47 +63,71 @@
 	char orgfilename[256];
 
 
-void err_usage() {
+static int sver_ieq( const char *a, const char *b )
+{
+	unsigned char ca;
+	unsigned char cb;
+
+	while( *a != '\0' && *b != '\0' )
+	{
+		ca = (unsigned char)*a++;
+		cb = (unsigned char)*b++;
+		if( ca >= 'A' && ca <= 'Z' ) ca = (unsigned char)( ca + ( 'a' - 'A' ) );
+		if( cb >= 'A' && cb <= 'Z' ) cb = (unsigned char)( cb + ( 'a' - 'A' ) );
+		if( ca != cb ) return 0;
+	}
+	return *a == '\0' && *b == '\0';
+}
+
+static unsigned long read_le32( const char *p )
+{
+	return (unsigned long)(unsigned char)p[0]
+		| ( (unsigned long)(unsigned char)p[1] << 8 )
+		| ( (unsigned long)(unsigned char)p[2] << 16 )
+		| ( (unsigned long)(unsigned char)p[3] << 24 );
+}
+
+static void err_usage( void ) {
 	printf("%s syntax is SV <execname.xxx>\n",errstr);
 	printf("            use -h or -? to get more help\n");
 	exit(1);
 }
 
-void err_open() {
+static void err_open( void ) {
 	printf("%s cannot open file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-void err_read() {
+static void err_read( void ) {
 	printf("%s cannot read from file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-void err_seek() {
+static void err_seek( void ) {
 	printf("%s error seeking in file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-void err_format() {
+static void err_format( void ) {
 	printf("%s unsupported exec format in file \"%s\"\n",errstr,filename);
 	exit(1);
 }
 
-void err_extender() {
+static void err_extender( void ) {
 	printf("%s \"%s\" is not a DOS/32A executable\n",errstr,filename);
 	exit(1);
 }
 
 
 /****************************************************************************/
-void ShowCopyright()
+static void ShowCopyright( void )
 {
 	printf("SVER -- SUNSYS Version Report Utility  Version %s\n",version);
 	printf("Copyright (C) Supernar Systems, Ltd. 1996-2002\n");
 }
 
 
-void ShowHelp()
+static void ShowHelp( void )
 {
 	printf("\n");
 	printf("The SVER Utility Program should be used to determine the version\n");
@@ -126,52 +150,46 @@ void ShowHelp()
 
 
 /****************************************************************************/
-void OpenFile()
+static void OpenFile( void )
 {
-	char buf[256];
+	static const char * const exts[] = {
+		"", ".exe", ".EXE", ".le", ".LE", ".lx", ".LX", ".lc", ".LC"
+	};
+	char buf[264];
+	size_t i;
 
-	strcpy(buf,filename);
-	if( (fp=fopen(buf,"rb")) == NULL)
+	fp = NULL;
+	for( i = 0; i < sizeof(exts) / sizeof(exts[0]); i++ )
 	{
-	  strcpy(buf,filename);
-	  strcat(buf,".exe");
-	  if( (fp=fopen(buf,"rb")) == NULL)
-	  {
-	    strcpy(buf,filename);
-	    strcat(buf,".le");
-	    if( (fp=fopen(buf,"rb")) == NULL)
-	    {
-	      strcpy(buf,filename);
-	      strcat(buf,".lx");
-	      if( (fp=fopen(buf,"rb")) == NULL)
-	      {
-	        strcpy(buf,filename);
-	        strcat(buf,".lc");
-	        if( (fp=fopen(buf,"rb")) == NULL)
-	        {
-			  err_open();
-	        }
-	      }
-	    }
-	  }
+		if( strlen(filename) + strlen(exts[i]) >= sizeof(buf) )
+			continue;
+		strcpy(buf, filename);
+		strcat(buf, exts[i]);
+		fp = fopen(buf, "rb");
+		if( fp != NULL )
+		{
+			strcpy(orgfilename, buf);
+			return;
+		}
 	}
-	strcpy(orgfilename,buf);
+	err_open();
 }
 
-void ReadFileHeader()
+static void ReadFileHeader( void )
 {
-	fread(&buffer,1,sizeof(buffer),fp);
+	memset(buffer, 0, sizeof(buffer));
+	fread(buffer, 1, sizeof(buffer), fp);
 	if(ferror(fp)) err_read();
 }
 
-void CheckFileFormat()
+static void CheckFileFormat( void )
 {
 	if(strncmp(buffer,"MZ",2) == 0) { fileisbound=TRUE; return; }
 	if(strncmp(buffer,"LC",2) == 0) { fileisbound=FALSE; return; }
 	err_format();
 }
 
-void CheckStubExtender()
+static void CheckStubExtender( void )
 {
 	unsigned int hdr_off;
 
@@ -241,7 +259,7 @@ void CheckStubExtender()
 }
 
 
-void ShowApplicationName()
+static void ShowApplicationName( void )
 {
 
 	printf("\n");
@@ -251,7 +269,7 @@ void ShowApplicationName()
 }
 
 
-void ShowExtenderVersion()
+static void ShowExtenderVersion( void )
 {
 	char buf[8];
 	unsigned int hdr_off;
@@ -325,7 +343,7 @@ void ShowExtenderVersion()
 	printf("Build:          %04d\n",	extender_build_version);
 }
 
-void ShowOEMInfo() {
+static void ShowOEMInfo( void ) {
 	int n;
 	int objects;
 	unsigned long offs;
@@ -337,16 +355,12 @@ void ShowOEMInfo() {
 // if MZ, move to Linear Exec start
 	if(strncmp(buffer,"MZ",2) == 0)
 	{
-		offs=0;
-		offs|=(unsigned long)buffer[0x3C];
-		offs|=(unsigned long)buffer[0x3D]<<8;
-		offs|=(unsigned long)buffer[0x3E]<<16;
-		offs|=(unsigned long)buffer[0x3F]<<24;
+		offs = read_le32(&buffer[0x3C]);
 		if(offs == 0) return;
 	}
 	else 	offs=0;
 
-	if(fseek(fp,offs,SEEK_SET) != 0) err_seek();
+	if(fseek(fp,(long)offs,SEEK_SET) != 0) err_seek();
 	fread(buffer,1,16,fp);
 	if(ferror(fp)) err_read();
 
@@ -354,34 +368,26 @@ void ShowOEMInfo() {
 	if(strncmp(buffer,"LC",2) != 0) return;
 
 // check if OEM Info is appended
-	if( (buffer[5]&0x80) != 0x80) return;
+	if( ((unsigned char)buffer[5]&0x80U) != 0x80U) return;
 
-	objects=buffer[4];
+	objects = (unsigned char)buffer[4];
 
 // scan through Objects
 	for(n=0; n<objects; n++)
 	{
 		fread(buffer,1,16,fp);
 		if(ferror(fp)) err_read();
-		size=0;
-		size|=(unsigned long)buffer[4];
-		size|=(unsigned long)buffer[5]<<8;
-		size|=(unsigned long)buffer[6]<<16;
-		size|=(unsigned long)buffer[7]<<24;
-		if(fseek(fp,size,SEEK_CUR) != 0) err_seek();
+		size = read_le32(&buffer[4]);
+		if(fseek(fp,(long)size,SEEK_CUR) != 0) err_seek();
 	}
 
 // skip Fixups
 	fread(buffer,1,12,fp);
-	size=0;
-	size|=(unsigned long)buffer[4];
-	size|=(unsigned long)buffer[5]<<8;
-	size|=(unsigned long)buffer[6]<<16;
-	size|=(unsigned long)buffer[7]<<24;
-	if(fseek(fp,size,SEEK_CUR) != 0) err_seek();
+	size = read_le32(&buffer[4]);
+	if(fseek(fp,(long)size,SEEK_CUR) != 0) err_seek();
 
 	memset(buffer,0,sizeof(buffer));
-	fread(buffer,1,sizeof(buffer),fp);
+	fread(buffer,1,sizeof(buffer) - 1,fp);
 	if(ferror(fp)) err_read();
 
 	printf("\n");
@@ -396,18 +402,19 @@ void ShowOEMInfo() {
 
 
 /****************************************************************************/
-void main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
 
 	setbuf(stdout, NULL);
 	ShowCopyright();
 
 	if(argc<2) err_usage();
-	if(	stricmp(argv[1],"-h") == 0 ||
-		stricmp(argv[1],"/h") == 0 ||
-		stricmp(argv[1],"-?") == 0 ||
-		stricmp(argv[1],"/?") == 0
+	if(	sver_ieq(argv[1],"-h") ||
+		sver_ieq(argv[1],"/h") ||
+		sver_ieq(argv[1],"-?") ||
+		sver_ieq(argv[1],"/?")
 	) ShowHelp();
+	if( strlen(argv[1]) >= sizeof(filename) ) err_open();
 	strcpy(filename,argv[1]);
 
 	OpenFile();
@@ -419,6 +426,8 @@ void main(int argc, char *argv[])
 	ShowExtenderVersion();
 	ShowOEMInfo();
 
+	if( fp != NULL ) fclose(fp);
+	return 0;
 }
 
 

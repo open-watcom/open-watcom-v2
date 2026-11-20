@@ -1,0 +1,112 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# frozen_string_literal: true
+
+# Vagrant configuration for testing Open Watcom DOS/32A across Microsoft MS-DOS
+# 1.25 (`bento/msdos-1.25`), 2.00 (`bento/msdos-2.0`), and 4.00 (`bento/msdos-4.0`)
+# using the Bento MS-DOS Vagrant communicator (`../bento/lib/bento/vagrant_msdos`).
+
+require "fileutils"
+require "rbconfig"
+require "socket"
+require "timeout"
+
+begin
+  require "bento/vagrant_msdos"
+rescue LoadError
+  [
+    File.expand_path("../../../../bento/lib", __dir__),
+    File.expand_path("../../../bento/lib", __dir__)
+  ].each do |bento_lib|
+    $LOAD_PATH.unshift(bento_lib) if File.directory?(bento_lib) && !$LOAD_PATH.include?(bento_lib)
+  end
+  require "bento/vagrant_msdos"
+end
+
+def port_open?(host, port)
+  Timeout.timeout(0.15) do
+    sock = TCPSocket.new(host, port)
+    sock.close
+    true
+  end
+rescue StandardError
+  false
+end
+
+def resolve_vm_serial_port(base_dir, host, vm_name, default_port)
+  return ENV["MSDOS_SERIAL_PORT"].to_i if ENV["MSDOS_SERIAL_PORT"] && !ENV["MSDOS_SERIAL_PORT"].empty?
+
+  port_file = File.join(base_dir, ".vagrant", "#{vm_name}_serial_port")
+  if File.exist?(port_file)
+    saved = File.read(port_file).strip.to_i
+    return saved if saved > 0
+  end
+
+  candidate = default_port
+  candidate += 100 while port_open?(host, candidate)
+  FileUtils.mkdir_p(File.dirname(port_file))
+  File.write(port_file, candidate.to_s)
+  candidate
+end
+
+MSDOS_TARGETS = {
+  "msdos_125" => { version: "1.25", box: "bento/msdos-1.25", default_port: 12_325 },
+  "msdos_20"  => { version: "2.0",  box: "bento/msdos-2.0",  default_port: 12_326 },
+  "msdos_40"  => { version: "4.0",  box: "bento/msdos-4.0",  default_port: 12_324 }
+}.freeze
+
+sync_root = File.join(__dir__, ".sync")
+FileUtils.mkdir_p(sync_root)
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+  if ENV["MSDOS_SERIAL_PORT"] && !ENV["MSDOS_SERIAL_PORT"].empty?
+    config.msdos.port = ENV["MSDOS_SERIAL_PORT"].to_i
+  end
+
+  MSDOS_TARGETS.each do |vm_name, meta|
+    ver = meta[:version]
+
+    config.vm.define vm_name, autostart: false do |t|
+      t.vm.box = ENV["MSDOS_BOX"] || meta[:box]
+      t.vm.guest = :msdos
+      t.vm.communicator = :msdos
+      t.vm.allow_fstab_modification = false
+      t.vm.allow_hosts_modification = false
+
+      serial_host = ENV["MSDOS_SERIAL_HOST"] || "127.0.0.1"
+      serial_port = resolve_vm_serial_port(__dir__, serial_host, vm_name, meta[:default_port])
+
+      guest_drive = ver == "1.25" ? "A:" : "C:"
+      t.msdos.host = serial_host
+      t.msdos.port = serial_port
+      t.msdos.dos_version = ver
+      t.msdos.sync_drive = guest_drive
+      t.msdos.work_dir = "#{guest_drive}#{92.chr}"
+
+      t.vm.synced_folder ".", "/vagrant", disabled: true
+
+      t.vm.provider :qemu do |qe|
+        host_cpu = RbConfig::CONFIG["host_cpu"].to_s.downcase
+        is_arm = host_cpu.include?("arm") || host_cpu.include?("aarch64")
+        accel = is_arm ? "tcg" : (RUBY_PLATFORM.include?("darwin") ? "hvf:tcg" : "kvm:tcg")
+
+        qe.arch = "i386"
+        qe.machine = "pc,accel=#{accel}"
+        qe.cpu = is_arm ? "max" : "pentium2"
+        qe.smp = "1"
+        qe.memory = "64M"
+        qe.net_device = nil
+        qe.drive_interface = "ide"
+        qe.firmware_format = nil
+        qe.debug_port = serial_port
+        qe.ssh_port = 50_000 + (serial_port % 10_000)
+        qe.ssh_auto_correct = true
+        qe.extra_qemu_args = [
+          "-vga", "std",
+          "-rtc", "base=localtime"
+        ]
+      end
+    end
+  end
+end

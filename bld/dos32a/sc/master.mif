@@ -1,0 +1,26 @@
+tree_depth = 4
+
+proj_name = sc
+
+sc_autodepends  = .AUTODEPEND
+sc_dos_extender = dos32a
+
+memory_model_386 = f
+fpu_flags_dos386 = -fpi87
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+
+.c : $(dos32a_dir)/src/sc
+.asm : $(dos32a_dir)/src/sc
+
+inc_dirs = -I"$(dos32a_dir)/src/sc" -I"$(dos32a_dir)/h32" -I"$(dos32a_dir)/src/sutils/misc"
+
+extra_c_flags = -ei -zp16
+extra_a_flags = -fpi87 -zld
+
+exetarg_objs = scomp.obj sload.obj encode.obj main.obj
+exetarg_name = sc
+exetarg_opts = op stack=65536
+!include exetarg.mif
