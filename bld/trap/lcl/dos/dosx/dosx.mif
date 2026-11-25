@@ -11,11 +11,13 @@ dosx_link_objs = dosxlink.obj packet.obj
 
 dosx_trap_objs = &
         dosxremo.obj &
+        rempktnr.obj &
         dosxfork.obj &
         dosxjump.obj
 
 dosx_serv_objs = &
         dosxserv.obj &
+        rempktnr.obj &
         dosxtrio.obj &
         dosxstub.obj &
         dosxrmod.obj &

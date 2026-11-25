@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +40,7 @@
 #include "packet.h"
 #include "servio.h"
 #include "nothing.h"
+#include "rempktnr.h"
 
 
 trap_version     TrapVersion;
@@ -116,14 +117,8 @@ bool Session( void )
         Out_Mx_Ptr = &Out[0];
         In_Mx_Num = 1;
         Out_Mx_Num = 1;
+        want_return = RemotePktDecodeNoReply( In_Mx_Ptr );
         req = TRP_REQUEST( In );
-        if( req & REQ_WANT_RETURN ) {
-            req &= ~REQ_WANT_RETURN;
-            want_return = false;
-        } else {
-            want_return = true;
-        }
-        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_CONNECT:
             if( !AccConnect() )

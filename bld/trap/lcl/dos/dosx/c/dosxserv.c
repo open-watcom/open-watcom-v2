@@ -43,6 +43,7 @@
 #include "packet.h"
 #include "servio.h"
 #include "dosxlink.h"
+#include "rempktnr.h"
 #ifdef ACAD
     #include "adsacc.h"
     #include "adslib.h"
@@ -88,19 +89,14 @@ bool Session( void )
 {
     unsigned    req;
     bool        want_return;
+    void        *p;
 
     for( ;; ) {
         In[0].len = GetPacket();
-        In[0].ptr = GetPacketBuffPtr();
+        In[0].ptr = p = GetPacketBuffPtr();
         _DBG(("Session got request "));
+        want_return = RemotePktDecodeNoReply( p );
         req = TRP_REQUEST( In );
-        if( req & REQ_WANT_RETURN ) {
-            req &= ~REQ_WANT_RETURN;
-            want_return = false;
-        } else {
-            want_return = true;
-        }
-        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));

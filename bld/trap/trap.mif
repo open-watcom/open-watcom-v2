@@ -139,7 +139,7 @@ build_target = $(trap_basename)$(ext_lib_shared)
 
 TRAP_first_obj   = $(os_prefix)strt.obj
 TRAP_common_objs = 
-TRAP_remote_objs = remote.obj
+TRAP_remote_objs = remote.obj rempktnr.obj
 
 !endif  ## ifndef test
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -75,20 +75,14 @@ static void AccTrap( bool want_return )
 bool Session( void )
 {
     unsigned    req;
-    bool    want_return;
+    bool        want_return;
 
     for( ;; ) {
         In[0].len = GetPacket();
         In[0].ptr = GetPacketBuffPtr();
         _DBG(("Session got request "));
+        want_return = RemotePktDecodeNoReply( In[0].ptr );
         req = TRP_REQUEST( In );
-        if( req & REQ_WANT_RETURN ) {
-            req &= ~REQ_WANT_RETURN;
-            want_return = false;
-        } else {
-            want_return = true;
-        }
-        TRP_REQUEST( In ) = req;
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));

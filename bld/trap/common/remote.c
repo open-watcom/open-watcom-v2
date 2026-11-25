@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2024 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2026 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,6 +38,7 @@
 #include "trpcomm.h"
 #include "trperr.h"
 #include "packet.h"
+#include "rempktnr.h"
 
 
 static trap_retval DoRequest( void )
@@ -49,14 +50,12 @@ static trap_retval DoRequest( void )
 
     _DBG_EnterFunc( "DoRequest" );
     StartPacket();
-    if( Out_Mx_Num == 0 ) {
-        /* Tell the server we're not expecting anything back */
-        TRP_REQUEST( In_Mx_Ptr ) |= REQ_WANT_RETURN;
-    }
+    /* Tell the server we're not expecting anything back */
+    RemotePktEncodeNoReply( In_Mx_Ptr, ( Out_Mx_Num == 0 ) );
     for( i = 0; i < In_Mx_Num; ++i ) {
         AddPacket( In_Mx_Ptr[i].ptr, In_Mx_Ptr[i].len );
     }
-    TRP_REQUEST( In_Mx_Ptr ) &= ~REQ_WANT_RETURN;
+    RemotePktDecodeNoReply( In_Mx_Ptr );
     result = PutPacket();
     if( result != TRAP_REQUEST_FAILED ) {
         result = 0;
