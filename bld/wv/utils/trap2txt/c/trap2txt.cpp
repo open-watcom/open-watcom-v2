@@ -154,6 +154,15 @@ SVC_DECODE *get_supp_service_decoder( const char *service_name )
 
 int main( int argc, char ** argv )
 {
+    unsigned        offset = 0;
+    unsigned short  type = 0;
+    unsigned short  len = 0;
+    unsigned char   buffer[2048];
+    unsigned char   last_id = 255;
+    SYSTEMTIME      st = {0};
+    int             time_valid = 0;
+    int             rc;
+
     if( argc < 2 )
         return -1;
 
@@ -162,14 +171,6 @@ int main( int argc, char ** argv )
         fprintf( stderr, "Failed to open file\n" );
         return -1;
     }
-
-    unsigned        offset = 0;
-    unsigned short  type = 0;
-    unsigned short  len = 0;
-    unsigned char   buffer[2048];
-    unsigned char   last_id = 255;
-    SYSTEMTIME      st = {0};
-    int             time_valid = 0;
 
     for( ;; ) {
 
@@ -180,6 +181,7 @@ int main( int argc, char ** argv )
         }
         offset += sizeof( type );
 
+        time_valid = 0;
         if( type > 3 ) {
             time_valid = 1;
             if( sizeof( WORD ) != fread( &st.wHour, 1, sizeof( WORD ), fil ) ) {
@@ -209,7 +211,7 @@ int main( int argc, char ** argv )
         if( type == 5 )
             type = 3;
 
-        if( sizeof( type ) != fread( &len, 1, sizeof( len ), fil ) ) {
+        if( sizeof( len ) != fread( &len, 1, sizeof( len ), fil ) ) {
             fprintf( stderr, "Failed to read len ( uint16 ) at offset 0x%.08x\n", offset );
             break;
         }
@@ -226,20 +228,17 @@ int main( int argc, char ** argv )
             fprintf( stderr, "Failed to read byte ( uint16 ) at offset 0x%.08x\n", offset );
             break;
         }
+        RemotePktDecodeNoReply( buffer );
 
         if( time_valid )
             printf( "%.02u:%.02u:%.02u.%3.3u ", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds );
-        int rc = 0;
 
+        rc = 0;
         if( ( type == 1 ) || ( type == 2 ) ) {
-            unsigned char rq_id = *buffer;
-//            unsigned char no_response = rq_id & 0x80;
-            rq_id &= ~0x80;
-
-            if( rq_id < REQ__LAST )
-                rc = ( MyHandlers[rq_id] )( buffer, len );
-            last_id = rq_id;
-
+            last_id = *buffer;
+            if( last_id < REQ__LAST ) {
+                rc = ( MyHandlers[last_id] )( buffer, len );
+            }
         } else if( type == 3 ) {
             if( last_id < REQ__LAST ) {
                 rc = ( MyReplyHandlers[last_id] )( buffer, len );
@@ -258,7 +257,9 @@ int main( int argc, char ** argv )
                 exit( -1 );
             }
             printf( "\n" );
-            DumpPacket( buffer, len );
+            if( len ) {
+                DumpPacket( buffer, len );
+            }
         }
 
         printf( "\n===============================================================================\n\n" );
@@ -735,13 +736,13 @@ int handle_REQ_PROG_LOAD( unsigned char *pkt, unsigned short len )
 
     printf( "Debugger request: REQ_PROG_LOAD\n" );
     idx = sizeof( prog_load_req );
-    printf( "    Program:    %s\n", p + idx );
+    printf( "    Program:    \"%s\"\n", p + idx );
     idx += strlen( p + idx ) + 1;
     if( idx < len ) {
-        printf( "    Args:       %s\n", p + idx );
+        printf( "    Args:       \"%s\"\n", p + idx );
         idx += strlen( p + idx ) + 1;
         while( idx < len ) {
-            printf( "                %s\n", p + idx );
+            printf( "                \"%s\"\n", p + idx );
             idx += strlen( p + idx ) + 1;
         }
     }
