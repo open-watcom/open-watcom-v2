@@ -15,7 +15,15 @@
 
 #include "bool.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern bool RemotePktEncodeNoReply( void *data, bool no_reply );
 extern bool RemotePktDecodeNoReply( void *data );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

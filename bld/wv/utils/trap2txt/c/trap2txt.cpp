@@ -6,6 +6,7 @@
 #include "trpcore.h"
 #include "madregs.h"
 #include "trpfile.h"
+#include "rempktnr.h"
 
 
 dig_arch    mad_arch = DIG_ARCH_NIL;

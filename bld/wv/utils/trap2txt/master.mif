@@ -12,14 +12,16 @@ dig_arch = $(host_cpu)
 
 !include $(dig_dir)/client.mif
 
-inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h" -I"$(dig_dir)/h"
+inc_dirs = -I"../h" -I"$(dip_dir)/watcom/h" -I"$(dig_dir)/h" -I"$(trap_dir)/common"
 
 extra_cpp_flags = $(dig_arch_cpp_flags) -DBLDVER=$(bld_ver)
 
 .cpp: ../c
+.c: $(trap_dir)/common
 
 exetarg_objs = &
     trap2txt.obj &
+    rempktnr.obj &
     trsp_cap.obj &
     trsp_env.obj &
     trspfinf.obj &
