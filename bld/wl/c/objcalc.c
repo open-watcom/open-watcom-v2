@@ -833,7 +833,7 @@ void CalcAddresses( void )
     CurrSect = Root;
     if( FmtData.type & MK_PROT_MODE ) {
         AllocFileSegs();
-        if( FmtData.objalign == NO_BASE_SPEC ) {
+        if( FmtData.objalign == NO_ALIGN_SPEC ) {
             setDefObjAlign();
         }
         if( FmtData.type & MK_SPLIT_DATA ) {

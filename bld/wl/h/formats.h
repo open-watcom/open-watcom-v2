@@ -229,6 +229,7 @@ struct fmt_rdos_data {
 };
 
 #define NO_BASE_SPEC    ((offset)-1L)
+#define NO_ALIGN_SPEC   ((offset)-1L)
 
 struct fmt_data {
     union   fmt_spec_data {

@@ -1405,7 +1405,7 @@ void ChkBase( offset align )
  * Note: align must be a power of 2
  */
 {
-    if( FmtData.objalign != NO_BASE_SPEC
+    if( FmtData.objalign != NO_ALIGN_SPEC
       && FmtData.objalign > align ) {
         align = FmtData.objalign;
     }

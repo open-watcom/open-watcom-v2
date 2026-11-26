@@ -144,7 +144,7 @@ static void ResetCmdFile( void )
     CmdFlags = CF_UNNAMED;
     ObjPath = NULL;
     FmtData.base = NO_BASE_SPEC;
-    FmtData.objalign = NO_BASE_SPEC;
+    FmtData.objalign = NO_ALIGN_SPEC;
     FmtData.type = MK_ALL;
     SET_SEG_PMODE_DPL( FmtData.def_seg_flags, 3 );
     FmtData.Hshift = 12;    /* May want different value for some 32 bit segmented modes */
